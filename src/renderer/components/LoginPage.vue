@@ -55,6 +55,7 @@ const css = require('semantic/dist/semantic.min.css')
 const ui = require('semantic/dist/semantic.min.js')
 
 const { ipcRenderer } = require('electron')
+const store = require('../store')
 
 var model = {
     modes: [
@@ -99,12 +100,15 @@ export default {
         this.acc = document.getElementById('acc')
         this.psw = document.getElementById('psw')
         $('.dropdown').dropdown({
-            onChange: (value, text, $selectedItem) =>
+            onChange: (value, text, $selectedItem) => {
+                console.log(store.default.getters.counter)
                 ipcRenderer.send('mode-update', value)
+            }
         })
     },
     methods: {
         doLogin: (e) => {
+            console.log(this)
             if (this.acc.value.length == 0)
                 $('#accf').transition(randomShake())
             else if (this.psw.value.length == 0 && !model.auth.disable)
