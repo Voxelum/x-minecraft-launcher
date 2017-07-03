@@ -19,13 +19,13 @@
                 <div id="accf" class="field">
                     <div class="ui left icon input">
                         <i class="user icon"></i>
-                        <input id="acc" type="text" name="email" :placeholder="auth.account">
+                        <input id="acc" type="text" name="email" :placeholder="auth.account" v-on:keyup.enter="doLogin">
                     </div>
                 </div>
                 <div id="pswf" class="field">
                     <div class="ui left icon input">
                         <i class="lock icon"></i>
-                        <input id="psw" type="password" name="password" :placeholder="auth.password" :disabled="auth.disable">
+                        <input id="psw" type="password" name="password" :placeholder="auth.password" :disabled="auth.disable" v-on:keyup.enter="doLogin">
                     </div>
                 </div>
                 <div class="ui fluid large submit button" v-on:click="doLogin">{{auth.login}}</div>
@@ -107,9 +107,9 @@ export default {
         doLogin: (e) => {
             if (this.acc.value.length == 0)
                 $('#accf').transition(randomShake())
-            else if (this.psw.value.length == 0)
+            else if (this.psw.value.length == 0 && !model.auth.disable)
                 $('#pswf').transition(randomShake())
-            else ipcRenderer.send('login', [this.acc.value, this.psw.value])
+            else ipcRenderer.send('login', [this.acc.value, this.psw.value, model.mode])
         }
     },
     data: () => {

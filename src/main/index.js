@@ -37,15 +37,8 @@ function init() {
   ipcMain.on('init', (event, args) => {
     event.send.send('init', 'pong')
   })
-  ipcMain.on('mode-update', (event, args) => {
-    if (args == 'offline') {
-    }
-    else {
-    }
-    event.sender.send('mode-update', args)
-  })
   ipcMain.on('login', (evet, args) => {
-    let [account, password] = args
+    let [account, password, mode] = args
     AuthService.newYggdrasilAuthService().login(account, password, 'non', (resp) => {
       console.log(resp)
     })
