@@ -26,12 +26,10 @@ export default {
 
         var character = new THREEx.MinecraftChar()
         character.root.translateY(-0.5)
-        character.root.translateX(-0.05)
+        character.root.translateX(-0.0625)
         scene.add(character.root)
         let vec = character.root.position
-        // vec.x += 0.5
-        // vec.y += 0.5
-        // camera.lookAt(vec)
+        camera.lookAt(new THREE.Vector3(0, 0, 0))
 
 
 
@@ -40,6 +38,11 @@ export default {
         //////////////////////////////////////////////////////////////////////////////////
 
         let controls = new OrbitControls(camera)
+        controls.target = new THREE.Vector3(0, 0, 0)
+        controls.enablePan = false
+        controls.enableKeys = false
+        controls.maxDistance = 3
+        controls.minDistance = 1.5
         // controls.target = vec
         // var geo = new THREE.BoxGeometry(1, 1, 1)
         // var mat = new THREE.MeshBasicMaterial({ wireframe: false })
@@ -71,6 +74,9 @@ export default {
         //////////////////////////////////////////////////////////////////////////////////
         onRenderFcts.push(function () {
             renderer.render(scene, camera);
+        })
+        onRenderFcts.push(() => {
+            character.root.rotateY(0.01)
         })
 
         //////////////////////////////////////////////////////////////////////////////////
