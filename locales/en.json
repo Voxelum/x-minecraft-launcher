@@ -1,0 +1,10 @@
+{
+    "hello": "Hello world",
+    "offline.name": "Offline",
+    "offline.account": "Username",
+    "offline.password": "No Password",
+    "mojang.name": "Mojang",
+    "mojang.account": "Email Adress",
+    "mojang.password": "Password",
+    "login": "Login"
+}
