@@ -11,7 +11,7 @@
                     <i class="world icon"></i>
                     <span class="text">Mojang</span>
                     <div class="menu">
-                        <option class="item" v-for="item in modes" :value="item">{{$t(item+'.name')}}</option>
+                        <option class="item" v-for="item in modes" :key="item" :value="item">{{$t(item+'.name')}}</option>
                     </div>
                 </div>
                 <br>
@@ -53,7 +53,7 @@ let translating = false
 import { mapGetters, mapMutations } from 'vuex'
 
 export default {
-    computed: mapGetters({
+    computed: mapGetters('auth', {
         modes: 'modes',
         disablePassword: 'disablePassword',
         mode: 'mode'
@@ -89,9 +89,9 @@ export default {
                     }
                 })
             }
-            else ipcRenderer.send('login', [this.acc.value, this.psw.value, this.mode])
+            else this.$store.dispatch('login', [this.acc.value, this.psw.value, this.mode])
         },
-        ...mapMutations([
+        ...mapMutations('auth', [
             'select'
         ])
     }

@@ -1,12 +1,13 @@
 <template>
   <div id="app">
-    <common></common>
+    <modpack></modpack>
   </div>
 </template>
 
 <script>
 import common from '@/components/CommonPage'
 import login from '@/components/Login'
+import modpack from '@/components/ModPack'
 const { ipcRenderer } = require('electron')
 
 export default {
@@ -17,7 +18,7 @@ export default {
     })
   },
   components: {
-    login, common
+    login, common, modpack
   }
 }
 </script>
