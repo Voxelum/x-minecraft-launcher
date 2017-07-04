@@ -8,7 +8,7 @@ const getters = {
   mode: state => state.mode
 }
 const mutations = {
-  select(mode) {
+  select(state, mode) {
     if (state.modes.indexOf(mode) != -1)
       state.mode = mode
   },

@@ -45,12 +45,12 @@ const css = require('semantic/dist/semantic.min.css')
 const ui = require('semantic/dist/semantic.min.js')
 
 const { ipcRenderer } = require('electron')
-const arr = ['jiggle', 'shake', 'tada', 'bounce', 'pulse']
+const arr = ['jiggle', 'shake', 'tada']
 function randomShake() {
-    return arr[Math.round(Math.random() * 5)]
+    return arr[Math.round(Math.random() * 3)]
 }
 let translating = false
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
     computed: mapGetters({
@@ -61,15 +61,39 @@ export default {
     mounted(e) {
         this.acc = document.getElementById('acc')
         this.psw = document.getElementById('psw')
+        let self = this
+        $('.dropdown').dropdown({
+            onChange: (value, text, $selectedItem) => {
+                self.select(value)
+            }
+        })
     },
     methods: {
-        doLogin: (e) => {
-            if (this.acc.value.length == 0)
-                $('#accf').transition(randomShake())
-            else if (this.psw.value.length == 0 && !model.auth.disable)
-                $('#pswf').transition(randomShake())
-            else ipcRenderer.send('login', [this.acc.value, this.psw.value, model.mode])
-        }
+        doLogin(e) {
+            if (translating) return
+            if (this.acc.value.length == 0) {
+                translating = true
+                $('#accf').transition({
+                    animation: randomShake(),
+                    onComplete: () => {
+                        translating = false
+                    }
+                })
+            }
+            else if (this.psw.value.length == 0) {
+                translating = true
+                $('#pswf').transition({
+                    animation: randomShake(),
+                    onComplete: () => {
+                        translating = false
+                    }
+                })
+            }
+            else ipcRenderer.send('login', [this.acc.value, this.psw.value, this.mode])
+        },
+        ...mapMutations([
+            'select'
+        ])
     }
 }
 </script>
