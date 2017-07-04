@@ -1,20 +1,34 @@
 <template>
   <div id="app">
-    <login-page></login-page>
+    <login></login>
   </div>
 </template>
 
 <script>
-import LoginPage from '@/components/LoginPage'
+import CommonPage from '@/components/CommonPage'
+import login from '@/components/Login'
+const { ipcRenderer } = require('electron')
 
 export default {
   name: 'llauncher',
+  mounted(e) {
+    ipcRenderer.send('init')
+    ipcRenderer.on('init', (event, args) => {
+    })
+  },
   components: {
-    LoginPage
+    login
   }
 }
 </script>
 
 <style>
-/* CSS */
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 </style>

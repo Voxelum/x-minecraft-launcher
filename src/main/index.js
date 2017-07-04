@@ -35,7 +35,7 @@ function createWindow() {
 
 function init() {
   ipcMain.on('init', (event, args) => {
-    event.send.send('init', 'pong')
+    event.sender.send('init', 'pong')
   })
   ipcMain.on('login', (evet, args) => {
     let [account, password, mode] = args
