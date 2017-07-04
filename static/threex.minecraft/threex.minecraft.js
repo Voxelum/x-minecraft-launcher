@@ -57,7 +57,6 @@ THREEx.MinecraftChar	= function(skinUrl){
 	sizes.armW	=  4 * sizes.pixRatio;
 	sizes.armD	=  4 * sizes.pixRatio;
 
-
 	// build model core hierachy
 	// - origin between 2 feet
 	// - height of full character is 1
