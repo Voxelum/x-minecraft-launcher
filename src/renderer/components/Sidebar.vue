@@ -1,6 +1,6 @@
 <template>
     <div class="ui segment noselect" style="max-width:300px">
-        <div class="ui header">PLAYER NAME</div>
+        <div class="ui header">{{auth.playerName}}</div>
         <div>
             <skin-view></skin-view>
         </div>

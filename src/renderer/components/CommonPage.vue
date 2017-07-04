@@ -1,6 +1,7 @@
 <template>
     <div>
         <side-bar></side-bar>
+        <button class="ui button">Launch</button>
     </div>
 </template>
 
