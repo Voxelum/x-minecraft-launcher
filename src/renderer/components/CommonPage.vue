@@ -1,22 +1,17 @@
 <template>
-    <div class="ui noselect">
-        <div></div>
-        <div>
-            <canvas></canvas>
-        </div>
-        <div>
-            <button>A</button>
-            <button>B</button>
-            <button>C</button>
-        </div>
+    <div>
+        <side-bar></side-bar>
     </div>
 </template>
 
 <script>
+import SideBar from './SideBar'
 export default {
     name: 'common-page',
     mounted(e) {
-        console.log('common ' + (this.$store != undefined))
+    },
+    components: {
+        SideBar
     }
 }
 </script>

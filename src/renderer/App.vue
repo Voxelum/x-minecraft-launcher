@@ -1,12 +1,11 @@
 <template>
   <div id="app">
-    <side></side>
+    <common></common>
   </div>
 </template>
 
 <script>
 import common from '@/components/CommonPage'
-import side from '@/components/Sidebar'
 import login from '@/components/Login'
 const { ipcRenderer } = require('electron')
 
@@ -18,7 +17,7 @@ export default {
     })
   },
   components: {
-    login, side
+    login, common
   }
 }
 </script>
