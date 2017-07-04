@@ -40,7 +40,7 @@ function init() {
   ipcMain.on('login', (evet, args) => {
     let [account, password, mode] = args
     if (mode == offline) {
-
+      
     } else
       AuthService.newYggdrasilAuthService().login(account, password, 'non').catch(e => {
         console.log(e.message)

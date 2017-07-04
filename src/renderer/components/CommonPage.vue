@@ -1,5 +1,15 @@
 <template>
-    <div></div>
+    <div class="ui noselect">
+        <div></div>
+        <div>
+            <canvas></canvas>
+        </div>
+        <div>
+            <button>A</button>
+            <button>B</button>
+            <button>C</button>
+        </div>
+    </div>
 </template>
 
 <script>
