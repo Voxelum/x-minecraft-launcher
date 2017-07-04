@@ -68,6 +68,8 @@
     "mocha": "^3.0.2",
     "multispinner": "^0.2.1",
     "style-loader": "^0.18.1",
+    "three": "^0.86.0",
+    "three-orbit-controls": "^82.1.0",
     "ts-minecraft": "^0.3.0-beta",
     "url-loader": "^0.5.7",
     "vue-html-loader": "^1.2.2",
