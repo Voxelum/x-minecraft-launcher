@@ -21,7 +21,7 @@ const mutations = {
 }
 const actions = {
   login(context) {
-    require('electron').remote.require('login').login(context.)
+    // require('electron').remote.require('login').login(context.)
 
   }
 }

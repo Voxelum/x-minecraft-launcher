@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <modpack></modpack>
+    <common></common>
   </div>
 </template>
 
