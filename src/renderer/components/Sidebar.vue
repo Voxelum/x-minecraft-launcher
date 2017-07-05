@@ -1,6 +1,6 @@
 <template>
     <div class="ui segment noselect" style="max-width:300px">
-        <div class="ui header">{{auth.playerName}}</div>
+        <div class="ui header">{{this.$store.state.auth.playerName}}</div>
         <div>
             <skin-view></skin-view>
         </div>

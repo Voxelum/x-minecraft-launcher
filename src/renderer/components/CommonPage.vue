@@ -8,7 +8,6 @@
 <script>
 import SideBar from './SideBar'
 export default {
-    name: 'common-page',
     mounted(e) {
     },
     components: {
