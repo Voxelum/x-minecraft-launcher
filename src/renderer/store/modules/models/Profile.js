@@ -1,30 +1,40 @@
-import { v4 } from 'uuid'
-/*export default {
-    constructor(option) {
-        this.id = v4()
-        this.name = option.name || 'default'
-        this.version = option
-    }
-}
-*/
 function state() {
     return {
         id: '',
-        profile: ''
+        name: '',
+        version: '',
+        resolution: [800, 400],
+        java: '',
+        resourcepacks: [],
+        mods: [],
+        setting: {},
+        vmOptions: [],
+        mcOptions: []
     }
 }
 const getters = {
-    profiles: state => state.profiles,
-    profile: state => state.profile,
-    version: state => state.profiles[state.profile].version,
-    resolution: state => state.profiles[state.profile].resolution,
-    javalocation: state => state.profiles[state.profile].javalocation,
+    id: state => state.id,
+    name: state => state.name,
+    version: state => state.version,
+    resolution: state => state.resolution,
+    java: state => state.java,
+    resourcepacks: state => state.resourcepacks,
+    mods: state => state.mods,
+    setting: state => state.setting,
+    vmOptions: state => state.vmOptions,
+    mcOptions: state => state.mcOptions
 }
 const mutations = {
-    selectProfile(state, profile) {
-        if (state.profiles[profile])
-            state.profile = profile
-    }
+    version(state, version) {
+        state.version = version
+    },
+    resolution(state, resolution) {
+        state.resolution = resolution
+    },
+    javaLocation(state, location) {
+        state.location = location
+    },
+    name(state, name) { state.name = name }
 }
 
 const actions = {

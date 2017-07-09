@@ -37,14 +37,24 @@ function init() {
   ipcMain.on('init', (event, args) => {
     event.sender.send('init', 'pong')
   })
-  ipcMain.on('login', (evet, args) => {
+  ipcMain.on('login', (event, args) => {
     let [account, password, mode] = args
-    if (mode == offline) {
-      
+    if (mode == 'offline') {
+      event.sender.send('login', undefined, AuthService.offlineAuth(account))
     } else
-      AuthService.newYggdrasilAuthService().login(account, password, 'non').catch(e => {
-        console.log(e.message)
-      })
+      AuthService.newYggdrasilAuthService().login(account, password, 'non').then(
+        result => { event.sender.send('login', undefined, result) },
+        err => { event.sender.send('login', err) }
+      )
+  })
+  ipcMain.on('launch', (event, options) => {
+    switch (options.type) {
+      case 'server':
+      case 'modpack':
+    }
+  })
+  ipcMain.on('save', (event, args) => {
+    args.type
   })
 }
 app.on('ready', () => {

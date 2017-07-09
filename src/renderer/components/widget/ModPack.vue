@@ -1,21 +1,21 @@
 <template>
-    <div class="ui card">
+    <div class="ui card" v-bind:class="{color}" @click="emit">
         <div class="image">
-            <img src="../assets/lena.png">
+            <img :src="image">
         </div>
         <div class="content">
-            <a class="header">Kristy</a>
+            <a class="header">{{name}}</a>
             <div class="meta">
-                <span class="date">Joined in 2013</span>
+                <span class="date">{{createdDate}}</span>
             </div>
             <div class="description">
-                Kristy is an art director living in New York.
+                {{description}}
             </div>
         </div>
         <div class="extra content">
             <a>
                 <i class="user icon"></i>
-                22 Friends
+                {{author}}
             </a>
         </div>
     </div>
@@ -23,7 +23,10 @@
 
 <script>
 export default {
-
+    props: ['color', 'image', 'name', 'createdDate', 'description', 'author'],
+    methods: {
+        emit() { this.$emit('select') }
+    }
 }
 </script>
 
