@@ -17,14 +17,14 @@
                     </a>
                 </div>
                 <!--<div class="ui inverted labeled icon dropdown">
-                                                <i class="filter inverted icon"></i>
-                                                <span class="inverted text">All</span>
-                                                <div class="inverted menu">
-                                                    <option class="item">All</option>
-                                                    <option class="item">ModPack</option>
-                                                    <option class="item">Servers</option>
-                                                </div>
-                                            </div>-->
+                                                            <i class="filter inverted icon"></i>
+                                                            <span class="inverted text">All</span>
+                                                            <div class="inverted menu">
+                                                                <option class="item">All</option>
+                                                                <option class="item">ModPack</option>
+                                                                <option class="item">Servers</option>
+                                                            </div>
+                                                        </div>-->
             </div>
         </div>
         <div class="row">
@@ -39,7 +39,7 @@
             </div>
             <div class="ten wide column">
                 <div class="ui link cards">
-                    <mod-pack v-for="pack in packs" :key="pack" :name="pack.name" :description="pack.description" :author="pack.author" @select="onSelect(pack)"></mod-pack>
+                    <profile v-for="profile in profiles" :key="profile" :name="profile.name" :description="profile.description" :author="profile.author" :ping="profile.ping" :ip="profile.ip" :type="profile.type" @select="onSelect(profile)"></profile>
                 </div>
                 <!--<button class="ui huge button">Launch</button>-->
             </div>
@@ -48,13 +48,26 @@
 </template>
 
 <script>
-// import SideBar from './widget/SideBar'
 import SkinView from './widget/SkinViewer'
-import ModPack from './widget/ModPack'
+import profile from './widget/Profile'
 export default {
     data() {
         return {
-            packs: []
+            profiles: [
+                {
+                    name: 'new age',
+                    author: 'ci010',
+                    description: 'the new age pack',
+                    type: 'modpack'
+                },
+                {
+                    name: 'myminecraft',
+                    ip: 'mc.crafter.me',
+                    description: 'server motd',
+                    ping: 100,
+                    type: 'server'
+                }
+            ]
         }
     },
     mounted(e) {
@@ -68,7 +81,7 @@ export default {
         }
     },
     components: {
-        SkinView, ModPack
+        SkinView, profile
     }
 }
 </script>
