@@ -1,13 +1,14 @@
 <template>
   <div id="app">
-    <common></common>
+    <common-page></common-page>
   </div>
 </template>
 
 <script>
-import common from '@/components/CommonPage'
-import login from '@/components/Login'
-import modpack from '@/components/ModPack'
+import components from '@/components/widget'
+import CommonPage from '@/components/CommonPage'
+require('semantic/dist/semantic.min.css')
+require('semantic/dist/semantic.min.js')
 const { ipcRenderer } = require('electron')
 
 export default {
@@ -17,9 +18,7 @@ export default {
     ipcRenderer.on('init', (event, args) => {
     })
   },
-  components: {
-    login, common, modpack
-  }
+  components: { CommonPage }
 }
 </script>
 

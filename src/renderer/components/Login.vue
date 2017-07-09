@@ -9,7 +9,7 @@
             <div class="ui segment">
                 <div class="ui labeled icon dropdown button">
                     <i class="world icon"></i>
-                    <span class="text">Mojang</span>
+                    <span class="text" v-once>{{$t(mode+'.name')}}</span>
                     <div class="menu">
                         <option class="item" v-for="item in modes" :key="item" :value="item">{{$t(item+'.name')}}</option>
                     </div>
@@ -34,16 +34,13 @@
         </form>
     
         <div class="ui segment center aligned ">
-            New to us?
-            <a href="#">Sign Up</a>
+            {{$t('signup.description')}}
+            <a href="#">{{$t('signup')}}</a>
         </div>
     </div>
 </template>
 
 <script>
-const css = require('semantic/dist/semantic.min.css')
-const ui = require('semantic/dist/semantic.min.js')
-
 const { ipcRenderer } = require('electron')
 const arr = ['jiggle', 'shake', 'tada']
 function randomShake() {
@@ -53,11 +50,9 @@ let translating = false
 import { mapGetters, mapMutations } from 'vuex'
 
 export default {
-    computed: mapGetters('auth', {
-        modes: 'modes',
-        disablePassword: 'disablePassword',
-        mode: 'mode'
-    }),
+    computed: mapGetters('auth', [
+        'modes', 'disablePassword', 'mode'
+    ]),
     mounted(e) {
         this.acc = document.getElementById('acc')
         this.psw = document.getElementById('psw')
@@ -70,8 +65,8 @@ export default {
     },
     methods: {
         doLogin(e) {
-            if (translating) return
             if (this.acc.value.length == 0) {
+                if (translating) return
                 translating = true
                 $('#accf').transition({
                     animation: randomShake(),
@@ -80,7 +75,8 @@ export default {
                     }
                 })
             }
-            else if (this.psw.value.length == 0) {
+            else if (this.psw.value.length == 0 && this.mode != 'offline') {
+                if (translating) return
                 translating = true
                 $('#pswf').transition({
                     animation: randomShake(),
@@ -89,7 +85,7 @@ export default {
                     }
                 })
             }
-            else this.$store.dispatch('login', [this.acc.value, this.psw.value, this.mode])
+            else this.$store.dispatch('auth/login', [this.acc.value, this.psw.value, this.mode]).then()
         },
         ...mapMutations('auth', [
             'select'

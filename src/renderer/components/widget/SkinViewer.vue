@@ -1,6 +1,6 @@
 <template>
-    <div style='margin: 0px; overflow: hidden;'>
-        <canvas id="scene"></canvas>
+    <div class="ui segment" style='margin: 0px; overflow: hidden;'>
+        <canvas id="scene" :width="width" :height="height"></canvas>
     </div>
 </template>
 
@@ -10,11 +10,12 @@ import THREEx from 'static/threex.minecraft'
 var THREE = require('three')
 const OrbitControls = require('three-orbit-controls')(THREE)
 export default {
+    props: ['width', 'height'],
     mounted(e) {
         let s = document.getElementById('scene')
         var renderer = new THREE.WebGLRenderer({ canvas: s });
-        renderer.setSize(300, 400);
-        // renderer.setClearColor('#444', 1)
+        renderer.setSize(this.width, this.height);
+        renderer.setClearColor('#FFF', 1)
 
         var onRenderFcts = [];
         var scene = new THREE.Scene();

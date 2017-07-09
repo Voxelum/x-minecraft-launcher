@@ -6,5 +6,7 @@
     "mojang.name": "Mojang",
     "mojang.account": "Email Adress",
     "mojang.password": "Password",
-    "login": "Login"
+    "login": "Login",
+    "signup.description": "New to us?",
+    "signup": "Sign Up"
 }
