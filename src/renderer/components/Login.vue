@@ -33,7 +33,7 @@
             <div class="ui error message"></div>
         </form>
     
-        <div class="ui segment center aligned ">
+        <div class="ui segment center aligned">
             {{$t('signup.description')}}
             <a href="#">{{$t('signup')}}</a>
         </div>

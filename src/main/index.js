@@ -35,8 +35,10 @@ function createWindow() {
 
 function init() {
   ipcMain.on('init', (event, args) => {
+
     event.sender.send('init', 'pong')
   })
+
   ipcMain.on('login', (event, args) => {
     let [account, password, mode] = args
     if (mode == 'offline') {
@@ -73,3 +75,6 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
+const storage = require('./storage')
+storage.loadAll(app.getPath('userData'))

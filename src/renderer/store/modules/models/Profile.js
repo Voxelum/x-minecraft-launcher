@@ -1,40 +1,29 @@
 function state() {
     return {
-        id: '',
-        name: '',
+        id: '', //meta-inf
+        type: '',
+
+        name: '', //specific info
         version: '',
-        resolution: [800, 400],
-        java: '',
-        resourcepacks: [],
+
+        resourcepacks: [], //official setting
         mods: [],
         setting: {},
+
+        resolution: [800, 400], //client setting
+        java: '',
         vmOptions: [],
         mcOptions: []
     }
 }
 const getters = {
-    id: state => state.id,
-    name: state => state.name,
-    version: state => state.version,
-    resolution: state => state.resolution,
-    java: state => state.java,
-    resourcepacks: state => state.resourcepacks,
-    mods: state => state.mods,
-    setting: state => state.setting,
-    vmOptions: state => state.vmOptions,
-    mcOptions: state => state.mcOptions
 }
 const mutations = {
-    version(state, version) {
-        state.version = version
-    },
-    resolution(state, resolution) {
-        state.resolution = resolution
-    },
-    javaLocation(state, location) {
-        state.location = location
-    },
-    name(state, name) { state.name = name }
+    putAll(state, option) {
+        for (var key in option)
+            if (option.hasOwnProperty(key) && state.hasOwnProperty(key))
+                state[key] = option[key];
+    }
 }
 
 const actions = {
