@@ -1,12 +1,12 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { AuthService } from 'ts-minecraft'
 
-
+const devMod = process.env.NODE_ENV == 'development'
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
  */
-if (process.env.NODE_ENV !== 'development') {
+if (!devMod) {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
@@ -76,5 +76,8 @@ app.on('activate', () => {
   }
 })
 
+const path = require('path')
+
+const root = path.join(app.getPath('appData'), '.launcher')
 const storage = require('./storage')
-storage.loadAll(app.getPath('userData'))
+storage.loadAll(root)
