@@ -57,7 +57,9 @@ class Launcher extends EventEmitter {
     }
 
     requireModule(module) {}
-    requireService(service) {}
+    requireService(service) {
+        return this._services.proxy
+    }
 }
 const launcher = new Launcher(paths.join(app.getPath('appData'), '.launcher'), app, modules, services)
 export default launcher
