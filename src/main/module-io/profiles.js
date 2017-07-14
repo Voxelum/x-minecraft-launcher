@@ -24,7 +24,6 @@ export default {
                     for (let file of files) {
                         let profileRoot = launcher.getPath('profiles', file)
                         let json = launcher.getPath('profiles', file, PROFILE_NAME)
-
                     }
                 }
             })

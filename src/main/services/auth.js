@@ -10,7 +10,6 @@ import launcher from '../launcher'
 const registered = new Map()
 export default {
     initialize() {
-        launcher.emit('init-auth', registry)
         registered.set('offline', ({
             account,
             clientToken
