@@ -3,5 +3,5 @@ const {
 } = require('ts-minecraft')
 const fs = require('fs')
 export default {
-    ping: ServerInfo.fetchServerStatus,
+    fetchServerStatus: ServerInfo.fetchServerStatus,
 }

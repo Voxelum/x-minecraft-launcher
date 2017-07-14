@@ -1,37 +1,43 @@
 const {
     EventEmitter
 } = require('events')
-export default class Lancher extends EventEmitter {
-    constructor(root, app, modules) {
+import {
+    app,
+    BrowserWindow,
+    ipcMain
+} from 'electron'
+const paths = require('path')
+class Lancher extends EventEmitter {
+    constructor(root, app, modules, service) {
         this.root = root
         this.app = app
         this._modules = modules
+        this._service = service
     }
 
-    get profiles() {
-        return path.join(root, 'profiles')
-    }
-    get resourcepacks() {
-        return path.join(root, 'resourcepacks')
-    }
-    get mods() {
-        return path.join(root, 'mods')
+    getPath(...path) {
+        paths.join(this.root, path)
     }
 
-    registerService(id, service) {
-
-    }
     _buildTree() {
+        //well this is future work 2333 
         //TODO toposort for module with dependencies and build tree 
     }
-    _onload(modules) {
+    _onServiceInit() {
+
+    }
+    _onload() {
         let tree = _buildTree()
         for (let branch of tree) {
             branch.batch(this)
         }
-        Promise.all()
     }
-    require(module) {
 
+    require(module) {
+        //this need to design...
     }
 }
+const modules = require('./module-io')
+const service = require('./service')
+const launcher = new Launcher(path.join(app.getPath('appData'), '.launcher'), app, modules, service)
+export default launcher

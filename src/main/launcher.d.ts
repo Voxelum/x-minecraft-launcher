@@ -1,10 +1,10 @@
 import { App } from 'electron'
 import { EventEmitter } from 'events'
-declare class Launcher extends EventEmitter {
-    readonly profiles: string;
-    readonly resourcepacks: string;
-    readonly mods: string;
+declare interface Launcher extends EventEmitter {
+    readonly rootPath: string;
     readonly app: App;
+    getPath(...path): string;
     require(module: string): any;
 }
-export default Launcher
+declare const launcher: Launcher
+export default launcher
