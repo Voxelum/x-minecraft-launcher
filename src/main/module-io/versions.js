@@ -5,9 +5,9 @@ const {
     VersionChecker
 } = require('ts-minecraft')
 export default {
-    initialize(launcher) {
+    load(context) {
         return new Promise((resolve, reject) => {
-            fs.readFile(launcher.getPath('versions.json'), (err, data) => {
+            fs.readFile(context.getPath('versions.json'), (err, data) => {
                 if (err) reject(err)
                 else return JSON.parse(data.toString())
             })

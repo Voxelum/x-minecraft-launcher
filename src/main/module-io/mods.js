@@ -1,5 +1,5 @@
 export default {
-    initialize(launcher) {
+    load(context) {
         return new Promise((resolve, reject) => {
             resolve()
         });

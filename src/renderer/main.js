@@ -7,7 +7,8 @@ import i18n from './i18n'
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.config.productionTip = false
 
-//loadAll
+//TODO load initialize all modules by call main-process
+
 /* eslint-disable no-new */
 let v = new Vue({
   components: { App },
