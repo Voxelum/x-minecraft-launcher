@@ -10,7 +10,6 @@ import CommonPage from '@/components/CommonPage'
 require('semantic/dist/semantic.min.css')
 require('semantic/dist/semantic.min.js')
 const { ipcRenderer } = require('electron')
-
 export default {
   name: 'llauncher',
   mounted(e) {
