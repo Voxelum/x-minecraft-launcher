@@ -1,5 +1,5 @@
 export default {
-    initialize(launcher) {
+    initialize() {
         return new Promise((resolve, reject) => {
             resolve()
         });

@@ -7,10 +7,15 @@ const {
 export default {
     load(context) {
         return new Promise((resolve, reject) => {
-            fs.readFile(context.getPath('versions.json'), (err, data) => {
-                if (err) reject(err)
-                else return JSON.parse(data.toString())
-            })
+            let fpath = context.getPath('versions.json')
+            if (fs.existsSync(fpath))
+                fs.readFile(context.getPath('versions.json'), (err, data) => {
+                    if (err) reject(err)
+                    else resolve(JSON.parse(data.toString()))
+                })
+            else {
+                resolve({})
+            }
         });
     }
 }
