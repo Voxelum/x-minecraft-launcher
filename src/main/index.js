@@ -76,8 +76,4 @@ app.on('activate', () => {
   }
 })
 
-const path = require('path')
-
-const root = path.join(app.getPath('appData'), '.launcher')
-const storage = require('./storage')
-storage.loadAll(root)
+const launch = require('./launcher')
