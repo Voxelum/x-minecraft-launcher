@@ -17,6 +17,34 @@ class Launcher extends EventEmitter {
         this.app = app
         this._modules = modules
         this._services = services
+        ipcMain.on('launcher', (event, payload) => {
+            let msgId = payload.id
+            if (payload.service) {
+                let service = payload.service.id
+                let action = payload.service.action
+                let args = payload.service.args
+                let serInst = this._services[service]
+                if (!serInst) {
+                    event.sender.send(msgId, {
+                        error: `No such service [${service}]`
+                    })
+                    return
+                }
+                let actionInst = serInst[action]
+                if (!actionInst) {
+                    event.sender.send(msgId, {
+                        error: `No such action [${action}] in service [${service}]`
+                    })
+                    return
+                }
+                let result = actionInst(args)
+                if (result) {
+                    event.sender.send(msgId, {
+                        result
+                    })
+                }
+            }
+        })
     }
 
     getPath(path) {
