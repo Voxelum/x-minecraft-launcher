@@ -45,7 +45,7 @@ class Launcher extends EventEmitter {
         //this need to design...
     }
 }
-const launcher = new Launcher(path.join(app.getPath('appData'), '.launcher'), app, modules, services)
+const launcher = new Launcher(paths.join(app.getPath('appData'), '.launcher'), app, modules, services)
 launcher._onload()
 launcher._onServiceInit()
 export default launcher
