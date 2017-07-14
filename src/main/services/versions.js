@@ -16,7 +16,6 @@ export default {
     },
     services: {
         update: VersionMetaList.update,
-
         parseVersion(version) {
             return Version.parse(launcher.rootPath, version)
         },

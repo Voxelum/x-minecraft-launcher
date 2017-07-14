@@ -13,39 +13,24 @@ import services from './services'
 class Launcher extends EventEmitter {
     constructor(root, app, modules, services) {
         super()
-        this.root = root
+        this.rootPath = root
         this.app = app
         this._modules = modules
         this._services = services
     }
 
-    getPath(...path) {
-        paths.join(this.root, path)
-    }
-
-    _buildTree() {
-        //well this is future work 2333 
-        //TODO toposort for module with dependencies and build tree 
-    }
-    _onload() {
-        console.log('load modules')
-        let tree = _buildTree()
-        for (let branch of tree) {
-            branch.batch(this)
+    getPath(path) {
+        if (typeof path === 'string') {
+            return paths.join(this.rootPath, path)
+        } else if (path instanceof Array) {
+            console.log("paths " + path)
+            return paths.join(this.rootPath, path.join(path))
         }
     }
-
-    _onServiceInit() {
-        console.log('services init')
-        this._services
-    }
-
 
     require(module) {
         //this need to design...
     }
 }
 const launcher = new Launcher(paths.join(app.getPath('appData'), '.launcher'), app, modules, services)
-launcher._onload()
-launcher._onServiceInit()
 export default launcher
