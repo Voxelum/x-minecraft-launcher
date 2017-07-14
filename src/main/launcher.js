@@ -10,7 +10,7 @@ const paths = require('path')
 import modules from './module-io'
 import services from './services'
 
-class Lancher extends EventEmitter {
+class Launcher extends EventEmitter {
     constructor(root, app, modules, services) {
         super()
         this.root = root
