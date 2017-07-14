@@ -6,7 +6,7 @@ const {
     v4
 } = require('uuid')
 export default {
-    loadState(context) {
+    load(context) {
         return new Promise((resolve, reject) => {
             let json = context.getPath('auth.json')
             if (fs.existsSync(json)) {
@@ -31,9 +31,7 @@ export default {
         });
     },
 
-    deploy(launcher) {},
-
-    saveState(context, state) {
+    save(context, state) {
         return new Promise((resolve, reject) => {
             let json = context.getPath('auth.json')
             state.modes = undefined

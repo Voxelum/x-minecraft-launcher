@@ -3,7 +3,7 @@ const {
 } = require('ts-minecraft')
 const fs = require('fs')
 export default {
-    loadState(context) {
+    load(context) {
         return new Promise((resolve, reject) => {
             let serversPath = context.getPath('servers.dat')
             if (fs.existsSync(serversPath))
@@ -13,7 +13,5 @@ export default {
                 })
             else resolve([])
         });
-    },
-    deploy(launcher) {
     }
 }
