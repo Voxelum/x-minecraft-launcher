@@ -33,7 +33,7 @@ export default {
         }
     },
 
-    services: {
+    actions: {
         login(optoin) {
             return new Promise((resolve, reject) => {
                 if (registered.has(mode))

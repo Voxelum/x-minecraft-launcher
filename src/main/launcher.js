@@ -30,7 +30,7 @@ class Launcher extends EventEmitter {
                     })
                     return
                 }
-                let actionInst = serInst[action]
+                let actionInst = serInst.services[action]
                 if (!actionInst) {
                     event.sender.send(msgId, {
                         error: `No such action [${action}] in service [${service}]`
@@ -56,9 +56,8 @@ class Launcher extends EventEmitter {
         }
     }
 
-    require(module) {
-        //this need to design...
-    }
+    requireModule(module) {}
+    requireService(service) {}
 }
 const launcher = new Launcher(paths.join(app.getPath('appData'), '.launcher'), app, modules, services)
 export default launcher

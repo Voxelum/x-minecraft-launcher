@@ -4,7 +4,8 @@ declare interface Launcher extends EventEmitter {
     readonly rootPath: string;
     readonly app: App;
     getPath(...path): string;
-    require(module: string): any;
+    requireModule(module: string): any;
+    requireService(service: string): any;
 }
 declare const launcher: Launcher
 export default launcher
