@@ -6,7 +6,7 @@ files.keys().forEach(key => {
     let id = key.replace(/(\.\/|\.js)/g, '')
     let instance = files(key).default
     if(!instance.id) instance.id = id
-    modules[name] = instance
+    modules[id] = instance
 })
 
 export default modules
