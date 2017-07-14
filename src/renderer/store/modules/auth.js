@@ -21,15 +21,21 @@ const mutations = {
   offline() {
     state.mode = 'offline'
   },
-  record(state, auth, loginAccount) {
+  record(state, {
+    auth,
+    account
+  }) {
     state.authInfo = auth
     state.clientToken = auth.clientToken
     state.accessToken = auth.accessToken
     if (!state.history[state.mode]) state.history[state.mode] = []
-    state.history[state.mode].push(loginAccount)
+    state.history[state.mode].push(account)
   }
 }
-import { ipcRenderer } from 'electron'
+import {
+  ipcRenderer
+} from 'electron'
+require('vuex')
 const actions = {
   login(context, loginInfo) {
     return new Promise((resolve, reject) => {
@@ -37,7 +43,10 @@ const actions = {
       ipcRenderer.once('login', (event, error, auth) => {
         if (error) reject(error)
         else {
-          context.record(auth, loginInfo[0])//TODO check this
+          context.commit('record', {
+            auth,
+            account: loginInfo[0]
+          }) //TODO check this
           resolve(auth)
         }
       })

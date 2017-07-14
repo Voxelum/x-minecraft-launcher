@@ -1,4 +1,5 @@
 import profile from './profile'
+
 function state() {
     let state = profile.state()
     state.type = 'server'
@@ -15,7 +16,8 @@ const getters = {
 const mutations = profile.mutations
 
 const actions = {
-    refresh(context) {
+    refresh(context, payload) {
+        service.require('service')
         //TODO ping the server
     }
 }
