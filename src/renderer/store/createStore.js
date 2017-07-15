@@ -4,14 +4,16 @@ export default (storeOption, option) => {
     let storeOption$ = storeOption
     if (option) {
         let state = storeOption.state
-        if (typeof state === 'function')
+        if (typeof state === 'function') {
             state = state()
-        else
+        } else {
             state = Object.assign({}, state)
-
-        for (let key in Object.keys(state))
-            if (option[key])
+        }
+        for (const key in Object.keys(state)) {
+            if (option[key]) {
                 state[key] = option[key]
+            }
+        }
 
         storeOption$ = Object.assign({}, storeOption)
         storeOption$.state = state
