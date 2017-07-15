@@ -7,7 +7,7 @@ const {
 } = require('ts-minecraft')
 import launcher from '../launcher'
 const versionProviders = new Map()
-import semver from 'semver'
+// import semver from 'semver'
 
 export default {
     initialize() { },
