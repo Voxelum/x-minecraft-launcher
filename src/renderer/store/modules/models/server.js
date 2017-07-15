@@ -1,29 +1,32 @@
 import profile from './profile'
 
 function state() {
-    let state = profile.state()
-    state.type = 'server'
-    state.ip = ''
-    state.motd = ''
-    state.ping = ''
-    state.icon = ''
-    return state
+    const theState = profile.state()
+    theState.type = 'server'
+    theState.ip = ''
+    theState.motd = ''
+    theState.ping = ''
+    theState.icon = ''
+    return theState
 }
+/* eslint-disable no-unused-vars */
 const getters = {
-    //Use mapState
+    // Use mapState
 }
 
 const mutations = profile.mutations
 
 const actions = {
+    /* eslint-disable no-unused-vars */
     refresh(context, payload) {
+        /* eslint-disable no-undef */
         service.require('service')
-        //TODO ping the server
-    }
+        // TODO ping the server
+    },
 }
 export default {
     state,
     getter,
     mutations,
-    actions
+    actions,
 }
