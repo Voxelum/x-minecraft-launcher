@@ -45,6 +45,9 @@ module.exports = {
     "no-restricted-syntax": 0,
     "no-prototype-builtins": 0,
     "no-param-reassign": 0,
-    "global-require": 0
+    "global-require": 0,
+    "no-trailing-spaces": 0,
+    "no-unused-vars": 0,
+    "wrap-iife": 0
   }
 }

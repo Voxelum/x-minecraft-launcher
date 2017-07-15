@@ -2,7 +2,7 @@ function state() {
     return {
         vbo: false,
         vao: false,
-        graphic: 0
+        graphic: 0,
     }
 }
 const getters = {
@@ -17,5 +17,5 @@ export default {
     state,
     getters,
     mutations,
-    actions
+    actions,
 }

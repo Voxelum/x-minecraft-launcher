@@ -1,10 +1,11 @@
-const {
+import {
     ipcRenderer,
-} = require('electron')
+} from 'electron'
 
 import {
     v4,
 } from 'uuid'
+
 export default {
     query(service, action, ...args) {
         return new Promise((resolve, reject) => {
