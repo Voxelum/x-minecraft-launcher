@@ -4,4 +4,7 @@ const {
 const fs = require('fs')
 export default {
     fetchServerStatus: ServerInfo.fetchServerStatus,
+    fetchServerIcon(serverInfo) {
+        
+    }
 }
