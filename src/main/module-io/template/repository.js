@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import crypto from 'crypto'
 export class Resource {
     constructor(hash, fileName, type) {
         this.hash = hash;
@@ -13,9 +14,8 @@ export default class Repository {
         this._root = root
         this._store = new Map()
     }
-
     _hash(buff) {
-
+        return crypto.createHash('sha1').update(buff).digest().toString()
     }
     _load(filePath) {
         return new Promise((resolve, reject) => {
@@ -24,7 +24,7 @@ export default class Repository {
                 else resolve({ name: path.basename(filePath), data, type: path.extname(filePath) })
             })
         }).then(({ name, data, type }) => {
-            return { filePath, data, resource: new Resource(_hash(data), name, type) }
+            return { filePath, data, resource: new Resource(this._hash(data), name, type) }
         });
     }
     _import(filePath, data, resource) {
@@ -34,7 +34,6 @@ export default class Repository {
                 else resolve(resource)
             })
         });
-
     }
     add(filePath) {
         return this._load(filePath).then(({ filePath, data, resource }) => {
