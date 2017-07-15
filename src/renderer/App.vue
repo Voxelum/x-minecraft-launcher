@@ -31,3 +31,7 @@ export default {
   user-select: none;
 }
 </style>
+
+<style lang="stylus">
+    @import './styles/main'
+</style>

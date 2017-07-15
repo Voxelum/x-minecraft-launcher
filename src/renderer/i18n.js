@@ -6,7 +6,7 @@ import Vue from 'vue'
 Vue.use(VueI18n)
 
 export default new VueI18n({
-  locale: 'en',
-  fallbackLocale: 'en',
-  messages: locales
+    locale: 'en',
+    fallbackLocale: 'en',
+    messages: locales,
 })

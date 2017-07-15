@@ -1,6 +1,6 @@
 <template>
     <div class="ui celled grid">
-        <div class="black row">
+        <div class="black row moveable">
             <div class="black four wide middle aligned center aligned column">
                 <h2 class="inverted ui header">
                     ILauncher
@@ -85,3 +85,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+    .moveable {
+        -webkit-app-region: drag
+    }
+</style>

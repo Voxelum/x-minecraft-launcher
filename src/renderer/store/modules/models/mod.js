@@ -1,8 +1,6 @@
 export default {
-    states: () => {
-        return {
-            displayName: '',
-            icon: ''
-        }
-    }
+    states: () => ({
+        displayName: '',
+        icon: '',
+    }),
 }
