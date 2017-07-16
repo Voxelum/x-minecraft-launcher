@@ -21,11 +21,11 @@ function parse(content) {
     }
 }
 
-function loadServers(context) {
+function loadServersNBT() {
     return new Promise((resolve, reject) => {
-        const serversPath = context.getPath('servers.dat');
+        const serversPath = launcher.getPath('servers.dat');
         if (fs.existsSync(serversPath)) {
-            fs.readFile(context.getPath('servers.dat'), (err, data) => {
+            fs.readFile(launcher.getPath('servers.dat'), (err, data) => {
                 if (err) reject(err);
                 else resolve(ServerInfo.readFromNBT(data));
             });
@@ -34,19 +34,32 @@ function loadServers(context) {
 }
 export default {
     load(context) {
-        return new Promise((resolve, reject) => {
-            fs.readdir(launcher.getPath('profiles'), (err, files) => {
-                if (err) { reject(err); } else {
-                    for (const file of files) {
-                        const profileRoot = launcher.getPath('profiles', file);
-                        const json = launcher.getPath('profiles', file, PROFILE_NAME);
-                    }
-                }
+        const serverPromise = loadServersNBT().then((result) => {
+            const arr = result.map((s) => {
+                const obj = {
+                    type: 'server',
+                    host: s.host,
+                    port: s.port,
+                    name: s.name,
+                    isLanServer: s.isLanServer,
+                    icon: s.icon,
+                };
+                return obj
             });
-            loadServers(context).then((result) => {
-
-            });
-            resolve({});
+            return arr;
         });
+        const modpackPromise = new Promise((resolve, reject) => {
+            fs.readdir(launcher.getPath('profiles'), (err, files) => {
+                if (err) { reject(err); } else { resolve(files); }
+            });
+        }).then((files) => {
+            for (const file of files) {
+                const profileRoot = launcher.getPath('profiles', file);
+                const json = launcher.getPath('profiles', file, PROFILE_NAME);
+                // implement late... no profile now.... lol
+            }
+        });
+        return Promise.all(serverPromise, modpackPromise)
+            .then(result => result[0].concat(result[1]))
     },
 }

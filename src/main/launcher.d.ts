@@ -2,10 +2,11 @@ import { App } from 'electron'
 import { EventEmitter } from 'events'
 declare interface Launcher extends EventEmitter {
     readonly rootPath: string;
-    readonly app: App;
     getPath(...path): string;
-    requireModule(module: string): any;
-    requireService(service: string): any;
+    /**
+     * Return a proxy of the service
+     */
+    requireServiceProxy(service: string): any;
 }
 declare const launcher: Launcher
 export default launcher
