@@ -1,11 +1,13 @@
+import launcher from '../launcher'
+
 const fs = require('fs')
 const {
     VersionMetaList,
     Version,
     VersionChecker,
-    MinecraftLocation
+    MinecraftLocation,
 } = require('ts-minecraft')
-import launcher from '../launcher'
+
 const versionProviders = new Map()
 // import semver from 'semver'
 
@@ -14,17 +16,17 @@ export default {
     proxy: {
         register(id, versionProvider) {
             versionProviders.set(id, versionProvider)
-        }
+        },
     },
     actions: {
         update(versionType) {
-            return versionProviders.has(versionType) ? versionProviders.get(versionType).update() : Promise.reject('No such version provider: ' + versionType)
+            return versionProviders.has(versionType) ? versionProviders.get(versionType).update() : Promise.reject(`No such version provider: ${versionType}`)
         },
         require(version) {
-            //TODO handle the version dependent tree
-            for (var v in version) {
+            // TODO handle the version dependent tree
+            for (const v in version) {
                 if (version.hasOwnProperty(v)) {
-                    var id = version[v];
+                    const id = version[v];
                     if (versionProviders.has(id)) {
                         versionProviders.get(id).require()
                     }
@@ -36,6 +38,6 @@ export default {
         },
         download(version) {
 
-        }
-    }
+        },
+    },
 }
