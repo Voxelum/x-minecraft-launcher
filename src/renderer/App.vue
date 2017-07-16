@@ -32,5 +32,5 @@ export default {
 }
 </style>
 <style lang="stylus">
-    @import './styles/main'
+    @import './assets/main'
 </style>
