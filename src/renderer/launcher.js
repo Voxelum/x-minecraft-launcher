@@ -27,7 +27,6 @@ export default {
             })
         });
     },
-<<<<<<< HEAD
     fetchAll() {
         return new Promise((resolve, reject) => {
             ipcRenderer.send('fetchAll');
@@ -59,6 +58,3 @@ export default {
         });
     }
 }
-=======
-}
->>>>>>> 80c39a12b27d9305dba84183e86f9655b3781a0e
