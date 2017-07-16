@@ -1,30 +1,33 @@
-const {
-    ipcRenderer
-} = require('electron')
 import {
-    v4
+    ipcRenderer,
+} from 'electron'
+
+import {
+    v4,
 } from 'uuid'
+
 export default {
     query(service, action, ...args) {
         return new Promise((resolve, reject) => {
-            let id = v4()
+            const id = v4()
             ipcRenderer.send('launcher', {
-                id: id,
+                id,
                 service: {
                     id: service,
                     action,
-                    args
-                }
+                    args,
+                },
             })
             ipcRenderer.once(id, (event, {
                 error,
-                result
+                result,
             }) => {
                 if (error) reject(error)
                 else resolve(result)
             })
         });
     },
+<<<<<<< HEAD
     fetchAll() {
         return new Promise((resolve, reject) => {
             ipcRenderer.send('fetchAll');
@@ -56,3 +59,6 @@ export default {
         });
     }
 }
+=======
+}
+>>>>>>> 80c39a12b27d9305dba84183e86f9655b3781a0e
