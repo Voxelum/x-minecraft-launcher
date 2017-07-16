@@ -2,6 +2,8 @@ import {
     ipcRenderer,
 } from 'electron'
 
+import launcher from '../../launcher'
+
 const state = {
     modes: ['mojang', 'offline'],
     mode: 'mojang',
@@ -26,7 +28,7 @@ const mutations = {
     offline() {
         state.mode = 'offline'
     },
-    record(theState, {
+    record(theState, { // record the state history
         auth,
         account,
     }) {
@@ -39,17 +41,10 @@ const mutations = {
 }
 const actions = {
     login(context, loginInfo) {
-        return new Promise((resolve, reject) => {
-            ipcRenderer.send('login', loginInfo)
-            ipcRenderer.once('login', (event, error, auth) => {
-                if (error) reject(error)
-                else {
-                    context.commit('record', {
-                        auth,
-                        account: loginInfo[0],
-                    }) // TODO check this
-                    resolve(auth)
-                }
+        return launcher.query('auth', 'login', loginInfo).then((result) => {
+            context.commit('record', {
+                auth: result.auth,
+                account: loginInfo[0],
             })
         });
     },

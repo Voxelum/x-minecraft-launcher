@@ -2,8 +2,11 @@ import profile from './profile'
 
 function state() {
     const theState = profile.state()
+
     theState.type = 'server'
-    theState.ip = ''
+    theState.host = ''
+    theState.port = ''
+    theState.isLanServer = false
     theState.motd = ''
     theState.ping = ''
     theState.icon = ''
