@@ -41,7 +41,6 @@ function createWindow() {
 
 function init() {
     ipcMain.on('init', (event, args) => {
-
         event.sender.send('init', 'pong')
     })
 
@@ -95,6 +94,20 @@ function _buildTree() {
 
 import launcher from './launcher'
 
+let _reqTreeEventHolder
+ipcMain.once('fetchAll', (event) => {
+    if (_reqTreeEventHolder) {
+        console.log('IO loaded first!')
+        event.sender.send('fetchAll', undefined, _reqTreeEventHolder)
+    }
+    else {
+        console.log('Client loaded first!')
+        _reqTreeEventHolder = event//place holder, which means tree already required by the renderer process!
+    }
+    ipcMain.on('fetchAll', () => {
+        console.log('remote force reload! implement later...')
+    })
+});
 (function () {
     const context = {
         getPath(path) {
@@ -107,21 +120,19 @@ import launcher from './launcher'
         }
     }
 
-    let modules = launcher._modules
+    let modules = launcher._modulesIO
     let promises = []
     for (var key in modules) {
         if (modules.hasOwnProperty(key)) {
             var m = modules[key];
-            promises.push(m.load(context))
+            promises.push(m.load(context).then(m => {
+                return { id: key, module: m }
+            }))
         }
     }
     console.log('loaded modules')
     return Promise.all(promises)
-})().catch(e => {
-    console.log(e)
-});
-
-(function () {
+})().then(modules => {
     console.log('services start init')
     let services = launcher._services
     for (var key in services) {
@@ -132,4 +143,19 @@ import launcher from './launcher'
         }
     }
     console.log('services inited')
-})();
+    return modules
+}).then(modules => {
+    let tree = {}
+    for (let m of modules)
+        tree[m.id] = m.module;
+    if (_reqTreeEventHolder)
+        _reqTreeEventHolder.sender.send('fetchAll', undefined, tree)
+    else
+        _reqTreeEventHolder = tree
+    return tree
+}).catch(e => {
+    console.log(e)
+});
+
+console.log(launcher)
+
