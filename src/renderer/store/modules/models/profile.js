@@ -1,29 +1,31 @@
 function state() {
     return {
-        id: '', //meta-inf
+        id: '', // meta-inf
         type: '',
 
-        name: '', //specific info
+        name: '', // specific info
         version: '',
 
-        resourcepacks: [], //official setting
+        resourcepacks: [], // official setting
         mods: [],
         setting: {},
 
-        resolution: [800, 400], //client setting
+        resolution: [800, 400], // client setting
         java: '',
         vmOptions: [],
-        mcOptions: []
+        mcOptions: [],
     }
 }
 const getters = {
 }
 const mutations = {
-    putAll(state, option) {
-        for (var key in option)
-            if (option.hasOwnProperty(key) && state.hasOwnProperty(key))
-                state[key] = option[key];
-    }
+    putAll(states, option) {
+        for (const key in option) {
+            if (option.hasOwnProperty(key) && states.hasOwnProperty(key)) {
+                states[key] = option[key];
+            }
+        }
+    },
 }
 
 const actions = {
@@ -33,5 +35,5 @@ export default {
     state,
     getters,
     mutations,
-    actions
+    actions,
 }
