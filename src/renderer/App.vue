@@ -31,7 +31,6 @@ export default {
   user-select: none;
 }
 </style>
-
 <style lang="stylus">
     @import './assets/main'
 </style>
