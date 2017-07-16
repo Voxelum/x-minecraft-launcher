@@ -51,7 +51,17 @@ export default {
         }
         return rootPath
     },
-    requireService(service) {
-        return services.proxy
+    requireServiceProxy(service) {
+        const queried = services[service]
+        if (queried) {
+            const proxy = Object.assign({}, queried.proxy)
+            for (const key in queried.actions) {
+                if (queried.actions.hasOwnProperty(key)) {
+                    proxy[`$${key}`] = queried.actions[key];
+                }
+            }
+            return proxy
+        }
+        return undefined
     },
 }
