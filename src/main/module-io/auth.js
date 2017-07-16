@@ -1,13 +1,11 @@
+import launcher from '../launcher'
+
 const fs = require('fs')
-const {
-    AuthService,
-} = require('ts-minecraft')
-const {
-    v4,
-} = require('uuid')
 
 export default {
     load(context) {
+        const proxy = launcher.requireServiceProxy('auth')
+        const modes = proxy.modes()
         return new Promise((resolve, reject) => {
             const json = context.getPath('auth.json')
             if (fs.existsSync(json)) {
@@ -16,13 +14,14 @@ export default {
                     else {
                         const inst = JSON.parse(data.toString())
                         // TODO validate inst
+                        inst.mods = modes
                         resolve(inst)
                     }
                 })
             } else {
                 resolve({
-                    mode: 'mojang',
-                    modes: ['mojang', 'offline'],
+                    mode: modes[0],
+                    modes,
                     clientToken: '',
                     accessToken: '',
                     history: {},
