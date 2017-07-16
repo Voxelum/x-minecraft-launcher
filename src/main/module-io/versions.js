@@ -2,20 +2,21 @@ const fs = require('fs')
 const {
     VersionMetaList,
     Version,
-    VersionChecker
+    VersionChecker,
 } = require('ts-minecraft')
+
 export default {
     load(context) {
         return new Promise((resolve, reject) => {
-            let fpath = context.getPath('versions.json')
-            if (fs.existsSync(fpath))
+            const fpath = context.getPath('versions.json')
+            if (fs.existsSync(fpath)) {
                 fs.readFile(context.getPath('versions.json'), (err, data) => {
                     if (err) reject(err)
                     else resolve(JSON.parse(data.toString()))
                 })
-            else {
+            } else {
                 resolve({})
             }
         });
-    }
+    },
 }

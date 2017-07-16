@@ -90,7 +90,23 @@ function _buildTree() {
     // TODO toposort for module with dependencies and build tree 
 }
 
-(function() {
+import launcher from './launcher'
+
+let _reqTreeEventHolder
+ipcMain.once('fetchAll', (event) => {
+    if (_reqTreeEventHolder) {
+        console.log('IO loaded first!')
+        event.sender.send('fetchAll', undefined, _reqTreeEventHolder)
+    }
+    else {
+        console.log('Client loaded first!')
+        _reqTreeEventHolder = event//place holder, which means tree already required by the renderer process!
+    }
+    ipcMain.on('fetchAll', () => {
+        console.log('remote force reload! implement later...')
+    })
+});
+(function () {
     const context = {
         getPath(path) {
             if (typeof path === 'string') {
@@ -103,19 +119,19 @@ function _buildTree() {
         },
     }
 
-    const modules = launcher._modules
-    const promises = []
-    for (const key in modules) {
+    let modules = launcher._modulesIO
+    let promises = []
+    for (var key in modules) {
         if (modules.hasOwnProperty(key)) {
-            const m = modules[key];
-            promises.push(m.load(context))
+            var m = modules[key];
+            promises.push(m.load(context).then(m => {
+                return { id: key, module: m }
+            }))
         }
     }
     console.log('loaded modules')
     return Promise.all(promises)
-})().catch(e => console.log(e));
-
-(function() {
+})().then(modules => {
     console.log('services start init')
     const services = launcher._services
     for (const key in services) {
@@ -127,4 +143,19 @@ function _buildTree() {
         }
     }
     console.log('services inited')
-}());
+    return modules
+}).then(modules => {
+    let tree = {}
+    for (let m of modules)
+        tree[m.id] = m.module;
+    if (_reqTreeEventHolder)
+        _reqTreeEventHolder.sender.send('fetchAll', undefined, tree)
+    else
+        _reqTreeEventHolder = tree
+    return tree
+}).catch(e => {
+    console.log(e)
+});
+
+console.log(launcher)
+

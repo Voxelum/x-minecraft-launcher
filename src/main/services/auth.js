@@ -1,46 +1,46 @@
-const fs = require('fs')
-const {
-    AuthService
-} = require('ts-minecraft')
+
 import {
-    v4
+    v4,
 } from 'uuid'
 import launcher from '../launcher'
+
+const fs = require('fs')
+const {
+    AuthService,
+} = require('ts-minecraft')
 
 const registered = new Map()
 export default {
     initialize() {
         registered.set('offline', ({
             account,
-            clientToken
-        }) => {
-            return AuthService.offlineAuth(account)
-        })
+            clientToken,
+        }) => AuthService.offlineAuth(account))
         registered.set('mojang', ({
             account,
             password,
-            clientToken
-        }) => {
-            return AuthService.yggdrasilAuth(account, password, clientToken ? clientToken : v4())
-        })
+            clientToken,
+        }) => AuthService.yggdrasilAuth(account, password, clientToken || v4()))
     },
 
     proxy: {
         register(id, func) {
-            if (registered.has(id))
-                throw 'duplicated id: ' + id
-            registered.set(k, v)
-        }
+            if (registered.has(id)) {
+                throw new Error(`duplicated id: ${id}`)
+            }
+            registered.set(id, func)
+        },
     },
 
     actions: {
         login(optoin) {
             return new Promise((resolve, reject) => {
-                if (registered.has(mode))
-                    return registered.get(mode)(optoin)
-                else reject('No such auth option!')
+                if (registered.has(optoin.mode)) {
+                    resolve(registered.get(optoin.mode)(optoin))
+                }
+                reject('No such auth option!')
             });
-        }
-        //TODO implement other auth function
-    }
+        },
+        // TODO implement other auth function
+    },
 }

@@ -1,9 +1,8 @@
 import Vue from 'vue';
-
-
-import Vuetify from 'vuetify';
-import App from './App.vue';
-import store from './store';
+import App from './App'
+import store from './store'
+import launcher from './launcher'
+// import Vuetify from 'vuetify';
 import i18n from './i18n';
 
 
@@ -12,10 +11,25 @@ if (!process.env.IS_WEB) {
 }
 Vue.config.productionTip = false
 
+launcher.fetchAll().then((modules) => {
+    console.log('moduleFetched')
+    for (const id in modules) {
+        if (modules.hasOwnProperty(id)) {
+            let m = modules[id];
+            console.log(m)
+            // update vuex store instance by:
+            // operate  v.$store.state?
+        }
+    }
+    console.log(v.$store.state)
+}, (err) => {
+    console.error(err)
+})
+
 // TODO load initialize all modules by call main-process
 
 /* eslint-disable no-new */
-Vue.use(Vuetify);
+// Vue.use(Vuetify);
 new Vue({
     components: { App },
     store,
