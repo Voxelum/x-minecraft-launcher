@@ -1,12 +1,12 @@
 import profile from './profile'
 
 function state() {
-    let state = profile.state()
-    state.author = ''
-    state.description = ''
-    state.url = ''
-    state.icon = ''
-    return state
+    const theState = profile.state()
+    theState.author = ''
+    theState.description = ''
+    theState.url = ''
+    theState.icon = ''
+    return theState
 }
 
 const getters = profile.getters
@@ -21,5 +21,5 @@ export default {
     state,
     getters,
     mutations,
-    actions
+    actions,
 }
