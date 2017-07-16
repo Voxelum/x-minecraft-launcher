@@ -90,7 +90,6 @@ function _buildTree() {
     // TODO toposort for module with dependencies and build tree 
 }
 
-<<<<<<< HEAD
 import launcher from './launcher'
 
 let _reqTreeEventHolder
@@ -108,9 +107,6 @@ ipcMain.once('fetchAll', (event) => {
     })
 });
 (function () {
-=======
-(function() {
->>>>>>> 80c39a12b27d9305dba84183e86f9655b3781a0e
     const context = {
         getPath(path) {
             if (typeof path === 'string') {
@@ -123,7 +119,6 @@ ipcMain.once('fetchAll', (event) => {
         },
     }
 
-<<<<<<< HEAD
     let modules = launcher._modulesIO
     let promises = []
     for (var key in modules) {
@@ -132,25 +127,11 @@ ipcMain.once('fetchAll', (event) => {
             promises.push(m.load(context).then(m => {
                 return { id: key, module: m }
             }))
-=======
-    const modules = launcher._modules
-    const promises = []
-    for (const key in modules) {
-        if (modules.hasOwnProperty(key)) {
-            const m = modules[key];
-            promises.push(m.load(context))
->>>>>>> 80c39a12b27d9305dba84183e86f9655b3781a0e
         }
     }
     console.log('loaded modules')
     return Promise.all(promises)
-<<<<<<< HEAD
 })().then(modules => {
-=======
-})().catch(e => console.log(e));
-
-(function() {
->>>>>>> 80c39a12b27d9305dba84183e86f9655b3781a0e
     console.log('services start init')
     const services = launcher._services
     for (const key in services) {
@@ -162,7 +143,6 @@ ipcMain.once('fetchAll', (event) => {
         }
     }
     console.log('services inited')
-<<<<<<< HEAD
     return modules
 }).then(modules => {
     let tree = {}
@@ -179,6 +159,3 @@ ipcMain.once('fetchAll', (event) => {
 
 console.log(launcher)
 
-=======
-}());
->>>>>>> 80c39a12b27d9305dba84183e86f9655b3781a0e
