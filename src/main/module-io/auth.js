@@ -1,20 +1,21 @@
 const fs = require('fs')
 const {
-    AuthService
+    AuthService,
 } = require('ts-minecraft')
 const {
-    v4
+    v4,
 } = require('uuid')
+
 export default {
     load(context) {
         return new Promise((resolve, reject) => {
-            let json = context.getPath('auth.json')
+            const json = context.getPath('auth.json')
             if (fs.existsSync(json)) {
                 fs.readFile(json, (err, data) => {
                     if (err) reject(err)
                     else {
-                        let inst = JSON.parse(data.toString())
-                        //TODO validate inst
+                        const inst = JSON.parse(data.toString())
+                        // TODO validate inst
                         resolve(inst)
                     }
                 })
@@ -22,23 +23,22 @@ export default {
                 resolve({
                     mode: 'mojang',
                     modes: ['mojang', 'offline'],
-                    clientToken: "",
+                    clientToken: '',
                     accessToken: '',
-                    history: {}
+                    history: {},
                 })
             }
-
         });
     },
 
     save(context, state) {
         return new Promise((resolve, reject) => {
-            let json = context.getPath('auth.json')
+            const json = context.getPath('auth.json')
             state.modes = undefined
             fs.writeFile(json, state, (err) => {
                 if (err) reject(err)
                 else resolve()
             })
         });
-    }
+    },
 }
