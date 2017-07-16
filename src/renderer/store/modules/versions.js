@@ -1,9 +1,9 @@
 import { Store } from 'vuex'
 import select from './models/single-select'
 
-let obj = Object.assign({}, select)
+const obj = Object.assign({}, select)
 
-obj.mutations.create = function (state, name) {
+obj.mutations.create = function(state, name) {
     
 }
 
