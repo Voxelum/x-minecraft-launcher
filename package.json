@@ -4,7 +4,7 @@
     "version": "0.0.0",
     "author": "",
     "description": "An electron-vue project",
-    "license": "GPL",
+    "license": "MIT",
     "main": "./dist/electron/main.js",
     "scripts": {
         "build": "node .electron-vue/build.js",
