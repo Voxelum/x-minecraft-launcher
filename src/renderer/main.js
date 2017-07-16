@@ -3,11 +3,28 @@ import Vue from 'vue'
 import App from './App'
 import store from './store'
 import i18n from './i18n'
+import launcher from './launcher'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.config.productionTip = false
 
+launcher.fetchAll().then(modules => {
+  console.log('moduleFetched')
+  for (var id in modules) {
+    if (modules.hasOwnProperty(id)) {
+      var m = modules[id];
+      console.log(m)
+      // update vuex store instance by:
+      // operate  v.$store.state?
+    }
+  }
+  console.log(v.$store.state)
+}, err => {
+  console.error(err)
+})
+
 //TODO load initialize all modules by call main-process
+
 
 /* eslint-disable no-new */
 let v = new Vue({
