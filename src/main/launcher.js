@@ -15,8 +15,9 @@ class Launcher extends EventEmitter {
         super()
         this.rootPath = root
         this.app = app
-        this._modules = modules
+        this._modulesIO = modules
         this._services = services
+        
         ipcMain.on('launcher', (event, payload) => {
             let msgId = payload.id
             if (payload.service) {
@@ -56,7 +57,9 @@ class Launcher extends EventEmitter {
         }
     }
 
-    requireModule(module) {}
+    requireModule(module) {
+        //TODO implement this
+    }
     requireService(service) {
         return this._services.proxy
     }
