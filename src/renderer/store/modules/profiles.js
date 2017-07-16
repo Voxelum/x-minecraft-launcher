@@ -2,10 +2,10 @@ import { Store } from 'vuex'
 import singleSelect from './models/single-select'
 import modelProfile from './models/profile'
 
-let obj = Object.assign({}, singleSelect)
+const obj = Object.assign({}, singleSelect)
 
-obj.mutations.create = function (state, name) {
-    let newProfile = new Store(modelProfile)
+obj.mutations.create = function(state, name) {
+    const newProfile = new Store(modelProfile)
     newProfile.commit('setName', name)
     state.commit('add', newProfile)
 }
