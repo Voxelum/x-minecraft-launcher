@@ -78,36 +78,44 @@ ipcMain.once('fetchAll', (event) => {
     })
 });
 
-const launcher = require('./launcher'); // require launcher AFTER modules loaded
+const launcher = require('./launcher');
+const services = require('./services').default;
 
-console.log('services start init')
-const services = launcher._services
+console.log('Start services initialize')
 for (const key in services) {
     if (services.hasOwnProperty(key)) {
         const service = services[key];
         if (service.initialize) {
+            console.log(`Initializes service ${key}`)
             service.initialize();
         }
     }
 }
-console.log('services inited');
 (function () {
     const modules = launcher._modulesIO;
     const promises = [];
     for (const key in modules) {
         if (modules.hasOwnProperty(key)) {
             const m = modules[key];
-            promises.push(m.load(launcher).then(mod => ({ id: key, module: mod })));
+            promises.push(m.load(launcher).then(mod => ({
+                id: key,
+                module: mod,
+            })));
         }
     }
     return Promise.all(promises);
 })().then((modules) => {
-    console.log('loaded module');
+    console.log('Loaded module');
     const tree = {};
-    for (const m of modules) { tree[m.id] = m.module; }
-    if (_reqTreeEventHolder) { _reqTreeEventHolder.sender.send('fetchAll', undefined, tree); } else { _reqTreeEventHolder = tree; }
+    for (const m of modules) {
+        tree[m.id] = m.module;
+    }
+    if (_reqTreeEventHolder) {
+        _reqTreeEventHolder.sender.send('fetchAll', undefined, tree);
+    } else {
+        _reqTreeEventHolder = tree;
+    }
     return tree
 }).catch((e) => {
     console.log(e)
 });
-
