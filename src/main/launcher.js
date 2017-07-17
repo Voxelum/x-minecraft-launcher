@@ -1,4 +1,3 @@
-
 import {
     app,
     BrowserWindow,
@@ -12,35 +11,49 @@ const {
     EventEmitter,
 } = require('events')
 
-const rootPath = paths.join(app.getPath('appData'), '.launcher')
-ipcMain.on('launcher', (event, payload) => {
-    const msgId = payload.id
-    if (payload.service) {
-        const service = payload.service.id
-        const action = payload.service.action
-        const args = payload.service.args
-        const serInst = this._services[service]
-        if (!serInst) {
-            event.sender.send(msgId, {
-                error: `No such service [${service}]`,
+ipcMain.on('query', (event, payload) => {
+    const {
+        id,
+        service,
+        action,
+        args,
+    } = payload
+    const serInst = services[service];
+    if (!serInst) {
+        event.sender.send(id, {
+            error: `No such service [${service}]`,
+        })
+        return;
+    }
+    const actionInst = serInst.actions[action];
+    if (!actionInst) {
+        event.sender.send(id, {
+            error: `No such action [${action}] in service [${service}]`,
+        });
+        return;
+    }
+    const result = actionInst(args);
+    if (result instanceof Promise) {
+        result.then((resolved) => {
+            event.sender.send(id, {
+                resolved,
             })
-            return
-        }
-        const actionInst = serInst.services[action]
-        if (!actionInst) {
-            event.sender.send(msgId, {
-                error: `No such action [${action}] in service [${service}]`,
+        }, (rejected) => {
+            event.sender.send(id, {
+                rejected,
             })
-            return
-        }
-        const result = actionInst(args)
-        if (result) {
-            event.sender.send(msgId, {
-                result,
-            })
-        }
+        })
+    } else if (result instanceof Error) {
+        event.sender.send(id, {
+            rejected: result,
+        });
+    } else {
+        event.sender.send(id, {
+            resolved: result,
+        });
     }
 })
+const rootPath = paths.join(app.getPath('appData'), '.launcher')
 export default {
     rootPath,
     getPath(path) {
