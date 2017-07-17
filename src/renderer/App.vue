@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <login></login>
+     <!-- <login></login>  -->
+      <common></common>  
   </div>
 </template>
 
@@ -12,7 +13,7 @@ require('semantic/dist/semantic.min.css')
 require('semantic/dist/semantic.min.js')
 export default {
   name: 'llauncher',
-  components: { CommonPage, Login }
+  components: { Common: CommonPage, Login }
 }
 </script>
 
