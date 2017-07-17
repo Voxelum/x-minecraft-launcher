@@ -1,5 +1,7 @@
 import uuid from 'uuid'
-import { ServerInfo } from 'ts-minecraft'
+import {
+    ServerInfo,
+} from 'ts-minecraft'
 
 import launcher from '../launcher'
 
@@ -7,17 +9,20 @@ const fs = require('fs')
 
 const PROFILE_NAME = 'profile.json'
 
-function parse(content) {
+function parseProfile(content) {
     if (typeof content === 'string') {
         content = JSON.parse(content);
     }
-    const build = {};
-    build.id = uuid.v4();
-    build.name = content.name;
-    if (!build.name) { build.name = build.id; }
-    build.resolution = content.resolution;
-    if (!(build.resolution instanceof Array) || build.resolution.length !== 2) {
-        build.resolution = [800, 400];
+    return {
+        id: content.id,
+        name: content.name,
+        version: content.version,
+        resourcepacks: content.resourcepacks || [],
+        mods: content.mods || [],
+        resolution: content.resolution || [800, 400],
+        java: content.java,
+        vmOptions: content.vmOptions,
+        mcOptions: content.mcOptions,
     }
 }
 
@@ -33,7 +38,7 @@ function loadServersNBT() {
     });
 }
 export default {
-    load(context) {
+    load() {
         const serverPromise = loadServersNBT().then((result) => {
             const arr = result.map((s) => {
                 const obj = {
@@ -49,17 +54,33 @@ export default {
             return arr;
         });
         const modpackPromise = new Promise((resolve, reject) => {
-            fs.readdir(launcher.getPath('profiles'), (err, files) => {
-                if (err) { reject(err); } else { resolve(files); }
-            });
+            const profilesRoot = launcher.getPath('profiles');
+            if (fs.existsSync(profilesRoot)) {
+                fs.readdir(launcher.getPath('profiles'), (err, files) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(files);
+                    }
+                });
+            } else resolve([]);
         }).then((files) => {
+            const tasks = [];
             for (const file of files) {
                 const profileRoot = launcher.getPath('profiles', file);
                 const json = launcher.getPath('profiles', file, PROFILE_NAME);
-                // implement late... no profile now.... lol
+                if (fs.existsSync(json)) {
+                    tasks.push(new Promise((resolve, reject) => {
+                        fs.readFile(json, (err, data) => {
+                            if (err) reject(err);
+                            else resolve(data.toString());
+                        })
+                    }).then(content => parseProfile(parseProfile)));
+                }
             }
+            return Promise.all(tasks);
         });
-        return Promise.all(serverPromise, modpackPromise)
-            .then(result => result[0].concat(result[1]))
+        return Promise.all([serverPromise, modpackPromise])
+            .then(result => result[0].concat(result[1]));
     },
 }

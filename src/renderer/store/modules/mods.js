@@ -1,4 +1,3 @@
-import { Store } from 'vuex'
 import multiSelect from './models/multi-select'
 import mod from './models/mod'
 

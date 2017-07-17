@@ -1,3 +1,5 @@
+import launcher from '../launcher'
+
 const fs = require('fs')
 const {
     VersionMetaList,
@@ -6,11 +8,11 @@ const {
 } = require('ts-minecraft')
 
 export default {
-    load(context) {
+    load() {
         return new Promise((resolve, reject) => {
-            const fpath = context.getPath('versions.json')
+            const fpath = launcher.getPath('versions.json')
             if (fs.existsSync(fpath)) {
-                fs.readFile(context.getPath('versions.json'), (err, data) => {
+                fs.readFile(launcher.getPath('versions.json'), (err, data) => {
                     if (err) reject(err)
                     else resolve(JSON.parse(data.toString()))
                 })
