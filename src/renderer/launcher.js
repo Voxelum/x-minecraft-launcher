@@ -6,55 +6,54 @@ import {
     v4,
 } from 'uuid'
 
+function privateLine(channel, payload, decode) {
+    return new Promise((resolve, reject) => {
+        ipcRenderer.send(channel, payload);
+        ipcRenderer.once(channel, (event, reply) => {
+            if (!reply) resolve()
+            else {
+                const rejected = reply.rejected;
+                let resolved = reply.resolved;
+                if (rejected) reject(rejected)
+                else {
+                    if (decode) resolved = decode(resolved)
+                    resolve(resolved)
+                }
+            }
+        })
+    });
+}
 export default {
-    query(service, action, ...args) {
+    query(service, action, args) {
         return new Promise((resolve, reject) => {
             const id = v4()
-            ipcRenderer.send('launcher', {
+            ipcRenderer.send('query', {
                 id,
-                service: {
-                    id: service,
-                    action,
-                    args,
-                },
+                service,
+                action,
+                args,
             })
             ipcRenderer.once(id, (event, {
-                error,
-                result,
+                rejected,
+                resolved,
             }) => {
-                if (error) reject(error)
-                else resolve(result)
+                if (rejected) reject(rejected)
+                else resolve(resolved)
             })
         });
     },
     fetchAll() {
-        return new Promise((resolve, reject) => {
-            ipcRenderer.send('fetchAll');
-            ipcRenderer.once('fetchAll', (event, err, states) => {
-                if (err) reject(err)
-                else resolve(states)
-            })
-        });
+        return privateLine('fetchAll');
     },
     fetch(moduleId) {
-        return new Promise((resolve, reject) => {
-            ipcRenderer.send('fetch', moduleId)
-            ipcRenderer.once('fetch', (event, err, state) => {
-                if (err) reject(err)
-                else resolve(state)
-            })
+        return privateLine('fetch', {
+            moduleId,
         });
     },
     update(moduleId, state) {
-        return new Promise((resolve, reject) => {
-            ipcRenderer.send('update', {
-                id: moduleId,
-                state
-            })
-            ipcRenderer.once('update', (event, err) => {
-                if (err) reject(err)
-                else resolve()
-            })
+        return privateLine('update', {
+            id: moduleId,
+            state,
         });
-    }
+    },
 }
