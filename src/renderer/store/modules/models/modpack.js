@@ -2,6 +2,7 @@ import profile from './profile'
 
 function state() {
     const theState = profile.state()
+    theState.type = 'modpack'
     theState.author = ''
     theState.description = ''
     theState.url = ''

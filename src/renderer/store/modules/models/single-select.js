@@ -1,37 +1,39 @@
-import { v4 } from 'uuid'
+import {
+    v4
+} from 'uuid'
 
 export default {
     namespaced: true,
     state() {
         return {
-            all: {},
+            dic: {},
+            all: [],
             selected: '',
         }
     },
     getters: {
-        all: state => state.all,
-        selected: state => state.all[state.select],
+        selected: state => state.dic[state.select],
     },
     mutations: {
         select(state, id) {
-            if (state.all[id]) {
-                state.selected = state.all[id]
+            if (state.dic[id]) {
+                state.selected = state.dic[id]
             }
         },
         add(state, newOne) {
             let id = newOne.id
             if (!id) id = v4()
-            state.all[id] = newOne
+            state.dic[id] = newOne
+            state.all.push(newOne)
         },
         remove(state, id) {
-            if (state.all[id]) {
+            if (state.dic[id]) {
                 if (state.selected === id) {
-                    state.selected = Object.keys[state.all][0]
+                    state.selected = Object.keys[state.dic][0]
                 }
-                state.all[id] = undefined
+                state.dic[id] = undefined
             }
         },
     },
-    actions: {
-    },
+    actions: {},
 }

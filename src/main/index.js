@@ -80,8 +80,13 @@ ipcMain.once('fetchAll', (event) => {
 
 const launcher = require('./launcher');
 const services = require('./services').default;
+const modules = require('./module-io').default;
 
 console.log('Start services initialize')
+
+function loadModules() {
+
+}
 for (const key in services) {
     if (services.hasOwnProperty(key)) {
         const service = services[key];
@@ -92,11 +97,11 @@ for (const key in services) {
     }
 }
 (function () {
-    const modules = launcher._modulesIO;
     const promises = [];
     for (const key in modules) {
         if (modules.hasOwnProperty(key)) {
             const m = modules[key];
+            console.log(`Start to load module ${key}`)
             promises.push(m.load(launcher).then(mod => ({
                 id: key,
                 module: mod,
@@ -104,10 +109,10 @@ for (const key in services) {
         }
     }
     return Promise.all(promises);
-})().then((modules) => {
+})().then((loaded) => {
     console.log('Loaded module');
     const tree = {};
-    for (const m of modules) {
+    for (const m of loaded) {
         tree[m.id] = m.module;
     }
     if (_reqTreeEventHolder) {
