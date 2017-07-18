@@ -9,3 +9,7 @@ export namespace ModuleIO {
         getPath(...paths: string[]): string;
     }
 }
+
+declare const ios: { [moduleId: string]: ModuleIO }
+
+export default ios

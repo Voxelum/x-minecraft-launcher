@@ -1,5 +1,5 @@
 export interface RemoteLauncher {
-    query(service: string, action: string, ...args: any[]): Promise<any>;
+    query(service: string, action: string, options: any): Promise<any>;
     /**
      * Fetch All state from remote
      */

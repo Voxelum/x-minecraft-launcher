@@ -19,13 +19,13 @@
                 <div id="accf" class="field">
                     <div class="ui left icon input">
                         <i class="user icon"></i>
-                        <input id="acc" type="text" name="email" :placeholder="$t(mode+'.account')" v-on:keyup.enter="doLogin">
+                        <input id="acc" type="text" name="email" :placeholder="$t(mode+'.account')" v-on:keyup.enter="doLogin" v-model="account">
                     </div>
                 </div>
                 <div id="pswf" class="field">
                     <div class="ui left icon input">
                         <i class="lock icon"></i>
-                        <input id="psw" type="password" name="password" :placeholder="$t(mode+'.password')" :disabled="disablePassword" v-on:keyup.enter="doLogin">
+                        <input id="psw" type="password" name="password" :placeholder="$t(mode+'.password')" :disabled="disablePassword" v-on:keyup.enter="doLogin" v-model="password">
                     </div>
                 </div>
                 <div class="ui fluid large submit button" v-on:click="doLogin">{{$t('login')}}</div>
@@ -47,15 +47,25 @@ function randomShake() {
     return arr[Math.round(Math.random() * 3)]
 }
 let translating = false
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapState } from 'vuex'
 
+import { VNode } from 'vue'
 export default {
-    computed: mapGetters('auth', [
-        'modes', 'disablePassword', 'mode'
-    ]),
+    data: () => {
+        return {
+            account: '',
+            password: '',
+        }
+    },
+    computed:
+    {
+        ...mapState('auth', ['history', 'clientToken', 'mode', 'modes']),
+
+        ...mapGetters('auth', [
+            'disablePassword',
+        ])
+    },
     mounted(e) {
-        this.acc = document.getElementById('acc')
-        this.psw = document.getElementById('psw')
         let self = this
         $('.dropdown').dropdown({
             onChange: (value, text, $selectedItem) => {
@@ -65,7 +75,7 @@ export default {
     },
     methods: {
         doLogin(e) {
-            if (this.acc.value.length == 0) {
+            if (this.account.length == 0) {
                 if (translating) return
                 translating = true
                 $('#accf').transition({
@@ -75,7 +85,7 @@ export default {
                     }
                 })
             }
-            else if (this.psw.value.length == 0 && this.mode != 'offline') {
+            else if (this.password.length == 0 && this.mode != 'offline') {
                 if (translating) return
                 translating = true
                 $('#pswf').transition({
@@ -85,7 +95,11 @@ export default {
                     }
                 })
             }
-            else this.$store.dispatch('auth/login', [this.acc.value, this.psw.value, this.mode]).then()
+            else this.$store.dispatch('auth/login',
+                { account: this.account, password: this.password, mode: this.mode, clientToken: this.clientToken })
+                .then((result) => {
+                    console.log(result)
+                })
         },
         ...mapMutations('auth', [
             'select'
