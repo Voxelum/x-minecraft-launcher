@@ -1,5 +1,13 @@
 import profile from './profile'
 
+const getters = profile.getters
+
+const mutations = profile.mutations
+
+const actions = {
+
+}
+
 function state() {
     const theState = profile.state()
     theState.type = 'modpack'
@@ -8,14 +16,6 @@ function state() {
     theState.url = ''
     theState.icon = ''
     return theState
-}
-
-const getters = profile.getters
-
-const mutations = profile.mutations
-
-const actions = {
-
 }
 
 export default {
