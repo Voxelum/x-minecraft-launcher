@@ -3,11 +3,11 @@ import launcher from '../launcher'
 const fs = require('fs')
 
 export default {
-    load(context) {
+    load() {
         const proxy = launcher.requireServiceProxy('auth')
         const modes = proxy.modes()
         return new Promise((resolve, reject) => {
-            const json = context.getPath('auth.json')
+            const json = launcher.getPath('auth.json')
             if (fs.existsSync(json)) {
                 fs.readFile(json, (err, data) => {
                     if (err) reject(err)
@@ -30,9 +30,9 @@ export default {
         });
     },
 
-    save(context, state) {
+    save(state) {
         return new Promise((resolve, reject) => {
-            const json = context.getPath('auth.json')
+            const json = launcher.getPath('auth.json')
             state.modes = undefined
             fs.writeFile(json, state, (err) => {
                 if (err) reject(err)

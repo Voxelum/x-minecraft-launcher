@@ -29,7 +29,7 @@ const actions = {
 }
 export default {
     state,
-    getter,
+    getters,
     mutations,
     actions,
 }

@@ -16,20 +16,11 @@
                         <div class="ui inverted circular button">ModPack</div>
                     </a>
                 </div>
-                <!--<div class="ui inverted labeled icon dropdown">
-                                                            <i class="filter inverted icon"></i>
-                                                            <span class="inverted text">All</span>
-                                                            <div class="inverted menu">
-                                                                <option class="item">All</option>
-                                                                <option class="item">ModPack</option>
-                                                                <option class="item">Servers</option>
-                                                            </div>
-                                                        </div>-->
             </div>
         </div>
         <div class="row">
             <div class="four wide middle aligned center aligned column">
-                <div class="ui header segment">{{this.$store.state.auth.playerName}}</div>
+                <div class="ui header segment">{{playerName}}</div>
                 <!--<skin-view width="1200" height="400"></skin-view>-->
                 <div class="ui segment">
                     <button class="ui icon button">
@@ -39,9 +30,21 @@
             </div>
             <div class="ten wide column">
                 <div class="ui link cards">
-                    <profile v-for="profile in profiles" :key="profile" :name="profile.name" :description="profile.description" :author="profile.author" :ping="profile.ping" :ip="profile.ip" :type="profile.type" @select="onSelect(profile)"></profile>
+                    <profile class="profile" v-for="profile in profiles" :key="profile" :source='profile' @select="onSelect(profile)"></profile>
                 </div>
-                <!--<button class="ui huge button">Launch</button>-->
+                <button id="addElement" class="ui icon right floated button" @click="createProfile({type:'modpack', option:{author:playerName}})">
+                    <i class="plus icon"></i>
+                </button>
+                <!-- <div id="addPopup" class="ui popup right transition visible animating scale out" style="background-color:transparent; ">
+                                                                                                    <div class="ui two column left aligned grid" style="background-color:transparent;">
+                                                                                                        <div class="column" style="background-color:transparent;">
+                                                                                                            <button class="ui button" @click="create('server')">Server</button>
+                                                                                                        </div>
+                                                                                                        <div class="column" style="background-color:transparent;">
+                                                                                                            <button class="ui button" @click="create('modpack')">Modpack</button>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div> -->
             </div>
         </div>
     </div>
@@ -50,35 +53,40 @@
 <script>
 import SkinView from './widget/SkinViewer'
 import profile from './widget/Profile'
+import { mapMutations, mapState, mapActions } from 'vuex'
+
 export default {
-    data() {
-        return {
-            profiles: [
-                {
-                    name: 'new age',
-                    author: 'ci010',
-                    description: 'the new age pack',
-                    type: 'modpack'
-                },
-                {
-                    name: 'myminecraft',
-                    ip: 'mc.crafter.me',
-                    description: 'server motd',
-                    ping: 100,
-                    type: 'server'
-                }
-            ]
+    computed: {
+        ...mapState('profiles', {
+            'profiles': 'all'
+        }),
+        playerName() {
+            return this.$store.state.auth.playerName;
         }
     },
     mounted(e) {
-        // $('.dropdown').dropdown({
-        //     onChange: (value, text, $selectedItem) => {
-        //     }
+        // $('#addElement').popup({
+        //     hoverable: true,
+        //     position: 'left center', 
         // })
+        $('.dropdown').dropdown({
+            onChange: (value, text, $selectedItem) => {
+            }
+        })
+
+        // $('.profile')
+        //     .transition({
+        //         animation: 'scale',
+        //         reverse: 'auto', // default setting
+        //         interval: 200
+        //     });
     },
     methods: {
+        ...mapActions('profiles', {
+            createProfile: 'create'
+        }),
         onSelect(event) {
-        }
+        },
     },
     components: {
         SkinView, profile
@@ -87,7 +95,7 @@ export default {
 </script>
 
 <style scoped>
-    .moveable {
-        -webkit-app-region: drag
-    }
+.moveable {
+    -webkit-app-region: drag
+}
 </style>
