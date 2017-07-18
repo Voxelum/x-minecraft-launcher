@@ -20,7 +20,7 @@
         </div>
         <div class="row">
             <div class="four wide middle aligned center aligned column">
-                <div class="ui header segment">{{this.$store.state.auth.playerName}}</div>
+                <div class="ui header segment">{{playerName}}</div>
                 <!--<skin-view width="1200" height="400"></skin-view>-->
                 <div class="ui segment">
                     <button class="ui icon button">
@@ -36,15 +36,15 @@
                     <i class="plus icon"></i>
                 </button>
                 <!-- <div id="addPopup" class="ui popup right transition visible animating scale out" style="background-color:transparent; ">
-                                                                                                <div class="ui two column left aligned grid" style="background-color:transparent;">
-                                                                                                    <div class="column" style="background-color:transparent;">
-                                                                                                        <button class="ui button" @click="create('server')">Server</button>
+                                                                                                    <div class="ui two column left aligned grid" style="background-color:transparent;">
+                                                                                                        <div class="column" style="background-color:transparent;">
+                                                                                                            <button class="ui button" @click="create('server')">Server</button>
+                                                                                                        </div>
+                                                                                                        <div class="column" style="background-color:transparent;">
+                                                                                                            <button class="ui button" @click="create('modpack')">Modpack</button>
+                                                                                                        </div>
                                                                                                     </div>
-                                                                                                    <div class="column" style="background-color:transparent;">
-                                                                                                        <button class="ui button" @click="create('modpack')">Modpack</button>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div> -->
+                                                                                                </div> -->
             </div>
         </div>
     </div>
@@ -60,14 +60,15 @@ export default {
         ...mapState('profiles', {
             'profiles': 'all'
         }),
-        ...mapState('auth', playerName)
+        playerName() {
+            return this.$store.state.auth.playerName;
+        }
     },
     mounted(e) {
         // $('#addElement').popup({
         //     hoverable: true,
         //     position: 'left center', 
         // })
-        let i = 0
         $('.dropdown').dropdown({
             onChange: (value, text, $selectedItem) => {
             }

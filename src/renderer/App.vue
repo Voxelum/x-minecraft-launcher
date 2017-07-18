@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-     <!-- <login></login>  -->
-      <common></common>  
+    <!-- <login></login>  -->
+    <common></common>
   </div>
 </template>
 
@@ -26,7 +26,4 @@ export default {
   -ms-user-select: none;
   user-select: none;
 }
-</style>
-<style lang="stylus">
-    @import './assets/main'
 </style>
