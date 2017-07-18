@@ -1,6 +1,5 @@
 function state() {
     return {
-        id: '', // meta-inf
         type: '',
 
         name: '', // specific info

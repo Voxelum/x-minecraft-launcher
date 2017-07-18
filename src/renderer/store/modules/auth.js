@@ -40,12 +40,13 @@ const mutations = {
     },
 }
 const actions = {
-    login(context, loginInfo) {
-        return launcher.query('auth', 'login', loginInfo).then((result) => {
+    login(context, payload) {
+        return launcher.query('auth', 'login', payload).then((result) => {
             context.commit('record', {
-                auth: result.auth,
-                account: loginInfo[0],
+                auth: result,
+                account: payload[0],
             })
+            return result
         });
     },
 }

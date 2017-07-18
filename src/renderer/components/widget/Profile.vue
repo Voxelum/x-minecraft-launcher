@@ -1,33 +1,41 @@
 <template>
     <div class="ui card" v-bind:class="{color}" @click="emit">
         <div class="image">
-            <img :src="image">
+            <img :src="this.source.state.image">
         </div>
         <div class="content">
-            <a class="header">{{name}}</a>
+            <a class="header">{{this.source.state.name}}</a>
             <div class="meta">
-                <span v-if="type=='server'">{{ip}}</span>
-                <span v-if="type=='modpack'">{{author}}</span>
-                <span class="date">{{createdDate}}</span>
+                <span v-if="this.source.state.type=='server'">{{this.source.state.ip}}</span>
+                <span v-if="this.source.state.type=='modpack'">{{this.source.state.author}}</span>
+                <span class="date">{{this.source.state.createdDate}}</span>
             </div>
             <div class="description">
-                {{description}}
+                {{this.source.state.description}}
             </div>
         </div>
         <div class="extra content">
-            <span v-if="type=='server'">
+            <span v-if="this.source.state.type=='server'">
                 <i class="wifi icon"></i>
-                {{ping ? ping+" ms":'Cannot connected'}}
+                {{this.source.state.ping ? this.source.state.ping+" ms":'Cannot connected'}}
             </span>
         </div>
     </div>
 </template>
 
 <script>
+
 export default {
-    props: ['color', 'image', 'name', 'createdDate', 'description', 'from', 'type', 'ping', 'ip', 'author'],
+    data() {
+        return {
+        }
+    },
+    props: ['color', 'source', 'image', 'name', 'createdDate', 'description', 'from', 'type', 'ping', 'ip', 'author'],
     methods: {
-        emit() { this.$emit('select') }
+        emit() { this.$emit('select') },
+    },
+    mounted() {
+        console.log(this.source.state)
     }
 }
 </script>

@@ -1,4 +1,3 @@
-
 import {
     v4,
 } from 'uuid'
@@ -20,7 +19,11 @@ export default {
             account,
             password,
             clientToken,
-        }) => AuthService.yggdrasilAuth(account, password, clientToken || v4()));
+        }) => AuthService.yggdrasilAuth({
+            username: account,
+            password,
+            clientToken: clientToken || v4(),
+        }));
     },
 
     proxy: {
@@ -36,12 +39,12 @@ export default {
     },
 
     actions: {
-        login(optoin) {
+        login(option) {
             return new Promise((resolve, reject) => {
-                if (registered.has(optoin.mode)) {
-                    resolve(registered.get(optoin.mode)(optoin))
+                if (registered.has(option.mode)) {
+                    resolve(registered.get(option.mode)(option))
                 } else {
-                    reject('No such auth option!')
+                    reject(`No such auth option ${option.mode}`)
                 }
             });
         },
