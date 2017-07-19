@@ -1,46 +1,31 @@
-import {
-    v4,
-} from 'uuid'
-import {
-    Store,
-} from 'vuex'
-
 export default {
     namespaced: true,
     state() {
         return {
-            dic: {},
-            all: [],
-            selected: '',
+            _all: [],
+            _selected: '',
         }
     },
     getters: {
-        selected: state => state.dic[state.select],
+        selected: state => state[state._select],
+        allStates: state => state._all.map(mName => state[mName]),
+        selectedKey: state => state._select,
+        allKeys: state => state._all,
     },
     mutations: {
-        select(state, id) {
-            if (state.dic[id]) {
-                state.selected = state.dic[id]
-            }
+        select(state, moduleID) {
+            const idx = state._all.indexOf(moduleID);
+            if (idx !== -1) state._selected = moduleID;
         },
-        add(state, newOne) {
-            let id
-            if (newOne instanceof Store) {
-                id = newOne.state.id
-            } else id = newOne.id
-            if (!id) id = v4()
-            state.dic[id] = newOne
-            state.all.push(newOne)
-            console.log('add')
+        add(state, payload) {
+            state._all.push(payload.id)
         },
         remove(state, id) {
-            if (state.dic[id]) {
-                if (state.selected === id) {
-                    state.selected = Object.keys[state.dic][0]
+            if (state._all.indexOf(id) !== -1) {
+                if (state._selected === id) {
+                    state._selected = state._all[0]
                 }
-                const removed = state.dic[id]
-                state.dic[id] = undefined
-                state.all = state.all.filter(v => v === removed)
+                state._all = state._all.filter(v => v === id)
             }
         },
     },

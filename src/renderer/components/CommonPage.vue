@@ -36,15 +36,15 @@
                     <i class="plus icon"></i>
                 </button>
                 <!-- <div id="addPopup" class="ui popup right transition visible animating scale out" style="background-color:transparent; ">
-                                                                                                    <div class="ui two column left aligned grid" style="background-color:transparent;">
-                                                                                                        <div class="column" style="background-color:transparent;">
-                                                                                                            <button class="ui button" @click="create('server')">Server</button>
-                                                                                                        </div>
-                                                                                                        <div class="column" style="background-color:transparent;">
-                                                                                                            <button class="ui button" @click="create('modpack')">Modpack</button>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div> -->
+                                                                                                                                                <div class="ui two column left aligned grid" style="background-color:transparent;">
+                                                                                                                                                    <div class="column" style="background-color:transparent;">
+                                                                                                                                                        <button class="ui button" @click="create('server')">Server</button>
+                                                                                                                                                    </div>
+                                                                                                                                                    <div class="column" style="background-color:transparent;">
+                                                                                                                                                        <button class="ui button" @click="create('modpack')">Modpack</button>
+                                                                                                                                                    </div>
+                                                                                                                                                </div>
+                                                                                                                                            </div> -->
             </div>
         </div>
     </div>
@@ -53,12 +53,12 @@
 <script>
 import SkinView from './widget/SkinViewer'
 import profile from './widget/Profile'
-import { mapMutations, mapState, mapActions } from 'vuex'
+import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
     computed: {
-        ...mapState('profiles', {
-            'profiles': 'all'
+        ...mapGetters('profiles', {
+            'profiles': 'allStates'
         }),
         playerName() {
             return this.$store.state.auth.playerName;
@@ -73,7 +73,6 @@ export default {
             onChange: (value, text, $selectedItem) => {
             }
         })
-
         // $('.profile')
         //     .transition({
         //         animation: 'scale',
