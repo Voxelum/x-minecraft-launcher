@@ -3,17 +3,19 @@ import { v4 } from 'uuid'
 export default {
     namespaced: true,
     state: {
-        all: {},
-        selected: new Set(),
+        _all: [],
+        _selected: [],
     },
     getters: {
-        all: state => state.all,
-        selected: state => state.all[state.select],
+        allState: state => state._all.map(k => state[k]),
+        selectedState: state => state._selected.map(k => state[k]),
+        selectedKey: state => state._selected,
+        allKey: state => state._all,
     },
     mutations: {
         select(state, id) {
-            if (state.all[id]) {
-                state.selected = state.all[id]
+            if (state[id]) {
+                state._selected.push(id)
             }
         },
         unselect(state, id) {
