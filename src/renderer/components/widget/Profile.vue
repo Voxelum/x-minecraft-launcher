@@ -1,23 +1,23 @@
 <template>
     <div class="ui card" v-bind:class="{color}" @click="emit">
         <div class="image">
-            <img :src="this.source.state.image">
+            <img :src="this.source.image">
         </div>
         <div class="content">
-            <a class="header">{{this.source.state.name}}</a>
+            <a class="header">{{this.source.name}}</a>
             <div class="meta">
-                <span v-if="this.source.state.type=='server'">{{this.source.state.ip}}</span>
-                <span v-if="this.source.state.type=='modpack'">{{this.source.state.author}}</span>
-                <span class="date">{{this.source.state.createdDate}}</span>
+                <span v-if="this.source.type=='server'">{{this.source.ip}}</span>
+                <span v-if="this.source.type=='modpack'">{{this.source.author}}</span>
+                <span class="date">{{this.source.createdDate}}</span>
             </div>
             <div class="description">
-                {{this.source.state.description}}
+                {{this.source.description}}
             </div>
         </div>
         <div class="extra content">
-            <span v-if="this.source.state.type=='server'">
+            <span v-if="this.source.type=='server'">
                 <i class="wifi icon"></i>
-                {{this.source.state.ping ? this.source.state.ping+" ms":'Cannot connected'}}
+                {{this.source.ping ? this.source.ping+" ms":'Cannot connected'}}
             </span>
         </div>
     </div>
@@ -35,7 +35,7 @@ export default {
         emit() { this.$emit('select') },
     },
     mounted() {
-        console.log(this.source.state)
+        console.log(this.source)
     }
 }
 </script>
