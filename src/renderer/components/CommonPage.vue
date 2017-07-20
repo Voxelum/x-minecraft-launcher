@@ -29,36 +29,40 @@
                 </div>
             </div>
             <div class="ten wide column">
-                <div class="ui link cards">
-                    <profile class="profile" v-for="profile in profiles" :key="profile" :source='profile' @select="onSelect(profile)"></profile>
+                <div v-if="selecting">
+                    <profile-view :source='selectedProfile'></profile-view>
                 </div>
-                <button id="addElement" class="ui icon right floated button" @click="createProfile({type:'modpack', option:{author:playerName}})">
-                    <i class="plus icon"></i>
-                </button>
-                <!-- <div id="addPopup" class="ui popup right transition visible animating scale out" style="background-color:transparent; ">
-                                                                                                                                                <div class="ui two column left aligned grid" style="background-color:transparent;">
-                                                                                                                                                    <div class="column" style="background-color:transparent;">
-                                                                                                                                                        <button class="ui button" @click="create('server')">Server</button>
-                                                                                                                                                    </div>
-                                                                                                                                                    <div class="column" style="background-color:transparent;">
-                                                                                                                                                        <button class="ui button" @click="create('modpack')">Modpack</button>
-                                                                                                                                                    </div>
-                                                                                                                                                </div>
-                                                                                                                                            </div> -->
+                <div v-else>
+                    <div class="ui link cards">
+                        <profile-card class="profile" v-for="id in keys" :key="id" :id="id" :source='getByKey(id)' @select="selectProfile"></profile-card>
+                    </div>
+                    <button id="addElement" class="ui icon right floated button" @click="createProfile({type:'modpack', option:{author:playerName}})">
+                        <i class="plus icon"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import SkinView from './widget/SkinViewer'
-import profile from './widget/Profile'
+import widgets from './widgets'
+
 import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
     computed: {
+        selecting() {
+            console.log('cal selecting')
+            console.log(this.selectProfileID)
+            return this.selectProfileID != undefined && this.selectProfileID != '' && this.selectProfileID != null
+        },
         ...mapGetters('profiles', {
-            'profiles': 'allStates'
+            'selectedProfile': 'selected',
+            'profiles': 'allStates',
+            'keys': 'allKeys',
+            'getByKey': 'getByKey',
+            'selectProfileID': 'selectedKey'
         }),
         playerName() {
             return this.$store.state.auth.playerName;
@@ -84,12 +88,11 @@ export default {
         ...mapActions('profiles', {
             createProfile: 'create'
         }),
-        onSelect(event) {
-        },
+        ...mapMutations('profiles', {
+            selectProfile: 'select'
+        }),
     },
-    components: {
-        SkinView, profile
-    }
+    components: widgets
 }
 </script>
 
