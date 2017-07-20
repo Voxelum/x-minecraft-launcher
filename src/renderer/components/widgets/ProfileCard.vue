@@ -26,6 +26,7 @@
 <script>
 
 export default {
+    name:'profile-card',
     props: ['color', 'source', 'id'],
     methods: {
         onclick(e) {
