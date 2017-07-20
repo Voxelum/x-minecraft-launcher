@@ -7,9 +7,10 @@ export default {
         }
     },
     getters: {
-        selected: state => state[state._select],
+        selected: state => state[state._selected],
         allStates: state => state._all.map(mName => state[mName]),
-        selectedKey: state => state._select,
+        getByKey: state => id => state[id],
+        selectedKey: state => state._selected,
         allKeys: state => state._all,
     },
     mutations: {
