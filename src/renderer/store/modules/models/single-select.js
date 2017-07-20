@@ -14,6 +14,9 @@ export default {
         allKeys: state => state._all,
     },
     mutations: {
+        unselect(state) {
+            state._selected = ''
+        },
         select(state, moduleID) {
             const idx = state._all.indexOf(moduleID);
             if (idx !== -1) state._selected = moduleID;
