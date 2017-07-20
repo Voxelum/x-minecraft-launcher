@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import components from '@/components/widget'
 import CommonPage from '@/components/CommonPage'
 import Login from '@/components/Login'
 require('semantic/dist/semantic.min.css')

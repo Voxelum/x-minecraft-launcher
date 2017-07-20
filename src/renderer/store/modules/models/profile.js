@@ -15,9 +15,14 @@ function state() {
         mcOptions: [],
     }
 }
-const getters = {
-}
+const getters = {}
 const mutations = {
+    setName(states, name) {
+        states.name = name
+    },
+    setVersion(states, version) {
+        states.versoin = version
+    },
     putAll(states, option) {
         for (const key in option) {
             if (option.hasOwnProperty(key) && states.hasOwnProperty(key)) {
@@ -27,8 +32,7 @@ const mutations = {
     },
 }
 
-const actions = {
-}
+const actions = {}
 
 export default {
     state,

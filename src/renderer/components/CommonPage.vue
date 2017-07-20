@@ -1,5 +1,5 @@
 <template>
-    <div class="ui celled grid">
+    <div class="ui celled grid noselect">
         <div class="black row moveable">
             <div class="black four wide middle aligned center aligned column">
                 <h2 class="inverted ui header">
@@ -9,12 +9,14 @@
             <div class="ten wide column">
                 <div class="ui breadcrumb">
                     <a class="section">
-                        <div class="ui inverted circular button">Home</div>
+                        <button class="ui inverted circular button" @click="unselect">Home</button>
                     </a>
-                    <i class="right chevron inverted icon divider" style="color:white"></i>
-                    <a class="section">
-                        <div class="ui inverted circular button">ModPack</div>
-                    </a>
+                    <span v-if="selecting">
+                        <i class="right chevron inverted icon divider" style="color:white"></i>
+                        <a class="section">
+                            <button class="ui inverted circular button">{{selectedProfile.name}}</button>
+                        </a>
+                    </span>
                 </div>
             </div>
         </div>
@@ -30,7 +32,7 @@
             </div>
             <div class="ten wide column">
                 <div v-if="selecting">
-                    <profile-view :source='selectedProfile'></profile-view>
+                    <profile-view :source='selectedProfile' :id="selectProfileID"></profile-view>
                 </div>
                 <div v-else>
                     <div class="ui link cards">
@@ -46,7 +48,8 @@
 </template>
 
 <script>
-import widgets from './widgets'
+import ProfileCard from './widgets/ProfileCard'
+import ProfileView from './widgets/ProfileView'
 
 import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 
@@ -69,10 +72,6 @@ export default {
         }
     },
     mounted(e) {
-        // $('#addElement').popup({
-        //     hoverable: true,
-        //     position: 'left center', 
-        // })
         $('.dropdown').dropdown({
             onChange: (value, text, $selectedItem) => {
             }
@@ -89,15 +88,16 @@ export default {
             createProfile: 'create'
         }),
         ...mapMutations('profiles', {
-            selectProfile: 'select'
+            selectProfile: 'select',
+            unselect: 'unselect'
         }),
     },
-    components: widgets
+    components: { ProfileCard, ProfileView }
 }
 </script>
 
 <style scoped>
-.moveable {
+/* .moveable {
     -webkit-app-region: drag
-}
+} */
 </style>

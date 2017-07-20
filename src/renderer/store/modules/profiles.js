@@ -24,6 +24,10 @@ export default {
             if (type === 'server') {
                 context.commit('add', { id: uuid(), module: mixin(modelServer, option) })
             } else if (type === 'modpack') {
+                option.name = 'New Modpack'
+                option.ediable = true
+                option.author = 'ci010'
+                option.description = 'no description yet!'                
                 context.commit('add', { id: uuid(), module: mixin(modelModpack, option) })
             }
         },
