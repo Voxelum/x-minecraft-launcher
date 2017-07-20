@@ -1,5 +1,5 @@
 <template>
-    <div class="ui card" v-bind:class="{color}" @click="emit">
+    <div class="ui card" v-bind:class="{color}" @click="onclick">
         <div class="image">
             <img :src="this.source.image">
         </div>
@@ -26,17 +26,15 @@
 <script>
 
 export default {
-    data() {
-        return {
+    props: ['color', 'source', 'id'],
+    methods: {
+        onclick(e) {
+            this.$emit('select', this.id, this.source)
         }
     },
-    props: ['color', 'source', 'image', 'name', 'createdDate', 'description', 'from', 'type', 'ping', 'ip', 'author'],
-    methods: {
-        emit() { this.$emit('select') },
-    },
     mounted() {
-        console.log(this.source)
-    }
+    },
+
 }
 </script>
 
