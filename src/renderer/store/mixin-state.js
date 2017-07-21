@@ -18,7 +18,5 @@ export default (template, option) => {
     }
     const storeOption$ = Object.assign({}, template)
     storeOption$.state = state
-    console.log(option)
-    console.log(state)
     return storeOption$;
 }

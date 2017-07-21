@@ -17,9 +17,7 @@
                             <button class="ui inverted circular button">{{selectedProfile.name}}</button>
                         </a>
                     </span>
-    
                 </div>
-    
             </div>
             <div class="two wide center aligned column">
                 <button class="ui inverted circular button">CI010</button>
@@ -53,9 +51,12 @@
 </template>
 
 <script>
-import ProfileCard from './widgets/ProfileCard'
-import ProfileView from './widgets/ProfileView'
-import SkinView from './widgets/SkinView'
+require('static/semantic/dist/semantic.min.css')
+require('static/semantic/dist/semantic.min.js')
+import ProfileCard from './components/ProfileCard'
+import ProfileView from './components/ProfileView'
+import SkinView from './components/SkinView'
+import Login from './components/Login'
 
 import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 
@@ -80,12 +81,6 @@ export default {
             onChange: (value, text, $selectedItem) => {
             }
         })
-        // $('.profile')
-        //     .transition({
-        //         animation: 'scale',
-        //         reverse: 'auto', // default setting
-        //         interval: 200
-        //     });
     },
     methods: {
         ...mapActions('profiles', {
@@ -101,7 +96,7 @@ export default {
 </script>
 
 <style scoped>
-/* .moveable {
+.moveable {
     -webkit-app-region: drag
-} */
+}
 </style>
