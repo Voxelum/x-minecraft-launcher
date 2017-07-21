@@ -33,9 +33,7 @@ export default {
             }
             registered.set(id, func)
         },
-        modes() {
-            return Array.from(registered.keys())
-        },
+
     },
 
     actions: {
@@ -47,6 +45,9 @@ export default {
                     reject(`No such auth option ${option.mode}`)
                 }
             });
+        },
+        modes() {
+            return Array.from(registered.keys())
         },
         // TODO implement other auth function
     },

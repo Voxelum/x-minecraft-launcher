@@ -54,15 +54,11 @@ ipcMain.on('query', (event, payload) => {
     }
 })
 const rootPath = paths.join(app.getPath('appData'), '.launcher')
+const pathArr = [rootPath]
 export default {
     rootPath,
-    getPath(path) {
-        if (typeof path === 'string') {
-            return paths.join(rootPath, path)
-        } else if (path instanceof Array) {
-            return paths.join(rootPath, paths.join(path))
-        }
-        return rootPath
+    getPath(...path) {
+        return paths.join(rootPath, paths.join(rootPath, ...path))
     },
     requireServiceProxy(service) {
         const queried = services[service]
