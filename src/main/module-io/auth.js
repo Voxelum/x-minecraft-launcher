@@ -5,7 +5,7 @@ const fs = require('fs')
 export default {
     load() {
         const proxy = launcher.requireServiceProxy('auth')
-        const modes = proxy.modes()
+        const modes = proxy.$modes()
         return new Promise((resolve, reject) => {
             const json = launcher.getPath('auth.json')
             if (fs.existsSync(json)) {

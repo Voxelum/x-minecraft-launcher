@@ -56,7 +56,7 @@ export default {
         const modpackPromise = new Promise((resolve, reject) => {
             const profilesRoot = launcher.getPath('profiles');
             if (fs.existsSync(profilesRoot)) {
-                fs.readdir(launcher.getPath('profiles'), (err, files) => {
+                fs.readdir(profilesRoot, (err, files) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -65,6 +65,7 @@ export default {
                 });
             } else resolve([]);
         }).then((files) => {
+            if (files.length === 0) return [];
             const tasks = [];
             for (const file of files) {
                 const profileRoot = launcher.getPath('profiles', file);
@@ -75,7 +76,7 @@ export default {
                             if (err) reject(err);
                             else resolve(data.toString());
                         })
-                    }).then(content => parseProfile(parseProfile)));
+                    }).then(content => parseProfile(content)));
                 }
             }
             return Promise.all(tasks);
