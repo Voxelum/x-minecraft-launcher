@@ -105,7 +105,7 @@ for (const key in services) {
             promises.push(m.load(launcher).then(mod => ({
                 id: key,
                 module: mod,
-            })));
+            })).catch((err) => { console.log(`Fail to load module [${key}], ${err}.`) }));
         }
     }
     return Promise.all(promises);

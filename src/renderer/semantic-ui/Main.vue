@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="two wide center aligned column">
-                <button class="ui inverted circular button">CI010</button>
+                <button class="ui inverted circular button" @click="showLogin">{{playerName}}</button>
             </div>
         </div>
         <div class="row">
@@ -46,6 +46,10 @@
                     </button>
                 </div>
             </div>
+        </div>
+        <div id="login" class="ui basic modal" style="padding:0 20% 0 20%;">
+            <i class="close icon" v-if="this.$store.state.auth.authInfo !== undefined"></i>
+            <login @logined='onlogined'></login>
         </div>
     </div>
 </template>
@@ -73,14 +77,20 @@ export default {
             'selectProfileID': 'selectedKey'
         }),
         playerName() {
-            return this.$store.state.auth.playerName;
-        }
+            console.log(this.$store.state.auth.authInfo)
+            return this.$store.state.auth.authInfo ? this.$store.state.auth.authInfo.selectedProfile.name : 'Steve';
+        },
     },
     mounted(e) {
-        $('.dropdown').dropdown({
-            onChange: (value, text, $selectedItem) => {
-            }
+        const self = this
+        this.$nextTick(() => {
+            $('#authMode').dropdown({
+                onChange: (value, text, $selectedItem) => {
+                    self.$store.commit('auth/select', value)
+                }
+            })
         })
+        this.showLogin()
     },
     methods: {
         ...mapActions('profiles', {
@@ -90,13 +100,23 @@ export default {
             selectProfile: 'select',
             unselect: 'unselect'
         }),
+        showLogin() {
+            this.$nextTick(() => {
+                $('#login').modal('setting', 'closable', false).modal('refresh').modal('setting', 'observeChanges', true).modal('show')
+            })
+        },
+        onlogined() {
+            this.$nextTick(() => {
+                $('#login').modal('hide')
+            })
+        },
     },
-    components: { ProfileCard, ProfileView, SkinView }
+    components: { ProfileCard, ProfileView, SkinView, Login }
 }
 </script>
 
 <style scoped>
 .moveable {
-    -webkit-app-region: drag
+    /* -webkit-app-region: drag */
 }
 </style>
