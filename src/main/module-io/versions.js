@@ -21,4 +21,5 @@ export default {
             }
         });
     },
+    save(mutation, state, payload) { },
 }

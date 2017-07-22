@@ -67,7 +67,8 @@ let _reqTreeEventHolder
 ipcMain.once('fetchAll', (event) => {
     if (_reqTreeEventHolder) {
         console.log('IO loaded first!')
-        event.sender.send('fetchAll', undefined, _reqTreeEventHolder)
+        console.log(_reqTreeEventHolder)
+        event.sender.send('fetchAll', { rejected: undefined, resolved: _reqTreeEventHolder })
     } else {
         console.log('Client loaded first!')
         _reqTreeEventHolder = event
@@ -105,7 +106,7 @@ for (const key in services) {
             promises.push(m.load(launcher).then(mod => ({
                 id: key,
                 module: mod,
-            })));
+            })).catch((err) => { console.log(`Fail to load module [${key}], ${err}.`) }));
         }
     }
     return Promise.all(promises);
@@ -116,7 +117,7 @@ for (const key in services) {
         tree[m.id] = m.module;
     }
     if (_reqTreeEventHolder) {
-        _reqTreeEventHolder.sender.send('fetchAll', undefined, tree);
+        _reqTreeEventHolder.sender.send('fetchAll', { rejected: undefined, resolved: tree });
     } else {
         _reqTreeEventHolder = tree;
     }

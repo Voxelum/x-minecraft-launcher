@@ -20,7 +20,7 @@
         "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
         "test": "npm run unit",
         "unit": "karma start test/unit/karma.conf.js",
-        "postinstall": ""
+        "postinstall": "cd static && cd semantic && gulp"
     },
     "dependencies": {
         "semantic-ui": "^2.2.10",
@@ -31,6 +31,7 @@
         "vuex": "^2.3.1"
     },
     "devDependencies": {
+        "mkdirp": "^0.5.1",
         "babel-core": "^6.22.1",
         "babel-eslint": "^7.2.3",
         "babel-loader": "^7.0.0",
@@ -62,6 +63,7 @@
         "eslint-plugin-import": "^2.2.0",
         "extract-text-webpack-plugin": "^2.0.0-beta.4",
         "file-loader": "^0.11.1",
+        "gulp": "^3.9.1",
         "html-webpack-plugin": "^2.16.1",
         "inject-loader": "^3.0.0",
         "jquery": "^3.2.1",

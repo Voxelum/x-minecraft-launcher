@@ -1,15 +1,15 @@
 <template>
-    <div class="ui noselect">
-        <h2 class="ui header segment center aligned ">
+    <div class="ui noselect" style="padding:15px">
+        <h3 class="ui header segment center aligned ">
             <div class="content">
                 Minecraft
             </div>
-        </h2>
+        </h3>
         <form class="ui large form">
             <div class="ui segment">
-                <div class="ui labeled icon dropdown button">
+                <div id="authMode" class="ui labeled icon dropdown button">
                     <i class="world icon"></i>
-                    <span class="text" v-once>{{$t(mode+'.name')}}</span>
+                    <span class="text">{{$t(mode+'.name')}}</span>
                     <div class="menu">
                         <option class="item" v-for="item in modes" :key="item" :value="item">{{$t(item+'.name')}}</option>
                     </div>
@@ -28,7 +28,7 @@
                         <input id="psw" type="password" name="password" :placeholder="$t(mode+'.password')" :disabled="disablePassword" v-on:keyup.enter="doLogin" v-model="password">
                     </div>
                 </div>
-                <div class="ui fluid large submit button" v-on:click="doLogin">{{$t('login')}}</div>
+                <div class="ui fluid large submit button" :class="{loading: logining}" v-on:click="doLogin">{{$t('login')}}</div>
             </div>
             <div class="ui error message"></div>
         </form>
@@ -41,18 +41,20 @@
 </template>
 
 <script>
-const { ipcRenderer } = require('electron')
+import { mapGetters, mapMutations, mapState } from 'vuex'
+import { VNode } from 'vue'
+
 const arr = ['jiggle', 'shake', 'tada']
 function randomShake() {
     return arr[Math.round(Math.random() * 3)]
 }
 let translating = false
-import { mapGetters, mapMutations, mapState } from 'vuex'
+let inited = false
 
-import { VNode } from 'vue'
 export default {
     data: () => {
         return {
+            logining: false,
             account: '',
             password: '',
         }
@@ -60,18 +62,11 @@ export default {
     computed:
     {
         ...mapState('auth', ['history', 'clientToken', 'mode', 'modes']),
-
         ...mapGetters('auth', [
             'disablePassword',
         ])
     },
-    mounted(e) {
-        let self = this
-        $('.dropdown').dropdown({
-            onChange: (value, text, $selectedItem) => {
-                self.select(value)
-            }
-        })
+    mounted() {
     },
     methods: {
         doLogin(e) {
@@ -95,11 +90,18 @@ export default {
                     }
                 })
             }
-            else this.$store.dispatch('auth/login',
-                { account: this.account, password: this.password, mode: this.mode, clientToken: this.clientToken })
-                .then((result) => {
-                    console.log(result)
-                })
+            else {
+                this.logining = true
+                this.$store.dispatch('auth/login',
+                    { account: this.account, password: this.password, mode: this.mode, clientToken: this.clientToken })
+                    .then((result) => {
+                        this.logining = false
+                        this.$emit('logined')
+                    }, err => {
+                        this.logining = false
+                        //TODO handle this
+                    })
+            }
         },
         ...mapMutations('auth', [
             'select'

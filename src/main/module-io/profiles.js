@@ -1,4 +1,5 @@
 import uuid from 'uuid'
+import mkdirp from 'mkdirp'
 import {
     ServerInfo,
 } from 'ts-minecraft'
@@ -56,15 +57,18 @@ export default {
         const modpackPromise = new Promise((resolve, reject) => {
             const profilesRoot = launcher.getPath('profiles');
             if (fs.existsSync(profilesRoot)) {
-                fs.readdir(launcher.getPath('profiles'), (err, files) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(files);
-                    }
+                fs.readdir(profilesRoot, (err, files) => {
+                    if (err) reject(err);
+                    else resolve(files);
                 });
-            } else resolve([]);
+            } else {
+                mkdirp(profilesRoot, (err) => {
+                    if (err) reject(err)
+                    else resolve()
+                }).then(() => [])
+            }
         }).then((files) => {
+            if (files.length === 0) return [];
             const tasks = [];
             for (const file of files) {
                 const profileRoot = launcher.getPath('profiles', file);
@@ -75,12 +79,18 @@ export default {
                             if (err) reject(err);
                             else resolve(data.toString());
                         })
-                    }).then(content => parseProfile(parseProfile)));
+                    }).then(content => parseProfile(content)));
                 }
             }
             return Promise.all(tasks);
         });
         return Promise.all([serverPromise, modpackPromise])
             .then(result => result[0].concat(result[1]));
+    },
+    save(mutation, state, payload) {
+        if (mutation === 'profiles/add') {
+
+        }
+        console.log(mutation)
     },
 }
