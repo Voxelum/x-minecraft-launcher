@@ -3,6 +3,8 @@ import {
     BrowserWindow,
     ipcMain,
 } from 'electron'
+import * as fs from 'fs'
+
 import modules from './module-io'
 import services from './services'
 
@@ -53,12 +55,22 @@ ipcMain.on('query', (event, payload) => {
         });
     }
 })
+ipcMain.on('update', (event, payload) => {
+    const { id, mutation, state } = payload;
+    const mo = modules[id]
+    if (!mo) {
+        console.war(`Unknown module ${id}!`)
+        return
+    }
+    mo.save(mutation.type, state, mutation.payload)
+})
 const rootPath = paths.join(app.getPath('appData'), '.launcher')
+fs.mkdir(rootPath, (err) => { })
 const pathArr = [rootPath]
 export default {
     rootPath,
     getPath(...path) {
-        return paths.join(rootPath, paths.join(rootPath, ...path))
+        return paths.join(rootPath, ...path)
     },
     requireServiceProxy(service) {
         const queried = services[service]

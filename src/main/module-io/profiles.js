@@ -2,6 +2,7 @@ import uuid from 'uuid'
 import {
     ServerInfo,
 } from 'ts-minecraft'
+import utils from 'ts-minecraft/dist/src/string_utils'
 
 import launcher from '../launcher'
 
@@ -57,13 +58,10 @@ export default {
             const profilesRoot = launcher.getPath('profiles');
             if (fs.existsSync(profilesRoot)) {
                 fs.readdir(profilesRoot, (err, files) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(files);
-                    }
+                    if (err) reject(err);
+                    else resolve(files);
                 });
-            } else resolve([]);
+            } else resolve(utils.DIR(profilesRoot).then(() => []))
         }).then((files) => {
             if (files.length === 0) return [];
             const tasks = [];
@@ -83,5 +81,8 @@ export default {
         });
         return Promise.all([serverPromise, modpackPromise])
             .then(result => result[0].concat(result[1]));
+    },
+    save(mutation, state, payload) {
+
     },
 }

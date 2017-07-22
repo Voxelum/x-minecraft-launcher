@@ -1,8 +1,9 @@
 
 export default {
-    load(context) {
+    load() {
         return new Promise((resolve, reject) => {
             resolve()
         });
     },
+    save(mutation, state, payload) { },
 }

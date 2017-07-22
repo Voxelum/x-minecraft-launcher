@@ -1,15 +1,15 @@
 <template>
     <div class="ui noselect" style="padding:15px">
-        <h2 class="ui header segment center aligned ">
+        <h3 class="ui header segment center aligned ">
             <div class="content">
                 Minecraft
             </div>
-        </h2>
+        </h3>
         <form class="ui large form">
             <div class="ui segment">
                 <div id="authMode" class="ui labeled icon dropdown button">
                     <i class="world icon"></i>
-                    <span class="text" v-once>{{$t(mode+'.name')}}</span>
+                    <span class="text">{{$t(mode+'.name')}}</span>
                     <div class="menu">
                         <option class="item" v-for="item in modes" :key="item" :value="item">{{$t(item+'.name')}}</option>
                     </div>
@@ -91,7 +91,6 @@ export default {
                 })
             }
             else {
-                console.log('ad')
                 this.logining = true
                 this.$store.dispatch('auth/login',
                     { account: this.account, password: this.password, mode: this.mode, clientToken: this.clientToken })
