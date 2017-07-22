@@ -1,9 +1,3 @@
-import {
-    ipcRenderer,
-} from 'electron'
-
-import launcher from '../../launcher'
-
 const state = {
     modes: ['mojang', 'offline'],
     mode: 'mojang',
@@ -42,13 +36,14 @@ const mutations = {
 }
 const actions = {
     login(context, payload) {
-        return launcher.query('auth', 'login', payload).then((result) => {
-            context.commit('record', {
-                auth: result,
-                account: payload.account,
+        return context.dispatch('query', { service: 'auth', action: 'login', payload }, { root: true })
+            .then((result) => {
+                context.commit('record', {
+                    auth: result,
+                    account: payload.account,
+                })
+                return result
             })
-            return result
-        });
     },
 }
 
