@@ -1,15 +1,17 @@
 <template>
   <div id="app">
-    <semantic-ui></semantic-ui>
+    <MaterialUi></MaterialUi>
   </div>
+  
 </template>
 
 <script>
 
 import SemanticUi from './semantic-ui/Main'
+import MaterialUi from './material-ui/Main'
 
 export default {
-  components: { SemanticUi }
+  components: { MaterialUi }
 }
 </script>
 
