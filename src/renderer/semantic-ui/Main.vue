@@ -77,7 +77,6 @@ export default {
             'selectProfileID': 'selectedKey'
         }),
         playerName() {
-            console.log(this.$store.state.auth.authInfo)
             return this.$store.state.auth.authInfo ? this.$store.state.auth.authInfo.selectedProfile.name : 'Steve';
         },
     },

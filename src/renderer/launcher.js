@@ -50,10 +50,14 @@ export default {
             moduleId,
         });
     },
-    update(moduleId, state) {
+    update(moduleId, mutation, state) {
         return privateLine('update', {
             id: moduleId,
+            mutation,
             state,
         });
+    },
+    reloadModule(moduleId, state) {
+        
     },
 }
