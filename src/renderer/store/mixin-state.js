@@ -1,9 +1,5 @@
-import {
-    Store,
-} from 'vuex'
-
-export default (storeOption, option) => {
-    let state = storeOption.state
+export default (template, option) => {
+    let state = template.state
     if (typeof state === 'function') {
         state = state()
     } else {
@@ -16,8 +12,7 @@ export default (storeOption, option) => {
             }
         }
     }
-    const storeOption$ = Object.assign({}, storeOption)
+    const storeOption$ = Object.assign({}, template)
     storeOption$.state = state
-    const store = new Store(storeOption$)
-    return store
+    return storeOption$;
 }

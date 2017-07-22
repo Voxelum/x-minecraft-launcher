@@ -1,19 +1,15 @@
 <template>
   <div id="app">
-    <!-- <login></login>  -->
-    <common></common>
+    <semantic-ui></semantic-ui>
   </div>
 </template>
 
 <script>
-import components from '@/components/widget'
-import CommonPage from '@/components/CommonPage'
-import Login from '@/components/Login'
-require('semantic/dist/semantic.min.css')
-require('semantic/dist/semantic.min.js')
+
+import SemanticUi from './semantic-ui/Main'
+
 export default {
-  name: 'llauncher',
-  components: { Common: CommonPage, Login }
+  components: { SemanticUi }
 }
 </script>
 

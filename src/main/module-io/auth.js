@@ -5,7 +5,7 @@ const fs = require('fs')
 export default {
     load() {
         const proxy = launcher.requireServiceProxy('auth')
-        const modes = proxy.modes()
+        const modes = proxy.$modes()
         return new Promise((resolve, reject) => {
             const json = launcher.getPath('auth.json')
             if (fs.existsSync(json)) {
@@ -30,14 +30,16 @@ export default {
         });
     },
 
-    save(state) {
+    save(mutation, state, payload) {
         return new Promise((resolve, reject) => {
-            const json = launcher.getPath('auth.json')
-            state.modes = undefined
-            fs.writeFile(json, state, (err) => {
-                if (err) reject(err)
-                else resolve()
-            })
+            if (mutation.endsWith('/record')) {
+                state.modes = undefined
+                const json = launcher.getPath('auth.json')
+                fs.writeFile(json, JSON.stringify(state), (err) => {
+                    if (err) reject(err)
+                    else resolve()
+                })
+            } else resolve()
         });
     },
 }

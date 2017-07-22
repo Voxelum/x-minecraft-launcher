@@ -2,7 +2,14 @@ import profile from './profile'
 
 const getters = profile.getters
 
-const mutations = profile.mutations
+const mutations = Object.assign({
+    setAuthor(states, author) {
+        states.author = author
+    },
+    setDescription(states, description) {
+        states.description = description
+    },
+}, profile.mutations)
 
 const actions = {
 
@@ -11,6 +18,7 @@ const actions = {
 function state() {
     const theState = profile.state()
     theState.type = 'modpack'
+    theState.ediable = true
     theState.author = ''
     theState.description = ''
     theState.url = ''
