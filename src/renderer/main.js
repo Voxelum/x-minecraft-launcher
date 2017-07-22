@@ -1,11 +1,13 @@
 import Vue from 'vue';
+import MuseUI from 'muse-ui';
+import 'muse-ui/dist/muse-ui.css'
 
 import App from './App.vue'
 import store from './store'
 import launcher from './launcher'
 import i18n from './i18n';
 
-
+Vue.use(MuseUI);
 if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'))
 }
