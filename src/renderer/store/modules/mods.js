@@ -3,8 +3,13 @@ import mod from './models/mod'
 
 const obj = Object.assign({}, multiSelect)
 
-obj.mutations.create = function(state, name) {
-    
+obj.actions = {
+    import(context, payload) {
+        return context.dispatch('query', { service: 'mod', action: 'import', payload });
+    },
+    export(context, payload) {
+        return context.dispatch('query', { service: 'mod', action: 'export', payload });
+    },
 }
 
 export default obj

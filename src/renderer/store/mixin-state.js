@@ -1,7 +1,3 @@
-import {
-    Store,
-} from 'vuex'
-
 export default (template, option) => {
     let state = template.state
     if (typeof state === 'function') {
