@@ -1,13 +1,7 @@
 
 export interface ModuleIO {
-    load?: (context: ModuleIO.Context) => Promise<any>;
-    save?: (context: ModuleIO.Context, state: any) => Promise<any>;
-}
-
-export namespace ModuleIO {
-    export interface Context {
-        getPath(...paths: string[]): string;
-    }
+    load?: () => Promise<any>;
+    save?: (mutation: string, state: any, payload: any) => Promise<any>;
 }
 
 declare const ios: { [moduleId: string]: ModuleIO }

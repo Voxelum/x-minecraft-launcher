@@ -45,7 +45,7 @@ const actions = {
         return launcher.query('auth', 'login', payload).then((result) => {
             context.commit('record', {
                 auth: result,
-                account: payload[0],
+                account: payload.account,
             })
             return result
         });

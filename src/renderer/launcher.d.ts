@@ -11,7 +11,7 @@ export interface RemoteLauncher {
     /**
      * Update a module's state to server. Server will save this
      */
-    update(module: string, state: any): Promise<any>;
+    update(module: string, mutation: string, state: any): Promise<any>;
 }
 
 declare const remote: RemoteLauncher
