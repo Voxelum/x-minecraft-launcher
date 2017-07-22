@@ -1,8 +1,8 @@
 import Vue from 'vue';
-import App from './App'
+
+import App from './App.vue'
 import store from './store'
 import launcher from './launcher'
-import Vuetify from 'vuetify';
 import i18n from './i18n';
 
 
@@ -10,18 +10,13 @@ if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'))
 }
 Vue.config.productionTip = false
-let v 
+let v
 launcher.fetchAll().then((modules) => {
-    console.log('moduleFetched')
     for (const id in modules) {
         if (modules.hasOwnProperty(id)) {
-            const m = modules[id];
-            console.log(m)
-            // update vuex store instance by:
-            // operate  v.$store.state?
+            v.$store.commit(`${id}/$reload`, modules[id])
         }
     }
-    console.log(v.$store.state)
 }, (err) => {
     console.error(err)
 })
@@ -29,7 +24,7 @@ launcher.fetchAll().then((modules) => {
 // TODO load initialize all modules by call main-process
 
 /* eslint-disable no-new */
-Vue.use(Vuetify);
+// Vue.use(Vuetify);
 v = new Vue({
     components: { App },
     store,
