@@ -1,8 +1,8 @@
 import uuid from 'uuid'
+import mkdirp from 'mkdirp'
 import {
     ServerInfo,
 } from 'ts-minecraft'
-import utils from 'ts-minecraft/dist/src/string_utils'
 
 import launcher from '../launcher'
 
@@ -61,7 +61,12 @@ export default {
                     if (err) reject(err);
                     else resolve(files);
                 });
-            } else resolve(utils.DIR(profilesRoot).then(() => []))
+            } else {
+                mkdirp(profilesRoot, (err) => {
+                    if (err) reject(err)
+                    else resolve()
+                }).then(() => [])
+            }
         }).then((files) => {
             if (files.length === 0) return [];
             const tasks = [];
@@ -83,6 +88,9 @@ export default {
             .then(result => result[0].concat(result[1]));
     },
     save(mutation, state, payload) {
+        if (mutation === 'profiles/add') {
 
+        }
+        console.log(mutation)
     },
 }
