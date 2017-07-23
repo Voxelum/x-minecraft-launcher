@@ -5,6 +5,12 @@ export default (store) => {
         const type = mutation.type
         if (type.endsWith('$reload')) return
         const moduleId = type.substring(0, type.indexOf('/'))
-        launcher.update(moduleId, mutation, state[moduleId])
+        store.dispatch(`${moduleId}/save`, { mutation: type }).then(() => {
+            console.log(`module ${moduleId} saved`);
+        },
+            (err) => {
+                console.warn(`module ${moduleId} saving occured an error:`)
+                console.warn(err)
+            });
     });
 }

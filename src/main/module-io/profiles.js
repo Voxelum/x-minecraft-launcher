@@ -88,9 +88,9 @@ export default {
             .then(result => result[0].concat(result[1]));
     },
     save(mutation, state, payload) {
-        if (mutation === 'profiles/add') {
+        // if (mutation === 'profiles/add') {
 
-        }
+        // }
         console.log(mutation)
     },
 }

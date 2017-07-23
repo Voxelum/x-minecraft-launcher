@@ -12,7 +12,10 @@ const versionProviders = new Map()
 // import semver from 'semver'
 
 export default {
-    initialize() { },
+    initialize() {
+        versionProviders.set('minecraft', (versionmeta) => {
+        })
+    },
     proxy: {
         register(id, versionProvider) {
             versionProviders.set(id, versionProvider)
@@ -32,6 +35,10 @@ export default {
                     }
                 }
             }
+        },
+        refresh(updateTime) {
+            console.log('refresh!')
+            return VersionMetaList.update({ date: updateTime })
         },
         parse(version) {
 
