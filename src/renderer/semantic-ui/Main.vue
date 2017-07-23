@@ -41,7 +41,7 @@
                     <div class="ui link cards">
                         <profile-card class="profile" v-for="id in keys" :key="id" :id="id" :source='getByKey(id)' @select="selectProfile"></profile-card>
                     </div>
-                    <button id="addElement" class="ui icon right floated button" @click="createProfile({type:'modpack', option:{author:playerName}})">
+                    <button id="addElement" class="ui icon right floated circlar button" @click="oncreate">
                         <i class="plus icon"></i>
                     </button>
                 </div>
@@ -67,6 +67,7 @@ import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 export default {
     computed: {
         selecting() {
+            console.log(`compute selecting ${this.selectProfileID}`)
             return this.selectProfileID != undefined && this.selectProfileID != '' && this.selectProfileID != null
         },
         ...mapGetters('profiles', {
@@ -107,6 +108,11 @@ export default {
         onlogined() {
             this.$nextTick(() => {
                 $('#login').modal('hide')
+            })
+        },
+        oncreate(event) {
+            this.createProfile({ type: 'modpack', option: { author: this.playerName } }).then(id => {
+                this.selectProfile(id)
             })
         },
     },

@@ -1,5 +1,6 @@
 <template>
     <div class="ui card" v-bind:class="{color}" @click="onclick">
+        <p class="ui top attached label">{{$t(this.source.type)}}</p>
         <div class="image">
             <img :src="this.source.image">
         </div>
@@ -26,7 +27,7 @@
 <script>
 
 export default {
-    name:'profile-card',
+    name: 'profile-card',
     props: ['color', 'source', 'id'],
     methods: {
         onclick(e) {
