@@ -21,7 +21,7 @@ const mutations = {
         states.name = name
     },
     setVersion(states, version) {
-        states.versoin = version
+        states.version = version
     },
     putAll(states, option) {
         for (const key in option) {

@@ -168,6 +168,7 @@ export default {
         }
     },
     mounted() {
+        this.refresh()
         this.$nextTick(() => {
             $('.menu .item').tab()
             $('.dropdown').dropdown()

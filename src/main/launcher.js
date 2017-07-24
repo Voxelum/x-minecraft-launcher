@@ -5,7 +5,6 @@ import {
 } from 'electron'
 import * as fs from 'fs'
 
-import modules from './module-io'
 import services from './services'
 
 const paths = require('path')

@@ -6,10 +6,10 @@ export default (store) => {
         if (type.endsWith('$reload')) return
         const moduleId = type.substring(0, type.indexOf('/'))
         store.dispatch(`${moduleId}/save`, { mutation: type }).then(() => {
-            console.log(`module ${moduleId} saved`);
+            console.log(`Module [${moduleId}] saved`);
         },
             (err) => {
-                console.warn(`module ${moduleId} saving occured an error:`)
+                console.warn(`Module [${moduleId}] saving occured an error:`)
                 console.warn(err)
             });
     });
