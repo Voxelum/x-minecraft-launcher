@@ -16,6 +16,10 @@ if (!devMod) {
     global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
+ipcMain.on('ping', (event) => {
+    event.sender.send('pong')
+})
+
 let mainWindow
 const winURL = process.env.NODE_ENV === 'development' ?
     'http://localhost:9080' :
@@ -56,6 +60,7 @@ app.on('activate', () => {
     }
 })
 
+
 const paths = require('path')
 
 function _buildTree() {
@@ -94,6 +99,8 @@ for (const key in services) {
         }
     }
 }
+
+
 
 // (function () {
 //     const promises = [];

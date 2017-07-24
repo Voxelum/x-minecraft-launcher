@@ -21,6 +21,7 @@ const store = new Vuex.Store({
     plugins,
 });
 
+
 (() => {
     console.log('start loading modules')
     console.log(store)

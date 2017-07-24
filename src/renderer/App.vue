@@ -14,6 +14,10 @@ export default {
 </script>
 
 <style>
+ #app {
+   height: 780px; 
+} 
+
 .noselect {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
