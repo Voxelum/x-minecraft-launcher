@@ -50,8 +50,6 @@ export default {
                 }, { root: true })]).then(promise => promise[0].concat(promise[1]))
         },
         save(context, payload) {
-            console.log('save profile')
-            console.log(payload)
         },
         create(context, {
             type,
