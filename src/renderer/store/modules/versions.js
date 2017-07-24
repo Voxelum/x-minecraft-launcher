@@ -51,6 +51,8 @@ export default {
         refresh(context, payload) {
             return context.dispatch('query', { service: 'versions', action: 'refresh', payload: context.state.updateTime }, { root: true })
                 .then((remoteVersionList) => {
+                    console.log('refresh version')
+                    console.log(remoteVersionList)
                     context.commit('update', remoteVersionList)
                 })
         },
