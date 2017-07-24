@@ -1,10 +1,18 @@
-import { Store } from 'vuex'
-import multiSelect from './models/multi-select'
+import repository from './models/repository'
 
-const obj = Object.assign({}, multiSelect)
-
-obj.mutations.create = function(state, name) {
-    
+export default {
+    state() {
+        const state = repository.state()
+        state.root = 'resourcepacks'
+        return state
+    },
+    getters: repository.getters,
+    mutation: repository.repository,
+    actions: Object.assign({
+        save(context, payload) {
+            const { mutation } = payload;
+            context.dispatch('')
+        },
+        load() { },
+    }, repository.actions),
 }
-
-export default obj

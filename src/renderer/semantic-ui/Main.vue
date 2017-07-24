@@ -1,10 +1,10 @@
 <template>
-    <div class="ui celled grid">
-        <div class="black row moveable">
-            <div class="black four wide middle aligned center aligned column">
-                <h2 class="inverted ui header">
+    <div class="ui celled grid" >
+        <div class="black row">
+            <div class="four wide center aligned column">
+                <h1 class="inverted ui header">
                     ILauncher
-                </h2>
+                </h1>
             </div>
             <div class="ten wide column">
                 <div class="ui breadcrumb">
