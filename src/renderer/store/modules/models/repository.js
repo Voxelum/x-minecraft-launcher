@@ -9,17 +9,17 @@ export class Resource {
         this.type = type;
     }
 }
-function _hash(buff) {
+function $hash(buff) {
     return crypto.createHash('sha1').update(buff).digest('hex').toString('utf-8');
 }
-function _load(filePath) {
+function $load(filePath) {
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, (err, data) => {
             if (err) reject(err);
             else resolve({ name: path.basename(filePath), data, type: path.extname(filePath) });
         })
     }).then(({ name, data, type }) => {
-        const resource = new Resource(_hash(data), name, type);
+        const resource = new Resource($hash(data), name, type);
         return { filePath, data, resource };
     });
 }
@@ -32,28 +32,24 @@ export default {
     },
     getters: {
         all: state => state.store,
-        get: (state, hash) => state.get(hash),
     },
     mutations: {
-
+        set(state, payload) {
+            state.store.set(payload.key, payload.value)
+        },
+        delete(state, payload) {
+            state.store.delete(payload)
+        },
     },
     actions: {
         import(context, payload) {
             const fpath = payload
-            return _load(fpath).then(({ filePath, data, resource }) => {
+            return $load(fpath).then(({ filePath, data, resource }) => {
                 if (!context.state.store.has(resource.hash)) {
-                    context.state.store.set(resource.hash, resource);
-                    return new Promise((resolve, reject) => {
-                        const targetPath = path.join(context.state.root, `${resource.hash}.${resource.type}`);
-                        if (!fs.existsSync(targetPath)) {
-                            fs.writeFile(targetPath, data, { mod: 'w' }, (err) => {
-                                if (err) reject(err);
-                                else resolve(resource);
-                            })
-                        } else {
-                            resolve(resource)
-                        }
-                    });
+                    context.commit('put', { key: resource.hash, value: resource })
+                    return context.dispatch('writeFile',
+                        { path: path.join(context.state.root, `${resource.hash}.${resource.type}`) },
+                        { root: true }).then(() => resource)
                 }
                 return resource;
             })
@@ -61,18 +57,12 @@ export default {
         export(context, payload) {
             const { resource, targetDirectory } = payload
             return new Promise((resolve, reject) => {
-                let res
                 if (typeof resource === 'string') {
                     if (context.state.store.has(resource)) {
                         resolve(context.state.store.get(resource))
-                    } else {
-                        reject(new Error('no such resource in cache!'))
-                    }
-                } else if (resource instanceof Resource) {
-                    resolve(resource)
-                } else {
-                    reject(new Error('illegal argument!'));
-                }
+                    } else reject(new Error('no such resource in cache!'))
+                } else if (resource instanceof Resource) resolve(resource)
+                else reject(new Error('illegal argument!'));
             }).then((res) => { // TODO mkdir
                 const option = payload.option || {}
                 const targetPath = path.join(targetDirectory, option.fileName || res.fileName);
@@ -99,29 +89,16 @@ export default {
             });
         },
         refresh(context, payload) {
-            if (fs.existsSync(context.state.root)) {
-                return new Promise((resolve, reject) => {
-                    fs.readdir(context.state.root, (err, files) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(files.map(file =>
-                                _load(path.join(context.state.root, file))
-                                    .then((resource) => {
-                                        context.state.store.set(resource.hash, resource);
-                                        return resource;
-                                    }),
-                            ));
-                        }
-                    })
-                }).then(result => Promise.all(result));
-            }
-            return new Promise((resolve, reject) => {
-                fs.mkdir(context.state.root, (err) => {
-                    if (err) reject(err)
-                    else resolve([])
-                })
-            });
+            return context.dispatch('readFolder', { path: this.context.state.root }, { root: true })
+                .then(files => Promise.all(
+                    files.map(file => context.dispatch('readFile', {
+                        path: `${this.context.state.root}/${file}`,
+                        fallback: undefined,
+                    }).then((buf) => {
+                        if (!buf) return;
+                        const resource = new Resource($hash(buf), file, path.extname(file))
+                        context.commit('put', { key: resource.hash, value: resource })
+                    }))));
         },
     },
 }

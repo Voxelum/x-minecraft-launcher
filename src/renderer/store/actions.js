@@ -45,10 +45,11 @@ export default {
             })
         });
     },
-    readFile(context, { path, fallback, encoding }) {
+    readFile(context, { path, fallback, encoding, onread }) {
         return new Promise((resolve, reject) => {
             path = paths.join(rootPath, path)
             if (fs.existsSync(path)) {
+                if (onread) onread(path)
                 fs.readFile(path, (err, data) => {
                     if (err) reject(err)
                     else if (encoding) {

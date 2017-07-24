@@ -4,8 +4,8 @@
             <i class="plug icon"></i>
             <div class="content">
                 {{selectingVersion}}
-                <div class="sub header">{{selectedMeta.releaseDate}}</div>
-                <div class="sub header">{{selectedMeta.type}}</div>
+                <div class="sub header">{{selectingMeta.releaseTime}}</div>
+                <div class="sub header">{{selectingMeta.type}}</div>
             </div>
         </h1>
         <div class="ui attached segment " :class="{disabled: metas.length==0}" style='height:500px;overflow-x: hidden;'>
@@ -32,8 +32,8 @@
             </table>
         </div>
         <!-- <div class="ui   bottom attached footer center aligned segment">
-                        <div class="ui  fluid button">Save</div>
-                    </div> -->
+                                                            <div class="ui  fluid button">Save</div>
+                                                        </div> -->
     
     </div>
 </template>
@@ -42,16 +42,22 @@ import { mapGetters, mapState } from 'vuex'
 export default {
     data() {
         return {
-            selectedMeta: '',
             filterRelease: true,
         }
     },
     computed: {
         ...mapGetters('profiles', ['selected', 'selectedKey']),
         ...mapState('versions', ['minecraft']),
+        metaMap() {
+            const map = new Map()
+            for (const v of this.minecraft.versions)
+                map.set(v.id, v);
+            return map;
+        },
         selectingVersion() {
             return this.selected.version
         },
+        selectingMeta() { return this.metaMap.get(this.selectingVersion) || {}; },
         metas() {
             if (!this.filterRelease)
                 return this.minecraft.versions
@@ -70,22 +76,43 @@ export default {
 ::-webkit-scrollbar {
     width: 8px;
 }
- 
+
+
+
+
+
+
+
+
+
+
 /* Track */
+
 ::-webkit-scrollbar-track {
     /* -webkit-border-radius: 10px; */
     /* border-radius: 10px; */
-    background: rgba(0,0,0,0.1); 
+    background: rgba(0, 0, 0, 0.1);
 }
- 
+
+
+
+
+
+
+
+
+
+
 /* Handle */
+
 ::-webkit-scrollbar-thumb {
     -webkit-border-radius: 10px;
     border-radius: 10px;
-    background: rgba(0,0,0,0.25); 
+    background: rgba(0, 0, 0, 0.25);
 }
+
 ::-webkit-scrollbar-thumb:window-inactive {
-	background: rgba(0,0,0,0.2); 
+    background: rgba(0, 0, 0, 0.2);
 }
 </style>
 

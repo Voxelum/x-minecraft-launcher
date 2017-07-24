@@ -1,16 +1,16 @@
 <template>
     <div class="ui grid">
-        <div class="five wide column">
+        <div class="six wide center aligned column">
             <h1 class="ui header">
                 {{source.name}}
                 <h1 class="ui sub header">
                     {{source.author}}
                 </h1>
             </h1>
-            <div style="min-height:300px"></div>
-            <button class="ui large button">Launch</button>
+            <div style="height:80%"></div>
+            <button class="ui huge button">Launch</button>
         </div>
-        <div class="eleven wide column">
+        <div class="ten wide column">
             <div class="ui very basic menu">
                 <a class="item active" data-tab="summery">
                     {{$t('summery')}}
@@ -107,9 +107,7 @@
                 <version-table-view></version-table-view>
             </div>
             <div class="ui tab segment" data-tab="resourcepacks">
-                <p class="ui text">
-                    AAA
-                </p>
+                <resource-pack-list></resource-pack-list>
             </div>
             <div class="ui tab segment" data-tab="mods">
                 <p class="ui text">
@@ -128,6 +126,7 @@
 import { mapGetters, mapActions, mapState } from 'vuex'
 import VersionDropdown from './VersionDropdown'
 import VersionTableView from './VersionTableView'
+import ResourcePackList from './ResourcePackList'
 export default {
     data() {
         return {
@@ -174,7 +173,7 @@ export default {
             $('.dropdown').dropdown()
         })
     },
-    components: { VersionDropdown, VersionTableView },
+    components: { VersionDropdown, VersionTableView,ResourcePackList },
 }
 </script>
 
