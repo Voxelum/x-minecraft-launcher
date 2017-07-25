@@ -1,6 +1,3 @@
-import { StoreOptions } from 'vuex'
-export interface Store {
-    [moduleId: string]: StoreOptions<any>
-}
-declare const store: Store
-export default store
+import vuex from 'vuex'
+// declare const store: vuex.Store<any>
+export default function (): Promise<vuex.Store<any>>
