@@ -12,7 +12,7 @@ import MaterialUi from './material-ui/Main'
 
 export default {
     components: { 
-        ui: MaterialUi
+        ui: SemanticUi
     }
 }
 </script>
