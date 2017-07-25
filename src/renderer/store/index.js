@@ -21,12 +21,7 @@ const store = new Vuex.Store({
     plugins,
 });
 
-<<<<<<< HEAD
-
-(() => {
-=======
 export const init = () => {
->>>>>>> 2cb24596ff40ff78025f0194067407fc3b5b61d5
     console.log('start loading modules')
     const keys = Object.keys(modules)
     const promises = []
