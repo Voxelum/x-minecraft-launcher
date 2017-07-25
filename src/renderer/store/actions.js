@@ -6,22 +6,30 @@ import { NBT } from 'ts-minecraft'
 import launcher from '../launcher'
 
 const rootPath = paths.join(remote.app.getPath('appData'), '.launcher')
+function dir(path) {
+    return new Promise((resolve1, reject1) => {
+        mkdirp(path, (err) => {
+            if (err) reject1(err)
+            else resolve1()
+        })
+    });
+}
+function write(path, data) {
+    console.log(`writeFile to ${path}`)
+    return new Promise((resolve, reject) => {
+        fs.writeFile(path, data, (err) => {
+            if (err) reject(err)
+            else resolve()
+        })
+    });
+}
 export default {
-    // query: launcher.query,
     query(context, payload) {
         return launcher.query(payload.service, payload.action, payload.payload)
     },
-    // loadAll(context, payload) {
-    //     const keys = Object.keys(context.rootState)
-    //     for (const key of keys) {
-    //         const mod = context.rootState[key]
-    //         if (mod.load) {
-
-    //         }
-    //     }
-    // },
     readFolder(context, { path }) {
         path = paths.join(rootPath, path);
+        console.log(`Read folder ${path}`)
         return new Promise((resolve, reject) => {
             if (!fs.existsSync(path)) {
                 mkdirp(path, (err) => {
@@ -37,21 +45,23 @@ export default {
         }));
     },
     writeFile(context, { path, data }) {
-        return new Promise((resolve, reject) => {
-            path = paths.resolve(rootPath, path)
-            fs.writeFile(path, data, (err) => {
-                if (err) reject(err)
-                else resolve()
-            })
-        });
+        path = paths.resolve(rootPath, path)
+        if (typeof data === 'object' && !(data instanceof Buffer)) data = JSON.stringify(data)
+        const parent = paths.dirname(path)
+        return write(path, data)
     },
     readFile(context, { path, fallback, encoding }) {
         return new Promise((resolve, reject) => {
             path = paths.join(rootPath, path)
             if (fs.existsSync(path)) {
                 fs.readFile(path, (err, data) => {
-                    if (err) reject(err)
-                    else if (encoding) {
+                    if (err) {
+                        if (fallback) {
+                            if (typeof fallback === 'object' && !(fallback instanceof Buffer)) fallback = JSON.stringify(fallback)
+                            resolve(write(path, fallback))
+                        }
+                        reject(err)
+                    } else if (encoding) {
                         if (encoding === 'string') resolve(data.toString())
                         else if (encoding === 'json') resolve(JSON.parse(data.toString()))
                         else if (encoding === 'nbt') resolve(NBT.read(data).root)
