@@ -1,14 +1,18 @@
 <template>
     <div class="ui grid">
         <div class="six wide center aligned column">
-            <h1 class="ui header">
-                {{source.name}}
-                <h1 class="ui sub header">
-                    {{source.author}}
+            <div class="five wide row">
+                <h1 class="ui header">
+                    {{source.name}}
+                    <h1 class="ui sub header">
+                        {{source.author}}
+                    </h1>
                 </h1>
-            </h1>
-            <div style="height:80%"></div>
-            <button class="ui huge button">Launch</button>
+            </div>
+            <div class="row">
+                <button class="ui huge button">Launch</button>
+            </div>
+    
         </div>
         <div class="ten wide column">
             <div class="ui very basic menu">
@@ -29,44 +33,6 @@
                 </a>
             </div>
             <div class="ui active tab segment" data-tab="summery">
-                <!-- <div class="ui grid">
-                                                <div class="three wide column">
-                                                    <div class="row">
-                                                        <div class="ui label">
-                                                            Name
-                                                        </div>
-                                                    </div>
-                                
-                                                    <div class="row">
-                                                        <div class="ui label">
-                                                            Author
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="ui label">
-                                                            Description
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="four wide column">
-                                                    <div class="row">
-                                                        <div class="ui disabled transparent input">
-                                                            <input type="text" name="Name" :placeholder="id" :value="source.name" @input="modify">
-                                                        </div>
-                                                    </div>
-                                
-                                                    <div class="row">
-                                                        <div class="ui disabled transparent input">
-                                                            <input type="text" name="Author" placeholder="Unknown author..." :value="source.author" @input="modify">
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="ui disabled transparent input">
-                                                            <input type="text" name="Description" placeholder="No description yet..." :value="source.description" @input="modify">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div> -->
                 <div class="ui list">
                     <div class="item ">
                         <div class="ui label">
@@ -107,14 +73,14 @@
                 <version-table-view></version-table-view>
             </div>
             <div class="ui tab segment" data-tab="resourcepacks">
-                <resource-pack-list></resource-pack-list>
+                <resource-pack-list style="height:400px"></resource-pack-list>
             </div>
-            <div class="ui tab segment" data-tab="mods">
+            <div class="ui tab segment" style="height:400px" data-tab="mods">
                 <p class="ui text">
                     BBB
                 </p>
             </div>
-            <div class="ui tab segment" data-tab="settings">
+            <div class="ui tab segment" style="height:400px" data-tab="settings">
     
             </div>
     
@@ -173,7 +139,7 @@ export default {
             $('.dropdown').dropdown()
         })
     },
-    components: { VersionDropdown, VersionTableView,ResourcePackList },
+    components: { VersionDropdown, VersionTableView, ResourcePackList },
 }
 </script>
 

@@ -1,14 +1,14 @@
 <template>
     <div>
-        <h1 class="ui  top attached header">
+        <h3 class="ui  top attached header">
             <i class="plug icon"></i>
             <div class="content">
                 {{selectingVersion}}
                 <div class="sub header">{{selectingMeta.releaseTime}}</div>
                 <div class="sub header">{{selectingMeta.type}}</div>
             </div>
-        </h1>
-        <div class="ui attached segment " :class="{disabled: metas.length==0}" style='height:500px;overflow-x: hidden;'>
+        </h3>
+        <div class="ui attached segment " :class="{disabled: metas.length==0}" style='height:400px;overflow-x: hidden;'>
             <div v-if="metas.length==0" class="ui active dimmer">
                 <div class="ui indeterminate text loader">Preparing Files</div>
             </div>
@@ -21,7 +21,7 @@
                         </td>
                         <td>{{meta.releaseTime}}</td>
                         <td>{{meta.time}}</td>
-                        <td class="selectable" data-tooltip="Download this version" data-position="left center">
+                        <td class="selectable" data-tooltip="Download this version" data-position="left center" @click="download">
                             <div style="padding:0 10px 0 10px">
                                 <i class="download icon"></i>
                             </div>
@@ -32,8 +32,8 @@
             </table>
         </div>
         <!-- <div class="ui   bottom attached footer center aligned segment">
-                                                            <div class="ui  fluid button">Save</div>
-                                                        </div> -->
+                                                                    <div class="ui  fluid button">Save</div>
+                                                                </div> -->
     
     </div>
 </template>
@@ -66,7 +66,12 @@ export default {
     },
     methods: {
         selectVersion(event) {
-            this.$store.commit(`profiles/${this.selectedKey}/setVersion`, event.srcElement.parentNode.getAttribute('version-id'))
+            const vId = event.srcElement.parentNode.getAttribute('version-id')
+            if (vId != this.selectingVersion)
+                this.$store.commit(`profiles/${this.selectedKey}/setVersion`, event.srcElement.parentNode.getAttribute('version-id'))
+        },
+        download(event) {
+
         }
     },
     components: {}
@@ -86,6 +91,8 @@ export default {
 
 
 
+
+
 /* Track */
 
 ::-webkit-scrollbar-track {
@@ -93,6 +100,8 @@ export default {
     /* border-radius: 10px; */
     background: rgba(0, 0, 0, 0.1);
 }
+
+
 
 
 
