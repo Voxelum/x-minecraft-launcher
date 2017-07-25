@@ -6,7 +6,7 @@ export default (store) => {
         if (type.endsWith('$reload')) return
         const moduleId = type.substring(0, type.indexOf('/'))
         store.dispatch(`${moduleId}/save`, { mutation: type, object: mutation.payload }).then(() => {
-            console.log(`Module [${moduleId}] saved`);
+            console.log(`Module [${moduleId}] saved by ${type}`);
         },
             (err) => {
                 console.warn(`Module [${moduleId}] saving occured an error:`)
