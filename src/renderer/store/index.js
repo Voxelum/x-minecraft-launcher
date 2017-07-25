@@ -28,8 +28,8 @@ export const init = () => {
     for (const key of keys) {
         if (modules.hasOwnProperty(key)) {
             const action = `${key}/load`;
-            console.log(`Found module ${key}`)
             if (store._actions[action]) {
+                console.log(`Found action ${action}`)
                 promises.push(store.dispatch(action).then((instance) => {
                     const id = key;
                     store.commit(`${id}/$reload`, instance)
@@ -42,7 +42,10 @@ export const init = () => {
             }
         }
     }
-    return Promise.all(promises).then(() => store)
+    return Promise.all(promises).then(() => {
+        console.log('done for all promise!')
+        return store
+    })
 }
 
 
