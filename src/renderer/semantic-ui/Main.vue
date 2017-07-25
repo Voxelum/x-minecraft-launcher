@@ -1,6 +1,6 @@
 <template>
-    <div class="ui celled grid" style="margin:0">
-        <div class="black row">
+    <div class="ui celled grid segment" style="margin:0;">
+        <div class="moveable black row">
             <div class="four wide center aligned column">
                 <h1 class="inverted ui header">
                     ILauncher
@@ -9,21 +9,21 @@
             <div class="ten wide column">
                 <div class="ui breadcrumb">
                     <a class="section">
-                        <button class="ui inverted circular button" @click="unselect">Home</button>
+                        <div class="ui inverted circular button" @click="unselect" style="-webkit-app-region: no-drag">Home</div>
                     </a>
                     <span v-if="selecting">
                         <i class="right chevron inverted icon divider" style="color:white"></i>
                         <a class="section">
-                            <button class="ui inverted circular button">{{selectedProfile.name}}</button>
+                            <div class="ui inverted circular button" style="-webkit-app-region: no-drag">{{selectedProfile.name}}</div>
                         </a>
                     </span>
                 </div>
             </div>
             <div class="two wide center aligned column">
-                <button class="ui inverted circular button" @click="showLogin">{{playerName}}</button>
+                <button class="ui inverted circular button"  style="-webkit-app-region: no-drag" @click="showLogin">{{playerName}}</button>
             </div>
         </div>
-        <div class="row">
+        <div class="row" style="height:560px;">
             <div class="four wide middle aligned center aligned column">
                 <div class="ui header segment">{{playerName}}</div>
                 <!-- <skin-view width="1200" height="400"></skin-view> -->
@@ -113,6 +113,6 @@ export default {
 
 <style scoped>
 .moveable {
-    /* -webkit-app-region: drag */
+     -webkit-app-region: drag 
 }
 </style>
