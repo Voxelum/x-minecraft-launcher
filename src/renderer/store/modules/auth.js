@@ -37,7 +37,7 @@ const actions = {
         if (!mutation.endsWith('/record')) return Promise.resolve()
         const target = Object.assign({}, context.state)
         target.modes = undefined
-        return context.dispatch('writeFile', { path: 'auth.json', data: JSON.stringify(target) }, { root: true })
+        return context.dispatch('writeFile', { path: 'auth.json', data: target }, { root: true })
     },
     load(context, payload) {
         console.log('load action of auth!')
