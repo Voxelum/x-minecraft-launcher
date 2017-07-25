@@ -2,7 +2,6 @@ import fs from 'fs'
 import paths from 'path'
 import mkdirp from 'mkdirp'
 import { remote } from 'electron'
-import { NBT } from 'ts-minecraft'
 import launcher from '../launcher'
 
 const rootPath = paths.join(remote.app.getPath('appData'), '.launcher')
@@ -51,10 +50,12 @@ export default {
         return write(path, data)
     },
     readFile(context, { path, fallback, encoding }) {
+        console.log(`read file ${path}`)
         return new Promise((resolve, reject) => {
             path = paths.join(rootPath, path)
             if (fs.existsSync(path)) {
                 fs.readFile(path, (err, data) => {
+                    console.log(`read file ${path} done`)
                     if (err) {
                         if (fallback) {
                             if (typeof fallback === 'object' && !(fallback instanceof Buffer)) fallback = JSON.stringify(fallback)
@@ -64,8 +65,8 @@ export default {
                     } else if (encoding) {
                         if (encoding === 'string') resolve(data.toString())
                         else if (encoding === 'json') resolve(JSON.parse(data.toString()))
-                        else if (encoding === 'nbt') resolve(NBT.read(data).root)
-                        else if (encoding === 'nbt/compressed') resolve(NBT.read(data, true).root)
+                        // else if (encoding === 'nbt') resolve(NBT.read(data).root)
+                        // else if (encoding === 'nbt/compressed') resolve(NBT.read(data, true).root)
                         else if (typeof encoding === 'function') resolve(encoding(data))
                         else {
                             console.warn(`Unsupported encoding ${encoding}!`);

@@ -1,5 +1,4 @@
 import uuid from 'uuid'
-import { ServerInfo } from 'ts-minecraft'
 
 import mixin from '../mixin-state'
 import singleSelect from './models/single-select'
