@@ -67,6 +67,15 @@ export default {
         ])
     },
     mounted() {
+        const self = this
+        this.$nextTick(() => {
+            console.log('setup auth mode')
+            $('#authMode').dropdown({
+                onChange: (value, text, $selectedItem) => {
+                    self.$store.commit('auth/select', value)
+                }
+            })
+        })
     },
     methods: {
         doLogin(e) {

@@ -21,23 +21,37 @@ const store = new Vuex.Store({
     plugins,
 });
 
+<<<<<<< HEAD
 
 (() => {
+=======
+export const init = () => {
+>>>>>>> 2cb24596ff40ff78025f0194067407fc3b5b61d5
     console.log('start loading modules')
-    console.log(store)
     const keys = Object.keys(modules)
     const promises = []
     for (const key of keys) {
         if (modules.hasOwnProperty(key)) {
             const action = `${key}/load`;
             if (store._actions[action]) {
+                console.log(`Found action ${action}`)
                 promises.push(store.dispatch(action).then((instance) => {
-                    store.commit(`${key}/$reload`, instance)
+                    const id = key;
+                    store.commit(`${id}/$reload`, instance)
+                    console.log(`loaded module [${id}]`)
+                }, (err) => {
+                    const id = key
+                    console.error(`an error occured when we load module [${id}].`)
+                    console.error(err)
                 }))
             }
         }
     }
-    return Promise.all(promises)
-})()
+    return Promise.all(promises).then(() => {
+        console.log('done for all promise!')
+        return store
+    })
+}
 
-export default store
+
+export default init
