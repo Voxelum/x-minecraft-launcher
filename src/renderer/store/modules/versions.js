@@ -49,9 +49,17 @@ export default {
         },
         refresh(context, payload) {
             return context.dispatch('query', { service: 'versions', action: 'refresh', payload: context.state.updateTime }, { root: true })
-                .then((remoteVersionList) => {
-                    context.commit('update', remoteVersionList)
-                })
+                .then(remoteVersionList =>
+                    context.dispatch('readFolder', { path: 'versions' }, { root: true })
+                        .then((files) => {
+                            const versions = new Set(files)
+                            for (const ver of remoteVersionList.list.versions) {
+                                if (versions.has(ver.id)) ver.status = 'local'
+                                else ver.status = 'remote'
+                            }
+                            context.commit('update', remoteVersionList)
+                        }),
+            )
         },
     },
 }
