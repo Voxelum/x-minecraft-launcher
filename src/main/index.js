@@ -60,29 +60,16 @@ app.on('activate', () => {
     }
 })
 
+<<<<<<< HEAD
 
 const paths = require('path')
 
+=======
+>>>>>>> 2cb24596ff40ff78025f0194067407fc3b5b61d5
 function _buildTree() {
     // well this is future work 2333 
     // TODO toposort for module with dependencies and build tree 
 }
-
-// let _reqTreeEventHolder
-// ipcMain.once('fetchAll', (event) => {
-//     if (_reqTreeEventHolder) {
-//         console.log('IO loaded first!')
-//         console.log(_reqTreeEventHolder)
-//         event.sender.send('fetchAll', { rejected: undefined, resolved: _reqTreeEventHolder })
-//     } else {
-//         console.log('Client loaded first!')
-//         _reqTreeEventHolder = event
-//         // place holder, which means tree already required by the renderer process!
-//     }
-//     ipcMain.on('fetchAll', () => {
-//         console.log('remote force reload! implement later...')
-//     })
-// });
 
 const launcher = require('./launcher');
 const services = require('./services').default;
@@ -99,6 +86,7 @@ for (const key in services) {
         }
     }
 }
+<<<<<<< HEAD
 
 
 
@@ -130,3 +118,5 @@ for (const key in services) {
 // }).catch((e) => {
 //     console.log(e)
 // });
+=======
+>>>>>>> 2cb24596ff40ff78025f0194067407fc3b5b61d5
