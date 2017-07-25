@@ -20,9 +20,6 @@ const mutations = {
             theState.mode = mode
         }
     },
-    offline() {
-        state.mode = 'offline'
-    },
     record(theState, { // record the state history
         auth,
         account,
@@ -35,6 +32,22 @@ const mutations = {
     },
 }
 const actions = {
+    save(context, payload) {
+        const { mutation } = payload;
+        if (!mutation.endsWith('/record')) return Promise.resolve()
+        const target = Object.assign({}, context.state)
+        target.modes = undefined
+        return context.dispatch('writeFile', { path: 'auth.json', data: target }, { root: true })
+    },
+    load(context, payload) {
+        console.log('load action of auth!')
+        return context.dispatch('readFile', { path: 'auth.json', fallback: {}, encoding: 'json' }, { root: true })
+            .then(data => context.dispatch('query', { service: 'auth', action: 'modes' }, { root: true }).then(modes => [modes, data]))
+            .then(([modes, data]) => {
+                data.modes = modes
+                return data
+            })
+    },
     login(context, payload) {
         return context.dispatch('query', { service: 'auth', action: 'login', payload }, { root: true })
             .then((result) => {

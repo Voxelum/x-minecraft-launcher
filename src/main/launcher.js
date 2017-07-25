@@ -5,7 +5,6 @@ import {
 } from 'electron'
 import * as fs from 'fs'
 
-import modules from './module-io'
 import services from './services'
 
 const paths = require('path')
@@ -23,17 +22,18 @@ ipcMain.on('query', (event, payload) => {
     const serInst = services[service];
     if (!serInst) {
         event.sender.send(id, {
-            error: `No such service [${service}]`,
+            rejected: `No such service [${service}]`,
         })
         return;
     }
     const actionInst = serInst.actions[action];
     if (!actionInst) {
         event.sender.send(id, {
-            error: `No such action [${action}] in service [${service}]`,
+            rejected: `No such action [${action}] in service [${service}]`,
         });
         return;
     }
+    console.log(`execute query ${service}/${action}`)
     const result = actionInst(args);
     if (result instanceof Promise) {
         result.then((resolved) => {
@@ -55,14 +55,9 @@ ipcMain.on('query', (event, payload) => {
         });
     }
 })
-ipcMain.on('update', (event, payload) => {
-    const { id, mutation, state } = payload;
-    const mo = modules[id]
-    if (!mo) {
-        console.war(`Unknown module ${id}!`)
-        return
-    }
-    mo.save(mutation.type, state, mutation.payload)
+ipcMain.on('placeholder', (event, payload) => {
+    const { tree } = payload;
+    event.sender.send();
 })
 const rootPath = paths.join(app.getPath('appData'), '.launcher')
 fs.mkdir(rootPath, (err) => { })

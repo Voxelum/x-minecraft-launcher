@@ -14,11 +14,39 @@ for (const key in modules) {
     }
 }
 
-console.log(modules)
-
-export default new Vuex.Store({
+const store = new Vuex.Store({
     modules,
     actions,
     strict: process.env.NODE_ENV !== 'production',
     plugins,
-})
+});
+
+export const init = () => {
+    console.log('start loading modules')
+    const keys = Object.keys(modules)
+    const promises = []
+    for (const key of keys) {
+        if (modules.hasOwnProperty(key)) {
+            const action = `${key}/load`;
+            if (store._actions[action]) {
+                console.log(`Found action ${action}`)
+                promises.push(store.dispatch(action).then((instance) => {
+                    const id = key;
+                    store.commit(`${id}/$reload`, instance)
+                    console.log(`loaded module [${id}]`)
+                }, (err) => {
+                    const id = key
+                    console.error(`an error occured when we load module [${id}].`)
+                    console.error(err)
+                }))
+            }
+        }
+    }
+    return Promise.all(promises).then(() => {
+        console.log('done for all promise!')
+        return store
+    })
+}
+
+
+export default init
