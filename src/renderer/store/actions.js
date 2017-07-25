@@ -49,12 +49,7 @@ export default {
         const parent = paths.dirname(path)
         return write(path, data)
     },
-<<<<<<< HEAD
     readFile(context, { path, fallback, encoding, onread }) {
-=======
-    readFile(context, { path, fallback, encoding }) {
-        console.log(`read file ${path}`)
->>>>>>> 2cb24596ff40ff78025f0194067407fc3b5b61d5
         return new Promise((resolve, reject) => {
             path = paths.join(rootPath, path)
             if (fs.existsSync(path)) {

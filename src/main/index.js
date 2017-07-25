@@ -60,12 +60,6 @@ app.on('activate', () => {
     }
 })
 
-<<<<<<< HEAD
-
-const paths = require('path')
-
-=======
->>>>>>> 2cb24596ff40ff78025f0194067407fc3b5b61d5
 function _buildTree() {
     // well this is future work 2333 
     // TODO toposort for module with dependencies and build tree 
@@ -86,37 +80,3 @@ for (const key in services) {
         }
     }
 }
-<<<<<<< HEAD
-
-
-
-// (function () {
-//     const promises = [];
-//     for (const key in modules) {
-//         if (modules.hasOwnProperty(key)) {
-//             const m = modules[key];
-//             console.log(`Start to load module ${key}`)
-//             promises.push(m.load(launcher).then(mod => ({
-//                 id: key,
-//                 module: mod,
-//             })).catch((err) => { console.log(`Fail to load module [${key}], ${err}.`) }));
-//         }
-//     }
-//     return Promise.all(promises);
-// })().then((loaded) => {
-//     console.log('Loaded module');
-//     const tree = {};
-//     for (const m of loaded) {
-//         tree[m.id] = m.module;
-//     }
-//     if (_reqTreeEventHolder) {
-//         _reqTreeEventHolder.sender.send('fetchAll', { rejected: undefined, resolved: tree });
-//     } else {
-//         _reqTreeEventHolder = tree;
-//     }
-//     return tree
-// }).catch((e) => {
-//     console.log(e)
-// });
-=======
->>>>>>> 2cb24596ff40ff78025f0194067407fc3b5b61d5
