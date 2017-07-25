@@ -8,5 +8,17 @@
     "mojang.password": "Password",
     "login": "Login",
     "signup.description": "New to us?",
-    "signup": "Sign Up"
+    "signup": "Sign Up",
+    "modpack": "Modpack",
+    "server": "Server",
+    "summery": "Summery",
+    "mods": "Mods",
+    "resourcepacks": "Resource Packs",
+    "settings": "Settings",
+    "versions": "Versions",
+    "launch": "Launch",
+    "version.status": "Status",
+    "version.date": "Updated Date",
+    "version": "Version",
+    "version.releaseDate": "Release Date"
 }

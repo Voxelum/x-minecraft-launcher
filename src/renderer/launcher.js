@@ -23,6 +23,14 @@ function privateLine(channel, payload, decode) {
         })
     });
 }
+(() => {
+    ipcRenderer.send('ping');
+    const first = Date.now()
+    ipcRenderer.once('pong', () => {
+        const time = Date.now() - first
+        console.log(`spend ${time} ms`)
+    })
+})();
 export default {
     query(service, action, args) {
         return new Promise((resolve, reject) => {
@@ -58,6 +66,6 @@ export default {
         });
     },
     reloadModule(moduleId, state) {
-        
+
     },
 }

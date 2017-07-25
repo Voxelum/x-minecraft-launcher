@@ -1,10 +1,10 @@
 <template>
-    <div class="ui celled grid">
-        <div class="black row moveable">
-            <div class="black four wide middle aligned center aligned column">
-                <h2 class="inverted ui header">
+    <div class="ui celled grid" >
+        <div class="black row">
+            <div class="four wide center aligned column">
+                <h1 class="inverted ui header">
                     ILauncher
-                </h2>
+                </h1>
             </div>
             <div class="ten wide column">
                 <div class="ui breadcrumb">
@@ -41,7 +41,7 @@
                     <div class="ui link cards">
                         <profile-card class="profile" v-for="id in keys" :key="id" :id="id" :source='getByKey(id)' @select="selectProfile"></profile-card>
                     </div>
-                    <button id="addElement" class="ui icon right floated button" @click="createProfile({type:'modpack', option:{author:playerName}})">
+                    <button id="addElement" class="ui icon right floated circlar button" @click="oncreate">
                         <i class="plus icon"></i>
                     </button>
                 </div>
@@ -81,15 +81,7 @@ export default {
         },
     },
     mounted(e) {
-        const self = this
-        this.$nextTick(() => {
-            $('#authMode').dropdown({
-                onChange: (value, text, $selectedItem) => {
-                    self.$store.commit('auth/select', value)
-                }
-            })
-        })
-        this.showLogin()
+        if (this.playerName === 'Steve') this.showLogin()
     },
     methods: {
         ...mapActions('profiles', {
@@ -107,6 +99,11 @@ export default {
         onlogined() {
             this.$nextTick(() => {
                 $('#login').modal('hide')
+            })
+        },
+        oncreate(event) {
+            this.createProfile({ type: 'modpack', option: { author: this.playerName } }).then(id => {
+                this.selectProfile(id)
             })
         },
     },
