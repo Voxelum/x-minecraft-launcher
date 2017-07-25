@@ -1,5 +1,5 @@
 <template>
-    <div class="ui celled grid" >
+    <div class="ui celled grid" style="margin:0">
         <div class="black row">
             <div class="four wide center aligned column">
                 <h1 class="inverted ui header">
