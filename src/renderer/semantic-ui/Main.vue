@@ -67,7 +67,6 @@ import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 export default {
     computed: {
         selecting() {
-            console.log(`compute selecting ${this.selectProfileID}`)
             return this.selectProfileID != undefined && this.selectProfileID != '' && this.selectProfileID != null
         },
         ...mapGetters('profiles', {
@@ -82,15 +81,7 @@ export default {
         },
     },
     mounted(e) {
-        const self = this
-        this.$nextTick(() => {
-            $('#authMode').dropdown({
-                onChange: (value, text, $selectedItem) => {
-                    self.$store.commit('auth/select', value)
-                }
-            })
-        })
-        this.showLogin()
+        if (this.playerName === 'Steve') this.showLogin()
     },
     methods: {
         ...mapActions('profiles', {

@@ -11,11 +11,12 @@ if (!process.env.IS_WEB) {
 
 Vue.config.productionTip = false
 
-/* eslint-disable no-new */
-// Vue.use(Vuetify);
-new Vue({
-    components: { App },
-    store,
-    i18n,
-    template: '<App/>',
-}).$mount('#app')
+store().then(s =>
+    new Vue({
+        components: { App },
+        store: s,
+        i18n,
+        template: '<App/>',
+    }).$mount('#app'),
+)
+
