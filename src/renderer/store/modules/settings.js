@@ -4,6 +4,7 @@ import { remote } from 'electron'
 
 
 export default {
+    namespaced: true,
     state() {
         return {
             rootPath: paths.join(remote.app.getPath('appData'), '.launcher'),

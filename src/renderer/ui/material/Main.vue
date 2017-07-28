@@ -69,5 +69,5 @@ html {
 </style>
 
 <style lang="stylus">
-    @import '../assets/main'
+    @import '../../assets/main'
 </style>
