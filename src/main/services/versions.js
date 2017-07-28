@@ -4,6 +4,7 @@ const fs = require('fs')
 const {
     VersionMetaList,
     Version,
+    VersionDownloader,
     VersionChecker,
     MinecraftLocation,
 } = require('ts-minecraft')
@@ -43,7 +44,12 @@ export default {
         parse(version) {
 
         },
-        download(version) {
+        download({ meta, location }) {
+            console.log(meta)
+            console.log(location)
+            return VersionDownloader.downloadVersion('client', meta, new MinecraftLocation(location))
+        },
+        check(version) {
 
         },
     },
