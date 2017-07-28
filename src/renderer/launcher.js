@@ -28,7 +28,7 @@ function privateLine(channel, payload, decode) {
     const first = Date.now()
     ipcRenderer.once('pong', () => {
         const time = Date.now() - first
-        console.log(`spend ${time} ms`)
+        console.debug(`spend ${time} ms`)
     })
 })();
 export default {

@@ -34,8 +34,10 @@
         </form>
     
         <div class="ui segment center aligned">
-            {{$t('signup.description')}}
-            <a href="#">{{$t('signup')}}</a>
+            <span class="ui text">
+                {{$t('signup.description')}}
+                <a class="ui blue label" href="#">{{$t('signup')}}</a>
+            </span>
         </div>
     </div>
 </template>
@@ -107,6 +109,7 @@ export default {
                         this.logining = false
                         this.$emit('logined')
                     }, err => {
+                        console.log(err)
                         this.logining = false
                         //TODO handle this
                     })
