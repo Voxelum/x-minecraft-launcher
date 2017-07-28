@@ -1,18 +1,27 @@
 import repository from './models/repository'
 
-export default {
-    state() {
-        const state = repository.state()
-        state.root = 'resourcepacks'
-        return state
+const state = () => {
+    const s = repository.state()
+    s.root = 'resourcepacks'
+    return s;
+}
+const getters = {
+    ...repository.getters,
+}
+const mutations = {
+    ...repository.mutations,
+}
+const actions = Object.assign({
+    save(context, payload) {
+        const { mutation } = payload;
     },
-    getters: repository.getters,
-    mutation: repository.repository,
-    actions: Object.assign({
-        save(context, payload) {
-            const { mutation } = payload;
-            context.dispatch('')
-        },
-        load() { },
-    }, repository.actions),
+    load() { },
+}, repository.actions)
+
+export default {
+    namespaced: true,
+    state,
+    getters,
+    mutations,
+    actions,
 }

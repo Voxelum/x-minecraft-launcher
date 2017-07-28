@@ -8,7 +8,7 @@
 <script>
 
 import SemanticUi from './semantic-ui/Main'
-import MaterialUi from './material-ui/Main'
+// import MaterialUi from './material-ui/Main'
 
 export default {
     components: { 
