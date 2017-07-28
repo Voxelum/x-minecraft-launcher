@@ -1,26 +1,34 @@
 <template>
   <div id="app">
-    <ui></ui>
+    <component v-bind:is="theme">
+    </component>
   </div>
-  
 </template>
 
 <script>
 
-import SemanticUi from './semantic-ui/Main'
-// import MaterialUi from './material-ui/Main'
+import SemanticUi from './ui/semantic/Main'
+import MaterialUi from './ui/material/Main'
 
+import { mapState } from 'vuex'
 export default {
-    components: { 
-        ui: SemanticUi
-    }
+  computed: {
+    ...mapState('settings', ['theme'])
+  },
+  mounted() {
+
+  },
+  components: {
+    semantic: SemanticUi,
+    material: MaterialUi,
+  }
 }
 </script>
 
 <style>
- #app {
-   height: 780px; 
-} 
+#app {
+  height: 780px;
+}
 
 .noselect {
   -webkit-touch-callout: none;
