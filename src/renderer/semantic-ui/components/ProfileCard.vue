@@ -8,7 +8,7 @@
                 <i class="cubes icon"></i>
             </span>
             {{this.source.name}}
-            <i class="right floated large delete icon" :class="{red:hoverDelete}" @mouseover="hoverDelete=true" @mouseout="hoverDelete=false"></i>
+            <i class="right floated large delete icon" :class="{red:hoverDelete}" @mouseover="hoverDelete=true" @mouseout="hoverDelete=false" @click="del"></i>
         </p>
         <div class="image">
             <img :src="this.source.image">
@@ -50,7 +50,7 @@ export default {
             this.$emit('select', this.id, this.source)
         },
         del(e) {
-            this.$emit('delete', this.id, this.source)
+            this.$emit('delete', { id: this.id, source: this.source })
         },
     },
     mounted() {

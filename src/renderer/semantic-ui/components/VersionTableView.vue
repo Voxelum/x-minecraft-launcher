@@ -3,7 +3,7 @@
         <h3 class="ui  top attached header">
             <i class="plug icon"></i>
             <div class="content">
-                {{selectingVersion}}
+                {{selectingMeta.id}}
                 <div class="sub header">{{selectingMeta.releaseTime}}</div>
                 <div class="sub header">{{selectingMeta.type}}</div>
             </div>
@@ -21,19 +21,28 @@
                         </td>
                         <td>{{meta.releaseTime}}</td>
                         <td>{{meta.time}}</td>
-                        <td class="selectable" data-tooltip="Download this version" data-position="left center" @click="download">
-                            <div style="padding:0 10px 0 10px">
+                        <td class="selectable" :ver="meta.id" data-tooltip="Download this version" data-position="left center" @click="download" v-if="meta.status=='remote'">
+                            <div style="padding:0 10px 0 10px;pointer-events: none;">
                                 <i class="download icon"></i>
                             </div>
-                            <!-- <label class="ui label" v-if="meta.type!='release'">{{meta.type}}</label> -->
+                        </td>
+                        <td class="selectable" :ver="meta.id" data-tooltip="Downloaded version" data-position="left center" v-else-if="meta.status=='local'">
+                            <div style="padding:0 10px 0 10px;pointer-events: none;">
+                                <i class="disk outline icon"></i>
+                            </div>
+                        </td>
+                        <td :ver="meta.id" data-tooltip="Loading..." data-position="left center" v-else>
+                            <div style="padding:0 15px 0 5px;pointer-events: none;">
+                                <div class="ui active inline small loader"></div>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <!-- <div class="ui   bottom attached footer center aligned segment">
-                                                                    <div class="ui  fluid button">Save</div>
-                                                                </div> -->
+                                                                                            <div class="ui  fluid button">Save</div>
+                                                                                        </div> -->
     
     </div>
 </template>
@@ -54,10 +63,7 @@ export default {
                 map.set(v.id, v);
             return map;
         },
-        selectingVersion() {
-            return this.selected.version
-        },
-        selectingMeta() { return this.metaMap.get(this.selectingVersion) || {}; },
+        selectingMeta() { return this.metaMap.get(this.selected.version) || {}; },
         metas() {
             if (!this.filterRelease)
                 return this.minecraft.versions
@@ -71,7 +77,8 @@ export default {
                 this.$store.commit(`profiles/${this.selectedKey}/setVersion`, event.srcElement.parentNode.getAttribute('version-id'))
         },
         download(event) {
-
+            this.$store.dispatch('versions/download', this.metaMap.get(event.target.getAttribute('ver')))
+            return false
         }
     },
     components: {}
@@ -88,11 +95,6 @@ export default {
 
 
 
-
-
-
-
-
 /* Track */
 
 ::-webkit-scrollbar-track {
@@ -100,11 +102,6 @@ export default {
     /* border-radius: 10px; */
     background: rgba(0, 0, 0, 0.1);
 }
-
-
-
-
-
 
 
 
