@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="two wide center aligned column">
-                <button class="ui inverted circular button"  style="-webkit-app-region: no-drag" @click="showLogin">{{playerName}}</button>
+                <button class="ui inverted circular button" style="-webkit-app-region: no-drag" @click="showLogin">{{playerName}}</button>
             </div>
         </div>
         <div class="row" style="height:560px;">
@@ -39,7 +39,7 @@
                 </div>
                 <div v-else>
                     <div class="ui link cards">
-                        <profile-card class="profile" v-for="id in keys" :key="id" :id="id" :source='getByKey(id)' @select="selectProfile"></profile-card>
+                        <profile-card class="profile" v-for="id in keys" :key="id" :id="id" :source='getByKey(id)' @select="selectProfile" @delete="showDelete"></profile-card>
                     </div>
                     <button id="addElement" class="ui icon right floated circlar button" @click="oncreate">
                         <i class="plus icon"></i>
@@ -50,6 +50,20 @@
         <div id="login" class="ui basic modal" style="padding:0 20% 0 20%;">
             <i class="close icon" v-if="this.$store.state.auth.authInfo !== undefined"></i>
             <login @logined='onlogined'></login>
+        </div>
+        <div id="delete" class="ui small basic test modal transition hidden">
+            <i class="close icon"></i>
+            <div class="ui icon header">
+                <i class="archive icon"></i>
+                Delete the profile
+            </div>
+            <div class="content">This will delete all the data about this profile. Are you sure to do this?</div>
+            <div class="actions">
+                <div class="ui basic cancel inverted button">
+                    <i class="close icon"></i>No</div>
+                <div class="ui red basic cancel inverted button">
+                    <i class="remove icon"></i>Delete</div>
+            </div>
         </div>
     </div>
 </template>
@@ -85,15 +99,36 @@ export default {
     },
     methods: {
         ...mapActions('profiles', {
-            createProfile: 'create'
+            createProfile: 'create',
+            selectProfile: 'select',
+            deleteProfile: 'delete',
         }),
         ...mapMutations('profiles', {
-            selectProfile: 'select',
-            unselect: 'unselect'
+            unselect: 'unselect',
         }),
+        showDelete(event) {
+            this.$nextTick(() => {
+                $('#delete')
+                    .modal({
+                        blurring: true,
+                        onApprove($element) {
+                            this.deleteProfile(event.id)
+                        },
+                        onDeny($element) {
+
+                        },
+                    })
+                    .modal('show')
+            })
+        },
         showLogin() {
             this.$nextTick(() => {
-                $('#login').modal('setting', 'closable', false).modal('refresh').modal('setting', 'observeChanges', true).modal('show')
+                $('#login')
+                    .modal('setting', 'closable', false)
+                    .modal('refresh')
+                    .modal('setting', 'observeChanges', true)
+                    .modal({ blurring: true })
+                    .modal('show')
             })
         },
         onlogined() {
@@ -113,6 +148,6 @@ export default {
 
 <style scoped>
 .moveable {
-     -webkit-app-region: drag 
+    -webkit-app-region: drag
 }
 </style>
