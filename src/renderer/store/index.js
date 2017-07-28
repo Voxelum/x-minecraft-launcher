@@ -16,6 +16,11 @@ for (const key in modules) {
 
 const store = new Vuex.Store({
     modules,
+    getters: {
+        rootPath(state, getters) {
+            return state.settings.rootPath
+        },
+    },
     actions,
     strict: process.env.NODE_ENV !== 'production',
     plugins,
@@ -44,6 +49,9 @@ export const init = () => {
     }
     return Promise.all(promises).then(() => {
         console.log('done for all promise!')
+        return store
+    }, (err) => {
+        console.log('Done with Error')
         return store
     })
 }

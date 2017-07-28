@@ -88,5 +88,12 @@ export default {
             }
             return id;
         },
+        delete(context, payload) {
+            context.commit('remove', payload)
+            return context.dispatch('deleteFolder', { path: `profiles/${payload}` }, { root: true })
+        },
+        select(context, profileId) {
+            if (context.state.getters.selectedKey !== profileId) context.commit('select', profileId)
+        },
     },
 }
