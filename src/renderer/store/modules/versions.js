@@ -68,7 +68,7 @@ export default {
             return context.dispatch('existFiles', { paths: [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.jjson`] }, { root: true })
                 .then(exist => (!exist ? context.dispatch('query', {
                     service: 'versions',
-                    action: 'download',
+                    action: 'downloadClient',
                     payload: {
                         meta: payload,
                         location: context.rootGetters.rootPath,
@@ -77,6 +77,7 @@ export default {
                 .then(() => {
                     context.commit('updateStatus', { version: versionMeta, status: 'local' })
                 }, (err) => {
+                    console.error(err)
                     context.commit('updateStatus', { version: versionMeta, status: 'remote' })
                 })
         },
