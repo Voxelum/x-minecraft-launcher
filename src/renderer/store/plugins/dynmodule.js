@@ -13,7 +13,9 @@ export default (store) => {
             if (!module.namespaced) module.namespaced = true;
             store.registerModule(paths, module);
         } else if (func === 'remove') {
-            store.unregisterModule(payload);
+            console.log(`payload ${payload}`)
+            paths.push(payload)
+            store.unregisterModule(paths);
         }
     })
 }
