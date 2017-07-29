@@ -64,8 +64,6 @@ export default {
                 .then(Array.from)
         },
         launch({ auth, option }) {
-            console.log(auth)
-            console.log(option)
             return Launcher.launch(auth, option).then((process) => {
                 process.on('error', (err) => {
                     console.error(err)
