@@ -14,6 +14,33 @@ function write(path, data) {
     });
 }
 export default {
+    launch(context, payload) {
+        const profile = context.getters['profiles/selected'];
+        const profileId = context.getters['profiles/selectedKey'];
+        const auth = context.state.auth.authInfo;
+
+        const type = profile.type;
+        const version = profile.version;
+        const option = {
+            gamePath: paths.join(rootPath, 'profiles', profileId),
+            resourcePath: rootPath,
+            javaPath: profile.java,
+            minMemory: profile.minMemory || 1024,
+            maxMemory: profile.maxMemory || 1024,
+            version,
+        }
+        if (profile.type === 'server') {
+            option.server = { ip: profile.host, port: profile.port };
+        }
+
+        
+        return context.dispatch('query', {
+            service: 'launcher',
+            action: 'launch',
+            payload: { auth, option },
+        });
+        // return ''
+    },
     query(context, payload) {
         return launcher.query(payload.service, payload.action, payload.payload)
     },

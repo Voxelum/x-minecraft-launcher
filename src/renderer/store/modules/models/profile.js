@@ -11,6 +11,8 @@ function state() {
 
         resolution: [800, 400], // client setting
         java: '',
+        minMemory: 1024,
+        maxMemory: 2048,
         vmOptions: [],
         mcOptions: [],
     }
