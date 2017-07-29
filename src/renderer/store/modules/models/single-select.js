@@ -29,7 +29,7 @@ export default {
                 if (state._selected === id) {
                     state._selected = state._all[0]
                 }
-                state._all = state._all.filter(v => v === id)
+                state._all = state._all.filter(v => v !== id)
             }
         },
     },

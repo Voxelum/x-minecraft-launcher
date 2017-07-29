@@ -49,7 +49,6 @@ export default {
             }
         },
         refresh(updateTime) {
-            console.log('refresh!')
             return Version.updateVersionMeta({ date: updateTime })
         },
         parse({ version, location }) {

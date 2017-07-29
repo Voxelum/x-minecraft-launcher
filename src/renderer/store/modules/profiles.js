@@ -78,6 +78,7 @@ export default {
             option,
         }) {
             const id = uuid()
+            console.log(`create ${id}: ${type}`)
             if (type === 'server') {
                 context.commit('add', { id, module: mixin(modelServer, option) })
             } else if (type === 'modpack') {
@@ -89,11 +90,12 @@ export default {
             return id;
         },
         delete(context, payload) {
+            console.log(`delete ${payload}`)
             context.commit('remove', payload)
             return context.dispatch('deleteFolder', { path: `profiles/${payload}` }, { root: true })
         },
         select(context, profileId) {
-            if (context.state.getters.selectedKey !== profileId) context.commit('select', profileId)
+            if (context.getters.selectedKey !== profileId) context.commit('select', profileId)
         },
     },
 }

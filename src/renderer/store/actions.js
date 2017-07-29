@@ -33,7 +33,7 @@ export default {
             option.server = { ip: profile.host, port: profile.port };
         }
 
-        
+
         return context.dispatch('query', {
             service: 'launcher',
             action: 'launch',
@@ -69,7 +69,7 @@ export default {
         path = paths.resolve(rootPath, path)
         if (typeof data === 'object' && !(data instanceof Buffer)) data = JSON.stringify(data)
         const parent = paths.dirname(path)
-        return write(path, data)
+        return fs.ensureDir(parent).then(() => write(path, data))
     },
     existFiles(context, payload) {
         for (const p of payload.paths) if (!fs.existsSync(p)) return false
