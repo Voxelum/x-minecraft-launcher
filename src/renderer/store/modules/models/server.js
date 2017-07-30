@@ -7,8 +7,7 @@ function state() {
     theState.host = ''
     theState.port = ''
     theState.isLanServer = false
-    theState.motd = ''
-    theState.ping = ''
+    theState.status = {}
     theState.icon = ''
     return theState
 }
@@ -20,11 +19,19 @@ const getters = {
 const mutations = profile.mutations
 
 const actions = {
-    /* eslint-disable no-unused-vars */
-    refresh(context, payload) {
-        /* eslint-disable no-undef */
-        service.require('service')
-        // TODO ping the server
+    ping(context, payload) {
+        context.dispatch('query', {
+            service: 'servers',
+            action: 'ping',
+            payload: { host: context.state.host, port: context.state.port },
+        }, { root: true })
+            .then((status) => {
+                context.commit('putAll', {
+                    status,
+                    icon: status.icon,
+                })
+                console.log(context.state)
+            })
     },
 }
 export default {

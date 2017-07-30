@@ -1,15 +1,24 @@
-import multiSelect from './models/multi-select'
-import mod from './models/mod'
+import repository from './models/repository'
 
-const obj = Object.assign({}, multiSelect)
-
-obj.actions = {
-    import(context, payload) {
-        return context.dispatch('query', { service: 'mod', action: 'import', payload });
-    },
-    export(context, payload) {
-        return context.dispatch('query', { service: 'mod', action: 'export', payload });
-    },
+const state = () => {
+    const s = repository.state()
+    s.root = 'mods'
+    return s;
 }
+const getters = repository.getters;
+const mutations = repository.mutations;
+const actions = Object.assign({
+    save(context, payload) {
+    },
+    load() {
 
-export default obj
+    },
+}, repository.actions)
+
+export default {
+    namespaced: true,
+    state,
+    getters,
+    mutations,
+    actions,
+}

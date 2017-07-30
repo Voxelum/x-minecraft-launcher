@@ -9,11 +9,23 @@ export default (store) => {
         paths = paths.slice(0, paths.length - 1)
         if (func === 'add') {
             const { id, module } = payload;
+            if (!id) {
+                console.error(`Unexpect empty id for adding! @${mutation.type}`)
+                return
+            }
+            if (!module) {
+                console.error(`Unexpect empty module for adding! @${mutation.type}`)
+                return
+            }
             paths.push(id)
             if (!module.namespaced) module.namespaced = true;
             store.registerModule(paths, module);
         } else if (func === 'remove') {
             console.log(`payload ${payload}`)
+            if (!payload) {
+                console.error(`Unexpect empty payload for removal! @${mutation.type}`)
+                return
+            }
             paths.push(payload)
             store.unregisterModule(paths);
         }

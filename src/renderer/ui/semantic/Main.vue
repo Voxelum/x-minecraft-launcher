@@ -27,7 +27,6 @@
             <div class="four wide middle aligned center aligned column">
                 <div class="ui header segment">{{playerName}}</div>
                 <!-- <skin-view width="1200" height="400"></skin-view> -->
-    
             </div>
             <div class="twelve wide column">
                 <div v-if="selecting">
@@ -35,9 +34,8 @@
                 </div>
                 <div v-else>
                     <div class="ui link cards">
-                        <profile-card class="profile" v-for="id in keys" :key="id" :id="id" :source='getByKey(id)' @select="selectProfile" @delete="showDelete"></profile-card>
+                        <profile-card class="profile" v-for="id in keys" :key="id" :id="id" :source='getByKey(id)' @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></profile-card>
                     </div>
-    
                 </div>
             </div>
         </div>
@@ -48,13 +46,18 @@
                 </div>
             </div>
             <div class="twelve wide column">
-                <div class="ui icon right floated circlar inverted button non-moveable" @click="createModpack">
-                    <i class="plus icon"></i>
-                    {{$t('profile.add.modpack')}}
+                <div v-if="selecting">
+                    <div class="ui fluid inverted button non-moveable" @click="launch">Launch</div>
                 </div>
-                <div class="ui icon right floated circlar inverted button non-moveable" @click="createServer">
-                    <i class="plus icon"></i>
-                    {{$t('profile.add.server')}}
+                <div v-else>
+                    <div class="ui icon right floated circlar inverted button non-moveable" @click="showModal('profile')">
+                        <i class="plus icon"></i>
+                        {{$t('profile.add.modpack')}}
+                    </div>
+                    <div class="ui icon right floated circlar inverted button non-moveable" @click="showModal('server')">
+                        <i class="plus icon"></i>
+                        {{$t('profile.add.server')}}
+                    </div>
                 </div>
             </div>
         </div>
@@ -62,22 +65,9 @@
             <i class="close icon" v-if="this.$store.state.auth.authInfo !== undefined"></i>
             <login @logined='onlogined'></login>
         </div>
-        <div id="delete" class="ui small basic test modal transition hidden">
-            <i class="close icon"></i>
-            <div class="ui icon header">
-                <i class="archive icon"></i>
-                <p v-if="deleting!=''"> {{$t(`profile.delete.${deleting}`)}}</p>
-            </div>
-            <div class="content">
-                <p v-if="deleting!=''">{{$t(`profile.delete.${deleting}.description`)}}</p>
-            </div>
-            <div class="actions">
-                <div class="ui basic cancel inverted button">
-                    <i class="close icon"></i>{{$t('profile.delete.no')}}</div>
-                <div class="ui red basic inverted ok button">
-                    <i class="remove icon"></i>{{$t('profile.delete.yes')}}</div>
-            </div>
-        </div>
+        <profile-modal ref="profileModal" @accept="createProfile({ type: 'modpack', option: $event })"></profile-modal>
+        <server-modal ref="serverModal" @accept="createProfile({ type: 'server', option: $event })"></server-modal>
+        <delete-modal ref="deleteModal" @accept="deleteProfile"></delete-modal>
     </div>
 </template>
 
@@ -88,15 +78,14 @@ import ProfileCard from './components/ProfileCard'
 import ProfileView from './components/ProfileView'
 import SkinView from './components/SkinView'
 import Login from './components/Login'
+import ProfileModal from './components/ProfileModal'
+import ServerModal from './components/ServerModal'
+import DeleteModal from './components/DeleteModal'
 
 import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
-    data() {
-        return {
-            deleting: '',
-        }
-    },
+    components: { ProfileCard, ProfileView, SkinView, Login, ServerModal, ProfileModal, DeleteModal },
     computed: {
         selecting() {
             return this.selectProfileID != undefined && this.selectProfileID != '' && this.selectProfileID != null
@@ -117,29 +106,16 @@ export default {
     },
     methods: {
         ...mapActions('profiles', {
-            createProfile: 'create',
+            createProfile: 'createAndSelect',
             selectProfile: 'select',
             deleteProfile: 'delete',
         }),
+        ...mapActions(['launch']),
         ...mapMutations('profiles', {
             unselect: 'unselect',
         }),
-        showDelete(event) {
-            const self = this
-            this.deleting = event.source.type
-            this.$nextTick(() => {
-                $('#delete')
-                    .modal({
-                        blurring: true,
-                        onApprove($element) {
-                            self.deleteProfile(event.id)
-                            return true;
-                        },
-                        onDeny($element) {
-                        },
-                    })
-                    .modal('show')
-            })
+        showModal(id, args) {
+            this.$refs[id + "Modal"].show(args)
         },
         showLogin() {
             this.$nextTick(() => {
@@ -156,20 +132,7 @@ export default {
                 $('#login').modal('hide')
             })
         },
-        createModpack() {
-            this.createProfile({ type: 'modpack', option: { author: this.playerName } })
-                .then(id => {
-                    this.selectProfile(id)
-                })
-        },
-        createServer() {
-            this.createProfile({ type: 'server', option: {} })
-                .then(id => {
-                    this.selectProfile(id)
-                })
-        }
     },
-    components: { ProfileCard, ProfileView, SkinView, Login }
 }
 </script>
 
