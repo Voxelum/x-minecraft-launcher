@@ -66,9 +66,6 @@ export default {
         ...mapGetters('resourcepacks', 'all'),
         ...mapGetters('profiles', 'selecting'),
         unselectingResources() {
-            console.log(this.$store.getters)
-            console.log(this.$store.state)
-            console.log(this.all)
             return []
             // return this.all.filter(a => this.selectingResources.indexOf(a) == -1)
         },
