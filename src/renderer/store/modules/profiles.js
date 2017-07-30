@@ -9,11 +9,9 @@ const PROFILE_NAME = 'profile.json'
 const PROFILES_NAEM = 'profiles.json'
 
 function parseProfile(content) {
-    return {
-        id: content.id,
+    const prof = {
         type: content.type,
         name: content.name,
-        version: content.version,
         resourcepacks: content.resourcepacks || [],
         mods: content.mods || [],
         resolution: content.resolution || [800, 400],
@@ -21,6 +19,23 @@ function parseProfile(content) {
         vmOptions: content.vmOptions,
         mcOptions: content.mcOptions,
     }
+    if (content.type === 'modpack') {
+        return {
+            version: content.version,
+            author: content.author,
+            description: content.description,
+            url: content.url,
+            icon: content.icon,
+        }
+    } else if (content.type === 'server') {
+        return {
+            host: content.host,
+            port: content.port,
+            isLanServer: content.isLanServer,
+            icon: content.icon,
+        }
+    }
+    return prof
 }
 
 export default {
@@ -78,24 +93,23 @@ export default {
             option,
         }) {
             const id = uuid()
-            console.log(`create ${id}: ${type}`)
+            console.log(`create ${id}: ${type} with`)
             if (type === 'server') {
                 context.commit('add', { id, module: mixin(modelServer, option) })
             } else if (type === 'modpack') {
-                option.name = 'New Modpack'
-                option.author = context.rootGetters['auth/info'].selectedProfile.name
-                option.description = 'no description yet!'
                 context.commit('add', { id, module: mixin(modelModpack, option) })
             }
             return id;
         },
         delete(context, payload) {
-            console.log(`delete ${payload}`)
             context.commit('remove', payload)
             return context.dispatch('deleteFolder', { path: `profiles/${payload}` }, { root: true })
         },
         select(context, profileId) {
             if (context.getters.selectedKey !== profileId) context.commit('select', profileId)
+        },
+        createAndSelect(context, payload) {
+            return context.dispatch('create', payload).then(id => context.commit('select', id))
         },
     },
 }

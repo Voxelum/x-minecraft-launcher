@@ -13,6 +13,7 @@ const {
 } = require('events')
 
 ipcMain.on('query', (event, payload) => {
+    console.log(payload)
     const {
         id,
         service,
@@ -23,6 +24,12 @@ ipcMain.on('query', (event, payload) => {
     if (!serInst) {
         event.sender.send(id, {
             rejected: `No such service [${service}]`,
+        })
+        return;
+    }
+    if (!serInst.actions) {
+        event.sender.send(id, {
+            rejected: `Service [${service}] has no actions at all!`,
         })
         return;
     }
