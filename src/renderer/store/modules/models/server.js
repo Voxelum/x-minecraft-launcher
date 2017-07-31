@@ -1,4 +1,4 @@
-import { TextComponent } from 'ts-minecraft'
+import { TextComponent, ServerInfo } from 'ts-minecraft'
 
 import profile from './profile'
 
@@ -30,23 +30,12 @@ const actions = {
             action: 'ping',
             payload: { host: context.state.host, port: context.state.port },
         }, { root: true })
-            .then((status) => {
+            .then((frame) => {
+                const status = ServerInfo.parseFrame(frame)
                 context.commit('putAll', {
                     icon: status.icon,
                 })
-                console.log('incomming')
-                if (status.gameVersion.text && status.gameVersion._siblings) { 
-                    console.log('converting ver')
-                    const str = TextComponent.str(status.gameVersion.text)
-                    str._siblings = status.gameVersion._siblings;
-                    status.gameVersion = str;
-                }
-                if (status.serverMOTD.text && status.serverMOTD._siblings) {
-                    console.log('converting motd')
-                    const str = TextComponent.str(status.serverMOTD.text)
-                    str._siblings = status.serverMOTD._siblings;
-                    status.serverMOTD = str;
-                }
+                console.log(status)
                 return status
             })
     },
