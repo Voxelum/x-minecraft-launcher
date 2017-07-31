@@ -66,7 +66,7 @@
             <login @logined='onlogined'></login>
         </div>
         <profile-modal ref="profileModal" @accept="createProfile({ type: 'modpack', option: $event })"></profile-modal>
-        <server-modal ref="serverModal" @accept="createProfile({ type: 'server', option: $event })"></server-modal>
+        <server-modal ref="serverModal" :defautAuthor="playerName" @accept="createProfile({ type: 'server', option: $event })"></server-modal>
         <delete-modal ref="deleteModal" @accept="deleteProfile"></delete-modal>
     </div>
 </template>

@@ -7,15 +7,15 @@
         <form class="ui inverted form">
             <div class="field">
                 <label>Name</label>
-                <input class="ui basic inverted input" type="text" placeholder="Name of profile">
+                <input class="ui basic inverted input" type="text" placeholder="Profile Name" v-model="name" @keypress="enter">
             </div>
             <div class="field">
                 <label>Author</label>
-                <input class="ui basic inverted input" type="text" placeholder="author" value="ci010">
+                <input class="ui basic inverted input" type="text" placeholder="Author Name" v-model="author" @keypress="enter">
             </div>
             <div class="field">
                 <label>Description</label>
-                <input class="ui basic inverted input" type="text" placeholder="Enter the simple description">
+                <input class="ui basic inverted input" type="text" placeholder="A Simple description" v-model="description" @keypress="enter">
             </div>
             <div class="ui error message">
                 <div class="header">Action Forbidden</div>
@@ -25,7 +25,7 @@
         <div class="actions">
             <div class="ui basic cancel inverted button">
                 <i class="close icon"></i>No</div>
-            <div class="ui green basic inverted ok button">
+            <div class="ui green basic inverted ok button" @click="accpet">
                 <i class="check icon"></i>Create</div>
         </div>
     </div>
@@ -53,16 +53,6 @@ export default {
                     self.description = 'No description yet'
                     self.hasError = false
                 },
-                onApprove($element) {
-                    if (!self.name || self.name === '') {
-                        self.hasError = true;
-                        return false;
-                    }
-                    self.$emit('accept', { name: self.name, author: self.author, description: self.description });
-                    return true;
-                },
-                onDeny($element) {
-                },
             }
         )
     },
@@ -70,6 +60,17 @@ export default {
         show() {
             $('#profileModal').modal('show')
         },
+        accpet() {
+            if (!this.name || this.name === '') {
+                this.hasError = true;
+            }
+            this.$emit('accept', { name: this.name, author: this.author, description: this.description });
+            $('#profileModal').modal('hide')
+        },
+        enter(event) {
+            if (event.keyCode != 13) return
+            this.accept()
+        }
     }
 }
 </script>
