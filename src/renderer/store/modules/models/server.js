@@ -1,3 +1,5 @@
+import { TextComponent } from 'ts-minecraft'
+
 import profile from './profile'
 
 function state() {
@@ -7,7 +9,6 @@ function state() {
     theState.host = ''
     theState.port = ''
     theState.isLanServer = false
-    theState.status = {}
     theState.icon = ''
     return theState
 }
@@ -19,18 +20,34 @@ const getters = {
 const mutations = profile.mutations
 
 const actions = {
+    save() {
+
+    },
+    load() { },
     ping(context, payload) {
-        context.dispatch('query', {
+        return context.dispatch('query', {
             service: 'servers',
             action: 'ping',
             payload: { host: context.state.host, port: context.state.port },
         }, { root: true })
             .then((status) => {
                 context.commit('putAll', {
-                    status,
                     icon: status.icon,
                 })
-                console.log(context.state)
+                console.log('incomming')
+                if (status.gameVersion.text && status.gameVersion._siblings) { 
+                    console.log('converting ver')
+                    const str = TextComponent.str(status.gameVersion.text)
+                    str._siblings = status.gameVersion._siblings;
+                    status.gameVersion = str;
+                }
+                if (status.serverMOTD.text && status.serverMOTD._siblings) {
+                    console.log('converting motd')
+                    const str = TextComponent.str(status.serverMOTD.text)
+                    str._siblings = status.serverMOTD._siblings;
+                    status.serverMOTD = str;
+                }
+                return status
             })
     },
 }
