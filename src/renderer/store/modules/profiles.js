@@ -8,34 +8,13 @@ import modelModpack from './models/modpack'
 const PROFILE_NAME = 'profile.json'
 const PROFILES_NAEM = 'profiles.json'
 
-function parseProfile(content) {
-    const prof = {
-        type: content.type,
-        name: content.name,
-        resourcepacks: content.resourcepacks || [],
-        mods: content.mods || [],
-        resolution: content.resolution || [800, 400],
-        java: content.java,
-        vmOptions: content.vmOptions,
-        mcOptions: content.mcOptions,
-    }
-    if (content.type === 'modpack') {
-        Object.assign(prof, {
-            version: content.version,
-            author: content.author,
-            description: content.description,
-            url: content.url,
-            icon: content.icon,
-        })
-    } else if (content.type === 'server') {
-        Object.assign(prof, {
-            host: content.host,
-            port: content.port,
-            isLanServer: content.isLanServer,
-            icon: content.icon,
-        })
-    }
-    return prof
+function regulize(content) {
+    content.resourcepacks = content.resourcepacks || []
+    content.resolution = content.resolution || [800, 400]
+    content.mods = content.mods || []
+    content.vmOptions = content.vmOptions || []
+    content.mcOptions = content.mcOptions || []
+    return content
 }
 
 export default {
@@ -58,7 +37,7 @@ export default {
                         fallback: {},
                         encoding: 'json',
                     }, { root: true })
-                        .then(object => parseProfile(object))
+                        .then(regulize)
                         .then(profile => [file, profile]))))
                 .then((promises) => {
                     for (const [id, profile] of promises) {
@@ -86,7 +65,8 @@ export default {
             } else {
                 const [, profileId, action] = path
                 const targetPath = `profiles/${profileId}/${PROFILE_NAME}`
-                context.dispatch('writeFile', { path: targetPath, data: context.state[profileId] }, { root: true })
+                context.dispatch(`${profileId}/save`)
+                    .then(data => context.dispatch('writeFile', { path: targetPath, data }, { root: true }))
             }
         },
         create(context, {

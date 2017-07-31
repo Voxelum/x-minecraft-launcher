@@ -10,6 +10,7 @@ function state() {
     theState.port = ''
     theState.isLanServer = false
     theState.icon = ''
+    theState.status = {}
     return theState
 }
 /* eslint-disable no-unused-vars */
@@ -20,10 +21,11 @@ const getters = {
 const mutations = profile.mutations
 
 const actions = {
-    save() {
-
+    save(context) {
+        const saved = Object.assign({}, context.state);
+        saved.status = undefined;
+        return saved;
     },
-    load() { },
     ping(context, payload) {
         return context.dispatch('query', {
             service: 'servers',
@@ -32,11 +34,12 @@ const actions = {
         }, { root: true })
             .then((frame) => {
                 const status = ServerInfo.parseFrame(frame)
+                status.pingToServer = frame.ping
                 context.commit('putAll', {
                     icon: status.icon,
+                    status,
                 })
                 console.log(status)
-                status.pingToServer = frame.ping
                 return status
             })
     },
