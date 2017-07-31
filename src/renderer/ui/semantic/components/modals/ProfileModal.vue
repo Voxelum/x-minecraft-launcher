@@ -49,7 +49,7 @@ export default {
                 blurring: true,
                 onShow() {
                     self.name = ''
-                    self.author = defaultAuthor || ""
+                    self.author = this.defaultAuthor || ""
                     self.description = 'No description yet'
                     self.hasError = false
                 },

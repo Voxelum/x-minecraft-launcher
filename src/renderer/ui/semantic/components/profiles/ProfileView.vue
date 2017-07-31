@@ -3,7 +3,6 @@
         <div class="eight wide column">
             <div class="ui sizer" style="font-size: 23px;">
                 <h1 class="ui header">
-                    <!-- <img v-if="type==='server'&&status.icon!=''&& status.icon" class="ui image" :src="status.icon"> -->
                     <div class="content">
                         <div class="ui transparent input">
                             <input type="text" name="Name" :placeholder="id" :value="source.name" @blur="modify">
@@ -57,11 +56,11 @@
 
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex'
-import VersionDropdown from './VersionDropdown'
-import VersionTableView from './VersionTableView'
-import ResourcePackList from './ResourcePackList'
-import TextComponent from './TextComponent'
+import VersionTableView from '../VersionTableView'
+import ResourcePackList from '../ResourcePackList'
+import TextComponent from '../TextComponent'
 export default {
+    components: {  VersionTableView, ResourcePackList, TextComponent },
     props: ['source', 'id'],
     computed: {
         ...mapState('versions', ['minecraft']),
@@ -80,7 +79,6 @@ export default {
             $('.menu .item').tab()
         })
     },
-    components: { VersionDropdown, VersionTableView, ResourcePackList, TextComponent },
 }
 </script>
 
