@@ -3,23 +3,26 @@
         <div class="eight wide column">
             <div class="ui sizer" style="font-size: 23px;">
                 <h1 class="ui header">
-                    <div class="ui transparent input">
-                        <input type="text" name="Name" :placeholder="id" :value="source.name" @blur="modify">
-                    </div>
-                    <h2 v-if="type==='modpack'" class="ui sub header">
-                        Author:
+                    <img v-if="type==='server'&&status.icon!=''&& status.icon" class="ui image" :src="status.icon">
+                    <div class="content">
                         <div class="ui transparent input">
-                            <input type="text" name="Author" placeholder="Unknown author..." :value="source.author" @blur="modify">
+                            <input type="text" name="Name" :placeholder="id" :value="source.name" @blur="modify">
                         </div>
-                    </h2>
-                    <h2 v-if="type==='modpack'" class="ui sub header">
-                        Version: {{source.version}}
-                    </h2>
-                    <h2 v-if="type==='server'" class="ui sub header">
-                        Version:
-                        <text-component :source="source.status.version"></text-component>
-                        Players: {{source.status.players}}/{{source.status.capacity}} Pings: {{source.status.ping}} ms
-                    </h2>
+                        <h2 v-if="type==='modpack'" class="ui sub header">
+                            Author:
+                            <div class="ui transparent input">
+                                <input type="text" name="Author" placeholder="Unknown author..." :value="source.author" @blur="modify">
+                            </div>
+                        </h2>
+                        <h2 v-if="type==='modpack'" class="ui sub header">
+                            Version: {{source.version}}
+                        </h2>
+                        <h2 v-if="type==='server'" class="ui sub header">
+                            <text-component :source="status.gameVersion"></text-component>
+                            Players: {{status.onlinePlayers}}/{{status.capacity}}
+                            <br> Pings: {{status.pingToServer}} ms
+                        </h2>
+                    </div>
                 </h1>
             </div>
             <div style="height:202px"></div>
@@ -42,8 +45,6 @@
                     {{$t('settings')}}
                 </a>
             </div>
-            <!-- <div class="ui tab container" data-tab="versions">
-                                                                                                                                                                            </div> -->
             <div class="ui tab segment" data-tab="resourcepacks">
                 <resource-pack-list style="height:380px"></resource-pack-list>
             </div>
@@ -55,7 +56,6 @@
             <div class="ui tab segment" style="height:380px" data-tab="settings">
     
             </div>
-    
         </div>
     </div>
 </template>
@@ -68,6 +68,11 @@ import ResourcePackList from './ResourcePackList'
 import TextComponent from './TextComponent'
 export default {
     props: ['source', 'id'],
+    data() {
+        return {
+            status: {}
+        }
+    },
     computed: {
         ...mapState('versions', ['minecraft']),
         versions() { return this.minecraft.versions },
@@ -80,8 +85,9 @@ export default {
         ...mapActions('versions', ['refresh']),
         ping() {
             this.$store.dispatch(`profiles/${this.id}/ping`)
-                .then(() => {
-                    console.log(this.source.status)
+                .then((status) => {
+
+                    this.status = status;
                 })
         },
         showVersionPopup(event) {

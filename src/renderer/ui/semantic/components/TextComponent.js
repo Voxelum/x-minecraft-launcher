@@ -23,22 +23,23 @@ export default {
         if (typeof this.source === 'string') return createElement('p', this.source)
         if (this.source.iterator) {
             for (const component of this.source.iterator) {
-                let styleString = ''
-                if (component.style.bold) styleString += 'font-weight:bold;';
-                if (component.style.underlined) styleString += 'text-decoration: underline;';
-                if (component.style.italic) styleString += 'font-style: italic;';
-                if (component.style.strikethrough) styleString += 'text-decoration:line-through;';
+                const style = {}
+                if (component.style.bold) style['font-weight'] = 'bold';
+                if (component.style.underlined) style['text-decoration'] = 'underline';
+                if (component.style.italic) style['font-style'] = 'italic';
+                if (component.style.strikethrough) style['text-decoration'] = 'line-through';
                 if (component.style.color) {
                     const code = colorCode[component.style.color.colorIndex];
                     const r = (code >> 16) / 255.0 // eslint-disable-line no-bitwise
                     const g = ((code >> 8) & 255) / 255.0 // eslint-disable-line no-bitwise
                     const b = (code & 255) / 255.0 // eslint-disable-line no-bitwise
-                    styleString += `color: (${r}, ${g}, ${b})`
+                    style.color = `(${r}, ${g}, ${b})`
                 }
-                arr.push(createElement('p', { text: component.unformatted, style: styleString }))
+                arr.push(createElement('p', { style }, [component.unformatted]))
             }
         }
-        return createElement('div', arr)
+        console.log(arr)
+        return arr[0]
     },
     props: { source: TextComponent },
 }
