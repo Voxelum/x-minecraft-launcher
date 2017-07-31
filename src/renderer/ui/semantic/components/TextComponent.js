@@ -38,7 +38,6 @@ export default {
                 arr.push(createElement('p', { style }, [component.unformatted]))
             }
         }
-        console.log(arr)
         return arr[0]
     },
     props: { source: TextComponent },
