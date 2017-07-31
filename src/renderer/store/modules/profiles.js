@@ -20,20 +20,20 @@ function parseProfile(content) {
         mcOptions: content.mcOptions,
     }
     if (content.type === 'modpack') {
-        return {
+        Object.assign(prof, {
             version: content.version,
             author: content.author,
             description: content.description,
             url: content.url,
             icon: content.icon,
-        }
+        })
     } else if (content.type === 'server') {
-        return {
+        Object.assign(prof, {
             host: content.host,
             port: content.port,
             isLanServer: content.isLanServer,
             icon: content.icon,
-        }
+        })
     }
     return prof
 }
@@ -62,7 +62,8 @@ export default {
                         .then(profile => [file, profile]))))
                 .then((promises) => {
                     for (const [id, profile] of promises) {
-                        context.commit('add', { id, module: mixin(modelModpack, profile) })
+                        const model = profile.type === 'modpack' ? modelModpack : modelServer
+                        context.commit('add', { id, module: mixin(model, profile) })
                     }
                 })
                 .then(() => context.dispatch('readFile', { path: 'profiles.json', fallback: {}, encoding: 'json' }, { root: true })
