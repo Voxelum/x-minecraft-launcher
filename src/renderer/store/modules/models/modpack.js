@@ -12,7 +12,9 @@ const mutations = Object.assign({
 }, profile.mutations)
 
 const actions = {
-
+    save(context, payload) {
+        return context.state;
+    },
 }
 
 function state() {
