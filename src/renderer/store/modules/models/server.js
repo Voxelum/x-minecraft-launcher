@@ -36,6 +36,7 @@ const actions = {
                     icon: status.icon,
                 })
                 console.log(status)
+                status.pingToServer = frame.ping
                 return status
             })
     },
