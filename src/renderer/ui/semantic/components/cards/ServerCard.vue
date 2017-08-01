@@ -22,7 +22,7 @@
                 <i class="user icon"></i> {{this.source.status.onlinePlayers}} / {{this.source.status.capacity}}
             </div>
             <div class="right floated">
-                <i class="wifi icon"></i>
+                <i class="signal icon"></i>
                 {{this.source.status ? (this.source.status.pingToServer ||-1)+" ms":'Cannot connected'}}
             </div>
         </div>

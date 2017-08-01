@@ -17,28 +17,6 @@
             <div style="height:202px"></div>
         </div>
         <div class="eight wide column">
-            <!-- <div class="ui very basic menu">
-                                <a class="item" data-tab="resourcepacks">
-                                    {{$t('resourcepacks')}}
-                                </a>
-                                <a class="item" data-tab="mods">
-                                    {{$t('mods')}}
-                                </a>
-                                <a class="item" data-tab="settings">
-                                    {{$t('settings')}}
-                                </a>
-                            </div>
-                            <div class="ui tab segment" data-tab="resourcepacks">
-                                <resource-pack-list style="height:380px"></resource-pack-list>
-                            </div>
-                            <div class="ui tab segment" style="height:380px" data-tab="mods">
-                                <p class="ui text">
-                                    BBB
-                                </p>
-                            </div>
-                            <div class="ui tab segment" style="height:380px" data-tab="settings">
-                    
-                            </div> -->
         </div>
     </div>
 </template>
