@@ -33,7 +33,6 @@ export default {
             option.server = { ip: profile.host, port: profile.port };
         }
 
-
         return context.dispatch('query', {
             service: 'launcher',
             action: 'launch',
