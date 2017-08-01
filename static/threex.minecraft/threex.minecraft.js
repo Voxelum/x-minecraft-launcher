@@ -237,6 +237,4 @@ THREEx.MinecraftChar.skinWellKnownUrls	= {
 	'woody'			: 'images/woody.png',
 }
 
-new THREEx.MinecraftChar()
-
 export default THREEx
