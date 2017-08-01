@@ -31,7 +31,7 @@
                 <!-- <skin-view width="1200" height="400"></skin-view> -->
             </div>
             <div class="twelve wide column">
-                <card-view v-if="isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
+                <card-view v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
                 <server-view :id="selectedProfileID" :source="selectedProfile" v-else-if="selectedProfile.type==='server'"> </server-view>
                 <profile-view :id="selectedProfileID" :source="selectedProfile" v-else> </profile-view>
             </div>
@@ -43,9 +43,9 @@
                 </div>
             </div>
             <div class="twelve wide column">
-                <common-bar @create="create" v-if="!isSelecting"> </common-bar>
-                <server-bar @launch='launch' v-else-if="selectedProfile.type==='server'"> </server-bar>
-                <profile-bar @launch='launch' v-else> </profile-bar>
+                <common-bar class="non-moveable" @create="create" v-if="!isSelecting"> </common-bar>
+                <server-bar class="non-moveable" @launch='launch' v-else-if="selectedProfile.type==='server'"> </server-bar>
+                <profile-bar class="non-moveable" @launch='launch' v-else> </profile-bar>
             </div>
         </div>
         <login-modal ref="loginModal"></login-modal>
@@ -119,7 +119,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .moveable {
     -webkit-app-region: drag
 }
