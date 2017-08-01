@@ -64,22 +64,24 @@ export default {
                 .then(Array.from)
         },
         launch({ auth, option }) {
-            return Launcher.launch(auth, option).then((process) => {
-                process.on('error', (err) => {
-                    console.error(err)
-                })
-                process.on('exit', (code, signal) => {
-                    console.log('exit:')
-                    console.log(code)
-                    console.log(signal)
-                })
-                process.stdout.on('data', (s) => {
-                    console.log(s)
-                })
-                process.stderr.on('data', (s) => {
-                    console.warn(s)
-                })
-            })
+            console.log(auth)
+            console.log(option)
+            // return Launcher.launch(auth, option).then((process) => {
+            //     process.on('error', (err) => {
+            //         console.error(err)
+            //     })
+            //     process.on('exit', (code, signal) => {
+            //         console.log('exit:')
+            //         console.log(code)
+            //         console.log(signal)
+            //     })
+            //     process.stdout.on('data', (s) => {
+            //         console.log(s)
+            //     })
+            //     process.stderr.on('data', (s) => {
+            //         console.warn(s)
+            //     })
+            // })
         },
     },
 }

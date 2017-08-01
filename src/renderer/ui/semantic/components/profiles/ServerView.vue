@@ -14,6 +14,9 @@
                     </h2>
                 </div>
             </h1>
+            <div class="ui text segment">
+                <text-component :source="status.serverMOTD"></text-component>
+            </div>
             <div style="height:202px"></div>
         </div>
         <div class="eight wide column">
@@ -35,14 +38,11 @@ export default {
         modify(event) {
             this.$store.commit('profiles/' + this.id + '/set' + event.target.name, event.target.value)
         },
-        ping() {
-            this.$store.dispatch(`profiles/${this.id}/ping`)
+        refresh() {
+            this.$store.dispatch(`profiles/${this.id}/refresh`)
         },
     },
     mounted() {
-        this.ping();
-        this.$nextTick(() => {
-        })
     },
 }
 </script>

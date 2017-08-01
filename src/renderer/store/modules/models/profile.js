@@ -17,7 +17,14 @@ function state() {
         mcOptions: [],
     }
 }
-const getters = {}
+const getters = {
+    errors(states) {
+        const errors = []
+        if (states.version === '') errors.push('profile.empty.version')
+        if (states.java === '') errors.push('profile.empty.java')
+        return errors
+    },
+}
 const mutations = {
     setName(states, name) {
         states.name = name
