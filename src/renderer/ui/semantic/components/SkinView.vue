@@ -14,7 +14,7 @@ export default {
     mounted(e) {
         let s = document.getElementById('scene')
         var renderer = new THREE.WebGLRenderer({ canvas: s });
-        renderer.setSize(this.width, this.height);
+        // renderer.setSize(this.width, this.height);
         renderer.setClearColor('#FFF', 1)
 
         var onRenderFcts = [];
@@ -31,8 +31,6 @@ export default {
         scene.add(character.root)
         let vec = character.root.position
         camera.lookAt(new THREE.Vector3(0, 0, 0))
-
-
 
         //////////////////////////////////////////////////////////////////////////////////
         //		controls							//
