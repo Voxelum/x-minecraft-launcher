@@ -1,4 +1,4 @@
-import { TextComponent, ServerInfo } from 'ts-minecraft'
+import { TextComponent, ServerInfo, ServerStatus } from 'ts-minecraft'
 import '../../../shared/protocol'
 import profile from './profile'
 
@@ -26,7 +26,8 @@ const actions = {
         saved.status = undefined;
         return saved;
     },
-    ping(context, payload) {
+    refresh(context, payload) {
+        context.commit('putAll', { status: ServerStatus.pinging() })
         return context.dispatch('query', {
             service: 'servers',
             action: 'ping',
@@ -41,9 +42,13 @@ const actions = {
                 }
                 const versions = profile[status.protocolVersion]
                 if (versions) all.versoin = versions[0]
-                console.log(status)
+                console.log(all)
                 context.commit('putAll', all)
                 return status
+            }, (err) => {
+                if (err.code === 'ETIMEOUT') {
+                    context.commit('putAll', { status: ServerStatus.error() })
+                }
             })
     },
 }

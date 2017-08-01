@@ -28,12 +28,12 @@
         </div>
         <div class="row" style="height:500px;">
             <div class="four wide middle aligned center aligned column">
-                 <skin-view width="1200" height="400"></skin-view> 
+                <!-- <skin-view width="1200" height="400"></skin-view>  -->
             </div>
             <div class="twelve wide column">
-                <card-view v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
-                <server-view :id="selectedProfileID" :source="selectedProfile" v-else-if="selectedProfile.type==='server'"> </server-view>
-                <profile-view :id="selectedProfileID" :source="selectedProfile" v-else> </profile-view>
+                <card-view ref='view' v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
+                <server-view ref='view' :id="selectedProfileID" :source="selectedProfile" v-else-if="selectedProfile.type==='server'"> </server-view>
+                <profile-view ref='view' :id="selectedProfileID" :source="selectedProfile" v-else> </profile-view>
             </div>
         </div>
         <div class="moveable black row" style="height:60px">
@@ -43,9 +43,29 @@
                 </div>
             </div>
             <div class="twelve wide column">
-                <common-bar class="non-moveable" @create="create" v-if="!isSelecting"> </common-bar>
-                <server-bar class="non-moveable" @launch='launch' v-else-if="selectedProfile.type==='server'"> </server-bar>
-                <profile-bar class="non-moveable" @launch='launch' v-else> </profile-bar>
+                <div class="ui icon circlar inverted button non-moveable" @click="refresh">
+                    <i class="refresh icon"></i>
+                </div>
+                <i class="warning sign icon"></i> 0
+                <span style="padding:3px"></span>
+                <i class="cloud download icon"></i> 0
+                <i class="tasks icon"></i> 0
+                <span v-if="!isSelecting">
+                    <div class="ui icon right floated circlar inverted button non-moveable" @click="create('profile')">
+                        <i class="plus icon"></i>
+                        {{$t('profile.add.modpack')}}
+                    </div>
+                    <div class="ui icon right floated circlar inverted button non-moveable" @click="create('server')">
+                        <i class="plus icon"></i>
+                        {{$t('profile.add.server')}}
+                    </div>
+                </span>
+                <span v-else>
+                    <div class="ui icon right floated circlar inverted button non-moveable" @click="launch">
+                        <i class="rocket icon"></i>
+                        {{$t('launch')}}
+                    </div>
+                </span>
             </div>
         </div>
         <login-modal ref="loginModal"></login-modal>
@@ -71,17 +91,12 @@ import ProfileModal from './components/modals/ProfileModal'
 import ServerModal from './components/modals/ServerModal'
 import DeleteModal from './components/modals/DeleteModal'
 
-import CommonBar from './components/bars/CommonBar'
-import ServerBar from './components/bars/ServerBar'
-import ProfileBar from './components/bars/ProfileBar'
-
 import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
     components: {
         ProfileView, ServerView, SkinView, CardView,
         LoginModal, ServerModal, ProfileModal, DeleteModal,
-        CommonBar, ServerBar, ProfileBar,
     },
     computed: {
         ...mapGetters('profiles', {
@@ -94,9 +109,13 @@ export default {
         username() {
             return this.$store.state.auth.authInfo ? this.$store.state.auth.authInfo.selectedProfile.name : 'Steve';
         },
+        canLaunch() {
+            return this.$store.getters[`profiles/${this.selectedProfileID}/canLaunch`]
+        }
     },
     mounted(e) {
         if (this.username === 'Steve') this.showLogin()
+        console.log(this.$store.getters['profiles/errors'])
     },
     methods: {
         ...mapActions('profiles', {
@@ -115,6 +134,9 @@ export default {
         create(type) {
             this.showModal(type)
         },
+        refresh() {
+            this.$refs.view.refresh()
+        }
     },
 }
 </script>

@@ -24,6 +24,10 @@ export default {
     },
     getters: {
         ...singleSelect.getters,
+        errors(states, getters) {
+            if (getters.selectedKey !== '') return getters[getters.selectedKey].errors
+            return []
+        },
     },
     mutations: {
         ...singleSelect.mutations,
