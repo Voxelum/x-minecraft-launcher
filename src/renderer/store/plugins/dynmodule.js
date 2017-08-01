@@ -20,7 +20,7 @@ export default (store) => {
             paths.push(id)
             if (!module.namespaced) module.namespaced = true;
             store.registerModule(paths, module);
-            store.dispatch(`${paths}/load`)
+            // store.dispatch(`${paths}/load`)
         } else if (func === 'remove') {
             console.log(`payload ${payload}`)
             if (!payload) {
