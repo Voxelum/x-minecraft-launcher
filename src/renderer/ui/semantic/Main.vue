@@ -28,7 +28,7 @@
         </div>
         <div class="row" style="height:500px;">
             <div class="four wide middle aligned center aligned column">
-                <!-- <skin-view width="1200" height="400"></skin-view> -->
+                 <skin-view width="1200" height="400"></skin-view> 
             </div>
             <div class="twelve wide column">
                 <card-view v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
