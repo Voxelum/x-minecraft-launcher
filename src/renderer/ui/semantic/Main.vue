@@ -15,7 +15,6 @@
                         <i class="right chevron inverted icon divider" style="color:white"></i>
                         <a class="section">
                             <div class="ui inverted circular button non-moveable">
-                                <i class="user icon"></i>
                                 {{selectedProfile.name}}
                             </div>
                         </a>
@@ -23,7 +22,8 @@
                 </div>
             </div>
             <div class="two wide center aligned column">
-                <button class="ui inverted circular button non-moveable">{{username}}</button>
+                <div class="ui inverted circular button non-moveable">
+                    <i class="user icon"></i>{{username}}</div>
             </div>
         </div>
         <div class="row" style="height:500px;">
