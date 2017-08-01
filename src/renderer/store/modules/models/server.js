@@ -1,5 +1,5 @@
 import { TextComponent, ServerInfo } from 'ts-minecraft'
-
+import '../../../shared/protocol'
 import profile from './profile'
 
 function state() {
@@ -35,11 +35,14 @@ const actions = {
             .then((frame) => {
                 const status = ServerInfo.parseFrame(frame)
                 status.pingToServer = frame.ping
-                context.commit('putAll', {
+                const all = {
                     icon: status.icon,
                     status,
-                })
+                }
+                const versions = profile[status.protocolVersion]
+                if (versions) all.versoin = versions[0]
                 console.log(status)
+                context.commit('putAll', all)
                 return status
             })
     },
