@@ -11,16 +11,16 @@
                 {{this.source.name}}
             </div>
             <div class="meta">
-                {{this.source.version?this.source.version.length!=0?"unknown":this.source.version:"unknown"}}
-                <span class="date">{{this.source.createdDate}}</span>
+                <text-component :source="source.status.gameVersion"></text-component>
+                <!-- <span class="date">{{this.source.createdDate}}</span> -->
             </div>
             <div class="description">
+                <text-component :source="source.status.serverMOTD"></text-component>
             </div>
         </div>
         <div class="extra content">
-            <div>
-                <i class="user icon"></i> {{this.source.status.onlinePlayers}} / {{this.source.status.capacity}}
-            </div>
+            <span>
+                <i class="user icon"></i> {{this.source.status.onlinePlayers}} / {{this.source.status.capacity}}</span>
             <div class="right floated">
                 <i class="signal icon"></i>
                 {{this.source.status ? (this.source.status.pingToServer ||-1)+" ms":'Cannot connected'}}
@@ -31,7 +31,9 @@
 
 <script>
 
+import TextComponent from '../TextComponent'
 export default {
+    components: { TextComponent },
     data() {
         return {
             hoverDelete: false,

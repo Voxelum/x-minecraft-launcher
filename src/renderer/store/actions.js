@@ -15,6 +15,7 @@ function write(path, data) {
 }
 export default {
     launch(context, payload) {
+        console.log('calling launch....')
         const profile = context.getters['profiles/selected'];
         const profileId = context.getters['profiles/selectedKey'];
         const auth = context.state.auth.authInfo;

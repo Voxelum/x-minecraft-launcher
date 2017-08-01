@@ -8,6 +8,9 @@ export default {
         ...vuex.mapGetters('profiles', ['allKeys', 'getByKey']),
     },
     methods: {
+        refresh() {
+            for (const key of this.allKeys) this.$store.dispatch(`profiles/${key}/refresh`)
+        },
     },
     render(createElement) {
         console.log('on render card-view');

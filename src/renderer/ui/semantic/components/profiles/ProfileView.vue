@@ -60,7 +60,7 @@ import VersionTableView from '../VersionTableView'
 import ResourcePackList from '../ResourcePackList'
 import TextComponent from '../TextComponent'
 export default {
-    components: {  VersionTableView, ResourcePackList, TextComponent },
+    components: { VersionTableView, ResourcePackList, TextComponent },
     props: ['source', 'id'],
     computed: {
         ...mapState('versions', ['minecraft']),
@@ -71,7 +71,10 @@ export default {
         modify(event) {
             this.$store.commit('profiles/' + this.id + '/set' + event.target.name, event.target.value)
         },
-        ...mapActions('versions', ['refresh']),
+        refresh() {
+            this.$store.dispatch(`profiles/${this.id}/refresh`)
+        },
+        // ...mapActions('versions', ['refresh']),
     },
     mounted() {
         this.refresh()

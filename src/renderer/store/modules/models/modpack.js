@@ -15,6 +15,9 @@ const actions = {
     save(context, payload) {
         return context.state;
     },
+    refresh(context, payload) {
+
+    },
 }
 
 function state() {
