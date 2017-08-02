@@ -20,6 +20,7 @@
                         </a>
                     </span>
                 </div>
+                <div class="ui inverted circular right floated button non-moveable">Help</div>
             </div>
             <div class="two wide center aligned middle aligned column">
                 <div id="userDropdown" class="non-moveable ui inverted pointing dropdown link item">
@@ -27,8 +28,10 @@
                     {{username}}
                     <i class="dropdown icon"></i>
                     <div class="inverted menu">
-                        <div class="inverted item"><i class="id card outline icon"></i>Profile</div>
-                        <div class="inverted item"><i class="sign out icon"></i>Logout</div>
+                        <div class="inverted item">
+                            <i class="id card outline icon"></i>Profile</div>
+                        <div class="inverted item">
+                            <i class="sign out icon"></i>Logout</div>
                     </div>
                 </div>
             </div>
@@ -72,9 +75,10 @@
                     </div>
                 </span>
                 <span v-else>
-                    <div class="ui icon right floated inverted large button non-moveable" @click="launch">
+                    <div class="ui icon right floated inverted button non-moveable" @click="launch">
+                        &nbsp&nbsp&nbsp
                         <i class="rocket icon"></i>
-                        {{$t('launch')}}
+                        {{$t('launch')}} &nbsp&nbsp&nbsp&nbsp
                     </div>
                 </span>
             </div>
@@ -124,7 +128,6 @@ export default {
             return this.$store.getters[`profiles/${this.selectedProfileID}/canLaunch`]
         },
         numberOfErrors() {
-            console.log(`computing errors: ${this.$store.getters.errors.length}`)
             return this.$store.getters.errors.length;
         },
         numberOfTasks() {
