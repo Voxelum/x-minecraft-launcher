@@ -41,6 +41,9 @@ export default {
         });
         // return ''
     },
+    park(context, payload) {
+        
+    },
     query(context, payload) {
         return launcher.query(payload.service, payload.action, payload.payload)
     },
