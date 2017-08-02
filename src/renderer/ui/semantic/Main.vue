@@ -124,6 +124,7 @@ export default {
             return this.$store.getters[`profiles/${this.selectedProfileID}/canLaunch`]
         },
         numberOfErrors() {
+            console.log(`computing errors: ${this.$store.getters.errors.length}`)
             return this.$store.getters.errors.length;
         },
         numberOfTasks() {

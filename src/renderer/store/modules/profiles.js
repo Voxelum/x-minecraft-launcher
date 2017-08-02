@@ -26,8 +26,8 @@ export default {
         ...singleSelect.getters,
         errors(states, getters) {
             if (getters.selectedKey !== '') {
-                const get = getters[getters.selectedKey]
-                if (get) return get.errors
+                const get = getters[`${getters.selectedKey}/errors`]
+                if (get) return get
             }
             return []
         },
