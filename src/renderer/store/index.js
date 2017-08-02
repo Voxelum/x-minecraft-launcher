@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import plugins from './plugins'
 import modules from './modules'
+import getters from './getters'
 import actions from './actions'
 import loadable from './loadable'
 
@@ -16,11 +17,7 @@ for (const key in modules) {
 
 const store = new Vuex.Store({
     modules,
-    getters: {
-        rootPath(state, getters) {
-            return state.settings.rootPath
-        },
-    },
+    getters,
     actions,
     strict: process.env.NODE_ENV !== 'production',
     plugins,

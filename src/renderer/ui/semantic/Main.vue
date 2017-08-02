@@ -1,12 +1,12 @@
 <template>
     <div class="ui celled grid segment" style="margin:0;">
         <div class="moveable black row">
-            <div class="four wide center aligned column">
+            <div class="four wide center aligned middle aligned column">
                 <h1 class="inverted ui header">
                     ILauncher
                 </h1>
             </div>
-            <div class="ten wide column">
+            <div class="ten wide column ">
                 <div class="ui breadcrumb">
                     <a class="section">
                         <div class="ui inverted circular button non-moveable" @click="unselect">Home</div>
@@ -14,16 +14,23 @@
                     <span v-if="isSelecting">
                         <i class="right chevron inverted icon divider" style="color:white"></i>
                         <a class="section">
-                            <div class="ui inverted circular button non-moveable">
+                            <div class="ui inverted circular  button non-moveable">
                                 {{selectedProfile.name}}
                             </div>
                         </a>
                     </span>
                 </div>
             </div>
-            <div class="two wide center aligned column">
-                <div class="ui inverted circular button non-moveable">
-                    <i class="user icon"></i>{{username}}</div>
+            <div class="two wide center aligned middle aligned column">
+                <div id="userDropdown" class="non-moveable ui inverted pointing dropdown link item">
+                    <i class="user icon"></i>
+                    {{username}}
+                    <i class="dropdown icon"></i>
+                    <div class="inverted menu">
+                        <div class="inverted item"><i class="id card outline icon"></i>Profile</div>
+                        <div class="inverted item"><i class="sign out icon"></i>Logout</div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row" style="height:500px;">
@@ -37,31 +44,35 @@
             </div>
         </div>
         <div class="moveable black row" style="height:60px">
-            <div class="four wide center aligned column">
+            <div class="four wide center aligned middle aligned column">
                 <div class="ui icon inverted button non-moveable">
                     <i class="setting icon"></i>
                 </div>
-            </div>
-            <div class="twelve wide column">
-                <div class="ui icon circlar inverted button non-moveable" @click="refresh">
+                <div class="ui icon inverted button non-moveable" @click="refresh">
                     <i class="refresh icon"></i>
                 </div>
-                <i class="warning sign icon"></i> 0
-                <span style="padding:3px"></span>
-                <i class="cloud download icon"></i> 0
-                <i class="tasks icon"></i> 0
+            </div>
+            <div class="twelve wide middle aligned column">
+                <span class="non-moveable ui inverted basic icon buttons">
+                    <div class="ui button">
+                        <i class="warning sign icon"></i> {{numberOfErrors}}
+                    </div>
+                    <div class="ui button">
+                        <i class="tasks icon"></i> {{numberOfTasks}}
+                    </div>
+                </span>
                 <span v-if="!isSelecting">
-                    <div class="ui icon right floated circlar inverted button non-moveable" @click="create('profile')">
+                    <div class="ui icon right floated  inverted button non-moveable" @click="create('profile')">
                         <i class="plus icon"></i>
                         {{$t('profile.add.modpack')}}
                     </div>
-                    <div class="ui icon right floated circlar inverted button non-moveable" @click="create('server')">
+                    <div class="ui icon right floated  inverted button non-moveable" @click="create('server')">
                         <i class="plus icon"></i>
                         {{$t('profile.add.server')}}
                     </div>
                 </span>
                 <span v-else>
-                    <div class="ui icon right floated circlar inverted button non-moveable" @click="launch">
+                    <div class="ui icon right floated inverted large button non-moveable" @click="launch">
                         <i class="rocket icon"></i>
                         {{$t('launch')}}
                     </div>
@@ -111,11 +122,24 @@ export default {
         },
         canLaunch() {
             return this.$store.getters[`profiles/${this.selectedProfileID}/canLaunch`]
-        }
+        },
+        numberOfErrors() {
+            return this.$store.getters.errors.length;
+        },
+        numberOfTasks() {
+            return 0;
+        },
     },
     mounted(e) {
         if (this.username === 'Steve') this.showLogin()
-        console.log(this.$store.getters['profiles/errors'])
+        $('#userDropdown').dropdown(
+            {
+                on: 'hover',
+                action: function () {
+                    return false
+                }
+            }
+        )
     },
     methods: {
         ...mapActions('profiles', {
@@ -148,5 +172,12 @@ export default {
 
 .non-moveable {
     -webkit-app-region: no-drag
+}
+</style>
+<style scoped>
+.footicon {}
+
+.footicon:hover {
+    box-shadow: inset 0 0 150px 150px rgba(255, 255, 255, 0.3);
 }
 </style>
