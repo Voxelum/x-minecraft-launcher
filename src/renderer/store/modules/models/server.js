@@ -1,5 +1,5 @@
 import { TextComponent, ServerInfo, ServerStatus } from 'ts-minecraft'
-import '../../../shared/protocol'
+import protocol from '../../../shared/protocol'
 import profile from './profile'
 
 function state() {
@@ -15,11 +15,15 @@ function state() {
 }
 const getters = {
     errors(states) {
-        const err = profile.getters.errors(state)
+        // const err = profile.getters.errors(state)
+        // this probably is a issue.... if i delegate to profile's getter; the responsive will fail.
+        const errors = []
+        if (states.version === '' || states.version === undefined || states.version === null) errors.push('profile.empty.version')
+        if (states.java === '' || states.java === undefined || states.java === null) errors.push('profile.empty.java')
         if (states.host === '' || states.host === undefined || states.host === null) {
-            err.push('server.empty.host')
+            errors.push('server.empty.host')
         }
-        return err;
+        return errors;
     },
 }
 
@@ -45,10 +49,11 @@ const actions = {
                     icon: status.icon,
                     status,
                 }
-                const versions = profile[status.protocolVersion]
-                if (versions) all.versoin = versions[0]
-                console.log(all)
+                const versions = protocol[status.protocolVersion]
+                if (versions) all.version = versions[0]
+                console.log('@server')
                 context.commit('putAll', all)
+                console.log(context.state)
                 return status
             }, (err) => {
                 if (err.code === 'ETIMEOUT') {
