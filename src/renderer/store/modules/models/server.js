@@ -13,9 +13,14 @@ function state() {
     theState.status = {}
     return theState
 }
-/* eslint-disable no-unused-vars */
 const getters = {
-    // Use mapState
+    errors(states) {
+        const err = profile.getters.errors(state)
+        if (states.host === '' || states.host === undefined || states.host === null) {
+            err.push('server.empty.host')
+        }
+        return err;
+    },
 }
 
 const mutations = profile.mutations
