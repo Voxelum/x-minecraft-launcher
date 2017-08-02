@@ -48,7 +48,7 @@ app.on('ready', () => {
     createWindow()
 })
 
-app.on('window-all-closed', () => {
+app.on('window-all-closed', () => { // will be removed later...
     if (process.platform !== 'darwin') {
         app.quit()
     }
@@ -60,14 +60,22 @@ app.on('activate', () => {
     }
 })
 
-function _buildTree() {
-    // well this is future work 2333 
-    // TODO toposort for module with dependencies and build tree 
-}
+ipcMain.on('park', () => {
+    mainWindow.close()
+    mainWindow = null;
+})
+ipcMain.on('restart', () => {
+    createWindow()
+})
+ipcMain.on('exit', () => {
+    mainWindow.close()
+    if (process.platform !== 'darwin') {
+        app.quit()
+    }
+})
 
 const launcher = require('./launcher');
 const services = require('./services').default;
-// const modules = require('./module-io').default;
 
 console.log('Start services initialize')
 
