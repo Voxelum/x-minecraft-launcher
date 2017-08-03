@@ -20,6 +20,9 @@
             <div style="height:202px"></div>
         </div>
         <div class="eight wide column">
+            <input class="ui input" :value="source.host">
+            <input class="ui input" :value="source.port">
+            <div>{{source.version}}</div>
         </div>
     </div>
 </template>
