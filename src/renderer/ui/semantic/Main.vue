@@ -23,14 +23,14 @@
                 <div class="ui inverted circular right floated button non-moveable">Help</div>
             </div>
             <div class="two wide center aligned middle aligned column">
-                <div id="userDropdown" class="non-moveable ui inverted pointing dropdown link item">
+                <div id="userDropdown" class="non-moveable ui inverted pointing dropdown">
                     <i class="user icon"></i>
                     {{username}}
                     <i class="dropdown icon"></i>
-                    <div class="inverted menu">
-                        <div class="inverted item">
+                    <div class="menu">
+                        <div class="item">
                             <i class="id card outline icon"></i>Profile</div>
-                        <div class="inverted item">
+                        <div class="item">
                             <i class="sign out icon"></i>Logout</div>
                     </div>
                 </div>
@@ -48,8 +48,18 @@
         </div>
         <div class="moveable black row" style="height:60px">
             <div class="four wide center aligned middle aligned column">
-                <div class="ui icon inverted button non-moveable">
+                <div class="ui icon inverted button pointing dropdown non-moveable">
                     <i class="setting icon"></i>
+                    <div class="menu">
+                        <div class="item">
+                            <i class="id card outline icon"></i>
+                            Profile
+                        </div>
+                        <div class="item">
+                            <i class="sign out icon"></i>
+                            Logout
+                        </div>
+                    </div>
                 </div>
                 <div class="ui icon inverted button non-moveable" @click="refresh">
                     <i class="refresh icon"></i>
@@ -57,11 +67,25 @@
             </div>
             <div class="twelve wide middle aligned column">
                 <span class="non-moveable ui inverted basic icon buttons">
-                    <div class="ui button">
-                        <i class="warning sign icon"></i> {{numberOfErrors}}
+                    <div id="warningPopup" class="ui button">
+                        <i class="warning sign icon"></i> {{errorsCount}}
+                    </div>
+                    <div class="ui flowing popup top left transition hidden">
+                        <div class="ui middle aligned divided list" style="max-height:300px; min-width:300px; overflow:hidden">
+                            <div v-for="(moduleErr, index) in errors" :key='moduleErr' class="item">
+                                {{index}}
+                                <div class="ui middle aligned selection divided list">
+                                    <div v-for="err of moduleErr" :key="err" class="item">
+                                        <div class="item">
+                                            <i class="warning icon"></i> {{err}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="ui button">
-                        <i class="tasks icon"></i> {{numberOfTasks}}
+                        <i class="tasks icon"></i> {{tasks.length}}
                     </div>
                 </span>
                 <span v-if="!isSelecting">
@@ -118,20 +142,12 @@ export default {
             'selectedProfile': 'selected',
             'selectedProfileID': 'selectedKey'
         }),
+        ...mapGetters(['errors', 'tasks', 'errorsCount']),
         isSelecting() {
             return this.selectedProfileID != undefined && this.selectedProfileID != '' && this.selectedProfileID != null
         },
         username() {
             return this.$store.state.auth.authInfo ? this.$store.state.auth.authInfo.selectedProfile.name : 'Steve';
-        },
-        canLaunch() {
-            return this.$store.getters[`profiles/${this.selectedProfileID}/canLaunch`]
-        },
-        numberOfErrors() {
-            return this.$store.getters.errors.length;
-        },
-        numberOfTasks() {
-            return 0;
         },
     },
     mounted(e) {
@@ -144,6 +160,17 @@ export default {
                 }
             }
         )
+        $('#warningPopup').popup(
+            {
+                hoverable: true,
+                position: 'top left',
+                delay: {
+                    show: 300,
+                    hide: 800
+                },
+            }
+        )
+        console.log(this.errors)
     },
     methods: {
         ...mapActions('profiles', {
@@ -176,12 +203,5 @@ export default {
 
 .non-moveable {
     -webkit-app-region: no-drag
-}
-</style>
-<style scoped>
-.footicon {}
-
-.footicon:hover {
-    box-shadow: inset 0 0 150px 150px rgba(255, 255, 255, 0.3);
 }
 </style>
