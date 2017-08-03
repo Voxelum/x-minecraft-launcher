@@ -20,11 +20,6 @@ function state() {
 const getters = {
     errors(states) {
         const errors = []
-<<<<<<< HEAD
-=======
-        console.log('@profile')
-        console.log(states.version)
->>>>>>> 25389f94bf3b1da5b420f35b6dc418565d593071
         if (states.version === '' || states.version === undefined || states.version === null) errors.push('profile.empty.version')
         if (states.java === '' || states.java === undefined || states.java === null) errors.push('profile.empty.java')
         return errors
