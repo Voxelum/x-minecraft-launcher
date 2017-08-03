@@ -1,15 +1,33 @@
 export default {
+    /**
+     * Return the errros by module.
+     * @param {* State} state The vuex root state
+     * @param {* Getters} getters The vuex root getters
+     */
     errors(state, getters) {
-        let errors = []
+        const errors = {}
         for (const key in state) {
             if (state.hasOwnProperty(key)) {
                 const get = getters[`${key}/errors`]
                 if (get) {
-                    errors = errors.concat(get)
+                    errors[key] = get
                 }
             }
         }
         return errors;
+    },
+    errorsCount(state, getters) {
+        let count = 0
+        const errors = getters.errors
+        for (const key in errors) {
+            if (errors.hasOwnProperty(key)) {
+                count += errors[key].length
+            }
+        }
+        return count
+    },
+    tasks(state, getters) {
+        return []
     },
     rootPath(state, getters) {
         return state.settings.rootPath
