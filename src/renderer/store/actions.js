@@ -1,5 +1,6 @@
 import fs from 'fs-extra'
 import paths from 'path'
+import { MinecraftFolder } from 'ts-minecraft'
 import { remote, ipcRenderer } from 'electron'
 import { v4 } from 'uuid'
 
@@ -14,18 +15,45 @@ function write(path, data) {
     });
 }
 
+function link(src, dest) {
+    return new Promise((resolve, reject) => {
+        fs.link(src, dest, (err) => {
+            if (err) reject(err)
+            else resolve()
+        })
+    });
+}
+function symlink(src, dest) {
+    return new Promise((resolve, reject) => {
+        fs.symlink(src, dest, (err) => {
+            if (err) reject(err)
+            else resolve()
+        })
+    });
+}
+
+function makeEnv(rootLoc, profileLoc) {
+}
 
 export default {
+    exit() {
+        ipcRenderer.sendSync('exit')
+    },
     launch(context, payload) {
         console.log('calling launch....')
         const profile = context.getters['profiles/selected'];
         const profileId = context.getters['profiles/selectedKey'];
         const auth = context.state.auth.authInfo;
 
-        // TODO check the launch condition!
+        if (profile === undefined || profile === null) return Promise.reject('launch.profile.empty')
+        if (auth === undefined || auth === null) return Promise.reject('launch.auth.empty');
 
         const type = profile.type;
         const version = profile.version;
+
+        if (version === undefined || version === '' || version === null) return Promise.reject('launch.version.empty')
+
+        // TODO check the launch condition!
         const option = {
             gamePath: paths.join(rootPath, 'profiles', profileId),
             resourcePath: rootPath,
@@ -34,6 +62,8 @@ export default {
             maxMemory: profile.maxMemory || 1024,
             version,
         }
+        makeEnv(new MinecraftFolder(rootPath), new MinecraftFolder(option.gamePath))
+
         if (profile.type === 'server') {
             option.server = { ip: profile.host, port: profile.port };
         }
@@ -44,7 +74,7 @@ export default {
             payload: { auth, option },
         }).then(() => {
             // save all or do other things...
-            ipcRenderer.send('park')
+            ipcRenderer.sendSync('park')
         });
     },
 
