@@ -1,6 +1,5 @@
 import * as paths from 'path'
 import { ipcMain } from 'electron'
-import launcher from '../launcher'
 
 const fs = require('fs');
 const {
@@ -18,9 +17,8 @@ export default {
     },
     actions: {
         launch({ auth, option }) {
-            console.log(auth)
+            console.log('launch:')
             console.log(option)
-            ipcMain.emit('park')
             return Launcher.launch(auth, option).then((process) => {
                 process.on('error', (err) => {
                     console.error(err)
