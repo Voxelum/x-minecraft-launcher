@@ -26,7 +26,7 @@ let mainWindow
 const winURL = process.env.NODE_ENV === 'development' ?
     'http://localhost:9080' :
     `file://${__dirname}/index.html`
-
+let parking = false;
 
 function createWindow() {
     /**
@@ -50,7 +50,8 @@ app.on('ready', () => {
     createWindow()
 })
 
-app.on('window-all-closed', () => { // will be removed later...
+app.on('window-all-closed', () => {
+    if (parking) return;
     if (process.platform !== 'darwin') {
         app.quit()
     }
@@ -63,10 +64,12 @@ app.on('activate', () => {
 })
 
 ipcMain.on('park', () => {
+    parking = true;
     mainWindow.close()
     mainWindow = null;
 })
 ipcMain.on('restart', () => {
+    parking = false;
     createWindow()
 })
 ipcMain.on('exit', () => {

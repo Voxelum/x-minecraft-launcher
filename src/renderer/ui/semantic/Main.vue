@@ -152,10 +152,15 @@ export default {
     },
     mounted(e) {
         if (this.username === 'Steve') this.showLogin()
+        const self = this
         $('#userDropdown').dropdown(
             {
                 on: 'hover',
-                action: function () {
+                action: function (text, value, element) {
+                    if (element.lastChild.textContent === 'Profile') {
+                        
+                    } else self.showModal('login')
+
                     return false
                 }
             }
@@ -182,9 +187,6 @@ export default {
         ...mapMutations('profiles', ['unselect']),
         showModal(id, args) {
             this.$refs[id + "Modal"].show(args)
-        },
-        showLogin() {
-            this.showModal('login')
         },
         create(type) {
             this.showModal(type)
