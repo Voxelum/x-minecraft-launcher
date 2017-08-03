@@ -1,5 +1,3 @@
-import launcher from '../../launcher'
-
 export default (store) => {
     store.subscribe((mutation, state) => {
         const type = mutation.type
