@@ -14,14 +14,14 @@
             </div>
             <table class="ui very basic selectable celled center aligned table">
                 <tbody>
-                    <tr style="cursor: pointer;" v-for="meta in metas" :key="meta" :url="meta.url" :version-id='meta.id' @click="selectVersion">
+                    <tr style="cursor: pointer;" v-for="meta in metas" :key="meta" :url="meta.url" :version-id='meta.id' @click="onselect">
                         <td>
                             <div class="ui ribbon label">{{meta.type}}</div>
                             <br> {{meta.id}}
                         </td>
                         <td>{{meta.releaseTime}}</td>
                         <td>{{meta.time}}</td>
-                        <td class="selectable" :ver="meta.id" data-tooltip="Download this version" data-position="left center" @click="download" v-if="meta.status=='remote'">
+                        <td class="selectable" :ver="meta.id" data-tooltip="Download this version" data-position="left center" @click="ondownload" v-if="meta.status=='remote'">
                             <div style="padding:0 10px 0 10px;pointer-events: none;">
                                 <i class="download icon"></i>
                             </div>
@@ -71,12 +71,12 @@ export default {
         }
     },
     methods: {
-        selectVersion(event) {
+        onselect(event) {
             const vId = event.srcElement.parentNode.getAttribute('version-id')
             if (vId != this.selectingVersion)
                 this.$store.commit(`profiles/${this.selectedKey}/setVersion`, event.srcElement.parentNode.getAttribute('version-id'))
         },
-        download(event) {
+        ondownload(event) {
             this.$store.dispatch('versions/download', this.metaMap.get(event.target.getAttribute('ver')))
             return false
         }
