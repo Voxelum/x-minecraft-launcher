@@ -16,8 +16,10 @@ if (!devMod) {
     global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
-ipcMain.on('ping', (event) => {
+ipcMain.on('ping', (event, time) => {
+    console.log(time)
     event.sender.send('pong')
+    console.log(`single spend ${Date.now() - time}`)
 })
 
 let mainWindow

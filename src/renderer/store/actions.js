@@ -1,7 +1,7 @@
 import fs from 'fs-extra'
 import paths from 'path'
-import { remote } from 'electron'
-import launcher from '../launcher'
+import { remote, ipcRenderer } from 'electron'
+import { v4 } from 'uuid'
 
 const rootPath = paths.join(remote.app.getPath('appData'), '.launcher')
 function write(path, data) {
@@ -13,6 +13,8 @@ function write(path, data) {
         })
     });
 }
+
+
 export default {
     launch(context, payload) {
         console.log('calling launch....')
@@ -41,11 +43,27 @@ export default {
         });
         // return ''
     },
+
     park(context, payload) {
-        
+
     },
-    query(context, payload) {
-        return launcher.query(payload.service, payload.action, payload.payload)
+    query(context, { service, action, args }) {
+        return new Promise((resolve, reject) => {
+            const id = v4()
+            ipcRenderer.send('query', {
+                id,
+                service,
+                action,
+                args,
+            })
+            ipcRenderer.once(id, (event, {
+                rejected,
+                resolved,
+            }) => {
+                if (rejected) reject(rejected)
+                else resolve(resolved)
+            })
+        });
     },
     readFolder(context, { path }) {
         path = paths.join(rootPath, path);

@@ -1,19 +1,12 @@
-import {
-    app,
-    BrowserWindow,
-    ipcMain,
-} from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import * as fs from 'fs'
 
 import services from './services'
 
 const paths = require('path')
-const {
-    EventEmitter,
-} = require('events')
+const { EventEmitter } = require('events')
 
 ipcMain.on('query', (event, payload) => {
-    console.log(payload)
     const {
         id,
         service,
