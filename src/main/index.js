@@ -75,18 +75,9 @@ ipcMain.on('exit', () => {
         app.quit()
     }
 })
+ipcMain.on('ping', (event, time) => {
+    event.sender.send('pong')
+    console.log(`single spend ${Date.now() - time}`)
+})
 
-const launcher = require('./launcher');
-const services = require('./services').default;
-
-console.log('Start services initialize')
-
-for (const key in services) {
-    if (services.hasOwnProperty(key)) {
-        const service = services[key];
-        if (service.initialize) {
-            console.log(`Initializes service ${key}`)
-            service.initialize();
-        }
-    }
-}
+require('./services'); // load all service 

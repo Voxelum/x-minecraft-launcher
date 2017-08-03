@@ -1,5 +1,3 @@
-import launcher from '../launcher'
-
 const fs = require('fs')
 const {
     Version,
