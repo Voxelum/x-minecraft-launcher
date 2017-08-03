@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { ipcRenderer } from 'electron'
 
 import plugins from './plugins'
 import modules from './modules'
@@ -22,6 +23,13 @@ const store = new Vuex.Store({
     strict: process.env.NODE_ENV !== 'production',
     plugins,
 });
+
+const first = Date.now()
+ipcRenderer.send('ping', first);
+ipcRenderer.once('pong', () => {
+    const time = Date.now() - first
+    console.debug(`double spend ${time} ms`)
+})
 
 export const init = () => {
     console.log('start loading modules')
@@ -46,7 +54,6 @@ export const init = () => {
     }
     return Promise.all(promises).then(() => {
         console.log('done for all promise!')
-        console.log(store)
         return store
     }, (err) => {
         console.log('Done with Error')

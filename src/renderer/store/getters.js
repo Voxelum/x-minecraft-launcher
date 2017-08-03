@@ -9,7 +9,7 @@ export default {
         for (const key in state) {
             if (state.hasOwnProperty(key)) {
                 const get = getters[`${key}/errors`]
-                if (get) {
+                if (get && get.length !== 0) {
                     errors[key] = get
                 }
             }

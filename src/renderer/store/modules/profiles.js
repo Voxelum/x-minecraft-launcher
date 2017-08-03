@@ -81,6 +81,11 @@ export default {
             option,
         }) {
             const id = uuid()
+            if (!option.java) {
+                if (context.rootState.settings.javas.length !== 0) {
+                    option.java = context.rootState.settings.javas[0]
+                }
+            }
             console.log(`create ${id}: ${type} with`)
             if (type === 'server') {
                 context.commit('add', { id, module: mixin(modelServer, option) })
