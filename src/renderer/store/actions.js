@@ -22,6 +22,8 @@ export default {
         const profileId = context.getters['profiles/selectedKey'];
         const auth = context.state.auth.authInfo;
 
+        // TODO check the launch condition!
+
         const type = profile.type;
         const version = profile.version;
         const option = {
@@ -40,21 +42,23 @@ export default {
             service: 'launcher',
             action: 'launch',
             payload: { auth, option },
+        }).then(() => {
+            // save all or do other things...
+            ipcRenderer.send('park')
         });
-        // return ''
     },
 
     park(context, payload) {
 
     },
-    query(context, { service, action, args }) {
+    query(context, { service, action, payload }) {
         return new Promise((resolve, reject) => {
             const id = v4()
             ipcRenderer.send('query', {
                 id,
                 service,
                 action,
-                args,
+                payload,
             })
             ipcRenderer.once(id, (event, {
                 rejected,

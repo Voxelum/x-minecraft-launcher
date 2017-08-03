@@ -37,6 +37,7 @@ const actions = {
     },
     refresh(context, payload) {
         context.commit('putAll', { status: ServerStatus.pinging() })
+        if (context.state.host === undefined) return Promise.reject('server.host.empty')
         return context.dispatch('query', {
             service: 'servers',
             action: 'ping',
