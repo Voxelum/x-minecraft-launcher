@@ -13,7 +13,6 @@ export default {
         },
     },
     render(createElement) {
-        console.log('on render card-view');
         const getByKey = this.getByKey;
         const self = this
         return createElement('div', { staticClass: 'ui link cards' }, this.allKeys.map((id) => {
