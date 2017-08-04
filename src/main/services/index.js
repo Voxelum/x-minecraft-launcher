@@ -57,13 +57,23 @@ ipcMain.on('query', (event, {
                 resolved,
             })
         }, (rejected) => {
-            event.sender.send(id, {
-                rejected,
-            })
+            console.log('reject:')
+            console.log(rejected)
+            if (rejected instanceof Error) {
+                event.sender.send(id, {
+                    rejected: rejected.message,
+                })
+            } else {
+                event.sender.send(id, {
+                    rejected,
+                })
+            }
         })
     } else if (result instanceof Error) {
+        console.log('reject:')
+        console.log(result)
         event.sender.send(id, {
-            rejected: result,
+            rejected: result.message,
         });
     } else {
         event.sender.send(id, {
