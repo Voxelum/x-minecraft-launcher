@@ -41,8 +41,8 @@
             </table>
         </div>
         <!-- <div class="ui   bottom attached footer center aligned segment">
-                                                                                            <div class="ui  fluid button">Save</div>
-                                                                                        </div> -->
+                                                                                                <div class="ui  fluid button">Save</div>
+                                                                                            </div> -->
     
     </div>
 </template>
@@ -89,27 +89,9 @@ export default {
     width: 8px;
 }
 
-
-
-
-
-
-
-/* Track */
-
 ::-webkit-scrollbar-track {
-    /* -webkit-border-radius: 10px; */
-    /* border-radius: 10px; */
     background: rgba(0, 0, 0, 0.1);
 }
-
-
-
-
-
-
-
-/* Handle */
 
 ::-webkit-scrollbar-thumb {
     -webkit-border-radius: 10px;
