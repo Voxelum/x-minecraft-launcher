@@ -2,10 +2,12 @@ import {
     app,
     BrowserWindow,
     ipcMain,
+    DownloadItem,
 } from 'electron'
 import {
     AuthService,
 } from 'ts-minecraft'
+import paths from 'path'
 
 const devMod = process.env.NODE_ENV === 'development'
 /**
@@ -23,10 +25,18 @@ ipcMain.on('ping', (event, time) => {
 })
 
 let mainWindow
+let maindownloadCallback
+const downloadTasks = new Map()
 const winURL = process.env.NODE_ENV === 'development' ?
     'http://localhost:9080' :
     `file://${__dirname}/index.html`
 let parking = false;
+
+let root = process.env.LAUNCHER_ROOT
+if (!root) {
+    process.env.LAUNCHER_ROOT = paths.join(app.getPath('appData'), '.launcher');
+    root = process.env.LAUNCHER_ROOT
+}
 
 function createWindow() {
     /**
@@ -44,6 +54,41 @@ function createWindow() {
     mainWindow.on('closed', () => {
         mainWindow = null
     })
+    mainWindow.on('show', () => {
+        console.log(`init ${root}`)
+    })
+    mainWindow.webContents.session.setDownloadPath(paths.join(root, 'temps'))
+    mainWindow.webContents.session.on('will-download', (event, item, content) => {
+        const save = downloadTasks.get(item.getURL())
+        if (save) item.setSavePath(save)
+        mainWindow.webContents.send('will-download', {
+            file: item.getFilename(),
+            url: item.getURL(),
+        })
+        item.on('updated', ($event, state) => {
+            mainWindow.webContents.send('download', {
+                file: item.getFilename(),
+                url: item.getURL(),
+                state,
+                byte: item.getReceivedBytes(),
+                total: item.getTotalBytes(),
+            })
+        })
+        item.on('done', ($event, state) => {
+            downloadTasks.delete(item.getURL())
+            mainWindow.webContents.send('download-done', {
+                file: item.getFilename(),
+                url: item.getURL(),
+                state,
+                byte: item.getReceivedBytes(),
+                total: item.getTotalBytes(),
+            })
+        })
+    })
+    maindownloadCallback = (filePath, url) => {
+        downloadTasks.set(url, filePath)
+        mainWindow.webContents.downloadURL(url)
+    }
 }
 
 app.on('ready', () => {
@@ -63,6 +108,10 @@ app.on('activate', () => {
     }
 })
 
+ipcMain.on('init', (event) => {
+    console.log(root)
+    mainWindow.webContents.send('init', root)
+})
 ipcMain.on('park', () => {
     parking = true;
     mainWindow.close()

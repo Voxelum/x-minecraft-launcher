@@ -16,23 +16,15 @@ for (const key in modules) {
     }
 }
 
-const store = new Vuex.Store({
-    modules,
-    getters,
-    actions,
-    strict: process.env.NODE_ENV !== 'production',
-    plugins,
-});
+export const init = (root) => {
+    const store = new Vuex.Store({
+        modules,
+        getters,
+        actions: actions(root),
+        strict: process.env.NODE_ENV !== 'production',
+        plugins,
+    });
 
-const first = Date.now()
-ipcRenderer.send('ping', first);
-ipcRenderer.once('pong', () => {
-    const time = Date.now() - first
-    console.debug(`double spend ${time} ms`)
-})
-
-export const init = () => {
-    console.log('start loading modules')
     const keys = Object.keys(modules)
     const promises = []
     for (const key of keys) {
