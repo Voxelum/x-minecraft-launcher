@@ -130,8 +130,8 @@ import ProfileModal from './components/modals/ProfileModal'
 import ServerModal from './components/modals/ServerModal'
 import DeleteModal from './components/modals/DeleteModal'
 
-import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
-
+import { mapMutations, mapState, mapGetters } from 'vuex'
+import mapActions from '../../shared/mapAction'
 export default {
     components: {
         ProfileView, ServerView, SkinView, CardView,
@@ -149,6 +149,7 @@ export default {
         username() {
             return this.$store.state.auth.authInfo ? this.$store.state.auth.authInfo.selectedProfile.name : 'Steve';
         },
+        ...mapState('settings', ['autoDownload'])
     },
     mounted(e) {
         if (this.username === 'Steve') this.showLogin()
@@ -158,7 +159,7 @@ export default {
                 on: 'hover',
                 action: function (text, value, element) {
                     if (element.lastChild.textContent === 'Profile') {
-                        
+
                     } else self.showModal('login')
 
                     return false
@@ -175,7 +176,6 @@ export default {
                 },
             }
         )
-        console.log(this.errors)
     },
     methods: {
         ...mapActions('profiles', {
@@ -193,7 +193,17 @@ export default {
         },
         refresh() {
             this.$refs.view.refresh()
-        }
+        },
+        onlaunch() {
+            this.launch()
+            // .catch(err => {
+            //     if (typeof err === 'string') {
+
+            //     } else if (err instanceof Array) {
+
+            //     }
+            // })
+        },
     },
 }
 </script>
