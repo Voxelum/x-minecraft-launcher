@@ -20,12 +20,14 @@ Vue.config.productionTip = false;
     })
 })();
 
-store().then(s =>
-    new Vue({
-        components: { App },
-        store: s,
-        i18n,
-        template: '<App/>',
-    }).$mount('#app'),
-)
-
+ipcRenderer.on('init', (event, root) => {
+    store(root).then(s =>
+        new Vue({
+            components: { App },
+            store: s,
+            i18n,
+            template: '<App/>',
+        }).$mount('#app'),
+    )
+})
+ipcRenderer.send('init')
