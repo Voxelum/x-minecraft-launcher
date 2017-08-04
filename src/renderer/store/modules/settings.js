@@ -51,6 +51,7 @@ export default {
         return {
             rootPath: paths.join(remote.app.getPath('appData'), '.launcher'), // this will be removed in the future...
             defaultResolution: { width: 400, height: 400, fullscreen: false },
+            autoDownload: false,
             javas: [],
             default: 'semantic',
             theme: 'semantic',

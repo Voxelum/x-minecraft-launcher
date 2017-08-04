@@ -48,7 +48,7 @@
                 </p>
             </div>
             <div class="ui tab segment" style="height:380px" data-tab="settings">
-    
+                <version-table-view></version-table-view>
             </div>
         </div>
     </div>
@@ -73,6 +73,7 @@ export default {
         },
         refresh() {
             this.$store.dispatch(`profiles/${this.id}/refresh`)
+            this.$store.dispatch('versions/refresh')
         },
         // ...mapActions('versions', ['refresh']),
     },
