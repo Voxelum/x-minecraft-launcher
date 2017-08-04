@@ -47,11 +47,14 @@ export default {
 
         if (profile === undefined || profile === null) return Promise.reject('launch.profile.empty')
         if (auth === undefined || auth === null) return Promise.reject('launch.auth.empty');
+        // well... these two totally... should not happen; 
+        // if it happen... that is a fatal bug or... a troll's work...
 
         const type = profile.type;
         const version = profile.version;
 
-        if (version === undefined || version === '' || version === null) return Promise.reject('launch.version.empty')
+        const errors = context.getters[`${profileId}/errors`]
+        if (errors.length !== 0) return Promise.reject(errors)
 
         // TODO check the launch condition!
         const option = {
@@ -145,11 +148,18 @@ export default {
                         reject(err)
                     } else if (encoding) {
                         if (encoding === 'string') resolve(data.toString())
-                        else if (encoding === 'json') resolve(JSON.parse(data.toString()))
+                        else if (encoding === 'json') {
+                            try {
+                                resolve(JSON.parse(data.toString()))
+                            } catch (e) {
+                                reject(e)
+                            }
+                        }
                         // else if (encoding === 'nbt') resolve(NBT.read(data).root)
                         // else if (encoding === 'nbt/compressed') resolve(NBT.read(data, true).root)
-                        else if (typeof encoding === 'function') resolve(encoding(data))
-                        else {
+                        else if (typeof encoding === 'function') {
+                            try { resolve(encoding(data)) } catch (e) { reject(e) }
+                        } else {
                             console.warn(`Unsupported encoding ${encoding}!`);
                             resolve(data);
                         }
