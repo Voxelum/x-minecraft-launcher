@@ -8,21 +8,21 @@
                             <input type="text" name="Name" :placeholder="id" :value="source.name" @blur="modify">
                         </div>
                         <h2 class="ui sub header">
-                            Author:
+                            {{$t('profile.author')}}:
                             <div class="ui transparent input">
                                 <input type="text" name="Author" placeholder="Unknown author..." :value="source.author" @blur="modify">
                             </div>
                         </h2>
                         <h2 class="ui sub header">
-                            Version: {{source.version}}
+                            {{$t('profile.version')}}: {{source.version}}
                         </h2>
                     </div>
                 </h1>
             </div>
             <div style="height:202px"></div>
             <div v-if="type==='modpack'" class="ui row piled segment" style="padding:35px 10px 10px 10px; height:150px;">
-                <label class="ui top left attached label">Description</label>
-                <label class="ui bottom right attached label">Edit</label>
+                <label class="ui top left attached label">{{$t('profile.description')}}</label>
+                <label class="ui bottom right attached label">{{$t('profile.edit')}}</label>
                 <textarea :value="source.description" name="Description" @blur="modify" style="border:0;outline:none;overflow: hidden;resize:none">
                 </textarea>
             </div>

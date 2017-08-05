@@ -3,10 +3,11 @@ import * as path from 'path'
 import crypto from 'crypto'
 
 export class Resource {
-    constructor(hash, fileName, type) {
+    constructor(hash, fileName, type, meta) {
         this.hash = hash;
         this.fileName = fileName;
         this.type = type;
+        this.meta = meta;
     }
 }
 function $hash(buff) {
@@ -19,7 +20,7 @@ function $load(filePath) {
             else resolve({ name: path.basename(filePath), data, type: path.extname(filePath) });
         })
     }).then(({ name, data, type }) => {
-        const resource = new Resource($hash(data), name, type);
+        const resource = new Resource($hash(data), name, type, undefined);
         return { filePath, data, resource };
     });
 }
@@ -27,32 +28,74 @@ export default {
     state() {
         return {
             root: '',
+            keys: [],
             store: new Map(),
         }
     },
     getters: {
-        all: state => state.store,
+        allKeys: state => state.keys,
+        entries: state => state.keys.map((key) => {
+            return { key, value: state.store.get(key) }
+        }),
+        get: state => key => state.store.get(key),
     },
     mutations: {
         set(state, payload) {
-            state.store.set(payload.key, payload.value)
+            if (!state.store.has(payload.key)) {
+                state.store.set(payload.key, payload.value)
+                state.keys.push(payload.key)
+            }
         },
         delete(state, payload) {
             state.store.delete(payload)
         },
     },
     actions: {
+        load(context) {
+            return context.dispatch('readFolder', { path: context.state.root }, { root: true })
+                .then(files => Promise.all(
+                    files
+                        .filter(file => file.endsWith('.json'))
+                        .map(file => context.dispatch('readFile', {
+                            path: `${context.state.root}/${file}`,
+                            fallback: undefined,
+                            encoding: 'json',
+                        }, { root: true }).then((json) => {
+                            if (!json) return undefined;
+                            const resource =
+                                new Resource(json.hash, json.fileName, json.type, json.meta)
+                            context.commit('set', { key: resource.hash, value: resource })
+                            return resource
+                        }))));
+        },
         import(context, payload) {
-            const fpath = payload
-            return $load(fpath).then(({ filePath, data, resource }) => {
-                if (!context.state.store.has(resource.hash)) {
-                    context.commit('put', { key: resource.hash, value: resource })
-                    return context.dispatch('writeFile',
-                        { path: path.join(context.state.root, `${resource.hash}.${resource.type}`) },
-                        { root: true }).then(() => resource)
-                }
-                return resource;
-            })
+            let arr
+            if (typeof payload === 'string') arr = [payload]
+            else if (payload instanceof Array) arr = payload
+            return Promise.all(arr.map(fpath =>
+                $load(fpath).then(({ filePath, data, resource }) =>
+                    context.dispatch('meta', { name: path.basename(filePath), data })
+                        .then((meta) => {
+                            resource.meta = meta;
+                            if (!context.state.store.has(resource.hash)) {
+                                context.commit('set', { key: resource.hash, value: resource })
+                                return context.dispatch('writeFile',
+                                    {
+                                        path: path.join(context.state.root, `${resource.hash}${resource.type}`),
+                                        data,
+                                    },
+                                    { root: true })
+                                    .then(() => context.dispatch('writeFile',
+                                        {
+                                            path: path.join(context.state.root, `${resource.hash}.json`),
+                                            data: resource,
+                                        },
+                                        { root: true }))
+                                    .then(() => resource)
+                            }
+                            return resource;
+                        },
+                    ))))
         },
         export(context, payload) {
             const { resource, targetDirectory } = payload
@@ -89,16 +132,16 @@ export default {
             });
         },
         refresh(context, payload) {
-            return context.dispatch('readFolder', { path: this.context.state.root }, { root: true })
-                .then(files => Promise.all(
-                    files.map(file => context.dispatch('readFile', {
-                        path: `${this.context.state.root}/${file}`,
-                        fallback: undefined,
-                    }).then((buf) => {
-                        if (!buf) return;
-                        const resource = new Resource($hash(buf), file, path.extname(file))
-                        context.commit('put', { key: resource.hash, value: resource })
-                    }))));
+            // return context.dispatch('readFolder', { path: this.context.state.root }, { root: true })
+            //     .then(files => Promise.all(
+            //         files.map(file => context.dispatch('readFile', {
+            //             path: `${this.context.state.root}/${file}`,
+            //             fallback: undefined,
+            //         }).then((buf) => {
+            //             if (!buf) return;
+            //             const resource = new Resource($hash(buf), file, path.extname(file))
+            //             context.commit('put', { key: resource.hash, value: resource })
+            //         }))));
         },
     },
 }

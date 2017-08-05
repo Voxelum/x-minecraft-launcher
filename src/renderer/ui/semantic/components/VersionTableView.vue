@@ -10,7 +10,7 @@
         </h3>
         <div class="ui attached segment " :class="{disabled: metas.length==0}" style='height:400px;overflow-x: hidden;'>
             <div v-if="metas.length==0" class="ui active dimmer">
-                <div class="ui indeterminate text loader">Preparing Files</div>
+                <div class="ui indeterminate text loader">{{$t('version.prepare')}}</div>
             </div>
             <table class="ui very basic selectable celled center aligned table">
                 <tbody>
@@ -40,10 +40,7 @@
                 </tbody>
             </table>
         </div>
-        <!-- <div class="ui   bottom attached footer center aligned segment">
-                                                                                                <div class="ui  fluid button">Save</div>
-                                                                                            </div> -->
-    
+        <!-- <div class="ui bottom attached footer center aligned segment"><div class="ui fluid button">Save</div></div> -->
     </div>
 </template>
 <script>

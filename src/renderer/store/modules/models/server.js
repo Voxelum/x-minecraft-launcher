@@ -52,9 +52,7 @@ const actions = {
                 }
                 const versions = protocol[status.protocolVersion]
                 if (versions) all.version = versions[0]
-                console.log('@server')
                 context.commit('putAll', all)
-                console.log(context.state)
                 return status
             }, (err) => {
                 if (err.code === 'ETIMEOUT') {

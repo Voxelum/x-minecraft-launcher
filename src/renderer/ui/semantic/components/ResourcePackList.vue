@@ -1,55 +1,17 @@
 <template>
     <div>
         <div class="ui button" @click="importResourcePack">Import</div>
-        <div class="ui list">
-            <div class="item" v-for="pack in unselectingResources" :key="pack">
+        <div class="ui relaxed list">
+            <div class="item" v-for="entry in entries" :key="entry.key">
                 <div class="right floated content">
-                    <div class="ui button" @click="moveRight">
-                        <i class="arrow right icon"></i>
-                    </div>
+                    <div class="ui button">Add</div>
                 </div>
-                <i class="map marker icon"></i>
+                <img class="ui avatar image" :src="entry.value.meta.icon">
                 <div class="content">
-                    <div class="header">{{key.name}}</div>
-                    <div class="description"> {{key.description}}</div>
-                </div>
-            </div>
-            <div class="item">
-                <div class="right floated content">
-                    <div class="ui button">
-                        <i class="arrow right icon"></i>
+                    <h3 class="header">{{entry.value.meta.packName}}</h3>
+                    <div class="description">
+                        <text-component :source="entry.value.meta.description"></text-component>
                     </div>
-                </div>
-                <i class="map marker icon"></i>
-                <div class="content">
-                    <div class="header">Xian Famous Foods</div>
-                    <div class="description">A pack bring xxx exp to mc.</div>
-                </div>
-            </div>
-        </div>
-        <div class="ui list">
-            <div class="item" v-for="pack in selectingResources" :key="pack">
-                <div class="left floated content">
-                    <div class="ui button" @click="moveLeft">
-                        <i class="arrow left icon"></i>
-                    </div>
-                </div>
-                <i class="map marker icon"></i>
-                <div class="content">
-                    <div class="header">{{key.name}}</div>
-                    <div class="description"> {{key.description}}</div>
-                </div>
-            </div>
-            <div class="item">
-                <div class="left floated content">
-                    <div class="ui button">
-                        <i class="arrow left icon"></i>
-                    </div>
-                </div>
-                <i class="map marker icon"></i>
-                <div class="content">
-                    <div class="header">Xian Famous Foods</div>
-                    <div class="description">A pack bring xxx exp to mc.</div>
                 </div>
             </div>
         </div>
@@ -59,12 +21,13 @@
 <script>
 import { remote } from 'electron'
 import { mapActions, mapGetters } from 'vuex'
+import TextComponent from './TextComponent'
 
 export default {
+    components: { TextComponent },
     computed: {
-        ...mapActions('resourcepacks', 'import'),
-        ...mapGetters('resourcepacks', 'all'),
-        ...mapGetters('profiles', 'selecting'),
+        ...mapGetters('resourcepacks', ['entries']),
+        ...mapGetters('profiles', ['selecting']),
         unselectingResources() {
             return []
             // return this.all.filter(a => this.selectingResources.indexOf(a) == -1)
@@ -75,12 +38,23 @@ export default {
         },
     },
     methods: {
+        ...mapActions('resourcepacks', ['import']),
+        moveRight() { console.log(this.entries) },
+        moveLeft() {
+            console.log(this.entries)
+        },
         importResourcePack() {
+            const self = this;
             remote.dialog.showOpenDialog({}, (files) => {
-
+                if (files)
+                    for (const file of files)
+                        self.import(file)
             })
         },
-    }
+    },
+    mounted() {
+        console.log(this.$store)
+    },
 
 }
 </script>
