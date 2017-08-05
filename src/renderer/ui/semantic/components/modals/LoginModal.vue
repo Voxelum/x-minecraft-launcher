@@ -86,8 +86,6 @@ export default {
     methods: {
         show() {
             $('#login').modal('show')
-            console.log(this.disablePassword)
-            console.log(this.mode)
         },
         doLogin(e) {
             if (this.account.length == 0) {

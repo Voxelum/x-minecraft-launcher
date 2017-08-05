@@ -2,19 +2,19 @@
     <div id="profileModal" class="ui basic error modal" :class="{error: hasError}" style="padding:0 20% 0 20%;">
         <div class="ui icon small header">
             <i class="archive icon"></i>
-            Create A New Profile
+            {{ isEdit?$t('profile.edit'):$t('profile.create')}}
         </div>
         <form class="ui inverted form">
             <div class="field">
-                <label>Name</label>
+                <label>{{$t('name')}}</label>
                 <input class="ui basic inverted input" type="text" placeholder="Profile Name" v-model="name" @keypress="enter">
             </div>
             <div class="field">
-                <label>Author</label>
+                <label>{{$t('author')}}</label>
                 <input class="ui basic inverted input" type="text" placeholder="Author Name" v-model="author" @keypress="enter">
             </div>
             <div class="field">
-                <label>Description</label>
+                <label>{{$t('description')}}</label>
                 <input class="ui basic inverted input" type="text" placeholder="A Simple description" v-model="description" @keypress="enter">
             </div>
             <div class="ui error message">
@@ -24,9 +24,12 @@
         </form>
         <div class="actions">
             <div class="ui basic cancel inverted button">
-                <i class="close icon"></i>No</div>
+                <i class="close icon"></i>{{$t('no')}}</div>
             <div class="ui green basic inverted ok button" @click="accpet">
-                <i class="check icon"></i>Create</div>
+                <i class="check icon"></i>
+                {{ isEdit?$t('save'):$t('create')}}
+            </div>
+    
         </div>
     </div>
 </template>
@@ -39,32 +42,36 @@ export default {
             author: '',
             description: '',
             hasError: false,
+            isEdit: false,
         }
     },
     props: ['defaultAuthor'],
     mounted() {
         const self = this
-        $('#profileModal').modal(
-            {
-                blurring: true,
-                onShow() {
-                    self.name = ''
-                    self.author = this.defaultAuthor || ""
-                    self.description = 'No description yet'
-                    self.hasError = false
-                },
-            }
-        )
+        $('#profileModal').modal({ blurring: true })
     },
     methods: {
-        show() {
+        show(args) {
+            if (args && args.isEdit) {
+                this.isEdit = true;
+                this.name = args.name;
+                this.description = args.description;
+                this.author = args.author;
+            }
+            else {
+                this.isEdit = false
+                this.name = ''
+                this.author = this.defaultAuthor || ""
+                this.description = 'No description yet'
+                this.hasError = false
+            }
             $('#profileModal').modal('show')
         },
         accpet() {
             if (!this.name || this.name === '') {
                 this.hasError = true;
             }
-            this.$emit('accept', { name: this.name, author: this.author, description: this.description });
+            this.$emit('accept', { name: this.name, author: this.author, description: this.description, isEdit: this.isEdit });
             $('#profileModal').modal('hide')
         },
         enter(event) {
