@@ -9,7 +9,7 @@
             <div class="ten wide column ">
                 <div class="ui breadcrumb">
                     <a class="section">
-                        <div class="ui inverted circular button non-moveable" @click="unselect">Home</div>
+                        <div class="ui inverted circular button non-moveable" @click="unselect">{{$t('home')}}</div>
                     </a>
                     <span v-if="isSelecting">
                         <i class="right chevron inverted icon divider" style="color:white"></i>
@@ -20,7 +20,7 @@
                         </a>
                     </span>
                 </div>
-                <div class="ui inverted circular right floated button non-moveable">Help</div>
+                <div class="ui inverted circular right floated button non-moveable">{{$t('help')}}</div>
             </div>
             <div class="two wide center aligned middle aligned column">
                 <div id="userDropdown" class="non-moveable ui inverted pointing dropdown">
@@ -29,9 +29,9 @@
                     <i class="dropdown icon"></i>
                     <div class="menu">
                         <div class="item">
-                            <i class="id card outline icon"></i>Profile</div>
+                            <i class="id card outline icon"></i> {{$t('user.profile')}} </div>
                         <div class="item">
-                            <i class="sign out icon"></i>Logout</div>
+                            <i class="sign out icon"></i> {{$t('user.logout')}}</div>
                     </div>
                 </div>
             </div>
@@ -50,16 +50,6 @@
             <div class="four wide center aligned middle aligned column">
                 <div class="ui icon inverted button pointing dropdown non-moveable">
                     <i class="setting icon"></i>
-                    <div class="menu">
-                        <div class="item">
-                            <i class="id card outline icon"></i>
-                            Profile
-                        </div>
-                        <div class="item">
-                            <i class="sign out icon"></i>
-                            Logout
-                        </div>
-                    </div>
                 </div>
                 <div class="ui icon inverted button non-moveable" @click="refresh">
                     <i class="refresh icon"></i>
@@ -71,7 +61,7 @@
                         <i class="warning sign icon"></i> {{errorsCount}}
                     </div>
                     <div class="ui flowing popup top left transition hidden">
-                        <div class="ui middle aligned divided list" style="max-height:300px; min-width:300px; overflow:hidden">
+                        <div v-if="errorsCount != 0" class="ui middle aligned divided list" style="max-height:300px; min-width:300px; overflow:hidden">
                             <div v-for="(moduleErr, index) in errors" :key='moduleErr' class="item">
                                 {{index}}
                                 <div class="ui middle aligned selection divided list">
@@ -82,6 +72,9 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div v-else>
+                            {{$t('errors.empty')}}
                         </div>
                     </div>
                     <div class="ui button">
@@ -104,12 +97,16 @@
                         <i class="rocket icon"></i>
                         {{$t('launch')}} &nbsp&nbsp&nbsp&nbsp
                     </div>
+                    <div class="ui icon right floated inverted button non-moveable" @click="edit">
+                        <i class="edit icon"></i>
+                        Edit
+                    </div>
                 </span>
             </div>
         </div>
         <login-modal ref="loginModal"></login-modal>
-        <profile-modal ref="profileModal" :defaultAuthor="username" @accept="createProfile({ type: 'modpack', option: $event })"></profile-modal>
-        <server-modal ref="serverModal" @accept="createProfile({ type: 'server', option: $event })"></server-modal>
+        <profile-modal ref="profileModal" :defaultAuthor="username" @accept="submitProfile"></profile-modal>
+        <server-modal ref="serverModal" @accept="submitProfile"></server-modal>
         <delete-modal ref="deleteModal" @accept="deleteProfile"></delete-modal>
     </div>
 </template>
@@ -143,39 +140,32 @@ export default {
             'selectedProfileID': 'selectedKey'
         }),
         ...mapGetters(['errors', 'tasks', 'errorsCount']),
+        ...mapGetters('auth', ['username']),
+        ...mapState('settings', ['autoDownload']),
         isSelecting() {
             return this.selectedProfileID != undefined && this.selectedProfileID != '' && this.selectedProfileID != null
         },
-        username() {
-            return this.$store.state.auth.authInfo ? this.$store.state.auth.authInfo.selectedProfile.name : 'Steve';
-        },
-        ...mapState('settings', ['autoDownload'])
     },
     mounted(e) {
         if (this.username === 'Steve') this.showLogin()
         const self = this
-        $('#userDropdown').dropdown(
-            {
-                on: 'hover',
-                action: function (text, value, element) {
-                    if (element.lastChild.textContent === 'Profile') {
+        $('#userDropdown').dropdown({
+            on: 'hover',
+            action: function (text, value, element) {
+                if (element.lastChild.textContent === 'Profile') {
 
-                    } else self.showModal('login')
-
-                    return false
-                }
+                } else self.showModal('login')
+                return false
             }
-        )
-        $('#warningPopup').popup(
-            {
-                hoverable: true,
-                position: 'top left',
-                delay: {
-                    show: 300,
-                    hide: 800
-                },
-            }
-        )
+        })
+        $('#warningPopup').popup({
+            hoverable: true,
+            position: 'top left',
+            delay: {
+                show: 300,
+                hide: 800
+            },
+        })
     },
     methods: {
         ...mapActions('profiles', {
@@ -194,15 +184,26 @@ export default {
         refresh() {
             this.$refs.view.refresh()
         },
+        edit() {
+            const args = { isEdit: true }
+            if (this.selectedProfile.type === 'server') {
+                args.host = this.selectedProfile.host;
+                args.port = this.selectedProfile.port;
+                args.name = this.selectedProfile.name;
+            } else {
+                args.name = this.selectedProfile.name;
+                args.author = this.selectedProfile.author;
+                args.description = this.selectedProfile.description;
+            }
+            this.showModal(this.selectedProfile.type, args)
+        },
+        submitProfile(event, type) {
+            if (event.isEdit) {
+                this.$store.commit(`profiles/${this.selectedProfileID}/putAll`, event)
+            } else this.createProfile({ type, option: event })
+        },
         onlaunch() {
             this.launch()
-            // .catch(err => {
-            //     if (typeof err === 'string') {
-
-            //     } else if (err instanceof Array) {
-
-            //     }
-            // })
         },
     },
 }

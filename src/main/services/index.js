@@ -53,6 +53,8 @@ ipcMain.on('query', (event, {
     const result = actionInst(payload);
     if (result instanceof Promise) {
         result.then((resolved) => {
+            console.log('resolve:')
+            console.log(resolved)
             event.sender.send(id, {
                 resolved,
             })
@@ -76,6 +78,8 @@ ipcMain.on('query', (event, {
             rejected: result.message,
         });
     } else {
+        console.log('resolve:')
+        console.log(result)
         event.sender.send(id, {
             resolved: result,
         });

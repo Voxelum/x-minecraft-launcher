@@ -20,9 +20,14 @@ export default {
     render(createElement) {
         const arr = []
         if (!this.source) return createElement('div')
-        if (typeof this.source === 'string') return createElement('p', this.source)
-        if (this.source.iterator) {
-            for (const component of this.source.iterator) {
+        let iterator
+        if (typeof this.source === 'string') {
+            iterator = [TextComponent.fromFormattedString(this.source)]
+        } else {
+            iterator = this.source.iterator;
+        }
+        if (iterator) {
+            for (const component of iterator) {
                 const style = {}
                 if (component.style.bold) style['font-weight'] = 'bold';
                 if (component.style.underlined) style['text-decoration'] = 'underline';

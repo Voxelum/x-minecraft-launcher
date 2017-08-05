@@ -80,26 +80,26 @@ export default (rootPath) => {
                 ipcRenderer.sendSync('park')
             });
         },
-
         park(context, payload) {
 
         },
         query(context, { service, action, payload }) {
             return new Promise((resolve, reject) => {
                 const id = v4()
+
+                ipcRenderer.once(id,
+                    (event, { rejected, resolved }) => {
+                        console.log(`finish ${id}`)
+                        if (rejected) reject(rejected)
+                        else resolve(resolved)
+                    })
                 ipcRenderer.send('query', {
                     id,
                     service,
                     action,
                     payload,
                 })
-                ipcRenderer.once(id, (event, {
-                rejected,
-                    resolved,
-            }) => {
-                    if (rejected) reject(rejected)
-                    else resolve(resolved)
-                })
+
             });
         },
         readFolder(context, { path }) {

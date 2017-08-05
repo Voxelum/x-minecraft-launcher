@@ -2,19 +2,19 @@
     <div id="createServerModal" class="ui basic modal" :class="{error: hasError}" style="padding:0 20% 0 20%;">
         <div class="ui icon small header">
             <i class="server icon"></i>
-            Create A New Server
+            {{ isEdit ? $t('server.edit') :$t('server.create')}}
         </div>
         <form class="ui inverted form">
             <div class="field">
-                <label>Name</label>
+                <label>{{$t('name')}}</label>
                 <input class="ui basic inverted input" type="text" placeholder="Name Of server" v-model="name" @keypress="enter">
             </div>
             <div class="field">
-                <label>Host</label>
+                <label>{{$t('server.host')}}</label>
                 <input class="ui basic inverted input" type="text" placeholder="IP address" v-model="ip" @keypress="enter">
             </div>
             <div class="field">
-                <label>Port</label>
+                <label>{{$t('server.port')}}</label>
                 <input class="ui basic inverted input" type="text" placeholder="25565" v-model="port" @keypress="enter">
             </div>
             <div class="ui error message">
@@ -24,9 +24,11 @@
         </form>
         <div class="actions">
             <div class="ui basic cancel inverted button">
-                <i class="close icon"></i>No</div>
-            <div class="ui green basic inverted  button" @click="accept">
-                <i class="check icon"></i>Create</div>
+                <i class="close icon"></i>{{$t('no')}}</div>
+            <div class="ui green basic inverted button" @click="accept">
+                <i class="check icon"></i>
+                {{ isEdit ? $t('save') : $t('create')}}
+            </div>
         </div>
     </div>
 </template>
@@ -39,22 +41,27 @@ export default {
             ip: '',
             port: 25565,
             hasError: false,
+            isEdit: false,
         }
     },
     mounted() {
         const self = this
-        $('#createServerModal').modal({
-            blurring: true,
-            onShow() {
-                self.hasError = true
-                self.ip = ''
-                self.name = ''
-                self.port = 25565
-            },
-        })
+        $('#createServerModal').modal({ blurring: true, })
     },
     methods: {
-        show() {
+        show(args) {
+            if (args && args.isEdit) {
+                this.isEdit = true
+                this.ip = args.host;
+                this.port = args.port;
+                this.name = args.name;
+            } else {
+                this.isEdit = false
+                this.hasError = true
+                this.ip = ''
+                this.name = ''
+                this.port = 25565
+            }
             this.$nextTick(() => {
                 $('#createServerModal').modal('show')
             })
@@ -68,7 +75,7 @@ export default {
             this.$nextTick(() => {
                 $('#createServerModal').modal('hide')
             })
-            this.$emit('accept', { name: this.name, host: this.ip, port: this.port })
+            this.$emit('accept', { name: this.name, host: this.ip, port: this.port, isEdit: this.isEdit })
         },
         enter(event) {
             if (event.keyCode != 13) return
