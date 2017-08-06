@@ -1,0 +1,12 @@
+export default {
+    fboEnable: true,
+    ao: 2,
+    fancyGraphics: true,
+    renderClouds: 'true',
+    renderDistance: 12,
+    useVbo: true,
+    mipmapLevels: 4,
+    entityShadows: true,
+    particles: 0,
+}
+

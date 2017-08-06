@@ -1,4 +1,5 @@
 import uuid from 'uuid'
+import { GameSetting } from 'ts-minecraft'
 
 import mixin from '../mixin-state'
 import singleSelect from './models/single-select'
@@ -10,7 +11,7 @@ const PROFILES_NAEM = 'profiles.json'
 
 function regulize(content) {
     content.resourcepacks = content.resourcepacks || []
-    content.resolution = content.resolution || [800, 400]
+    content.resolution = content.resolution || { width: 800, height: 400 }
     content.mods = content.mods || []
     content.vmOptions = content.vmOptions || []
     content.mcOptions = content.mcOptions || []
@@ -36,7 +37,20 @@ export default {
         ...singleSelect.mutations,
     },
     actions: {
-        load(context, payload) {
+        async load(context, payload) {
+            const files = await context.dispatch('readFolder', { path: 'profiles' }, { root: true });
+            for (const file of files) {
+                context.dispatch('readFile', {
+                    path: `profiles/${file}/${PROFILE_NAME}`,
+                    fallback: {},
+                    encoding: 'json',
+                }, { root: true })
+                context.dispatch('readFile', {
+                    path: `profiles/${file}/options.txt`,
+                    fallback: {},
+                    encoding: 'string',
+                }, { root: true })
+            }
             return context.dispatch('readFolder', { path: 'profiles' }, { root: true })
                 .then(files =>
                     Promise.all(files.map(file => context.dispatch('readFile', {
@@ -55,7 +69,7 @@ export default {
                 .then(() => context.dispatch('readFile', { path: 'profiles.json', fallback: {}, encoding: 'json' }, { root: true })
                     .then(json => context.commit('select', json.selected)))
         },
-        save(context, payload) {
+        async save(context, payload) {
             const mutation = payload.mutation
             const object = payload.object
             const path = mutation.split('/')
@@ -63,18 +77,24 @@ export default {
                 const [, action] = path
                 if (action === 'add') {
                     const targetPath = `profiles/${object.id}/${PROFILE_NAME}`
-                    context.dispatch('writeFile', { path: targetPath, data: object.module.state }, { root: true })
+                    return context.dispatch('writeFile', { path: targetPath, data: object.module.state }, { root: true })
                 } else if (action === 'select') {
-                    context.dispatch('writeFile', {
+                    return context.dispatch('writeFile', {
                         path: PROFILES_NAEM, data: { selected: context.state._selected },
                     }, { root: true })
                 }
-            } else {
-                const [, profileId, action] = path
-                const targetPath = `profiles/${profileId}/${PROFILE_NAME}`
-                context.dispatch(`${profileId}/save`)
-                    .then(data => context.dispatch('writeFile', { path: targetPath, data }, { root: true }))
+                return Promise.resolve();
             }
+            const [, profileId, action] = path
+            const profileJson = `profiles/${profileId}/${PROFILE_NAME}`
+            const settingTxt = `profiles/${profileId}/options.txt`
+            const data = await context.dispatch(`${profileId}/save`)
+            const setting = data.setting;
+            data.setting = undefined;
+            return Promise.all(
+                context.dispatch('writeFile', { path: profileJson, data }, { root: true }),
+                context.dispatch('writeFile', { path: settingTxt, data: GameSetting.writeToString(setting) }, { root: true }),
+            )
         },
         create(context, {
             type,
