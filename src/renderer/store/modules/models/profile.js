@@ -5,7 +5,7 @@ function state() {
         name: '', // specific info
         version: '',
 
-        resourcepacks: [], // official setting
+        // resourcepacks: [], // official setting
         mods: [],
         setting: {},
 
@@ -24,6 +24,7 @@ const getters = {
         if (states.java === '' || states.java === undefined || states.java === null) errors.push('profile.empty.java')
         return errors
     },
+    resourcepacks: states => states.setting.resourcepacks,
 }
 const mutations = {
     setName(states, name) {
@@ -41,7 +42,9 @@ const mutations = {
     },
 }
 
-const actions = {}
+const actions = {
+
+}
 
 export default {
     state,
