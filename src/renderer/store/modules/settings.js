@@ -2,6 +2,7 @@
 import paths from 'path'
 import { remote } from 'electron'
 import fs from 'fs-extra'
+import mcsettings from './mcsettings'
 
 function findJavaFromHome(set) {
     const home = process.env.JAVA_HOME;
@@ -52,6 +53,7 @@ export default {
             rootPath: paths.join(remote.app.getPath('appData'), '.launcher'), // this will be removed in the future...
             defaultResolution: { width: 400, height: 400, fullscreen: false },
             autoDownload: false,
+            mcsettings,
             javas: [],
             default: 'semantic',
             theme: 'semantic',
@@ -61,6 +63,9 @@ export default {
     mutations: {
         javas(states, payload) {
             if (payload instanceof Array) states.javas = payload;
+        },
+        copySetting(states, { from, to }) {
+            const setting = states.mcsettings[from]
         },
     },
     getters: {
@@ -74,7 +79,6 @@ export default {
         load(context, payload) {
             context.dispatch('searchJava').then((javas) => {
                 context.commit('javas', javas);
-                console.log(context.state)
             })
             return context.dispatch('readFile', { path: 'setting.json' }, { root: true })
         },

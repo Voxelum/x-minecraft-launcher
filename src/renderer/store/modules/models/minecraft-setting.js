@@ -1,0 +1,7 @@
+
+function loadSetting() {
+    
+}
+export default () => {
+
+}
