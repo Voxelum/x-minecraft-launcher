@@ -87,8 +87,6 @@ export default {
             const data = await context.dispatch(`${profileId}/save`)
             const setting = data.setting;
             data.setting = undefined;
-            console.log('save setting:')
-            console.log(GameSetting.writeToString(setting))
             return Promise.all(
                 context.dispatch('writeFile', { path: profileJson, data }, { root: true }),
                 context.dispatch('writeFile', { path: settingTxt, data: GameSetting.writeToString(setting) }, { root: true }),

@@ -1,3 +1,5 @@
+import options from '../../../shared/options'
+
 function state() {
     return {
         type: '',
@@ -7,7 +9,11 @@ function state() {
 
         // resourcepacks: [], // official setting
         mods: [],
-        setting: {},
+        setting: {
+            minecraft: options,
+            // forge: {},
+            // optifine: {},
+        },
 
         resolution: [800, 400], // client setting
         java: '',
@@ -24,7 +30,9 @@ const getters = {
         if (states.java === '' || states.java === undefined || states.java === null) errors.push('profile.empty.java')
         return errors
     },
-    resourcepacks: states => states.setting.resourcepacks,
+    minecraftOptions: states => states.setting.minecraft,
+    resourcepacks: states => states.setting.minecraft.resourcepacks,
+    language: states => states.setting.minecraft.lang,
 }
 const mutations = {
     setName(states, name) {
