@@ -105,8 +105,8 @@
             </div>
         </div>
         <login-modal ref="loginModal"></login-modal>
-        <profile-modal ref="profileModal" :defaultAuthor="username" @accept="submitProfile('modpack', $event)"></profile-modal>
-        <server-modal ref="serverModal" @accept="submitProfile('server', $event)"></server-modal>
+        <profile-modal ref="profileModal" :defaultAuthor="username" @accept="submitProfile($event, 'modpack')"></profile-modal>
+        <server-modal ref="serverModal" @accept="submitProfile($event, 'server')"></server-modal>
         <delete-modal ref="deleteModal" @accept="deleteProfile"></delete-modal>
     </div>
 </template>
