@@ -69,7 +69,11 @@ export default {
                 const [, action] = path
                 if (action === 'add') {
                     const targetPath = `profiles/${object.id}/${PROFILE_NAME}`
-                    return context.dispatch('writeFile', { path: targetPath, data: object.module.state }, { root: true })
+                    const settingTxt = `profiles/${object.id}/options.txt`
+                    return Promise.all(
+                        context.dispatch('writeFile', { path: targetPath, data: JSON.stringify(object.module.state, (key, value) => (key === 'setting' ? undefined : value)) }, { root: true }),
+                        context.dispatch('writeFile', { path: settingTxt, data: GameSetting.writeToString(object.module.state.setting) }, { root: true }),
+                    )
                 } else if (action === 'select') {
                     return context.dispatch('writeFile', {
                         path: PROFILES_NAEM, data: { selected: context.state._selected },
@@ -83,6 +87,8 @@ export default {
             const data = await context.dispatch(`${profileId}/save`)
             const setting = data.setting;
             data.setting = undefined;
+            console.log('save setting:')
+            console.log(GameSetting.writeToString(setting))
             return Promise.all(
                 context.dispatch('writeFile', { path: profileJson, data }, { root: true }),
                 context.dispatch('writeFile', { path: settingTxt, data: GameSetting.writeToString(setting) }, { root: true }),
