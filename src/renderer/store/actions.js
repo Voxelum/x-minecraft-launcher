@@ -165,7 +165,10 @@ export default (rootPath) => {
                             }
                         } else resolve(data)
                     })
-                } else resolve(fallback)
+                } else {
+                    console.log(`File ${path} not exist! return fallback`)
+                    resolve(fallback)
+                }
             });
         },
     }

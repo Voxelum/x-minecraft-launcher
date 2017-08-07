@@ -38,19 +38,6 @@ export default {
     },
     actions: {
         async load(context, payload) {
-            const files = await context.dispatch('readFolder', { path: 'profiles' }, { root: true });
-            for (const file of files) {
-                context.dispatch('readFile', {
-                    path: `profiles/${file}/${PROFILE_NAME}`,
-                    fallback: {},
-                    encoding: 'json',
-                }, { root: true })
-                context.dispatch('readFile', {
-                    path: `profiles/${file}/options.txt`,
-                    fallback: {},
-                    encoding: 'string',
-                }, { root: true })
-            }
             return context.dispatch('readFolder', { path: 'profiles' }, { root: true })
                 .then(files =>
                     Promise.all(files.map(file => context.dispatch('readFile', {
@@ -59,7 +46,12 @@ export default {
                         encoding: 'json',
                     }, { root: true })
                         .then(regulize)
-                        .then(profile => [file, profile]))))
+                        .then(profile => context.dispatch('readFile', {
+                            path: `profiles/${file}/options.txt`,
+                            fallback: context.rootState.settings.mcsettings.midum,
+                            encoding: 'string',
+                        }, { root: true })
+                            .then(setting => [file, { ...profile, setting }])))))
                 .then((promises) => {
                     for (const [id, profile] of promises) {
                         const model = profile.type === 'modpack' ? modelModpack : modelServer
