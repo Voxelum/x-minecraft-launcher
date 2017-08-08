@@ -49,8 +49,8 @@
 
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex'
-import TextComponent from '../TextComponent'
-import ResourcePackList from '../ResourcePackList'
+import TextComponent from './TextComponent'
+import ResourcePackList from './ResourcePackList'
 export default {
     components: { TextComponent, ResourcePackList },
     props: ['source', 'id'],

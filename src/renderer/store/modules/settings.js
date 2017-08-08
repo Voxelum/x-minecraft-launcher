@@ -50,10 +50,11 @@ export default {
     namespaced: true,
     state() {
         return {
-            rootPath: paths.join(remote.app.getPath('appData'), '.launcher'), // this will be removed in the future...
             defaultResolution: { width: 400, height: 400, fullscreen: false },
             autoDownload: false,
-            mcsettings,
+            templates: {
+                minecraft: mcsettings,
+            },
             javas: [],
             default: 'semantic',
             theme: 'semantic',
@@ -74,6 +75,7 @@ export default {
             if (states.javas.length === 0) e.push('setting.install.java')
             return e;
         },
+        settings: states => states.settings,
     },
     actions: {
         load(context, payload) {
