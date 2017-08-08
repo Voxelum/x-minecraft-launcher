@@ -43,12 +43,10 @@
                 <resource-pack-list style="height:380px"></resource-pack-list>
             </div>
             <div class="ui tab segment" style="height:380px" data-tab="mods">
-                <p class="ui text">
-                    BBB
-                </p>
             </div>
             <div class="ui tab segment" style="height:380px" data-tab="settings">
-                <version-table-view></version-table-view>
+                <game-settings></game-settings>
+                <!-- <version-table-view></version-table-view> -->
             </div>
         </div>
     </div>
@@ -56,11 +54,13 @@
 
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex'
-import VersionTableView from '../VersionTableView'
-import ResourcePackList from '../ResourcePackList'
-import TextComponent from '../TextComponent'
+import VersionTableView from './VersionTableView'
+import ResourcePackList from './ResourcePackList'
+import TextComponent from './TextComponent'
+import GameSettings from './GameSettings'
+
 export default {
-    components: { VersionTableView, ResourcePackList, TextComponent },
+    components: { VersionTableView, ResourcePackList, TextComponent, GameSettings },
     props: ['source', 'id'],
     computed: {
         ...mapState('versions', ['minecraft']),

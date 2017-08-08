@@ -43,7 +43,7 @@
             <div class="twelve wide column">
                 <card-view ref='view' v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
                 <server-view ref='view' :id="selectedProfileID" :source="selectedProfile" v-else-if="selectedProfile.type==='server'"> </server-view>
-                <profile-view ref='view' :id="selectedProfileID" :source="selectedProfile" v-else> </profile-view>
+                <modpack-view ref='view' :id="selectedProfileID" :source="selectedProfile" v-else> </modpack-view>
             </div>
         </div>
         <div class="moveable black row" style="height:60px">
@@ -105,7 +105,7 @@
             </div>
         </div>
         <login-modal ref="loginModal"></login-modal>
-        <profile-modal ref="profileModal" :defaultAuthor="username" @accept="submitProfile($event, 'modpack')"></profile-modal>
+        <modpack-modal ref="modpackModal" :defaultAuthor="username" @accept="submitProfile($event, 'modpack')"></modpack-modal>
         <server-modal ref="serverModal" @accept="submitProfile($event, 'server')"></server-modal>
         <delete-modal ref="deleteModal" @accept="deleteProfile"></delete-modal>
     </div>
@@ -115,24 +115,19 @@
 require('static/semantic/dist/semantic.min.css')
 require('static/semantic/dist/semantic.min.js')
 
-import ProfileView from './components/profiles/ProfileView'
-import ServerView from './components/profiles/ServerView'
-
+import modals from './components/modals'
+import ModpackView from './components/ModpackView'
+import ServerView from './components/ServerView'
 import CardView from './components/CardView'
-
 import SkinView from './components/SkinView'
-
-import LoginModal from './components/modals/LoginModal'
-import ProfileModal from './components/modals/ProfileModal'
-import ServerModal from './components/modals/ServerModal'
-import DeleteModal from './components/modals/DeleteModal'
 
 import { mapMutations, mapState, mapGetters } from 'vuex'
 import mapActions from '../../shared/mapAction'
 export default {
     components: {
-        ProfileView, ServerView, SkinView, CardView,
-        LoginModal, ServerModal, ProfileModal, DeleteModal,
+        ModpackView, ServerView, CardView,
+        SkinView,
+        ...modals
     },
     computed: {
         ...mapGetters('profiles', {
@@ -173,10 +168,13 @@ export default {
             selectProfile: 'select',
             deleteProfile: 'delete',
         }),
-        ...mapActions(['launch']),
         ...mapMutations('profiles', ['unselect']),
+        ...mapActions(['launch']),
         showModal(id, args) {
-            this.$refs[id + "Modal"].show(args)
+            const modal = this.$refs[id + "Modal"]
+            if (modal)
+                modal.show(args)
+            else console.warn(`No modal named ${id}`)
         },
         create(type) {
             this.showModal(type)

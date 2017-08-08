@@ -30,10 +30,12 @@ const getters = {
 const mutations = profile.mutations
 
 const actions = {
-    save(context) {
-        const saved = Object.assign({}, context.state);
-        saved.status = undefined;
-        return saved;
+    load: profile.actions.load,
+
+    serialize(context, payload) {
+        const serialized = Object.assign({}, this.context)
+        serialized.status = undefined
+        return serialized
     },
     refresh(context, payload) {
         context.commit('putAll', { status: ServerStatus.pinging() })

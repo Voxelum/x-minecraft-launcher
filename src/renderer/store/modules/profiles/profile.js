@@ -35,12 +35,6 @@ const getters = {
     language: states => states.setting.minecraft.lang,
 }
 const mutations = {
-    setName(states, name) {
-        states.name = name
-    },
-    setVersion(states, version) {
-        states.version = version
-    },
     putAll(states, option) {
         for (const key in option) {
             if (option.hasOwnProperty(key) && states.hasOwnProperty(key)) {
@@ -51,7 +45,21 @@ const mutations = {
 }
 
 const actions = {
-
+    load(context, payload) {
+        const id = payload
+        context.dispatch('readFile', {
+            path: `profiles/${id}/options.txt`,
+            fallback: context.rootState.settings.templates.minecraft.midum,
+            encoding: 'string',
+        }, { root: true })
+    },
+    async save(context, { id }) {
+        const profileJson = `profiles/${id}/profile.json`
+        const data = await context.dispatch('serialize')
+        const setting = data.setting;
+        data.setting = undefined;
+        return context.dispatch('writeFile', { path: profileJson, data }, { root: true })
+    },
 }
 
 export default {
