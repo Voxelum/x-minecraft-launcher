@@ -1,16 +1,18 @@
 import vuex from 'vuex'
-import ModpackView from './profiles/ModpackView.vue'
-import ServerView from './profiles/ServerView.vue'
+import ModpackCard from './ModpackCard.vue'
+import ServerCard from './ServerCard.vue'
 
 export default {
-    components: { modpack: ModpackView, server: ServerView },
+    components: { 'modpack-card': ModpackCard, 'server-card': ServerCard },
     computed: {
-        ...vuex.mapGetters('profiles', ['selected', 'selectedKey']),
+        ...vuex.mapGetters('profiles', ['allKeys', 'getByKey']),
     },
     methods: {
+        refresh() {
+            for (const key of this.allKeys) this.$store.dispatch(`profiles/${key}/refresh`)
+        },
     },
     render(createElement) {
-        console.log('on render profiles-view');
         const getByKey = this.getByKey;
         const self = this
         return createElement('div', { staticClass: 'ui link cards' }, this.allKeys.map((id) => {

@@ -1,7 +1,0 @@
-
-function loadSetting() {
-    
-}
-export default () => {
-
-}

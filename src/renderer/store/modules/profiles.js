@@ -2,9 +2,8 @@ import uuid from 'uuid'
 import { GameSetting } from 'ts-minecraft'
 
 import mixin from '../mixin-state'
-import singleSelect from './models/single-select'
-import modelServer from './models/server'
-import modelModpack from './models/modpack'
+import modelServer from './profiles/server'
+import modelModpack from './profiles/modpack'
 
 const PROFILE_NAME = 'profile.json'
 const PROFILES_NAEM = 'profiles.json'
@@ -21,10 +20,17 @@ function regulize(content) {
 export default {
     namespaced: true,
     state() {
-        return singleSelect.state()
+        return {
+            all: [],
+            selected: '',
+        }
     },
     getters: {
-        ...singleSelect.getters,
+        selected: state => state[state.selected],
+        allStates: state => state.all.map(mName => state[mName]),
+        getByKey: state => id => state[id],
+        selectedKey: state => state.selected,
+        allKeys: state => state.all,
         errors(states, getters) {
             if (getters.selectedKey !== '') {
                 const get = getters[`${getters.selectedKey}/errors`]
@@ -34,9 +40,31 @@ export default {
         },
     },
     mutations: {
-        ...singleSelect.mutations,
+        unselect(state) {
+            state.selected = ''
+        },
+        select(state, moduleID) {
+            const idx = state.all.indexOf(moduleID);
+            if (idx !== -1) state.selected = moduleID;
+        },
+        add(state, payload) {
+            state.all.push(payload.id)
+        },
+        remove(state, id) {
+            if (state.all.indexOf(id) !== -1) {
+                if (state.selected === id) {
+                    state.selected = state.all[0]
+                }
+                state.all = state.all.filter(v => v !== id)
+            }
+        },
     },
     actions: {
+        async loadOptions(context, payload) {
+
+        },
+        loadOptifine() { return {} },
+        loadForge() { return undefined },
         async load(context, payload) {
             return context.dispatch('readFolder', { path: 'profiles' }, { root: true })
                 .then(files =>
@@ -48,7 +76,7 @@ export default {
                         .then(regulize)
                         .then(profile => context.dispatch('readFile', {
                             path: `profiles/${file}/options.txt`,
-                            fallback: context.rootState.settings.mcsettings.midum,
+                            fallback: context.rootState.settings.templates.minecraft.midum,
                             encoding: 'string',
                         }, { root: true })
                             .then(setting => [file, { ...profile, setting }])))))
@@ -62,35 +90,20 @@ export default {
                     .then(json => context.commit('select', json.selected)))
         },
         async save(context, payload) {
-            const mutation = payload.mutation
-            const object = payload.object
-            const path = mutation.split('/')
-            if (path.length === 2) {
-                const [, action] = path
-                if (action === 'add') {
-                    const targetPath = `profiles/${object.id}/${PROFILE_NAME}`
-                    const settingTxt = `profiles/${object.id}/options.txt`
-                    return Promise.all(
-                        context.dispatch('writeFile', { path: targetPath, data: JSON.stringify(object.module.state, (key, value) => (key === 'setting' ? undefined : value)) }, { root: true }),
-                        context.dispatch('writeFile', { path: settingTxt, data: GameSetting.writeToString(object.module.state.setting) }, { root: true }),
-                    )
-                } else if (action === 'select') {
-                    return context.dispatch('writeFile', {
-                        path: PROFILES_NAEM, data: { selected: context.state._selected },
-                    }, { root: true })
-                }
-                return Promise.resolve();
-            }
-            const [, profileId, action] = path
-            const profileJson = `profiles/${profileId}/${PROFILE_NAME}`
-            const settingTxt = `profiles/${profileId}/options.txt`
-            const data = await context.dispatch(`${profileId}/save`)
-            const setting = data.setting;
-            data.setting = undefined;
-            return Promise.all(
-                context.dispatch('writeFile', { path: profileJson, data }, { root: true }),
-                context.dispatch('writeFile', { path: settingTxt, data: GameSetting.writeToString(setting) }, { root: true }),
-            )
+            // const mutation = payload.mutation
+            // const object = payload.object
+            // const path = mutation.split('/')
+            // if (path.length === 2) {
+            //     const [, action] = path
+            //     if (action === 'select') {
+            //         return context.dispatch('writeFile', {
+            //             path: PROFILES_NAEM, data: { selected: context.state.selected },
+            //         }, { root: true })
+            //     }
+            //     return Promise.resolve();
+            // }
+            // const [, profileId, action] = path
+            // return context.dispatch(`${profileId}/save`)
         },
         create(context, {
             type,
@@ -104,9 +117,11 @@ export default {
             }
             console.log(`create ${id}: ${type} with`)
             if (type === 'server') {
-                context.commit('add', { id, module: mixin(modelServer, option) })
+                context.commit('add', { id, module: modelServer })
+                context.commit(`${id}/putAll`, option)
             } else if (type === 'modpack') {
-                context.commit('add', { id, module: mixin(modelModpack, option) })
+                context.commit('add', { id, module: modelModpack })
+                context.commit(`${id}/putAll`, option)
             }
             return id;
         },
