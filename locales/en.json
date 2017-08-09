@@ -5,49 +5,113 @@
     "save": "Save",
     "name": "Name",
     "create": "Create",
-    "server.create": "Create A New Server",
     "author": "Author",
     "description": "Description",
     "help": "Help",
     "home": "Home",
     "login": "Login",
-    "signup.description": "New to us?",
-    "signup": "Sign Up",
     "modpack": "Modpack",
-    "server": "Server",
     "summery": "Summery",
     "mods": "Mods",
     "resourcepacks": "Resource Packs",
     "settings": "Settings",
     "launch": "Launch",
-    "versions": "Versions",
-    "version.prepare": "Preparing Files",
-    "version.status": "Status",
-    "version.date": "Updated Date",
-    "version": "Version",
-    "version.releaseDate": "Release Date",
-    "profile.add.server": "Add Server",
-    "profile.add.modpack": "Add Modpack",
-    "profile.delete.server": "Delete the server",
-    "profile.delete.modpack": "Delete the modpack",
-    "profile.delete.server.description": "This will delete all the local data about this server. Are you sure to do this?",
-    "profile.delete.modpack.description": "This will delete all the data about this modpack. Are you sure to do this?",
-    "profile.delete.yes": "Delete",
-    "profile.delete.no": "No",
-    "profile.edit": "Edit Profile Info",
-    "profile.create": "Create a New Profile",
-    "user.profile": "Profile",
-    "user.logout": "Logout",
-    "offline.name": "Offline",
-    "offline.account": "Username",
-    "offline.password": "No Password",
-    "mojang.name": "Mojang",
-    "mojang.account": "Email Adress",
-    "mojang.password": "Password",
-    "server.players": "Players",
-    "server.pings": "Pings",
-    "server.host": "Host",
-    "server.port": "Port",
-    "server.edit": "Edit Server Info",
-    "errors.empty": "No error yet"
+    "version": {
+        "name": "Version | Versions",
+        "prepare": "Preparing Files",
+        "status": "Status",
+        "date": "Updated Date",
+        "releaseDate": "Release Date"
+    },
+    "profile": {
+        "add.server": "Add Server",
+        "add.modpack": "Add Modpack",
+        "delete.server": "Delete the server",
+        "delete.modpack": "Delete the modpack",
+        "delete.server.description": "This will delete all the local data about this server. Are you sure to do this?",
+        "delete.modpack.description": "This will delete all the data about this modpack. Are you sure to do this?",
+        "delete.yes": "Delete",
+        "delete.no": "No",
+        "edit": "Edit Profile Info",
+        "create": "Create a New Profile"
+    },
+    "signup": {
+        "description": "New to us?",
+        "name": "Sign Up"
+    },
+    "user": {
+        "profile": "Profile",
+        "logout": "Logout"
+    },
+    "offline": {
+        "name": "Offline",
+        "account": "Username",
+        "password": "No Password"
+    },
+    "mojang": {
+        "name": "Mojang",
+        "account": "Email Adress",
+        "password": "Password"
+    },
+    "server": {
+        "name": "Server | Servers",
+        "create": "Create A New Server",
+        "players": "Players",
+        "pings": "Pings",
+        "host": "Host",
+        "port": "Port",
+        "edit": "Edit Server Info"
+    },
+    "errors.empty": "No error yet",
+    "renderClouds": {
+        "name": "Clouds",
+        "true": "Fancy",
+        "false": "Off",
+        "fast": "Fast"
+    },
+    "particles": {
+        "name": "Particle",
+        "0": "Maximum",
+        "1": "Decreased",
+        "2": "Minimum"
+    },
+    "ao": {
+        "name": "Smooth Lighting",
+        "0": "Off",
+        "1": "Minimum",
+        "2": "Maximum"
+    },
+    "mipmapLevels": {
+        "name": "Mipmap",
+        "0": "0",
+        "1": "1",
+        "2": "2",
+        "3": "3",
+        "4": "4"
+    },
+    "entityShadows": {
+        "name": "Entity Shadows",
+        "true": "Enabled",
+        "false": "Disabled"
+    },
+    "fancyGraphics": {
+        "name": "Graphic",
+        "true": "Fancy",
+        "false": "Fast"
+    },
+    "enableVsync": {
+        "name": "Vsync",
+        "true": "Enabled",
+        "false": "Disabled"
+    },
+    "fboEnable": {
+        "name": "Use FBO",
+        "true": "Enabled",
+        "false": "Disabled"
+    },
+    "useVBO": {
+        "name": "Use VBO",
+        "true": "Enabled",
+        "false": "Disabled"
+    }
 }

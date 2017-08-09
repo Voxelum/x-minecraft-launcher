@@ -1,6 +1,6 @@
 <template>
-    <div class="ui button" @click="switchValue">
-         {{$t(id)}} : {{$t(value)}} 
+    <div class="ui basic button" @click="switchValue">
+        {{localizedId}} : {{localizedValue}}
     </div>
 </template>
 
@@ -12,6 +12,9 @@ export default {
         }
     },
     computed: {
+        localizedId() { return this.$t(`${this.id}.name`) },
+        localizedOptions() { return this.options.map(v => `${this.id}.${v}`).map(v => this.$t(v)) },
+        localizedValue() { return this.localizedOptions[this.selected] },
         value() { return this.options ? this.options[this.selected] : '' }
     },
     props: ['id', 'options'],
