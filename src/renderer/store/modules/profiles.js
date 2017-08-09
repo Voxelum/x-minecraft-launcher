@@ -60,69 +60,98 @@ export default {
         },
     },
     actions: {
-        async loadOptions(context, payload) {
-
+        loadProfile(context, id) {
+            return context.dispatch('readFile', {
+                path: `profiles/${id}/${PROFILE_NAME}`,
+                fallback: {},
+                encoding: 'json',
+            }, { root: true })
+                .then(regulize)
+                .then(profile => Object.create({ id, profile }))
         },
-        loadOptifine() { return {} },
-        loadForge() { return undefined },
-        async load(context, payload) {
-            return context.dispatch('readFolder', { path: 'profiles' }, { root: true })
-                .then(files =>
-                    Promise.all(files.map(file => context.dispatch('readFile', {
-                        path: `profiles/${file}/${PROFILE_NAME}`,
-                        fallback: {},
-                        encoding: 'json',
-                    }, { root: true })
-                        .then(regulize)
-                        .then(profile => context.dispatch('readFile', {
-                            path: `profiles/${file}/options.txt`,
-                            fallback: context.rootState.settings.templates.minecraft.midum,
-                            encoding: 'string',
-                        }, { root: true })
-                            .then(setting => [file, { ...profile, setting }])))))
-                .then((promises) => {
-                    for (const [id, profile] of promises) {
-                        const model = profile.type === 'modpack' ? modelModpack : modelServer
-                        context.commit('add', { id, module: mixin(model, profile) })
-                    }
+        loadOptions(context, { id, profile }) {
+            return context.dispatch('readFile', {
+                path: `profiles/${id}/options.txt`,
+                fallback: context.rootGetters['settings/defaultOptions'],
+                encoding: 'string',
+            }, { root: true })
+                .then((option) => {
+                    profile.settings.minecraft = option;
+                    return { id, profile }
                 })
-                .then(() => context.dispatch('readFile', { path: 'profiles.json', fallback: {}, encoding: 'json' }, { root: true })
-                    .then(json => context.commit('select', json.selected)))
+        },
+        loadOptifine(context, { id, profile }) { return { id, profile } },
+        loadForge(context, { id, profile }) { return { id, profile } },
+        load({ dispatch, commit }, payload) {
+            return dispatch('readFolder', { path: 'profiles' }, { root: true })
+                .then(files => Promise.all(files.map(
+                    id => dispatch('loadProfile', id)
+                        .then(pass => dispatch('loadOptions', pass))
+                        .then(pass => dispatch('loadForge', pass))
+                        .then(pass => dispatch('loadOptifine', pass)))))
+                .then((list) => {
+                    list.forEach(({ id, profile }) => {
+                        const model = profile.type === 'modpack' ? modelModpack : modelServer
+                        commit('add', { id, module: mixin(model, profile) })
+                    })
+                })
+                .then(() => dispatch('readFile', { path: 'profiles.json', fallback: {}, encoding: 'json' }, { root: true })
+                    .then(json => commit('select', json.selected)))
+        },
+        async saveOptions(context, { id, settings }) {
+            const minecraft = settings.minecraft;
+            const path = `profiles/${id}/options.txt`
+
+            return context.dispatch('writeFile', {
+                path: `profiles/${id}/options.txt`,
+                data: GameSetting.writeToString(minecraft),
+            }, { root: true })
+        },
+        saveForge(context, { id, settings }) {
+            if (!settings.forge) return Promise.resolve()
+
+            return Promise.resolve()
+        },
+        saveOptifine(context, { id, settings }) {
+            if (!settings.optifine) return Promise.resolve()
+
+            return Promise.resolve()
+        },
+        async saveProfile(context, { id }) {
+            const profileJson = `profiles/${id}/profile.json`
+            const data = await context.dispatch(`${id}/serialize`)
+            const settings = data.settings;
+            data.settings = undefined;
+            return context.dispatch('writeFile', { path: profileJson, data }, { root: true })
+                .then(() => context.dispatch('saveOptions', { id, settings }))
+                .then(() => context.dispatch('saveOptifine', { id, settings }))
+                .then(() => context.dispatch('saveForge', { id, settings }))
         },
         async save(context, payload) {
-            // const mutation = payload.mutation
-            // const object = payload.object
-            // const path = mutation.split('/')
-            // if (path.length === 2) {
-            //     const [, action] = path
-            //     if (action === 'select') {
-            //         return context.dispatch('writeFile', {
-            //             path: PROFILES_NAEM, data: { selected: context.state.selected },
-            //         }, { root: true })
-            //     }
-            //     return Promise.resolve();
-            // }
-            // const [, profileId, action] = path
-            // return context.dispatch(`${profileId}/save`)
+            const mutation = payload.mutation
+            const object = payload.object
+            const path = mutation.split('/')
+            if (path.length === 2) {
+                const [, action] = path
+                if (action === 'select') {
+                    return context.dispatch('writeFile', {
+                        path: PROFILES_NAEM, data: { selected: context.state.selected },
+                    }, { root: true })
+                }
+                return Promise.resolve();
+            }
+            const [, profileId, action] = path
+            return context.dispatch('saveProfile', { id: profileId })
         },
         create(context, {
             type,
             option,
         }) {
             const id = uuid()
-            if (!option.java) {
-                if (context.rootState.settings.javas.length !== 0) {
-                    option.java = context.rootState.settings.javas[0]
-                }
-            }
-            console.log(`create ${id}: ${type} with`)
-            if (type === 'server') {
-                context.commit('add', { id, module: modelServer })
-                context.commit(`${id}/putAll`, option)
-            } else if (type === 'modpack') {
-                context.commit('add', { id, module: modelModpack })
-                context.commit(`${id}/putAll`, option)
-            }
+            option.java = option.java || context.rootGetters['settings/defaultJava']
+            const module = type === 'server' ? modelServer : type === 'modpack' ? modelModpack : undefined;
+            context.commit('add', { id, module })
+            context.commit(`${id}/putAll`, option)
             return id;
         },
         delete(context, payload) {
