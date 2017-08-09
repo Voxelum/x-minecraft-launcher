@@ -1,52 +1,57 @@
 <template>
-    <div class="ui grid">
-        <div class="eight wide column">
-            <div class="ui sizer" style="font-size: 23px;">
-                <h1 class="ui header">
-                    <div class="content">
-                        <div class="ui transparent input">
-                            <input type="text" name="Name" :placeholder="id" :value="source.name" @blur="modify">
+    <div class="ui vertically divided grid">
+        <div class="row">
+            <div class="eight wide column">
+                <div class="ui sizer" style="font-size: 23px;">
+                    <h1 class="ui header">
+                        <div class="content">
+                            {{source.name}}
+                            <h2 class="ui sub header">
+                                {{$t('profile.author')}}:
+                                <div class="ui transparent input">
+                                    <input type="text" name="Author" placeholder="Unknown author..." :value="source.author" @blur="modify">
+                                </div>
+                            </h2>
+                            <h2 class="ui sub header">
+                                {{$t('profile.version')}}: {{source.version}}
+                            </h2>
                         </div>
-                        <h2 class="ui sub header">
-                            {{$t('profile.author')}}:
-                            <div class="ui transparent input">
-                                <input type="text" name="Author" placeholder="Unknown author..." :value="source.author" @blur="modify">
-                            </div>
-                        </h2>
-                        <h2 class="ui sub header">
-                            {{$t('profile.version')}}: {{source.version}}
-                        </h2>
-                    </div>
-                </h1>
+                    </h1>
+                </div>
             </div>
-            <div style="height:202px"></div>
-            <div v-if="type==='modpack'" class="ui row piled segment" style="padding:35px 10px 10px 10px; height:150px;">
-                <label class="ui top left attached label">{{$t('profile.description')}}</label>
-                <label class="ui bottom right attached label">{{$t('profile.edit')}}</label>
+            <div class="eight wide column">
+                <h5 class="ui horizontal divider header">
+                    <i class="tag icon"></i>
+                    Modpack Description
+                </h5>
                 <textarea :value="source.description" name="Description" @blur="modify" style="border:0;outline:none;overflow: hidden;resize:none">
                 </textarea>
             </div>
         </div>
-        <div class="eight wide column">
-            <div class="ui very basic menu">
-                <a class="item" data-tab="resourcepacks">
-                    {{$t('resourcepacks')}}
-                </a>
-                <a class="item" data-tab="mods">
-                    {{$t('mods')}}
-                </a>
-                <a class="item" data-tab="settings">
-                    {{$t('settings')}}
-                </a>
+        <div class="stretched row" style="height:70%">
+            <div class="five wide column">
+                <div class="ui vertical fluid tabular menu">
+                    <a class="item" data-tab="resourcepacks">
+                        {{$t('resourcepacks')}}
+                    </a>
+                    <a class="item" data-tab="mods">
+                        {{$t('mods')}}
+                    </a>
+                    <a class="item" data-tab="settings">
+                        {{$t('settings')}}
+                    </a>
+                </div>
             </div>
-            <div class="ui tab segment" data-tab="resourcepacks">
-                <resource-pack-list style="height:380px"></resource-pack-list>
-            </div>
-            <div class="ui tab segment" style="height:380px" data-tab="mods">
-            </div>
-            <div class="ui tab segment" style="height:380px" data-tab="settings">
-                <game-settings></game-settings>
-                <!-- <version-table-view></version-table-view> -->
+            <div class="eleven wide column" >
+                <div class="ui tab" data-tab="resourcepacks">
+                    <resource-pack-list style="height:380px"></resource-pack-list>
+                </div>
+                <div class="ui tab" style="height:380px" data-tab="mods">
+                </div>
+                <div class="ui tab" style="height:380px" data-tab="settings">
+                    <game-settings></game-settings>
+                    <!-- <version-table-view></version-table-view> -->
+                </div>
             </div>
         </div>
     </div>
