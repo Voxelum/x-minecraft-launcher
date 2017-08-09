@@ -1,6 +1,6 @@
 <template>
     <div class="ui vertically divided grid" style="height:105%">
-        <div class="row" >
+        <div class="row">
             <div class="eight wide column">
                 <h1 class="ui header">
                     <img v-if="status.icon!=''&& status.icon" class="ui image" :src="status.icon">
@@ -27,8 +27,8 @@
             </div>
         </div>
         <div class="stretched row" style="height:70%">
-            <div id="selection" class="five wide column" style="">
-                <div class="ui  vertical  fluid tabular menu">
+            <div class="five wide column" style="">
+                <div class="ui vertical  fluid tabular menu">
                     <a class="item" data-tab="common">Common</a>
                     <a class="item" data-tab="resourcepack">ResourcePacks</a>
                     <a class="item" data-tab="mods">Mods</a>
@@ -68,9 +68,8 @@ export default {
     },
     mounted() {
         this.$nextTick(() => {
-            $('#selection .menu .item').tab()
+            $('.menu .item').tab()
         })
-        // $('#selection .menu .item').tab()
         if (!this.$store.state.auth.authInfo) this.refresh();
     },
 }
