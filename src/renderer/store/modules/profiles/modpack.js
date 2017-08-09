@@ -17,7 +17,7 @@ const mutations = Object.assign({}, profile.mutations)
 
 const actions = {
     serialize(context, payload) {
-        return Object.assign({}, this.context)
+        return Object.assign({}, context.state)
     },
     refresh(context, payload) { },
 }

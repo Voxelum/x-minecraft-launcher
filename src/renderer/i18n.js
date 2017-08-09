@@ -8,4 +8,8 @@ export default new VueI18n({
     locale: 'en',
     fallbackLocale: 'en',
     messages: locales,
+    missing: (locale, key, vm) => {
+        
+        // handle translation missing
+    },
 })
