@@ -9,7 +9,7 @@ function state() {
 
         // resourcepacks: [], // official setting
         mods: [],
-        setting: {
+        settings: {
             minecraft: options,
             // forge: {},
             // optifine: {},
@@ -30,9 +30,9 @@ const getters = {
         if (states.java === '' || states.java === undefined || states.java === null) errors.push('profile.empty.java')
         return errors
     },
-    minecraftOptions: states => states.setting.minecraft,
-    resourcepacks: states => states.setting.minecraft.resourcepacks,
-    language: states => states.setting.minecraft.lang,
+    minecraftOptions: states => states.settings.minecraft,
+    resourcepacks: states => states.settings.minecraft.resourcepacks,
+    language: states => states.settings.minecraft.lang,
 }
 const mutations = {
     putAll(states, option) {
@@ -45,21 +45,6 @@ const mutations = {
 }
 
 const actions = {
-    load(context, payload) {
-        const id = payload
-        context.dispatch('readFile', {
-            path: `profiles/${id}/options.txt`,
-            fallback: context.rootState.settings.templates.minecraft.midum,
-            encoding: 'string',
-        }, { root: true })
-    },
-    async save(context, { id }) {
-        const profileJson = `profiles/${id}/profile.json`
-        const data = await context.dispatch('serialize')
-        const setting = data.setting;
-        data.setting = undefined;
-        return context.dispatch('writeFile', { path: profileJson, data }, { root: true })
-    },
 }
 
 export default {

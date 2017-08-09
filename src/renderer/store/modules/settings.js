@@ -46,6 +46,15 @@ function findJavaFromRegistry() {
     });
 }
 
+(() => {
+    const options = require('../../shared/options')
+    for (const key in mcsettings) {
+        if (mcsettings.hasOwnProperty(key)) {
+            mcsettings[key] = Object.assign(mcsettings[key], options)
+        }
+    }
+})()
+
 export default {
     namespaced: true,
     state() {
@@ -65,8 +74,8 @@ export default {
         javas(states, payload) {
             if (payload instanceof Array) states.javas = payload;
         },
-        copySetting(states, { from, to }) {
-            const setting = states.mcsettings[from]
+        copyOptions(states, { from, to }) {
+            const setting = states.templates.minecraft[from]
         },
     },
     getters: {
@@ -75,7 +84,10 @@ export default {
             if (states.javas.length === 0) e.push('setting.install.java')
             return e;
         },
-        settings: states => states.settings,
+        javas: states => states.javas,
+
+        defaultJava: states => (states.javas.length !== 0 ? states.javas[0] : undefined),
+        defaultOptions: states => states.templates.minecraft.midum,
     },
     actions: {
         load(context, payload) {
