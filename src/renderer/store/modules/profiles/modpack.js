@@ -20,7 +20,6 @@ const actions = {
         return Object.assign({}, this.context)
     },
     refresh(context, payload) { },
-    ...profile.actions,
 }
 
 export default {

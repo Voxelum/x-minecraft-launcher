@@ -30,10 +30,8 @@ const getters = {
 const mutations = profile.mutations
 
 const actions = {
-    load: profile.actions.load,
-
     serialize(context, payload) {
-        const serialized = Object.assign({}, this.context)
+        const serialized = Object.assign({}, context.state)
         serialized.status = undefined
         return serialized
     },
