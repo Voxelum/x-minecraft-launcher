@@ -85,7 +85,7 @@ export default {
             return e;
         },
         javas: states => states.javas,
-
+        options: states => states.templates.minecraft,
         defaultJava: states => (states.javas.length !== 0 ? states.javas[0] : undefined),
         defaultOptions: states => states.templates.minecraft.midum,
     },

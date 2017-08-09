@@ -76,6 +76,7 @@ export default {
                 encoding: 'string',
             }, { root: true })
                 .then((option) => {
+                    profile.settings = {}
                     profile.settings.minecraft = option;
                     return { id, profile }
                 })

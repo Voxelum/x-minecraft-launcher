@@ -82,7 +82,7 @@
                     </div>
                 </span>
                 <span v-if="!isSelecting">
-                    <div class="ui icon right floated  inverted button non-moveable" @click="create('profile')">
+                    <div class="ui icon right floated  inverted button non-moveable" @click="create('modpack')">
                         <i class="plus icon"></i>
                         {{$t('profile.add.modpack')}}
                     </div>
