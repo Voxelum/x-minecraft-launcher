@@ -31,10 +31,10 @@ const mutations = profile.mutations
 
 const actions = {
     serialize(context, payload) {
-        const serialized = Object.assign({}, context.state)
-        serialized.status = undefined
-        console.log(context.state)
-        return serialized
+        return JSON.stringify(context.state, (key, value) => {
+            if (key === 'settings' || key === 'status') return undefined;
+            return value;
+        })
     },
     refresh(context, payload) {
         context.commit('putAll', { status: ServerStatus.pinging() })

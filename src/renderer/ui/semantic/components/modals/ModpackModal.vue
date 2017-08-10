@@ -25,7 +25,7 @@
         <div class="actions">
             <div class="ui basic cancel inverted button">
                 <i class="close icon"></i>{{$t('no')}}</div>
-            <div class="ui green basic inverted ok button" @click="accpet">
+            <div class="ui green basic inverted ok button" @click="accept">
                 <i class="check icon"></i>
                 {{ isEdit?$t('save'):$t('create')}}
             </div>
@@ -67,7 +67,7 @@ export default {
             }
             $('#profileModal').modal('show')
         },
-        accpet() {
+        accept() {
             if (!this.name || this.name === '') {
                 this.hasError = true;
             }

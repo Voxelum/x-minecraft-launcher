@@ -1,10 +1,6 @@
 import uuid from 'uuid'
 import { GameSetting } from 'ts-minecraft'
 
-import mixin from '../mixin-state'
-import modelServer from './profiles/server'
-import modelModpack from './profiles/modpack'
-
 const PROFILE_NAME = 'profile.json'
 const PROFILES_NAEM = 'profiles.json'
 
@@ -14,6 +10,7 @@ function regulize(content) {
     content.mods = content.mods || []
     content.vmOptions = content.vmOptions || []
     content.mcOptions = content.mcOptions || []
+    if (!content.minecraft) content.minecraft = { name: 'custom' }
     return content
 }
 
@@ -67,65 +64,23 @@ export default {
                 encoding: 'json',
             }, { root: true })
                 .then(regulize)
-                .then(profile => Object.create({ id, profile }))
+                .then(profile => context.commit('add', { id, moduleData: profile }))
         },
-        loadOptions(context, { id, profile }) {
-            return context.dispatch('readFile', {
-                path: `profiles/${id}/options.txt`,
-                fallback: context.rootGetters['settings/defaultOptions'],
-                encoding: 'string',
-            }, { root: true })
-                .then((option) => {
-                    profile.minecraft = option;
-                    return { id, profile }
-                })
-        },
-        loadOptifine(context, { id, profile }) { return { id, profile } },
-        loadForge(context, { id, profile }) { return { id, profile } },
         load({ dispatch, commit }, payload) {
             return dispatch('readFolder', { path: 'profiles' }, { root: true })
-                .then(files => Promise.all(files.map(
-                    id => dispatch('loadProfile', id)
-                        .then(pass => dispatch('loadOptions', pass))
-                        .then(pass => dispatch('loadForge', pass))
-                        .then(pass => dispatch('loadOptifine', pass)))))
-                .then((list) => {
-                    list.forEach(({ id, profile }) => {
-                        const model = profile.type === 'modpack' ? modelModpack : modelServer
-                        commit('add', { id, module: mixin(model, profile) })
-                    })
-                })
-                .then(() => dispatch('readFile', { path: 'profiles.json', fallback: {}, encoding: 'json' }, { root: true })
-                    .then(json => commit('select', json.selected)))
-        },
-        async saveOptions(context, { id, settings }) {
-            const minecraft = settings.minecraft;
-            const path = `profiles/${id}/options.txt`
-            return context.dispatch('writeFile', {
-                path: `profiles/${id}/options.txt`,
-                data: GameSetting.writeToString(minecraft.instance),
-            }, { root: true })
-        },
-        saveForge(context, { id, settings }) {
-            if (!settings.forge) return Promise.resolve()
-
-            return Promise.resolve()
-        },
-        saveOptifine(context, { id, settings }) {
-            if (!settings.optifine) return Promise.resolve()
-
-            return Promise.resolve()
+                .then(files => Promise.all(files.map(id => dispatch('loadProfile', id))))
+                .then(() => dispatch('readFile', { path: 'profiles.json', fallback: {}, encoding: 'json' }, { root: true }))
+                .then(json => commit('select', json.selected))
         },
         async saveProfile(context, { id }) {
             const profileJson = `profiles/${id}/profile.json`
+            console.log('save profile')
+
             const data = await context.dispatch(`${id}/serialize`)
-            data.minecraft = undefined;
-            data.forge = undefined;
-            data.liteloader = undefined;
-            data.optifine = undefined;
+            console.log(data)
             return context.dispatch('writeFile', { path: profileJson, data }, { root: true })
         },
-        async save(context, payload) {
+        save(context, payload) {
             const mutation = payload.mutation
             const object = payload.object
             const path = mutation.split('/')
@@ -141,10 +96,8 @@ export default {
                 context.dispatch('saveProfile', { id: path[1] })
             } else if (path.length === 4) {
                 const target = path[2]
-                if (target === 'minecraft') return context.dispatch('saveProfile', { id: path[1] }).then(() => context.dispatch('saveOptions', { id: path[1] }))
-                if (target === 'forge') return context.dispatch('saveProfile', { id: path[1] }).then(() => context.dispatch('saveForge', { id: path[1] }))
-                if (target === 'liteloader') return context.dispatch('saveProfile', { id: path[1] }).then(() => context.dispatch('saveLiteloader', { id: path[1] }))
-                if (target === 'optifine') return context.dispatch('saveProfile', { id: path[1] }).then(() => context.dispatch('saveOptifine', { id: path[1] }))
+                return context.dispatch('saveProfile', { id: path[1] })
+                    .then(() => context.dispatch(`${path[1]}/${target}/save`, { id: path[1] }))
             }
             return context.dispatch('saveProfile', { id: path[1] })
         },
@@ -154,10 +107,8 @@ export default {
         }) {
             const id = uuid()
             option.java = option.java || context.rootGetters['settings/defaultJava']
-            const module = type === 'server' ? modelServer : type === 'modpack' ? modelModpack : undefined;
-            context.commit('add', { id, module })
-            context.commit(`${id}/putAll`, option)
-            return id;
+            context.commit('add', { id, moduleData: option })
+            return context.dispatch('saveProfile', { id })
         },
         delete(context, payload) {
             context.commit('remove', payload)
