@@ -42,7 +42,7 @@
                 </div>
                 <div class="ui tab" data-tab="mods">C</div>
                 <div class="ui tab" data-tab="settings">
-                    <game-settings></game-settings>
+                    <game-settings :source="source" :id="id"></game-settings>
                 </div>
             </div>
         </div>
@@ -73,7 +73,7 @@ export default {
         this.$nextTick(() => {
             $('.menu .item').tab()
         })
-        if (!this.source.status.ping) this.refresh();
+        // if (!this.source.status.ping) this.refresh();
     },
 }
 </script>

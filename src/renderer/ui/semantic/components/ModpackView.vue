@@ -49,7 +49,7 @@
                 <div class="ui tab" style="height:380px" data-tab="mods">
                 </div>
                 <div class="ui tab" style="height:380px" data-tab="settings">
-                    <game-settings></game-settings>
+                    <game-settings :source="source" :id="id"></game-settings>
                     <!-- <version-table-view></version-table-view> -->
                 </div>
             </div>

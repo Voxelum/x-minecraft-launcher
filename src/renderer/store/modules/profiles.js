@@ -76,8 +76,7 @@ export default {
                 encoding: 'string',
             }, { root: true })
                 .then((option) => {
-                    profile.settings = {}
-                    profile.settings.minecraft = option;
+                    profile.minecraft = option;
                     return { id, profile }
                 })
         },
@@ -102,10 +101,9 @@ export default {
         async saveOptions(context, { id, settings }) {
             const minecraft = settings.minecraft;
             const path = `profiles/${id}/options.txt`
-
             return context.dispatch('writeFile', {
                 path: `profiles/${id}/options.txt`,
-                data: GameSetting.writeToString(minecraft),
+                data: GameSetting.writeToString(minecraft.instance),
             }, { root: true })
         },
         saveForge(context, { id, settings }) {
@@ -121,8 +119,16 @@ export default {
         async saveProfile(context, { id }) {
             const profileJson = `profiles/${id}/profile.json`
             const data = await context.dispatch(`${id}/serialize`)
-            const settings = data.settings;
-            data.settings = undefined;
+            const settings = {
+                minecraft: data.minecraft,
+                forge: data.forge,
+                liteloader: data.liteloader,
+                optifine: data.optifine,
+            };
+            data.minecraft = undefined;
+            data.forge = undefined;
+            data.liteloader = undefined;
+            data.optifine = undefined;
             return context.dispatch('writeFile', { path: profileJson, data }, { root: true })
                 .then(() => context.dispatch('saveOptions', { id, settings }))
                 .then(() => context.dispatch('saveOptifine', { id, settings }))
@@ -141,8 +147,7 @@ export default {
                 }
                 return Promise.resolve();
             }
-            const [, profileId, action] = path
-            return context.dispatch('saveProfile', { id: profileId })
+            return context.dispatch('saveProfile', { id: path[1] })
         },
         create(context, {
             type,
