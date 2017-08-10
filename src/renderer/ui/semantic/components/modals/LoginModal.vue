@@ -37,7 +37,7 @@
             <div class="ui segment center aligned">
                 <span class="ui text">
                     {{$t('signup.description')}}
-                    <a class="ui blue label" href="#">{{$t('signup')}}</a>
+                    <a class="ui blue label" href="#">{{$t('user.signup')}}</a>
                 </span>
             </div>
         </div>

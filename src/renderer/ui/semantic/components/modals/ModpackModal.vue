@@ -2,7 +2,7 @@
     <div id="profileModal" class="ui basic error modal" :class="{error: hasError}" style="padding:0 20% 0 20%;">
         <div class="ui icon small header">
             <i class="archive icon"></i>
-            {{ isEdit?$t('profile.edit'):$t('profile.create')}}
+            {{ isEdit?$t('modpack.edit'):$t('modpack.create')}}
         </div>
         <form class="ui inverted form">
             <div class="field">

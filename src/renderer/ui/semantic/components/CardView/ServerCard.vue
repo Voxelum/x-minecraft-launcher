@@ -1,6 +1,6 @@
 <template>
     <div class="ui card" v-bind:class="{color}">
-        <p class="ui top attached label" :data-tooltip="$t(this.source.type + '.name')" data-inverted="">
+        <p class="ui top attached label" :data-tooltip="$tc(this.source.type + '.name', 1)" data-inverted="">
             <i class="server icon"></i>
             {{this.source.host}}
             <i class="right floated large delete icon" :class="{red:hoverDelete}" @mouseover="hoverDelete=true" @mouseout="hoverDelete=false" @click="del"></i>
