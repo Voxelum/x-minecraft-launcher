@@ -37,7 +37,6 @@ const mutations = {
 
 const actions = {
     async save(context, { id }) {
-        
         const profileJson = `profiles/${id}/profile.json`
         const data = await context.dispatch('serialize')
         const settings = {
@@ -50,10 +49,11 @@ const actions = {
         data.forge = undefined;
         data.liteloader = undefined;
         data.optifine = undefined;
+
         return context.dispatch('writeFile', { path: profileJson, data }, { root: true })
-            .then(() => context.dispatch('saveOptions', { id, settings }))
-            .then(() => context.dispatch('saveOptifine', { id, settings }))
-            .then(() => context.dispatch('saveForge', { id, settings }))
+        // .then(() => context.dispatch('forge/save', { id, settings }))
+        // .then(() => context.dispatch('saveOptifine', { id, settings }))
+        // .then(() => context.dispatch('saveForge', { id, settings }))
     },
 }
 
