@@ -161,6 +161,7 @@ export default {
                 hide: 800
             },
         })
+        console.log(this.$store)
     },
     methods: {
         ...mapActions('profiles', {

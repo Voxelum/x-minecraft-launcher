@@ -1,19 +1,9 @@
-import options from '../../../shared/options'
-
 function state() {
     return {
         type: '',
 
         name: '', // specific info
         version: '',
-
-        // resourcepacks: [], // official setting
-        mods: [],
-        settings: {
-            minecraft: options,
-            // forge: {},
-            // optifine: {},
-        },
 
         resolution: [800, 400], // client setting
         java: '',
@@ -30,9 +20,9 @@ const getters = {
         if (states.java === '' || states.java === undefined || states.java === null) errors.push('profile.empty.java')
         return errors
     },
-    minecraftOptions: states => states.settings.minecraft,
-    resourcepacks: states => states.settings.minecraft.resourcepacks,
-    language: states => states.settings.minecraft.lang,
+    mods: (states, gets) => (gets.forge ? gets.forge.mods : []),
+    resourcepacks: (states, gets) => gets.options.resourcepacks,
+    language: (states, gets) => gets.options.lang,
 }
 const mutations = {
     putAll(states, option) {
@@ -42,9 +32,29 @@ const mutations = {
             }
         }
     },
+    toggle(states, option) { /* dummy mutation */ },
 }
 
 const actions = {
+    async save(context, { id }) {
+        
+        const profileJson = `profiles/${id}/profile.json`
+        const data = await context.dispatch('serialize')
+        const settings = {
+            minecraft: data.minecraft,
+            forge: data.forge,
+            liteloader: data.liteloader,
+            optifine: data.optifine,
+        };
+        data.minecraft = undefined;
+        data.forge = undefined;
+        data.liteloader = undefined;
+        data.optifine = undefined;
+        return context.dispatch('writeFile', { path: profileJson, data }, { root: true })
+            .then(() => context.dispatch('saveOptions', { id, settings }))
+            .then(() => context.dispatch('saveOptifine', { id, settings }))
+            .then(() => context.dispatch('saveForge', { id, settings }))
+    },
 }
 
 export default {
