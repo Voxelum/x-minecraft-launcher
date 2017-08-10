@@ -1,9 +1,11 @@
+import { GameSetting } from 'ts-minecraft'
+
 export default {
     namespaced: true,
-    states() {
+    state() {
         return {
             name: 'custom',
-            instance: {
+            settings: {
                 version: 1139, // for 1.12
                 invertYMouse: false,
                 mouseSensitivity: 0.5,
@@ -117,22 +119,41 @@ export default {
         }
     },
     getters: {
-        options: states => states.instance,
+        options: states => states.settings,
         name: states => states.name,
     },
     mutations: {
         update(states, { key, value }) {
-            states.instance[key] = value
+            console.log(`update ${key} -> ${value}`)
+            states.settings[key] = value
+        },
+        update$reload(states, { values }) {
+            for (const key in values) {
+                if (values[key] !== undefined && states.settings[key] !== undefined) {
+                    states.settings[key] = values[key]
+                }
+            }
         },
         updateTemplate(states, { name, template }) {
             states.name = name;
-            states.instance = template;
+            states.settings = template;
         },
     },
     actions: {
-        save() {
+        save(context, { id }) {
+            const path = `profiles/${id}/options.txt`
+            return context.dispatch('writeFile', {
+                path: `profiles/${id}/options.txt`,
+                data: GameSetting.writeToString(context.state.settings),
+            }, { root: true })
         },
-        load() { },
+        load(context, { id }) {
+            return context.dispatch('readFile', {
+                path: `profiles/${id}/options.txt`,
+                fallback: context.rootGetters['settings/defaultOptions'],
+                encoding: 'string',
+            }, { root: true }).then(string => GameSetting.readFromStringRaw(string))
+        },
         useTemplate(context, { templateId }) {
 
         },

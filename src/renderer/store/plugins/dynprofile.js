@@ -13,20 +13,30 @@ export default (store) => {
         const paths = rawPaths.slice(0, rawPaths.length - 1)
         const action = rawPaths[rawPaths.length - 1];
         if (type === 'profiles/add') {
-            const { id, module } = payload;
+            const { id, moduleData } = payload;
             if (!id) {
                 console.error(`Unexpect empty id for adding! @${mutation.type}`)
                 return
             }
-            if (!module) {
+            if (!moduleData) {
                 console.error(`Unexpect empty module for adding! @${mutation.type}`)
                 return
             }
             paths.push(id)
-            if (!module.namespaced) module.namespaced = true;
-            // const model = module.type === 'modpack' ? modelModpack : modelServer
-            store.registerModule(paths, module);
-            store.registerModule(paths.concat('minecraft'), settings.minecraft)
+            if (!moduleData.namespaced) moduleData.namespaced = true;
+            const model = moduleData.type === 'modpack' ? modelModpack : modelServer
+            store.registerModule(paths, mixin(model, moduleData));
+            if (!moduleData.minecraft) moduleData.minecraft = { name: 'high' }
+            for (const subMod of ['minecraft', 'forge', 'liteload', 'optifine']) {
+                if (moduleData[subMod]) {
+                    const mPath = paths.concat(subMod)
+                    store.registerModule(mPath, settings[subMod])
+                    store.dispatch(mPath.concat(['load']).join('/'), { id })
+                        .then((data) => {
+                            store.commit(`profiles/${id}/${subMod}/update$reload`, { values: data })
+                        })
+                }
+            }
         } else if (type === 'profiles/remove') {
             console.log(`payload ${payload}`)
             if (!payload) {
@@ -35,7 +45,7 @@ export default (store) => {
             }
             paths.push(payload)
             store.unregisterModule(paths);
-        } else if (rawPaths.length >= 3 && paths[0] === 'profiles' && paths[2] === 'toggle') { 
+        } else if (rawPaths.length >= 3 && paths[0] === 'profiles' && paths[2] === 'toggle') {
             // maybe more generic way to handle this...
             if (payload.forge) {
                 store.registerModule(paths.concat('forge'), settings.forge) // register forge module

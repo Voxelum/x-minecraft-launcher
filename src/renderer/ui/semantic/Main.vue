@@ -138,7 +138,7 @@ export default {
         ...mapGetters('auth', ['username']),
         ...mapState('settings', ['autoDownload']),
         isSelecting() {
-            return this.selectedProfileID != undefined && this.selectedProfileID != '' && this.selectedProfileID != null
+            return this.selectedProfile != undefined && this.selectedProfileID != null
         },
     },
     mounted(e) {

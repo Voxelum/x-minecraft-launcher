@@ -17,6 +17,9 @@ export default {
         const self = this
         return createElement('div', { staticClass: 'ui link cards' }, this.allKeys.map((id) => {
             const source = getByKey(id)
+            if (source === null || source === undefined) {
+                return createElement('div')
+            }
             const option = {
                 props: { source, id },
                 on: {
