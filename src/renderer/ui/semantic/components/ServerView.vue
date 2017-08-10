@@ -21,7 +21,7 @@
             <div class="eight wide column">
                 <h5 class="ui horizontal divider header">
                     <i class="tag icon"></i>
-                    Server MOTD
+                    {{$t('server.motd')}}
                 </h5>
                 <text-component :source="status.serverMOTD"></text-component>
             </div>
@@ -30,9 +30,9 @@
             <div class="five wide column">
                 <div class="ui vertical  fluid tabular menu">
                     <a class="item" data-tab="common">Common</a>
-                    <a class="item" data-tab="resourcepack">ResourcePacks</a>
-                    <a class="item" data-tab="mods">Mods</a>
-                    <a class="item" data-tab="settings">Advance</a>
+                    <a class="item" data-tab="resourcepack">{{$t('resourcepacks')}}</a>
+                    <a class="item" data-tab="mods">{{$t('mods')}}</a>
+                    <a class="item" data-tab="settings">{{$t('settings')}}</a>
                 </div>
             </div>
             <div class="eleven wide column">
@@ -53,8 +53,9 @@
 import { mapGetters, mapActions, mapState } from 'vuex'
 import TextComponent from './TextComponent'
 import ResourcePackList from './ResourcePackList'
+import GameSettings from './GameSettings'
 export default {
-    components: { TextComponent, ResourcePackList },
+    components: { TextComponent, ResourcePackList, GameSettings },
     props: ['source', 'id'],
     computed: {
         status() { return this.source.status },
@@ -72,7 +73,7 @@ export default {
         this.$nextTick(() => {
             $('.menu .item').tab()
         })
-        if (!this.$store.state.auth.authInfo) this.refresh();
+        if (!this.source.status.ping) this.refresh();
     },
 }
 </script>
