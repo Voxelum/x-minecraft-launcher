@@ -9,7 +9,6 @@ const numOptions = [0, 1, 2]
 
 export default {
     render(createElement) {
-        console.log(this.source)
         const dropdown = createElement('option-menu')
         let currentFields = [];
         const fields = []
@@ -20,7 +19,7 @@ export default {
                     props: {
                         id: key,
                         options: option,
-                        value: this.source.minecraft.instance[key],
+                        value: this.source.minecraft.settings[key],
                     },
                     on: {
                         change: this.onchange,
