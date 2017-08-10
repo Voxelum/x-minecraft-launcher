@@ -119,20 +119,11 @@ export default {
         async saveProfile(context, { id }) {
             const profileJson = `profiles/${id}/profile.json`
             const data = await context.dispatch(`${id}/serialize`)
-            const settings = {
-                minecraft: data.minecraft,
-                forge: data.forge,
-                liteloader: data.liteloader,
-                optifine: data.optifine,
-            };
             data.minecraft = undefined;
             data.forge = undefined;
             data.liteloader = undefined;
             data.optifine = undefined;
             return context.dispatch('writeFile', { path: profileJson, data }, { root: true })
-                .then(() => context.dispatch('saveOptions', { id, settings }))
-                .then(() => context.dispatch('saveOptifine', { id, settings }))
-                .then(() => context.dispatch('saveForge', { id, settings }))
         },
         async save(context, payload) {
             const mutation = payload.mutation
@@ -146,6 +137,14 @@ export default {
                     }, { root: true })
                 }
                 return Promise.resolve();
+            } else if (path.length === 3) {
+                context.dispatch('saveProfile', { id: path[1] })
+            } else if (path.length === 4) {
+                const target = path[2]
+                if (target === 'minecraft') return context.dispatch('saveProfile', { id: path[1] }).then(() => context.dispatch('saveOptions', { id: path[1] }))
+                if (target === 'forge') return context.dispatch('saveProfile', { id: path[1] }).then(() => context.dispatch('saveForge', { id: path[1] }))
+                if (target === 'liteloader') return context.dispatch('saveProfile', { id: path[1] }).then(() => context.dispatch('saveLiteloader', { id: path[1] }))
+                if (target === 'optifine') return context.dispatch('saveProfile', { id: path[1] }).then(() => context.dispatch('saveOptifine', { id: path[1] }))
             }
             return context.dispatch('saveProfile', { id: path[1] })
         },
