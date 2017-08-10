@@ -2,7 +2,7 @@ export default {
     fboEnable: true,
     ao: 0,
     fancyGraphics: false,
-    renderClouds: 'true',
+    renderClouds: 'false',
     renderDistance: 6,
     useVbo: true,
     mipmapLevels: 4,

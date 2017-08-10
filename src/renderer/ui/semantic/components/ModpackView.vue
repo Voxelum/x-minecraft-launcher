@@ -7,13 +7,13 @@
                         <div class="content">
                             {{source.name}}
                             <h2 class="ui sub header">
-                                {{$t('profile.author')}}:
+                                {{$t('author')}}:
                                 <div class="ui transparent input">
                                     <input type="text" name="Author" placeholder="Unknown author..." :value="source.author" @blur="modify">
                                 </div>
                             </h2>
                             <h2 class="ui sub header">
-                                {{$t('profile.version')}}: {{source.version}}
+                                {{$tc('version.name', 0)}}: {{source.version}}
                             </h2>
                         </div>
                     </h1>
@@ -42,9 +42,9 @@
                     </a>
                 </div>
             </div>
-            <div class="eleven wide column" >
-                <div class="ui tab" data-tab="resourcepacks">
-                    <resource-pack-list style="height:380px"></resource-pack-list>
+            <div class="eleven wide column">
+                <div class="ui tab" style="height:380px" data-tab="resourcepacks">
+                    <resource-pack-list></resource-pack-list>
                 </div>
                 <div class="ui tab" style="height:380px" data-tab="mods">
                 </div>
