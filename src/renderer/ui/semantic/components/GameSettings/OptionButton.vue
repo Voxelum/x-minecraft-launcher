@@ -15,14 +15,16 @@ export default {
         localizedId() { return this.$t(`${this.id}.name`) },
         localizedOptions() { return this.options.map(v => `${this.id}.${v}`).map(v => this.$t(v)) },
         localizedValue() { return this.localizedOptions[this.selected] },
-        value() { return this.options ? this.options[this.selected] : '' }
     },
-    props: ['id', 'options'],
+    props: ['id', 'options', 'value'],
     methods: {
         switchValue() {
             this.selected = (this.selected + 1) % this.options.length
-            this.$emit('change', this.value)
+            this.$emit('change', { key: this.id, value: this.value })
         }
+    },
+    mounted() {
+        this.selected = this.options.indexOf(this.value)
     }
 }
 </script>

@@ -9,13 +9,23 @@ const numOptions = [0, 1, 2]
 
 export default {
     render(createElement) {
+        console.log(this.source)
         const dropdown = createElement('option-menu')
         let currentFields = [];
         const fields = []
         for (const key in this.options) {
             if (this.options.hasOwnProperty(key)) {
                 const option = this.options[key];
-                currentFields.push(createElement('option-button', { props: { id: key, options: option } }))
+                currentFields.push(createElement('option-button', {
+                    props: {
+                        id: key,
+                        options: option,
+                        value: this.source.minecraft.instance[key],
+                    },
+                    on: {
+                        change: this.onchange,
+                    },
+                }))
                 if (currentFields.length === 2) {
                     fields.push(createElement('div', { attrs: { class: 'ui two basic buttons' } }, currentFields))
                     currentFields = []
@@ -32,7 +42,6 @@ export default {
     data() {
         return {
             options: {
-
                 // enableVsync: boolOptions,
                 fancyGraphics: boolOptions,
                 renderClouds: ['true', 'fast', 'false'],
@@ -51,9 +60,14 @@ export default {
             templates: 'options',
         }),
     },
+    methods: {
+        onchange(event) {
+            this.$store.commit(`profiles/${this.id}/minecraft/update`, event)
+        },
+    },
     mounted() {
         $('#templatesDropdown').dropdown();
     },
     components: { OptionButton, OptionMenu },
-    // props: ['source', 'id'],
+    props: ['source', 'id'],
 }

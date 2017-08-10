@@ -33,6 +33,7 @@ const actions = {
     serialize(context, payload) {
         const serialized = Object.assign({}, context.state)
         serialized.status = undefined
+        console.log(context.state)
         return serialized
     },
     refresh(context, payload) {
@@ -63,6 +64,7 @@ const actions = {
     },
 }
 export default {
+    namespaced: true,
     state,
     getters,
     mutations,
