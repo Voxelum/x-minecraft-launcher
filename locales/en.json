@@ -64,6 +64,7 @@
         "host": "Host",
         "port": "Port",
         "edit": "Edit Server Info",
+        "motd": "Server MOTD",
         "delete": {
             "name": "Delete the server",
             "description": "This will delete all the local data about this server. Are you sure to do this?"
