@@ -86,7 +86,6 @@ export default (rootPath) => {
         query(context, { service, action, payload }) {
             return new Promise((resolve, reject) => {
                 const id = v4()
-
                 ipcRenderer.once(id,
                     (event, { rejected, resolved }) => {
                         console.log(`finish ${id}`)
@@ -144,21 +143,28 @@ export default (rootPath) => {
                             if (fallback) {
                                 if (typeof fallback === 'object' && !(fallback instanceof Buffer)) fallback = JSON.stringify(fallback)
                                 resolve(write(path, fallback))
-                            }
-                            reject(err)
+                            } else reject(err)
                         } else if (encoding) {
                             if (encoding === 'string') resolve(data.toString())
                             else if (encoding === 'json') {
                                 try {
                                     resolve(JSON.parse(data.toString()))
                                 } catch (e) {
-                                    reject(e)
+                                    if (fallback) {
+                                        if (typeof fallback === 'object' && !(fallback instanceof Buffer)) fallback = JSON.stringify(fallback)
+                                        resolve(write(path, fallback))
+                                    } else reject(e)
                                 }
                             }
                             // else if (encoding === 'nbt') resolve(NBT.read(data).root)
                             // else if (encoding === 'nbt/compressed') resolve(NBT.read(data, true).root)
                             else if (typeof encoding === 'function') {
-                                try { resolve(encoding(data)) } catch (e) { reject(e) }
+                                try { resolve(encoding(data)) } catch (e) {
+                                    if (fallback) {
+                                        if (typeof fallback === 'object' && !(fallback instanceof Buffer)) fallback = JSON.stringify(fallback)
+                                        resolve(write(path, fallback))
+                                    } else reject(e)
+                                }
                             } else {
                                 console.warn(`Unsupported encoding ${encoding}!`);
                                 resolve(data);

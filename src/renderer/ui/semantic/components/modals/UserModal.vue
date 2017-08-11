@@ -1,6 +1,6 @@
 <template>
-    <div id="userModal" class="ui basic modal">
-
+    <div class="ui basic modal">
+    
     </div>
 </template>
 

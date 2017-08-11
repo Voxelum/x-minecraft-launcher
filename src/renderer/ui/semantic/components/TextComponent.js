@@ -29,23 +29,27 @@ export default {
         if (iterator) {
             for (const component of iterator) {
                 let style = ''
-                if (component.style.bold) style += 'font-weight:bold';
-                if (component.style.underlined) style += 'text-decoration:underline';
-                if (component.style.italic) style += 'font-style:italic';
-                if (component.style.strikethrough) style += 'text-decoration:line-through';
+                if (component.style.bold) style += 'font-weight:bold;';
+                if (component.style.underlined) style += 'text-decoration:underline;';
+                if (component.style.italic) style += 'font-style:italic;';
+                if (component.style.strikethrough) style += 'text-decoration:line-through;';
                 if (component.style.color) {
                     const code = colorCode[component.style.color.colorIndex];
                     const r = (code >> 16) // eslint-disable-line no-bitwise
                     const g = ((code >> 8) & 255) // eslint-disable-line no-bitwise
                     const b = (code & 255)// eslint-disable-line no-bitwise
-                    style += `color: rgb(${r}, ${g}, ${b})`
+                    style += `color: rgb(${r}, ${g}, ${b});`
+                }
+                let text = component.unformatted;
+                if (this.localized === 'true' && this.$te(component.unformatted)) {
+                    text = this.$t(component.unformatted, this.args);
                 }
                 arr.push(createElement('p', {
                     attrs: { style },
-                }, [component.unformatted]))
+                }, [text]))
             }
         }
         return createElement('p', {}, arr)
     },
-    props: { source: TextComponent },
+    props: { source: TextComponent, localized: String, args: { type: Object, default: () => { Object.create(null) } } },
 }

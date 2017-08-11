@@ -1,5 +1,5 @@
 <template>
-    <div id="createServerModal" class="ui basic modal" :class="{error: hasError}" style="padding:0 20% 0 20%;">
+    <div class="ui basic modal" :class="{error: hasError}" style="padding:0 20% 0 20%;">
         <div class="ui icon small header">
             <i class="server icon"></i>
             {{ isEdit ? $t('server.edit') :$t('server.create')}}
@@ -46,7 +46,7 @@ export default {
     },
     mounted() {
         const self = this
-        $('#createServerModal').modal({ blurring: true, })
+        $(this.$el).modal({ blurring: true, })
     },
     methods: {
         show(args) {
@@ -63,7 +63,7 @@ export default {
                 this.port = 25565
             }
             this.$nextTick(() => {
-                $('#createServerModal').modal('show')
+                $(this.$el).modal('show')
             })
         },
         accept() {
@@ -73,7 +73,7 @@ export default {
             }
             if (!this.port || this.port === '') this.port = '25565'
             this.$nextTick(() => {
-                $('#createServerModal').modal('hide')
+                $(this.$el).modal('hide')
             })
             this.$emit('accept', { name: this.name, host: this.ip, port: this.port, isEdit: this.isEdit })
         },

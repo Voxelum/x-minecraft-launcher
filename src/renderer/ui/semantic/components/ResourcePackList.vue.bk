@@ -1,0 +1,96 @@
+<template>
+    <div class="ui center aligned grid">
+        <div class="eight wide column">
+            <h5 class="ui horizontal divider header">
+                <i class="disk outline icon"></i>
+                Repository
+            </h5>
+            <div id="resourcepackList" class="ui list">
+                <div class="dimmable item" v-for="entry in unselecting" :key="entry.key" style="border-radius: 5px;">
+                    <div class="ui inverted dimmer">
+                        <div class="content">
+                            <div class="center">
+                                <div class="ui green basic button" @click="add(entry.value.meta.packName)">Add</div>
+                            </div>
+                        </div>
+                    </div>
+                    <img class="ui tiny rounded image" :src="entry.value.meta.icon">
+                    <div class="content">
+                        <h3 class="header">{{entry.value.meta.packName}}</h3>
+                        <div class="description">
+                            <text-component :source="entry.value.meta.description"></text-component>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="resourcepackList" class="eight wide column">
+            <h5 class="ui horizontal divider header">
+                <i class="folder outline icon"></i>
+                Using
+            </h5>
+            <div class="ui list">
+                <div class="dimmable item" v-for="entry in selecting" :key="entry.key" style="border-radius: 5px;">
+                    <div class="ui inverted dimmer">
+                        <div class="content">
+                            <div class="center">
+                                <div class="ui tiny red basic button" @click="remove(entry.value.meta.packName)">Remove</div>
+                            </div>
+                        </div>
+                    </div>
+                    <img class="ui avatar image" :src="entry.value.meta.icon">
+                    <div class="content">
+                        <h3 class="header">{{entry.value.meta.packName}}</h3>
+                        <div class="description">
+                            <text-component :source="entry.value.meta.description"></text-component>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import { remote } from 'electron'
+import { mapActions, mapGetters } from 'vuex'
+import TextComponent from './TextComponent'
+
+export default {
+    components: { TextComponent },
+    computed: {
+        ...mapGetters('resourcepacks', ['entries']),
+        ...mapGetters('profiles', ['selectedKey']),
+        unselecting() {
+            return this.entries.filter(e => this.selectingNames.indexOf(e.value.meta.packName) === -1)
+        },
+        selecting() {
+            return this.entries.filter(e => this.selectingNames.indexOf(e.value.meta.packName) !== -1)
+        },
+        selectingNames() {
+            return (this.$store.getters[`profiles/${this.selectedKey}/minecraft/resourcepacks`])
+        },
+    },
+    methods: {
+        ...mapActions('resourcepacks', ['import']),
+        add(pack) {
+            this.$store.commit(`profiles/${this.selectedKey}/minecraft/addResourcepack`, { pack })
+        },
+        remove(pack) {
+            this.$store.commit(`profiles/${this.selectedKey}/minecraft/removeResourcepack`, { pack })
+        },
+        importResourcePack() {
+            const self = this;
+            remote.dialog.showOpenDialog({}, (files) => {
+                if (files)
+                    for (const file of files)
+                        self.import(file)
+            })
+        },
+    },
+    mounted() {
+        $('#resourcepackList .item').dimmer({ on: 'hover' })
+    },
+
+}
+</script>
