@@ -47,15 +47,16 @@ export default (store) => {
             store.unregisterModule(paths);
         } else if (rawPaths.length >= 3 && paths[0] === 'profiles' && paths[2] === 'toggle') {
             // maybe more generic way to handle this...
-            if (payload.forge) {
+            if (payload.forge && !store.state.profiles[paths[1]].forge) {
                 store.registerModule(paths.concat('forge'), settings.forge) // register forge module
             }
-            if (payload.liteloader) {
+            if (payload.liteloader && !store.state.profiles[paths[1]].liteloader) {
                 store.registerModule(paths.concat('liteloader'), settings.liteloader) // register liteloader module
             }
-            if (payload.optifine) {
+            if (payload.optifine && !store.state.profiles[paths[1]].optifine) {
                 store.registerModule(paths.concat('optifine'), settings.optifine) // register liteloader module
             }
         }
+
     })
 }

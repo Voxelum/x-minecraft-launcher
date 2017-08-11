@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="stretched row" style="height:70%">
-            <div class="five wide column">
+            <div class="four wide column">
                 <div class="ui vertical fluid tabular menu">
                     <a class="item" data-tab="resourcepacks">
                         {{$t('resourcepacks')}}

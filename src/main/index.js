@@ -43,10 +43,16 @@ function createWindow() {
      * Initial window options
      */
     mainWindow = new BrowserWindow({
-        height: 563,
+        height: 626,
         useContentSize: true,
         width: 1000,
+        resizable: false,
+        // minWidth: 1000,
+        // minHeight: 626,
+        // maxWidth: 1000,
+        // maxHeight: 626,
         frame: false,
+        titleBarStyle: 'customButtonsOnHover',
     })
 
     mainWindow.loadURL(winURL)
