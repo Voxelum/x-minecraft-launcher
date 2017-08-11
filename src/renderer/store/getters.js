@@ -30,6 +30,6 @@ export default {
         return []
     },
     rootPath(state, getters) {
-        return state.settings.rootPath
+        return state.root
     },
 }

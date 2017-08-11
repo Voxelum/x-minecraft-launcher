@@ -51,6 +51,8 @@ export default {
         },
     },
     actions: {
+        rename(context, { key, name }) {
+        },
         load(context) {
             return context.dispatch('readFolder', { path: context.state.root }, { root: true })
                 .then(files => Promise.all(
@@ -115,13 +117,11 @@ export default {
                     case 1:
                     case 2:
                         return new Promise((resolve, reject) => {
-                            fs.link(path.join(context.state.root, `${res.hash}.${res.type}`), targetPath, (err) => {
-                                if (err) {
-                                    reject(err);
-                                } else {
-                                    resolve();
-                                }
-                            });
+                            fs.link(path.join(context.rootGetters.rootPath, context.state.root, `${res.hash}${res.type}`),
+                                targetPath, (err) => {
+                                    if (err) reject(err);
+                                    else resolve();
+                                });
                         });
                     case 3:
                     case 4:

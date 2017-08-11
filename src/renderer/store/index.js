@@ -18,6 +18,7 @@ for (const key in modules) {
 
 export const init = (root) => {
     const store = new Vuex.Store({
+        state: { root },
         modules,
         getters,
         actions: actions(root),
