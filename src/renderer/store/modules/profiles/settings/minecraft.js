@@ -124,7 +124,6 @@ export default {
     },
     mutations: {
         update(states, { key, value }) {
-            console.log(`update ${key} -> ${value}`)
             states.settings[key] = value
         },
         update$reload(states, { values }) {
@@ -142,9 +141,9 @@ export default {
     actions: {
         save(context, { id }) {
             const path = `profiles/${id}/options.txt`
+            const data = GameSetting.writeToString(context.state.settings)
             return context.dispatch('writeFile', {
-                path: `profiles/${id}/options.txt`,
-                data: GameSetting.writeToString(context.state.settings),
+                path, data,
             }, { root: true })
         },
         load(context, { id }) {
@@ -152,7 +151,7 @@ export default {
                 path: `profiles/${id}/options.txt`,
                 fallback: context.rootGetters['settings/defaultOptions'],
                 encoding: 'string',
-            }, { root: true }).then(string => GameSetting.readFromStringRaw(string))
+            }, { root: true }).then(string => (typeof string === 'string' ? GameSetting.readFromStringRaw(string) : string))
         },
         useTemplate(context, { templateId }) {
 

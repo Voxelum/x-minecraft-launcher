@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="stretched row" style="height:70%">
-            <div class="five wide column">
+            <div class="four wide column">
                 <div class="ui vertical  fluid tabular menu">
                     <a class="item" data-tab="common">Common</a>
                     <a class="item" data-tab="resourcepack">{{$t('resourcepacks')}}</a>
@@ -35,7 +35,7 @@
                     <a class="item" data-tab="settings">{{$t('settings')}}</a>
                 </div>
             </div>
-            <div class="eleven wide column">
+            <div class="twelve wide column" style="padding: 0 5% 0 20px">
                 <div class="ui active tab" data-tab="common">A</div>
                 <div class="ui tab" data-tab="resourcepack">
                     <resource-pack-list></resource-pack-list>
