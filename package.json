@@ -19,8 +19,7 @@
         "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
         "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
         "test": "npm run unit",
-        "unit": "karma start test/unit/karma.conf.js",
-        "postinstall": "cd semantic && node ../node_modules/gulp/bin/gulp.js build"
+        "unit": "karma start test/unit/karma.conf.js"
     },
     "dependencies": {
         "semantic-ui": "^2.2.10",
