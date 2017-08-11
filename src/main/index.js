@@ -18,6 +18,8 @@ if (!devMod) {
     global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
+
+
 ipcMain.on('ping', (event, time) => {
     console.log(time)
     event.sender.send('pong')
@@ -36,6 +38,18 @@ let root = process.env.LAUNCHER_ROOT
 if (!root) {
     process.env.LAUNCHER_ROOT = paths.join(app.getPath('appData'), '.launcher');
     root = process.env.LAUNCHER_ROOT
+}
+
+const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+        if (mainWindow.isMinimized()) mainWindow.restore()
+        mainWindow.focus()
+    }
+})
+
+if (isSecondInstance) {
+    app.quit()
 }
 
 function createWindow() {

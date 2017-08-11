@@ -112,8 +112,8 @@
 </template>
 
 <script>
-require('static/semantic/dist/semantic.min.css')
-require('static/semantic/dist/semantic.min.js')
+require('static/semantic/semantic.min.css')
+require('static/semantic/semantic.min.js')
 
 import modals from './components/modals'
 import ModpackView from './components/ModpackView'
