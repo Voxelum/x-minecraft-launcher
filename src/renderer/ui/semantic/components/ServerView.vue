@@ -4,10 +4,11 @@
             <div class="eight wide column">
                 <h1 class="ui header">
                     <img v-if="status.icon!=''&& status.icon" class="ui image" :src="status.icon"></img>
+                    <i v-else class="server icon"></i>
                     <div class="content">
                         {{source.name}}
                         <h2 class="ui sub header">
-                            <text-component :source="status.gameVersion"></text-component>
+                            <text-component :source="status.gameVersion" localized="true"></text-component>
                         </h2>
                         <h2 class="ui sub header">
                             {{$t('server.players')}}: {{status.onlinePlayers}}/{{status.capacity}}
@@ -23,12 +24,12 @@
                     <i class="tag icon"></i>
                     {{$t('server.motd')}}
                 </h5>
-                <text-component :source="status.serverMOTD"></text-component>
+                <text-component :source="status.serverMOTD" localized="true"></text-component>
             </div>
         </div>
         <div class="stretched row" style="height:70%">
             <div class="four wide column">
-                <div class="ui vertical  fluid tabular menu">
+                <div class="ui vertical fluid tabular menu">
                     <a class="item" data-tab="common">Common</a>
                     <a class="item" data-tab="resourcepack">{{$t('resourcepacks')}}</a>
                     <a class="item" data-tab="mods">{{$t('mods')}}</a>
@@ -62,9 +63,6 @@ export default {
         type() { return this.source.type },
     },
     methods: {
-        modify(event) {
-            this.$store.commit(`profiles/${this.id}/set${event.target.name}`, event.target.value)
-        },
         refresh() {
             this.$store.dispatch(`profiles/${this.id}/refresh`)
         },
@@ -73,7 +71,7 @@ export default {
         this.$nextTick(() => {
             $('.menu .item').tab()
         })
-        // if (!this.source.status.ping) this.refresh();
+        if (!this.source.status.ping) this.refresh();
     },
 }
 </script>

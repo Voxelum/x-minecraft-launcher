@@ -9,7 +9,7 @@ const numOptions = [0, 1, 2]
 
 export default {
     render(createElement) {
-        const dropdown = createElement('option-menu')
+        // const dropdown = createElement('option-menu')
         let currentFields = [];
         const fields = []
         for (const key in this.options) {
@@ -36,7 +36,7 @@ export default {
             attr: {
                 class: 'ui container',
             },
-        }, [dropdown, /* createElement('div', { attrs: { class: 'ui divider' } }), */ ...fields])
+        }, [/* dropdown, */ /* createElement('div', { attrs: { class: 'ui divider' } }), */ ...fields])
     },
     data() {
         return {

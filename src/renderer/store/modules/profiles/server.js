@@ -14,6 +14,7 @@ function state() {
     return theState
 }
 const getters = {
+    ...profile.getters,
     errors(states) {
         // const err = profile.getters.errors(state)
         // this probably is a issue.... if i delegate to profile's getter; the responsive will fail.
@@ -57,12 +58,13 @@ const actions = {
                 return status
             }, (err) => {
                 if (err.code === 'ETIMEOUT') {
-                    context.commit('putAll', { status: new ServerStatus(TextComponent.str('Timeout'), TextComponent.str('Timeout'), -1, -1, -1) })
+                    const timeout = TextComponent.str('server.status.timeout');
+                    timeout.style = Style.create({ color: TextFormatting.RED })
+                    context.commit('putAll', { status: new ServerStatus(TextComponent.str('version.unknown'), timeout, -1, -1, -1) })
                 } else if (err.code === 'ECONNREFUSED') {
-                    const nohost = TextComponent.str('Cannot find host');
-                    nohost._style = Style.create({ color: TextFormatting.RED }) // bad... i will fix later
-                    console.log(nohost)
-                    context.commit('putAll', { status: new ServerStatus(nohost, nohost, -1, -1, -1) })
+                    const nohost = TextComponent.str('server.status.nohost');
+                    nohost.style = Style.create({ color: TextFormatting.RED })
+                    context.commit('putAll', { status: new ServerStatus(TextComponent.str('version.unknown'), nohost, -1, -1, -1) })
                 }
             })
     },

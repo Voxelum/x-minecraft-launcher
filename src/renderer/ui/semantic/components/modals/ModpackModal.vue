@@ -1,5 +1,5 @@
 <template>
-    <div id="profileModal" class="ui basic error modal" :class="{error: hasError}" style="padding:0 20% 0 20%;">
+    <div class="ui basic error modal" :class="{error: hasError}" style="padding:0 20% 0 20%;">
         <div class="ui icon small header">
             <i class="archive icon"></i>
             {{ isEdit?$t('modpack.edit'):$t('modpack.create')}}
@@ -48,7 +48,7 @@ export default {
     props: ['defaultAuthor'],
     mounted() {
         const self = this
-        $('#profileModal').modal({ blurring: true })
+        $(this.$el).modal({ blurring: true })
     },
     methods: {
         show(args) {
@@ -65,14 +65,14 @@ export default {
                 this.description = 'No description yet'
                 this.hasError = false
             }
-            $('#profileModal').modal('show')
+            $(this.$el).modal('show')
         },
         accept() {
             if (!this.name || this.name === '') {
                 this.hasError = true;
             }
             this.$emit('accept', { name: this.name, author: this.author, description: this.description, isEdit: this.isEdit });
-            $('#profileModal').modal('hide')
+            $(this.$el).modal('hide')
         },
         enter(event) {
             if (event.keyCode != 13) return
