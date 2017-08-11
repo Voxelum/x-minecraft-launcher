@@ -31,7 +31,15 @@ function symlink(src, dest) {
     });
 }
 
-function makeEnv(rootLoc, profileLoc) {
+async function makeEnv(context, profileId, rootLoc, profileLoc) {
+    const allPacks = context.getters['resourcepacks/allKeys'];
+    const targetDirectory = profileLoc.resourcepacks;
+    await fs.ensureDir(targetDirectory)
+    return Promise.all(allPacks.map(key => context.dispatch('resourcepacks/export', { resource: key, targetDirectory })
+        .catch((e) => {
+            console.warn(`Cannot export resourcepack id: ${key}`)
+            console.warn(e)
+        })))
 }
 
 export default (rootPath) => {
@@ -39,7 +47,7 @@ export default (rootPath) => {
         exit() {
             ipcRenderer.sendSync('exit')
         },
-        launch(context, payload) {
+        async launch(context, payload) {
             console.log('calling launch....')
             const profile = context.getters['profiles/selected'];
             const profileId = context.getters['profiles/selectedKey'];
@@ -65,7 +73,9 @@ export default (rootPath) => {
                 maxMemory: profile.maxMemory || 1024,
                 version,
             }
-            makeEnv(new MinecraftFolder(rootPath), new MinecraftFolder(option.gamePath))
+
+            await makeEnv(context, profileId, new MinecraftFolder(rootPath),
+                new MinecraftFolder(option.gamePath))
 
             if (profile.type === 'server') {
                 option.server = { ip: profile.host, port: profile.port };
@@ -79,9 +89,6 @@ export default (rootPath) => {
                 // save all or do other things...
                 ipcRenderer.sendSync('park')
             });
-        },
-        park(context, payload) {
-
         },
         query(context, { service, action, payload }) {
             return new Promise((resolve, reject) => {
@@ -98,7 +105,6 @@ export default (rootPath) => {
                     action,
                     payload,
                 })
-
             });
         },
         readFolder(context, { path }) {

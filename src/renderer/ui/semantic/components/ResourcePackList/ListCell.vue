@@ -8,10 +8,12 @@
                 </div>
             </div>
         </div>
-        <img class="ui tiny rounded image" :src="entry.value.meta.icon">
+        <img class="ui avatar image" :src="entry.value.meta.icon">
         <div class="content">
-            <h3 class="header">{{entry.value.meta.packName}}</h3>
-            <div class="description">
+            <h3 class="header">
+                {{entry.value.meta.packName}}
+            </h3>
+            <div class="description" style="max-width:220px">
                 <text-component :source="entry.value.meta.description"></text-component>
             </div>
         </div>
@@ -26,7 +28,15 @@ export default {
     mounted() {
         $(this.$el).dimmer({ on: 'hover' })
     },
-    props: ['entry', 'type']
+    props: ['entry', 'type'],
+    methods: {
+        test(event) {
+            console.log(this.entry.value.meta.packName)
+            console.log(event.target.value)
+            this.entry.value.meta.packName = event.target.value
+            console.log(this.entry.value.meta.packName)
+        }
+    }
 }
 </script>
 
