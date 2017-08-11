@@ -1,4 +1,4 @@
-import { TextComponent, ServerInfo, ServerStatus } from 'ts-minecraft'
+import { TextComponent, TextFormatting, Style, ServerInfo, ServerStatus } from 'ts-minecraft'
 import protocol from '../../../shared/protocol'
 import profile from './profile'
 
@@ -57,9 +57,12 @@ const actions = {
                 return status
             }, (err) => {
                 if (err.code === 'ETIMEOUT') {
-                    context.commit('putAll', { status: ServerStatus.error() })
+                    context.commit('putAll', { status: new ServerStatus(TextComponent.str('Timeout'), TextComponent.str('Timeout'), -1, -1, -1) })
                 } else if (err.code === 'ECONNREFUSED') {
-                    context.commit('putAll', { status: ServerStatus.error() })
+                    const nohost = TextComponent.str('Cannot find host');
+                    nohost._style = Style.create({ color: TextFormatting.RED }) // bad... i will fix later
+                    console.log(nohost)
+                    context.commit('putAll', { status: new ServerStatus(nohost, nohost, -1, -1, -1) })
                 }
             })
     },
