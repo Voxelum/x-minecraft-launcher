@@ -57,7 +57,8 @@ const actions = {
                 return status
             }, (err) => {
                 if (err.code === 'ETIMEOUT') {
-                    console.log('TIMEOUT!!!!!!')
+                    context.commit('putAll', { status: ServerStatus.error() })
+                } else if (err.code === 'ECONNREFUSED') {
                     context.commit('putAll', { status: ServerStatus.error() })
                 }
             })

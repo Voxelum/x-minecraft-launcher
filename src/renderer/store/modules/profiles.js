@@ -74,10 +74,7 @@ export default {
         },
         async saveProfile(context, { id }) {
             const profileJson = `profiles/${id}/profile.json`
-            console.log('save profile')
-
             const data = await context.dispatch(`${id}/serialize`)
-            console.log(data)
             return context.dispatch('writeFile', { path: profileJson, data }, { root: true })
         },
         save(context, payload) {

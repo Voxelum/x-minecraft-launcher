@@ -26,7 +26,7 @@ ipcRenderer.on('init', (event, root) => {
             components: { App },
             store: s,
             i18n,
-            template: '<App/>',
+            template: '<App style="max-height:626px; overflow:hidden;"></App>',
         }).$mount('#app'),
     )
 })
