@@ -86,7 +86,7 @@
         "stylus-loader": "^3.0.1",
         "three": "^0.86.0",
         "three-orbit-controls": "^82.1.0",
-        "ts-minecraft": "^0.8.2-beta",
+        "ts-minecraft": "^0.9.0-beta",
         "url-loader": "^0.5.7",
         "vue-html-loader": "^1.2.2",
         "vue-loader": "^12.2.1",
