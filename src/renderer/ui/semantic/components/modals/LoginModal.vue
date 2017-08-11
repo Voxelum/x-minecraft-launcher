@@ -1,5 +1,5 @@
 <template>
-    <div id="login" class="ui basic modal" style="padding:0 20% 0 20%;">
+    <div class="ui basic modal" style="padding:0 20% 0 20%;">
         <i class="close icon" v-if="this.$store.state.auth.authInfo !== undefined"></i>
         <div class="ui noselect" style="padding:15px">
             <h3 class="ui header segment center aligned ">
@@ -76,7 +76,7 @@ export default {
                     self.$store.commit('auth/select', value)
                 }
             })
-            $('#login')
+            $(this.$el)
                 .modal('setting', 'closable', false)
                 .modal('refresh')
                 .modal('setting', 'observeChanges', true)
@@ -85,7 +85,7 @@ export default {
     },
     methods: {
         show() {
-            $('#login').modal('show')
+            $(this.$el).modal('show')
         },
         doLogin(e) {
             if (this.account.length == 0) {

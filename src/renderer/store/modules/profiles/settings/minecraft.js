@@ -120,6 +120,7 @@ export default {
     },
     getters: {
         options: states => states.settings,
+        resourcepacks: states => states.settings.resourcePacks,
         name: states => states.name,
     },
     mutations: {
@@ -132,6 +133,15 @@ export default {
                     states.settings[key] = values[key]
                 }
             }
+        },
+        addResourcepack(states, { pack }) {
+            if (states.settings.resourcePacks.indexOf(pack) === -1) {
+                states.settings.resourcePacks.push(pack)
+            }
+        },
+        removeResourcepack(states, { pack }) {
+            states.settings.resourcePacks = states.settings.resourcePacks
+                .filter(name => name !== pack);
         },
         updateTemplate(states, { name, template }) {
             states.name = name;
