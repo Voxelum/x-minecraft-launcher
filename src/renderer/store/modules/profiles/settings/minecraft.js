@@ -1,4 +1,5 @@
 import { GameSetting } from 'ts-minecraft'
+import Vue from 'vue'
 
 export default {
     namespaced: true,
@@ -142,6 +143,22 @@ export default {
         removeResourcepack(states, { pack }) {
             states.settings.resourcePacks = states.settings.resourcePacks
                 .filter(name => name !== pack);
+        },
+        moveupResourcepack(states, { pack }) {
+            const idx = states.settings.resourcePacks.indexOf(pack)
+            if (idx <= 0) return;
+            const last = states.settings.resourcePacks[idx - 1];
+            states.settings.resourcePacks[idx - 1] = pack;
+            states.settings.resourcePacks[idx] = last;
+            Vue.set(states.settings.resourcePacks, idx - 1, pack)
+            Vue.set(states.settings.resourcePacks, idx, last)
+        },
+        movedownResourcepack(states, { pack }) {
+            const idx = states.settings.resourcePacks.indexOf(pack)
+            if (idx === -1 || idx === states.settings.resourcePacks.length - 1) return;
+            const next = states.settings.resourcePacks[idx + 1];
+            Vue.set(states.settings.resourcePacks, idx + 1, pack)
+            Vue.set(states.settings.resourcePacks, idx, next)
         },
         updateTemplate(states, { name, template }) {
             states.name = name;

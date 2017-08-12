@@ -1,6 +1,15 @@
 <template>
     <div>
-        <h3 class="ui  top attached header">
+        <h5 class="ui horizontal divider header">
+            <i class="plug icon"></i>
+            <div class="content">
+                {{selectingMeta.id}}
+                <div class="sub header">{{selectingMeta.releaseTime}}</div>
+                <div class="sub header">{{selectingMeta.type}}</div>
+            </div>
+        </h5>
+        <!-- 
+        <h3 class="ui top attached header">
             <i class="plug icon"></i>
             <div class="content">
                 {{selectingMeta.id}}
@@ -8,7 +17,8 @@
                 <div class="sub header">{{selectingMeta.type}}</div>
             </div>
         </h3>
-        <div class="ui attached segment " :class="{disabled: metas.length==0}" style='height:400px;overflow-x: hidden;'>
+     -->
+        <div class="ui attached segment " :class="{disabled: metas.length==0}" style='height:240px;overflow-x: hidden;'>
             <div v-if="metas.length==0" class="ui active dimmer">
                 <div class="ui indeterminate text loader">{{$t('version.prepare')}}</div>
             </div>
@@ -62,8 +72,7 @@ export default {
         },
         selectingMeta() { return this.metaMap.get(this.selected.version) || {}; },
         metas() {
-            if (!this.filterRelease)
-                return this.minecraft.versions
+            if (!this.filterRelease) return this.minecraft.versions
             return this.minecraft.versions.filter(v => v.type === 'release')
         }
     },
@@ -71,7 +80,7 @@ export default {
         onselect(event) {
             const vId = event.srcElement.parentNode.getAttribute('version-id')
             if (vId != this.selectingVersion)
-                this.$store.commit(`profiles/${this.selectedKey}/setVersion`, event.srcElement.parentNode.getAttribute('version-id'))
+                this.$store.commit(`profiles/${this.selectedKey}/putAll`, { version: vId })
         },
         ondownload(event) {
             this.$store.dispatch('versions/download', this.metaMap.get(event.target.getAttribute('ver')))
