@@ -1,7 +1,6 @@
 <template>
-    <div class="ui segment">
-        <canvas id="scene" :width="width" :height="height"></canvas>
-    </div>
+    <canvas :width="width" :height="height">
+    </canvas>
 </template>
 
 <script>
@@ -12,8 +11,7 @@ const OrbitControls = require('three-orbit-controls')(THREE)
 export default {
     props: ['width', 'height'],
     mounted(e) {
-        const s = document.getElementById('scene')
-        var renderer = new THREE.WebGLRenderer({ canvas: s, antialias: true });
+        var renderer = new THREE.WebGLRenderer({ canvas: this.$el, antialias: true });
         renderer.setClearColor('#FFF', 1)
 
         var onRenderFcts = [];
@@ -34,25 +32,26 @@ export default {
         //		controls							//
         //////////////////////////////////////////////////////////////////////////////////
 
-        let controls = new OrbitControls(camera)
+        let controls = new OrbitControls(camera, this.$el)
         controls.target = new THREE.Vector3(0, 0, 0)
         controls.enablePan = false
         controls.enableKeys = false
         controls.maxDistance = 3
         controls.minDistance = 1.5
+        controls.autoRotate = true
+        controls.autoRotateSpeed = 4
 
         //////////////////////////////////////////////////////////////////////////////////
         //		loop runner							//
         //////////////////////////////////////////////////////////////////////////////////
-        var lastTimeMsec = null
 
-        console.log(requestAnimationFrame)
         requestAnimationFrame(function animate(nowMsec) {
             // keep looping
             requestAnimationFrame(animate);
             // measure time
+            controls.update()
             renderer.render(scene, camera);
-            character.root.rotation.y += 0.01;
+            // character.root.rotation.y += 0.01;
         })
     }
 }

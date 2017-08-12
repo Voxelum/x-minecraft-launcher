@@ -1,6 +1,13 @@
 export default {
-    states: () => ({
+    state: () => ({
+        // mutable data 
         displayName: '',
         icon: '',
+        meta: {},
     }),
+    mutations: {
+        setName() {
+
+        },
+    },
 }

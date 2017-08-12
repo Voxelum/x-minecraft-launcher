@@ -30,21 +30,21 @@
         <div class="stretched row" style="height:70%">
             <div class="four wide column">
                 <div class="ui vertical fluid tabular menu">
-                    <a class="item" data-tab="common">Common</a>
+                    <a class="item" data-tab="settings">{{$t('settings')}}</a>
                     <a class="item" data-tab="resourcepack">{{$t('resourcepacks')}}</a>
                     <a class="item" data-tab="mods">{{$t('mods')}}</a>
-                    <a class="item" data-tab="settings">{{$t('settings')}}</a>
                 </div>
             </div>
             <div class="twelve wide column" style="padding: 0 5% 0 20px">
-                <div class="ui active tab" data-tab="common">A</div>
+                <div class="ui tab" data-tab="settings">
+                    <h5 class="ui horizontal divider header">Critical graphic</h5>
+                    <game-settings :source="source" :id="id"></game-settings>
+                </div>
                 <div class="ui tab" data-tab="resourcepack">
                     <resource-pack-list></resource-pack-list>
                 </div>
                 <div class="ui tab" data-tab="mods">C</div>
-                <div class="ui tab" data-tab="settings">
-                    <game-settings :source="source" :id="id"></game-settings>
-                </div>
+    
             </div>
         </div>
     </div>
@@ -71,7 +71,7 @@ export default {
         this.$nextTick(() => {
             $('.menu .item').tab()
         })
-        if (!this.source.status.ping) this.refresh();
+        if (!this.status.pingToServer) this.refresh();
     },
 }
 </script>

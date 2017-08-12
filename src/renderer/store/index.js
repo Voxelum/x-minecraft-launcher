@@ -18,7 +18,12 @@ for (const key in modules) {
 
 export const init = (root) => {
     const store = new Vuex.Store({
-        state: { root },
+        state: { root, dragover: false },
+        mutations: {
+            dragover(states, value) {
+                states.dragover = value
+            },
+        },
         modules,
         getters,
         actions: actions(root),
