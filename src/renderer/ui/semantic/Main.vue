@@ -1,5 +1,5 @@
 <template>
-    <div class="ui celled grid segment" style="margin:0;">
+    <div class="ui celled grid segment" style="margin:0;" @drop="ondrop">
         <div class="moveable black row">
             <div class="four wide center aligned middle aligned column">
                 <h1 class="inverted ui header">
@@ -38,7 +38,7 @@
         </div>
         <div class="row" style="height:500px;">
             <div class="four wide middle aligned center aligned column">
-                <skin-view width="210" height="400"></skin-view>
+                 <skin-view width="210" height="400"></skin-view> 
             </div>
             <div class="twelve wide column">
                 <card-view ref='view' v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
@@ -161,7 +161,20 @@ export default {
                 hide: 800
             },
         })
-        console.log(this.$store)
+        var dragTimer;
+        const store = this.$store
+        $(document).on('dragover', function (e) {
+            var dt = e.originalEvent.dataTransfer;
+            if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
+                if (!store.state.dragover) store.commit('dragover', true);
+                window.clearTimeout(dragTimer);
+            }
+        });
+        $(document).on('dragleave', function (e) {
+            dragTimer = window.setTimeout(function () {
+                store.commit('dragover', false);
+            }, 25);
+        });
     },
     methods: {
         ...mapActions('profiles', {
@@ -179,6 +192,10 @@ export default {
         },
         create(type) {
             this.showModal(type)
+        },
+        ondrop(event) {
+            event.preventDefault()
+            this.$store.commit('dragover', false)
         },
         refresh() {
             this.$refs.view.refresh()
@@ -199,7 +216,10 @@ export default {
         submitProfile(event, type) {
             if (event.isEdit) {
                 this.$store.commit(`profiles/${this.selectedProfileID}/putAll`, event)
-            } else this.createProfile({ type, option: event })
+            } else {
+                event.type = type;
+                this.createProfile({ type, option: event })
+            }
         },
         onlaunch() {
             this.launch()

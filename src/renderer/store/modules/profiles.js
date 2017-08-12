@@ -102,6 +102,7 @@ export default {
             type,
             option,
         }) {
+            console.log(`create profile typed ${type}`)
             const id = uuid()
             option.java = option.java || context.rootGetters['settings/defaultJava']
             context.commit('add', { id, moduleData: option })

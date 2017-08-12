@@ -13,6 +13,9 @@
     "summery": "Summery",
     "mods": "Mods",
     "resourcepacks": "Resource Packs",
+    "add": "Add",
+    "remove": "Remove",
+    "!delete": "Delete",
     "resourcepack": {
         "name": "Resource Pack | Resource Packs",
         "available": "Avaliable",

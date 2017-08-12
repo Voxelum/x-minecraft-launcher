@@ -31,26 +31,31 @@
         <div class="stretched row" style="height:70%">
             <div class="four wide column">
                 <div class="ui vertical fluid tabular menu">
+                    <a class="active item" data-tab="versions">
+                        {{$tc('version.name', 0)}}
+                    </a>
+                    <a class="item" data-tab="settings">
+                        {{$t('settings')}}
+                    </a>
                     <a class="item" data-tab="resourcepacks">
                         {{$t('resourcepacks')}}
                     </a>
                     <a class="item" data-tab="mods">
                         {{$t('mods')}}
                     </a>
-                    <a class="item" data-tab="settings">
-                        {{$t('settings')}}
-                    </a>
                 </div>
             </div>
             <div class="eleven wide column">
+                <div class="ui active tab" style="height:380px" data-tab="versions">
+                    <version-table-view></version-table-view>
+                </div>
+                <div class="ui tab" style="height:380px" data-tab="settings">
+                    <game-settings :source="source" :id="id"></game-settings>
+                </div>
                 <div class="ui tab" style="height:380px" data-tab="resourcepacks">
                     <resource-pack-list></resource-pack-list>
                 </div>
                 <div class="ui tab" style="height:380px" data-tab="mods">
-                </div>
-                <div class="ui tab" style="height:380px" data-tab="settings">
-                    <game-settings :source="source" :id="id"></game-settings>
-                    <!-- <version-table-view></version-table-view> -->
                 </div>
             </div>
         </div>
