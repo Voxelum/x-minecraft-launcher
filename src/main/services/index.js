@@ -54,7 +54,6 @@ ipcMain.on('query', (event, {
     if (result instanceof Promise) {
         result.then((resolved) => {
             console.log('resolve:')
-            console.log(resolved)
             event.sender.send(id, {
                 resolved,
             })
@@ -79,7 +78,6 @@ ipcMain.on('query', (event, {
         });
     } else {
         console.log('resolve:')
-        console.log(result)
         event.sender.send(id, {
             resolved: result,
         });

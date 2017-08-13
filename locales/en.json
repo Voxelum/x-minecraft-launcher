@@ -29,7 +29,10 @@
         "status": "Status",
         "date": "Updated Date",
         "releaseDate": "Release Date",
-        "unknown": "Unknown Version"
+        "unknown": "Unknown Version",
+        "download": "Download this version",
+        "downloading": "Downloading...",
+        "downloaded": "This version is in the disk"
     },
     "signup": {
         "description": "New to us?",
@@ -130,8 +133,13 @@
         "true": "Enabled",
         "false": "Disabled"
     },
-    "useVBO": {
+    "useVbo": {
         "name": "Use VBO",
+        "true": "Enabled",
+        "false": "Disabled"
+    },
+    "anaglyph3d": {
+        "name": "3D Effect",
         "true": "Enabled",
         "false": "Disabled"
     }

@@ -24,7 +24,7 @@
                     <i class="tag icon"></i>
                     Modpack Description
                 </h5>
-                <textarea :value="source.description" name="Description" @blur="modify" style="border:0;outline:none;overflow: hidden;resize:none">
+                <textarea :value="source.description" name="Description" @blur="modify" style="width:100%;border:0;outline:none;overflow: hidden;resize:none">
                 </textarea>
             </div>
         </div>
@@ -33,6 +33,9 @@
                 <div class="ui vertical fluid tabular menu">
                     <a class="active item" data-tab="versions">
                         {{$tc('version.name', 0)}}
+                    </a>
+                    <a class="item" data-tab="maps">
+                        Maps
                     </a>
                     <a class="item" data-tab="settings">
                         {{$t('settings')}}
@@ -48,6 +51,9 @@
             <div class="eleven wide column">
                 <div class="ui active tab" style="height:380px" data-tab="versions">
                     <version-table-view></version-table-view>
+                </div>
+                <div class="ui tab" style="height:380px" data-tab="maps">
+                    <maps-list :source="source" :id="id"></maps-list>
                 </div>
                 <div class="ui tab" style="height:380px" data-tab="settings">
                     <game-settings :source="source" :id="id"></game-settings>
@@ -68,9 +74,10 @@ import VersionTableView from './VersionTableView'
 import ResourcePackList from './ResourcePackList'
 import TextComponent from './TextComponent'
 import GameSettings from './GameSettings'
+import MapsList from './MapsList'
 
 export default {
-    components: { VersionTableView, ResourcePackList, TextComponent, GameSettings },
+    components: { VersionTableView, ResourcePackList, TextComponent, GameSettings, MapsList },
     props: ['source', 'id'],
     computed: {
         ...mapState('versions', ['minecraft']),
@@ -79,7 +86,7 @@ export default {
     },
     methods: {
         modify(event) {
-            this.$store.commit('profiles/' + this.id + '/set' + event.target.name, event.target.value)
+            this.$store.commit('profiles/' + this.id + '/putAll', { description: event.target.value })
         },
         refresh() {
             this.$store.dispatch(`profiles/${this.id}/refresh`)
