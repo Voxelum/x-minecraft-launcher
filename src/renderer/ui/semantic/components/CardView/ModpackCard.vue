@@ -11,14 +11,14 @@
                 {{this.source.name}}
             </div>
             <div class="meta">
-                {{this.source.version?this.source.version.length!=0?"unknown":this.source.version:"unknown"}}
-                {{this.source.author}}
+                {{this.version}}
             </div>
             <div class="description">
-                {{this.source.description?this.source.description!=0?this.source.description:"No description yet.":"No description yet."}}
+                {{this.description}}
             </div>
         </div>
         <div class="extra content">
+            <i class="user icon"></i> {{this.source.author}}
         </div>
     </div>
 </template>
@@ -28,6 +28,14 @@ export default {
     data() {
         return {
             hoverDelete: false,
+        }
+    },
+    computed: {
+        version() {
+            return this.source.version ? this.source.version.length != 0 ? this.source.version : "unknown" : "unknown"
+        },
+        description() {
+            return this.source.description ? this.source.description != 0 ? this.source.description : "No description yet." : "No description yet."
         }
     },
     name: 'profile-card',

@@ -5,7 +5,7 @@ import { remote, ipcRenderer } from 'electron'
 import { v4 } from 'uuid'
 
 function write(path, data) {
-    console.log(`writeFile to ${path}`)
+    // console.log(`writeFile to ${path}`)
     return new Promise((resolve, reject) => {
         fs.writeFile(path, data, (err) => {
             if (err) reject(err)
@@ -48,7 +48,7 @@ export default (rootPath) => {
             ipcRenderer.sendSync('exit')
         },
         async launch(context, payload) {
-            console.log('calling launch....')
+            // console.log('calling launch....')
             const profile = context.getters['profiles/selected'];
             const profileId = context.getters['profiles/selectedKey'];
             const auth = context.state.auth.authInfo;
@@ -95,7 +95,7 @@ export default (rootPath) => {
                 const id = v4()
                 ipcRenderer.once(id,
                     (event, { rejected, resolved }) => {
-                        console.log(`finish ${id}`)
+                        // console.log(`finish ${id}`)
                         if (rejected) reject(rejected)
                         else resolve(resolved)
                     })
@@ -109,7 +109,7 @@ export default (rootPath) => {
         },
         readFolder(context, { path }) {
             path = paths.join(rootPath, path);
-            console.log(`Read folder ${path}`)
+            // console.log(`Read folder ${path}`)
             return new Promise((resolve, reject) => {
                 if (!fs.existsSync(path)) resolve(fs.ensureDir(path))
                 else resolve()
@@ -122,7 +122,7 @@ export default (rootPath) => {
         },
         deleteFolder(context, { path }) {
             path = paths.join(rootPath, path);
-            console.log(`Delete ${path}`);
+            // console.log(`Delete ${path}`);
             return new Promise((resolve, reject) => {
                 if (!fs.existsSync(path)) resolve()
                 else resolve(fs.remove(path))
@@ -144,7 +144,7 @@ export default (rootPath) => {
                 if (fs.existsSync(path)) {
                     if (onread) onread(path)
                     fs.readFile(path, (err, data) => {
-                        console.log(`read file ${path} done`)
+                        // console.log(`read file ${path} done`)
                         if (err) {
                             if (fallback) {
                                 if (typeof fallback === 'object' && !(fallback instanceof Buffer)) fallback = JSON.stringify(fallback)

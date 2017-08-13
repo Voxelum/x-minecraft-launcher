@@ -1,7 +1,7 @@
 <template>
     <div class="">
         <h5 class="ui horizontal divider header">Critical graphic</h5>
-        <option-group :options="criticalGraphics" :source="source" :id="id"></option-group>
+        <options-group :options="criticalGraphics" :source="source" :id="id"></options-group>
     </div>
 </template>
 
@@ -23,16 +23,20 @@ export default {
     data() {
         return {
             criticalGraphics: {
-                // enableVsync: boolOptions,
                 fancyGraphics: boolOptions,
-                renderClouds: ['true', 'fast', 'false'],
+                renderClouds: [true, 'fast', false],
                 ao: numOptions,
                 entityShadows: boolOptions,
                 particles: numOptions,
                 mipmapLevels: [0, 1, 2, 3, 4],
-                useVBO: boolOptions,
+                useVbo: boolOptions,
                 fboEnable: boolOptions,
+                enableVsync: boolOptions,
+                anaglyph3d: boolOptions,
             },
+            normalGraphics: {
+
+            }
         }
     },
     props: ['source', 'id'],

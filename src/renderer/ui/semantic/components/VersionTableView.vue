@@ -19,7 +19,7 @@
         </h3>
      -->
         <div class="ui attached segment " :class="{disabled: metas.length==0}" style='height:240px;overflow-x: hidden;'>
-            <div v-if="metas.length==0" class="ui active dimmer">
+            <div v-if="metas.length==0" class="ui active inverted dimmer">
                 <div class="ui indeterminate text loader">{{$t('version.prepare')}}</div>
             </div>
             <table class="ui very basic selectable celled center aligned table">
@@ -31,17 +31,17 @@
                         </td>
                         <td>{{meta.releaseTime}}</td>
                         <td>{{meta.time}}</td>
-                        <td class="selectable" :ver="meta.id" data-tooltip="Download this version" data-position="left center" @click="ondownload" v-if="meta.status=='remote'">
+                        <td class="selectable" :ver="meta.id" :data-tooltip="$t('version.download')" data-position="left center" @click="ondownload" v-if="meta.status=='remote'">
                             <div style="padding:0 10px 0 10px;pointer-events: none;">
                                 <i class="download icon"></i>
                             </div>
                         </td>
-                        <td class="selectable" :ver="meta.id" data-tooltip="Downloaded version" data-position="left center" v-else-if="meta.status=='local'">
+                        <td class="selectable" :ver="meta.id" :data-tooltip="$t('version.downloaded')" data-position="left center" v-else-if="meta.status=='local'">
                             <div style="padding:0 10px 0 10px;pointer-events: none;">
                                 <i class="disk outline icon"></i>
                             </div>
                         </td>
-                        <td :ver="meta.id" data-tooltip="Loading..." data-position="left center" v-else>
+                        <td :ver="meta.id" :data-tooltip="$t('version.downloading')" data-position="left center" v-else>
                             <div style="padding:0 15px 0 5px;pointer-events: none;">
                                 <div class="ui active inline small loader"></div>
                             </div>

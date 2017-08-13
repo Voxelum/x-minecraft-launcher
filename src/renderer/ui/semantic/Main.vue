@@ -6,7 +6,7 @@
                     ILauncher
                 </h1>
             </div>
-            <div class="ten wide column ">
+            <div class="eleven wide column ">
                 <div class="ui breadcrumb">
                     <a class="section">
                         <div class="ui inverted circular button non-moveable" @click="unselect">{{$t('home')}}</div>
@@ -22,23 +22,27 @@
                 </div>
                 <div class="ui inverted circular right floated button non-moveable">{{$t('help')}}</div>
             </div>
-            <div class="two wide center aligned middle aligned column">
-                <div id="userDropdown" class="non-moveable ui inverted pointing dropdown">
+            <div class="one wide center aligned middle aligned column mon-movable" :style="{grey: closing}" @mouseout="closing = false" @mouseover="closing = true" @click="close">
+    
+                <i class="large close icon non-moveable" :class="{red: closing}"></i>
+            </div>
+        </div>
+        <div class="row" style="height:500px;">
+            <div class="four wide middle aligned center aligned column">
+                <h5 id="userDropdown" class="ui pointing dropdown">
                     <i class="user icon"></i>
                     {{username}}
                     <i class="dropdown icon"></i>
                     <div class="menu">
                         <div class="item">
-                            <i class="id card outline icon"></i> {{$t('user.profile')}} </div>
+                            <i class="id card outline icon"></i> {{$t('user.profile')}}
+                        </div>
                         <div class="item">
-                            <i class="sign out icon"></i> {{$t('user.logout')}}</div>
+                            <i class="sign out icon"></i> {{$t('user.logout')}}
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="row" style="height:500px;">
-            <div class="four wide middle aligned center aligned column">
-                 <skin-view width="210" height="400"></skin-view> 
+                </h5>
+                <skin-view width="210" height="400"></skin-view>
             </div>
             <div class="twelve wide column">
                 <card-view ref='view' v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
@@ -129,6 +133,11 @@ export default {
         SkinView,
         ...modals
     },
+    data() {
+        return {
+            closing: false,
+        }
+    },
     computed: {
         ...mapGetters('profiles', {
             'selectedProfile': 'selected',
@@ -212,6 +221,9 @@ export default {
                 args.description = this.selectedProfile.description;
             }
             this.showModal(this.selectedProfile.type, args)
+        },
+        close() {
+            require('electron').ipcRenderer.sendSync('exit')
         },
         submitProfile(event, type) {
             if (event.isEdit) {
