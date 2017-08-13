@@ -3,6 +3,8 @@ import {
     BrowserWindow,
     ipcMain,
     DownloadItem,
+    Tray,
+    nativeImage,
 } from 'electron'
 import {
     AuthService,
@@ -19,7 +21,6 @@ if (!devMod) {
 }
 
 
-
 ipcMain.on('ping', (event, time) => {
     console.log(time)
     event.sender.send('pong')
@@ -34,12 +35,12 @@ const winURL = process.env.NODE_ENV === 'development' ?
     `file://${__dirname}/index.html`
 let parking = false;
 
+let iconImage
 let root = process.env.LAUNCHER_ROOT
 if (!root) {
     process.env.LAUNCHER_ROOT = paths.join(app.getPath('appData'), '.launcher');
     root = process.env.LAUNCHER_ROOT
 }
-
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
     // Someone tried to run a second instance, we should focus our window.
     if (mainWindow) {
@@ -61,14 +62,10 @@ function createWindow() {
         useContentSize: true,
         width: 1100,
         resizable: false,
-        // minWidth: 1000,
-        // minHeight: 626,
-        // maxWidth: 1000,
-        // maxHeight: 626,
         frame: false,
-        titleBarStyle: 'customButtonsOnHover',
     })
-
+    mainWindow.setTitle('ILauncher')
+    mainWindow.setIcon(iconImage)
     mainWindow.loadURL(winURL)
 
     mainWindow.on('closed', () => {
@@ -112,7 +109,10 @@ function createWindow() {
 }
 
 app.on('ready', () => {
+    iconImage = nativeImage.createFromPath(`${__dirname}/logo.png`)
     createWindow()
+    const appIcon = new Tray(iconImage)
+    app.setName('ILauncher');
 })
 
 app.on('window-all-closed', () => {

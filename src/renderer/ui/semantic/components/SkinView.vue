@@ -11,7 +11,7 @@ const OrbitControls = require('three-orbit-controls')(THREE)
 export default {
     props: ['width', 'height'],
     mounted(e) {
-        var renderer = new THREE.WebGLRenderer({ canvas: this.$el, antialias: true });
+        var renderer = new THREE.WebGLRenderer( { canvas: this.$el, antialias: true } );
         renderer.setClearColor('#FFF', 1)
 
         var onRenderFcts = [];

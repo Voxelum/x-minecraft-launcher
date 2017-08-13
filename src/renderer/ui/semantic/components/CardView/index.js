@@ -15,13 +15,21 @@ export default {
     render(createElement) {
         const getByKey = this.getByKey;
         const self = this
-        return createElement('div', { staticClass: 'ui link cards' }, this.allKeys.map((id) => {
+        return createElement('div', {
+            staticClass: 'ui link cards',
+            attrs: {
+                style: 'height:105%;overflow: auto',
+            },
+        }, this.allKeys.map((id) => {
             const source = getByKey(id)
             if (source === null || source === undefined) {
                 return createElement('div')
             }
             const option = {
                 props: { source, id },
+                attrs: {
+                    style: 'max-height:45%',
+                },
                 on: {
                     select(event) { self.$emit('select', event) },
                     delete(event) { self.$emit('delete', event) },

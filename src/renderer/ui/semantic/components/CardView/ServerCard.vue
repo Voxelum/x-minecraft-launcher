@@ -11,7 +11,7 @@
                 {{this.source.name}}
             </div>
             <div class="meta">
-                <text-component :source="source.status.gameVersion"></text-component>
+                <text-component :source="source.status.gameVersion" styled="false"></text-component>
                 <!-- <span class="date">{{this.source.createdDate}}</span> -->
             </div>
             <div class="description">
@@ -20,7 +20,7 @@
         </div>
         <div class="extra content">
             <span>
-                <i class="user icon"></i> {{this.source.status.onlinePlayers}} / {{this.source.status.capacity}}</span>
+                <i class="users icon"></i> {{this.source.status.onlinePlayers}} / {{this.source.status.capacity}}</span>
             <div class="right floated">
                 <i class="signal icon"></i>
                 {{this.source.status ? (this.source.status.pingToServer ||-1)+" ms":'Cannot connected'}}

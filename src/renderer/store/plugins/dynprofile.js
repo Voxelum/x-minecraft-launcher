@@ -24,7 +24,6 @@ export default (store) => {
             }
             paths.push(id)
             if (!moduleData.namespaced) moduleData.namespaced = true;
-            console.log(moduleData)
             const model = moduleData.type === 'modpack' ? modelModpack : modelServer
             store.registerModule(paths, mixin(model, moduleData));
             if (!moduleData.minecraft) moduleData.minecraft = { name: 'high' }
