@@ -34,6 +34,20 @@
         "downloading": "Downloading...",
         "downloaded": "This version is in the disk"
     },
+    "gametype": {
+        "survival": "Survival",
+        "creative": "Creative",
+        "adventure": "Adventure",
+        "spectator": "Spectator",
+        "non": "Non mode"
+    },
+    "difficulty": {
+        "peaseful": "Peaseful",
+        "easy": "Easy",
+        "normal": "Normal",
+        "hard": "Hard",
+        "non": "Unknown difficulty"
+    },
     "signup": {
         "description": "New to us?",
         "name": "Sign Up"

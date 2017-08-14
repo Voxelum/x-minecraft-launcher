@@ -140,7 +140,7 @@ export default {
                     states.settings[key] = settings[key]
                 }
             }
-            states.maps = maps;
+            for (const map of maps) states.maps.push(map)
         },
         addResourcepack(states, { pack }) {
             if (states.settings.resourcePacks.indexOf(pack) === -1) {
@@ -195,7 +195,7 @@ export default {
                             context.dispatch('readFile', {
                                 path: `profiles/${id}/saves/${file}/level.dat`,
                                 fallback: undefined,
-                            }),
+                            }, { root: true }),
                         ),
                     ))
                     .then(buffers => buffers.filter(buf => buf !== undefined).map(WorldInfo.read)),
