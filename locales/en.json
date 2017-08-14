@@ -86,6 +86,9 @@
             "timeout": "Connect server timeout!"
         }
     },
+    "map": {
+        "name": "Map | Maps"
+    },
     "errors.empty": "No error yet",
     "renderClouds": {
         "name": "Clouds",

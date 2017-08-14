@@ -37,7 +37,7 @@ const actions = {
             return value;
         })
     },
-    refresh(context, payload) {
+    refresh(context) {
         context.commit('putAll', { status: ServerStatus.pinging() })
         if (context.state.host === undefined) return Promise.reject('server.host.empty')
         return context.dispatch('query', {
@@ -71,6 +71,7 @@ const actions = {
 }
 export default {
     namespaced: true,
+    modules: { ...profile.modules },
     state,
     getters,
     mutations,

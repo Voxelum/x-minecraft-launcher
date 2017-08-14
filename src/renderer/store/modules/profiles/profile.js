@@ -1,11 +1,10 @@
+import settings from './settings'
+
 function state() {
     return {
         type: '',
-
         name: '', // specific info
-        version: '',
-
-        resolution: [800, 400], // client setting
+        resolution: { width: 800, height: 400, fullscreen: false }, // client setting
         java: '',
         minMemory: 1024,
         maxMemory: 2048,
@@ -20,8 +19,7 @@ const getters = {
         if (states.java === '' || states.java === undefined || states.java === null) errors.push('profile.empty.java')
         return errors
     },
-    mods: (states, gets) => (gets.forge ? gets.forge.mods : []),
-    resourcepacks: (states, gets) => gets['minecraft/resourcepacks'],
+    versoin: states => states.minecraft.version,
     language: (states, gets) => gets['minecraft/options'].lang,
 }
 const mutations = {
@@ -32,13 +30,15 @@ const mutations = {
             }
         }
     },
-    toggle(states, option) { /* dummy mutation */ },
 }
 
 const actions = {
 }
 
 export default {
+    modules: {
+        ...settings,
+    },
     state,
     getters,
     mutations,

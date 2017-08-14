@@ -11,7 +11,30 @@ const OrbitControls = require('three-orbit-controls')(THREE)
 export default {
     props: ['width', 'height'],
     mounted(e) {
-        var renderer = new THREE.WebGLRenderer( { canvas: this.$el, antialias: true } );
+        console.log("===========START===========")
+
+        var canvas = this.$el;
+        var gl = canvas.getContext("webgl");
+
+        console.log(gl.getParameter(gl.RENDERER));
+        console.log(gl.getParameter(gl.VENDOR));
+        console.log(getUnmaskedInfo(gl).vendor);
+        console.log(getUnmaskedInfo(gl).renderer);
+
+        function getUnmaskedInfo(gl) {
+            var unMaskedInfo = {
+                renderer: '',
+                vendor: ''
+            };
+            var dbgRenderInfo = gl.getExtension("WEBGL_debug_renderer_info");
+            if (dbgRenderInfo != null) {
+                unMaskedInfo.renderer = gl.getParameter(dbgRenderInfo.UNMASKED_RENDERER_WEBGL);
+                unMaskedInfo.vendor = gl.getParameter(dbgRenderInfo.UNMASKED_VENDOR_WEBGL);
+            }
+            return unMaskedInfo;
+        }
+        console.log("===========END===========")
+        var renderer = new THREE.WebGLRenderer({ canvas: this.$el, antialias: true });
         renderer.setClearColor('#FFF', 1)
 
         var onRenderFcts = [];

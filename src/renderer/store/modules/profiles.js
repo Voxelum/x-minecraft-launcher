@@ -1,5 +1,7 @@
 import uuid from 'uuid'
 import { GameSetting } from 'ts-minecraft'
+import server from './profiles/server'
+import modpack from './profiles/modpack'
 
 const PROFILE_NAME = 'profile.json'
 const PROFILES_NAEM = 'profiles.json'
@@ -102,7 +104,6 @@ export default {
             type,
             option,
         }) {
-            console.log(`create profile typed ${type}`)
             const id = uuid()
             option.java = option.java || context.rootGetters['settings/defaultJava']
             context.commit('add', { id, moduleData: option })
