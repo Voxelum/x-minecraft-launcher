@@ -33,14 +33,15 @@ export const mapActions = normalizeNamespace((namespace, actions) => {
         val = namespace + val
         res[key] = function mappedAction(...args) {
             if (namespace && !getModuleByNamespace(this.$store, 'mapActions', namespace)) {
-                return
+                return null;
             }
             const loc = [val].concat(args)
             this.$store.commit('tasks/addTask', loc)
-            return this.$store.dispatch.apply(this.$store, loc).then((v) => {
-                this.$store.commit('tasks/deleteTask', loc)
-                return v
-            })
+            return this.$store.dispatch.apply(this.$store, loc)
+                .then((v) => {
+                    this.$store.commit('tasks/deleteTask', loc)
+                    return v
+                })
         }
     })
     return res

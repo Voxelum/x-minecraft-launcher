@@ -35,7 +35,7 @@
                         {{$tc('version.name', 0)}}
                     </a>
                     <a class="item" data-tab="maps">
-                        Maps
+                        {{$tc('map.name', 0)}}
                     </a>
                     <a class="item" data-tab="settings">
                         {{$t('settings')}}

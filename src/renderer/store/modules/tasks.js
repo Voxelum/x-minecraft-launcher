@@ -14,17 +14,17 @@ export default {
     namespaced: true,
     state: {
         downloading: [],
+        tasks: [],
     },
     mutations: {
         addTask(state, payload) {
-            console.log('@addTask')
-            console.log(payload)
+            // console.log('@addTask')
+            // console.log(payload)
         },
         deleteTask(state, payload) {
-            console.log('@deleteTask')
-            console.log(payload)
+            // console.log('@deleteTask')
+            // console.log(payload)
         },
-
     },
 
 }

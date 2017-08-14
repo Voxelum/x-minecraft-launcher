@@ -1,3 +1,4 @@
+import paths from 'path'
 export default {
     /**
      * Return the errros by module.
@@ -32,4 +33,6 @@ export default {
     rootPath(state, getters) {
         return state.root
     },
+    path: (state, gets) => path => (path instanceof Array ?
+        paths.join(gets.rootPath, ...path) : paths.join(gets.rootPath, path)),
 }

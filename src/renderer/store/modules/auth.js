@@ -17,7 +17,6 @@ const getters = {
 const mutations = {
     select(theState, mode) {
         if (theState.modes.indexOf(mode) !== -1) {
-            console.log(`change mode ${mode}`)
             theState.mode = mode
         }
     },

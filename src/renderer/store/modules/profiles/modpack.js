@@ -11,7 +11,10 @@ function state() {
     return theState
 }
 
-const getters = profile.getters
+const getters = {
+    ...profile.getters,
+
+}
 
 const mutations = Object.assign({}, profile.mutations)
 
@@ -27,6 +30,7 @@ const actions = {
 
 export default {
     namespaced: true,
+    modules: { ...profile.modules },
     state,
     getters,
     mutations,
