@@ -6,6 +6,7 @@ export default {
     state() {
         return {
             name: 'custom',
+            version: '',
             maps: [],
             settings: {
                 version: 1139, // for 1.12
@@ -123,30 +124,23 @@ export default {
     getters: {
         options: states => states.settings,
         resourcepacks: states => states.settings.resourcePacks,
+        maps: state => state.maps,
         name: states => states.name,
     },
     mutations: {
         addMap(states, { map }) {
             states.maps.push(map)
         },
-        modifyMap(states, { map, key, value }) {
-            map[key] = value
-        },
-        pushMapList(states, { map, key, value }) {
-            map[key].push(value)
-        },
-        modifyInDepth(states, { map, key, index, innerKey, value }) {
-            map[key][index][innerKey] = value
-        },
         update(states, { key, value }) {
             states.settings[key] = value
         },
-        update$reload(states, { values, maps }) {
-            for (const key in values) {
-                if (values[key] !== undefined && states.settings[key] !== undefined) {
-                    states.settings[key] = values[key]
+        update$reload(states, [settings, maps]) {
+            for (const key in settings) {
+                if (settings[key] !== undefined && states.settings[key] !== undefined) {
+                    states.settings[key] = settings[key]
                 }
             }
+            states.maps = maps;
         },
         addResourcepack(states, { pack }) {
             if (states.settings.resourcePacks.indexOf(pack) === -1) {
@@ -177,6 +171,7 @@ export default {
             states.name = name;
             states.settings = template;
         },
+
     },
     actions: {
         save(context, { id }) {
@@ -187,18 +182,29 @@ export default {
             }, { root: true })
         },
         load(context, { id }) {
-            context.dispatch('readFolder', { path: `profiles/${id}/saves` }, { root: true })
-                .then(files => Promise.all(files
-                    .map(file => context.dispatch('readFile', {
-                        path: `profiles/${id}/saves/${file}/level.dat`,
-                        fallback: undefined,
-                    }))))
-                .then(buffers => buffers.filter(buf => buf !== undefined).map(WorldInfo.read))
-            return context.dispatch('readFile', {
-                path: `profiles/${id}/options.txt`,
-                fallback: context.rootGetters['settings/defaultOptions'],
-                encoding: 'string',
-            }, { root: true }).then(string => (typeof string === 'string' ? GameSetting.readFromStringRaw(string) : string))
+            return Promise.all([
+                context.dispatch('readFile', {
+                    path: `profiles/${id}/options.txt`,
+                    fallback: context.rootGetters['settings/defaultOptions'],
+                    encoding: 'string',
+                }, { root: true })
+                    .then(string => (typeof string === 'string' ? GameSetting.readFromStringRaw(string) : string)),
+                context.dispatch('readFolder', { path: `profiles/${id}/saves` }, { root: true })
+                    .then(files => Promise.all(
+                        files.map(file =>
+                            context.dispatch('readFile', {
+                                path: `profiles/${id}/saves/${file}/level.dat`,
+                                fallback: undefined,
+                            }),
+                        ),
+                    ))
+                    .then(buffers => buffers.filter(buf => buf !== undefined).map(WorldInfo.read)),
+            ])
+        },
+        importMap(context) {
+        },
+        exportMap(context, { map, targetFolder }) {
+            context.rootGetters.path(context)
         },
         useTemplate(context, { templateId }) {
 

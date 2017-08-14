@@ -78,6 +78,7 @@
         "locales": "0.0.2",
         "mkdirp": "^0.5.1",
         "mocha": "^3.0.2",
+        "monaco-editor": "^0.9.0",
         "multispinner": "^0.2.1",
         "muse-ui": "^2.1.0",
         "style-loader": "^0.18.1",

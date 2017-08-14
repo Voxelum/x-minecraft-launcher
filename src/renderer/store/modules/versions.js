@@ -32,7 +32,6 @@ export default {
     },
     getters: {
         forge: (state, getters) => { // return all the forge meta by mcversion
-            console.log(getters)
         },
         liteloader: (state, getters) => { // return all the liteloader meta by mcversion
 
@@ -61,7 +60,6 @@ export default {
         },
         download(context, payload) {
             // TODO maybe validate paylaod
-            console.log(context.rootState.settings.rootPath)
             const versionMeta = payload;
             const id = versionMeta.id;
             context.commit('updateStatus', { version: versionMeta, status: 'loading' })
@@ -81,7 +79,7 @@ export default {
                     context.commit('updateStatus', { version: versionMeta, status: 'remote' })
                 })
         },
-        refresh(context, payload) {
+        refresh(context) {
             return context.dispatch('query', { service: 'versions', action: 'refresh', payload: context.state.updateTime }, { root: true })
                 .then(remoteVersionList =>
                     context.dispatch('readFolder', { path: 'versions' }, { root: true })

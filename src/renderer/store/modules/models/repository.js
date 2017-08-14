@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import crypto from 'crypto'
+import Vue from 'vue'
 
 export class Resource {
     constructor(hash, fileName, type, meta) {
@@ -20,7 +21,7 @@ function $load(filePath) {
             else resolve({ name: path.basename(filePath), data, type: path.extname(filePath) });
         })
     }).then(({ name, data, type }) => {
-        const resource = new Resource($hash(data), name, type, undefined);
+        const resource = { hash: $hash(data), fileName: name, type, meta: undefined };
         return { filePath, data, resource };
     });
 }
@@ -28,31 +29,30 @@ export default {
     state() {
         return {
             root: '',
-            keys: [],
-            store: new Map(),
+            resources: {},
         }
     },
     getters: {
-        allKeys: state => state.keys,
-        entries: state => state.keys.map((key) => {
-            return { key, value: state.store.get(key) }
-        }),
-        get: state => key => state.store.get(key),
+        allKeys: state => Object.keys(state.resources),
+        entries: (state, gets) =>
+            gets.allKeys.map(key => Object.create({ key, value: state.resources[key] })),
+        get: state => key => state.resources[key],
     },
     mutations: {
+        rename(context, { key, name }) {
+            const res = context.state.resources[key]
+            if (res) res.fileName = name;
+        },
         set(state, payload) {
-            if (!state.store.has(payload.key)) {
-                state.store.set(payload.key, payload.value)
-                state.keys.push(payload.key)
+            if (!state.resources[payload.key]) {
+                Vue.set(state.resources, payload.key, payload.value)
             }
         },
         delete(state, payload) {
-            state.store.delete(payload)
+            Vue.delete(state.resource, payload);
         },
     },
     actions: {
-        rename(context, { key, name }) {
-        },
         load(context) {
             return context.dispatch('readFolder', { path: context.state.root }, { root: true })
                 .then(files => Promise.all(
@@ -70,6 +70,8 @@ export default {
                             return resource
                         }))));
         },
+        detete(context, resource) { },
+        rename(context, { resource, name }) { },
         import(context, payload) {
             let arr
             if (typeof payload === 'string') arr = [payload]
