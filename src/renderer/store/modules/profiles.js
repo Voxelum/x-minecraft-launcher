@@ -60,7 +60,7 @@ export default {
     },
     actions: {
         loadProfile(context, id) {
-            return context.dispatch('readFile', {
+            return context.dispatch('read', {
                 path: `profiles/${id}/${PROFILE_NAME}`,
                 fallback: {},
                 encoding: 'json',
@@ -71,13 +71,13 @@ export default {
         load({ dispatch, commit }, payload) {
             return dispatch('readFolder', { path: 'profiles' }, { root: true })
                 .then(files => Promise.all(files.map(id => dispatch('loadProfile', id))))
-                .then(() => dispatch('readFile', { path: 'profiles.json', fallback: {}, encoding: 'json' }, { root: true }))
+                .then(() => dispatch('read', { path: 'profiles.json', fallback: {}, encoding: 'json' }, { root: true }))
                 .then(json => commit('select', json.selected))
         },
         async saveProfile(context, { id }) {
             const profileJson = `profiles/${id}/profile.json`
             const data = await context.dispatch(`${id}/serialize`)
-            return context.dispatch('writeFile', { path: profileJson, data }, { root: true })
+            return context.dispatch('write', { path: profileJson, data }, { root: true })
         },
         save(context, payload) {
             const mutation = payload.mutation
@@ -86,7 +86,7 @@ export default {
             if (path.length === 2) {
                 const [, action] = path
                 if (action === 'select') {
-                    return context.dispatch('writeFile', {
+                    return context.dispatch('write', {
                         path: PROFILES_NAEM, data: { selected: context.state.selected },
                     }, { root: true })
                 }
@@ -111,7 +111,7 @@ export default {
         },
         delete(context, payload) {
             context.commit('remove', payload)
-            return context.dispatch('deleteFolder', { path: `profiles/${payload}` }, { root: true })
+            return context.dispatch('delete', { path: `profiles/${payload}` }, { root: true })
         },
         select(context, profileId) {
             if (context.getters.selectedKey !== profileId) context.commit('select', profileId)

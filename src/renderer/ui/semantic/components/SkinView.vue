@@ -1,5 +1,5 @@
 <template>
-    <canvas :width="width" :height="height" style="background-color: rgba(0,0,0,0); ">
+    <canvas :width="width" :height="height">
     </canvas>
 </template>
 

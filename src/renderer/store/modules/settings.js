@@ -94,7 +94,7 @@ export default {
             context.dispatch('searchJava').then((javas) => {
                 context.commit('javas', javas);
             })
-            return context.dispatch('readFile', { path: 'setting.json' }, { root: true })
+            return context.dispatch('read', { path: 'setting.json' }, { root: true })
         },
         save() {
             return {}

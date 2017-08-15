@@ -131,9 +131,6 @@ export default {
         name: states => states.name,
     },
     mutations: {
-        addMap(states, { map }) {
-            states.maps.push(map)
-        },
         update(states, { key, value }) {
             states.settings[key] = value
         },
@@ -180,11 +177,11 @@ export default {
         save(context, { id }) {
             const path = `profiles/${id}/options.txt`
             const data = GameSetting.writeToString(context.state.settings)
-            return context.dispatch('writeFile', { path, data }, { root: true })
+            return context.dispatch('write', { path, data }, { root: true })
         },
         load(context, { id }) {
             return Promise.all([
-                context.dispatch('readFile', {
+                context.dispatch('read', {
                     path: `profiles/${id}/options.txt`,
                     fallback: context.rootGetters['settings/defaultOptions'],
                     encoding: 'string',
@@ -193,12 +190,12 @@ export default {
                 context.dispatch('readFolder', { path: `profiles/${id}/saves` }, { root: true })
                     .then(files => Promise.all(
                         files.map(file =>
-                            context.dispatch('readFile', {
+                            context.dispatch('read', {
                                 path: `profiles/${id}/saves/${file}/level.dat`,
                                 fallback: undefined,
                             }, { root: true })
                                 .then(buf =>
-                                    (buf ? context.dispatch('readFile', {
+                                    (buf ? context.dispatch('read', {
                                         path: `profiles/${id}/saves/${file}/icon.png`,
                                         fallback: undefined,
                                     }, { root: true })
@@ -213,10 +210,11 @@ export default {
                     )),
             ])
         },
-        importMap(context, { location }) {
+        importMap(context, { id, location }) {
+            context.dispatch('import', { file: location, toFolder: `profiles/${id}/saves` })
         },
-        exportMap(context, { map, targetFolder }) {
-            context.rootGetters.path(context)
+        exportMap(context, { id, map, targetFolder }) {
+            context.dispatch('export', { file: `profiles/${id}/saves/${map}`, toFolder: targetFolder })
         },
         useTemplate(context, { templateId }) {
 
