@@ -22,7 +22,7 @@
                 </div>
                 <div class="ui inverted circular right floated button non-moveable">{{$t('help')}}</div>
             </div>
-            <div class="one wide center aligned middle aligned column mon-movable" :style="{grey: closing}" @mouseout="closing = false" @mouseover="closing = true" @click="close">
+            <div class="one wide center aligned middle aligned column mon-movable" style="cursor:pointer" :style="{grey: closing}" @mouseout="closing = false" @mouseover="closing = true" @click="close">
                 <i class="large close icon non-moveable" :class="{red: closing}"></i>
             </div>
         </div>
@@ -118,7 +118,7 @@
 import 'static/semantic/semantic.min.css'
 import 'static/semantic/semantic.min.js'
 
-// import imgURL from '../../assets/Background1.png'
+import imgURL from '../../assets/Background1.png'
 import modals from './components/modals'
 import ModpackView from './components/ModpackView'
 import ServerView from './components/ServerView'
@@ -136,7 +136,7 @@ export default {
     data() {
         return {
             closing: false,
-            background: '',//'url(imgs/Background1.png)'
+            background: ''//'url(imgs/Background1.png)'
         }
     },
     computed: {
