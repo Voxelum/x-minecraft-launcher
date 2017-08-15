@@ -1,6 +1,9 @@
 import { GameSetting, WorldInfo } from 'ts-minecraft'
 import Vue from 'vue'
 
+async function readMap(context, dir) {
+    return Promise.all()
+}
 export default {
     namespaced: true,
     state() {
@@ -177,9 +180,7 @@ export default {
         save(context, { id }) {
             const path = `profiles/${id}/options.txt`
             const data = GameSetting.writeToString(context.state.settings)
-            return context.dispatch('writeFile', {
-                path, data,
-            }, { root: true })
+            return context.dispatch('writeFile', { path, data }, { root: true })
         },
         load(context, { id }) {
             return Promise.all([
@@ -195,13 +196,24 @@ export default {
                             context.dispatch('readFile', {
                                 path: `profiles/${id}/saves/${file}/level.dat`,
                                 fallback: undefined,
-                            }, { root: true }),
+                            }, { root: true })
+                                .then(buf =>
+                                    (buf ? context.dispatch('readFile', {
+                                        path: `profiles/${id}/saves/${file}/icon.png`,
+                                        fallback: undefined,
+                                    }, { root: true })
+                                        .then(iconBuf => [buf, iconBuf])
+                                        : undefined),
+                            ),
                         ),
                     ))
-                    .then(buffers => buffers.filter(buf => buf !== undefined).map(WorldInfo.read)),
+                    .then(buffers => buffers.filter(buf => buf !== undefined)
+                        .map(([buf, iconBuf]) => Object.assign(WorldInfo.read(buf),
+                            { icon: (iconBuf ? `data:image/png;base64, ${iconBuf.toString('base64')}` : undefined) }),
+                    )),
             ])
         },
-        importMap(context) {
+        importMap(context, { location }) {
         },
         exportMap(context, { map, targetFolder }) {
             context.rootGetters.path(context)
