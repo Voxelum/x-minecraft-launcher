@@ -1,12 +1,19 @@
 <template>
-    <div class="ui aligned grid" @drop="ondrop">
+    <div class="ui dimmable grid" @drop="ondrop">
+        <div v-if="this.$store.state.dragover" class="ui inverted active dimmer">
+            <div class="content">
+                <div class="center">
+                    Drag here to import
+                </div>
+            </div>
+        </div>
         <div class="eight wide column">
             <h5 class="ui horizontal divider header">
                 <i class="disk outline icon"></i>
                 {{$t('resourcepack.available')}}
             </h5>
             <div class="ui relaxed list">
-                <list-cell v-for="entry in unselecting" :key="entry.key" :entry="entry" type="add" @change="add"></list-cell>
+                <list-cell v-for="value in unselecting" :key="value.name" :val="value" type="add" @change="add"></list-cell>
             </div>
         </div>
         <div class="eight wide column">
@@ -15,34 +22,38 @@
                 {{$t('resourcepack.selected')}}
             </h5>
             <div class="ui relaxed list">
-                <list-cell v-for="entry in selecting" :key="entry.key" :entry="entry" type="remove" @change="remove" @moveup="moveup" @movedown="movedown"></list-cell>
+                <list-cell v-for="value in selecting" :key="value.name" :val="value" type="remove" @change="remove" @moveup="moveup" @movedown="movedown"></list-cell>
             </div>
         </div>
-        <div v-if="this.$store.state.dragover">AUIDUSBIBIAD</div>
-        
     </div>
 </template>
 
 <script>
 import { remote } from 'electron'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ListCell from './ListCell'
 
 export default {
     components: { ListCell },
     computed: {
-        ...mapGetters('resourcepacks', ['entries']),
+        ...mapGetters('resourcepacks', ['values']),
         ...mapGetters('profiles', ['selectedKey']),
         unselecting() {
-            return this.entries.filter(e => this.selectingNames.indexOf(e.value.meta.packName) === -1)
+            return this.values.filter(e => this.selectingNames.indexOf(e.name) === -1)
         },
         selecting() {
             return this.selectingNames.map(name => this.nameToEntry.get(name))
         },
         nameToEntry() {
             const map = new Map()
-            for (const entry of this.entries) {
-                map.set(entry.value.meta.packName, entry)
+            for (const value of this.values) {
+                if (!map.has(value.name))
+                    map.set(value.name, value)
+                else {
+                    const name = value.name + ' copy'
+                    this.rename({ resource: value, name })
+                    map.set(name, value)
+                }
             }
             return map;
         },
@@ -52,6 +63,7 @@ export default {
     },
     methods: {
         ...mapActions('resourcepacks', ['import']),
+        ...mapMutations('resourcepacks', ['rename']),
         add(pack) {
             this.$store.commit(`profiles/${this.selectedKey}/minecraft/addResourcepack`, { pack })
         },
@@ -61,9 +73,8 @@ export default {
         importResourcePack() {
             const self = this;
             remote.dialog.showOpenDialog({}, (files) => {
-                if (files)
-                    for (const file of files)
-                        self.import(file)
+                if (files) for (const file of files)
+                    self.import(file)
             })
         },
         ondrop(event) {
