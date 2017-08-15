@@ -101,7 +101,8 @@
         }
     },
     "map": {
-        "name": "Map | Maps"
+        "name": "Map | Maps",
+        "hint": "Drop map folder/zip here to import map."
     },
     "errors.empty": "No error yet",
     "renderClouds": {

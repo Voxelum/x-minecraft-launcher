@@ -8,10 +8,16 @@
             </div>
         </div>
         <div class="eight wide column">
-            <h5 class="ui horizontal divider header">
+            <div-header>
                 <i class="disk outline icon"></i>
                 {{$t('resourcepack.available')}}
-            </h5>
+            </div-header>
+            <div class="ui flowing popup top left transition hidden">
+                <div class="ui vertical center aligned secondary menu">
+                    <a class="item">Import <i class="plus icon"></i></a>
+                    <a class="item">Exprot <i class="upload icon"></i></a>
+                </div>
+            </div>
             <div class="ui relaxed list">
                 <list-cell v-for="value in unselecting" :key="value.name" :val="value" type="add" @change="add"></list-cell>
             </div>
@@ -32,9 +38,10 @@
 import { remote } from 'electron'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ListCell from './ListCell'
+import DivHeader from '../DivHeader'
 
 export default {
-    components: { ListCell },
+    components: { ListCell, DivHeader },
     computed: {
         ...mapGetters('resourcepacks', ['values']),
         ...mapGetters('profiles', ['selectedKey']),
