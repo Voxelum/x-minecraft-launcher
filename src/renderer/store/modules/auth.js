@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 const state = {
     modes: ['mojang', 'offline'],
     mode: 'mojang',
@@ -27,7 +29,7 @@ const mutations = {
         theState.authInfo = auth
         theState.clientToken = auth.clientToken
         theState.accessToken = auth.accessToken
-        if (!theState.history[theState.mode]) theState.history[theState.mode] = []
+        if (!theState.history[theState.mode]) Vue.set(theState.history, theState.mode, [])
         theState.history[theState.mode].push(account)
     },
 }
@@ -35,9 +37,8 @@ const actions = {
     save(context, payload) {
         const { mutation } = payload;
         if (!mutation.endsWith('/record')) return Promise.resolve()
-        const target = Object.assign({}, context.state)
-        target.modes = undefined
-        return context.dispatch('writeFile', { path: 'auth.json', data: target }, { root: true })
+        const data = JSON.stringify(context.state, (key, value) => (key === 'modes' ? undefined : value))
+        return context.dispatch('writeFile', { path: 'auth.json', data }, { root: true })
     },
     load(context, payload) {
         return context.dispatch('readFile', { path: 'auth.json', fallback: {}, encoding: 'json' }, { root: true })
