@@ -115,10 +115,10 @@
 </template>
 
 <script>
-require('static/semantic/semantic.min.css')
-require('static/semantic/semantic.min.js')
+import 'static/semantic/semantic.min.css'
+import 'static/semantic/semantic.min.js'
 
-import imgURL from '../../assets/Background1.png'
+// import imgURL from '../../assets/Background1.png'
 import modals from './components/modals'
 import ModpackView from './components/ModpackView'
 import ServerView from './components/ServerView'
@@ -136,7 +136,7 @@ export default {
     data() {
         return {
             closing: false,
-            background: 'url(imgs/Background1.png)'
+            background: '',//'url(imgs/Background1.png)'
         }
     },
     computed: {

@@ -4,8 +4,7 @@ import { MinecraftFolder } from 'ts-minecraft'
 import { remote, ipcRenderer } from 'electron'
 import { v4 } from 'uuid'
 
-function write(path, data) {
-    // console.log(`writeFile to ${path}`)
+function $write(path, data) {
     return new Promise((resolve, reject) => {
         fs.writeFile(path, data, (err) => {
             if (err) reject(err)
@@ -120,7 +119,7 @@ export default (rootPath) => {
                 })
             }));
         },
-        deleteFolder(context, { path }) {
+        delete(context, { path }) {
             path = paths.join(rootPath, path);
             // console.log(`Delete ${path}`);
             return new Promise((resolve, reject) => {
@@ -128,17 +127,28 @@ export default (rootPath) => {
                 else resolve(fs.remove(path))
             });
         },
-        writeFile(context, { path, data }) {
+        import(context, { file, toFolder, name }) {
+            const to = context.getters.path(toFolder, name || paths.basename(file))
+            return fs.copy(file, to)
+        },
+        export(context, { file, toFolder, name, mode }) {
+            const $mode = mode || 'copy';
+            const from = context.getters.path(file)
+            const to = paths.join(toFolder, name || paths.basename(file))
+            if ($mode === 'link') return link(from, to)
+            return fs.copy(from, to)
+        },
+        write(context, { path, data }) {
             path = paths.resolve(rootPath, path)
             if (typeof data === 'object' && !(data instanceof Buffer)) data = JSON.stringify(data)
             const parent = paths.dirname(path)
-            return fs.ensureDir(parent).then(() => write(path, data))
+            return fs.ensureDir(parent).then(() => $write(path, data))
         },
-        existFiles(context, payload) {
+        exist(context, payload) {
             for (const p of payload.paths) if (!fs.existsSync(p)) return false
             return true
         },
-        readFile(context, { path, fallback, encoding, onread }) {
+        read(context, { path, fallback, encoding, onread }) {
             return new Promise((resolve, reject) => {
                 path = paths.join(rootPath, path)
                 if (fs.existsSync(path)) {
@@ -148,7 +158,7 @@ export default (rootPath) => {
                         if (err) {
                             if (fallback) {
                                 if (typeof fallback === 'object' && !(fallback instanceof Buffer)) fallback = JSON.stringify(fallback)
-                                resolve(write(path, fallback))
+                                resolve($write(path, fallback))
                             } else reject(err)
                         } else if (encoding) {
                             if (encoding === 'string') resolve(data.toString())
@@ -158,7 +168,7 @@ export default (rootPath) => {
                                 } catch (e) {
                                     if (fallback) {
                                         if (typeof fallback === 'object' && !(fallback instanceof Buffer)) fallback = JSON.stringify(fallback)
-                                        resolve(write(path, fallback))
+                                        resolve($write(path, fallback))
                                     } else reject(e)
                                 }
                             }
@@ -168,7 +178,7 @@ export default (rootPath) => {
                                 try { resolve(encoding(data)) } catch (e) {
                                     if (fallback) {
                                         if (typeof fallback === 'object' && !(fallback instanceof Buffer)) fallback = JSON.stringify(fallback)
-                                        resolve(write(path, fallback))
+                                        resolve($write(path, fallback))
                                     } else reject(e)
                                 }
                             } else {

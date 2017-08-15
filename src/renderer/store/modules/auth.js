@@ -38,10 +38,10 @@ const actions = {
         const { mutation } = payload;
         if (!mutation.endsWith('/record')) return Promise.resolve()
         const data = JSON.stringify(context.state, (key, value) => (key === 'modes' ? undefined : value))
-        return context.dispatch('writeFile', { path: 'auth.json', data }, { root: true })
+        return context.dispatch('write', { path: 'auth.json', data }, { root: true })
     },
     load(context, payload) {
-        return context.dispatch('readFile', { path: 'auth.json', fallback: {}, encoding: 'json' }, { root: true })
+        return context.dispatch('read', { path: 'auth.json', fallback: {}, encoding: 'json' }, { root: true })
             .then(data => context.dispatch('query', { service: 'auth', action: 'modes' }, { root: true }).then(modes => [modes, data]))
             .then(([modes, data]) => {
                 data.modes = modes

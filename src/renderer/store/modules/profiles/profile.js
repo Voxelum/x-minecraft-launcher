@@ -10,6 +10,7 @@ function state() {
         maxMemory: 2048,
         vmOptions: [],
         mcOptions: [],
+        
     }
 }
 const getters = {
