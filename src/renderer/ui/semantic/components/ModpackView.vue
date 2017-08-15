@@ -24,7 +24,7 @@
                     <i class="tag icon"></i>
                     Modpack Description
                 </h5>
-                <textarea :value="source.description" name="Description" @blur="modify" style="width:100%;border:0;outline:none;overflow: hidden;resize:none">
+                <textarea :value="source.description" name="Description" @blur="modify" style="width:100%;border:0;outline:none;overflow: hidden;resize:none;background-color:transparent;">
                 </textarea>
             </div>
         </div>

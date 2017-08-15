@@ -1,5 +1,5 @@
 <template>
-    <canvas :width="width" :height="height">
+    <canvas :width="width" :height="height" style="background-color: rgba(0,0,0,0); ">
     </canvas>
 </template>
 
@@ -34,9 +34,9 @@ export default {
             return unMaskedInfo;
         }
         console.log("===========END===========")
-        var renderer = new THREE.WebGLRenderer({ canvas: this.$el, antialias: true });
-        renderer.setClearColor('#FFF', 1)
-
+        var renderer = new THREE.WebGLRenderer({ canvas: this.$el, antialias: true, alpha: true });
+        // renderer.setClearColor('#FFF', 0)
+        // gl.clear(gl.COLOR_BUFFER_BIT);
         var onRenderFcts = [];
         var scene = new THREE.Scene();
         var camera = new THREE.PerspectiveCamera(45, this.width / this.height, 0.5, 5);
