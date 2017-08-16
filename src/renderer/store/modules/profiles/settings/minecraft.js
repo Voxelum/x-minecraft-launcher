@@ -1,5 +1,8 @@
 import { GameSetting, WorldInfo } from 'ts-minecraft'
 import Vue from 'vue'
+import fs from 'fs-extra'
+import paths from 'path'
+import Zip from 'adm-zip'
 
 async function readMap(context, dir) {
     return Promise.all()
@@ -127,10 +130,14 @@ export default {
     getters: {
         options: states => states.settings,
         resourcepacks: states => states.settings.resourcePacks,
+        version: states => states.version,
         maps: state => state.maps,
         name: states => states.name,
     },
     mutations: {
+        version(states, version) {
+            states.version = version
+        },
         update(states, { key, value }) {
             states.settings[key] = value
         },
@@ -142,30 +149,35 @@ export default {
             }
             for (const map of maps) states.maps.push(map)
         },
-        addResourcepack(states, { pack }) {
-            if (states.settings.resourcePacks.indexOf(pack) === -1) {
-                states.settings.resourcePacks.push(pack)
+        resourcepack(states, { action, pack }) {
+            let idx;
+            let temp;
+            switch (action) {
+                case 'add':
+                    if (states.settings.resourcePacks.indexOf(pack) === -1) {
+                        states.settings.resourcePacks.push(pack)
+                    }
+                    break;
+                case 'remove':
+                    states.settings.resourcePacks = states.settings.resourcePacks
+                        .filter(name => name !== pack);
+                    break;
+                case 'moveup':
+                    idx = states.settings.resourcePacks.indexOf(pack)
+                    if (idx <= 0) return;
+                    temp = states.settings.resourcePacks[idx - 1];
+                    Vue.set(states.settings.resourcePacks, idx - 1, pack)
+                    Vue.set(states.settings.resourcePacks, idx, temp)
+                    break;
+                case 'movedown':
+                    idx = states.settings.resourcePacks.indexOf(pack)
+                    if (idx === -1 || idx === states.settings.resourcePacks.length - 1) return;
+                    temp = states.settings.resourcePacks[idx + 1];
+                    Vue.set(states.settings.resourcePacks, idx + 1, pack)
+                    Vue.set(states.settings.resourcePacks, idx, temp)
+                    break;
+                default: break;
             }
-        },
-        removeResourcepack(states, { pack }) {
-            states.settings.resourcePacks = states.settings.resourcePacks
-                .filter(name => name !== pack);
-        },
-        moveupResourcepack(states, { pack }) {
-            const idx = states.settings.resourcePacks.indexOf(pack)
-            if (idx <= 0) return;
-            const last = states.settings.resourcePacks[idx - 1];
-            states.settings.resourcePacks[idx - 1] = pack;
-            states.settings.resourcePacks[idx] = last;
-            Vue.set(states.settings.resourcePacks, idx - 1, pack)
-            Vue.set(states.settings.resourcePacks, idx, last)
-        },
-        movedownResourcepack(states, { pack }) {
-            const idx = states.settings.resourcePacks.indexOf(pack)
-            if (idx === -1 || idx === states.settings.resourcePacks.length - 1) return;
-            const next = states.settings.resourcePacks[idx + 1];
-            Vue.set(states.settings.resourcePacks, idx + 1, pack)
-            Vue.set(states.settings.resourcePacks, idx, next)
         },
         updateTemplate(states, { name, template }) {
             states.name = name;
@@ -210,11 +222,40 @@ export default {
                     )),
             ])
         },
-        importMap(context, { id, location }) {
-            context.dispatch('import', { file: location, toFolder: `profiles/${id}/saves` })
+        async importMap(context, { id, location }) {
+            const map = location
+            const isDir = await new Promise((resolve, reject) => {
+                fs.lstat(map, (err, status) => {
+                    if (err) reject(err)
+                    else resolve(status.isDirectory())
+                })
+            });
+            if (isDir) {
+                return fs.existsSync(paths.join(map, 'level.dat'))
+            }
+            try {
+                const zip = new Zip(map)
+                if (zip.getEntry('level.dat')) return context.dispatch('import', { file: location, toFolder: `profiles/${id}/saves` })
+                if (zip.getEntry(`${zip.getEntries()[0].entryName}level.dat`)) {
+                    return new Promise((resolve, reject) =>
+                        zip.extractAllToAsync(context.rootGetters.path(`profiles/${id}/saves`), err => (err ? reject(err) : resolve())),
+                    );
+                }
+                return false
+            } catch (e) { return undefined; }
         },
-        exportMap(context, { id, map, targetFolder }) {
-            context.dispatch('export', { file: `profiles/${id}/saves/${map}`, toFolder: targetFolder })
+        exportMap(context, { id, map, targetFolder, zip }) {
+            if (!zip) return context.dispatch('export', { file: `profiles/${id}/saves/${map}`, toFolder: targetFolder })
+            const from = context.rootGetters.path(`profiles/${id}/saves/${map}`)
+            if (!fs.existsSync(from)) return Promise.reject(`No such map ${map} in profile ${id}`);
+            const targetZip = paths.join(targetFolder, `${map}.zip`)
+            const zipfile = new Zip()
+            zipfile.addLocalFolder(from)
+            zipfile.writeZip(targetZip) // maybe block ui.....
+            return Promise.resolve()
+        },
+        deleteMap(context, { id, map }) {
+
         },
         useTemplate(context, { templateId }) {
 

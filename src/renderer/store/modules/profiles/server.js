@@ -33,7 +33,7 @@ const mutations = profile.mutations
 const actions = {
     serialize(context, payload) {
         return JSON.stringify(context.state, (key, value) => {
-            if (key === 'settings' || key === 'status') return undefined;
+            if (key === 'settings' || key === 'maps' || key === 'status') return undefined;
             return value;
         })
     },
@@ -53,7 +53,7 @@ const actions = {
                     status,
                 }
                 const versions = protocol[status.protocolVersion]
-                if (versions) all.version = versions[0]
+                if (versions) context.commit('minecraft/version', versions[0]);
                 context.commit('putAll', all)
                 return status
             }, (err) => {

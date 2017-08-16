@@ -51,7 +51,7 @@ export default {
     },
     mutations: {
         rename(context, { resource, name }) {
-            resource.fileName = name;
+            resource.name = name;
         },
         set(state, payload) {
             if (!state.resources[payload.key]) {
@@ -74,7 +74,7 @@ export default {
                         .then((json) => {
                             if (!json) return undefined;
                             const resource =
-                                new Resource(json.hash, json.fileName, json.type, json.meta)
+                                new Resource(json.hash, json.name, json.type, json.meta)
                             context.commit('set', { key: resource.hash, value: resource })
                             return resource
                         })))),
