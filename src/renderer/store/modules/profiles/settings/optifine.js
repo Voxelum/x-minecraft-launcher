@@ -11,7 +11,7 @@ export default {
         toggle(state) { state.enabled = !state.enabled },
         version(state, version) { state.version = version },
         update$reload(states, payload) {
-
+            
         },
     },
     actions: {

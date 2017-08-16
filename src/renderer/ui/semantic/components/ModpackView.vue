@@ -13,7 +13,7 @@
                                 </div>
                             </h2>
                             <h2 class="ui sub header">
-                                {{$tc('version.name', 0)}}: {{source.version}}
+                                {{$tc('version.name', 0)}}: {{source.minecraft.version}}
                             </h2>
                         </div>
                     </h1>
@@ -92,7 +92,6 @@ export default {
             this.$store.dispatch(`profiles/${this.id}/refresh`)
             this.$store.dispatch('versions/refresh')
         },
-        // ...mapActions('versions', ['refresh']),
     },
     mounted() {
         this.refresh()

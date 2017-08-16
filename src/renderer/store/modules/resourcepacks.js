@@ -6,7 +6,15 @@ const state = () => {
     s.root = 'resourcepacks'
     return s;
 }
-const getters = repository.getters;
+const getters = {
+    ...repository.getters,
+    namemap(states, gets) {
+        const map = {}
+        for (const pack of gets.values) {
+            map[pack.name] = pack.meta
+        }
+    },
+};
 const mutations = repository.mutations;
 const actions = {
     ...repository.actions,

@@ -118,7 +118,7 @@
 import 'static/semantic/semantic.min.css'
 import 'static/semantic/semantic.min.js'
 
-import imgURL from '../../assets/Background1.png'
+// import imgURL from '../../assets/Background1.png'
 import modals from './components/modals'
 import ModpackView from './components/ModpackView'
 import ServerView from './components/ServerView'
