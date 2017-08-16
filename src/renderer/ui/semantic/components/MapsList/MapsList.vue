@@ -6,11 +6,9 @@
         </div-header>
         <div class="ui flowing popup top left transition hidden">
             <div class="ui vertical center aligned secondary menu">
-                <a class="item">Import
+                <a class="item" @click="importMap">Import
                     <i class="plus icon"></i>
                 </a>
-                <a class="item">Exprot<i class="upload icon"></i></a>
-                <a class="item">CopyTo<i class="copy icon"></i></a>
             </div>
         </div>
         <div class="ui middle aligned divided list">

@@ -14,8 +14,12 @@
             </div-header>
             <div class="ui flowing popup top left transition hidden">
                 <div class="ui vertical center aligned secondary menu">
-                    <a class="item">Import <i class="plus icon"></i></a>
-                    <a class="item">Exprot <i class="upload icon"></i></a>
+                    <a class="item">Import
+                        <i class="plus icon"></i>
+                    </a>
+                    <a class="item">Exprot
+                        <i class="upload icon"></i>
+                    </a>
                 </div>
             </div>
             <div class="ui relaxed list">
@@ -71,12 +75,13 @@ export default {
     methods: {
         ...mapActions('resourcepacks', ['import']),
         ...mapMutations('resourcepacks', ['rename']),
-        add(pack) {
-            this.$store.commit(`profiles/${this.selectedKey}/minecraft/addResourcepack`, { pack })
+        resourcepack(action, pack) {
+            this.$store.commit(`profiles/${this.selectedKey}/minecraft/resourcepack`, { action, pack })
         },
-        remove(pack) {
-            this.$store.commit(`profiles/${this.selectedKey}/minecraft/removeResourcepack`, { pack })
-        },
+        add(pack) { this.resourcepack('add', pack) },
+        remove(pack) { this.resourcepack('remove', pack) },
+        moveup(name) { this.resourcepack('moveup', pack) },
+        movedown(name) { this.resourcepack('movedown', pack) },
         importResourcePack() {
             const self = this;
             remote.dialog.showOpenDialog({}, (files) => {
@@ -87,12 +92,6 @@ export default {
         ondrop(event) {
             this.import(event.dataTransfer.files[0].path)
             event.preventDefault()
-        },
-        moveup(name) {
-            this.$store.commit(`profiles/${this.selectedKey}/minecraft/moveupResourcepack`, { pack: name })
-        },
-        movedown(name) {
-            this.$store.commit(`profiles/${this.selectedKey}/minecraft/movedownResourcepack`, { pack: name })
         },
     },
     mounted() {

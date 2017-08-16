@@ -3,6 +3,7 @@ import paths from 'path'
 import { MinecraftFolder } from 'ts-minecraft'
 import { remote, ipcRenderer } from 'electron'
 import { v4 } from 'uuid'
+import makeEnv from './mkenv'
 
 function $write(path, data) {
     return new Promise((resolve, reject) => {
@@ -28,17 +29,6 @@ function symlink(src, dest) {
             else resolve()
         })
     });
-}
-
-async function makeEnv(context, profileId, rootLoc, profileLoc) {
-    const allPacks = context.getters['resourcepacks/allKeys'];
-    const targetDirectory = profileLoc.resourcepacks;
-    await fs.ensureDir(targetDirectory)
-    return Promise.all(allPacks.map(key => context.dispatch('resourcepacks/export', { resource: key, targetDirectory })
-        .catch((e) => {
-            console.warn(`Cannot export resourcepack id: ${key}`)
-            console.warn(e)
-        })))
 }
 
 export default (rootPath) => {
@@ -87,6 +77,8 @@ export default (rootPath) => {
             }).then(() => {
                 // save all or do other things...
                 ipcRenderer.sendSync('park')
+            }).catch((err) => {
+                
             });
         },
         query(context, { service, action, payload }) {

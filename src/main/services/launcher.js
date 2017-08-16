@@ -9,6 +9,7 @@ const {
     MinecraftFolder,
 } = require('ts-minecraft')
 
+
 // import semver from 'semver'
 export default {
     initialize() {

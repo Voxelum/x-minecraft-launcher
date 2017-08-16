@@ -21,7 +21,7 @@ const mutations = Object.assign({}, profile.mutations)
 const actions = {
     serialize(context, payload) {
         return JSON.stringify(context.state, (key, value) => {
-            if (key === 'settings') return undefined;
+            if (key === 'settings' || key === 'maps') return undefined;
             return value;
         })
     },

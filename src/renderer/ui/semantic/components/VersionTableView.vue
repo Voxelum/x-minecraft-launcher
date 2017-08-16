@@ -80,7 +80,7 @@ export default {
         onselect(event) {
             const vId = event.srcElement.parentNode.getAttribute('version-id')
             if (vId != this.selectingVersion)
-                this.$store.commit(`profiles/${this.selectedKey}/putAll`, { version: vId })
+                this.$store.commit(`profiles/${this.selectedKey}/minecraft/version`, vId)
         },
         ondownload(event) {
             this.$store.dispatch('versions/download', this.metaMap.get(event.target.getAttribute('ver')))
