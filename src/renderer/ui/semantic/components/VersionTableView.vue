@@ -8,17 +8,7 @@
                 <div class="sub header">{{selectingMeta.type}}</div>
             </div>
         </h5>
-        <!-- 
-        <h3 class="ui top attached header">
-            <i class="plug icon"></i>
-            <div class="content">
-                {{selectingMeta.id}}
-                <div class="sub header">{{selectingMeta.releaseTime}}</div>
-                <div class="sub header">{{selectingMeta.type}}</div>
-            </div>
-        </h3>
-     -->
-        <div class="ui attached segment " :class="{disabled: metas.length==0}" style='height:240px;overflow-x: hidden;'>
+        <div class="ui attached segment " :class="{disabled: metas.length==0}" style='height:220px;overflow-x: hidden;'>
             <div v-if="metas.length==0" class="ui active inverted dimmer">
                 <div class="ui indeterminate text loader">{{$t('version.prepare')}}</div>
             </div>
@@ -50,7 +40,16 @@
                 </tbody>
             </table>
         </div>
-        <!-- <div class="ui bottom attached footer center aligned segment"><div class="ui fluid button">Save</div></div> -->
+        <div class="ui clearing bottom attached segment">
+            <!-- <div class="ui left icon input">
+                    <i class="filter icon"></i>
+                    <input>
+                </div> -->
+            <div class="ui right floated checkbox">
+                <input type="checkbox" name="example">
+                <label>Show Alpha</label>
+            </div>
+        </div>
     </div>
 </template>
 <script>
@@ -61,8 +60,8 @@ export default {
             filterRelease: true,
         }
     },
+    props: ['id'],
     computed: {
-        ...mapGetters('profiles', ['selected', 'selectedKey']),
         ...mapState('versions', ['minecraft']),
         metaMap() {
             const map = new Map()
@@ -70,7 +69,7 @@ export default {
                 map.set(v.id, v);
             return map;
         },
-        selectingMeta() { return this.metaMap.get(this.selected.version) || {}; },
+        selectingMeta() { return /* this.metaMap.get(this.selected.version) || */ {}; },
         metas() {
             if (!this.filterRelease) return this.minecraft.versions
             return this.minecraft.versions.filter(v => v.type === 'release')
@@ -80,7 +79,7 @@ export default {
         onselect(event) {
             const vId = event.srcElement.parentNode.getAttribute('version-id')
             if (vId != this.selectingVersion)
-                this.$store.commit(`profiles/${this.selectedKey}/minecraft/version`, vId)
+                this.$store.commit(`profiles/${this.id}/minecraft/version`, vId)
         },
         ondownload(event) {
             this.$store.dispatch('versions/download', this.metaMap.get(event.target.getAttribute('ver')))

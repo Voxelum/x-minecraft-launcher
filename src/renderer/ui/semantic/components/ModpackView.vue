@@ -22,9 +22,9 @@
             <div class="eight wide column">
                 <h5 class="ui horizontal divider header">
                     <i class="tag icon"></i>
-                    Modpack Description
+                    {{$t('description')}}
                 </h5>
-                <textarea :value="source.description" name="Description" @blur="modify" style="width:100%;border:0;outline:none;overflow: hidden;resize:none;background-color:transparent;">
+                <textarea :value="source.description" @blur="modify" style="width:100%;border:0;outline:none;overflow: hidden;resize:none;background-color:transparent;">
                 </textarea>
             </div>
         </div>
@@ -41,16 +41,16 @@
                         {{$t('settings')}}
                     </a>
                     <a class="item" data-tab="resourcepacks">
-                        {{$t('resourcepacks')}}
+                        {{$tc('resourcepack.name', 0)}}
                     </a>
                     <a class="item" data-tab="mods">
-                        {{$t('mods')}}
+                        {{$tc('mod.name', 0)}}
                     </a>
                 </div>
             </div>
             <div class="eleven wide column">
                 <div class="ui active tab" style="height:380px" data-tab="versions">
-                    <version-table-view></version-table-view>
+                    <version-table-view :id="id"></version-table-view>
                 </div>
                 <div class="ui tab" style="height:380px" data-tab="maps">
                     <maps-list :source="source" :id="id"></maps-list>
@@ -59,9 +59,10 @@
                     <game-settings :source="source" :id="id"></game-settings>
                 </div>
                 <div class="ui tab" style="height:380px" data-tab="resourcepacks">
-                    <resource-pack-list></resource-pack-list>
+                    <resource-pack-list :id="id"></resource-pack-list>
                 </div>
                 <div class="ui tab" style="height:380px" data-tab="mods">
+                    <mods-list :id="id"></mods-list>
                 </div>
             </div>
         </div>
@@ -75,9 +76,10 @@ import ResourcePackList from './ResourcePackList'
 import TextComponent from './TextComponent'
 import GameSettings from './GameSettings'
 import MapsList from './MapsList'
+import ModsList from './ModsList'
 
 export default {
-    components: { VersionTableView, ResourcePackList, TextComponent, GameSettings, MapsList },
+    components: { VersionTableView, ResourcePackList, TextComponent, GameSettings, MapsList, ModsList },
     props: ['source', 'id'],
     computed: {
         ...mapState('versions', ['minecraft']),

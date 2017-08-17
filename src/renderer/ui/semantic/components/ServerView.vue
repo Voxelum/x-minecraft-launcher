@@ -31,8 +31,8 @@
             <div class="four wide column">
                 <div class="ui vertical fluid tabular menu">
                     <a class="active item" data-tab="settings">{{$t('settings')}}</a>
-                    <a class="item" data-tab="resourcepack">{{$t('resourcepacks')}}</a>
-                    <a class="item" data-tab="mods">{{$t('mods')}}</a>
+                    <a class="item" data-tab="resourcepack">{{$tc('resourcepack.name', 0)}}</a>
+                    <a class="item" data-tab="mods">{{$tc('mod.name', 0)}}</a>
                 </div>
             </div>
             <div class="twelve wide column" style="padding: 0 5% 0 20px">
@@ -42,8 +42,9 @@
                 <div class="ui tab" data-tab="resourcepack">
                     <resource-pack-list></resource-pack-list>
                 </div>
-                <div class="ui tab" data-tab="mods">C</div>
-    
+                <div class="ui tab" data-tab="mods" :id="id">
+                    <mods-list></mods-list>
+                </div>
             </div>
         </div>
     </div>
@@ -54,8 +55,10 @@ import { mapGetters, mapActions, mapState } from 'vuex'
 import TextComponent from './TextComponent'
 import ResourcePackList from './ResourcePackList'
 import GameSettings from './GameSettings'
+import ModsList from './ModsList'
+
 export default {
-    components: { TextComponent, ResourcePackList, GameSettings },
+    components: { TextComponent, ResourcePackList, GameSettings, ModsList },
     props: ['source', 'id'],
     computed: {
         status() { return this.source.status },
