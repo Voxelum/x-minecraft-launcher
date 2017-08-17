@@ -11,15 +11,29 @@
     "home": "Home",
     "login": "Login",
     "summery": "Summery",
-    "mods": "Mods",
-    "resourcepacks": "Resource Packs",
     "add": "Add",
     "remove": "Remove",
     "!delete": "Delete",
+    "mod": {
+        "name": "Mod | Mods",
+        "hint": "Drop mod's .jar/.litemod here to import.",
+        "import": "Import Mod",
+        "export": "Export Mod"
+    },
+    "market": "Market",
     "resourcepack": {
         "name": "Resource Pack | Resource Packs",
         "available": "Avaliable",
-        "selected": "Selected"
+        "selected": "Selected",
+        "hint": "Drop Resource Pack's folder/zip here to import.",
+        "import": "Import Resource Pack",
+        "export": "Export Resource Pack"
+    },
+    "map": {
+        "name": "Map | Maps",
+        "hint": "Drop map's folder/zip here to import map.",
+        "import": "Import Map",
+        "export": "Export Map"
     },
     "settings": "Settings",
     "launch": "Launch",
@@ -99,10 +113,6 @@
             "nohost": "Cannot find host!",
             "timeout": "Connect server timeout!"
         }
-    },
-    "map": {
-        "name": "Map | Maps",
-        "hint": "Drop map folder/zip here to import map."
     },
     "errors.empty": "No error yet",
     "renderClouds": {

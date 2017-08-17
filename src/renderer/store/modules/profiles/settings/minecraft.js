@@ -231,14 +231,17 @@ export default {
                 })
             });
             if (isDir) {
-                return fs.existsSync(paths.join(map, 'level.dat'))
+                if (await fs.existsSync(paths.join(map, 'level.dat'))) {
+                    return context.dispatch('import', { file: location, toFolder: `profiles/${id}/saves` })
+                }
+                return context.reject('map.invalid')
             }
             try {
                 const zip = new Zip(map)
                 if (zip.getEntry('level.dat')) return context.dispatch('import', { file: location, toFolder: `profiles/${id}/saves` })
                 if (zip.getEntry(`${zip.getEntries()[0].entryName}level.dat`)) {
                     return new Promise((resolve, reject) =>
-                        zip.extractAllToAsync(context.rootGetters.path(`profiles/${id}/saves`), err => (err ? reject(err) : resolve())),
+                        zip.extractAllToAsync(context.rootGetters.path(`profiles/${id}/saves`), true, err => (err ? reject(err) : resolve())),
                     );
                 }
                 return false

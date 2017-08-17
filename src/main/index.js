@@ -42,6 +42,7 @@ if (!root) {
     root = process.env.LAUNCHER_ROOT
 }
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
+    console.log('single')
     // Someone tried to run a second instance, we should focus our window.
     if (mainWindow) {
         if (mainWindow.isMinimized()) mainWindow.restore()
@@ -59,7 +60,6 @@ function createWindow() {
      */
     mainWindow = new BrowserWindow({
         height: 626,
-        useContentSize: true,
         width: 1100,
         resizable: false,
         frame: false,

@@ -1,9 +1,16 @@
 <template>
-    <div class="ui dimmable grid" @drop="ondrop">
+    <div class="ui center aligned middle aligned basic segment container" v-if="values.length===0" @drop="ondrop"  style="height:100%">
+        <br>
+        <h2 class="ui icon header">
+            <i class="gift icon"></i>
+            <div class="sub header">{{$t('resourcepack.hint')}}</div>
+        </h2>
+    </div>
+    <div class="ui dimmable grid" @drop="ondrop" v-else>
         <div v-if="this.$store.state.dragover" class="ui inverted active dimmer">
             <div class="content">
                 <div class="center">
-                    Drag here to import
+                    <div class="sub header">{{$t('resourcepack.hint')}}</div>
                 </div>
             </div>
         </div>
@@ -14,10 +21,12 @@
             </div-header>
             <div class="ui flowing popup top left transition hidden">
                 <div class="ui vertical center aligned secondary menu">
-                    <a class="item">Import
+                    <a class="item">
+                        {{$t('resourcepack.import')}}
                         <i class="plus icon"></i>
                     </a>
-                    <a class="item">Exprot
+                    <a class="item">
+                        {{$t('resourcepack.export')}}
                         <i class="upload icon"></i>
                     </a>
                 </div>
@@ -48,7 +57,6 @@ export default {
     components: { ListCell, DivHeader },
     computed: {
         ...mapGetters('resourcepacks', ['values']),
-        ...mapGetters('profiles', ['selectedKey']),
         unselecting() {
             return this.values.filter(e => this.selectingNames.indexOf(e.name) === -1)
         },
@@ -69,14 +77,14 @@ export default {
             return map;
         },
         selectingNames() {
-            return (this.$store.getters[`profiles/${this.selectedKey}/minecraft/resourcepacks`])
+            return (this.$store.getters[`profiles/${this.id}/minecraft/resourcepacks`])
         },
     },
     methods: {
         ...mapActions('resourcepacks', ['import']),
         ...mapMutations('resourcepacks', ['rename']),
         resourcepack(action, pack) {
-            this.$store.commit(`profiles/${this.selectedKey}/minecraft/resourcepack`, { action, pack })
+            this.$store.commit(`profiles/${this.id}/minecraft/resourcepack`, { action, pack })
         },
         add(pack) { this.resourcepack('add', pack) },
         remove(pack) { this.resourcepack('remove', pack) },
@@ -94,6 +102,7 @@ export default {
             event.preventDefault()
         },
     },
+    props: ['id'],
     mounted() {
         $('#resourcepackList .item').dimmer({ on: 'hover' })
     },

@@ -16,14 +16,20 @@ function $hash(buff) {
 }
 async function $load(context, filePath) {
     const [name, data, type] = await new Promise((resolve, reject) => {
-        fs.read(filePath, (err, $data) => {
+        fs.readFile(filePath, (err, $data) => {
             if (err) reject(err);
             else resolve([path.basename(filePath), $data, path.extname(filePath)]);
         })
     });
     const hash = $hash(data);
     if (!context.state.resources[hash]) {
-        const resource = new Resource(hash, name, type, await context.dispatch('meta', { name, data }))
+        let meta
+        try {
+            meta = await context.dispatch('meta', { name, data })
+        } catch (e) {
+            return Promise.reject(e)
+        }
+        const resource = new Resource(hash, name, type, meta)
         context.commit('set', { key: resource.hash, value: resource })
         await context.dispatch('write', {
             path: path.join(context.state.root, `${resource.hash}${resource.type}`),
@@ -89,7 +95,8 @@ export default {
             let arr
             if (typeof payload === 'string') arr = [payload]
             else if (payload instanceof Array) arr = payload
-            return Promise.all(arr.map($load))
+            else return Promise.reject('Illegal Type')
+            return Promise.all(arr.map(file => $load(context, file)))
         },
         export(context, payload) {
             const { resource, targetDirectory } = payload
@@ -111,16 +118,16 @@ export default {
             });
         },
         refresh(context, payload) {
-/* return context.dispatch('readFolder', { path: this.context.state.root }, { root: true })
-    .then(files => Promise.all(
-        files.map(file => context.dispatch('read', {
-            path: `${this.context.state.root}/${file}`,
-            fallback: undefined,
-        }).then((buf) => {
-            if (!buf) return;
-            const resource = new Resource($hash(buf), file, path.extname(file))
-            context.commit('put', { key: resource.hash, value: resource })
-        })))); */
+            /* return context.dispatch('readFolder', { path: this.context.state.root }, { root: true })
+                .then(files => Promise.all(
+                    files.map(file => context.dispatch('read', {
+                        path: `${this.context.state.root}/${file}`,
+                        fallback: undefined,
+                    }).then((buf) => {
+                        if (!buf) return;
+                        const resource = new Resource($hash(buf), file, path.extname(file))
+                        context.commit('put', { key: resource.hash, value: resource })
+                    })))); */
         },
     },
 }

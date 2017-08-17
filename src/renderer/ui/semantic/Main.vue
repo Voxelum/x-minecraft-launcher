@@ -1,5 +1,5 @@
 <template>
-    <div class="ui celled grid segment" style="margin:0;" @drop="ondrop">
+    <div class="ui celled grid segment" style="margin:0;">
         <div class="moveable black row">
             <div class="four wide center aligned middle aligned column">
                 <h1 class="inverted ui header">
@@ -9,7 +9,9 @@
             <div class="eleven wide column ">
                 <div class="ui breadcrumb">
                     <a class="section">
-                        <div class="ui inverted circular button non-moveable" @click="unselect">{{$t('home')}}</div>
+                        <div class="ui inverted circular button non-moveable" @click="unselect">
+                            <i class="home icon"></i>{{$t('home')}}
+                        </div>
                     </a>
                     <span v-if="isSelecting">
                         <i class="right chevron inverted icon divider" style="color:white"></i>
@@ -20,7 +22,10 @@
                         </a>
                     </span>
                 </div>
-                <div class="ui inverted circular right floated button non-moveable">{{$t('help')}}</div>
+                <div class="ui inverted circular right floated button non-moveable">
+                    <i class="help  icon"></i>{{$t('help')}}</div>
+                <div class="ui inverted circular right floated button non-moveable">
+                    <i class="shop  icon"></i>{{$t('market')}}</div>
             </div>
             <div class="one wide center aligned middle aligned column mon-movable" style="cursor:pointer" :style="{grey: closing}" @mouseout="closing = false" @mouseover="closing = true" @click="close">
                 <i class="large close icon non-moveable" :class="{red: closing}"></i>
@@ -41,7 +46,7 @@
                         </div>
                     </div>
                 </h5>
-                <skin-view width="210" height="400"></skin-view>
+                <!-- <skin-view width="210" height="400"></skin-view> -->
             </div>
             <div class="twelve wide column">
                 <card-view ref='view' v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
@@ -136,6 +141,7 @@ export default {
     data() {
         return {
             closing: false,
+            view: 'home',
             background: ''//'url(imgs/Background1.png)'
         }
     },
@@ -171,20 +177,6 @@ export default {
                 hide: 800
             },
         })
-        var dragTimer;
-        const store = this.$store
-        $(document).on('dragover', function (e) {
-            var dt = e.originalEvent.dataTransfer;
-            if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
-                if (!store.state.dragover) store.commit('dragover', true);
-                window.clearTimeout(dragTimer);
-            }
-        });
-        $(document).on('dragleave', function (e) {
-            dragTimer = window.setTimeout(function () {
-                store.commit('dragover', false);
-            }, 25);
-        });
     },
     methods: {
         ...mapActions('profiles', {
@@ -202,10 +194,6 @@ export default {
         },
         create(type) {
             this.showModal(type)
-        },
-        ondrop(event) {
-            event.preventDefault()
-            this.$store.commit('dragover', false)
         },
         refresh() {
             this.$refs.view.refresh()
