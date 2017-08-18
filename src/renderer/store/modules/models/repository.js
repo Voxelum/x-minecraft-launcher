@@ -65,7 +65,7 @@ export default {
             }
         },
         delete(state, payload) {
-            Vue.delete(state.resource, payload);
+            Vue.delete(state.resources, payload);
         },
     },
     actions: {
@@ -89,7 +89,14 @@ export default {
             // const { key, name } = object
             // return context.dispatch('write', { path: `resourcepacks/${key}.json`, data: context.state.resources[key] }, { root: true })
         },
-        detete(context, resource) { },
+        delete(context, resource) {
+            if (typeof resource === 'string') {
+                resource = context.state.resources[resource];
+            }
+            context.commit('delete', resource.hash)
+            return context.dispatch('delete', { path: `resourcepacks/${resource.hash}.json` }, { root: true })
+                .then(() => context.dispatch('delete', { path: `resourcepacks/${resource.hash}${resource.type}` }, { root: true }))
+        },
         rename(context, { resource, name }) { },
         import(context, payload) {
             let arr
