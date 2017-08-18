@@ -19,7 +19,7 @@ const getters = {
         // const err = profile.getters.errors(state)
         // this probably is a issue.... if i delegate to profile's getter; the responsive will fail.
         const errors = []
-        if (states.version === '' || states.version === undefined || states.version === null) errors.push('profile.empty.version')
+        if (states.minecraft.version === '' || states.minecraft.version === undefined || states.minecraft.version === null) errors.push('profile.empty.version')
         if (states.java === '' || states.java === undefined || states.java === null) errors.push('profile.empty.java')
         if (states.host === '' || states.host === undefined || states.host === null) {
             errors.push('server.empty.host')
