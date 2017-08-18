@@ -53,10 +53,10 @@
                     <version-table-view :id="id"></version-table-view>
                 </div>
                 <div class="ui tab" style="height:380px" data-tab="maps">
-                    <maps-list :source="source" :id="id"></maps-list>
+                    <maps-list :id="id"></maps-list>
                 </div>
                 <div class="ui tab" style="height:380px" data-tab="settings">
-                    <game-settings :source="source" :id="id"></game-settings>
+                    <game-settings :id="id"></game-settings>
                 </div>
                 <div class="ui tab" style="height:380px" data-tab="resourcepacks">
                     <resource-pack-list :id="id"></resource-pack-list>

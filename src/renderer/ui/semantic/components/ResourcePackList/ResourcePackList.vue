@@ -77,7 +77,7 @@ export default {
             return map;
         },
         selectingNames() {
-            return (this.$store.getters[`profiles/${this.id}/minecraft/resourcepacks`])
+            return this.$store.getters[`profiles/${this.id}/minecraft/resourcepacks`]
         },
     },
     methods: {

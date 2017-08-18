@@ -1,5 +1,5 @@
 <template>
-    <div class="ui center aligned middle aligned basic segment container" v-if="values.length===0">
+    <div class="ui center aligned middle aligned basic segment container" v-if="values.length===0" @drop="ondrop">
         <br>
         <h2 class="ui icon header">
             <i class="game icon"></i>
@@ -7,39 +7,64 @@
         </h2>
     </div>
     <div v-else>
-        <div class="ui icon input">
+        <div class="ui icon transparent input">
             <i class="filter icon"></i>
-            <input placeholder="Filter">
+            <input placeholder="Filter" v-model="keyword">
         </div>
-        <h5 class="ui horizontal divider header">
-            <i class="disk outline icon"></i>
-            Mods
-        </h5>
-        <div class="ui relaxed list">
+        <div class="ui divider"></div>
+        <div class="ui relaxed middle aligned list">
+            <list-cell v-for="val in mods" :key="val" :value="val"></list-cell>
         </div>
     </div>
     <!-- </div>
-                                        <div class="eight wide column">
-                                            <h5 class="ui horizontal divider header">
-                                                <i class="folder outline icon"></i>
-                                                {{$t('resourcepack.selected')}}
-                                            </h5>
-                                            <div class="ui relaxed list">
-                                                <list-cell v-for="entry in selecting" :key="entry.key" :entry="entry" type="remove" @change="remove"></list-cell>
-                                            </div>
-                                        </div>
-                                    </div> -->
+                                                                                                            <div class="eight wide column">
+                                                                                                                <h5 class="ui horizontal divider header">
+                                                                                                                    <i class="folder outline icon"></i>
+                                                                                                                    {{$t('resourcepack.selected')}}
+                                                                                                                </h5>
+                                                                                                                <div class="ui relaxed list">
+                                                                                                                    <list-cell v-for="entry in selecting" :key="entry.key" :entry="entry" type="remove" @change="remove"></list-cell>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div> -->
 </template>
 
 <script>
 import vuex from 'vuex'
+import ListCell from './ListCell'
 
-
+function valid(meta, keyword) { return meta.name.includes(keyword) || meta.modid.includes(keyword) || meta.description.includes(keyword) }
 export default {
-    computed: {
-        ...vuex.mapGetters('mods', ['values'])
+    data() {
+        return {
+            keyword: ''
+        }
     },
-    props: ['id']
+    components: { ListCell },
+    computed: {
+        ...vuex.mapGetters('mods', ['values']),
+        mods() {
+            const all = []
+            for (const val of this.values) {
+                if (val.meta instanceof Array)
+                    for (const meta of val.meta) {
+                        if (valid(meta.meta, this.keyword))
+                            all.push(meta)
+                    }
+                else if (valid(meta.meta, this.keyword)) 
+                    all.push(val.meta)
+            }
+            return all
+        }
+    },
+    props: ['id'],
+    methods: {
+        ...vuex.mapActions('mods', ['import']),
+        ondrop(event) {
+            this.import(event.dataTransfer.files[0].path)
+            event.preventDefault()
+        }
+    }
 }
 </script>
 

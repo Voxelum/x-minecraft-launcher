@@ -1,7 +1,7 @@
 <template>
     <div class="">
         <h5 class="ui horizontal divider header">Critical graphic</h5>
-        <options-group :options="criticalGraphics" :source="source" :id="id"></options-group>
+        <options-group :options="criticalGraphics" :id="id"></options-group>
     </div>
 </template>
 
@@ -39,7 +39,7 @@ export default {
             }
         }
     },
-    props: ['source', 'id'],
+    props: ['id'],
 }
 </script>
 
