@@ -1,12 +1,12 @@
 <template>
-    <div class="ui center aligned middle aligned basic segment container" v-if="values.length===0" @drop="ondrop"  style="height:100%">
+    <div class="ui center aligned middle aligned basic segment container" v-if="values.length===0" @drop="ondrop" style="height:100% !important">
         <br>
         <h2 class="ui icon header">
             <i class="gift icon"></i>
             <div class="sub header">{{$t('resourcepack.hint')}}</div>
         </h2>
     </div>
-    <div class="ui dimmable grid" @drop="ondrop" v-else>
+    <div class="ui dimmable grid" @drop="ondrop" style="height:100%" v-else>
         <div v-if="this.$store.state.dragover" class="ui inverted active dimmer">
             <div class="content">
                 <div class="center">
@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="ui relaxed list">
-                <list-cell v-for="value in unselecting" :key="value.name" :val="value" type="add" @change="add"></list-cell>
+                <list-cell v-for="value in unselecting" :key="value.name" :val="value" type="add" @change="add"  @delete="dele"></list-cell>
             </div>
         </div>
         <div class="eight wide column">
@@ -41,7 +41,7 @@
                 {{$t('resourcepack.selected')}}
             </h5>
             <div class="ui relaxed list">
-                <list-cell v-for="value in selecting" :key="value.name" :val="value" type="remove" @change="remove" @moveup="moveup" @movedown="movedown"></list-cell>
+                <list-cell v-for="value in selecting" :key="value.name" :val="value" type="remove" @change="remove" @moveup="moveup" @movedown="movedown" ></list-cell>
             </div>
         </div>
     </div>
@@ -81,15 +81,15 @@ export default {
         },
     },
     methods: {
-        ...mapActions('resourcepacks', ['import']),
+        ...mapActions('resourcepacks', ['import', 'delete']),
         ...mapMutations('resourcepacks', ['rename']),
         resourcepack(action, pack) {
             this.$store.commit(`profiles/${this.id}/minecraft/resourcepack`, { action, pack })
         },
         add(pack) { this.resourcepack('add', pack) },
         remove(pack) { this.resourcepack('remove', pack) },
-        moveup(name) { this.resourcepack('moveup', pack) },
-        movedown(name) { this.resourcepack('movedown', pack) },
+        moveup(name) { this.resourcepack('moveup', name) },
+        movedown(name) { this.resourcepack('movedown', name) },
         importResourcePack() {
             const self = this;
             remote.dialog.showOpenDialog({}, (files) => {
@@ -100,6 +100,9 @@ export default {
         ondrop(event) {
             this.import(event.dataTransfer.files[0].path)
             event.preventDefault()
+        },
+        dele(hash) {
+            this.delete(hash)
         },
     },
     props: ['id'],

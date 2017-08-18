@@ -1,5 +1,5 @@
 <template>
-    <div class="ui center aligned middle aligned basic segment container" v-if="values.length===0" @drop="ondrop">
+    <div class="ui center aligned middle aligned basic segment container" v-if="values.length===0" @drop="ondrop" style="height:100%">
         <br>
         <h2 class="ui icon header">
             <i class="game icon"></i>
