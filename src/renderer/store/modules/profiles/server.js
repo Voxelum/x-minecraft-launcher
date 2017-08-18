@@ -37,7 +37,8 @@ const actions = {
             return value;
         })
     },
-    refresh(context) {
+    refresh(context, force) {
+        if (context.state.status.pingToServer && !force) return Promise.resolve();
         context.commit('putAll', { status: ServerStatus.pinging() })
         if (context.state.host === undefined) return Promise.reject('server.host.empty')
         return context.dispatch('query', {
