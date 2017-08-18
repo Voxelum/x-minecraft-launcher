@@ -37,13 +37,13 @@
             </div>
             <div class="twelve wide column" style="padding: 0 5% 0 20px">
                 <div class="ui active tab" data-tab="settings">
-                    <game-settings :source="source" :id="id"></game-settings>
+                    <game-settings :id="id"></game-settings>
                 </div>
                 <div class="ui tab" data-tab="resourcepack">
-                    <resource-pack-list></resource-pack-list>
+                    <resource-pack-list :id="id"></resource-pack-list>
                 </div>
-                <div class="ui tab" data-tab="mods" :id="id">
-                    <mods-list></mods-list>
+                <div class="ui tab" data-tab="mods">
+                    <mods-list :id="id"></mods-list>
                 </div>
             </div>
         </div>
