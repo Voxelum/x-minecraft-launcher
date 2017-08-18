@@ -1,6 +1,6 @@
 <template>
     <div class="ui card" v-bind:class="{color}">
-        <p class="ui top attached label" :data-tooltip="$tc(this.source.type + '.name', 1)" data-inverted="">
+        <p class="ui top attached label" :data-tooltip="$tc(this.source.type + '.name', 1)" data-inverted="" :data-position="bound? 'bottom center': 'top center'">
             <i class="server icon"></i>
             {{this.source.host}}
             <i class="right floated large delete icon" :class="{red:hoverDelete}" @mouseover="hoverDelete=true" @mouseout="hoverDelete=false" @click="del"></i>
@@ -40,7 +40,7 @@ export default {
         }
     },
     name: 'profile-card',
-    props: ['color', 'source', 'id'],
+    props: ['color', 'source', 'id', 'bound'],
     methods: {
         onclick(e) {
             this.$emit('select', this.id, this.source)

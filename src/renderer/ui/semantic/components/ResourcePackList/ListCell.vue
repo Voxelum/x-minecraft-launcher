@@ -7,7 +7,10 @@
                         <div class="ui basic black button" v-if="type === 'remove'" @click="$emit('moveup', val.name)">
                             <i class="arrow up icon"></i>
                         </div>
-                        <div v-if="type==='add'" class="ui red basic button" @click="$emit('delete',val.meta.hash)">{{$t('!delete')}}</div>
+                        <transition v-if="type==='add'" mode="out-in" @blur="deleting = false">
+                            <div v-if="!deleting" class="ui red basic button" @click="deleting = true" @blur="deleting = false">X</div>
+                            <div v-if="deleting" class="ui red basic button" @click="$emit('delete', val.hash)" @blur="deleting = false">{{$t('!delete')}}</div>
+                        </transition>
                         <div v-if="type==='add'" class="ui green basic button" @click="$emit('change',val.name)">&nbsp&nbsp&nbsp{{$t('add')}}&nbsp&nbsp&nbsp</div>
                         <div v-if="type==='remove'" class="ui red basic button" @click="$emit('change',val.name)">{{$t('remove')}}</div>
                         <div class="ui basic black button" v-if="type === 'remove'" @click="$emit('movedown', val.name)">
@@ -33,9 +36,15 @@
 import TextComponent from '../TextComponent'
 
 export default {
+    data() {
+        return {
+            deleting: false,
+        }
+    },
     components: { TextComponent },
     mounted() {
         $(this.$el).dimmer({ on: 'hover' })
+        console.log(this.val)
     },
     props: ['val', 'type'],
     methods: {

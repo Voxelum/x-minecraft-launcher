@@ -46,7 +46,7 @@
                         </div>
                     </div>
                 </h5>
-                <!-- <skin-view width="210" height="400"></skin-view> -->
+                <skin-view width="210" height="400"></skin-view>
             </div>
             <div class="twelve wide column">
                 <card-view ref='view' v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
