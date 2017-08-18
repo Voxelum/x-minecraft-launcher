@@ -16,17 +16,6 @@
             <list-cell v-for="val in mods" :key="val" :value="val"></list-cell>
         </div>
     </div>
-    <!-- </div>
-                                                                                                            <div class="eight wide column">
-                                                                                                                <h5 class="ui horizontal divider header">
-                                                                                                                    <i class="folder outline icon"></i>
-                                                                                                                    {{$t('resourcepack.selected')}}
-                                                                                                                </h5>
-                                                                                                                <div class="ui relaxed list">
-                                                                                                                    <list-cell v-for="entry in selecting" :key="entry.key" :entry="entry" type="remove" @change="remove"></list-cell>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div> -->
 </template>
 
 <script>
