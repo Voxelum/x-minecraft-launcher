@@ -21,7 +21,6 @@
         <div class="right floated content">
       <div class="ui button">Add</div>
     </div>
-
         <div class="content">
             <h3 class="header">
                 {{meta.name}} : 
@@ -47,7 +46,6 @@ export default {
         meta() { return this.value.meta; }
     },
     mounted(){
-        console.log(this.value.meta)
     }
 }
 </script>
