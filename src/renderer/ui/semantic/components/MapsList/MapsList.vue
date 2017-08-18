@@ -39,7 +39,7 @@ export default {
     components: { ListCell, DivHeader },
     mounted() {
     },
-    props: ['source', 'id'],
+    props: ['id'],
     computed: {
         maps() {
             return this.$store.getters[`profiles/${this.id}/minecraft/maps`]

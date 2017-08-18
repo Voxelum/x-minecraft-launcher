@@ -4,7 +4,8 @@ import OptionButton from './OptionButton.vue'
 export default {
     render(createElement) {
         let currentFields = [];
-        const fields = []
+        const fields = [];
+        const mcoptions = this.$store.getters[`profiles/${this.id}/minecraft/options`]
         for (const key in this.options) {
             if (this.options.hasOwnProperty(key)) {
                 const option = this.options[key];
@@ -12,7 +13,7 @@ export default {
                     props: {
                         id: key,
                         options: option,
-                        value: this.source.minecraft.settings[key],
+                        value: mcoptions[key],
                     },
                     on: { change: this.onchange },
                 }))
@@ -29,6 +30,9 @@ export default {
             this.$store.commit(`profiles/${this.id}/minecraft/update`, event)
         },
     },
+    computed: {
+
+    },
     components: { OptionButton },
-    props: ['source', 'id', 'options'],
+    props: ['id', 'options'],
 }
