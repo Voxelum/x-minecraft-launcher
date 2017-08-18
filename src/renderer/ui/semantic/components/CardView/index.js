@@ -15,6 +15,7 @@ export default {
     render(createElement) {
         const getByKey = this.getByKey;
         const self = this
+        let idx = 0;
         return createElement('div', {
             staticClass: 'ui link cards',
             attrs: {
@@ -35,6 +36,10 @@ export default {
                     delete(event) { self.$emit('delete', event) },
                 },
             }
+            if (idx < 2) {
+                option.props.bound = true;
+            }
+            idx += 1;
             return createElement(`${source.type}-card`, option)
         }))
     },
