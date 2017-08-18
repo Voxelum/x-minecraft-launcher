@@ -65,19 +65,21 @@ export default {
         type() { return this.source.type },
     },
     methods: {
-        refresh() {
-            this.$store.dispatch(`profiles/${this.id}/refresh`)
+        refresh(force) {
+            this.$store.dispatch(`profiles/${this.id}/refresh`, force)
         },
     },
     mounted() {
         this.$nextTick(() => {
             $('.menu .item').tab()
         })
-        if (!this.status.pingToServer) this.refresh();
+        this.refresh();
     },
 }
 </script>
 
-<style>
-
+<style scoped=true>
+.ui.tab {
+    height: 100%
+}
 </style>
