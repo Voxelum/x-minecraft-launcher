@@ -27,15 +27,21 @@
                 <text-component :source="status.serverMOTD" localized="true"></text-component>
             </div>
         </div>
-        <div class="stretched row" style="height:70%">
+        <div class="stretched row">
             <div class="four wide column">
-                <div class="ui vertical fluid tabular menu">
+                <div class="ui vertical secondary pointing  menu">
+                    <div class="header item">Basic</div>
                     <a class="active item" data-tab="settings">{{$t('settings')}}</a>
                     <a class="item" data-tab="resourcepack">{{$tc('resourcepack.name', 0)}}</a>
                     <a class="item" data-tab="mods">{{$tc('mod.name', 0)}}</a>
+                    <div class="ui divider"></div>
+                    <div class="header item">Advance</div>
+                    <a class="item" data-tab="forge">Forge</a>
+                    <a class="item" data-tab="liteloader">Liteloader</a>
                 </div>
             </div>
-            <div class="twelve wide column" style="padding: 0 5% 0 20px">
+            <div class="one wide column"></div>
+            <div class="eleven wide column" style="padding: 0 5% 0 20px">
                 <div class="ui active tab" data-tab="settings">
                     <game-settings :id="id"></game-settings>
                 </div>
@@ -44,6 +50,12 @@
                 </div>
                 <div class="ui tab" data-tab="mods">
                     <mods-list :id="id"></mods-list>
+                </div>
+                <div class="ui tab" data-tab="forge">
+                    Forge
+                </div>
+                <div class="ui tab" data-tab="liteloader">
+                    LiteLoader
                 </div>
             </div>
         </div>
