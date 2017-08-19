@@ -6,7 +6,7 @@
                     ILauncher
                 </h1>
             </div>
-            <div class="eleven wide column ">
+            <div class="eleven wide column">
                 <div class="ui breadcrumb">
                     <a class="section">
                         <div class="ui inverted circular button non-moveable" @click="unselect">

@@ -9,12 +9,12 @@ export default {
     },
     methods: {
         refresh() {
-            for (const key of this.allKeys) this.$store.dispatch(`profiles/${key}/refresh`)
+            for (const key of this.allKeys) this.$store.dispatch(`profiles/${key}/refresh`);
         },
     },
     render(createElement) {
         const getByKey = this.getByKey;
-        const self = this
+        const self = this;
         let idx = 0;
         return createElement('div', {
             staticClass: 'ui link cards',
@@ -22,9 +22,9 @@ export default {
                 style: 'height:105%;overflow: auto',
             },
         }, this.allKeys.map((id) => {
-            const source = getByKey(id)
+            const source = getByKey(id);
             if (source === null || source === undefined) {
-                return createElement('div')
+                return createElement('div');
             }
             const option = {
                 props: { source, id },
@@ -36,11 +36,11 @@ export default {
                     delete(event) { self.$emit('delete', event) },
                 },
             }
-            if (idx < 2) {
+            if (idx <= 2) {
                 option.props.bound = true;
             }
             idx += 1;
-            return createElement(`${source.type}-card`, option)
+            return createElement(`${source.type}-card`, option);
         }))
     },
 }
