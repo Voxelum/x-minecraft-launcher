@@ -7,12 +7,23 @@
         </h2>
     </div>
     <div v-else>
-        <div class="ui icon transparent input">
-            <i class="filter icon"></i>
-            <input placeholder="Filter" v-model="keyword">
+        <div class="ui grid">
+            <div class="eight wide column">
+                <div class="ui icon transparent input">
+                    <i class="filter icon"></i>
+                    <input placeholder="Filter" v-model="keyword">
+                </div>
+            </div>
+            <div class="eight wide right aligned column">
+                <div class="ui checkbox">
+                    <input type="checkbox">
+                    <label>Show Mods for other version</label>
+                </div>
+            </div>
         </div>
+    
         <div class="ui divider"></div>
-        <div class="ui relaxed middle aligned list">
+        <div class="ui relaxed divided items">
             <list-cell v-for="val in mods" :key="val" :value="val"></list-cell>
         </div>
     </div>
@@ -40,7 +51,7 @@ export default {
                         if (valid(meta.meta, this.keyword))
                             all.push(meta)
                     }
-                else if (valid(meta.meta, this.keyword)) 
+                else if (valid(meta.meta, this.keyword))
                     all.push(val.meta)
             }
             return all
