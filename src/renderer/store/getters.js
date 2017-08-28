@@ -1,4 +1,5 @@
 import paths from 'path'
+
 export default {
     /**
      * Return the errros by module.

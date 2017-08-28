@@ -16,10 +16,8 @@ async function mkMods(context, id, rootFolder, profileFolder) {
     await fs.remove(targetDirectory)
     await fs.ensureDir(targetDirectory);
     const getMod = context.getters['mods/get'];
-
-    
 }
 export default async function (context, profileId, rootLoc, profileLoc) {
-    mkRespack(context, profileId, rootLoc, profileLoc)
-
+    await mkRespack(context, profileId, rootLoc, profileLoc)
+    await mkMods(context, profileId, rootLoc, profileLoc)
 }
