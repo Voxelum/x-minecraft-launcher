@@ -12,7 +12,7 @@ function mix(target, src) {
 export function copy(obj) {
     return JSON.parse(JSON.stringify(obj))
 }
-export default (template, option) => {
+export default function mixin(template, option) {
     let state = template.state
     if (typeof state === 'function') {
         state = state()
@@ -20,6 +20,14 @@ export default (template, option) => {
         state = copy(state)
     }
     if (option) mix(state, option)
+
+    if (template.modules) { // try mixin sub-modules' states 
+        for (const moduleId in template.modules) {
+            if (option[moduleId] && typeof option[moduleId] === 'object') {
+                mixin(template.modules[moduleId], option[moduleId])
+            }
+        }
+    }
 
     const storeOption$ = Object.assign({}, template)
     storeOption$.state = state
