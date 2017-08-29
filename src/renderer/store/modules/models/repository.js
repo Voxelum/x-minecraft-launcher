@@ -1,4 +1,4 @@
-import * as fs from 'fs'
+import * as fs from 'fs-extra'
 import * as path from 'path'
 import crypto from 'crypto'
 import Vue from 'vue'
@@ -15,12 +15,8 @@ function $hash(buff) {
     return crypto.createHash('sha1').update(buff).digest('hex').toString('utf-8');
 }
 async function $load(context, filePath) {
-    const [name, data, type] = await new Promise((resolve, reject) => {
-        fs.readFile(filePath, (err, $data) => {
-            if (err) reject(err);
-            else resolve([path.basename(filePath), $data, path.extname(filePath)]);
-        })
-    });
+    const [name, data, type] = await fs.readFile(filePath)
+        .then($data => [path.basename(filePath), $data, path.extname(filePath)]);
     const hash = $hash(data);
     if (!context.state.resources[hash]) {
         let meta

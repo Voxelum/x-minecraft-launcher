@@ -122,14 +122,11 @@
 <script>
 import 'static/semantic/semantic.min.css'
 import 'static/semantic/semantic.min.js'
-
-// import imgURL from '../../assets/Background1.png'
 import modals from './components/modals'
 import ModpackView from './components/ModpackView'
 import ServerView from './components/ServerView'
 import CardView from './components/CardView'
 import SkinView from './components/SkinView'
-
 import { mapMutations, mapState, mapGetters } from 'vuex'
 import mapActions from '../../shared/mapAction'
 export default {
@@ -159,7 +156,7 @@ export default {
     },
     mounted(e) {
         if (this.username === 'Steve') this.showLogin()
-        const self = this
+        const self = this;
         $('#userDropdown').dropdown({
             on: 'hover',
             action: function (text, value, element) {

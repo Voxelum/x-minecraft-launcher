@@ -1,8 +1,31 @@
 export default {
+    modules: {
+        mods: 'mods',
+        profiles: 'profiles',
+    },
     getters: {
         profiles: {
-            selected: 'profiles/selected',
-            allStates: 'profiles/allStates',
+            selected: 'selected',
+            allStates: 'allStates',
+        },
+        repository: {
+            allResources: 'values',
+            allKeys: 'allKeys',
+            get: 'get',
+        },
+        mods: {
+            allModResource: 'values',
+            allModHash: 'allKeys',
+            getModResource: 'get',
+            forgeMods: 'forgeMods',
+            liteMods: 'liteMods',
+            modMap: 'modmap',
+        },
+        resourcepacks: {
+            allPackResource: 'values',
+            allPackHash: 'allKeys',
+            getPackResource: 'get',
+            nameToResourceMap: 'namemap',
         },
     },
     actions: {
@@ -36,12 +59,12 @@ export default {
             refresh: profileId => `profiles/${profileId}/refresh`,
         },
         resourcepacks: {
-              /**
-             * { resource }: the resourceId or resource object will be exported.  
-             * { targetDirectory }: the target folder will the resource file be placed.   
-             * { option? }: { mode?: the mode to export, can be 'link', 'copy', 'move'. Default is 'link' ,  
-             *      fileName?: the fileName of the exported file will be. }
-             */
+            /**
+           * { resource }: the resourceId or resource object will be exported.  
+           * { targetDirectory }: the target folder will the resource file be placed.   
+           * { option? }: { mode?: the mode to export, can be 'link', 'copy', 'move'. Default is 'link' ,  
+           *      fileName?: the fileName of the exported file will be. }
+           */
             export: 'resourcepacks/export',
             /**
              * path(s): string file path or array of file paths will be imported 
