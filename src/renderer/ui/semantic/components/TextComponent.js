@@ -22,7 +22,7 @@ export default {
         if (!this.source) return createElement('div')
         let iterator
         if (typeof this.source === 'string') {
-            iterator = [TextComponent.fromFormattedString(this.source)]
+            iterator = [TextComponent.from(this.source)]
         } else {
             iterator = this.source.iterator;
         }
