@@ -10,6 +10,7 @@ import {
     AuthService,
 } from 'ts-minecraft'
 import paths from 'path'
+import urls from 'url'
 
 const devMod = process.env.NODE_ENV === 'development'
 /**
@@ -31,9 +32,11 @@ const mainWinURL = process.env.NODE_ENV === 'development' ?
     'http://localhost:9080/index.html' :
     `file://${__dirname}/index.html`
 
+
+console.log(urls.format(urls.parse('file://../../dist/electron/log.html'), {}))
 const logWinURL = process.env.NODE_ENV === 'development' ?
-    'http://localhost:9080/log.html' :
-    `file://${__dirname}/log.html`
+    `file://${__dirname}/log.html` :
+    urls.format(urls.parse('file://../../dist/electron/log.html'), {})
 
 let mainWindow;
 let logWindow;
@@ -64,14 +67,14 @@ if (isSecondInstance) {
     app.quit()
 }
 
-// function createLogWindow() {
-//     logWindow = new BrowserWindow({
-//     })
-//     logWindow.setTitle('Log')
-//     logWindow.setIcon(iconImage);
-//     logWindow.loadURL(logWinURL);
-//     logWindow.on('closed', () => { logWindow = null })
-// }
+function createLogWindow() {
+    logWindow = new BrowserWindow({
+    })
+    logWindow.setTitle('Log')
+    logWindow.setIcon(iconImage);
+    logWindow.loadURL(logWinURL);
+    logWindow.on('closed', () => { logWindow = null })
+}
 
 function createMainWindow() {
     /**
@@ -129,7 +132,7 @@ app.on('ready', () => {
     createMainWindow()
     const appIcon = new Tray(iconImage)
     app.setName('ILauncher');
-    // createLogWindow();
+    createLogWindow();
 })
 
 app.on('window-all-closed', () => {
