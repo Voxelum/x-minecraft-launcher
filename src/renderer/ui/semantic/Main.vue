@@ -85,8 +85,25 @@
                             {{$t('errors.empty')}}
                         </div>
                     </div>
-                    <div class="ui button">
-                        <i class="tasks icon"></i> {{tasks.length}}
+                    <div id="taskPopup" class="ui button">
+                        <i class="tasks icon"></i> {{tasksCount}}
+                    </div>
+                    <div class="ui flowing popup top left transition hidden">
+                        <div v-if="tasksCount != 0" class="ui middle aligned divided list" style="max-height:300px; min-width:300px; overflow:hidden">
+                            <div v-for="(moduleTask, index) in errors" :key='moduleTask' class="item">
+                                {{index}}
+                                <div class="ui middle aligned selection divided list">
+                                    <div v-for="task of moduleTask" :key="task" class="item">
+                                        <!-- {{task.name}} -->
+                                        <!-- {{task.progress}} -->
+                                        <!-- {{task.status}} -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else>
+                            {{$t('errors.empty')}}
+                        </div>
                     </div>
                 </span>
                 <span v-if="!isSelecting">
@@ -147,7 +164,7 @@ export default {
             'selectedProfile': 'selected',
             'selectedProfileID': 'selectedKey'
         }),
-        ...mapGetters(['errors', 'tasks', 'errorsCount']),
+        ...mapGetters(['errors', 'tasks', 'errorsCount', 'tasksCount']),
         ...mapGetters('auth', ['username']),
         ...mapState('settings', ['autoDownload']),
         isSelecting() {
@@ -159,7 +176,7 @@ export default {
         const self = this;
         $('#userDropdown').dropdown({
             on: 'hover',
-            action: function (text, value, element) {
+            action: function(text, value, element) {
                 if (element.lastChild.textContent === 'Profile') {
 
                 } else self.showModal('login')
