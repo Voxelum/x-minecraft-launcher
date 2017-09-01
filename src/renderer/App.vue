@@ -1,17 +1,12 @@
 <template>
   <div id="app" @drop="ondrop">
-    <!-- <component v-bind:is="theme"> -->
-    <!-- </component> -->
-    <!-- <material></material> -->
-    <!-- <semantic></semantic> -->
-    <log></log>
+    <semantic></semantic>
   </div>
 </template>
 
 <script>
 import SemanticUi from './ui/semantic/Main'
 import MaterialUi from './ui/material/Main'
-import Log from './Log'
 
 import { mapState } from 'vuex'
 export default {
@@ -46,7 +41,6 @@ export default {
   components: {
     semantic: SemanticUi,
     material: MaterialUi,
-    log: Log,
   }
 }
 </script>
