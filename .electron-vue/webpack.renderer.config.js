@@ -103,12 +103,12 @@ let rendererConfig = {
         ? path.resolve(__dirname, '../node_modules')
         : false
     }),
-    new CopyWebpackPlugin([
-      {
-        from: 'node_modules/monaco-editor/min/vs',
-        to: 'vs',
-      }
-    ]),
+    // new CopyWebpackPlugin([
+    //   {
+    //     from: 'node_modules/monaco-editor/min/vs',
+    //     to: 'vs',
+    //   }
+    // ]),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jquery: 'jquery',
@@ -128,7 +128,8 @@ let rendererConfig = {
       '@': path.join(__dirname, '../src/renderer'),
       'vue$': 'vue/dist/vue.esm.js',
       'locales': path.join(__dirname, '../locales'),
-      'static': path.join(__dirname, '../static')
+      'static': path.join(__dirname, '../static'),
+      'shared': path.join(__dirname, '../src/shared')
     },
     extensions: ['.js', '.vue', '.json', '.css', '.node']
   },
