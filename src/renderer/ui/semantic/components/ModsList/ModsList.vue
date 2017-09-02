@@ -21,7 +21,10 @@
                 </div>
             </div>
         </div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 51416053d2d46d69f99b356734a82fd408a732ba
         <div class="ui divider"></div>
         <div class="ui relaxed divided items">
             <list-cell v-for="val in mods" :key="val" :value="val"></list-cell>
@@ -31,9 +34,13 @@
 
 <script>
 import vuex from 'vuex'
+import types from '../../../../store/types'
 import ListCell from './ListCell'
 
-function valid(meta, keyword) { return meta.name.includes(keyword) || meta.modid.includes(keyword) || meta.description.includes(keyword) }
+function valid(meta, keyword) {
+    return meta.name.includes(keyword) || meta.modid.includes(keyword)
+        || meta.description.includes(keyword)
+}
 export default {
     data() {
         return {

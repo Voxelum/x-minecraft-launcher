@@ -2,7 +2,7 @@ import { GameSetting, WorldInfo } from 'ts-minecraft'
 import Vue from 'vue'
 import fs from 'fs-extra'
 import paths from 'path'
-import Zip from 'adm-zip'
+import Zip from 'jszip'
 
 async function readMap(context, dir) {
     return Promise.all()
@@ -133,6 +133,7 @@ export default {
         version: states => states.version,
         maps: state => state.maps,
         name: states => states.name,
+
     },
     mutations: {
         version(states, version) {
@@ -188,7 +189,7 @@ export default {
     actions: {
         save(context, { id }) {
             const path = `profiles/${id}/options.txt`
-            const data = GameSetting.writeToString(context.state.settings)
+            const data = GameSetting.stringify(context.state.settings)
             return context.dispatch('write', { path, data }, { root: true })
         },
         load(context, { id }) {
@@ -198,7 +199,7 @@ export default {
                     fallback: context.rootGetters['settings/defaultOptions'],
                     encoding: 'string',
                 }, { root: true })
-                    .then(string => (typeof string === 'string' ? GameSetting.readFromStringRaw(string) : string)),
+                    .then(string => (typeof string === 'string' ? GameSetting.parse(string) : string)),
                 context.dispatch('readFolder', { path: `profiles/${id}/saves` }, { root: true })
                     .then(files => Promise.all(
                         files.map(file =>
@@ -222,30 +223,8 @@ export default {
                     )),
             ])
         },
-        async importMap(context, { id, location }) {
-            const map = location
-            const isDir = await new Promise((resolve, reject) => {
-                fs.lstat(map, (err, status) => {
-                    if (err) reject(err)
-                    else resolve(status.isDirectory())
-                })
-            });
-            if (isDir) {
-                if (await fs.existsSync(paths.join(map, 'level.dat'))) {
-                    return context.dispatch('import', { file: location, toFolder: `profiles/${id}/saves` })
-                }
-                return context.reject('map.invalid')
-            }
-            try {
-                const zip = new Zip(map)
-                if (zip.getEntry('level.dat')) return context.dispatch('import', { file: location, toFolder: `profiles/${id}/saves` })
-                if (zip.getEntry(`${zip.getEntries()[0].entryName}level.dat`)) {
-                    return new Promise((resolve, reject) =>
-                        zip.extractAllToAsync(context.rootGetters.path(`profiles/${id}/saves`), true, err => (err ? reject(err) : resolve())),
-                    );
-                }
-                return false
-            } catch (e) { return undefined; }
+        importMap(context, { id, location }) {
+            return WorldInfo.valid(location);
         },
         exportMap(context, { id, map, targetFolder, zip }) {
             if (!zip) return context.dispatch('export', { file: `profiles/${id}/saves/${map}`, toFolder: targetFolder })

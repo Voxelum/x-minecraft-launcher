@@ -18,12 +18,8 @@ export default {
     },
     mutations: {
         addTask(state, payload) {
-            // console.log('@addTask')
-            // console.log(payload)
         },
         deleteTask(state, payload) {
-            // console.log('@deleteTask')
-            // console.log(payload)
         },
     },
 

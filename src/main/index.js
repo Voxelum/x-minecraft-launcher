@@ -10,6 +10,7 @@ import {
     AuthService,
 } from 'ts-minecraft'
 import paths from 'path'
+import urls from 'url'
 
 const devMod = process.env.NODE_ENV === 'development'
 /**
@@ -27,22 +28,34 @@ ipcMain.on('ping', (event, time) => {
     console.log(`single spend ${Date.now() - time}`)
 })
 
-let mainWindow
-let maindownloadCallback
-const downloadTasks = new Map()
-const winURL = process.env.NODE_ENV === 'development' ?
-    'http://localhost:9080' :
+const mainWinURL = process.env.NODE_ENV === 'development' ?
+    'http://localhost:9080/index.html' :
     `file://${__dirname}/index.html`
+
+
+console.log(urls.format(urls.parse('file://../../dist/electron/log.html'), {}))
+const logWinURL = process.env.NODE_ENV === 'development' ?
+    `file://${__dirname}/log.html` :
+    urls.format(urls.parse('file://../../dist/electron/log.html'), {})
+
+let mainWindow;
+let logWindow;
+
+
+let maindownloadCallback;
+const downloadTasks = new Map()
+
 let parking = false;
 
 let iconImage
+
 let root = process.env.LAUNCHER_ROOT
 if (!root) {
     process.env.LAUNCHER_ROOT = paths.join(app.getPath('appData'), '.launcher');
     root = process.env.LAUNCHER_ROOT
 }
+
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
-    console.log('single')
     // Someone tried to run a second instance, we should focus our window.
     if (mainWindow) {
         if (mainWindow.isMinimized()) mainWindow.restore()
@@ -54,7 +67,16 @@ if (isSecondInstance) {
     app.quit()
 }
 
-function createWindow() {
+function createLogWindow() {
+    logWindow = new BrowserWindow({
+    })
+    logWindow.setTitle('Log')
+    logWindow.setIcon(iconImage);
+    logWindow.loadURL(logWinURL);
+    logWindow.on('closed', () => { logWindow = null })
+}
+
+function createMainWindow() {
     /**
      * Initial window options
      */
@@ -66,13 +88,10 @@ function createWindow() {
     })
     mainWindow.setTitle('ILauncher')
     mainWindow.setIcon(iconImage)
-    mainWindow.loadURL(winURL)
+    mainWindow.loadURL(mainWinURL)
 
-    mainWindow.on('closed', () => {
-        mainWindow = null
-    })
+    mainWindow.on('closed', () => { mainWindow = null })
     mainWindow.on('show', () => {
-        console.log(`init ${root}`)
     })
     mainWindow.webContents.session.setDownloadPath(paths.join(root, 'temps'))
     mainWindow.webContents.session.on('will-download', (event, item, content) => {
@@ -110,9 +129,10 @@ function createWindow() {
 
 app.on('ready', () => {
     iconImage = nativeImage.createFromPath(`${__dirname}/logo.png`)
-    createWindow()
+    createMainWindow()
     const appIcon = new Tray(iconImage)
     app.setName('ILauncher');
+    createLogWindow();
 })
 
 app.on('window-all-closed', () => {
@@ -123,23 +143,21 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-    if (mainWindow === null) {
-        createWindow()
-    }
+    if (mainWindow === null) createMainWindow()
 })
 
 ipcMain.on('init', (event) => {
-    console.log(root)
     mainWindow.webContents.send('init', root)
 })
-ipcMain.on('park', () => {
+ipcMain.on('park', (debug) => {
     parking = true;
     mainWindow.close()
     mainWindow = null;
+    if (debug) createLogWindow();
 })
 ipcMain.on('restart', () => {
     parking = false;
-    createWindow()
+    createMainWindow()
 })
 ipcMain.on('exit', () => {
     mainWindow.close()
