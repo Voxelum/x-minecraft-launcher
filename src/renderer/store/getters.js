@@ -1,4 +1,5 @@
 import paths from 'path'
+
 export default {
     /**
      * Return the errros by module.
@@ -18,17 +19,15 @@ export default {
         return errors;
     },
     errorsCount(state, getters) {
-        let count = 0
-        const errors = getters.errors
-        for (const key in errors) {
-            if (errors.hasOwnProperty(key)) {
-                count += errors[key].length
-            }
-        }
-        return count
+        return Object.keys(getters.errors).map((k, i, arr) => getters.errors[k].length)
+            .reduce((a, b) => a + b, 0)
     },
     tasks(state, getters) {
-        return []
+        return {}
+    },
+    tasksCount(states, getters) {
+        return Object.keys(getters.tasks).map((k, i, arr) => getters.tasks[k].length)
+            .reduce((a, b) => a + b, 0)
     },
     rootPath(state, getters) {
         return state.root

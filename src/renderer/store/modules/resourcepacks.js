@@ -1,4 +1,5 @@
 import { ResourcePack } from 'ts-minecraft'
+
 import repository from './models/repository'
 
 const state = () => {
@@ -13,6 +14,7 @@ const getters = {
         for (const pack of gets.values) {
             map[pack.name] = pack.meta
         }
+        return map;
     },
 };
 const mutations = repository.mutations;

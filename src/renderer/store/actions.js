@@ -76,7 +76,7 @@ export default (rootPath) => {
                 payload: { auth, option },
             }).then(() => {
                 // save all or do other things...
-                ipcRenderer.sendSync('park')
+                ipcRenderer.sendSync('park', true)
             }).catch((err) => {
                 
             });

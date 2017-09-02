@@ -1,14 +1,12 @@
 import Vue from 'vue';
 import { ipcRenderer } from 'electron'
-import App from './App.vue'
+import App from './App'
 import store from './store'
 import i18n from './i18n';
-
 
 if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'))
 }
-
 Vue.config.productionTip = false;
 
 (() => {

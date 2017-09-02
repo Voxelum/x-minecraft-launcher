@@ -32,10 +32,12 @@ export default {
     },
     computed: {
         version() {
-            return this.source.minecraft.version ? this.source.minecraft.version.length != 0 ? this.source.minecraft.version : "unknown" : "unknown"
+            return this.source.minecraft.version ? this.source.minecraft.version.length != 0 ?
+                this.source.minecraft.version : "unknown" : "unknown"
         },
         description() {
-            return this.source.description ? this.source.description != 0 ? this.source.description : "No description yet." : "No description yet."
+            return this.source.description ? this.source.description != 0 ?
+                this.source.description : "No description yet." : "No description yet."
         }
     },
     name: 'profile-card',

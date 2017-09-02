@@ -47,7 +47,7 @@ const actions = {
             payload: { host: context.state.host, port: context.state.port },
         }, { root: true })
             .then((frame) => {
-                const status = ServerInfo.parseFrame(frame)
+                const status = ServerStatus.from(frame)
                 status.pingToServer = frame.ping
                 const all = {
                     icon: status.icon,

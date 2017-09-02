@@ -1,15 +1,21 @@
 // http://eslint.org/docs/user-guide/configuring
-
+const path = require('path')
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
+  // parser: 'babel-eslint',
   parserOptions: {
+    parser: "babel-eslint",
     sourceType: 'module'
   },
   env: {
     browser: true,
+    commonjs: true,
+    es6: true,
+    node: true
   },
-  extends: 'airbnb-base',
+  extends: ['airbnb-base',
+    'plugin:vue/recommended'
+  ],
   // required to lint *.vue files
   plugins: [
     'html'
@@ -18,7 +24,7 @@ module.exports = {
   'settings': {
     'import/resolver': {
       'webpack': {
-        'config': '.electron-vue/webpack.main.config.js'
+        'config': '.electron-vue/webpack.renderer.config.js'
       }
     }
   },
@@ -29,6 +35,7 @@ module.exports = {
       'js': 'never',
       'vue': 'never'
     }],
+    'vue/valid-v-if': 'error',
     // allow optionalDependencies
     'import/no-extraneous-dependencies': ['error', {
       'optionalDependencies': ['test/unit/index.js']
