@@ -1,55 +1,52 @@
 <template>
-    <div class="">
-        <div class="ui top attached menu">
-  <div class="ui dropdown icon item">
-    <i class="wrench icon"></i>
-    <div class="menu">
-      <div class="item">
-        <i class="dropdown icon"></i>
-        <span class="text">New</span>
-        <div class="menu">
-          <div class="item">Document</div>
-          <div class="item">Image</div>
+  <div class="ui grid">
+    <div class="four wide column">
+      <div class="ui  accordion">
+        <div class="active title">
+          <i class="dropdown icon"></i>
+          Basic
+        </div>
+        <div class="active content">
+          <div class="ui vertical secondary pointing menu">
+            <a class="item">
+              Settings
+            </a>
+            <a class="item">
+              Resource Packs
+            </a>
+            <a class="item">
+              Mods
+            </a>
+          </div>
+        </div>
+        <div class="title">
+          <i class="dropdown icon"></i>
+          Advanced
+        </div>
+        <div class="content">
+          <div class="ui vertical secondary pointing menu">
+            <a class="item">
+              Forge
+            </a>
+            <a class="item">
+              Liteloader
+            </a>
+          </div>
         </div>
       </div>
-      <div class="item">
-        Open...
-      </div>
-      <div class="item">
-        Save...
-      </div>
-      <div class="item">Edit Permissions</div>
-      <div class="divider"></div>
-      <div class="header">
-        Export
-      </div>
-      <div class="item">
-        Share...
-      </div>
+    </div>
+    <div class="thirteen wide column">
+
     </div>
   </div>
-  <div class="right menu">
-    <div class="ui right aligned category search item">
-      <div class="ui transparent icon input">
-        <input class="prompt" type="text" placeholder="Search animals...">
-        <i class="search link icon"></i>
-      </div>
-      <div class="results"></div>
-    </div>
-  </div>
-</div>
-<div class="ui bottom attached segment">
-  <p></p>
-</div>
-    </div>
 </template>
 
 <script>
 export default {
-    props: ['id'],
-    mounted() {
-        $(this.$el).accordion();
-    }
+  props: ['id'],
+  mounted() {
+    $(this.$el).accordion();
+  }
 }
 </script>
 

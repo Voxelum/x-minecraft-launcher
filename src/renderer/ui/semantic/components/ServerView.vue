@@ -27,17 +27,30 @@
                 <text-component :source="status.serverMOTD" localized="true"></text-component>
             </div>
         </div>
-        <div class="stretched row">
+        <div class="stretched row" style="min-height:70%; max-heigth:70%">
             <div class="four wide column">
-                <div class="ui vertical secondary pointing  menu">
+                <div class="ui vertical secondary pointing menu">
                     <div class="header item">Basic</div>
                     <a class="active item" data-tab="settings">{{$t('settings')}}</a>
                     <a class="item" data-tab="resourcepack">{{$tc('resourcepack.name', 0)}}</a>
                     <a class="item" data-tab="mods">{{$tc('mod.name', 0)}}</a>
-                    <div class="ui divider"></div>
-                    <div class="header item">Advance</div>
-                    <a class="item" data-tab="forge">Forge</a>
-                    <a class="item" data-tab="liteloader">Liteloader</a>
+                    <!-- <div class="ui divider"></div> -->
+                    <!-- <div class="header item">Advance</div> -->
+                    <div id="acc" class="ui accordion">
+                        <a class="title header item">
+                            Advance
+                        </a>
+                        <div class="content">
+                            <a class="item" data-tab="forge">
+                                Forge
+                            </a>
+                            <a class="item" data-tab="liteloader">
+                                Liteloader
+                            </a>
+                        </div>
+                    </div>
+                    <!-- <a class="item" data-tab="forge">Forge</a> -->
+                    <!-- <a class="item" data-tab="liteloader">Liteloader</a> -->
                 </div>
             </div>
             <div class="one wide column"></div>
@@ -52,10 +65,9 @@
                     <mods-list :id="id"></mods-list>
                 </div>
                 <div class="ui tab" data-tab="forge">
-                    Forge
+                    <advance></advance>
                 </div>
                 <div class="ui tab" data-tab="liteloader">
-                    LiteLoader
                 </div>
             </div>
         </div>
@@ -68,9 +80,9 @@ import TextComponent from './TextComponent'
 import ResourcePackList from './ResourcePackList'
 import GameSettings from './GameSettings'
 import ModsList from './ModsList'
-
+import Advance from './AdvanceSettings'
 export default {
-    components: { TextComponent, ResourcePackList, GameSettings, ModsList },
+    components: { TextComponent, ResourcePackList, GameSettings, ModsList, Advance },
     props: ['source', 'id'],
     computed: {
         status() { return this.source.status },
@@ -82,9 +94,8 @@ export default {
         },
     },
     mounted() {
-        this.$nextTick(() => {
-            $('.menu .item').tab()
-        })
+        $('#acc').accordion()
+        $('.menu .item').tab()
         this.refresh();
     },
 }
