@@ -54,6 +54,7 @@ if (!root) {
     process.env.LAUNCHER_ROOT = paths.join(app.getPath('appData'), '.launcher');
     root = process.env.LAUNCHER_ROOT
 }
+app.setPath('appData', root);
 
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
     // Someone tried to run a second instance, we should focus our window.
@@ -132,7 +133,7 @@ app.on('ready', () => {
     createMainWindow()
     const appIcon = new Tray(iconImage)
     app.setName('ILauncher');
-    createLogWindow();
+    // createLogWindow();
 })
 
 app.on('window-all-closed', () => {
