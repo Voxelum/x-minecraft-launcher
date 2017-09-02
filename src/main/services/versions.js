@@ -22,9 +22,7 @@ export default {
         downloadClient({ meta, location }) {
             if (typeof location === 'string') location = new MinecraftFolder(location)
             if (!(location instanceof MinecraftFolder)) return Promise.reject('Require location as string or MinecraftLocation!')
-            return Version.downloadVersion('client', meta, location)
-                .then(() => Version.parse(location.root, meta.id))
-                .then(version => Version.checkDependency(version, location))
+            return Version.install('client', meta, location);
         },
         checkClient({ version, location }) {
             if (typeof location === 'string') location = new MinecraftFolder(location)
