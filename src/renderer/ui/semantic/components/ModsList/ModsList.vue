@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-    
+
         <div class="ui divider"></div>
         <div class="ui relaxed divided items">
             <list-cell v-for="val in mods" :key="val" :value="val"></list-cell>
