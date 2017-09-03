@@ -9,7 +9,7 @@ import Zip from 'jszip'
 function findJavaFromHome(set) {
     const home = process.env.JAVA_HOME;
     if (!home) return set
-    const javaPath = paths.join(home, 'bin', 'javaw.exe')
+    const javaPath = path.join(home, 'bin', 'javaw.exe')
     if (fs.existsSync(javaPath)) set.add(javaPath)
     return set
 }
@@ -18,7 +18,7 @@ function findJavaFromPath(set) {
     const pathString = process.env.PATH
     const array = pathString.split(';')
     for (const p of array) {
-        const javaPath = paths.join(p, 'bin', 'javaw.exe')
+        const javaPath = path.join(p, 'bin', 'javaw.exe')
         if (fs.existsSync(javaPath)) set.add(set)
     }
     return set
@@ -42,7 +42,7 @@ function findJavaFromRegistry(set) {
                 item.replace(/[\r\n]/g, '').replace(/\\\\/g, '\\').match(/\w(:[\\a-zA-Z0-9 ._]*)/)))
                 .filter(item => item != null && item !== undefined)
                 .map(item => item[0])
-                .map(item => paths.join(item, 'bin', 'javaw.exe'))
+                .map(item => path.join(item, 'bin', 'javaw.exe'))
                 .filter(item => fs.existsSync(item))))
         });
     });

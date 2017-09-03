@@ -76,6 +76,10 @@
         "account": "Username",
         "password": "No Password"
     },
+    "basic": "Basic",
+    "advanced": "Advanced",
+    "forge": "Forge",
+    "liteloader": "LiteLoader",
     "mojang": {
         "name": "Mojang",
         "account": "Email Adress",

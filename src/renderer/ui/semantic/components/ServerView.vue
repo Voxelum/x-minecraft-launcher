@@ -30,27 +30,23 @@
         <div class="stretched row" style="min-height:70%; max-heigth:70%">
             <div class="four wide column">
                 <div class="ui vertical secondary pointing menu">
-                    <div class="header item">Basic</div>
+                    <div class="header item">{{$('basic')}}</div>
                     <a class="active item" data-tab="settings">{{$t('settings')}}</a>
                     <a class="item" data-tab="resourcepack">{{$tc('resourcepack.name', 0)}}</a>
                     <a class="item" data-tab="mods">{{$tc('mod.name', 0)}}</a>
-                    <!-- <div class="ui divider"></div> -->
-                    <!-- <div class="header item">Advance</div> -->
                     <div id="acc" class="ui accordion">
                         <a class="title header item">
-                            Advance
+                            {{$t('advanced')}}
                         </a>
                         <div class="content">
                             <a class="item" data-tab="forge">
-                                Forge
+                                {{$t('forge')}}
                             </a>
                             <a class="item" data-tab="liteloader">
-                                Liteloader
+                                {{$t('liteloader')}}
                             </a>
                         </div>
                     </div>
-                    <!-- <a class="item" data-tab="forge">Forge</a> -->
-                    <!-- <a class="item" data-tab="liteloader">Liteloader</a> -->
                 </div>
             </div>
             <div class="one wide column"></div>
@@ -65,7 +61,6 @@
                     <mods-list :id="id"></mods-list>
                 </div>
                 <div class="ui tab" data-tab="forge">
-                    <advance></advance>
                 </div>
                 <div class="ui tab" data-tab="liteloader">
                 </div>
