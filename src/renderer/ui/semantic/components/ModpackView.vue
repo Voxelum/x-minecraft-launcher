@@ -30,11 +30,12 @@
         </div>
         <div class="stretched row" style="height:70%">
             <div class="four wide column">
-                <div class="ui vertical fluid tabular menu">
-                    <a class="active item" data-tab="versions">
-                        {{$tc('version.name', 0)}}
-                    </a>
-                    <a class="item" data-tab="maps">
+                <div class="ui vertical secondary pointing menu">
+                    <div class="header item">{{$t('basic')}}</div>
+                    <!-- <a class="active item" data-tab="versions">
+                            {{$tc('version.name', 0)}}
+                        </a> -->
+                    <a class="active item" data-tab="maps">
                         {{$tc('map.name', 0)}}
                     </a>
                     <a class="item" data-tab="settings">
@@ -46,13 +47,27 @@
                     <a class="item" data-tab="mods">
                         {{$tc('mod.name', 0)}}
                     </a>
+                    <div id="acc" class="ui accordion">
+                        <a class="title header item">
+                            {{$t('advanced')}}
+                        </a>
+                        <div class="content">
+                            <a class="item" data-tab="forge">
+                                {{$t('forge')}}
+                            </a>
+                            <a class="item" data-tab="liteloader">
+                                {{$t('liteloader')}}
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div class="one wide column"></div>
             <div class="eleven wide column">
-                <div class="ui active tab" style="height:380px" data-tab="versions">
-                    <version-table-view :id="id"></version-table-view>
-                </div>
-                <div class="ui tab" style="height:380px" data-tab="maps">
+                <!-- <div class="ui active tab" style="height:380px" data-tab="versions">
+                        <version-table-view :id="id"></version-table-view>
+                    </div> -->
+                <div class="ui active tab" style="height:380px" data-tab="maps">
                     <maps-list :id="id"></maps-list>
                 </div>
                 <div class="ui tab" style="height:380px" data-tab="settings">
@@ -63,6 +78,10 @@
                 </div>
                 <div class="ui tab" style="height:380px" data-tab="mods">
                     <mods-list :id="id"></mods-list>
+                </div>
+                <div class="ui tab" data-tab="forge">
+                </div>
+                <div class="ui tab" data-tab="liteloader">
                 </div>
             </div>
         </div>
@@ -97,6 +116,7 @@ export default {
     },
     mounted() {
         this.refresh()
+        $('#acc').accordion()
         this.$nextTick(() => {
             $('.menu .item').tab()
         })

@@ -102,7 +102,7 @@ export default {
         },
         create(context, {
             type,
-            option,
+            option = {},
         }) {
             const id = uuid()
             option.java = option.java || context.rootGetters['settings/defaultJava']

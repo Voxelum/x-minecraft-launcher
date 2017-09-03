@@ -131,6 +131,7 @@ function createMainWindow() {
 app.on('ready', () => {
     iconImage = nativeImage.createFromPath(`${__dirname}/logo.png`)
     createMainWindow()
+
     const appIcon = new Tray(iconImage)
     app.setName('ILauncher');
     // createLogWindow();
