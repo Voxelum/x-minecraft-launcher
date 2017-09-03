@@ -115,6 +115,9 @@
                         <i class="plus icon"></i>
                         {{$t('server.add')}}
                     </div>
+                    <div class="ui icon right floated  inverted button non-moveable" @click="test">
+                        <i class="plus icon"></i>
+                    </div>
                 </span>
                 <span v-else>
                     <div class="ui icon right floated inverted button non-moveable" @click="launch">
@@ -235,6 +238,9 @@ export default {
                 event.type = type;
                 this.createProfile({ type, option: event })
             }
+        },
+        test() {
+            this.$store.dispatch('query', { 'service': 'jre', action: 'ensureJre' })
         },
         onlaunch() {
             this.launch()
