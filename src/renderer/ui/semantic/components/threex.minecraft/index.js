@@ -51,27 +51,28 @@ class PlayerModel {
 			UVs[2].x = x2; UVs[2].y = y1;
 		}
 		const order = ['left', 'right', 'top', 'bottom', 'front', 'back']
-		// let obj = {}
 		const map = (mesh, src) => {
 			for (let i = 0; i < order.length; i++) {
 				const posArr = src[order[i]];
 				mapUv(mesh, i, posArr[0], posArr[1], posArr[2], posArr[3]);
-				// obj[mesh.name] = mesh.geometry.faceVertexUvs[0]
 			}
 		}
 		if (type === 'cape') {
 			if (this[type])
 				map(this[type], model[type])
-		} else for (const key of Object.keys(model).filter(k => k !== 'cape')) {
-			if (this[key])
-				// if (legacy && (key === 'leftArm' || key === 'leftLeg'))
-				// map(this[key], model[key.replace('left', 'right')])
-				// else
-				map(this[key], model[key]);
-			if (!legacy && this[`${key}Layer`])
-				map(this[`${key}Layer`], model[key].layer);
-		}
-		console.log('remap done')
+		} else if (type === 'arm') {
+			for (const key of ['rightArm', 'leftArm']) {
+				map(this[key], model[key])
+				if (!legacy && this[`${key}Layer`])
+					map(this[`${key}Layer`], model[key].layer);
+			}
+		} else
+			for (const key of Object.keys(model).filter(k => k !== 'cape')) {
+				if (this[key])
+					map(this[key], model[key]);
+				if (!legacy && this[`${key}Layer`])
+					map(this[`${key}Layer`], model[key].layer);
+			}
 	}
 	remodel() {
 		if (!this.root) {
@@ -111,6 +112,7 @@ class PlayerModel {
 					if (layer.z) layerMesh.position.z = layer.z;
 				}
 			}
+			this.remap()
 		} else {
 			const template = this.slim ? format.alex : format.steve;
 			for (const key of ['rightArm', 'leftArm']) {
@@ -119,6 +121,7 @@ class PlayerModel {
 				model = model.layer;
 				this[`${key}Layer`].geometry = new THREE.CubeGeometry(model.w, model.h, model.d);;
 			}
+			this.remap('arm')
 		}
 	}
 	constructor(option = {}) {
@@ -159,10 +162,11 @@ class PlayerModel {
 	updateSkin(skin, isSlim) {
 		isSlim = isSlim || false
 		const texture = this.texture
-		const slimChange = this.slim !== isSlim;
+		const slimChange = this.slim === undefined || this.slim == null || this.slim !== isSlim;
 		this.slim = isSlim;
-		if (slimChange) this.remodel()
-		this.remap()
+		if (slimChange) {
+			this.remodel()
+		}
 		const reload = (img) => {
 			let legacy = img.width !== img.height;
 			const canvas = texture.image;
@@ -177,7 +181,6 @@ class PlayerModel {
 				context.drawImage(img, 0, 0, img.width, img.width);
 			}
 			texture.needsUpdate = true;
-			/* if (slimChange) */
 		}
 		if (skin instanceof Image) {
 			reload(skin);

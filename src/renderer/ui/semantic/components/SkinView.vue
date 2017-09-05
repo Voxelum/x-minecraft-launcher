@@ -6,7 +6,9 @@
 <script>
 
 import Model from './threex.minecraft'
-let THREE = require('three')
+// const Model = require('threex.minecraft')
+// import Model from 'threex.minecraft'
+const THREE = require('three')
 const OrbitControls = require('three-orbit-controls')(THREE)
 export default {
     props: ['width', 'height'],
