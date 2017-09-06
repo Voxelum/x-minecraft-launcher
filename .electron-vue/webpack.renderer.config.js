@@ -163,10 +163,6 @@ if (process.env.NODE_ENV === 'production') {
         from: path.join(__dirname, '../static'),
         to: path.join(__dirname, '../dist/electron/static'),
         ignore: ['.*']
-      },
-      {
-        from: 'node_modules/monaco-editor/min/vs',
-        to: 'vs',
       }
     ]),
     new webpack.DefinePlugin({
