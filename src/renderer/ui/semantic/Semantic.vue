@@ -46,7 +46,7 @@
                         </div>
                     </div>
                 </h5>
-                <skin-view width="210" height="400"></skin-view>
+                <skin-view width="210" height="400" :skin="skin"></skin-view>
             </div>
             <div class="twelve wide column">
                 <card-view ref='view' v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
@@ -132,7 +132,7 @@
                 </span>
             </div>
         </div>
-        <login-modal ref="loginModal"></login-modal>
+        <login-modal ref="loginModal" @login='onlogin'></login-modal>
         <modpack-modal ref="modpackModal" :defaultAuthor="username" @accept="submitProfile($event, 'modpack')"></modpack-modal>
         <server-modal ref="serverModal" @accept="submitProfile($event, 'server')"></server-modal>
         <delete-modal ref="deleteModal" @accept="deleteProfile"></delete-modal>
@@ -146,8 +146,9 @@ import modals from './components/modals'
 import ModpackView from './components/ModpackView'
 import ServerView from './components/ServerView'
 import CardView from './components/CardView'
-import SkinView from './components/SkinView'
-import { mapMutations, mapState, mapGetters } from 'vuex'
+import SkinView from '../shared/SkinView'
+
+import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 export default {
     components: {
         ModpackView, ServerView, CardView,
@@ -167,7 +168,7 @@ export default {
             'selectedProfileID': 'selectedKey'
         }),
         ...mapGetters(['errors', 'tasks', 'errorsCount', 'tasksCount']),
-        ...mapGetters('auth', ['username']),
+        ...mapGetters('auth', ['username', 'skin']),
         ...mapState('settings', ['autoDownload']),
         isSelecting() {
             return this.selectedProfile != undefined && this.selectedProfileID != null
@@ -195,6 +196,9 @@ export default {
         })
     },
     methods: {
+        onlogin() {
+            console.log(this.skin)
+        },
         ...mapActions('profiles', {
             createProfile: 'createAndSelect',
             selectProfile: 'select',

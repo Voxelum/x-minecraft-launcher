@@ -14,6 +14,9 @@ const getters = {
     mode: theState => theState.mode,
     info: theState => theState.authInfo || {},
     username: theState => (theState.authInfo ? theState.authInfo.selectedProfile.name : 'Steve'),
+    skin: theState =>
+        (theState.authInfo ? theState.authInfo.selectedProfile.properties.textures.textures.SKIN : undefined)
+
 }
 
 const mutations = {
@@ -26,6 +29,7 @@ const mutations = {
         auth,
         account,
     }) {
+        console.log(auth)
         theState.authInfo = auth
         theState.clientToken = auth.clientToken
         theState.accessToken = auth.accessToken
