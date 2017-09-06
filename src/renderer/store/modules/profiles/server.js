@@ -1,5 +1,5 @@
 import { TextComponent, TextFormatting, Style, ServerInfo, ServerStatus } from 'ts-minecraft'
-import protocol from '../../../shared/protocol'
+import protocol from 'shared/protocol'
 import profile from './profile'
 
 function state() {

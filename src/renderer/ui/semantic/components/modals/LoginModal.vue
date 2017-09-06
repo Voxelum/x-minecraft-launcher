@@ -114,8 +114,8 @@ export default {
                     { account: this.account, password: this.password, mode: this.mode, clientToken: this.clientToken })
                     .then((result) => {
                         this.logining = false
-                        this.$emit('logined')
-                        this.$nextTick(() => $('#login').modal('hide'))
+                        this.$emit('login')
+                        this.$nextTick(() => $(this.$el).modal('hide'))
                     }, err => {
                         console.log(err)
                         this.logining = false
