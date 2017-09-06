@@ -148,7 +148,6 @@ import ServerView from './components/ServerView'
 import CardView from './components/CardView'
 import SkinView from './components/SkinView'
 import { mapMutations, mapState, mapGetters } from 'vuex'
-import mapActions from '../../shared/mapAction'
 export default {
     components: {
         ModpackView, ServerView, CardView,
