@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import SemanticUi from './ui/semantic/Main'
+import SemanticUi from './ui/semantic/Semantic'
 import MaterialUi from './ui/material/Main'
 
 import { mapState } from 'vuex'

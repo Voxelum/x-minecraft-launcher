@@ -9,8 +9,22 @@ import Model from './threex.minecraft'
 let THREE = require('three')
 const OrbitControls = require('three-orbit-controls')(THREE)
 export default {
-    props: ['width', 'height'],
+    props: ['width', 'height', 'skin', 'cape'],
+    watch: {
+        skin(nskin) {
+            console.log(nskin)
+            if (!nskin) {
+                this.$setSkin(undefined)
+                return;
+            }
+            let slim = nskin.metadata ? nskin.metadata.model === 'slim' : false
+            if (nskin.data) {
+                this.$setSkin('data:image/png;base64, ' + nskin.data, slim)
+            }
+        }
+    },
     mounted(e) {
+        console.log(this.skin)
         console.log("===========START===========")
 
         let canvas = this.$el;
@@ -41,6 +55,12 @@ export default {
 
         let character = new Model()
         character.root.translateY(-0.5)
+        this.$setSkin = (skin, slim) => {
+            character.updateSkin(skin, slim);
+        }
+        this.$setCape = (cape) => {
+            character.updateCape(cape);
+        }
         scene.add(character.root)
         camera.lookAt(new THREE.Vector3(0, 0, 0))
 

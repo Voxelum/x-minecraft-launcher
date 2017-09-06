@@ -5,24 +5,30 @@ import {
 const fs = require('fs')
 const {
     AuthService,
+    ProfileService,
+    GameProfile,
 } = require('ts-minecraft')
 
 const registered = new Map()
+async function authMojang({ account, password, clientToken }) {
+    const auth = await AuthService.yggdrasilAuth({
+        username: account,
+        password,
+        clientToken: clientToken || v4(),
+    })
+    const profile = await ProfileService.fetch(auth.selectedProfile.id);
+    const textures = await GameProfile.cacheTextures(profile);
+    profile.properties['textures'] = textures;
+    auth.selectedProfile = profile;
+    return auth;
+}
 export default {
     initialize() {
         registered.set('offline', ({
             account,
             clientToken,
         }) => AuthService.offlineAuth(account));
-        registered.set('mojang', ({
-            account,
-            password,
-            clientToken,
-        }) => AuthService.yggdrasilAuth({
-            username: account,
-            password,
-            clientToken: clientToken || v4(),
-        }));
+        registered.set('mojang', authMojang);
     },
 
     proxy: {
