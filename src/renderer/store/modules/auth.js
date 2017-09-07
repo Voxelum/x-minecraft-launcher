@@ -42,8 +42,7 @@ export default {
             state.auth.profiles = auth.profiles
             state.auth.id = auth.selectedProfile.id;
             state.auth.name = auth.selectedProfile.name;
-            state.auth.skin.data = auth.skin.data;
-            state.auth.skin.slim = auth.skin.slim;
+            state.auth.skin = auth.skin;
             state.auth.cape = auth.cape;
             if (!state.history[state.mode]) Vue.set(state.history, state.mode, [])
             const his = state.history[state.mode];
@@ -85,7 +84,7 @@ export default {
                 const profile = await context.dispatch('query', {
                     service: 'profile',
                     action: 'fetch',
-                    payload: { service: 'mojang', uuid: result.userId, cache: true },
+                    payload: { service: 'mojang', uuid: result.selectedProfile.id, cache: true },
                 }, { root: true });
                 const skin = profile.textures.textures.SKIN
                 if (skin) {
@@ -95,14 +94,12 @@ export default {
                     }
                 }
                 if (profile.textures.textures.CAPE) result.cape = profile.textures.textures.CAPE.data;
-                return result;
-            } catch (e) {
-                context.commit('record', {
-                    auth: result,
-                    account: payload.account,
-                });
-                return result;
-            }
+            } catch (e) { }
+            context.commit('record', {
+                auth: result,
+                account: payload.account,
+            });
+            return result;
         },
     },
 }
