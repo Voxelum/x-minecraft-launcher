@@ -50,8 +50,9 @@ export default {
 
         },
         importMap(event) {
+            if (!event) return;
+            if (!event.dataTransfer) return;
             this.$store.dispatch(`profiles/${this.id}/minecraft/importMap`, { id: this.id, location: event.dataTransfer.files[0].path })
-            console.log('importMap')
             event.preventDefault();
             return false
         },
