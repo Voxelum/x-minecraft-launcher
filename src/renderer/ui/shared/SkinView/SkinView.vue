@@ -12,7 +12,6 @@ export default {
     props: ['width', 'height', 'skin', 'cape'],
     watch: {
         skin(nskin) {
-            console.log(nskin)
             if (!nskin) {
                 this.$setSkin(undefined)
                 return;
@@ -24,7 +23,7 @@ export default {
         }
     },
     mounted(e) {
-        console.log(this.skin)
+
         console.log("===========START===========")
 
         let canvas = this.$el;
@@ -62,6 +61,8 @@ export default {
             character.updateCape(cape);
         }
         scene.add(character.root)
+        if (this.skin) 
+            this.$setSkin('data:image/png;base64, ' + this.skin.data, this.skin.slim)
         camera.lookAt(new THREE.Vector3(0, 0, 0))
 
 
