@@ -31,10 +31,10 @@ export default {
                     ipcMain.emit('restart')
                 })
                 process.stdout.on('data', (s) => {
-                    console.log(s)
+                    ipcMain.emit('minecraft-stdout', s);
                 })
                 process.stderr.on('data', (s) => {
-                    console.warn(s)
+                    ipcMain.emit('minecraft-stderr')
                 })
             })
         },

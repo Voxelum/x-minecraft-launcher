@@ -7,26 +7,20 @@ export default {
         mode: 'mojang',
         history: {},
 
-        auth: {
-            id: '',
-            name: '',
-            profiles: [],
-            accessToken: '',
-            clientToken: '',
-
+        auth: {}, // cached
+        cache: {
             skin: { data: undefined, slim: false },
             cape: undefined,
-        }, // cached
+        }
     },
     getters: {
         modes: state => state.modes,
         disablePassword: state => state.mode === 'offline',
         mode: state => state.mode,
-        info: state => state.auth,
-        username: state => state.auth.name,
-        id: state => state.auth.id,
-        skin: state => state.auth.skin,
-        cape: state => state.auth.cape,
+        username: state => (state.auth.selectedProfile ? state.auth.selectedProfile.name : ''),
+        id: state => (state.auth.id ? state.auth.id : ''),
+        skin: state => (state.auth.skin ? state.auth.skin : ''),
+        cape: state => (state.auth.cape ? state.auth.cape : ''),
         history: state => state.history[state.mode],
     },
     mutations: {
@@ -37,13 +31,14 @@ export default {
             auth,
             account,
         }) {
-            state.auth.clientToken = auth.clientToken
-            state.auth.accessToken = auth.accessToken
-            state.auth.profiles = auth.profiles
-            state.auth.id = auth.selectedProfile.id;
-            state.auth.name = auth.selectedProfile.name;
-            state.auth.skin = auth.skin;
-            state.auth.cape = auth.cape;
+            state.auth = auth;
+            // state.auth.clientToken = auth.clientToken
+            // state.auth.accessToken = auth.accessToken
+            // state.auth.profiles = auth.profiles
+            // state.auth.id = auth.selectedProfile.id;
+            // state.auth.name = auth.selectedProfile.name;
+            // state.auth.skin = auth.skin;
+            // state.auth.cape = auth.cape;
             if (!state.history[state.mode]) Vue.set(state.history, state.mode, [])
             const his = state.history[state.mode];
             const idx = his.indexOf(account);

@@ -17,6 +17,7 @@
     <div id="app"></div>
     <!-- Set `__static` path to static files in production -->
     <script>
+        var SIDE = 'index'
         if (process.env.NODE_ENV !== 'development') window.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
     </script>
 
