@@ -33,10 +33,9 @@ const mainWinURL = process.env.NODE_ENV === 'development' ?
     `file://${__dirname}/index.html`
 
 
-console.log(urls.format(urls.parse('file://../../dist/electron/log.html'), {}))
 const logWinURL = process.env.NODE_ENV === 'development' ?
-    `file://${__dirname}/log.html` :
-    urls.format(urls.parse('file://../../dist/electron/log.html'), {})
+    `http://localhost:9080/log.html` :
+    `file://${__dirname}/log.html`
 
 let mainWindow;
 let logWindow;
@@ -76,6 +75,18 @@ function createLogWindow() {
     logWindow.loadURL(logWinURL);
     logWindow.on('closed', () => { logWindow = null })
 }
+
+ipcMain.on('minecraft-stdout', (s) => {
+    if (logWindow) {
+        logWindow.webContents.send('minecraft-stdout', s);
+    }
+})
+
+ipcMain.on('minecraft-stderr', (s) => {
+    if (logWindow) {
+        logWindow.webContents.send('minecraft-stderr', s);
+    }
+})
 
 function createMainWindow() {
     /**
@@ -155,10 +166,14 @@ ipcMain.on('park', (debug) => {
     parking = true;
     mainWindow.close()
     mainWindow = null;
-    if (debug) createLogWindow();
+    createLogWindow();
 })
 ipcMain.on('restart', () => {
     parking = false;
+    if (logWindow) {
+        logWindow.close();
+        logWindow = undefined;
+    }
     createMainWindow()
 })
 ipcMain.on('exit', () => {

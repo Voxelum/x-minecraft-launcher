@@ -40,7 +40,7 @@ export default (rootPath) => {
             // console.log('calling launch....')
             const profile = context.getters['profiles/selected'];
             const profileId = context.getters['profiles/selectedKey'];
-            const auth = context.state.auth.authInfo;
+            const auth = context.state.auth.auth;
 
             if (profile === undefined || profile === null) return Promise.reject('launch.profile.empty')
             if (auth === undefined || auth === null) return Promise.reject('launch.auth.empty');
@@ -48,9 +48,8 @@ export default (rootPath) => {
             // if it happen... that is a fatal bug or... a troll's work...
 
             const type = profile.type;
-            const version = profile.version;
-
-            const errors = context.getters[`${profileId}/errors`]
+            const version = profile.minecraft.version;
+            const errors = context.getters[`profiles/${profileId}/errors`]
             if (errors && errors.length !== 0) return Promise.reject(errors)
 
             // TODO check the launch condition!
