@@ -7,22 +7,28 @@
                     Minecraft
                 </div>
             </h3>
-            <form class="ui large form">
+            <form class="ui large form" :class="{error:error}">
                 <div class="ui segment">
-                    <div id="authMode" class="ui labeled icon dropdown button">
-                        <i class="world icon"></i>
-                        <span class="text">{{$t(mode+'.name')}}</span>
-                        <div class="menu">
-                            <option class="item" v-for="item in modes" :key="item" :value="item">{{$t(item+'.name')}}</option>
+                    <div class="field">
+                        <div id="authMode" class="ui labeled icon dropdown button">
+                            <i class="world icon"></i>
+                            <span class="text">{{$t(mode+'.name')}}</span>
+                            <div class="menu">
+                                <option class="item" v-for="item in modes" :key="item" :value="item">{{$t(item+'.name')}}</option>
+                            </div>
                         </div>
                     </div>
-                    <br>
-                    <br>
-                    <div id="accf" class="field">
+                    <div id="accf" class=" field">
                         <div class="ui left icon input">
                             <i class="user icon"></i>
-                            <input id="acc" type="text" name="email" :placeholder="$t(mode+'.account')" v-on:keyup.enter="doLogin" v-model="account">
+                            <div id='accd' class="ui floating dropdown">
+                                <div class="menu" style="width:350px">
+                                    <div class="item" v-for="h of history" :key="h" @click="updateAccount(h)" @keypress.enter="updateAccount(h)">{{h}}</div>
+                                </div>
+                            </div>
+                            <input id="acc" type="text" name="email" :placeholder="$t(mode+'.account')" @click="handleAccount" v-on:keyup="handleAccount" v-model="account">
                         </div>
+
                     </div>
                     <div id="pswf" class="field">
                         <div class="ui left icon input">
@@ -59,33 +65,43 @@ export default {
     data: () => {
         return {
             logining: false,
+            error: false,
             account: '',
             password: '',
         }
     },
     computed:
     {
-        ...mapState('auth', ['history', 'clientToken', 'mode', 'modes']),
-        ...mapGetters('auth', ['disablePassword'])
+        ...mapGetters('auth', ['disablePassword', 'history', 'mode', 'modes'])
     },
     mounted() {
         const self = this
-        this.$nextTick(() => {
-            $('#authMode').dropdown({
-                onChange: (value, text, $selectedItem) => {
-                    self.$store.commit('auth/select', value)
-                }
-            })
-            $(this.$el)
-                .modal('setting', 'closable', false)
-                .modal('refresh')
-                .modal('setting', 'observeChanges', true)
-                .modal({ blurring: true })
+        $('#authMode').dropdown({
+            onChange: (value, text, $selectedItem) => {
+                self.$store.commit('auth/select', value)
+            }
         })
+        $('#accd').dropdown()
+        $(this.$el)
+            .modal('setting', 'closable', false)
+            .modal('refresh')
+            .modal({ blurring: true })
     },
     methods: {
+        updateAccount(acc) {
+            this.account = acc;
+        },
         show() {
             $(this.$el).modal('show')
+        },
+        handleAccount(event) {
+            if (this.account === '') $('#accd').dropdown('hide')
+            console.log(event)
+            if (event.keyCode) {
+
+            } else {
+                $('#accd').dropdown('show')
+            }
         },
         doLogin(e) {
             if (this.account.length == 0) {
@@ -111,14 +127,19 @@ export default {
             else {
                 this.logining = true
                 this.$store.dispatch('auth/login',
-                    { account: this.account, password: this.password, mode: this.mode, clientToken: this.clientToken })
+                    {
+                        account: this.account, password: this.password,
+                        mode: this.mode, clientToken: this.clientToken
+                    })
                     .then((result) => {
                         this.logining = false
                         this.$emit('login')
+                        this.error = false;
                         this.$nextTick(() => $(this.$el).modal('hide'))
                     }, err => {
                         console.log(err)
                         this.logining = false
+                        this.error = true;
                         //TODO handle this
                     })
             }
