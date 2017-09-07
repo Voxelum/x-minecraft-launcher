@@ -14,6 +14,7 @@
     "add": "Add",
     "remove": "Remove",
     "!delete": "Delete",
+    "Invalid credentials. Invalid username or password.": "Invalid credentials. Invalid username or password.",
     "mod": {
         "name": "Mod | Mods",
         "hint": "Drop mod's .jar/.litemod here to import.",

@@ -85,9 +85,7 @@ export default {
                 self.$store.commit('auth/select', value)
             }
         })
-        $('#accd').dropdown({
-
-        })
+        $('#accd').dropdown({})
         $(this.$el)
             .modal('setting', 'closable', false)
             .modal('refresh')
