@@ -38,10 +38,10 @@
                     {{username}}
                     <i class="dropdown icon"></i>
                     <div class="menu">
-                        <div class="item">
+                        <div class="item" @click="showModal('profile')">
                             <i class="id card outline icon"></i> {{$t('user.profile')}}
                         </div>
-                        <div class="item">
+                        <div class="item" @click="showModal('login')">
                             <i class="sign out icon"></i> {{$t('user.logout')}}
                         </div>
                     </div>
@@ -136,6 +136,7 @@
         <modpack-modal ref="modpackModal" :defaultAuthor="username" @accept="submitProfile($event, 'modpack')"></modpack-modal>
         <server-modal ref="serverModal" @accept="submitProfile($event, 'server')"></server-modal>
         <delete-modal ref="deleteModal" @accept="deleteProfile"></delete-modal>
+        <profile-modal ref="profileModal"></profile-modal>
     </div>
 </template>
 
@@ -179,15 +180,6 @@ export default {
         const self = this;
         $('#userDropdown').dropdown({
             on: 'hover',
-            action: function(text, value, element) {
-                if (element.lastChild.textContent === 'Profile') {
-
-                } else {
-                    // self.$store.commit('auth/logout')
-                    self.showModal('login')
-                }
-                return false
-            }
         })
         $('#warningPopup').popup({
             hoverable: true,
@@ -249,7 +241,9 @@ export default {
             this.$store.dispatch('query', { 'service': 'jre', action: 'ensureJre' })
         },
         onlaunch() {
-            this.launch()
+            this.launch().catch(e => {
+                console.log(e);
+            })
         },
     },
 }

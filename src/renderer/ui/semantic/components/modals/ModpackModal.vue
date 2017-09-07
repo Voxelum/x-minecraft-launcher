@@ -47,7 +47,6 @@ export default {
     },
     props: ['defaultAuthor'],
     mounted() {
-        const self = this
         $(this.$el).modal({ blurring: true })
     },
     methods: {

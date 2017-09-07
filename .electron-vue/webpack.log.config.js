@@ -92,13 +92,7 @@ let rendererConfig = {
             jquery: 'jquery',
             'window.jQuery': 'jquery',
             jQuery: 'jquery',
-        }), new CopyWebpackPlugin([
-            {
-                from: 'node_modules/monaco-editor/min/vs',
-                to: 'vs',
-                toType: "dir"
-            }
-        ]),
+        }),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin()
     ],

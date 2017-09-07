@@ -30,7 +30,7 @@
         <div class="stretched row" style="min-height:70%; max-heigth:70%">
             <div class="four wide column">
                 <div class="ui vertical secondary pointing menu">
-                    <div class="header item">{{$('basic')}}</div>
+                    <div class="header item">{{$t('basic')}}</div>
                     <a class="active item" data-tab="settings">{{$t('settings')}}</a>
                     <a class="item" data-tab="resourcepack">{{$tc('resourcepack.name', 0)}}</a>
                     <a class="item" data-tab="mods">{{$tc('mod.name', 0)}}</a>
