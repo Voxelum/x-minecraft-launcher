@@ -32,9 +32,6 @@
             <div class="four wide column">
                 <div class="ui vertical secondary pointing menu">
                     <div class="header item">{{$t('basic')}}</div>
-                    <!-- <a class="active item" data-tab="versions">
-                            {{$tc('version.name', 0)}}
-                        </a> -->
                     <a class="active item" data-tab="maps">
                         {{$tc('map.name', 0)}}
                     </a>
@@ -64,9 +61,7 @@
             </div>
             <div class="one wide column"></div>
             <div class="eleven wide column">
-                <!-- <div class="ui active tab" style="height:380px" data-tab="versions">
-                        <version-table-view :id="id"></version-table-view>
-                    </div> -->
+                <!-- <version-table-view :id="id"></version-table-view> -->
                 <div class="ui active tab" style="height:380px" data-tab="maps">
                     <maps-list :id="id"></maps-list>
                 </div>
@@ -98,7 +93,10 @@ import MapsList from './MapsList'
 import ModsList from './ModsList'
 
 export default {
-    components: { VersionTableView, ResourcePackList, TextComponent, GameSettings, MapsList, ModsList },
+    components: {
+        VersionTableView, ResourcePackList, TextComponent,
+        GameSettings, MapsList, ModsList
+    },
     props: ['source', 'id'],
     computed: {
         ...mapState('versions', ['minecraft']),
@@ -107,7 +105,7 @@ export default {
     },
     methods: {
         modify(event) {
-            this.$store.commit('profiles/' + this.id + '/putAll', { description: event.target.value })
+            this.$store.commit(`profiles/${this.id}/putAll`, { description: event.target.value })
         },
         refresh() {
             this.$store.dispatch(`profiles/${this.id}/refresh`)
@@ -117,9 +115,7 @@ export default {
     mounted() {
         this.refresh()
         $('#acc').accordion()
-        this.$nextTick(() => {
-            $('.menu .item').tab()
-        })
+        $('.menu .item').tab()
     },
 }
 </script>

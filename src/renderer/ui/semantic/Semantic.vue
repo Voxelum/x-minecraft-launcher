@@ -182,7 +182,10 @@ export default {
             action: function(text, value, element) {
                 if (element.lastChild.textContent === 'Profile') {
 
-                } else self.showModal('login')
+                } else {
+                    // self.$store.commit('auth/logout')
+                    self.showModal('login')
+                }
                 return false
             }
         })

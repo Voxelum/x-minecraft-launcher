@@ -3,42 +3,27 @@ import {
 } from 'uuid'
 
 const fs = require('fs')
-const {
-    AuthService,
-    ProfileService,
-    GameProfile,
-} = require('ts-minecraft')
+const { AuthService } = require('ts-minecraft')
 
 const registered = new Map()
-async function authMojang({ account, password, clientToken }) {
-    const auth = await AuthService.yggdrasilAuth({
-        username: account,
-        password,
-        clientToken: clientToken || v4(),
-    })
-    const profile = await ProfileService.fetch(auth.selectedProfile.id);
-    const textures = await GameProfile.cacheTextures(profile);
-    profile.properties['textures'] = textures;
-    auth.selectedProfile = profile;
-    return auth;
-}
 export default {
     initialize() {
         registered.set('offline', ({
             account,
             clientToken,
         }) => AuthService.offlineAuth(account));
-        registered.set('mojang', authMojang);
+        registered.set('mojang', ({ account, password, clientToken }) => AuthService.yggdrasilAuth({
+            username: account,
+            password,
+            clientToken: clientToken || v4(),
+        }));
     },
 
     proxy: {
         register(id, func) {
-            if (registered.has(id)) {
-                throw new Error(`duplicated id: ${id}`)
-            }
+            if (registered.has(id)) throw new Error(`duplicated id: ${id}`)
             registered.set(id, func)
         },
-
     },
 
     actions: {
@@ -51,6 +36,7 @@ export default {
                 }
             });
         },
+
         modes() {
             return Array.from(registered.keys())
         },
