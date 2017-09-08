@@ -55,7 +55,6 @@
 
 <script>
 import { mapGetters, mapMutations, mapState } from 'vuex'
-import { VNode } from 'vue'
 
 const arr = ['jiggle', 'shake', 'tada']
 function randomShake() {
@@ -74,8 +73,7 @@ export default {
             selecting: 0,
         }
     },
-    computed:
-    {
+    computed: {
         ...mapGetters('auth', ['disablePassword', 'history', 'mode', 'modes'])
     },
     mounted() {
