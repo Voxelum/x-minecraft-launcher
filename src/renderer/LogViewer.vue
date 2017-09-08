@@ -1,16 +1,23 @@
 <template>
-    <div class="ui middle aligned selection list">
-        <div v-for="(log,index) of logs" :key="index">
-            <div class="ui basic label">{{log.time}}</div>
-            <div class="ui basic label">{{log.thread}}</div>
-            <div class="ui basic label">{{log.level}}</div>
-            {{log.message}}
+    <div class="ui moveable padded segment" :class="{inverted:inverted}" style="height:100%;overflow:hidden;border-radius: 0px">
+        <div class="ui middle aligned selection list" :class="{inverted:inverted}" style="height:100%;overflow:auto">
+            <div v-for="(log,index) of logs" :key="index" class="inverted item non-moveable">
+                <div class="ui label" :class="{black:inverted,inverted:inverted}">{{log.time}}</div>
+                <div class="ui label" :class="{black:inverted,inverted:inverted}">{{log.thread}}</div>
+                <div class="ui label" :class="{black:inverted,inverted:inverted}">{{log.level}}</div>
+                &nbsp{{log.message}}
+            </div>
         </div>
     </div>
 </template>
 
 
 <script>
+import 'static/semantic/semantic.min.css'
+import 'static/semantic/semantic.min.js'
+
+import { decode } from 'iconv-lite'
+
 import { ipcRenderer } from 'electron'
 function message(s, tags) {
     let start = 0
@@ -27,6 +34,7 @@ function message(s, tags) {
 export default {
     data() {
         return {
+            inverted: true,
             logs: [],
         }
     },
@@ -40,6 +48,7 @@ export default {
         onLog(log) {
             let tags = []
             log = message(log, tags);
+            log = decode(new Buffer(log), 'gbk')
             this.logs.push({
                 message: log,
                 time: tags[0],
@@ -52,5 +61,11 @@ export default {
 </script>
 
 <style>
+.moveable {
+    -webkit-app-region: drag
+}
 
+.non-moveable {
+    -webkit-app-region: no-drag
+}
 </style>
