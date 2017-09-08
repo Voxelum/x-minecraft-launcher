@@ -42,7 +42,6 @@ export default {
     },
     mounted() {
         $(this.$el).dimmer({ on: 'hover' })
-        console.log(this.value)
     }
 }
 </script>

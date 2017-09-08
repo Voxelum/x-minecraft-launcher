@@ -44,8 +44,7 @@ export default {
     components: { TextComponent },
     mounted() {
         $(this.$el).dimmer({ on: 'hover' })
-        console.log(this.val)
-    },
+    },  
     props: ['val', 'type'],
     methods: {
     }

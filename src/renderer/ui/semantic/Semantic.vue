@@ -132,7 +132,7 @@
                 </span>
             </div>
         </div>
-        <login-modal ref="loginModal" @login='onlogin'></login-modal>
+        <login-modal ref="loginModal"></login-modal>
         <modpack-modal ref="modpackModal" :defaultAuthor="username" @accept="submitProfile($event, 'modpack')"></modpack-modal>
         <server-modal ref="serverModal" @accept="submitProfile($event, 'server')"></server-modal>
         <delete-modal ref="deleteModal" @accept="deleteProfile"></delete-modal>
@@ -176,7 +176,7 @@ export default {
         },
     },
     mounted(e) {
-        if (this.username === 'Steve') this.showLogin()
+        if (this.username === '') this.showModal('login')
         const self = this;
         $('#userDropdown').dropdown({
             on: 'hover',
@@ -191,9 +191,6 @@ export default {
         })
     },
     methods: {
-        onlogin() {
-            console.log(this.skin)
-        },
         ...mapActions('profiles', {
             createProfile: 'createAndSelect',
             selectProfile: 'select',

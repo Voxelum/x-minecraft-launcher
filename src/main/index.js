@@ -34,7 +34,7 @@ const mainWinURL = process.env.NODE_ENV === 'development' ?
 
 
 const logWinURL = process.env.NODE_ENV === 'development' ?
-    `http://localhost:9080/log.html` :
+    'http://localhost:9080/log.html' :
     `file://${__dirname}/log.html`
 
 let mainWindow;
@@ -69,6 +69,9 @@ if (isSecondInstance) {
 
 function createLogWindow() {
     logWindow = new BrowserWindow({
+        height: 400,
+        width: 600,
+        frame: false,
     })
     logWindow.setTitle('Log')
     logWindow.setIcon(iconImage);
@@ -174,6 +177,7 @@ ipcMain.on('restart', () => {
         logWindow.close();
         logWindow = undefined;
     }
+    console.log('recreate main')
     createMainWindow()
 })
 ipcMain.on('exit', () => {
@@ -181,10 +185,6 @@ ipcMain.on('exit', () => {
     if (process.platform !== 'darwin') {
         app.quit()
     }
-})
-ipcMain.on('ping', (event, time) => {
-    event.sender.send('pong')
-    console.log(`single spend ${Date.now() - time}`)
 })
 
 require('./services'); // load all service 

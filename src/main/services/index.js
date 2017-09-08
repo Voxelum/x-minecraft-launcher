@@ -53,12 +53,12 @@ ipcMain.on('query', (event, {
     const result = actionInst(payload);
     if (result instanceof Promise) {
         result.then((resolved) => {
-            console.log('resolve:')
+            console.log(`resolve: ${service}/${action}`)
             event.sender.send(id, {
                 resolved,
             })
         }, (rejected) => {
-            console.log('reject:')
+            console.log(`reject: ${service}/${action}`)
             console.log(rejected)
             if (rejected instanceof Error) {
                 event.sender.send(id, {
@@ -71,13 +71,13 @@ ipcMain.on('query', (event, {
             }
         })
     } else if (result instanceof Error) {
-        console.log('reject:')
+        console.log(`reject: ${service}/${action}`)
         console.log(result)
         event.sender.send(id, {
             rejected: { message: result.message, ...result },
         });
     } else {
-        console.log('resolve:')
+        console.log(`resolve: ${service}/${action}`)
         event.sender.send(id, {
             resolved: result,
         });

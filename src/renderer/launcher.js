@@ -9,15 +9,6 @@ if (!process.env.IS_WEB) {
 }
 Vue.config.productionTip = false;
 
-(() => {
-    ipcRenderer.send('ping');
-    const first = Date.now()
-    ipcRenderer.once('pong', () => {
-        const time = Date.now() - first
-        console.debug(`spend ${time} ms`)
-    })
-})();
-
 ipcRenderer.on('init', (event, root) => {
     store(root).then(s =>
         new Vue({
