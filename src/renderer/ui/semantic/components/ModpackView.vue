@@ -7,14 +7,12 @@
                         <div class="content">
                             {{source.name}}
                             <h2 class="ui sub header">
-                                {{$t('author')}}:
-                                <div class="ui transparent input">
-                                    <input type="text" name="Author" placeholder="Unknown author..." :value="source.author" @blur="modify">
-                                </div>
+                                {{$t('author')}}: {{source.author}}
                             </h2>
-                            <h2 class="ui sub header">
-                                {{$tc('version.name', 0)}}: {{source.minecraft.version}}
+                            <h2 id="versionPopup" class="ui sub header">
+                                {{$tc('version.name', 0)}}: {{source.minecraft.version===''? 'Unselected':source.minecraft.version}}
                             </h2>
+                            <version-table-view :id="id"></version-table-view>
                         </div>
                     </h1>
                 </div>
@@ -114,6 +112,14 @@ export default {
     },
     mounted() {
         this.refresh()
+        $('#versionPopup').popup({
+            position: 'bottom left',
+            hoverable: true,
+            delay: {
+                show: 300,
+                hide: 800
+            }
+        });
         $('#acc').accordion()
         $('.menu .item').tab()
     },
