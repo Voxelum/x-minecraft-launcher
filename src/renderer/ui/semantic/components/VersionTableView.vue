@@ -1,53 +1,51 @@
 <template>
-    <div>
-        <h5 class="ui horizontal divider header">
-            <i class="plug icon"></i>
-            <div class="content">
-                {{selectingMeta.id}}
-                <div class="sub header">{{selectingMeta.releaseTime}}</div>
-                <div class="sub header">{{selectingMeta.type}}</div>
+    <div class="ui flowing popup bottom left transition hidden grid">
+        <div class="sixteen wide center aligned column">
+            <div class="ui left icon right action input">
+                <i class="search icon"></i>
+                <input type="text" placeholder="Filter" v-model="filter">
+                <span id="alphaDropdown" class="ui basic floating dropdown button">
+                    <div class="text">{{$t('version.release')}}</div>
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <div class="item" @click="filterType='snapshot'">{{$t('version.snapshot')}}</div>
+                        <div class="item" @click="filterType='release'">{{$t('version.release')}}</div>
+                        <div class="item" @click="filterType=''">{{$t('version.all')}}</div>
+                    </div>
+                </span>
             </div>
-        </h5>
-        <div class="ui attached segment " :class="{disabled: metas.length==0}" style='height:220px;overflow-x: hidden;'>
-            <div v-if="metas.length==0" class="ui active inverted dimmer">
-                <div class="ui indeterminate text loader">{{$t('version.prepare')}}</div>
-            </div>
-            <table class="ui very basic selectable celled center aligned table">
-                <tbody>
-                    <tr style="cursor: pointer;" v-for="meta in metas" :key="meta" :url="meta.url" :version-id='meta.id' @click="onselect">
-                        <td>
-                            <div class="ui ribbon label">{{meta.type}}</div>
-                            <br> {{meta.id}}
-                        </td>
-                        <td>{{meta.releaseTime}}</td>
-                        <td>{{meta.time}}</td>
-                        <td class="selectable" :ver="meta.id" :data-tooltip="$t('version.download')" data-position="left center" @click="ondownload" v-if="meta.status=='remote'">
-                            <div style="padding:0 10px 0 10px;pointer-events: none;">
-                                <i class="download icon"></i>
-                            </div>
-                        </td>
-                        <td class="selectable" :ver="meta.id" :data-tooltip="$t('version.downloaded')" data-position="left center" v-else-if="meta.status=='local'">
-                            <div style="padding:0 10px 0 10px;pointer-events: none;">
-                                <i class="disk outline icon"></i>
-                            </div>
-                        </td>
-                        <td :ver="meta.id" :data-tooltip="$t('version.downloading')" data-position="left center" v-else>
-                            <div style="padding:0 15px 0 5px;pointer-events: none;">
-                                <div class="ui active inline small loader"></div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="ui clearing bottom attached segment">
-            <!-- <div class="ui left icon input">
-                    <i class="filter icon"></i>
-                    <input>
-                </div> -->
-            <div class="ui right floated checkbox">
-                <input type="checkbox" name="example">
-                <label>Show Alpha</label>
+            <div class="ui divider"></div>
+            <div class="ui basic segment " :class="{disabled: metas.length==0}" style='height:300px;overflow-x: hidden;'>
+                <div v-if="metas.length==0" class="ui active inverted dimmer">
+                    <div class="ui indeterminate text loader">{{$t('version.prepare')}}</div>
+                </div>
+                <table class="ui  very basic selectable celled center aligned table" style='height:300px;overflow-x: hidden;'>
+                    <tbody>
+                        <tr style="cursor: pointer;" v-for="meta in metas" :key="meta" :url="meta.url" :version-id='meta.id' @click="onselect">
+                            <td>
+                                <div class="ui  grey ribbon label">{{meta.type}}</div>
+                                <br> {{meta.id}}
+                            </td>
+                            <td>{{meta.releaseTime}}</td>
+                            <!-- <td>{{meta.time}}</td> -->
+                            <td class="selectable" :ver="meta.id" :data-tooltip="$t('version.download')" data-position="left center" @click="ondownload" v-if="meta.status=='remote'">
+                                <div style="padding:0 10px 0 10px;pointer-events: none;">
+                                    <i class="download icon"></i>
+                                </div>
+                            </td>
+                            <td class="selectable" :ver="meta.id" :data-tooltip="$t('version.downloaded')" data-position="left center" v-else-if="meta.status=='local'">
+                                <div style="padding:0 10px 0 10px;pointer-events: none;">
+                                    <i class="disk outline icon"></i>
+                                </div>
+                            </td>
+                            <td :ver="meta.id" :data-tooltip="$t('version.downloading')" data-position="left center" v-else>
+                                <div style="padding:0 15px 0 5px;pointer-events: none;">
+                                    <div class="ui active inline small loader"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -58,8 +56,11 @@ export default {
     data() {
         return {
             filterRelease: true,
+            filter: '',
+            filterType: 'release',
         }
     },
+    mounted() { $('#alphaDropdown').dropdown() },
     props: ['id'],
     computed: {
         ...mapState('versions', ['minecraft']),
@@ -71,8 +72,12 @@ export default {
         },
         selectingMeta() { return /* this.metaMap.get(this.selected.version) || */ {}; },
         metas() {
-            if (!this.filterRelease) return this.minecraft.versions
-            return this.minecraft.versions.filter(v => v.type === 'release')
+            let metas = this.minecraft.versions;
+            if (this.filterType !== '')
+                metas = metas.filter(v => v.type === this.filterType)
+            if (this.filter !== '')
+                metas = metas.filter(v => v.id.includes(this.filter))
+            return metas
         }
     },
     methods: {
