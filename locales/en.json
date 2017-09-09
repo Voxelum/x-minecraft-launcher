@@ -47,7 +47,10 @@
         "unknown": "Unknown Version",
         "download": "Download this version",
         "downloading": "Downloading...",
-        "downloaded": "This version is in the disk"
+        "downloaded": "This version is in the disk",
+        "snapshot": "Snapshot",
+        "all": "All",
+        "release": "Release"
     },
     "gametype": {
         "survival": "Survival",
