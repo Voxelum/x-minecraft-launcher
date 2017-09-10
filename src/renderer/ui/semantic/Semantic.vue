@@ -235,7 +235,7 @@ export default {
             }
         },
         test() {
-            this.$store.dispatch('query', { 'service': 'jre', action: 'ensureJre' })
+            this.$store.dispatch('query', { service: 'jre', action: 'ensureJre' })
         },
         onlaunch() {
             this.launch().catch(e => {
@@ -253,5 +253,24 @@ export default {
 
 .non-moveable {
     -webkit-app-region: no-drag
+}
+
+body ::-webkit-scrollbar {
+    width: 2px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+body ::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 5px;
+    border-radius: 10px;
+    /* width: 1px; */
+    background: rgba(0, 0, 0, 0.25);
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+    /* background: rgba(0, 0, 0, 0.2); */
 }
 </style>

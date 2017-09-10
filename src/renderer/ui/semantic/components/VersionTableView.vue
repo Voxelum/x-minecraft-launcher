@@ -95,23 +95,7 @@ export default {
 }
 </script>
 <style>
-::-webkit-scrollbar {
-    width: 8px;
-}
 
-::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-}
-
-::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.25);
-}
-
-::-webkit-scrollbar-thumb:window-inactive {
-    background: rgba(0, 0, 0, 0.2);
-}
 </style>
 
 

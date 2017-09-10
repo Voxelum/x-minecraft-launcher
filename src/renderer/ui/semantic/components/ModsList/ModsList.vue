@@ -6,7 +6,7 @@
             <div class="sub header">{{$t('mod.hint')}}</div>
         </h2>
     </div>
-    <div v-else>
+    <div v-else @drop="ondrop">
         <div class="ui grid">
             <div class="eight wide column">
                 <div class="ui icon transparent input">
@@ -14,15 +14,15 @@
                     <input placeholder="Filter" v-model="keyword">
                 </div>
             </div>
-            <div class="eight wide right aligned column">
-                <div class="ui checkbox">
-                    <input type="checkbox">
-                    <label>Show Mods for other version</label>
-                </div>
+            <div id="modFilterDropdown" class="eight wide right aligned column">
+                <select name="skills" multiple="" class="ui dropdown">
+                    <option value="angular">OtherVersion</option>
+                    <option value="css">Disabled Only</option>
+                </select>
             </div>
         </div>
         <div class="ui divider"></div>
-        <div class="ui relaxed divided items">
+        <div class="ui relaxed divided items" style="height:230px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
             <list-cell v-for="val in mods" :key="val" :value="val"></list-cell>
         </div>
     </div>
@@ -30,22 +30,24 @@
 
 <script>
 import vuex from 'vuex'
-import types from '../../../../store/types'
 import ListCell from './ListCell'
 
 function valid(meta, keyword) {
-    return meta.name.includes(keyword) || meta.modid.includes(keyword)
-        || meta.description.includes(keyword)
+    return (meta.name && meta.name.includes(keyword)) || (meta.modid && meta.modid.includes(keyword))
+        || (meta.description && meta.description.includes(keyword))
 }
 export default {
     data() {
         return {
-            keyword: ''
+            keyword: '',
+            showOtherVersion: false,
+            disabledOnly: true,
         }
     },
     components: { ListCell },
     computed: {
         ...vuex.mapGetters('mods', ['values']),
+        selectedMods() { return this.$store.getters[`profiles/${this.id}/forge/mods`] },
         mods() {
             const all = []
             for (const val of this.values) {
@@ -54,7 +56,7 @@ export default {
                         if (valid(meta.meta, this.keyword))
                             all.push(meta)
                     }
-                else if (valid(meta.meta, this.keyword))
+                else if (valid(val.meta.meta, this.keyword))
                     all.push(val.meta)
             }
             return all
@@ -64,7 +66,9 @@ export default {
     methods: {
         ...vuex.mapActions('mods', ['import']),
         ondrop(event) {
-            this.import(event.dataTransfer.files[0].path)
+            if (event.dataTransfer && event.dataTransfer.files) {
+                this.import(Array.from(event.dataTransfer.files).map(f => f.path))
+            }
             event.preventDefault()
         }
     }
