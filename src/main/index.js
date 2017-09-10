@@ -22,12 +22,6 @@ if (!devMod) {
 }
 
 
-ipcMain.on('ping', (event, time) => {
-    console.log(time)
-    event.sender.send('pong')
-    console.log(`single spend ${Date.now() - time}`)
-})
-
 const mainWinURL = process.env.NODE_ENV === 'development' ?
     'http://localhost:9080/index.html' :
     `file://${__dirname}/index.html`
@@ -148,7 +142,6 @@ app.on('ready', () => {
 
     const appIcon = new Tray(iconImage)
     app.setName('ILauncher');
-    // createLogWindow();
 })
 
 app.on('window-all-closed', () => {

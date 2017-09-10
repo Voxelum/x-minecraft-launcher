@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import 'default-passive-events'
 import { ipcRenderer } from 'electron'
 import App from './App'
 import store from './store'
