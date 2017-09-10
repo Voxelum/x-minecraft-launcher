@@ -1,23 +1,20 @@
 <template>
     <div class="dimmable item">
-        <div class="ui inverted dimmer">
-            <div class="content">
-                <div class="center">
-                    <div class="ui icon buttons">
-                        <a class="ui right floated green basic button">Enabled</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- <div class="ui inverted dimmer">
+                                <div class="content">
+                                    <div class="center">
+                                        <div class="ui icon buttons">
+                                            <a class="ui right floated green basic button">Enabled</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
         <div class="content">
             <h3 class="header">
                 {{meta.name}}
             </h3>
             <div class="meta">
-                <div class="ui basic small label">Version</div> {{meta.version}}
-                <div class="ui basic samll label">Minecraft</div>
-                {{meta.mcversion}}
-                <div class="ui basic small label">Authors</div>
+                <span v-if="meta.authorList&&meta.authorList.length!=0">Authors:</span>
                 <span v-for="author in meta.authorList" :key="author">
                     {{author}}
                 </span>
@@ -26,9 +23,14 @@
                 {{meta.description}}
             </div>
             <div class="extra">
-                <span v-if="meta.credits">
-                    Credit: {{meta.credits}}
-                </span>
+                <a class="ui basic small label">Version: &nbsp {{meta.version}}</a> 
+                <a class="ui basic samll label">Minecraft: &nbsp{{meta.mcversion}}</a>
+                <!-- <div class="ui icon buttons"> -->
+                <a class="ui right floated green basic tiny button">Enabled</a>
+                <!-- </div> -->
+                <!-- <span v-if="meta.credits">
+                                        Credit: {{meta.credits}}
+                                    </span> -->
             </div>
         </div>
     </div>
@@ -41,7 +43,7 @@ export default {
         meta() { return this.value.meta; }
     },
     mounted() {
-        $(this.$el).dimmer({ on: 'hover' })
+        // $(this.$el).dimmer({ on: 'hover' })
     }
 }
 </script>

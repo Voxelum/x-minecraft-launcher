@@ -1,4 +1,4 @@
-import { ModContainer } from 'ts-minecraft'
+import { Mod,Forge } from 'ts-minecraft'
 import repository from './models/repository'
 
 const state = () => {
@@ -26,7 +26,9 @@ const mutations = repository.mutations;
 const actions = {
     ...repository.actions,
     meta(context, { name, data }) {
-        return ModContainer.parseForge(data).catch(e => ModContainer.parseLiteLoader(data))
+        return Mod.parse(data).catch((e) => {
+            console.log(e)
+        })
     },
 }
 

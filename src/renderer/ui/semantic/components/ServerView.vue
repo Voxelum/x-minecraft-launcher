@@ -50,7 +50,7 @@
                 </div>
             </div>
             <div class="one wide column"></div>
-            <div class="eleven wide column" style="padding: 0 5% 0 20px">
+            <div class="eleven wide column" style="padding: 0 5% 0 0px">
                 <div class="ui active tab" data-tab="settings">
                     <game-settings :id="id"></game-settings>
                 </div>
@@ -61,6 +61,7 @@
                     <mods-list :id="id"></mods-list>
                 </div>
                 <div class="ui tab" data-tab="forge">
+                    <forge-view :id="id"></forge-view>
                 </div>
                 <div class="ui tab" data-tab="liteloader">
                 </div>
@@ -75,9 +76,10 @@ import TextComponent from './TextComponent'
 import ResourcePackList from './ResourcePackList'
 import GameSettings from './GameSettings'
 import ModsList from './ModsList'
-import Advance from './AdvanceSettings'
+import ForgeView from './ForgeView'
+
 export default {
-    components: { TextComponent, ResourcePackList, GameSettings, ModsList, Advance },
+    components: { TextComponent, ResourcePackList, GameSettings, ModsList, ForgeView },
     props: ['source', 'id'],
     computed: {
         status() { return this.source.status },
