@@ -15,6 +15,8 @@ export default {
     },
     getters: {
         mods: state => state.mods,
+        version: state => state.version,
+        settings: state => state.settings,
     },
     actions: {
         load() { },
