@@ -31,7 +31,7 @@ In this situation, players don't need to ever touch the game files. They don't e
  - [ ] Mod configuration
  - [ ] Dynamic ui theme loading
  - [ ] Dynamic appData location
- - [ ] Skin preview
+ - [x] Skin preview
  - [ ] Skin upload & export
  - [ ] Model preview
  - [x] JRE detection and installation 
@@ -42,6 +42,8 @@ In this situation, players don't need to ever touch the game files. They don't e
  - [ ] Plugin system
 
 #### Contributing
+
+This project is using [nodejs](https://nodejs.org/) + [electron](https://electron.atom.io) + [vue](https://vuejs.org).
 
 File structure:
 
@@ -67,6 +69,8 @@ Just adding a new folder under the `src/renderer/ui` folder.
 [MIT](LICENSE)
 
 #### Build Setup
+
+(require nodejs installed in your pc, both LTS v6.x.x or Current v8.x.x are fine, [nodejs download](https://nodejs.org/))
 
 ``` bash
 # install dependencies
