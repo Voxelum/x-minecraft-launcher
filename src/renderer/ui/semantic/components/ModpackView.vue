@@ -95,11 +95,12 @@ export default {
         VersionTableView, ResourcePackList, TextComponent,
         GameSettings, MapsList, ModsList
     },
-    props: ['source', 'id'],
     computed: {
         ...mapState('versions', ['minecraft']),
         versions() { return this.minecraft.versions },
         type() { return this.source.type },
+        id() { return this.$route.params.id },
+        source() { return this.$store.state.profiles[this.id] }
     },
     methods: {
         modify(event) {

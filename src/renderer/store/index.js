@@ -51,7 +51,7 @@ export const init = (root) => {
         }
     }
     return Promise.all(promises).then(() => {
-        console.log('done for all promise!')
+        console.log('Done loading store!')
         return store
     }, (err) => {
         console.log('Done with Error')
