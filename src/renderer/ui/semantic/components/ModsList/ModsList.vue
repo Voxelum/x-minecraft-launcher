@@ -15,16 +15,18 @@
                 </div>
             </div>
             <!-- <div id="modFilterDropdown" class="eight wide right aligned column">
-                <select name="skills" multiple="" class="ui dropdown">
-                    <option value="angular">OtherVersion</option>
-                    <option value="css">Disabled Only</option>
-                </select>
-            </div> -->
+                                    <select name="skills" multiple="" class="ui dropdown">
+                                        <option value="angular">OtherVersion</option>
+                                        <option value="css">Disabled Only</option>
+                                    </select>
+                                </div> -->
         </div>
-        <div  class="ui divider"></div>
-        <virtualList wclass="ui relaxed divided items" :size="50" :remain="3" :bench="8" style="height:230px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
+        <div class="ui divider"></div>
+        <!-- <virtualList wclass="ui relaxed divided items" :size="50" :remain="3" :bench="8" style="height:230px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;"> -->
+        <div class="ui relaxed divided items" style="height:230px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
             <list-cell v-for="val in mods" v-if="valid(val)" :key="val[0].modid||val[0].name" :value="val"></list-cell>
-        </virtualList>
+        </div>
+        <!-- </virtualList> -->
     </div>
 </template>
 
@@ -54,8 +56,8 @@ export default {
                     meta = [meta];
                 for (const resMeta of meta) {
                     if (!resMeta) continue;
-                    let id = resMeta.id;
-                    id = id.substring(0, id.indexOf(':'));
+                    let id = resMeta.id ? resMeta.id : resMeta.meta.modid || resMeta.meta.name;
+                    if (resMeta.id) id = id.substring(0, id.indexOf(':'));
                     const metas = resMeta.meta instanceof Array ?
                         [...resMeta.meta] : [resMeta.meta]
                     if (!tree[id]) tree[id] = []
