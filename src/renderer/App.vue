@@ -1,7 +1,7 @@
 <template>
-  <div id="app" @drop="ondrop">
-    <semantic></semantic>
-  </div>
+    <div id="app" @drop="ondrop">
+        <semantic></semantic>
+    </div>
 </template>
 
 <script>
@@ -10,38 +10,38 @@ import MaterialUi from './ui/material/Main'
 
 import { mapState } from 'vuex'
 export default {
-  computed: {
-    ...mapState('settings', ['theme'])
-  },
-  mounted() {
-    let dragTimer;
-    const store = this.$store
-    $(document).on('dragover', function(e) {
-      e.preventDefault()
-      var dt = e.originalEvent.dataTransfer;
-      if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1
-        : dt.types.contains('Files'))) {
-        if (!store.state.dragover) store.commit('dragover', true);
-        window.clearTimeout(dragTimer);
-      }
-    });
-    $(document).on('dragleave', function(e) {
-      dragTimer = window.setTimeout(function() {
-        store.commit('dragover', false);
-      }, 25);
-    });
-  },
-  methods: {
-    ondrop(event) {
-      event.preventDefault()
-      this.$store.commit('dragover', false)
-      return false;
+    computed: {
+        ...mapState('settings', ['theme'])
     },
-  },
-  components: {
-    semantic: SemanticUi,
-    material: MaterialUi,
-  }
+    mounted() {
+        let dragTimer;
+        const store = this.$store
+        $(document).on('dragover', function(e) {
+            e.preventDefault()
+            var dt = e.originalEvent.dataTransfer;
+            if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1
+                : dt.types.contains('Files'))) {
+                if (!store.state.dragover) store.commit('dragover', true);
+                window.clearTimeout(dragTimer);
+            }
+        });
+        $(document).on('dragleave', function(e) {
+            dragTimer = window.setTimeout(function() {
+                store.commit('dragover', false);
+            }, 25);
+        });
+    },
+    methods: {
+        ondrop(event) {
+            event.preventDefault()
+            this.$store.commit('dragover', false)
+            return false;
+        },
+    },
+    components: {
+        semantic: SemanticUi,
+        material: MaterialUi,
+    }
 }
 </script>
 
@@ -51,11 +51,11 @@ export default {
 } */
 
 .noselect {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 </style>
