@@ -2,6 +2,8 @@
 
 > An Minecraft Launcher based on electron-vue
 
+![Image](/misc/0.png)
+
 ## Problems and Solutions
 
 To play Minecraft, players always need various pre-knowledge to handle so many minecraft technical stuff. Even they might know how to do, they still need maintain Minecraft game folder by their own, repeating doing the copy and paste to work. 
@@ -31,7 +33,7 @@ In this situation, players don't need to ever touch the game files. They don't e
  - [ ] Mod configuration
  - [ ] Dynamic ui theme loading
  - [ ] Dynamic appData location
- - [ ] Skin preview
+ - [x] Skin preview
  - [ ] Skin upload & export
  - [ ] Model preview
  - [x] JRE detection and installation 
@@ -42,6 +44,8 @@ In this situation, players don't need to ever touch the game files. They don't e
  - [ ] Plugin system
 
 #### Contributing
+
+This project is using [nodejs](https://nodejs.org/) + [electron](https://electron.atom.io) + [vue](https://vuejs.org).
 
 File structure:
 
@@ -66,7 +70,9 @@ Just adding a new folder under the `src/renderer/ui` folder.
 
 [MIT](LICENSE)
 
-#### Build Setup
+#### Dev
+
+(require nodejs installed in your pc, both LTS v6.x.x or Current v8.x.x should be fine, [nodejs download](https://nodejs.org/))
 
 ``` bash
 # install dependencies
@@ -75,12 +81,11 @@ npm install
 # serve with hot reload at localhost:9080
 npm run dev
 
-# build electron application for production
+# build electron application for production, don't run this unless you really want to make a product env.... use npm run dev to dev
 npm run build
 
-# run unit tests
+# run unit tests, whereas no tests yet
 npm test
-
 
 ```
 
