@@ -60,7 +60,9 @@
             </div>
         </div>
         <div class="ui middle aligned divided list">
-            <list-cell v-for="map in maps" :key="map.displayName" :map="map" :id="id"></list-cell>
+            <list-cell v-for="map in maps" :key="map.displayName" :map="map" :id="id">
+                
+            </list-cell>
         </div>
     </div>
 </template>
