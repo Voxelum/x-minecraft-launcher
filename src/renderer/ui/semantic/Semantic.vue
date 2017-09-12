@@ -8,16 +8,16 @@
             </div>
             <div class="eleven wide column">
                 <div class="ui breadcrumb">
-                    <a class="section">
-                        <div class="ui inverted circular button non-moveable" @click="unselect">
+                    <div class="section">
+                        <router-link to="/semantic" class="ui inverted circular button non-moveable">
                             <i class="home icon"></i>{{$t('home')}}
-                        </div>
-                    </a>
+                        </router-link>
+                    </div>
                     <span v-if="isSelecting">
                         <i class="right chevron inverted icon divider" style="color:white"></i>
                         <a class="section">
                             <div class="ui inverted circular  button non-moveable">
-                                {{selectedProfile.name}}
+                                {{selecttedProfile.name}}
                             </div>
                         </a>
                     </span>
@@ -49,9 +49,10 @@
                 <skin-view width="210" height="400" :skin="skin"></skin-view>
             </div>
             <div class="twelve wide column">
-                <card-view ref='view' v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
+                <router-view></router-view>
+                <!-- <card-view ref='view' v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
                 <server-view ref='view' :id="selectedProfileID" :source="selectedProfile" v-else-if="selectedProfile.type==='server'"> </server-view>
-                <modpack-view ref='view' :id="selectedProfileID" :source="selectedProfile" v-else> </modpack-view>
+                <modpack-view ref='view' :id="selectedProfileID" :source="selectedProfile" v-else> </modpack-view> -->
             </div>
         </div>
         <div class="moveable black row" style="height:60px">
@@ -144,15 +145,15 @@
 import 'static/semantic/semantic.min.css'
 import 'static/semantic/semantic.min.js'
 import modals from './components/modals'
-import ModpackView from './components/ModpackView'
-import ServerView from './components/ServerView'
-import CardView from './components/CardView'
+// import ModpackView from './components/ModpackView'
+// import ServerView from './components/ServerView'
+// import CardView from './components/CardView'
 import SkinView from '../shared/SkinView'
 
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 export default {
     components: {
-        ModpackView, ServerView, CardView,
+        // ModpackView, ServerView, CardView,
         SkinView,
         ...modals
     },
@@ -172,7 +173,7 @@ export default {
         ...mapGetters('auth', ['username', 'skin']),
         ...mapState('settings', ['autoDownload']),
         isSelecting() {
-            return this.selectedProfile != undefined && this.selectedProfileID != null
+            return false;//this.selectedProfile != undefined && this.selectedProfileID != null
         },
     },
     mounted(e) {

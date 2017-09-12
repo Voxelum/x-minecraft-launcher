@@ -1,7 +1,7 @@
 <template>
     <div class="ui vertically divided grid" style="height:105%">
         <div class="row">
-            <div class="eight wide column">
+            <div class="eight wide column"  @click="openBar">
                 <h1 class="ui header">
                     <img v-if="status.icon!=''&& status.icon" class="ui image" :src="status.icon"></img>
                     <i v-else class="server icon"></i>
@@ -27,15 +27,39 @@
                 <text-component :source="status.serverMOTD" localized="true"></text-component>
             </div>
         </div>
-        <div class="stretched row" style="min-height:70%; max-heigth:70%">
-            <div id="barmenu" class="ui top attached demo menu">
-                <a class="item" @click="openBar">
-                    <i class="sidebar icon"></i>
-                    Menu
-                </a>
+        <div id="bar" class="stretched row pushable" style="min-height:70%; max-heigth:70%">
+
+            <!-- <div id="bar" class="ui segment pushable"> -->
+            <div id="sidebar" class="ui inline vertical sidebar secondary pointing menu" style="background-color:white">
+                <a class="active item" data-tab="settings">{{$t('settings')}}</a>
+                <a class="item" data-tab="resourcepack">{{$tc('resourcepack.name', 0)}}</a>
+                <a class="item" data-tab="mods">{{$tc('mod.name', 0)}}</a>
+                <div id="acc" class="ui accordion">
+                    <a class="title header item">
+                        {{$t('advanced')}}
+                    </a>
+                    <div class="content">
+                        <a class="item" data-tab="forge">
+                            {{$t('forge')}}
+                        </a>
+                        <a class="item" data-tab="liteloader">
+                            {{$t('liteloader')}}
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div id="bar" class="ui bottom attached segment pushable">
-                <div id="sidebar" class="ui inverted labeled icon left inline vertical sidebar menu" style="">
+            <div class="pusher">
+                <div class="ui basic segment">
+                    <h3 class="ui header">Application Content</h3>
+                    <p></p>
+                    <p></p>
+                    <p></p>
+                    <p></p>
+                </div>
+            </div>
+            <!-- </div> -->
+            <!-- <div class="four wide column">
+                <div class="ui vertical secondary pointing menu">
                     <div class="header item">{{$t('basic')}}</div>
                     <a class="active item" data-tab="settings">{{$t('settings')}}</a>
                     <a class="item" data-tab="resourcepack">{{$tc('resourcepack.name', 0)}}</a>
@@ -54,54 +78,24 @@
                         </div>
                     </div>
                 </div>
-                <div class="pusher">
-                    <div class="ui basic segment">
-                        <h3 class="ui header">Application Content</h3>
-                        <p></p>
-                        <p></p>
-                        <p></p>
-                        <p></p>
-                    </div>
-                </div>
             </div>
-            <!-- <div class="four wide column">
-                                        <div class="ui vertical secondary pointing menu">
-                                            <div class="header item">{{$t('basic')}}</div>
-                                            <a class="active item" data-tab="settings">{{$t('settings')}}</a>
-                                            <a class="item" data-tab="resourcepack">{{$tc('resourcepack.name', 0)}}</a>
-                                            <a class="item" data-tab="mods">{{$tc('mod.name', 0)}}</a>
-                                            <div id="acc" class="ui accordion">
-                                                <a class="title header item">
-                                                    {{$t('advanced')}}
-                                                </a>
-                                                <div class="content">
-                                                    <a class="item" data-tab="forge">
-                                                        {{$t('forge')}}
-                                                    </a>
-                                                    <a class="item" data-tab="liteloader">
-                                                        {{$t('liteloader')}}
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="one wide column"></div>
-                                    <div class="eleven wide column" style="padding: 0 5% 0 0px">
-                                        <div class="ui active tab" data-tab="settings">
-                                            <game-settings :id="id"></game-settings>
-                                        </div>
-                                        <div class="ui tab" data-tab="resourcepack">
-                                            <resource-pack-list :id="id"></resource-pack-list>
-                                        </div>
-                                        <div class="ui tab" data-tab="mods">
-                                            <mods-list :id="id"></mods-list>
-                                        </div>
-                                        <div class="ui tab" data-tab="forge">
-                                            <forge-view :id="id"></forge-view>
-                                        </div>
-                                        <div class="ui tab" data-tab="liteloader">
-                                        </div>
-                                    </div> -->
+            <div class="one wide column"></div>
+            <div class="eleven wide column" style="padding: 0 5% 0 0px">
+                <div class="ui active tab" data-tab="settings">
+                    <game-settings :id="id"></game-settings>
+                </div>
+                <div class="ui tab" data-tab="resourcepack">
+                    <resource-pack-list :id="id"></resource-pack-list>
+                </div>
+                <div class="ui tab" data-tab="mods">
+                    <mods-list :id="id"></mods-list>
+                </div>
+                <div class="ui tab" data-tab="forge">
+                    <forge-view :id="id"></forge-view>
+                </div>
+                <div class="ui tab" data-tab="liteloader">
+                </div>
+            </div> -->
         </div>
     </div>
 </template>
@@ -116,10 +110,11 @@ import ForgeView from './ForgeView'
 
 export default {
     components: { TextComponent, ResourcePackList, GameSettings, ModsList, ForgeView },
-    props: ['source', 'id'],
     computed: {
         status() { return this.source.status },
         type() { return this.source.type },
+        id() { return this.$route.params.id },
+        source() { return this.$store.state.profiles[this.id] }
     },
     methods: {
         refresh(force) {

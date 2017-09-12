@@ -1,5 +1,5 @@
 <template>
-    <div class="ui card" v-bind:class="{color}">
+    <router-link :to="{ name:'server', params: { id: id }}" class="ui card" v-bind:class="{color}" replace>
         <p class="ui top attached label" :data-tooltip="$tc(this.source.type + '.name', 1)" data-inverted="" :data-position="bound? 'bottom center': 'top center'">
             <i class="server icon"></i>
             {{this.source.host}}
@@ -26,7 +26,7 @@
                 {{this.source.status ? (this.source.status.pingToServer ||-1)+" ms":'Cannot connected'}}
             </div>
         </div>
-    </div>
+    </router-link>
 </template>
 
 <script>
