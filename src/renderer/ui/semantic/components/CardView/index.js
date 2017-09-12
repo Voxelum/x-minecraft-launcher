@@ -1,6 +1,6 @@
 import vuex from 'vuex'
-import ModpackCard from './ModpackCard.vue'
-import ServerCard from './ServerCard.vue'
+import ModpackCard from './ModpackCard'
+import ServerCard from './ServerCard'
 
 export default {
     components: { 'modpack-card': ModpackCard, 'server-card': ServerCard },

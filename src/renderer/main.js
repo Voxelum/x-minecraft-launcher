@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import { ipcRenderer } from 'electron'
-import App from './App'
 
 if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'))
@@ -14,7 +13,7 @@ if (SIDE === 'log') {
     }).$mount('#log');
 } else {
     // require('default-passive-events')
-    // const App = require('./App');
+    const App = require('./App');
     const store = require('./store').default;
     ipcRenderer.on('init', (event, root) => {
         store(root).then(s =>

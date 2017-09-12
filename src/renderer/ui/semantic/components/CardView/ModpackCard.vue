@@ -1,5 +1,5 @@
 <template>
-    <div class="ui card" v-bind:class="{color}">
+    <router-link :to="{ name:'modpack', params: { id: id }}" class="ui card" v-bind:class="{color}">
         <p class="ui top attached label" :data-tooltip="$tc(this.source.type + '.name', 1)" data-inverted="">
             <i class="cubes icon"></i>
             {{this.source.name}}
@@ -20,7 +20,7 @@
         <div class="extra content">
             <i class="user icon"></i> {{this.source.author}}
         </div>
-    </div>
+    </router-link>
 </template>
 <script>
 
