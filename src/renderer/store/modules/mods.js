@@ -42,9 +42,7 @@ const mutations = repository.mutations;
 const actions = {
     ...repository.actions,
     meta(context, { name, data }) {
-        return Mod.parse(data).catch((e) => {
-            console.log(e)
-        })
+        return Mod.parse(data);
     },
 }
 
