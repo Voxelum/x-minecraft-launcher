@@ -115,12 +115,6 @@ let rendererConfig = {
         ? path.resolve(__dirname, '../node_modules')
         : false
     }),
-    // new CopyWebpackPlugin([
-    //   {
-    //     from: 'node_modules/monaco-editor/min/vs',
-    //     to: 'vs',
-    //   }
-    // ]),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jquery: 'jquery',

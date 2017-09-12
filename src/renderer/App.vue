@@ -1,12 +1,10 @@
 <template>
-    <div id="app" @drop="ondrop">
-        <semantic></semantic>
+    <div @drop="ondrop">
+        <router-view></router-view>
     </div>
 </template>
 
 <script>
-import SemanticUi from './ui/semantic/Semantic'
-import MaterialUi from './ui/material/Main'
 
 import { mapState } from 'vuex'
 export default {
@@ -37,19 +35,11 @@ export default {
             this.$store.commit('dragover', false)
             return false;
         },
-    },
-    components: {
-        semantic: SemanticUi,
-        material: MaterialUi,
     }
 }
 </script>
 
 <style>
-/* #app {
-  height: 780px;
-} */
-
 .noselect {
     -webkit-touch-callout: none;
     -webkit-user-select: none;

@@ -19,7 +19,7 @@ if (SIDE === 'log') {
     ipcRenderer.on('init', (event, root) => {
         store(root).then(s =>
             new Vue({
-                router: require('./router').default,
+                router: require('./router.js').default,
                 components: { App },
                 store: s,
                 i18n: require('./i18n').default,

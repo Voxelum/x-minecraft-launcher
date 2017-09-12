@@ -6,26 +6,38 @@
             <div class="sub header">{{$t('mod.hint')}}</div>
         </h2>
     </div>
-    <div v-else @drop="ondrop">
-        <div class="ui grid">
+    <div v-else @drop="ondrop" class="ui grid">
+        <div class="row"></div>
+        <div class="ui icon transparent input">
+            <i class="filter icon"></i>
+            <input placeholder="Filter" v-model="keyword">
+        </div>
+        <div class="row">
             <div class="eight wide column">
-                <div class="ui icon transparent input">
-                    <i class="filter icon"></i>
-                    <input placeholder="Filter" v-model="keyword">
+                <div class="ui relaxed divided items" style="height:290px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
+                    <a class="ui circular large basic label" style="margin:5px" v-for="(val, index) in mods" v-if="valid(val)" :class="classObject(index)" :key="val[0].modid||val[0].name" :data-tooltip="val[0].description" data-inverted="" :data-position="pos(index)">
+                        {{val[0].modid||val[0].name}}
+                    </a>
+                    <!-- <list-cell v-for="(val, index) in cached" v-if="valid(val)" :key="val[0].modid||val[0].name" :value="val"></list-cell> -->
                 </div>
             </div>
-            <!-- <div id="modFilterDropdown" class="eight wide right aligned column">
-                                    <select name="skills" multiple="" class="ui dropdown">
-                                        <option value="angular">OtherVersion</option>
-                                        <option value="css">Disabled Only</option>
-                                    </select>
-                                </div> -->
+            <div class="eight wide column">
+            </div>
         </div>
-        <div class="ui divider"></div>
+        <!-- <div class="ui black grid"> -->
+        <!-- <div class="eight wide column"> -->
+
+        <!-- </div> -->
+        <!-- <div id="modFilterDropdown" class="eight wide right aligned column">
+                        <select name="skills" multiple="" class="ui dropdown">
+                            <option value="angular">OtherVersion</option>
+                            <option value="css">Disabled Only</option>
+                        </select>
+                    </div> -->
+        <!-- </div> -->
+        <!-- <div class="ui divider"></div> -->
         <!-- <virtualList wclass="ui relaxed divided items" :size="50" :remain="3" :bench="8" style="height:230px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;"> -->
-        <div class="ui relaxed divided items" style="height:230px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
-            <list-cell v-for="val in mods" v-if="valid(val)" :key="val[0].modid||val[0].name" :value="val"></list-cell>
-        </div>
+
         <!-- </virtualList> -->
     </div>
 </template>
@@ -41,10 +53,14 @@ export default {
             keyword: '',
             showOtherVersion: false,
             disabledOnly: true,
+            cached: [],
         }
+    },
+    mounted() {
     },
     components: { ListCell, VirtualList },
     computed: {
+
         ...vuex.mapGetters('mods', ['values']),
         selectedMods() { return this.$store.getters[`profiles/${this.id}/forge/mods`] },
         mods() {
@@ -69,6 +85,12 @@ export default {
     },
     props: ['id'],
     methods: {
+        classObject: function(index) {
+            const color = ['red', 'green', 'teal', 'orange', 'blue'][Math.floor(Math.random() * 5) % 5];
+            return {
+                [color]: true,
+            }
+        },
         ...vuex.mapActions('mods', ['import']),
         valid(metas) {
             const keyword = this.keyword;
@@ -80,6 +102,9 @@ export default {
                     valid = true;
             }
             return valid;
+        },
+        pos(index) {
+            return index > 7 ? 'top center' : 'bottom center'
         },
         ondrop(event) {
             if (event.dataTransfer && event.dataTransfer.files) {
