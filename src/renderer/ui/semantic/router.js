@@ -5,6 +5,7 @@ import SemanticUi from './Semantic'
 import ModpackView from './components/ModpackView'
 import ServerView from './components/ServerView'
 import CardView from './components/CardView'
+import MarketView from './components/MarketView'
 
 export default {
     path: '/semantic',
@@ -30,6 +31,7 @@ export default {
         {
             path: 'market',
             name: 'market',
+            component: MarketView,
         },
     ],
 }

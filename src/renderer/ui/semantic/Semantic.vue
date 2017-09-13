@@ -9,7 +9,7 @@
             <div class="eleven wide column">
                 <div class="ui breadcrumb">
                     <div class="section">
-                        <router-link to="/semantic" class="ui inverted circular button non-moveable">
+                        <router-link  tabindex="-1" to="/semantic" class="ui inverted circular button non-moveable">
                             <i class="home icon"></i>{{$t('home')}}
                         </router-link>
                     </div>
@@ -24,8 +24,8 @@
                 </div>
                 <div class="ui inverted circular right floated button non-moveable">
                     <i class="help  icon"></i>{{$t('help')}}</div>
-                <div class="ui inverted circular right floated button non-moveable">
-                    <i class="shop  icon"></i>{{$t('market')}}</div>
+                <router-link tabindex="-1" to="/semantic/market" class="ui inverted circular right floated button non-moveable">
+                    <i class="shop  icon"></i>{{$t('market')}}</router-link>
             </div>
             <div class="one wide center aligned middle aligned column mon-movable" style="cursor:pointer" :style="{grey: closing}" @mouseout="closing = false" @mouseover="closing = true" @click="close">
                 <i class="large close icon non-moveable" :class="{red: closing}"></i>
