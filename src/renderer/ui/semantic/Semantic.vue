@@ -7,11 +7,6 @@
                 </h1>
             </div>
             <location-bar></location-bar>
-            <!-- <div class="eleven wide column">
-                   
-                    <router-link tabIndex="-1" to="/semantic/market" class="ui inverted circular right floated button non-moveable">
-                        <i class="shop  icon"></i>{{$t('market')}}</router-link>
-                </div> -->
             <div class="one wide center aligned middle aligned column mon-movable" style="cursor:pointer" :style="{grey: closing}" @mouseout="closing = false" @mouseover="closing = true" @click="close">
                 <i class="large close icon non-moveable" :class="{red: closing}"></i>
             </div>
