@@ -6,27 +6,7 @@
                     ILauncher
                 </h1>
             </div>
-            <div class="eleven wide column">
-                <div class="ui breadcrumb">
-                    <div class="section">
-                        <router-link to="/semantic" class="ui inverted circular button non-moveable">
-                            <i class="home icon"></i>{{$t('home')}}
-                        </router-link>
-                    </div>
-                    <span v-if="isSelecting">
-                        <i class="right chevron inverted icon divider" style="color:white"></i>
-                        <a class="section">
-                            <div class="ui inverted circular  button non-moveable">
-                                {{selecttedProfile.name}}
-                            </div>
-                        </a>
-                    </span>
-                </div>
-                <div class="ui inverted circular right floated button non-moveable">
-                    <i class="help  icon"></i>{{$t('help')}}</div>
-                <div class="ui inverted circular right floated button non-moveable">
-                    <i class="shop  icon"></i>{{$t('market')}}</div>
-            </div>
+            <navigation-bar></navigation-bar>
             <div class="one wide center aligned middle aligned column mon-movable" style="cursor:pointer" :style="{grey: closing}" @mouseout="closing = false" @mouseover="closing = true" @click="close">
                 <i class="large close icon non-moveable" :class="{red: closing}"></i>
             </div>
@@ -49,10 +29,9 @@
                 <skin-view width="210" height="400" :skin="skin"></skin-view>
             </div>
             <div class="twelve wide column">
-                <router-view></router-view>
-                <!-- <card-view ref='view' v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
-                <server-view ref='view' :id="selectedProfileID" :source="selectedProfile" v-else-if="selectedProfile.type==='server'"> </server-view>
-                <modpack-view ref='view' :id="selectedProfileID" :source="selectedProfile" v-else> </modpack-view> -->
+                <transition name="fade">
+                    <router-view></router-view>
+                </transition>
             </div>
         </div>
         <div class="moveable black row" style="height:60px">
@@ -144,17 +123,16 @@
 <script>
 import 'static/semantic/semantic.min.css'
 import 'static/semantic/semantic.min.js'
+
+import NavigationBar from './components/NavigationBar'
 import modals from './components/modals'
-// import ModpackView from './components/ModpackView'
-// import ServerView from './components/ServerView'
-// import CardView from './components/CardView'
 import SkinView from '../shared/SkinView'
 
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 export default {
     components: {
-        // ModpackView, ServerView, CardView,
         SkinView,
+        NavigationBar,
         ...modals
     },
     data() {
@@ -273,5 +251,25 @@ body ::-webkit-scrollbar-thumb {
 
 ::-webkit-scrollbar-thumb:window-inactive {
     /* background: rgba(0, 0, 0, 0.2); */
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .3s ease;
+}
+.fade-enter, .fade-leave-active {
+  opacity: 0
+}
+.child-view {
+  position: absolute;
+  transition: all .3s cubic-bezier(.55,0,.1,1);
+}
+.slide-left-enter, .slide-right-leave-active {
+  opacity: 0;
+  -webkit-transform: translate(30px, 0);
+  transform: translate(30px, 0);
+}
+.slide-left-leave-active, .slide-right-enter {
+  opacity: 0;
+  -webkit-transform: translate(-30px, 0);
+  transform: translate(-30px, 0);
 }
 </style>

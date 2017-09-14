@@ -1,5 +1,0 @@
-export default {
-    render(createElement) {
-        
-    },
-}
