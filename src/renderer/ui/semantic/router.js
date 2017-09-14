@@ -43,8 +43,8 @@ export default {
             component: Curseforge,
         },
         {
-            path: 'project/:id',
-            name: 'project',
+            path: 'curseproject/:id',
+            name: 'curseproject',
             // component: CurseforgeProject,
         },
         {

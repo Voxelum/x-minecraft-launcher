@@ -18,10 +18,13 @@ for (const key in modules) {
 
 export const init = (root) => {
     const store = new Vuex.Store({
-        state: { root, dragover: false },
+        state: { root, dragover: false, path: '' },
         mutations: {
             dragover(states, value) {
                 states.dragover = value
+            },
+            path(states, path) {
+                states.path = path;
             },
         },
         modules,

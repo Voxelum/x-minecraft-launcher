@@ -7,26 +7,14 @@
             <i class="filter icon"></i>
             <span class="text">Popularity</span>
             <div class="menu">
-                <div class="item">
-                    Popularity
-                </div>
-                <div class="item">
-                    Date Created
-                </div>
-                <div class="item">
-                    Last Updated
-                </div>
-                <div class="item">
-                    Name
-                </div>
-                <div class="item">
-                    Total download
+                <div class="item" v-for="f of filters" :key="f.value" @click="filter = f.value">
+                    {{f.text}}
                 </div>
             </div>
         </div>
         <div id="versionDropdown" class="ui labeled icon top right pointing scrolling dropdown button">
             <i class="filter icon"></i>
-            <span class="text">Filter Posts</span>
+            <span class="text">All Versions</span>
             <div class="menu">
                 <div class="item" v-for="v of versions" :key="v.value" @click="version = v.value">
                     {{v.text}}
@@ -81,6 +69,7 @@ export default {
             pages: [],
             version: '',
             filter: '',
+            filters: [],
             versions: [],
             loading: false,
         }
@@ -90,8 +79,8 @@ export default {
     },
     watch: {
         page() { this.request(); },
-        filter() { this.page = 1; },
-        version() { this.page = 1; },
+        filter() { if (this.page === 1) this.request(); this.page = 1; },
+        version() { if (this.page === 1) this.request(); this.page = 1; },
     },
     methods: {
         request() {
@@ -114,6 +103,7 @@ export default {
                     self.page = current;
                     self.pages = pages
                     self.versions = s.versions;
+                    self.filters = s.filters;
                     self.$nextTick(() => {
                         $('#filterDropdown').dropdown()
                         $('#versionDropdown').dropdown()
