@@ -100,6 +100,8 @@ function createMainWindow() {
     mainWindow.loadURL(mainWinURL)
 
     mainWindow.on('closed', () => { mainWindow = null })
+    mainWindow.on('ready-to-show', () => {
+    })
     mainWindow.on('show', () => {
     })
     mainWindow.webContents.session.setDownloadPath(paths.join(root, 'temps'))
@@ -137,6 +139,8 @@ function createMainWindow() {
 }
 
 app.on('ready', () => {
+    require('./services'); // load all service 
+
     iconImage = nativeImage.createFromPath(`${__dirname}/logo.png`)
     createMainWindow()
 
@@ -179,6 +183,4 @@ ipcMain.on('exit', () => {
         app.quit()
     }
 })
-
-require('./services'); // load all service 
 

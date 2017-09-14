@@ -5,6 +5,11 @@ import SemanticUi from './Semantic'
 import ModpackView from './components/ModpackView'
 import ServerView from './components/ServerView'
 import CardView from './components/CardView'
+import MarketView from './components/MarketView'
+import Curseforge from './components/Curseforge'
+// import CurseforgeProjectList from './component/CurseforgeProjectList'
+// import CurseforgeProject from './component/CurseforgeProject'
+import Mcmodcn from './components/McmodCn'
 
 import ResourcePackList from './components/ResourcePackList'
 import GameSettings from './components/GameSettings'
@@ -73,6 +78,22 @@ export default {
         {
             path: 'market',
             name: 'market',
+            component: MarketView,
+        },
+        {
+            path: 'curseforge',
+            name: 'curseforge',
+            component: Curseforge,
+        },
+        {
+            path: 'curseproject/:id',
+            name: 'curseproject',
+            // component: CurseforgeProject,
+        },
+        {
+            path: 'mcmodcn',
+            name: 'mcmodcn',
+            component: Mcmodcn,
         },
     ],
 }

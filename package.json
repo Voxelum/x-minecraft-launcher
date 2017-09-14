@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "default-passive-events": "^0.1.1",
+    "fast-html-parser": "^1.0.1",
     "iconv-lite": "^0.4.18",
     "semantic-ui": "^2.2.10",
     "threex.minecraft": "^1.0.3",
