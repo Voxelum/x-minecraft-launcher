@@ -54,6 +54,13 @@ export default {
                         value: ver.attributes.value,
                     };
                 })
+            const filters = root.querySelector('#filter-sort').removeWhitespace()
+                .childNodes.map((f) => {
+                    return {
+                        text: f.rawText,
+                        value: f.attributes.value,
+                    }
+                })
             const all = root.querySelectorAll('.project-list-item').map((item) => {
                 item = item.removeWhitespace();
                 const noText = n => !(n instanceof parser.TextNode)
@@ -88,6 +95,7 @@ export default {
                 mods: all,
                 pages,
                 versions,
+                filters,
             }
         },
     },

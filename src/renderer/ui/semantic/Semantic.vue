@@ -6,27 +6,12 @@
                     ILauncher
                 </h1>
             </div>
-            <div class="eleven wide column">
-                <div class="ui breadcrumb">
-                    <div class="section">
-                        <router-link tabIndex="-1" to="/semantic" class="ui inverted circular button non-moveable">
-                            <i class="home icon"></i>{{$t('home')}}
-                        </router-link>
-                    </div>
-                    <span v-if="isSelecting">
-                        <i class="right chevron inverted icon divider" style="color:white"></i>
-                        <a class="section">
-                            <div class="ui inverted circular  button non-moveable">
-                                {{selecttedProfile.name}}
-                            </div>
-                        </a>
-                    </span>
-                </div>
-                <div class="ui inverted circular right floated button non-moveable">
-                    <i class="help  icon"></i>{{$t('help')}}</div>
-                <router-link tabIndex="-1" to="/semantic/market" class="ui inverted circular right floated button non-moveable">
-                    <i class="shop  icon"></i>{{$t('market')}}</router-link>
-            </div>
+            <location-bar></location-bar>
+            <!-- <div class="eleven wide column">
+                   
+                    <router-link tabIndex="-1" to="/semantic/market" class="ui inverted circular right floated button non-moveable">
+                        <i class="shop  icon"></i>{{$t('market')}}</router-link>
+                </div> -->
             <div class="one wide center aligned middle aligned column mon-movable" style="cursor:pointer" :style="{grey: closing}" @mouseout="closing = false" @mouseover="closing = true" @click="close">
                 <i class="large close icon non-moveable" :class="{red: closing}"></i>
             </div>
@@ -50,9 +35,6 @@
             </div>
             <div class="twelve wide column">
                 <router-view></router-view>
-                <!-- <card-view ref='view' v-if="!isSelecting" @select="selectProfile" @delete="showModal('delete', { type: $event.source.type, id: $event.id })"></card-view>
-                <server-view ref='view' :id="selectedProfileID" :source="selectedProfile" v-else-if="selectedProfile.type==='server'"> </server-view>
-                <modpack-view ref='view' :id="selectedProfileID" :source="selectedProfile" v-else> </modpack-view> -->
             </div>
         </div>
         <div class="moveable black row" style="height:60px">
@@ -144,17 +126,16 @@
 <script>
 import 'static/semantic/semantic.min.css'
 import 'static/semantic/semantic.min.js'
+
+import LocationBar from './components/LocationBar'
 import modals from './components/modals'
-// import ModpackView from './components/ModpackView'
-// import ServerView from './components/ServerView'
-// import CardView from './components/CardView'
 import SkinView from '../shared/SkinView'
 
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 export default {
     components: {
-        // ModpackView, ServerView, CardView,
         SkinView,
+        LocationBar,
         ...modals
     },
     data() {
