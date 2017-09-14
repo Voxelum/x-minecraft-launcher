@@ -15,16 +15,22 @@ if (SIDE === 'log') {
     // require('default-passive-events')
     const App = require('./App');
     const store = require('./store').default;
+    const router = require('./router.js').default;
     ipcRenderer.on('init', (event, root) => {
         store(root).then(s =>
             new Vue({
-                router: require('./router.js').default,
+                router,
                 components: { App },
                 store: s,
                 i18n: require('./i18n').default,
                 template: '<App style="max-height:626px; overflow:hidden;"></App>',
             }).$mount('#app'),
-        )
+        ).then((v) => {
+            v.$store.commit('path', v.$route.fullPath)
+            v.$router.afterEach((to, from) => {
+                v.$store.commit('path', to.fullPath)
+            })
+        })
     })
     ipcRenderer.send('init')
 }
