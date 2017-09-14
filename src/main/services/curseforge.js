@@ -21,7 +21,6 @@ async function project(path) {
     const s = await request(endpoint);
     const root = parser.parse(s);
     const descontent = root.querySelector('.project-description')
-    console.log(descontent)
 }
 export default {
     initialize() {
@@ -47,6 +46,14 @@ export default {
                 .map(text => Number.parseInt(text, 10))
                 .filter(n => Number.isInteger(n))
                 .reduce((a, b) => (a > b ? a : b))
+            const versions = root.querySelector('#filter-game-version').removeWhitespace()
+                .childNodes.map((ver) => {
+                    return {
+                        type: ver.attributes.class,
+                        text: ver.rawText,
+                        value: ver.attributes.value,
+                    };
+                })
             const all = root.querySelectorAll('.project-list-item').map((item) => {
                 item = item.removeWhitespace();
                 const noText = n => !(n instanceof parser.TextNode)
@@ -80,6 +87,7 @@ export default {
             return {
                 mods: all,
                 pages,
+                versions,
             }
         },
     },
