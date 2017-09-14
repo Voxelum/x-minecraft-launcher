@@ -6,6 +6,8 @@ import ModpackView from './components/ModpackView'
 import ServerView from './components/ServerView'
 import CardView from './components/CardView'
 import MarketView from './components/MarketView'
+import Curseforge from './components/Curseforge'
+import Mcmodcn from './components/McmodCn'
 
 export default {
     path: '/semantic',
@@ -32,6 +34,16 @@ export default {
             path: 'market',
             name: 'market',
             component: MarketView,
+        },
+        {
+            path: 'curseforge',
+            name: 'curseforge',
+            component: Curseforge,
+        },
+        {
+            path: 'mcmodcn',
+            name: 'mcmodcn',
+            component: Mcmodcn,
         },
     ],
 }

@@ -2,28 +2,45 @@ import { net } from 'electron'
 import querystring from 'querystring'
 import parser from 'fast-html-parser'
 
+function request(endpoint) {
+    return new Promise((resolve, reject) => {
+        let s = ''
+        const req = net.request(endpoint)
+        req.on('response', (msg) => {
+            msg.on('data', (b) => { s += b.toString() })
+            msg.on('end', () => {
+                resolve(s)
+            })
+        })
+        req.on('error', e => reject(e))
+        req.end()
+    });
+}
+async function project(path) {
+    const endpoint = `https://minecraft.curseforge.com${path}`
+    const s = await request(endpoint);
+    const root = parser.parse(s);
+    const descontent = root.querySelector('.project-description')
+    console.log(descontent)
+}
 export default {
     initialize() {
+        project('/projects/journeymap')
     },
     actions: {
+        async project(path) {
+            const endpoint = `https://minecraft.curseforge.com${path}`
+            const s = await request(endpoint);
+            const root = parser.parse(s);
+            const descontent = root.querySelector('.project-description')
+        },
         async mods({ page, sort, version } = {}) {
             const endpoint = `https://minecraft.curseforge.com/mc-mods?${querystring.stringify({
                 page: page || '',
                 'filter-sort': sort || 'popularity',
                 'filter-game-version': version || '',
             })}`
-            let s = ''
-            await new Promise((resolve, reject) => {
-                const req = net.request(endpoint)
-                req.on('response', (msg) => {
-                    msg.on('data', (b) => { s += b.toString() })
-                    msg.on('end', () => {
-                        resolve(s)
-                    })
-                })
-                req.on('error', e => reject(e))
-                req.end()
-            });
+            const s = await request(endpoint)
             const root = parser.parse(s.replace(/\r\n/g, ''));
             const pages = root.querySelectorAll('.b-pagination-item')
                 .map(pageItem => pageItem.firstChild.rawText)
