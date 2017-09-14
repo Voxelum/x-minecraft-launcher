@@ -6,7 +6,7 @@
                     ILauncher
                 </h1>
             </div>
-            <location-bar></location-bar>
+            <navigation-bar></navigation-bar>
             <div class="one wide center aligned middle aligned column mon-movable" style="cursor:pointer" :style="{grey: closing}" @mouseout="closing = false" @mouseover="closing = true" @click="close">
                 <i class="large close icon non-moveable" :class="{red: closing}"></i>
             </div>
@@ -122,7 +122,7 @@
 import 'static/semantic/semantic.min.css'
 import 'static/semantic/semantic.min.js'
 
-import LocationBar from './components/LocationBar'
+import NavigationBar from './components/NavigationBar'
 import modals from './components/modals'
 import SkinView from '../shared/SkinView'
 
@@ -130,7 +130,7 @@ import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 export default {
     components: {
         SkinView,
-        LocationBar,
+        NavigationBar,
         ...modals
     },
     data() {
