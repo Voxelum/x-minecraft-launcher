@@ -7,7 +7,6 @@
         </h2>
     </div>
     <div v-else @drop="ondrop" class="ui grid">
-        <div class="row"></div>
         <div class="ui icon transparent input">
             <i class="filter icon"></i>
             <input placeholder="Filter" v-model="keyword">
