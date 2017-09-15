@@ -16,22 +16,44 @@ function request(endpoint) {
         req.end()
     });
 }
-async function project(path) {
-    const endpoint = `https://minecraft.curseforge.com${path}`
-    const s = await request(endpoint);
-    const root = parser.parse(s);
-    const descontent = root.querySelector('.project-description')
+function convert(node) {
+    let text = '';
+    if (node instanceof parser.TextNode) {
+        text += node.rawText;
+    } else if (node instanceof parser.HTMLElement) {
+        const attrs = node.rawAttrs === '' ? '' : ` ${node.rawAttrs}`
+        if (node.tagName !== null) text += `<${node.tagName}${attrs}>`
+        if (node.childNodes.length !== 0) for (const c of node.childNodes) text += convert(c)
+        if (node.tagName !== null) text += `</${node.tagName}>`
+    } else throw new Error('Unsupported type');
+    return text
 }
+
 export default {
     initialize() {
-        project('/projects/journeymap')
     },
     actions: {
         async project(path) {
-            const endpoint = `https://minecraft.curseforge.com${path}`
-            const s = await request(endpoint);
-            const root = parser.parse(s);
+            const root = parser.parse(await request(`https://minecraft.curseforge.com${path}`));
             const descontent = root.querySelector('.project-description')
+            const description = convert(descontent)
+
+            const filespage = parser.parse(await request(`https://minecraft.curseforge.com${path}/files`))
+            const files = filespage.querySelectorAll('.project-file-list-item')
+                .map((i) => {
+                    i = i.removeWhitespace();
+                    return {
+                        type: i.firstChild.attributes.title,
+                        href: i.childNodes[1].firstChild.firstChild.firstChild.attributes.href,
+                        size: i.childNodes[2].rawText,
+                        date: i.childNodes[3].firstChild.attributes['data-epoch'],
+                        downloadCount: i.childNodes[5].rawText,
+                    }
+                })
+            return {
+                description,
+                files,
+            }
         },
         async mods({ page, sort, version } = {}) {
             const endpoint = `https://minecraft.curseforge.com/mc-mods?${querystring.stringify({
@@ -87,7 +109,7 @@ export default {
                     return ca
                 })
                 return {
-                    path, name, author, description, date, count, categories, icon,
+                    path: path.substring(path.lastIndexOf('/') + 1), name, author, description, date, count, categories, icon,
                 };
             })
 
