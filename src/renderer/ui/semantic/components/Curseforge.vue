@@ -27,9 +27,9 @@
                     <img :src="m.icon">
                 </div>
                 <div class="content">
-                    <div class="header">
+                    <router-link class="header" :to="{ path: 'curseforge', params:{id: m.path}}" replace>
                         {{m.name}}
-                    </div>
+                    </router-link>
                     <span class="meta">
                         &nbsp {{m.author}}
                     </span>
