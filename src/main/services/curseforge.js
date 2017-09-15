@@ -16,13 +16,26 @@ function request(endpoint) {
         req.end()
     });
 }
+
 function convert(node) {
     let text = '';
     if (node instanceof parser.TextNode) {
         text += node.rawText;
     } else if (node instanceof parser.HTMLElement) {
-        const attrs = node.rawAttrs === '' ? '' : ` ${node.rawAttrs}`
-        if (node.tagName !== null) text += `<${node.tagName}${attrs}>`
+        if (node.tagName !== null) {
+            if (node.tagName === 'a') {
+                let attrs = node.rawAttrs === '' ? '' : ` ${node.rawAttrs}`
+                if (node.attributes.href) {
+                    const href = node.attributes.href;
+                    const newHref = `#/${href.substring(href.indexOf('remoteUrl=') + 'remoteUrl='.length)}`
+                    attrs = querystring.unescape(querystring.unescape(attrs.replace(href, newHref)))
+                }
+                text += `<${node.tagName}${attrs}>`
+            } else {
+                const attrs = node.rawAttrs === '' ? '' : ` ${node.rawAttrs}`
+                text += `<${node.tagName}${attrs}>`
+            }
+        }
         if (node.childNodes.length !== 0) for (const c of node.childNodes) text += convert(c)
         if (node.tagName !== null) text += `</${node.tagName}>`
     } else throw new Error('Unsupported type');
@@ -38,19 +51,26 @@ export default {
             const descontent = root.querySelector('.project-description')
             const description = convert(descontent)
 
+            const projWrap = root.querySelector('.project-user').removeWhitespace()
+            const image = projWrap.firstChild.firstChild.attributes.src;
+            const name = projWrap.childNodes[1].firstChild.rawText;
             const filespage = parser.parse(await request(`https://minecraft.curseforge.com${path}/files`))
             const files = filespage.querySelectorAll('.project-file-list-item')
                 .map((i) => {
                     i = i.removeWhitespace();
                     return {
                         type: i.firstChild.attributes.title,
+                        name: i.childNodes[1].firstChild.childNodes[1].firstChild.rawText,
                         href: i.childNodes[1].firstChild.firstChild.firstChild.attributes.href,
                         size: i.childNodes[2].rawText,
                         date: i.childNodes[3].firstChild.attributes['data-epoch'],
                         downloadCount: i.childNodes[5].rawText,
                     }
                 })
+
             return {
+                image,
+                name,
                 description,
                 files,
             }
