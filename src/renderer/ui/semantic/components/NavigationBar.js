@@ -59,11 +59,15 @@ export default {
                     break;
                 case 'curseforge':
                     paths.push({ path: `/${splited[0]}/market`, name: 'market' }, {
-                        path: this.path,
+                        path: `/${splited[0]}/curseforge`,
                         name: 'curseforge',
                     });
-                    break;
-                case 'curseproject':
+                    if (splited.length > 2) {
+                        paths.push({
+                            path: this.path,
+                            name: splited[2],
+                        })
+                    }
                     break;
                 case 'mcmodcn':
                     paths.push({ path: `/${splited[0]}/market`, name: 'market' }, {

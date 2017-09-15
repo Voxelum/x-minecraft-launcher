@@ -22,14 +22,14 @@
             </div>
         </div>
         <div class="ui divided items" style="overflow-x:hidden;max-height:350px">
-            <div class="item" v-for="m of mods" :key="m.path">
+            <div class="item" v-for="m of mods" :key="m.path" style="padding-right:10px">
                 <div class="ui tiny image">
                     <img :src="m.icon">
                 </div>
                 <div class="content">
-                    <router-link class="header" :to="{ path: 'curseforge', params:{id: m.path}}" replace>
+                    <div class="header">
                         {{m.name}}
-                    </router-link>
+                    </div>
                     <span class="meta">
                         &nbsp {{m.author}}
                     </span>
@@ -47,7 +47,13 @@
                         {{m.description}}
                     </div>
                     <div class="extra">
-
+                        <div class="ui avatar image" v-for="cat of m.categories" :key="cat.href">
+                            <img :src="cat.icon">
+                        </div>
+                        <div class="ui right floated basic button">Downloads</div>
+                        <router-link :to="{ path: 'curseforge/'+m.path, params:{id: m.path}}" class="ui right floated basic button" replace>
+                            Details
+                        </router-link>
                     </div>
                 </div>
             </div>
