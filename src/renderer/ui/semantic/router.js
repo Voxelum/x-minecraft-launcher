@@ -7,8 +7,7 @@ import ServerView from './components/ServerView'
 import CardView from './components/CardView'
 import MarketView from './components/MarketView'
 import Curseforge from './components/Curseforge'
-// import CurseforgeProjectList from './component/CurseforgeProjectList'
-// import CurseforgeProject from './component/CurseforgeProject'
+import CurseforgeProject from './components/CurseforgeProject'
 import Mcmodcn from './components/McmodCn'
 
 import ResourcePackList from './components/ResourcePackList'
@@ -88,7 +87,8 @@ export default {
         {
             path: 'curseproject/:id',
             name: 'curseproject',
-            // component: CurseforgeProject,
+            component: CurseforgeProject,
+            props: true,
         },
         {
             path: 'mcmodcn',
