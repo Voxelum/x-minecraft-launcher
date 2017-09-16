@@ -86,7 +86,7 @@ export default {
         },
         {
             path: 'curseforge/:id',
-            name: 'curseforge',
+            name: 'curseforge-project',
             component: CurseforgeProject,
             props: true,
         },

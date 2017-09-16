@@ -3,35 +3,35 @@
         <div v-if="mods.length==0 || loading" class="ui active inverted dimmer">
             <div class="ui text loader">Loading</div>
         </div>
-        <div id="filterDropdown" class="ui labeled icon top right pointing dropdown button">
+        <div id="filterDropdown" class="ui labeled icon top right pointing basic dropdown">
             <i class="filter icon"></i>
             <span class="text">Popularity</span>
             <div class="menu">
-                <div class="item" v-for="f of filters" :key="f.value" @click="filter = f.value">
+                <div class="item" v-for="f of filters" :key="f.value" @click="change({filter: f.value})">
                     {{f.text}}
                 </div>
             </div>
+            <i class="dropdown icon"></i>
         </div>
-        <div id="versionDropdown" class="ui labeled icon top right pointing scrolling dropdown button">
+        <div id="versionDropdown" class="ui labeled icon top right pointing scrolling basic dropdown">
             <i class="filter icon"></i>
             <span class="text">All Versions</span>
             <div class="menu">
-                <div class="item" v-for="v of versions" :key="v.value" @click="version = v.value">
+                <div class="item" v-for="v of versions" :key="v.value" @click="change({version:v.value})">
                     {{v.text}}
                 </div>
             </div>
+            <i class="dropdown icon"></i>
         </div>
-        <div class="ui divided items" style="overflow-x:hidden;max-height:350px">
-            <div class="item" v-for="m of mods" :key="m.path" style="padding-right:10px">
-                <div class="ui tiny image">
-                    <img :src="m.icon">
-                </div>
+        <div class="ui link cards" style="overflow-x:hidden;max-height:350px; margin-top:20px; margin-bottom:20px">
+            <router-link :to="{ path: 'curseforge/'+m.path, params:{id: m.path}}" class="card" v-for="m of mods" :key="m.path" style="padding-right:10px">
                 <div class="content">
+                    <img class="right floated mini ui icon" :src="m.icon">
                     <div class="header">
                         {{m.name}}
                     </div>
                     <span class="meta">
-                        &nbsp {{m.author}}
+                        {{m.author}}
                     </span>
                     <div class="meta">
                         <span>
@@ -46,20 +46,16 @@
                     <div class="description">
                         {{m.description}}
                     </div>
-                    <div class="extra">
-                        <div class="ui avatar image" v-for="cat of m.categories" :key="cat.href">
-                            <img :src="cat.icon">
-                        </div>
-                        <div class="ui right floated basic button">Downloads</div>
-                        <router-link :to="{ path: 'curseforge/'+m.path, params:{id: m.path}}" class="ui right floated basic button" replace>
-                            Details
-                        </router-link>
+                </div>
+                <div class="extra content">
+                    <div class="ui avatar image" v-for="cat of m.categories" :key="cat.href">
+                        <img :src="cat.icon">
                     </div>
                 </div>
-            </div>
+            </router-link>
         </div>
         <div class="ui secondary pagination menu">
-            <a class="item" :class="{active: p===page,  disabled: p==='...'}" v-for="p of pages" :key="p" @click="page = p">
+            <a class="item" :class="{active: p===page,  disabled: p==='...'}" v-for="p of pages" :key="p" @click="change({page: p})">
                 {{p}}
             </a>
         </div>
@@ -67,55 +63,33 @@
 </template>
 
 <script>
+import vuex from 'vuex'
 export default {
-    data() {
-        return {
-            mods: [],
-            page: 1,
-            pages: [],
-            version: '',
-            filter: '',
-            filters: [],
-            versions: [],
-            loading: false,
-        }
+    computed: {
+        ...vuex.mapState('curseforge', ['mods', 'pages',
+            'page', 'version', 'filter',
+            'filters', 'versions', 'loading']),
     },
     mounted() {
-        if (this.mods.length === 0) this.request()
+        if (this.mods.length === 0) this.change()
+        $('#filterDropdown').dropdown()
+        $('#versionDropdown').dropdown()
     },
-    watch: {
-        page() { this.request(); },
-        filter() { if (this.page === 1) this.request(); this.page = 1; },
-        version() { if (this.page === 1) this.request(); this.page = 1; },
+    created() {
+        $('#filterDropdown').dropdown()
+        $('#versionDropdown').dropdown()
     },
     methods: {
-        request() {
-            const args = { page: this.page, version: this.version, sort: this.filter }
-            this.loading = true;
-            const current = args ? args.page || 1 : 1;
+        ...vuex.mapActions('curseforge', ['update']),
+        change({ page, version, filter } = {}) {
+            if ((version || filter) && this.page !== 1) page = 1;
             const self = this;
-            this.$store.dispatch('query', { service: 'curseforge', action: 'mods', payload: args })
-                .then(s => {
-                    self.mods = s.mods;
-                    const total = s.pages;
-
-                    const start = Math.max(current - 2, 1)
-                    const end = Math.min(current + 3, total);
-
-                    const pages = []
-                    if (start > 1) pages.push(1, '...');
-                    for (let i = start; i < end; i++) pages.push(i);
-                    if (end < total) pages.push('...', total)
-                    self.page = current;
-                    self.pages = pages
-                    self.versions = s.versions;
-                    self.filters = s.filters;
-                    self.$nextTick(() => {
-                        $('#filterDropdown').dropdown()
-                        $('#versionDropdown').dropdown()
-                        this.loading = false;
-                    })
+            this.update({ page, version, filter }).then(() => {
+                self.$nextTick(() => {
+                    $('#filterDropdown').dropdown()
+                    $('#versionDropdown').dropdown()
                 })
+            })
         },
         date(string) {
             const date = new Date(0)
