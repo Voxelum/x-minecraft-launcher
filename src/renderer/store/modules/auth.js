@@ -11,7 +11,7 @@ export default {
         cache: {
             skin: { data: undefined, slim: false },
             cape: undefined,
-        }
+        },
     },
     getters: {
         modes: state => state.modes,

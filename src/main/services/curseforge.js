@@ -46,14 +46,7 @@ export default {
     initialize() {
     },
     actions: {
-        async project(path) {
-            const root = parser.parse(await request(`https://minecraft.curseforge.com${path}`));
-            const descontent = root.querySelector('.project-description')
-            const description = convert(descontent)
-
-            const projWrap = root.querySelector('.project-user').removeWhitespace()
-            const image = projWrap.firstChild.firstChild.attributes.src;
-            const name = projWrap.childNodes[1].firstChild.rawText;
+        async files(path) {
             const filespage = parser.parse(await request(`https://minecraft.curseforge.com${path}/files`))
             const files = filespage.querySelectorAll('.project-file-list-item')
                 .map((i) => {
@@ -67,10 +60,48 @@ export default {
                         downloadCount: i.childNodes[5].rawText,
                     }
                 })
+            return files;
+        },
+        async project(path) {
+            const root = parser.parse(await request(`https://minecraft.curseforge.com${path}`));
+            const descontent = root.querySelector('.project-description')
+            const description = convert(descontent)
 
+            const details = root.querySelector('.project-details').removeWhitespace()
+            const createdDate = details.childNodes[1].childNodes[1].firstChild.attributes['data-epoch']
+            const lastFile = details.childNodes[2].childNodes[1].firstChild.attributes['data-epoch']
+            const totalDownload = details.childNodes[3].childNodes[1].rawText
+            const license = details.childNodes[4].childNodes[1].attributes.href;
+
+            const projWrap = root.querySelector('.project-user').removeWhitespace()
+            const image = projWrap.firstChild.firstChild.attributes.href;
+            const name = projWrap.childNodes[1].firstChild.rawText;
+
+            const files = root.querySelectorAll('.file-tag')
+                .map((f) => {
+                    f = f.removeWhitespace();
+                    const typeClass = f.firstChild.firstChild.attributes.class;
+                    let type = 'unknonwn'
+                    if (typeClass.includes('release')) type = 'release'
+                    else if (typeClass.includes('alpha')) type = 'alpha'
+                    else if (typeClass.includes('beta')) type = 'beta'
+                    const href = f.childNodes[1].firstChild.attributes.href;
+                    const fname = f.childNodes[1].childNodes[1].rawText;
+                    const date = f.childNodes[1].childNodes[2].attributes['data-epoch']
+                    return {
+                        type,
+                        href,
+                        name: fname,
+                        date,
+                    }
+                });
             return {
                 image,
                 name,
+                createdDate,
+                lastFile,
+                totalDownload,
+                license,
                 description,
                 files,
             }
@@ -89,20 +120,16 @@ export default {
                 .filter(n => Number.isInteger(n))
                 .reduce((a, b) => (a > b ? a : b))
             const versions = root.querySelector('#filter-game-version').removeWhitespace()
-                .childNodes.map((ver) => {
-                    return {
-                        type: ver.attributes.class,
-                        text: ver.rawText,
-                        value: ver.attributes.value,
-                    };
-                })
+                .childNodes.map(ver => ({
+                    type: ver.attributes.class,
+                    text: ver.rawText,
+                    value: ver.attributes.value,
+                }))
             const filters = root.querySelector('#filter-sort').removeWhitespace()
-                .childNodes.map((f) => {
-                    return {
-                        text: f.rawText,
-                        value: f.attributes.value,
-                    }
-                })
+                .childNodes.map(f => ({
+                    text: f.rawText,
+                    value: f.attributes.value,
+                }))
             const all = root.querySelectorAll('.project-list-item').map((item) => {
                 item = item.removeWhitespace();
                 const noText = n => !(n instanceof parser.TextNode)
