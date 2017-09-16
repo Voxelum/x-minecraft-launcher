@@ -36,7 +36,7 @@
                     <div class="meta">
                         <span>
                             <i class="calendar icon"> </i>
-                            {{date(m.date)}}
+                            {{m.date}}
                         </span>
                         <span>
                             <i class="download icon"></i>
@@ -54,17 +54,15 @@
                 </div>
             </router-link>
         </div>
-        <div class="ui secondary pagination menu">
-            <a class="item" :class="{active: p===page,  disabled: p==='...'}" v-for="p of pages" :key="p" @click="change({page: p})">
-                {{p}}
-            </a>
-        </div>
+        <pagination :pages="pages" @page="change({page:$event})"></pagination>
     </div>
 </template>
 
 <script>
 import vuex from 'vuex'
+import Pagination from './Pagination'
 export default {
+    components: { Pagination },
     computed: {
         ...vuex.mapState('curseforge', ['mods', 'pages',
             'page', 'version', 'filter',
@@ -91,11 +89,6 @@ export default {
                 })
             })
         },
-        date(string) {
-            const date = new Date(0)
-            date.setUTCSeconds(Number.parseInt(string))
-            return date.toLocaleDateString()
-        }
     },
 }
 </script>
