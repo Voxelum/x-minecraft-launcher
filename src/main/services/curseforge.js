@@ -87,8 +87,6 @@ export default {
         async project(path) {
             const root = parser.parse(await request(`https://minecraft.curseforge.com${path}`));
             const descontent = root.querySelector('.project-description')
-            console.log(`https://minecraft.curseforge.com${path}`)
-            console.log(root)
             const description = convert(descontent)
             const details = root.querySelector('.project-details').removeWhitespace()
             const createdDate = localDate(details.childNodes[1].childNodes[1].firstChild.attributes['data-epoch'])
