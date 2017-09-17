@@ -2,11 +2,11 @@
     <div class="ui link cards" style="overflow-x:hidden;height:100%">
         <router-link to="curseforge" class="ui card">
             <div class="ui  image">
-                <img src="https://pbs.twimg.com/profile_images/725406699369058304/0mVMpCrb.jpg">
+                <img :src="curseforgeSrc">
             </div>
             <div class="content">
                 <div class="header">
-                    curseforge
+                    Curseforge
                 </div>
                 <div class="meta">
                     <span class="date">One of the best community for modder.</span>
@@ -18,7 +18,7 @@
         </router-link>
         <router-link to="mcmodcn" class="ui card">
             <div class="image">
-                <img  src="http://www.mcmod.cn/images/logo.gif">
+                <img :src="mcmodcnSrc">
             </div>
             <div class="content">
                 <div class="header">
@@ -36,15 +36,18 @@
 </template>
 
 <script>
+const curseforgeSrc = require('static/curseforge-icon.jpg')
+const mcmodcnSrc = require('static/mcmodcn-icon.png')
+
 export default {
-    // data() {
-    //     return {
-    //         mods: [],
-    //         page: 0,
-    //         total: 1,
-    //     }
-    // },
+    data() {
+        return {
+            curseforgeSrc,
+            mcmodcnSrc,
+        }
+    },
     mounted() {
+        console.log(this.curseforgeSrc)
     },
     methods: {
     },

@@ -140,8 +140,7 @@ function createMainWindow() {
 
 app.on('ready', () => {
     require('./services'); // load all service 
-
-    iconImage = nativeImage.createFromPath(`${__dirname}/logo.png`)
+    iconImage = nativeImage.createFromPath(`${__static}/logo.png`)
     createMainWindow()
 
     const appIcon = new Tray(iconImage)
