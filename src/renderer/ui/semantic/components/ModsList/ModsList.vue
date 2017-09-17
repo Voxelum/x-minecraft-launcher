@@ -15,7 +15,7 @@
             <div class="eight wide column">
                 <div class="ui relaxed divided items" style="height:290px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
                     <a class="ui circular large basic label" style="margin:5px" v-for="(val, index) in mods" v-if="valid(val)" :class="classObject(index)" :key="val[0].modid||val[0].name" :data-tooltip="val[0].description" data-inverted="" :data-position="pos(index)">
-                        {{val[0].modid||val[0].name}}
+                        {{modName(val[0])}}
                     </a>
                     <!-- <list-cell v-for="(val, index) in cached" v-if="valid(val)" :key="val[0].modid||val[0].name" :value="val"></list-cell> -->
                 </div>
@@ -28,11 +28,11 @@
 
         <!-- </div> -->
         <!-- <div id="modFilterDropdown" class="eight wide right aligned column">
-                        <select name="skills" multiple="" class="ui dropdown">
-                            <option value="angular">OtherVersion</option>
-                            <option value="css">Disabled Only</option>
-                        </select>
-                    </div> -->
+                                                            <select name="skills" multiple="" class="ui dropdown">
+                                                                <option value="angular">OtherVersion</option>
+                                                                <option value="css">Disabled Only</option>
+                                                            </select>
+                                                        </div> -->
         <!-- </div> -->
         <!-- <div class="ui divider"></div> -->
         <!-- <virtualList wclass="ui relaxed divided items" :size="50" :remain="3" :bench="8" style="height:230px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;"> -->
@@ -45,6 +45,15 @@
 import vuex from 'vuex'
 import ListCell from './ListCell'
 import VirtualList from 'vue-virtual-scroll-list'
+import en from 'static/en-cn'
+
+const generalized = {}
+function general(w) {
+    return w.replace(/ /g, '').toLowerCase()
+}
+for (const k in en) {
+    generalized[general(k)] = en[k];
+}
 
 export default {
     data() {
@@ -104,6 +113,12 @@ export default {
         },
         pos(index) {
             return index > 7 ? 'top center' : 'bottom center'
+        },
+        modName(m) {
+            const name = m.modid || m.name;
+            const gname = general(name)
+            if (generalized[gname]) return generalized[gname];
+            return name;
         },
         ondrop(event) {
             if (event.dataTransfer && event.dataTransfer.files) {
