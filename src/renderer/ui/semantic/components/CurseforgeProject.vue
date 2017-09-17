@@ -89,7 +89,6 @@ export default {
         refresh() {
             const self = this;
             this.project(this.id).then((proj) => {
-                console.log(proj)
                 self.cache = proj;
                 self.$nextTick(() => {
                     $('.menu .item').tab({
