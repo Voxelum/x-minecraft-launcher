@@ -1,8 +1,4 @@
-const fs = require('fs')
-const {
-    Version,
-    MinecraftFolder,
-} = require('ts-minecraft')
+import { Version, MinecraftFolder } from 'ts-minecraft'
 
 const versionProviders = new Map()
 // import semver from 'semver'

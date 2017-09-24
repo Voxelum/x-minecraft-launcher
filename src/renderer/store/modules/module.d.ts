@@ -2,8 +2,8 @@ import { ActionContext } from 'vuex'
 
 interface Module {
     actions: {
-        save(context: ActionContext, payload: { mutation: string });
-        load(context: ActionContext);
+        save(context: ActionContext<any, any>, payload: { mutation: string });
+        load(context: ActionContext<any,any>);
     }
 }
 export default Module

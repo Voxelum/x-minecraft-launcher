@@ -1,5 +1,6 @@
 import fs from 'fs-extra'
 import paths from 'path'
+import { ActionContext } from 'vuex'
 import { MinecraftFolder } from 'ts-minecraft'
 import { remote, ipcRenderer } from 'electron'
 import { v4 } from 'uuid'
@@ -9,13 +10,11 @@ export default {
     searchJava({ dispatch }) {
         return dispatch('query', { service: 'jre', action: 'availbleJre' }, { root: true })
     },
-    exit() {
-        ipcRenderer.sendSync('exit')
-    },
+    exit() { ipcRenderer.sendSync('exit') },
     /**
      * 
-     * @param {*} context 
-     * @param { } payload 
+     * @param {ActionContext} context 
+     * @param {} payload 
      * @return {Promise<string[]>}
      */
     openDialog(context, payload) {
@@ -29,6 +28,9 @@ export default {
                 })
         });
     },
+    /**
+     * @param {ActionContext} context 
+     */
     async launch(context) {
         const profile = context.getters['profiles/selected'];
         const profileId = context.getters['profiles/selectedKey'];
@@ -73,8 +75,21 @@ export default {
         });
     },
     /**
+    * 
+    * @param {ActionContext} context 
+    * @param {{resolution?:{width:number,height:number,fullscreen?:boolean}, location?:string, theme?:string}} payload 
+    */
+    updateSetting(context, payload) {
+        if (payload.resolution) {
+            context.commit('resolution', payload.resolution);
+        }
+        if (payload.location !== context.state.location || payload.theme !== context.state.theme) {
+            ipcRenderer.send('update', payload.location, payload.theme)
+        }
+    },
+    /**
      * 
-     * @param {*} context 
+     * @param {ActionContext} context 
      * @param {{service:string, action:string, payload:any}} payload 
      */
     query(context, payload) {
@@ -91,33 +106,61 @@ export default {
                 id,
                 service,
                 action,
-                $payload,
+                payload: $payload,
             })
         });
     },
-    readFolder(context, { path }) {
+    /**
+     * 
+     * @param {ActionContext} context 
+     * @param {{path:string}} payload 
+     */
+    readFolder(context, payload) {
+        let { path } = payload;
         path = paths.join(context.state.root, path);
         return fs.ensureDir(path).then(() => fs.readdir(path));
     },
-    delete(context, { path }) {
+    /**
+     * 
+     * @param {ActionContext} context 
+     * @param {{path:string}} payload 
+     */
+    delete(context, payload) {
+        let { path } = payload;
         path = paths.join(context.state.root, path);
         return new Promise((resolve, reject) => {
             if (!fs.existsSync(path)) resolve()
             else resolve(fs.remove(path))
         });
     },
-    import(context, { file, toFolder, name }) {
+    /**
+      * @param {ActionContext} context 
+      * @param {{file:string, toFolder:string, name:string}} payload 
+      */
+    import(context, payload) {
+        const { file, toFolder, name } = payload;
         const to = context.getters.path(toFolder, name || paths.basename(file))
         return fs.copy(file, to)
     },
-    export(context, { file, toFolder, name, mode }) {
+    /**
+     * 
+     * @param {ActionContext} context 
+     * @param {{ file:string, toFolder:string, name:string, mode:string }} payload 
+     */
+    export(context, payload) {
+        const { file, toFolder, name, mode } = payload;
         const $mode = mode || 'copy';
         const from = context.getters.path(file)
         const to = paths.join(toFolder, name || paths.basename(file))
         if ($mode === 'link') return fs.link(from, to)
         return fs.copy(from, to)
     },
-    write(context, { path, data }) {
+    /**
+     * @param {ActionContext} context 
+     * @param {{path:string,data:Buffer|string|any}} payload 
+     */
+    write(context, payload) {
+        let { path, data } = payload;
         path = paths.resolve(context.state.root, path)
         if (typeof data === 'object' && !(data instanceof Buffer)) data = JSON.stringify(data)
         const parent = paths.dirname(path)
@@ -125,14 +168,21 @@ export default {
     },
     /**
      * 
-     * @param {*} context 
+     * @param {ActionContext} context 
      * @param {{paths:string[]}} payload 
      */
     exist(context, payload) {
         for (const p of payload.paths) if (!fs.existsSync(p)) return false
         return true
     },
-    async read(context, { path, fallback, encoding, onread }) {
+    /**
+     * 
+     * @param {ActionContext} context 
+     * @param {{path:string, fallback:string|Buffer, encoding:'string'|'json'|((buf:Buffer)=>any), onread:(path:string)=>void}} payload
+     */
+    async read(context, payload) {
+        let { path, fallback } = payload;
+        const { encoding, onread } = payload;
         path = paths.join(context.state.root, path)
         if (!fs.existsSync(path)) {
             if (fallback) return fallback;

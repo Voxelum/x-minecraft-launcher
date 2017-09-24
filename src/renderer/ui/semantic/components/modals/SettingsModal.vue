@@ -2,11 +2,11 @@
     <div class="ui basic modal" style="padding:0 20% 0 20%;">
         <div class="ui icon tiny header">
             <i class="setting icon"></i>
-            Settings
+            {{$t('setting.name', 0)}}
         </div>
         <form class="ui inverted form">
             <div class="field">
-                <label>Store Location</label>
+                <label>{{$t('setting.location')}}</label>
                 <div class="ui basic inverted action input" @keydown="cacnelKey">
                     <input type="text" v-model="location">
                     <div class="ui icon button" @click="browseFolder">
@@ -15,34 +15,33 @@
                 </div>
             </div>
             <div class="field">
-                <label>Theme</label>
+                <label>{{$t('setting.theme')}}</label>
                 <div class="ui selection dropdown">
-                    <input type="hidden" name="theme">
                     <i class="dropdown icon"></i>
-                    <div class="default text">{{selectedTheme}}</div>
+                    <span class="text">{{selectedTheme}}</span>
                     <div class="menu">
-                        <div class="item" v-for="th of themes" :key="th">{{th}}</div>
+                        <div class="item" v-for="th of themes" :key="th" @click="updateTheme(th)">{{th}}</div>
                     </div>
                 </div>
             </div>
-            <div class="field">
-                <label>Default Resolution</label>
+            <div class="field" :class="{disabled: resfullscreen}" >
+                <label>{{$t('setting.resolution')}}</label>
                 <div class="two fields">
                     <div class="field">
-                        <input class="ui basic inverted input" type="text" v-model="reswidth" placeholder="Width">
+                        <input class="ui basic inverted input" type="text" v-model="reswidth" :placeholder="$t('resolution.width')">
                     </div>
                     <div class="field">
-                        <input class="ui basic inverted input" type="text" v-model="resheight" placeholder="Height">
+                        <input class="ui basic inverted input" type="text" v-model="resheight" :placeholder="$t('resolution.height')">
                     </div>
                 </div>
             </div>
             <div class="inline field">
-                <div class="ui toggle inverted checkbox">
-                    <input type="checkbox" name="auto-download" v-model="resfullscreen">
-                    <label>FullScreen</label>
+                <div class="ui slider checkbox" @click="resfullscreen=!resfullscreen">
+                    <input type="checkbox" name="auto-download" >
+                    <label>{{$t('resolution.fullscreen')}}</label>
                 </div>
             </div>
-            <button class="ui inverted right floated button" @click="save">Save</button>
+            <div class="ui inverted right floated button" @click="upload">{{$t('save')}}</div>
         </form>
     </div>
 </template>
@@ -68,8 +67,9 @@ export default {
         $('.selection.dropdown').dropdown()
     },
     methods: {
-        ...vuex.mapActions(['openDialog']),
+        ...vuex.mapActions(['openDialog', 'updateSetting']),
         show() {
+            console.log(this)
             this.resheight = this.defaultResolution.height;
             this.reswidth = this.defaultResolution.width;
             this.resfullscreen = this.defaultResolution.fullscreen;
@@ -78,7 +78,6 @@ export default {
             $(this.$el).modal('show')
             $('.ui.checkbox').checkbox()
             $('.selection.dropdown').dropdown()
-            console.log(this)
         },
         browseFolder() {
             const self = this;
@@ -89,8 +88,14 @@ export default {
         cacnelKey(e) {
             e.preventDefault();
         },
-        save() {
-
+        updateTheme(theme) {
+            this.selectedTheme = theme
+        },
+        upload(e) {
+            this.updateSetting({
+                resolution: { width: this.reswidth, height: this.resheight, fullscreen: this.resfullscreen },
+                location: this.location, theme: this.selectedTheme
+            });
         },
     }
 }

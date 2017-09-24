@@ -1,4 +1,4 @@
-interface CreateOption {
+declare interface CreateOption {
     type: 'modpack' | 'server',
     option?: {
         name?: string, // specific info

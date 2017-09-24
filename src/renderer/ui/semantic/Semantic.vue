@@ -30,7 +30,7 @@
             </div>
             <div class="twelve wide column">
                 <transition name="fade">
-                    <router-view></router-view>
+                    <router-view ref="view"></router-view>
                 </transition>
             </div>
         </div>
@@ -188,6 +188,7 @@ export default {
             this.showModal(type)
         },
         refresh() {
+            console.log(this.$refs)
             this.$refs.view.refresh()
         },
         edit() {
