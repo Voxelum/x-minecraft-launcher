@@ -6,16 +6,12 @@ import routes from './ui'
 Vue.use(Router)
 
 const router = new Router({
-    routes: [{
-        path: '/',
-        name: 'home',
-        redirect: '/semantic',
-    }, ...routes],
+    routes: [...routes],
 })
 
 router.beforeEach((to, from, next) => {
-    if (to && to.path.startsWith('/http')) {
-        shell.openExternal(to.path.substring(1));
+    if (to && to.path.startsWith('/external/')) {
+        shell.openExternal(to.path.substring('/external/'.length));
         next(false);
     } else if (next) next()
 })

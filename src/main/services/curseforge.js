@@ -33,7 +33,7 @@ function convert(node) {
                 let attrs = node.rawAttrs === '' ? '' : ` ${node.rawAttrs}`
                 if (node.attributes.href) {
                     const href = node.attributes.href;
-                    const newHref = `#/${href.substring(href.indexOf('remoteUrl=') + 'remoteUrl='.length)}`
+                    const newHref = `#/external/${href.substring(href.indexOf('remoteUrl=') + 'remoteUrl='.length)}`
                     attrs = querystring.unescape(querystring.unescape(attrs.replace(href, newHref)))
                 }
                 text += `<${node.tagName}${attrs}>`
@@ -73,7 +73,7 @@ export default {
                 .map((i) => {
                     i = i.removeWhitespace();
                     return {
-                        type: i.firstChild.attributes.title,
+                        type: i.firstChild.firstChild.attributes.title,
                         name: i.childNodes[1].firstChild.childNodes[1].firstChild.rawText,
                         href: i.childNodes[1].firstChild.firstChild.firstChild.attributes.href,
                         size: i.childNodes[2].rawText,

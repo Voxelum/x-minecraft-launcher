@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="ui relaxed list">
-                <list-cell v-for="value in unselecting" :key="value.name" :val="value" type="add" @change="add"  @delete="dele"></list-cell>
+                <list-cell v-for="value in unselecting" :key="value.name" :val="value" type="add" @change="add" @delete="dele"></list-cell>
             </div>
         </div>
         <div class="eight wide column">
@@ -41,7 +41,7 @@
                 {{$t('resourcepack.selected')}}
             </h5>
             <div class="ui relaxed list">
-                <list-cell v-for="value in selecting" :key="value.name" :val="value" type="remove" @change="remove" @moveup="moveup" @movedown="movedown" ></list-cell>
+                <list-cell v-for="value in selecting" :key="value.name" :val="value" type="remove" @change="remove" @moveup="moveup" @movedown="movedown"></list-cell>
             </div>
         </div>
     </div>
@@ -81,6 +81,7 @@ export default {
         },
     },
     methods: {
+        ...mapActions(['openDialog']),
         ...mapActions('resourcepacks', ['import', 'delete']),
         ...mapMutations('resourcepacks', ['rename']),
         resourcepack(action, pack) {
@@ -92,10 +93,7 @@ export default {
         movedown(name) { this.resourcepack('movedown', name) },
         importResourcePack() {
             const self = this;
-            remote.dialog.showOpenDialog({}, (files) => {
-                if (files) for (const file of files)
-                    self.import(file)
-            })
+            this.openDialog({}).then(self.import)
         },
         ondrop(event) {
             this.import(event.dataTransfer.files[0].path)

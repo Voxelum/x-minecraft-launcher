@@ -8,8 +8,16 @@
 
 import { mapState } from 'vuex'
 export default {
+    watch: {
+        theme() {
+            this.$router.push(this.theme)
+        }
+    },
     computed: {
-        ...mapState('settings', ['theme'])
+        ...mapState(['theme'])
+    },
+    beforeMount() {
+        this.$router.push(this.theme)
     },
     mounted() {
         let dragTimer;
@@ -25,14 +33,14 @@ export default {
         });
         $(document).on('dragleave', function(e) {
             dragTimer = window.setTimeout(function() {
-                store.commit('dragover', false);
+                store.commit('drag/dragover', false);
             }, 25);
         });
     },
     methods: {
         ondrop(event) {
             event.preventDefault()
-            this.$store.commit('dragover', false)
+            this.$store.commit('drag/dragover', false)
             return false;
         },
     }

@@ -5,6 +5,7 @@ import {
     DownloadItem,
     Tray,
     nativeImage,
+    dialog,
 } from 'electron'
 import {
     AuthService,
