@@ -6,6 +6,8 @@ import {
     Tray,
     nativeImage,
     dialog,
+    MenuItem,
+    Menu,
 } from 'electron'
 import {
     AuthService,
@@ -149,7 +151,17 @@ app.on('ready', () => {
     iconImage = nativeImage.createFromPath(`${__static}/logo.png`) // eslint-disable-line no-undef
     createMainWindow('semantic')
 
-    const appIcon = new Tray(iconImage)
+    const tray = new Tray(iconImage)
+    tray.setToolTip('An Electron Minecraft Launcher')
+    const menu = new Menu();
+    menu.append(new MenuItem({
+        click: (item, win, event) => {
+            mainWindow.close();
+        },
+        role: 'Hint',
+        label: 'Exit',
+    }))
+    tray.setContextMenu(menu)
     app.setName('ILauncher');
 })
 
