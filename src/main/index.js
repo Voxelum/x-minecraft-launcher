@@ -1,19 +1,12 @@
 import {
-    app,
-    BrowserWindow,
-    ipcMain,
-    DownloadItem,
-    Tray,
-    nativeImage,
-    dialog,
-    MenuItem,
-    Menu,
+    app, BrowserWindow,
+    ipcMain, DownloadItem,
+    Tray, nativeImage,
+    dialog, MenuItem, Menu,
 } from 'electron'
-import {
-    AuthService,
-} from 'ts-minecraft'
 import paths from 'path'
 import urls from 'url'
+import fs from 'fs-extra'
 
 const devMod = process.env.NODE_ENV === 'development'
 /**
@@ -24,15 +17,9 @@ if (!devMod) {
     global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
-
-const mainWinURL = process.env.NODE_ENV === 'development' ?
+const winURL = process.env.NODE_ENV === 'development' ?
     'http://localhost:9080/index.html' :
     `file://${__dirname}/index.html`
-
-
-const logWinURL = process.env.NODE_ENV === 'development' ?
-    'http://localhost:9080/log.html' :
-    `file://${__dirname}/log.html`
 
 let mainWindow;
 let logWindow;
@@ -55,6 +42,12 @@ if (!root) {
     updateRoot(paths.join(app.getPath('appData'), '.launcher'));
 }
 
+let theme = 'semantic';
+
+function updateTheme(newTheme) {
+    if (theme !== newTheme) theme = newTheme;
+}
+
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
     // Someone tried to run a second instance, we should focus our window.
     if (mainWindow) {
@@ -75,7 +68,7 @@ function createLogWindow() {
     })
     logWindow.setTitle('Log')
     logWindow.setIcon(iconImage);
-    logWindow.loadURL(`${logWinURL}?logger=true`);
+    logWindow.loadURL(`${winURL}?logger=true`);
     logWindow.on('closed', () => { logWindow = null })
 }
 
@@ -91,7 +84,7 @@ ipcMain.on('minecraft-stderr', (s) => {
     }
 })
 
-function createMainWindow(theme) {
+function createMainWindow() {
     /**
      * Initial window options
      */
@@ -103,7 +96,7 @@ function createMainWindow(theme) {
     })
     mainWindow.setTitle('ILauncher')
     mainWindow.setIcon(iconImage)
-    mainWindow.loadURL(`${mainWinURL}?logger=false&theme=${theme}&root=${root}`)
+    mainWindow.loadURL(`${winURL}?logger=false&theme=${theme}&root=${root}`)
 
     mainWindow.on('closed', () => { mainWindow = null })
     mainWindow.on('ready-to-show', () => {
@@ -147,7 +140,7 @@ function createMainWindow(theme) {
 app.on('ready', () => {
     require('./services'); // load all service 
     iconImage = nativeImage.createFromPath(`${__static}/logo.png`) // eslint-disable-line no-undef
-    createMainWindow('semantic')
+    createMainWindow()
 
     const tray = new Tray(iconImage)
     tray.setToolTip('An Electron Minecraft Launcher')
@@ -171,16 +164,17 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-    if (mainWindow === null) createMainWindow('semantic')
+    if (mainWindow === null) createMainWindow()
 })
 
 ipcMain.on('update', (event, newRoot, newTheme) => {
     if (newRoot !== undefined || newTheme !== undefined) {
         if (newRoot) updateRoot(newRoot);
+        if (newTheme) updateTheme(newTheme);
         newTheme = newTheme || 'semantic'
         parking = true
         mainWindow.close();
-        createMainWindow(newTheme);
+        createMainWindow();
         parking = false;
     }
 })
@@ -197,7 +191,7 @@ ipcMain.on('restart', () => {
         logWindow.close();
         logWindow = undefined;
     }
-    createMainWindow('semantic')
+    createMainWindow()
 })
 
 ipcMain.on('exit', () => {
