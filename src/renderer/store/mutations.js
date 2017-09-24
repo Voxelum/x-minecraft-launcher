@@ -8,4 +8,7 @@ export default {
     copyOptions(states, { from, to }) {
         const setting = states.templates.minecraft[from]
     },
+    path(state, path) {
+        state.path = path;
+    },
 }

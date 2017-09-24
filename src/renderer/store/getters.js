@@ -26,9 +26,7 @@ export default {
         .map((k, i, arr) => getters.errors[k].length).reduce((a, b) => a + b, 0),
     tasksCount: (states, getters) => Object.keys(getters.tasks)
         .map((k, i, arr) => getters.tasks[k].length).reduce((a, b) => a + b, 0),
-    rootPath(state, getters) {
-        return state.root
-    },
+    rootPath: (state, getters) => state.root,
     root: state => state.root,
     themes: state => state.themes,
     theme: state => state.theme,
