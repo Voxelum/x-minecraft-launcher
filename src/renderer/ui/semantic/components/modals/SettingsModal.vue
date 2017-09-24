@@ -19,10 +19,9 @@
                 <div class="ui selection dropdown">
                     <input type="hidden" name="theme">
                     <i class="dropdown icon"></i>
-                    <div class="default text">Semantic</div>
+                    <div class="default text">{{selectedTheme}}</div>
                     <div class="menu">
-                        <div class="item" data-value="1">Semantic</div>
-                        <div class="item" data-value="0">Material</div>
+                        <div class="item" v-for="th of themes" :key="th">{{th}}</div>
                     </div>
                 </div>
             </div>
@@ -30,16 +29,16 @@
                 <label>Default Resolution</label>
                 <div class="two fields">
                     <div class="field">
-                        <input class="ui basic inverted input" type="text" placeholder="Width">
+                        <input class="ui basic inverted input" type="text" v-model="reswidth" placeholder="Width">
                     </div>
                     <div class="field">
-                        <input class="ui basic inverted input" type="text" placeholder="Height">
+                        <input class="ui basic inverted input" type="text" v-model="resheight" placeholder="Height">
                     </div>
                 </div>
             </div>
             <div class="inline field">
                 <div class="ui toggle inverted checkbox">
-                    <input type="checkbox" name="auto-download">
+                    <input type="checkbox" name="auto-download" v-model="resfullscreen">
                     <label>FullScreen</label>
                 </div>
             </div>
@@ -54,11 +53,15 @@ import vuex from 'vuex'
 export default {
     data() {
         return {
-            location: this.$store.state.root,
+            reswidth: 400,
+            resheight: 400,
+            resfullscreen: false,
+            location: '',
+            selectedTheme: '',
         }
     },
     computed: {
-        ...vuex.mapState(['defaultResolution', 'autoDownload', 'theme'])
+        ...vuex.mapState(['defaultResolution', 'autoDownload', 'theme', 'root', 'themes'])
     },
     mounted() {
         $(this.$el).modal({ blurring: true, })
@@ -67,9 +70,15 @@ export default {
     methods: {
         ...vuex.mapActions(['openDialog']),
         show() {
+            this.resheight = this.defaultResolution.height;
+            this.reswidth = this.defaultResolution.width;
+            this.resfullscreen = this.defaultResolution.fullscreen;
+            this.location = this.root;
+            this.selectedTheme = this.theme;
             $(this.$el).modal('show')
             $('.ui.checkbox').checkbox()
             $('.selection.dropdown').dropdown()
+            console.log(this)
         },
         browseFolder() {
             const self = this;
