@@ -24,12 +24,11 @@ function findJavaFromPath(set) {
     return set
 }
 /**
-* @author Indexyz 
+* @author Indexyz
 */
 function findJavaFromRegistry(set) {
     let command;
     const childProcess = require('child_process');
-    const os = require('os');
 
     if (os.platform() === 'win32') command = 'REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome'
     else command = 'find /usr/ -name java -type f'
@@ -75,22 +74,30 @@ async function installJre() {
         case 'x86':
         case 'x32':
             arch = 'x86'
+            break;
         case 'x64':
             arch = 'x86_64'
+            break;
+        default:
+            arch = 'x86';
     }
     switch (os.platform()) {
         case 'darwin': break;
         case 'win32':
-            buildSystemId = 'windows'; break;
+            buildSystemId = 'windows';
+            break;
         case 'linux':
-            buildSystemId = 'el6_9'
+            buildSystemId = 'el6_9';
+            break;
+        default:
+            buildSystemId = ''
     }
     if (!buildSystemId) throw new Error(`Not supporting system ${os.platform()}`);
     if (!arch) throw new Error(`Not supporting arch ${os.arch()}`)
-    const downURL = latest.assets.map(ass => ass['browser_download_url'])
-        .filter(ass => {
+    const downURL = latest.assets.map(ass => ass.browser_download_url)
+        .filter((ass) => {
             const arr = ass.split('.');
-            return arr[arr.length - 2] === arch && sys === arr[arr.length - 3]
+            return arr[arr.length - 2] === arch // && sys === arr[arr.length - 3]
         })[0]
     const splt = downURL.split('/');
     const tempFileLoc = path.join(app.getPath('temp'), splt[splt.length - 1]);
@@ -116,10 +123,11 @@ export default {
         async availbleJre() {
             const local = path.join(app.getPath('appData'), 'jre', 'bin', 'javaw.exe');
             if (fs.existsSync(local)) return [local]
-            return await findJavaFromRegistry()
+            const ret = await findJavaFromRegistry()
                 .then(findJavaFromPath)
                 .then(findJavaFromHome)
-                .then(Array.from)
+                .then(Array.from);
+            return ret;
         },
         async ensureJre() {
             const local = path.join(app.getPath('appData'), 'jre', 'bin', 'javaw.exe');
@@ -131,7 +139,8 @@ export default {
             if (arr.length === 0) {
                 await installJre();
                 return [local];
-            } else return arr;
+            }
+            return arr;
         },
-    }
+    },
 }
