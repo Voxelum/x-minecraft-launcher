@@ -16,7 +16,7 @@ const numOptions = [0, 1, 2]
 export default {
     components: { OptionsGroup },
     computed: {
-        ...vuex.mapGetters('settings', {
+        ...vuex.mapGetters({
             templates: 'options',
         }),
     },

@@ -105,7 +105,7 @@ export default {
             option = {},
         }) {
             const id = uuid()
-            option.java = option.java || context.rootGetters['settings/defaultJava']
+            option.java = option.java || context.rootGetters.defaultJava
             context.commit('add', { id, moduleData: option })
             return context.dispatch('saveProfile', { id })
         },

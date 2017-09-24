@@ -36,7 +36,7 @@
         </div>
         <div class="moveable black row" style="height:60px">
             <div class="four wide center aligned middle aligned column">
-                <div class="ui icon inverted button pointing dropdown non-moveable">
+                <div class="ui icon inverted button pointing dropdown non-moveable" @click="showModal('settings')">
                     <i class="setting icon"></i>
                 </div>
                 <div class="ui icon inverted button non-moveable" @click="refresh">
@@ -117,6 +117,7 @@
         <server-modal ref="serverModal" @accept="submitProfile($event, 'server')"></server-modal>
         <delete-modal ref="deleteModal" @accept="deleteProfile"></delete-modal>
         <profile-modal ref="profileModal"></profile-modal>
+        <settings-modal ref="settingsModal"></settings-modal>
     </div>
 </template>
 

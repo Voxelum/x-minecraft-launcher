@@ -19,7 +19,7 @@
 import vuex from 'vuex'
 export default {
     computed: {
-        ...vuex.mapGetters('settings', {
+        ...vuex.mapGetters({
             templates: 'options'
         }),
     },

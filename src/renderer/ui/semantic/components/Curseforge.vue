@@ -24,7 +24,7 @@
             <i class="dropdown icon"></i>
         </div>
         <div class="ui link cards" style="overflow-x:hidden;max-height:350px; margin-top:20px; margin-bottom:20px">
-            <router-link :to="{ path: 'curseforge/'+m.path, params:{id: m.path}}" class="card" v-for="m of mods" :key="m.path" style="padding-right:10px">
+            <router-link :to="{ path: 'curseforge/'+m.path, params:{id: m.path}}" class="card" v-for="m of mods" :key="m.path">
                 <div class="content">
                     <img class="right floated mini ui icon" :src="m.icon">
                     <div class="header">

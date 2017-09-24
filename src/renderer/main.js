@@ -6,29 +6,29 @@ if (!process.env.IS_WEB) {
 }
 Vue.config.productionTip = false;
 
+// eslint-disable-next-line no-undef
 if (SIDE === 'log') {
     new Vue({
         components: { Log: require('./LogViewer') },
         template: '<Log></Log>',
     }).$mount('#log');
 } else {
-    // require('default-passive-events')
-    const App = require('./App');
-    const store = require('./store').default;
+    const createStore = require('./store').default;
     const router = require('./router.js').default;
+    const ui = require('./ui').default;
     ipcRenderer.on('init', (event, root) => {
-        store(root).then(s =>
+        createStore(root, ui.map(gui => gui.path)).then(store =>
             new Vue({
                 router,
-                components: { App },
-                store: s,
+                components: { App: require('./App') },
+                store,
                 i18n: require('./i18n').default,
                 template: '<App style="max-height:626px; overflow:hidden;"></App>',
             }).$mount('#app'),
         ).then((v) => {
-            v.$store.commit('path', v.$route.fullPath)
+            v.$store.commit('url', v.$route.fullPath)
             v.$router.afterEach((to, from) => {
-                v.$store.commit('path', to.fullPath)
+                v.$store.commit('url', to.fullPath)
             })
         })
     })

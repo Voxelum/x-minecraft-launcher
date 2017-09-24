@@ -16,22 +16,24 @@ export default {
                 }
             }
         }
+        if (state.javas.length === 0) errors.settings = ['setting.install.java']
         return errors;
-    },
-    errorsCount(state, getters) {
-        return Object.keys(getters.errors).map((k, i, arr) => getters.errors[k].length)
-            .reduce((a, b) => a + b, 0)
     },
     tasks(state, getters) {
         return {}
     },
-    tasksCount(states, getters) {
-        return Object.keys(getters.tasks).map((k, i, arr) => getters.tasks[k].length)
-            .reduce((a, b) => a + b, 0)
-    },
+    errorsCount: (state, getters) => Object.keys(getters.errors)
+        .map((k, i, arr) => getters.errors[k].length).reduce((a, b) => a + b, 0),
+    tasksCount: (states, getters) => Object.keys(getters.tasks)
+        .map((k, i, arr) => getters.tasks[k].length).reduce((a, b) => a + b, 0),
     rootPath(state, getters) {
         return state.root
     },
-    path: (state, gets) => path => (path instanceof Array ?
-        paths.join(gets.rootPath, ...path) : paths.join(gets.rootPath, path)),
+    root: state => state.root,
+    themes: state => state.themes,
+    theme: state => state.theme,
+    javas: state => state.javas,
+    options: state => state.templates.minecraft,
+    defaultJava: state => (state.javas.length !== 0 ? state.javas[0] : undefined),
+    defaultOptions: state => state.templates.minecraft.midum,
 }
