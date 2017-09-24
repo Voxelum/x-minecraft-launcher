@@ -189,7 +189,6 @@ ipcMain.on('restart', () => {
     parking = false;
     if (logWindow) {
         logWindow.close();
-        logWindow = undefined;
     }
     createMainWindow()
 })
