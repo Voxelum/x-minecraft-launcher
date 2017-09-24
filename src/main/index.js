@@ -56,7 +56,6 @@ if (!root) {
 }
 
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
-    console.log('sing')
     // Someone tried to run a second instance, we should focus our window.
     if (mainWindow) {
         if (mainWindow.isMinimized()) mainWindow.restore()
@@ -93,7 +92,6 @@ ipcMain.on('minecraft-stderr', (s) => {
 })
 
 function createMainWindow(theme) {
-    console.log('create main')
     /**
      * Initial window options
      */
@@ -179,8 +177,6 @@ app.on('activate', () => {
 ipcMain.on('update', (event, newRoot, newTheme) => {
     if (newRoot !== undefined || newTheme !== undefined) {
         if (newRoot) updateRoot(newRoot);
-        console.log(newTheme)
-        console.log(newRoot)
         newTheme = newTheme || 'semantic'
         parking = true
         mainWindow.close();
@@ -205,7 +201,6 @@ ipcMain.on('restart', () => {
 })
 
 ipcMain.on('exit', () => {
-    console.log('exit')
     mainWindow.close()
     if (process.platform !== 'darwin') {
         app.quit()
