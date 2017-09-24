@@ -4,7 +4,7 @@ import { ActionContext } from 'vuex'
 import { MinecraftFolder } from 'ts-minecraft'
 import { remote, ipcRenderer } from 'electron'
 import { v4 } from 'uuid'
-import makeEnv from './mkenv'
+import makeEnv from './helpers/mkenv'
 
 export default {
     searchJava({ dispatch }) {

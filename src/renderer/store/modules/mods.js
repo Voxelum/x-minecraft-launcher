@@ -1,5 +1,5 @@
 import { Mod } from 'ts-minecraft'
-import repository from './models/repository'
+import repository from './repository'
 
 const state = () => {
     const s = repository.state()
