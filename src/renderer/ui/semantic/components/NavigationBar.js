@@ -39,7 +39,7 @@ export default {
         }, [...right, createElement('div', { attrs: { class: 'ui breadcrumb' } }, rendered)])
     },
     computed: {
-        ...vuex.mapState(['path']),
+        ...vuex.mapState({ path: 'url' }),
         paths() {
             const splited = this.path.split('/').slice(1);
             const paths = []

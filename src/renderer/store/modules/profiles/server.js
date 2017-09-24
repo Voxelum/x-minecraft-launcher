@@ -7,7 +7,7 @@ function state() {
 
     theState.type = 'server'
     theState.host = ''
-    theState.port = ''
+    theState.port = 25565
     theState.isLanServer = false
     theState.icon = ''
     theState.status = {}
@@ -66,6 +66,8 @@ const actions = {
                     const nohost = TextComponent.str('server.status.nohost');
                     nohost.style = Style.create({ color: TextFormatting.RED })
                     context.commit('putAll', { status: new ServerStatus(TextComponent.str('version.unknown'), nohost, -1, -1, -1) })
+                } else {
+                    context.commit('putAll', { status: new ServerStatus(TextComponent.str('version.unknown'), 'Internet Error', -1, -1, -1) })
                 }
             })
     },

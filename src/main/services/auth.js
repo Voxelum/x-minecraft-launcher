@@ -1,9 +1,6 @@
-import {
-    v4,
-} from 'uuid'
+import { v4 } from 'uuid'
 
-const fs = require('fs')
-const { AuthService } = require('ts-minecraft')
+import { AuthService } from 'ts-minecraft'
 
 const registered = new Map()
 export default {

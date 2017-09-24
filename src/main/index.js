@@ -35,7 +35,6 @@ const logWinURL = process.env.NODE_ENV === 'development' ?
 let mainWindow;
 let logWindow;
 
-
 let maindownloadCallback;
 const downloadTasks = new Map()
 
@@ -44,13 +43,18 @@ let parking = false;
 let iconImage
 
 let root = process.env.LAUNCHER_ROOT
-if (!root) {
-    process.env.LAUNCHER_ROOT = paths.join(app.getPath('appData'), '.launcher');
-    root = process.env.LAUNCHER_ROOT
+function updateRoot(newRoot) {
+    process.env.LAUNCHER_ROOT = newRoot;
+    root = newRoot
+    app.setPath('appData', root);
 }
-app.setPath('appData', root);
+
+if (!root) {
+    updateRoot(paths.join(app.getPath('appData'), '.launcher'));
+}
 
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
+    console.log('sing')
     // Someone tried to run a second instance, we should focus our window.
     if (mainWindow) {
         if (mainWindow.isMinimized()) mainWindow.restore()
@@ -70,7 +74,7 @@ function createLogWindow() {
     })
     logWindow.setTitle('Log')
     logWindow.setIcon(iconImage);
-    logWindow.loadURL(logWinURL);
+    logWindow.loadURL(`${logWinURL}?logger=true`);
     logWindow.on('closed', () => { logWindow = null })
 }
 
@@ -86,7 +90,8 @@ ipcMain.on('minecraft-stderr', (s) => {
     }
 })
 
-function createMainWindow() {
+function createMainWindow(theme) {
+    console.log('create main')
     /**
      * Initial window options
      */
@@ -98,7 +103,7 @@ function createMainWindow() {
     })
     mainWindow.setTitle('ILauncher')
     mainWindow.setIcon(iconImage)
-    mainWindow.loadURL(mainWinURL)
+    mainWindow.loadURL(`${mainWinURL}?logger=false&theme=${theme}&root=${root}`)
 
     mainWindow.on('closed', () => { mainWindow = null })
     mainWindow.on('ready-to-show', () => {
@@ -142,7 +147,7 @@ function createMainWindow() {
 app.on('ready', () => {
     require('./services'); // load all service 
     iconImage = nativeImage.createFromPath(`${__static}/logo.png`) // eslint-disable-line no-undef
-    createMainWindow()
+    createMainWindow('semantic')
 
     const appIcon = new Tray(iconImage)
     app.setName('ILauncher');
@@ -156,28 +161,39 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-    if (mainWindow === null) createMainWindow()
+    if (mainWindow === null) createMainWindow('semantic')
 })
 
-ipcMain.on('init', (event) => {
-    mainWindow.webContents.send('init', root)
+ipcMain.on('update', (event, newRoot, newTheme) => {
+    if (newRoot !== undefined || newTheme !== undefined) {
+        if (newRoot) updateRoot(newRoot);
+        console.log(newTheme)
+        console.log(newRoot)
+        newTheme = newTheme || 'semantic'
+        parking = true
+        mainWindow.close();
+        createMainWindow(newTheme);
+        parking = false;
+    }
 })
+
 ipcMain.on('park', (debug) => {
     parking = true;
     mainWindow.close()
-    mainWindow = null;
     createLogWindow();
 })
+
 ipcMain.on('restart', () => {
     parking = false;
     if (logWindow) {
         logWindow.close();
         logWindow = undefined;
     }
-    console.log('recreate main')
-    createMainWindow()
+    createMainWindow('semantic')
 })
+
 ipcMain.on('exit', () => {
+    console.log('exit')
     mainWindow.close()
     if (process.platform !== 'darwin') {
         app.quit()

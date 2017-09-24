@@ -2,6 +2,7 @@
   "name": "ilauncher",
   "productName": "ILauncher",
   "version": "0.0.0",
+  "typings": "typings.d.ts",
   "author": "",
   "description": "A great minecraft launcher in the feature",
   "license": "MIT",

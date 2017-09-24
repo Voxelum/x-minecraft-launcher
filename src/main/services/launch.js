@@ -1,13 +1,12 @@
-import * as paths from 'path'
+import paths from 'path'
 import { ipcMain } from 'electron'
 
-const fs = require('fs');
-const {
+import {
     Launcher,
     Version,
     AuthService,
     MinecraftFolder,
-} = require('ts-minecraft')
+} from 'ts-minecraft'
 
 
 // import semver from 'semver'
@@ -17,6 +16,7 @@ export default {
     proxy: {
     },
     actions: {
+
         launch({ auth, option }) {
             console.log('launch:')
             console.log(option)

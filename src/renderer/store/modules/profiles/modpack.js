@@ -3,7 +3,7 @@ import profile from './profile'
 function state() {
     const theState = profile.state()
     theState.type = 'modpack'
-    theState.ediable = true
+    theState.editable = true
     theState.author = ''
     theState.description = ''
     theState.url = ''

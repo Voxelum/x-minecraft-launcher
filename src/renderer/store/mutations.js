@@ -11,4 +11,7 @@ export default {
     path(state, path) {
         state.path = path;
     },
+    updateSetting(state, settings) {
+
+    },
 }

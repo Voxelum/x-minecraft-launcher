@@ -17,7 +17,6 @@ export default {
     },
     url: '',
     javas: [],
-    path: '',
     root: '',
     theme: 'semantic',
     themes: [], // todo... I think we need a more generic way... 

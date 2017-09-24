@@ -1,4 +1,5 @@
 import uuid from 'uuid'
+import { ActionContext } from 'vuex'
 import { GameSetting } from 'ts-minecraft'
 import server from './profiles/server'
 import modpack from './profiles/modpack'
@@ -79,9 +80,12 @@ export default {
             const data = await context.dispatch(`${id}/serialize`)
             return context.dispatch('write', { path: profileJson, data }, { root: true })
         },
+        /**
+         * @param {ActionContext} context 
+         * @param {{mutation:string, object:any}} payload 
+         */
         save(context, payload) {
-            const mutation = payload.mutation
-            const object = payload.object
+            const { mutation, object } = payload
             const path = mutation.split('/')
             if (path.length === 2) {
                 const [, action] = path
@@ -100,6 +104,10 @@ export default {
             }
             return context.dispatch('saveProfile', { id: path[1] })
         },
+        /**
+         * @param {ActionContext} context 
+         * @param {*} param1 
+         */
         create(context, {
             type,
             option = {},
