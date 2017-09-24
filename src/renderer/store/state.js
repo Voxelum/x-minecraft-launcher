@@ -1,5 +1,4 @@
-
-import mcsettings from './mcsettings'
+import mcsettings from './modules/mcsettings'
 
 (() => {
     const options = require('shared/options')
@@ -18,6 +17,7 @@ export default {
     },
     url: '',
     javas: [],
+    path: '',
     root: '',
     theme: 'semantic',
     themes: [], // todo... I think we need a more generic way... 

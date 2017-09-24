@@ -97,7 +97,7 @@ export default {
     },
     readFolder(context, { path }) {
         path = paths.join(context.state.root, path);
-        return fs.ensureDir(path).then(() => fs.readdir());
+        return fs.ensureDir(path).then(() => fs.readdir(path));
     },
     delete(context, { path }) {
         path = paths.join(context.state.root, path);
