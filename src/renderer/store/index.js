@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { ipcRenderer } from 'electron'
 
 import plugins from './plugins'
+import state from './state'
+import mutations from './mutations'
 import modules from './modules'
 import getters from './getters'
 import actions from './actions'
@@ -10,57 +11,41 @@ import loadable from './loadable'
 
 Vue.use(Vuex)
 
-for (const key in modules) {
-    if (modules.hasOwnProperty(key)) {
-        loadable(modules[key])
-    }
-}
+Object.keys(modules).forEach(key => loadable(modules[key]))
 
-export const init = (root) => {
+export default (root, themes) => {
+    state.root = root;
+    state.thems = themes || ['semantic'];
     const store = new Vuex.Store({
-        state: { root, dragover: false, path: '' },
-        mutations: {
-            dragover(states, value) {
-                states.dragover = value
-            },
-            path(states, path) {
-                states.path = path;
-            },
-        },
+        state,
+        mutations,
         modules,
         getters,
-        actions: actions(root),
+        actions,
         strict: process.env.NODE_ENV !== 'production',
         plugins,
     });
 
-    const keys = Object.keys(modules)
-    const promises = []
-    for (const key of keys) {
-        if (modules.hasOwnProperty(key)) {
-            const action = `${key}/load`;
-            if (store._actions[action]) {
-                console.log(`Found action ${action}`)
-                promises.push(store.dispatch(action).then((instance) => {
-                    const id = key;
-                    store.commit(`${id}/$reload`, instance)
-                    console.log(`loaded module [${id}]`)
-                }, (err) => {
-                    const id = key
-                    console.error(`an error occured when we load module [${id}].`)
-                    console.error(err)
-                }))
-            }
+    return Promise.all(Object.keys(modules).map((key) => {
+        const action = `${key}/load`;
+        if (store._actions[action]) {
+            console.log(`Found action ${action}`)
+            return store.dispatch(action).then((instance) => {
+                const id = key;
+                store.commit(`${id}/$reload`, instance)
+                console.log(`loaded module [${id}]`)
+            }, (err) => {
+                const id = key
+                console.error(`an error occured when we load module [${id}].`)
+                console.error(err)
+            })
         }
-    }
-    return Promise.all(promises).then(() => {
+        return Promise.resolve();
+    })).then(() => {
         console.log('Done loading store!')
         return store
     }, (err) => {
-        console.log('Done with Error')
+        console.log('Done loading store with Error')
         return store
     })
 }
-
-
-export default init

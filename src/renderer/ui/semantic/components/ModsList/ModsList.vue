@@ -68,7 +68,6 @@ export default {
     },
     components: { ListCell, VirtualList },
     computed: {
-
         ...vuex.mapGetters('mods', ['values']),
         selectedMods() { return this.$store.getters[`profiles/${this.id}/forge/mods`] },
         mods() {

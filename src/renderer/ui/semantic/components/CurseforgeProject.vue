@@ -1,8 +1,8 @@
 <template>
     <div id="project-container" class="ui grid" style="">
         <!-- <div class="ui active inverted dimmer">
-                                <div class="ui text loader">Loading</div>
-                            </div> -->
+                                                        <div class="ui text loader">Loading</div>
+                                                    </div> -->
         <div v-if="cache" class="four wide column">
             <div class="ui card">
                 <div class="image">
@@ -45,15 +45,26 @@
                 <div v-if="cache.description" v-html="cache.description"></div>
             </div>
             <div class="ui tab" data-tab="files">
-                <div v-if="cache.downloads" class="ui middle aligned selection black list">
-                    <div v-for="f of cache.downloads.files" :key="f.href" class="item" style="padding-left:20px">
+                <div v-if="cache.downloads" class="ui middle aligned black divided items">
+                    <div v-for="f of cache.downloads.files" :key="f.href" class="item" style="padding-left:20px" @click="download(f.href)">
                         <div class="ui ribbon label">
                             {{f.type}}
                         </div>
                         <div class="content">
                             <div class="header">{{f.name}}</div>
                             <div class="extra">
-                                {{f.date}}
+                                <div class="ui right floated basic button">
+                                    <i class="download icon"></i>{{f.size}}
+                                </div>
+                                <div class="ui basic label">
+                                    <i class="time icon"></i>{{f.date}}
+                                </div>
+                                <div class="ui basic label">
+                                    <i class="download icon"></i>{{f.downloadCount}}
+                                </div>
+                                <div class="ui basic label">
+                                    <i class="game icon"></i>{{f.version}}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -98,6 +109,9 @@ export default {
                 console.error(e)
             })
         },
+        download(href) {
+            console.log(href)
+        }
     },
     props: ['id'],
 }
