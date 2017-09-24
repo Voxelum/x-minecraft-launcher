@@ -11,7 +11,6 @@ const webpackHotMiddleware = require('webpack-hot-middleware')
 
 const mainConfig = require('./webpack.main.config')
 const rendererConfig = require('./webpack.renderer.config')
-const logConfig = require('./webpack.log.config')
 
 let electronProcess = null
 let manualRestart = false
@@ -37,20 +36,6 @@ function logStats(proc, data) {
   log += '\n' + chalk.yellow.bold(`┗ ${new Array(28 + 1).join('-')}`) + '\n'
 
   console.log(log)
-}
-
-function startLog() {
-  return new Promise((resolve, reject) => {
-    const compiler = webpack(logConfig)
-
-    compiler.plugin('done', stats => {
-      logStats('Logger', stats)
-    })
-    compiler.run((err, stats) => {
-      if (err) console.log(err)
-      else logStats('Logger', stats)
-    })
-  })
 }
 function startRenderer() {
   return new Promise((resolve, reject) => {
