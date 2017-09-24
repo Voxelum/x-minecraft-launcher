@@ -7,7 +7,7 @@ import mutations from './mutations'
 import modules from './modules'
 import getters from './getters'
 import actions from './actions'
-import loadable from './loadable'
+import loadable from './helpers/loadable'
 
 Vue.use(Vuex)
 
