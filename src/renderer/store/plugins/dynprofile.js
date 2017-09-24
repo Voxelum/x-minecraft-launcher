@@ -2,7 +2,7 @@ import uuid from 'uuid'
 import modelServer from '../modules/profiles/server'
 import modelModpack from '../modules/profiles/modpack'
 import settings from '../modules/profiles/settings'
-import mixin from '../mixin-state'
+import mixin from '../helpers/mixin-state'
 
 export default (store) => {
     store.subscribe((mutation, state) => {
