@@ -10,14 +10,14 @@ import { mapState } from 'vuex'
 export default {
     watch: {
         theme() {
-            this.$router.push(this.theme)
+            this.$router.replace(`/${this.theme}`)
         }
     },
     computed: {
         ...mapState(['theme'])
     },
     beforeMount() {
-        this.$router.push(this.theme)
+        this.$router.replace(`/${this.theme}`)
     },
     mounted() {
         let dragTimer;
@@ -27,7 +27,7 @@ export default {
             var dt = e.originalEvent.dataTransfer;
             if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1
                 : dt.types.contains('Files'))) {
-                if (!store.state.dragover) store.commit('dragover', true);
+                if (!store.state.dragover) store.commit('drag/dragover', true);
                 window.clearTimeout(dragTimer);
             }
         });

@@ -36,7 +36,17 @@
         "import": "Import Map",
         "export": "Export Map"
     },
-    "settings": "Settings",
+    "setting": {
+        "name": "Settings",
+        "location": "Store Location",
+        "theme": "Theme",
+        "resolution": "Default Resolution"
+    },
+    "resolution": {
+        "width": "Width",
+        "height": "Height",
+        "fullscreen": "Fullscreen"
+    },
     "launch": "Launch",
     "version": {
         "name": "Version | Versions",
