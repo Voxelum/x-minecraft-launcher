@@ -6,7 +6,6 @@ export default {
         modes: ['mojang', 'offline'],
         mode: 'mojang',
         history: {},
-
         auth: {}, // cached
         cache: {
             skin: { data: undefined, slim: false },
