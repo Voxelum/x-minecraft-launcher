@@ -4,13 +4,17 @@ export default {
     /**
      * Return the errros by module.
      */
-    errors: (state, getters) => ({
-        ...Object.keys(state)
-            .map(key => ({ [key]: getters[`${key}/errors`] }))
-            .filter(get => get && get.length !== 0)
-            .reduce((a, b) => ({ ...a, ...b })),
-        settings: (state.javas.length !== 0) ? ['setting.install.java'] : [],
-    }),
+    errors: (state, getters) => {
+        const settings = []
+        if (state.javas.length !== 0) settings.push('setting.install.java')
+        const errors = {
+        }
+        Object.keys(state)
+            .filter(key => getters[`${key}/errors`] && getters[`${key}/errors`].length !== 0)
+            .forEach((key) => { errors[key] = getters[`${key}/errors`] });
+        if (settings.length !== 0) errors.settings = settings;
+        return errors;
+    },
     tasks(state, getters) {
         return {}
     },
