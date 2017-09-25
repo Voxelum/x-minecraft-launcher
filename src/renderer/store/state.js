@@ -4,7 +4,7 @@ export default {
     defaultResolution: { width: 400, height: 400, fullscreen: false },
     autoDownload: false,
     templates: {
-        minecraft: {},
+        minecraft: { ...options },
     },
     url: '',
     javas: [],
