@@ -10,7 +10,6 @@ export default new VueI18n({
     fallbackLocale: 'en',
     messages: locales,
     missing: (locale, key, vm) => {
-
         // handle translation missing
     },
     silentTranslationWarn: true,
