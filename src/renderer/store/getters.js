@@ -3,22 +3,14 @@ import paths from 'path'
 export default {
     /**
      * Return the errros by module.
-     * @param {* State} state The vuex root state
-     * @param {* Getters} getters The vuex root getters
      */
-    errors(state, getters) {
-        const errors = {}
-        for (const key in state) {
-            if (state.hasOwnProperty(key)) {
-                const get = getters[`${key}/errors`]
-                if (get && get.length !== 0) {
-                    errors[key] = get
-                }
-            }
-        }
-        if (state.javas.length === 0) errors.settings = ['setting.install.java']
-        return errors;
-    },
+    errors: (state, getters) => ({
+        ...Object.keys(state)
+            .map(key => ({ [key]: getters[`${key}/errors`] }))
+            .filter(get => get && get.length !== 0)
+            .reduce((a, b) => ({ ...a, ...b })),
+        settings: (state.javas.length !== 0) ? ['setting.install.java'] : [],
+    }),
     tasks(state, getters) {
         return {}
     },
