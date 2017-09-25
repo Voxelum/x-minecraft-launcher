@@ -17,7 +17,7 @@ Object.keys(modules).forEach(key => loadable(modules[key]))
 
 export default (root, themes, theme) => {
     state.root = root;
-    state.themes = themes || ['semantic', 'material'];
+    state.themes = themes || ['semantic'];
     state.theme = theme || 'semantic'
     const store = new Vuex.Store({
         state,

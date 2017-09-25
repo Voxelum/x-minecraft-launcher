@@ -14,7 +14,6 @@ export default {
     },
     getters: {
         modes: state => state.modes,
-        disablePassword: state => state.mode === 'offline',
         mode: state => state.mode,
         username: state => (state.auth.selectedProfile ? state.auth.selectedProfile.name : ''),
         id: state => (state.auth.id ? state.auth.id : ''),

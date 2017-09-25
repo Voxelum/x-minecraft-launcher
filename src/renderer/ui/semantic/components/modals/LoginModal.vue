@@ -32,7 +32,7 @@
                     <div ref="passwordField" class="field">
                         <div class="ui left icon inverted input">
                             <i class="lock icon"></i>
-                            <input type="password" name="password" :placeholder="$t(`${mode}.password`)" :disabled="disablePassword" v-on:keyup.enter="doLogin" v-model="password">
+                            <input type="password" name="password" :placeholder="$t(`${mode}.password`)" :disabled="mode==='offline'" v-on:keyup.enter="doLogin" v-model="password">
                         </div>
                     </div>
                     <div class="ui fluid large submit basic button inverted" :class="{loading: logining}" v-on:click="doLogin">{{$t('login')}}</div>
@@ -73,7 +73,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('auth', ['disablePassword', 'history', 'mode', 'modes'])
+        ...mapGetters('auth', ['history', 'mode', 'modes'])
     },
     mounted() {
         const self = this
