@@ -92,8 +92,8 @@ export default {
      * @param {ActionContext} context 
      * @param {{service:string, action:string, payload:any}} payload 
      */
-    query(context, payload) {
-        const { service, action, $payload } = payload;
+    query(context, $payload) {
+        const { service, action, payload } = $payload;
         return new Promise((resolve, reject) => {
             const id = v4()
             ipcRenderer.once(id,
@@ -106,7 +106,7 @@ export default {
                 id,
                 service,
                 action,
-                payload: $payload,
+                payload,
             })
         });
     },
