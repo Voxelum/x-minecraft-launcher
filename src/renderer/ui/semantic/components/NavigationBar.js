@@ -96,8 +96,12 @@ export default {
                 attrs: { class: 'section' },
             }, [createElement('a', {
                 attrs: {
+                    // to: path,
                     href: `#${path}`,
                     class: 'ui inverted circular right floated button non-moveable',
+                },
+                on: {
+                    click: () => { this.$router.replace(path) },
                 },
             },
                 [createElement('i', {
@@ -112,8 +116,12 @@ export default {
                 attrs: { class: 'section' },
             }, [createElement('a', {
                 attrs: {
+                    // to: path,
                     href: `#${path}`,
                     class: 'ui inverted circular button non-moveable',
+                },
+                on: {
+                    click: () => { this.$router.replace(path) },
                 },
             },
                 [createElement('i', {
