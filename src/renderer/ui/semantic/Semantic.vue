@@ -13,7 +13,7 @@
         </div>
         <div id="mainRow" class="row" style="height:500px;" :style="{'background-image' : background}">
             <div class="four wide middle aligned center aligned column">
-                <h5 id="userDropdown" class="ui pointing dropdown">
+                <h5 ref="userDropdown" class="ui pointing dropdown">
                     <i class="user icon"></i>
                     {{username}}
                     <i class="dropdown icon"></i>
@@ -45,7 +45,7 @@
             </div>
             <div class="twelve wide middle aligned column">
                 <span class="non-moveable ui inverted basic icon buttons">
-                    <div id="warningPopup" class="ui button">
+                    <div ref="warningPopup" class="ui button">
                         <i class="warning sign icon"></i> {{errorsCount}}
                     </div>
                     <div class="ui flowing popup top left transition hidden">
@@ -65,7 +65,7 @@
                             {{$t('errors.empty')}}
                         </div>
                     </div>
-                    <div id="taskPopup" class="ui button">
+                    <div ref="taskPopup" class="ui button">
                         <i class="tasks icon"></i> {{tasksCount}}
                     </div>
                     <div class="ui flowing popup top left transition hidden">
@@ -86,30 +86,7 @@
                         </div>
                     </div>
                 </span>
-                <span v-if="!isSelecting">
-                    <div class="ui icon right floated  inverted button non-moveable" @click="create('modpack')">
-                        <i class="plus icon"></i>
-                        {{$t('modpack.add')}}
-                    </div>
-                    <div class="ui icon right floated  inverted button non-moveable" @click="create('server')">
-                        <i class="plus icon"></i>
-                        {{$t('server.add')}}
-                    </div>
-                    <div class="ui icon right floated  inverted button non-moveable" @click="test">
-                        <i class="plus icon"></i>
-                    </div>
-                </span>
-                <span v-else>
-                    <div class="ui icon right floated inverted button non-moveable" @click="launch">
-                        &nbsp&nbsp&nbsp
-                        <i class="rocket icon"></i>
-                        {{$t('launch')}} &nbsp&nbsp&nbsp&nbsp
-                    </div>
-                    <div class="ui icon right floated inverted button non-moveable" @click="edit">
-                        <i class="edit icon"></i>
-                        Edit
-                    </div>
-                </span>
+                <router-view name='buttons' @modal="showModal" :id="selectedProfileID"></router-view>
             </div>
         </div>
         <login-modal ref="loginModal"></login-modal>
@@ -151,17 +128,11 @@ export default {
         ...mapGetters(['errors', 'tasks', 'errorsCount', 'tasksCount']),
         ...mapGetters('auth', ['username', 'skin']),
         ...mapState('settings', ['autoDownload']),
-        isSelecting() {
-            return false;//this.selectedProfile != undefined && this.selectedProfileID != null
-        },
     },
     mounted(e) {
         if (this.username === '') this.showModal('login')
-        const self = this;
-        $('#userDropdown').dropdown({
-            on: 'hover',
-        })
-        $('#warningPopup').popup({
+        $(this.$refs.userDropdown).dropdown({ on: 'hover' })
+        $(this.$refs.warningPopup).popup({
             hoverable: true,
             position: 'top left',
             delay: {
@@ -177,32 +148,14 @@ export default {
             deleteProfile: 'delete',
         }),
         ...mapMutations('profiles', ['unselect']),
-        ...mapActions(['launch']),
         showModal(id, args) {
             const modal = this.$refs[id + "Modal"]
             if (modal)
                 modal.show(args)
             else console.warn(`No modal named ${id}`)
         },
-        create(type) {
-            this.showModal(type)
-        },
         refresh() {
-            console.log(this.$refs)
             this.$refs.view.refresh()
-        },
-        edit() {
-            const args = { isEdit: true }
-            if (this.selectedProfile.type === 'server') {
-                args.host = this.selectedProfile.host;
-                args.port = this.selectedProfile.port;
-                args.name = this.selectedProfile.name;
-            } else {
-                args.name = this.selectedProfile.name;
-                args.author = this.selectedProfile.author;
-                args.description = this.selectedProfile.description;
-            }
-            this.showModal(this.selectedProfile.type, args)
         },
         close() {
             require('electron').ipcRenderer.sendSync('exit')
@@ -214,14 +167,6 @@ export default {
                 event.type = type;
                 this.createProfile({ type, option: event })
             }
-        },
-        test() {
-            this.$store.dispatch('query', { service: 'jre', action: 'ensureJre' })
-        },
-        onlaunch() {
-            this.launch().catch(e => {
-                console.log(e);
-            })
         },
     },
 }

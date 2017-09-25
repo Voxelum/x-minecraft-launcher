@@ -48,6 +48,7 @@ export default {
 
     actions: {
         project({ dispatch, commit, state }, path) {
+            if (path === undefined || path == null) return Promise.reject('Path cannot be null');
             if (!state.cached[path]) {
                 return dispatch('query',
                     { service: 'curseforge', action: 'project', payload: `/projects/${path}` },
