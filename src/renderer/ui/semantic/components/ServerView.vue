@@ -29,39 +29,39 @@
         </div>
         <div id="bar" class="stretched row pushable ui top attached segment" style="border-radius:0px;border-right-width:0;border-right-color:transparent;border-right-style:none;">
             <!-- <div id="sidebar" class="ui vertical secondary pointing menu sidebar" style="background-color:white;">
-                            <div class="header item">{{$t('basic')}}</div>
-                            <a class="active item" data-tab="maps">
-                                {{$tc('map.name', 0)}}
-                            </a>
-                            <a class="item" data-tab="settings">
-                                {{$t('settings')}}
-                            </a>
-                            <a class="item" data-tab="resourcepacks">
-                                {{$tc('resourcepack.name', 0)}}
-                            </a>
-                            <a class="item" data-tab="mods">
-                                {{$tc('mod.name', 0)}}
-                            </a>
-                            <div id="acc" class="ui accordion">
-                                <a class="title header item">
-                                    {{$t('advanced')}}
-                                </a>
-                                <div class="content">
-                                    <a class="item" data-tab="forge">
-                                        {{$t('forge')}}
-                                    </a>
-                                    <a class="item" data-tab="liteloader">
-                                        {{$t('liteloader')}}
-                                    </a>
-                                </div>
-                            </div>
-                        </div> -->
-            <div id="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white">
+                                                <div class="header item">{{$t('basic')}}</div>
+                                                <a class="active item" data-tab="maps">
+                                                    {{$tc('map.name', 0)}}
+                                                </a>
+                                                <a class="item" data-tab="settings">
+                                                    {{$t('settings')}}
+                                                </a>
+                                                <a class="item" data-tab="resourcepacks">
+                                                    {{$tc('resourcepack.name', 0)}}
+                                                </a>
+                                                <a class="item" data-tab="mods">
+                                                    {{$tc('mod.name', 0)}}
+                                                </a>
+                                                <div id="acc" class="ui accordion">
+                                                    <a class="title header item">
+                                                        {{$t('advanced')}}
+                                                    </a>
+                                                    <div class="content">
+                                                        <a class="item" data-tab="forge">
+                                                            {{$t('forge')}}
+                                                        </a>
+                                                        <a class="item" data-tab="liteloader">
+                                                            {{$t('liteloader')}}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div> -->
+            <div id="sidebar" ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white">
                 <div class="sixteen wide column">
                     <div class="header item">
                         {{$t('basic')}}
                     </div>
-                    <router-link to="gamesettings" class="item" style="border-bottom:0;border-top:0;">{{$t('settings')}}</router-link>
+                    <router-link to="gamesettings" class="item" style="border-bottom:0;border-top:0;">{{$t('setting.name')}}</router-link>
                     <router-link to="resourcepacks" class="item" style="border-bottom:0;border-top:0;">{{$tc('resourcepack.name', 0)}}</router-link>
                     <router-link to="mods" class="item">{{$tc('mod.name', 0)}}</router-link>
                     <div class="header item">
@@ -76,7 +76,10 @@
                 </div>
 
             </div>
-            <div class="pusher ui basic segment padded container" style="min-height:70%; max-heigth:70%;">
+            <div class="ui basic circular icon huge button" style="position:absolute; margin:20px;" @click="openBar">
+                <i class="options icon"></i>
+            </div>
+            <div class="pusher ui basic segment padded text container" style="min-height:70%; max-heigth:70%;">
                 <router-view></router-view>
             </div>
         </div>
@@ -99,17 +102,16 @@ export default {
             this.$store.dispatch(`profiles/${this.id}/refresh`, force)
         },
         openBar() {
-            $('#sidebar').sidebar('toggle')
+            $(this.$refs.sidebar).sidebar('toggle')
         }
     },
     mounted() {
-        $('#sidebar')
+        $(this.$refs.sidebar)
             .sidebar({
                 context: $('#bar'),
                 dimPage: false
             })
             .sidebar('setting', 'transition', 'overlay')
-        $('#acc').accordion()
         this.refresh();
     },
     props: ['id']

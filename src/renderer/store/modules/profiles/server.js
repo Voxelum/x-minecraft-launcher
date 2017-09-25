@@ -19,7 +19,8 @@ export default {
         ...profile.getters,
         errors(state) {
             // const err = profile.getters.errors(state)
-            // this probably is a issue.... if i delegate to profile's getter; the responsive will fail.
+            // this probably is a issue.... 
+            // if i delegate to profile's getter; the responsive will fail.
             const errors = []
             if (state.minecraft.version === '' || state.minecraft.version === undefined || state.minecraft.version === null) errors.push('profile.empty.version')
             if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.empty.java')
