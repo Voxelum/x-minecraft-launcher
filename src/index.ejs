@@ -2,9 +2,7 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <!-- <link rel="stylesheet" href="https://fonts.proxy.ustclug.org/css?family=Roboto:300,400,500,700,400italic"> -->
-    <!-- <link rel="stylesheet" href="https://cdn.bootcss.com/material-design-icons/3.0.1/iconfont/material-icons.min.css"> -->
+    <meta charset="UTF-8">
     <% if (htmlWebpackPlugin.options.nodeModules) { %>
         <!-- Add `node_modules/` to global paths so `require` works properly in development -->
         <script>
@@ -14,14 +12,10 @@
 </head>
 
 <body>
-    <div id="app"></div>
-    <!-- Set `__static` path to static files in production -->
+    <div id="log"></div>
     <script>
-        var SIDE = 'index'
         if (process.env.NODE_ENV !== 'development') window.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
     </script>
-
-    <!-- webpack builds are automatically injected -->
 </body>
 
 </html>
