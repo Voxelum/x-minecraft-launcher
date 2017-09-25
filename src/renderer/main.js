@@ -13,7 +13,7 @@ if (logger === 'true') {
     new Vue({
         components: { Log: require('./LogViewer') },
         template: '<Log></Log>',
-    }).$mount('#log');
+    }).$mount('#app');
 } else {
     const createStore = require('./store').default;
     const router = require('./router.js').default;
