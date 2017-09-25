@@ -3,7 +3,7 @@
         <div v-if="mods.length==0 || loading" class="ui active inverted dimmer">
             <div class="ui text loader">Loading</div>
         </div>
-        <div id="filterDropdown" class="ui labeled icon top right pointing basic dropdown">
+        <div ref="filterDropdown" class="ui labeled icon top right pointing basic dropdown">
             <i class="filter icon"></i>
             <span class="text">Popularity</span>
             <div class="menu">
@@ -13,7 +13,7 @@
             </div>
             <i class="dropdown icon"></i>
         </div>
-        <div id="versionDropdown" class="ui labeled icon top right pointing scrolling basic dropdown">
+        <div ref="versionDropdown" class="ui labeled icon top right pointing scrolling basic dropdown">
             <i class="filter icon"></i>
             <span class="text">All Versions</span>
             <div class="menu">
@@ -70,12 +70,12 @@ export default {
     },
     mounted() {
         if (this.mods.length === 0) this.change()
-        $('#filterDropdown').dropdown()
-        $('#versionDropdown').dropdown()
+        $(this.$refs.filterDropdown).dropdown()
+        $(this.$refs.versionDropdown).dropdown()
     },
     created() {
-        $('#filterDropdown').dropdown()
-        $('#versionDropdown').dropdown()
+        $(this.$refs.filterDropdown).dropdown()
+        $(this.$refs.versionDropdown).dropdown()
     },
     methods: {
         ...vuex.mapActions('curseforge', ['update']),

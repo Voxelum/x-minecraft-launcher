@@ -97,7 +97,7 @@ export default {
             }, [createElement('a', {
                 attrs: {
                     // to: path,
-                    href: `#${path}`,
+                    // href: `#${path}`,
                     class: 'ui inverted circular right floated button non-moveable',
                 },
                 on: {
@@ -117,7 +117,7 @@ export default {
             }, [createElement('a', {
                 attrs: {
                     // to: path,
-                    href: `#${path}`,
+                    // href: `#${path}`,
                     class: 'ui inverted circular button non-moveable',
                 },
                 on: {

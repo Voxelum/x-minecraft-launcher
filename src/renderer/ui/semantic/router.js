@@ -15,6 +15,10 @@ import GameSettings from './components/GameSettings'
 import ModsList from './components/ModsList'
 import ForgeView from './components/ForgeView'
 
+import CardsButtonGroup from './components/CardsButtonGroup'
+import EditButtonGroup from './components/EditButtonGroup'
+import MarketButtonGroup from './components/MarketButtonGroup'
+
 export default {
     path: '/semantic',
     name: 'semantic',
@@ -24,13 +28,22 @@ export default {
         {
             path: 'cards',
             name: 'cards',
-            component: CardView,
+            components: {
+                default: CardView,
+                buttons: CardsButtonGroup,
+            },
         },
         {
             path: 'modpack/:id',
             name: 'modpack',
-            component: ModpackView,
-            props: true,
+            components: {
+                default: ModpackView,
+                buttons: EditButtonGroup,
+            },
+            props: {
+                default: true,
+                buttons: false,
+            },
             children: [
                 {
                     path: 'maps',
@@ -41,8 +54,14 @@ export default {
         {
             path: 'server/:id',
             name: 'server',
-            component: ServerView,
-            props: true,
+            components: {
+                default: ServerView,
+                buttons: EditButtonGroup,
+            },
+            props: {
+                default: true,
+                buttons: false,
+            },
             children: [
                 {
                     path: '',
@@ -77,23 +96,23 @@ export default {
         {
             path: 'market',
             name: 'market',
-            component: MarketView,
+            components: { buttons: MarketButtonGroup, default: MarketView },
         },
         {
             path: 'curseforge',
             name: 'curseforge',
-            component: Curseforge,
+            components: { buttons: MarketButtonGroup, default: Curseforge },
         },
         {
             path: 'curseforge/:id',
             name: 'curseforge-project',
-            component: CurseforgeProject,
-            props: true,
+            components: { buttons: MarketButtonGroup, default: CurseforgeProject },
+            props: { default: true, buttons: false },
         },
         {
             path: 'mcmodcn',
             name: 'mcmodcn',
-            component: Mcmodcn,
+            components: { buttons: MarketButtonGroup, default: Mcmodcn },
         },
     ],
 }
