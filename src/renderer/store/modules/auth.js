@@ -26,18 +26,11 @@ export default {
         select(state, mode) {
             if (state.modes.indexOf(mode) !== -1) state.mode = mode
         },
-        record(state, { // record the state history
+        history(state, { // record the state history
             auth,
             account,
         }) {
             state.auth = auth;
-            // state.auth.clientToken = auth.clientToken
-            // state.auth.accessToken = auth.accessToken
-            // state.auth.profiles = auth.profiles
-            // state.auth.id = auth.selectedProfile.id;
-            // state.auth.name = auth.selectedProfile.name;
-            // state.auth.skin = auth.skin;
-            // state.auth.cape = auth.cape;
             if (!state.history[state.mode]) Vue.set(state.history, state.mode, [])
             const his = state.history[state.mode];
             const idx = his.indexOf(account);
@@ -47,25 +40,25 @@ export default {
             Vue.set(his, 0, account);
             Vue.set(his, idx, first);
         },
+        modes: (state, modes) => { state.modes = modes },
         clear(state) {
-            state.auth.accessToken = ''
-            state.auth.profiles = []
-            state.auth.id = '';
-            state.auth.name = 'Steve';
-            state.auth.skin.data = undefined;
-            state.auth.cape = undefined;
+            state.auth = undefined;
+            state.cache = {
+                skin: { data: undefined, slim: false },
+                cape: undefined,
+            };
         },
     },
     actions: {
         save(context, payload) {
             const { mutation } = payload;
-            if (!mutation.endsWith('/record')) return Promise.resolve()
+            if (!mutation.endsWith('/history')) return Promise.resolve()
             const data = JSON.stringify(context.state, (key, value) => (key === 'modes' ? undefined : value))
             return context.dispatch('write', { path: 'auth.json', data }, { root: true })
         },
         async load(context, payload) {
             const data = await context.dispatch('read', { path: 'auth.json', fallback: {}, encoding: 'json' }, { root: true });
-            data.modes = await context.dispatch('query', { service: 'auth', action: 'modes' }, { root: true });
+            context.commit('modes', await context.dispatch('query', { service: 'auth', action: 'modes' }, { root: true }));
             return data;
         },
         async logout({ commit, dispatch }) {
@@ -89,7 +82,7 @@ export default {
                 }
                 if (profile.textures.textures.CAPE) result.cape = profile.textures.textures.CAPE.data;
             } catch (e) { }
-            context.commit('record', {
+            context.commit('history', {
                 auth: result,
                 account: payload.account,
             });
