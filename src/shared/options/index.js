@@ -2,6 +2,6 @@ import levels from './levels'
 import tempate from './default'
 
 export default Object.keys(levels).map(level => ({
-    ...JSON.stringify(JSON.parse(tempate)),
+    ...JSON.parse(JSON.stringify(tempate)),
     ...levels[level],
 }))
