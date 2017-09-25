@@ -24,6 +24,7 @@ function request(endpoint) {
 }
 
 function convert(node) {
+    if (node === null || !node) return '';
     let text = '';
     if (node instanceof parser.TextNode) {
         text += node.rawText;
@@ -53,6 +54,7 @@ export default {
     },
     actions: {
         async downloads({ path, version, page } = {}) {
+            if (!path || path == null) throw new Error('Curseforge path cannot be null')
             version = version || ''
             page = page || 1
             const filespage = parser.parse(await request(`
@@ -85,6 +87,7 @@ export default {
             return { pages, versions, files };
         },
         async project(path) {
+            if (!path || path == null) throw new Error('Curseforge path cannot be null')
             const root = parser.parse(await request(`https://minecraft.curseforge.com${path}`));
             const descontent = root.querySelector('.project-description')
             const description = convert(descontent)

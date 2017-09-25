@@ -1,8 +1,8 @@
 <template>
     <div id="project-container" class="ui grid" style="">
-        <!-- <div class="ui active inverted dimmer">
-                                                        <div class="ui text loader">Loading</div>
-                                                    </div> -->
+        <div class="ui active inverted dimmer" v-if="loading">
+            <div class="ui text loader">Loading</div>
+        </div>
         <div v-if="cache" class="four wide column">
             <div class="ui card">
                 <div class="image">
@@ -69,7 +69,7 @@
                         </div>
                     </div>
                 </div>
-                <pagination v-if="cache.downloads" :pages="cache.downloads.pages" @page="change($event)"></pagination>
+                <pagination :pages="cache.downloads? cache.downloads.pages:1" @page="change($event)"></pagination>
             </div>
             <div class="ui tab" data-tab="license">
             </div>
@@ -86,6 +86,7 @@ export default {
     data() {
         return {
             cache: {},
+            loading: true,
         }
     },
     created() {
@@ -99,13 +100,16 @@ export default {
         },
         refresh() {
             const self = this;
+            this.loading = true;
             this.project(this.id).then((proj) => {
                 self.cache = proj;
+                self.loading = false;
                 self.$nextTick(() => {
                     $('.menu .item').tab({
                     })
                 })
             }, (e) => {
+                self.loading = false;
                 console.error(e)
             })
         },
