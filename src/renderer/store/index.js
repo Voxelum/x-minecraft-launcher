@@ -1,3 +1,4 @@
+
 import Vue from 'vue'
 import Vuex from 'vuex'
 
@@ -10,6 +11,7 @@ import actions from './actions'
 import loadable from './helpers/loadable'
 
 Vue.use(Vuex)
+
 
 Object.keys(modules).forEach(key => loadable(modules[key]))
 
