@@ -69,7 +69,7 @@ export default {
                     action: 'downloadClient',
                     payload: {
                         meta,
-                        location: context.rootGetters.rootPath,
+                        location: context.rootGetters.root,
                     },
                 }, { root: true }) : undefined))
                 .then(() => {

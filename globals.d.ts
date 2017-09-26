@@ -1,32 +1,6 @@
 import { ServerStatus, Auth as McAuth, VersionMeta } from 'ts-minecraft'
 
-export declare interface CreateOption {
-    type: 'modpack' | 'server',
-    option?: {
-        name?: string, // specific info
-        resolution?: { width: number, height: number, fullscreen: boolean }, // client setting
-        java?: string,
-        minMemory?: number,
-        maxMemory?: number,
-        vmOptions?: Array,
-        mcOptions?: Array,
-        minecraft?: {
-            version: string,
-        },
-        forge?: {
-            version: string,
-        },
-        liteloader?: {
-            version: string,
-        },
-        host?: string,
-        port?: number,
-        isLanServer?: boolean,
-
-        author?: string,
-        description?: string,
-    }
-}
+declare var testADS: number
 
 export declare namespace State {
     interface Root {
@@ -35,7 +9,7 @@ export declare namespace State {
         url: string,
         theme: string,
         themes: string[],
-        javas: [],
+        javas: string[],
 
         profiles: Profiles,
         auth: Auth,

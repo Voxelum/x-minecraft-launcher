@@ -3,6 +3,9 @@ import profile from './profile'
 export default {
     namespaced: true,
     modules: { ...profile.modules },
+    /**
+     * @return {Modpack}
+     */
     state: () => ({
         ...profile.state(),
         type: 'modpack',
