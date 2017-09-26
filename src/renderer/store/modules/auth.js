@@ -1,11 +1,18 @@
 import Vue from 'vue'
+import { Auth } from 'ts-minecraft'
 
 export default {
     namespaced: true,
     state: {
         modes: ['mojang', 'offline'],
         mode: 'mojang',
+        /**
+         * @type {{[mode:string]: string[]}}
+         */
         history: {},
+        /**
+         * @type {Auth}
+         */
         auth: {}, // cached
         cache: {
             skin: { data: undefined, slim: false },
