@@ -21,6 +21,9 @@ export default {
     namespaced: true,
     state() {
         return {
+            /**
+             * @type {Profile[]}
+             */
             all: [],
             selected: '',
         }
@@ -106,24 +109,41 @@ export default {
         },
         /**
          * @param {ActionContext} context 
-         * @param {*} param1 
+         * @param {CreateOption} payload 
+         * @return {Promise<string>}
          */
-        create(context, {
-            type,
-            option = {},
-        }) {
+        create(context, payload) {
+            const {
+                type,
+                option = {},
+            } = payload
             const id = uuid()
             option.java = option.java || context.rootGetters.defaultJava
             context.commit('add', { id, moduleData: option })
             return context.dispatch('saveProfile', { id })
         },
+        /**
+         * 
+         * @param {ActionContext} context 
+         * @param {string} payload 
+         */
         delete(context, payload) {
             context.commit('remove', payload)
             return context.dispatch('delete', { path: `profiles/${payload}` }, { root: true })
         },
+        /**
+         * 
+         * @param {ActionContext} context 
+         * @param {string} profileId 
+         * 
+         */
         select(context, profileId) {
             if (context.getters.selectedKey !== profileId) context.commit('select', profileId)
         },
+        /**
+         * @param {ActionContext} context 
+         * @param {CreateOption} payload 
+         */
         createAndSelect(context, payload) {
             return context.dispatch('create', payload).then(id => context.commit('select', id))
         },

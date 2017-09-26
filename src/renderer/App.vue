@@ -27,20 +27,20 @@ export default {
             var dt = e.originalEvent.dataTransfer;
             if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1
                 : dt.types.contains('Files'))) {
-                if (!store.state.dragover) store.commit('drag/dragover', true);
+                if (!store.state.dragover) store.commit('dragover', true);
                 window.clearTimeout(dragTimer);
             }
         });
         $(document).on('dragleave', function(e) {
             dragTimer = window.setTimeout(function() {
-                store.commit('drag/dragover', false);
+                store.commit('dragover', false);
             }, 25);
         });
     },
     methods: {
         ondrop(event) {
             event.preventDefault()
-            this.$store.commit('drag/dragover', false)
+            this.$store.commit('dragover', false)
             return false;
         },
     }

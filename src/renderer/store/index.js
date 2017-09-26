@@ -12,7 +12,6 @@ import loadable from './helpers/loadable'
 
 Vue.use(Vuex)
 
-
 Object.keys(modules).forEach(key => loadable(modules[key]))
 
 export default (root, themes, theme) => {
@@ -28,18 +27,19 @@ export default (root, themes, theme) => {
         strict: process.env.NODE_ENV !== 'production',
         plugins,
     });
+    console.log(store)
 
     return Promise.all(Object.keys(modules).map((key) => {
         const action = `${key}/load`;
         if (store._actions[action]) {
-            console.log(`Found action ${action}`)
+            console.log(`Found loading action [${action}]`)
             return store.dispatch(action).then((instance) => {
                 const id = key;
                 store.commit(`${id}/$reload`, instance)
-                console.log(`loaded module [${id}]`)
+                console.log(`Loaded module [${id}]`)
             }, (err) => {
                 const id = key
-                console.error(`an error occured when we load module [${id}].`)
+                console.error(`An error occured when we load module [${id}].`)
                 console.error(err)
             })
         }
