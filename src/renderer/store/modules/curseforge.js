@@ -29,9 +29,16 @@ export default {
         loading(state, loading) {
             state.loading = loading;
         },
+        /**
+         * 
+         * @param {State} state 
+         */
         cache(state, { path, cache }) {
             Vue.set(state.cached, path, cache);
         },
+        /**
+         * @param {State} state 
+         */
         cacheDownload(state, { path, downloads, page }) {
             downloads.page = page;
             if (state.cached[path]) {
@@ -47,7 +54,16 @@ export default {
     },
 
     actions: {
-        project({ dispatch, commit, state }, path) {
+
+        /**
+         * 
+         * @param {ActionContext} context 
+         * @param {string} path 
+         * @return {CurseforgeProject}
+         * 
+         */
+        project(context, path) {
+            const { dispatch, commit, state } = context;
             if (path === undefined || path == null) return Promise.reject('Path cannot be null');
             if (!state.cached[path]) {
                 return dispatch('query',
@@ -59,8 +75,15 @@ export default {
             }
             return Promise.resolve(state.cached[path])
         },
-        downloads({ dispatch, commit, state }, { path, version, page }) {
-            page = page || 1;
+        /**
+         * 
+         * @param {ActionContext} context 
+         * @param {{path:string, version:string, page:string}} payload 
+         */
+        downloads(context, payload) {
+            const { dispatch, commit, state } = context;
+            const { path, version } = payload;
+            const page = payload.page || 1;
             return dispatch('query',
                 { service: 'curseforge', action: 'downloads', payload: { path: `/projects/${path}`, version, page } },
                 { root: true })
@@ -68,10 +91,16 @@ export default {
                     commit('cacheDownload', { path, downloads, page });
                 })
         },
-        update({ dispatch, commit, state }, { page, version, filter }) {
-            filter = filter || state.filter;
-            version = version || state.version;
-            page = page || state.page;
+        /**
+         * 
+         * @param {ActionContext} context 
+         * @param {{path:string, version:string, filter:string}} payload 
+         */
+        update(context, payload) {
+            const { dispatch, commit, state } = context;
+            const filter = payload.filter || state.filter;
+            const version = payload.version || state.version;
+            const page = payload.page || state.page;
             commit('loading', true)
             return dispatch('query', {
                 service: 'curseforge',
