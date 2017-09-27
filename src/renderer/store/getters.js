@@ -1,6 +1,5 @@
 import paths from 'path'
 
-let a = testADS;
 export default {
     /**
      * Return the errros by module.

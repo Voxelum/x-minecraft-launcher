@@ -24,6 +24,9 @@ export default {
     },
 
     actions: {
+        /**
+         * @param {{mode:string, account:string, password?:string, clientToken?:string}} option 
+         */
         login(option) {
             return new Promise((resolve, reject) => {
                 if (registered.has(option.mode)) {

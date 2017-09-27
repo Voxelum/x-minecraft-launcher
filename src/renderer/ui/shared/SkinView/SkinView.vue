@@ -23,7 +23,6 @@ export default {
         }
     },
     mounted(e) {
-
         console.log("===========START===========")
 
         let canvas = this.$el;
