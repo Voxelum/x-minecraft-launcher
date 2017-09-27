@@ -1,3 +1,5 @@
+import { VersionMeta } from 'ts-minecraft'
+
 function checkversion(remoteVersionList, files) {
     const versions = new Set(files)
     for (const ver of remoteVersionList.list.versions) {
@@ -5,6 +7,7 @@ function checkversion(remoteVersionList, files) {
         else ver.status = 'remote'
     }
 }
+
 
 export default {
     namespaced: true,
@@ -58,7 +61,13 @@ export default {
             const data = JSON.stringify(context.state);
             return context.dispatch('write', { path: 'version.json', data }, { root: true })
         },
-        download(context, { type, meta }) {
+        /**
+         * 
+         * @param {ActionContext} context 
+         * @param {{type?:string, meta:VersionMeta}} payload
+         */
+        download(context, payload) {
+            const { type, meta } = payload
             // TODO maybe validate paylaod
             const versionMeta = meta;
             const id = versionMeta.id;
@@ -78,6 +87,9 @@ export default {
                     context.commit('updateStatus', { version: versionMeta, status: 'remote' })
                 })
         },
+        /**
+         * Refresh the remote versions cache 
+         */
         refresh(context) {
             return context.dispatch('query', { service: 'versions', action: 'refresh', payload: context.state.updateTime }, { root: true })
                 .then(remoteVersionList =>

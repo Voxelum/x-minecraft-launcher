@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import { Auth } from 'ts-minecraft'
+import { Auth, GameProfile } from 'ts-minecraft'
+import { ActionContext } from 'vuex'
 
 export default {
     namespaced: true,
@@ -29,7 +30,7 @@ export default {
         history: state => state.history[state.mode],
     },
     mutations: {
-        select(state, mode) {
+        mode(state, mode) {
             if (state.modes.indexOf(mode) !== -1) state.mode = mode
         },
         history(state, { // record the state history
@@ -67,26 +68,48 @@ export default {
             context.commit('modes', await context.dispatch('query', { service: 'auth', action: 'modes' }, { root: true }));
             return data;
         },
-        async logout({ commit, dispatch }) {
+        /**
+         * 
+         * @param {ActionContext} context 
+         * @param {string} mode 
+         */
+        selectMod(context, mode) {
+            context.commit('mode', mode);
+        },
+        /**
+         * Logout and clear current cache.
+         */
+        async logout({ commit }) {
             commit('clear')
         },
+        /**
+         * 
+         * @param {ActionContext} context 
+         * @param {{mode:string, account:string, password?:string, clientToken?:string}} payload 
+         * @return {Promise<Auth>}
+         */
         async login(context, payload) {
             const result = await context.dispatch('query', { service: 'auth', action: 'login', payload }, { root: true })
 
             try {
-                const profile = await context.dispatch('query', {
+                /**
+                 * @type {GameProfile.Textures}
+                 */
+                const textures = await context.dispatch('query', {
                     service: 'profile',
                     action: 'fetch',
                     payload: { service: 'mojang', uuid: result.selectedProfile.id, cache: true },
-                }, { root: true });
-                const skin = profile.textures.textures.SKIN
+                }, { root: true }).textures;
+                const skin = textures.textures.SKIN
                 if (skin) {
                     result.skin = {
                         data: skin.data,
                         slim: skin.metadata.model === 'slim',
                     }
                 }
-                if (profile.textures.textures.CAPE) result.cape = profile.textures.textures.CAPE.data;
+                if (textures.textures.CAPE) {
+                    result.cape = textures.textures.CAPE.data;
+                }
             } catch (e) { }
             context.commit('history', {
                 auth: result,

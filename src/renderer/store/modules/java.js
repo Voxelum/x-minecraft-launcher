@@ -1,7 +1,3 @@
-/**
- * @type {Java.Module}
- */
-const a = 0;
 
 export default {
     state: {
@@ -17,6 +13,9 @@ export default {
         },
     },
     actions: {
+        /**
+         * scan local java locations and cache
+         */
         updateJavas({ dispatch, commit }) {
             return dispatch('query', { service: 'jre', action: 'availbleJre' }, { root: true }).then((javas) => {
                 commit('javas', javas);
