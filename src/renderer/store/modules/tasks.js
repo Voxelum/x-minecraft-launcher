@@ -25,7 +25,7 @@ export default {
             states.tasks[id].progress = progress;
             if (state) states.tasks[id].state = state;
         },
-        child(state, { id, }) {
+        child(state, { id }) {
 
         },
         delete(state, id) {

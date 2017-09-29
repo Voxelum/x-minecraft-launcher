@@ -74,7 +74,15 @@ export default {
             if (typeof payload === 'string') arr = [files]
             else if (files instanceof Array) arr = files
             else return Promise.reject('Illegal Type')
-            return context.dispatch('query', { service: 'repository', action: 'import', payload: { root: context.state.root, files: arr, metaType: context.state.metaType } })
+            return context.dispatch('query',
+                {
+                    service: 'repository',
+                    action: 'import',
+                    payload: { root: context.state.root, files: arr, metaType: context.state.metaType }
+                },
+                {
+                    root: true,
+                })
                 .then(
                 /**
                  * @param {Resource[]} resources

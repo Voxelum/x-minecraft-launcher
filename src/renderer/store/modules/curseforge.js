@@ -40,7 +40,12 @@ export default {
          * @param {State} state 
          */
         cacheDownload(state, { path, downloads, page }) {
-            downloads.page = page;
+            const { pages, files, versions } = downloads;
+            downloads = {
+                pages,
+                page,
+                files,
+            }
             if (state.cached[path]) {
                 if (Object.keys(state.cached[path].downloads).length === 0) {
                     state.cached[path].downloads = downloads;
@@ -56,11 +61,9 @@ export default {
     actions: {
 
         /**
-         * 
          * @param {ActionContext} context 
          * @param {string} path 
-         * @return {CurseforgeProject}
-         * 
+         * @return {Project}
          */
         project(context, path) {
             const { dispatch, commit, state } = context;
@@ -76,7 +79,7 @@ export default {
             return Promise.resolve(state.cached[path])
         },
         /**
-         * 
+         * @internal internal function, don't call explicitly
          * @param {ActionContext} context 
          * @param {{path:string, version:string, page:string}} payload 
          */
@@ -92,11 +95,11 @@ export default {
                 })
         },
         /**
-         * 
+         * Update the current cached projects
          * @param {ActionContext} context 
          * @param {{path:string, version:string, filter:string}} payload 
          */
-        update(context, payload) {
+        projects(context, payload) {
             const { dispatch, commit, state } = context;
             const filter = payload.filter || state.filter;
             const version = payload.version || state.version;

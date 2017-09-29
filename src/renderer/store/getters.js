@@ -7,10 +7,7 @@ export default {
      */
     errors: (state, getters, rootState) => {
         const settings = []
-        console.log(state)
-        console.log(getters)
-        console.log(rootState)
-        if (rootState.javas.length !== 0) settings.push('setting.install.java')
+        if (rootState.java.javas.length !== 0) settings.push('setting.install.java')
         const errors = {
         }
         Object.keys(rootState)
