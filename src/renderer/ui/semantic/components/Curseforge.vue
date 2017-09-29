@@ -78,11 +78,11 @@ export default {
         $(this.$refs.versionDropdown).dropdown()
     },
     methods: {
-        ...vuex.mapActions('curseforge', ['update']),
+        ...vuex.mapActions('curseforge', ['projects']),
         change({ page, version, filter } = {}) {
             if ((version || filter) && this.page !== 1) page = 1;
             const self = this;
-            this.update({ page, version, filter }).then(() => {
+            this.projects({ page, version, filter }).then(() => {
                 self.$nextTick(() => {
                     $('#filterDropdown').dropdown()
                     $('#versionDropdown').dropdown()
