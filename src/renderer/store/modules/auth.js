@@ -73,7 +73,7 @@ export default {
          * @param {ActionContext} context 
          * @param {string} mode 
          */
-        selectMod(context, mode) {
+        selectMode(context, mode) {
             context.commit('mode', mode);
         },
         /**

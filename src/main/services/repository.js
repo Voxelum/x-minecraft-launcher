@@ -60,12 +60,16 @@ export default {
         /**
          * 
          * @param {string} root 
-         * @param {string[]} files 
+         * @param {string[]|string} files 
          * @param {string} metaType 
          */
         async import(root, files, metaType) {
             if (!root || !metaType || !files) throw new Error('Import require root location, files, and a specific meta type!')
             const parser = parsers[metaType]
+
+            if (typeof files === 'string') files = [files]
+            else if (!(files instanceof Array)) { return Promise.reject('Illegal Type') }
+
             if (!parser) throw new Error(`Unknown meta type ${metaType}`)
             return (await Promise.all(files.map(f => $import(root, f, parser))))
                 .filter(res => res !== undefined)
