@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import TextComponent from '../TextComponent'
 
 export default {
     data() {
@@ -41,7 +40,6 @@ export default {
             deleting: false,
         }
     },
-    components: { TextComponent },
     mounted() {
         $(this.$el).dimmer({ on: 'hover' })
     },  

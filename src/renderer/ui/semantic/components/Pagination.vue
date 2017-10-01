@@ -16,12 +16,16 @@ export default {
     },
     watch: {
         page() {
-            this.pagesCache = this.calculatePages(this.page, this.pages)
+            this.calculatePages(this.page, this.pages)
             this.$emit('page', this.page)
+        },
+        pages() {
+            this.calculatePages(this.page, this.pages)
         },
     },
     mounted() {
-        this.pagesCache = this.calculatePages(this.page, this.pages)
+        this.calculatePages(this.page, this.pages)
+        console.log(`${this.page}/${this.pages}`)
     },
     methods: {
         calculatePages(page, total) {
@@ -31,7 +35,7 @@ export default {
             if (start > 1) pages.push(1, '...');
             for (let i = start; i < end; i += 1) pages.push(i);
             if (end < total) pages.push('...', total)
-            return pages;
+            this.pagesCache = pages;
         }
     },
     props: {

@@ -99,14 +99,23 @@
 </template>
 
 <script>
+import vue from 'vue'
+
 import 'static/semantic/semantic.min.css'
 import 'static/semantic/semantic.min.js'
+
+import Pagination from './components/Pagination'
+import TextComponent from './components/TextComponent'
 
 import NavigationBar from './components/NavigationBar'
 import modals from './components/modals'
 import SkinView from '../shared/SkinView'
 
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
+
+vue.component('pagination', Pagination);
+vue.component('text-component', TextComponent)
+
 export default {
     components: {
         SkinView,
