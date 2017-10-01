@@ -27,7 +27,7 @@
                 <text-component :source="status.serverMOTD" localized="true"></text-component>
             </div>
         </div>
-        <div id="bar" class="stretched row pushable ui top attached segment" style="border-radius:0px;border-right-width:0;border-right-color:transparent;border-right-style:none;">
+        <div id="bar" class="stretched row pushable ui top attached segment" style="border-right-width:0;border-right-color:transparent;border-radius:0px;">
             <!-- <div id="sidebar" class="ui vertical secondary pointing menu sidebar" style="background-color:white;">
                                                 <div class="header item">{{$t('basic')}}</div>
                                                 <a class="active item" data-tab="maps">
@@ -56,7 +56,7 @@
                                                     </div>
                                                 </div>
                                             </div> -->
-            <div id="sidebar" ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white">
+            <div id="sidebar" ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;">
                 <div class="sixteen wide column">
                     <div class="header item">
                         {{$t('basic')}}
