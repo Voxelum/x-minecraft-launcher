@@ -84,7 +84,7 @@ export default {
         })
     },
     methods: {
-        ...vuex.mapActions(['auth/selectMode', 'auth/login']),
+        ...vuex.mapActions('auth', ['selectMode', 'login']),
         show() {
             $(this.$el).modal('show')
         },
