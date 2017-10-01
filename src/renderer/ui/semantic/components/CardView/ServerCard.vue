@@ -30,9 +30,7 @@
 </template>
 
 <script>
-import TextComponent from '../TextComponent'
 export default {
-    components: { TextComponent },
     data() {
         return {
             hoverDelete: false,

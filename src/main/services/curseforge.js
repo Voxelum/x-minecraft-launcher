@@ -49,17 +49,49 @@ function convert(node) {
     return text
 }
 
+let cached = {}
+
+function cache(url, data) {
+    cached[url] = data;
+    setTimeout(() => {
+        delete cached[url];
+    }, 60000);
+    return data;
+}
+
 export default {
     initialize() {
     },
     actions: {
-        async downloads({ path, version, page } = {}) {
+        clearCache() {
+            cached = {}
+        },
+        /**
+         * Get the license in url
+         * @param {string} url
+         * @return string 
+         */
+        async license(url) {
+            if (url == null || !url) throw new Error('URL cannot be null');
+            const string = await request(`https://minecraft.curseforge.com${url}`)
+            return parser.parse(string).querySelector('.module').removeWhitespace().firstChild.rawText;
+        },
+        /**
+         * 
+         * @param {{path:string, version:string, page:string}} payload 
+         * @return {Downloads}
+         */
+        async downloads(payload = {}) {
+            const path = payload.path;
+            let { version, page } = payload;
             if (!path || path == null) throw new Error('Curseforge path cannot be null')
             version = version || ''
             page = page || 1
-            const filespage = parser.parse(await request(`
+            const url = `
             https://minecraft.curseforge.com${path}/files?filter-game-version=${version}&page=${page}
-            `))
+            `
+            if (cached[url]) return cached[url];
+            const filespage = parser.parse(await request(url))
             const pages = filespage.querySelectorAll('.b-pagination-item')
                 .map(pageItem => pageItem.firstChild.rawText)
                 .map(text => Number.parseInt(text, 10))
@@ -84,18 +116,25 @@ export default {
                         downloadCount: i.childNodes[5].rawText,
                     }
                 })
-            return { pages, versions, files };
+            return cache(url, { pages, versions, files });
         },
+        /**
+         * Query the project from path
+         * @param {string} path 
+         * @return {Project}
+         */
         async project(path) {
             if (!path || path == null) throw new Error('Curseforge path cannot be null')
-            const root = parser.parse(await request(`https://minecraft.curseforge.com${path}`));
+            const url = `https://minecraft.curseforge.com${path}`
+            if (cached[url]) return cached[url];
+            const root = parser.parse(await request(url));
             const descontent = root.querySelector('.project-description')
             const description = convert(descontent)
             const details = root.querySelector('.project-details').removeWhitespace()
             const createdDate = localDate(details.childNodes[1].childNodes[1].firstChild.attributes['data-epoch'])
             const lastFile = localDate(details.childNodes[2].childNodes[1].firstChild.attributes['data-epoch'])
             const totalDownload = details.childNodes[3].childNodes[1].rawText
-            const license = details.childNodes[4].childNodes[1].attributes.href;
+            const license = details.childNodes[4].childNodes[1].firstChild.attributes.href;
 
             const projWrap = root.querySelector('.project-user').removeWhitespace()
             const image = projWrap.firstChild.firstChild.attributes.href;
@@ -119,7 +158,7 @@ export default {
                         date,
                     }
                 });
-            return {
+            return cache(url, {
                 image,
                 name,
                 createdDate,
@@ -129,14 +168,21 @@ export default {
                 description,
                 downloads: {},
                 // files,
-            }
+            })
         },
-        async mods({ page, sort, version } = {}) {
+        /**
+         * 
+         * @param {{page:string, sort:string, version:string}} payload 
+         * @return {mods:ProjectPreview[], pages:number, versions:string[], filters:string[]}
+         */
+        async mods(payload = {}) {
+            const { page, sort, version } = payload
             const endpoint = `https://minecraft.curseforge.com/mc-mods?${querystring.stringify({
                 page: page || '',
                 'filter-sort': sort || 'popularity',
                 'filter-game-version': version || '',
             })}`
+            if (cached[endpoint]) return cached[endpoint];
             const s = await request(endpoint)
             const root = parser.parse(s.replace(/\r\n/g, ''));
             const pages = root.querySelectorAll('.b-pagination-item')
@@ -185,12 +231,12 @@ export default {
                 };
             })
 
-            return {
+            return cache(endpoint, {
                 mods: all,
                 pages,
                 versions,
                 filters,
-            }
+            })
         },
     },
 }

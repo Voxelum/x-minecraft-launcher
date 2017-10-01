@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="mods.length==0 || loading" class="ui active inverted dimmer">
+        <div v-if="loading" class="ui active inverted dimmer">
             <div class="ui text loader">Loading</div>
         </div>
         <div ref="filterDropdown" class="ui labeled icon top right pointing basic dropdown">
@@ -24,7 +24,7 @@
             <i class="dropdown icon"></i>
         </div>
         <div class="ui link cards" style="overflow-x:hidden;max-height:350px; margin-top:20px; margin-bottom:20px">
-            <router-link :to="{ path: 'curseforge/'+m.path, params:{id: m.path}}" class="card" v-for="m of mods" :key="m.path">
+            <router-link :to="{ path: 'curseforge/'+m.path, params:{id: m.path}}" class="card" v-for="m of projects" :key="m.path">
                 <div class="content">
                     <img class="right floated mini ui icon" :src="m.icon">
                     <div class="header">
@@ -60,16 +60,23 @@
 
 <script>
 import vuex from 'vuex'
-import Pagination from './Pagination'
 export default {
-    components: { Pagination },
+    data: () => ({
+        projects: [],
+        page: 1,
+        pages: 1,
+        version: '',
+        versions: [],
+        filter: '',
+        filters: [],
+        category: '',
+        categories: [],
+        loading: false,
+    }),
     computed: {
-        ...vuex.mapState('curseforge', ['mods', 'pages',
-            'page', 'version', 'filter',
-            'filters', 'versions', 'loading']),
     },
     mounted() {
-        if (this.mods.length === 0) this.change()
+        if (this.projects.length === 0) this.change()
         $(this.$refs.filterDropdown).dropdown()
         $(this.$refs.versionDropdown).dropdown()
     },
@@ -78,12 +85,34 @@ export default {
         $(this.$refs.versionDropdown).dropdown()
     },
     methods: {
-        ...vuex.mapActions('curseforge', ['projects']),
+        /**
+         * @param {{path:string, version:string, filter:string}} payload 
+         */
+        fetch(payload) {
+            const filter = payload.filter || this.filter;
+            const version = payload.version || this.version;
+            const page = payload.page || this.page;
+            this.loading = true;
+
+            return this.$store.dispatch('query', {
+                service: 'curseforge',
+                action: 'mods',
+                payload: { page, version, sort: filter },
+            }).then((s) => {
+                this.projects = s.mods;
+                this.page = page;
+                this.pages = s.pages;
+                this.filter = filter;
+                this.filters = s.filters;
+                this.version = version;
+                this.versions = s.versions;
+                this.loading = false;
+            })
+        },
         change({ page, version, filter } = {}) {
             if ((version || filter) && this.page !== 1) page = 1;
-            const self = this;
-            this.projects({ page, version, filter }).then(() => {
-                self.$nextTick(() => {
+            this.fetch({ page, version, filter }).then(() => {
+                this.$nextTick(() => {
                     $('#filterDropdown').dropdown()
                     $('#versionDropdown').dropdown()
                 })

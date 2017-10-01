@@ -18,18 +18,14 @@ export default {
         get: state => key => state.resources[key],
     },
     mutations: {
-        rename(context, { resource, name }) {
-            resource.name = name;
-        },
+        rename(context, { resource, name }) { resource.name = name; },
         /**
          * @param {Resource[]} payload 
          */
         resources: (state, payload) => {
             payload.forEach((res) => { Vue.set(state.resources, res.hash, res) })
         },
-        delete(state, payload) {
-            Vue.delete(state.resources, payload);
-        },
+        delete(state, payload) { Vue.delete(state.resources, payload); },
     },
     actions: {
         load: context => context.dispatch('readFolder', { path: context.state.root }, { root: true })
@@ -67,29 +63,13 @@ export default {
          * @param {string[]|string} files 
          */
         import(context, files) {
-            /**
-             * @type {string}
-             */
-            let arr
-            if (typeof payload === 'string') arr = [files]
-            else if (files instanceof Array) arr = files
-            else return Promise.reject('Illegal Type')
             return context.dispatch('query',
                 {
                     service: 'repository',
                     action: 'import',
-                    payload: { root: context.state.root, files: arr, metaType: context.state.metaType }
-                },
-                {
-                    root: true,
-                })
-                .then(
-                /**
-                 * @param {Resource[]} resources
-                 */
-                (resources) => {
-                    context.commit('resources', resources)
-                })
+                    payload: { root: context.state.root, files, metaType: context.state.metaType },
+                }, { root: true })
+                .then((resources) => { context.commit('resources', resources) })
         },
         /**
          * 
@@ -103,9 +83,8 @@ export default {
                  * @type {Resource}
                  */
                 let res;
-                if (typeof resource === 'string') {
-                    res = context.state.resources[resource]
-                } else res = resource;
+                if (typeof resource === 'string') res = context.state.resources[resource]
+                else res = resource;
                 return res;
             }).then((res) => { // TODO mkdir
                 const option = payload.option || {}
@@ -118,16 +97,6 @@ export default {
             });
         },
         refresh(context, payload) {
-            /* return context.dispatch('readFolder', { path: this.context.state.root }, { root: true })
-                .then(files => Promise.all(
-                    files.map(file => context.dispatch('read', {
-                        path: `${this.context.state.root}/${file}`,
-                        fallback: undefined,
-                    }).then((buf) => {
-                        if (!buf) return;
-                        const resource = new Resource($hash(buf), file, path.extname(file))
-                        context.commit('put', { key: resource.hash, value: resource })
-                    })))); */
         },
     },
 }
