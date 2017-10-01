@@ -53,47 +53,38 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState } from 'vuex'
-
-const arr = ['jiggle', 'shake', 'tada']
-function randomShake() {
-    return arr[Math.round(Math.random() * 3)]
-}
-let translating = false
-let inited = false
+import vuex from 'vuex'
 
 export default {
-    data: () => {
-        return {
-            logining: false,
-            error: '',
-            account: '',
-            password: '',
-            selecting: 0,
-        }
-    },
+    data: () => ({
+        logining: false,
+        error: '',
+        account: '',
+        password: '',
+        selecting: 0,
+        animations: ['jiggle', 'shake', 'tada'],
+    }),
     computed: {
-        ...mapGetters('auth', ['history', 'mode', 'modes'])
+        ...vuex.mapGetters('auth', ['history', 'mode', 'modes'])
     },
     mounted() {
         const self = this
         $(this.$refs.authMod).dropdown({
             onChange: (value, text, $selectedItem) => {
-                self.$store.commit('auth/select', value)
+                self.selectMode(value)
             }
         })
         $(this.$refs.accountDropdown).dropdown()
-        $(this.$el)
-            .modal({
-                closable: false,
-                onHide($element) {
-                    console.log('onhide')
-                    return true;
-                },
-                blurring: true,
-            })
+        $(this.$el).modal({
+            closable: false,
+            onHide($element) {
+                return true;
+            },
+            blurring: true,
+        })
     },
     methods: {
+        ...vuex.mapActions(['auth/selectMode', 'auth/login']),
         show() {
             $(this.$el).modal('show')
         },
@@ -109,55 +100,44 @@ export default {
                 if ($(this.$refs.accountDropdown).dropdown('is visible')) {
                     this.account = document.getElementById(`acc_${this.selecting}`).innerText;
                     $(this.$refs.accountDropdown).dropdown('hide')
-                } else {
-                    this.doLogin()
-                }
+                } else this.doLogin()
             } else if (event.key === 'Tab') {
                 $(this.$refs.accountDropdown).dropdown('hide')
             } else {
                 $(this.$refs.accountDropdown).dropdown('show')
             }
         },
+        shake(ref) {
+            if (this.translating) return
+            this.translating = true
+            const self = this;
+            const animation = this.animations[Math.round(Math.random() * 3)]
+            $(ref).transition({
+                animation,
+                onComplete: () => { self.translating = false }
+            })
+        },
         doLogin() {
-            if (this.account.length == 0) {
-                if (translating) return
-                translating = true
-                $(this.$refs.accountField).transition({
-                    animation: randomShake(),
-                    onComplete: () => {
-                        translating = false
-                    }
-                })
-            }
-            else if (this.password.length == 0 && this.mode != 'offline') {
-                if (translating) return
-                translating = true
-                $(this.$refs.passwordField).transition({
-                    animation: randomShake(),
-                    onComplete: () => {
-                        translating = false
-                    }
-                })
-            }
+            if (this.account.length == 0)
+                this.shake(this.$refs.accountField)
+            else if (this.password.length == 0 && this.mode != 'offline')
+                this.shake(this.$refs.passwordField)
             else {
                 this.logining = true
-                this.$store.dispatch('auth/login',
-                    {
-                        account: this.account, password: this.password,
-                        mode: this.mode, clientToken: this.clientToken
-                    })
-                    .then((result) => {
-                        this.logining = false
-                        this.$emit('login')
-                        this.error = '';
-                        this.$nextTick(() => $(this.$el).modal('hide'))
-                    }, err => {
-                        this.logining = false
-                        this.error = err.message;
-                    })
+                this.login({
+                    account: this.account, password: this.password,
+                    mode: this.mode, clientToken: this.clientToken
+                }).then((result) => {
+                    this.logining = false
+                    this.$emit('login')
+                    this.error = '';
+                    this.$nextTick(() => $(this.$el).modal('hide'))
+                }, err => {
+                    this.logining = false
+                    this.error = err.message;
+                });
             }
         },
-        ...mapMutations('auth', ['select'])
     }
 }
 </script>
