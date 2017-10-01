@@ -24,7 +24,7 @@
                     </div>
                 </div>
             </div>
-            <div class="field" :class="{disabled: resfullscreen}" >
+            <div class="field" :class="{disabled: resfullscreen}">
                 <label>{{$t('setting.resolution')}}</label>
                 <div class="two fields">
                     <div class="field">
@@ -37,7 +37,7 @@
             </div>
             <div class="inline field">
                 <div class="ui slider checkbox" @click="resfullscreen=!resfullscreen">
-                    <input type="checkbox" name="auto-download" >
+                    <input type="checkbox" name="auto-download">
                     <label>{{$t('resolution.fullscreen')}}</label>
                 </div>
             </div>
@@ -60,7 +60,13 @@ export default {
         }
     },
     computed: {
-        ...vuex.mapState(['defaultResolution', 'autoDownload', 'theme', 'root', 'themes'])
+        ...vuex.mapState({
+            defaultResolution: state => state.settings.defaultResolution,
+            autoDownload: state => state.settings.autoDownload,
+            theme: state => state.settings.theme,
+            themes: state => state.settings.themes,
+            root: state => state.root,
+        })
     },
     mounted() {
         $(this.$el).modal({ blurring: true, })
