@@ -60,13 +60,7 @@ export default {
         }
     },
     computed: {
-        ...vuex.mapState({
-            defaultResolution: state => state.settings.defaultResolution,
-            autoDownload: state => state.settings.autoDownload,
-            theme: state => state.settings.theme,
-            themes: state => state.settings.themes,
-            root: state => state.root,
-        })
+        ...vuex.mapState(['theme', 'themes', 'root', 'defaultResolution', 'autoDownload']),
     },
     mounted() {
         $(this.$el).modal({ blurring: true, })
@@ -84,6 +78,7 @@ export default {
             $(this.$el).modal('show')
             $('.ui.checkbox').checkbox()
             $('.selection.dropdown').dropdown()
+            console.log(this.themes)
         },
         browseFolder() {
             const self = this;

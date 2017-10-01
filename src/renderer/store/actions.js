@@ -49,6 +49,20 @@ export default {
         });
     },
     /**
+       * 
+       * @param {ActionContext} context 
+       * @param {{resolution?:{width:number,height:number,fullscreen?:boolean}, location?:string, theme?:string}} payload 
+       */
+    updateSetting(context, payload) {
+        if (payload.resolution) {
+            context.commit('resolution', payload.resolution);
+        }
+        if (payload.location !== context.state.root ||
+            payload.theme !== context.state.theme) {
+            ipcRenderer.send('update', payload.location, payload.theme)
+        }
+    },
+    /**
      * @param {ActionContext} context 
      */
     async launch(context) {
