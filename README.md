@@ -31,8 +31,8 @@ In this situation, players don't need to ever touch the game files. They don't e
  - [x] Listing mods
  - [ ] Modify mods
  - [ ] Mod configuration
- - [ ] Dynamic ui theme loading
- - [ ] Dynamic appData location
+ - [x] Dynamic ui theme loading
+ - [x] Dynamic appData location
  - [x] Skin preview
  - [ ] Skin upload & export
  - [ ] Model preview

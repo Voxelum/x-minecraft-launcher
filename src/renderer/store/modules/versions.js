@@ -8,45 +8,28 @@ function checkversion(remoteVersionList, files) {
     }
 }
 
-
 export default {
     namespaced: true,
-    state() {
-        return {
-            minecraft: {
-                updateTime: '',
-                versions: [],
-                latest: {
-                    snapshot: '',
-                    release: '',
-                },
-            },
-            forge: {
-                updateTime: '',
-                versions: {},
-                latestsToIds: {},
-            },
-            liteloader: {
-                updateTime: '',
-                versions: [],
-                metas: {},
-            },
-        }
-    },
+    state: () => ({
+        updateTime: '',
+        versions: [],
+        latest: {
+            snapshot: '',
+            release: '',
+        },
+    }),
     getters: {
-        forge: (state, getters) => { // return all the forge meta by mcversion
-        },
-        liteloader: (state, getters) => { // return all the liteloader meta by mcversion
-
-        },
+        versions: state => state.versions,
+        latestRelease: state => state.latest.release,
+        latestSnapshot: state => state.latest.snapshot,
     },
     mutations: {
         update(state, list) {
             state.updateTime = list.date;
             if (list.list) {
-                state.minecraft.versions = list.list.versions;
-                state.minecraft.latest.release = list.list.latest.release;
-                state.minecraft.latest.snapshot = list.list.latest.snapshot;
+                state.versions = list.list.versions;
+                state.latest.release = list.list.latest.release;
+                state.latest.snapshot = list.list.latest.snapshot;
             }
         },
         updateStatus(state, { version, status }) {
