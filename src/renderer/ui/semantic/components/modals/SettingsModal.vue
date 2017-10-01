@@ -69,7 +69,6 @@ export default {
     methods: {
         ...vuex.mapActions(['openDialog', 'updateSetting']),
         show() {
-            console.log(this)
             this.resheight = this.defaultResolution.height;
             this.reswidth = this.defaultResolution.width;
             this.resfullscreen = this.defaultResolution.fullscreen;
@@ -78,7 +77,6 @@ export default {
             $(this.$el).modal('show')
             $('.ui.checkbox').checkbox()
             $('.selection.dropdown').dropdown()
-            console.log(this.themes)
         },
         browseFolder() {
             const self = this;
