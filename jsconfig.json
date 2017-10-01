@@ -3,8 +3,14 @@
         "target": "es5",
         "strict": true
     },
+    "include": [
+        "/src/*",
+        "/test/*"
+    ],
     "exclude": [
         "node_modules",
-        "**/node_modules/*"
+        "**/node_modules/*",
+        "/semantic/*",
+        "/static/semantic/*"
     ]
 }
