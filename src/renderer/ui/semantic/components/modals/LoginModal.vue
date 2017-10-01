@@ -85,6 +85,9 @@ export default {
     },
     methods: {
         ...vuex.mapActions('auth', ['selectMode', 'login']),
+        updateAccount(account) {
+            this.account = account;
+        },
         show() {
             $(this.$el).modal('show')
         },
