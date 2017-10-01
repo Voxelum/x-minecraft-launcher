@@ -32,20 +32,34 @@ let parking = false;
 let iconImage
 
 let root = process.env.LAUNCHER_ROOT
-function updateRoot(newRoot) {
-    process.env.LAUNCHER_ROOT = newRoot;
-    root = newRoot
-    app.setPath('appData', root);
-}
-
-if (!root) {
-    updateRoot(paths.join(app.getPath('appData'), '.launcher'));
-}
-
 let theme = 'semantic';
 
-function updateTheme(newTheme) {
-    if (theme !== newTheme) theme = newTheme;
+const appData = app.getPath('appData');
+
+const cfgFile = `${appData}/launcher.json`
+
+function updateSettings(newRoot, newTheme) {
+    let updated = false;
+    if (newRoot && newRoot != null && newRoot !== root) {
+        root = newRoot;
+        updated = true;
+    }
+    if (newTheme && newTheme != null && newTheme !== theme) {
+        theme = newTheme;
+        updated = true;
+    }
+    if (updated) fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
+}
+
+try {
+    const buf = fs.readFileSync(cfgFile)
+    const cfg = JSON.parse(buf.toString())
+    root = cfg.root || paths.join(appData, '.launcher');
+    theme = cfg.theme || 'semantic'
+} catch (e) {
+    root = paths.join(appData, '.launcher');
+    theme = 'semantic'
+    fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
 }
 
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
@@ -169,8 +183,7 @@ app.on('activate', () => {
 
 ipcMain.on('update', (event, newRoot, newTheme) => {
     if (newRoot !== undefined || newTheme !== undefined) {
-        if (newRoot) updateRoot(newRoot);
-        if (newTheme) updateTheme(newTheme);
+        updateSettings(newRoot, newTheme);
         newTheme = newTheme || 'semantic'
         parking = true
         mainWindow.close();
