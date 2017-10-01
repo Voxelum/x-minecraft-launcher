@@ -4,7 +4,7 @@
             <div class="ui left icon right action input">
                 <i class="search icon"></i>
                 <input type="text" placeholder="Filter" v-model="filter">
-                <span id="alphaDropdown" class="ui basic floating dropdown button">
+                <span ref="alphaDropdown" class="ui basic floating dropdown button">
                     <div class="text">{{$t('version.release')}}</div>
                     <i class="dropdown icon"></i>
                     <div class="menu">
@@ -21,7 +21,7 @@
                 </div>
                 <table class="ui  very basic selectable celled center aligned table" style='height:300px;overflow-x: hidden;'>
                     <tbody>
-                        <tr style="cursor: pointer;" v-for="meta in metas" :key="meta" :url="meta.url" :version-id='meta.id' @click="onselect">
+                        <tr style="cursor: pointer;" v-for="meta in metas" :key="meta" :url="meta.url" :version-id='meta.id' @click="onselect(meta.id)">
                             <td>
                                 <div class="ui  grey ribbon label">{{meta.type}}</div>
                                 <br> {{meta.id}}
@@ -60,19 +60,19 @@ export default {
             filterType: 'release',
         }
     },
-    mounted() { $('#alphaDropdown').dropdown() },
+    mounted() { $(this.$refs.alphaDropdown).dropdown() },
     props: ['id'],
     computed: {
-        ...mapState('versions', ['minecraft']),
+        ...mapGetters('versions', ['versions', 'latestRelease', 'latestSnapshot']),
         metaMap() {
             const map = new Map()
-            for (const v of this.minecraft.versions)
+            for (const v of this.versions)
                 map.set(v.id, v);
             return map;
         },
         selectingMeta() { return /* this.metaMap.get(this.selected.version) || */ {}; },
         metas() {
-            let metas = this.minecraft.versions;
+            let metas = this.versions;
             if (this.filterType !== '')
                 metas = metas.filter(v => v.type === this.filterType)
             if (this.filter !== '')
@@ -81,9 +81,8 @@ export default {
         }
     },
     methods: {
-        onselect(event) {
-            const vId = event.srcElement.parentNode.getAttribute('version-id')
-            if (vId != this.selectingVersion)
+        onselect(vId) {
+            if (vId !== this.selectingVersion)
                 this.$store.commit(`profiles/${this.id}/minecraft/version`, vId)
         },
         ondownload(event) {
