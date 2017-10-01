@@ -15,10 +15,6 @@ export default {
          * @type {Auth}
          */
         auth: {}, // cached
-        cache: {
-            skin: { data: undefined, slim: false },
-            cape: undefined,
-        },
     },
     getters: {
         modes: state => state.modes,
@@ -50,10 +46,6 @@ export default {
         modes: (state, modes) => { state.modes = modes },
         clear(state) {
             state.auth = undefined;
-            state.cache = {
-                skin: { data: undefined, slim: false },
-                cape: undefined,
-            };
         },
     },
     actions: {
@@ -95,11 +87,11 @@ export default {
                 /**
                  * @type {GameProfile.Textures}
                  */
-                const textures = await context.dispatch('query', {
+                const textures = (await context.dispatch('query', {
                     service: 'profile',
                     action: 'fetch',
                     payload: { service: 'mojang', uuid: result.selectedProfile.id, cache: true },
-                }, { root: true }).textures;
+                }, { root: true })).textures;
                 const skin = textures.textures.SKIN
                 if (skin) {
                     result.skin = {
@@ -110,7 +102,9 @@ export default {
                 if (textures.textures.CAPE) {
                     result.cape = textures.textures.CAPE.data;
                 }
-            } catch (e) { }
+            } catch (e) {
+                console.warn(e);
+            }
             context.commit('history', {
                 auth: result,
                 account: payload.account,
