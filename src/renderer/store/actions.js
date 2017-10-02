@@ -4,7 +4,7 @@ import { MinecraftFolder } from 'ts-minecraft'
 import { remote, ipcRenderer } from 'electron'
 import paths from 'path'
 import { v4 } from 'uuid'
-import makeEnv from './helpers/mkenv'
+import make from './helpers/mkenv'
 
 export default {
     exit() { ipcRenderer.sendSync('exit') },
@@ -90,7 +90,7 @@ export default {
             version,
         }
 
-        await makeEnv(context, profileId, new MinecraftFolder(context.state.root),
+        await make(context, profileId, new MinecraftFolder(context.state.root),
             new MinecraftFolder(option.gamePath))
 
         if (profile.type === 'server') {
@@ -98,7 +98,7 @@ export default {
         }
 
         return context.dispatch('query', {
-            service: 'launcher',
+            service: 'launch',
             action: 'launch',
             payload: { auth, option },
         }).then(() => {
