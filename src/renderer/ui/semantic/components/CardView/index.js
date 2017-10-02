@@ -7,6 +7,9 @@ export default {
     computed: {
         ...vuex.mapGetters('profiles', ['allKeys', 'getByKey']),
     },
+    created() {
+        this.refresh()
+    },
     methods: {
         refresh() {
             for (const key of this.allKeys) this.$store.dispatch(`profiles/${key}/refresh`);
