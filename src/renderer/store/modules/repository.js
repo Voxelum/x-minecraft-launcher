@@ -6,23 +6,21 @@ import { ActionContext } from 'vuex'
 
 export default {
     namespaced: true,
-    state: () => ({ resources: {} }),
+    state: () => ({
+        mods: {},
+        resourcepacks: {},
+    }),
     getters: {
-        allKeys: state => Object.keys(state.resources),
-        values: (state, gets) => gets.allKeys.map(key => state.resources[key]),
-        get: state => key => state.resources[key],
-        index(state, getters) {
-            const index = {
-                mods: [],
-                resourcepacks: [],
+        domains: state => Object.keys(state),
+        mods: state => Object.keys(state.mods).map(k => state.mods[k]) || [],
+        resourcepacks: state => Object.keys(state.resourcepacks)
+            .map(k => state.resourcepacks[k]) || [],
+        getResource: (state, getters) => (hash) => {
+            for (const domain of getters.domains) {
+                if (state[domain][hash]) return state[domain][hash];
             }
-            for (const val of getters.values) {
-                index[val.domain].push(val);
-            }
-            return index;
+            return undefined;
         },
-        mods: (state, getters) => getters.index.mods,
-        resourcepacks: (state, getters) => getters.index.resourcepacks,
     },
     mutations: {
         rename(context, { resource, name }) { resource.name = name; },
@@ -30,7 +28,10 @@ export default {
          * @param {Resource[]} payload 
          */
         resources: (state, payload) => {
-            payload.forEach((res) => { Vue.set(state.resources, res.hash, res) })
+            payload.forEach((res) => {
+                if (!state[res.domain]) Vue.set(state, res.domain, {})
+                Vue.set(state[res.domain], res.hash, res);
+            })
         },
         delete(state, payload) { Vue.delete(state.resources, payload); },
     },
@@ -39,12 +40,12 @@ export default {
          * @param {ActionContext} context 
          */
         async load(context) {
-            const files = await context.dispatch('readFolder', { path: `${context.rootGetters.root}/resources` }, { root: true });
+            const files = await context.dispatch('readFolder', { path: 'resources' }, { root: true });
             const contents = []
             for (const file of files.filter(f => f.endsWith('.json'))) {
                 try {
                     contents.push(await context.dispatch('read', { // eslint-disable-line
-                        path: `${context.state.root}/${file}`,
+                        path: `resources/${file}`,
                         fallback: undefined,
                         encoding: 'json',
                     }, { root: true }))
@@ -60,7 +61,7 @@ export default {
          */
         delete(context, resource) {
             if (typeof resource === 'string') {
-                resource = context.state.resources[resource];
+                resource = context.getters.getResource(resource)
             }
             context.commit('delete', resource.hash)
             return context.dispatch('delete', { path: `resources/${resource.hash}.json` }, { root: true })
@@ -71,7 +72,7 @@ export default {
         * @param {{resource:string|Resource, name:string}} payload
         */
         rename(context, payload) {
-            if (typeof payload.resource === 'string') payload.resource = context.state.resources[payload.resource];
+            if (typeof payload.resource === 'string') payload.resource = context.getters.getResource(payload.resource);
             if (!payload) throw new Error('Cannot find resource');
             context.commit('rename', payload);
             return context.dispatch('write', { path: `resources/${payload.resource.hash}.json`, data: JSON.stringify(payload.resource) }, { root: true })
@@ -101,7 +102,7 @@ export default {
             * @type {Resource}
             */
             let res;
-            if (typeof resource === 'string') res = context.state.resources[resource]
+            if (typeof resource === 'string') res = context.getters.getResource(resource)
             else res = resource;
 
             if (!res) throw new Error(`Cannot find the resource ${resource}`);
@@ -124,7 +125,7 @@ export default {
             * @type {Resource}
             */
             let res;
-            if (typeof resource === 'string') res = context.state.resources[resource]
+            if (typeof resource === 'string') res = context.getters.getResource(resource)
             else res = resource;
 
             if (!res) throw new Error(`Cannot find the resource ${resource}`);
