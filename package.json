@@ -36,6 +36,7 @@
     "vuex": "^2.3.1"
   },
   "devDependencies": {
+    "vuedraggable": "^2.14.1",
     "vue-devtools": "^3.1.9",
     "babel-core": "^6.22.1",
     "babel-eslint": "^7.2.3",
