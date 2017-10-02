@@ -32,8 +32,12 @@ export default {
                     style: 'max-height:45%',
                 },
                 on: {
-                    select(event) { self.$emit('select', event) },
-                    delete(event) { self.$emit('delete', event) },
+                    select(event) {
+                        self.$store.dispatch('profiles/select', event);
+                    },
+                    delete(event) {
+                        self.$store.dispatch('profiles/delete', event);
+                    },
                 },
             }
             if (idx <= 2) {
