@@ -100,6 +100,7 @@
 
 <script>
 import vue from 'vue'
+import draggable from 'vuedraggable'
 
 import 'static/semantic/semantic.min.css'
 import 'static/semantic/semantic.min.js'
@@ -115,6 +116,7 @@ import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 
 vue.component('pagination', Pagination);
 vue.component('text-component', TextComponent)
+vue.component('draggable', draggable)
 
 export default {
     components: {
