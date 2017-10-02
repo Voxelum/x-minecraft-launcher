@@ -7,6 +7,7 @@ import {
 import paths from 'path'
 import urls from 'url'
 import fs from 'fs-extra'
+import os from 'os'
 
 const devMod = process.env.NODE_ENV === 'development'
 /**
@@ -81,7 +82,10 @@ function createLogWindow() {
         frame: false,
     })
     logWindow.setTitle('Log')
-    logWindow.setIcon(iconImage);
+
+    const platform = os.platform()
+    if (platform === 'darwin') app.dock.setIcon(iconImage)
+    else logWindow.setIcon(iconImage);
     logWindow.loadURL(`${winURL}?logger=true`);
     logWindow.on('closed', () => { logWindow = null })
 }
