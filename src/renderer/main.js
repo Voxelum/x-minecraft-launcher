@@ -27,7 +27,7 @@ if (logger === 'true') {
             template: '<App style="max-height:626px; overflow:hidden;"></App>',
         }).$mount('#app'),
     ).then((v) => {
-        console.log(v.$route.fullPath)
+        v.$store.dispatch('updateJavas')
         v.$store.commit('url', v.$route.fullPath)
         v.$router.afterEach((to, from) => {
             console.log(to.fullPath)
