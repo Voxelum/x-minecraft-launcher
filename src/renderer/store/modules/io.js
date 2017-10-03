@@ -73,7 +73,7 @@ export default {
         /**
          * 
          * @param {ActionContext} context 
-         * @param {{path:string, fallback:string|Buffer, encoding:'string'|'json'|((buf:Buffer)=>any), onread:(path:string)=>void}} payload
+         * @param {{path:string, fallback:string|Buffer, encoding:'string'|'json'|((buf:Buffer)=>any), onread:(path:string)=>void}} payload 
          */
         async read(context, payload) {
             let { path, fallback } = payload;
