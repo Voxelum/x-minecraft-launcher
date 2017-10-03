@@ -10,7 +10,7 @@ function findJavaFromHome(set) {
     const home = process.env.JAVA_HOME;
     if (!home) return set
     const javaPath = path.join(home, 'bin', 'javaw.exe')
-    if (fs.existsSync(javaPath)) set.add(javaPath)
+    if (fs.existsSync(javaPath)) set[javaPath] = 0
     return set
 }
 
@@ -19,14 +19,14 @@ function findJavaFromPath(set) {
     const array = pathString.split(';')
     for (const p of array) {
         const javaPath = path.join(p, 'bin', 'javaw.exe')
-        if (fs.existsSync(javaPath)) set.add(set)
+        if (fs.existsSync(javaPath)) set[javaPath] = 0
     }
     return set
 }
 /**
 * @author Indexyz
 */
-function findJavaFromRegistry(set) {
+function findJavaFromRegistry() {
     let command;
     const childProcess = require('child_process');
 
@@ -36,13 +36,16 @@ function findJavaFromRegistry(set) {
     return new Promise((resolve, reject) => {
         childProcess.exec(command, (error, stdout, stderr) => {
             if (error) reject(error)
-            resolve(new Set(stdout.split(os.EOL).map(item => (os.platform() !== 'win32' ?
+            const set = {}
+            stdout.split(os.EOL).map(item => (os.platform() !== 'win32' ?
                 item.replace(/[\r\n]/g, '') :
                 item.replace(/[\r\n]/g, '').replace(/\\\\/g, '\\').match(/\w(:[\\a-zA-Z0-9 ._]*)/)))
                 .filter(item => item != null && item !== undefined)
                 .map(item => item[0])
                 .map(item => path.join(item, 'bin', 'javaw.exe'))
-                .filter(item => fs.existsSync(item))))
+                .filter(item => fs.existsSync(item))
+                .forEach((item) => { set[item] = 0 })
+            resolve(set);
         });
     });
 }
@@ -103,7 +106,7 @@ async function installJre() {
     const tempFileLoc = path.join(app.getPath('temp'), splt[splt.length - 1]);
     await fs.ensureFile(tempFileLoc)
     await download(downURL, tempFileLoc);
-    const jreRoot = path.join(app.getPath('appData'), 'jre')
+    const jreRoot = path.join(app.getPath('userData'), 'jre')
     const zip = await new Zip().loadAsync(await fs.readFile())
     const arr = []
     zip.forEach((name, entry) => {
@@ -121,21 +124,21 @@ export default {
     },
     actions: {
         async availbleJre() {
-            const local = path.join(app.getPath('appData'), 'jre', 'bin', 'javaw.exe');
+            const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
             if (fs.existsSync(local)) return [local]
             const ret = await findJavaFromRegistry()
                 .then(findJavaFromPath)
                 .then(findJavaFromHome)
-                .then(Array.from);
+                .then(Object.keys);
             return ret;
         },
         async ensureJre() {
-            const local = path.join(app.getPath('appData'), 'jre', 'bin', 'javaw.exe');
+            const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
             if (fs.existsSync(local)) return [local]
             const arr = await findJavaFromRegistry()
                 .then(findJavaFromPath)
                 .then(findJavaFromHome)
-                .then(Array.from)
+                .then(Object.keys)
             if (arr.length === 0) {
                 await installJre();
                 return [local];
