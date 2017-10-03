@@ -27,7 +27,6 @@ export default (root, themes, theme) => {
         strict: process.env.NODE_ENV !== 'production',
         plugins,
     });
-    console.log(store)
 
     return Promise.all(Object.keys(modules).map((key) => {
         const action = `${key}/load`;
