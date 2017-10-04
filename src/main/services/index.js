@@ -1,4 +1,8 @@
 import { ipcMain } from 'electron'
+import { EventEmitter } from 'events';
+import { Task } from 'ts-minecraft'
+
+import context from '../task.context'
 
 const files = require.context('.', false, /\.js$/)
 const modules = {}
@@ -29,58 +33,45 @@ ipcMain.on('query', (event, {
     action,
     payload,
     }) => {
-    const serInst = modules[service];
-    if (!serInst) {
-        event.sender.send(id, {
-            rejected: `No such service [${service}]`,
-        })
+    const serv = modules[service];
+    const tempId = `${service}-${action}`
+    if (!serv) {
+        event.sender.send(id, 'error', [], `No such service [${service}]`)
         return;
     }
-    if (!serInst.actions) {
-        event.sender.send(id, {
-            rejected: `Service [${service}] has no actions at all!`,
-        })
+    if (!serv.actions) {
+        event.sender.send(id, 'error', [], `Service [${service}] has no actions at all!`)
         return;
     }
-    const actionInst = serInst.actions[action];
-    if (!actionInst) {
-        event.sender.send(id, {
-            rejected: `No such action [${action}] in service [${service}]`,
-        });
+    const act = serv.actions[action];
+    if (!act) {
+        event.sender.send(id, 'error', [], `No such action [${action}] in service [${service}]`)
         return;
     }
     console.log(`execute query ${service}/${action}`)
-    const result = actionInst(payload);
+    const result = act(payload);
     if (result instanceof Promise) {
         result.then((resolved) => {
             console.log(`resolve: ${service}/${action}`)
-            event.sender.send(id, {
-                resolved,
-            })
+            event.sender.send(id, 'finish', [], resolved)
         }, (rejected) => {
             console.log(`reject: ${service}/${action}`)
             console.log(rejected)
             if (rejected instanceof Error) {
-                event.sender.send(id, {
-                    rejected: { message: rejected.message, ...rejected },
-                })
+                event.sender.send(id, 'error', [], { message: rejected.message, ...rejected })
             } else {
-                event.sender.send(id, {
-                    rejected,
-                })
+                event.sender.send(id, 'error', [], { ...rejected })
             }
         })
     } else if (result instanceof Error) {
         console.log(`reject: ${service}/${action}`)
         console.log(result)
-        event.sender.send(id, {
-            rejected: { message: result.message, ...result },
-        });
+        event.sender.send(id, 'error', [], { message: result.message, ...result })
+    } else if (context.isTask(result)) {
+        context.execute(id, tempId, event.sender, result)
     } else {
         console.log(`resolve: ${service}/${action}`)
-        event.sender.send(id, {
-            resolved: result,
-        });
+        event.sender.send(id, 'finish', [], result)
     }
 })
 
