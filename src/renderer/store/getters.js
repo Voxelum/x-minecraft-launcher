@@ -16,13 +16,8 @@ export default {
         if (settings.length !== 0) errors.settings = settings;
         return errors;
     },
-    tasks(state, getters) {
-        return {}
-    },
     errorsCount: (state, getters) => Object.keys(getters.errors)
         .map((k, i, arr) => getters.errors[k].length).reduce((a, b) => a + b, 0),
-    tasksCount: (states, getters) => Object.keys(getters.tasks)
-        .map((k, i, arr) => getters.tasks[k].length).reduce((a, b) => a + b, 0),
     root: state => state.root,
     options: state => state.templates.minecraft,
     defaultOptions: state => state.templates.minecraft.midum,
