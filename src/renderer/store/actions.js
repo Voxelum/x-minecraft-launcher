@@ -9,29 +9,6 @@ import make from './helpers/mkenv'
 export default {
     exit() { ipcRenderer.sendSync('exit') },
     /**
-    * 
-    * @param {ActionContext} context 
-    * @param {{service:string, action:string, payload:any}} payload 
-    */
-    query(context, $payload) {
-        const { service, action, payload } = $payload;
-        return new Promise((resolve, reject) => {
-            const id = v4()
-            ipcRenderer.once(id,
-                (event, { rejected, resolved }) => {
-                    // console.log(`finish ${id}`)
-                    if (rejected) reject(rejected)
-                    else resolve(resolved)
-                })
-            ipcRenderer.send('query', {
-                id,
-                service,
-                action,
-                payload,
-            })
-        });
-    },
-    /**
      * 
      * @param {ActionContext} context 
      * @param {} payload 
@@ -73,7 +50,7 @@ export default {
         if (profile === undefined || profile === null) return Promise.reject('launch.profile.empty')
         if (auth === undefined || auth === null) return Promise.reject('launch.auth.empty');
         // well... these two totally... should not happen; 
-        // if it happen... that is a fatal bug or... a troll's work...
+        // if it happen... that is a fatal bug...
 
         const type = profile.type;
         const version = profile.minecraft.version;
@@ -90,6 +67,7 @@ export default {
             version,
         }
 
+        // make the launch environment
         await make(context, profileId, new MinecraftFolder(context.state.root),
             new MinecraftFolder(option.gamePath))
 
@@ -104,21 +82,17 @@ export default {
         }).then(() => {
             // save all or do other things...
             ipcRenderer.sendSync('park', true)
-        }).catch((err) => {
-
-        });
-    },
-    /**
-    * 
-    * @param {ActionContext} context 
-    * @param {{resolution?:{width:number,height:number,fullscreen?:boolean}, location?:string, theme?:string}} payload 
-    */
-    updateSetting(context, payload) {
-        if (payload.resolution) {
-            context.commit('resolution', payload.resolution);
-        }
-        if (payload.location !== context.state.location || payload.theme !== context.state.theme) {
-            ipcRenderer.send('update', payload.location, payload.theme)
-        }
+        }).catch((e) => {
+            if (e.message.startsWith('Cannot find version ') || e.message.startsWith('No version file for ')) {
+                throw new Error('missing.version')
+            } else if (e.message === 'Missing library') {
+                throw new Error('missing.libraries')
+            } else if (e.message === 'Missing asset!') {
+                throw new Error('missing.assets')
+            } else if (e.message === 'Missing mainClass' || e.message === 'Missing minecraftArguments') {
+                throw new Error('illegal.version.json')
+            }
+            throw e;
+        })
     },
 }

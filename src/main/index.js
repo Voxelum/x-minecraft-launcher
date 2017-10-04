@@ -36,13 +36,13 @@ let root = process.env.LAUNCHER_ROOT
 let theme = 'semantic';
 
 const appData = app.getPath('appData');
-
 const cfgFile = `${appData}/launcher.json`
 
 function updateSettings(newRoot, newTheme) {
     let updated = false;
     if (newRoot && newRoot != null && newRoot !== root) {
         root = newRoot;
+        app.setPath('userData', root);
         updated = true;
     }
     if (newTheme && newTheme != null && newTheme !== theme) {
@@ -56,9 +56,11 @@ try {
     const buf = fs.readFileSync(cfgFile)
     const cfg = JSON.parse(buf.toString())
     root = cfg.root || paths.join(appData, '.launcher');
+    app.setPath('userData', root);
     theme = cfg.theme || 'semantic'
 } catch (e) {
     root = paths.join(appData, '.launcher');
+    app.setPath('userData', root);
     theme = 'semantic'
     fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
 }

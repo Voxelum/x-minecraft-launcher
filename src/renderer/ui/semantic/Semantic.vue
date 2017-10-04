@@ -50,7 +50,7 @@
                     </div>
                     <div class="ui flowing popup top left transition hidden">
                         <div v-if="errorsCount != 0" class="ui middle aligned divided list" style="max-height:300px; min-width:300px; overflow:hidden">
-                            <div v-for="(moduleErr, index) in errors" :key='moduleErr' class="item">
+                            <div v-for="(moduleErr, index) in errors" :key='index' class="item">
                                 {{index}}
                                 <div class="ui middle aligned selection divided list">
                                     <div v-for="err of moduleErr" :key="err" class="item">
@@ -70,10 +70,10 @@
                     </div>
                     <div class="ui flowing popup top left transition hidden">
                         <div v-if="tasksCount != 0" class="ui middle aligned divided list" style="max-height:300px; min-width:300px; overflow:hidden">
-                            <div v-for="(moduleTask, index) in errors" :key='moduleTask' class="item">
+                            <div v-for="(moduleTask, index) in errors" :key='index' class="item">
                                 {{index}}
                                 <div class="ui middle aligned selection divided list">
-                                    <div v-for="task of moduleTask" :key="task" class="item">
+                                    <div v-for="(task, index) of moduleTask" :key="index" class="item">
                                         <!-- {{task.name}} -->
                                         <!-- {{task.progress}} -->
                                         <!-- {{task.status}} -->
@@ -127,7 +127,6 @@ export default {
     data() {
         return {
             closing: false,
-            view: 'home',
             background: ''//'url(imgs/Background1.png)'
         }
     },
@@ -136,9 +135,8 @@ export default {
             'selectedProfile': 'selected',
             'selectedProfileID': 'selectedKey'
         }),
-        ...mapGetters(['errors', 'tasks', 'errorsCount', 'tasksCount']),
+        ...mapGetters(['errors', 'runningTasks', 'errorsCount', 'tasksCount']),
         ...mapGetters('auth', ['username', 'skin']),
-        ...mapState('settings', ['autoDownload']),
     },
     mounted(e) {
         if (this.username === '') this.showModal('login')
