@@ -92,7 +92,7 @@ npm test
 
 #### Credit
 
-Phoebe, Sumeng Wang
+Phoebe, Sumeng Wang, Luca
 
 ---
 
