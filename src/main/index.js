@@ -77,6 +77,12 @@ if (isSecondInstance) {
     app.quit()
 }
 
+function setupIcon(window) {
+    const platform = os.platform()
+    if (platform === 'darwin') app.dock.setIcon(iconImage)
+    else logWindow.setIcon(iconImage);
+}
+
 function createLogWindow() {
     logWindow = new BrowserWindow({
         height: 400,
@@ -84,10 +90,7 @@ function createLogWindow() {
         frame: false,
     })
     logWindow.setTitle('Log')
-
-    const platform = os.platform()
-    if (platform === 'darwin') app.dock.setIcon(iconImage)
-    else logWindow.setIcon(iconImage);
+    setupIcon(logWindow)
     logWindow.loadURL(`${winURL}?logger=true`);
     logWindow.on('closed', () => { logWindow = null })
 }
@@ -115,7 +118,7 @@ function createMainWindow() {
         frame: false,
     })
     mainWindow.setTitle('ILauncher')
-    mainWindow.setIcon(iconImage)
+    setupIcon(mainWindow)
     mainWindow.loadURL(`${winURL}?logger=false&theme=${theme}&root=${root}`)
 
     mainWindow.on('closed', () => { mainWindow = null })
