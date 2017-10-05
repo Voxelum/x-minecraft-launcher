@@ -47,14 +47,12 @@ export default {
         /**
          * 
          * @param {ActionContext} context 
-         * @param {{type?:string, meta:VersionMeta}} payload
+         * @param {VersionMeta} meta
          */
-        download(context, payload) {
-            const { type, meta } = payload
+        async download(context, meta) {
             // TODO maybe validate paylaod
-            const versionMeta = meta;
-            const id = versionMeta.id;
-            context.commit('updateStatus', { version: versionMeta, status: 'loading' })
+            const id = meta.id;
+            context.commit('updateStatus', { version: meta, status: 'loading' })
             return context.dispatch('exist', { paths: [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`] }, { root: true })
                 .then(exist => (!exist ? context.dispatch('query', {
                     service: 'versions',
@@ -65,9 +63,9 @@ export default {
                     },
                 }, { root: true }) : undefined))
                 .then(() => {
-                    context.commit('updateStatus', { version: versionMeta, status: 'local' })
+                    context.commit('updateStatus', { version: meta, status: 'local' })
                 }, (err) => {
-                    context.commit('updateStatus', { version: versionMeta, status: 'remote' })
+                    context.commit('updateStatus', { version: meta, status: 'remote' })
                 })
         },
         /**

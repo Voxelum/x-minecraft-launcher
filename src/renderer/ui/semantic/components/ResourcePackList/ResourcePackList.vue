@@ -1,5 +1,5 @@
 <template>
-    <div class="ui center aligned middle aligned basic segment container" v-if="values.length===0" @drop="ondrop" style="height:100% !important">
+    <div class="ui center aligned middle aligned basic segment container" v-if="resourcepacks.length===0" @drop="ondrop" style="height:100% !important">
         <br>
         <h2 class="ui icon header">
             <i class="gift icon"></i>
@@ -56,22 +56,21 @@ import DivHeader from '../DivHeader'
 export default {
     components: { ListCell, DivHeader },
     computed: {
-        ...mapGetters('resourcepacks', ['values']),
+        ...mapGetters('repository', ['resourcepacks']),
         unselecting() {
-            return this.values.filter(e => this.selectingNames.indexOf(e.name) === -1)
+            return this.resourcepacks.filter(e => this.selectingNames.indexOf(e.name) === -1)
         },
         selecting() {
-            return this.selectingNames.map(name => this.nameToEntry.get(name))
+            return this.selectingNames.map(name => this.nameToEntry[name])
         },
         nameToEntry() {
-            const map = new Map()
-            for (const value of this.values) {
-                if (!map.has(value.name))
-                    map.set(value.name, value)
+            const map = {}
+            for (const value of this.resourcepacks) {
+                if (!map[value.name]) map[value.name] = value
                 else {
                     const name = value.name + ' copy'
                     this.rename({ resource: value, name })
-                    map.set(name, value)
+                    map[name] = value
                 }
             }
             return map;
@@ -82,8 +81,7 @@ export default {
     },
     methods: {
         ...mapActions(['openDialog']),
-        ...mapActions('resourcepacks', ['import', 'delete']),
-        ...mapMutations('resourcepacks', ['rename']),
+        ...mapActions('repository', ['import', 'delete', 'rename']),
         resourcepack(action, pack) {
             this.$store.commit(`profiles/${this.id}/minecraft/resourcepack`, { action, pack })
         },
