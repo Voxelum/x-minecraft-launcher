@@ -87,7 +87,12 @@ npm run build
 # run unit tests, whereas no tests yet
 npm test
 
+
 ```
+
+#### Credit
+
+Phoebe, Sumeng Wang, Luca
 
 ---
 
