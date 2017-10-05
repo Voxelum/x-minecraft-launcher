@@ -44,6 +44,7 @@ export default {
         },
         del(e) {
             this.$emit('delete', { id: this.id, source: this.source })
+            e.preventDefault()
         },
     },
     mounted() {
