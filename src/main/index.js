@@ -80,7 +80,7 @@ if (isSecondInstance) {
 function setupIcon(window) {
     const platform = os.platform()
     if (platform === 'darwin') app.dock.setIcon(iconImage)
-    else logWindow.setIcon(iconImage);
+    else window.setIcon(iconImage);
 }
 
 function createLogWindow() {
