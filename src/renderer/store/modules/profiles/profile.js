@@ -15,8 +15,8 @@ export default {
     getters: {
         errors(state) {
             const errors = []
-            if (state.minecraft.version === '' || state.minecraft.version === undefined || state.minecraft.version === null) errors.push('profile.empty.version')
-            if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.empty.java')
+            if (state.minecraft.version === '' || state.minecraft.version === undefined || state.minecraft.version === null) errors.push('profile.noversion')
+            if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.missingjava')
             return errors
         },
         versoin: state => state.minecraft.version,

@@ -82,17 +82,6 @@ export default {
         }).then(() => {
             // save all or do other things...
             ipcRenderer.sendSync('park', true)
-        }).catch((e) => {
-            if (e.message.startsWith('Cannot find version ') || e.message.startsWith('No version file for ')) {
-                throw new Error('missing.version')
-            } else if (e.message === 'Missing library') {
-                throw new Error('missing.libraries')
-            } else if (e.message === 'Missing asset!') {
-                throw new Error('missing.assets')
-            } else if (e.message === 'Missing mainClass' || e.message === 'Missing minecraftArguments') {
-                throw new Error('illegal.version.json')
-            }
-            throw e;
         })
     },
 }

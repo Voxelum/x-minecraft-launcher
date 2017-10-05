@@ -55,9 +55,9 @@
         "date": "Updated Date",
         "releaseDate": "Release Date",
         "unknown": "Unknown Version",
-        "download": "Download this version",
-        "downloading": "Downloading...",
-        "downloaded": "This version is in the disk",
+        "remote": "Download this version",
+        "pending": "Downloading...",
+        "local": "This version is in the disk",
         "snapshot": "Snapshot",
         "all": "All",
         "release": "Release"

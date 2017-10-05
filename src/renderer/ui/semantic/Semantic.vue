@@ -55,7 +55,7 @@
                                 <div class="ui middle aligned selection divided list">
                                     <div v-for="err of moduleErr" :key="err" class="item">
                                         <div class="item">
-                                            <i class="warning icon"></i> {{err}}
+                                            <i class="warning icon"></i> {{$t(`error.${err}`)}}
                                         </div>
                                     </div>
                                 </div>
