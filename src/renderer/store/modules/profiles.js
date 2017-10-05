@@ -60,6 +60,7 @@ export default {
                 }
                 state.all = state.all.filter(v => v !== id)
             }
+            if (state.selected === id) state.selected = '';
         },
     },
     actions: {
