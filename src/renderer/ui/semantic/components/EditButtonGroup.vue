@@ -1,6 +1,6 @@
 <template>
     <span>
-        <div class="ui icon right floated inverted button non-moveable" @click="launch">
+        <div class="ui icon right floated inverted button non-moveable" @click="onlaunch">
             &nbsp&nbsp&nbsp
             <i class="rocket icon"></i>
             {{$t('launch')}} &nbsp&nbsp&nbsp&nbsp
@@ -35,7 +35,12 @@ export default {
                 args.description = this.selectedProfile.description;
             }
             $emit('modal', this.selectedProfile.type, args);
-        }
+        },
+        onlaunch() {
+            this.launch().catch((e) => {
+                console.log(e)
+            })
+        },
     },
     props: ['id'],
 }
