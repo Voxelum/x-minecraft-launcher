@@ -8,6 +8,18 @@ import {
     MinecraftFolder,
 } from 'ts-minecraft'
 
+function onerror(e) {
+    if (e.message.startsWith('Cannot find version ') || e.message.startsWith('No version file for ')) {
+        e.type = 'missing.version'
+    } else if (e.message === 'Missing library') {
+        e.type = 'missing.libraries'
+    } else if (e.message === 'Missing asset!') {
+        e.type = 'missing.assets'
+    } else if (e.message === 'Missing mainClass' || e.message === 'Missing minecraftArguments') {
+        e.type = 'illegal.version.json'
+    }
+    return e
+}
 
 // import semver from 'semver'
 export default {
@@ -16,7 +28,6 @@ export default {
     proxy: {
     },
     actions: {
-
         launch({ auth, option }) {
             console.log('launch:')
             console.log(option)
@@ -36,6 +47,8 @@ export default {
                 process.stderr.on('data', (s) => {
                     ipcMain.emit('minecraft-stderr', s)
                 })
+            }).catch((e) => {
+                throw onerror(e);
             })
         },
     },
