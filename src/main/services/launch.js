@@ -33,7 +33,7 @@ export default {
             console.log(option)
             return Launcher.launch(auth, option).then((process) => {
                 process.on('error', (err) => {
-                    console.error(err)
+                    console.log(err)
                 })
                 process.on('exit', (code, signal) => {
                     console.log('exit:')
@@ -45,6 +45,7 @@ export default {
                     ipcMain.emit('minecraft-stdout', s.toString());
                 })
                 process.stderr.on('data', (s) => {
+                    console.error(s)
                     ipcMain.emit('minecraft-stderr', s)
                 })
             }).catch((e) => {
