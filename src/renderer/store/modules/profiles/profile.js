@@ -4,8 +4,8 @@ export default {
     modules: { ...settings },
     state: () => ({
         type: '',
-        name: '', 
-        resolution: { width: 800, height: 400, fullscreen: false },  
+        name: '',
+        resolution: { width: 800, height: 400, fullscreen: false },
         java: '',
         minMemory: 1024,
         maxMemory: 2048,
@@ -23,9 +23,11 @@ export default {
         language: (state, gets) => gets['minecraft/options'].lang,
     },
     mutations: {
+        edit(state, option) {
+        },
         putAll(state, option) {
             Object.keys(option)
-                .filter(key => state.hasOwnProperty(key))
+                .filter(key => key !== 'type')
                 .forEach((key) => { state[key] = option[key] })
         },
     },
