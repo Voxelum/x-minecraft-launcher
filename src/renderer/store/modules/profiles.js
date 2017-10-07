@@ -13,7 +13,6 @@ function regulize(content) {
     content.mods = content.mods || []
     content.vmOptions = content.vmOptions || []
     content.mcOptions = content.mcOptions || []
-    if (!content.minecraft) content.minecraft = { name: 'custom' }
     return content
 }
 
@@ -99,12 +98,14 @@ export default {
                     }, { root: true })
                 }
                 return Promise.resolve();
-            } else if (path.length === 3) {
-                context.dispatch('saveProfile', { id: path[1] })
-            } else if (path.length === 4) {
-                const target = path[2]
+            } else if (path.length === 3) { // only profile
                 return context.dispatch('saveProfile', { id: path[1] })
-                    .then(() => context.dispatch(`${path[1]}/${target}/save`, { id: path[1] }))
+            } else if (path.length === 4) { // save module data
+                const target = path[2]
+                return Promise.all([
+                    context.dispatch('saveProfile', { id: path[1] }),
+                    context.dispatch(`${path[1]}/${target}/save`, { id: path[1] }),
+                ])
             }
             return context.dispatch('saveProfile', { id: path[1] })
         },
