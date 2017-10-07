@@ -61,6 +61,10 @@ export default {
 </script>
 
 <style>
+body {
+    overflow-y: hidden;
+}
+
 .moveable {
     -webkit-app-region: drag
 }
