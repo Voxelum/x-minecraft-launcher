@@ -12,24 +12,30 @@ function mix(target, src) {
 export function copy(obj) {
     return JSON.parse(JSON.stringify(obj))
 }
+function flat(state) {
+    if (state === undefined) throw new Error('Cannot flat undefined')
+    if (typeof state === 'function') return state();
+    return copy(state)
+}
 export default function mixin(template, option) {
-    let state = template.state
-    if (typeof state === 'function') {
-        state = state()
-    } else {
-        state = copy(state)
-    }
+    const state = flat(template.state)
     if (option) mix(state, option)
-
-    if (template.modules) { // try mixin sub-modules' states 
-        for (const moduleId in template.modules) {
-            if (option[moduleId] && typeof option[moduleId] === 'object') {
-                mixin(template.modules[moduleId], option[moduleId])
-            }
-        }
-    }
 
     const storeOption$ = Object.assign({}, template)
     storeOption$.state = state
+
+    if (template.modules) { // try mixin sub-modules' states 
+        for (const moduleId in template.modules) {
+            if (template.modules.hasOwnProperty(moduleId)) {
+                const subState = template.modules[moduleId].state;
+                if (option[moduleId] && typeof option[moduleId] === 'object' && subState !== undefined) {
+                    const flated = flat(subState);
+                    mix(flated, option[moduleId])
+                    storeOption$.modules[moduleId].state = flated;
+                }
+            }
+        }
+    }
+   
     return storeOption$;
 }
