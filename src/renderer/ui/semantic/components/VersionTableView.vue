@@ -19,28 +19,18 @@
                 <div v-if="metas.length==0" class="ui active inverted dimmer">
                     <div class="ui indeterminate text loader">{{$t('version.prepare')}}</div>
                 </div>
-                <table class="ui  very basic selectable celled center aligned table" style='height:300px;overflow-x: hidden;'>
+                <table class="ui very basic selectable celled center aligned table" style='height:300px;overflow-x: hidden;'>
                     <tbody>
-                        <tr style="cursor: pointer;" v-for="meta in metas" :key="meta" :url="meta.url" :version-id='meta.id' @click="onselect(meta.id)">
+                        <tr style="cursor: pointer;" v-for="meta in metas" :key="meta.id" :url="meta.url" :version-id='meta.id' @click="onselect(meta.id)">
                             <td>
-                                <div class="ui  grey ribbon label">{{meta.type}}</div>
+                                <div class="ui ribbon label">{{meta.type}}</div>
                                 <br> {{meta.id}}
                             </td>
                             <td>{{meta.releaseTime}}</td>
-                            <!-- <td>{{meta.time}}</td> -->
-                            <td class="selectable" :ver="meta.id" :data-tooltip="$t('version.download')" data-position="left center" @click="ondownload" v-if="meta.status=='remote'">
+                            <td class="selectable" :data-tooltip="$t(`version.${meta.status}`)" data-position="left center" @click="ondownload(meta.id)">
                                 <div style="padding:0 10px 0 10px;pointer-events: none;">
-                                    <i class="download icon"></i>
-                                </div>
-                            </td>
-                            <td class="selectable" :ver="meta.id" :data-tooltip="$t('version.downloaded')" data-position="left center" v-else-if="meta.status=='local'">
-                                <div style="padding:0 10px 0 10px;pointer-events: none;">
-                                    <i class="disk outline icon"></i>
-                                </div>
-                            </td>
-                            <td :ver="meta.id" :data-tooltip="$t('version.downloading')" data-position="left center" v-else>
-                                <div style="padding:0 15px 0 5px;pointer-events: none;">
-                                    <div class="ui active inline small loader"></div>
+                                    <i :class="downloadIcon(meta.status)" v-if="meta.status!=='loading'"></i>
+                                    <div class="ui active inline small loader" v-else></div>
                                 </div>
                             </td>
                         </tr>
@@ -65,12 +55,10 @@ export default {
     computed: {
         ...mapGetters('versions', ['versions', 'latestRelease', 'latestSnapshot']),
         metaMap() {
-            const map = new Map()
-            for (const v of this.versions)
-                map.set(v.id, v);
+            const map = {}
+            for (const v of this.versions) map[v.id] = v
             return map;
         },
-        selectingMeta() { return /* this.metaMap.get(this.selected.version) || */ {}; },
         metas() {
             let metas = this.versions;
             if (this.filterType !== '')
@@ -81,12 +69,26 @@ export default {
         }
     },
     methods: {
+        downloadIcon(status) {
+            return {
+                download: status === 'remote',
+                disk: status === 'local',
+                outline: status === 'local',
+                icon: true,
+            }
+        },
         onselect(vId) {
             if (vId !== this.selectingVersion)
                 this.$store.commit(`profiles/${this.id}/minecraft/version`, vId)
         },
         ondownload(event) {
-            this.$store.dispatch('versions/download', this.metaMap.get(event.target.getAttribute('ver')))
+            console.log('download')
+            console.log(this.metaMap[event])
+            if (!this.metaMap[event]) {
+                console.error(`Cannot find the remote version ${event}`)
+            }
+            if (this.metaMap[event].status === 'remote')
+                this.$store.dispatch('versions/download', this.metaMap[event])
             return false
         }
     },
@@ -96,5 +98,3 @@ export default {
 <style>
 
 </style>
-
-

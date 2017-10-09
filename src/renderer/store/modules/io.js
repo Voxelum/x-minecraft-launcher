@@ -67,7 +67,7 @@ export default {
          * @param {{paths:string[]}} payload 
          */
         exist(context, payload) {
-            for (const p of payload.paths) if (!fs.existsSync(p)) return false
+            for (const p of payload.paths) if (!fs.existsSync(`${context.rootGetters.root}/${p}`)) return false
             return true
         },
         /**

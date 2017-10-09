@@ -55,7 +55,7 @@
                                 <div class="ui middle aligned selection divided list">
                                     <div v-for="err of moduleErr" :key="err" class="item">
                                         <div class="item">
-                                            <i class="warning icon"></i> {{err}}
+                                            <i class="warning icon"></i> {{$t(`error.${err}`)}}
                                         </div>
                                     </div>
                                 </div>
@@ -70,43 +70,47 @@
                     </div>
                     <div class="ui flowing popup top left transition hidden">
                         <div v-if="tasksCount != 0" class="ui middle aligned divided list" style="max-height:300px; min-width:300px; overflow:hidden">
-                            <div v-for="(moduleTask, index) in errors" :key='index' class="item">
-                                {{index}}
-                                <div class="ui middle aligned selection divided list">
-                                    <div v-for="(task, index) of moduleTask" :key="index" class="item">
+                            <div v-for="(moduleTask, index) in runningTasks" :key='index' class="item">
+                                {{moduleTask}}
+                                <!-- <div class="ui middle aligned selection divided list"> -->
+                                    <!-- <div v-for="(task, index) of moduleTask" :key="index" class="item"> -->
                                         <!-- {{task.name}} -->
                                         <!-- {{task.progress}} -->
                                         <!-- {{task.status}} -->
-                                    </div>
-                                </div>
+                                    <!-- </div> -->
+                                <!-- </div> -->
                             </div>
                         </div>
                         <div v-else>
-                            {{$t('errors.empty')}}
+                            {{$t('tasks.empty')}}
                         </div>
                     </div>
                 </span>
-                <router-view name='buttons' @modal="showModal" :id="selectedProfileID"></router-view>
+                <router-view name='buttons' :id="selectedProfileID"></router-view>
             </div>
         </div>
-        <login-modal ref="loginModal"></login-modal>
-        <modpack-modal ref="modpackModal" :defaultAuthor="username" @accept="submitProfile($event, 'modpack')"></modpack-modal>
-        <server-modal ref="serverModal" @accept="submitProfile($event, 'server')"></server-modal>
-        <delete-modal ref="deleteModal" @accept="deleteProfile"></delete-modal>
-        <profile-modal ref="profileModal"></profile-modal>
-        <settings-modal ref="settingsModal"></settings-modal>
+        <modals ref='modals'></modals>
+        <!-- <div>
+                <login-modal ref="loginModal"></login-modal>
+                <modpack-modal ref="modpackModal"></modpack-modal>
+                <server-modal ref="serverModal"></server-modal>
+                <delete-modal ref="deleteModal"></delete-modal>
+                <profile-modal ref="profileModal"></profile-modal>
+                <settings-modal ref="settingsModal"></settings-modal>
+            </div> -->
     </div>
 </template>
 
 <script>
 import vue from 'vue'
-import draggable from 'vuedraggable'
 
 import 'static/semantic/semantic.min.css'
 import 'static/semantic/semantic.min.js'
 
+import draggable from 'vuedraggable'
 import Pagination from './components/Pagination'
 import TextComponent from './components/TextComponent'
+import DivHeader from './components/DivHeader'
 
 import NavigationBar from './components/NavigationBar'
 import modals from './components/modals'
@@ -117,19 +121,18 @@ import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 vue.component('pagination', Pagination);
 vue.component('text-component', TextComponent)
 vue.component('draggable', draggable)
+vue.component('div-header', DivHeader)
 
 export default {
     components: {
         SkinView,
         NavigationBar,
-        ...modals
+        modals
     },
-    data() {
-        return {
-            closing: false,
-            background: ''//'url(imgs/Background1.png)'
-        }
-    },
+    data: () => ({
+        closing: false,
+        background: ''//'url(imgs/Background1.png)'
+    }),
     computed: {
         ...mapGetters('profiles', {
             'selectedProfile': 'selected',
@@ -138,8 +141,8 @@ export default {
         ...mapGetters(['errors', 'runningTasks', 'errorsCount', 'tasksCount']),
         ...mapGetters('auth', ['username', 'skin']),
     },
-    mounted(e) {
-        if (this.username === '') this.showModal('login')
+    mounted() {
+        if (this.username === '') this.$refs.modals.show('login')
         $(this.$refs.userDropdown).dropdown({ on: 'hover' })
         $(this.$refs.warningPopup).popup({
             hoverable: true,
@@ -149,34 +152,23 @@ export default {
                 hide: 800
             },
         })
+        $(this.$refs.taskPopup).popup({
+            hoverable: true,
+            position: 'top left',
+            delay: {
+                show: 300,
+                hide: 800
+            },
+        })
     },
     methods: {
-        ...mapActions('profiles', {
-            createProfile: 'createAndSelect',
-            selectProfile: 'select',
-            deleteProfile: 'delete',
-        }),
-        ...mapMutations('profiles', ['unselect']),
         showModal(id, args) {
-            const modal = this.$refs[id + "Modal"]
-            if (modal)
-                modal.show(args)
-            else console.warn(`No modal named ${id}`)
+            this.$bus.$emit('modal', id, args)
         },
         refresh() {
             this.$refs.view.refresh()
         },
-        close() {
-            require('electron').ipcRenderer.sendSync('exit')
-        },
-        submitProfile(event, type) {
-            if (event.isEdit) {
-                this.$store.commit(`profiles/${this.selectedProfileID}/putAll`, event)
-            } else {
-                event.type = type;
-                this.createProfile({ type, option: event })
-            }
-        },
+        close: () => require('electron').ipcRenderer.sendSync('exit'),
     },
 }
 </script>
