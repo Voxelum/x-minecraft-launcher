@@ -17,27 +17,17 @@ import vuex from 'vuex'
 
 export default {
     computed: {
-        selectedProfile() {
-            return this.$store.state.profiles[this.id];
-        }
+        ...vuex.mapGetters('profiles', ['selected', 'selectedKey'])
     },
     methods: {
         ...vuex.mapActions(['launch']),
         edit() {
-            const args = { isEdit: true }
-            if (this.selectedProfile.type === 'server') {
-                args.host = this.selectedProfile.host;
-                args.port = this.selectedProfile.port;
-                args.name = this.selectedProfile.name;
-            } else {
-                args.name = this.selectedProfile.name;
-                args.author = this.selectedProfile.author;
-                args.description = this.selectedProfile.description;
-            }
-            $emit('modal', this.selectedProfile.type, args);
+            this.$bus.$emit('modal', this.selected.type, { isEdit:true })
         },
         onlaunch() {
+            console.log(this)
             this.launch().catch((e) => {
+                console.log(e.type)
                 console.log(e)
             })
         },

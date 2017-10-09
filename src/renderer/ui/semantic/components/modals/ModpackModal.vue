@@ -29,36 +29,43 @@
                 <i class="check icon"></i>
                 {{ isEdit?$t('save'):$t('create')}}
             </div>
-    
         </div>
     </div>
 </template>
 
 <script>
+
+import vuex from 'vuex'
+
 export default {
-    data() {
-        return {
-            name: '',
-            author: '',
-            description: '',
-            hasError: false,
-            isEdit: false,
-        }
-    },
-    props: ['defaultAuthor'],
+    data: () => ({
+        name: '',
+        author: '',
+        description: '',
+        hasError: false,
+        isEdit: false,
+    }),
     mounted() {
         $(this.$el).modal({ blurring: true })
     },
+    computed: {
+        ...vuex.mapGetters('auth', {
+            defaultAuthor: 'username'
+        }),
+        profile() {
+            return this.$store.getters['profiles/selected']
+        }
+    },
     methods: {
-        show(args) {
-            if (args && args.isEdit) {
-                this.isEdit = true;
-                this.name = args.name;
-                this.description = args.description;
-                this.author = args.author;
+        show(args = {}) {
+            const { isEdit } = args;
+            this.isEdit = isEdit || false;
+            if (this.isEdit) {
+                this.name = this.profile.name;
+                this.description = this.profile.description;
+                this.author = this.profile.author;
             }
             else {
-                this.isEdit = false
                 this.name = ''
                 this.author = this.defaultAuthor || ""
                 this.description = 'No description yet'
@@ -69,8 +76,23 @@ export default {
         accept() {
             if (!this.name || this.name === '') {
                 this.hasError = true;
+                return
             }
-            this.$emit('accept', { name: this.name, author: this.author, description: this.description, isEdit: this.isEdit });
+            if (this.isEdit) {
+                this.$store.commit(`profiles/${this.profileId}/putAll`, {
+                    name: this.name,
+                    author: this.author,
+                    description: this.description,
+                })
+            } else {
+                this.$store.commit(`profiles/create`, {
+                    type: 'modpack',
+                    name: this.name,
+                    author: this.author,
+                    description: this.description,
+                })
+            }
+
             $(this.$el).modal('hide')
         },
         enter(event) {
