@@ -1,3 +1,3 @@
-import Inst from './MapsList.vue'
+import Inst from './MapsList'
 
 export default Inst
