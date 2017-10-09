@@ -1,11 +1,11 @@
 <template>
-    <div class="ui basic error modal" :class="{error: hasError}" style="padding:0 20% 0 20%;">
+    <div class="ui basic error modal" style="padding:0 20% 0 20%;">
         <div class="ui icon small header">
             <i class="archive icon"></i>
             {{ isEdit?$t('modpack.edit'):$t('modpack.create')}}
         </div>
-        <form class="ui inverted form">
-            <div class="field">
+        <form class="ui inverted form" :class="{error: nameError}">
+            <div class="field" :class="{error:nameError}">
                 <label>{{$t('name')}}</label>
                 <input class="ui basic inverted input" type="text" placeholder="Profile Name" v-model="name" @keypress="enter">
             </div>
@@ -18,14 +18,14 @@
                 <input class="ui basic inverted input" type="text" placeholder="A Simple description" v-model="description" @keypress="enter">
             </div>
             <div class="ui error message">
-                <div class="header">Action Forbidden</div>
-                <p>You can only sign up for an account once with a given e-mail address.</p>
+                <div class="header">{{$t('actionforbidden')}}</div>
+                <p>{{$t('modpack.error.requirename')}}</p>
             </div>
         </form>
         <div class="actions">
             <div class="ui basic cancel inverted button">
                 <i class="close icon"></i>{{$t('no')}}</div>
-            <div class="ui green basic inverted ok button" @click="accept">
+            <div class="ui green basic inverted button" @click="accept">
                 <i class="check icon"></i>
                 {{ isEdit?$t('save'):$t('create')}}
             </div>
@@ -42,11 +42,18 @@ export default {
         name: '',
         author: '',
         description: '',
-        hasError: false,
         isEdit: false,
+
+        nameError: false,
     }),
     mounted() {
-        $(this.$el).modal({ blurring: true })
+        const self = this;
+        $(this.$el).modal({
+            blurring: true,
+            onHidden() {
+                self.nameError = false;
+            }
+        })
     },
     computed: {
         ...vuex.mapGetters('auth', {
@@ -69,13 +76,13 @@ export default {
                 this.name = ''
                 this.author = this.defaultAuthor || ""
                 this.description = 'No description yet'
-                this.hasError = false
             }
             $(this.$el).modal('show')
         },
         accept() {
+            console.log(this.name)
             if (!this.name || this.name === '') {
-                this.hasError = true;
+                this.nameError = true;
                 return
             }
             if (this.isEdit) {
@@ -85,14 +92,15 @@ export default {
                     description: this.description,
                 })
             } else {
-                this.$store.commit(`profiles/create`, {
+                this.$store.dispatch(`profiles/create`, {
                     type: 'modpack',
-                    name: this.name,
-                    author: this.author,
-                    description: this.description,
+                    option: {
+                        name: this.name,
+                        author: this.author,
+                        description: this.description,
+                    },
                 })
             }
-
             $(this.$el).modal('hide')
         },
         enter(event) {

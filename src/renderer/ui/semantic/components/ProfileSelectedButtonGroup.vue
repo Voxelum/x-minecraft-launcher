@@ -22,11 +22,15 @@ export default {
     methods: {
         ...vuex.mapActions(['launch']),
         edit() {
-            this.$bus.$emit('modal', this.selected.type, { isEdit:true })
+            this.$bus.$emit('modal', this.selected.type, { isEdit: true })
         },
         onlaunch() {
-            console.log(this)
             this.launch().catch((e) => {
+                switch (e.type) {
+                    case 'missing.version':
+                        this.$bus.$emit('modal', 'missingVersion')
+                    default:
+                }
                 console.log(e.type)
                 console.log(e)
             })
