@@ -133,6 +133,9 @@ export default {
             context.commit('remove', payload)
             return context.dispatch('delete', { path: `profiles/${payload}` }, { root: true })
         },
+        unselect(context) {
+            context.commit('unselect')
+        },
         /**
          * 
          * @param {ActionContext} context 
