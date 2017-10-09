@@ -70,33 +70,34 @@
                     </div>
                     <div class="ui flowing popup top left transition hidden">
                         <div v-if="tasksCount != 0" class="ui middle aligned divided list" style="max-height:300px; min-width:300px; overflow:hidden">
-                            <div v-for="(moduleTask, index) in errors" :key='index' class="item">
-                                {{index}}
-                                <div class="ui middle aligned selection divided list">
-                                    <div v-for="(task, index) of moduleTask" :key="index" class="item">
+                            <div v-for="(moduleTask, index) in runningTasks" :key='index' class="item">
+                                {{moduleTask}}
+                                <!-- <div class="ui middle aligned selection divided list"> -->
+                                    <!-- <div v-for="(task, index) of moduleTask" :key="index" class="item"> -->
                                         <!-- {{task.name}} -->
                                         <!-- {{task.progress}} -->
                                         <!-- {{task.status}} -->
-                                    </div>
-                                </div>
+                                    <!-- </div> -->
+                                <!-- </div> -->
                             </div>
                         </div>
                         <div v-else>
-                            {{$t('errors.empty')}}
+                            {{$t('tasks.empty')}}
                         </div>
                     </div>
                 </span>
-                <router-view name='buttons' @modal="showModal" :id="selectedProfileID"></router-view>
+                <router-view name='buttons' :id="selectedProfileID"></router-view>
             </div>
         </div>
-        <div>
-            <login-modal ref="loginModal"></login-modal>
-            <modpack-modal ref="modpackModal"></modpack-modal>
-            <server-modal ref="serverModal"></server-modal>
-            <delete-modal ref="deleteModal"></delete-modal>
-            <profile-modal ref="profileModal"></profile-modal>
-            <settings-modal ref="settingsModal"></settings-modal>
-        </div>
+        <modals ref='modals'></modals>
+        <!-- <div>
+                <login-modal ref="loginModal"></login-modal>
+                <modpack-modal ref="modpackModal"></modpack-modal>
+                <server-modal ref="serverModal"></server-modal>
+                <delete-modal ref="deleteModal"></delete-modal>
+                <profile-modal ref="profileModal"></profile-modal>
+                <settings-modal ref="settingsModal"></settings-modal>
+            </div> -->
     </div>
 </template>
 
@@ -126,7 +127,7 @@ export default {
     components: {
         SkinView,
         NavigationBar,
-        ...modals
+        modals
     },
     data: () => ({
         closing: false,
@@ -140,9 +141,8 @@ export default {
         ...mapGetters(['errors', 'runningTasks', 'errorsCount', 'tasksCount']),
         ...mapGetters('auth', ['username', 'skin']),
     },
-    mounted(e) {
-        this.$bus.$on('modal', this.showModal)
-        if (this.username === '') this.showModal('login')
+    mounted() {
+        if (this.username === '') this.$refs.modals.show('login')
         $(this.$refs.userDropdown).dropdown({ on: 'hover' })
         $(this.$refs.warningPopup).popup({
             hoverable: true,
@@ -152,21 +152,18 @@ export default {
                 hide: 800
             },
         })
+        $(this.$refs.taskPopup).popup({
+            hoverable: true,
+            position: 'top left',
+            delay: {
+                show: 300,
+                hide: 800
+            },
+        })
     },
     methods: {
-        ...mapActions('profiles', {
-            createProfile: 'createAndSelect',
-            selectProfile: 'select',
-            deleteProfile: 'delete',
-            unselect: 'unselect'
-        }),
         showModal(id, args) {
-            console.log(id)
-            console.log(args)
-            const modal = this.$refs[id + "Modal"]
-            if (modal)
-                modal.show(args)
-            else console.warn(`No modal named ${id}`)
+            this.$bus.$emit('modal', id, args)
         },
         refresh() {
             this.$refs.view.refresh()
