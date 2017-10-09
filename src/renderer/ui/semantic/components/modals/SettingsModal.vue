@@ -95,6 +95,7 @@ export default {
                 resolution: { width: this.reswidth, height: this.resheight, fullscreen: this.resfullscreen },
                 location: this.location, theme: this.selectedTheme
             });
+            $(this.$el).modal('hide')
         },
     }
 }
