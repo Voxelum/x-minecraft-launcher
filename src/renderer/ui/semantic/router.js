@@ -16,7 +16,7 @@ import ModsList from './components/ModsList'
 import ForgeView from './components/ForgeView'
 
 import CardsButtonGroup from './components/CardsButtonGroup'
-import EditButtonGroup from './components/EditButtonGroup'
+import ProfileSelectedButtonGroup from './components/ProfileSelectedButtonGroup'
 import MarketButtonGroup from './components/MarketButtonGroup'
 
 export default {
@@ -38,7 +38,7 @@ export default {
             name: 'modpack',
             components: {
                 default: ModpackView,
-                buttons: EditButtonGroup,
+                buttons: ProfileSelectedButtonGroup,
             },
             props: {
                 default: true,
@@ -56,7 +56,7 @@ export default {
             name: 'server',
             components: {
                 default: ServerView,
-                buttons: EditButtonGroup,
+                buttons: ProfileSelectedButtonGroup,
             },
             props: {
                 default: true,

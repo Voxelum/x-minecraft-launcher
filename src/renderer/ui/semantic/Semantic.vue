@@ -89,24 +89,27 @@
                 <router-view name='buttons' @modal="showModal" :id="selectedProfileID"></router-view>
             </div>
         </div>
-        <login-modal ref="loginModal"></login-modal>
-        <modpack-modal ref="modpackModal" :defaultAuthor="username" @accept="submitProfile($event, 'modpack')"></modpack-modal>
-        <server-modal ref="serverModal" @accept="submitProfile($event, 'server')"></server-modal>
-        <delete-modal ref="deleteModal" @accept="deleteProfile"></delete-modal>
-        <profile-modal ref="profileModal"></profile-modal>
-        <settings-modal ref="settingsModal"></settings-modal>
+        <div>
+            <login-modal ref="loginModal"></login-modal>
+            <modpack-modal ref="modpackModal"></modpack-modal>
+            <server-modal ref="serverModal"></server-modal>
+            <delete-modal ref="deleteModal"></delete-modal>
+            <profile-modal ref="profileModal"></profile-modal>
+            <settings-modal ref="settingsModal"></settings-modal>
+        </div>
     </div>
 </template>
 
 <script>
 import vue from 'vue'
-import draggable from 'vuedraggable'
 
 import 'static/semantic/semantic.min.css'
 import 'static/semantic/semantic.min.js'
 
+import draggable from 'vuedraggable'
 import Pagination from './components/Pagination'
 import TextComponent from './components/TextComponent'
+import DivHeader from './components/DivHeader'
 
 import NavigationBar from './components/NavigationBar'
 import modals from './components/modals'
@@ -117,6 +120,7 @@ import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 vue.component('pagination', Pagination);
 vue.component('text-component', TextComponent)
 vue.component('draggable', draggable)
+vue.component('div-header', DivHeader)
 
 export default {
     components: {
@@ -124,12 +128,10 @@ export default {
         NavigationBar,
         ...modals
     },
-    data() {
-        return {
-            closing: false,
-            background: ''//'url(imgs/Background1.png)'
-        }
-    },
+    data: () => ({
+        closing: false,
+        background: ''//'url(imgs/Background1.png)'
+    }),
     computed: {
         ...mapGetters('profiles', {
             'selectedProfile': 'selected',
@@ -139,6 +141,7 @@ export default {
         ...mapGetters('auth', ['username', 'skin']),
     },
     mounted(e) {
+        this.$bus.$on('modal', this.showModal)
         if (this.username === '') this.showModal('login')
         $(this.$refs.userDropdown).dropdown({ on: 'hover' })
         $(this.$refs.warningPopup).popup({
@@ -155,9 +158,11 @@ export default {
             createProfile: 'createAndSelect',
             selectProfile: 'select',
             deleteProfile: 'delete',
+            unselect: 'unselect'
         }),
-        ...mapMutations('profiles', ['unselect']),
         showModal(id, args) {
+            console.log(id)
+            console.log(args)
             const modal = this.$refs[id + "Modal"]
             if (modal)
                 modal.show(args)
@@ -166,17 +171,7 @@ export default {
         refresh() {
             this.$refs.view.refresh()
         },
-        close() {
-            require('electron').ipcRenderer.sendSync('exit')
-        },
-        submitProfile(event, type) {
-            if (event.isEdit) {
-                this.$store.commit(`profiles/${this.selectedProfileID}/putAll`, event)
-            } else {
-                event.type = type;
-                this.createProfile({ type, option: event })
-            }
-        },
+        close: () => require('electron').ipcRenderer.sendSync('exit'),
     },
 }
 </script>
