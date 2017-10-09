@@ -9,7 +9,7 @@ import {
 } from 'ts-minecraft'
 
 function onerror(e) {
-    if (e.message.startsWith('Cannot find version ') || e.message.startsWith('No version file for ')) {
+    if (e.message.startsWith('Cannot find version ') || e.message.startsWith('No version file for ') || e.message.startsWith('No version jar for ')) {
         e.type = 'missing.version'
     } else if (e.message === 'Missing library') {
         e.type = 'missing.libraries'
