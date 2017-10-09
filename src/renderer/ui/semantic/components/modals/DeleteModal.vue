@@ -19,18 +19,16 @@
 
 <script>
 export default {
-    data() {
-        return {
-            type: '',
-            id: '',
-        }
-    },
+    data: () => ({
+        type: '',
+        id: '',
+    }),
     mounted() {
         const self = this
         $(this.$el).modal({
             blurring: true,
             onApprove($element) {
-                self.$emit('accept', self.id)
+                self.$store.dispatch('profiles/delete', self.id)
                 return true;
             },
         })

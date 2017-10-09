@@ -1,6 +1,9 @@
 import Vue from 'vue';
 import url from 'url'
 import querystring from 'querystring'
+import VueBus from 'vue-bus'
+
+Vue.use(VueBus)
 
 if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'))

@@ -208,10 +208,10 @@ ipcMain.on('park', (debug) => {
 })
 
 ipcMain.on('restart', () => {
-    parking = false;
     if (logWindow) {
         logWindow.close();
     }
+    parking = false;
     createMainWindow()
 })
 

@@ -22,10 +22,10 @@ export default {
             // this probably is a issue.... 
             // if i delegate to profile's getter; the responsive will fail.
             const errors = []
-            if (state.minecraft.version === '' || state.minecraft.version === undefined || state.minecraft.version === null) errors.push('profile.empty.version')
-            if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.empty.java')
+            if (state.minecraft.version === '' || state.minecraft.version === undefined || state.minecraft.version === null) errors.push('profile.missingversion')
+            if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.nojava')
             if (state.host === '' || state.host === undefined || state.host === null) {
-                errors.push('server.empty.host')
+                errors.push('profile.nohost')
             }
             return errors;
         },

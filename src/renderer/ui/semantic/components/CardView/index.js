@@ -3,6 +3,7 @@ import ModpackCard from './ModpackCard'
 import ServerCard from './ServerCard'
 
 export default {
+    name: 'CardView',
     components: { 'modpack-card': ModpackCard, 'server-card': ServerCard },
     computed: {
         ...vuex.mapGetters('profiles', ['allKeys', 'getByKey']),
@@ -39,7 +40,7 @@ export default {
                         self.$store.dispatch('profiles/select', event);
                     },
                     delete(event) {
-                        self.$store.dispatch('profiles/delete', event);
+                        self.$bus.$emit('modal', 'delete', { id: event.id, type: event.source.type })
                     },
                 },
             }
