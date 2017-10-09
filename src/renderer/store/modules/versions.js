@@ -47,45 +47,44 @@ export default {
         /**
          * 
          * @param {ActionContext} context 
-         * @param {{type?:string, meta:VersionMeta}} payload
+         * @param {VersionMeta} meta
          */
-        download(context, payload) {
-            const { type, meta } = payload
-            // TODO maybe validate paylaod
-            const versionMeta = meta;
-            const id = versionMeta.id;
-            context.commit('updateStatus', { version: versionMeta, status: 'loading' })
-            return context.dispatch('exist', { paths: [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`] }, { root: true })
-                .then(exist => (!exist ? context.dispatch('query', {
-                    service: 'versions',
-                    action: 'downloadClient',
-                    payload: {
-                        meta,
-                        location: context.rootGetters.root,
-                    },
-                }, { root: true }) : undefined))
-                .then(() => {
-                    context.commit('updateStatus', { version: versionMeta, status: 'local' })
-                }, (err) => {
-                    context.commit('updateStatus', { version: versionMeta, status: 'remote' })
-                })
+        async download(context, meta) {
+            const id = meta.id;
+            context.commit('updateStatus', { version: meta, status: 'loading' })
+            let exist = await context.dispatch('exist', { paths: [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`] }, { root: true });
+            if (!exist) {
+                try {
+                    await context.dispatch('query', {
+                        service: 'versions',
+                        action: 'downloadClient',
+                        payload: {
+                            meta,
+                            location: context.rootGetters.root,
+                        },
+                    }, { root: true })
+                } catch (e) { console.warn(e) }
+            }
+            exist = await context.dispatch('exist', { paths: [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`] }, { root: true });
+            if (exist) {
+                context.commit('updateStatus', { version: meta, status: 'local' })
+            } else {
+                context.commit('updateStatus', { version: meta, status: 'remote' })
+            }
         },
         /**
          * Refresh the remote versions cache 
          */
-        refresh(context) {
-            return context.dispatch('query', { service: 'versions', action: 'refresh', payload: context.state.updateTime }, { root: true })
-                .then(remoteVersionList =>
-                    context.dispatch('readFolder', { path: 'versions' }, { root: true })
-                        .then((files) => {
-                            checkversion(remoteVersionList, files)
-                            context.commit('update', remoteVersionList)
-                        }),
-                (err) => {
-                    // network error
-                    throw err
-                },
-            )
+        async refresh(context) {
+            const remoteList = await context.dispatch('query', { service: 'versions', action: 'refresh', payload: context.state.updateTime }, { root: true })
+            const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true })
+            const existed = []
+            for (const file of files) {
+                const exist = await context.dispatch('exist', { paths: [`versions/${file}`, `versions/${file}/${file}.jar`, `versions/${file}/${file}.json`] }, { root: true }); // eslint-disable-line
+                if (exist) existed.push(file)
+            }
+            checkversion(remoteList, existed)
+            context.commit('update', remoteList)
         },
     },
 }

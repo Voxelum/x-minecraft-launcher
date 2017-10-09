@@ -1,10 +1,10 @@
 <template>
     <span>
-        <div class="ui icon right floated inverted button non-moveable" @click="$emit('modal','modpack')">
+        <div class="ui icon right floated inverted button non-moveable" @click="onModpack">
             <i class="plus icon"></i>
             {{$t('modpack.add')}}
         </div>
-        <div class="ui icon right floated inverted button non-moveable" @click="$emit('modal','server')">
+        <div class="ui icon right floated inverted button non-moveable" @click="onServer">
             <i class="plus icon"></i>
             {{$t('server.add')}}
         </div>
@@ -13,7 +13,14 @@
 
 <script>
 export default {
-    
+    methods: {
+        onModpack() {
+            this.$bus.$emit('modal', 'modpack')
+        },
+        onServer() {
+            this.$bus.$emit('modal', 'server')
+        }
+    }
 }
 </script>
 

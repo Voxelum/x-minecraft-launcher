@@ -7,7 +7,7 @@ export default {
      */
     errors: (state, getters, rootState) => {
         const settings = []
-        if (rootState.java.javas.length !== 0) settings.push('setting.install.java')
+        if (!getters.defaultJava) settings.push('setting.nojava')
         const errors = {
         }
         Object.keys(rootState)
