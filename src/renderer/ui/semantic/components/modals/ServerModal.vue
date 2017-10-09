@@ -37,34 +37,39 @@
 export default {
     data() {
         return {
+            profileId: '',
+            isEdit: false,
+
             name: '',
             ip: '',
             port: 25565,
             hasError: false,
-            isEdit: false,
         }
     },
     mounted() {
         const self = this
         $(this.$el).modal({ blurring: true, })
     },
+    computed: {
+        profile() {
+            return this.$store.getters[`profiles/getByKey`](this.profileId)
+        }
+    },
     methods: {
-        show(args) {
-            if (args && args.isEdit) {
-                this.isEdit = true
-                this.ip = args.host;
-                this.port = args.port;
-                this.name = args.name;
+        show(args = {}) {
+            const { isEdit } = args;
+            this.isEdit = isEdit || false;
+            if (this.isEdit) {
+                this.profileId = this.$store.getters['profiles/selectedKey']
+                this.ip = this.profile.host;
+                this.port = this.profile.port;
+                this.name = this.profile.name;
             } else {
-                this.isEdit = false
-                this.hasError = true
                 this.ip = ''
                 this.name = ''
                 this.port = 25565
             }
-            this.$nextTick(() => {
-                $(this.$el).modal('show')
-            })
+            $(this.$el).modal('show')
         },
         accept() {
             if (!this.ip || this.ip === '') {
@@ -72,10 +77,22 @@ export default {
                 return;
             }
             if (!this.port || this.port === '') this.port = '25565'
-            this.$nextTick(() => {
-                $(this.$el).modal('hide')
-            })
-            this.$emit('accept', { name: this.name, host: this.ip, port: this.port, isEdit: this.isEdit })
+
+            $(this.$el).modal('hide')
+            if (this.isEdit) {
+                this.$store.commit(`profiles/${this.profileId}/putAll`, {
+                    name: this.name,
+                    host: this.ip,
+                    port: this.port,
+                })
+            } else {
+                this.$store.commit(`profiles/create`, {
+                    type: 'server',
+                    name: this.name,
+                    host: this.ip,
+                    port: this.port,
+                })
+            }
         },
         enter(event) {
             if (event.keyCode != 13) return
