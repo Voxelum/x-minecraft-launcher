@@ -42,6 +42,7 @@
                 </div>
             </div>
             <div class="ui inverted right floated button" @click="upload">{{$t('save')}}</div>
+            <div class="ui inverted right floated button" @click="discard">{{$t('cancel')}}</div>
         </form>
     </div>
 </template>
@@ -89,6 +90,9 @@ export default {
         },
         updateTheme(theme) {
             this.selectedTheme = theme
+        },
+        discard(){
+            $(this.$el).modal('hide')
         },
         upload(e) {
             this.updateSetting({
