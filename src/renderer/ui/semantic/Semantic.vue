@@ -1,0 +1,146 @@
+<template>
+    <div class="ui celled grid segment" style="margin:0;">
+        <div class="moveable black row">
+            <div class="four wide center aligned middle aligned column">
+                <h1 class="inverted ui header">
+                    ILauncher
+                </h1>
+            </div>
+            <navigation-bar></navigation-bar>
+            <div class="one wide center aligned middle aligned column mon-movable" style="cursor:pointer" :style="{grey: closing}" @mouseout="closing = false" @mouseover="closing = true" @click="close">
+                <i class="large close icon non-moveable" :class="{red: closing}"></i>
+            </div>
+        </div>
+        <div class="row" style="height:500px;" :style="{'background-image' : background}">
+            <div class="four wide middle aligned center aligned column">
+                <user-dropdown></user-dropdown>
+                <skin-view width="210" height="400" :skin="skin"></skin-view>
+            </div>
+            <div class="twelve wide column">
+                <transition name="fade">
+                    <router-view ref="view"></router-view>
+                </transition>
+            </div>
+        </div>
+        <div class="moveable black row" style="height:60px">
+            <div class="four wide center aligned middle aligned column">
+                <div class="ui icon inverted button pointing dropdown non-moveable" @click="showModal('settings')">
+                    <i class="setting icon"></i>
+                </div>
+                <div class="ui icon inverted button non-moveable" @click="refresh">
+                    <i class="refresh icon"></i>
+                </div>
+            </div>
+            <div class="twelve wide middle aligned column">
+                <info-popups></info-popups>
+                <router-view name='buttons' :id="selectedProfileID"></router-view>
+            </div>
+        </div>
+        <modals ref='modals'></modals>
+    </div>
+</template>
+
+<script>
+import vue from 'vue'
+
+import 'static/semantic/semantic.min.css'
+import 'static/semantic/semantic.min.js'
+
+import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
+
+vue.component('pagination', () => import('./components/Pagination'));
+vue.component('text-component', () => import('./components/TextComponent'))
+vue.component('draggable', () => import('vuedraggable'))
+vue.component('div-header', () => import('./components/DivHeader'))
+
+export default {
+    components: {
+        SkinView: () => import('../shared/SkinView'),
+        NavigationBar: () => import('./components/NavigationBar'),
+        Modals: () => import('./components/modals'),
+        InfoPopups: () => import('./components/InfoPopups'),
+        UserDropdown: () => import('./components/UserDropdown')
+    },
+    data: () => ({
+        closing: false,
+        background: ''//'url(imgs/Background1.png)'
+    }),
+    computed: {
+        ...mapGetters('profiles', {
+            'selectedProfile': 'selected',
+            'selectedProfileID': 'selectedKey'
+        }),
+        ...mapGetters('auth', ['username', 'skin']),
+    },
+    mounted() {
+        if (this.username === '') this.$refs.modals.show('login')
+    },
+    methods: {
+        showModal(id, args) { this.$bus.$emit('modal', id, args) },
+        refresh() { this.$bus.$emit('refresh') },
+        close: () => require('electron').ipcRenderer.sendSync('exit'),
+    },
+}
+</script>
+
+<style>
+body {
+    background-color: transparent;
+}
+
+.moveable {
+    -webkit-app-region: drag
+}
+
+.non-moveable {
+    -webkit-app-region: no-drag
+}
+
+body ::-webkit-scrollbar {
+    width: 2px;
+}
+
+ ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+body ::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 5px;
+    border-radius: 10px;
+    /* width: 1px; */
+    background: rgba(0, 0, 0, 0.25);
+}
+
+ ::-webkit-scrollbar-thumb:window-inactive {
+    /* background: rgba(0, 0, 0, 0.2); */
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity .3s ease;
+}
+
+.fade-enter,
+.fade-leave-active {
+    opacity: 0
+}
+
+.child-view {
+    position: absolute;
+    transition: all .3s cubic-bezier(.55, 0, .1, 1);
+}
+
+.slide-left-enter,
+.slide-right-leave-active {
+    opacity: 0;
+    -webkit-transform: translate(30px, 0);
+    transform: translate(30px, 0);
+}
+
+.slide-left-leave-active,
+.slide-right-enter {
+    opacity: 0;
+    -webkit-transform: translate(-30px, 0);
+    transform: translate(-30px, 0);
+}
+</style>

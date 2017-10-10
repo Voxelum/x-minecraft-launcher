@@ -59,18 +59,16 @@ export default {
         ...vuex.mapGetters('auth', {
             defaultAuthor: 'username'
         }),
-        profile() {
-            return this.$store.getters['profiles/selected']
-        }
+        ...vuex.mapGetters('profiles', ['selected', 'selectedKey']),
     },
     methods: {
         show(args = {}) {
             const { isEdit } = args;
             this.isEdit = isEdit || false;
             if (this.isEdit) {
-                this.name = this.profile.name;
-                this.description = this.profile.description;
-                this.author = this.profile.author;
+                this.name = this.selected.name;
+                this.description = this.selected.description;
+                this.author = this.selected.author;
             }
             else {
                 this.name = ''
@@ -86,12 +84,13 @@ export default {
                 return
             }
             if (this.isEdit) {
-                this.$store.commit(`profiles/${this.profileId}/putAll`, {
+                this.$store.commit(`profiles/${this.selectedKey}/putAll`, {
                     name: this.name,
                     author: this.author,
                     description: this.description,
                 })
             } else {
+                console.log('create modpack')
                 this.$store.dispatch(`profiles/create`, {
                     type: 'modpack',
                     option: {
