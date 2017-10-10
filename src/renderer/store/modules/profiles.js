@@ -70,7 +70,7 @@ export default {
                 encoding: 'json',
             }, { root: true })
                 .then(regulize)
-                .then(profile => context.commit('add', { id, moduleData: profile }))
+                .then(profile => context.commit('add', { id, type: profile.type, moduleData: profile }))
         },
         load({ dispatch, commit }, payload) {
             return dispatch('readFolder', { path: 'profiles' }, { root: true })
@@ -121,7 +121,7 @@ export default {
             } = payload
             const id = uuid()
             option.java = option.java || context.rootGetters.defaultJava
-            context.commit('add', { id, moduleData: option })
+            context.commit('add', { id, type, moduleData: option })
             return context.dispatch('saveProfile', { id })
         },
         /**
