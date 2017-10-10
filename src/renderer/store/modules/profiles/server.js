@@ -17,16 +17,17 @@ export default {
     }),
     getters: {
         ...profile.getters,
+        host: state => state.host,
+        port: state => state.port,
+        icon: state => state.icon,
+        status: state => state.status,
+        isLanServer: state => state.isLanServer,
         errors(state) {
-            // const err = profile.getters.errors(state)
-            // this probably is a issue.... 
-            // if i delegate to profile's getter; the responsive will fail.
             const errors = []
-            if (state.minecraft.version === '' || state.minecraft.version === undefined || state.minecraft.version === null) errors.push('profile.missingversion')
-            if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.nojava')
-            if (state.host === '' || state.host === undefined || state.host === null) {
-                errors.push('profile.nohost')
-            }
+            const isNone = obj => obj === '' || obj === undefined || obj == null;
+            if (isNone(state.minecraft.version)) errors.push('profile.missingversion')
+            if (isNone(state.java)) errors.push('profile.nojava')
+            if (isNone(state.host)) errors.push('profile.nohost')
             return errors;
         },
     },
@@ -40,6 +41,7 @@ export default {
         },
         refresh(context, force) {
             if (context.state.status.pingToServer && !force) return Promise.resolve();
+            console.log(`refresh ${force}`)
             context.commit('putAll', { status: ServerStatus.pinging() })
             if (context.state.host === undefined) return Promise.reject('server.host.empty')
             return context.dispatch('query', {

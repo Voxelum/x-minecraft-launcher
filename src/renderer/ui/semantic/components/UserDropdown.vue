@@ -1,5 +1,5 @@
 <template>
-    <h5 class="ui pointing dropdown">
+    <h5 class="ui pointing dropdown" @drag="$event.preventDefault()">
         <i class="user icon"></i>
         {{username}}
         <i class="dropdown icon"></i>
@@ -17,8 +17,8 @@
 <script>
 import { mapGetters } from 'vuex'
 export default {
-    computed:{
-        ...mapGetters('auth',['username']),
+    computed: {
+        ...mapGetters('auth', ['username']),
     },
     mounted() {
         $(this.$el).dropdown({ on: 'hover' })
