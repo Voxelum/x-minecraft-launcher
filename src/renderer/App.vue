@@ -41,7 +41,7 @@ export default {
         ondrop(event) {
             event.preventDefault()
             this.$store.commit('dragover', false)
-            return false;
+            // return false;
         },
     }
 }
