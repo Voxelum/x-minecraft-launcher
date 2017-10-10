@@ -70,6 +70,7 @@ export default {
             for (const p of payload.paths) if (!fs.existsSync(`${context.rootGetters.root}/${p}`)) return false
             return true
         },
+
         /**
          * 
          * @param {ActionContext} context 
@@ -80,7 +81,12 @@ export default {
             const { encoding, onread } = payload;
             path = paths.join(context.rootGetters.root, path)
             if (!fs.existsSync(path)) {
-                if (fallback) return fallback;
+                if (fallback) {
+                    const fallData = fallback
+                    if (typeof fallback === 'object' && !(fallback instanceof Buffer)) fallback = JSON.stringify(fallback);
+                    await fs.writeFile(path, fallback);
+                    return fallData;
+                }
                 throw new Error(`No such file ${path}`);
             }
             if (onread) onread(path);
@@ -97,9 +103,10 @@ export default {
                 }
             } catch (e) {
                 if (fallback) {
+                    const fallData = fallback
                     if (typeof fallback === 'object' && !(fallback instanceof Buffer)) fallback = JSON.stringify(fallback);
                     await fs.writeFile(path, fallback);
-                    return fallback;
+                    return fallData;
                 }
                 throw e;
             }
