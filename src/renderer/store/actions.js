@@ -26,9 +26,16 @@ export default {
         });
     },
     /**
+     * @typedef {Object} Resolution
+     * @property {number} width
+     * @property {number} height 
+     * @property {boolean=} fullscreen 
+     */
+
+    /**
        * 
        * @param {ActionContext} context 
-       * @param {{resolution?:{width:number,height:number,fullscreen?:boolean}, location?:string, theme?:string}} payload 
+       * @param {{resolution?:Resolution, location?:string, theme?:string}} payload 
        */
     updateSetting(context, payload) {
         if (payload.resolution) {

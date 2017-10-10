@@ -26,7 +26,6 @@ export default {
         } else {
             iterator = this.source.iterator;
         }
-        console.log(iterator)
         if (iterator) {
             for (const component of iterator) {
                 const attrs = {}

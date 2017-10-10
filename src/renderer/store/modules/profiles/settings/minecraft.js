@@ -198,7 +198,7 @@ export default {
         async load(context, { id }) {
             const gcString = await context.dispatch('read', {
                 path: `profiles/${id}/options.txt`,
-                fallback: context.rootGetters['settings/defaultOptions'],
+                fallback: {},
                 encoding: 'string',
             }, { root: true });
             const settings = typeof gcString === 'string' ? GameSetting.parse(gcString) : gcString;
