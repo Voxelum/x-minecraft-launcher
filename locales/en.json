@@ -12,6 +12,7 @@
     "login": "Login",
     "summery": "Summery",
     "add": "Add",
+    "cancel": "Cancel",
     "remove": "Remove",
     "!delete": "Delete",
     "Invalid credentials. Invalid username or password.": "Invalid credentials. Invalid username or password.",
@@ -104,6 +105,9 @@
         "add": "Add Modpack",
         "name": "Modpack | Modpacks",
         "edit": "Edit Modpack Info",
+        "error": {
+            "requirename": "Name is required! Please come up a modpack name!"
+        },
         "delete": {
             "name": "Delete the modpack",
             "description": "This will delete all the data about this modpack. Are you sure to do this?"
@@ -114,6 +118,7 @@
         "yes": "Delete",
         "no": "No"
     },
+    "actionforbidden": "Action Forbidden",
     "server": {
         "add": "Add Server",
         "name": "Server | Servers",
@@ -124,6 +129,10 @@
         "port": "Port",
         "edit": "Edit Server Info",
         "motd": "Server MOTD",
+        "error": {
+            "requirehost": "Host IP address is required! Please enter it!",
+            "requirename": "Name is required! Please enter a server name!"
+        },
         "delete": {
             "name": "Delete the server",
             "description": "This will delete all the local data about this server. Are you sure to do this?"
@@ -134,6 +143,8 @@
         }
     },
     "errors.empty": "No error yet",
+    "hardcore": "Hardcore mode",
+    "cheat": "Cheating",
     "renderClouds": {
         "name": "Clouds",
         "true": "Fancy",
