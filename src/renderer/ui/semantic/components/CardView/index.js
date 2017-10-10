@@ -9,12 +9,11 @@ export default {
         ...vuex.mapGetters('profiles', ['allKeys', 'getByKey']),
     },
     created() {
-        this.refresh()
+        this.refresh(false)
+        this.$bus.$on('refresh', this.refresh)
     },
     methods: {
-        refresh() {
-            for (const key of this.allKeys) this.$store.dispatch(`profiles/${key}/refresh`);
-        },
+        refresh(force = true) { for (const key of this.allKeys) this.$store.dispatch(`profiles/${key}/refresh`, force); },
     },
     render(createElement) {
         const getByKey = this.getByKey;
