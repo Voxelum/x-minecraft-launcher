@@ -50,11 +50,9 @@
 <script>
 import { remote } from 'electron'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import ListCell from './ListCell'
-import DivHeader from '../DivHeader'
 
 export default {
-    components: { ListCell, DivHeader },
+    components: { ListCell: () => import('./ListCell') },
     computed: {
         ...mapGetters('repository', ['resourcepacks']),
         unselecting() {
@@ -94,8 +92,10 @@ export default {
             this.openDialog({}).then(self.import)
         },
         ondrop(event) {
-            this.import(event.dataTransfer.files[0].path)
-            event.preventDefault()
+            this.import(Array.from(event.dataTransfer.files).map(f => f.path))
+                .catch((e) => {
+                    console.error(e)
+                })
         },
         dele(hash) {
             this.delete(hash)

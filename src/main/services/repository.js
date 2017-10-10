@@ -35,6 +35,7 @@ async function $import(root, filePath) {
             break;
         } catch (e) { console.warn(e) }
     }
+    if (!domain || !meta) { throw new Error(`Cannot parse ${filePath}.`) }
     const resource = { hash, name, type, meta, domain };
     await fs.ensureDir(path.join(root, 'resources'))
     await fs.writeFile(path.join(root, 'resources', `${resource.hash}${resource.type}`), data);
@@ -72,6 +73,7 @@ export default {
          */
         async import(payload) {
             const { root } = payload;
+            console.log(payload)
             let files = payload.files
             if (!root || !files) throw new Error(`Import require root location, files, and a specific meta type! ${root}, ${files}`)
 
@@ -80,6 +82,17 @@ export default {
 
             return (await Promise.all(files.map(f => $import(root, f))))
                 .filter(res => res !== undefined)
+        },
+
+        /**
+         * 
+         * @param {{root:string, target:string, elements:string[]}} payload 
+         */
+        virtualenv(payload) {
+            const { root, target, elements } = payload;
+            elements.forEach((e) => {
+                path.join(e)
+            })
         },
     },
 }

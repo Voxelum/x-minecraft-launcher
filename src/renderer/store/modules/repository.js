@@ -82,6 +82,7 @@ export default {
          * @param {string[]|string} files 
          */
         import(context, files) {
+            if (files.length === 0) return Promise.resolve();
             return context.dispatch('query',
                 {
                     service: 'repository',
