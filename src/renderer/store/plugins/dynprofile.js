@@ -18,6 +18,7 @@ export default
             const action = rawPaths[rawPaths.length - 1];
             if (type === 'profiles/add') {
                 const { id, moduleData } = payload;
+                const profileType = payload.type;
                 if (!id) {
                     console.error(`Unexpect empty id for adding! @${mutation.type}`)
                     return
@@ -28,7 +29,7 @@ export default
                 }
                 paths.push(id)
                 if (!moduleData.namespaced) moduleData.namespaced = true;
-                const model = moduleData.type === 'modpack' ? modelModpack : modelServer
+                const model = profileType === 'modpack' ? modelModpack : modelServer
                 store.registerModule(paths, mixin(model, moduleData));
                 for (const subMod of Object.keys(settings)) {
                     const mPath = paths.concat([subMod, 'load']).join('/')
