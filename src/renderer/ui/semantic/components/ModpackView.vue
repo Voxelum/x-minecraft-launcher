@@ -1,5 +1,5 @@
 <template>
-    <div class="ui vertically divided grid">
+    <div class="ui vertically divided grid" style="height:105%">
         <div class="row">
             <div class="eight wide column">
                 <div class="ui sizer" style="font-size: 23px;">
@@ -9,7 +9,7 @@
                             <h2 class="ui sub header">
                                 {{$t('author')}}: {{source.author}}
                             </h2>
-                            <h2 id="versionPopup" class="ui sub header">
+                            <h2 ref="versionPopup" class="ui sub header">
                                 {{$tc('version.name', 0)}}: {{source.minecraft.version===''? 'Unselected':source.minecraft.version}}
                             </h2>
                             <version-table-view :id="id"></version-table-view>
@@ -26,23 +26,17 @@
                 </textarea>
             </div>
         </div>
-        <div class="stretched row" style="height:70%">
-            <div class="four wide column">
-                <div class="ui vertical secondary pointing menu">
-                    <div class="header item">{{$t('basic')}}</div>
-                    <a class="active item" data-tab="maps">
-                        {{$tc('map.name', 0)}}
-                    </a>
-                    <a class="item" data-tab="settings">
-                        {{$t('settings')}}
-                    </a>
-                    <a class="item" data-tab="resourcepacks">
-                        {{$tc('resourcepack.name', 0)}}
-                    </a>
-                    <a class="item" data-tab="mods">
-                        {{$tc('mod.name', 0)}}
-                    </a>
-                    <div id="acc" class="ui accordion">
+        <div ref="bar" class="stretched row pushable ui top attached segment" style="border-right-width:0;border-right-color:transparent;border-radius:0px;">
+            <div ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;">
+                <div class="sixteen wide column">
+                    <div class="header item">
+                        {{$t('basic')}}
+                    </div>
+                    <router-link to="gamesettings" class="item" style="border-bottom:0;border-top:0;">{{$t('setting.name')}}</router-link>
+                    <router-link to="maps" class="item"> {{$tc('map.name', 0)}} </router-link>
+                    <router-link to="resourcepacks" class="item" style="border-bottom:0;border-top:0;">{{$tc('resourcepack.name', 0)}}</router-link>
+                    <router-link to="mods" class="item">{{$tc('mod.name', 0)}}</router-link>
+                    <div ref="acc" class="ui accordion">
                         <a class="title header item">
                             {{$t('advanced')}}
                         </a>
@@ -56,26 +50,13 @@
                         </div>
                     </div>
                 </div>
+
             </div>
-            <div class="one wide column"></div>
-            <div class="eleven wide column">
-                <!-- <version-table-view :id="id"></version-table-view> -->
-                <div class="ui active tab" style="height:380px" data-tab="maps">
-                    <maps-list :id="id"></maps-list>
-                </div>
-                <div class="ui tab" style="height:380px" data-tab="settings">
-                    <game-settings :id="id"></game-settings>
-                </div>
-                <div class="ui tab" style="height:380px" data-tab="resourcepacks">
-                    <resource-pack-list :id="id"></resource-pack-list>
-                </div>
-                <div class="ui tab" style="height:380px" data-tab="mods">
-                    <mods-list :id="id"></mods-list>
-                </div>
-                <div class="ui tab" data-tab="forge">
-                </div>
-                <div class="ui tab" data-tab="liteloader">
-                </div>
+            <div class="ui basic circular icon huge button" style="position:absolute; margin:20px;" @click="openBar">
+                <i class="options icon"></i>
+            </div>
+            <div class="pusher ui basic segment padded text container" style="min-height:70%; max-heigth:70%;">
+                <router-view></router-view>
             </div>
         </div>
     </div>
@@ -110,10 +91,19 @@ export default {
             this.$store.dispatch(`profiles/${this.id}/refresh`)
             this.$store.dispatch('versions/refresh')
         },
+        openBar() {
+            $(this.$refs.sidebar).sidebar('toggle')
+        },
     },
     mounted() {
         this.refresh()
-        $('#versionPopup').popup({
+        $(this.$refs.sidebar)
+            .sidebar({
+                context: $(this.$refs.bar),
+                dimPage: false
+            })
+            .sidebar('setting', 'transition', 'overlay')
+        $(this.$refs.versionPopup).popup({
             position: 'bottom left',
             hoverable: true,
             delay: {
@@ -121,8 +111,7 @@ export default {
                 hide: 800
             }
         });
-        $('#acc').accordion()
-        $('.menu .item').tab()
+        $(this.$refs.acc).accordion()
     },
 }
 </script>
