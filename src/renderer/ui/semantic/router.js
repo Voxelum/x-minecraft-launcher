@@ -13,6 +13,7 @@ import Mcmodcn from './components/McmodCn'
 import ResourcePackList from './components/ResourcePackList'
 import GameSettings from './components/GameSettings'
 import ModsList from './components/ModsList'
+import MapsList from './components/MapsList'
 import ForgeView from './components/ForgeView'
 
 import CardsButtonGroup from './components/CardsButtonGroup'
@@ -46,8 +47,38 @@ export default {
             },
             children: [
                 {
+                    path: '',
+                    redirect: 'gamesettings',
+                },
+                {
+                    path: 'resourcepacks',
+                    name: 'resourcepacks',
+                    component: ResourcePackList,
+                    props: true,
+                },
+                {
+                    path: 'gamesettings',
+                    name: 'gamesettings',
+                    component: GameSettings,
+                    props: true,
+                },
+                {
+                    path: 'mods',
+                    name: 'mods',
+                    component: ModsList,
+                    props: true,
+                },
+                {
+                    path: 'forge',
+                    name: 'forge',
+                    component: ForgeView,
+                    props: true,
+                },
+                {
                     path: 'maps',
                     name: 'maps',
+                    component: MapsList,
+                    props: true,
                 },
             ],
         },

@@ -27,36 +27,8 @@
                 <text-component :source="status.serverMOTD" localized="true"></text-component>
             </div>
         </div>
-        <div id="bar" class="stretched row pushable ui top attached segment" style="border-right-width:0;border-right-color:transparent;border-radius:0px;">
-            <!-- <div id="sidebar" class="ui vertical secondary pointing menu sidebar" style="background-color:white;">
-                                                <div class="header item">{{$t('basic')}}</div>
-                                                <a class="active item" data-tab="maps">
-                                                    {{$tc('map.name', 0)}}
-                                                </a>
-                                                <a class="item" data-tab="settings">
-                                                    {{$t('settings')}}
-                                                </a>
-                                                <a class="item" data-tab="resourcepacks">
-                                                    {{$tc('resourcepack.name', 0)}}
-                                                </a>
-                                                <a class="item" data-tab="mods">
-                                                    {{$tc('mod.name', 0)}}
-                                                </a>
-                                                <div id="acc" class="ui accordion">
-                                                    <a class="title header item">
-                                                        {{$t('advanced')}}
-                                                    </a>
-                                                    <div class="content">
-                                                        <a class="item" data-tab="forge">
-                                                            {{$t('forge')}}
-                                                        </a>
-                                                        <a class="item" data-tab="liteloader">
-                                                            {{$t('liteloader')}}
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div> -->
-            <div id="sidebar" ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;">
+        <div ref="bar" class="stretched row pushable ui top attached segment" style="border-right-width:0;border-right-color:transparent;border-radius:0px;">
+            <div ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;">
                 <div class="sixteen wide column">
                     <div class="header item">
                         {{$t('basic')}}
@@ -108,7 +80,7 @@ export default {
     mounted() {
         $(this.$refs.sidebar)
             .sidebar({
-                context: $('#bar'),
+                context: $(this.$refs.bar),
                 dimPage: false
             })
             .sidebar('setting', 'transition', 'overlay')
