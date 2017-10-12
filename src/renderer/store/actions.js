@@ -25,6 +25,17 @@ export default {
                 })
         });
     },
+    saveDialog(context, payload) {
+        return new Promise((resolve, reject) => {
+            remote.dialog.showSaveDialog(
+                remote.BrowserWindow.getFocusedWindow(),
+                payload,
+                (file) => {
+                    file = file || '';
+                    resolve(file)
+                })
+        })
+    },
     /**
      * @typedef {Object} Resolution
      * @property {number} width
