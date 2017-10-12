@@ -46,7 +46,6 @@
                         {{$t('liteloader')}}
                     </a>
                 </div>
-
             </div>
             <div class="ui basic circular icon huge button" style="position:absolute; margin:20px;" @click="openBar">
                 <i class="options icon"></i>
@@ -78,6 +77,8 @@ export default {
         }
     },
     mounted() {
+        if(!this.id) throw new Error('Unexpected state for undefined id!')
+        if(!this.source) throw new Error(`Unexpected undefined state for id ${this.id}!`)
         $(this.$refs.sidebar)
             .sidebar({
                 context: $(this.$refs.bar),
