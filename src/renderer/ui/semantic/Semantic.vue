@@ -17,7 +17,7 @@
                 <skin-view width="210" height="400" :skin="skin"></skin-view>
             </div>
             <div class="twelve wide column">
-                <transition name="fade">
+                <transition name="fade" mode="out-in">
                     <router-view ref="view"></router-view>
                 </transition>
             </div>
@@ -117,11 +117,11 @@ body ::-webkit-scrollbar-thumb {
 
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity .3s ease;
+    transition: opacity .25s ease;
 }
 
 .fade-enter,
-.fade-leave-active {
+.fade-leave-to {
     opacity: 0
 }
 
