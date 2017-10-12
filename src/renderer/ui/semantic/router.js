@@ -52,31 +52,26 @@ export default {
                 },
                 {
                     path: 'resourcepacks',
-                    name: 'resourcepacks',
                     component: ResourcePackList,
                     props: true,
                 },
                 {
                     path: 'gamesettings',
-                    name: 'gamesettings',
                     component: GameSettings,
                     props: true,
                 },
                 {
                     path: 'mods',
-                    name: 'mods',
                     component: ModsList,
                     props: true,
                 },
                 {
                     path: 'forge',
-                    name: 'forge',
                     component: ForgeView,
                     props: true,
                 },
                 {
                     path: 'maps',
-                    name: 'maps',
                     component: MapsList,
                     props: true,
                 },
@@ -100,25 +95,21 @@ export default {
                 },
                 {
                     path: 'resourcepacks',
-                    name: 'resourcepacks',
                     component: ResourcePackList,
                     props: true,
                 },
                 {
                     path: 'gamesettings',
-                    name: 'gamesettings',
                     component: GameSettings,
                     props: true,
                 },
                 {
                     path: 'mods',
-                    name: 'mods',
                     component: ModsList,
                     props: true,
                 },
                 {
                     path: 'forge',
-                    name: 'forge',
                     component: ForgeView,
                     props: true,
                 },

@@ -73,7 +73,6 @@ export default {
          */
         async import(payload) {
             const { root } = payload;
-            console.log(payload)
             let files = payload.files
             if (!root || !files) throw new Error(`Import require root location, files, and a specific meta type! ${root}, ${files}`)
 

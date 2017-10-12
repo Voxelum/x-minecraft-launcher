@@ -33,7 +33,7 @@ export default {
                 Vue.set(state[res.domain], res.hash, res);
             })
         },
-        delete(state, payload) { Vue.delete(state.resources, payload); },
+        remove(state, resource) { Vue.delete(state[resource.domain], resource.hash); },
     },
     actions: {
         /**
@@ -59,13 +59,15 @@ export default {
          * @param {ActionContext} context 
          * @param {string|Resource} resource 
          */
-        delete(context, resource) {
+        remove(context, resource) {
             if (typeof resource === 'string') {
                 resource = context.getters.getResource(resource)
             }
-            context.commit('delete', resource.hash)
-            return context.dispatch('delete', { path: `resources/${resource.hash}.json` }, { root: true })
-                .then(() => context.dispatch('delete', { path: `resources/${resource.hash}${resource.type}` }, { root: true }))
+            context.commit('remove', resource)
+            return Promise.all([
+                context.dispatch('delete', { path: `resources/${resource.hash}.json` }, { root: true }),
+                context.dispatch('delete', { path: `resources/${resource.hash}${resource.type}` }, { root: true }),
+            ])
         },
         /**
         * @param {ActionContext} context 

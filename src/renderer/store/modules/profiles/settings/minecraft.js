@@ -141,7 +141,9 @@ export default {
             // states.name = name;
             // states.version = version;
             for (const key in settings) {
-                if (settings[key] !== undefined && states.settings[key] !== undefined) {
+                if (settings[key] !== undefined
+                    && settings[key] != null
+                    && states.settings[key] !== undefined) {
                     states.settings[key] = settings[key]
                 }
             }
