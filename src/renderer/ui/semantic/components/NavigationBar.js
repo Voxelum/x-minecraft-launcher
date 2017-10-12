@@ -49,6 +49,7 @@ export default {
                     break;
                 case 'modpack':
                 case 'server':
+                    if (splited.length < 3) throw new Error(`Unexpected path ${splited}`)
                     paths.push({ path: `/${splited[0]}/cards`, name: 'home' }, {
                         path: this.path,
                         name: this.$store.state.profiles[splited[2]].name,
