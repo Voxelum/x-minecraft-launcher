@@ -21,18 +21,18 @@
             </div-header>
             <div class="ui flowing popup top left transition hidden">
                 <div class="ui vertical center aligned secondary menu">
-                    <a class="item">
+                    <a class="item" @click="importResourcePack">
                         {{$t('resourcepack.import')}}
                         <i class="plus icon"></i>
                     </a>
-                    <a class="item">
+                    <a class="item" @click="exportResourcePack">
                         {{$t('resourcepack.export')}}
                         <i class="upload icon"></i>
                     </a>
                 </div>
             </div>
             <div class="ui relaxed list">
-                <list-cell v-for="value in unselecting" :key="value.name" :val="value" type="add" @change="add" @delete="dele"></list-cell>
+                <list-cell v-for="value in unselecting" :key="value.name" :val="value" type="add" @change="add" @delete="ondelete"></list-cell>
             </div>
         </div>
         <div class="eight wide column">
@@ -41,7 +41,7 @@
                 {{$t('resourcepack.selected')}}
             </h5>
             <div class="ui relaxed list">
-                <list-cell v-for="value in selecting" :key="value.name" :val="value" type="remove" @change="remove" @moveup="moveup" @movedown="movedown"></list-cell>
+                <list-cell v-for="value in selecting" :key="value.name" :val="value" type="remove" @change="$remove" @moveup="moveup" @movedown="movedown"></list-cell>
             </div>
         </div>
     </div>
@@ -52,14 +52,38 @@ import { remote } from 'electron'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
+    data: () => ({
+        drag: false,
+        isEditing: false,
+    }),
     components: { ListCell: () => import('./ListCell') },
     computed: {
         ...mapGetters('repository', ['resourcepacks']),
-        unselecting() {
-            return this.resourcepacks.filter(e => this.selectingNames.indexOf(e.name) === -1)
+        unselecting: {
+            get() {
+                return this.resourcepacks.filter(e => this.selectingNames.indexOf(e.name) === -1)
+            },
+            set(value,old) {
+                console.log('unselecting')
+                console.log(value)
+
+                // this.resourcepack('remove', value)
+                // this.$store.commit('updateList', value)
+            },
         },
-        selecting() {
-            return this.selectingNames.map(name => this.nameToEntry[name])
+        selecting: {
+            get() {
+                return this.selectingNames.map(name => this.nameToEntry[name])
+            },
+            set(value, old) {
+                console.log('selecting')
+                console.log(value)
+                // this.resourcepack('add', value)
+                // this.$store.commit('updateList', value)
+            },
+        },
+        selectingNames() {
+            return this.$store.getters[`profiles/${this.id}/minecraft/resourcepacks`]
         },
         nameToEntry() {
             const map = {}
@@ -73,23 +97,29 @@ export default {
             }
             return map;
         },
-        selectingNames() {
-            return this.$store.getters[`profiles/${this.id}/minecraft/resourcepacks`]
-        },
+
     },
     methods: {
         ...mapActions(['openDialog']),
-        ...mapActions('repository', ['import', 'delete', 'rename']),
+        ...mapActions('repository', ['import', 'remove', 'rename']),
         resourcepack(action, pack) {
             this.$store.commit(`profiles/${this.id}/minecraft/resourcepack`, { action, pack })
         },
         add(pack) { this.resourcepack('add', pack) },
-        remove(pack) { this.resourcepack('remove', pack) },
+        $remove(pack) { this.resourcepack('remove', pack) },
         moveup(name) { this.resourcepack('moveup', name) },
         movedown(name) { this.resourcepack('movedown', name) },
+        exportResourcePack() {
+            // this.openDialog({}).then(this.import)
+        },
         importResourcePack() {
-            const self = this;
-            this.openDialog({}).then(self.import)
+            this.openDialog({
+                filters: [{ name: 'Resource Packs', extensions: ['zip'] }],
+                properties: ['multiSelections'],
+            }).then((files) => {
+                if (files.length === 0) return;
+                this.import(files)
+            })
         },
         ondrop(event) {
             this.import(Array.from(event.dataTransfer.files).map(f => f.path))
@@ -97,8 +127,8 @@ export default {
                     console.error(e)
                 })
         },
-        dele(hash) {
-            this.delete(hash)
+        ondelete(hash) {
+            this.remove(hash)
         },
     },
     props: ['id'],
