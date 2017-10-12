@@ -41,7 +41,6 @@ export default {
         },
         refresh(context, force) {
             if (context.state.status.pingToServer && !force) return Promise.resolve();
-            console.log(`refresh ${force}`)
             context.commit('putAll', { status: ServerStatus.pinging() })
             if (context.state.host === undefined) return Promise.reject('server.host.empty')
             return context.dispatch('query', {
