@@ -73,7 +73,7 @@ export default {
         ...mapGetters('auth', ['username', 'skin']),
     },
     mounted() {
-        if (this.username === '') this.$refs.modals.show('login')
+        if (this.username === '') this.showModal('login')
     },
     methods: {
         showModal(id, args) { this.$bus.$emit('modal', id, args) },
