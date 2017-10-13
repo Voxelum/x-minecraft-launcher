@@ -33,7 +33,7 @@ if (logger === 'true') {
         v.$store.dispatch('updateJavas')
         v.$store.commit('url', v.$route.fullPath)
         v.$router.afterEach((to, from) => {
-            console.log(to.fullPath)
+            console.log(`${from ? from.fullPath : ''} => ${to.fullPath}`)
             v.$store.commit('url', to.fullPath)
         })
     })

@@ -1,5 +1,6 @@
 import uuid from 'uuid'
 import { ActionContext } from 'vuex'
+import Vue from 'vue'
 import { GameSetting } from 'ts-minecraft'
 import server from './profiles/server'
 import modpack from './profiles/modpack'
@@ -47,7 +48,10 @@ export default {
         },
         select(state, moduleID) {
             const idx = state.all.indexOf(moduleID);
-            if (idx !== -1) state.selected = moduleID;
+            if (idx !== -1) {
+                state.selected = moduleID;
+                Vue.bus.emit('$profile.select', state[moduleID].type, moduleID);
+            }
         },
         add(state, payload) {
             state.all.push(payload.id)
