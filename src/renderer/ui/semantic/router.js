@@ -36,7 +36,6 @@ export default {
         },
         {
             path: 'modpack/:id',
-            name: 'modpack',
             components: {
                 default: ModpackView,
                 buttons: ProfileSelectedButtonGroup,
@@ -79,7 +78,6 @@ export default {
         },
         {
             path: 'server/:id',
-            name: 'server',
             components: {
                 default: ServerView,
                 buttons: ProfileSelectedButtonGroup,

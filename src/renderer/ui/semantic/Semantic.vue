@@ -74,6 +74,10 @@ export default {
     },
     mounted() {
         if (this.username === '') this.showModal('login')
+        this.$bus.$on('$profile.select', (type, id) => {
+            console.log()
+            this.$router.push({ path: `${type}/${id}`});
+        })
     },
     methods: {
         showModal(id, args) { this.$bus.$emit('modal', id, args) },
