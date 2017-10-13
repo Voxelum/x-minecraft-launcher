@@ -78,7 +78,6 @@ export default {
             $(this.$el).modal('show')
         },
         accept() {
-            console.log(this.name)
             if (!this.name || this.name === '') {
                 this.nameError = true;
                 return
@@ -90,7 +89,6 @@ export default {
                     description: this.description,
                 })
             } else {
-                console.log('create modpack')
                 this.$store.dispatch(`profiles/create`, {
                     type: 'modpack',
                     option: {

@@ -1,5 +1,5 @@
 <template>
-    <router-link :to="{ name:'modpack', params: { id: id }}" class="ui card" v-bind:class="{color}" @dragstart.native="$event.preventDefault()" @drag.native="$event.preventDefault()">
+    <div :to="{ path:'modpack', params: { id: id }}" class="ui card" v-bind:class="{color}" @dragstart.native="$event.preventDefault()" @drag.native="$event.preventDefault()">
         <p class="ui top attached label" :data-tooltip="$tc(this.source.type + '.name', 1)" data-inverted="" :data-position="bound? 'bottom center': 'top center'">
             <i class="cubes icon"></i>
             {{this.source.name}}
@@ -20,7 +20,7 @@
         <div class="extra content">
             <i class="user icon"></i> {{this.source.author}}
         </div>
-    </router-link>
+    </div>
 </template>
 <script>
 
@@ -49,7 +49,6 @@ export default {
         del(e) {
             this.$emit('delete', { id: this.id, source: this.source })
             e.preventDefault()
-
         },
     },
     mounted() {
