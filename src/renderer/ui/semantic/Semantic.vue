@@ -76,7 +76,7 @@ export default {
         if (this.username === '') this.showModal('login')
         this.$bus.$on('$profile.select', (type, id) => {
             console.log()
-            this.$router.push({ path: `${type}/${id}`});
+            this.$router.push({ path: `${type}/${id}` });
         })
     },
     methods: {

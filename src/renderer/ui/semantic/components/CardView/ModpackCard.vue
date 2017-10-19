@@ -1,5 +1,5 @@
 <template>
-    <div :to="{ path:'modpack', params: { id: id }}" class="ui card" v-bind:class="{color}" @dragstart.native="$event.preventDefault()" @drag.native="$event.preventDefault()">
+    <div class="ui card" v-bind:class="{color}">
         <p class="ui top attached label" :data-tooltip="$tc(this.source.type + '.name', 1)" data-inverted="" :data-position="bound? 'bottom center': 'top center'">
             <i class="cubes icon"></i>
             {{this.source.name}}
@@ -25,11 +25,9 @@
 <script>
 
 export default {
-    data() {
-        return {
-            hoverDelete: false,
-        }
-    },
+    data: () => ({
+        hoverDelete: false,
+    }),
     computed: {
         version() {
             return this.source.minecraft.version ? this.source.minecraft.version.length != 0 ?
