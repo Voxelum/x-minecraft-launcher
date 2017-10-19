@@ -35,17 +35,18 @@ function findJavaFromRegistry() {
 
     return new Promise((resolve, reject) => {
         childProcess.exec(command, (error, stdout, stderr) => {
-            if (error) reject(error)
-            const set = {}
-            stdout.split(os.EOL).map(item => (os.platform() !== 'win32' ?
-                item.replace(/[\r\n]/g, '') :
-                item.replace(/[\r\n]/g, '').replace(/\\\\/g, '\\').match(/\w(:[\\a-zA-Z0-9 ._]*)/)))
-                .filter(item => item != null && item !== undefined)
-                .map(item => item[0])
-                .map(item => path.join(item, 'bin', 'javaw.exe'))
-                .filter(item => fs.existsSync(item))
-                .forEach((item) => { set[item] = 0 })
-            resolve(set);
+            if (stdout) {
+                const set = {}
+                stdout.split(os.EOL).map(item => (os.platform() !== 'win32' ?
+                    item.replace(/[\r\n]/g, '') :
+                    item.replace(/[\r\n]/g, '').replace(/\\\\/g, '\\').match(/\w(:[\\a-zA-Z0-9 ._]*)/)))
+                    .filter(item => item != null && item !== undefined)
+                    .map(item => (item instanceof Array ? item[0] : item))
+                    .map(item => (os.platform() === 'win32' ? path.join(item, 'bin', 'javaw.exe') : item))
+                    .filter(item => fs.existsSync(item))
+                    .forEach((item) => { set[item] = 0 })
+                resolve(set);
+            }
         });
     });
 }
