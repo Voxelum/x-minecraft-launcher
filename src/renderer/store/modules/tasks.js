@@ -16,14 +16,18 @@ ipcRenderer.on('download-done', ({ file, url, state, byte, total }) => {
 })
 
 class TaskProxy extends EventEmitter {
-    constructor(uuid, id) {
+    constructor(uuid, id, timeout = 10000) {
         super()
         this.id = id;
+
         const handler = (event, type, childPaths, args) => {
             switch (type) {
                 case 'error':
                 case 'finish':
-                    if (childPaths.length[0] === id) ipcRenderer.removeListener(uuid, handler);
+                    if (childPaths.length === 0) {
+                        ipcRenderer.removeListener(uuid, handler);
+                        clearTimeout(this.timeout);
+                    }
                     break;
                 default:
                 case 'update':
@@ -32,6 +36,11 @@ class TaskProxy extends EventEmitter {
             }
             this.emit(type, childPaths, args);
         };
+        this.timeout = setTimeout(() => {
+            ipcRenderer.removeListener(uuid, handler);
+            this.emit('error', [], new Error(`Timeout ${timeout} millisecond`));
+        }, timeout)
+
         ipcRenderer.on(uuid, handler)
     }
 }
