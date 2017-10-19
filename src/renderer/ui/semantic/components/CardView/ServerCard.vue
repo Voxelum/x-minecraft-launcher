@@ -1,11 +1,11 @@
 <template>
-    <div :to="{ path:'server', params: { id: id }}" class="ui card" v-bind:class="{color}" replace @dragstart.native="$event.preventDefault()" @drag.native="$event.preventDefault()">
+    <div class="ui card" @click="onclick" v-bind:class="{color}">
         <p class="ui top attached label" :data-tooltip="$tc(this.source.type + '.name', 1)" data-inverted="" :data-position="bound? 'bottom center': 'top center'">
             <i class="server icon"></i>
             {{this.source.host}}
             <i class="right floated large delete icon" :class="{red:hoverDelete}" @mouseover="hoverDelete=true" @mouseout="hoverDelete=false" @click="del"></i>
         </p>
-        <div class="content" @click="onclick">
+        <div class="content">
             <img :src="this.source.icon" class="right floated ui image">
             <div class="header">
                 {{this.source.name}}
