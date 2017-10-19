@@ -17,8 +17,8 @@ import 'static/semantic/semantic.min.css'
 import 'static/semantic/semantic.min.js'
 
 import { decode } from 'iconv-lite'
-
 import { ipcRenderer } from 'electron'
+
 function message(s, tags) {
     let start = 0
     while (start !== -1) {
@@ -31,6 +31,7 @@ function message(s, tags) {
     }
     return s.replace(':', '').trim();
 }
+
 export default {
     data() {
         return {

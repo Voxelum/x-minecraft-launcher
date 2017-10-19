@@ -72,7 +72,7 @@ export default {
                 children: {},
                 progress: -1,
                 error: '',
-                status: 'prepare',
+                status: 'running',
             });
         },
         errorTask(state, { uuid, paths, error }) {
@@ -110,7 +110,7 @@ export default {
                 children: {},
                 progress: -1,
                 error: '',
-                status: 'prepare',
+                status: 'running',
             }
         },
     },
@@ -118,13 +118,13 @@ export default {
         /**
          * 
          * @param {ActionContext} context 
-         * @param {{service:string, action:string, payload:any}} $payload  
+         * @param {{service:string, action:string, timeout:number, payload:any}} $payload  
          */
         query(context, $payload) {
-            const { service, action, payload } = $payload;
+            const { service, action, payload, timeout } = $payload;
             return new Promise((resolve, reject) => {
                 const id = v4();
-                const task = new TaskProxy(id, `${service}.${action}`)
+                const task = new TaskProxy(id, `${service}.${action}`, timeout)
                 context.dispatch('listenTask', { uuid: id, task })
                 task.on('finish', (paths, result) => { if (paths.length === 0) resolve(result) })
                 task.on('error', (paths, error) => { if (paths.length === 0) reject(error) })
