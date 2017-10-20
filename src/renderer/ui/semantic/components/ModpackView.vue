@@ -47,6 +47,7 @@
                             <a class="item" data-tab="liteloader">
                                 {{$t('liteloader')}}
                             </a>
+                            <router-link to="launchsettings" class="item">Launch Settings</router-link>
                         </div>
                     </div>
                 </div>

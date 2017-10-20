@@ -45,6 +45,7 @@
                     <a class="item">
                         {{$t('liteloader')}}
                     </a>
+                    <router-link to="launchsettings" class="item">Launch Settings</router-link>
                 </div>
             </div>
             <div class="ui basic circular icon huge button" style="position:absolute; margin:20px;" @click="openBar">
