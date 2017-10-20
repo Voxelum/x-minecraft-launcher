@@ -50,6 +50,19 @@ function findJavaFromRegistry() {
         });
     });
 }
+function findMacJavaByWhich(set) {
+    if (os.platform() === 'win32') return set;
+    const childProcess = require('child_process');
+    return new Promise((resolve, reject) => {
+        childProcess.exec('which java', (error, stdout, stderr) => {
+            if (error) reject(error)
+            else if (stdout) {
+                set[stdout.trim()] = 0;
+                resolve(set);
+            }
+        });
+    });
+}
 
 // https://api.github.com/repos/Indexyz/ojrebuild/releases
 async function installJre() {
@@ -128,6 +141,7 @@ export default {
             const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
             if (fs.existsSync(local)) return [local]
             const ret = await findJavaFromRegistry()
+                .then(findMacJavaByWhich)
                 .then(findJavaFromPath)
                 .then(findJavaFromHome)
                 .then(Object.keys);
@@ -137,6 +151,7 @@ export default {
             const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
             if (fs.existsSync(local)) return [local]
             const arr = await findJavaFromRegistry()
+                .then(findMacJavaByWhich)
                 .then(findJavaFromPath)
                 .then(findJavaFromHome)
                 .then(Object.keys)
