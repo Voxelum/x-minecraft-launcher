@@ -18,7 +18,7 @@ import vuex from 'vuex'
 
 export default {
     methods: {
-        ...vuex.mapActions(['addJavas']),
+        ...vuex.mapActions(['addJavas', 'openDialog']),
         popDialog(event){
             // @Assign to phoebe, luca
             // should popup dialog here then collect user selected java path
@@ -26,6 +26,12 @@ export default {
             // const javapath = ...;
             // you should store java path into vuex's store by: 
             // this.addJavas(javapath);
+            this.openDialog({}).then((paths)=>{
+                //after user select, the paths should be the paths...
+            })
+        },
+        selectJava(){
+
         },
     },
 }
