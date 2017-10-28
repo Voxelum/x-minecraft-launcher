@@ -1,6 +1,16 @@
 <template>
     <div>
         <div class="ui segment">
+            <input v-model="vmOptions">
+            Assign to Luca: modify the JVM argments, input (text box)
+        </div>
+        <div class="ui segment">
+            Assign to Luca: modify the launch argments, input (text box)
+        </div>
+        <div class="ui segment">
+            Assign to Luca: save button
+        </div>
+        <div class="ui segment">
             Try to display selected java, maybe here? 
         </div>
         <div class="ui segment">
@@ -17,8 +27,21 @@
 import vuex from 'vuex'
 
 export default {
+    // data: () => ({
+    //     vmOptions: '',
+    //     mcOptions: '',
+    //     minMemory: 0,
+    //     maxMemory: 0,
+    // }),
     methods: {
         ...vuex.mapActions(['addJavas', 'openDialog']),
+        save() {
+            const id = this.$store.getters['profiles/selectedKey']
+            // this.$store.commit('putAll', {
+            //     vmOptions: vmOptions,
+            //     mcOptions: 
+            // })
+        },
         popDialog(event){
             // @Assign to phoebe, luca
             // should popup dialog here then collect user selected java path
