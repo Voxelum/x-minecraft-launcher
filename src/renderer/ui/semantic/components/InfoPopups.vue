@@ -25,15 +25,29 @@
         </div>
         <div class="ui flowing popup transition hidden">
             <div v-if="tasksCount != 0" class="ui middle aligned divided list" style="max-height:300px; min-width:300px; overflow:hidden">
+                <div class="item">
+                    <div class="content">
+                        <div class="header">Ping Server</div>
+                        <div class="description">Pingning server</div>
+                        <div class="ui active progress">
+                            <div class="bar">
+                                <div class="progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div v-for="(moduleTask, index) in runningTasks" :key='index' class="item">
-                    {{moduleTask}}
-                    <!-- <div class="ui middle aligned selection divided list"> -->
-                    <!-- <div v-for="(task, index) of moduleTask" :key="index" class="item"> -->
-                    <!-- {{task.name}} -->
-                    <!-- {{task.progress}} -->
-                    <!-- {{task.status}} -->
-                    <!-- </div> -->
-                    <!-- </div> -->
+                    <i class="task icon"></i>
+                    <div class="content">
+                        <div class="ui basic label">{{moduleTask.status}}</div>
+                        <div class="header">{{$t(moduleTask.id)}}</div>
+                        <!-- <div class="ui progress">
+                            <div class="bar">
+                                <div class="progress"></div>
+                            </div>
+                            <div class="label">Uploading Files</div>
+                        </div> -->
+                    </div>
                 </div>
             </div>
             <div v-else>
@@ -44,31 +58,30 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 export default {
-    computed: {
-        ...mapGetters(['errors', 'runningTasks', 'errorsCount', 'tasksCount']),
-    },
-    mounted() {
-        $(this.$refs.warningPopup).popup({
-            hoverable: true,
-            position: 'top center',
-            delay: {
-                show: 300,
-            },
-            onShow() {
-
-            }
-        })
-        $(this.$refs.taskPopup).popup({
-            hoverable: true,
-            position: 'top center',
-            delay: {
-                show: 300,
-            },
-        })
-    },
-}
+  computed: {
+    ...mapGetters(["errors", "runningTasks", "errorsCount", "tasksCount"])
+  },
+  mounted() {
+      $('.progress').progress();
+    $(this.$refs.warningPopup).popup({
+      hoverable: true,
+      position: "top center",
+      delay: {
+        show: 300
+      },
+      onShow() {}
+    });
+    $(this.$refs.taskPopup).popup({
+      hoverable: true,
+      position: "top center",
+      delay: {
+        show: 300
+      }
+    });
+  }
+};
 </script>
 
 <style>

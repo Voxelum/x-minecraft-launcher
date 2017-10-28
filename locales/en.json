@@ -49,6 +49,9 @@
         "fullscreen": "Fullscreen"
     },
     "launch": "Launch",
+    "tasks": {
+        "empty": "No Running Tasks"
+    },
     "version": {
         "name": "Version | Versions",
         "prepare": "Preparing Files",
