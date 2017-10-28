@@ -1,15 +1,14 @@
 <template>
-    <div>
-        <div class="ui segment">
-            Try to display selected java, maybe here? 
+    <div class="ui form">
+        <div class="field">
+            <label>JVM Argument</label>
+            <input type="text" name="first-name" >
         </div>
-        <div class="ui segment">
-            Here should display the list of existing javas
+        <div class="field">
+            <label>Minecraft Argument</label>
+            <input type="text" name="last-name" >
         </div>
-        <div class="ui icon button" @click="popDialog">
-            After this button click, it should popup a dialog
-            <i class="add icon"></i>
-        </div>
+        <button class="ui button" type="submit" @click="save">Save</button>
     </div>
 </template>
 
@@ -17,7 +16,21 @@
 import vuex from 'vuex'
 
 export default {
+    computed:{
+        ...vuex.mapGetters('profiles', {
+            id: "selectedKey",
+        }),
+        vmOptions(){
+            return this.$store.getters[`profiles/${id}/vmOptions`]
+        },
+        mcOptions(){
+            return this.$store.getters[`profiles/${id}/mcOptions`] 
+        }
+    },
     methods: {
+        save(){
+            
+        },
         ...vuex.mapActions(['addJavas', 'openDialog']),
         popDialog(event){
             // @Assign to phoebe, luca

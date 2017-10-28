@@ -20,6 +20,8 @@ export default {
             return errors
         },
         versoin: state => state.minecraft.version,
+        vmOptions: state => state.vmOptions,
+        mcOptions: state => state.mcOptions,
         language: (state, gets) => gets['minecraft/options'].lang,
     },
     mutations: {
