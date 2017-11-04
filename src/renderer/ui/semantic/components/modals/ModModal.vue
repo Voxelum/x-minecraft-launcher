@@ -17,10 +17,10 @@
         <div ref = 'a' class="ui accordion">
             <div class="title">
             <i class="dropdown icon"></i>
-            A
+            Luca is genius?
             </div>
             <div class="content">
-            <p class="transition hidden"> aaa </p>
+            <p class="transition hidden"> yes! </p>
             </div>  
         </div>
         
