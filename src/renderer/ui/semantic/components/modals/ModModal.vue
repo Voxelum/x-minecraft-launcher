@@ -40,7 +40,12 @@
 </template>
 
 <script>
+import ModDetail from '../ModDetail'
 export default {
+    components:{
+        ModDetail
+    },
+
     methods: {
         show() {
             $(this.$el).modal("show");
