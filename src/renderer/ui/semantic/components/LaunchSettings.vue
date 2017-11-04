@@ -28,6 +28,12 @@
             </div>
         </div>
         <button class="ui button" type="submit" @click="save">Save</button>
+        <div class="ui cookie nag">
+            <span class="title">
+                Successfully saved!
+            </span>
+            <i class="close icon"></i>
+        </div>
     </div>
         
 </template>
@@ -37,13 +43,13 @@ import vuex from "vuex";
 
 export default {
       mounted() {
-    $(this.$refs.path).dropdown({
-      onChange: function(value, text, $selectedItem) {
-        console.log(value);
-        // custom action
-      }
-    });
-  },
+        $(this.$refs.path).dropdown({
+        onChange: function(value, text, $selectedItem) {
+            console.log(value);
+            // custom action
+        }
+        });
+    },
     computed:{
         ...vuex.mapGetters('profiles', {
             id: "selectedKey",
@@ -58,7 +64,7 @@ export default {
     },
     methods: {
         save(){
-            
+           $('.cookie.nag').nag('show'); 
         },
         ...vuex.mapActions(["addJavas", "openDialog"]),
         popDialog(event) {
