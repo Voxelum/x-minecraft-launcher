@@ -2,6 +2,7 @@
     <div class="ui modal">
     <i class="close icon"></i>
     <div class="header">
+        <mod-detail></mod-detail>
         Profile Picture
     </div>
     <div class="image content">
@@ -58,7 +59,12 @@
 </template>
 
 <script>
+import ModDetail from '../ModDetail'
 export default {
+    components:{
+        ModDetail
+    },
+
     methods: {
         show() {
             $(this.$el).modal("show");
