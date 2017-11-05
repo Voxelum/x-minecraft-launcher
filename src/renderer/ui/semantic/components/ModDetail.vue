@@ -1,22 +1,24 @@
 <template>
     <div class="ui items">
         <div class="item">
-            <a class="ui small image">
-                <img>
-            </a>
+            <div class="image">
+                <img src="/images/wireframe/image.png">
+            </div>
             <div class="content">
-                <a class="header"><b><font size='14'>Mod Tittle</font></b></a>
+                <a class="header">Header</a>
+                <div class="meta">
+                    <span>Description</span>
+                </div>
                 <div class="description">
-                    <p>{{mod.modid}}</p>
-                    <p>{{mod.name}}</p>
-                    <p>{{mod.authors}}</p>
                     <p>{{mod.description}}</p>
+                </div>
+                <div class="extra">
+                    Additional Details
                 </div>
             </div>
         </div>
     </div>
 </template>
-
 <script>
 export default {
     data: () => ({
