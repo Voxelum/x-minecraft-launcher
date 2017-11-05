@@ -5,12 +5,10 @@
                 <img src="/images/wireframe/image.png">
             </div>
             <div class="content">
-                <a class="header">Header</a>
+                <a class="header"><font size='15'>Header</font></a>
+                <span>arthor name</span>
                 <div class="meta">
-                    <span>Description</span>
-                </div>
-                <div class="description">
-                    <p>{{mod.description}}</p>
+                    <span><font size='2'>Real-time mapping in-game or your browser as you explore.</font></span>
                 </div>
                 <div class="extra">
                     Additional Details
