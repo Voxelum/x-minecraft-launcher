@@ -8,46 +8,47 @@
 
             <div class="ui divided items">
                 <li class="item" v-for="cate in Object.keys(categories)" :key="cate">
-                        <div class="content">
-                            <h3 class="header">{{cate}}</h3>
-                            <div class="item">comment: </div>
-                            {{categories[cate].comment}}
-                            <div ref='a' class="ui accordion">
-                                <div class="title">
-                                    <i class="dropdown icon"></i>
-                                    properties
+                    <div class="content">
+                        <h3 class="header">{{cate}}</h3>
+                        <div class="item">comment: {{categories[cate].comment}}</div>
 
-                                </div>
-                                <div class="content">
-                                    <li v-for="item in Object.values(categories[cate].properties)" :key="item">
-                                        {{item.name}}
-                                    </li>
+                        <div ref='a' class="ui accordion">
+                            <div class="title">
+                                <i class="dropdown icon"></i>
+                                properties
 
-                                    <!-- <p class="transition hidden"> name: "hp", type: "I", comment: "hp", value: 7 </p>
-                                                            <p class="transition hidden"> name: "hp", type: "I", comment: "hp", value: 6 </p> -->
+                            </div>
+                            <div class="content">
+                                <div class="ui list">
+                                    <div class="item" v-for="item in Object.values(categories[cate].properties)" :key="item.name">
+                                        <!-- <i class="map marker icon"></i> -->
+                                        <div class="content">
+                                            <span class="header">
+                                                <span class="ui label">{{item.comment}}</span>
+                                            </span>
+                                            <div class="description" style="padding-top:10px;padding-bottom:10px">
+                                                <div class="ui labeled input">
+                                                    <div class="ui green label">
+                                                        {{item.type}}
+                                                    </div>
+                                                    <div class="ui label">
+                                                        {{item.name}}
+                                                    </div>
+                                                    <input type="text" :value="item.value">
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
                                 </div>
+
                             </div>
                         </div>
+                    </div>
 
                 </li>
             </div>
-
-            <!-- <div class="item">comment</div> -->
-
-            <!-- <div ref='a' class="ui accordion">
-                                                    <div class="title">
-                                                        <i class="dropdown icon"></i>
-                                                        properties
-
-                                                    </div>
-                                                    <div class="content">
-                                                        <!-- <li v-for="cate in Object.keys(categories)" :key="cate">
-                                                                {{ categories[cate].properties[0].comment }}
-                                                            </li> -->
-            <!-- <p class="transition hidden"> name: "hp", type: "I", comment: "hp", value: 7 </p>
-                                                                <p class="transition hidden"> name: "hp", type: "I", comment: "hp", value: 6 </p> -->
-            <!-- </div>
-                                                </div> -->
 
         </div>
         <div class="actions">
@@ -79,36 +80,36 @@ export default {
     },
     data: () => ({
         categories: {
-            cateB: {
-                comment: "lll",
-                properties: [
-                    {
-                        name: "hp",
-                        type: "I",
-                        comment: "hp",
-                        value: 1
-                    },
-                    {
-                        name: "hp",
-                        type: "I",
-                        comment: "hp",
-                        value: 2
-                    }
-                ]
-            },
             cateA: {
                 comment: "lll",
                 properties: [
                     {
                         name: "hp",
                         type: "I",
-                        comment: "hp",
+                        comment: "...",
+                        value: 1
+                    },
+                    {
+                        name: "hp",
+                        type: "I",
+                        comment: "...",
+                        value: 2
+                    }
+                ]
+            },
+            cateB: {
+                comment: "lll",
+                properties: [
+                    {
+                        name: "hp",
+                        type: "I",
+                        comment: "...",
                         value: 7
                     },
                     {
                         name: "hp",
                         type: "I",
-                        comment: "hp",
+                        comment: "...",
                         value: 6
                     }
                 ]
