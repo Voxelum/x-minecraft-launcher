@@ -2,7 +2,7 @@
     <div class="ui modal">
         <i class="close icon"></i>
         <div class="header">
-            Profile Picture
+            Profile Picture <mod-detail></mod-detail>
         </div>
             <div class="image content">
 
