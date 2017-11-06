@@ -15,6 +15,7 @@ import GameSettings from './components/GameSettings'
 import ModsList from './components/ModsList'
 import MapsList from './components/MapsList'
 import ForgeView from './components/ForgeView'
+import LaunchSettings from './components/LaunchSettings'
 
 import CardsButtonGroup from './components/CardsButtonGroup'
 import ProfileSelectedButtonGroup from './components/ProfileSelectedButtonGroup'
@@ -74,6 +75,10 @@ export default {
                     component: MapsList,
                     props: true,
                 },
+                {
+                    path: 'launchsettings',
+                    component: LaunchSettings,
+                },
             ],
         },
         {
@@ -110,6 +115,10 @@ export default {
                     path: 'forge',
                     component: ForgeView,
                     props: true,
+                },
+                {
+                    path: 'launchsettings',
+                    component: LaunchSettings,
                 },
             ],
         },
