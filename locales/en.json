@@ -86,7 +86,7 @@
         "name": "Sign Up"
     },
     "user": {
-        "signup": "Singup",
+        "signup": "Sign up",
         "profile": "Profile",
         "logout": "Logout"
     },
