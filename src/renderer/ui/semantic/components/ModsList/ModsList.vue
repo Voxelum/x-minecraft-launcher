@@ -1,6 +1,9 @@
 <template>
     <div class="ui center aligned middle aligned basic segment container" v-if="values.length===0" @drop="ondrop" style="height:100%">
         <br>
+        <div class="ui button" @click="$bus.$emit('modal', 'mod')">
+            Test
+        </div>
         <h2 class="ui icon header">
             <i class="game icon"></i>
             <div class="sub header">{{$t('mod.hint')}}</div>
