@@ -5,7 +5,8 @@ export default {
     },
     getters: {
         javas: state => state.javas,
-        defaultJava: state => (state.javas.length !== 0 ? state.javas[0] : undefined),
+        defaultJava: state => 
+            (state.javas.length !== 0 ? state.javas[state.javas.length - 1] : undefined),
     },
     mutations: {
         javas(state, javas) {
@@ -13,6 +14,9 @@ export default {
         },
     },
     actions: {
+        addJavas(context, java) {
+            context.commit('javas', context.getters.javas.concat(java))
+        },
         /**
          * scan local java locations and cache
          */
