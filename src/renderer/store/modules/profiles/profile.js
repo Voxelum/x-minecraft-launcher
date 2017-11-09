@@ -25,13 +25,25 @@ export default {
         language: (state, gets) => gets['minecraft/options'].lang,
     },
     mutations: {
-        edit(state, option) {
-        },
         putAll(state, option) {
             Object.keys(option)
                 .filter(key => key !== 'type')
                 .forEach((key) => { state[key] = option[key] })
         },
     },
-    actions: {},
+    actions: {
+        edit(context, option) {
+            const keys = Object.keys(option);
+            if (keys.length === 0) return;
+            let changed = false;
+            for (const key of keys) {
+                if (context.state[key]) {
+                    if (context.state[key] !== option[key]) {
+                        changed = true;
+                    }
+                }
+            }
+            if (changed) context.commit('putAll', option)
+        },
+    },
 }
