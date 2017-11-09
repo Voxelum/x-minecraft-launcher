@@ -9,11 +9,14 @@ const PROFILE_NAME = 'profile.json'
 const PROFILES_NAEM = 'profiles.json'
 
 function regulize(content) {
+    console.log('regulize')
+    console.log(content)
     content.resourcepacks = content.resourcepacks || []
     content.resolution = content.resolution || { width: 800, height: 400 }
     content.mods = content.mods || []
     content.vmOptions = content.vmOptions || []
     content.mcOptions = content.mcOptions || []
+    console.log(content)
     return content
 }
 
@@ -75,6 +78,7 @@ export default {
             }, { root: true })
                 .then(regulize)
                 .then(profile => context.commit('add', { id, type: profile.type, moduleData: profile }))
+                .catch(e => undefined)
         },
         load({ dispatch, commit }, payload) {
             return dispatch('readFolder', { path: 'profiles' }, { root: true })
