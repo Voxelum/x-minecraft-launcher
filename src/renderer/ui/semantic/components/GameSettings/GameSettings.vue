@@ -2,6 +2,7 @@
     <div class="">
         <h5 class="ui horizontal divider header">Critical graphic</h5>
         <options-group :options="criticalGraphics" :id="id"></options-group>
+        <h5 class="ui horizontal divider header">Hot key</h5>
     </div>
 </template>
 
