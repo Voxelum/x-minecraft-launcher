@@ -33,6 +33,7 @@ export default {
     },
     mutations: profile.mutations,
     actions: {
+        ...profile.actions,
         serialize(context, payload) {
             return JSON.stringify(context.state, (key, value) => {
                 if (key === 'settings' || key === 'maps' || key === 'status') return undefined;
