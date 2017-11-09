@@ -1,113 +1,102 @@
 <template>
-    <div class="ui form">
-        <div class="field">
-            <label>JVM Argument</label>
-            <input type="text" name="first-name" >
-        </div>
-        <div class="field">
-            <label>Minecraft Argument</label>
-            <input type="text" name="last-name" >
-    </div>
-            
-        <div class="fields">
-            <div class="ui inline field">
-                <label>Java</label>
-                <div ref="path" class="ui selection dropdown" style="min-width:400px">
-                    <input type="hidden" name="java path">
-                        <i class="dropdown icon"></i>
-                    <div class="default text">Java path</div>
-                    <div class="menu">
-                        <li class="item" v-for="value in javas" :key="value">
-                            {{value}}
-                        </li>
+    <div>
+        <div class="ui form">
+            <div class="field">
+                <label>JVM Argument</label>
+                <labeled-input :labels="vmOptions" @dellabel="delVM" @addlabel="addVM"></labeled-input>
+            </div>
+            <div class="field">
+                <label>Minecraft Argument</label @dellabel="delMC" @addlabel="addMC">
+                <labeled-input :labels="mcOptions"></labeled-input>
+            </div>
+            <div class="fields">
+                <div class="ui field">
+                    <label>Java</label>
+                    <div class="ui grid">
+                        <div class="ui thirteen wide column">
+                            <div ref="path" class="ui selection dropdown" style="min-width:370px">
+                                <input type="hidden" name="java path">
+                                <i class="dropdown icon"></i>
+                                <div class="default text">{{javaPath}}</div>
+                                <div class="menu">
+                                    <li class="item" v-for="value in javas" :key="value">
+                                        {{value}}
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui column">
+                            <div class="ui icon button" @click="popDialog">
+                                <i class="add icon"></i>
+                            </div>
+                        </div>
+                        <div class="ui column">
+                            <div class="ui icon button" @click="popDialog">
+                                <i class="remove icon"></i>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="ui icon button" @click="popDialog">
-                    <i class="add icon"></i>
                 </div>
             </div>
         </div>
-        <button class="ui button" type="submit" @click="save">Save</button>
-        <div class="ui cookie nag">
-            <span class="title">
-                Successfully saved!
-            </span>
-            <i class="close icon"></i>
-        </div>
     </div>
-        
 </template>
 
 <script>
 import vuex from "vuex";
+import LabeledInput from './LabeledInput'
 
 export default {
-<<<<<<< HEAD
-    // data: () => ({
-    //     vmOptions: '',
-    //     mcOptions: '',
-    //     minMemory: 0,
-    //     maxMemory: 0,
-    // }),
-    methods: {
-        ...vuex.mapActions(['addJavas', 'openDialog']),
-        save() {
-            const id = this.$store.getters['profiles/selectedKey']
-            // this.$store.commit('putAll', {
-            //     vmOptions: vmOptions,
-            //     mcOptions: 
-            // })
-        },
-        popDialog(event){
-            // @Assign to phoebe, luca
-            // should popup dialog here then collect user selected java path
-            // suppose you get the java path store here: 
-            // const javapath = ...;
-            // you should store java path into vuex's store by: 
-            // this.addJavas(javapath);
-            this.openDialog({}).then((paths)=>{
-=======
-      mounted() {
+    components: { LabeledInput },
+    data: () => ({
+        state: 'nochange',
+        javaPath: '',
+    }),
+    mounted() {
         $(this.$refs.path).dropdown({
-        onChange: function(value, text, $selectedItem) {
-            console.log(value);
-            // custom action
-        }
+            onChange: function (value, text, $selectedItem) {
+                console.log(value);
+                // custom action
+            }
         });
     },
-    computed:{
+    computed: {
         ...vuex.mapGetters('profiles', {
             id: "selectedKey",
         }),
-         ...vuex.mapGetters(["javas"]),
-        vmOptions(){
-            return this.$store.getters[`profiles/${id}/vmOptions`]
+        ...vuex.mapGetters(["javas"]),
+        vmOptions() {
+            return this.$store.getters[`profiles/${this.id}/vmOptions`]
         },
-        mcOptions(){
-            return this.$store.getters[`profiles/${id}/mcOptions`] 
+        mcOptions() {
+            return this.$store.getters[`profiles/${this.id}/mcOptions`]
         }
     },
     methods: {
-        save(){
-           $('.cookie.nag').nag('show'); 
-        },
         ...vuex.mapActions(["addJavas", "openDialog"]),
+        addVM(arg) {
+            this.$store.dispatch(`profiles/${this.id}/edit`,
+                { vmOptions: [...this.vmOptions, arg] })
+        },
+        delVM(arg) {
+            this.$store.dispatch(`profiles/${this.id}/edit`,
+                { vmOptions: this.vmOptions.filter(a => a !== arg) })
+        },
+        addMC(arg) {
+            this.$store.dispatch(`profiles/${this.id}/edit`,
+                { mcOptions: [...this.mcOptions, arg] })
+        },
+        delMC(arg) {
+            this.$store.dispatch(`profiles/${this.id}/edit`,
+                { mcOptions: this.mcOptions.filter(a => a !== arg) })
+        },
         popDialog(event) {
-        // @Assign to phoebe, luca
-        // should popup dialog here then collect user selected java path
-        // suppose you get the java path store here:
-        // const javapath = ...;
-        // you should store java path into vuex's store by:
-        // this.addJavas(javapath);
             this.openDialog({}).then(paths => {
                 this.addJavas(paths[0]);
-                console.log(paths[0]);
->>>>>>> 9adde1f8d51a3875133b1d251677bfd1ae19efba
-                //after user select, the paths should be the paths...
             });
         },
 
-        selectJava(){
+        selectJava() {
 
         },
     }
