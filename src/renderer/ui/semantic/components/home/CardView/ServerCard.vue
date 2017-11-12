@@ -1,41 +1,39 @@
 <template>
     <div class="ui card" v-bind:class="{color}">
         <p class="ui top attached label" :data-tooltip="$tc(this.source.type + '.name', 1)" data-inverted="" :data-position="bound? 'bottom center': 'top center'">
-            <i class="cubes icon"></i>
-            {{this.source.name}}
+            <i class="server icon"></i>
+            {{this.source.host}}
             <i class="right floated large delete icon" :class="{red:hoverDelete}" @mouseover="hoverDelete=true" @mouseout="hoverDelete=false" @click="del"></i>
         </p>
         <div class="content" @click="onclick">
-            <img v-if="this.source.icon" :src="this.source.icon" class="right floated ui image">
+            <img :src="this.source.icon" class="right floated ui image">
             <div class="header">
                 {{this.source.name}}
             </div>
             <div class="meta">
-                {{this.version}}
+                <text-component :source="source.status.gameVersion" styled="false"></text-component>
+                <!-- <span class="date">{{this.source.createdDate}}</span> -->
             </div>
             <div class="description">
-                {{this.description}}
+                <text-component :source="source.status.serverMOTD"></text-component>
             </div>
         </div>
         <div class="extra content">
-            <i class="user icon"></i> {{this.source.author}}
+            <span>
+                <i class="users icon"></i> {{this.source.status.onlinePlayers}} / {{this.source.status.capacity}}</span>
+            <div class="right floated">
+                <i class="signal icon"></i>
+                {{this.source.status ? (this.source.status.pingToServer ||-1)+" ms":'Cannot connected'}}
+            </div>
         </div>
     </div>
 </template>
-<script>
 
+<script>
 export default {
-    data: () => ({
-        hoverDelete: false,
-    }),
-    computed: {
-        version() {
-            return this.source.minecraft.version ? this.source.minecraft.version.length != 0 ?
-                this.source.minecraft.version : "unknown" : "unknown"
-        },
-        description() {
-            return this.source.description ? this.source.description != 0 ?
-                this.source.description : "No description yet." : "No description yet."
+    data() {
+        return {
+            hoverDelete: false,
         }
     },
     name: 'profile-card',
@@ -45,7 +43,7 @@ export default {
             this.$emit('select', this.id, this.source)
         },
         del(e) {
-            this.$emit('delete', { id: this.id, source: this.source })
+            this.$emit('delete', this.id, this.source)
             e.preventDefault()
         },
     },

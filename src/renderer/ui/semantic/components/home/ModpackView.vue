@@ -67,14 +67,13 @@
 import { mapGetters, mapActions, mapState } from 'vuex'
 import VersionTableView from './VersionTableView'
 import ResourcePackList from './ResourcePackList'
-import TextComponent from './TextComponent'
 import GameSettings from './GameSettings'
 import MapsList from './MapsList'
 import ModsList from './ModsList'
 
 export default {
     components: {
-        VersionTableView, ResourcePackList, TextComponent,
+        VersionTableView, ResourcePackList, 
         GameSettings, MapsList, ModsList
     },
     computed: {

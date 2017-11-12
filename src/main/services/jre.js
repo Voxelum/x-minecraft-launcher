@@ -67,7 +67,14 @@ function findMacJavaByWhich(set) {
 // https://api.github.com/repos/Indexyz/ojrebuild/releases
 async function installJre() {
     const info = await new Promise((resolve, reject) => {
-        const req = net.request('https://api.github.com/repos/Indexyz/ojrebuild/releases')
+        const req = net.request({
+            method: 'GET',
+            protocol: 'https:',
+            hostname: 'api.github.com',
+            path: '/repos/Indexyz/ojrebuild/releases',
+        })
+        req.setHeader('User-Agent', 'ILauncher')
+        req.end();
         let infojson = ''
         req.on('response', (response) => {
             response.on('data', (data) => {
@@ -76,7 +83,7 @@ async function installJre() {
             response.on('end', () => {
                 resolve(JSON.parse(infojson))
             })
-            response.on('error', () => {
+            response.on('error', (e) => {
                 console.error(`${response.headers}`);
             })
         })
@@ -118,18 +125,24 @@ async function installJre() {
         })[0]
     const splt = downURL.split('/');
     const tempFileLoc = path.join(app.getPath('temp'), splt[splt.length - 1]);
+    console.log('start download')
+    console.log(tempFileLoc);
     await fs.ensureFile(tempFileLoc)
+    console.log(`download url ${downURL}`)
     await download(downURL, tempFileLoc);
     const jreRoot = path.join(app.getPath('userData'), 'jre')
+    console.log(`jreRoot ${jreRoot}`)
     const zip = await new Zip().loadAsync(await fs.readFile())
     const arr = []
     zip.forEach((name, entry) => {
+        console.log(`unzip ${name}`)
         const target = path.resolve(jreRoot, name)
         arr.push(entry.async('nodebuffer')
             .then(buf => fs.ensureFile(target).then(() => buf))
             .then(buf => fs.writeFile(target, buf)))
     })
     await Promise.all(arr);
+    console.log('deleting temp')
     await fs.unlink(tempFileLoc)
 }
 

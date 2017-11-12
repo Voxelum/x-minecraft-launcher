@@ -58,12 +58,13 @@ export default {
     }),
     components: { ListCell: () => import('./ListCell') },
     computed: {
+        id() { return this.$route.params.id },
         ...mapGetters('repository', ['resourcepacks']),
         unselecting: {
             get() {
                 return this.resourcepacks.filter(e => this.selectingNames.indexOf(e.name) === -1)
             },
-            set(value,old) {
+            set(value, old) {
                 console.log('unselecting')
                 console.log(value)
 
@@ -131,7 +132,6 @@ export default {
             this.remove(hash)
         },
     },
-    props: ['id'],
     mounted() {
         $('#resourcepackList .item').dimmer({ on: 'hover' })
     },

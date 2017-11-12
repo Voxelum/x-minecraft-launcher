@@ -8,21 +8,21 @@
 
 import { mapState } from 'vuex'
 export default {
-    watch: {
-        theme() {
-            this.$router.replace(`/${this.theme}`)
-        }
-    },
     computed: {
         ...mapState(['theme'])
     },
     beforeMount() {
-        this.$router.replace(`/${this.theme}`)
+        let route = localStorage.getItem('route');
+        if (route && route !== '/') {
+            this.$router.replace(route)
+        } else {
+            this.$router.replace(`/${this.theme}`)
+        }
     },
     mounted() {
         let dragTimer;
         const store = this.$store
-        $(document).on('dragover', function(e) {
+        $(document).on('dragover', function (e) {
             e.preventDefault()
             var dt = e.originalEvent.dataTransfer;
             if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1
@@ -31,8 +31,8 @@ export default {
                 window.clearTimeout(dragTimer);
             }
         });
-        $(document).on('dragleave', function(e) {
-            dragTimer = window.setTimeout(function() {
+        $(document).on('dragleave', function (e) {
+            dragTimer = window.setTimeout(function () {
                 store.commit('dragover', false);
             }, 25);
         });
@@ -49,11 +49,11 @@ export default {
 
 <style>
 .noselect {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 </style>
