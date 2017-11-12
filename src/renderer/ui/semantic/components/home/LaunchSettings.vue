@@ -18,7 +18,7 @@
                             <i class="dropdown icon"></i>
                             <div class="text">{{selectedJava}}</div>
                             <div class="menu">
-                                <li class="item" v-for="value in javas" :key="value">
+                                <li class="item" v-for="value in javas" :key="value" @click="selectJava(value)">
                                     {{value}}
                                 </li>
                             </div>
@@ -35,7 +35,7 @@
                         </div>
                     </div>
                     <div class="ui two wide column">
-                        <div class="ui icon fluid button">
+                        <div class="ui icon fluid button" @click="removeCurrent">
                             <i class="remove icon"></i>
                         </div>
                     </div>
@@ -50,15 +50,9 @@ import vuex from "vuex";
 
 export default {
     data: () => ({
-        state: 'nochange',
     }),
     mounted() {
         const self = this;
-        $(this.$refs.path).dropdown({
-            onChange: function (value, text, $selectedItem) {
-                self.selectJava(value);
-            }
-        });
     },
     computed: {
         ...vuex.mapGetters(["javas"]),
@@ -72,7 +66,7 @@ export default {
         }
     },
     methods: {
-        ...vuex.mapActions(["addJavas", "openDialog"]),
+        ...vuex.mapActions(["addJavas", "openDialog", "removeJava"]),
         addVM(arg) {
             this.$store.dispatch(`profiles/${this.id}/edit`,
                 { vmOptions: [...this.vmOptions, arg] })
@@ -95,8 +89,21 @@ export default {
             });
         },
         selectJava(newPath) {
-            this.$store.dispatch(`profiles/${this.id}/edit`, { java: newPath })
+            console.log(`select ${newPath}`)
+            this.$store.dispatch(`profiles/${this.id}/edit`, { java: newPath }).then(()=>{
+                console.log(this.selectedJava)
+            })
         },
+        removeCurrent() {
+            this.removeJava(this.selectedJava)
+                .then(() => {
+                    if (this.javas.length !== 0) {
+                        this.$store.dispatch(`profiles/${this.id}/edit`, { java: this.javas[0] })
+                    } else {
+                        this.$store.dispatch(`profiles/${this.id}/edit`, { java: '' })
+                    }
+                })
+        }
     }
 
 };
