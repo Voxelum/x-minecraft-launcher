@@ -3,11 +3,13 @@ import {
     ipcMain, DownloadItem,
     Tray, nativeImage,
     dialog, MenuItem, Menu,
+    net,
 } from 'electron'
 import paths from 'path'
 import urls from 'url'
 import fs from 'fs-extra'
 import os from 'os'
+import storage from './storage'
 
 const devMod = process.env.NODE_ENV === 'development'
 /**
@@ -65,6 +67,8 @@ try {
     fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
 }
 
+const loadedStorage = storage(root);
+
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
     // Someone tried to run a second instance, we should focus our window.
     if (mainWindow) {
@@ -116,6 +120,7 @@ function createMainWindow() {
         width: 1100,
         resizable: false,
         frame: false,
+        transparent: true,
     })
     mainWindow.setTitle('ILauncher')
     setupIcon(mainWindow)
@@ -162,6 +167,7 @@ function createMainWindow() {
 
 app.on('ready', () => {
     require('./services'); // load all service 
+
     iconImage = nativeImage.createFromPath(`${__static}/logo.png`) // eslint-disable-line no-undef
     createMainWindow()
 

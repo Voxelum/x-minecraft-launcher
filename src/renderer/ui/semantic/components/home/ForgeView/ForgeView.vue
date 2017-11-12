@@ -1,8 +1,7 @@
 <template>
     <div>
         <div>
-            HELLO
-            {{version}}
+            HELLO {{version}}
         </div>
         <div class="ui list">
             <div v-for="mod of mods" :key="mod">
@@ -15,14 +14,12 @@
 <script>
 import vuex from 'vuex'
 export default {
-    name: "forge-view",
-    props: ['id'],
     computed: {
+        id() { return this.$route.params.id; },
         version() { return this.$store.getters[`profiles/${this.id}/forge/version`] },
         settings() { return this.$store.getters[`profiles/${this.id}/forge/settings`] },
         mods() { return this.$store.getters[`profiles/${this.id}/forge/mods`] },
     }
-
 }
 </script>
 

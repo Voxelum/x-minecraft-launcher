@@ -28,7 +28,7 @@
             </div>
         </div>
         <div ref="bar" class="stretched row pushable ui top attached segment" style="border-right-width:0;border-right-color:transparent;border-radius:0px;">
-            <div ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;">
+            <div ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;" @mouseleave="closeBar">
                 <div class="sixteen wide column">
                     <div class="header item">
                         {{$t('basic')}}
@@ -36,50 +36,47 @@
                     <router-link to="gamesettings" class="item" style="border-bottom:0;border-top:0;">{{$t('setting.name')}}</router-link>
                     <router-link to="resourcepacks" class="item" style="border-bottom:0;border-top:0;">{{$tc('resourcepack.name', 0)}}</router-link>
                     <router-link to="mods" class="item">{{$tc('mod.name', 0)}}</router-link>
-                    <div class="header item">
-                        {{$t('advanced')}}
-                    </div>
-                    <a class="item">
-                        {{$t('forge')}}
-                    </a>
-                    <a class="item">
-                        {{$t('liteloader')}}
-                    </a>
-                    <router-link to="launchsettings" class="item">Launch Settings</router-link>
+                    <div class="header item"> {{$t('advanced')}} </div>
+                    <router-link to="forge" class="item"> {{$t('forge')}} </router-link>
+                    <a class="item"> {{$t('liteloader')}} </a>
+                    <router-link to="launchsettings" class="item">{{$t('launchsetting.name')}}</router-link>
                 </div>
             </div>
-            <div class="ui basic circular icon huge button" style="position:absolute; margin:20px;" @click="openBar">
-                <i class="options icon"></i>
+            <div class="ui black circular icon huge button" style="position:absolute; margin:20px;" @click="openBar" @mouseenter="openBar">
+                <i class="white cube icon"></i>
             </div>
             <div class="pusher ui basic segment padded text container" style="min-height:70%; max-heigth:70%;">
-                <router-view></router-view>
+                <transition name="fade" mode="out-in">
+                    <router-view></router-view>
+                </transition>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import { mapGetters, mapActions, mapState } from 'vuex'
-import TextComponent from './TextComponent'
 
 export default {
-    components: { TextComponent },
     computed: {
         status() { return this.source.status },
         type() { return this.source.type },
-        source() { return this.$store.state.profiles[this.id] }
+        source() { return this.$store.getters['profiles/get'](this.id) || { name: "unknown" } },
+        id() { return this.$route.params.id }
     },
     methods: {
         refresh(force) {
             this.$store.dispatch(`profiles/${this.id}/refresh`, force)
         },
         openBar() {
-            $(this.$refs.sidebar).sidebar('toggle')
+            $(this.$refs.sidebar).sidebar('show')
+        },
+        closeBar() {
+            $(this.$refs.sidebar).sidebar('hide')
         }
     },
     mounted() {
-        if(!this.id) throw new Error('Unexpected state for undefined id!')
-        if(!this.source) throw new Error(`Unexpected undefined state for id ${this.id}!`)
+        if (!this.id) throw new Error('Unexpected state for undefined id!')
+        if (!this.source) throw new Error(`Unexpected undefined state for id ${this.id}!`)
         $(this.$refs.sidebar)
             .sidebar({
                 context: $(this.$refs.bar),
@@ -88,12 +85,11 @@ export default {
             .sidebar('setting', 'transition', 'overlay')
         this.refresh();
     },
-    props: ['id']
 }
 </script>
 
 <style scoped=true>
 .ui.tab {
-    height: 100%
+  height: 100%;
 }
 </style>

@@ -53,9 +53,9 @@ export default {
         disabledOnly: true,
         cached: [],
     }),
-    props: ['id'],
     components: { ListCell },
     computed: {
+        id() { return this.$route.params.id },
         ...vuex.mapGetters('repository', { values: 'mods' }),
         selectedMods: {
             get() { return this.$store.getters[`profiles/${this.id}/forge/mods`] },
@@ -84,7 +84,7 @@ export default {
         }
     },
     methods: {
-        classObject: function(index) {
+        classObject: function (index) {
             const color = ['red', 'green', 'teal', 'orange', 'blue'][Math.floor(Math.random() * 5) % 5];
             return {
                 [color]: true,

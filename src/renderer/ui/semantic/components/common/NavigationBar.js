@@ -5,24 +5,20 @@ export default {
         const rendered = []
         for (const p of this.paths) {
             let icon = '';
-            let name = p.name;
             switch (name) {
                 case 'home':
-                    name = this.$t(name)
                     icon = 'home icon'
                     break;
                 case 'market':
-                    name = this.$t(name)
                     icon = 'shop icon'
                     break;
                 case 'curseforge':
-                    name = this.$t(name)
                     icon = 'fire icon'
                     break;
                 default:
                     break;
             }
-            rendered.push(this.renderLink(createElement, p.path, name, icon),
+            rendered.push(this.renderLink(createElement, p.path, this.$t(p.name), icon),
                 this.renderArrow(createElement))
         }
         rendered.pop()
@@ -39,48 +35,34 @@ export default {
         }, [...right, createElement('div', { attrs: { class: 'ui breadcrumb' } }, rendered)])
     },
     computed: {
-        ...vuex.mapState({ path: 'url' }),
         paths() {
-            const splited = this.path.split('/').slice(1);
-            const paths = []
+            const path = this.$route.fullPath;
+            const splited = path.split('/').slice(1);
             switch (splited[1]) {
                 case 'cards':
-                    paths.push({ path: this.path, name: 'home' });
-                    break;
+                    return [{ path, name: 'home' }];
                 case 'modpack':
                 case 'server':
                     if (splited.length < 3) throw new Error(`Unexpected path ${splited}`)
-                    paths.push({ path: `/${splited[0]}/cards`, name: 'home' }, {
-                        path: this.path,
-                        name: this.$store.state.profiles[splited[2]].name,
-                    });
-                    break;
+                    return [{ path: `/${splited[0]}/cards`, name: 'home' },
+                    { path, name: this.$store.state.profiles[splited[2]].name }];
                 case 'market':
-                    paths.push({ path: this.path, name: 'market' });
-                    break;
+                    return [{ path, name: 'market' }];
                 case 'curseforge':
-                    paths.push({ path: `/${splited[0]}/market`, name: 'market' }, {
-                        path: `/${splited[0]}/curseforge`,
-                        name: 'curseforge',
-                    });
                     if (splited.length > 2) {
-                        paths.push({
-                            path: this.path,
-                            name: splited[2],
-                        })
+                        return [{ path: `/${splited[0]}/market`, name: 'market' },
+                        { path: `/${splited[0]}/curseforge`, name: 'curseforge' },
+                        { path, name: splited[2] }]
                     }
-                    break;
+                    return [{ path: `/${splited[0]}/market`, name: 'market' },
+                    { path: `/${splited[0]}/curseforge`, name: 'curseforge' }]
                 case 'mcmodcn':
-                    paths.push({ path: `/${splited[0]}/market`, name: 'market' }, {
-                        path: this.path,
-                        name: 'mcmod',
-                    });
-                    break;
+                    return [{ path: `/${splited[0]}/market`, name: 'market' },
+                    { path, name: 'mcmod' }];
                 case 'mcmodproject':
-                    break;
-                default: break;
+                    return [];
+                default: return [];
             }
-            return paths;
         },
     },
     methods: {
@@ -93,16 +75,15 @@ export default {
             })
         },
         renderLinkRight(createElement, path, name, icon) {
+            const self = this;
             return createElement('div', {
                 attrs: { class: 'section' },
             }, [createElement('a', {
                 attrs: {
-                    // to: path,
-                    // href: `#${path}`,
                     class: 'ui inverted circular right floated button non-moveable',
                 },
                 on: {
-                    click: () => { this.$router.replace(path) },
+                    click() { self.$router.replace(path) },
                 },
             },
                 [createElement('i', {
@@ -113,6 +94,7 @@ export default {
                 ])])
         },
         renderLink(createElement, path, name, icon = '') {
+            const self = this;
             return createElement('div', {
                 attrs: { class: 'section' },
             }, [createElement('a', {
@@ -122,7 +104,7 @@ export default {
                     class: 'ui inverted circular button non-moveable',
                 },
                 on: {
-                    click: () => { this.$router.replace(path) },
+                    click() { self.$router.replace(path) },
                 },
             },
                 [createElement('i', {

@@ -56,10 +56,9 @@ export default {
         })
     },
     computed: {
-        ...vuex.mapGetters('auth', {
-            defaultAuthor: 'username'
-        }),
-        ...vuex.mapGetters('profiles', ['selected', 'selectedKey']),
+        ...vuex.mapGetters('auth', ['username']),
+        id() { return this.$route.params.id; },
+        selected() { return this.$store.getter[`profiles/${id}`] }
     },
     methods: {
         show(args = {}) {
@@ -72,7 +71,7 @@ export default {
             }
             else {
                 this.name = ''
-                this.author = this.defaultAuthor || ""
+                this.author = this.username || ""
                 this.description = 'No description yet'
             }
             $(this.$el).modal('show')
@@ -83,7 +82,7 @@ export default {
                 return
             }
             if (this.isEdit) {
-                this.$store.commit(`profiles/${this.selectedKey}/putAll`, {
+                this.$store.commit(`profiles/${this.id}/putAll`, {
                     name: this.name,
                     author: this.author,
                     description: this.description,

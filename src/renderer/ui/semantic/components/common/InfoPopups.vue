@@ -25,28 +25,16 @@
         </div>
         <div class="ui flowing popup transition hidden">
             <div v-if="tasksCount != 0" class="ui middle aligned divided list" style="max-height:300px; min-width:300px; overflow:hidden">
-                <div class="item">
+                <div class="item" v-for="(moduleTask, index) in runningTasks" :key="index">
                     <div class="content">
-                        <div class="header">Ping Server</div>
-                        <div class="description">Pingning server</div>
-                        <div class="ui active progress">
-                            <div class="bar">
-                                <div class="progress"></div>
-                            </div>
+                        <div class="header">{{$t(`${moduleTask.id}.name`)}}</div>
+                        <div class="description">
+                            <br>
+                            <undetermined-progress v-if="moduleTask.total==-1" :active="moduleTask.status==='running'" :error="moduleTask.status==='error'" :status="$t(`${moduleTask.id}.description`)"></undetermined-progress>
+                            <progress-bar v-if="moduleTask.total!=-1" :progress="moduleTask.progress" :total="moduleTask.total" :active="moduleTask.status==='running'" :error="moduleTask.status==='error'"></progress-bar>
+
+                            <!-- {{$t(`${moduleTask.id}.description`)}} -->
                         </div>
-                    </div>
-                </div>
-                <div v-for="(moduleTask, index) in runningTasks" :key='index' class="item">
-                    <i class="task icon"></i>
-                    <div class="content">
-                        <div class="ui basic label">{{moduleTask.status}}</div>
-                        <div class="header">{{$t(moduleTask.id)}}</div>
-                        <!-- <div class="ui progress">
-                            <div class="bar">
-                                <div class="progress"></div>
-                            </div>
-                            <div class="label">Uploading Files</div>
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -60,27 +48,33 @@
 <script>
 import { mapGetters } from "vuex";
 export default {
-  computed: {
-    ...mapGetters(["errors", "runningTasks", "errorsCount", "tasksCount"])
-  },
-  mounted() {
-      $('.progress').progress();
-    $(this.$refs.warningPopup).popup({
-      hoverable: true,
-      position: "top center",
-      delay: {
-        show: 300
-      },
-      onShow() {}
-    });
-    $(this.$refs.taskPopup).popup({
-      hoverable: true,
-      position: "top center",
-      delay: {
-        show: 300
-      }
-    });
-  }
+    computed: {
+        ...mapGetters(["errors", "runningTasks", "errorsCount", "tasksCount"])
+    },
+    mounted() {
+        $(this.$refs.warningPopup).popup({
+            hoverable: true,
+            position: "top center",
+            delay: {
+                show: 300
+            },
+            onShow() { }
+        });
+        $(this.$refs.prg).progress({
+            autoSuccess: false,
+            showActivity: false,
+            value: 2,
+            total: 2,
+            label: 'ratio'
+        })
+        $(this.$refs.taskPopup).popup({
+            hoverable: true,
+            position: "top center",
+            delay: {
+                show: 300
+            }
+        });
+    }
 };
 </script>
 

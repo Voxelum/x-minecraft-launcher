@@ -57,16 +57,15 @@ export default {
         })
     },
     computed: {
-        profile() {
-            return this.$store.getters[`profiles/getByKey`](this.profileId)
-        }
+        id() { return this.$route.params.id; },
+        profile() { return this.$store.getters[`profiles/get`](this.id) }
     },
     methods: {
         show(args = {}) {
             const { isEdit } = args;
             this.isEdit = isEdit || false;
             if (this.isEdit) {
-                this.profileId = this.$store.getters['profiles/selectedKey']
+                this.profileId = this.id
                 this.ip = this.profile.host;
                 this.port = this.profile.port;
                 this.name = this.profile.name;
@@ -89,7 +88,7 @@ export default {
 
             $(this.$el).modal('hide')
             if (this.isEdit) {
-                this.$store.commit(`profiles/${this.profileId}/putAll`, {
+                this.$store.commit(`profiles/${this.id}/putAll`, {
                     name: this.name,
                     host: this.ip,
                     port: this.port,

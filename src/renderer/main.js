@@ -2,6 +2,7 @@ import Vue from 'vue';
 import url from 'url'
 import querystring from 'querystring'
 import VueBus from 'vue-bus'
+import fs from 'fs-extra'
 
 Vue.use(VueBus)
 
@@ -31,11 +32,6 @@ if (logger === 'true') {
         }).$mount('#app'),
     ).then((v) => {
         v.$store.dispatch('updateJavas')
-        v.$store.commit('url', v.$route.fullPath)
-        v.$router.afterEach((to, from) => {
-            console.log(`${from ? from.fullPath : ''} => ${to.fullPath}`)
-            v.$store.commit('url', to.fullPath)
-        })
     })
 }
 
