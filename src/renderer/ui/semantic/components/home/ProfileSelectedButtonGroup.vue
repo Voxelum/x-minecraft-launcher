@@ -17,12 +17,13 @@ import vuex from 'vuex'
 
 export default {
     computed: {
-        ...vuex.mapGetters('profiles', ['selected', 'selectedKey'])
+        id() { return this.$route.params.id },
+        profile() { return this.$store.getters[`profiles/get`](this.id) },
     },
     methods: {
         ...vuex.mapActions(['launch']),
         edit() {
-            this.$bus.$emit('modal', this.selected.type, { isEdit: true })
+            this.$bus.$emit('modal', this.profile.type, { isEdit: true })
         },
         onlaunch() {
             this.launch().catch((e) => {
@@ -36,7 +37,6 @@ export default {
             })
         },
     },
-    props: ['id'],
 }
 </script>
 

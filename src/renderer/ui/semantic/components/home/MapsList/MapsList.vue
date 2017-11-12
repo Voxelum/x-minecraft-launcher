@@ -32,22 +32,16 @@
 
 
 <script>
-import vuex from 'vuex'
-import vue from 'vue'
-import ListCell from './ListCell'
 
 export default {
-    template: "#list",
     components: {
-        ListCell
+        ListCell: () => import('./ListCell')
     },
     mounted() {
     },
-    props: ['id'],
     computed: {
-        maps() {
-            return this.$store.getters[`profiles/${this.id}/minecraft/maps`]
-        }
+        id() { return this.$route.params.id },
+        maps() { return this.$store.getters[`profiles/${this.id}/minecraft/maps`] }
     },
     methods: {
         exportMap(event) {

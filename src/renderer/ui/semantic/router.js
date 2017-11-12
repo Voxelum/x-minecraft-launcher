@@ -2,24 +2,23 @@ import Vue from 'vue'
 import { RouteConfig } from 'vue-router'
 
 import SemanticUi from './Semantic'
-import ModpackView from './components/ModpackView'
-import ServerView from './components/ServerView'
-import CardView from './components/CardView'
-import MarketView from './components/MarketView'
-import Curseforge from './components/Curseforge'
-import CurseforgeProject from './components/CurseforgeProject'
-import Mcmodcn from './components/McmodCn'
+import ModpackView from './components/home/ModpackView'
+import ServerView from './components/home/ServerView'
+import CardView from './components/home/CardView'
+import ResourcePackList from './components/home/ResourcePackList'
+import GameSettings from './components/home/GameSettings'
+import ModsList from './components/home/ModsList'
+import MapsList from './components/home/MapsList'
+import ForgeView from './components/home/ForgeView'
+import LaunchSettings from './components/home/LaunchSettings'
+import CardsButtonGroup from './components/home/CardsButtonGroup'
+import ProfileSelectedButtonGroup from './components/home/ProfileSelectedButtonGroup'
 
-import ResourcePackList from './components/ResourcePackList'
-import GameSettings from './components/GameSettings'
-import ModsList from './components/ModsList'
-import MapsList from './components/MapsList'
-import ForgeView from './components/ForgeView'
-import LaunchSettings from './components/LaunchSettings'
-
-import CardsButtonGroup from './components/CardsButtonGroup'
-import ProfileSelectedButtonGroup from './components/ProfileSelectedButtonGroup'
-import MarketButtonGroup from './components/MarketButtonGroup'
+import MarketView from './components/market/MarketView'
+import Curseforge from './components/market/Curseforge'
+import CurseforgeProject from './components/market/CurseforgeProject'
+import Mcmodcn from './components/market/McmodCn'
+import MarketButtonGroup from './components/market/MarketButtonGroup'
 
 export default {
     path: '/semantic',
@@ -53,27 +52,22 @@ export default {
                 {
                     path: 'resourcepacks',
                     component: ResourcePackList,
-                    props: true,
                 },
                 {
                     path: 'gamesettings',
                     component: GameSettings,
-                    props: true,
                 },
                 {
                     path: 'mods',
                     component: ModsList,
-                    props: true,
                 },
                 {
                     path: 'forge',
                     component: ForgeView,
-                    props: true,
                 },
                 {
                     path: 'maps',
                     component: MapsList,
-                    props: true,
                 },
                 {
                     path: 'launchsettings',

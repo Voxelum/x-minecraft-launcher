@@ -91,7 +91,7 @@ export default {
         updateTheme(theme) {
             this.selectedTheme = theme
         },
-        discard(){
+        discard() {
             $(this.$el).modal('hide')
         },
         upload(e) {

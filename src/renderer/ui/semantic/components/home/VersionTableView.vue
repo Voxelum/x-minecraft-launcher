@@ -51,8 +51,8 @@ export default {
         }
     },
     mounted() { $(this.$refs.alphaDropdown).dropdown() },
-    props: ['id'],
     computed: {
+        id() { return this.$route.params.id },
         ...mapGetters('versions', ['versions', 'latestRelease', 'latestSnapshot']),
         metaMap() {
             const map = {}

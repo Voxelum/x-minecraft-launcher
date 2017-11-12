@@ -1,5 +1,5 @@
 import vuex from 'vuex'
-import OptionButton from './OptionButton.vue'
+import OptionButton from './OptionButton'
 
 export default {
     render(createElement) {
