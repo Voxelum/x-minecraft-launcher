@@ -27,7 +27,7 @@
             </div>
         </div>
         <div ref="bar" class="stretched row pushable ui top attached segment" style="border-right-width:0;border-right-color:transparent;border-radius:0px;">
-            <div ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;">
+            <div ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;" @mouseleave="closeBar">
                 <div class="sixteen wide column">
                     <div class="header item">
                         {{$t('basic')}}
@@ -53,7 +53,7 @@
                 </div>
 
             </div>
-            <div class="ui basic circular icon huge button" style="position:absolute; margin:20px;" @click="openBar">
+            <div class="ui basic circular icon huge button" style="position:absolute; margin:20px;" @click="openBar" @mouseenter="openBar">
                 <i class="options icon"></i>
             </div>
             <div class="pusher ui basic segment padded text container" style="min-height:70%; max-heigth:70%;">
@@ -81,7 +81,7 @@ export default {
         versions() { return this.minecraft.versions },
         type() { return this.source.type },
         id() { return this.$route.params.id },
-        source() { return this.$store.state.profiles[this.id] }
+        source() { return this.$store.getters['profiles/get'](this.id) }
     },
     methods: {
         modify(event) {
@@ -92,8 +92,11 @@ export default {
             this.$store.dispatch('versions/refresh')
         },
         openBar() {
-            $(this.$refs.sidebar).sidebar('toggle')
+            $(this.$refs.sidebar).sidebar('show')
         },
+        closeBar() {
+            $(this.$refs.sidebar).sidebar('hide')
+        }
     },
     mounted() {
         this.refresh()
