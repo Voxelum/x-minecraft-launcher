@@ -93,22 +93,18 @@ export default {
                 {
                     path: 'resourcepacks',
                     component: ResourcePackList,
-                    props: true,
                 },
                 {
                     path: 'gamesettings',
                     component: GameSettings,
-                    props: true,
                 },
                 {
                     path: 'mods',
                     component: ModsList,
-                    props: true,
                 },
                 {
                     path: 'forge',
                     component: ForgeView,
-                    props: true,
                 },
                 {
                     path: 'launchsettings',

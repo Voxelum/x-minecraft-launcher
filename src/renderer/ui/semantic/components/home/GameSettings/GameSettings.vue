@@ -2,7 +2,7 @@
     <div class="">
         <h5 class="ui horizontal divider header">Critical graphic</h5>
         <options-group :options="criticalGraphics" :id="id"></options-group>
-        <hot-key-button :initkey="hotKeys.moveForward"  @keychange="onkeychange"></hot-key-button>
+        <hot-key-button :initkey="hotKeys.moveForward" @keychange="onkeychange"></hot-key-button>
         <hot-key-button initkey="O"></hot-key-button>
         <hot-key-button initkey="O"></hot-key-button>
     </div>
@@ -23,6 +23,7 @@ export default {
         ...vuex.mapGetters({
             templates: 'options',
         }),
+        id() { return this.$route.params.id; }
     },
     methods: {
         onkeychange(newKeyValue) {
@@ -30,29 +31,26 @@ export default {
             console.log(`Get new key ${newKeyValue}`)
         }
     },
-    data() {
-        return {
-            criticalGraphics: {
-                fancyGraphics: boolOptions,
-                renderClouds: [true, 'fast', false],
-                ao: numOptions,
-                entityShadows: boolOptions,
-                particles: numOptions,
-                mipmapLevels: [0, 1, 2, 3, 4],
-                useVbo: boolOptions,
-                fboEnable: boolOptions,
-                enableVsync: boolOptions,
-                anaglyph3d: boolOptions,
-            },
-            normalGraphics: {
+    data: () => ({
+        criticalGraphics: {
+            fancyGraphics: boolOptions,
+            renderClouds: [true, 'fast', false],
+            ao: numOptions,
+            entityShadows: boolOptions,
+            particles: numOptions,
+            mipmapLevels: [0, 1, 2, 3, 4],
+            useVbo: boolOptions,
+            fboEnable: boolOptions,
+            enableVsync: boolOptions,
+            anaglyph3d: boolOptions,
+        },
+        normalGraphics: {
 
-            },
-            hotKeys: {
-                moveForward: 'w'
-            },
-        }
-    },
-    props: ['id'],
+        },
+        hotKeys: {
+            moveForward: 'w'
+        },
+    }),
 }
 </script>
 
