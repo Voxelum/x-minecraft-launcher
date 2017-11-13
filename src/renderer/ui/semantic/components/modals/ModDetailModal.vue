@@ -1,82 +1,83 @@
 <template>
     <div class="ui modal">
-        <i class="close icon"></i>
         <div class="header">
             <div class="ui items">
                 <div class="item">
                     <div class="image">
-                        <img src="/images/wireframe/image.png">
+                        <i class="cube huge icon"></i>
                     </div>
-                    <div class="content">
+                    <div class="content" style="padding: 10px 0 0 0">
                         <a class="header">
-                            <font size='15'>Header</font>
+                            <font size='10'>{{name}}</font>
                         </a>
-                        <span>arthor name</span>
-                        <div class="meta">
-                            <span>
-                                <font size='2'>Real-time mapping in-game or your browser as you explore.</font>
-                            </span>
+                        <span v-if="authors.length!==0">by {{authors[0]}}</span>
+                        <div class="meta" v-if="mod.description">
+                            <font size='2'>{{mod.description}}</font>
                         </div>
                         <div class="extra">
-                            Additional Details
+                            <span>{{version}}</span>
+                            <span v-if="mod.mcversion"> MC{{mod.mcversion}}</span>
+
+                        </div>
+                        <div class="extra">
+                            <div class="ui secondary menu">
+                                <a class="item active">
+                                    Config
+                                </a>
+                                <a class="item">
+                                    On Curseforge
+                                </a>
+                                <a class="item">
+                                    On Wiki
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="image content">
 
-            <div class="ui divided items">
+            <header>Configs</header>
+            <div class="ui divided items" style="max-height:200px; overflow:auto; width:100%">
                 <li class="item" v-for="cate in Object.keys(categories)" :key="cate">
                     <div class="content">
-                        <h3 class="header">{{cate}}</h3>
-                        <div class="item">comment: {{categories[cate].comment}}</div>
-
                         <div ref='a' class="ui accordion">
-                            <div class="title">
+                            <div class="title header">
                                 <i class="dropdown icon"></i>
-                                properties
-
+                                {{cate}}
                             </div>
                             <div class="content">
                                 <div class="ui list">
                                     <div class="item" v-for="item in Object.values(categories[cate].properties)" :key="item.name">
-                                        <!-- <i class="map marker icon"></i> -->
                                         <div class="content">
-                                            <span class="header">
-                                                <span class="ui label">{{item.comment}}</span>
-                                            </span>
-                                            <div class="description" style="padding-top:10px;padding-bottom:10px">
-                                                <div class="ui labeled input">
-                                                    <div class="ui green label">
-                                                        {{item.type}}
-                                                    </div>
+                                            <div class="description" style="padding-top:10px;padding-bottom:10px" :data-tooltip="item.comment" data-position="top left">
+                                                <div class="ui right labeled input">
                                                     <div class="ui label">
                                                         {{item.name}}
                                                     </div>
                                                     <input type="text" :value="item.value">
+                                                    <div class="ui right green label">
+                                                        {{item.type}}
+                                                    </div>
                                                 </div>
-
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
-
                 </li>
             </div>
-
         </div>
         <div class="actions">
             <div class="ui black deny button">
-                Cancel
+                {{$t('cancel')}}
             </div>
             <div class="ui positive right labeled icon button">
-                Save
+                {{$t('save')}}
                 <i class="checkmark icon"></i>
             </div>
         </div>
@@ -84,32 +85,24 @@
 </template>
 
 <script>
-// import ModDetail from '../ModDetail'
 export default {
-    // components: {
-    //     ModDetail
-    // },
-
+    computed: {
+        name() { return this.mod.name || this.mod.modid || 'Unknown' },
+        authors() { return this.mod.authorList || [] },
+        version() { return this.mod.version || '0.0.0' },
+    },
     methods: {
-        show() {
+        show(mod) {
             $(this.$el).modal("show");
+            this.mod = mod;
+            console.log(mod)
         }
     },
     mounted() {
         $(this.$refs.a).accordion({});
     },
     data: () => ({
-        mod: {
-            modid: 'lucaisgenius',
-            name: 'luca',
-            authors: [
-                "a", "b"
-            ]
-            ,
-            description: "hahahah is sooooo fun",
-            version: "0.00.0.0.0.0",
-            mcversion: "0.0.0..00",
-        },
+        mod: {},
         categories: {
             cateA: {
                 comment: "lll",

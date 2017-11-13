@@ -1,30 +1,37 @@
 <template>
     <div class="ui center aligned middle aligned basic segment container" v-if="values.length===0" @drop="ondrop" style="height:100%">
         <br>
-        <div class="ui button" @click="$bus.$emit('modal', 'mod')">
-            Test
-        </div>
         <h2 class="ui icon header">
             <i class="game icon"></i>
             <div class="sub header">{{$t('mod.hint')}}</div>
         </h2>
     </div>
     <div v-else @drop="ondrop" class="ui grid">
-        <div class="ui icon transparent input">
-            <i class="filter icon"></i>
-            <input placeholder="Filter" v-model="keyword">
+        <div class="row">
+            <div class="eight wide centered column">
+                <div class="ui icon fluid transparent input">
+                    <i class="filter icon"></i>
+                    <input placeholder="Filter" v-model="keyword">
+                </div>
+            </div>
+            <div class="eight wide centered column">
+                <div class="ui icon fluid transparent input">
+                    <i class="filter icon"></i>
+                    <input placeholder="Filter" v-model="keyword">
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="eight wide column">
                 <div class="ui relaxed divided items" style="height:290px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
-                    <a class="ui circular large label" style="margin:5px" v-for="(val, index) in mods" v-if="valid(val)" :key="val[0].modid||val[0].name" :data-tooltip="val[0].version" data-inverted="" :data-position="pos(index)">
+                    <a class="ui circular large label" style="margin:5px" v-for="(val, index) in mods" v-if="valid(val)" :key="val[0].modid||val[0].name" :data-tooltip="val[0].version" data-inverted="" :data-position="pos(index)" @click="$bus.$emit('modal', 'moddetail', val[0])">
                         {{modName(val[0])}}
                     </a>
                 </div>
             </div>
             <div class="eight wide column">
                 <draggable class="ui relaxed divided items" style="height:290px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
-                    <a class="ui circular large label" style="margin:5px" v-for="(val, index) in nonselectedMods" v-if="valid(val)" :key="val[0].modid||val[0].name" :data-tooltip="val[0].version" data-inverted="" :data-position="pos(index)">
+                    <a class="ui circular large label" style="margin:5px" v-for="(val, index) in nonselectedMods" v-if="valid(val)" :key="val[0].modid||val[0].name" :data-tooltip="val[0].version" data-inverted="" :data-position="pos(index)" @click="$bus.$emit('modal', 'moddetail', val[0])">
                         {{modName(val[0])}}
                     </a>
                 </draggable>
