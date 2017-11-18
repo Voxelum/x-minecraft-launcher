@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import keymapper from 'shared/keymapper'
+
 export default {
     data: () => ({
         editing: false,
@@ -32,6 +34,7 @@ export default {
                 this.editing = false;
                 this.innerkey = event.key;
                 this.$emit('keychange', this.innerkey)
+                console.log(keymapper.getKey(event.code))
             }
         })
     },
