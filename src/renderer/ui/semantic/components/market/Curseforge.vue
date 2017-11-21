@@ -85,6 +85,7 @@ export default {
         $(this.$refs.versionDropdown).dropdown()
     },
     methods: {
+        ...vuex.mapActions('curseforge', { fetchMods: 'mods' }),
         /**
          * @param {{path:string, version:string, filter:string}} payload 
          */
@@ -94,20 +95,17 @@ export default {
             const page = payload.page || this.page;
             this.loading = true;
 
-            return this.$store.dispatch('query', {
-                service: 'curseforge',
-                action: 'mods',
-                payload: { page, version, sort: filter },
-            }).then((s) => {
-                this.projects = s.mods;
-                this.page = page;
-                this.pages = s.pages;
-                this.filter = filter;
-                this.filters = s.filters;
-                this.version = version;
-                this.versions = s.versions;
-                this.loading = false;
-            })
+            return this.fetchMods({ page, version, sort: filter })
+                .then((s) => {
+                    this.projects = s.mods;
+                    this.page = page;
+                    this.pages = s.pages;
+                    this.filter = filter;
+                    this.filters = s.filters;
+                    this.version = version;
+                    this.versions = s.versions;
+                    this.loading = false;
+                });
         },
         change({ page, version, filter } = {}) {
             if ((version || filter) && this.page !== 1) page = 1;

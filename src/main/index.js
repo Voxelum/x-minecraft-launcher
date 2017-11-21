@@ -24,7 +24,13 @@ const winURL = process.env.NODE_ENV === 'development' ?
     'http://localhost:9080/index.html' :
     `file://${__dirname}/index.html`
 
+/**
+ * @type {BrowserWindow}
+ */
 let mainWindow;
+/**
+ * @type {BrowserWindow}
+ */
 let logWindow;
 
 let maindownloadCallback;
@@ -67,7 +73,12 @@ try {
     fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
 }
 
-const loadedStorage = storage(root);
+// const loadedStorage = storage(root);
+// loadedStorage.then((store) => {
+//     console.log(Object.keys(store))
+// }).catch((e) => {
+//     console.log(e)
+// })
 
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
     // Someone tried to run a second instance, we should focus our window.
@@ -127,42 +138,6 @@ function createMainWindow() {
     mainWindow.loadURL(`${winURL}?logger=false&theme=${theme}&root=${root}`)
 
     mainWindow.on('closed', () => { mainWindow = null })
-    mainWindow.on('ready-to-show', () => {
-    })
-    mainWindow.on('show', () => {
-    })
-    mainWindow.webContents.session.setDownloadPath(paths.join(root, 'temps'))
-    mainWindow.webContents.session.on('will-download', (event, item, content) => {
-        const save = downloadTasks.get(item.getURL())
-        if (save) item.setSavePath(save)
-        mainWindow.webContents.send('will-download', {
-            file: item.getFilename(),
-            url: item.getURL(),
-        })
-        item.on('updated', ($event, state) => {
-            mainWindow.webContents.send('download', {
-                file: item.getFilename(),
-                url: item.getURL(),
-                state,
-                byte: item.getReceivedBytes(),
-                total: item.getTotalBytes(),
-            })
-        })
-        item.on('done', ($event, state) => {
-            downloadTasks.delete(item.getURL())
-            mainWindow.webContents.send('download-done', {
-                file: item.getFilename(),
-                url: item.getURL(),
-                state,
-                byte: item.getReceivedBytes(),
-                total: item.getTotalBytes(),
-            })
-        })
-    })
-    maindownloadCallback = (filePath, url) => {
-        downloadTasks.set(url, filePath)
-        mainWindow.webContents.downloadURL(url)
-    }
 }
 
 app.on('ready', () => {

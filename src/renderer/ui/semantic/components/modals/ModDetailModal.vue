@@ -17,17 +17,16 @@
                         <div class="extra">
                             <span>{{version}}</span>
                             <span v-if="mod.mcversion"> MC{{mod.mcversion}}</span>
-
                         </div>
                         <div class="extra">
                             <div class="ui secondary menu">
-                                <a class="item active">
+                                <a class="item" :class="{ active: selected === 'Config' }" @click="selected = 'Config'">
                                     Config
                                 </a>
-                                <a class="item">
+                                <a class="item" :class="{ active: selected === 'OnCurseforge' }" @click="selected = 'OnCurseforge'">
                                     On Curseforge
                                 </a>
-                                <a class="item">
+                                <a class="item" :class="{ active: selected === 'OnWiki' }" @click="selected = 'OnWiki'"> 
                                     On Wiki
                                 </a>
                             </div>
@@ -36,41 +35,8 @@
                 </div>
             </div>
         </div>
-
-        <div class="image content">
-
-            <header>Configs</header>
-            <div class="ui divided items" style="max-height:200px; overflow:auto; width:100%">
-                <li class="item" v-for="cate in Object.keys(categories)" :key="cate">
-                    <div class="content">
-                        <div ref='a' class="ui accordion">
-                            <div class="title header">
-                                <i class="dropdown icon"></i>
-                                {{cate}}
-                            </div>
-                            <div class="content">
-                                <div class="ui list">
-                                    <div class="item" v-for="item in Object.values(categories[cate].properties)" :key="item.name">
-                                        <div class="content">
-                                            <div class="description" style="padding-top:10px;padding-bottom:10px" :data-tooltip="item.comment" data-position="top left">
-                                                <div class="ui right labeled input">
-                                                    <div class="ui label">
-                                                        {{item.name}}
-                                                    </div>
-                                                    <input type="text" :value="item.value">
-                                                    <div class="ui right green label">
-                                                        {{item.type}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </div>
+        <div class="content">
+            <component :is="selected"></component>
         </div>
         <div class="actions">
             <div class="ui black deny button">
@@ -85,7 +51,12 @@
 </template>
 
 <script>
+import Config from './ModDetailModal/Config'
+import OnCurseforge from './ModDetailModal/OnCurseforge'
+import OnWiki from './ModDetailModal/OnWiki'
+
 export default {
+    components: { Config, OnCurseforge, OnWiki },
     computed: {
         name() { return this.mod.name || this.mod.modid || 'Unknown' },
         authors() { return this.mod.authorList || [] },
@@ -95,50 +66,13 @@ export default {
         show(mod) {
             $(this.$el).modal("show");
             this.mod = mod;
-            console.log(mod)
         }
     },
     mounted() {
-        $(this.$refs.a).accordion({});
     },
     data: () => ({
         mod: {},
-        categories: {
-            cateA: {
-                comment: "lll",
-                properties: [
-                    {
-                        name: "hp",
-                        type: "I",
-                        comment: "...",
-                        value: 1
-                    },
-                    {
-                        name: "hp",
-                        type: "I",
-                        comment: "...",
-                        value: 2
-                    }
-                ]
-            },
-            cateB: {
-                comment: "lll",
-                properties: [
-                    {
-                        name: "hp",
-                        type: "I",
-                        comment: "...",
-                        value: 7
-                    },
-                    {
-                        name: "hp",
-                        type: "I",
-                        comment: "...",
-                        value: 6
-                    }
-                ]
-            }
-        }
+        selected: 'Config',
     })
 };
 </script>
