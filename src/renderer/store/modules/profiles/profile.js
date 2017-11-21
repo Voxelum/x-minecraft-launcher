@@ -19,7 +19,6 @@ export default {
             if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.missingjava')
             return errors
         },
-        java: state => state.java,
         versoin: state => state.minecraft.version,
         vmOptions: state => state.vmOptions,
         mcOptions: state => state.mcOptions,

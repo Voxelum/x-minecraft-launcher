@@ -9,29 +9,56 @@ const PROFILE_NAME = 'profile.json'
 const PROFILES_NAEM = 'profiles.json'
 
 function regulize(content) {
+    console.log('regulize')
+    console.log(content)
     content.resourcepacks = content.resourcepacks || []
     content.resolution = content.resolution || { width: 800, height: 400 }
     content.mods = content.mods || []
     content.vmOptions = content.vmOptions || []
     content.mcOptions = content.mcOptions || []
+    console.log(content)
     return content
 }
 
 export default {
     namespaced: true,
-    state: () => ({
-        /**
-         * @type {Profile[]}
-         */
-        all: [],
-    }),
+    state() {
+        return {
+            /**
+             * @type {Profile[]}
+             */
+            all: [],
+            selected: '',
+        }
+    },
     getters: {
-        profiles: state => state.all.map(mName => state[mName]),
-        get: state => id => state[id],
-        ids: state => state.all,
+        selected: state => state[state.selected],
+        allStates: state => state.all.map(mName => state[mName]),
+        getByKey: state => id => state[id],
+        selectedKey: state => state.selected,
+        allKeys: state => state.all,
+        errors(states, getters) {
+            if (getters.selectedKey !== '') {
+                const get = getters[`${getters.selectedKey}/errors`]
+                if (get) return get
+            }
+            return []
+        },
     },
     mutations: {
-        add(state, payload) { state.all.push(payload.id) },
+        unselect(state) {
+            state.selected = ''
+        },
+        select(state, moduleID) {
+            const idx = state.all.indexOf(moduleID);
+            if (idx !== -1) {
+                state.selected = moduleID;
+                Vue.bus.emit('$profile.select', state[moduleID].type, moduleID);
+            }
+        },
+        add(state, payload) {
+            state.all.push(payload.id)
+        },
         remove(state, id) {
             if (state.all.indexOf(id) !== -1) {
                 if (state.selected === id) {
@@ -56,6 +83,8 @@ export default {
         load({ dispatch, commit }, payload) {
             return dispatch('readFolder', { path: 'profiles' }, { root: true })
                 .then(files => Promise.all(files.map(id => dispatch('loadProfile', id))))
+                .then(() => dispatch('read', { path: 'profiles.json', fallback: {}, encoding: 'json' }, { root: true }))
+                .then(json => commit('select', json.selected))
         },
         async saveProfile(context, { id }) {
             const profileJson = `profiles/${id}/profile.json`
@@ -71,6 +100,11 @@ export default {
             const path = mutation.split('/')
             if (path.length === 2) {
                 const [, action] = path
+                if (action === 'select') {
+                    return context.dispatch('write', {
+                        path: PROFILES_NAEM, data: { selected: context.state.selected },
+                    }, { root: true })
+                }
                 return Promise.resolve();
             } else if (path.length === 3) { // only profile
                 return context.dispatch('saveProfile', { id: path[1] })
@@ -106,6 +140,25 @@ export default {
         delete(context, payload) {
             context.commit('remove', payload)
             return context.dispatch('delete', { path: `profiles/${payload}` }, { root: true })
+        },
+        unselect(context) {
+            context.commit('unselect')
+        },
+        /**
+         * 
+         * @param {ActionContext} context 
+         * @param {string} profileId 
+         * 
+         */
+        select(context, profileId) {
+            if (context.getters.selectedKey !== profileId) context.commit('select', profileId)
+        },
+        /**
+         * @param {ActionContext} context 
+         * @param {CreateOption} payload 
+         */
+        createAndSelect(context, payload) {
+            return context.dispatch('create', payload).then(id => context.commit('select', id))
         },
     },
 }

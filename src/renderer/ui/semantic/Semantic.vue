@@ -1,6 +1,6 @@
 <template>
-    <div class="ui celled grid segment" style="margin:0; border-radius:7px;">
-        <div class="moveable black row" style="border-radius:7px 7px 0 0;">
+    <div class="ui celled grid segment" style="margin:0;">
+        <div class="moveable black row">
             <div class="four wide center aligned middle aligned column">
                 <h1 class="inverted ui header">
                     ILauncher
@@ -22,7 +22,7 @@
                 </transition>
             </div>
         </div>
-        <div class="moveable black row" style="height:60px;border-radius: 0 0 7px 7px;">
+        <div class="moveable black row" style="height:60px">
             <div class="four wide center aligned middle aligned column">
                 <div class="ui icon inverted button pointing dropdown non-moveable" @click="showModal('settings')">
                     <i class="setting icon"></i>
@@ -33,7 +33,7 @@
             </div>
             <div class="twelve wide middle aligned column">
                 <info-popups></info-popups>
-                <router-view name='buttons'></router-view>
+                <router-view name='buttons' :id="selectedProfileID"></router-view>
             </div>
         </div>
         <modals ref='modals'></modals>
@@ -52,27 +52,32 @@ vue.component('pagination', () => import('./components/Pagination'));
 vue.component('text-component', () => import('./components/TextComponent'))
 vue.component('draggable', () => import('vuedraggable'))
 vue.component('div-header', () => import('./components/DivHeader'))
-vue.component('progress-bar', () => import('./components/ProgressBar'))
-vue.component('undetermined-progress', () => import('./components/UndeterminedProgress'))
-vue.component('labeled-input', () => import('./components/LabeledInput'))
 
 export default {
     components: {
         SkinView: () => import('../shared/SkinView'),
-        NavigationBar: () => import('./components/common/NavigationBar'),
+        NavigationBar: () => import('./components/NavigationBar'),
         Modals: () => import('./components/modals'),
-        InfoPopups: () => import('./components/common/InfoPopups'),
-        UserDropdown: () => import('./components/common/UserDropdown'),
+        InfoPopups: () => import('./components/InfoPopups'),
+        UserDropdown: () => import('./components/UserDropdown')
     },
     data: () => ({
         closing: false,
         background: ''//'url(imgs/Background1.png)'
     }),
     computed: {
+        ...mapGetters('profiles', {
+            'selectedProfile': 'selected',
+            'selectedProfileID': 'selectedKey'
+        }),
         ...mapGetters('auth', ['username', 'skin']),
     },
     mounted() {
         if (this.username === '') this.showModal('login')
+        this.$bus.$on('$profile.select', (type, id) => {
+            console.log()
+            this.$router.push({ path: `${type}/${id}` });
+        })
     },
     methods: {
         showModal(id, args) { this.$bus.$emit('modal', id, args) },
@@ -83,67 +88,63 @@ export default {
 </script>
 
 <style>
-.app {
-  border-radius: 7px;
-}
 body {
-  background-color: transparent;
-  border-radius: 7px;
+    background-color: transparent;
 }
 
 .moveable {
-  -webkit-app-region: drag;
+    -webkit-app-region: drag
 }
 
 .non-moveable {
-  -webkit-app-region: no-drag;
+    -webkit-app-region: no-drag
 }
 
 body ::-webkit-scrollbar {
-  width: 2px;
+    width: 2px;
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
+ ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
 }
 
 body ::-webkit-scrollbar-thumb {
-  -webkit-border-radius: 5px;
-  border-radius: 10px;
-  /* width: 1px; */
-  background: rgba(0, 0, 0, 0.25);
+    -webkit-border-radius: 5px;
+    border-radius: 10px;
+    /* width: 1px; */
+    background: rgba(0, 0, 0, 0.25);
 }
 
-::-webkit-scrollbar-thumb:window-inactive {
-  /* background: rgba(0, 0, 0, 0.2); */
+ ::-webkit-scrollbar-thumb:window-inactive {
+    /* background: rgba(0, 0, 0, 0.2); */
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.25s ease;
+    transition: opacity .25s ease;
 }
 
 .fade-enter,
 .fade-leave-to {
-  opacity: 0;
+    opacity: 0
 }
 
 .child-view {
-  position: absolute;
-  transition: all 0.3s cubic-bezier(0.55, 0, 0.1, 1);
+    position: absolute;
+    transition: all .3s cubic-bezier(.55, 0, .1, 1);
 }
 
 .slide-left-enter,
 .slide-right-leave-active {
-  opacity: 0;
-  -webkit-transform: translate(30px, 0);
-  transform: translate(30px, 0);
+    opacity: 0;
+    -webkit-transform: translate(30px, 0);
+    transform: translate(30px, 0);
 }
 
 .slide-left-leave-active,
 .slide-right-enter {
-  opacity: 0;
-  -webkit-transform: translate(-30px, 0);
-  transform: translate(-30px, 0);
+    opacity: 0;
+    -webkit-transform: translate(-30px, 0);
+    transform: translate(-30px, 0);
 }
 </style>
