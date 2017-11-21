@@ -81,15 +81,35 @@ export default {
         },
         /**
          * @param {ActionContext} context 
-         * @param {string[]|string} files 
+         * @param {string[]|string| {signiture:any, files:string|string[]}} files 
          */
         import(context, files) {
-            if (files.length === 0) return Promise.resolve();
+            const data = {
+                files: [],
+                signiture: {
+                    source: 'local',
+                    date: Date.now(),
+                    meta: null,
+                },
+            }
+            if (files instanceof Array) {
+                data.files = files;
+                data.signiture.meta = files;
+            } else if (typeof files === 'string') {
+                data.files = [files]
+                data.signiture.meta = files;
+            } else {
+                if (!files.files || files.files == null || !(files.files instanceof Array)) throw new Error('Illegal Argument format!')
+                if (!files.signiture || files.signiture == null) throw new Error('Have to have a signiture to import!')
+                data.files = files.files;
+                data.signiture = files.signiture
+            }
+            if (data.files.length === 0) return Promise.resolve();
             return context.dispatch('query',
                 {
                     service: 'repository',
                     action: 'import',
-                    payload: { root: context.rootGetters.root, files },
+                    payload: { root: context.rootGetters.root, files: data },
                 }, { root: true })
                 .then((resources) => { context.commit('resources', resources) })
         },
