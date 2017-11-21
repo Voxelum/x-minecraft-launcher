@@ -17,7 +17,7 @@ const parsers = [
  * @param {string} root 
  * @param {string} filePath 
  */
-async function $import(root, filePath) {
+async function $import(root, filePath, signiture) {
     const data = await fs.readFile(filePath);
     const name = path.basename(filePath);
     const type = path.extname(filePath);
@@ -36,7 +36,7 @@ async function $import(root, filePath) {
         } catch (e) { console.warn(e) }
     }
     if (!domain || !meta) { throw new Error(`Cannot parse ${filePath}.`) }
-    const resource = { hash, name, type, meta, domain };
+    const resource = { hash, name, type, meta, domain, signiture };
     await fs.ensureDir(path.join(root, 'resources'))
     await fs.writeFile(path.join(root, 'resources', `${resource.hash}${resource.type}`), data);
     await fs.writeFile(path.join(root, 'resources', `${resource.hash}.json`), JSON.stringify(resource));
@@ -64,22 +64,22 @@ export default {
          * @param {{hash:string,type:string}} resource 
          * @param {string} targetDirectory 
          */
-        export(root, resource, targetDirectory) {
+        export(context, { root, resource, targetDirectory }) {
             return fs.copy(`${root}/${resource.hash}${resource.type}`, `${targetDirectory}/${resource.hash}${resource.type}`)
         },
         /**
          * 
          * @param {{root:string, string[]|string:files}} payload
          */
-        async import(payload) {
-            const { root } = payload;
+        async import(context, payload) {
+            const { root, signiture } = payload;
             let files = payload.files
             if (!root || !files) throw new Error(`Import require root location, files, and a specific meta type! ${root}, ${files}`)
 
             if (typeof files === 'string') files = [files]
             else if (!(files instanceof Array)) { return Promise.reject('Illegal Type') }
 
-            return (await Promise.all(files.map(f => $import(root, f))))
+            return (await Promise.all(files.map(f => $import(root, f, signiture))))
                 .filter(res => res !== undefined)
         },
 
@@ -87,7 +87,7 @@ export default {
          * 
          * @param {{root:string, target:string, elements:string[]}} payload 
          */
-        virtualenv(payload) {
+        virtualenv(context, payload) {
             const { root, target, elements } = payload;
             elements.forEach((e) => {
                 path.join(e)

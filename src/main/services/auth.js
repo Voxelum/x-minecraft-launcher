@@ -1,6 +1,6 @@
 import { v4 } from 'uuid'
 
-import { AuthService } from 'ts-minecraft'
+import { Auth } from 'ts-minecraft'
 
 const registered = new Map()
 export default {
@@ -8,8 +8,8 @@ export default {
         registered.set('offline', ({
             account,
             clientToken,
-        }) => AuthService.offlineAuth(account));
-        registered.set('mojang', ({ account, password, clientToken }) => AuthService.yggdrasilAuth({
+        }) => Auth.offline(account));
+        registered.set('mojang', ({ account, password, clientToken }) => Auth.yggdrasil({
             username: account,
             password,
             clientToken: clientToken || v4(),
@@ -27,7 +27,7 @@ export default {
         /**
          * @param {{mode:string, account:string, password?:string, clientToken?:string}} option 
          */
-        login(option) {
+        login(context, option) {
             return new Promise((resolve, reject) => {
                 if (registered.has(option.mode)) {
                     resolve(registered.get(option.mode)(option))
