@@ -15,7 +15,7 @@ export default {
          * 
          * @param {{root:string, map:string, toFolder: string, zip:boolean}} payload 
          */
-        async export(payload) {
+        async export(context, payload) {
             const srcMap = paths.join(payload.root, payload.map)
             if (payload.zip) {
                 const targetZip = paths.join(payload.toFolder, `${payload.map}.zip`);

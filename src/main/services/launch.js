@@ -28,7 +28,7 @@ export default {
     proxy: {
     },
     actions: {
-        launch({ auth, option }) {
+        launch(context, { auth, option }) {
             console.log('launch:')
             console.log(option)
             return Launcher.launch(auth, option).then((process) => {

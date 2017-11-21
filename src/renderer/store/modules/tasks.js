@@ -5,16 +5,6 @@ import Vue from 'vue'
 import { v4 } from 'uuid'
 import { EventEmitter } from 'events'
 
-ipcRenderer.on('will-download', ({ file, url }) => {
-    console.log(`will-download ${file}`)
-})
-ipcRenderer.on('download', ({ file, url, state, byte, total }) => {
-    console.log(`download ${file}`)
-})
-ipcRenderer.on('download-done', ({ file, url, state, byte, total }) => {
-    console.log(`download-done ${file}`)
-})
-
 class TaskProxy extends EventEmitter {
     constructor(uuid, id, timeout = 10000) {
         super()

@@ -46,8 +46,8 @@
             </div>
             <div class="ui tab" data-tab="files">
                 <div class="ui active inverted dimmer" v-if="downloads.loading">
-                        <div class="ui text loader">Loading</div>
-                    </div>
+                    <div class="ui text loader">Loading</div>
+                </div>
                 <div class="ui middle aligned black divided items">
                     <div v-for="f of downloads.files" :key="f.href" class="item" style="padding-left:20px">
                         <div class="ui ribbon label">
@@ -112,17 +112,17 @@ export default {
         if (this.name === '') this.refresh();
     },
     methods: {
+        ...vuex.mapActions('curseforge', ['files', 'project']),
+        ...vuex.mapActions('curseforge', {
+            fetchLicense: 'license',
+            startDownload: 'download'
+        }),
         cacheDownload(page) {
             this.downloads.loading = true;
             const path = this.id;
             page = page || this.downloads.page;
             this.downloads.files = []
-            this.$store.dispatch('query',
-                {
-                    service: 'curseforge',
-                    action: 'downloads',
-                    payload: { path: `/projects/${path}`, version: '', page }
-                })
+            this.files({ path, version:'', page })
                 .then(downloads => {
                     this.downloads.pages = downloads.pages;
                     this.downloads.files = downloads.files;
@@ -132,22 +132,17 @@ export default {
         cacheLicense() {
             if (this.license.content !== '') return;
             this.license.loading = true;
-            this.$store.dispatch('query', {
-                service: 'curseforge',
-                action: 'license',
-                payload: this.license.url,
-            }).then(license => {
-                this.license.content = license;
-                this.license.loading = false;
-            })
-
+            this.fetchLicense(this.license.url)
+                .then(license => {
+                    this.license.content = license;
+                    this.license.loading = false;
+                })
         },
         refresh() {
             this.loading = true;
             const path = this.id;
             if (path === undefined || path == null) return Promise.reject('Path cannot be null');
-            return this.$store.dispatch('query',
-                { service: 'curseforge', action: 'project', payload: `/projects/${path}` })
+            return this.project(path)
                 .then(project => {
                     this.image = project.image;
                     this.name = project.name;
@@ -179,7 +174,7 @@ export default {
                 })
         },
         download(href) {
-            console.log(href)
+            this.startDownload(href)
         }
     },
     props: ['id'],

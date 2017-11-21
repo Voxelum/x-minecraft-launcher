@@ -1,4 +1,4 @@
-import { net } from 'electron'
+import { net, app, webContents } from 'electron'
 import querystring from 'querystring'
 import parser from 'fast-html-parser'
 
@@ -69,9 +69,9 @@ export default {
         /**
          * Get the license in url
          * @param {string} url
-         * @return string 
+         * @return {string} 
          */
-        async license(url) {
+        async license(context, url) {
             if (url == null || !url) throw new Error('URL cannot be null');
             const string = await request(`https://minecraft.curseforge.com${url}`)
             return parser.parse(string).querySelector('.module').removeWhitespace().firstChild.rawText;
@@ -81,7 +81,7 @@ export default {
          * @param {{path:string, version:string, page:string}} payload 
          * @return {Downloads}
          */
-        async downloads(payload = {}) {
+        async downloads(context, payload = {}) {
             const path = payload.path;
             let { version, page } = payload;
             if (!path || path == null) throw new Error('Curseforge path cannot be null')
@@ -104,18 +104,16 @@ export default {
                     value: ver.attributes.value,
                 }))
             const files = filespage.querySelectorAll('.project-file-list-item')
-                .map((i) => {
-                    i = i.removeWhitespace();
-                    return {
-                        type: i.firstChild.firstChild.attributes.title,
-                        name: i.childNodes[1].firstChild.childNodes[1].firstChild.rawText,
-                        href: i.childNodes[1].firstChild.firstChild.firstChild.attributes.href,
-                        size: i.childNodes[2].rawText,
-                        date: localDate(i.childNodes[3].firstChild.attributes['data-epoch']),
-                        version: i.childNodes[4].firstChild.rawText,
-                        downloadCount: i.childNodes[5].rawText,
-                    }
-                })
+                .map(i => i.removeWhitespace())
+                .map(i => ({
+                    type: i.firstChild.firstChild.attributes.title,
+                    name: i.childNodes[1].firstChild.childNodes[1].firstChild.rawText,
+                    href: i.childNodes[1].firstChild.firstChild.firstChild.attributes.href,
+                    size: i.childNodes[2].rawText,
+                    date: localDate(i.childNodes[3].firstChild.attributes['data-epoch']),
+                    version: i.childNodes[4].firstChild.rawText,
+                    downloadCount: i.childNodes[5].rawText,
+                }))
             return cache(url, { pages, versions, files });
         },
         /**
@@ -123,7 +121,7 @@ export default {
          * @param {string} path 
          * @return {Project}
          */
-        async project(path) {
+        async project(context, path) {
             if (!path || path == null) throw new Error('Curseforge path cannot be null')
             const url = `https://minecraft.curseforge.com${path}`
             if (cached[url]) return cached[url];
@@ -175,7 +173,7 @@ export default {
          * @param {{page:string, sort:string, version:string}} payload 
          * @return {mods:ProjectPreview[], pages:number, versions:string[], filters:string[]}
          */
-        async mods(payload = {}) {
+        async mods(context, payload = {}) {
             const { page, sort, version } = payload
             const endpoint = `https://minecraft.curseforge.com/mc-mods?${querystring.stringify({
                 page: page || '',
