@@ -90,6 +90,38 @@ export default {
     },
     proxy: {},
     actions: {
+        async fetchDetail(context, url) {
+            console.log(url)
+            const pageCont = parser.parse(await request(url)).removeWhitespace()
+            const infoBlock = pageCont.querySelector('.InfoBlock')
+            const title = pageCont.querySelector('.title')
+            const modimg = pageCont.querySelector('.class_modimg')
+            const classEx = pageCont.querySelector('.class_ex')
+            const modDescription = pageCont.querySelector('.right_inside')
+            return {
+                title: title.childNodes[1].text,
+                subTitle: title.childNodes[2].text,
+                likes: title.childNodes[3].childNodes[0].lastChild.text,
+                popularity: classEx.childNodes[0].childNodes[0].childNodes[0].text,
+                popularityType: classEx.childNodes[0].childNodes[0].childNodes[1].text,
+                lastDayCount: classEx.childNodes[0].childNodes[2].text,
+                averageCount: classEx.childNodes[0].childNodes[3].text,
+                browseCount: classEx.childNodes[1].childNodes[0].childNodes[0].text,
+                recommendCount: classEx.childNodes[1].childNodes[1].childNodes[0].text,
+                image: modimg.attributes.src,
+                modType: infoBlock.childNodes[0].lastChild.text,
+                recordTime: infoBlock.childNodes[1].text,
+                author: infoBlock.childNodes[2].text,
+                lastModifiedTime: infoBlock.childNodes[3].text,
+                mod: infoBlock.childNodes[4].text,
+                lastRecommendTime: infoBlock.childNodes[5].text,
+                modifyCount: infoBlock.childNodes[6].text.replace('\r\n', '').replace(/ /g, ''),
+                relevantLink: infoBlock.childNodes[7].childNodes[1]
+                    .childNodes[1].childNodes[0].lastChild.text,
+                modDescription: modDescription.childNodes[0].childNodes[0]
+                    .childNodes[0].childNodes[0].text,
+            }
+        },
         async fetchAll() {
             const s = await request('http://www.mcmod.cn')
             const root = parser.parse(s);
