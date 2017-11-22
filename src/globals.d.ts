@@ -34,6 +34,9 @@ declare module 'fast-html-parser' {
     interface HTMLElement extends Node {
         querySelectorAll(selector: string): Node[]
         querySelector(selector: string): Node
+
+        removeWhitespace(): HTMLElement
+        trimRight(): HTMLElement
     }
 
     function parse(raw: string, options?: {
