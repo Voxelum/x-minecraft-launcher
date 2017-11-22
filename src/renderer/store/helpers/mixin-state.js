@@ -2,11 +2,7 @@ function mix(target, src) {
     for (const key in target) {
         if (target.hasOwnProperty(key) && src.hasOwnProperty(key)) {
             if (typeof target[key] === 'object' && typeof src[key] === 'object') {
-                if (target[key] instanceof Array) {
-                    target[key] = src[key];
-                } else {
-                    mix(target[key], src[key]);
-                }
+                mix(target[key], src[key]);
             } else {
                 target[key] = src[key];
             }
@@ -40,6 +36,6 @@ export default function mixin(template, option) {
             }
         }
     }
-
+   
     return storeOption$;
 }
