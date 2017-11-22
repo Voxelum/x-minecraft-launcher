@@ -14,6 +14,7 @@
     "add": "Add",
     "cancel": "Cancel",
     "remove": "Remove",
+    "missingversion": "Missing Version",
     "!delete": "Delete",
     "Invalid credentials. Invalid username or password.": "Invalid credentials. Invalid username or password.",
     "mod": {
