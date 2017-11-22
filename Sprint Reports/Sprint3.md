@@ -40,7 +40,7 @@ The total number of estimated ideal work hours completed is 30.
 
 Last sprint has 14 days, so the user stories/day is 4/14, about 0.28 stories/day, and hours/day is about 2.14 hours/day.
 
-![Chart](svd-3.png)
+![Chart](svd--3.png)
 
 Totally, last two sprints have 42 days. The user stories/day is 12/42, about 0.29 stories/day, and hours/day is 2.02.
 
