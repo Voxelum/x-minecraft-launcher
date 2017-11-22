@@ -116,7 +116,13 @@
 
 <script>
 export default {
-
+    mounted(){
+        this.$store.dispatch('query', {
+            service:'mcmod', action:'fetchDetail', payload:'http://www.mcmod.cn/class/1.html'
+        }).then(s=>{
+            console.log(s)
+        })
+    }
 }
 </script>
 
