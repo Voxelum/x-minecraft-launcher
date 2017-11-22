@@ -5,7 +5,7 @@ export default {
     },
     getters: {
         javas: state => state.javas,
-        defaultJava: state =>
+        defaultJava: state => 
             (state.javas.length !== 0 ? state.javas[state.javas.length - 1] : undefined),
     },
     mutations: {
@@ -16,13 +16,6 @@ export default {
     actions: {
         addJavas(context, java) {
             context.commit('javas', context.getters.javas.concat(java))
-        },
-        removeJava(context, java) {
-            console.log(java)
-            const newarr = context.getters.javas.filter(j => j !== java);
-            if (newarr.length !== context.getters.javas.length) {
-                context.commit('javas', newarr)
-            }
         },
         /**
          * scan local java locations and cache
