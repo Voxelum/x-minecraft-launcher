@@ -64,7 +64,7 @@ function parseAllClass(root) {
         });
 }
 
-async function parseNews(root) {
+function parseNews(root) {
     const news = root.querySelector('.news_block').removeWhitespace();
     const newsMods = news.childNodes[1].childNodes.map((node) => {
         if (node.childNodes.length === 2) {
@@ -86,13 +86,14 @@ async function parseNews(root) {
 
 export default {
     initialize() {
+        
     },
     proxy: {},
     actions: {
         async fetchAll() {
             const s = await request('http://www.mcmod.cn')
             const root = parser.parse(s);
-            const content = await parseAllClass(root);
+            const content = parseAllClass(root);
             const news = parseNews(root);
             return { news, content }
         },
