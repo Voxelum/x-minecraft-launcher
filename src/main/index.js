@@ -108,6 +108,9 @@ function createLogWindow() {
     setupIcon(logWindow)
     logWindow.loadURL(`${winURL}?logger=true`);
     logWindow.on('closed', () => { logWindow = null })
+    logWindow.webContents.setVisualZoomLevelLimits(1, 1);
+    logWindow.webContents.setLayoutZoomLevelLimits(1, 1);
+    
 }
 
 ipcMain.on('minecraft-stdout', (s) => {
