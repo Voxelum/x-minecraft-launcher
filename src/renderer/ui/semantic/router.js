@@ -18,6 +18,7 @@ import MarketView from './components/market/MarketView'
 import Curseforge from './components/market/Curseforge'
 import CurseforgeProject from './components/market/CurseforgeProject'
 import Mcmodcn from './components/market/McmodCn'
+import McmodcnProject from './components/market/McModCnProject'
 import MarketButtonGroup from './components/market/MarketButtonGroup'
 
 export default {
@@ -132,6 +133,11 @@ export default {
             path: 'mcmodcn',
             name: 'mcmodcn',
             components: { buttons: MarketButtonGroup, default: Mcmodcn },
+        },
+        {
+            path: 'mcmodcn/:id',
+            components: { buttons: MarketButtonGroup, default: McmodcnProject },
+            props: { default: true, buttons: false },
         },
     ],
 }
