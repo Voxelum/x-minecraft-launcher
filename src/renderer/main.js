@@ -3,8 +3,10 @@ import url from 'url'
 import querystring from 'querystring'
 import VueBus from 'vue-bus'
 import fs from 'fs-extra'
+import { webFrame } from 'electron'
 
 Vue.use(VueBus)
+webFrame.setVisualZoomLevelLimits(1, 1)
 
 if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'))
