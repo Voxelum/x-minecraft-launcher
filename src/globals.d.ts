@@ -11,6 +11,53 @@ interface Service {
     actions?: { [actionName: string]: (context: ServiceContext, payload: any) => Promise<any> }
 }
 
+namespace McModCN {
+    interface Item {
+        id: string
+        url: string
+        image: string
+    }
+    interface ModPreview {
+        id: string
+        image: string
+        url: string
+        title: string
+        view: string
+        likes: string
+        favor: string
+        items: Item
+    }
+
+    interface Mod {
+        title: string
+        subTitle: string
+        likes: string
+        popularity: string
+        popularityType: string
+        lastDayCount: string
+        averageCount: string
+        browseCount: string
+        recommendCount: string
+        image: string
+        modType: string
+        recordTime: string
+        author: string
+        lastModifiedTime: string
+        mod: string
+        lastRecommendTime: string
+        modifyCount: string
+        relevantLink: string
+        modDescription: string
+    }
+
+    interface Category {
+        title: string
+        url: string
+        description: string
+        list: ModPreview
+    }
+}
+
 declare module 'fast-html-parser' {
     interface Node {
         text: string
@@ -23,7 +70,7 @@ declare module 'fast-html-parser' {
 
         removeWhitespace(): Node
         trimRight(): Node
-        
+
         attributes: { [key: string]: string }
         rawAttributes: string
         rawAttrs: string
