@@ -60,11 +60,11 @@ export default {
     /**
      * @param {ActionContext} context 
      */
-    async launch(context) {
-        const profile = context.getters['profiles/selected'];
-        const profileId = context.getters['profiles/selectedKey'];
+    async launch(context, profileId) {
+        // const profile = context.getters['profiles/selected'];
+        // const profileId = context.getters['profiles/selectedKey'];
         const auth = context.state.auth.auth;
-
+        const profile = context.getters['profiles/get'](profileId);
         if (profile === undefined || profile === null) return Promise.reject('launch.profile.empty')
         if (auth === undefined || auth === null) return Promise.reject('launch.auth.empty');
         // well... these two totally... should not happen; 
@@ -77,6 +77,7 @@ export default {
 
         // TODO check the launch condition!
         const option = {
+            auth,
             gamePath: paths.join(context.state.root, 'profiles', profileId),
             resourcePath: context.state.root,
             javaPath: profile.java,
@@ -96,7 +97,7 @@ export default {
         return context.dispatch('query', {
             service: 'launch',
             action: 'launch',
-            payload: { auth, option },
+            payload: option,
         }).then(() => {
             // save all or do other things...
             ipcRenderer.sendSync('park', true)

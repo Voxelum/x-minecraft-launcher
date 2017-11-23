@@ -18,7 +18,6 @@ import vuex from 'vuex'
 export default {
     computed: {
         id() { return this.$route.params.id },
-        profile() { return this.$store.getters[`profiles/get`](this.id) },
     },
     methods: {
         ...vuex.mapActions(['launch']),
@@ -26,13 +25,12 @@ export default {
             this.$bus.$emit('modal', this.profile.type, { isEdit: true })
         },
         onlaunch() {
-            this.launch().catch((e) => {
+            this.launch(this.id).catch((e) => {
                 switch (e.type) {
                     case 'missing.version':
                         this.$bus.$emit('modal', 'missingVersion')
                     default:
                 }
-                console.log(e.type)
                 console.log(e)
             })
         },
