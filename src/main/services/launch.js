@@ -29,7 +29,6 @@ export default {
     },
     actions: {
         launch(context, option) {
-            console.log('launch:')
             console.log(option)
             return Launcher.launch(option).then((process) => {
                 process.on('error', (err) => {

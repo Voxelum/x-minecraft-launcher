@@ -14,7 +14,6 @@
     "add": "Add",
     "cancel": "Cancel",
     "remove": "Remove",
-    "missingversion": "Missing Version",
     "!delete": "Delete",
     "Invalid credentials. Invalid username or password.": "Invalid credentials. Invalid username or password.",
     "mod": {
@@ -65,7 +64,9 @@
         "local": "This version is in the disk",
         "snapshot": "Snapshot",
         "all": "All",
-        "release": "Release"
+        "release": "Release",
+        "missing": "Missing Version {version}",
+        "requiredownload": "Missing Version {version}. Please download the version to play."
     },
     "gametype": {
         "survival": "Survival",

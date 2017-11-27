@@ -18,6 +18,7 @@ import vuex from 'vuex'
 export default {
     computed: {
         id() { return this.$route.params.id },
+        profile() { return this.$store.getters['profiles/get'](this.id) }
     },
     methods: {
         ...vuex.mapActions(['launch']),
