@@ -20,6 +20,7 @@ export default {
     }),
     getters: {
         versions: state => state.versions,
+        versionsMap: state => state.versions.reduce((o, v) => { o[v.id] = v; return o; }, {}),
         latestRelease: state => state.latest.release,
         latestSnapshot: state => state.latest.snapshot,
     },
@@ -47,9 +48,13 @@ export default {
         /**
          * 
          * @param {ActionContext} context 
-         * @param {VersionMeta} meta
+         * @param {VersionMeta|string} meta
          */
         async download(context, meta) {
+            if (typeof meta === 'string') {
+                if (!context.getters.versionsMap[meta]) throw new Error(`Cannot find the version ${meta}`)
+                meta = context.getters.versionsMap[meta];
+            }
             const id = meta.id;
             context.commit('updateStatus', { version: meta, status: 'loading' })
             let exist = await context.dispatch('exist', { paths: [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`] }, { root: true });

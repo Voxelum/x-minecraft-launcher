@@ -14,7 +14,7 @@
                 <text-component :source="source.status.gameVersion" styled="false"></text-component>
                 <!-- <span class="date">{{this.source.createdDate}}</span> -->
             </div>
-            <div class="description">
+            <div class="description" style="max-height:50px; overflow: auto;">
                 <text-component :source="source.status.serverMOTD"></text-component>
             </div>
         </div>
