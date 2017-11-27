@@ -206,10 +206,15 @@ export default {
             const settings = typeof gcString === 'string' ? GameSetting.parse(gcString) : gcString;
 
             const readMap = async (file) => {
+                const exist = await context.dispatch('exist', {
+                    paths: [`profiles/${id}/saves/${file}/level.dat`],
+                }, { root: true })
+                if (!exist) return undefined;
                 const levBuf = await context.dispatch('read', {
                     path: `profiles/${id}/saves/${file}/level.dat`,
                     fallback: undefined,
                 }, { root: true });
+                if (levBuf === undefined) return undefined;
                 const imgBuf = await context.dispatch('read', {
                     path: `profiles/${id}/saves/${file}/icon.png`,
                     fallback: undefined,
@@ -220,12 +225,13 @@ export default {
             }
             let maps;
             try {
-                const files = await context.dispatch('readFolder', { path: `profiles/${id}/saves` }, { root: true });
-                maps = await Promise.all(files.map(readMap))
+                const files = (await context.dispatch('readFolder', { path: `profiles/${id}/saves` }, { root: true }))
+                maps = (await Promise.all(files.map(readMap))).filter(m => m !== undefined);
             } catch (e) {
                 console.warn(e)
             }
 
+            console.log(maps)
             return {
                 settings,
                 maps,

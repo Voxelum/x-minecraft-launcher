@@ -43,22 +43,15 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 export default {
-    data() {
-        return {
-            filterRelease: true,
-            filter: '',
-            filterType: 'release',
-        }
-    },
+    data: () => ({
+        filterRelease: true,
+        filter: '',
+        filterType: 'release',
+    }),
     mounted() { $(this.$refs.alphaDropdown).dropdown() },
     computed: {
         id() { return this.$route.params.id },
-        ...mapGetters('versions', ['versions', 'latestRelease', 'latestSnapshot']),
-        metaMap() {
-            const map = {}
-            for (const v of this.versions) map[v.id] = v
-            return map;
-        },
+        ...mapGetters('versions', ['versions', 'latestRelease', 'latestSnapshot', 'versionsMap']),
         metas() {
             let metas = this.versions;
             if (this.filterType !== '')
@@ -69,26 +62,24 @@ export default {
         }
     },
     methods: {
-        downloadIcon(status) {
-            return {
-                download: status === 'remote',
-                disk: status === 'local',
-                outline: status === 'local',
-                icon: true,
-            }
-        },
+        downloadIcon: (status) => ({
+            download: status === 'remote',
+            disk: status === 'local',
+            outline: status === 'local',
+            icon: true,
+        }),
         onselect(vId) {
             if (vId !== this.selectingVersion)
                 this.$store.commit(`profiles/${this.id}/minecraft/version`, vId)
         },
         ondownload(event) {
             console.log('download')
-            console.log(this.metaMap[event])
-            if (!this.metaMap[event]) {
+            console.log(this.versionsMap[event])
+            if (!this.versionsMap[event]) {
                 console.error(`Cannot find the remote version ${event}`)
             }
-            if (this.metaMap[event].status === 'remote')
-                this.$store.dispatch('versions/download', this.metaMap[event])
+            if (this.versionsMap[event].status === 'remote')
+                this.$store.dispatch('versions/download', this.versionsMap[event])
             return false
         }
     },

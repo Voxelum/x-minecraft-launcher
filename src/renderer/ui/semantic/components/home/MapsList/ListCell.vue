@@ -1,20 +1,21 @@
 <template>
-    <div class="item">
-        <!-- <div class="image"> -->
-            <img class="ui rounded image" :src="map.icon"> 
-        <!-- </div> -->
+    <div class="image item">
+        <div class="ui tiny rounded image">
+            <img :src="map.icon">
+        </div>
         <div class="content">
             <h3 class="header">
                 {{map.displayName}}
             </h3>
+            <div class="meta">
+                {{$t(gameType)}} Mode
+            </div>
             <div class="extra">
-                <div class="ui label"> {{$t(gameType)}}</div>
                 <div class="ui label"> {{$t(difficulty)}}</div>
                 <div class="ui label" v-if="map.isHardCore">{{$t('hardcore')}}</div>
                 <div class="ui label" v-if="map.enabledCheat">{{$t('cheat')}}</div>
                 <div class="ui right floated basic red button">
-                    Remove
-                    <!-- <i class="right chevron icon"></i> -->
+                    {{$t('remove')}}
                 </div>
             </div>
         </div>
