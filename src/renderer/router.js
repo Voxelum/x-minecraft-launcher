@@ -16,4 +16,11 @@ router.beforeEach((to, from, next) => {
     } else if (next) next()
 })
 
+router.afterEach((to, from) => {
+    console.log(`${from ? from.fullPath : ''} => ${to.fullPath}`)
+    localStorage.setItem('route', to.fullPath);
+    console.log(localStorage.getItem('route'))
+})
+
+
 export default router;

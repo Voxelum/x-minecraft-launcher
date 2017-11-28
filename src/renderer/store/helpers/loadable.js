@@ -4,6 +4,9 @@ export default (module) => {
     if (!module.state) return;
     const keys = Object.keys(module.state)
     mutations.$reload = (state, newState) => {
+        if (!newState) {
+            return;
+        }
         for (const key of keys) {
             if (state.hasOwnProperty(key) && newState.hasOwnProperty(key)) {
                 state[key] = newState[key]
