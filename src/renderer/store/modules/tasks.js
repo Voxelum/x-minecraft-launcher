@@ -6,7 +6,7 @@ import { v4 } from 'uuid'
 import { EventEmitter } from 'events'
 
 class TaskProxy extends EventEmitter {
-    constructor(uuid, id, timeout = 10000) {
+    constructor(uuid, id, timeout = 100000) {
         super()
         this.id = id;
 
