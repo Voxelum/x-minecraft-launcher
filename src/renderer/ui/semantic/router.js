@@ -10,16 +10,12 @@ import Curseforge from './components/Curseforge'
 import CurseforgeProject from './components/CurseforgeProject'
 import Mcmodcn from './components/McmodCn'
 
-import ResourcePackList from './components/ResourcePackList'
-import GameSettings from './components/GameSettings'
-import ModsList from './components/ModsList'
-import MapsList from './components/MapsList'
-import ForgeView from './components/ForgeView'
-import LaunchSettings from './components/LaunchSettings'
-
-import CardsButtonGroup from './components/CardsButtonGroup'
-import ProfileSelectedButtonGroup from './components/ProfileSelectedButtonGroup'
-import MarketButtonGroup from './components/MarketButtonGroup'
+import MarketView from './components/market/MarketView'
+import Curseforge from './components/market/Curseforge'
+import CurseforgeProject from './components/market/CurseforgeProject'
+import Mcmodcn from './components/market/McmodCn'
+import McmodcnProject from './components/market/McModCnProject'
+import MarketButtonGroup from './components/market/MarketButtonGroup'
 
 export default {
     path: '/semantic',
@@ -142,6 +138,11 @@ export default {
             path: 'mcmodcn',
             name: 'mcmodcn',
             components: { buttons: MarketButtonGroup, default: Mcmodcn },
+        },
+        {
+            path: 'mcmodcn/:id',
+            components: { buttons: MarketButtonGroup, default: McmodcnProject },
+            props: { default: true, buttons: false },
         },
     ],
 }
