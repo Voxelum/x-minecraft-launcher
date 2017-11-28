@@ -1,6 +1,7 @@
 export default (module) => {
     if (!module.namespaced) return;
     const mutations = module.mutations || {}
+    if (!module.state) return;
     const keys = Object.keys(module.state)
     mutations.$reload = (state, newState) => {
         for (const key of keys) {

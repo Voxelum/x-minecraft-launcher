@@ -23,7 +23,7 @@
                 </a>
             </div>
         </div>
-        <div class="ui middle aligned divided items">
+        <div class="ui divided items">
             <list-cell v-for="map in maps" :key="map.displayName" :map="map" :id="id">
             </list-cell>
         </div>

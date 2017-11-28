@@ -64,7 +64,9 @@
         "local": "This version is in the disk",
         "snapshot": "Snapshot",
         "all": "All",
-        "release": "Release"
+        "release": "Release",
+        "missing": "Missing Version {version}",
+        "requiredownload": "Missing Version {version}. Please download the version to play."
     },
     "gametype": {
         "survival": "Survival",
