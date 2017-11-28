@@ -48,6 +48,7 @@ export default (root, themes, theme) => {
         return store
     }, (err) => {
         console.log('Done loading store with Error')
+        console.log(err)
         return store
     })
 }

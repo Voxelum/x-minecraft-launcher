@@ -145,7 +145,16 @@
         "status": {
             "nohost": "Cannot find host!",
             "timeout": "Connect server timeout!"
+        },
+        "ping": {
+            "name": "Pinging the server",
+            "description": "Pinging..."
         }
+    },
+    "launchsetting": {
+        "name": "Launch Settings",
+        "jvm": "JVM Arguments",
+        "mc": "Minecraft Arguments"
     },
     "errors.empty": "No error yet",
     "hardcore": "Hardcore mode",
