@@ -11,7 +11,7 @@ export default {
     },
     created() {
         this.refresh(false)
-        this.$ipc.$on('refresh', this.refresh)
+        this.$ipc.on('refresh', this.refresh)
     },
     methods: {
         refresh(force = true) { this.ids.forEach(id => this.$store.dispatch(`profiles/${id}/refresh`, force)) },
