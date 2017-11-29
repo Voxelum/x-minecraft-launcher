@@ -30,9 +30,7 @@
         <div ref="bar" class="stretched row pushable ui top attached segment" style="border-right-width:0;border-right-color:transparent;border-radius:0px;">
             <div ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;" @mouseleave="closeBar">
                 <div class="sixteen wide column">
-                    <div class="header item">
-                        {{$t('basic')}}
-                    </div>
+                    <div class="header item"> {{$t('basic')}} </div>
                     <router-link to="gamesettings" class="item" style="border-bottom:0;border-top:0;">{{$t('setting.name')}}</router-link>
                     <router-link to="resourcepacks" class="item" style="border-bottom:0;border-top:0;">{{$tc('resourcepack.name', 0)}}</router-link>
                     <router-link to="mods" class="item">{{$tc('mod.name', 0)}}</router-link>
@@ -58,7 +56,7 @@
 
 export default {
     computed: {
-        status() { return this.source.status },
+        status() { return this.source.status || {} },
         type() { return this.source.type },
         source() { return this.$store.getters['profiles/get'](this.id) || { name: "unknown" } },
         id() { return this.$route.params.id }
