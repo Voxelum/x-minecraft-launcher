@@ -17,7 +17,7 @@ export default {
     watch: {
         page() {
             this.calculatePages(this.page, this.pages)
-            this.$emit('page', this.page)
+            this.emit('page', this.page)
         },
         pages() {
             this.calculatePages(this.page, this.pages)

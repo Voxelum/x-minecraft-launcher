@@ -40,7 +40,7 @@ export default {
                         self.$router.push(`${esource.type}/${eid}`)
                     },
                     delete(eid, esource) {
-                        self.$ipc.$emit('modal', 'delete', { id: eid, type: esource.type })
+                        self.$ipc.emit('modal', 'delete', { id: eid, type: esource.type })
                     },
                 },
             }

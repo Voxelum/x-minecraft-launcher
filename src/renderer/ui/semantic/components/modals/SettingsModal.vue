@@ -30,13 +30,7 @@
                     <i class="dropdown icon"></i>
                     <span class="text"></span>
                     <div class="menu">
-                        <div class="item" @click="$i18n.locale = 'zh_cn'">
-                            zh_cn
-                        </div>
-                         <div class="item" @click="$i18n.locale = 'en'">
-                            en
-                        </div>
-                        <!-- <div class="item" v-for="th of themes" :key="th" @click="updateTheme(th)">{{th}}</div> -->
+                        <div class="item" v-for="l of languages" :key="l" @click="updateLanguage(l)">{{l}}</div>
                     </div>
                 </div>
             </div>
@@ -74,10 +68,12 @@ export default {
             resfullscreen: false,
             location: '',
             selectedTheme: '',
+            language: '',
         }
     },
     computed: {
-        ...vuex.mapState(['theme', 'themes', 'root', 'defaultResolution', 'autoDownload']),
+        ...vuex.mapState(['theme', 'themes', 'root', 'defaultResolution', 'autoDownload',
+            'languages']),
     },
     mounted() {
         $(this.$el).modal({ blurring: true, })
@@ -105,7 +101,10 @@ export default {
             e.preventDefault();
         },
         updateTheme(theme) {
-            this.selectedTheme = theme
+            this.selectedTheme = theme;
+        },
+        updateLanguage(lang) {
+            this.language = lang;
         },
         discard() {
             $(this.$el).modal('hide')
