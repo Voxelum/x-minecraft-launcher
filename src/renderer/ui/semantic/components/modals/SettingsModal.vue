@@ -24,6 +24,22 @@
                     </div>
                 </div>
             </div>
+            <div class="field">
+                <label>{{$t('setting.language')}}</label>
+                <div class="ui selection dropdown">
+                    <i class="dropdown icon"></i>
+                    <span class="text"></span>
+                    <div class="menu">
+                        <div class="item" @click="$i18n.locale = 'zh_cn'">
+                            zh_cn
+                        </div>
+                         <div class="item" @click="$i18n.locale = 'en'">
+                            en
+                        </div>
+                        <!-- <div class="item" v-for="th of themes" :key="th" @click="updateTheme(th)">{{th}}</div> -->
+                    </div>
+                </div>
+            </div>
             <div class="field" :class="{disabled: resfullscreen}">
                 <label>{{$t('setting.resolution')}}</label>
                 <div class="two fields">
