@@ -33,7 +33,7 @@ export default {
             if (this.editing) {
                 this.editing = false;
                 this.innerkey = event.key;
-                this.emit('keychange', this.innerkey)
+                this.$emit('keychange', this.innerkey)
                 console.log(keymapper.getKey(event.code))
             }
         })
