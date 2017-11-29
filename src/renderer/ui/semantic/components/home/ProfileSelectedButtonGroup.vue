@@ -23,13 +23,13 @@ export default {
     methods: {
         ...vuex.mapActions(['launch']),
         edit() {
-            this.$bus.$emit('modal', this.profile.type, { isEdit: true })
+            this.$ipc.$emit('modal', this.profile.type, { isEdit: true })
         },
         onlaunch() {
             this.launch(this.id).catch((e) => {
                 switch (e.type) {
                     case 'missing.version':
-                        this.$bus.$emit('modal', 'missingVersion')
+                        this.$ipc.$emit('modal', 'missingVersion')
                     default:
                 }
                 console.log(e)

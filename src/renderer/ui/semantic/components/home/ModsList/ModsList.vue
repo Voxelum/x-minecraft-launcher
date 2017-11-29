@@ -24,14 +24,14 @@
         <div class="row">
             <div class="eight wide column">
                 <div class="ui relaxed divided items" style="height:290px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
-                    <a class="ui circular large label" style="margin:5px" v-for="(val, index) in mods" v-if="valid(val)" :key="val[0].modid||val[0].name" :data-tooltip="val[0].version" data-inverted="" :data-position="pos(index)" @click="$bus.$emit('modal', 'moddetail', val[0])">
+                    <a class="ui circular large label" style="margin:5px" v-for="(val, index) in mods" v-if="valid(val)" :key="val[0].modid||val[0].name" :data-tooltip="val[0].version" data-inverted="" :data-position="pos(index)" @click="$ipc.$emit('modal', 'moddetail', val[0])">
                         {{modName(val[0])}}
                     </a>
                 </div>
             </div>
             <div class="eight wide column">
                 <draggable class="ui relaxed divided items" style="height:290px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
-                    <a class="ui circular large label" style="margin:5px" v-for="(val, index) in nonselectedMods" v-if="valid(val)" :key="val[0].modid||val[0].name" :data-tooltip="val[0].version" data-inverted="" :data-position="pos(index)" @click="$bus.$emit('modal', 'moddetail', val[0])">
+                    <a class="ui circular large label" style="margin:5px" v-for="(val, index) in nonselectedMods" v-if="valid(val)" :key="val[0].modid||val[0].name" :data-tooltip="val[0].version" data-inverted="" :data-position="pos(index)" @click="$ipc.$emit('modal', 'moddetail', val[0])">
                         {{modName(val[0])}}
                     </a>
                 </draggable>

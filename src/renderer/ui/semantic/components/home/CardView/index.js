@@ -11,7 +11,7 @@ export default {
     },
     created() {
         this.refresh(false)
-        this.$bus.$on('refresh', this.refresh)
+        this.$ipc.$on('refresh', this.refresh)
     },
     methods: {
         refresh(force = true) { this.ids.forEach(id => this.$store.dispatch(`profiles/${id}/refresh`, force)) },
@@ -40,7 +40,7 @@ export default {
                         self.$router.push(`${esource.type}/${eid}`)
                     },
                     delete(eid, esource) {
-                        self.$bus.$emit('modal', 'delete', { id: eid, type: esource.type })
+                        self.$ipc.$emit('modal', 'delete', { id: eid, type: esource.type })
                     },
                 },
             }
