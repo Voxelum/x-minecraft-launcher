@@ -132,7 +132,7 @@ export default {
                     mode: this.mode, clientToken: this.clientToken
                 }).then((result) => {
                     this.logining = false
-                    this.$emit('login')
+                    this.emit('login')
                     this.error = '';
                     this.$nextTick(() => $(this.$el).modal('hide'))
                 }, err => {

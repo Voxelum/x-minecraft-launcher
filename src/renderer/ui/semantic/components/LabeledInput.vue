@@ -22,13 +22,13 @@ export default {
                 this.inputVal = '';
                 return;
             }
-            this.$emit('addlabel', this.inputVal)
+            this.emit('addlabel', this.inputVal)
             this.inputVal = '';
         },
         delLabel(lab) {
             const idx = this.labels.indexOf(lab)
             if (idx === -1) return;
-            this.$emit('dellabel', lab)
+            this.emit('dellabel', lab)
         },
         focusInput() {
             this.$refs.input.focus();
