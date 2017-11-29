@@ -9,7 +9,7 @@ webFrame.setVisualZoomLevelLimits(1, 1)
 
 Vue.use({
     install(instance) {
-        instance.$ipc = ipcRenderer;
+        Vue.prototype.$ipc = ipcRenderer;
         instance.$mapGetters = Vuex.mapGetters;
         instance.$mapActions = Vuex.mapActions;
     },

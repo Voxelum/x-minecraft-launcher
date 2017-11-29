@@ -16,7 +16,7 @@ export default {
             })))
     },
     mounted() {
-        this.$ipc.$on('modal', this.show)
+        this.$ipc.on('modal', this.show)
     },
     methods: {
         show(id, args) {
