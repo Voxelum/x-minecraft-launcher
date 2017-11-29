@@ -85,13 +85,13 @@
         "non": "Unknown difficulty"
     },
     "signup": {
-        "description": "New to us?",
-        "name": "Sign Up"
+        "description": "第一次使用?",
+        "name": "注册"
     },
     "user": {
-        "signup": "Sign up",
-        "profile": "Profile",
-        "logout": "Logout"
+        "signup": "注册",
+        "profile": "个人信息",
+        "logout": "登出"
     },
     "offline": {
         "name": "Offline",
