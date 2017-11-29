@@ -15,10 +15,10 @@
 export default {
     methods: {
         onModpack() {
-            this.$ipc.$emit('modal', 'modpack')
+            this.$ipc.emit('modal', 'modpack')
         },
         onServer() {
-            this.$ipc.$emit('modal', 'server')
+            this.$ipc.emit('modal', 'server')
         }
     }
 }
