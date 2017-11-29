@@ -6,7 +6,7 @@ import { remote } from 'electron'
 Vue.use(VueI18n)
 
 export default new VueI18n({
-    locale: remote.app.getLocale(),
+    locale: 'zh_cn',
     fallbackLocale: 'en',
     messages: locales,
     missing: (locale, key, vm) => {

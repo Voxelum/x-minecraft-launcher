@@ -1,28 +1,28 @@
 {
-    "hello": "Hello world",
-    "edit": "Edit",
-    "no": "No",
-    "save": "Save",
-    "name": "Name",
-    "create": "Create",
-    "author": "Author",
-    "description": "Description",
-    "help": "Help",
-    "home": "Home",
-    "login": "Login",
-    "summery": "Summery",
-    "add": "Add",
-    "cancel": "Cancel",
-    "remove": "Remove",
-    "!delete": "Delete",
-    "Invalid credentials. Invalid username or password.": "Invalid credentials. Invalid username or password.",
+    "hello": "你好世界",
+    "edit": "编辑",
+    "no": "否",
+    "save": "保存",
+    "name": "名字",
+    "create": "创建",
+    "author": "作者",
+    "description": "介绍",
+    "help": "帮助",
+    "home": "主页",
+    "login": "登陆",
+    "summery": "简介",
+    "add": "添加",
+    "cancel": "取消",
+    "remove": "移除",
+    "!delete": "删除",
+    "Invalid credentials. Invalid username or password.": "错误的用户名或密码",
     "mod": {
         "name": "Mod | Mods",
         "hint": "Drop mod's .jar/.litemod here to import.",
         "import": "Import Mod",
         "export": "Export Mod"
     },
-    "market": "Market",
+    "market": "市场",
     "resourcepack": {
         "name": "Resource Pack | Resource Packs",
         "available": "Avaliable",
@@ -108,7 +108,7 @@
         "password": "Password"
     },
     "modpack": {
-        "add": "Add Modpack",
+        "add": "添加扩展包",
         "name": "Modpack | Modpacks",
         "edit": "Edit Modpack Info",
         "error": {
@@ -118,26 +118,26 @@
             "name": "Delete the modpack",
             "description": "This will delete all the data about this modpack. Are you sure to do this?"
         },
-        "create": "Create a New Modpack"
+        "create": "创建一个新的扩展包"
     },
     "delete": {
         "yes": "Delete",
         "no": "No"
     },
-    "actionforbidden": "Action Forbidden",
+    "actionforbidden": "创建失败",
     "server": {
-        "add": "Add Server",
+        "add": "添加服务器",
         "name": "Server | Servers",
-        "create": "Create A New Server",
+        "create": "创建一个新的服务器",
         "players": "Players",
         "pings": "Pings",
-        "host": "Host",
-        "port": "Port",
-        "edit": "Edit Server Info",
+        "host": "主机",
+        "port": "端口",
+        "edit": "编辑",
         "motd": "Server MOTD",
         "error": {
-            "requirehost": "Host IP address is required! Please enter it!",
-            "requirename": "Name is required! Please enter a server name!"
+            "requirehost": "缺少主机IP地址",
+            "requirename": "缺少服务器名"
         },
         "delete": {
             "name": "Delete the server",
