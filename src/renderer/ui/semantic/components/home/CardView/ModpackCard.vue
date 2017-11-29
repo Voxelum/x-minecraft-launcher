@@ -41,10 +41,10 @@ export default {
     props: ['color', 'source', 'id', 'bound'],
     methods: {
         onclick(e) {
-            this.emit('select', this.id, this.source)
+            this.$emit('select', this.id, this.source)
         },
         del(e) {
-            this.emit('delete', this.id, this.source)
+            this.$emit('delete', this.id, this.source)
             e.preventDefault()
         },
     },

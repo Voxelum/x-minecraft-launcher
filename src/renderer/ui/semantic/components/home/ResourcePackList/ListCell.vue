@@ -67,7 +67,7 @@ export default {
             if (!this.deleting) {
                 this.deleting = true
             } else {
-                this.emit('delete', this.val.hash)
+                this.$emit('delete', this.val.hash)
                 this.deleting = false
             }
         }
