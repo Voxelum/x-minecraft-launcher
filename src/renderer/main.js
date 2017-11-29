@@ -1,12 +1,19 @@
 import Vue from 'vue';
 import url from 'url'
+import Vuex from 'vuex';
 import querystring from 'querystring'
-import VueBus from 'vue-bus'
 import fs from 'fs-extra'
-import { webFrame } from 'electron'
+import { webFrame, ipcRenderer } from 'electron'
 
-Vue.use(VueBus)
 webFrame.setVisualZoomLevelLimits(1, 1)
+
+Vue.use({
+    install(instance) {
+        instance.$ipc = ipcRenderer;
+        instance.$mapGetters = Vuex.mapGetters;
+        instance.$mapActions = Vuex.mapActions;
+    },
+})
 
 if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'))
