@@ -75,8 +75,8 @@ export default {
         if (this.username === '') this.showModal('login')
     },
     methods: {
-        showModal(id, args) { this.$bus.$emit('modal', id, args) },
-        refresh() { this.$bus.$emit('refresh') },
+        showModal(id, args) { this.$ipc.emit('modal', id, args) },
+        refresh() { this.$ipc.emit('refresh') },
         close: () => require('electron').ipcRenderer.sendSync('exit'),
     },
 }
