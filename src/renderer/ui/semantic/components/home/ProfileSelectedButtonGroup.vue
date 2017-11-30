@@ -7,7 +7,7 @@
         </div>
         <div class="ui icon right floated inverted button non-moveable" @click="edit">
             <i class="edit icon"></i>
-            Edit
+            {{$t('edit')}}
         </div>
     </span>
 </template>

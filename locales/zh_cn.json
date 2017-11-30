@@ -55,17 +55,17 @@
     },
     "version": {
         "name": "版本 | 版本",
-        "prepare": "Preparing Files",
+        "prepare": "准备中",
         "status": "状态",
-        "date": "Updated Date",
-        "releaseDate": "Release Date",
+        "date": "更新日期",
+        "releaseDate": "发行日期",
         "unknown": "未知的版本",
         "remote": "下载这个版本",
         "pending": "下载中...",
-        "local": "这个版本已下载",
+        "local": "这个版本已被下载",
         "snapshot": "快照",
-        "all": "All",
-        "release": "Release",
+        "all": "所有版本",
+        "release": "稳定版",
         "missing": "缺少{version}版本的游戏文件 ",
         "requiredownload": "缺少{version}版本的游戏文件. 请下载并重试."
     },
@@ -112,11 +112,11 @@
         "name": "整合包 | 整合包",
         "edit": "编辑整合包信息",
         "error": {
-            "requirename": "Name is required! Please come up a modpack name!"
+            "requirename": "必须填写整合包的名字！"
         },
         "delete": {
-            "name": "Delete the modpack",
-            "description": "This will delete all the data about this modpack. Are you sure to do this?"
+            "name": "删除整合包",
+            "description": "此操作将删除所有整合包的数据。你确定要继续吗？"
         },
         "create": "创建一个新的整合包"
     },
@@ -130,7 +130,7 @@
         "name": "服务器 | 服务器",
         "create": "创建一个新的服务器",
         "players": "玩家",
-        "pings": "Pings",
+        "pings": "延迟",
         "host": "主机IP",
         "port": "端口",
         "edit": "编辑",
@@ -141,15 +141,16 @@
         },
         "delete": {
             "name": "删除服务器",
-            "description": "This will delete all the local data about this server. Are you sure to do this?"
+            "description": "此操作将删除所有本地关于此服务器的信息。你确定继续吗？"
         },
         "status": {
-            "nohost": "Cannot find host!",
-            "timeout": "Connect server timeout!"
+            "nohost": "找不到服务器!",
+            "timeout": "服务器响应超时!",
+            "refurse": "服务器断开了连接!"
         },
         "ping": {
-            "name": "Pinging the server",
-            "description": "Pinging..."
+            "name": "检测远端服务器连接",
+            "description": "连接服务器中..."
         }
     },
     "launchsetting": {
@@ -157,14 +158,14 @@
         "jvm": "JVM 参数",
         "mc": "Minecraft 参数"
     },
-    "errors.empty": "No error yet",
+    "errors.empty": "没有错误",
     "hardcore": "极限模式",
     "cheat": "作弊模式",
     "renderClouds": {
-        "name": "Clouds",
-        "true": "Fancy",
-        "false": "Off",
-        "fast": "Fast"
+        "name": "云",
+        "true": "最佳",
+        "false": "关闭",
+        "fast": "快速"
     },
     "particles": {
         "name": "粒子",
