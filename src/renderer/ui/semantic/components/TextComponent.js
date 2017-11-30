@@ -45,7 +45,7 @@ export default {
                     attrs.style = style;
                 }
                 let text = component.unformatted;
-                if (this.localized === 'true' && this.$te(component.unformatted)) {
+                if (this.$te(component.unformatted)) {
                     text = this.$t(component.unformatted, this.args);
                 }
                 arr.push(createElement('span', {
