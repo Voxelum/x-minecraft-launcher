@@ -31,7 +31,7 @@ export default {
             return context.dispatch('query', {
                 service: 'mcmod',
                 action: 'fetchDetail',
-                payload: `http://www.mcmod.cn/class/${url}.html`,
+                payload: `http://www.mcmod.cn/class/${id}.html`,
             }, { root: true })
         },
     },
