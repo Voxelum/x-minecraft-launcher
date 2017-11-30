@@ -231,7 +231,6 @@ export default {
                 console.warn(e)
             }
 
-            console.log(maps)
             return {
                 settings,
                 maps,
