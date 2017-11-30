@@ -94,15 +94,9 @@
         "logout": "登出"
     },
     "offline": {
-<<<<<<< HEAD
-        "name": "离线",
-        "account": "帐号",
-        "password": "No Password"
-=======
         "name": "离线模式",
         "account": "用户名",
         "password": "无需密码"
->>>>>>> 388c58ee65dc641a6b0cab7914d89d00b6603b36
     },
     "basic": "基础",
     "advanced": "高级",
@@ -110,11 +104,7 @@
     "liteloader": "LiteLoader",
     "mojang": {
         "name": "Mojang",
-<<<<<<< HEAD
         "account": "邮箱地址",
-=======
-        "account": "电子邮箱地址",
->>>>>>> 388c58ee65dc641a6b0cab7914d89d00b6603b36
         "password": "密码"
     },
     "modpack": {
@@ -140,13 +130,8 @@
         "name": "服务器 | 服务器",
         "create": "创建一个新的服务器",
         "players": "玩家",
-<<<<<<< HEAD
-        "pings": "Pings",
-        "host": "主机",
-=======
         "pings": "延迟",
-        "host": "主机IP",
->>>>>>> 388c58ee65dc641a6b0cab7914d89d00b6603b36
+        "host": "主机",
         "port": "端口",
         "edit": "编辑",
         "motd": "服务器 MOTD",
@@ -156,20 +141,12 @@
         },
         "delete": {
             "name": "删除服务器",
-<<<<<<< HEAD
-            "description": "这会删除这个服务器的所有本地数据，你确定要这么做吗？"
-        },
-        "status": {
-            "nohost": "Cannot find host!",
-            "timeout": "连接超时！"
-=======
             "description": "此操作将删除所有本地关于此服务器的信息。你确定继续吗？"
         },
         "status": {
             "nohost": "找不到服务器!",
             "timeout": "服务器响应超时!",
             "refurse": "服务器断开了连接!"
->>>>>>> 388c58ee65dc641a6b0cab7914d89d00b6603b36
         },
         "ping": {
             "name": "检测远端服务器连接",
