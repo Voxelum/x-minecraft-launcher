@@ -87,6 +87,10 @@ export default {
                 const modimg = pageCont.querySelector('.class_modimg')
                 const classEx = pageCont.querySelector('.class_ex')
                 const modDescription = pageCont.querySelector('.right_inside')
+                let image = modimg.attributes.src;
+                if (image.startsWith('/')) {
+                    image = `http://www.mcmod.cn${image}`
+                }
                 return {
                     title: title.childNodes[1].text,
                     subTitle: title.childNodes[2].text,
@@ -97,7 +101,7 @@ export default {
                     averageCount: classEx.childNodes[0].childNodes[3].text,
                     browseCount: classEx.childNodes[1].childNodes[0].childNodes[0].text,
                     recommendCount: classEx.childNodes[1].childNodes[1].childNodes[0].text,
-                    image: modimg.attributes.src,
+                    image,
                     modType: infoBlock.childNodes[0].lastChild.text,
                     recordTime: infoBlock.childNodes[1].text,
                     author: infoBlock.childNodes[2].text,
