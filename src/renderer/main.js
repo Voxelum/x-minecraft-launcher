@@ -10,8 +10,8 @@ webFrame.setVisualZoomLevelLimits(1, 1)
 Vue.use({
     install(instance) {
         Vue.prototype.$ipc = ipcRenderer;
-        instance.$mapGetters = Vuex.mapGetters;
-        instance.$mapActions = Vuex.mapActions;
+        Vue.prototype.$mapGetters = Vuex.mapGetters;
+        Vue.prototype.$mapActions = Vuex.mapActions;
     },
 })
 
@@ -36,7 +36,7 @@ if (logger === 'true') {
             router,
             components: { App: require('./App') },
             store,
-            i18n: require('./i18n').default,
+            i18n: store.getters.i18n,
             template: '<App style="max-height:626px; overflow:hidden;"></App>',
         }).$mount('#app'),
     ).then((v) => {

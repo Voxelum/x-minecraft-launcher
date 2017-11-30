@@ -145,7 +145,8 @@
         },
         "status": {
             "nohost": "Cannot find host!",
-            "timeout": "Connect server timeout!"
+            "timeout": "Connect server timeout!",
+            "refurse": "Server refused!"
         },
         "ping": {
             "name": "Pinging the server",
