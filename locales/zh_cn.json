@@ -18,71 +18,71 @@
     "Invalid credentials. Invalid username or password.": "错误的用户名或密码",
     "mod": {
         "name": "Mod | Mods",
-        "hint": "Drop mod's .jar/.litemod here to import.",
-        "import": "Import Mod",
-        "export": "Export Mod"
+        "hint": "将Mod jar文件拖入此处来导入",
+        "import": "导入 Mod",
+        "export": "导出 Mod"
     },
     "market": "市场",
     "resourcepack": {
-        "name": "Resource Pack | Resource Packs",
-        "available": "Avaliable",
-        "selected": "Selected",
-        "hint": "Drop Resource Pack's folder/zip here to import.",
-        "import": "Import Resource Pack",
-        "export": "Export Resource Pack"
+        "name": "资源包 | 资源包",
+        "available": "可用的资源包",
+        "selected": "已选的资源包",
+        "hint": "将资源包zip或文件夹拖入此处来导入",
+        "import": "导入资源包",
+        "export": "导出资源包"
     },
     "map": {
-        "name": "Map | Maps",
-        "hint": "Drop map's folder/zip here to import map.",
-        "import": "Import Map",
-        "export": "Export Map"
+        "name": "地图 | 地图",
+        "hint": "将地图zip或文件夹拖入此处来导入",
+        "import": "导入地图",
+        "export": "导出地图"
     },
     "setting": {
-        "name": "Settings",
-        "location": "Store Location",
-        "theme": "Theme",
-        "language": "Language",
-        "resolution": "Default Resolution"
+        "name": "设置",
+        "location": "数据存储位置",
+        "theme": "外观主题",
+        "language": "语言",
+        "resolution": "Minecraft默认窗口大小"
     },
     "resolution": {
-        "width": "Width",
-        "height": "Height",
-        "fullscreen": "Fullscreen"
+        "width": "宽",
+        "height": "高",
+        "fullscreen": "全屏"
     },
-    "launch": "Launch",
+    "launch": "启动",
     "tasks": {
-        "empty": "No Running Tasks"
+        "empty": "目前没有运行中的任务"
     },
     "version": {
-        "name": "Version | Versions",
-        "prepare": "Preparing Files",
-        "status": "Status",
-        "date": "Updated Date",
-        "releaseDate": "Release Date",
-        "unknown": "Unknown Version",
-        "remote": "Download this version",
-        "pending": "Downloading...",
-        "local": "This version is in the disk",
-        "snapshot": "Snapshot",
-        "all": "All",
-        "release": "Release",
-        "missing": "Missing Version {version}",
-        "requiredownload": "Missing Version {version}. Please download the version to play."
+        "name": "版本 | 版本",
+        "prepare": "准备中",
+        "status": "状态",
+        "date": "更新日期",
+        "releaseDate": "发行日期",
+        "unknown": "未知的版本",
+        "remote": "下载这个版本",
+        "pending": "下载中...",
+        "local": "这个版本已被下载",
+        "snapshot": "快照",
+        "all": "所有版本",
+        "release": "稳定版",
+        "missing": "缺少{version}版本的游戏文件 ",
+        "requiredownload": "缺少{version}版本的游戏文件. 请下载并重试."
     },
     "gametype": {
-        "survival": "Survival",
-        "creative": "Creative",
-        "adventure": "Adventure",
-        "spectator": "Spectator",
-        "non": "Non mode"
+        "survival": "生存模式",
+        "creative": "创造模式",
+        "adventure": "冒险模式",
+        "spectator": "观察者模式",
+        "non": "未知模式"
     },
     "curseforge": "Curseforge",
     "difficulty": {
-        "peaseful": "Peaseful",
-        "easy": "Easy",
-        "normal": "Normal",
-        "hard": "Hard",
-        "non": "Unknown difficulty"
+        "peaseful": "和平",
+        "easy": "简单",
+        "normal": "正常",
+        "hard": "困难",
+        "non": "未知难度"
     },
     "signup": {
         "description": "第一次使用?",
@@ -94,31 +94,41 @@
         "logout": "登出"
     },
     "offline": {
+<<<<<<< HEAD
         "name": "离线",
         "account": "帐号",
         "password": "No Password"
+=======
+        "name": "离线模式",
+        "account": "用户名",
+        "password": "无需密码"
+>>>>>>> 388c58ee65dc641a6b0cab7914d89d00b6603b36
     },
-    "basic": "Basic",
-    "advanced": "Advanced",
+    "basic": "基础",
+    "advanced": "高级",
     "forge": "Forge",
     "liteloader": "LiteLoader",
     "mojang": {
         "name": "Mojang",
+<<<<<<< HEAD
         "account": "邮箱地址",
+=======
+        "account": "电子邮箱地址",
+>>>>>>> 388c58ee65dc641a6b0cab7914d89d00b6603b36
         "password": "密码"
     },
     "modpack": {
-        "add": "添加扩展包",
-        "name": "Modpack | Modpacks",
-        "edit": "Edit Modpack Info",
+        "add": "添加整合包",
+        "name": "整合包 | 整合包",
+        "edit": "编辑整合包信息",
         "error": {
-            "requirename": "Name is required! Please come up a modpack name!"
+            "requirename": "必须填写整合包的名字！"
         },
         "delete": {
-            "name": "Delete the modpack",
-            "description": "This will delete all the data about this modpack. Are you sure to do this?"
+            "name": "删除整合包",
+            "description": "此操作将删除所有整合包的数据。你确定要继续吗？"
         },
-        "create": "创建一个新的扩展包"
+        "create": "创建一个新的整合包"
     },
     "delete": {
         "yes": "删除",
@@ -127,59 +137,73 @@
     "actionforbidden": "创建失败",
     "server": {
         "add": "添加服务器",
-        "name": "Server | Servers",
+        "name": "服务器 | 服务器",
         "create": "创建一个新的服务器",
         "players": "玩家",
+<<<<<<< HEAD
         "pings": "Pings",
         "host": "主机",
+=======
+        "pings": "延迟",
+        "host": "主机IP",
+>>>>>>> 388c58ee65dc641a6b0cab7914d89d00b6603b36
         "port": "端口",
         "edit": "编辑",
-        "motd": "Server MOTD",
+        "motd": "服务器 MOTD",
         "error": {
             "requirehost": "缺少主机IP地址",
             "requirename": "缺少服务器名"
         },
         "delete": {
             "name": "删除服务器",
+<<<<<<< HEAD
             "description": "这会删除这个服务器的所有本地数据，你确定要这么做吗？"
         },
         "status": {
             "nohost": "Cannot find host!",
             "timeout": "连接超时！"
+=======
+            "description": "此操作将删除所有本地关于此服务器的信息。你确定继续吗？"
+        },
+        "status": {
+            "nohost": "找不到服务器!",
+            "timeout": "服务器响应超时!",
+            "refurse": "服务器断开了连接!"
+>>>>>>> 388c58ee65dc641a6b0cab7914d89d00b6603b36
         },
         "ping": {
-            "name": "Pinging the server",
-            "description": "Pinging..."
+            "name": "检测远端服务器连接",
+            "description": "连接服务器中..."
         }
     },
     "launchsetting": {
-        "name": "Launch Settings",
-        "jvm": "JVM Arguments",
-        "mc": "Minecraft Arguments"
+        "name": "启动配置",
+        "jvm": "JVM 参数",
+        "mc": "Minecraft 参数"
     },
-    "errors.empty": "No error yet",
-    "hardcore": "Hardcore mode",
-    "cheat": "Cheating",
+    "errors.empty": "没有错误",
+    "hardcore": "极限模式",
+    "cheat": "作弊模式",
     "renderClouds": {
-        "name": "Clouds",
-        "true": "Fancy",
-        "false": "Off",
-        "fast": "Fast"
+        "name": "云",
+        "true": "最佳",
+        "false": "关闭",
+        "fast": "快速"
     },
     "particles": {
-        "name": "Particle",
-        "0": "Maximum",
-        "1": "Decreased",
-        "2": "Minimum"
+        "name": "粒子",
+        "0": "最多",
+        "1": "较少",
+        "2": "最少"
     },
     "ao": {
-        "name": "Smooth Lighting",
-        "0": "Off",
-        "1": "Minimum",
-        "2": "Maximum"
+        "name": "平滑光照",
+        "0": "关",
+        "1": "最少",
+        "2": "最多"
     },
     "mipmapLevels": {
-        "name": "Mipmap",
+        "name": "Mipmap等级",
         "0": "0",
         "1": "1",
         "2": "2",
@@ -187,33 +211,33 @@
         "4": "4"
     },
     "entityShadows": {
-        "name": "Entity Shadows",
-        "true": "Enabled",
-        "false": "Disabled"
+        "name": "实体阴影",
+        "true": "开启",
+        "false": "关闭"
     },
     "fancyGraphics": {
-        "name": "Graphic",
-        "true": "Fancy",
-        "false": "Fast"
+        "name": "图像质量",
+        "true": "最高",
+        "false": "快速"
     },
     "enableVsync": {
-        "name": "Vsync",
-        "true": "Enabled",
-        "false": "Disabled"
+        "name": "垂直同步",
+        "true": "开启",
+        "false": "关闭"
     },
     "fboEnable": {
-        "name": "Use FBO",
-        "true": "Enabled",
-        "false": "Disabled"
+        "name": "使用FBO",
+        "true": "启用",
+        "false": "关闭"
     },
     "useVbo": {
-        "name": "Use VBO",
-        "true": "Enabled",
-        "false": "Disabled"
+        "name": "使用VBO",
+        "true": "启用",
+        "false": "关闭"
     },
     "anaglyph3d": {
-        "name": "3D Effect",
-        "true": "Enabled",
-        "false": "Disabled"
+        "name": "3D效果",
+        "true": "启用",
+        "false": "关闭"
     }
 }

@@ -1,7 +1,7 @@
 import { TextComponent, TextFormatting, Style, Server } from 'ts-minecraft'
+import vuex from 'vuex'
 import protocol from 'shared/protocol'
 import profile from './profile'
-
 
 export default {
     namespaced: true,
@@ -40,6 +40,11 @@ export default {
                 return value;
             })
         },
+        /**
+         * 
+         * @param {vuex.ActionContext} context 
+         * @param {*} force 
+         */
         refresh(context, force) {
             if (context.state.status.pingToServer && !force) return Promise.resolve();
             context.commit('putAll', { status: Server.Status.pinging() })
@@ -67,8 +72,12 @@ export default {
                         const timeout = TextComponent.str('server.status.timeout');
                         timeout.style = Style.create({ color: TextFormatting.RED })
                         context.commit('putAll', { status: new Server.Status(TextComponent.str('version.unknown'), timeout, -1, -1, -1) })
+                    } else if (err.code === 'ENOTFOUND') {
+                        const timeout = TextComponent.str('server.status.nohost');
+                        timeout.style = Style.create({ color: TextFormatting.RED })
+                        context.commit('putAll', { status: new Server.Status(TextComponent.str('version.unknown'), timeout, -1, -1, -1) })
                     } else if (err.code === 'ECONNREFUSED') {
-                        const nohost = TextComponent.str('server.status.nohost');
+                        const nohost = TextComponent.str('server.status.refuse');
                         nohost.style = Style.create({ color: TextFormatting.RED })
                         context.commit('putAll', { status: new Server.Status(TextComponent.str('version.unknown'), nohost, -1, -1, -1) })
                     } else {
