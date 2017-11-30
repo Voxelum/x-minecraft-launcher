@@ -34,7 +34,6 @@ export default
             .then(parser)
             .then((parsed) => {
                 if (parsed !== null) {
-                    console.log(parsed)
                     cache[url] = parsed;
                     setTimeout(() => { delete cache[url]; }, 60000);
                 }
