@@ -94,8 +94,8 @@
         "logout": "登出"
     },
     "offline": {
-        "name": "Offline",
-        "account": "Username",
+        "name": "离线",
+        "account": "帐号",
         "password": "No Password"
     },
     "basic": "Basic",
@@ -104,8 +104,8 @@
     "liteloader": "LiteLoader",
     "mojang": {
         "name": "Mojang",
-        "account": "Email Adress",
-        "password": "Password"
+        "account": "邮箱地址",
+        "password": "密码"
     },
     "modpack": {
         "add": "添加扩展包",
@@ -121,15 +121,15 @@
         "create": "创建一个新的扩展包"
     },
     "delete": {
-        "yes": "Delete",
-        "no": "No"
+        "yes": "删除",
+        "no": "取消"
     },
     "actionforbidden": "创建失败",
     "server": {
         "add": "添加服务器",
         "name": "Server | Servers",
         "create": "创建一个新的服务器",
-        "players": "Players",
+        "players": "玩家",
         "pings": "Pings",
         "host": "主机",
         "port": "端口",
@@ -140,12 +140,12 @@
             "requirename": "缺少服务器名"
         },
         "delete": {
-            "name": "Delete the server",
-            "description": "This will delete all the local data about this server. Are you sure to do this?"
+            "name": "删除服务器",
+            "description": "这会删除这个服务器的所有本地数据，你确定要这么做吗？"
         },
         "status": {
             "nohost": "Cannot find host!",
-            "timeout": "Connect server timeout!"
+            "timeout": "连接超时！"
         },
         "ping": {
             "name": "Pinging the server",
