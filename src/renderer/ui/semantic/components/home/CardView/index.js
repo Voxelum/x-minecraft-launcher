@@ -37,6 +37,7 @@ export default {
                 },
                 on: {
                     select(eid, esource) {
+                        console.log(`select ${`${esource.type}/${eid}`}`)
                         self.$router.push(`${esource.type}/${eid}`)
                     },
                     delete(eid, esource) {
