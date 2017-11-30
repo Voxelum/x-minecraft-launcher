@@ -40,8 +40,8 @@
                     <router-link to="launchsettings" class="item">{{$t('launchsetting.name')}}</router-link>
                 </div>
             </div>
-            <div class="ui black circular icon huge button" style="position:absolute; margin:20px;" @click="openBar" @mouseenter="openBar">
-                <i class="white cube icon"></i>
+            <div class="ui basic circular icon huge button" style="position:absolute; margin:20px;" @click="openBar" @mouseenter="openBar">
+                <i class="options icon"></i>
             </div>
             <div class="pusher ui basic segment padded text container" style="min-height:70%; max-heigth:70%;">
                 <transition name="fade" mode="out-in">
