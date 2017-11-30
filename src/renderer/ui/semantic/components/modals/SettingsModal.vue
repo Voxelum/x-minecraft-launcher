@@ -28,7 +28,7 @@
                 <label>{{$t('setting.language')}}</label>
                 <div class="ui selection dropdown">
                     <i class="dropdown icon"></i>
-                    <span class="text"></span>
+                    <span class="text">{{selectedLanguage}}</span>
                     <div class="menu">
                         <div class="item" v-for="l of languages" :key="l" @click="updateLanguage(l)">{{l}}</div>
                     </div>
@@ -68,12 +68,20 @@ export default {
             resfullscreen: false,
             location: '',
             selectedTheme: '',
-            language: '',
+            selectedLanguage: '',
         }
     },
     computed: {
-        ...vuex.mapState(['theme', 'themes', 'root', 'defaultResolution', 'autoDownload',
-            'languages']),
+        ...vuex.mapGetters([
+            'theme',
+            'themes',
+            'root',
+            'defaultResolution',
+            'autoDownload',
+            'javas',
+            'defaultJava',
+            'languages',
+            'language']),
     },
     mounted() {
         $(this.$el).modal({ blurring: true, })
@@ -87,6 +95,7 @@ export default {
             this.resfullscreen = this.defaultResolution.fullscreen;
             this.location = this.root;
             this.selectedTheme = this.theme;
+            this.selectedLanguage = this.language;
             $(this.$el).modal('show')
             $('.ui.checkbox').checkbox()
             $('.selection.dropdown').dropdown()
@@ -104,15 +113,21 @@ export default {
             this.selectedTheme = theme;
         },
         updateLanguage(lang) {
-            this.language = lang;
+            this.selectedLanguage = lang;
         },
         discard() {
             $(this.$el).modal('hide')
         },
         upload(e) {
             this.updateSetting({
-                resolution: { width: this.reswidth, height: this.resheight, fullscreen: this.resfullscreen },
-                location: this.location, theme: this.selectedTheme
+                resolution: {
+                    width: this.reswidth,
+                    height: this.resheight,
+                    fullscreen: this.resfullscreen,
+                },
+                location: this.location,
+                theme: this.selectedTheme,
+                language: this.selectedLanguage,
             });
             $(this.$el).modal('hide')
         },

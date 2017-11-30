@@ -7,6 +7,5 @@ export default {
     },
     theme: 'semantic',
     themes: [],
-    defaultResolution: { width: 400, height: 400, fullscreen: false },  
     root: '',
 }
