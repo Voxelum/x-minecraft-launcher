@@ -1,7 +1,48 @@
 <template>
     <div>
+        <div class="ui items">
+            <div class="item">
+                <a class="image">
+                    <img :src="data.image">
+                    <br>
+                    <br>
+                    <div class="ui compact menu">
+                        <a class="item">
+                            <i class="heart icon"></i>
+                            <div class="floating ui red label">{{data.popularity}}</div>
+                        </a>
+                    </div>
+                </a>
+                <div class="content">
+                    <a class="header">
+                        <font size="6">{{data.title}}</font>
+                    </a>
+                    <span class="subheader"> {{data.subTitle}} </span>
+                    <div class="ui grid">
+                        <div class="two column row">
+                            <div class="column"> 模组类型：{{data.modType}} </div>
+                            <div class="column"> {{data.recordTime}} </div>
+                        </div>
+                        {{data.relevantLink}}
+                        <div class="two column row">
+                            <div class="column"> {{data.author}} </div>
+                            <div class="column"> {{data.lastModifiedTime}} </div>
+                        </div>
+                        <div class="two column row">
+                            <div class="column"> {{data.mod}} </div>
+                            <div class="column"> {{data.lastRecommendTime}} </div>
+                        </div>
+                        <div class="two column row">
+                            <div class="column"> {{data.modifyCount}} </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
 
     </div>
+
 </template>
 
 <script>
@@ -10,17 +51,20 @@ import vuex from 'vuex'
 export default {
     data: () => ({
         loading: true,
-        data: null,
+        /**
+         * @type {McModCN.Mod}
+         */
+        data: {},
     }),
     props: ['id'],
     methods: {
         ...vuex.mapActions('mcmod.cn', ['detail'])
     },
     mounted() {
-        if (this.data === null) {
+        if (Object.keys(this.data).length === 0) {
             if (!this.id) throw new Error('Unexpected missing page id!')
             this.loading = true;
-            this.detail(this.id).then(data => { this.data = data; this.loading = false });
+            this.detail(this.id).then(data => { this.data = data; console.log(data); this.loading = false });
         }
     },
 }
