@@ -81,6 +81,8 @@ ipcMain.on('query',
                     console.log(rejected)
                     if (rejected instanceof Error) {
                         event.sender.send(id, 'error', [], { message: rejected.message, ...rejected })
+                    } else if (typeof rejected === 'string') {
+                        event.sender.send(id, 'error', [], { message: rejected })
                     } else {
                         event.sender.send(id, 'error', [], { ...rejected })
                     }
@@ -92,7 +94,9 @@ ipcMain.on('query',
         } catch (e) {
             console.log(`reject: ${service}/${action}`)
             console.log(e)
-            event.sender.send(id, 'error', [], { message: e.message, ...e })
+            let err = e
+            if (err instanceof Error) { err = { message: e.message, ...e } }
+            event.sender.send(id, 'error', [], err)
         }
     })
 
