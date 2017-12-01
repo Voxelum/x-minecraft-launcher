@@ -18,7 +18,7 @@
     "Invalid credentials. Invalid username or password.": "错误的用户名或密码",
     "mod": {
         "name": "Mod | Mods",
-        "hint": "将Mod jar文件拖入此处来导入",
+        "hint": "将Mod的jar文件拖入此处来导入",
         "import": "导入 Mod",
         "export": "导出 Mod"
     },

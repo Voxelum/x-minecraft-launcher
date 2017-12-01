@@ -28,7 +28,7 @@ As a user, I need to ping the server info correctly.
 
 As a user, I need to have the capability to manage the local mods.
 
-As a user, I need to be able to config / launch the game smoothly.
+As a user, I need to be able to config the game.
 
 Story completed partially:
 
