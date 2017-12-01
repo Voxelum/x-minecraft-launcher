@@ -2,38 +2,59 @@
     <div>
         <div class="ui items">
             <div class="item">
-                <a class="image">
-                    <img :src="data.image">
-                    <br>
-                    <br>
-                    <div class="ui compact menu">
-                        <a class="item">
-                            <i class="heart icon"></i>
-                            <div class="floating ui red label">{{data.popularity}}</div>
-                        </a>
-                    </div>
-                </a>
+                <div class="large   ">
+                    <img class="ui large image" :src="data.image">
+                </div>
                 <div class="content">
                     <a class="header">
                         <font size="6">{{data.title}}</font>
                     </a>
                     <span class="subheader"> {{data.subTitle}} </span>
+                    <br>
+                    <br>
                     <div class="ui grid">
                         <div class="two column row">
-                            <div class="column"> 模组类型：{{data.modType}} </div>
-                            <div class="column"> {{data.recordTime}} </div>
+                            <div class="column">
+                                <div class="ui large label">
+                                    模组类型： {{data.modType}}
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="ui large label">
+                                    {{data.recordTime}}
+                                </div>
+                            </div>
                         </div>
-                        {{data.relevantLink}}
                         <div class="two column row">
-                            <div class="column"> {{data.author}} </div>
-                            <div class="column"> {{data.lastModifiedTime}} </div>
+                            <div class="column">
+                                <div class="ui large label">
+                                    {{data.author}}
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="ui large label">
+                                    {{data.lastModifiedTime}}
+                                </div>
+                            </div>
                         </div>
                         <div class="two column row">
-                            <div class="column"> {{data.mod}} </div>
-                            <div class="column"> {{data.lastRecommendTime}} </div>
+                            <div class="column">
+                                <div class="ui large label">
+                                    {{data.mod}}
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="ui large label">
+                                    {{data.lastRecommendTime}}
+                                </div>
+                            </div>
                         </div>
                         <div class="two column row">
-                            <div class="column"> {{data.modifyCount}} </div>
+                            <div class="column">
+                                <div class="ui large label">
+                                    {{data.modifyCount}}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
