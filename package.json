@@ -20,6 +20,7 @@
         "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
         "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
         "test": "npm run unit",
+        "test-service": "mocha test/unit/mcmod.js",
         "unit": "karma start test/unit/karma.conf.js"
     },
     "dependencies": {

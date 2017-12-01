@@ -46,7 +46,7 @@ namespace McModCN {
         mod: string
         lastRecommendTime: string
         modifyCount: string
-        relevantLink: string
+        relevantLink: string[]
         modDescription: string
     }
 
