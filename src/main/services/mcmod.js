@@ -91,10 +91,13 @@ export default {
                 if (image.startsWith('/')) {
                     image = `http://www.mcmod.cn${image}`
                 }
+                const linksList = infoBlock.childNodes[8].lastChild
+                    .lastChild
+
                 return {
                     title: title.childNodes[1].text,
                     subTitle: title.childNodes[2].text,
-                    likes: title.childNodes[3].childNodes[0].lastChild.text,
+                    // likes: title.childNodes[3].childNodes[0].lastChild.text,
                     popularity: classEx.childNodes[0].childNodes[0].childNodes[0].text,
                     popularityType: classEx.childNodes[0].childNodes[0].childNodes[1].text,
                     lastDayCount: classEx.childNodes[0].childNodes[2].text,
@@ -109,8 +112,7 @@ export default {
                     mod: infoBlock.childNodes[4].text,
                     lastRecommendTime: infoBlock.childNodes[5].text,
                     modifyCount: infoBlock.childNodes[6].text.replace('\r\n', '').replace(/ /g, ''),
-                    relevantLink: infoBlock.childNodes[7].childNodes[1]
-                        .childNodes[1].childNodes[0].lastChild.text,
+                    relevantLinks: linksList.childNodes.map(val => val.lastChild.attributes.href),
                     modDescription: modDescription.childNodes[0].childNodes[0]
                         .childNodes[0].childNodes[0].text,
                 }
