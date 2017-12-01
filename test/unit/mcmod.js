@@ -23,7 +23,7 @@ describe('Fetch detail', () => {
             (data) => {
                 assert.equal(data.title, '[MFR2] 我的工厂2')
                 assert.equal(data.subTitle, 'MineFactoryReloaded 2')
-                // assert.equal(data.likes, '')
+                // assert.equal(data.likes, '88')
                 assert.equal(data.popularity, '3.5')
                 assert.equal(data.popularityType, '众人皆知')
                 assert.equal(data.lastDayCount, '昨日指数：175')
@@ -37,7 +37,7 @@ describe('Fetch detail', () => {
                 assert.equal(data.lastModifiedTime, '最后编辑：3月前')
                 assert.equal(data.mod, '模式：SSP/SMP')
                 assert.equal(data.lastRecommendTime, '最后推荐：1天前')
-                assert.equal(data.modifyCount, '历史编辑： 3次')
+                assert.equal(data.modifyCount, '历史编辑：3次')
                 assert.equal(data.relevantLink[0], 'http://www.mcmod.cn/jump/aHR0cDovL3RlYW1jb2ZoLmNvbS8=')
                 // assert.equal(data.modDescription, '')
                 done()
@@ -45,3 +45,39 @@ describe('Fetch detail', () => {
             .catch((e) => { done(e) })
     })
 })
+
+describe('Fetch detail', () => {
+    it('should fetch details from mcmod.cn for GregTech5', (done) => {
+        mcmod.actions.fetchDetail({}, 'http://www.mcmod.cn/class/327.html')
+            .then(
+                /**
+                 */
+            (data) => {
+                assert.equal(data.title, '活跃 [GT5] 格雷科技5')
+                assert.equal(data.subTitle, 'GregTech5')
+                // assert.equal(data.likes, '697')
+                assert.equal(data.popularity, '5.0')
+                assert.equal(data.popularityType, '名扬天下')
+                assert.equal(data.lastDayCount, '昨日指数：242')
+                assert.equal(data.averageCount, '昨日平均指数：24.038')
+                assert.equal(data.browseCount, '17.32万')
+                assert.equal(data.recommendCount, '697')
+                assert.equal(data.image, 'http://i.mcmod.cn/class/cover/20171127/1511779237_11798_7HYz.jpg')
+                assert.equal(data.modType, '综合类')
+                assert.equal(data.recordTime, '收录时间：3年前')
+                assert.equal(data.author, '作者/开发团队：GregoriusT,BloodAsp')
+                assert.equal(data.lastModifiedTime, '最后编辑：4天前')
+                assert.equal(data.mod, '模式：SSP/SMP')
+                assert.equal(data.lastRecommendTime, '最后推荐：8时前')
+                assert.equal(data.modifyCount, '历史编辑：21次')
+                assert.equal(data.relevantLink[0], 'http://www.mcmod.cn/jump/aHR0cDovL2Z0Yi5nYW1lcGVkaWEuY29tL0dyZWdUZWNoXzVfVW5vZmZpY2lhbA==')
+                assert.equal(data.relevantLink[1], 'http://www.mcmod.cn/jump/aHR0cDovL21vZHMuY3Vyc2UuY29tL21jLW1vZHMvbWluZWNyYWZ0LzI1MTA1My1ncmVndGVjaC01LXVub2ZmaWNpYWw=')
+                assert.equal(data.relevantLink[2], 'http://www.mcmod.cn/jump/aHR0cDovL2dpdGh1Yi5jb20vQmxvb2QtQXNwL0dUNS1Vbm9mZmljaWFs')
+                // assert.equal(data.modDescription, '')
+                done()
+            })
+            .catch((e) => { done(e) })
+    })
+})
+
+
