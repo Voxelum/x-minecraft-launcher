@@ -57,10 +57,13 @@ export default {
                     return [{ path: `/${splited[0]}/market`, name: 'market' },
                     { path: `/${splited[0]}/curseforge`, name: 'curseforge' }]
                 case 'mcmodcn':
+                    if (splited.length > 2) {
+                        return [{ path: `/${splited[0]}/market`, name: 'market' },
+                        { path: `/${splited[0]}/mcmodcn`, name: 'mcmod' },
+                        { path, name: splited[2] }]
+                    }
                     return [{ path: `/${splited[0]}/market`, name: 'market' },
                     { path, name: 'mcmod' }];
-                case 'mcmodproject':
-                    return [];
                 default: return [];
             }
         },
