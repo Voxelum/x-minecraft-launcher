@@ -14,19 +14,25 @@ Mod classification and quality check
 
 #### Story 1: As an international user, I want to access the app from my native language.
 
-Task 1: I18n converage through whole project
+Task 1: I18n converage through whole project (7)
 
-Task 2: Chinese i18n translation
+Task 2: Chinese i18n translation (3)
+
+Total hour: 10
 
 #### Story 2: As a Chinese user, I want to access the mcmod.cn wiki
 
-Task 1: McMod base view UI and project UI
+Task 1: McMod base view UI and project UI (7)
+
+Total hour: 7
 
 #### Story 3: As a user, I want to identify the any local mods by categories, which is much easier than reading description and name.
 
-Task 1: Resource pack repository implementation
+Task 1: Collect all the mod artifacts (7) 
 
-Task 2: Resourcepack UI basic design
+Task 2: Ayalyze the mod artifact and create data base for the categories (7)
+
+Total hour: 14
 
 ## Team Roles
 
