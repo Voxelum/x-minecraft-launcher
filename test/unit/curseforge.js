@@ -37,3 +37,22 @@ describe('Fetch detail', () => {
             .catch((e) => { done(e) })
     })
 })
+
+describe('Fetch detail', () => {
+    it('should test project.image is not null and a valid string', (done) => {
+        curseforge.actions.project({}, '/chisel')               
+            .then(
+            (data) => {
+                assert.equal(data.image, 'https://media-elerium.cursecdn.com/avatars/thumbnails/24/517/62/62/635758617021943603.png')
+                assert.equal(data.name, 'Chisel')
+                assert.equal(data.createdDate, 'Aug 22, 2015')
+                assert.equal(data.lastFile, 'Sep 12, 2017')
+                assert.equal(data.totalDownload, '17,421,946')
+                assert.equal(data.license, '/projects/chisel/license')
+                assert(typeof description === 'string')
+                done()
+            })
+            .catch((e) => { done(e) })
+    })
+})
+
