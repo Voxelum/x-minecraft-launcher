@@ -147,7 +147,7 @@ export default {
         },
         /**
          * 
-         * @param {{page:string, sort:string, version:string}} payload 
+         * @param {{page:string, sort?:string, version?:string}} payload 
          * @return {mods:ProjectPreview[], pages:number, versions:string[], filters:string[]}
          */
         async mods(context, payload = {}) {
