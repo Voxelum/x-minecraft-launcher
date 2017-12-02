@@ -114,4 +114,40 @@ describe('Fetch detail', () => {
     })
 })
 
-
+describe('Fetch detail', () => {
+    it('should fetch details from mcmod.cn for Industrial Craft 2', (done) => {
+        mcmod.actions.fetchDetail({}, 'http://www.mcmod.cn/class/2.html')
+            .then(
+                /**
+                 */
+            (data) => {
+                assert.equal(data.title, '[IC2] 工业时代2')
+                assert.equal(data.subTitle, 'Industrial Craft 2')
+                // assert.equal(data.likes, '439')
+                assert.equal(data.popularity, '5.0')
+                assert.equal(data.popularityType, '名扬天下')
+                assert.equal(data.lastDayCount, '昨日指数：460')
+                assert.equal(data.averageCount, '昨日平均指数：24.038')
+                assert.equal(data.browseCount, '160.29万')
+                assert.equal(data.recommendCount, '439')
+                assert.equal(data.image, 'http://www.mcmod.cn/pages/class/images/cover/20170621/1498028100_9203_ys5M.jpg')
+                assert.equal(data.modType, '综合类')
+                assert.equal(data.recordTime, '收录时间：5年前')
+                assert.equal(data.author, '作者/开发团队：IC2 Dev Team')
+                assert.equal(data.lastModifiedTime, '最后编辑：1月前')
+                assert.equal(data.mod, '模式：SSP/SMP')
+                assert.equal(data.lastRecommendTime, '最后推荐：8时前')
+                assert.equal(data.modifyCount, '历史编辑：15次')
+                assert.equal(data.relevantLink[0], 'http://www.mcmod.cn/jump/aHR0cHM6Ly93d3cuaW5kdXN0cmlhbC1jcmFmdC5uZXQv')
+                assert.equal(data.relevantLink[1], 'http://www.mcmod.cn/jump/aHR0cDovL3dpa2kuaW5kdXN0cmlhbC1jcmFmdC5uZXQv')
+                assert.equal(data.relevantLink[2], 'http://www.mcmod.cn/jump/aHR0cHM6Ly9mdGJ3aWtpLm9yZy9JbmR1c3RyaWFsQ3JhZnRfMg==')
+                assert.equal(data.relevantLink[3], 'http://www.mcmod.cn/jump/aHR0cDovL3Rla2tpdGNsYXNzaWMud2lraWEuY29tL3dpa2kvQ2F0ZWdvcnk6SW5kdXN0cmlhbF9DcmFmdF8y')
+                assert.equal(data.relevantLink[4], 'http://www.mcmod.cn/jump/aHR0cDovL3d3dy5tY2Jicy5uZXQvdGhyZWFkLTI4OTUyOC0xLTEuaHRtbA==')
+                assert.equal(data.relevantLink[5], 'http://www.mcmod.cn/jump/aHR0cHM6Ly9tb2RzLmN1cnNlLmNvbS9tYy1tb2RzL21pbmVjcmFmdC8yNDI2MzgtaW5kdXN0cmlhbC1jcmFmdA==')
+                assert.equal(data.relevantLink[6], 'http://www.mcmod.cn/jump/aHR0cHM6Ly9taW5lY3JhZnQuY3Vyc2Vmb3JnZS5jb20vcHJvamVjdHMvaW5kdXN0cmlhbC1jcmFmdA==')
+                // // assert.equal(data.modDescription, '')
+                done()
+            })
+            .catch((e) => { done(e) })
+    })
+})
