@@ -53,7 +53,7 @@ describe('Fetch detail', () => {
                 /**
                  */
             (data) => {
-                assert.equal(data.title, '活跃 [GT5] 格雷科技5')
+                assert.equal(data.title, '[GT5] 格雷科技5')
                 assert.equal(data.subTitle, 'GregTech5')
                 // assert.equal(data.likes, '697')
                 assert.equal(data.popularity, '5.0')
@@ -73,6 +73,40 @@ describe('Fetch detail', () => {
                 assert.equal(data.relevantLink[0], 'http://www.mcmod.cn/jump/aHR0cDovL2Z0Yi5nYW1lcGVkaWEuY29tL0dyZWdUZWNoXzVfVW5vZmZpY2lhbA==')
                 assert.equal(data.relevantLink[1], 'http://www.mcmod.cn/jump/aHR0cDovL21vZHMuY3Vyc2UuY29tL21jLW1vZHMvbWluZWNyYWZ0LzI1MTA1My1ncmVndGVjaC01LXVub2ZmaWNpYWw=')
                 assert.equal(data.relevantLink[2], 'http://www.mcmod.cn/jump/aHR0cDovL2dpdGh1Yi5jb20vQmxvb2QtQXNwL0dUNS1Vbm9mZmljaWFs')
+                // assert.equal(data.modDescription, '')
+                done()
+            })
+            .catch((e) => { done(e) })
+    })
+})
+
+describe('Fetch detail', () => {
+    it('should fetch details from mcmod.cn for Big Reactors', (done) => {
+        mcmod.actions.fetchDetail({}, 'http://www.mcmod.cn/class/257.html')
+            .then(
+                /**
+                 */
+            (data) => {
+                assert.equal(data.title, '[BR] 大型反应堆')
+                assert.equal(data.subTitle, 'Big Reactors')
+                // assert.equal(data.likes, '697')
+                assert.equal(data.popularity, '1.0')
+                assert.equal(data.popularityType, '默默无闻')
+                assert.equal(data.lastDayCount, '昨日指数：59')
+                assert.equal(data.averageCount, '昨日平均指数：24.038')
+                assert.equal(data.browseCount, '4.63万')
+                assert.equal(data.recommendCount, '37')
+                assert.equal(data.image, 'http://www.mcmod.cn/pages/center/0/album/20140819/14084402196068.jpg')
+                assert.equal(data.modType, '综合类')
+                assert.equal(data.recordTime, '收录时间：3年前')
+                assert.equal(data.author, '作者/开发团队：Erogenous Beef')
+                assert.equal(data.lastModifiedTime, '最后编辑：5天前')
+                assert.equal(data.mod, '模式：SSP/SMP')
+                assert.equal(data.lastRecommendTime, '最后推荐：46分前')
+                assert.equal(data.modifyCount, '历史编辑：3次')
+                assert.equal(data.relevantLink[0], 'http://www.mcmod.cn/jump/aHR0cDovL2JpZy1yZWFjdG9ycy5jb20v')
+                assert.equal(data.relevantLink[1], 'http://www.mcmod.cn/jump/aHR0cDovL3dpa2kudGVjaG5pY3BhY2submV0L0JpZ19SZWFjdG9ycw==')
+                assert.equal(data.relevantLink[2], 'http://www.mcmod.cn/jump/aHR0cHM6Ly9naXRodWIuY29tL2Vyb2dlbm91c2JlZWYvQmlnUmVhY3RvcnM=')
                 // assert.equal(data.modDescription, '')
                 done()
             })
