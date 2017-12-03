@@ -2,26 +2,26 @@
     <div class="">
         <h5 class="ui horizontal divider header">Critical graphic</h5>
         <options-group :options="criticalGraphics" :id="id"></options-group>
-        <hot-key-button :initkey="hotKeys.moveForward" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.moveBackward" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.moveLeft" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.moveRight" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.Jump" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.DropItem" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.Talk" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.OpenOrCloseBag" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.Steath" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.Viewplayer" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.Shortcut1" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.Shortcut2" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.Shortcut3" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.Shortcut4" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.Shortcut5" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.Shortcut6" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.Shortcut7" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.Shortcut8" @keychange="onkeychange"></hot-key-button>
-        <hot-key-button :initkey="hotKeys.Shortcut9" @keychange="onkeychange"></hot-key-button>
-        /div>
+        <h5 class="ui horizontal divider header">Hotkey Changes</h5>
+        <hot-key-button name="Move Forward" :initkey="hotKeys.moveForward" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Move Backward" :initkey="hotKeys.moveBackward" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Move Left" :initkey="hotKeys.moveLeft" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Move Right" :initkey="hotKeys.moveRight" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Jump" :initkey="hotKeys.Jump" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Drop Item" :initkey="hotKeys.DropItem" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Talk" :initkey="hotKeys.Talk" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Open or Close Bag" :initkey="hotKeys.OpenOrCloseBag" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Steath" :initkey="hotKeys.Steath" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="View player" :initkey="hotKeys.Viewplayer" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Shortcut1" :initkey="hotKeys.Shortcut1" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Shortcut2" :initkey="hotKeys.Shortcut2" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Shortcut3" :initkey="hotKeys.Shortcut3" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Shortcut4" :initkey="hotKeys.Shortcut4" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Shortcut5" :initkey="hotKeys.Shortcut5" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Shortcut6" :initkey="hotKeys.Shortcut6" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Shortcut7" :initkey="hotKeys.Shortcut7" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Shortcut8" :initkey="hotKeys.Shortcut8" @keychange="onkeychange"></hot-key-button>
+        <hot-key-button name="Shortcut9" :initkey="hotKeys.Shortcut9" @keychange="onkeychange"></hot-key-button>
     </div>
 </template>
 
@@ -72,7 +72,7 @@ export default {
             Jump: 'Space',
             DropItem: 'q',
             Talk: 't',
-            OpenOrCloseBag: 'E',
+            OpenOrCloseBag: 'e',
             Viewplayer: 'Tab',
             Steath: 'LeftShift',
             Shortcut1: '1',
