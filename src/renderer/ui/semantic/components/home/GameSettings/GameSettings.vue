@@ -1,9 +1,9 @@
     <template>
     <div class="">
-        <h5 class="ui horizontal divider header">Critical graphic</h5>
+        <h5 class="ui horizontal divider header"><label>{{$t('criticalGraphics')}}</label></h5>
         <options-group :options="criticalGraphics" :id="id"></options-group>
-        <h5 class="ui horizontal divider header">Hotkey Changes</h5>
-        <hot-key-button name="Move Forward" :initkey="hotKeys.moveForward" @keychange="onkeychange"></hot-key-button>
+        <h5 class="ui horizontal divider header"><label>{{$t('hotkeyChanges')}}</label></h5>
+        <hot-key-button :name="$t('criticalGraphics')" :initkey="hotKeys.moveForward" @keychange="onkeychange"></hot-key-button>
         <hot-key-button name="Move Backward" :initkey="hotKeys.moveBackward" @keychange="onkeychange"></hot-key-button>
         <hot-key-button name="Move Left" :initkey="hotKeys.moveLeft" @keychange="onkeychange"></hot-key-button>
         <hot-key-button name="Move Right" :initkey="hotKeys.moveRight" @keychange="onkeychange"></hot-key-button>
@@ -65,14 +65,14 @@ export default {
 
         },
         hotKeys: {
-            moveForward: 'w',
-            moveBackward:'s',
-            moveLeft: 'a',
-            moveRight: 'd',
+            moveForward: 'W',
+            moveBackward:'S',
+            moveLeft: 'A',
+            moveRight: 'D',
             Jump: 'Space',
-            DropItem: 'q',
-            Talk: 't',
-            OpenOrCloseBag: 'e',
+            DropItem: 'Q',
+            Talk: 'T',
+            OpenOrCloseBag: 'E',
             Viewplayer: 'Tab',
             Steath: 'LeftShift',
             Shortcut1: '1',
