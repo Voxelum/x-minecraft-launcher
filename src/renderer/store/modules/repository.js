@@ -65,8 +65,8 @@ export default {
             }
             context.commit('remove', resource)
             return Promise.all([
-                context.dispatch('delete', { path: `resources/${resource.hash}.json` }, { root: true }),
-                context.dispatch('delete', { path: `resources/${resource.hash}${resource.type}` }, { root: true }),
+                context.dispatch('delete', `resources/${resource.hash}.json`, { root: true }),
+                context.dispatch('delete', `resources/${resource.hash}${resource.type}`, { root: true }),
             ])
         },
         /**
@@ -85,6 +85,7 @@ export default {
          */
         import(context, files) {
             const data = {
+                root: context.rootGetters.root,
                 files: [],
                 signiture: {
                     source: 'local',
@@ -109,7 +110,7 @@ export default {
                 {
                     service: 'repository',
                     action: 'import',
-                    payload: { root: context.rootGetters.root, files: data },
+                    payload: data,
                 }, { root: true })
                 .then((resources) => { context.commit('resources', resources) })
         },

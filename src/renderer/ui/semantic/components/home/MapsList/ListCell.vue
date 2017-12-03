@@ -1,9 +1,10 @@
 <template>
     <div class="image item">
         <div class="ui tiny rounded image">
-            <img :src="map.icon">
+            <img v-if="!imageError" :src="map.icon" @error="imageError = true">
+            <i v-else class="huge bordered fitted map icon" style="font-size:3.5em"></i>
         </div>
-        <div class="content">
+        <div class="content" ref="contextMenu">
             <h3 class="header">
                 {{map.displayName}}
             </h3>
@@ -11,12 +12,15 @@
                 {{$t(gameType)}} Mode
             </div>
             <div class="extra">
-                <div class="ui label"> {{$t(difficulty)}}</div>
-                <div class="ui label" v-if="map.isHardCore">{{$t('hardcore')}}</div>
-                <div class="ui label" v-if="map.enabledCheat">{{$t('cheat')}}</div>
-                <div class="ui right floated basic red button">
+                <a class="ui label"> {{$t(difficulty)}}</a>
+                <a class="ui label" v-if="map.isHardCore">{{$t('hardcore')}}</a>
+                <a class="ui label" v-if="map.enabledCheat">{{$t('cheat')}}</a>
+                <a class="ui right floated basic red button" @click="$emit('remove', map)">
                     {{$t('remove')}}
-                </div>
+                </a>
+                <a class="ui right floated basic button" @click="$emit('export', map)">
+                    {{$t('export')}}
+                </a>
             </div>
         </div>
     </div>
@@ -24,7 +28,10 @@
 
 <script>
 export default {
-    props: ['id', 'map'],
+    data: () => ({
+        imageError: false,
+    }),
+    props: ['map'],
     computed: {
         difficulty() {
             switch (this.map.difficulty) {
@@ -47,5 +54,11 @@ export default {
             return "gametype.non"
         }
     },
+    mounted() {
+    },
+    methods: {
+        exportMap() { },
+        removeMap() { }
+    }
 }
 </script>
