@@ -53,6 +53,7 @@ export default {
     }),
     mounted() {
         const self = this;
+        $(this.$refs.path).dropdown()
     },
     computed: {
         ...vuex.mapGetters(["javas"]),

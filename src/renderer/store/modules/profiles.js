@@ -105,7 +105,7 @@ export default {
          */
         delete(context, payload) {
             context.commit('remove', payload)
-            return context.dispatch('delete', { path: `profiles/${payload}` }, { root: true })
+            return context.dispatch('delete', `profiles/${payload}`, { root: true })
         },
     },
 }
