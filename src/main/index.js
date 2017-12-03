@@ -1,4 +1,4 @@
-import {
+import electron, {
     app, BrowserWindow,
     ipcMain, DownloadItem,
     Tray, nativeImage,
@@ -110,7 +110,6 @@ function createLogWindow() {
     logWindow.on('closed', () => { logWindow = null })
     logWindow.webContents.setVisualZoomLevelLimits(1, 1);
     logWindow.webContents.setLayoutZoomLevelLimits(1, 1);
-    
 }
 
 ipcMain.on('minecraft-stdout', (s) => {
@@ -143,7 +142,10 @@ function createMainWindow() {
     mainWindow.on('closed', () => { mainWindow = null })
 }
 
+console.log('INDEX RUNNING!')
+
 app.on('ready', () => {
+    console.log('READY!!!!!!!')
     require('./services'); // load all service 
 
     iconImage = nativeImage.createFromPath(`${__static}/logo.png`) // eslint-disable-line no-undef
@@ -173,6 +175,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     if (mainWindow === null) createMainWindow()
 })
+
 
 ipcMain.on('update', (event, newRoot, newTheme) => {
     if (newRoot !== undefined || newTheme !== undefined) {
@@ -206,3 +209,6 @@ ipcMain.on('exit', () => {
     }
 })
 
+export default {
+    service: require('./services'),
+}

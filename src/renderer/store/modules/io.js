@@ -18,15 +18,11 @@ export default {
         /**
          * 
          * @param {ActionContext} context 
-         * @param {{path:string}} payload 
+         * @param {string} payload 
          */
-        delete(context, payload) {
-            let { path } = payload;
+        delete(context, path) {
             path = paths.join(context.rootGetters.root, path);
-            return new Promise((resolve, reject) => {
-                if (!fs.existsSync(path)) resolve()
-                else resolve(fs.remove(path))
-            });
+            return fs.remove(path)
         },
         /**
           * @param {ActionContext} context 
@@ -34,7 +30,7 @@ export default {
           */
         import(context, payload) {
             const { file, toFolder, name } = payload;
-            const to = context.rootGetters.path(toFolder, name || paths.basename(file))
+            const to = paths.join(context.rootGetters.root, toFolder, name || paths.basename(file))
             return fs.copy(file, to)
         },
         /**
@@ -45,7 +41,7 @@ export default {
         export(context, payload) {
             const { file, toFolder, name, mode } = payload;
             const $mode = mode || 'copy';
-            const from = context.rootGetters.path(file)
+            const from = paths.join(context.rootGetters.root, file)
             const to = paths.join(toFolder, name || paths.basename(file))
             if ($mode === 'link') return fs.link(from, to)
             return fs.copy(from, to)
@@ -64,10 +60,11 @@ export default {
         /**
          * 
          * @param {ActionContext} context 
-         * @param {{paths:string[]}} payload 
+         * @param {string|string[]} files 
          */
-        exist(context, payload) {
-            for (const p of payload.paths) if (!fs.existsSync(`${context.rootGetters.root}/${p}`)) return false
+        exist(context, files) {
+            if (typeof files === 'string') files = [files]
+            for (const p of files) if (!fs.existsSync(`${context.rootGetters.root}/${p}`)) return false
             return true
         },
 

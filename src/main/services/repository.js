@@ -33,7 +33,7 @@ async function $import(root, filePath, signiture) {
             if (meta instanceof Promise) meta = await meta; // eslint-disable-line
             domain = parser.domain;
             break;
-        } catch (e) { console.warn(e) }
+        } catch (e) { console.warn(`Fail with domain [${parser.domain}]`); console.warn(e) }
     }
     if (!domain || !meta) { throw new Error(`Cannot parse ${filePath}.`) }
     const resource = { hash, name, type, meta, domain, signiture };
@@ -88,10 +88,16 @@ export default {
          * @param {{root:string, target:string, elements:string[]}} payload 
          */
         virtualenv(context, payload) {
+            console.log(payload)
             const { root, target, elements } = payload;
-            elements.forEach((e) => {
-                path.join(e)
-            })
+            return Promise.all(elements.map(async (e) => {
+                const from = path.join(root, e.hash)
+                const to = path.join(target, e.pack)
+                if (!(await fs.exists(from))) throw new Error(`The source file does not exist ${from}`)
+                if (await fs.exists(to)) await fs.unlink(to);
+                console.log(`Symlink ${from}->${to}`)
+                return fs.symlink(from, to)
+            }))
         },
     },
 }

@@ -51,6 +51,7 @@ export default {
     mounted() { $(this.$refs.alphaDropdown).dropdown() },
     computed: {
         id() { return this.$route.params.id },
+        selectingVersion() { return this.$store.getters[`profiles/${this.id}/mcversion`] },
         ...mapGetters('versions', ['versions', 'latestRelease', 'latestSnapshot', 'versionsMap']),
         metas() {
             let metas = this.versions;
@@ -69,8 +70,7 @@ export default {
             icon: true,
         }),
         onselect(vId) {
-            if (vId !== this.selectingVersion)
-                this.$store.commit(`profiles/${this.id}/minecraft/version`, vId)
+            this.$store.dispatch(`profiles/${this.id}/edit`, { mcversion: vId })
         },
         ondownload(event) {
             console.log('download')

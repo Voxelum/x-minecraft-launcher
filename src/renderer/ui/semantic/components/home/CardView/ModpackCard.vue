@@ -30,8 +30,8 @@ export default {
     }),
     computed: {
         version() {
-            return this.source.minecraft.version ? this.source.minecraft.version.length != 0 ?
-                this.source.minecraft.version : "unknown" : "unknown"
+            return this.source.mcversion ? this.source.mcversion.length != 0 ?
+                this.source.mcversion : "unknown" : "unknown"
         },
         description() {
             return this.source.description ? this.source.description != 0 ?
