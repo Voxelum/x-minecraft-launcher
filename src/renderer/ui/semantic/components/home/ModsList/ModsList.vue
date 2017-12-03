@@ -1,5 +1,5 @@
 <template>
-    <div class="ui center aligned middle aligned basic segment container" v-if="values.length===0" @drop="ondrop" style="height:100%">
+    <div class="ui center aligned middle aligned basic segment container" v-if="mods.length===0" @drop="ondrop" style="height:100%">
         <br>
         <h2 class="ui icon header">
             <i class="game icon"></i>
@@ -11,30 +11,26 @@
             <div class="eight wide centered column">
                 <div class="ui icon fluid transparent input">
                     <i class="filter icon"></i>
-                    <input placeholder="Filter" v-model="keyword">
+                    <input :placeholder="$t('filter')" v-model="nonSelectKeyword">
                 </div>
             </div>
             <div class="eight wide centered column">
                 <div class="ui icon fluid transparent input">
                     <i class="filter icon"></i>
-                    <input placeholder="Filter" v-model="keyword">
+                    <input placeholder="$t('filter')" v-model="selectKeyword">
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="eight wide column">
                 <div class="ui relaxed divided items" style="height:290px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
-                    <a class="ui circular large label" style="margin:5px" v-for="(val, index) in mods" v-if="valid(val)" :key="val[0].modid||val[0].name" :data-tooltip="val[0].version" data-inverted="" :data-position="pos(index)" @click="$ipc.emit('modal', 'moddetail', val[0])">
-                        {{modName(val[0])}}
-                    </a>
+                    <mod-label v-for="(m, index) in nonselectedMods" :mod="m" :key="m.hash" :index='index' selecting='false' @toggle="addForgeMod(m)"></mod-label>
                 </div>
             </div>
             <div class="eight wide column">
-                <draggable class="ui relaxed divided items" style="height:290px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
-                    <a class="ui circular large label" style="margin:5px" v-for="(val, index) in nonselectedMods" v-if="valid(val)" :key="val[0].modid||val[0].name" :data-tooltip="val[0].version" data-inverted="" :data-position="pos(index)" @click="$ipc.emit('modal', 'moddetail', val[0])">
-                        {{modName(val[0])}}
-                    </a>
-                </draggable>
+                <div class="ui relaxed divided items" style="height:290px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
+                    <mod-label v-for="(m, index) in selectedMods" :mod="m" :key="m.hash" :index='index' selecting='true' @remove="removeForgeMod(m)"></mod-label>
+                </div>
             </div>
         </div>
     </div>
@@ -44,6 +40,7 @@
 import vuex from 'vuex'
 import ListCell from './ListCell'
 import en from 'static/en-cn'
+import ModLabel from './ModLabel'
 
 const generalized = {}
 function general(w) {
@@ -55,63 +52,80 @@ for (const k in en) {
 
 export default {
     data: () => ({
-        keyword: '',
+        nonSelectKeyword: '',
+        selectKeyword: '',
         showOtherVersion: false,
         disabledOnly: true,
         cached: [],
     }),
-    components: { ListCell },
+    components: { ModLabel },
     computed: {
         id() { return this.$route.params.id },
-        ...vuex.mapGetters('repository', { values: 'mods' }),
-        selectedMods: {
-            get() { return this.$store.getters[`profiles/${this.id}/forge/mods`] },
-            set() { },
+        ...vuex.mapGetters('repository', ['mods']),
+        forgeModNames() { return this.$store.getters[`profiles/${this.id}/forgeMods`] },
+        modIdVersions() {
+            const modIdVersions = {};
+            this.mods.forEach((res) => {
+                res.meta.forEach((mod) => {
+                    const mInfo = {
+                        hash: mod.hash,
+                        filename: res.name,
+                        signiture: res.signiture,
+                        type: mod.type,
+                        ...mod.meta,
+                    }
+                    if (this.valid(this.selectKeyword, mInfo))
+                        modIdVersions[`${mod.meta.modid}:${mod.meta.version}`] = mInfo
+                })
+            })
+            return modIdVersions;
         },
-        nonselectedMods: {
-            get() { return this.mods },
-            set() { },
+        selectedMods() {
+            return this.forgeModNames.map((id) =>
+                this.modIdVersions[id]).filter(mod => mod !== undefined);
         },
-        mods() {
-            // return this.values;
-            const resources = this.values
-            const tree = {}
-            for (const resource of resources) {
-                let meta = resource.meta instanceof Array ? resource.meta : [resource.meta];
-                for (const resMeta of meta) {
-                    if (!resMeta) continue;
-                    const id = resMeta.id.substring(0, resMeta.id.indexOf(':'));
-                    const metas = resMeta.meta instanceof Array ?
-                        [...resMeta.meta] : [resMeta.meta]
-                    if (!tree[id]) tree[id] = []
-                    tree[id].push(...metas)
-                }
-            }
-            return Object.keys(tree).map(k => tree[k])
-        }
+        nonselectedMods() {
+            const arr = [];
+            this.mods.forEach((res) => {
+                res.meta.forEach((artifact) => {
+                    const mInfo = {
+                        hash: res.hash,
+                        filename: res.name,
+                        signiture: res.signiture,
+                        type: artifact.type,
+                        ...artifact.meta,
+                    };
+                    if (this.valid(this.nonSelectKeyword, mInfo))
+                        arr.push(mInfo)
+                })
+            })
+            return arr;
+        },
     },
     methods: {
         classObject: function (index) {
-            const color = ['red', 'green', 'teal', 'orange', 'blue'][Math.floor(Math.random() * 5) % 5];
+            const color = ['red', 'green', 'teal', 'orange', 'blue']
+            [Math.floor(Math.random() * 5) % 5];
             return {
                 [color]: true,
             }
         },
+        addForgeMod(mod) {
+            this.$store.dispatch(`profiles/${this.id}/addForgeMod`,
+                `${mod.modid}:${mod.version}`)
+        },
+        removeForgeMod(mod) {
+            this.$store.dispatch(`profiles/${this.id}/removeForgeMod`,
+                `${mod.modid}:${mod.version}`)
+        },
         ...vuex.mapActions('repository', ['import']),
-        valid(metas) {
-            const keyword = this.keyword;
-            let valid = false;
-            for (const meta of metas) {
-                if ((meta.name && meta.name.includes(keyword))
-                    || (meta.modid && meta.modid.includes(keyword))
-                    || (meta.description && meta.description.includes(keyword)))
-                    valid = true;
-            }
-            return valid;
+        valid(keyword, mod) {
+            if (keyword === '') return true
+            return (mod.name && mod.name.includes(keyword))
+                || (mod.modid && mod.modid.includes(keyword))
+                || (mod.description && mod.description.includes(keyword))
         },
-        pos(index) {
-            return index > 7 ? 'top center' : 'bottom center'
-        },
+
         modName(m) {
             const name = m.modid || m.name;
             const gname = general(name)

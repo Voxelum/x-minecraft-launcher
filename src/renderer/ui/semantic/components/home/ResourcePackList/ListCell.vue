@@ -4,7 +4,7 @@
             <div class="content">
                 <div class="center">
                     <div class="ui icon buttons">
-                        <div class="ui basic black button" v-if="type === 'remove'" @click="emit('moveup', val.name)">
+                        <div class="ui basic black button" v-if="type === 'remove'" @click="$emit('moveup', val.name)">
                             <i class="arrow up icon"></i>
                         </div>
                         <transition v-if="type==='add'" name="fadee" mode="out-in">
@@ -15,9 +15,9 @@
                                 <!-- </transition> -->
                             </div>
                         </transition>
-                        <div v-if="type==='add'" class="ui green basic button" @click="emit('change',val.name)">&nbsp&nbsp&nbsp{{$t('add')}}&nbsp&nbsp&nbsp</div>
-                        <div v-if="type==='remove'" class="ui red basic button" @click="emit('change',val.name)">{{$t('remove')}}</div>
-                        <div class="ui basic black button" v-if="type === 'remove'" @click="emit('movedown', val.name)">
+                        <div v-if="type==='add'" class="ui green basic button" @click="$emit('change',val.name)">&nbsp&nbsp&nbsp{{$t('add')}}&nbsp&nbsp&nbsp</div>
+                        <div v-if="type==='remove'" class="ui red basic button" @click="$emit('change',val.name)">{{$t('remove')}}</div>
+                        <div class="ui basic black button" v-if="type === 'remove'" @click="$emit('movedown', val.name)">
                             <i class="arrow down icon"></i>
                         </div>
                     </div>

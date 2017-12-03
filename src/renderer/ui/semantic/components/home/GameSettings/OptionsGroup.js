@@ -5,7 +5,7 @@ export default {
     render(createElement) {
         let currentFields = [];
         const fields = [];
-        const mcoptions = this.$store.getters[`profiles/${this.id}/minecraft/options`]
+        const mcoptions = this.$store.getters[`profiles/${this.id}/mcoptions`]
         for (const key in this.options) {
             if (this.options.hasOwnProperty(key)) {
                 const option = this.options[key];
@@ -27,7 +27,7 @@ export default {
     },
     methods: {
         onchange(event) {
-            this.$store.commit(`profiles/${this.id}/minecraft/update`, event)
+            this.$store.commit(`profiles/${this.id}/mcoption`, event)
         },
     },
     computed: {

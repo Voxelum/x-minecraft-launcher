@@ -10,7 +10,8 @@
                                 {{$t('author')}}: {{source.author}}
                             </h2>
                             <h2 ref="versionPopup" class="ui sub header">
-                                {{$tc('version.name', 0)}}: {{source.minecraft.version===''? 'Unselected':source.minecraft.version}}
+                                {{$tc('version.name', 0)}}: {{source.mcversion===''? 'Unselected':source.mcversion}} 
+                                <i class="dropdown icon"></i>
                             </h2>
                             <version-table-view :id="id"></version-table-view>
                         </div>
@@ -78,14 +79,13 @@ export default {
     },
     computed: {
         ...mapState('versions', ['minecraft']),
-        versions() { return this.minecraft.versions },
         type() { return this.source.type },
         id() { return this.$route.params.id },
         source() { return this.$store.getters['profiles/get'](this.id) }
     },
     methods: {
         modify(event) {
-            this.$store.commit(`profiles/${this.id}/putAll`, { description: event.target.value })
+            this.$store.dispatch(`profiles/${this.id}/edit`, { description: event.target.value })
         },
         refresh() {
             this.$store.dispatch(`profiles/${this.id}/refresh`)
