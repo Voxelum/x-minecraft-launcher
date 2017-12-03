@@ -7,6 +7,7 @@
     "create": "创建",
     "author": "作者",
     "description": "介绍",
+    "nodescription": "暂时没有介绍",
     "help": "帮助",
     "home": "主页",
     "login": "登陆",
@@ -15,6 +16,8 @@
     "cancel": "取消",
     "remove": "移除",
     "!delete": "删除",
+    "criticalGraphics": "图像设置",
+    "hotkeyChanges": "按键设置",
     "Invalid credentials. Invalid username or password.": "错误的用户名或密码",
     "mod": {
         "name": "Mod | Mods",
