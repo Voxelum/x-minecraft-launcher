@@ -88,7 +88,7 @@ export default {
 
             $(this.$el).modal('hide')
             if (this.isEdit) {
-                this.$store.commit(`profiles/${this.id}/putAll`, {
+                this.$store.dispatch(`profiles/${this.id}/edit`, {
                     name: this.name,
                     host: this.ip,
                     port: this.port,

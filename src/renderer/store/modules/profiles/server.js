@@ -25,7 +25,7 @@ export default {
         errors(state) {
             const errors = []
             const isNone = obj => obj === '' || obj === undefined || obj == null;
-            if (isNone(state.minecraft.version)) errors.push('profile.missingversion')
+            if (isNone(state.mcversion)) errors.push('profile.noversion')
             if (isNone(state.java)) errors.push('profile.nojava')
             if (isNone(state.host)) errors.push('profile.nohost')
             return errors;
@@ -47,7 +47,7 @@ export default {
          */
         refresh(context, force) {
             if (context.state.status.pingToServer && !force) return Promise.resolve();
-            context.commit('putAll', { status: Server.Status.pinging() })
+            context.commit('profile', { status: Server.Status.pinging() })
             if (context.state.host === undefined) return Promise.reject('server.host.empty')
             return context.dispatch('query', {
                 service: 'server',
@@ -63,25 +63,25 @@ export default {
                         status,
                     }
                     const versions = protocol[status.protocolVersion]
-                    if (versions) context.commit('minecraft/version', versions[0]);
-                    context.commit('putAll', all)
+                    if (versions) context.commit('mcversion', versions[0]);
+                    context.commit('profile', all)
                     return status;
                 }, (err) => {
                     console.error(err);
                     if (err.code === 'ETIMEOUT') {
                         const timeout = TextComponent.str('server.status.timeout');
                         timeout.style = Style.create({ color: TextFormatting.RED })
-                        context.commit('putAll', { status: new Server.Status(TextComponent.str('version.unknown'), timeout, -1, -1, -1) })
+                        context.commit('profile', { status: new Server.Status(TextComponent.str('version.unknown'), timeout, -1, -1, -1) })
                     } else if (err.code === 'ENOTFOUND') {
                         const timeout = TextComponent.str('server.status.nohost');
                         timeout.style = Style.create({ color: TextFormatting.RED })
-                        context.commit('putAll', { status: new Server.Status(TextComponent.str('version.unknown'), timeout, -1, -1, -1) })
+                        context.commit('profile', { status: new Server.Status(TextComponent.str('version.unknown'), timeout, -1, -1, -1) })
                     } else if (err.code === 'ECONNREFUSED') {
                         const nohost = TextComponent.str('server.status.refuse');
                         nohost.style = Style.create({ color: TextFormatting.RED })
-                        context.commit('putAll', { status: new Server.Status(TextComponent.str('version.unknown'), nohost, -1, -1, -1) })
+                        context.commit('profile', { status: new Server.Status(TextComponent.str('version.unknown'), nohost, -1, -1, -1) })
                     } else {
-                        context.commit('putAll', { status: new Server.Status(TextComponent.str('version.unknown'), 'Internet Error', -1, -1, -1) })
+                        context.commit('profile', { status: new Server.Status(TextComponent.str('version.unknown'), 'Internet Error', -1, -1, -1) })
                     }
                 })
         },

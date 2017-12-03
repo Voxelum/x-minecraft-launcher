@@ -84,7 +84,7 @@ export default {
             },
         },
         selectingNames() {
-            return this.$store.getters[`profiles/${this.id}/minecraft/resourcepacks`]
+            return this.$store.getters[`profiles/${this.id}/resourcepacks`]
         },
         nameToEntry() {
             const map = {}
@@ -104,7 +104,7 @@ export default {
         ...mapActions(['openDialog']),
         ...mapActions('repository', ['import', 'remove', 'rename']),
         resourcepack(action, pack) {
-            this.$store.commit(`profiles/${this.id}/minecraft/resourcepack`, { action, pack })
+            this.$store.commit(`profiles/${this.id}/resourcepack`, { action, pack })
         },
         add(pack) { this.resourcepack('add', pack) },
         $remove(pack) { this.resourcepack('remove', pack) },

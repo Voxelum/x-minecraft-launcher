@@ -18,7 +18,6 @@ export default {
             context.commit('javas', context.getters.javas.concat(java))
         },
         removeJava(context, java) {
-            console.log(java)
             const newarr = context.getters.javas.filter(j => j !== java);
             if (newarr.length !== context.getters.javas.length) {
                 context.commit('javas', newarr)

@@ -58,7 +58,7 @@ export default {
     computed: {
         ...vuex.mapGetters('auth', ['username']),
         id() { return this.$route.params.id; },
-        selected() { return this.$store.getter[`profiles/${id}`] }
+        selected() { return this.$store.getters['profiles/get'](this.id) }
     },
     methods: {
         show(args = {}) {
@@ -82,7 +82,7 @@ export default {
                 return
             }
             if (this.isEdit) {
-                this.$store.commit(`profiles/${this.id}/putAll`, {
+                this.$store.dispatch(`profiles/${this.id}/edit`, {
                     name: this.name,
                     author: this.author,
                     description: this.description,

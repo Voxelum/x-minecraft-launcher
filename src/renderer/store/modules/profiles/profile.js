@@ -1,8 +1,9 @@
-import settings from './settings'
+import modules from './modules'
 
 export default {
-    modules: { ...settings },
+    modules,
     state: () => ({
+        id: '',
         type: '',
         name: '',
         resolution: { width: 800, height: 400, fullscreen: false },
@@ -11,22 +12,28 @@ export default {
         maxMemory: 2048,
         vmOptions: [],
         mcOptions: [],
+        mcversion: '',
     }),
     getters: {
+        id: state => state.id,
+        type: state => state.type,
         errors(state) {
             const errors = []
-            if (state.minecraft.version === '' || state.minecraft.version === undefined || state.minecraft.version === null) errors.push('profile.noversion')
+            if (state.mcversion === '') errors.push('profile.noversion')
             if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.missingjava')
             return errors
         },
+        name: state => state.name,
+        mcversion: state => state.mcversion,
         java: state => state.java,
-        versoin: state => state.minecraft.version,
+        maxMemory: state => state.maxMemory,
+        minMemory: state => state.minMemory,
         vmOptions: state => state.vmOptions,
         mcOptions: state => state.mcOptions,
-        language: (state, gets) => gets['minecraft/options'].lang,
+        resolution: state => state.resolution,
     },
     mutations: {
-        putAll(state, option) {
+        profile(state, option) {
             Object.keys(option)
                 .filter(key => key !== 'type')
                 .forEach((key) => { state[key] = option[key] })
@@ -38,13 +45,13 @@ export default {
             if (keys.length === 0) return;
             let changed = false;
             for (const key of keys) {
-                if (context.state[key]) {
+                if (context.state[key] !== undefined) {
                     if (context.state[key] !== option[key]) {
                         changed = true;
                     }
                 }
             }
-            if (changed) context.commit('putAll', option)
+            if (changed) context.commit('profile', option)
         },
     },
 }

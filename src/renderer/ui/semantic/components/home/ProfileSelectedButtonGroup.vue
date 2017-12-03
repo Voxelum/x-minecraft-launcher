@@ -18,18 +18,21 @@ import vuex from 'vuex'
 export default {
     computed: {
         id() { return this.$route.params.id },
-        profile() { return this.$store.getters['profiles/get'](this.id) }
+        type() { return this.$store.getters[`profiles/${this.id}/type`] }
     },
     methods: {
         ...vuex.mapActions(['launch']),
         edit() {
-            this.$ipc.emit('modal', this.profile.type, { isEdit: true })
+            this.$ipc.emit('modal', this.type, { isEdit: true })
         },
         onlaunch() {
             this.launch(this.id).catch((e) => {
-                switch (e.type) {
+                let type = typeof e === 'string' ? e : e.type;
+                switch (type) {
                     case 'missing.version':
                         this.$ipc.emit('modal', 'missingVersion')
+                    case 'profile.noversion':
+                        this.$ipc.emit('modal', 'selectVersion')
                     default:
                 }
                 console.log(e)
