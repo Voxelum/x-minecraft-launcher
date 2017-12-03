@@ -13,6 +13,7 @@ export default {
     },
     beforeMount() {
         let route = localStorage.getItem('route');
+        console.log(`Initialize to route ${route}`)
         if (route && route !== '/') {
             this.$router.replace(route)
         } else {

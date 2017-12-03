@@ -20,7 +20,7 @@ import vuex from 'vuex'
 export default {
     computed: {
         id() { return this.$route.params.id; },
-        version() { return this.$store.getters[`profiles/${this.id}/minecraft/version`]; }
+        version() { return this.$store.getters[`profiles/${this.id}/mcversion`]; }
     },
     mounted() {
         $(this.$el).modal({ blurring: true })

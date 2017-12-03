@@ -5,11 +5,7 @@ import paths from 'path'
 import Zip from 'jszip'
 
 export default {
-    namespaced: true,
     state: () => ({
-        name: 'custom',
-        version: '',
-        maps: [],
         settings: {
             version: 1139, // for 1.12
             invertYMouse: false,
@@ -123,32 +119,21 @@ export default {
         },
     }),
     getters: {
-        options: states => states.settings,
+        mcoptions: states => states.settings,
         resourcepacks: states => states.settings.resourcePacks,
-        version: states => states.version,
-        maps: state => state.maps,
-        name: states => states.name,
+        mclanguage: state => state.lang,
     },
     mutations: {
-        version(states, version) {
+        mcversion(states, version) {
             states.version = version
         },
-        update(states, { key, value }) {
+        mcoptions(states, { key, value }) {
             states.settings[key] = value
         },
-        update$reload(states, data) {
-            const { maps, name, version, settings } = data;
-            // states.name = name;
-            // states.version = version;
-            for (const key in settings) {
-                if (settings[key] !== undefined
-                    && settings[key] != null
-                    && states.settings[key] !== undefined) {
-                    states.settings[key] = settings[key]
-                }
-            }
-            for (const map of maps) states.maps.push(map)
+        mcoption(states, settings) {
+            states.settings = settings
         },
+
         /**
          * 
          * @param {any} states 
@@ -185,11 +170,6 @@ export default {
                 default: break;
             }
         },
-        updateTemplate(states, { name, template }) {
-            states.name = name;
-            states.settings = template;
-        },
-
     },
     actions: {
         save(context, { id }) {
@@ -204,64 +184,7 @@ export default {
                 encoding: 'string',
             }, { root: true });
             const settings = typeof gcString === 'string' ? GameSetting.parse(gcString) : gcString;
-
-            const readMap = async (file) => {
-                const exist = await context.dispatch('exist', {
-                    paths: [`profiles/${id}/saves/${file}/level.dat`],
-                }, { root: true })
-                if (!exist) return undefined;
-                const levBuf = await context.dispatch('read', {
-                    path: `profiles/${id}/saves/${file}/level.dat`,
-                    fallback: undefined,
-                }, { root: true });
-                if (levBuf === undefined) return undefined;
-                const imgBuf = await context.dispatch('read', {
-                    path: `profiles/${id}/saves/${file}/icon.png`,
-                    fallback: undefined,
-                }, { root: true })
-                const info = WorldInfo.parse(levBuf);
-                if (imgBuf) info.icon = `data:image/png;base64, ${imgBuf.toString('base64')}`;
-                return info
-            }
-            let maps;
-            try {
-                const files = (await context.dispatch('readFolder', { path: `profiles/${id}/saves` }, { root: true }))
-                maps = (await Promise.all(files.map(readMap))).filter(m => m !== undefined);
-            } catch (e) {
-                console.warn(e)
-            }
-
-            return {
-                settings,
-                maps,
-            }
-        },
-        importMap(context, { id, location }) {
-            return WorldInfo.valid(location);
-        },
-        /**
-         * 
-         * @param {ActionContext} context 
-         * @param {{id:string, map:string, targetFolder: string, zip:string}} payload
-         */
-        exportMap(context, { id, map, targetFolder, zip }) {
-            return context.dispatch('query', {
-                service: 'repository',
-                action: 'export',
-                payload: {
-                    root: context.rootGetters.path(`profiles/${id}/saves/${map}`),
-                    resource: {
-
-                    },
-                    targetDirectory: targetFolder,
-                },
-            }, { root: true })
-        },
-        deleteMap(context, { id, map }) {
-
-        },
-        useTemplate(context, { templateId }) {
-
+            context.commit('mcoption', settings);
         },
     },
 }

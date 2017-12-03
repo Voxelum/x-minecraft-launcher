@@ -9,14 +9,29 @@ import { MinecraftFolder } from 'ts-minecraft'
  * @param {MinecraftFolder} profileLoc 
  */
 async function mkRespack(context, id, rootLoc, profileLoc) {
-    const allPacks = context.getters['repository/resourcepacks'];
+    const allPacks = context.state.repository.resourcepacks;
+    const nameToId = {};
+    Object.keys(allPacks).forEach((hash) => {
+        const pack = allPacks[hash];
+        nameToId[pack.name] = hash;
+    });
+    const all = context.getters[`profiles/${id}/resourcepacks`]
+        .map(pack => ({ pack, hash: `${nameToId[pack]}.zip` }));
     await fs.ensureDir(profileLoc.resourcepacks)
-    if (!allPacks) return Promise.resolve();
-    return Promise.all(allPacks.map(key => context.dispatch('link', { resource: key, minecraft: profileLoc.root })
-        .catch((e) => {
-            console.warn(`Cannot export resourcepack id: ${key}`)
-            console.warn(e)
-        })))
+    if (!all) return Promise.resolve();
+    await context.dispatch('query', {
+        service: 'repository',
+        action: 'virtualenv',
+        payload: {
+            root: rootLoc.getPath('resources'),
+            target: profileLoc.getPath('resourcepacks'),
+            elements: all,
+        },
+    }).catch((e) => {
+        console.warn('Cannot export resourcepack')
+        console.warn(e)
+    });
+    return true;
 }
 
 /**

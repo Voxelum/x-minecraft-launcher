@@ -71,9 +71,9 @@ export default {
         // if it happen... that is a fatal bug...
 
         const type = profile.type;
-        const version = profile.minecraft.version;
+        const version = profile.mcversion;
         const errors = context.getters[`profiles/${profileId}/errors`]
-        if (errors && errors.length !== 0) return Promise.reject(errors)
+        if (errors && errors.length !== 0) return Promise.reject(errors[0])
 
         // TODO check the launch condition!
         const option = {

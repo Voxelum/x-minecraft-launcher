@@ -52,6 +52,7 @@ function findJavaFromRegistry() {
 }
 function findMacJavaByWhich(set) {
     if (os.platform() === 'win32') return set;
+    set['/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java'] = 0
     const childProcess = require('child_process');
     return new Promise((resolve, reject) => {
         childProcess.exec('which java', (error, stdout, stderr) => {
