@@ -16,7 +16,7 @@
                 <user-dropdown></user-dropdown>
                 <skin-view width="210" height="400" :skin="skin"></skin-view>
             </div>
-            <div class="twelve wide column" style="max-height:100%; overflow-x:hidden; overflow-y:auto;">
+            <div class="twelve wide column" style="max-height:500px; overflow-x:hidden; overflow-y:auto;">
                 <transition name="fade" mode="out-in">
                     <router-view ref="view"></router-view>
                 </transition>

@@ -1,10 +1,10 @@
     <template>
-    <div class="">
+    <div>
         <h5 class="ui horizontal divider header">
             <label>{{$t('criticalGraphics')}}</label>
         </h5>
         <options-group :options="criticalGraphics" :id="id"></options-group>
-        <options-group :options="normalGraphics" :id="id">
+        <options-group :options="normalGraphics" :id="id"></options-group>
             <h5 class="ui horizontal divider header">
                 <label>{{$t('hotkeyChanges')}}</label>
             </h5>
