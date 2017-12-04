@@ -17,7 +17,7 @@
             <div class="eight wide centered column">
                 <div class="ui icon fluid transparent input">
                     <i class="filter icon"></i>
-                    <input placeholder="$t('filter')" v-model="selectKeyword">
+                    <input :placeholder="$t('filter')" v-model="selectKeyword">
                 </div>
             </div>
         </div>
