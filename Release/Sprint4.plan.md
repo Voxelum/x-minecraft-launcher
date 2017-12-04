@@ -42,7 +42,7 @@ Luca (Xinghai Xiong): Developer, Tester
 
 Phoebe (Li Jiang): Developer, Scrum Master
 
-Wang: Developer, Tester
+Sumeng Wang: Developer, Tester
 
 Qiang Tang: Develope
 
@@ -54,7 +54,7 @@ Luca (Xinghai Xiong): Story 4 Task 1
 
 Phoebe (Li Jiang): Story 4 Task 1
 
-Wang: Story 4 Task 2
+Sumeng Wang: Story 4 Task 2
 
 Qiang Tang: Story 4 Task 2
 
