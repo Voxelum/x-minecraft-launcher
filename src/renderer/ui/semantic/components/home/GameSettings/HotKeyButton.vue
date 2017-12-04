@@ -1,5 +1,5 @@
 <template>
-    <div class="ui basic button" @click="onclick" @keyup="onkeypress">
+    <div class="ui basic button" @click="onclick" @keyup="onkeypress" @blur="onblur" tabindex="1">
         {{name}}: {{editing? 'Please press a key': innerkey}}
     </div>
 </template>
@@ -23,6 +23,10 @@ export default {
                 this.editing = false;
             }
         },
+        onblur() {
+            console.log('blur')
+            this.editing = false;
+        }
     },
     computed: {
     },
