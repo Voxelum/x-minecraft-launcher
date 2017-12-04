@@ -32,13 +32,13 @@ As a user, I want to identify the any local mods by categories, which is much ea
 
 ## Work completion rate
 
-There are 4 user stories in this Sprint. 
+There are 3 user stories in this Sprint. 
 
-The total number of estimated ideal work hours completed is 30.
+The total number of estimated ideal work hours completed is 31.
 
-Last sprint has 14 days, so the user stories/day is 4/14, about 0.28 stories/day, and hours/day is about 2.14 hours/day.
+Last sprint has 13 days, so the user stories/day is 3/13, about 0.23 stories/day, and hours/day is about 2.38 hours/day.
 
 ![Chart](svg-4.png)
 
-Totally, last two sprints have 42 days. The user stories/day is 12/42, about 0.29 stories/day, and hours/day is 2.02.
+Totally, last 3 sprints have 56 days. The user stories/day is 15/56, about 0.27 stories/day, and hours/day is 2.07
 
