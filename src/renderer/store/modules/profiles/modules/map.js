@@ -83,15 +83,19 @@ export default {
                 if (!exist) return undefined;
                 const levBuf = await context.dispatch('read', {
                     path: `profiles/${id}/saves/${file}/level.dat`,
-                    fallback: undefined,
+                    fallback: false,
                 }, { root: true });
-                if (levBuf === undefined) return undefined;
-                const imgBuf = await context.dispatch('read', {
-                    path: `profiles/${id}/saves/${file}/icon.png`,
-                    fallback: undefined,
-                }, { root: true })
+                if (!levBuf) return undefined;
                 const info = WorldInfo.parse(levBuf);
-                if (imgBuf) info.icon = `data:image/png;base64, ${imgBuf.toString('base64')}`;
+                try {
+                    const imgBuf = await context.dispatch('read', {
+                        path: `profiles/${id}/saves/${file}/icon.png`,
+                        fallback: '',
+                    }, { root: true })
+                    if (imgBuf !== '') info.icon = `data:image/png;base64, ${imgBuf.toString('base64')}`;
+                } catch (e) {
+                    console.error(e)
+                }
                 info.filename = file;
                 return info
             }
