@@ -1,6 +1,6 @@
 <template>
-    <div class="ui vertically divided grid" style="height:105%">
-        <div class="row">
+    <div class="ui vertically divided grid" style="max-height:500px; min-height:500px;">
+        <div class="row" style="max-height:150px;min-height:150px;">
             <div class="eight wide column" @click="openBar">
                 <h1 class="ui header">
                     <img v-if="status.icon!=''&& status.icon" class="ui image" :src="status.icon"></img>
@@ -27,7 +27,7 @@
                 <text-component :source="status.serverMOTD" localized="true"></text-component>
             </div>
         </div>
-        <div ref="bar" class="stretched row pushable ui top attached segment" style="border-right-width:0;border-right-color:transparent;border-radius:0px;">
+        <div ref="bar" class="row pushable ui top attached segment" style="min-height:350px;max-height:350px; border-right-width:0;border-right-color:transparent;border-radius:0px;">
             <div ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;" @mouseleave="closeBar">
                 <div class="sixteen wide column">
                     <div class="header item"> {{$t('basic')}} </div>
@@ -36,16 +36,16 @@
                     <router-link to="mods" class="item">{{$tc('mod.name', 0)}}</router-link>
                     <div class="header item"> {{$t('advanced')}} </div>
                     <router-link to="forge" class="item"> {{$t('forge')}} </router-link>
-                    <a class="item"> {{$t('liteloader')}} </a>
+                    <!-- <a class="item"> {{$t('liteloader')}} </a> -->
                     <router-link to="launchsettings" class="item">{{$t('launchsetting.name')}}</router-link>
                 </div>
             </div>
-            <div class="ui basic circular icon huge button" style="position:absolute; margin:20px;" @click="openBar" @mouseenter="openBar">
+            <div class="ui basic circular icon huge button" style="z-index: 10;position:absolute; margin:20px;" @mouseenter="openBar">
                 <i class="options icon"></i>
             </div>
-            <div class="pusher ui basic segment padded text container" style="min-height:70%; max-heigth:70%;">
+            <div class="pusher ui basic segment" style="overflow:auto; width:100%">
                 <transition name="fade" mode="out-in">
-                    <router-view></router-view>
+                    <router-view style="padding: 10px 20px 10px 80px"></router-view>
                 </transition>
             </div>
         </div>

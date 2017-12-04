@@ -56,7 +56,7 @@
                         <div class="content">
                             <div class="header">{{f.name}}</div>
                             <div class="extra">
-                                <div class="ui right floated basic button" @click="download(f.href)">
+                                <div class="ui right floated basic button" @click="download(f)">
                                     <i class="download icon"></i>{{f.size}}
                                 </div>
                                 <div class="ui basic label">
@@ -122,7 +122,7 @@ export default {
             const path = this.id;
             page = page || this.downloads.page;
             this.downloads.files = []
-            this.files({ path, version:'', page })
+            this.files({ path, version: '', page })
                 .then(downloads => {
                     this.downloads.pages = downloads.pages;
                     this.downloads.files = downloads.files;
@@ -173,8 +173,14 @@ export default {
                     })
                 })
         },
-        download(href) {
-            this.startDownload(href)
+        download(file) {
+            const project = {
+                name: this.name,
+                description: this.description,
+                path: this.path,
+                image: this.image,
+            }
+            this.startDownload({ file, project })
         }
     },
     props: ['id'],

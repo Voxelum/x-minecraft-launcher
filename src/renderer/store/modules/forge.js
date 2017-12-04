@@ -51,31 +51,6 @@ export default {
          * @param {VersionMeta|string} meta
          */
         async download(context, meta) {
-            if (typeof meta === 'string') {
-                if (!context.getters.versionsMap[meta]) throw new Error(`Cannot find the version ${meta}`)
-                meta = context.getters.versionsMap[meta];
-            }
-            const id = meta.id;
-            context.commit('updateStatus', { version: meta, status: 'loading' })
-            let exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
-            if (!exist) {
-                try {
-                    await context.dispatch('query', {
-                        service: 'versions',
-                        action: 'downloadClient',
-                        payload: {
-                            meta,
-                            location: context.rootGetters.root,
-                        },
-                    }, { root: true })
-                } catch (e) { console.warn(e) }
-            }
-            exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
-            if (exist) {
-                context.commit('updateStatus', { version: meta, status: 'local' })
-            } else {
-                context.commit('updateStatus', { version: meta, status: 'remote' })
-            }
         },
         async checkLocalForge(context, forgeMeta) {
             const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true })

@@ -8,14 +8,15 @@ class DownloadTask extends EventEmitter {
         super();
         this.id = id;
         this.url = url;
+        this.source = source;
         this.file = file;
     }
     execute(context) {
         return new Promise((resolve, reject) => {
             this.source.session.once('will-download', (event, item, content) => {
-                if (item.getURL() !== this.url) throw new Error(`Unmatched url: ${item.getURL()} : ${this.url}`)
+                // if (item.getURL() !== this.url) throw new Error(`Unmatched url: ${item.getURL()} : ${this.url}`)
                 const savePath = paths.join(app.getPath('userData'), 'temps', item.getFilename());
-                if (!this.file) item.setSavePath(paths.join(app.getPath('userData'), 'temps', item.getFilename()))
+                if (!this.file) item.setSavePath(savePath)
                 item.on('updated', ($event, state) => {
                     this.emit('update', {
                         status: state,
@@ -51,7 +52,8 @@ export default {
          * @param {{url:string, path?:string}} payload 
          */
         download(context, payload) {
-            return new DownloadTask(context.uuid, payload.url, payload.path, context.source);
+            console.log(payload)
+            return new DownloadTask(`download ${payload.url}`, payload.url, payload.path, context.source);
         },
     },
 }

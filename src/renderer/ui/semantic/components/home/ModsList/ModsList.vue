@@ -1,12 +1,12 @@
 <template>
-    <div class="ui center aligned middle aligned basic segment container" v-if="mods.length===0" @drop="ondrop" style="height:100%">
+    <div class="ui center aligned middle aligned basic segment container" v-if="mods.length===0" @drop="ondrop">
         <br>
         <h2 class="ui icon header">
             <i class="game icon"></i>
             <div class="sub header">{{$t('mod.hint')}}</div>
         </h2>
     </div>
-    <div v-else @drop="ondrop" class="ui grid">
+    <div v-else @drop="ondrop" class="ui grid" style="width:100%">
         <div class="row">
             <div class="eight wide centered column">
                 <div class="ui icon fluid transparent input">
