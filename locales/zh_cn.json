@@ -7,6 +7,8 @@
     "create": "创建",
     "author": "作者",
     "description": "介绍",
+    "nodescription": "暂时没有介绍",
+    "unknown": "未知版本",
     "help": "帮助",
     "home": "主页",
     "login": "登陆",
@@ -15,6 +17,29 @@
     "cancel": "取消",
     "remove": "移除",
     "!delete": "删除",
+    "criticalGraphics": "图像设置",
+    "hotkeyChanges": "按键设置",
+    "buttonSettings": {
+        "moveForward": "向前",
+        "moveBackward": "向后",
+        "moveLeft": "向左",
+        "moveRight": "向右",
+        "jump": "跳",
+        "drop": "丢弃",
+        "talk": "讲话",
+        "open": "打开关闭背包",
+        "stealth": "潜行",
+        "view": "观察玩家",
+        "shortcut1": "快捷键 1",
+        "shortcut2": "快捷键 2",
+        "shortcut3": "快捷键 3",
+        "shortcut4": "快捷键 4",
+        "shortcut5": "快捷键 5",
+        "shortcut6": "快捷键 6",
+        "shortcut7": "快捷键 7",
+        "shortcut8": "快捷键 8",
+        "shortcut9": "快捷键 9"
+    },
     "Invalid credentials. Invalid username or password.": "错误的用户名或密码",
     "mod": {
         "name": "Mod | Mods",
@@ -65,9 +90,12 @@
         "local": "这个版本已被下载",
         "snapshot": "快照",
         "all": "所有版本",
+        "allVersion": "所有版本",
         "release": "稳定版",
         "missing": "缺少{version}版本的游戏文件 ",
-        "requiredownload": "缺少{version}版本的游戏文件. 请下载并重试."
+        "requiredownload": "缺少{version}版本的游戏文件. 请下载并重试.",
+        "selectVersion": "请选择一个版本",
+        "selectversionWarn": "缺少版本无法启动"
     },
     "gametype": {
         "survival": "生存模式",
@@ -77,6 +105,7 @@
         "non": "未知模式"
     },
     "curseforge": "Curseforge",
+    "popular": "热度",
     "difficulty": {
         "peaseful": "和平",
         "easy": "简单",
@@ -108,6 +137,9 @@
         "password": "密码"
     },
     "modpack": {
+        "profile": "整合包名",
+        "author": "作者名",
+        "description": "简介",
         "add": "添加整合包",
         "name": "整合包 | 整合包",
         "edit": "编辑整合包信息",
@@ -126,6 +158,8 @@
     },
     "actionforbidden": "创建失败",
     "server": {
+        "profile": "服务器名",
+        "ipAddress": "IP地址",
         "add": "添加服务器",
         "name": "服务器 | 服务器",
         "create": "创建一个新的服务器",

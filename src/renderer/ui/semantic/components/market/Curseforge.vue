@@ -5,7 +5,7 @@
         </div>
         <div ref="filterDropdown" class="ui labeled icon top right pointing basic dropdown">
             <i class="filter icon"></i>
-            <span class="text">Popularity</span>
+            <span class="text"><label>{{$t('popular')}}</label></span>
             <div class="menu">
                 <div class="item" v-for="f of filters" :key="f.value" @click="change({filter: f.value})">
                     {{f.text}}
@@ -15,7 +15,7 @@
         </div>
         <div ref="versionDropdown" class="ui labeled icon top right pointing scrolling basic dropdown">
             <i class="filter icon"></i>
-            <span class="text">All Versions</span>
+            <span class="text"><label>{{$t('version.allVersion')}}</label></span>
             <div class="menu">
                 <div class="item" v-for="v of versions" :key="v.value" @click="change({version:v.value})">
                     {{v.text}}
