@@ -22,13 +22,13 @@ Task 3: Briefly read the Electron.js (2h)
 
 Total hours of Story 1: 5
 
-#### Story 2: As a user, I don’t want to care about java installation. Auto detecting java should be available.
+#### Story 2: As a user, I want to install java quickly and easily. Auto detecting java should be available.
 
 Task 1: Detect the java in mac (5h)
 
 Total hours of Story 2: 5
 
-#### Story 3: As a user, I need to be able to config / launch the game smoothly.
+#### Story 3: As a user, I want to be able to config / launch the game smoothly.
 
 Task 1: Implement the launch configuration (5h)
  
@@ -54,7 +54,7 @@ Luca (Xinghai Xiong): Developer
 
 Phoebe (Li Jiang): Developer
 
-Wang: Developer
+Sumeng Wang: Developer
 
 Qiang Tang: Developer
 
@@ -66,7 +66,7 @@ Luca (Xinghai Xiong): All the Tasks in Story 1, Story 2
 
 Phoebe (Li Jiang): All the Tasks in Story 1, Story 2
 
-Wang: All the Tasks in Story 1, Story 3 Task 1
+Sumeng Wang: All the Tasks in Story 1, Story 3 Task 1
 
 Qiang Tang: All the Tasks in Story 1, Story 3 Task 1
 
