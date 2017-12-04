@@ -9,6 +9,7 @@ export default {
         for (const key in this.options) {
             if (this.options.hasOwnProperty(key)) {
                 const option = this.options[key];
+                if (!option) throw new Error(`Cannot find option ${key}`)
                 currentFields.push(createElement('option-button', {
                     props: {
                         id: key,

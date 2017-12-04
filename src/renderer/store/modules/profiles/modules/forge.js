@@ -22,6 +22,11 @@ export default {
     },
     actions: {
         load() { },
+        setForgeVersion(context, version) {
+            if (context.state.version !== version) {
+                context.commit('forgeVersion', version)
+            }
+        },
         addForgeMod(context, mod) {
             if (context.state.mods.indexOf(mod) === -1) {
                 context.commit('addForgeMod', mod)

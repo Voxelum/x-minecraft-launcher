@@ -1,4 +1,4 @@
-import { Version, MinecraftFolder } from 'ts-minecraft'
+import { Version, MinecraftFolder, Forge } from 'ts-minecraft'
 
 const versionProviders = new Map()
 // import semver from 'semver'
@@ -9,6 +9,21 @@ export default {
     proxy: {
     },
     actions: {
+        async refreshForge() {
+            const remoteList = await Forge.VersionMetaList.update()
+
+            const list = remoteList.list;
+            Object.keys(list.mcversion).forEach((mcver) => {
+                list.mcversion[mcver] = list.mcversion[mcver].map(id => list.number[id]);
+            })
+            Object.keys(list.promos).forEach((mcver) => {
+                list.promos[mcver] = list.number[list.promos[mcver]];
+            })
+            delete list.number
+            delete list.branches
+
+            return remoteList
+        },
         refresh(context, updateTime) {
             return Version.updateVersionMeta({ date: updateTime })
         },

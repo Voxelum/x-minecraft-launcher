@@ -10,7 +10,7 @@
                                 {{$t('author')}}: {{source.author}}
                             </h2>
                             <h2 ref="versionPopup" class="ui sub header">
-                                {{$tc('version.name', 0)}}: {{source.mcversion===''? 'Unselected':source.mcversion}} 
+                                {{$tc('version.name', 0)}}: {{source.mcversion===''? 'Unselected':source.mcversion}}
                                 <i class="dropdown icon"></i>
                             </h2>
                             <version-table-view :id="id"></version-table-view>
@@ -42,12 +42,12 @@
                             {{$t('advanced')}}
                         </a>
                         <div class="content">
-                            <a class="item" data-tab="forge">
+                            <router-link to="forge" class="item" data-tab="forge">
                                 {{$t('forge')}}
-                            </a>
-                            <a class="item" data-tab="liteloader">
+                            </router-link>
+                            <!-- <router-link class="item" data-tab="liteloader">
                                 {{$t('liteloader')}}
-                            </a>
+                            </router-link> -->
                             <router-link to="launchsettings" class="item">Launch Settings</router-link>
                         </div>
                     </div>
@@ -74,7 +74,7 @@ import ModsList from './ModsList'
 
 export default {
     components: {
-        VersionTableView, ResourcePackList, 
+        VersionTableView, ResourcePackList,
         GameSettings, MapsList, ModsList
     },
     computed: {
