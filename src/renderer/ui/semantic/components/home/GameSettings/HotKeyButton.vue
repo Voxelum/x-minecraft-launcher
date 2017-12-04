@@ -1,7 +1,7 @@
 <template>
-    <button class="ui basic button" @click="onclick" @keyup="onkeypress" @blur="onblur" >
+    <div class="ui basic button" @click="onclick" @keyup="onkeypress" @blur="onblur" tabindex="1">
         {{name}}: {{editing? 'Please press a key': innerkey}}
-    </button>
+    </div>
 </template>
 
 <script>
