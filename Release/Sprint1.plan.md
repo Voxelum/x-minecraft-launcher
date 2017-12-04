@@ -22,7 +22,7 @@ Task 3: Briefly read the Electron.js (2h)
 
 Total hours of Story 1: 5
 
-#### Story 2: As a user, I don’t want to care about java installation. Auto detecting/installing java should be available.
+#### Story 2: As a user, I don’t want to care about java installation. Auto detecting java should be available.
 
 Task 1: Detect the java in mac (5h)
 
