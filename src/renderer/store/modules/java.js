@@ -23,6 +23,9 @@ export default {
                 context.commit('javas', newarr)
             }
         },
+        testJava(context, java) {
+            
+        },
         /**
          * scan local java locations and cache
          */
