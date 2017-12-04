@@ -24,15 +24,15 @@ We should keep the one long meeting each week. It's a good chance for teammate t
 
 Stories completed:
 
-As a user, I need to ping the server info correctly.
+As a user, I want to ping the server info correctly.
 
-As a user, I need to have the capability to manage the local mods.
+As a user, I want to have the capability to manage the local mods.
 
-As a user, I need to be able to config the game.
+As a user, I want to be able to config the game.
 
 Story completed partially:
 
-As a user, I need to have the capability to manage the local resource packs.
+As a user, I want to have the capability to manage the local resource packs.
 
 Basically, this story is almost complete, instead some advance setting part. It should fulfill all the basic demand of user.
 
