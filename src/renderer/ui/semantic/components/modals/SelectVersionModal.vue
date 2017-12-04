@@ -2,10 +2,10 @@
     <div class="ui basic modal" style="padding:0 20% 0 20%;">
         <div class="ui icon small header">
             <i class="user icon"></i>
-            Please Select a version!
+            <label>{{$t('version.selectVersion')}}</label>
         </div>
         <div class="content">
-            Cannot launch without selecting a version
+            <label>{{$t('version.selectversionWarn')}}</label>
         </div>
         <div class="actions">
             <div class="ui basic inverted cancel button">{{$t('cancel')}}</div>

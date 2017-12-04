@@ -8,6 +8,7 @@
     "author": "Author",
     "description": "Description",
     "nodescription": "No description yet.",
+    "unknown": "unknown",
     "help": "Help",
     "home": "Home",
     "login": "Login",
@@ -89,9 +90,12 @@
         "local": "This version is in the disk",
         "snapshot": "Snapshot",
         "all": "All",
+        "allVersion": "All versions",
         "release": "Release",
         "missing": "Missing Version {version}",
-        "requiredownload": "Missing Version {version}. Please download the version to play."
+        "requiredownload": "Missing Version {version}. Please download the version to play.",
+        "selectVersion": "Please select a version!",
+        "selectversionWarn": " Cannot launch without selecting a version"
     },
     "gametype": {
         "survival": "Survival",
@@ -101,6 +105,7 @@
         "non": "Non mode"
     },
     "curseforge": "Curseforge",
+    "popular": "Porpularity",
     "difficulty": {
         "peaseful": "Peaseful",
         "easy": "Easy",
@@ -132,6 +137,9 @@
         "password": "Password"
     },
     "modpack": {
+        "profile": "Profile Name",
+        "author": "Author Name",
+        "description": "A simple description",
         "add": "Add Modpack",
         "name": "Modpack | Modpacks",
         "edit": "Edit Modpack Info",
@@ -150,6 +158,8 @@
     },
     "actionforbidden": "Action Forbidden",
     "server": {
+        "profile": "Name Of the Server",
+        "ipAddress": "IP Address",
         "add": "Add Server",
         "name": "Server | Servers",
         "create": "Create A New Server",
