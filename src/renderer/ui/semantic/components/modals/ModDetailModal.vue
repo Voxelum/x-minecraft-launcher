@@ -12,13 +12,14 @@
                         </a>
                         <span v-if="authors.length!==0">by {{authors[0]}}</span>
                         <div class="meta" v-if="mod.description">
-                            <font size='2'>{{mod.description}}</font>
+                            <font size='3'>{{mod.description}}</font>
                         </div>
                         <div class="extra">
                             <span>{{version}}</span>
-                            <span v-if="mod.mcversion"> MC{{mod.mcversion}}</span>
+                            <span v-if="mod.mcversion"> {{$t('recommendedMinecraftVersion')}} {{mod.mcversion}}</span>
+                            <span v-if="acceptingMc">{{$t('acceptingMinecraftVersion')}}: {{acceptingMc}}</span>
                         </div>
-                        <div class="extra">
+                        <!-- <div class="extra">
                             <div class="ui secondary menu">
                                 <a class="item" :class="{ active: selected === 'Config' }" @click="selected = 'Config'">
                                     Config
@@ -30,20 +31,20 @@
                                     On Wiki
                                 </a>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
         </div>
-        <div class="content">
+        <!-- <div class="content">
             <component :is="selected"></component>
-        </div>
+        </div> -->
         <div class="actions">
             <div class="ui black deny button">
                 {{$t('cancel')}}
             </div>
             <div class="ui positive right labeled icon button">
-                {{$t('save')}}
+                {{$t('ok')}}
                 <i class="checkmark icon"></i>
             </div>
         </div>
@@ -61,6 +62,7 @@ export default {
         name() { return this.mod.name || this.mod.modid || 'Unknown' },
         authors() { return this.mod.authorList || [] },
         version() { return this.mod.version || '0.0.0' },
+        acceptingMc() { return this.mod.acceptedMinecraftVersions || '' },
     },
     methods: {
         show(mod) {

@@ -88,7 +88,6 @@ export default {
          * @param {{root:string, target:string, elements:string[]}} payload 
          */
         virtualenv(context, payload) {
-            console.log(payload)
             const { root, target, elements } = payload;
             return Promise.all(elements.map(async (e) => {
                 const from = path.join(root, e.hash)

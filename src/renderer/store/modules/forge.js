@@ -51,6 +51,12 @@ export default {
          * @param {VersionMeta|string} meta
          */
         async download(context, meta) {
+            console.log(meta)
+            return context.dispatch('query', {
+                service: 'versions',
+                action: 'downloadForge',
+                payload: { meta, minecraft: context.rootGetters.root },
+            }, { root: true })
         },
         async checkLocalForge(context, forgeMeta) {
             const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true })
