@@ -31,11 +31,11 @@ export default {
     computed: {
         version() {
             return this.source.mcversion ? this.source.mcversion.length != 0 ?
-                this.source.mcversion : "unknown" : "unknown"
+                this.source.mcversion : this.$t('unknown') : this.$t('unknown')
         },
         description() {
             return this.source.description ? this.source.description != 0 ?
-                this.source.description : "No description yet." : "No description yet."
+                this.source.description : this.$t('nodescription') : this.$t('nodescription')
         }
     },
     props: ['color', 'source', 'id', 'bound'],
