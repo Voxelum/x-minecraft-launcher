@@ -24,7 +24,7 @@ We keep to have seperated small meeting for communicating and helping with each 
 
 Stories completed:
 
-As a player, I want to be able to access/download mods / resource packs / maps from curseforge.
+As a player, I want to be able to access/download mods curseforge.
 
 As a player from China, I want to to view the wiki from mcmod.cn.
 
