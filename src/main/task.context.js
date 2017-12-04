@@ -52,7 +52,8 @@ export default {
      * @return {Promise<T>}
      */
     execute(uuid, id, sender, task) {
-        return task.execute(new InnerContext({ id }, task, uuid, sender));
+        sender.send(uuid, 'child', [], task.id)
+        return task.execute(new InnerContext(undefined, task, uuid, sender));
     },
     isTask: object => object.id && object.execute && typeof object.execute === 'function' && object instanceof EventEmitter,
 };

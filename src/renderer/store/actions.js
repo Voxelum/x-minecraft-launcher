@@ -70,8 +70,14 @@ export default {
         // well... these two totally... should not happen; 
         // if it happen... that is a fatal bug...
 
+        let version = profile.mcversion;
+
+        const mods = context.getters[`profiles/${profileId}/forgeMods`];
+        const forgeVersion = context.getters[`profiles/${profileId}/forgeVersion`];
+        if (mods.length !== 0 && forgeVersion !== '') {
+            version = `${version}-forge-${forgeVersion}`
+        }
         const type = profile.type;
-        const version = profile.mcversion;
         const errors = context.getters[`profiles/${profileId}/errors`]
         if (errors && errors.length !== 0) return Promise.reject(errors[0])
 

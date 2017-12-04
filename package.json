@@ -92,7 +92,7 @@
         "three": "^0.86.0",
         "require-dir": "^0.3.0",
         "three-orbit-controls": "^82.1.0",
-        "ts-minecraft": "^2.0.8",
+        "ts-minecraft": "^2.0.10",
         "url-loader": "^0.5.7",
         "vue-devtools": "^3.1.9",
         "vue-html-loader": "^1.2.2",

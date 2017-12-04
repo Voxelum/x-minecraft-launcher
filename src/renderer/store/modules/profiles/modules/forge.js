@@ -52,7 +52,7 @@ export default {
             }
         },
         addForgeMod(context, mod) {
-            context.dispatch('validateForgeVersion')
+            // context.dispatch('validateForgeVersion')
             if (context.state.mods.indexOf(mod) === -1) {
                 context.commit('addForgeMod', mod)
             }

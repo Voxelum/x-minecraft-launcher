@@ -17,13 +17,13 @@ class DownloadTask extends EventEmitter {
                 // if (item.getURL() !== this.url) throw new Error(`Unmatched url: ${item.getURL()} : ${this.url}`)
                 const savePath = paths.join(app.getPath('userData'), 'temps', item.getFilename());
                 if (!this.file) item.setSavePath(savePath)
-                item.on('updated', ($event, state) => {
-                    this.emit('update', {
-                        status: state,
-                        progress: item.getReceivedBytes(),
-                        total: item.getTotalBytes(),
-                    })
-                })
+                // item.on('updated', ($event, state) => {
+                //     this.emit('update', {
+                //         status: state,
+                //         progress: item.getReceivedBytes(),
+                //         total: item.getTotalBytes(),
+                //     })
+                // })
                 item.on('done', ($event, state) => {
                     switch (state) {
                         case 'completed':
