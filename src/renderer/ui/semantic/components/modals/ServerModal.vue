@@ -7,11 +7,11 @@
         <form class="ui inverted form" :class="{error: nameError|| hostError}">
             <div class="field" :class="{error: nameError}">
                 <label>{{$t('name')}}</label>
-                <input class="ui basic inverted input" type="text" placeholder="Name Of server" v-model="name" @keypress="enter">
+                <input class="ui basic inverted input" type="text" :placeholder="$t('server.profile')" v-model="name" @keypress="enter">
             </div>
             <div class="field" :class="{error: hostError}">
                 <label>{{$t('server.host')}}</label>
-                <input class="ui basic inverted input" type="text" placeholder="IP address" v-model="ip" @keypress="enter">
+                <input class="ui basic inverted input" type="text" :placeholder="$t('server.ipAddress')" v-model="ip" @keypress="enter">
             </div>
             <div class="field">
                 <label>{{$t('server.port')}}</label>

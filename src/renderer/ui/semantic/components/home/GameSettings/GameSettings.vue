@@ -1,36 +1,40 @@
     <template>
     <div class="">
-        <h5 class="ui horizontal divider header">Critical graphic</h5>
+        <h5 class="ui horizontal divider header">
+            <label>{{$t('criticalGraphics')}}</label>
+        </h5>
         <options-group :options="criticalGraphics" :id="id"></options-group>
-        <options-group :options="normalGraphics" :id="id"></options-group>
-        <h5 class="ui horizontal divider header">Hotkey Changes</h5>
-        <div class="five ui basic buttons">
-            <hot-key-button :name="$t('settings.moveforward')" :initkey="hotKeys.moveForward" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Move Backward" :initkey="hotKeys.moveBackward" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Move Left" :initkey="hotKeys.moveLeft" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Move Right" :initkey="hotKeys.moveRight" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Jump" :initkey="hotKeys.Jump" @keychange="onkeychange"></hot-key-button>
-        </div>
-        <div class="five ui basic buttons">
-            <hot-key-button name="Drop Item" :initkey="hotKeys.DropItem" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Talk" :initkey="hotKeys.Talk" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Open or Close Bag" :initkey="hotKeys.OpenOrCloseBag" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Steath" :initkey="hotKeys.Steath" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="View player" :initkey="hotKeys.Viewplayer" @keychange="onkeychange"></hot-key-button>
-        </div>
-        <div class="five ui basic buttons">
-            <hot-key-button name="Shortcut1" :initkey="hotKeys.Shortcut1" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Shortcut2" :initkey="hotKeys.Shortcut2" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Shortcut3" :initkey="hotKeys.Shortcut3" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Shortcut4" :initkey="hotKeys.Shortcut4" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Shortcut5" :initkey="hotKeys.Shortcut5" @keychange="onkeychange"></hot-key-button>
-        </div>
-        <div class="four ui basic buttons">
-            <hot-key-button name="Shortcut6" :initkey="hotKeys.Shortcut6" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Shortcut7" :initkey="hotKeys.Shortcut7" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Shortcut8" :initkey="hotKeys.Shortcut8" @keychange="onkeychange"></hot-key-button>
-            <hot-key-button name="Shortcut9" :initkey="hotKeys.Shortcut9" @keychange="onkeychange"></hot-key-button>
-        </div>
+        <options-group :options="normalGraphics" :id="id">
+            <h5 class="ui horizontal divider header">
+                <label>{{$t('hotkeyChanges')}}</label>
+            </h5>
+            <div class="five ui basic buttons">
+                <hot-key-button :name="$t('buttonSettings.moveForward')" :initkey="hotKeys.moveForward" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.moveBackward')" :initkey="hotKeys.moveBackward" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.moveLeft')" :initkey="hotKeys.moveLeft" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.moveRight')" :initkey="hotKeys.moveRight" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.jump')" :initkey="hotKeys.Jump" @keychange="onkeychange"></hot-key-button>
+            </div>
+            <div class="five ui basic buttons">
+                <hot-key-button :name="$t('buttonSettings.drop')" :initkey="hotKeys.DropItem" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.talk')" :initkey="hotKeys.Talk" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.open')" :initkey="hotKeys.OpenOrCloseBag" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.stealth')" :initkey="hotKeys.Steath" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.view')" :initkey="hotKeys.Viewplayer" @keychange="onkeychange"></hot-key-button>
+            </div>
+            <div class="five ui basic buttons">
+                <hot-key-button :name="$t('buttonSettings.shortcut1')" :initkey="hotKeys.Shortcut1" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.shortcut2')" :initkey="hotKeys.Shortcut2" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.shortcut3')" :initkey="hotKeys.Shortcut3" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.shortcut4')" :initkey="hotKeys.Shortcut4" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.shortcut5')" :initkey="hotKeys.Shortcut5" @keychange="onkeychange"></hot-key-button>
+            </div>
+            <div class="four ui basic buttons">
+                <hot-key-button :name="$t('buttonSettings.shortcut6')" :initkey="hotKeys.Shortcut6" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.shortcut7')" :initkey="hotKeys.Shortcut7" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.shortcut8')" :initkey="hotKeys.Shortcut8" @keychange="onkeychange"></hot-key-button>
+                <hot-key-button :name="$t('buttonSettings.shortcut9')" :initkey="hotKeys.Shortcut9" @keychange="onkeychange"></hot-key-button>
+            </div>
     </div>
 </template>
 
@@ -79,14 +83,14 @@ export default {
             // maxFps: 120,
         },
         hotKeys: {
-            moveForward: 'w',
-            moveBackward: 's',
-            moveLeft: 'a',
-            moveRight: 'd',
+            moveForward: 'W',
+            moveBackward:'S',
+            moveLeft: 'A',
+            moveRight: 'D',
             Jump: 'Space',
-            DropItem: 'q',
-            Talk: 't',
-            OpenOrCloseBag: 'e',
+            DropItem: 'Q',
+            Talk: 'T',
+            OpenOrCloseBag: 'E',
             Viewplayer: 'Tab',
             Steath: 'LeftShift',
             Shortcut1: '1',
