@@ -7,15 +7,15 @@
         <form class="ui inverted form" :class="{error: nameError}">
             <div class="field" :class="{error:nameError}">
                 <label>{{$t('name')}}</label>
-                <input class="ui basic inverted input" type="text" placeholder="Profile Name" v-model="name" @keypress="enter">
+                <input class="ui basic inverted input" type="text" :placeholder="$t('modpack.profile')" v-model="name" @keypress="enter">
             </div>
             <div class="field">
                 <label>{{$t('author')}}</label>
-                <input class="ui basic inverted input" type="text" placeholder="Author Name" v-model="author" @keypress="enter">
+                <input class="ui basic inverted input" type="text" :placeholder="$t('modpack.author')" v-model="author" @keypress="enter">
             </div>
             <div class="field">
                 <label>{{$t('description')}}</label>
-                <input class="ui basic inverted input" type="text" placeholder="A Simple description" v-model="description" @keypress="enter">
+                <input class="ui basic inverted input" type="text" :placeholder="$t('modpack.description')" v-model="description" @keypress="enter">
             </div>
             <div class="ui error message">
                 <div class="header">{{$t('actionforbidden')}}</div>
@@ -72,7 +72,7 @@ export default {
             else {
                 this.name = ''
                 this.author = this.username || ""
-                this.description = 'No description yet'
+                this.description = this.$t('nodescription')
             }
             $(this.$el).modal('show')
         },
