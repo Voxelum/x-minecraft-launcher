@@ -26,13 +26,13 @@ Stories completed:
 
 As a developer, I need to be familiar with project to start.
 
-As a user, I don’t want to care about java installation. Auto detecting java should be available.
+As a user, I want to install java quickly and easily. Auto detecting java should be available.
 
 As a user, I want to manage the local worlds easily. 
 
 Stories not completed:
 
-As a user, I need to be able to config / launch the game smoothly.
+As a user, I want to be able to config / launch the game smoothly.
 
 ## Work completion rate
 
