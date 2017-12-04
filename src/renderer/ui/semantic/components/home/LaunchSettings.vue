@@ -1,46 +1,44 @@
 <template>
-    <div>
-        <div class="ui form">
-            <div class="field">
-                <label>{{$t('launchsetting.jvm')}}</label>
-                <labeled-input :labels="vmOptions" @dellabel="delVM" @addlabel="addVM"></labeled-input>
-            </div>
-            <div class="field">
-                <label>{{$t('launchsetting.mc')}}</label>
-                <labeled-input :labels="mcOptions" @dellabel="delMC" @addlabel="addMC"></labeled-input>
-            </div>
-            <div class="ui field">
-                <label>Java</label>
-                <div class="ui grid">
-                    <div class="ui ten wide column">
-                        <div ref="path" class="ui selection fluid dropdown">
-                            <input type="hidden" name="java path">
-                            <i class="dropdown icon"></i>
-                            <div class="text">{{selectedJava}}</div>
-                            <div class="menu">
-                                <li class="item" v-for="value in javas" :key="value" @click="selectJava(value)">
-                                    {{value}}
-                                </li>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ui two wide column">
-                        <div class="ui fluid button" style="padding-left:27%">
-                            Test
-                        </div>
-                    </div>
-                    <div class="ui two wide column">
-                        <div class="ui icon fluid button" @click="popDialog">
-                            <i class="add icon"></i>
-                        </div>
-                    </div>
-                    <div class="ui two wide column">
-                        <div class="ui icon fluid button" @click="removeCurrent">
-                            <i class="remove icon"></i>
+    <div class="ui form">
+        <div style="z-index:10" class="ui field">
+            <label>Java</label>
+            <div class="ui grid">
+                <div class="ui ten wide column">
+                    <div ref="path" class="ui selection fluid dropdown">
+                        <input type="hidden" name="java path">
+                        <i class="dropdown icon"></i>
+                        <div class="text">{{selectedJava}}</div>
+                        <div class="menu">
+                            <li class="item" v-for="value in javas" :key="value" @click="selectJava(value)">
+                                {{value}}
+                            </li>
                         </div>
                     </div>
                 </div>
+                <div class="ui two wide column">
+                    <div class="ui fluid button" style="padding-left:27%">
+                        Test
+                    </div>
+                </div>
+                <div class="ui two wide column">
+                    <div class="ui icon fluid button" @click="popDialog">
+                        <i class="add icon"></i>
+                    </div>
+                </div>
+                <div class="ui two wide column">
+                    <div class="ui icon fluid button" @click="removeCurrent">
+                        <i class="remove icon"></i>
+                    </div>
+                </div>
             </div>
+        </div>
+        <div class="field" style="z-index:0">
+            <label>{{$t('launchsetting.jvm')}}</label>
+            <labeled-input style="z-index:0"  :labels="vmOptions" @dellabel="delVM" @addlabel="addVM"></labeled-input>
+        </div>
+        <div class="field" style="z-index:0">
+            <label>{{$t('launchsetting.mc')}}</label>
+            <labeled-input style="z-index:0" :labels="mcOptions" @dellabel="delMC" @addlabel="addMC"></labeled-input>
         </div>
     </div>
 </template>
@@ -91,7 +89,7 @@ export default {
         },
         selectJava(newPath) {
             console.log(`select ${newPath}`)
-            this.$store.dispatch(`profiles/${this.id}/edit`, { java: newPath }).then(()=>{
+            this.$store.dispatch(`profiles/${this.id}/edit`, { java: newPath }).then(() => {
                 console.log(this.selectedJava)
             })
         },

@@ -1,6 +1,6 @@
 <template>
-    <div class="ui vertically divided grid" style="height:105%">
-        <div class="row">
+    <div class="ui vertically divided grid" style="max-height:500px; min-height:500px;">
+        <div class="row" style="max-height:150px;min-height:150px;">
             <div class="eight wide column">
                 <div class="ui sizer" style="font-size: 23px;">
                     <h1 class="ui header">
@@ -27,7 +27,7 @@
                 </textarea>
             </div>
         </div>
-        <div ref="bar" class="stretched row pushable ui top attached segment" style="border-right-width:0;border-right-color:transparent;border-radius:0px;">
+        <div ref="bar" class="stretched row pushable ui top attached segment" style="min-height:350px;max-height:350px; border-right-width:0;border-right-color:transparent;border-radius:0px;">
             <div ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;" @mouseleave="closeBar">
                 <div class="sixteen wide column">
                     <div class="header item">
@@ -54,11 +54,13 @@
                 </div>
 
             </div>
-            <div class="ui basic circular icon huge button" style="position:absolute; margin:20px;" @click="openBar" @mouseenter="openBar">
+            <div class="ui basic circular icon huge button" style="z-index: 10;position:absolute; margin:20px;" @mouseenter="openBar">
                 <i class="options icon"></i>
             </div>
-            <div class="pusher ui basic segment padded text container" style="min-height:70%; max-heigth:70%;">
-                <router-view></router-view>
+            <div class="pusher ui basic segment" style="overflow:auto; width:100%">
+                <transition name="fade" mode="out-in">
+                    <router-view style="padding: 10px 20px 10px 80px"></router-view>
+                </transition>
             </div>
         </div>
     </div>

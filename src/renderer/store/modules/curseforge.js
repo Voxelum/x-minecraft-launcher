@@ -77,7 +77,7 @@ export default {
                 action: 'download',
                 payload: { url: `https://minecraft.curseforge.com${payload.file.href}` },
             }, { root: true })
-            return context.dispatch('respository/import', {
+            return context.dispatch('repository/import', {
                 files: [file],
                 signiture: {
                     source: 'curseforge',
