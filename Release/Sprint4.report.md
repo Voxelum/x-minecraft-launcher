@@ -1,4 +1,4 @@
-# Sprint 3 Report
+# Sprint 4 Report
 
 Product name : ILauncher,
 
@@ -8,9 +8,15 @@ Date: Dec. 3
 
 ## Action to Stop doing
 
+Team members should stop working on the master branch to avoid merging conflict
+
 ## Action to start doing
 
+Team members should start closing their issues on github after they finish their tasks
+
 ## Action to keep doing
+
+Team members should keep implementing clean codes. It makes the debugging process much efficient.
 
 ## Work completed/not completed
 
