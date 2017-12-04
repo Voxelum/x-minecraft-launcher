@@ -14,9 +14,14 @@
     "login": "Login",
     "summery": "Summery",
     "add": "Add",
+    "ok": "Ok",
+    "filter": "Filter",
+    "recommendedMinecraftVersion": "Minecraft Version",
+    "acceptingMinecraftVersion": "Accepting Minecraft Version",
     "cancel": "Cancel",
     "remove": "Remove",
     "!delete": "Delete",
+    "detail": "Detail",
     "criticalGraphics": "Critical Graphics",
     "hotkeyChanges": "Hotkey Changes",
     "buttonSettings": {
@@ -129,7 +134,14 @@
     },
     "basic": "Basic",
     "advanced": "Advanced",
-    "forge": "Forge",
+    "forge": {
+        "name": "Forge",
+        "non": "No Forge",
+        "recommended": "Recommended",
+        "latest": "Latest",
+        "common": "Common",
+        "install": "Install"
+    },
     "liteloader": "LiteLoader",
     "mojang": {
         "name": "Mojang",

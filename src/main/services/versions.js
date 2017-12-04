@@ -24,6 +24,10 @@ export default {
 
             return remoteList
         },
+        downloadForge(context, { meta, minecraft }) {
+            if (!meta) throw new Error('Meta cannot be undefined!')
+            return Forge.install(meta, new MinecraftFolder(minecraft))
+        },
         refresh(context, updateTime) {
             return Version.updateVersionMeta({ date: updateTime })
         },

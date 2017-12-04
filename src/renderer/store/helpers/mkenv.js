@@ -45,7 +45,31 @@ async function mkMods(context, id, rootFolder, profileFolder) {
     await fs.remove(targetDirectory)
     await fs.ensureDir(targetDirectory);
 
-    const getMod = context.getters['repository/mods'];
+    const mods = context.getters['repository/mods'];
+    const selecting = context.getters[`profiles/${id}/forgeMods`];
+
+    const modIdVersions = {};
+    mods.forEach((res) => {
+        res.meta.forEach((mod) => {
+            modIdVersions[`${mod.meta.modid}:${mod.meta.version}`] = { hash: `${res.hash}.jar`, pack: `${res.hash}.jar` }
+        })
+    })
+    const selectingResources = selecting.map(k => modIdVersions[k]).filter(mod => mod !== undefined);
+
+    console.log(selectingResources);
+
+    await context.dispatch('query', {
+        service: 'repository',
+        action: 'virtualenv',
+        payload: {
+            root: rootFolder.getPath('resources'),
+            target: targetDirectory,
+            elements: selectingResources,
+        },
+    }).catch((e) => {
+        console.warn('Cannot export mods')
+        console.warn(e)
+    });
 }
 
 export default async (context, profileId, rootLoc, profileLoc) => {

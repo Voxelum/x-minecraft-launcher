@@ -24,7 +24,7 @@
         <div class="row">
             <div class="eight wide column">
                 <div class="ui relaxed divided items" style="height:290px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
-                    <mod-label v-for="(m, index) in nonselectedMods" :mod="m" :key="m.hash" :index='index' selecting='false' @toggle="addForgeMod(m)"></mod-label>
+                    <mod-label :notmatch="m.mcversion!==mcversion" v-for="(m, index) in nonselectedMods" :mod="m" :key="m.hash" :index='index' selecting='false' @toggle="addForgeMod(m)"></mod-label>
                 </div>
             </div>
             <div class="eight wide column">
@@ -62,13 +62,14 @@ export default {
     computed: {
         id() { return this.$route.params.id },
         ...vuex.mapGetters('repository', ['mods']),
+        mcversion() { return this.$store.getters[`profiles/${this.id}/mcversion`] },
         forgeModNames() { return this.$store.getters[`profiles/${this.id}/forgeMods`] },
         modIdVersions() {
             const modIdVersions = {};
             this.mods.forEach((res) => {
                 res.meta.forEach((mod) => {
                     const mInfo = {
-                        hash: mod.hash,
+                        hash: res.hash,
                         filename: res.name,
                         signiture: res.signiture,
                         type: mod.type,
