@@ -43,7 +43,7 @@
                         </a>
                         <div class="content">
                             <router-link to="forge" class="item" data-tab="forge">
-                                {{$t('forge')}}
+                                {{$t('forge.name')}}
                             </router-link>
                             <!-- <router-link class="item" data-tab="liteloader">
                                 {{$t('liteloader')}}
