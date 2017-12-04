@@ -8,6 +8,7 @@
     "author": "作者",
     "description": "介绍",
     "nodescription": "暂时没有介绍",
+    "unknown": "未知版本",
     "help": "帮助",
     "home": "主页",
     "login": "登陆",
@@ -89,9 +90,12 @@
         "local": "这个版本已被下载",
         "snapshot": "快照",
         "all": "所有版本",
+        "allVersion": "所有版本",
         "release": "稳定版",
         "missing": "缺少{version}版本的游戏文件 ",
-        "requiredownload": "缺少{version}版本的游戏文件. 请下载并重试."
+        "requiredownload": "缺少{version}版本的游戏文件. 请下载并重试.",
+        "selectVersion": "请选择一个版本",
+        "selectversionWarn": "缺少版本无法启动"
     },
     "gametype": {
         "survival": "生存模式",
@@ -101,6 +105,7 @@
         "non": "未知模式"
     },
     "curseforge": "Curseforge",
+    "popular": "热度",
     "difficulty": {
         "peaseful": "和平",
         "easy": "简单",
@@ -132,6 +137,9 @@
         "password": "密码"
     },
     "modpack": {
+        "profile": "整合包名",
+        "author": "作者名",
+        "description": "简介",
         "add": "添加整合包",
         "name": "整合包 | 整合包",
         "edit": "编辑整合包信息",
@@ -150,6 +158,8 @@
     },
     "actionforbidden": "创建失败",
     "server": {
+        "profile": "服务器名",
+        "ipAddress": "IP地址",
         "add": "添加服务器",
         "name": "服务器 | 服务器",
         "create": "创建一个新的服务器",
