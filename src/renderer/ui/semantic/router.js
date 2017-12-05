@@ -2,22 +2,24 @@ import Vue from 'vue'
 import { RouteConfig } from 'vue-router'
 
 import SemanticUi from './Semantic'
-import ModpackView from './components/ModpackView'
-import ServerView from './components/ServerView'
-import CardView from './components/CardView'
-import MarketView from './components/MarketView'
-import Curseforge from './components/Curseforge'
-import CurseforgeProject from './components/CurseforgeProject'
-import Mcmodcn from './components/McmodCn'
+import ModpackView from './components/home/ModpackView'
+import ServerView from './components/home/ServerView'
+import CardView from './components/home/CardView'
+import ResourcePackList from './components/home/ResourcePackList'
+import GameSettings from './components/home/GameSettings'
+import ModsList from './components/home/ModsList'
+import MapsList from './components/home/MapsList'
+import ForgeView from './components/home/ForgeView'
+import LaunchSettings from './components/home/LaunchSettings'
+import CardsButtonGroup from './components/home/CardsButtonGroup'
+import ProfileSelectedButtonGroup from './components/home/ProfileSelectedButtonGroup'
 
-import ResourcePackList from './components/ResourcePackList'
-import GameSettings from './components/GameSettings'
-import ModsList from './components/ModsList'
-import ForgeView from './components/ForgeView'
-
-import CardsButtonGroup from './components/CardsButtonGroup'
-import ProfileSelectedButtonGroup from './components/ProfileSelectedButtonGroup'
-import MarketButtonGroup from './components/MarketButtonGroup'
+import MarketView from './components/market/MarketView'
+import Curseforge from './components/market/Curseforge'
+import CurseforgeProject from './components/market/CurseforgeProject'
+import Mcmodcn from './components/market/McmodCn'
+import McmodcnProject from './components/market/McModCnProject'
+import MarketButtonGroup from './components/market/MarketButtonGroup'
 
 export default {
     path: '/semantic',
@@ -35,7 +37,6 @@ export default {
         },
         {
             path: 'modpack/:id',
-            name: 'modpack',
             components: {
                 default: ModpackView,
                 buttons: ProfileSelectedButtonGroup,
@@ -46,14 +47,37 @@ export default {
             },
             children: [
                 {
+                    path: '',
+                    redirect: 'gamesettings',
+                },
+                {
+                    path: 'resourcepacks',
+                    component: ResourcePackList,
+                },
+                {
+                    path: 'gamesettings',
+                    component: GameSettings,
+                },
+                {
+                    path: 'mods',
+                    component: ModsList,
+                },
+                {
+                    path: 'forge',
+                    component: ForgeView,
+                },
+                {
                     path: 'maps',
-                    name: 'maps',
+                    component: MapsList,
+                },
+                {
+                    path: 'launchsettings',
+                    component: LaunchSettings,
                 },
             ],
         },
         {
             path: 'server/:id',
-            name: 'server',
             components: {
                 default: ServerView,
                 buttons: ProfileSelectedButtonGroup,
@@ -69,27 +93,23 @@ export default {
                 },
                 {
                     path: 'resourcepacks',
-                    name: 'resourcepacks',
                     component: ResourcePackList,
-                    props: true,
                 },
                 {
                     path: 'gamesettings',
-                    name: 'gamesettings',
                     component: GameSettings,
-                    props: true,
                 },
                 {
                     path: 'mods',
-                    name: 'mods',
                     component: ModsList,
-                    props: true,
                 },
                 {
                     path: 'forge',
-                    name: 'forge',
                     component: ForgeView,
-                    props: true,
+                },
+                {
+                    path: 'launchsettings',
+                    component: LaunchSettings,
                 },
             ],
         },
@@ -113,6 +133,11 @@ export default {
             path: 'mcmodcn',
             name: 'mcmodcn',
             components: { buttons: MarketButtonGroup, default: Mcmodcn },
+        },
+        {
+            path: 'mcmodcn/:id',
+            components: { buttons: MarketButtonGroup, default: McmodcnProject },
+            props: { default: true, buttons: false },
         },
     ],
 }

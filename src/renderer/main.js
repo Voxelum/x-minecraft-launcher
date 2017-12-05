@@ -1,9 +1,19 @@
 import Vue from 'vue';
 import url from 'url'
+import Vuex from 'vuex';
 import querystring from 'querystring'
-import VueBus from 'vue-bus'
+import fs from 'fs-extra'
+import { webFrame, ipcRenderer } from 'electron'
 
-Vue.use(VueBus)
+webFrame.setVisualZoomLevelLimits(1, 1)
+
+Vue.use({
+    install(instance) {
+        Vue.prototype.$ipc = ipcRenderer;
+        Vue.prototype.$mapGetters = Vuex.mapGetters;
+        Vue.prototype.$mapActions = Vuex.mapActions;
+    },
+})
 
 if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'))
@@ -26,16 +36,11 @@ if (logger === 'true') {
             router,
             components: { App: require('./App') },
             store,
-            i18n: require('./i18n').default,
+            i18n: store.getters.i18n,
             template: '<App style="max-height:626px; overflow:hidden;"></App>',
         }).$mount('#app'),
     ).then((v) => {
         v.$store.dispatch('updateJavas')
-        v.$store.commit('url', v.$route.fullPath)
-        v.$router.afterEach((to, from) => {
-            console.log(to.fullPath)
-            v.$store.commit('url', to.fullPath)
-        })
     })
 }
 

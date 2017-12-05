@@ -33,7 +33,7 @@ export default {
                 Vue.set(state[res.domain], res.hash, res);
             })
         },
-        delete(state, payload) { Vue.delete(state.resources, payload); },
+        remove(state, resource) { Vue.delete(state[resource.domain], resource.hash); },
     },
     actions: {
         /**
@@ -59,13 +59,15 @@ export default {
          * @param {ActionContext} context 
          * @param {string|Resource} resource 
          */
-        delete(context, resource) {
+        remove(context, resource) {
             if (typeof resource === 'string') {
                 resource = context.getters.getResource(resource)
             }
-            context.commit('delete', resource.hash)
-            return context.dispatch('delete', { path: `resources/${resource.hash}.json` }, { root: true })
-                .then(() => context.dispatch('delete', { path: `resources/${resource.hash}${resource.type}` }, { root: true }))
+            context.commit('remove', resource)
+            return Promise.all([
+                context.dispatch('delete', `resources/${resource.hash}.json`, { root: true }),
+                context.dispatch('delete', `resources/${resource.hash}${resource.type}`, { root: true }),
+            ])
         },
         /**
         * @param {ActionContext} context 
@@ -79,14 +81,36 @@ export default {
         },
         /**
          * @param {ActionContext} context 
-         * @param {string[]|string} files 
+         * @param {string[]|string| {signiture:any, files:string|string[]}} files 
          */
         import(context, files) {
+            const data = {
+                root: context.rootGetters.root,
+                files: [],
+                signiture: {
+                    source: 'local',
+                    date: Date.now(),
+                    meta: null,
+                },
+            }
+            if (files instanceof Array) {
+                data.files = files;
+                data.signiture.meta = files;
+            } else if (typeof files === 'string') {
+                data.files = [files]
+                data.signiture.meta = files;
+            } else {
+                if (!files.files || files.files == null || !(files.files instanceof Array)) throw new Error('Illegal Argument format!')
+                if (!files.signiture || files.signiture == null) throw new Error('Have to have a signiture to import!')
+                data.files = files.files;
+                data.signiture = files.signiture
+            }
+            if (data.files.length === 0) return Promise.resolve();
             return context.dispatch('query',
                 {
                     service: 'repository',
                     action: 'import',
-                    payload: { root: context.rootGetters.root, files },
+                    payload: data,
                 }, { root: true })
                 .then((resources) => { context.commit('resources', resources) })
         },

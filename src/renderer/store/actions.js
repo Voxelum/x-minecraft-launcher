@@ -25,10 +25,28 @@ export default {
                 })
         });
     },
+    saveDialog(context, payload) {
+        return new Promise((resolve, reject) => {
+            remote.dialog.showSaveDialog(
+                remote.BrowserWindow.getFocusedWindow(),
+                payload,
+                (file) => {
+                    file = file || '';
+                    resolve(file)
+                })
+        })
+    },
+    /**
+     * @typedef {Object} Resolution
+     * @property {number} width
+     * @property {number} height 
+     * @property {boolean=} fullscreen 
+     */
+
     /**
        * 
        * @param {ActionContext} context 
-       * @param {{resolution?:{width:number,height:number,fullscreen?:boolean}, location?:string, theme?:string}} payload 
+       * @param {{resolution?:Resolution, location?:string, theme?:string}} payload 
        */
     updateSetting(context, payload) {
         if (payload.resolution) {
@@ -42,23 +60,30 @@ export default {
     /**
      * @param {ActionContext} context 
      */
-    async launch(context) {
-        const profile = context.getters['profiles/selected'];
-        const profileId = context.getters['profiles/selectedKey'];
+    async launch(context, profileId) {
+        // const profile = context.getters['profiles/selected'];
+        // const profileId = context.getters['profiles/selectedKey'];
         const auth = context.state.auth.auth;
-
+        const profile = context.getters['profiles/get'](profileId);
         if (profile === undefined || profile === null) return Promise.reject('launch.profile.empty')
         if (auth === undefined || auth === null) return Promise.reject('launch.auth.empty');
         // well... these two totally... should not happen; 
         // if it happen... that is a fatal bug...
 
+        let version = profile.mcversion;
+
+        const mods = context.getters[`profiles/${profileId}/forgeMods`];
+        const forgeVersion = context.getters[`profiles/${profileId}/forgeVersion`];
+        if (mods.length !== 0 && forgeVersion !== '') {
+            version = `${version}-forge-${forgeVersion}`
+        }
         const type = profile.type;
-        const version = profile.minecraft.version;
         const errors = context.getters[`profiles/${profileId}/errors`]
-        if (errors && errors.length !== 0) return Promise.reject(errors)
+        if (errors && errors.length !== 0) return Promise.reject(errors[0])
 
         // TODO check the launch condition!
         const option = {
+            auth,
             gamePath: paths.join(context.state.root, 'profiles', profileId),
             resourcePath: context.state.root,
             javaPath: profile.java,
@@ -78,7 +103,7 @@ export default {
         return context.dispatch('query', {
             service: 'launch',
             action: 'launch',
-            payload: { auth, option },
+            payload: option,
         }).then(() => {
             // save all or do other things...
             ipcRenderer.sendSync('park', true)

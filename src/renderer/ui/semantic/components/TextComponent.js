@@ -22,7 +22,7 @@ export default {
         if (!this.source) return createElement('div')
         let iterator
         if (typeof this.source === 'string') {
-            iterator = [TextComponent.from(this.source)]
+            iterator = TextComponent.from(this.source).iterator
         } else {
             iterator = this.source.iterator;
         }
@@ -45,10 +45,10 @@ export default {
                     attrs.style = style;
                 }
                 let text = component.unformatted;
-                if (this.localized === 'true' && this.$te(component.unformatted)) {
+                if (this.$te(component.unformatted)) {
                     text = this.$t(component.unformatted, this.args);
                 }
-                arr.push(createElement('p', {
+                arr.push(createElement('span', {
                     attrs,
                 }, [text]))
             }

@@ -1,13 +1,15 @@
-import {
+import electron, {
     app, BrowserWindow,
     ipcMain, DownloadItem,
     Tray, nativeImage,
     dialog, MenuItem, Menu,
+    net,
 } from 'electron'
 import paths from 'path'
 import urls from 'url'
 import fs from 'fs-extra'
 import os from 'os'
+import storage from './storage'
 
 const devMod = process.env.NODE_ENV === 'development'
 /**
@@ -22,7 +24,13 @@ const winURL = process.env.NODE_ENV === 'development' ?
     'http://localhost:9080/index.html' :
     `file://${__dirname}/index.html`
 
+/**
+ * @type {BrowserWindow}
+ */
 let mainWindow;
+/**
+ * @type {BrowserWindow}
+ */
 let logWindow;
 
 let maindownloadCallback;
@@ -65,6 +73,13 @@ try {
     fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
 }
 
+// const loadedStorage = storage(root);
+// loadedStorage.then((store) => {
+//     console.log(Object.keys(store))
+// }).catch((e) => {
+//     console.log(e)
+// })
+
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
     // Someone tried to run a second instance, we should focus our window.
     if (mainWindow) {
@@ -93,6 +108,8 @@ function createLogWindow() {
     setupIcon(logWindow)
     logWindow.loadURL(`${winURL}?logger=true`);
     logWindow.on('closed', () => { logWindow = null })
+    logWindow.webContents.setVisualZoomLevelLimits(1, 1);
+    logWindow.webContents.setLayoutZoomLevelLimits(1, 1);
 }
 
 ipcMain.on('minecraft-stdout', (s) => {
@@ -116,52 +133,21 @@ function createMainWindow() {
         width: 1100,
         resizable: false,
         frame: false,
+        transparent: true,
     })
     mainWindow.setTitle('ILauncher')
     setupIcon(mainWindow)
     mainWindow.loadURL(`${winURL}?logger=false&theme=${theme}&root=${root}`)
 
     mainWindow.on('closed', () => { mainWindow = null })
-    mainWindow.on('ready-to-show', () => {
-    })
-    mainWindow.on('show', () => {
-    })
-    mainWindow.webContents.session.setDownloadPath(paths.join(root, 'temps'))
-    mainWindow.webContents.session.on('will-download', (event, item, content) => {
-        const save = downloadTasks.get(item.getURL())
-        if (save) item.setSavePath(save)
-        mainWindow.webContents.send('will-download', {
-            file: item.getFilename(),
-            url: item.getURL(),
-        })
-        item.on('updated', ($event, state) => {
-            mainWindow.webContents.send('download', {
-                file: item.getFilename(),
-                url: item.getURL(),
-                state,
-                byte: item.getReceivedBytes(),
-                total: item.getTotalBytes(),
-            })
-        })
-        item.on('done', ($event, state) => {
-            downloadTasks.delete(item.getURL())
-            mainWindow.webContents.send('download-done', {
-                file: item.getFilename(),
-                url: item.getURL(),
-                state,
-                byte: item.getReceivedBytes(),
-                total: item.getTotalBytes(),
-            })
-        })
-    })
-    maindownloadCallback = (filePath, url) => {
-        downloadTasks.set(url, filePath)
-        mainWindow.webContents.downloadURL(url)
-    }
 }
 
+console.log('INDEX RUNNING!')
+
 app.on('ready', () => {
+    console.log('READY!!!!!!!')
     require('./services'); // load all service 
+
     iconImage = nativeImage.createFromPath(`${__static}/logo.png`) // eslint-disable-line no-undef
     createMainWindow()
 
@@ -189,6 +175,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     if (mainWindow === null) createMainWindow()
 })
+
 
 ipcMain.on('update', (event, newRoot, newTheme) => {
     if (newRoot !== undefined || newTheme !== undefined) {
@@ -222,3 +209,6 @@ ipcMain.on('exit', () => {
     }
 })
 
+export default {
+    service: require('./services'),
+}

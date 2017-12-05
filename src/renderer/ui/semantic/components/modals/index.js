@@ -16,10 +16,11 @@ export default {
             })))
     },
     mounted() {
-        this.$bus.$on('modal', this.show)
+        this.$ipc.on('modal', this.show)
     },
     methods: {
         show(id, args) {
+            console.log(`Attempt show modal ${id}`)
             const modal = this.$refs[`${id}modal`.toLowerCase()]
             if (modal) modal.show(args); // $(modal).modal('show') // eslint-disable-line
             else console.warn(`No modal named ${id}`)
