@@ -35,17 +35,32 @@ function findJavaFromRegistry() {
 
     return new Promise((resolve, reject) => {
         childProcess.exec(command, (error, stdout, stderr) => {
+            if (stdout) {
+                const set = {}
+                stdout.split(os.EOL).map(item => (os.platform() !== 'win32' ?
+                    item.replace(/[\r\n]/g, '') :
+                    item.replace(/[\r\n]/g, '').replace(/\\\\/g, '\\').match(/\w(:[\\a-zA-Z0-9 ._]*)/)))
+                    .filter(item => item != null && item !== undefined)
+                    .map(item => (item instanceof Array ? item[0] : item))
+                    .map(item => (os.platform() === 'win32' ? path.join(item, 'bin', 'javaw.exe') : item))
+                    .filter(item => fs.existsSync(item))
+                    .forEach((item) => { set[item] = 0 })
+                resolve(set);
+            }
+        });
+    });
+}
+function findMacJavaByWhich(set) {
+    if (os.platform() === 'win32') return set;
+    set['/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java'] = 0
+    const childProcess = require('child_process');
+    return new Promise((resolve, reject) => {
+        childProcess.exec('which java', (error, stdout, stderr) => {
             if (error) reject(error)
-            const set = {}
-            stdout.split(os.EOL).map(item => (os.platform() !== 'win32' ?
-                item.replace(/[\r\n]/g, '') :
-                item.replace(/[\r\n]/g, '').replace(/\\\\/g, '\\').match(/\w(:[\\a-zA-Z0-9 ._]*)/)))
-                .filter(item => item != null && item !== undefined)
-                .map(item => item[0])
-                .map(item => path.join(item, 'bin', 'javaw.exe'))
-                .filter(item => fs.existsSync(item))
-                .forEach((item) => { set[item] = 0 })
-            resolve(set);
+            else if (stdout) {
+                set[stdout.trim()] = 0;
+                resolve(set);
+            }
         });
     });
 }
@@ -53,7 +68,14 @@ function findJavaFromRegistry() {
 // https://api.github.com/repos/Indexyz/ojrebuild/releases
 async function installJre() {
     const info = await new Promise((resolve, reject) => {
-        const req = net.request('https://api.github.com/repos/Indexyz/ojrebuild/releases')
+        const req = net.request({
+            method: 'GET',
+            protocol: 'https:',
+            hostname: 'api.github.com',
+            path: '/repos/Indexyz/ojrebuild/releases',
+        })
+        req.setHeader('User-Agent', 'ILauncher')
+        req.end();
         let infojson = ''
         req.on('response', (response) => {
             response.on('data', (data) => {
@@ -62,7 +84,7 @@ async function installJre() {
             response.on('end', () => {
                 resolve(JSON.parse(infojson))
             })
-            response.on('error', () => {
+            response.on('error', (e) => {
                 console.error(`${response.headers}`);
             })
         })
@@ -104,18 +126,24 @@ async function installJre() {
         })[0]
     const splt = downURL.split('/');
     const tempFileLoc = path.join(app.getPath('temp'), splt[splt.length - 1]);
+    console.log('start download')
+    console.log(tempFileLoc);
     await fs.ensureFile(tempFileLoc)
+    console.log(`download url ${downURL}`)
     await download(downURL, tempFileLoc);
     const jreRoot = path.join(app.getPath('userData'), 'jre')
+    console.log(`jreRoot ${jreRoot}`)
     const zip = await new Zip().loadAsync(await fs.readFile())
     const arr = []
     zip.forEach((name, entry) => {
+        console.log(`unzip ${name}`)
         const target = path.resolve(jreRoot, name)
         arr.push(entry.async('nodebuffer')
             .then(buf => fs.ensureFile(target).then(() => buf))
             .then(buf => fs.writeFile(target, buf)))
     })
     await Promise.all(arr);
+    console.log('deleting temp')
     await fs.unlink(tempFileLoc)
 }
 
@@ -127,6 +155,7 @@ export default {
             const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
             if (fs.existsSync(local)) return [local]
             const ret = await findJavaFromRegistry()
+                .then(findMacJavaByWhich)
                 .then(findJavaFromPath)
                 .then(findJavaFromHome)
                 .then(Object.keys);
@@ -136,6 +165,7 @@ export default {
             const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
             if (fs.existsSync(local)) return [local]
             const arr = await findJavaFromRegistry()
+                .then(findMacJavaByWhich)
                 .then(findJavaFromPath)
                 .then(findJavaFromHome)
                 .then(Object.keys)

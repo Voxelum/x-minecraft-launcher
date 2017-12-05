@@ -24,6 +24,16 @@
                     </div>
                 </div>
             </div>
+            <div class="field">
+                <label>{{$t('setting.language')}}</label>
+                <div class="ui selection dropdown">
+                    <i class="dropdown icon"></i>
+                    <span class="text">{{selectedLanguage}}</span>
+                    <div class="menu">
+                        <div class="item" v-for="l of languages" :key="l" @click="updateLanguage(l)">{{l}}</div>
+                    </div>
+                </div>
+            </div>
             <div class="field" :class="{disabled: resfullscreen}">
                 <label>{{$t('setting.resolution')}}</label>
                 <div class="two fields">
@@ -42,6 +52,7 @@
                 </div>
             </div>
             <div class="ui inverted right floated button" @click="upload">{{$t('save')}}</div>
+            <div class="ui inverted right floated button" @click="discard">{{$t('cancel')}}</div>
         </form>
     </div>
 </template>
@@ -57,10 +68,20 @@ export default {
             resfullscreen: false,
             location: '',
             selectedTheme: '',
+            selectedLanguage: '',
         }
     },
     computed: {
-        ...vuex.mapState(['theme', 'themes', 'root', 'defaultResolution', 'autoDownload']),
+        ...vuex.mapGetters([
+            'theme',
+            'themes',
+            'root',
+            'defaultResolution',
+            'autoDownload',
+            'javas',
+            'defaultJava',
+            'languages',
+            'language']),
     },
     mounted() {
         $(this.$el).modal({ blurring: true, })
@@ -74,6 +95,7 @@ export default {
             this.resfullscreen = this.defaultResolution.fullscreen;
             this.location = this.root;
             this.selectedTheme = this.theme;
+            this.selectedLanguage = this.language;
             $(this.$el).modal('show')
             $('.ui.checkbox').checkbox()
             $('.selection.dropdown').dropdown()
@@ -88,13 +110,26 @@ export default {
             e.preventDefault();
         },
         updateTheme(theme) {
-            this.selectedTheme = theme
+            this.selectedTheme = theme;
+        },
+        updateLanguage(lang) {
+            this.selectedLanguage = lang;
+        },
+        discard() {
+            $(this.$el).modal('hide')
         },
         upload(e) {
             this.updateSetting({
-                resolution: { width: this.reswidth, height: this.resheight, fullscreen: this.resfullscreen },
-                location: this.location, theme: this.selectedTheme
+                resolution: {
+                    width: this.reswidth,
+                    height: this.resheight,
+                    fullscreen: this.resfullscreen,
+                },
+                location: this.location,
+                theme: this.selectedTheme,
+                language: this.selectedLanguage,
             });
+            $(this.$el).modal('hide')
         },
     }
 }

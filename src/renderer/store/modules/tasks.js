@@ -5,25 +5,19 @@ import Vue from 'vue'
 import { v4 } from 'uuid'
 import { EventEmitter } from 'events'
 
-ipcRenderer.on('will-download', ({ file, url }) => {
-    console.log(`will-download ${file}`)
-})
-ipcRenderer.on('download', ({ file, url, state, byte, total }) => {
-    console.log(`download ${file}`)
-})
-ipcRenderer.on('download-done', ({ file, url, state, byte, total }) => {
-    console.log(`download-done ${file}`)
-})
-
 class TaskProxy extends EventEmitter {
-    constructor(uuid, id) {
+    constructor(uuid, id, timeout = 100000) {
         super()
         this.id = id;
+
         const handler = (event, type, childPaths, args) => {
             switch (type) {
                 case 'error':
                 case 'finish':
-                    if (childPaths.length[0] === id) ipcRenderer.removeListener(uuid, handler);
+                    if (childPaths.length === 0) {
+                        ipcRenderer.removeListener(uuid, handler);
+                        clearTimeout(this.timeout);
+                    }
                     break;
                 default:
                 case 'update':
@@ -32,6 +26,11 @@ class TaskProxy extends EventEmitter {
             }
             this.emit(type, childPaths, args);
         };
+        this.timeout = setTimeout(() => {
+            ipcRenderer.removeListener(uuid, handler);
+            this.emit('error', [], new Error(`Timeout ${timeout} millisecond`));
+        }, timeout)
+
         ipcRenderer.on(uuid, handler)
     }
 }
@@ -63,7 +62,7 @@ export default {
                 children: {},
                 progress: -1,
                 error: '',
-                status: 'prepare',
+                status: 'running',
             });
         },
         errorTask(state, { uuid, paths, error }) {
@@ -101,7 +100,7 @@ export default {
                 children: {},
                 progress: -1,
                 error: '',
-                status: 'prepare',
+                status: 'running',
             }
         },
     },
@@ -109,13 +108,13 @@ export default {
         /**
          * 
          * @param {ActionContext} context 
-         * @param {{service:string, action:string, payload:any}} $payload  
+         * @param {{service:string, action:string, timeout:number, payload:any}} $payload  
          */
         query(context, $payload) {
-            const { service, action, payload } = $payload;
+            const { service, action, payload, timeout } = $payload;
             return new Promise((resolve, reject) => {
                 const id = v4();
-                const task = new TaskProxy(id, `${service}.${action}`)
+                const task = new TaskProxy(id, `${service}.${action}`, timeout)
                 context.dispatch('listenTask', { uuid: id, task })
                 task.on('finish', (paths, result) => { if (paths.length === 0) resolve(result) })
                 task.on('error', (paths, error) => { if (paths.length === 0) reject(error) })

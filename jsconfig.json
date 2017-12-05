@@ -3,16 +3,17 @@
         "target": "es5",
         "strict": true
     },
-    "exclude": [
-        "/static/*",
-        "/semantic/*",
-        "/.electron-vue/*",
-        "/dist/*",
-        "/build/*"
+    "typeAcquisition": {
+        "include": [
+            "node",
+            "vue",
+            "vuex",
+            "vue-router",
+            "electron"
+        ]
+    },
+    "include": [
+        "src/**/*",
+        "test/**/*"
     ]
-    /* ,
-    "files": [
-        "/src/*",
-        "/test/*"
-    ] */
 }

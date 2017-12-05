@@ -20,6 +20,7 @@ export default {
     }),
     getters: {
         versions: state => state.versions,
+        versionsMap: state => state.versions.reduce((o, v) => { o[v.id] = v; return o; }, {}),
         latestRelease: state => state.latest.release,
         latestSnapshot: state => state.latest.snapshot,
     },
@@ -47,12 +48,16 @@ export default {
         /**
          * 
          * @param {ActionContext} context 
-         * @param {VersionMeta} meta
+         * @param {VersionMeta|string} meta
          */
         async download(context, meta) {
+            if (typeof meta === 'string') {
+                if (!context.getters.versionsMap[meta]) throw new Error(`Cannot find the version ${meta}`)
+                meta = context.getters.versionsMap[meta];
+            }
             const id = meta.id;
             context.commit('updateStatus', { version: meta, status: 'loading' })
-            let exist = await context.dispatch('exist', { paths: [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`] }, { root: true });
+            let exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
             if (!exist) {
                 try {
                     await context.dispatch('query', {
@@ -65,7 +70,7 @@ export default {
                     }, { root: true })
                 } catch (e) { console.warn(e) }
             }
-            exist = await context.dispatch('exist', { paths: [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`] }, { root: true });
+            exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
             if (exist) {
                 context.commit('updateStatus', { version: meta, status: 'local' })
             } else {
@@ -80,7 +85,7 @@ export default {
             const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true })
             const existed = []
             for (const file of files) {
-                const exist = await context.dispatch('exist', { paths: [`versions/${file}`, `versions/${file}/${file}.jar`, `versions/${file}/${file}.json`] }, { root: true }); // eslint-disable-line
+                const exist = await context.dispatch('exist', [`versions/${file}`, `versions/${file}/${file}.jar`, `versions/${file}/${file}.json`], { root: true }); // eslint-disable-line
                 if (exist) existed.push(file)
             }
             checkversion(remoteList, existed)

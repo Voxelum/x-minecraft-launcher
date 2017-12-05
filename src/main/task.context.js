@@ -14,7 +14,6 @@ class InnerContext extends EventEmitter {
         this.sender = sender;
         this.uuid = uuid;
         this.id = task.id;
-        this.uuid = uuid;
         this.parent = parent;
         task.on('update', (progress, total, status) => {
             this.sender.send(uuid, 'update', this.paths, { progress, total, status })
@@ -29,7 +28,7 @@ class InnerContext extends EventEmitter {
     get paths() {
         const paths = [this.id]
         let task = this;
-        while (task.parent !== null) {
+        while (task.parent !== null && task.parent !== undefined) {
             paths.unshift(task.parent.id)
             task = task.parent
         }
@@ -53,8 +52,8 @@ export default {
      * @return {Promise<T>}
      */
     execute(uuid, id, sender, task) {
-        this.sender.send(uuid, 'child', [id], task.id)
-        task.execute(new InnerContext({ id }, task, uuid, sender));
+        sender.send(uuid, 'child', [], task.id)
+        return task.execute(new InnerContext(undefined, task, uuid, sender));
     },
     isTask: object => object.id && object.execute && typeof object.execute === 'function' && object instanceof EventEmitter,
 };
