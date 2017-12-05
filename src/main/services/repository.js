@@ -17,7 +17,7 @@ const parsers = [
  * @param {string} root 
  * @param {string} filePath 
  */
-async function $import(root, filePath) {
+async function $import(root, filePath, signiture) {
     const data = await fs.readFile(filePath);
     const name = path.basename(filePath);
     const type = path.extname(filePath);
@@ -33,9 +33,10 @@ async function $import(root, filePath) {
             if (meta instanceof Promise) meta = await meta; // eslint-disable-line
             domain = parser.domain;
             break;
-        } catch (e) { console.warn(e) }
+        } catch (e) { console.warn(`Fail with domain [${parser.domain}]`); console.warn(e) }
     }
-    const resource = { hash, name, type, meta, domain };
+    if (!domain || !meta) { throw new Error(`Cannot parse ${filePath}.`) }
+    const resource = { hash, name, type, meta, domain, signiture };
     await fs.ensureDir(path.join(root, 'resources'))
     await fs.writeFile(path.join(root, 'resources', `${resource.hash}${resource.type}`), data);
     await fs.writeFile(path.join(root, 'resources', `${resource.hash}.json`), JSON.stringify(resource));
@@ -63,23 +64,39 @@ export default {
          * @param {{hash:string,type:string}} resource 
          * @param {string} targetDirectory 
          */
-        export(root, resource, targetDirectory) {
+        export(context, { root, resource, targetDirectory }) {
             return fs.copy(`${root}/${resource.hash}${resource.type}`, `${targetDirectory}/${resource.hash}${resource.type}`)
         },
         /**
          * 
          * @param {{root:string, string[]|string:files}} payload
          */
-        async import(payload) {
-            const { root } = payload;
+        async import(context, payload) {
+            const { root, signiture } = payload;
             let files = payload.files
             if (!root || !files) throw new Error(`Import require root location, files, and a specific meta type! ${root}, ${files}`)
 
             if (typeof files === 'string') files = [files]
             else if (!(files instanceof Array)) { return Promise.reject('Illegal Type') }
 
-            return (await Promise.all(files.map(f => $import(root, f))))
+            return (await Promise.all(files.map(f => $import(root, f, signiture))))
                 .filter(res => res !== undefined)
+        },
+
+        /**
+         * 
+         * @param {{root:string, target:string, elements:string[]}} payload 
+         */
+        virtualenv(context, payload) {
+            const { root, target, elements } = payload;
+            return Promise.all(elements.map(async (e) => {
+                const from = path.join(root, e.hash)
+                const to = path.join(target, e.pack)
+                if (!(await fs.exists(from))) throw new Error(`The source file does not exist ${from}`)
+                if (await fs.exists(to)) await fs.unlink(to);
+                console.log(`Symlink ${from}->${to}`)
+                return fs.symlink(from, to)
+            }))
         },
     },
 }

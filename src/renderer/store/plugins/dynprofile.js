@@ -2,7 +2,6 @@ import uuid from 'uuid'
 import { Store } from 'vuex'
 import modelServer from '../modules/profiles/server'
 import modelModpack from '../modules/profiles/modpack'
-import settings from '../modules/profiles/settings'
 import mixin from '../helpers/mixin-state'
 
 export default
@@ -18,6 +17,7 @@ export default
             const action = rawPaths[rawPaths.length - 1];
             if (type === 'profiles/add') {
                 const { id, moduleData } = payload;
+                const profileType = payload.type;
                 if (!id) {
                     console.error(`Unexpect empty id for adding! @${mutation.type}`)
                     return
@@ -28,15 +28,11 @@ export default
                 }
                 paths.push(id)
                 if (!moduleData.namespaced) moduleData.namespaced = true;
-                const model = moduleData.type === 'modpack' ? modelModpack : modelServer
-                store.registerModule(paths, mixin(model, moduleData));
-                for (const subMod of Object.keys(settings)) {
-                    const mPath = paths.concat([subMod, 'load']).join('/')
-                    store.dispatch(mPath, { id })
-                        .then((data) => {
-                            store.commit(`profiles/${id}/${subMod}/update$reload`, data)
-                        })
-                }
+                const model = profileType === 'modpack' ? modelModpack : modelServer
+                const mixed = mixin(model, moduleData);
+                mixed.state.id = id;
+                store.registerModule(paths, mixed);
+                store.dispatch(`profiles/${id}/load`, { id })
             } else if (type === 'profiles/remove') {
                 if (!payload) {
                     console.error(`Unexpect empty payload for removal! @${mutation.type}`)

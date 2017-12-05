@@ -7,13 +7,44 @@
     "create": "Create",
     "author": "Author",
     "description": "Description",
+    "nodescription": "No description yet.",
+    "unknown": "unknown",
     "help": "Help",
     "home": "Home",
     "login": "Login",
     "summery": "Summery",
     "add": "Add",
+    "ok": "Ok",
+    "filter": "Filter",
+    "recommendedMinecraftVersion": "Minecraft Version",
+    "acceptingMinecraftVersion": "Accepting Minecraft Version",
+    "cancel": "Cancel",
     "remove": "Remove",
     "!delete": "Delete",
+    "detail": "Detail",
+    "criticalGraphics": "Critical Graphics",
+    "hotkeyChanges": "Hotkey Changes",
+    "buttonSettings": {
+        "moveForward": "Move Forward",
+        "moveBackward": "Move Backward",
+        "moveLeft": "Move Left",
+        "moveRight": "Move Right",
+        "jump": "Jump",
+        "drop": "Drop Items",
+        "talk": "Talk",
+        "open": "Open or close bag",
+        "stealth": "Stealth",
+        "view": "View players",
+        "shortcut1": "Shortcut 1",
+        "shortcut2": "Shortcut 2",
+        "shortcut3": "Shortcut 3",
+        "shortcut4": "Shortcut 4",
+        "shortcut5": "Shortcut 5",
+        "shortcut6": "Shortcut 6",
+        "shortcut7": "Shortcut 7",
+        "shortcut8": "Shortcut 8",
+        "shortcut9": "Shortcut 9"
+    },
     "Invalid credentials. Invalid username or password.": "Invalid credentials. Invalid username or password.",
     "mod": {
         "name": "Mod | Mods",
@@ -40,6 +71,7 @@
         "name": "Settings",
         "location": "Store Location",
         "theme": "Theme",
+        "language": "Language",
         "resolution": "Default Resolution"
     },
     "resolution": {
@@ -48,6 +80,9 @@
         "fullscreen": "Fullscreen"
     },
     "launch": "Launch",
+    "tasks": {
+        "empty": "No Running Tasks"
+    },
     "version": {
         "name": "Version | Versions",
         "prepare": "Preparing Files",
@@ -60,7 +95,12 @@
         "local": "This version is in the disk",
         "snapshot": "Snapshot",
         "all": "All",
-        "release": "Release"
+        "allVersion": "All versions",
+        "release": "Release",
+        "missing": "Missing Version {version}",
+        "requiredownload": "Missing Version {version}. Please download the version to play.",
+        "selectVersion": "Please select a version!",
+        "selectversionWarn": " Cannot launch without selecting a version"
     },
     "gametype": {
         "survival": "Survival",
@@ -70,6 +110,7 @@
         "non": "Non mode"
     },
     "curseforge": "Curseforge",
+    "popular": "Porpularity",
     "difficulty": {
         "peaseful": "Peaseful",
         "easy": "Easy",
@@ -82,7 +123,7 @@
         "name": "Sign Up"
     },
     "user": {
-        "signup": "Singup",
+        "signup": "Sign up",
         "profile": "Profile",
         "logout": "Logout"
     },
@@ -93,7 +134,14 @@
     },
     "basic": "Basic",
     "advanced": "Advanced",
-    "forge": "Forge",
+    "forge": {
+        "name": "Forge",
+        "non": "No Forge",
+        "recommended": "Recommended",
+        "latest": "Latest",
+        "common": "Common",
+        "install": "Install"
+    },
     "liteloader": "LiteLoader",
     "mojang": {
         "name": "Mojang",
@@ -101,9 +149,15 @@
         "password": "Password"
     },
     "modpack": {
+        "profile": "Profile Name",
+        "author": "Author Name",
+        "description": "A simple description",
         "add": "Add Modpack",
         "name": "Modpack | Modpacks",
         "edit": "Edit Modpack Info",
+        "error": {
+            "requirename": "Name is required! Please come up a modpack name!"
+        },
         "delete": {
             "name": "Delete the modpack",
             "description": "This will delete all the data about this modpack. Are you sure to do this?"
@@ -114,7 +168,10 @@
         "yes": "Delete",
         "no": "No"
     },
+    "actionforbidden": "Action Forbidden",
     "server": {
+        "profile": "Name Of the Server",
+        "ipAddress": "IP Address",
         "add": "Add Server",
         "name": "Server | Servers",
         "create": "Create A New Server",
@@ -124,16 +181,32 @@
         "port": "Port",
         "edit": "Edit Server Info",
         "motd": "Server MOTD",
+        "error": {
+            "requirehost": "Host IP address is required! Please enter it!",
+            "requirename": "Name is required! Please enter a server name!"
+        },
         "delete": {
             "name": "Delete the server",
             "description": "This will delete all the local data about this server. Are you sure to do this?"
         },
         "status": {
             "nohost": "Cannot find host!",
-            "timeout": "Connect server timeout!"
+            "timeout": "Connect server timeout!",
+            "refurse": "Server refused!"
+        },
+        "ping": {
+            "name": "Pinging the server",
+            "description": "Pinging..."
         }
     },
+    "launchsetting": {
+        "name": "Launch Settings",
+        "jvm": "JVM Arguments",
+        "mc": "Minecraft Arguments"
+    },
     "errors.empty": "No error yet",
+    "hardcore": "Hardcore mode",
+    "cheat": "Cheating",
     "renderClouds": {
         "name": "Clouds",
         "true": "Fancy",

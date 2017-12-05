@@ -1,31 +1,31 @@
 <template>
-    <div class="ui basic error modal" :class="{error: hasError}" style="padding:0 20% 0 20%;">
+    <div class="ui basic error modal" style="padding:0 20% 0 20%;">
         <div class="ui icon small header">
             <i class="archive icon"></i>
             {{ isEdit?$t('modpack.edit'):$t('modpack.create')}}
         </div>
-        <form class="ui inverted form">
-            <div class="field">
+        <form class="ui inverted form" :class="{error: nameError}">
+            <div class="field" :class="{error:nameError}">
                 <label>{{$t('name')}}</label>
-                <input class="ui basic inverted input" type="text" placeholder="Profile Name" v-model="name" @keypress="enter">
+                <input class="ui basic inverted input" type="text" :placeholder="$t('modpack.profile')" v-model="name" @keypress="enter">
             </div>
             <div class="field">
                 <label>{{$t('author')}}</label>
-                <input class="ui basic inverted input" type="text" placeholder="Author Name" v-model="author" @keypress="enter">
+                <input class="ui basic inverted input" type="text" :placeholder="$t('modpack.author')" v-model="author" @keypress="enter">
             </div>
             <div class="field">
                 <label>{{$t('description')}}</label>
-                <input class="ui basic inverted input" type="text" placeholder="A Simple description" v-model="description" @keypress="enter">
+                <input class="ui basic inverted input" type="text" :placeholder="$t('modpack.description')" v-model="description" @keypress="enter">
             </div>
             <div class="ui error message">
-                <div class="header">Action Forbidden</div>
-                <p>You can only sign up for an account once with a given e-mail address.</p>
+                <div class="header">{{$t('actionforbidden')}}</div>
+                <p>{{$t('modpack.error.requirename')}}</p>
             </div>
         </form>
         <div class="actions">
             <div class="ui basic cancel inverted button">
                 <i class="close icon"></i>{{$t('no')}}</div>
-            <div class="ui green basic inverted ok button" @click="accept">
+            <div class="ui green basic inverted button" @click="accept">
                 <i class="check icon"></i>
                 {{ isEdit?$t('save'):$t('create')}}
             </div>
@@ -42,57 +42,61 @@ export default {
         name: '',
         author: '',
         description: '',
-        hasError: false,
         isEdit: false,
+
+        nameError: false,
     }),
     mounted() {
-        $(this.$el).modal({ blurring: true })
+        const self = this;
+        $(this.$el).modal({
+            blurring: true,
+            onHidden() {
+                self.nameError = false;
+            }
+        })
     },
     computed: {
-        ...vuex.mapGetters('auth', {
-            defaultAuthor: 'username'
-        }),
-        profile() {
-            return this.$store.getters['profiles/selected']
-        }
+        ...vuex.mapGetters('auth', ['username']),
+        id() { return this.$route.params.id; },
+        selected() { return this.$store.getters['profiles/get'](this.id) }
     },
     methods: {
         show(args = {}) {
             const { isEdit } = args;
             this.isEdit = isEdit || false;
             if (this.isEdit) {
-                this.name = this.profile.name;
-                this.description = this.profile.description;
-                this.author = this.profile.author;
+                this.name = this.selected.name;
+                this.description = this.selected.description;
+                this.author = this.selected.author;
             }
             else {
                 this.name = ''
-                this.author = this.defaultAuthor || ""
-                this.description = 'No description yet'
-                this.hasError = false
+                this.author = this.username || ""
+                this.description = this.$t('nodescription')
             }
             $(this.$el).modal('show')
         },
         accept() {
             if (!this.name || this.name === '') {
-                this.hasError = true;
+                this.nameError = true;
                 return
             }
             if (this.isEdit) {
-                this.$store.commit(`profiles/${this.profileId}/putAll`, {
+                this.$store.dispatch(`profiles/${this.id}/edit`, {
                     name: this.name,
                     author: this.author,
                     description: this.description,
                 })
             } else {
-                this.$store.commit(`profiles/create`, {
+                this.$store.dispatch(`profiles/create`, {
                     type: 'modpack',
-                    name: this.name,
-                    author: this.author,
-                    description: this.description,
+                    option: {
+                        name: this.name,
+                        author: this.author,
+                        description: this.description,
+                    },
                 })
             }
-
             $(this.$el).modal('hide')
         },
         enter(event) {

@@ -28,17 +28,14 @@ export default {
     proxy: {
     },
     actions: {
-        launch({ auth, option }) {
-            console.log('launch:')
+        launch(context, option) {
             console.log(option)
-            return Launcher.launch(auth, option).then((process) => {
+            return Launcher.launch(option).then((process) => {
                 process.on('error', (err) => {
                     console.log(err)
                 })
                 process.on('exit', (code, signal) => {
-                    console.log('exit:')
-                    console.log(code)
-                    console.log(signal)
+                    console.log(`exit: ${code}, signal: ${signal}`)
                     ipcMain.emit('restart')
                 })
                 process.stdout.on('data', (s) => {

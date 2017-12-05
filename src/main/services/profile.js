@@ -17,7 +17,7 @@ export default {
     },
 
     actions: {
-        async fetch({ service, uuid, pubKey, cache }) {
+        async fetch(context, { service, uuid, pubKey, cache }) {
             if (!registered[service]) throw new Error(`No such auth option ${service}`);
             if (!uuid || uuid == null) throw new Error('UUID cannot be null')
             const profile = await ProfileService.fetch(uuid, { api: registered[service], pubKey })
@@ -28,7 +28,7 @@ export default {
             }
             return profile;
         },
-        async lookup({ service, id, pubKey, cache }) {
+        async lookup(context, { service, id, pubKey, cache }) {
             if (!registered[service]) throw new Error(`No such auth option ${service}`);
             const profile = await ProfileService.lookup(id, { api: registered[service], pubKey })
             if (cache) {
