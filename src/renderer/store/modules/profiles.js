@@ -33,13 +33,9 @@ export default {
     mutations: {
         add(state, payload) { state.all.push(payload.id) },
         remove(state, id) {
-            if (state.all.indexOf(id) !== -1) {
-                if (state.selected === id) {
-                    state.selected = state.all[0]
-                }
-                state.all = state.all.filter(v => v !== id)
-            }
-            if (state.selected === id) state.selected = '';
+            const idx = state.all.indexOf(id);
+            if (idx === -1) return;
+            Vue.delete(state.all, idx);
         },
     },
     actions: {
