@@ -35,7 +35,6 @@ export default {
     mutations: {
         profile(state, option) {
             Object.keys(option)
-                .filter(key => key !== 'type')
                 .forEach((key) => { state[key] = option[key] })
         },
     },
