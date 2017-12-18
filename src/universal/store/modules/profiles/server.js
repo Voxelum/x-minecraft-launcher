@@ -1,13 +1,9 @@
 import { TextComponent, TextFormatting, Style, Server } from 'ts-minecraft'
 import vuex from 'vuex'
 import protocol from 'shared/protocol'
-import profile from './profile'
 
 export default {
-    namespaced: true,
-    modules: { ...profile.modules },
     state: () => ({
-        ...profile.state(),
         type: 'server',
         host: '',
         port: 25565,
@@ -16,7 +12,6 @@ export default {
         status: {},
     }),
     getters: {
-        ...profile.getters,
         host: state => state.host,
         port: state => state.port,
         icon: state => state.icon,
@@ -31,9 +26,7 @@ export default {
             return errors;
         },
     },
-    mutations: profile.mutations,
     actions: {
-        ...profile.actions,
         serialize(context, payload) {
             return JSON.stringify(context.state, (key, value) => {
                 if (key === 'settings' || key === 'maps' || key === 'status') return undefined;

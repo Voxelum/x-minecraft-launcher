@@ -2,6 +2,7 @@ import uuid from 'uuid'
 import { Store } from 'vuex'
 import modelServer from '../modules/profiles/server'
 import modelModpack from '../modules/profiles/modpack'
+import profile from '../modules/profiles/profile'
 import mixin from '../helpers/mixin-state'
 
 export default
@@ -28,10 +29,8 @@ export default
                 }
                 paths.push(id)
                 if (!moduleData.namespaced) moduleData.namespaced = true;
-                const model = profileType === 'modpack' ? modelModpack : modelServer
-                const mixed = mixin(model, moduleData);
-                mixed.state.id = id;
-                store.registerModule(paths, mixed);
+                profile.modules[profileType] = profileType === 'modpack' ? modelModpack : modelServer;
+                store.registerModule(paths, profile);
                 store.dispatch(`profiles/${id}/load`, { id })
             } else if (type === 'profiles/remove') {
                 if (!payload) {
