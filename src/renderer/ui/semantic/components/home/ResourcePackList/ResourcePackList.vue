@@ -60,28 +60,11 @@ export default {
     computed: {
         id() { return this.$route.params.id },
         ...mapGetters('repository', ['resourcepacks']),
-        unselecting: {
-            get() {
-                return this.resourcepacks.filter(e => this.selectingNames.indexOf(e.name) === -1)
-            },
-            set(value, old) {
-                console.log('unselecting')
-                console.log(value)
-
-                // this.resourcepack('remove', value)
-                // this.$store.commit('updateList', value)
-            },
+        unselecting() {
+            return this.resourcepacks.filter(e => this.selectingNames.indexOf(e.name) === -1)
         },
-        selecting: {
-            get() {
-                return this.selectingNames.map(name => this.nameToEntry[name])
-            },
-            set(value, old) {
-                console.log('selecting')
-                console.log(value)
-                // this.resourcepack('add', value)
-                // this.$store.commit('updateList', value)
-            },
+        selecting() {
+            return this.selectingNames.map(name => this.nameToEntry[name])
         },
         selectingNames() {
             return this.$store.getters[`profiles/${this.id}/resourcepacks`]

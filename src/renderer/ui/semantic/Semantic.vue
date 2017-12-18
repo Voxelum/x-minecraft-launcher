@@ -69,10 +69,9 @@ export default {
         background: ''//'url(imgs/Background1.png)'
     }),
     computed: {
-        ...mapGetters('auth', ['username', 'skin']),
+        ...mapGetters('auth', ['skin']),
     },
     mounted() {
-        if (this.username === '') this.showModal('login')
     },
     methods: {
         showModal(id, args) { this.$ipc.emit('modal', id, args) },

@@ -39,7 +39,7 @@ export default {
             ipcRenderer.on('refresh', () => {
                 context.dispatch('refresh');
             })
-            return context.dispatch('read', { path: 'forge-versions.json', fallback: {}, encoding: 'json' }, { root: true })
+            return context.dispatch('read', { path: 'forge-versions.json', fallback: {}, type: 'json' }, { root: true })
         },
         save(context, payload) {
             const data = JSON.stringify(context.state);
