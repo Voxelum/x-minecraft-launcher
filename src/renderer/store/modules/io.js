@@ -71,11 +71,11 @@ export default {
         /**
          * 
          * @param {ActionContext} context 
-         * @param {{path:string, fallback:string|Buffer, encoding:'string'|'json'|((buf:Buffer)=>any), onread:(path:string)=>void}} payload 
+         * @param {{path:string, fallback:string|Buffer, type:'string'|'json'|((buf:Buffer)=>any), onread:(path:string)=>void}} payload 
          */
         async read(context, payload) {
             let { path, fallback } = payload;
-            const { encoding, onread } = payload;
+            const { type, onread } = payload;
             path = paths.join(context.rootGetters.root, path)
             if (!fs.existsSync(path)) {
                 if (fallback) {
@@ -89,13 +89,13 @@ export default {
             if (onread) onread(path);
             try {
                 const data = await fs.readFile(path)
-                if (!encoding) return data;
-                if (typeof encoding === 'function') return encoding(data);
-                switch (encoding) {
+                if (!type) return data;
+                if (typeof type === 'function') return type(data);
+                switch (type) {
                     case 'string': return data.toString();
                     case 'json': return JSON.parse(data.toString());
                     default:
-                        console.warn(`Unsupported encoding ${encoding}!`);
+                        console.warn(`Unsupported type ${type}!`);
                         return data;
                 }
             } catch (e) {

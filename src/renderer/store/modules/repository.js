@@ -47,7 +47,7 @@ export default {
                     contents.push(await context.dispatch('read', { // eslint-disable-line
                         path: `resources/${file}`,
                         fallback: undefined,
-                        encoding: 'json',
+                        type: 'json',
                     }, { root: true }))
                 } catch (e) { console.warn(e) }
             }
