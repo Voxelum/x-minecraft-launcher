@@ -4,7 +4,6 @@ import { MinecraftFolder } from 'ts-minecraft'
 import { remote, ipcRenderer } from 'electron'
 import paths from 'path'
 import { v4 } from 'uuid'
-import make from './helpers/mkenv'
 
 export default {
     exit() { ipcRenderer.sendSync('exit') },
@@ -56,57 +55,5 @@ export default {
             payload.theme !== context.state.theme) {
             ipcRenderer.send('update', payload.location, payload.theme)
         }
-    },
-    /**
-     * @param {ActionContext} context 
-     */
-    async launch(context, profileId) {
-        // const profile = context.getters['profiles/selected'];
-        // const profileId = context.getters['profiles/selectedKey'];
-        const auth = context.state.auth.auth;
-        const profile = context.getters['profiles/get'](profileId);
-        if (profile === undefined || profile === null) return Promise.reject('launch.profile.empty')
-        if (auth === undefined || auth === null) return Promise.reject('launch.auth.empty');
-        // well... these two totally... should not happen; 
-        // if it happen... that is a fatal bug...
-
-        let version = profile.mcversion;
-
-        const mods = context.getters[`profiles/${profileId}/forgeMods`];
-        const forgeVersion = context.getters[`profiles/${profileId}/forgeVersion`];
-        if (mods.length !== 0 && forgeVersion !== '') {
-            version = `${version}-forge-${forgeVersion}`
-        }
-        const type = profile.type;
-        const errors = context.getters[`profiles/${profileId}/errors`]
-        if (errors && errors.length !== 0) return Promise.reject(errors[0])
-
-        // TODO check the launch condition!
-        const option = {
-            auth,
-            gamePath: paths.join(context.state.root, 'profiles', profileId),
-            resourcePath: context.state.root,
-            javaPath: profile.java,
-            minMemory: profile.minMemory || 1024,
-            maxMemory: profile.maxMemory || 1024,
-            version,
-        }
-
-        // make the launch environment
-        await make(context, profileId, new MinecraftFolder(context.state.root),
-            new MinecraftFolder(option.gamePath))
-
-        if (profile.type === 'server') {
-            option.server = { ip: profile.host, port: profile.port };
-        }
-
-        return context.dispatch('query', {
-            service: 'launch',
-            action: 'launch',
-            payload: option,
-        }).then(() => {
-            // save all or do other things...
-            ipcRenderer.sendSync('park', true)
-        })
     },
 }

@@ -24,10 +24,14 @@ export default {
         skin: state => (state.auth.skin ? state.auth.skin : ''),
         cape: state => (state.auth.cape ? state.auth.cape : ''),
         history: state => state.history[state.mode],
+        logined: state => typeof auth === 'object' && Object.keys(state.auth).length !== 0,
     },
     mutations: {
         mode(state, mode) {
-            if (state.modes.indexOf(mode) !== -1) state.mode = mode
+            if (state.modes.indexOf(mode) !== -1) {
+                state.mode = mode;
+                if (!state.history[mode]) { state.history[mode] = [] }
+            }
         },
         history(state, { // record the state history
             auth,
@@ -56,7 +60,7 @@ export default {
             return context.dispatch('write', { path: 'auth.json', data }, { root: true })
         },
         async load(context, payload) {
-            const data = await context.dispatch('read', { path: 'auth.json', fallback: {}, encoding: 'json' }, { root: true });
+            const data = await context.dispatch('read', { path: 'auth.json', fallback: {}, type: 'json' }, { root: true });
             context.commit('modes', await context.dispatch('query', { service: 'auth', action: 'modes' }, { root: true }));
             return data;
         },
@@ -65,15 +69,11 @@ export default {
          * @param {ActionContext} context 
          * @param {string} mode 
          */
-        selectMode(context, mode) {
-            context.commit('mode', mode);
-        },
+        selectMode(context, mode) { context.commit('mode', mode); },
         /**
          * Logout and clear current cache.
          */
-        async logout({ commit }) {
-            commit('clear')
-        },
+        logout({ commit }) { commit('clear') },
         /**
          * 
          * @param {ActionContext} context 

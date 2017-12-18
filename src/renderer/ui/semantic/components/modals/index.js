@@ -23,7 +23,11 @@ export default {
             console.log(`Attempt show modal ${id}`)
             const modal = this.$refs[`${id}modal`.toLowerCase()]
             if (modal) modal.show(args); // $(modal).modal('show') // eslint-disable-line
-            else console.warn(`No modal named ${id}`)
+            else {
+                console.warn(`No modal named ${id}`);
+                console.warn('Existing:')
+                console.warn(Object.keys(this.$refs))
+            }
         },
     },
 }

@@ -3,21 +3,19 @@ import paths from 'path'
 import Vue from 'vue'
 
 export default {
-    state: () => ({
-        maps: [],
-    }),
+    state: () => [],
     getters: {
-        maps: state => state.maps,
+        maps: state => state,
     },
     mutations: {
         setMaps(state, maps) {
-            state.maps = maps;
+            state.push(...maps);
         },
         addMap(state, map) {
-            state.maps.push(map)
+            state.push(map)
         },
         removeMap(state, map) {
-            Vue.delete(state.maps, state.maps.indexOf(map))
+            Vue.delete(state, state.indexOf(map))
         },
     },
     actions: {

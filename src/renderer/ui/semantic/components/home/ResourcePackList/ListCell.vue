@@ -1,5 +1,5 @@
 <template>
-    <div class="dimmable item" style="border-radius: 5px;">
+    <div class="dimmable item" style="min-height:50px">
         <div class="ui inverted dimmer">
             <div class="content">
                 <div class="center">
@@ -7,15 +7,12 @@
                         <div class="ui basic black button" v-if="type === 'remove'" @click="$emit('moveup', val.name)">
                             <i class="arrow up icon"></i>
                         </div>
-                        <transition v-if="type==='add'" name="fadee" mode="out-in">
+                        <transition v-if="type==='add'" name="fade" mode="out-in">
                             <div :key="deleting?'a':'b'" class="ui red basic button" @click="ondelete">
                                 {{deleting?$t('!delete'):"X"}}
-                                <!-- <transition name="fade" mode="out-in"> -->
-                                <!-- <span v-bind:key="deleting">{{deleting?$t('!delete'):"X"}}</span> -->
-                                <!-- </transition> -->
                             </div>
                         </transition>
-                        <div v-if="type==='add'" class="ui green basic button" @click="$emit('change',val.name)">&nbsp&nbsp&nbsp{{$t('add')}}&nbsp&nbsp&nbsp</div>
+                        <div v-if="type==='add'" class="ui green basic button" @click="$emit('change',val.name)">{{$t('add')}}</div>
                         <div v-if="type==='remove'" class="ui red basic button" @click="$emit('change',val.name)">{{$t('remove')}}</div>
                         <div class="ui basic black button" v-if="type === 'remove'" @click="$emit('movedown', val.name)">
                             <i class="arrow down icon"></i>

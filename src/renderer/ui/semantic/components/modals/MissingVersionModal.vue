@@ -20,15 +20,15 @@ import vuex from 'vuex'
 export default {
     computed: {
         id() { return this.$route.params.id; },
-        version() { return this.$store.getters[`profiles/${this.id}/mcversion`]; }
+        version() { return this.$store.getters[`profiles/${this.id}/mcversion`]; },
     },
     mounted() {
         $(this.$el).modal({ blurring: true })
     },
     methods: {
         show() { $(this.$el).modal('show'); },
-        download() { this.$store.dispatch('versions/download', this.version); }
-    }
+        download() { this.$store.dispatch('versions/download', this.version); },
+    },
 }
 </script>
 
