@@ -65,14 +65,14 @@ export default {
         animations: ['jiggle', 'shake', 'tada'],
     }),
     computed: {
-        ...vuex.mapGetters('auth', ['history', 'mode', 'modes'])
+        ...vuex.mapGetters('auth', ['history', 'mode', 'modes', 'logined']),
     },
     mounted() {
         const self = this
         $(this.$refs.authMod).dropdown({
             onChange: (value, text, $selectedItem) => {
                 self.selectMode(value)
-            }
+            },
         })
         $(this.$refs.accountDropdown).dropdown()
         $(this.$el).modal({
@@ -82,6 +82,7 @@ export default {
             },
             blurring: true,
         })
+        if (!this.logined) this.show()
     },
     methods: {
         ...vuex.mapActions('auth', ['selectMode', 'login']),
@@ -121,21 +122,21 @@ export default {
             })
         },
         doLogin() {
-            if (this.account.length == 0)
-                this.shake(this.$refs.accountField)
-            else if (this.password.length == 0 && this.mode != 'offline')
-                this.shake(this.$refs.passwordField)
+            if (this.account.length === 0) this.shake(this.$refs.accountField)
+            else if (this.password.length === 0 && this.mode !== 'offline') this.shake(this.$refs.passwordField)
             else {
                 this.logining = true
                 this.login({
-                    account: this.account, password: this.password,
-                    mode: this.mode, clientToken: this.clientToken
+                    account: this.account,
+                    password: this.password,
+                    mode: this.mode,
+                    clientToken: this.clientToken,
                 }).then((result) => {
                     this.logining = false
                     this.$emit('login')
                     this.error = '';
                     this.$nextTick(() => $(this.$el).modal('hide'))
-                }, err => {
+                }, (err) => {
                     this.logining = false
                     this.error = err.message;
                 });

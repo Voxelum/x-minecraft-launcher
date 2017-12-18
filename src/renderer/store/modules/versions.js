@@ -38,8 +38,9 @@ export default {
         },
     },
     actions: {
-        load(context, payload) {
-            return context.dispatch('read', { path: 'version.json', fallback: {}, encoding: 'json' }, { root: true })
+        async load(context, payload) {
+            await context.dispatch('refresh')
+            return context.dispatch('read', { path: 'version.json', fallback: {}, type: 'json' }, { root: true })
         },
         save(context, payload) {
             const data = JSON.stringify(context.state);
@@ -52,9 +53,10 @@ export default {
          */
         async download(context, meta) {
             if (typeof meta === 'string') {
-                if (!context.getters.versionsMap[meta]) throw new Error(`Cannot find the version ${meta}`)
+                if (!context.getters.versionsMap[meta]) throw new Error(`Cannot find the version meta for [${meta}]. Please Refresh the meta cache!`)
                 meta = context.getters.versionsMap[meta];
             }
+
             const id = meta.id;
             context.commit('updateStatus', { version: meta, status: 'loading' })
             let exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
