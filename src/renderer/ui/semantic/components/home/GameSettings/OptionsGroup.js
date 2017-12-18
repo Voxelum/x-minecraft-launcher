@@ -28,7 +28,8 @@ export default {
     },
     methods: {
         onchange(event) {
-            this.$store.commit(`profiles/${this.id}/mcoption`, event)
+            console.log(`Eevent ${event}`);
+            // this.$store.commit(`profiles/${this.id}/mcoption`, event)
         },
     },
     computed: {

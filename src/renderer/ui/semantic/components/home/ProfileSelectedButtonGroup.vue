@@ -27,15 +27,16 @@ export default {
         },
         onlaunch() {
             this.launch(this.id).catch((e) => {
-                let type = typeof e === 'string' ? e : e.type;
+                const type = typeof e === 'string' ? e : e.type;
                 switch (type) {
                     case 'missing.version':
                         this.$ipc.emit('modal', 'missingVersion')
+                        break;
                     case 'profile.noversion':
                         this.$ipc.emit('modal', 'selectVersion')
+                        break;
                     default:
                 }
-                console.log(e)
             })
         },
     },

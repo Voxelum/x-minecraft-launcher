@@ -30,7 +30,7 @@ export default {
         //     const cfg = await context.dispatch('read', {
         //         path: `profiles/${id}/mods.json`,
         //         fallback: {},
-        //         encoding: 'json',
+        //         type: 'json',
         //     }, { root: true })
         //     context.commit('$reload', cfg);
         // },
