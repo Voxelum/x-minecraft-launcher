@@ -39,19 +39,17 @@ export default {
         },
     },
     actions: {
-        loadProfile(context, id) {
-            return context.dispatch('read', {
-                path: `profiles/${id}/${PROFILE_NAME}`,
-                fallback: {},
-                encoding: 'json',
-            }, { root: true })
-                .then(regulize)
-                .then(profile => context.commit('add', { id, type: profile.type, moduleData: profile }))
-                .catch(e => undefined)
-        },
-        load({ dispatch, commit }, payload) {
-            return dispatch('readFolder', { path: 'profiles' }, { root: true })
-                .then(files => Promise.all(files.map(id => dispatch('loadProfile', id))))
+        load(context, payload) {
+            return context.dispatch('readFolder', { path: 'profiles' }, { root: true })
+                .then(files => Promise.all(files.map(id => context.dispatch('read', {
+                    path: `profiles/${id}/${PROFILE_NAME}`,
+                    fallback: {},
+                    type: 'json',
+                }, { root: true })
+                    .then(regulize)
+                    .then(profile => context.commit('add', { id, type: profile.type, moduleData: profile }))
+                    .catch(e => undefined),
+                )))
         },
         async saveProfile(context, { id }) {
             const profileJson = `profiles/${id}/profile.json`
@@ -66,15 +64,11 @@ export default {
             const { mutation, object } = payload
             const path = mutation.split('/')
             if (path.length === 2) {
-                const [, action] = path
                 return Promise.resolve();
             } else if (path.length === 3) { // only profile
-                return context.dispatch('saveProfile', { id: path[1] })
-            } else if (path.length === 4) { // save module data
-                const target = path[2]
                 return Promise.all([
                     context.dispatch('saveProfile', { id: path[1] }),
-                    context.dispatch(`${path[1]}/${target}/save`, { id: path[1] }),
+                    context.dispatch(`${path[1]}/save`, { id: path[1], mutation: path[2] }),
                 ])
             }
             return context.dispatch('saveProfile', { id: path[1] })

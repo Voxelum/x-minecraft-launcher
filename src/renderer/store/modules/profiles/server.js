@@ -63,7 +63,7 @@ export default {
                         status,
                     }
                     const versions = protocol[status.protocolVersion]
-                    if (versions) context.commit('mcversion', versions[0]);
+                    if (versions) context.commit('profile', { mcversion: versions[0] });
                     context.commit('profile', all)
                     return status;
                 }, (err) => {

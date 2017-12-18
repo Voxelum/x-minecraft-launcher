@@ -2,13 +2,13 @@ import { ActionContext } from 'vuex'
 
 export default {
     state: {
-        id: '',
+        theme: '',
         metas: {},
         allThemes: [],
         defaultResolution: { width: 400, height: 400, fullscreen: false },
     },
     getters: {
-        // theme: state => state.id,
+        theme: state => state.theme,
         // themeMeta: state => state.metas[state.id],
         allThemeMetas: state => state.metas,
         allThemes: state => state.allThemes,
@@ -16,7 +16,12 @@ export default {
     },
     mutations: {
         setTheme(state, theme) {
-            state.id = theme;
+            state.theme = theme;
+        },
+        setDefaultResolution(state, resolution) {
+            state.defaultResolution.width = resolution.width;
+            state.defaultResolution.height = resolution.height;
+            state.defaultResolution.fullscreen = resolution.fullscreen;
         },
     },
     actions: {
@@ -31,12 +36,14 @@ export default {
                     context.commit('setTheme', payload.theme)
                 }
             }
+            if (payload.defaultResolution) {
+                context.commit('setDefaultResolution', payload.defaultResolution);
+            }
         },
         /**
          * @param {ActionContext} context 
          */
         load(context, virtual) {
-            // virtual.get('theme')
         },
     },
 }

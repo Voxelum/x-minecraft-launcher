@@ -5,14 +5,14 @@
 </template>
 
 <script>
-
 import { mapState } from 'vuex'
+
 export default {
     computed: {
-        ...mapState(['theme'])
+        ...mapState(['theme']),
     },
     beforeMount() {
-        let route = localStorage.getItem('route');
+        const route = localStorage.getItem('route');
         console.log(`Initialize to route ${route}`)
         if (route && route !== '/') {
             this.$router.replace(route)
@@ -25,7 +25,7 @@ export default {
         const store = this.$store
         $(document).on('dragover', function (e) {
             e.preventDefault()
-            var dt = e.originalEvent.dataTransfer;
+            const dt = e.originalEvent.dataTransfer;
             if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1
                 : dt.types.contains('Files'))) {
                 if (!store.state.dragover) store.commit('dragover', true);
@@ -44,7 +44,7 @@ export default {
             this.$store.commit('dragover', false)
             // return false;
         },
-    }
+    },
 }
 </script>
 
