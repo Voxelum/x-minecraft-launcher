@@ -1,6 +1,19 @@
 import Vue from 'vue'
 import { Auth, GameProfile } from 'ts-minecraft'
 import { ActionContext } from 'vuex'
+import { v4 } from 'uuid'
+
+const registered = {
+    offline: ({
+        account,
+        clientToken,
+    }) => Auth.offline(account),
+    mojang: ({ account, password, clientToken }) => Auth.yggdrasil({
+        username: account,
+        password,
+        clientToken: clientToken || v4(),
+    }),
+};
 
 export default {
     namespaced: true,
@@ -41,16 +54,16 @@ export default {
             if (!state.history[state.mode]) Vue.set(state.history, state.mode, [])
             const his = state.history[state.mode];
             const idx = his.indexOf(account);
-            if (idx === -1) his.push(account)
-            else if (idx === 0) return;
-            const first = his[0];
-            Vue.set(his, 0, account);
-            Vue.set(his, idx, first);
+            if (idx === -1) {
+                his.unshift(account);
+            } else {
+                const first = his[0];
+                Vue.set(his, 0, account);
+                Vue.set(his, idx, first);
+            }
         },
         modes: (state, modes) => { state.modes = modes },
-        clear(state) {
-            state.auth = undefined;
-        },
+        clear(state) { state.auth = null; },
     },
     actions: {
         save(context, payload) {
@@ -81,29 +94,27 @@ export default {
          * @return {Promise<Auth>}
          */
         async login(context, payload) {
-            const result = await context.dispatch('query', { service: 'auth', action: 'login', payload }, { root: true })
-
-            try {
+            if (!registered[payload.mode]) throw new Error(`Cannot find auth named ${payload.mode}`);
+            const result = registered[payload.mode](payload);
+            if (!result) throw new Error(`Cannot auth the ${payload.account}`);
+            if (payload.mode !== 'offline' && payload.texture) {
                 /**
-                 * @type {GameProfile.Textures}
+                 * @type {GameProfile}
                  */
-                const textures = (await context.dispatch('query', {
-                    service: 'profile',
-                    action: 'fetch',
-                    payload: { service: 'mojang', uuid: result.selectedProfile.id, cache: true },
-                }, { root: true })).textures;
-                const skin = textures.textures.SKIN
-                if (skin) {
-                    result.skin = {
-                        data: skin.data,
-                        slim: skin.metadata.model === 'slim',
+                const gameProfile = await context.dispatch('gameprofile/fetch', { service: payload.mode, uuid: result.selectedProfile.id, cache: true }, { root: true });
+                const textures = gameProfile.textures;
+                if (textures) {
+                    const skin = textures.textures.SKIN;
+                    if (skin) {
+                        result.skin = {
+                            data: skin.data,
+                            slim: skin.metadata.model === 'slim',
+                        }
+                    }
+                    if (textures.textures.CAPE) {
+                        result.cape = textures.textures.CAPE.data;
                     }
                 }
-                if (textures.textures.CAPE) {
-                    result.cape = textures.textures.CAPE.data;
-                }
-            } catch (e) {
-                console.warn(e);
             }
             context.commit('history', {
                 auth: result,

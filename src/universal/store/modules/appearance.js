@@ -9,7 +9,7 @@ export default {
     },
     getters: {
         theme: state => state.theme,
-        // themeMeta: state => state.metas[state.id],
+        themeMeta: state => state.metas[state.theme],
         allThemeMetas: state => state.metas,
         allThemes: state => state.allThemes,
         defaultResolution: state => state.defaultResolution,
