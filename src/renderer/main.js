@@ -20,7 +20,7 @@ if (!process.env.IS_WEB) {
 }
 Vue.config.productionTip = false;
 
-const { logger, theme, root } = querystring.parse(url.parse(document.URL).query)
+const { logger, root } = querystring.parse(url.parse(document.URL).query)
 
 if (logger === 'true') {
     new Vue({
@@ -28,19 +28,40 @@ if (logger === 'true') {
         template: '<Log></Log>',
     }).$mount('#app');
 } else {
-    const createStore = require('./store').default;
-    const router = require('./router.js').default;
-    const ui = require('./ui').default;
-    createStore(root, ui.map(gui => gui.path.substring(1)), theme).then(store =>
+    (async () => {
+        const storeOptions = require('./store').default;
+        const router = require('./router.js').default;
+        const ui = require('./ui').default;
+        const themes = ui.map(gui => gui.path.substring(1));
+
+        storeOptions.state.root = root;
+        storeOptions.modules.appearance.state.themes = themes;
+
+        const mainModules = storeOptions.modules;
+
+        const store = new Vuex.Store(storeOptions);
+
+        await Promise.all(Object.keys(mainModules).map((key) => {
+            const action = `${key}/load`;
+            if (store._actions[action]) {
+                console.log(`Found loading action [${action}]`)
+                return store.dispatch(action).then((instance) => {
+                    console.log(`Loaded module [${key}]`)
+                }, (err) => {
+                    console.error(`An error occured when we load module [${key}].`)
+                    console.error(err)
+                })
+            }
+            return Promise.resolve();
+        }))
+        console.log('Finish root modules loading')
         new Vue({
             router,
             components: { App: require('./App') },
             store,
             i18n: store.getters.i18n,
             template: '<App style="max-height:626px; overflow:hidden;"></App>',
-        }).$mount('#app'),
-    ).then((v) => {
-        v.$store.dispatch('updateJavas')
-    })
+        }).$mount('#app')
+    })()
 }
 

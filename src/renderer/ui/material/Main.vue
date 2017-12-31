@@ -14,13 +14,13 @@
 
 <script>
 import Vue from 'vue'
-// import Vuetify from 'vuetify'
-// import MuseUI from 'muse-ui';
-// Vue.use(Vuetify);
-// Vue.use(MuseUI);
+import Vuetify from 'vuetify'
+import MuseUI from 'muse-ui';
+Vue.use(Vuetify);
+Vue.use(MuseUI);
 
-// require("muse-ui/dist/muse-ui.css")
-// require("muse-ui/dist/muse-ui.js")
+require("muse-ui/dist/muse-ui.css")
+require("muse-ui/dist/muse-ui.js")
 import Login from './components/Login'
 export default {
     data() {

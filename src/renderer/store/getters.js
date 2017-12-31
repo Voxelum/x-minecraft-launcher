@@ -21,6 +21,4 @@ export default {
     root: state => state.root,
     options: state => state.templates.minecraft,
     defaultOptions: state => state.templates.minecraft.midum,
-    themes: state => state.themes,
-    theme: state => state.theme,
 }

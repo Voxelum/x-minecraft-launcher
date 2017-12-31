@@ -40,6 +40,12 @@ export default {
         modes() {
             return Array.from(registered.keys())
         },
-        // TODO implement other auth function
+        /**
+         * 
+         * @param {{accessToken:string, clientToken:string}} payload 
+         */
+        validate(context, payload) {
+            return Auth.Yggdrasil.create().validate(payload.accessToken, payload.clientToken);
+        },
     },
 }

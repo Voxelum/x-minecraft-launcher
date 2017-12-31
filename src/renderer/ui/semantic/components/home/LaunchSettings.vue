@@ -9,8 +9,11 @@
                         <i class="dropdown icon"></i>
                         <div class="text">{{selectedJava}}</div>
                         <div class="menu">
-                            <li class="item" v-for="value in javas" :key="value" @click="selectJava(value)">
-                                {{value}}
+                            <li class="item" v-for="value in Object.keys(javas)" :key="value" @click="selectJava(value)">
+                                {{javas[value].split('\n')[0].toUpperCase()}}
+                                <span style="color:grey; size:5px">
+                                    {{value}}
+                                </span>
                             </li>
                         </div>
                     </div>
@@ -34,7 +37,7 @@
         </div>
         <div class="field" style="z-index:0">
             <label>{{$t('launchsetting.jvm')}}</label>
-            <labeled-input style="z-index:0"  :labels="vmOptions" @dellabel="delVM" @addlabel="addVM"></labeled-input>
+            <labeled-input style="z-index:0" :labels="vmOptions" @dellabel="delVM" @addlabel="addVM"></labeled-input>
         </div>
         <div class="field" style="z-index:0">
             <label>{{$t('launchsetting.mc')}}</label>
@@ -54,7 +57,10 @@ export default {
         $(this.$refs.path).dropdown()
     },
     computed: {
-        ...vuex.mapGetters(["javas"]),
+        ...vuex.mapGetters('jre', {
+            javas: 'availables',
+            defaultJava: 'default',
+        }),
         id() { return this.$route.params.id },
         selectedJava() { return this.$store.getters[`profiles/${this.id}/java`] },
         vmOptions() {
@@ -65,7 +71,7 @@ export default {
         }
     },
     methods: {
-        ...vuex.mapActions(["addJavas", "openDialog", "removeJava"]),
+        ...vuex.mapActions(["openDialog"]),
         addVM(arg) {
             this.$store.dispatch(`profiles/${this.id}/edit`,
                 { vmOptions: [...this.vmOptions, arg] })
@@ -84,7 +90,7 @@ export default {
         },
         popDialog(event) {
             this.openDialog({}).then(paths => {
-                this.addJavas(paths[0]);
+                this.$store.dispatch('jre/add', path[0])
             });
         },
         selectJava(newPath) {
@@ -96,8 +102,8 @@ export default {
         removeCurrent() {
             this.removeJava(this.selectedJava)
                 .then(() => {
-                    if (this.javas.length !== 0) {
-                        this.$store.dispatch(`profiles/${this.id}/edit`, { java: this.javas[0] })
+                    if (this.availables.length !== 0) {
+                        this.$store.dispatch(`profiles/${this.id}/edit`, { java: this.defaultJava })
                     } else {
                         this.$store.dispatch(`profiles/${this.id}/edit`, { java: '' })
                     }

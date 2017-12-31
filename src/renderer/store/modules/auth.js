@@ -24,7 +24,7 @@ export default {
         skin: state => (state.auth.skin ? state.auth.skin : ''),
         cape: state => (state.auth.cape ? state.auth.cape : ''),
         history: state => state.history[state.mode],
-        logined: state => typeof auth === 'object' && Object.keys(state.auth).length !== 0,
+        logined: state => typeof state.auth === 'object' && Object.keys(state.auth).length !== 0,
     },
     mutations: {
         mode(state, mode) {
@@ -33,11 +33,11 @@ export default {
                 if (!state.history[mode]) { state.history[mode] = [] }
             }
         },
-        history(state, { // record the state history
+        login(state, {
             auth,
             account,
         }) {
-            state.auth = auth;
+            state.auth = Object.assign({}, auth);
             if (!state.history[state.mode]) Vue.set(state.history, state.mode, [])
             const his = state.history[state.mode];
             const idx = his.indexOf(account);
@@ -47,33 +47,62 @@ export default {
             Vue.set(his, 0, account);
             Vue.set(his, idx, first);
         },
+        setAuth(state, auth) {
+            state.auth = auth;
+        },
+        setHistory(state, history) {
+            Object.keys(history).forEach((k) => {
+                state.history[k] = history[k];
+            })
+        },
         modes: (state, modes) => { state.modes = modes },
         clear(state) {
             state.auth = undefined;
         },
     },
     actions: {
-        save(context, payload) {
-            const { mutation } = payload;
-            if (!mutation.endsWith('/history')) return Promise.resolve()
+        save(context) {
             const data = JSON.stringify(context.state, (key, value) => (key === 'modes' ? undefined : value))
             return context.dispatch('write', { path: 'auth.json', data }, { root: true })
+        },
+        validate(context, auth) {
+            if (typeof auth.accessToken !== 'string' ||
+                typeof auth.clientToken !== 'string') return false;
+            return context.dispatch('query', {
+                service: 'auth',
+                action: 'validate',
+                payload: auth,
+            }, { root: true });
         },
         async load(context, payload) {
             const data = await context.dispatch('read', { path: 'auth.json', fallback: {}, type: 'json' }, { root: true });
             context.commit('modes', await context.dispatch('query', { service: 'auth', action: 'modes' }, { root: true }));
-            return data;
+            if (typeof data.mode === 'string') context.commit('mode', data.mode);
+            if (data.mode !== 'offline') {
+                if (await context.dispatch('validate', data.auth)) {
+                    context.commit('setAuth', data.auth);
+                }
+            } else { context.commit('setAuth', data.auth); }
+            if (typeof data.history === 'object') {
+                context.commit('setHistory', data.history);
+            }
         },
         /**
          * 
          * @param {ActionContext} context 
          * @param {string} mode 
          */
-        selectMode(context, mode) { context.commit('mode', mode); },
+        selectMode(context, mode) {
+            context.commit('mode', mode);
+            return context.dispatch('save');
+        },
         /**
          * Logout and clear current cache.
          */
-        logout({ commit }) { commit('clear') },
+        logout({ commit, dispatch }) {
+            commit('clear');
+            return dispatch('save');
+        },
         /**
          * 
          * @param {ActionContext} context 
@@ -105,10 +134,11 @@ export default {
             } catch (e) {
                 console.warn(e);
             }
-            context.commit('history', {
+            context.commit('login', {
                 auth: result,
                 account: payload.account,
             });
+            await context.dispatch('save')
             return result;
         },
     },

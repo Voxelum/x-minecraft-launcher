@@ -34,9 +34,6 @@ export default {
         },
     },
     actions: {
-        loadGlobal(context, payload) {
-
-        },
         updateSetting(context, payload) {
             if (payload.language && typeof payload.language === 'string') {
                 if (context.getters.languages.indexOf(payload.language) !== -1) {

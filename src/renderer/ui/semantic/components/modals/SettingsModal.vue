@@ -72,14 +72,18 @@ export default {
         }
     },
     computed: {
-        ...vuex.mapGetters([
+        ...vuex.mapGetters('appearance', [
             'theme',
             'themes',
-            'root',
             'defaultResolution',
+        ]),
+        ...vuex.mapGetters('jre', {
+            javas: 'availables',
+            defaultJava: 'default',
+        }),
+        ...vuex.mapGetters([
+            'root',
             'autoDownload',
-            'javas',
-            'defaultJava',
             'languages',
             'language']),
     },
@@ -119,14 +123,17 @@ export default {
             $(this.$el).modal('hide')
         },
         upload(e) {
-            this.updateSetting({
+            this.$store.dispatch('appearance/update', {
                 resolution: {
                     width: this.reswidth,
                     height: this.resheight,
                     fullscreen: this.resfullscreen,
                 },
-                location: this.location,
                 theme: this.selectedTheme,
+            })
+            
+            this.updateSetting({
+                location: this.location,
                 language: this.selectedLanguage,
             });
             $(this.$el).modal('hide')

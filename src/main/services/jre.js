@@ -4,56 +4,48 @@ import path from 'path'
 import fs from 'fs-extra'
 import download from 'ts-minecraft/dist/src/utils/download'
 import Zip from 'jszip'
+import childProcess from 'child_process';
 
 
-function findJavaFromHome(set) {
-    const home = process.env.JAVA_HOME;
-    if (!home) return set
-    const javaPath = path.join(home, 'bin', 'javaw.exe')
-    if (fs.existsSync(javaPath)) set[javaPath] = 0
-    return set
-}
-
-function findJavaFromPath(set) {
-    const pathString = process.env.PATH
-    const array = pathString.split(';')
-    for (const p of array) {
-        const javaPath = path.join(p, 'bin', 'javaw.exe')
-        if (fs.existsSync(javaPath)) set[javaPath] = 0
-    }
-    return set
-}
 /**
 * @author Indexyz
 */
-function findJavaFromRegistry() {
-    let command;
-    const childProcess = require('child_process');
-
-    if (os.platform() === 'win32') command = 'REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome'
-    else command = 'find /usr/ -name java -type f'
-
-    return new Promise((resolve, reject) => {
+async function findWinJava() {
+    const command = 'REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome'
+    const set = await new Promise((resolve, reject) => {
         childProcess.exec(command, (error, stdout, stderr) => {
             if (stdout) {
-                const set = {}
+                const $set = {}
                 stdout.split(os.EOL).map(item => (os.platform() !== 'win32' ?
                     item.replace(/[\r\n]/g, '') :
                     item.replace(/[\r\n]/g, '').replace(/\\\\/g, '\\').match(/\w(:[\\a-zA-Z0-9 ._]*)/)))
                     .filter(item => item != null && item !== undefined)
                     .map(item => (item instanceof Array ? item[0] : item))
-                    .map(item => (os.platform() === 'win32' ? path.join(item, 'bin', 'javaw.exe') : item))
+                    .map(item => path.join(item, 'bin', 'javaw.exe'))
                     .filter(item => fs.existsSync(item))
-                    .forEach((item) => { set[item] = 0 })
-                resolve(set);
+                    .forEach((item) => { $set[item] = 0 })
+                resolve($set);
             }
         });
     });
+
+    const home = process.env.JAVA_HOME;
+    if (!home) return set
+    const javaPath = path.join(home, 'bin', 'javaw.exe')
+    if (fs.existsSync(javaPath)) set[javaPath] = 0
+
+    const pathString = process.env.PATH
+    const array = pathString.split(';')
+    for (const p of array) {
+        const jp = path.join(p, 'bin', 'javaw.exe')
+        if (fs.existsSync(jp)) set[jp] = 0
+    }
+
+    return set;
 }
-function findMacJavaByWhich(set) {
-    if (os.platform() === 'win32') return set;
+
+function findMacJava(set) {
     set['/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java'] = 0
-    const childProcess = require('child_process');
     return new Promise((resolve, reject) => {
         childProcess.exec('which java', (error, stdout, stderr) => {
             if (error) reject(error)
@@ -151,29 +143,52 @@ export default {
     initialize() {
     },
     actions: {
-        async availbleJre() {
-            const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
-            if (fs.existsSync(local)) return [local]
-            const ret = await findJavaFromRegistry()
-                .then(findMacJavaByWhich)
-                .then(findJavaFromPath)
-                .then(findJavaFromHome)
-                .then(Object.keys);
-            return ret;
+        async validate(context, jrePath) {
+            if (typeof jrePath !== 'string') throw new Error('Jre path has to be a string!')
+            jrePath = `"${jrePath.trim()}"`;
+            const valid = await new Promise((resolve, reject) => {
+                childProcess.exec(jrePath, (err, stdo, stde) => {
+                    resolve(err.code === 1);
+                })
+            })
+            if (!valid) return { valid: false, path: jrePath };
+            return new Promise((resolve, reject) => {
+                childProcess.exec(`${jrePath} --version`, (err, stdo, stde) => {
+                    if (err) reject({ valid: false, path: jrePath })
+                    resolve({ valid: true, path: jrePath, description: stdo.trim() })
+                })
+            })
+        },
+        async availableJre() {
+            const set = {}
+            let local;
+            switch (os.platform()) {
+                case 'darwin':
+                    await findMacJava(set);
+                    local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw');
+                    if (fs.existsSync(local)) set[local] = 0;
+                    break;
+                case 'win32':
+                    local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
+                    await findWinJava(set);
+                    if (fs.existsSync(local)) set[local] = 0;
+                    break;
+                default:
+            }
+            return set;
         },
         async ensureJre() {
-            const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
-            if (fs.existsSync(local)) return [local]
-            const arr = await findJavaFromRegistry()
-                .then(findMacJavaByWhich)
-                .then(findJavaFromPath)
-                .then(findJavaFromHome)
-                .then(Object.keys)
-            if (arr.length === 0) {
-                await installJre();
-                return [local];
-            }
-            return arr;
+            // const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
+            // if (fs.existsSync(local)) return [local]
+            // const arr = await findJavaFromRegistry()
+            //     .then(findJavaFromPath)
+            //     .then(findJavaFromHome)
+            //     .then(Object.keys)
+            // if (arr.length === 0) {
+            //     await installJre();
+            //     return [local];
+            // }
+            // return arr;
         },
     },
 }

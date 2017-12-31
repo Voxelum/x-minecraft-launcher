@@ -5,7 +5,5 @@ export default {
     templates: {
         minecraft: { ...options },
     },
-    theme: 'semantic',
-    themes: [],
     root: '',
 }

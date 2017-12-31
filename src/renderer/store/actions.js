@@ -48,12 +48,8 @@ export default {
        * @param {{resolution?:Resolution, location?:string, theme?:string}} payload 
        */
     updateSetting(context, payload) {
-        if (payload.resolution) {
-            context.commit('resolution', payload.resolution);
-        }
-        if (payload.location !== context.state.root ||
-            payload.theme !== context.state.theme) {
-            ipcRenderer.send('update', payload.location, payload.theme)
-        }
+        // if (payload.resolution) {
+        //     context.commit('resolution', payload.resolution);
+        // }
     },
 }

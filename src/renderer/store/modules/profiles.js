@@ -84,7 +84,7 @@ export default {
                 option = {},
             } = payload
             const id = uuid()
-            option.java = option.java || context.rootGetters.defaultJava
+            option.java = option.java || context.rootGetters['jre/default']
             context.commit('add', { id, type, moduleData: option })
             return context.dispatch('saveProfile', { id })
         },

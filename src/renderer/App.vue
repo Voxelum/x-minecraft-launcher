@@ -5,16 +5,24 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import vuex from 'vuex'
 
 export default {
     computed: {
-        ...mapState(['theme']),
+        theme() {
+            return this.$store.getters['appearance/theme']
+        }
+    },
+    watch: {
+        theme() {
+            this.$router.replace(`/${this.theme}`)
+        }
     },
     beforeMount() {
         const route = localStorage.getItem('route');
         console.log(`Initialize to route ${route}`)
-        if (route && route !== '/') {
+        if (route && route !== '/' &&
+            this.$store.getters['appearance/themes'].indexOf(route.split('/')[1]) !== -1) {
             this.$router.replace(route)
         } else {
             this.$router.replace(`/${this.theme}`)
