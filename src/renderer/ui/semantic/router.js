@@ -2,8 +2,8 @@ import Vue from 'vue'
 import { RouteConfig } from 'vue-router'
 
 import SemanticUi from './Semantic'
-import ModpackView from './components/home/ModpackView'
-import ServerView from './components/home/ServerView'
+import ProfileView from './components/home/ProfileView'
+
 import CardView from './components/home/CardView'
 import ResourcePackList from './components/home/ResourcePackList'
 import GameSettings from './components/home/GameSettings'
@@ -36,9 +36,9 @@ export default {
             },
         },
         {
-            path: 'modpack/:id',
+            path: 'profile/:id',
             components: {
-                default: ModpackView,
+                default: ProfileView,
                 buttons: ProfileSelectedButtonGroup,
             },
             props: {
@@ -69,43 +69,6 @@ export default {
                 {
                     path: 'maps',
                     component: MapsList,
-                },
-                {
-                    path: 'launchsettings',
-                    component: LaunchSettings,
-                },
-            ],
-        },
-        {
-            path: 'server/:id',
-            components: {
-                default: ServerView,
-                buttons: ProfileSelectedButtonGroup,
-            },
-            props: {
-                default: true,
-                buttons: false,
-            },
-            children: [
-                {
-                    path: '',
-                    redirect: 'gamesettings',
-                },
-                {
-                    path: 'resourcepacks',
-                    component: ResourcePackList,
-                },
-                {
-                    path: 'gamesettings',
-                    component: GameSettings,
-                },
-                {
-                    path: 'mods',
-                    component: ModsList,
-                },
-                {
-                    path: 'forge',
-                    component: ForgeView,
                 },
                 {
                     path: 'launchsettings',

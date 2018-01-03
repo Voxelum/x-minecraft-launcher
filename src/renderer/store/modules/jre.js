@@ -87,7 +87,7 @@ export default {
             const valid = await context.dispatch('validate', java);
             context.commit('add', valid);
             if (!valid.valid) context.commit('addToFailed', valid)
-            context.dispatch('save');
+            await context.dispatch('save');
         },
         setDefault(context, defaultJre) {
             context.commit(defaultJre);

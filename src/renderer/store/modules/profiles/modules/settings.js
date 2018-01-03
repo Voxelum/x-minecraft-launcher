@@ -125,7 +125,7 @@ export default {
         mcoption(states, { key, value }) {
             states[key] = value
         },
-        mcoptions$reload(state, settings) {
+        mcoptions(state, settings) {
             Object.keys(settings)
                 .filter(k => state[k] !== undefined)
                 .forEach((k) => {
@@ -181,7 +181,7 @@ export default {
         },
     },
     actions: {
-        save(context, { id, mutation }) {
+        saveSetting(context, { id, mutation }) {
             if (mutation !== 'mcoption' && mutation !== 'resourcepack') {
                 return Promise.resolve();
             }
@@ -195,7 +195,7 @@ export default {
                 path: `profiles/${id}/options.txt`,
                 type: 'string',
             }, { root: true });
-            context.commit('mcoptions$reload', GameSetting.parseFrame(gcString));
+            context.commit('mcoptions', GameSetting.parseFrame(gcString));
         },
     },
 }

@@ -1,32 +1,7 @@
 <template>
     <div class="ui vertically divided grid" style="max-height:500px; min-height:500px;">
-        <div class="row" style="max-height:150px;min-height:150px;">
-            <div class="eight wide column">
-                <div class="ui sizer" style="font-size: 23px;">
-                    <h1 class="ui header">
-                        <div class="content">
-                            {{source.name}}
-                            <h2 class="ui sub header">
-                                {{$t('author')}}: {{source.author}}
-                            </h2>
-                            <h2 ref="versionPopup" class="ui sub header">
-                                {{$tc('version.name', 0)}}: {{source.mcversion===''? 'Unselected':source.mcversion}}
-                                <i class="dropdown icon"></i>
-                            </h2>
-                            <version-table-view :id="id"></version-table-view>
-                        </div>
-                    </h1>
-                </div>
-            </div>
-            <div class="eight wide column">
-                <h5 class="ui horizontal divider header">
-                    <i class="tag icon"></i>
-                    {{$t('description')}}
-                </h5>
-                <textarea :value="source.description" @blur="modify" style="width:100%;border:0;outline:none;overflow: hidden;resize:none;background-color:transparent;">
-                </textarea>
-            </div>
-        </div>
+        <modpack-row v-if="type==='modpack'"></modpack-row>
+        <server-row v-else></server-row>
         <div ref="bar" class="stretched row pushable ui top attached segment" style="min-height:350px;max-height:350px; border-right-width:0;border-right-color:transparent;border-radius:0px;">
             <div ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;" @mouseleave="closeBar">
                 <div class="sixteen wide column">
@@ -45,14 +20,10 @@
                             <router-link to="forge" class="item" data-tab="forge">
                                 {{$t('forge.name')}}
                             </router-link>
-                            <!-- <router-link class="item" data-tab="liteloader">
-                                {{$t('liteloader')}}
-                            </router-link> -->
                             <router-link to="launchsettings" class="item">Launch Settings</router-link>
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="ui basic circular icon huge button" style="z-index: 10;position:absolute; margin:20px;" @mouseenter="openBar">
                 <i class="options icon"></i>
@@ -68,27 +39,17 @@
 
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex'
-import VersionTableView from './VersionTableView'
-import ResourcePackList from './ResourcePackList'
-import GameSettings from './GameSettings'
-import MapsList from './MapsList'
-import ModsList from './ModsList'
 
 export default {
     components: {
-        VersionTableView, ResourcePackList,
-        GameSettings, MapsList, ModsList
+        ModpackRow: () => import('./ModpackRow'),
+        ServerRow: () => import('./ServerRow'),
     },
     computed: {
-        ...mapState('versions', ['minecraft']),
-        type() { return this.source.type },
-        id() { return this.$route.params.id },
-        source() { return this.$store.getters['profiles/get'](this.id) }
+        type() { return this.$store.getters[`profiles/${this.id}/type`] },
+        id() { return this.$route.params.id; },
     },
     methods: {
-        modify(event) {
-            this.$store.dispatch(`profiles/${this.id}/edit`, { description: event.target.value })
-        },
         refresh() {
             this.$store.dispatch(`profiles/${this.id}/refresh`)
             this.$store.dispatch('versions/refresh')
@@ -108,14 +69,6 @@ export default {
                 dimPage: false
             })
             .sidebar('setting', 'transition', 'overlay')
-        $(this.$refs.versionPopup).popup({
-            position: 'bottom left',
-            hoverable: true,
-            delay: {
-                show: 300,
-                hide: 800
-            }
-        });
         $(this.$refs.acc).accordion()
     },
 }
