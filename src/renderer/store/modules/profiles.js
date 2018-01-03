@@ -6,7 +6,6 @@ import server from './profiles/server'
 import modpack from './profiles/modpack'
 
 const PROFILE_NAME = 'profile.json'
-const PROFILES_NAEM = 'profiles.json'
 
 function regulize(content) {
     content.resourcepacks = content.resourcepacks || []

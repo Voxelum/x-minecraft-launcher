@@ -17,6 +17,9 @@ export default {
     }),
     getters: {
         ...profile.getters,
+        author: state => state.author,
+        description: state => state.description,
+        icon: state => state.icon,
     },
     mutations: {
         ...profile.mutations,

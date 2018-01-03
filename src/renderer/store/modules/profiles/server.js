@@ -3,6 +3,7 @@ import vuex from 'vuex'
 import protocol from 'shared/protocol'
 import profile from './profile'
 
+
 export default {
     namespaced: true,
     modules: { ...profile.modules },

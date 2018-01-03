@@ -28,8 +28,7 @@ export default
                 }
                 paths.push(id)
                 if (!moduleData.namespaced) moduleData.namespaced = true;
-                const model = profileType === 'modpack' ? modelModpack : modelServer
-                const mixed = mixin(model, moduleData);
+                const mixed = mixin(profileType === 'modpack' ? modelModpack : modelServer, moduleData);
                 mixed.state.id = id;
                 store.registerModule(paths, mixed);
                 store.dispatch(`profiles/${id}/load`, { id })

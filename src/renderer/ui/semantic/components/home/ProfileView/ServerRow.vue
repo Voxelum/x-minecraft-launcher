@@ -32,8 +32,8 @@
 
 export default {
     computed: {
-        status() { return this.$store.getters[`profiles/${id}/status`] },
-        name() { return this.$store.getters[`profiles/${id}/name`] },
+        status() { return this.$store.getters[`profiles/${this.id}/status`] },
+        name() { return this.$store.getters[`profiles/${this.id}/name`] },
 
         id() { return this.$route.params.id }
     },
