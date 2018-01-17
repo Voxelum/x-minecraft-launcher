@@ -181,11 +181,8 @@ export default {
         },
     },
     actions: {
-        saveSetting(context, { id, mutation }) {
-            if (mutation !== 'mcoption' && mutation !== 'resourcepack') {
-                return Promise.resolve();
-            }
-            const path = `profiles/${id}/options.txt`
+        saveSetting(context) {
+            const path = `profiles/${context.state.id}/options.txt`
             const snapshot = JSON.stringify(context.state);
             const data = GameSetting.stringify(context.state);
             return context.dispatch('write', { path, data }, { root: true })
@@ -196,6 +193,7 @@ export default {
                 type: 'string',
             }, { root: true });
             context.commit('mcoptions', GameSetting.parseFrame(gcString));
+            context.dispatch('saveSetting');
         },
     },
 }
