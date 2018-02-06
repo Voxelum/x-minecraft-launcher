@@ -49,6 +49,7 @@ function findJavaFromRegistry() {
 }
 
 export default {
+    namespaced: true,
     state: {
         javas: [],
         blacklist: [],

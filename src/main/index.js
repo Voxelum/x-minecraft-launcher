@@ -9,7 +9,7 @@ import paths from 'path'
 import urls from 'url'
 import fs from 'fs-extra'
 import os from 'os'
-import storage from './storage'
+import storeLoader from './store'
 
 const devMod = process.env.NODE_ENV === 'development'
 /**
@@ -40,6 +40,9 @@ let parking = false;
 
 let iconImage
 
+/**
+ * @type {string}
+ */
 let root = process.env.LAUNCHER_ROOT
 let theme = 'semantic';
 
@@ -72,13 +75,6 @@ try {
     theme = 'semantic'
     fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
 }
-
-// const loadedStorage = storage(root);
-// loadedStorage.then((store) => {
-//     console.log(Object.keys(store))
-// }).catch((e) => {
-//     console.log(e)
-// })
 
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
     // Someone tried to run a second instance, we should focus our window.
@@ -142,11 +138,9 @@ function createMainWindow() {
     mainWindow.on('closed', () => { mainWindow = null })
 }
 
-console.log('INDEX RUNNING!')
-
+let store;
 app.on('ready', () => {
-    console.log('READY!!!!!!!')
-    require('./services'); // load all service 
+    store = storeLoader(root);
 
     iconImage = nativeImage.createFromPath(`${__static}/logo.png`) // eslint-disable-line no-undef
     createMainWindow()
@@ -175,7 +169,6 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     if (mainWindow === null) createMainWindow()
 })
-
 
 ipcMain.on('update', (event, newRoot, newTheme) => {
     if (newRoot !== undefined || newTheme !== undefined) {
@@ -210,5 +203,6 @@ ipcMain.on('exit', () => {
 })
 
 export default {
-    service: require('./services'),
+    commit: () => store.commit,
+    dispatch: () => store.dispatch,
 }

@@ -31,27 +31,27 @@ export default {
 //         plugins,
 //     });
 
-//     return Promise.all(Object.keys(modules).map((key) => {
-//         const action = `${key}/load`;
-//         if (store._actions[action]) {
-//             console.log(`Found loading action [${action}]`)
-//             return store.dispatch(action).then((instance) => {
-//                 const id = key;
-//                 store.commit(`${id}/$reload`, instance)
-//                 console.log(`Loaded module [${id}]`)
-//             }, (err) => {
-//                 const id = key
-//                 console.error(`An error occured when we load module [${id}].`)
-//                 console.error(err)
-//             })
-//         }
-//         return Promise.resolve();
-//     })).then(() => {
-//         console.log('Done loading store!')
-//         return store
-//     }, (err) => {
-//         console.log('Done loading store with Error')
-//         console.log(err)
-//         return store
-//     })
+    // return Promise.all(Object.keys(modules).map((key) => {
+    //     const action = `${key}/load`;
+    //     if (store._actions[action]) {
+    //         console.log(`Found loading action [${action}]`)
+    //         return store.dispatch(action).then((instance) => {
+    //             const id = key;
+    //             store.commit(`${id}/$reload`, instance)
+    //             console.log(`Loaded module [${id}]`)
+    //         }, (err) => {
+    //             const id = key
+    //             console.error(`An error occured when we load module [${id}].`)
+    //             console.error(err)
+    //         })
+    //     }
+    //     return Promise.resolve();
+    // })).then(() => {
+    //     console.log('Done loading store!')
+    //     return store
+    // }, (err) => {
+    //     console.log('Done loading store with Error')
+    //     console.log(err)
+    //     return store
+    // })
 // }
