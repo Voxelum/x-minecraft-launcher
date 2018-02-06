@@ -1,6 +1,7 @@
 import { ActionContext } from 'vuex'
 
 export default {
+    namespaced: true,
     state: {
         theme: '',
         metas: {},
