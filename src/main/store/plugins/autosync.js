@@ -12,7 +12,8 @@ export default
             if (currentId === mutationHistory.length - 1) {
                 return;
             } 
-            event.sender.send('vuex-sync', mutationHistory.slice(currentId));
+            const mutations = mutationHistory.slice(currentId);
+            event.sender.send('vuex-sync', mutations, mutations.length + currentId);
         })
         store.subscribe(
             /**

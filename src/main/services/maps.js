@@ -2,10 +2,6 @@ import Zip from 'jszip'
 import fs from 'fs-extra'
 import paths from 'path'
 
-const allFiles = folder =>
-    fs.readdirSync(folder)
-        .map(file => (fs.lstatSync(`${folder}/${file}`).isDirectory() ? allFiles(`${folder}/${file}`) : [`${folder}/${file}`]))
-        .reduce((left, right) => [...left, ...right], []);
 
 export default {
     initialize() { },

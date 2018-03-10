@@ -9,6 +9,7 @@ import paths from 'path'
 import urls from 'url'
 import fs from 'fs-extra'
 import os from 'os'
+import vuex from 'vuex'
 import storeLoader from './store'
 
 const devMod = process.env.NODE_ENV === 'development'
@@ -32,43 +33,37 @@ let mainWindow;
  * @type {BrowserWindow}
  */
 let logWindow;
-
-let maindownloadCallback;
-const downloadTasks = new Map()
-
 let parking = false;
+/**
+ * @type {electron.NativeImage}
+ */
+let iconImage;
+/**
+ * @type {vuex.Store}
+ */
+let store;
+/**
+ * @type {Promise<void>}
+ */
+let storePromise;
 
-let iconImage
 
 /**
  * @type {string}
  */
 let root = process.env.LAUNCHER_ROOT
-let theme = 'semantic';
-
 const appData = app.getPath('appData');
 const cfgFile = `${appData}/launcher.json`
 
-function updateSettings(newRoot, newTheme) {
-    let updated = false;
-    if (newRoot && newRoot != null && newRoot !== root) {
-        root = newRoot;
-        app.setPath('userData', root);
-        updated = true;
-    }
-    if (newTheme && newTheme != null && newTheme !== theme) {
-        theme = newTheme;
-        updated = true;
-    }
-    if (updated) fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
-}
+/**
+ * Setup root and config
+ */
 
 try {
     const buf = fs.readFileSync(cfgFile)
     const cfg = JSON.parse(buf.toString())
     root = cfg.root || paths.join(appData, '.launcher');
     app.setPath('userData', root);
-    theme = cfg.theme || 'semantic'
 } catch (e) {
     root = paths.join(appData, '.launcher');
     app.setPath('userData', root);
@@ -86,6 +81,24 @@ const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) 
 
 if (isSecondInstance) {
     app.quit()
+}
+
+storePromise = storeLoader(root).then(result => {
+    store = result;
+})
+
+/**
+ * Helper functions
+ */
+
+function updateSettings(newRoot) {
+    let updated = false;
+    if (newRoot && newRoot != null && newRoot !== root) {
+        root = newRoot;
+        app.setPath('userData', root);
+        updated = true;
+    }
+    if (updated) fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
 }
 
 function setupIcon(window) {
@@ -108,18 +121,6 @@ function createLogWindow() {
     logWindow.webContents.setLayoutZoomLevelLimits(1, 1);
 }
 
-ipcMain.on('minecraft-stdout', (s) => {
-    if (logWindow) {
-        logWindow.webContents.send('minecraft-stdout', s);
-    }
-})
-
-ipcMain.on('minecraft-stderr', (s) => {
-    if (logWindow) {
-        logWindow.webContents.send('minecraft-stderr', s);
-    }
-})
-
 function createMainWindow() {
     /**
      * Initial window options
@@ -138,12 +139,13 @@ function createMainWindow() {
     mainWindow.on('closed', () => { mainWindow = null })
 }
 
-let store;
-app.on('ready', () => {
-    store = storeLoader(root);
+/**
+ * ElectronApp event handle
+ */
 
+app.on('ready', () => {
     iconImage = nativeImage.createFromPath(`${__static}/logo.png`) // eslint-disable-line no-undef
-    createMainWindow()
+    createMainWindow();
 
     const tray = new Tray(iconImage)
     tray.setToolTip('An Electron Minecraft Launcher')
@@ -170,10 +172,25 @@ app.on('activate', () => {
     if (mainWindow === null) createMainWindow()
 })
 
-ipcMain.on('update', (event, newRoot, newTheme) => {
-    if (newRoot !== undefined || newTheme !== undefined) {
-        updateSettings(newRoot, newTheme);
-        newTheme = newTheme || 'semantic'
+/**
+ * Custom ipc event handle
+ */
+
+ipcMain.on('minecraft-stdout', (s) => {
+    if (logWindow) {
+        logWindow.webContents.send('minecraft-stdout', s);
+    }
+})
+
+ipcMain.on('minecraft-stderr', (s) => {
+    if (logWindow) {
+        logWindow.webContents.send('minecraft-stderr', s);
+    }
+})
+
+ipcMain.on('update', (event, newRoot) => {
+    if (newRoot !== undefined) {
+        updateSettings(newRoot);
         parking = true
         mainWindow.close();
         createMainWindow();
@@ -203,6 +220,6 @@ ipcMain.on('exit', () => {
 })
 
 export default {
-    commit: () => store.commit,
-    dispatch: () => store.dispatch,
+    commit: (type, payload, option) => storePromise.then(r => r.commit(type, payload, option)),
+    dispatch: (type, payload, option) => storePromise.then(r => r.dispatch(type, payload, option)),
 }

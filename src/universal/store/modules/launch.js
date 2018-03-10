@@ -47,7 +47,7 @@ export default {
          * @param {MinecraftFolder} rootFolder 
          * @param {MinecraftFolder} profileFolder 
          */
-        async  makeModEnvironment(context, id, rootFolder, profileFolder) {
+        async makeModEnvironment(context, id, rootFolder, profileFolder) {
             const targetDirectory = profileFolder.mods;
             await fs.emptyDir(targetDirectory);
 

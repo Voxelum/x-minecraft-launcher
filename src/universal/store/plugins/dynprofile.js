@@ -31,7 +31,7 @@ export default
                 if (!moduleData.namespaced) moduleData.namespaced = true;
                 profile.modules[profileType] = profileType === 'modpack' ? modelModpack : modelServer;
                 store.registerModule(paths, profile);
-                store.dispatch(`profiles/${id}/load`, { id })
+                // store.dispatch(`profiles/${id}/load`, { id })
             } else if (type === 'profiles/remove') {
                 if (!payload) {
                     console.error(`Unexpect empty payload for removal! @${mutation.type}`)
