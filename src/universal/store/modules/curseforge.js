@@ -1,6 +1,7 @@
 import { ActionContext } from 'vuex'
 import querystring from 'querystring'
 import parser from 'fast-html-parser'
+import request from '../helpers/request'
 
 function localDate(string) {
     const d = new Date(0)
@@ -107,8 +108,7 @@ export default {
                     filters,
                 }
             }
-
-            return request(endpoint, parse);
+            return request(endpoint, parse)
         },
 
         /**
@@ -119,7 +119,6 @@ export default {
          * @return {Project}
          */
         project(context, path) {
-
             if (!path || path == null) throw new Error('Curseforge path cannot be null')
             path = `/projects/${path}`;
             const url = `https://minecraft.curseforge.com${path}`
@@ -179,7 +178,7 @@ export default {
          * @return {Downloads}
          */
         files(context, payload) {
-            const { page, version } = payload;
+            let { page, version } = payload;
             const path = `/projects/${payload.path}`
 
             if (!path || path == null) throw new Error('Curseforge path cannot be null')
@@ -221,7 +220,7 @@ export default {
          * @param {string} url 
          * @return {string}
          */
-        license(context, url) {
+        async license(context, url) {
             if (url == null || !url) throw new Error('URL cannot be null');
             const string = await request(`https://minecraft.curseforge.com${url}`)
             return parser.parse(string).querySelector('.module').removeWhitespace().firstChild.rawText;

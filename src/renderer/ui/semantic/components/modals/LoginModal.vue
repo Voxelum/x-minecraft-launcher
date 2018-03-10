@@ -54,6 +54,7 @@
 
 <script>
 import vuex from 'vuex'
+import { remote } from 'electron'
 
 export default {
     data: () => ({
@@ -67,11 +68,17 @@ export default {
     computed: {
         ...vuex.mapGetters('auth', ['history', 'mode', 'modes', 'logined']),
     },
+    watch: {
+        mode() {
+            console.log('mode change!');
+        }
+    },
     mounted() {
         const self = this
         $(this.$refs.authMod).dropdown({
             onChange: (value, text, $selectedItem) => {
                 self.selectMode(value)
+                // self.$store.dispatch('auth/selectMode', value)
             },
         })
         $(this.$refs.accountDropdown).dropdown()
@@ -123,10 +130,11 @@ export default {
         },
         doLogin() {
             if (this.account.length === 0) this.shake(this.$refs.accountField)
-            else if (this.password.length === 0 && this.mode !== 'offline') this.shake(this.$refs.passwordField)
-            else {
+            else if (this.password.length === 0 && this.mode !== 'offline') {
+                this.shake(this.$refs.passwordField)
+            } else {
                 this.logining = true
-                this.login({
+                this.$store.dispatch('auth/login', {
                     account: this.account,
                     password: this.password,
                     mode: this.mode,

@@ -2,7 +2,7 @@ import fs from 'fs-extra'
 import { ActionContext } from 'vuex'
 import { MinecraftFolder } from 'ts-minecraft'
 import paths from 'path'
-import { ipcRenderer } from 'electron'
+// import { ipcRenderer } from 'electron'
 
 export default {
     actions: {
@@ -127,7 +127,7 @@ export default {
                 payload: option,
             }).then(() => {
                 // save all or do other things...
-                ipcRenderer.sendSync('park', true)
+                // ipcRenderer.sendSync('park', true)
             })
         },
     },

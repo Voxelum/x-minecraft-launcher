@@ -72,11 +72,9 @@ export default {
         }
     },
     computed: {
+        ...vuex.mapGetters('appearance', ['theme', 'themes']),
         ...vuex.mapGetters([
-            'theme',
-            'themes',
             'root',
-            'defaultResolution',
             'autoDownload',
             'javas',
             'defaultJava',

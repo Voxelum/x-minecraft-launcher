@@ -1,6 +1,5 @@
 import { TextComponent, TextFormatting, Style, Server } from 'ts-minecraft'
 import vuex from 'vuex'
-import { Server } from 'ts-minecraft'
 
 // import protocol from 'universal/protocol'
 
