@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import store from '../../universal/store'
 import plugins from './plugins'
 
-store.plugins.push(plugins);
+store.plugins.push(...plugins);
 
 Vue.use(Vuex);
 
@@ -24,6 +24,11 @@ function discoverLoader(mo, path, container) {
     return container;
 }
 
+/**
+ * 
+ * @param {string} root 
+ * @returns {Promise<Vuex.Store>}
+ */
 function load(root) {
     const loaders = discoverLoader(store, [], []);
     store.state.root = root;

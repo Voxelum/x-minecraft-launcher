@@ -1,6 +1,8 @@
 import { TextComponent, TextFormatting, Style, Server } from 'ts-minecraft'
 import vuex from 'vuex'
-import protocol from 'shared/protocol'
+import { Server } from 'ts-minecraft'
+
+// import protocol from 'universal/protocol'
 
 export default {
     state: () => ({
@@ -42,12 +44,10 @@ export default {
             if (context.state.status.pingToServer && !force) return Promise.resolve();
             context.commit('profile', { status: Server.Status.pinging() })
             if (context.state.host === undefined) return Promise.reject('server.host.empty')
-            return context.dispatch('query', {
-                service: 'server',
-                action: 'ping',
-                payload: { host: context.state.host, port: context.state.port },
-                timeout: 1000000,
-            }, { root: true })
+            return Server.fetchStatusFrame({
+                host: context.state.host,
+                port: context.state.port
+            }, { protocol: 335 })
                 .then((frame) => {
                     const status = Server.Status.from(frame)
                     status.pingToServer = frame.ping
@@ -55,7 +55,7 @@ export default {
                         icon: status.icon,
                         status,
                     }
-                    const versions = protocol[status.protocolVersion]
+                    const versions = []; protocol[status.protocolVersion]
                     if (versions) context.commit('profile', { mcversion: versions[0] });
                     context.commit('profile', all)
                     return status;

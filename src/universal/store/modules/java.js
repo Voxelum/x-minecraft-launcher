@@ -1,6 +1,9 @@
+import { net, app } from 'electron'
+import os from 'os'
 import path from 'path'
 import fs from 'fs-extra'
-import os from 'os'
+import download from 'ts-minecraft/dist/src/utils/download'
+import Zip from 'jszip'
 
 function findJavaFromHome(set) {
     const home = process.env.JAVA_HOME;
@@ -19,7 +22,6 @@ function findJavaFromPath(set) {
     }
     return set
 }
-
 /**
 * @author Indexyz
 */
@@ -46,6 +48,102 @@ function findJavaFromRegistry() {
             }
         });
     });
+}
+function findMacJavaByWhich(set) {
+    if (os.platform() === 'win32') return set;
+    set['/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java'] = 0
+    const childProcess = require('child_process');
+    return new Promise((resolve, reject) => {
+        childProcess.exec('which java', (error, stdout, stderr) => {
+            if (error) reject(error)
+            else if (stdout) {
+                set[stdout.trim()] = 0;
+                resolve(set);
+            }
+        });
+    });
+}
+
+// https://api.github.com/repos/Indexyz/ojrebuild/releases
+async function installJre() {
+    const info = await new Promise((resolve, reject) => {
+        const req = net.request({
+            method: 'GET',
+            protocol: 'https:',
+            hostname: 'api.github.com',
+            path: '/repos/Indexyz/ojrebuild/releases',
+        })
+        req.setHeader('User-Agent', 'ILauncher')
+        req.end();
+        let infojson = ''
+        req.on('response', (response) => {
+            response.on('data', (data) => {
+                infojson += data.toString();
+            })
+            response.on('end', () => {
+                resolve(JSON.parse(infojson))
+            })
+            response.on('error', (e) => {
+                console.error(`${response.headers}`);
+            })
+        })
+        req.on('error', (err) => {
+            reject(err)
+        })
+    });
+    const latest = info[0];
+    let buildSystemId;
+    let arch;
+    switch (os.arch()) {
+        case 'x86':
+        case 'x32':
+            arch = 'x86'
+            break;
+        case 'x64':
+            arch = 'x86_64'
+            break;
+        default:
+            arch = 'x86';
+    }
+    switch (os.platform()) {
+        case 'darwin': break;
+        case 'win32':
+            buildSystemId = 'windows';
+            break;
+        case 'linux':
+            buildSystemId = 'el6_9';
+            break;
+        default:
+            buildSystemId = ''
+    }
+    if (!buildSystemId) throw new Error(`Not supporting system ${os.platform()}`);
+    if (!arch) throw new Error(`Not supporting arch ${os.arch()}`)
+    const downURL = latest.assets.map(ass => ass.browser_download_url)
+        .filter((ass) => {
+            const arr = ass.split('.');
+            return arr[arr.length - 2] === arch // && sys === arr[arr.length - 3]
+        })[0]
+    const splt = downURL.split('/');
+    const tempFileLoc = path.join(app.getPath('temp'), splt[splt.length - 1]);
+    console.log('start download')
+    console.log(tempFileLoc);
+    await fs.ensureFile(tempFileLoc)
+    console.log(`download url ${downURL}`)
+    await download(downURL, tempFileLoc);
+    const jreRoot = path.join(app.getPath('userData'), 'jre')
+    console.log(`jreRoot ${jreRoot}`)
+    const zip = await new Zip().loadAsync(await fs.readFile())
+    const arr = []
+    zip.forEach((name, entry) => {
+        console.log(`unzip ${name}`)
+        const target = path.resolve(jreRoot, name)
+        arr.push(entry.async('nodebuffer')
+            .then(buf => fs.ensureFile(target).then(() => buf))
+            .then(buf => fs.writeFile(target, buf)))
+    })
+    await Promise.all(arr);
+    console.log('deleting temp')
+    await fs.unlink(tempFileLoc)
 }
 
 export default {
@@ -84,17 +182,29 @@ export default {
         /**
          * scan local java locations and cache
          */
-        updateJavas({ dispatch, commit }) {
-            return dispatch('query', { service: 'jre', action: 'availbleJre' }, { root: true }).then((javas) => {
-                commit('javas', javas);
-                return javas;
-            });
+        async updateJavas({ dispatch, commit }) {
+            const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
+            if (fs.existsSync(local)) return [local]
+            const ret = await findJavaFromRegistry()
+                .then(findMacJavaByWhich)
+                .then(findJavaFromPath)
+                .then(findJavaFromHome)
+                .then(Object.keys);
+            commit('javas', ret);
         },
-        downloadJavas(context) {
-            return context.dispatch('query', { service: 'jre', action: 'ensureJre' }, { root: true }).then((javas) => {
-                context.commit('javas', javas);
-                return javas;
-            });
+        async downloadJavas(context) {
+            const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
+            if (fs.existsSync(local)) return [local]
+            const arr = await findJavaFromRegistry()
+                .then(findMacJavaByWhich)
+                .then(findJavaFromPath)
+                .then(findJavaFromHome)
+                .then(Object.keys)
+            if (arr.length === 0) {
+                await installJre();
+                return [local];
+            }
+            return arr;
         },
     },
 }

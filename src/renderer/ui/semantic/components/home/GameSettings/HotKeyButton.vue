@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import keymapper from 'shared/keymapper'
+import keymapper from 'universal/keymapper'
 
 export default {
     data: () => ({
