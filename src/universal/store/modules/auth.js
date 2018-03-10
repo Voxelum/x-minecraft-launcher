@@ -73,8 +73,8 @@ export default {
             return context.dispatch('write', { path: 'auth.json', data }, { root: true })
         },
         async load(context, payload) {
-            const data = await context.dispatch('read', { path: 'auth.json', fallback: {}, type: 'json' }, { root: true });
-            context.commit('modes', await context.dispatch('query', { service: 'auth', action: 'modes' }, { root: true }));
+            // const data = await context.dispatch('read', { path: 'auth.json', fallback: {}, type: 'json' }, { root: true });
+            // context.commit('modes', await context.dispatch('query', { service: 'auth', action: 'modes' }, { root: true }));
             return data;
         },
         /**
