@@ -1,4 +1,4 @@
-import { VersionMeta } from 'ts-minecraft'
+import { VersionMeta, MinecraftFolder, Version } from 'ts-minecraft'
 
 function checkversion(remoteVersionList, files) {
     const versions = new Set(files)
@@ -62,10 +62,10 @@ export default {
             let exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
             if (!exist) {
                 try {
-                    const location = context.rootGetters.root;
+                    let location = context.rootGetters.root;
                     if (typeof location === 'string') location = new MinecraftFolder(location)
                     if (!(location instanceof MinecraftFolder)) return Promise.reject('Require location as string or MinecraftLocation!')
-                    return Version.install('client', meta, location);
+                    Version.install('client', meta, location);
                 } catch (e) { console.warn(e) }
             }
             exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
@@ -74,6 +74,7 @@ export default {
             } else {
                 context.commit('updateStatus', { version: meta, status: 'remote' })
             }
+            return undefined;
         },
         checkClient(context, { version, location }) {
             if (typeof location === 'string') location = new MinecraftFolder(location)

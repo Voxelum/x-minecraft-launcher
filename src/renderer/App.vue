@@ -9,14 +9,16 @@ import { mapState } from 'vuex'
 
 export default {
     computed: {
-        ...mapState(['theme']),
+        ...mapState('appearance', ['theme']),
     },
     beforeMount() {
         const route = localStorage.getItem('route');
         console.log(`Initialize to route ${route}`)
+        console.log(this.theme)
         if (route && route !== '/') {
             this.$router.replace(route)
         } else {
+            console.log(this.theme)
             this.$router.replace(`/${this.theme}`)
         }
     },

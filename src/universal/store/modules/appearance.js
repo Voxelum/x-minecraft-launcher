@@ -3,7 +3,7 @@ import { ActionContext } from 'vuex'
 export default {
     namespaced: true,
     state: {
-        theme: '',
+        theme: 'semantic',
         metas: {},
         allThemes: [],
         defaultResolution: { width: 400, height: 400, fullscreen: false },
@@ -12,7 +12,7 @@ export default {
         theme: state => state.theme,
         themeMeta: state => state.metas[state.theme],
         allThemeMetas: state => state.metas,
-        allThemes: state => state.allThemes,
+        themes: state => state.allThemes,
         defaultResolution: state => state.defaultResolution,
     },
     mutations: {
@@ -26,6 +26,9 @@ export default {
         },
     },
     actions: {
+        load(context) {
+            context.commit('setTheme', 'semantic')
+        },
         /**
          * 
          * @param {ActionContext} context 

@@ -1,8 +1,8 @@
-import { remote, ipcRenderer } from 'electron'
+import { remote } from 'electron'
 
 export default {
     actions: {
-        exit() { ipcRenderer.sendSync('exit') },
+        // exit() { ipcRenderer.sendSync('exit') },
         /**
          * 
          * @param {ActionContext} context 
