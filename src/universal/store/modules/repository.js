@@ -25,13 +25,14 @@ export default {
     mutations: {
         rename(context, { resource, name }) { resource.name = name; },
         /**
-         * @param {Resource[]} payload 
+         * @param {{payload: Resource[]}} payload 
          */
         resources: (state, payload) => {
-            payload.forEach((res) => {
-                if (!state[res.domain]) Vue.set(state, res.domain, {})
-                Vue.set(state[res.domain], res.hash, res);
-            })
+            console.log(payload)
+            // payload.forEach((res) => {
+            //     if (!state[res.domain]) Vue.set(state, res.domain, {})
+            //     Vue.set(state[res.domain], res.hash, res);
+            // })
         },
         remove(state, resource) { Vue.delete(state[resource.domain], resource.hash); },
     },

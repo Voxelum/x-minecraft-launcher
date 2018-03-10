@@ -19,21 +19,22 @@ let lastId = 0;
 ipcRenderer.on('vuex-commit', (event, mutation, id) => {
     const newId = lastId + 1;
     if (id !== newId) {
-        ipcRenderer.send('vuex-sync');
+        ipcRenderer.send('vuex-sync', lastId);
     } else {
-        localCommit(mutation);
+        localCommit(mutation.type, mutation.payload);
         lastId = newId;
     }
 });
 ipcRenderer.on('vuex-sync', (event, mutations, id) => {
-    console.log(`sync ${id} ${lastId}`);
-    array.forEach(mul => localCommit(mul));
+    for (const mul of mutations) {
+        localCommit(mul)
+    }
     lastId = id;
 });
 
 ipcRenderer.send('vuex-sync', 0);
 
-const remoteCall = remote.require('./main').default;
+const remoteCall = remote.require('./main');
 localStore.commit = remoteCall.commit;
 localStore.dispatch = remoteCall.dispatch;
 

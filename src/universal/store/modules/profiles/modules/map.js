@@ -1,4 +1,6 @@
 import { WorldInfo } from 'ts-minecraft'
+import fs from 'fs-extra'
+import Zip from 'jszip'
 import paths from 'path'
 import Vue from 'vue'
 
@@ -24,7 +26,7 @@ export default {
         },
     },
     actions: {
-        async importMap(context, locations) {
+        importMap(context, locations) {
             if (typeof locations === 'string') {
                 locations = [locations];
             }
@@ -59,9 +61,9 @@ export default {
          * @param {ActionContext} context 
          * @param {{file:string, map:string, zip:boolean}} payload
          */
-        exportMap(context, payload) {
+        async  exportMap(context, payload) {
             const id = context.getters.id;
-            const exportName = file;
+            const exportName = payload.file;
             const map = paths.join(context.rootGetters.root, `profiles/${id}/saves/${payload.map}`)
             if (payload.zip) {
                 const targetZip = exportName;

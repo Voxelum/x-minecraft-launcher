@@ -75,7 +75,7 @@ export default {
         async load(context, payload) {
             // const data = await context.dispatch('read', { path: 'auth.json', fallback: {}, type: 'json' }, { root: true });
             // context.commit('modes', await context.dispatch('query', { service: 'auth', action: 'modes' }, { root: true }));
-            return data;
+            // return data;
         },
         /**
          * 
@@ -95,6 +95,7 @@ export default {
          */
         async login(context, payload) {
             if (!registered[payload.mode]) throw new Error(`Cannot find auth named ${payload.mode}`);
+            console.log(`login ${payload}`)
             const result = registered[payload.mode](payload);
             if (!result) throw new Error(`Cannot auth the ${payload.account}`);
             if (payload.mode !== 'offline' && payload.texture) {

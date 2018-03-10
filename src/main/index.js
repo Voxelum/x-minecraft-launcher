@@ -42,11 +42,6 @@ let iconImage;
  * @type {vuex.Store}
  */
 let store;
-/**
- * @type {Promise<void>}
- */
-let storePromise;
-
 
 /**
  * @type {string}
@@ -67,8 +62,8 @@ try {
 } catch (e) {
     root = paths.join(appData, '.launcher');
     app.setPath('userData', root);
-    theme = 'semantic'
-    fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
+    // theme = 'semantic'
+    fs.writeFile(cfgFile, JSON.stringify({ path: root }))
 }
 
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
@@ -83,7 +78,10 @@ if (isSecondInstance) {
     app.quit()
 }
 
-storePromise = storeLoader(root).then(result => {
+/**
+ * @type {Promise<void>}
+ */
+const storePromise = storeLoader(root).then((result) => {
     store = result;
 })
 
@@ -134,7 +132,7 @@ function createMainWindow() {
     })
     mainWindow.setTitle('ILauncher')
     setupIcon(mainWindow)
-    mainWindow.loadURL(`${winURL}?logger=false&theme=${theme}&root=${root}`)
+    mainWindow.loadURL(`${winURL}?logger=false&root=${root}`)
 
     mainWindow.on('closed', () => { mainWindow = null })
 }
@@ -219,7 +217,9 @@ ipcMain.on('exit', () => {
     }
 })
 
-export default {
-    commit: (type, payload, option) => storePromise.then(r => r.commit(type, payload, option)),
-    dispatch: (type, payload, option) => storePromise.then(r => r.dispatch(type, payload, option)),
+export function commit(type, payload, option) {
+    storePromise.then(() => store.commit(type, payload, option))
+}
+export function dispatch(type, payload, option) {
+    return storePromise.then(() => store.dispatch(type, payload, option))
 }

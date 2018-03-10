@@ -48,8 +48,12 @@
 <script>
 import { mapGetters } from "vuex";
 export default {
+    data: () => ({
+        runningTasks: [],
+        tasksCount:0,
+    }),
     computed: {
-        ...mapGetters(["errors", "runningTasks", "errorsCount", "tasksCount"])
+        ...mapGetters(["errors" , "errorsCount"])
     },
     mounted() {
         $(this.$refs.warningPopup).popup({
