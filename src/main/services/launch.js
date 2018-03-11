@@ -1,5 +1,4 @@
 import paths from 'path'
-import { ipcMain } from 'electron'
 
 import {
     Launcher,

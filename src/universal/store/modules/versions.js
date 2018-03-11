@@ -39,12 +39,28 @@ export default {
     },
     actions: {
         async load(context, payload) {
-            await context.dispatch('refresh')
-            return context.dispatch('read', { path: 'version.json', fallback: {}, type: 'json' }, { root: true })
+            const data = context.dispatch('read', { path: 'version.json', fallback: {}, type: 'json' }, { root: true })
+            const container = {
+                date: data.updateTime,
+                list: data,
+            }
+            let metas = container;
+            try {
+                metas = await Version.updateVersionMeta({ fallback: container })
+                const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true })
+                const existed = []
+                for (const file of files) {
+                    const exist = await context.dispatch('exist', [`versions/${file}`, `versions/${file}/${file}.jar`, `versions/${file}/${file}.json`], { root: true }); // eslint-disable-line
+                    if (exist) existed.push(file)
+                }
+                checkversion(metas, existed)
+            } catch (e) {
+                console.error('')
+            }
+            context.commit('update', metas)
         },
         save(context, payload) {
-            const data = JSON.stringify(context.state);
-            return context.dispatch('write', { path: 'version.json', data }, { root: true })
+            return context.dispatch('write', { path: 'version.json', data: JSON.stringify(context.state) }, { root: true })
         },
         /**
          * 

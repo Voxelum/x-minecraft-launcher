@@ -1,7 +1,8 @@
 import fs from 'fs-extra'
 import { ActionContext } from 'vuex'
-import { MinecraftFolder } from 'ts-minecraft'
+import { MinecraftFolder, Launcher } from 'ts-minecraft'
 import paths from 'path'
+import { ipcMain } from 'electron'
 // import { ipcRenderer } from 'electron'
 
 export default {
@@ -121,13 +122,23 @@ export default {
                 option.server = { ip: profile.host, port: profile.port };
             }
 
-            return context.dispatch('query', {
-                service: 'launch',
-                action: 'launch',
-                payload: option,
-            }).then(() => {
-                // save all or do other things...
-                // ipcRenderer.sendSync('park', true)
+            return Launcher.launch(option).then((process) => {
+                process.on('error', (err) => {
+                    console.log(err)
+                })
+                process.on('exit', (code, signal) => {
+                    console.log(`exit: ${code}, signal: ${signal}`)
+                    ipcMain.emit('restart')
+                })
+                process.stdout.on('data', (s) => {
+                    ipcMain.emit('minecraft-stdout', s.toString());
+                })
+                process.stderr.on('data', (s) => {
+                    console.error(s)
+                    ipcMain.emit('minecraft-stderr', s)
+                })
+            }).catch((e) => {
+                throw onerror(e);
             })
         },
     },
