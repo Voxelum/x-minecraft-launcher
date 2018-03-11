@@ -38,17 +38,5 @@ if (logger === 'true') {
         i18n: store.getters.i18n,
         template: '<App style="max-height:626px; overflow:hidden;"></App>',
     }).$mount('#app')
-
-    // createStore(root, ui.map(gui => gui.path.substring(1)), theme).then(store =>
-    //     new Vue({
-    //         router,
-    //         components: { App: require('./App') },
-    //         store,
-    //         i18n: store.getters.i18n,
-    //         template: '<App style="max-height:626px; overflow:hidden;"></App>',
-    //     }).$mount('#app'),
-    // ).then((v) => {
-    //     v.$store.dispatch('updateJavas')
-    // })
 }
 

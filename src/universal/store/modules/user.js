@@ -8,7 +8,7 @@ const registered = {
         account,
         clientToken,
     }) => Auth.offline(account),
-    mojang: ({ account, password, clientToken }) => Auth.yggdrasil({
+    mojang: ({ account, password, clientToken }) => Auth.Yggdrasil.login({
         username: account,
         password,
         clientToken: clientToken || v4(),
@@ -37,7 +37,7 @@ export default {
         skin: state => (state.auth.skin ? state.auth.skin : ''),
         cape: state => (state.auth.cape ? state.auth.cape : ''),
         history: state => state.history[state.mode],
-        logined: state => typeof auth === 'object' && Object.keys(state.auth).length !== 0,
+        logined: state => typeof state.auth === 'object' && Object.keys(state.auth).length !== 0,
     },
     mutations: {
         mode(state, mode) {
@@ -46,6 +46,9 @@ export default {
                 if (!state.history[mode]) { state.history[mode] = [] }
             }
         },
+        setHistory: (state, history) => { state.history = history },
+        setCache: (state, cache) => { state.auth = cache },
+
         history(state, { // record the state history
             auth,
             account,
@@ -72,10 +75,12 @@ export default {
             const data = JSON.stringify(context.state, (key, value) => (key === 'modes' ? undefined : value))
             return context.dispatch('write', { path: 'auth.json', data }, { root: true })
         },
-        async load(context, payload) {
-            // const data = await context.dispatch('read', { path: 'auth.json', fallback: {}, type: 'json' }, { root: true });
-            // context.commit('modes', await context.dispatch('query', { service: 'auth', action: 'modes' }, { root: true }));
-            // return data;
+        async load(context) {
+            const data = await context.dispatch('read', { path: 'auth.json', fallback: {}, type: 'json' }, { root: true });
+            context.commit('modes', Object.keys(registered));
+            context.commit('mode', data.mode);
+            context.commit('setHistory', data.history);
+            context.commit('setCache', data.auth);
         },
         /**
          * 
@@ -95,7 +100,6 @@ export default {
          */
         async login(context, payload) {
             if (!registered[payload.mode]) throw new Error(`Cannot find auth named ${payload.mode}`);
-            console.log(`login ${payload}`)
             const result = registered[payload.mode](payload);
             if (!result) throw new Error(`Cannot auth the ${payload.account}`);
             if (payload.mode !== 'offline' && payload.texture) {

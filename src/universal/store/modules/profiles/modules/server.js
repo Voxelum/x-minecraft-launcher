@@ -1,11 +1,10 @@
 import { TextComponent, TextFormatting, Style, Server } from 'ts-minecraft'
-import vuex from 'vuex'
-
-// import protocol from 'universal/protocol'
 
 export default {
+    namespaced: true,
     state: () => ({
-        type: 'server',
+        servers: [],
+        primary: -1,
         host: '',
         port: 25565,
         isLanServer: false,
@@ -18,22 +17,20 @@ export default {
         icon: state => state.icon,
         status: state => state.status,
         isLanServer: state => state.isLanServer,
-        errors(state) {
-            const errors = []
-            const isNone = obj => obj === '' || obj === undefined || obj == null;
-            if (isNone(state.mcversion)) errors.push('profile.noversion')
-            if (isNone(state.java)) errors.push('profile.nojava')
-            if (isNone(state.host)) errors.push('profile.nohost')
-            return errors;
-        },
+
+        servers: state => state.servers,
+        // errors(state) {
+        //     const errors = []
+        //     const isNone = obj => obj === '' || obj === undefined || obj == null;
+        //     if (state.mcversion === '') errors.push('profile.noversion')
+        //     if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.missingjava')
+        //     if (isNone(state.mcversion)) errors.push('profile.noversion')
+        //     if (isNone(state.java)) errors.push('profile.nojava')
+        //     if (isNone(state.host)) errors.push('profile.nohost')
+        //     return errors;
+        // },
     },
     actions: {
-        serialize(context, payload) {
-            return JSON.stringify(context.state, (key, value) => {
-                if (key === 'settings' || key === 'maps' || key === 'status') return undefined;
-                return value;
-            })
-        },
         /**
          * 
          * @param {vuex.ActionContext} context 
@@ -45,7 +42,7 @@ export default {
             if (context.state.host === undefined) return Promise.reject('server.host.empty')
             return Server.fetchStatusFrame({
                 host: context.state.host,
-                port: context.state.port
+                port: context.state.port,
             }, { protocol: 335 })
                 .then((frame) => {
                     const status = Server.Status.from(frame)
@@ -54,7 +51,7 @@ export default {
                         icon: status.icon,
                         status,
                     }
-                    const versions = []; protocol[status.protocolVersion]
+                    const versions = []; //protocol[status.protocolVersion]
                     if (versions) context.commit('profile', { mcversion: versions[0] });
                     context.commit('profile', all)
                     return status;

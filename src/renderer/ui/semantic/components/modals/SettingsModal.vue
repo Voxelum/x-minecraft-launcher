@@ -75,9 +75,9 @@ export default {
         ...vuex.mapGetters('appearance', ['theme', 'themes']),
         ...vuex.mapGetters([
             'root',
-            'autoDownload',
-            'javas',
-            'defaultJava',
+            // 'autoDownload',
+            // 'javas',
+            // 'defaultJava',
             'languages',
             'language']),
     },

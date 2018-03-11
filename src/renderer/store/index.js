@@ -27,7 +27,7 @@ ipcRenderer.on('vuex-commit', (event, mutation, id) => {
 });
 ipcRenderer.on('vuex-sync', (event, mutations, id) => {
     for (const mul of mutations) {
-        localCommit(mul)
+        localCommit(mul.type, mul.payload)
     }
     lastId = id;
 });
