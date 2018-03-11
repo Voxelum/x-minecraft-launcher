@@ -6,28 +6,28 @@ export default {
         theme: 'semantic',
         metas: {},
         allThemes: [],
-        defaultResolution: { width: 400, height: 400, fullscreen: false },
     },
     getters: {
         theme: state => state.theme,
         themeMeta: state => state.metas[state.theme],
         allThemeMetas: state => state.metas,
         themes: state => state.allThemes,
-        defaultResolution: state => state.defaultResolution,
     },
     mutations: {
-        setTheme(state, theme) {
+        theme(state, theme) {
             state.theme = theme;
         },
-        setDefaultResolution(state, resolution) {
-            state.defaultResolution.width = resolution.width;
-            state.defaultResolution.height = resolution.height;
-            state.defaultResolution.fullscreen = resolution.fullscreen;
+        themes(state, themes) {
+
         },
     },
     actions: {
-        load(context) {
-            context.commit('setTheme', 'semantic')
+        async load(context) {
+            const data = await context.dispatch('readFile', { path: 'appearance.json' });
+            context.commit('setTheme', data.theme || 'semantic');
+        },
+        save(context) {
+            return context.dispatch('writeFile', { path: 'appearance.json', data: JSON.stringify(context.state) }, { root: true })
         },
         /**
          * 
@@ -40,14 +40,9 @@ export default {
                     context.commit('setTheme', payload.theme)
                 }
             }
-            if (payload.defaultResolution) {
-                context.commit('setDefaultResolution', payload.defaultResolution);
-            }
-        },
-        /**
-         * @param {ActionContext} context 
-         */
-        load(context, virtual) {
+            // if (payload.defaultResolution) {
+            //     context.commit('setDefaultResolution', payload.defaultResolution);
+            // }
         },
     },
 }

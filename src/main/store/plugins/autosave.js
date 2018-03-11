@@ -1,4 +1,5 @@
 import Vuex from 'vuex';
+import { loading } from '../index'
 
 export default
     /**
@@ -10,7 +11,7 @@ export default
              * @param {{type: string}} mutation 
              */
             (mutation, state) => {
-                if (store.getters.loading) return;
+                if (loading()) return;
                 const type = mutation.type;
                 const idx = type.indexOf('/');
                 if (idx === -1) return;

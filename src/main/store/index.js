@@ -24,6 +24,10 @@ function discoverLoader(mo, path, container) {
     return container;
 }
 
+let _loading = false;
+
+export function loading() { return _loading }
+export function moduleGuards() { }
 /**
  * 
  * @param {string} root 
@@ -32,6 +36,7 @@ function discoverLoader(mo, path, container) {
 function load(root) {
     const loaders = discoverLoader(store, [], []);
     store.state.root = root;
+    _loading = true;
     const st = new Vuex.Store(store);
 
     return Promise.all(loaders.map((key) => {
@@ -47,9 +52,11 @@ function load(root) {
         }
         return Promise.resolve();
     })).then(() => {
+        _loading = false;
         console.log('Done loading store!')
         return st
     }, (err) => {
+        _loading = false;
         console.log('Done loading store with Error')
         console.log(err)
         return st

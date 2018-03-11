@@ -1,10 +1,15 @@
 import modules from './modules'
 
 export default {
+    namespaced: true,
     modules,
     state: () => ({
+        editable: true,
+        author: '',
+        description: '',
+        url: '',
+        icon: '',
         id: '',
-        type: '',
         name: '',
         resolution: { width: 800, height: 400, fullscreen: false },
         java: '',
@@ -12,6 +17,7 @@ export default {
         maxMemory: 2048,
         vmOptions: [],
         mcOptions: [],
+
         mcversion: '',
     }),
     getters: {
@@ -39,6 +45,19 @@ export default {
         },
     },
     actions: {
+        async load(context) {
+            const path = `profiles/${context.state.id}`;
+            const data = await context.dispatch('readFile', { path, fallback: {}, type: 'json' }, { root: true });
+            context.commit('edit', data);
+        },
+        save(context) {
+            const path = `profiles/${context.state.id}`;
+            const data = JSON.stringify(context.state, (key, value) => {
+                if (modules[key]) return undefined;
+                return value;
+            })
+            return context.dispatch('writeFile', { path, data }, { root: true });
+        },
         edit(context, option) {
             const keys = Object.keys(option);
             if (keys.length === 0) return;
@@ -52,5 +71,12 @@ export default {
             }
             if (changed) context.commit('profile', option)
         },
+        // serialize(context, payload) {
+        //     return JSON.stringify(context.state, (key, value) => {
+        //         if (key === 'settings' || key === 'maps') return undefined;
+        //         return value;
+        //     })
+        // },
+        refresh(context, payload) { },
     },
 }
