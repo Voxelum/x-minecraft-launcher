@@ -23,8 +23,8 @@ export default {
     },
     actions: {
         async load(context) {
-            const data = await context.dispatch('readFile', { path: 'appearance.json' });
-            context.commit('setTheme', data.theme || 'semantic');
+            const data = await context.dispatch('read', { path: 'appearance.json', fallback: {} }, { root: true });
+            context.commit('theme', data.theme || 'semantic');
         },
         save(context) {
             return context.dispatch('writeFile', { path: 'appearance.json', data: JSON.stringify(context.state) }, { root: true })

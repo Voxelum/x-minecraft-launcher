@@ -28,8 +28,8 @@ export default {
             return context.dispatch('readFolder', { path: 'profiles' }, { root: true })
                 .then(files => Promise.all(files.map((id) => {
                     context.commit('add', { id });
-                    return context.dispatch(`${id}/load`);
-                }).catch(e => undefined)));
+                    return context.dispatch(`${id}/load`).catch(e => undefined);
+                })));
         },
         /**
          * @param {ActionContext} context 

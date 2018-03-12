@@ -88,9 +88,9 @@ export default {
     methods: {
         ...vuex.mapActions(['openDialog', 'updateSetting']),
         show() {
-            this.resheight = this.defaultResolution.height;
-            this.reswidth = this.defaultResolution.width;
-            this.resfullscreen = this.defaultResolution.fullscreen;
+            // this.resheight = this.defaultResolution.height;
+            // this.reswidth = this.defaultResolution.width;
+            // this.resfullscreen = this.defaultResolution.fullscreen;
             this.location = this.root;
             this.selectedTheme = this.theme;
             this.selectedLanguage = this.language;

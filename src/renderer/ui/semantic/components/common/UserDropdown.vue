@@ -18,7 +18,7 @@
 import { mapGetters } from 'vuex'
 export default {
     computed: {
-        ...mapGetters('auth', ['username']),
+        ...mapGetters('user', ['username']),
     },
     mounted() {
         $(this.$el).dropdown({ on: 'hover' })

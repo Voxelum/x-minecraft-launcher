@@ -129,7 +129,6 @@ export default {
          * @param {{payload: Resource[]}} payload 
          */
         resources: (state, payload) => {
-            console.log(payload)
             payload.forEach((res) => {
                 if (!state[res.domain]) Vue.set(state, res.domain, {})
                 Vue.set(state[res.domain], res.hash, res);

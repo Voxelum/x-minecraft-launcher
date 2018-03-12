@@ -92,6 +92,7 @@
         "stylus-loader": "^3.0.1",
         "three": "^0.86.0",
         "three-orbit-controls": "^82.1.0",
+        "treelike-task": "0.0.3",
         "ts-minecraft": "^2.0.12",
         "url-loader": "^0.5.7",
         "vue-devtools": "^3.1.9",

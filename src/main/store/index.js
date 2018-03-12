@@ -46,7 +46,7 @@ function load(root) {
             return st.dispatch(action).then((instance) => {
                 console.log(`Loaded [${key}]`)
             }, (err) => {
-                console.error(`An error occured when we load module [${key}].`)
+                console.error(`An error occured when we load module [${key.substring(0, key.indexOf('/'))}].`)
                 console.error(err)
             })
         }

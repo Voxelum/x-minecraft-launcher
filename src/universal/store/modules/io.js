@@ -84,7 +84,7 @@ export default {
                     await fs.writeFile(path, fallback);
                     return fallData;
                 }
-                throw new Error(`No such file ${path}`);
+                return undefined;
             }
             if (onread) onread(path);
             try {

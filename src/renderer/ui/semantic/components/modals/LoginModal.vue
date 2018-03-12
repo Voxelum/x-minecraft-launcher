@@ -1,6 +1,6 @@
 <template>
     <div class="ui basic modal" style="padding: 0 20% 0 20%">
-        <i class="close icon" v-if="this.$store.state.auth.authInfo !== undefined"></i>
+        <i class="close icon" v-if="this.$store.state.user.auth !== undefined"></i>
         <div class="ui noselect" style="padding:15px">
             <h3 class="ui inverted header segment center aligned ">
                 <div class="content">
@@ -66,7 +66,7 @@ export default {
         animations: ['jiggle', 'shake', 'tada'],
     }),
     computed: {
-        ...vuex.mapGetters('auth', ['history', 'mode', 'modes', 'logined']),
+        ...vuex.mapGetters('user', ['history', 'mode', 'modes', 'logined']),
     },
     watch: {
         mode() {
@@ -92,7 +92,7 @@ export default {
         if (!this.logined) this.show()
     },
     methods: {
-        ...vuex.mapActions('auth', ['selectMode', 'login']),
+        ...vuex.mapActions('user', ['selectMode', 'login']),
         updateAccount(account) {
             this.account = account;
         },
@@ -134,7 +134,7 @@ export default {
                 this.shake(this.$refs.passwordField)
             } else {
                 this.logining = true
-                this.$store.dispatch('auth/login', {
+                this.$store.dispatch('user/login', {
                     account: this.account,
                     password: this.password,
                     mode: this.mode,

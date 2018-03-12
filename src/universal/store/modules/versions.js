@@ -39,7 +39,7 @@ export default {
     },
     actions: {
         async load(context, payload) {
-            const data = context.dispatch('read', { path: 'version.json', fallback: {}, type: 'json' }, { root: true })
+            const data = await context.dispatch('read', { path: 'version.json', fallback: {}, type: 'json' }, { root: true })
             const container = {
                 date: data.updateTime,
                 list: data,
@@ -55,9 +55,9 @@ export default {
                 }
                 checkversion(metas, existed)
             } catch (e) {
-                console.error('')
+                console.error(e)
             }
-            context.commit('update', metas)
+            context.commit('update', metas);
         },
         save(context, payload) {
             return context.dispatch('write', { path: 'version.json', data: JSON.stringify(context.state) }, { root: true })
