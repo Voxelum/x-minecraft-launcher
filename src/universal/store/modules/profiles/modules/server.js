@@ -1,14 +1,16 @@
-import { TextComponent, TextFormatting, Style, Server } from 'ts-minecraft'
+import { TextComponent, TextFormatting, Style, Server, NBT } from 'ts-minecraft'
 
 export default {
     namespaced: true,
     state: () => ({
         servers: [],
         primary: -1,
+
         host: '',
         port: 25565,
         isLanServer: false,
         icon: '',
+
         status: {},
     }),
     getters: {
@@ -17,20 +19,41 @@ export default {
         icon: state => state.icon,
         status: state => state.status,
         isLanServer: state => state.isLanServer,
-
         servers: state => state.servers,
-        // errors(state) {
-        //     const errors = []
-        //     const isNone = obj => obj === '' || obj === undefined || obj == null;
-        //     if (state.mcversion === '') errors.push('profile.noversion')
-        //     if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.missingjava')
-        //     if (isNone(state.mcversion)) errors.push('profile.noversion')
-        //     if (isNone(state.java)) errors.push('profile.nojava')
-        //     if (isNone(state.host)) errors.push('profile.nohost')
-        //     return errors;
-        // },
+    },
+    mutations: {
+        add(state, server) {
+            state.servers.push(server);
+        },
     },
     actions: {
+        load(context, { id }) {
+            console.log(context.getters)
+            const nbt = context.dispatch('read', { path: `profiles/${id}/servers.dat` })
+            if (nbt) {
+                Server.parseNBT(nbt).forEach(i => context.commit('add', i));
+            }
+        },
+        save(context) {
+        },
+        /**
+         * @param {Server.Info} payload
+         */
+        add(context, payload) {
+            if (!payload.host) throw new Error('Cannot add server with missing host!');
+            context.commit('add', payload);
+        },
+        error(context) {
+            const state = context.state;
+            const errors = []
+            const isNone = obj => obj === '' || obj === undefined || obj == null;
+            if (state.mcversion === '') errors.push('profile.noversion')
+            if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.missingjava')
+            if (isNone(state.mcversion)) errors.push('profile.noversion')
+            if (isNone(state.java)) errors.push('profile.nojava')
+            if (isNone(state.host)) errors.push('profile.nohost')
+            return errors;
+        },
         /**
          * 
          * @param {vuex.ActionContext} context 

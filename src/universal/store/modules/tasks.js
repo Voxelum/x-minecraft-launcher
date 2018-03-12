@@ -1,39 +1,7 @@
-import { ipcRenderer } from 'electron'
 import { Task } from 'ts-minecraft'
 import { ActionContext } from 'vuex'
 import Vue from 'vue'
 import { v4 } from 'uuid'
-import { EventEmitter } from 'events'
-
-class TaskProxy extends EventEmitter {
-    constructor(uuid, id, timeout = 100000) {
-        super()
-        this.id = id;
-
-        const handler = (event, type, childPaths, args) => {
-            switch (type) {
-                case 'error':
-                case 'finish':
-                    if (childPaths.length === 0) {
-                        ipcRenderer.removeListener(uuid, handler);
-                        clearTimeout(this.timeout);
-                    }
-                    break;
-                default:
-                case 'update':
-                case 'child':
-                    break;
-            }
-            this.emit(type, childPaths, args);
-        };
-        this.timeout = setTimeout(() => {
-            ipcRenderer.removeListener(uuid, handler);
-            this.emit('error', [], new Error(`Timeout ${timeout} millisecond`));
-        }, timeout)
-
-        ipcRenderer.on(uuid, handler)
-    }
-}
 
 export default {
     state: {
@@ -107,24 +75,11 @@ export default {
     actions: {
         /**
          * 
-         * @param {ActionContext} context 
-         * @param {{service:string, action:string, timeout:number, payload:any}} $payload  
+         * @param {vuex.ActionContext} context 
+         * @param {{id:string}} payload 
          */
-        query(context, $payload) {
-            const { service, action, payload, timeout } = $payload;
-            return new Promise((resolve, reject) => {
-                const id = v4();
-                const task = new TaskProxy(id, `${service}.${action}`, timeout)
-                context.dispatch('listenTask', { uuid: id, task })
-                task.on('finish', (paths, result) => { if (paths.length === 0) resolve(result) })
-                task.on('error', (paths, error) => { if (paths.length === 0) reject(error) })
-                ipcRenderer.send('query', {
-                    id,
-                    service,
-                    action,
-                    payload,
-                })
-            });
+        create(context, payload) {
+            
         },
         /**
          * 

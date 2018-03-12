@@ -26,18 +26,18 @@ export default {
         },
     },
     actions: {
-        // async load(context, { id }) {
-        //     const cfg = await context.dispatch('read', {
-        //         path: `profiles/${id}/mods.json`,
-        //         fallback: {},
-        //         type: 'json',
-        //     }, { root: true })
-        //     context.commit('$reload', cfg);
-        // },
-        // save(context, { id }) {
-        //     const path = `profiles/${id}/mods.json`
-        //     return context.dispatch('write', { path, data: context.state }, { root: true })
-        // },
+        async load(context, { id }) {
+            // const cfg = await context.dispatch('read', {
+            //     path: `profiles/${id}/mods.json`,
+            //     fallback: {},
+            //     type: 'json',
+            // }, { root: true })
+            // context.commit('$reload', cfg);
+        },
+        save(context, { id }) {
+            const path = `profiles/${id}/mods.json`
+            return context.dispatch('write', { path, data: context.state }, { root: true })
+        },
         setForgeVersion(context, version) {
             if (context.state.version !== version) {
                 context.commit('forgeVersion', version)

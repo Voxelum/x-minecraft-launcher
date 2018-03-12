@@ -48,6 +48,7 @@ export default {
             })
         },
         importMap(event) {
+            if (!event.dataTransfer) return;
             this.$store.dispatch(`profiles/${this.id}/importMap`,
                 Array.from(event.dataTransfer.files).map(f => f.path))
         },

@@ -87,7 +87,7 @@ export default {
          * @param {ActionContext} context 
          * @param {string} mode 
          */
-        selectMode(context, mode) { context.commit('mode', mode); },
+        selectLoginMode(context, mode) { context.commit('mode', mode); },
         /**
          * Logout and clear current cache.
          */
