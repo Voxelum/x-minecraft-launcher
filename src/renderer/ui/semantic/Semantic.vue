@@ -69,7 +69,7 @@ export default {
         background: ''//'url(imgs/Background1.png)'
     }),
     computed: {
-        ...mapGetters('auth', ['skin']),
+        ...mapGetters('user', ['skin']),
     },
     mounted() {
     },

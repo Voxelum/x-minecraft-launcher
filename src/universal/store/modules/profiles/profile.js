@@ -4,13 +4,9 @@ export default {
     namespaced: true,
     modules,
     state: () => ({
-        editable: true,
-        author: '',
-        description: '',
-        url: '',
-        icon: '',
         id: '',
         name: '',
+
         resolution: { width: 800, height: 400, fullscreen: false },
         java: '',
         minMemory: 1024,
@@ -19,16 +15,11 @@ export default {
         mcOptions: [],
 
         mcversion: '',
+
+        type: 'modpack',
     }),
     getters: {
         id: state => state.id,
-        type: state => state.type,
-        errors(state) {
-            const errors = []
-            if (state.mcversion === '') errors.push('profile.noversion')
-            if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.missingjava')
-            return errors
-        },
         name: state => state.name,
         mcversion: state => state.mcversion,
         java: state => state.java,
@@ -37,6 +28,8 @@ export default {
         vmOptions: state => state.vmOptions,
         mcOptions: state => state.mcOptions,
         resolution: state => state.resolution,
+
+        type: state => 'modpack',
     },
     mutations: {
         profile(state, option) {
@@ -47,8 +40,11 @@ export default {
     actions: {
         async load(context) {
             const path = `profiles/${context.state.id}`;
-            const data = await context.dispatch('readFile', { path, fallback: {}, type: 'json' }, { root: true });
+            const data = await context.dispatch('read', { path, fallback: {}, type: 'json' }, { root: true });
             context.commit('edit', data);
+            for (const m of Object.keys(modules)) {
+                await context.dispatch(`${m}/load`, { id: context.state.id });
+            }
         },
         save(context) {
             const path = `profiles/${context.state.id}`;
@@ -69,14 +65,8 @@ export default {
                     }
                 }
             }
-            if (changed) context.commit('profile', option)
+            if (changed) context.commit('profile', option);
         },
-        // serialize(context, payload) {
-        //     return JSON.stringify(context.state, (key, value) => {
-        //         if (key === 'settings' || key === 'maps') return undefined;
-        //         return value;
-        //     })
-        // },
         refresh(context, payload) { },
     },
 }
