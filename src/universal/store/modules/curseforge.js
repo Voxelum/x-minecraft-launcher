@@ -234,10 +234,15 @@ export default {
          */
         async download(context, payload) {
             const content = webContents.getFocusedWebContents();
+            // const uuid = await context.dispatch('task/create', { id: 'curseforge.download' });
+
             const file = await new Promise((resolve, reject) => {
                 content.session.once('will-download', (event, item, $content) => {
                     const savePath = paths.join(app.getPath('userData'), 'temps', item.getFilename());
                     if (!this.file) item.setSavePath(savePath);
+                    // item.on('update', ($event, state) => {
+                    //     context.commit('task/update', { path: [uuid], progress: item.getReceivedBytes(), total: item.getTotalBytes() })
+                    // })
                     item.on('done', ($event, state) => {
                         switch (state) {
                             case 'completed':
