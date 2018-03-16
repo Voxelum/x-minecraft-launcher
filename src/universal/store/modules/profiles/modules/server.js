@@ -25,10 +25,15 @@ export default {
         add(state, server) {
             state.servers.push(server);
         },
+        edit(state, option) {
+            state.host = option.host || state.host;
+            state.port = option.port || state.port;
+            state.isLanServer = option.isLanServer || state.isLanServer;
+            state.icon = option.icon || state.icon;
+        },
     },
     actions: {
         load(context, { id }) {
-            console.log(context.getters)
             const nbt = context.dispatch('read', { path: `profiles/${id}/servers.dat` })
             if (nbt) {
                 Server.parseNBT(nbt).forEach(i => context.commit('add', i));

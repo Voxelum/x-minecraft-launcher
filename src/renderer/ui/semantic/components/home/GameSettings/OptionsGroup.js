@@ -5,7 +5,7 @@ export default {
     render(createElement) {
         let currentFields = [];
         const fields = [];
-        const mcoptions = this.$store.getters[`profiles/${this.id}/mcoptions`]
+        const get = this.$store.getters[`profiles/${this.id}/settings/get`]
         for (const key in this.options) {
             if (this.options.hasOwnProperty(key)) {
                 const option = this.options[key];
@@ -14,7 +14,7 @@ export default {
                     props: {
                         id: key,
                         options: option,
-                        value: mcoptions[key],
+                        value: get[key],
                     },
                     on: { change: this.onchange },
                 }))
