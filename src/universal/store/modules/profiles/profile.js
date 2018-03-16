@@ -66,7 +66,7 @@ export default {
                     }
                 }
             }
-            if (Object.keys(profile) !== 0) context.commit('profile', profile);
+            if (Object.keys(profile) !== 0) context.commit('edit', profile);
         },
         refresh(context, payload) { },
     },
