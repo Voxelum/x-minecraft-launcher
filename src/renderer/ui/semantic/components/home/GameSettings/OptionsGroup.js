@@ -14,7 +14,7 @@ export default {
                     props: {
                         id: key,
                         options: option,
-                        value: get[key],
+                        value: get(key),
                     },
                     on: { change: this.onchange },
                 }))
@@ -28,8 +28,7 @@ export default {
     },
     methods: {
         onchange(event) {
-            console.log(`Eevent ${event}`);
-            // this.$store.commit(`profiles/${this.id}/mcoption`, event)
+            this.$store.commit(`profiles/${this.id}/settings/edit`, event)
         },
     },
     computed: {

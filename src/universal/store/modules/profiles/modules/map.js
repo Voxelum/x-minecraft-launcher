@@ -10,6 +10,7 @@ const allFiles = folder =>
         .reduce((left, right) => [...left, ...right], []);
 
 export default {
+    namespaced: true,
     state: () => [],
     getters: {
         maps: state => state,
