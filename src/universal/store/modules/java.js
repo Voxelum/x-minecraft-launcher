@@ -131,16 +131,23 @@ export default {
     },
     getters: {
         javas: state => state.javas.filter(loc => state.blacklist.indexOf(loc) === -1),
-        defaultJava: state => state.default,
+        default: state => state.default,
     },
     mutations: {
         javas(state, inJava) {
             if (inJava instanceof Array) state.javas.push(...inJava);
             else state.push(inJava);
+            if (!state.default) state.default = state.javas[0]; 
         },
         blackList(state, java) { state.blacklist.push(java) },
+        default(state, def) {
+            state.default = def;
+        },
     },
     actions: {
+        load(context) {
+            return context.dispatch('refresh');
+        },
         add(context, java) {
             context.commit('javas', context.getters.javas.concat(java))
         },
