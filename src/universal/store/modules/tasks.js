@@ -4,6 +4,7 @@ import Vue from 'vue'
 import { v4 } from 'uuid'
 
 export default {
+    namespaced: true,
     state: {
         tasks: {},
         failed: [],
@@ -16,59 +17,55 @@ export default {
         tasksCount: (states, getters) => Object.keys(getters.runningTasks).length,
     },
     mutations: {
-        updateTask(state, { uuid, paths, progress, total, status }) {
-            let task = state.tasks[uuid];
-            if (paths) for (const p of paths) task = task.children[p];
-            task.progress = progress;
-            if (total) task.total = total;
-            if (status) task.status = status;
+        update(state, { path, progress, total, status }) {
+            if (!path || path.length === 0) throw new Error();
+            let root = state;
+            for (const p of path) root = root.tasks[p];
+            if (progress) root.progress = progress;
+            if (total) root.total = total;
+            if (status) root.status = status;
         },
-        addTask(state, { uuid, id }) {
-            Vue.set(state.tasks, uuid, {
+        create(state, { id, path }) {
+            const ps = path || []
+            const uuid = v4();
+            let root = state;
+            for (const p of ps) root = root.tasks[p];
+            Vue.set(root.tasks, uuid, {
                 id,
                 total: -1,
-                children: {},
                 progress: -1,
+                tasks: {},
                 error: '',
                 status: 'running',
             });
         },
-        errorTask(state, { uuid, paths, error }) {
-            let task = state.tasks[uuid];
-            if (paths.length === 0) {
-                task.error = error;
-                task.status = 'error'
-                state.failed.push(task)
-                Vue.delete(state.tasks, uuid)
-            } else {
-                for (const p of paths) task = task.children[p]
-                task.error = error;
-                task.status = 'error'
+        // error(state, { uuid, path, error }) {
+        //     let task = state.tasks[uuid];
+        //     if (path.length === 0) {
+        //         task.error = error;
+        //         task.status = 'error'
+        //         state.failed.push(task)
+        //         Vue.delete(state.tasks, uuid)
+        //     } else {
+        //         for (const p of path) task = task.children[p]
+        //         task.error = error;
+        //         task.status = 'error'
+        //     }
+        // },
+        finish(state, { path }) {
+            if (!path || path.length === 0) throw new Error();
+            let root = state;
+            let uuid;
+            let parent;
+            for (const p of path) {
+                parent = root;
+                root = root.tasks[p];
+                uuid = p;
             }
-        },
-        finishTask(state, { uuid, paths }) {
-            let task = state.tasks[uuid];
-            if (paths.length === 0) {
-                Vue.delete(state.tasks, uuid);
-                task.status = 'finish';
-                state.finished.push(task);
-            } else {
-                for (const p of paths) task = task.children[p]
-                task.status = 'finish'
-            }
-        },
-        addChildTask(state, { uuid, paths, id }) {
-            let task = state.tasks[uuid];
-            for (const p of paths) {
-                task = task.children[p]
-            }
-            task.children[id] = {
-                id,
-                total: -1,
-                children: {},
-                progress: -1,
-                error: '',
-                status: 'running',
+            root.status = 'finish';
+            Vue.delete(parent.tasks, uuid);
+            if (parent === state) {
+                state.finished.push(root);
             }
         },
     },
@@ -79,7 +76,7 @@ export default {
          * @param {{id:string}} payload 
          */
         create(context, payload) {
-            
+
         },
         /**
          * 
