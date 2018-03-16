@@ -33,8 +33,8 @@ export default {
         },
     },
     actions: {
-        load(context, { id }) {
-            const nbt = context.dispatch('read', { path: `profiles/${id}/servers.dat` })
+        async load(context, { id }) {
+            const nbt = await context.dispatch('read', { path: `profiles/${id}/servers.dat` }, { root: true })
             if (nbt) {
                 Server.parseNBT(nbt).forEach(i => context.commit('add', i));
             }

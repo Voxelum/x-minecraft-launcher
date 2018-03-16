@@ -6,6 +6,10 @@ export default {
         url: '',
         icon: '',
     }),
+    getters: {
+        author: state => state.author,
+        description: state => state.description,
+    },
     mutations: {
         edit(state, data) {
             state.author = data.author || state.author;
@@ -17,7 +21,7 @@ export default {
     actions: {
         async load(context, { id }) {
             const data = await context.dispatch('read', { path: `profiles/${id}/pack-info.json`, fallback: {}, type: 'json' }, { root: true });
-            context.commit('modpack', data);
+            context.commit('edit', data);
         },
         save(context, { mutation }) {
             const id = mutation.split('/')[1];

@@ -5,12 +5,12 @@
                 <div class="ui sizer" style="font-size: 23px;">
                     <h1 class="ui header">
                         <div class="content">
-                            {{source.name}}
+                            {{name}}
                             <h2 class="ui sub header">
-                                {{$t('author')}}: {{source.author}}
+                                {{$t('author')}}: {{author}}
                             </h2>
                             <h2 ref="versionPopup" class="ui sub header">
-                                {{$tc('version.name', 0)}}: {{source.mcversion===''? 'Unselected':source.mcversion}}
+                                {{$tc('version.name', 0)}}: {{version}}
                                 <i class="dropdown icon"></i>
                             </h2>
                             <version-table-view :id="id"></version-table-view>
@@ -23,7 +23,7 @@
                     <i class="tag icon"></i>
                     {{$t('description')}}
                 </h5>
-                <textarea :value="source.description" @blur="modify" style="width:100%;border:0;outline:none;overflow: hidden;resize:none;background-color:transparent;">
+                <textarea :value="description" @blur="modify" style="width:100%;border:0;outline:none;overflow: hidden;resize:none;background-color:transparent;">
                 </textarea>
             </div>
         </div>
@@ -81,9 +81,12 @@ export default {
     },
     computed: {
         ...mapState('versions', ['minecraft']),
-        type() { return this.source.type },
         id() { return this.$route.params.id },
-        source() { return this.$store.getters['profiles/get'](this.id) }
+        description() { return this.$store.getters[`profiles/${this.id}/modpack/description`] },
+        author() { return this.$store.getters[`profiles/${this.id}/modpack/author`] },
+        version() { return this.$store.getters[`profiles/${this.id}/mcversion`] || 'Unselected' },
+        type() { return this.$store.getters[`profiles/${this.id}/type`] },
+        name() { return this.$store.getters[`profiles/${this.id}/name`] || 'Untitled' },
     },
     methods: {
         modify(event) {

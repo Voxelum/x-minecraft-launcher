@@ -123,7 +123,7 @@ export default {
         language: state => state.lang || '',
     },
     mutations: {
-        option(state, option) {
+        edit(state, option) {
             Object.keys(option)
                 .filter(k => state[k] !== undefined && option[k] !== null)
                 .forEach((k) => {
