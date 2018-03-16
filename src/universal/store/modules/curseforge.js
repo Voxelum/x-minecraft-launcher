@@ -1,6 +1,8 @@
 import { ActionContext } from 'vuex'
 import querystring from 'querystring'
+import paths from 'path'
 import parser from 'fast-html-parser'
+import { webContents, app } from 'electron'
 import request from '../helpers/request'
 
 function localDate(string) {
@@ -231,19 +233,34 @@ export default {
          * @param {{project:Project, file:Download}} payload 
          */
         async download(context, payload) {
-            // const file = await context.dispatch('query', {
-            //     service: 'download',
-            //     action: 'download',
-            //     payload: { url: `https://minecraft.curseforge.com${payload.file.href}` },
-            // }, { root: true })
-            // return context.dispatch('repository/import', {
-            //     files: [file],
-            //     signiture: {
-            //         source: 'curseforge',
-            //         date: Date.now(),
-            //         meta: payload.project,
-            //     },
-            // }, { root: true })
+            const content = webContents.getFocusedWebContents();
+            const file = await new Promise((resolve, reject) => {
+                content.session.once('will-download', (event, item, $content) => {
+                    const savePath = paths.join(app.getPath('userData'), 'temps', item.getFilename());
+                    if (!this.file) item.setSavePath(savePath);
+                    item.on('done', ($event, state) => {
+                        switch (state) {
+                            case 'completed':
+                                resolve(savePath)
+                                break;
+                            case 'cancelled':
+                            case 'interrupted':
+                            default:
+                                reject(new Error(state))
+                                break;
+                        }
+                    })
+                });
+                content.downloadURL(`https://minecraft.curseforge.com${payload.file.href}`)
+            });
+            context.dispatch('repository/import', {
+                files: [file],
+                signiture: {
+                    source: 'curseforge',
+                    date: Date.now(),
+                    meta: payload.project,
+                },
+            }, { root: true });
         },
     },
 }
