@@ -234,7 +234,7 @@ export default {
                 file: `resources/${res.hash}${res.type}`,
                 toFolder: `${minecraft}/${res.domain}`,
                 mode: 'link',
-                name: `${res.hash}${res.type}`,
+                name: `${res.name}${res.type}`,
             }).then(() => res);
         },
         /**

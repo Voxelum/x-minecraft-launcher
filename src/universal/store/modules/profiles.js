@@ -50,7 +50,7 @@ export default {
                 option = {},
             } = payload;
             const id = uuid();
-            option.java = option.java || context.rootGetters.defaultJava;
+            option.java = option.java || context.rootGetters.default;
             context.commit('add', { id, type });
             if (type) context.commit(`${id}/${type}/edit`, option);
             context.dispatch(`${id}/edit`, { ...option, type });
