@@ -14,11 +14,9 @@ export default {
     beforeMount() {
         const route = localStorage.getItem('route');
         console.log(`Initialize to route ${route}`)
-        console.log(this.theme)
         if (route && route !== '/') {
             this.$router.replace(route)
         } else {
-            console.log(this.theme)
             this.$router.replace(`/${this.theme}`)
         }
     },

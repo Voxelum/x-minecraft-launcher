@@ -1,6 +1,7 @@
 import Vue from 'vue'
 
 export default {
+    namespaced: true,
     state: () => ({
         mods: [],
         version: '',
@@ -34,9 +35,10 @@ export default {
             // }, { root: true })
             // context.commit('$reload', cfg);
         },
-        save(context, { id }) {
-            const path = `profiles/${id}/mods.json`
-            return context.dispatch('write', { path, data: context.state }, { root: true })
+        save(context, { mutation }) {
+            // const paths = mutation.split('/');
+            // const path = `profiles/${id}/mods.json`
+            // return context.dispatch('write', { path, data: context.state }, { root: true })
         },
         setForgeVersion(context, version) {
             if (context.state.version !== version) {
