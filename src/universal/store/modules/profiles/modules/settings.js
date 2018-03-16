@@ -188,7 +188,7 @@ export default {
                 path: `profiles/${id}/options.txt`,
                 type: 'string',
             }, { root: true });
-            if (options) context.commit('option', GameSetting.parseFrame(options));
+            if (options) context.commit('edit', GameSetting.parseFrame(options));
         },
     },
 }

@@ -13,7 +13,7 @@ export default {
     namespaced: true,
     state: () => [],
     getters: {
-        maps: state => state,
+        all: state => state,
     },
     mutations: {
         setMaps(state, maps) {
@@ -27,7 +27,7 @@ export default {
         },
     },
     actions: {
-        importMap(context, locations) {
+        import(context, locations) {
             if (typeof locations === 'string') {
                 locations = [locations];
             }
@@ -62,7 +62,7 @@ export default {
          * @param {ActionContext} context 
          * @param {{file:string, map:string, zip:boolean}} payload
          */
-        async  exportMap(context, payload) {
+        async export(context, payload) {
             const id = context.getters.id;
             const exportName = payload.file;
             const map = paths.join(context.rootGetters.root, `profiles/${id}/saves/${payload.map}`)
@@ -76,7 +76,7 @@ export default {
             }
             return fs.copy(map, exportName)
         },
-        deleteMap(context, map) {
+        delete(context, map) {
             const filename = map.filename;
             return context.dispatch('delete', `profiles/${context.getters.id}/saves/${filename}`, { root: true })
                 .then(() => {
