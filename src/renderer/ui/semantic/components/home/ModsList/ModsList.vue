@@ -38,9 +38,9 @@
 
 <script>
 import vuex from 'vuex'
-import ListCell from './ListCell'
 import en from 'static/en-cn'
-import ModLabel from './ModLabel'
+
+// import ListCell from './ListCell'
 
 const generalized = {}
 function general(w) {
@@ -58,12 +58,12 @@ export default {
         disabledOnly: true,
         cached: [],
     }),
-    components: { ModLabel },
+    components: { ModLabel: () => import('./ModLabel') },
     computed: {
         id() { return this.$route.params.id },
         ...vuex.mapGetters('repository', ['mods']),
         mcversion() { return this.$store.getters[`profiles/${this.id}/mcversion`] },
-        forgeModNames() { return this.$store.getters[`profiles/${this.id}/forgeMods`] },
+        forgeModNames() { return this.$store.getters[`profiles/${this.id}/forge/selected`] },
         modIdVersions() {
             const modIdVersions = {};
             this.mods.forEach((res) => {
@@ -87,19 +87,22 @@ export default {
         },
         nonselectedMods() {
             const arr = [];
-            this.mods.forEach((res) => {
-                res.meta.forEach((artifact) => {
+            console.log(this.mods);
+            for (const resource of this.mods) {
+                const metas = resource.meta.mods;
+                metas.forEach((artifact) => {
                     const mInfo = {
-                        hash: res.hash,
-                        filename: res.name,
-                        signiture: res.signiture,
-                        type: artifact.type,
+                        hash: resource.hash,
+                        filename: resource.name,
+                        signiture: resource.signiture,
+                        type: resource.type,
                         ...artifact.meta,
                     };
                     if (this.valid(this.nonSelectKeyword, mInfo))
                         arr.push(mInfo)
                 })
-            })
+            }
+
             return arr;
         },
     },

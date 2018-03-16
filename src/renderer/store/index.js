@@ -37,5 +37,6 @@ ipcRenderer.send('vuex-sync', 0);
 const remoteCall = remote.require('./main');
 localStore.commit = remoteCall.commit;
 localStore.dispatch = remoteCall.dispatch;
+localStore.localCommit = localCommit;
 
 export default localStore;
