@@ -32,7 +32,7 @@ export default {
         type: state => 'modpack',
     },
     mutations: {
-        profile(state, option) {
+        edit(state, option) {
             delete option.id;
             Object.keys(option)
                 .forEach((key) => { state[key] = option[key] })

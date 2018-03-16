@@ -25,16 +25,19 @@ export default {
     },
     actions: {
         async load(context, payload) {
-            return context.dispatch('readFolder', { path: 'profiles' }, { root: true })
-                .then(files => Promise.all(files.map((id) => {
-                    context.dispatch('exist', { path: `profiles/${id}/profile.json` }, { root: true })
-                        .then((exist) => {
-                            if (exist) {
-                                context.commit('add', { id });
-                                return context.dispatch(`${id}/load`);
-                            }
-                        })
-                }).catch(e => undefined)));
+            const files = await context.dispatch('readFolder', { path: 'profiles' }, { root: true });
+            return Promise.all(files.map(id =>
+                context.dispatch('exist', `profiles/${id}/profile.json`, { root: true })
+                    .then((exist) => {
+                        console.log(id)
+                        if (exist) {
+                            context.commit('add', { id });
+                            return context.dispatch(`${id}/load`);
+                        }
+                        return Promise.resolve();
+                    })
+                    .catch((e) => { console.error(e) }),
+            ))
         },
         /**
          * @param {ActionContext} context 
