@@ -27,7 +27,7 @@ export default {
             context.commit('theme', data.theme || 'semantic');
         },
         save(context) {
-            return context.dispatch('writeFile', { path: 'appearance.json', data: JSON.stringify(context.state) }, { root: true })
+            return context.dispatch('write', { path: 'appearance.json', data: JSON.stringify(context.state) }, { root: true })
         },
         /**
          * 

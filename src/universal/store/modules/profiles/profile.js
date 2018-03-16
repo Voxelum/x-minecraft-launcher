@@ -33,13 +33,14 @@ export default {
     },
     mutations: {
         profile(state, option) {
+            delete option.id;
             Object.keys(option)
                 .forEach((key) => { state[key] = option[key] })
         },
     },
     actions: {
         async load(context) {
-            const path = `profiles/${context.state.id}`;
+            const path = `profiles/${context.state.id}/profile.json`;
             const data = await context.dispatch('read', { path, fallback: {}, type: 'json' }, { root: true });
             context.commit('edit', data);
             for (const m of Object.keys(modules)) {
@@ -47,25 +48,25 @@ export default {
             }
         },
         save(context) {
-            const path = `profiles/${context.state.id}`;
+            const path = `profiles/${context.state.id}/profile.json`;
             const data = JSON.stringify(context.state, (key, value) => {
                 if (modules[key]) return undefined;
                 return value;
             })
-            return context.dispatch('writeFile', { path, data }, { root: true });
+            return context.dispatch('write', { path, data }, { root: true });
         },
         edit(context, option) {
             const keys = Object.keys(option);
             if (keys.length === 0) return;
-            let changed = false;
+            const profile = {};
             for (const key of keys) {
                 if (context.state[key] !== undefined) {
                     if (context.state[key] !== option[key]) {
-                        changed = true;
+                        profile[key] = option[key]
                     }
                 }
             }
-            if (changed) context.commit('profile', option);
+            if (Object.keys(profile) !== 0) context.commit('profile', profile);
         },
         refresh(context, payload) { },
     },

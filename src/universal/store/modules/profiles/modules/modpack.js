@@ -7,7 +7,7 @@ export default {
         icon: '',
     }),
     mutations: {
-        modpack(state, data) {
+        edit(state, data) {
             state.author = data.author || state.author;
             state.description = data.description || state.description;
             state.url = data.url || state.url;
@@ -16,8 +16,13 @@ export default {
     },
     actions: {
         async load(context, { id }) {
-            const data = await context.dispactch('read', { path: `profiles/${id}/pack-info.json`, fallback: {}, type: 'json' }, { root: true });
+            const data = await context.dispatch('read', { path: `profiles/${id}/pack-info.json`, fallback: {}, type: 'json' }, { root: true });
             context.commit('modpack', data);
+        },
+        save(context, { mutation }) {
+            const id = mutation.split('/')[1];
+            const path = `profiles/${id}/pack-info.json`;
+            return context.dispatch('write', { path, data: context.state, type: 'json' }, { root: true });
         },
     },
 }

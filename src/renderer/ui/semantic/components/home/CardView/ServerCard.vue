@@ -8,22 +8,22 @@
         <div class="content" @click="onclick">
             <img :src="this.source.icon" class="right floated ui image">
             <div class="header">
-                {{this.source.name}}
+                {{this.name}}
             </div>
             <div class="meta">
-                <text-component :source="source.status.gameVersion" styled="false"></text-component>
+                <text-component :source="version" styled="false"></text-component>
                 <!-- <span class="date">{{this.source.createdDate}}</span> -->
             </div>
             <div class="description" style="max-height:50px; overflow: auto;">
-                <text-component :source="source.status.serverMOTD"></text-component>
+                <text-component :source="motd"></text-component>
             </div>
         </div>
         <div class="extra content">
             <span>
-                <i class="users icon"></i> {{this.source.status.onlinePlayers}} / {{this.source.status.capacity}}</span>
+                <i class="users icon"></i> {{this.onlinePlayers}} / {{this.capacity}}</span>
             <div class="right floated">
                 <i class="signal icon"></i>
-                {{this.source.status ? (this.source.status.pingToServer ||-1)+" ms":'Cannot connected'}}
+                {{this.ping === -1 ? 'Cannot connected' : this.ping + ' ms'}}
             </div>
         </div>
     </div>
@@ -31,12 +31,21 @@
 
 <script>
 export default {
-    data() {
-        return {
-            hoverDelete: false,
-        }
+    data: () => ({
+        hoverDelete: false,
+    }),
+    computed: {
+        name() { return this.source.name; },
+        host() { return this.source.server.host; },
+        port() { return this.source.server.port; },
+        icon() { return this.source.server.status.icon || '' },
+        onlinePlayers() { return this.source.server.status.onlinePlayers || -1 },
+        capacity() { return this.source.server.status.capacity || -1 },
+        ping() { return this.source.server.status.pingToServer || -1 },
+        motd() { return this.source.server.status.motd || '' },
+        version() { return this.source.server.status.gameVersion || 'Unknown' },
+
     },
-    name: 'profile-card',
     props: ['color', 'source', 'id', 'bound'],
     methods: {
         onclick(e) {

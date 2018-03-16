@@ -1,7 +1,6 @@
 import uuid from 'uuid'
 import { Store } from 'vuex'
 import profile from '../modules/profiles/profile'
-import mixin from '../helpers/mixin-state'
 
 export default
     /**
@@ -21,8 +20,11 @@ export default
                     console.error(`Unexpect empty id for adding! @${mutation.type}`)
                     return
                 }
-                paths.push(id)
-                store.registerModule(paths, profile);
+                paths.push(id);
+                const model = { ...profile };
+                model.state = profile.state();
+                model.state.id = id;
+                store.registerModule(paths, model);
             } else if (type === 'profiles/remove') {
                 if (!payload) {
                     console.error(`Unexpect empty payload for removal! @${mutation.type}`)
