@@ -1,4 +1,4 @@
-import { VersionMeta } from 'ts-minecraft'
+import { VersionMeta, MinecraftFolder, Version } from 'ts-minecraft'
 
 function checkversion(remoteVersionList, files) {
     const versions = new Set(files)
@@ -39,12 +39,28 @@ export default {
     },
     actions: {
         async load(context, payload) {
-            await context.dispatch('refresh')
-            return context.dispatch('read', { path: 'version.json', fallback: {}, type: 'json' }, { root: true })
+            const data = await context.dispatch('read', { path: 'version.json', fallback: {}, type: 'json' }, { root: true })
+            const container = {
+                date: data.updateTime,
+                list: data,
+            }
+            let metas = container;
+            try {
+                metas = await Version.updateVersionMeta({ fallback: container })
+                const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true })
+                const existed = []
+                for (const file of files) {
+                    const exist = await context.dispatch('exist', [`versions/${file}`, `versions/${file}/${file}.jar`, `versions/${file}/${file}.json`], { root: true }); // eslint-disable-line
+                    if (exist) existed.push(file)
+                }
+                checkversion(metas, existed)
+            } catch (e) {
+                console.error(e)
+            }
+            context.commit('update', metas);
         },
         save(context, payload) {
-            const data = JSON.stringify(context.state);
-            return context.dispatch('write', { path: 'version.json', data }, { root: true })
+            return context.dispatch('write', { path: 'version.json', data: JSON.stringify(context.state) }, { root: true })
         },
         /**
          * 
@@ -62,14 +78,10 @@ export default {
             let exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
             if (!exist) {
                 try {
-                    await context.dispatch('query', {
-                        service: 'versions',
-                        action: 'downloadClient',
-                        payload: {
-                            meta,
-                            location: context.rootGetters.root,
-                        },
-                    }, { root: true })
+                    let location = context.rootGetters.root;
+                    if (typeof location === 'string') location = new MinecraftFolder(location)
+                    if (!(location instanceof MinecraftFolder)) return Promise.reject('Require location as string or MinecraftLocation!')
+                    Version.install('client', meta, location);
                 } catch (e) { console.warn(e) }
             }
             exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
@@ -78,12 +90,18 @@ export default {
             } else {
                 context.commit('updateStatus', { version: meta, status: 'remote' })
             }
+            return undefined;
+        },
+        checkClient(context, { version, location }) {
+            if (typeof location === 'string') location = new MinecraftFolder(location)
+            if (!(location instanceof MinecraftFolder)) return Promise.reject('Require location as string or MinecraftLocation!')
+            return Version.checkDependency(version, location)
         },
         /**
          * Refresh the remote versions cache 
          */
         async refresh(context) {
-            const remoteList = await context.dispatch('query', { service: 'versions', action: 'refresh', payload: context.state.updateTime }, { root: true })
+            const remoteList = await Version.updateVersionMeta({ date: context.state.updateTime })
             const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true })
             const existed = []
             for (const file of files) {

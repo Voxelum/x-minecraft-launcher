@@ -5,6 +5,7 @@ import paths from 'path'
 import Zip from 'jszip'
 
 export default {
+    namespaced: true,
     state: () => ({
         version: 1139, // for 1.12
         invertYMouse: false,
@@ -117,29 +118,24 @@ export default {
         modelPart_hat: true,
     }),
     getters: {
-        mcoptions: state => state,
+        get: state => name => state[name],
         resourcepacks: state => state.resourcePacks,
-        mclanguage: state => state.lang || '',
+        language: state => state.lang || '',
     },
     mutations: {
-        mcoption(states, { key, value }) {
-            states[key] = value
-        },
-        mcoptions$reload(state, settings) {
-            Object.keys(settings)
-                .filter(k => state[k] !== undefined)
+        edit(state, option) {
+            Object.keys(option)
+                .filter(k => state[k] !== undefined && option[k] !== null)
                 .forEach((k) => {
-                    if (settings[k] !== null) {
-                        if (state[k] instanceof Array) {
-                            if (settings[k] instanceof Array) {
-                                state[k] = settings[k].slice()
-                            } else {
-                                console.error(`Cannot copy the value ${settings[k]}`)
-                                console.error(settings);
-                            }
+                    if (state[k] instanceof Array) {
+                        if (option[k] instanceof Array) {
+                            state[k] = option[k].slice()
                         } else {
-                            state[k] = settings[k]
+                            console.error(`Cannot copy the value ${option[k]}`)
+                            console.error(option);
                         }
+                    } else {
+                        state[k] = option[k]
                     }
                 })
         },
@@ -181,21 +177,18 @@ export default {
         },
     },
     actions: {
-        save(context, { id, mutation }) {
-            if (mutation !== 'mcoption' && mutation !== 'resourcepack') {
-                return Promise.resolve();
-            }
+        save(context, { mutation }) {
+            const id = mutation.split('/')[1];
             const path = `profiles/${id}/options.txt`
-            const snapshot = JSON.stringify(context.state);
             const data = GameSetting.stringify(context.state);
             return context.dispatch('write', { path, data }, { root: true })
         },
         async load(context, { id }) {
-            const gcString = await context.dispatch('read', {
+            const options = await context.dispatch('read', {
                 path: `profiles/${id}/options.txt`,
                 type: 'string',
             }, { root: true });
-            context.commit('mcoptions$reload', GameSetting.parseFrame(gcString));
+            if (options) context.commit('edit', GameSetting.parseFrame(options));
         },
     },
 }

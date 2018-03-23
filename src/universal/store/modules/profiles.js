@@ -1,21 +1,6 @@
 import uuid from 'uuid'
 import { ActionContext } from 'vuex'
 import Vue from 'vue'
-import { GameSetting } from 'ts-minecraft'
-import server from './profiles/server'
-import modpack from './profiles/modpack'
-
-const PROFILE_NAME = 'profile.json'
-const PROFILES_NAEM = 'profiles.json'
-
-function regulize(content) {
-    content.resourcepacks = content.resourcepacks || []
-    content.resolution = content.resolution || { width: 800, height: 400 }
-    content.mods = content.mods || []
-    content.vmOptions = content.vmOptions || []
-    content.mcOptions = content.mcOptions || []
-    return content
-}
 
 export default {
     namespaced: true,
@@ -39,39 +24,20 @@ export default {
         },
     },
     actions: {
-        load(context, payload) {
-            return context.dispatch('readFolder', { path: 'profiles' }, { root: true })
-                .then(files => Promise.all(files.map(id => context.dispatch('read', {
-                    path: `profiles/${id}/${PROFILE_NAME}`,
-                    fallback: {},
-                    type: 'json',
-                }, { root: true })
-                    .then(regulize)
-                    .then(profile => context.commit('add', { id, type: profile.type, moduleData: profile }))
-                    .catch(e => undefined),
-                )))
-        },
-        async saveProfile(context, { id }) {
-            const profileJson = `profiles/${id}/profile.json`
-            const data = await context.dispatch(`${id}/serialize`)
-            return context.dispatch('write', { path: profileJson, data }, { root: true })
-        },
-        /**
-         * @param {ActionContext} context 
-         * @param {{mutation:string, object:any}} payload 
-         */
-        save(context, payload) {
-            const { mutation, object } = payload
-            const path = mutation.split('/')
-            if (path.length === 2) {
-                return Promise.resolve();
-            } else if (path.length === 3) { // only profile
-                return Promise.all([
-                    context.dispatch('saveProfile', { id: path[1] }),
-                    context.dispatch(`${path[1]}/save`, { id: path[1], mutation: path[2] }),
-                ])
-            }
-            return context.dispatch('saveProfile', { id: path[1] })
+        async load(context, payload) {
+            const files = await context.dispatch('readFolder', { path: 'profiles' }, { root: true });
+            return Promise.all(files.map(id =>
+                context.dispatch('exist', `profiles/${id}/profile.json`, { root: true })
+                    .then((exist) => {
+                        console.log(id)
+                        if (exist) {
+                            context.commit('add', { id });
+                            return context.dispatch(`${id}/load`);
+                        }
+                        return Promise.resolve();
+                    })
+                    .catch((e) => { console.error(e) }),
+            ))
         },
         /**
          * @param {ActionContext} context 
@@ -82,11 +48,12 @@ export default {
             const {
                 type,
                 option = {},
-            } = payload
-            const id = uuid()
-            option.java = option.java || context.rootGetters.defaultJava
-            context.commit('add', { id, type, moduleData: option })
-            return context.dispatch('saveProfile', { id })
+            } = payload;
+            const id = uuid();
+            option.java = option.java || context.rootGetters.default;
+            context.commit('add', { id, type });
+            if (type) context.commit(`${id}/${type}/edit`, option);
+            context.dispatch(`${id}/edit`, { ...option, type });
         },
         /**
          * 
@@ -94,8 +61,8 @@ export default {
          * @param {string} payload 
          */
         delete(context, payload) {
-            context.commit('remove', payload)
-            return context.dispatch('delete', `profiles/${payload}`, { root: true })
+            context.commit('remove', payload);
+            return context.dispatch('delete', `profiles/${payload}`, { root: true });
         },
     },
 }

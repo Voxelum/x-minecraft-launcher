@@ -1,14 +1,16 @@
-import { TextComponent, TextFormatting, Style, Server } from 'ts-minecraft'
-import vuex from 'vuex'
-import protocol from 'shared/protocol'
+import { TextComponent, TextFormatting, Style, Server, NBT } from 'ts-minecraft'
 
 export default {
+    namespaced: true,
     state: () => ({
-        type: 'server',
+        servers: [],
+        primary: -1,
+
         host: '',
         port: 25565,
         isLanServer: false,
         icon: '',
+
         status: {},
     }),
     getters: {
@@ -17,21 +19,45 @@ export default {
         icon: state => state.icon,
         status: state => state.status,
         isLanServer: state => state.isLanServer,
-        errors(state) {
+        servers: state => state.servers,
+    },
+    mutations: {
+        add(state, server) {
+            state.servers.push(server);
+        },
+        edit(state, option) {
+            state.host = option.host || state.host;
+            state.port = option.port || state.port;
+            state.isLanServer = option.isLanServer || state.isLanServer;
+            state.icon = option.icon || state.icon;
+        },
+    },
+    actions: {
+        async load(context, { id }) {
+            const nbt = await context.dispatch('read', { path: `profiles/${id}/servers.dat` }, { root: true })
+            if (nbt) {
+                Server.parseNBT(nbt).forEach(i => context.commit('add', i));
+            }
+        },
+        save(context) {
+        },
+        /**
+         * @param {Server.Info} payload
+         */
+        add(context, payload) {
+            if (!payload.host) throw new Error('Cannot add server with missing host!');
+            context.commit('add', payload);
+        },
+        error(context) {
+            const state = context.state;
             const errors = []
             const isNone = obj => obj === '' || obj === undefined || obj == null;
+            if (state.mcversion === '') errors.push('profile.noversion')
+            if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.missingjava')
             if (isNone(state.mcversion)) errors.push('profile.noversion')
             if (isNone(state.java)) errors.push('profile.nojava')
             if (isNone(state.host)) errors.push('profile.nohost')
             return errors;
-        },
-    },
-    actions: {
-        serialize(context, payload) {
-            return JSON.stringify(context.state, (key, value) => {
-                if (key === 'settings' || key === 'maps' || key === 'status') return undefined;
-                return value;
-            })
         },
         /**
          * 
@@ -42,12 +68,10 @@ export default {
             if (context.state.status.pingToServer && !force) return Promise.resolve();
             context.commit('profile', { status: Server.Status.pinging() })
             if (context.state.host === undefined) return Promise.reject('server.host.empty')
-            return context.dispatch('query', {
-                service: 'server',
-                action: 'ping',
-                payload: { host: context.state.host, port: context.state.port },
-                timeout: 1000000,
-            }, { root: true })
+            return Server.fetchStatusFrame({
+                host: context.state.host,
+                port: context.state.port,
+            }, { protocol: 335 })
                 .then((frame) => {
                     const status = Server.Status.from(frame)
                     status.pingToServer = frame.ping
@@ -55,7 +79,7 @@ export default {
                         icon: status.icon,
                         status,
                     }
-                    const versions = protocol[status.protocolVersion]
+                    const versions = []; //protocol[status.protocolVersion]
                     if (versions) context.commit('profile', { mcversion: versions[0] });
                     context.commit('profile', all)
                     return status;

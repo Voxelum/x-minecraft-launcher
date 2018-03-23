@@ -1,28 +1,25 @@
 import modules from './modules'
 
 export default {
+    namespaced: true,
     modules,
     state: () => ({
         id: '',
-        type: '',
         name: '',
+
         resolution: { width: 800, height: 400, fullscreen: false },
         java: '',
         minMemory: 1024,
         maxMemory: 2048,
         vmOptions: [],
         mcOptions: [],
+
         mcversion: '',
+
+        type: 'modpack',
     }),
     getters: {
         id: state => state.id,
-        type: state => state.type,
-        errors(state) {
-            const errors = []
-            if (state.mcversion === '') errors.push('profile.noversion')
-            if (state.java === '' || state.java === undefined || state.java === null) errors.push('profile.missingjava')
-            return errors
-        },
         name: state => state.name,
         mcversion: state => state.mcversion,
         java: state => state.java,
@@ -31,26 +28,46 @@ export default {
         vmOptions: state => state.vmOptions,
         mcOptions: state => state.mcOptions,
         resolution: state => state.resolution,
+
+        type: state => 'modpack',
     },
     mutations: {
-        profile(state, option) {
+        edit(state, option) {
+            delete option.id;
             Object.keys(option)
                 .forEach((key) => { state[key] = option[key] })
         },
     },
     actions: {
+        async load(context) {
+            const path = `profiles/${context.state.id}/profile.json`;
+            const data = await context.dispatch('read', { path, fallback: {}, type: 'json' }, { root: true });
+            context.commit('edit', data);
+            for (const m of Object.keys(modules)) {
+                await context.dispatch(`${m}/load`, { id: context.state.id });
+            }
+        },
+        save(context) {
+            const path = `profiles/${context.state.id}/profile.json`;
+            const data = JSON.stringify(context.state, (key, value) => {
+                if (modules[key]) return undefined;
+                return value;
+            })
+            return context.dispatch('write', { path, data }, { root: true });
+        },
         edit(context, option) {
             const keys = Object.keys(option);
             if (keys.length === 0) return;
-            let changed = false;
+            const profile = {};
             for (const key of keys) {
                 if (context.state[key] !== undefined) {
                     if (context.state[key] !== option[key]) {
-                        changed = true;
+                        profile[key] = option[key]
                     }
                 }
             }
-            if (changed) context.commit('profile', option)
+            if (Object.keys(profile) !== 0) context.commit('edit', profile);
         },
+        refresh(context, payload) { },
     },
 }

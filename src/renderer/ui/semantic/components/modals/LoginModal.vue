@@ -1,6 +1,6 @@
 <template>
     <div class="ui basic modal" style="padding: 0 20% 0 20%">
-        <i class="close icon" v-if="this.$store.state.auth.authInfo !== undefined"></i>
+        <i class="close icon" v-if="this.$store.state.user.auth !== undefined"></i>
         <div class="ui noselect" style="padding:15px">
             <h3 class="ui inverted header segment center aligned ">
                 <div class="content">
@@ -54,6 +54,7 @@
 
 <script>
 import vuex from 'vuex'
+import { remote } from 'electron'
 
 export default {
     data: () => ({
@@ -65,13 +66,19 @@ export default {
         animations: ['jiggle', 'shake', 'tada'],
     }),
     computed: {
-        ...vuex.mapGetters('auth', ['history', 'mode', 'modes', 'logined']),
+        ...vuex.mapGetters('user', ['history', 'mode', 'modes', 'logined']),
+    },
+    watch: {
+        mode() {
+            console.log('mode change!');
+        }
     },
     mounted() {
         const self = this
         $(this.$refs.authMod).dropdown({
             onChange: (value, text, $selectedItem) => {
                 self.selectMode(value)
+                // self.$store.dispatch('auth/selectMode', value)
             },
         })
         $(this.$refs.accountDropdown).dropdown()
@@ -85,7 +92,7 @@ export default {
         if (!this.logined) this.show()
     },
     methods: {
-        ...vuex.mapActions('auth', ['selectMode', 'login']),
+        ...vuex.mapActions('user', ['selectMode', 'login']),
         updateAccount(account) {
             this.account = account;
         },
@@ -123,10 +130,11 @@ export default {
         },
         doLogin() {
             if (this.account.length === 0) this.shake(this.$refs.accountField)
-            else if (this.password.length === 0 && this.mode !== 'offline') this.shake(this.$refs.passwordField)
-            else {
+            else if (this.password.length === 0 && this.mode !== 'offline') {
+                this.shake(this.$refs.passwordField)
+            } else {
                 this.logining = true
-                this.login({
+                this.$store.dispatch('user/login', {
                     account: this.account,
                     password: this.password,
                     mode: this.mode,

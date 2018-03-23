@@ -11,5 +11,6 @@ thumbs.db
 !.gitkeep
 static/semantic
 /semantic
+*.lock
 
 package-lock.json

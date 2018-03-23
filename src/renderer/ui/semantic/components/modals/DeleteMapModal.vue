@@ -28,7 +28,7 @@ export default {
         $(this.$el).modal({
             blurring: true,
             onApprove($element) {
-                self.$store.dispatch(`profiles/${self.id}/deleteMap`, self.map)
+                self.$store.dispatch(`profiles/${self.id}/map/delete`, self.map)
                 return true;
             },
         })

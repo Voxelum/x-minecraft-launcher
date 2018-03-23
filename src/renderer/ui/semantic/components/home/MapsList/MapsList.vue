@@ -38,17 +38,18 @@ export default {
     },
     computed: {
         id() { return this.$route.params.id },
-        maps() { return this.$store.getters[`profiles/${this.id}/maps`] || [] }
+        maps() { return this.$store.getters[`profiles/${this.id}/map/all`] || [] }
     },
     methods: {
         ...vuex.mapActions(['saveDialog', 'openDialog']),
         importDialog() {
             this.openDialog().then((files) => {
-                this.$store.dispatch(`profiles/${this.id}/importMap`, files)
+                this.$store.dispatch(`profiles/${this.id}/map/import`, files)
             })
         },
         importMap(event) {
-            this.$store.dispatch(`profiles/${this.id}/importMap`,
+            if (!event.dataTransfer) return;
+            this.$store.dispatch(`profiles/${this.id}/map/import`,
                 Array.from(event.dataTransfer.files).map(f => f.path))
         },
         deleteMap(map) {
@@ -57,7 +58,7 @@ export default {
         exportMap(map) {
             this.saveDialog({ title: 'Export map to', defaultPath: `${map.filename}` })
                 .then((file) => {
-                    this.$store.dispatch(`profiles/${this.id}/exportMap`,
+                    this.$store.dispatch(`profiles/${this.id}/map/export`,
                         { map: map.filename, file })
                 })
         },

@@ -1,6 +1,5 @@
 import mocha from 'mocha'
 import assert from 'assert'
-import curseforge from '../../src/main/services/curseforge'
 
 describe('Fetch detail', () => {
     it('should test project.image is not null and a valid string', (done) => {

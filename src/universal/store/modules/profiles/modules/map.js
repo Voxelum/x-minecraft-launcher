@@ -1,11 +1,19 @@
 import { WorldInfo } from 'ts-minecraft'
+import fs from 'fs-extra'
+import Zip from 'jszip'
 import paths from 'path'
 import Vue from 'vue'
 
+const allFiles = folder =>
+    fs.readdirSync(folder)
+        .map(file => (fs.lstatSync(`${folder}/${file}`).isDirectory() ? allFiles(`${folder}/${file}`) : [`${folder}/${file}`]))
+        .reduce((left, right) => [...left, ...right], []);
+
 export default {
+    namespaced: true,
     state: () => [],
     getters: {
-        maps: state => state,
+        all: state => state,
     },
     mutations: {
         setMaps(state, maps) {
@@ -19,7 +27,7 @@ export default {
         },
     },
     actions: {
-        async importMap(context, locations) {
+        import(context, locations) {
             if (typeof locations === 'string') {
                 locations = [locations];
             }
@@ -54,20 +62,21 @@ export default {
          * @param {ActionContext} context 
          * @param {{file:string, map:string, zip:boolean}} payload
          */
-        exportMap(context, payload) {
+        async export(context, payload) {
             const id = context.getters.id;
-            const { map, zip, file } = payload;
-            return context.dispatch('query', {
-                service: 'maps',
-                action: 'export',
-                payload: {
-                    map: paths.join(context.rootGetters.root, `profiles/${id}/saves/${map}`),
-                    exportName: file,
-                    zip,
-                },
-            }, { root: true })
+            const exportName = payload.file;
+            const map = paths.join(context.rootGetters.root, `profiles/${id}/saves/${payload.map}`)
+            if (payload.zip) {
+                const targetZip = exportName;
+                const zip = new Zip();
+                await Promise.all(allFiles(map).map(file =>
+                    fs.readFile(file).then(buf => zip.file(paths.relative(map, file), buf)),
+                ))
+                return fs.writeFile(targetZip, await zip.generateAsync({ type: 'nodebuffer' }));
+            }
+            return fs.copy(map, exportName)
         },
-        deleteMap(context, map) {
+        delete(context, map) {
             const filename = map.filename;
             return context.dispatch('delete', `profiles/${context.getters.id}/saves/${filename}`, { root: true })
                 .then(() => {
