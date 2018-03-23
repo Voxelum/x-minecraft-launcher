@@ -28,6 +28,7 @@ export default {
         onlaunch() {
             this.launch(this.id).catch((e) => {
                 const type = typeof e === 'string' ? e : e.type;
+                console.error(e)
                 switch (type) {
                     case 'missing.version':
                         this.$ipc.emit('modal', 'missingVersion')

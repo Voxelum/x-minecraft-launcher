@@ -15,7 +15,7 @@ import vuex from 'vuex'
 
 export default {
     computed: {
-        ...vuex.mapGetters('auth', ['username'])
+        ...vuex.mapGetters('user', ['username'])
     },
     mounted() {
         $(this.$el).modal({ blurring: true })

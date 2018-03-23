@@ -1,8 +1,109 @@
-import * as fs from 'fs-extra'
-import * as path from 'path'
 import crypto from 'crypto'
 import Vue from 'vue'
 import { ActionContext } from 'vuex'
+import fs from 'fs-extra'
+import path from 'path'
+import { Mod, ResourcePack } from 'ts-minecraft'
+
+
+/**
+ * @type {ResourceParser[]}
+ */
+const parsers = [
+    { domain: 'mods', parse: (name, data, type) => Mod.parse(data) },
+    {
+        domain: 'resourcepacks',
+        parse: (name, data, type) => {
+            if (type === '') {
+                return ResourcePack.readFolder(name);
+            }
+            return ResourcePack.read(name, data)
+        },
+    },
+];
+
+async function readFolderFull(folder) {
+    const arr = [];
+    const files = await fs.readdir(folder);
+    for (const f of files) {
+        const st = await fs.stat(f); // eslint-disable-line
+        if (st.isDirectory()) {
+            arr.push(...readFolderFull(`${folder}/${f}`));
+        } else {
+            arr.push({ path: `${folder}/${f}`, data: await fs.readFile(`${folder}/${f}`) }) // eslint-disable-line
+        }
+    }
+    return arr;
+}
+
+/**
+ * 
+ * @param {string} folder 
+ * @param {crypto.Hash} hasher 
+ */
+async function hashFolder(folder, hasher) {
+    const files = await fs.readdir(folder);
+    for (const f of files) {
+        const st = await fs.stat(f); // eslint-disable-line
+        if (st.isDirectory()) {
+            hashFolder(`${folder}/${f}`, hasher);
+        } else {
+            hasher.update(await fs.readFile(`${folder}/${f}`)) // eslint-disable-line
+        }
+    }
+    return hasher;
+}
+
+/**
+ * 
+ * @param {string} root 
+ * @param {string} filePath 
+ */
+async function $import(root, filePath, signiture) {
+    const status = await fs.stat(filePath);
+    const name = path.basename(filePath);
+    let data;
+    let type;
+    let hash;
+    if (status.isDirectory()) {
+        type = '';
+        data = await readFolderFull(filePath);
+        const hasher = crypto.createHash('sha1');
+        data.forEach(f => hasher.update(f.data))
+        hash = hasher.digest('hex').toString('utf-8');
+    } else {
+        data = await fs.readFile(filePath);
+        type = path.extname(filePath);
+        hash = crypto.createHash('sha1').update(data).digest('hex').toString('utf-8');
+    }
+    const metaFile = `${hash}.json`;
+    const dataFile = `${hash}${type}`;
+    if (fs.existsSync(dataFile) && fs.existsSync(metaFile)) return undefined;
+
+    let meta;
+    let domain;
+    for (const parser of parsers) {
+        try {
+            meta = parser.parse(name, data, type);
+            if (meta instanceof Promise) meta = await meta; // eslint-disable-line
+            domain = parser.domain;
+            break;
+        } catch (e) { console.warn(`Fail with domain [${parser.domain}]`); console.warn(e) }
+    }
+    if (!domain || !meta) { throw new Error(`Cannot parse ${filePath}.`) }
+
+    const resource = { hash, name, type, meta, domain, signiture };
+    await fs.ensureDir(path.join(root, 'resources'));
+    if (status.isDirectory()) {
+        data.forEach((f) => {
+            
+        })
+    } else {
+        await fs.writeFile(path.join(root, 'resources', `${resource.hash}${resource.type}`), data);
+    }
+    await fs.writeFile(path.join(root, 'resources', `${resource.hash}.json`), JSON.stringify(resource));
+    return resource;
+}
 
 export default {
     namespaced: true,
@@ -25,7 +126,7 @@ export default {
     mutations: {
         rename(context, { resource, name }) { resource.name = name; },
         /**
-         * @param {Resource[]} payload 
+         * @param {{payload: Resource[]}} payload 
          */
         resources: (state, payload) => {
             payload.forEach((res) => {
@@ -81,38 +182,36 @@ export default {
         },
         /**
          * @param {ActionContext} context 
-         * @param {string[]|string| {signiture:any, files:string|string[]}} files 
+         * @param {string[] | string | {signiture:any, files:string[]}} infiles 
          */
-        import(context, files) {
-            const data = {
-                root: context.rootGetters.root,
-                files: [],
-                signiture: {
-                    source: 'local',
-                    date: Date.now(),
-                    meta: null,
-                },
-            }
-            if (files instanceof Array) {
-                data.files = files;
-                data.signiture.meta = files;
-            } else if (typeof files === 'string') {
-                data.files = [files]
-                data.signiture.meta = files;
+        async import(context, infiles) {
+            const root = context.rootGetters.root;
+            const files = [];
+            let signiture = {
+                source: 'local',
+                date: Date.now(),
+                meta: null,
+            };
+            if (infiles instanceof Array) {
+                files.push(...infiles);
+                signiture.meta = files;
+            } else if (typeof infiles === 'string') {
+                files.push(infiles)
+                signiture.meta = files;
             } else {
-                if (!files.files || files.files == null || !(files.files instanceof Array)) throw new Error('Illegal Argument format!')
-                if (!files.signiture || files.signiture == null) throw new Error('Have to have a signiture to import!')
-                data.files = files.files;
-                data.signiture = files.signiture
+                if (!infiles.files || !(infiles.files instanceof Array)) throw new Error('Illegal Argument format!')
+                if (!infiles.signiture) throw new Error('Have to have a signiture to import!')
+                files.push(...infiles.files);
+                signiture = infiles.signiture;
+                // data.signiture = files.signiture
             }
-            if (data.files.length === 0) return Promise.resolve();
-            return context.dispatch('query',
-                {
-                    service: 'repository',
-                    action: 'import',
-                    payload: data,
-                }, { root: true })
-                .then((resources) => { context.commit('resources', resources) })
+
+            const resources = (await Promise.all(files.map(f => $import(root, f, signiture))))
+                .filter(res => res !== undefined)
+
+            context.commit('resources', resources);
+
+            return Promise.resolve();
         },
 
         /**
@@ -135,7 +234,7 @@ export default {
                 file: `resources/${res.hash}${res.type}`,
                 toFolder: `${minecraft}/${res.domain}`,
                 mode: 'link',
-                name: `${res.hash}${res.type}`,
+                name: `${res.name}${res.type}`,
             }).then(() => res);
         },
         /**

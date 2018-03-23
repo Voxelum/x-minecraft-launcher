@@ -1,54 +1,129 @@
+import { net, app } from 'electron'
+import os from 'os'
 import path from 'path'
 import fs from 'fs-extra'
-import os from 'os'
+import download from 'ts-minecraft/dist/src/utils/download'
+import Zip from 'jszip'
+import { exec } from 'child_process'
 
-function findJavaFromHome(set) {
-    const home = process.env.JAVA_HOME;
-    if (!home) return set
-    const javaPath = path.join(home, 'bin', 'javaw.exe')
-    if (fs.existsSync(javaPath)) set[javaPath] = 0
-    return set
-}
-
-function findJavaFromPath(set) {
-    const pathString = process.env.PATH
-    const array = pathString.split(';')
-    for (const p of array) {
-        const javaPath = path.join(p, 'bin', 'javaw.exe')
-        if (fs.existsSync(javaPath)) set[javaPath] = 0
-    }
-    return set
-}
-
-/**
-* @author Indexyz
-*/
-function findJavaFromRegistry() {
-    let command;
-    const childProcess = require('child_process');
-
-    if (os.platform() === 'win32') command = 'REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome'
-    else command = 'find /usr/ -name java -type f'
-
-    return new Promise((resolve, reject) => {
-        childProcess.exec(command, (error, stdout, stderr) => {
-            if (stdout) {
-                const set = {}
-                stdout.split(os.EOL).map(item => (os.platform() !== 'win32' ?
-                    item.replace(/[\r\n]/g, '') :
-                    item.replace(/[\r\n]/g, '').replace(/\\\\/g, '\\').match(/\w(:[\\a-zA-Z0-9 ._]*)/)))
+async function findJava() {
+    let all = [];
+    const file = os.platform() === 'win32' ? 'java.exe' : 'java';
+    process.env.PATH.split(';').forEach(p => all.push(path.join(p, 'bin', file)))
+    if (process.env.JAVA_HOME) all.push(path.join(process.env.JAVA_HOME, 'bin', file))
+    if (os.platform() === 'win32') {
+        const out = await new Promise((resolve, reject) => {
+            exec('REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome', (error, stdout, stderr) => {
+                if (!stdout) reject();
+                resolve(stdout.split(os.EOL).map(item => (
+                    item.replace(/[\r\n]/g, '')))
                     .filter(item => item != null && item !== undefined)
                     .map(item => (item instanceof Array ? item[0] : item))
-                    .map(item => (os.platform() === 'win32' ? path.join(item, 'bin', 'javaw.exe') : item))
-                    .filter(item => fs.existsSync(item))
-                    .forEach((item) => { set[item] = 0 })
-                resolve(set);
-            }
-        });
+                    .map(item => path.join(item, 'bin', 'javaw.exe')))
+            });
+        })
+        all.push(...out);
+    } else if (os.platform() === 'darwin') {
+        all.push('/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java');
+    }
+    const set = {};
+    all.filter(p => fs.existsSync(p)).forEach((p) => { set[p] = 0 })
+    all = [];
+    for (const p of Object.keys(set)) {
+        if (await new Promise((resolve, reject) => {
+            exec(`"${p}" -version`, (err, sout, serr) => {
+                resolve(serr && serr.indexOf('java version') !== -1)
+            });
+        })) {
+            all.push(p);
+        }
+    }
+    return all;
+}
+
+// https://api.github.com/repos/Indexyz/ojrebuild/releases
+async function installJre() {
+    const info = await new Promise((resolve, reject) => {
+        const req = net.request({
+            method: 'GET',
+            protocol: 'https:',
+            hostname: 'api.github.com',
+            path: '/repos/Indexyz/ojrebuild/releases',
+        })
+        req.setHeader('User-Agent', 'ILauncher')
+        req.end();
+        let infojson = ''
+        req.on('response', (response) => {
+            response.on('data', (data) => {
+                infojson += data.toString();
+            })
+            response.on('end', () => {
+                resolve(JSON.parse(infojson))
+            })
+            response.on('error', (e) => {
+                console.error(`${response.headers}`);
+            })
+        })
+        req.on('error', (err) => {
+            reject(err)
+        })
     });
+    const latest = info[0];
+    let buildSystemId;
+    let arch;
+    switch (os.arch()) {
+        case 'x86':
+        case 'x32':
+            arch = 'x86'
+            break;
+        case 'x64':
+            arch = 'x86_64'
+            break;
+        default:
+            arch = 'x86';
+    }
+    switch (os.platform()) {
+        case 'darwin': break;
+        case 'win32':
+            buildSystemId = 'windows';
+            break;
+        case 'linux':
+            buildSystemId = 'el6_9';
+            break;
+        default:
+            buildSystemId = ''
+    }
+    if (!buildSystemId) throw new Error(`Not supporting system ${os.platform()}`);
+    if (!arch) throw new Error(`Not supporting arch ${os.arch()}`)
+    const downURL = latest.assets.map(ass => ass.browser_download_url)
+        .filter((ass) => {
+            const arr = ass.split('.');
+            return arr[arr.length - 2] === arch // && sys === arr[arr.length - 3]
+        })[0]
+    const splt = downURL.split('/');
+    const tempFileLoc = path.join(app.getPath('temp'), splt[splt.length - 1]);
+    // console.log('start download')
+    // console.log(tempFileLoc);
+    await fs.ensureFile(tempFileLoc)
+    // console.log(`download url ${downURL}`)
+    await download(downURL, tempFileLoc);
+    const jreRoot = path.join(app.getPath('userData'), 'jre')
+    // console.log(`jreRoot ${jreRoot}`)
+    const zip = await new Zip().loadAsync(await fs.readFile(tempFileLoc))
+    const arr = []
+    zip.forEach((name, entry) => {
+        const target = path.resolve(jreRoot, name)
+        arr.push(entry.async('nodebuffer')
+            .then(buf => fs.ensureFile(target).then(() => buf))
+            .then(buf => fs.writeFile(target, buf)))
+    })
+    await Promise.all(arr);
+    // console.log('deleting temp')
+    await fs.unlink(tempFileLoc)
 }
 
 export default {
+    namespaced: true,
     state: {
         javas: [],
         blacklist: [],
@@ -56,44 +131,51 @@ export default {
     },
     getters: {
         javas: state => state.javas.filter(loc => state.blacklist.indexOf(loc) === -1),
-        defaultJava: state => state.default,
+        default: state => state.default,
     },
     mutations: {
-        javas(state, javas) {
-            if (javas instanceof Array) state.javas = javas;
+        javas(state, inJava) {
+            if (inJava instanceof Array) state.javas.push(...inJava);
+            else state.push(inJava);
+            if (!state.default) state.default = state.javas[0]; 
         },
-        addJavaBlackList(state, java) { state.blacklist.push(java) },
+        blackList(state, java) { state.blacklist.push(java) },
+        default(state, def) {
+            state.default = def;
+        },
     },
     actions: {
-        addJavas(context, java) {
+        load(context) {
+            return context.dispatch('refresh');
+        },
+        add(context, java) {
             context.commit('javas', context.getters.javas.concat(java))
         },
-        addJava(context, java) {
-            context.commit('addJava', context.getters.javas.concat(java))
-        },
-        removeJava(context, java) {
+        remove(context, java) {
             const newarr = context.getters.javas.filter(j => j !== java);
             if (newarr.length !== context.getters.javas.length) {
                 context.commit('javas', newarr)
             }
         },
-        testJava(context, java) {
-
-        },
         /**
          * scan local java locations and cache
          */
-        updateJavas({ dispatch, commit }) {
-            return dispatch('query', { service: 'jre', action: 'availbleJre' }, { root: true }).then((javas) => {
-                commit('javas', javas);
-                return javas;
-            });
+        async refresh({ dispatch, commit }) {
+            const arr = await findJava();
+            const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
+            if (fs.existsSync(local)) arr.unshift(local);
+            commit('javas', arr);
+            return arr;
         },
-        downloadJavas(context) {
-            return context.dispatch('query', { service: 'jre', action: 'ensureJre' }, { root: true }).then((javas) => {
-                context.commit('javas', javas);
-                return javas;
-            });
+        async download(context) {
+            const arr = await findJava();
+            const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
+            if (fs.existsSync(local)) arr.unshift(local);
+            if (arr.length === 0) {
+                await installJre();
+                if (fs.existsSync(local)) arr.unshift(local);
+            }
+            return arr;
         },
     },
 }

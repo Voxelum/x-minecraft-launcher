@@ -34,7 +34,7 @@
         </div>
         <div class="field" style="z-index:0">
             <label>{{$t('launchsetting.jvm')}}</label>
-            <labeled-input style="z-index:0"  :labels="vmOptions" @dellabel="delVM" @addlabel="addVM"></labeled-input>
+            <labeled-input style="z-index:0" :labels="vmOptions" @dellabel="delVM" @addlabel="addVM"></labeled-input>
         </div>
         <div class="field" style="z-index:0">
             <label>{{$t('launchsetting.mc')}}</label>
@@ -54,7 +54,7 @@ export default {
         $(this.$refs.path).dropdown()
     },
     computed: {
-        ...vuex.mapGetters(["javas"]),
+        ...vuex.mapGetters('java', ["javas"]),
         id() { return this.$route.params.id },
         selectedJava() { return this.$store.getters[`profiles/${this.id}/java`] },
         vmOptions() {

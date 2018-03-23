@@ -9,7 +9,7 @@ import { mapState } from 'vuex'
 
 export default {
     computed: {
-        ...mapState(['theme']),
+        ...mapState('appearance', ['theme']),
     },
     beforeMount() {
         const route = localStorage.getItem('route');
@@ -28,20 +28,20 @@ export default {
             const dt = e.originalEvent.dataTransfer;
             if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1
                 : dt.types.contains('Files'))) {
-                if (!store.state.dragover) store.commit('dragover', true);
+                if (!store.state.dragover) store.localCommit('dragover', true);
                 window.clearTimeout(dragTimer);
             }
         });
         $(document).on('dragleave', function (e) {
             dragTimer = window.setTimeout(function () {
-                store.commit('dragover', false);
+                store.localCommit('dragover', false);
             }, 25);
         });
     },
     methods: {
         ondrop(event) {
             event.preventDefault()
-            this.$store.commit('dragover', false)
+            this.$store.localCommit('dragover', false)
             // return false;
         },
     },

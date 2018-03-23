@@ -1,5 +1,4 @@
 import { Forge } from 'ts-minecraft'
-import { ipcRenderer } from 'electron'
 
 function checkversion(remoteVersionList, files) {
     const versions = new Set(files)
@@ -36,9 +35,9 @@ export default {
     },
     actions: {
         load(context, payload) {
-            ipcRenderer.on('refresh', () => {
-                context.dispatch('refresh');
-            })
+            // ipcRenderer.on('refresh', () => {
+                // context.dispatch('refresh');
+            // })
             return context.dispatch('read', { path: 'forge-versions.json', fallback: {}, type: 'json' }, { root: true })
         },
         save(context, payload) {

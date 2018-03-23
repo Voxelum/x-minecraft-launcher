@@ -53,7 +53,7 @@ export default {
         write(context, payload) {
             let { path, data } = payload;
             path = paths.resolve(context.rootState.root, path)
-            if (typeof data === 'object' && !(data instanceof Buffer)) data = JSON.stringify(data)
+            if (typeof data === 'object' && !(data instanceof Buffer)) data = JSON.stringify(data, undefined, 4);
             const parent = paths.dirname(path)
             return fs.ensureDir(parent).then(() => fs.writeFile(path, data))
         },
@@ -84,7 +84,7 @@ export default {
                     await fs.writeFile(path, fallback);
                     return fallData;
                 }
-                throw new Error(`No such file ${path}`);
+                return undefined;
             }
             if (onread) onread(path);
             try {

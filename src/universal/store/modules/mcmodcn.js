@@ -1,7 +1,7 @@
 import querystring from 'querystring'
 import parser from 'fast-html-parser'
+import request from '../helpers/request'
 
-import request from '../html-request'
 
 /**
  * 
@@ -75,11 +75,47 @@ function parseNews(root) {
 
 
 export default {
-    initialize() {
-    },
-    proxy: {},
+    namespaced: true,
     actions: {
-        fetchDetail(context, url) {
+        /**
+         * 
+         * @param {vuex.ActionContext} context 
+         */
+        viewRandom(context) {
+            const parse = (randomSection) => {
+                randomSection = randomSection.removeWhitespace();
+                return randomSection.childNodes.map(parseFrame);
+            }
+            return request({
+                method: 'POST',
+                url: 'http://www.mcmod.cn/ajax/index/ajax___index_random.php',
+                headers: {
+                    Host: 'www.mcmod.cn',
+                    Origin: 'http://www.mcmod.cn',
+                    Referer: 'http://www.mcmod.cn/',
+                },
+            }, parse)
+            // return context.dispatch('query', {
+            //     service: 'mcmod',
+            //     action: 'fetchRandom',
+            // }, { root: true })
+        },
+        /**
+         * 
+         * @param {vuex.ActionContext} context 
+         */
+        view(context) {
+            return request('http://www.mcmod.cn', root => ({
+                news: parseNews(root),
+                content: parseAllClass(root),
+            }))
+        },
+        /**
+         * 
+         * @param {vuex.ActionContext} context 
+         */
+        detail(context, id) {
+            const url = `http://www.mcmod.cn/class/${id}.html`;
             return request(url, (pageCont) => {
                 pageCont = pageCont.removeWhitespace();
                 const infoBlock = pageCont.querySelector('.InfoBlock')
@@ -117,27 +153,11 @@ export default {
                         .childNodes[0].childNodes[0].text,
                 }
             })
-        },
-        fetchAll() {
-            return request('http://www.mcmod.cn', root => ({
-                news: parseNews(root),
-                content: parseAllClass(root),
-            }))
-        },
-        fetchRandom() {
-            const parse = (randomSection) => {
-                randomSection = randomSection.removeWhitespace();
-                return randomSection.childNodes.map(parseFrame);
-            }
-            return request({
-                method: 'POST',
-                url: 'http://www.mcmod.cn/ajax/index/ajax___index_random.php',
-                headers: {
-                    Host: 'www.mcmod.cn',
-                    Origin: 'http://www.mcmod.cn',
-                    Referer: 'http://www.mcmod.cn/',
-                },
-            }, parse)
+            // return context.dispatch('query', {
+            //     service: 'mcmod',
+            //     action: 'fetchDetail',
+            //     payload: `http://www.mcmod.cn/class/${id}.html`,
+            // }, { root: true })
         },
     },
 }

@@ -6,11 +6,9 @@
 
 <script>
 export default {
-    data() {
-        return {
-            selected: 0,
-        }
-    },
+    data: () => ({
+        selected: 0,
+    }),
     computed: {
         localizedId() { return this.$t(`${this.id}.name`) },
         localizedOptions() { return this.options.map(v => `${this.id}.${v}`).map(v => this.$t(v)) },

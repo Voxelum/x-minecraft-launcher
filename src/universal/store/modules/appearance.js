@@ -1,30 +1,34 @@
 import { ActionContext } from 'vuex'
 
 export default {
+    namespaced: true,
     state: {
-        theme: '',
+        theme: 'semantic',
         metas: {},
         allThemes: [],
-        defaultResolution: { width: 400, height: 400, fullscreen: false },
     },
     getters: {
         theme: state => state.theme,
         themeMeta: state => state.metas[state.theme],
         allThemeMetas: state => state.metas,
-        allThemes: state => state.allThemes,
-        defaultResolution: state => state.defaultResolution,
+        themes: state => state.allThemes,
     },
     mutations: {
-        setTheme(state, theme) {
+        theme(state, theme) {
             state.theme = theme;
         },
-        setDefaultResolution(state, resolution) {
-            state.defaultResolution.width = resolution.width;
-            state.defaultResolution.height = resolution.height;
-            state.defaultResolution.fullscreen = resolution.fullscreen;
+        themes(state, themes) {
+
         },
     },
     actions: {
+        async load(context) {
+            const data = await context.dispatch('read', { path: 'appearance.json', fallback: {} }, { root: true });
+            context.commit('theme', data.theme || 'semantic');
+        },
+        save(context) {
+            return context.dispatch('write', { path: 'appearance.json', data: JSON.stringify(context.state) }, { root: true })
+        },
         /**
          * 
          * @param {ActionContext} context 
@@ -36,14 +40,9 @@ export default {
                     context.commit('setTheme', payload.theme)
                 }
             }
-            if (payload.defaultResolution) {
-                context.commit('setDefaultResolution', payload.defaultResolution);
-            }
-        },
-        /**
-         * @param {ActionContext} context 
-         */
-        load(context, virtual) {
+            // if (payload.defaultResolution) {
+            //     context.commit('setDefaultResolution', payload.defaultResolution);
+            // }
         },
     },
 }

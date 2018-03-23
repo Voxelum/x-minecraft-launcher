@@ -9,7 +9,8 @@ import paths from 'path'
 import urls from 'url'
 import fs from 'fs-extra'
 import os from 'os'
-import storage from './storage'
+import vuex from 'vuex'
+import storeLoader from './store'
 
 const devMod = process.env.NODE_ENV === 'development'
 /**
@@ -32,53 +33,38 @@ let mainWindow;
  * @type {BrowserWindow}
  */
 let logWindow;
-
-let maindownloadCallback;
-const downloadTasks = new Map()
-
 let parking = false;
+/**
+ * @type {electron.NativeImage}
+ */
+let iconImage;
+/**
+ * @type {vuex.Store}
+ */
+let store;
 
-let iconImage
-
+/**
+ * @type {string}
+ */
 let root = process.env.LAUNCHER_ROOT
-let theme = 'semantic';
-
 const appData = app.getPath('appData');
 const cfgFile = `${appData}/launcher.json`
 
-function updateSettings(newRoot, newTheme) {
-    let updated = false;
-    if (newRoot && newRoot != null && newRoot !== root) {
-        root = newRoot;
-        app.setPath('userData', root);
-        updated = true;
-    }
-    if (newTheme && newTheme != null && newTheme !== theme) {
-        theme = newTheme;
-        updated = true;
-    }
-    if (updated) fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
-}
+/**
+ * Setup root and config
+ */
 
 try {
     const buf = fs.readFileSync(cfgFile)
     const cfg = JSON.parse(buf.toString())
     root = cfg.root || paths.join(appData, '.launcher');
     app.setPath('userData', root);
-    theme = cfg.theme || 'semantic'
 } catch (e) {
     root = paths.join(appData, '.launcher');
     app.setPath('userData', root);
-    theme = 'semantic'
-    fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
+    // theme = 'semantic'
+    fs.writeFile(cfgFile, JSON.stringify({ path: root }))
 }
-
-// const loadedStorage = storage(root);
-// loadedStorage.then((store) => {
-//     console.log(Object.keys(store))
-// }).catch((e) => {
-//     console.log(e)
-// })
 
 const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
     // Someone tried to run a second instance, we should focus our window.
@@ -90,6 +76,27 @@ const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) 
 
 if (isSecondInstance) {
     app.quit()
+}
+
+/**
+ * @type {Promise<void>}
+ */
+const storePromise = storeLoader(root).then((result) => {
+    store = result;
+})
+
+/**
+ * Helper functions
+ */
+
+function updateSettings(newRoot) {
+    let updated = false;
+    if (newRoot && newRoot != null && newRoot !== root) {
+        root = newRoot;
+        app.setPath('userData', root);
+        updated = true;
+    }
+    if (updated) fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
 }
 
 function setupIcon(window) {
@@ -112,18 +119,6 @@ function createLogWindow() {
     logWindow.webContents.setLayoutZoomLevelLimits(1, 1);
 }
 
-ipcMain.on('minecraft-stdout', (s) => {
-    if (logWindow) {
-        logWindow.webContents.send('minecraft-stdout', s);
-    }
-})
-
-ipcMain.on('minecraft-stderr', (s) => {
-    if (logWindow) {
-        logWindow.webContents.send('minecraft-stderr', s);
-    }
-})
-
 function createMainWindow() {
     /**
      * Initial window options
@@ -137,19 +132,18 @@ function createMainWindow() {
     })
     mainWindow.setTitle('ILauncher')
     setupIcon(mainWindow)
-    mainWindow.loadURL(`${winURL}?logger=false&theme=${theme}&root=${root}`)
+    mainWindow.loadURL(`${winURL}?logger=false&root=${root}`)
 
     mainWindow.on('closed', () => { mainWindow = null })
 }
 
-console.log('INDEX RUNNING!')
+/**
+ * ElectronApp event handle
+ */
 
 app.on('ready', () => {
-    console.log('READY!!!!!!!')
-    require('./services'); // load all service 
-
     iconImage = nativeImage.createFromPath(`${__static}/logo.png`) // eslint-disable-line no-undef
-    createMainWindow()
+    createMainWindow();
 
     const tray = new Tray(iconImage)
     tray.setToolTip('An Electron Minecraft Launcher')
@@ -176,11 +170,25 @@ app.on('activate', () => {
     if (mainWindow === null) createMainWindow()
 })
 
+/**
+ * Custom ipc event handle
+ */
 
-ipcMain.on('update', (event, newRoot, newTheme) => {
-    if (newRoot !== undefined || newTheme !== undefined) {
-        updateSettings(newRoot, newTheme);
-        newTheme = newTheme || 'semantic'
+ipcMain.on('minecraft-stdout', (s) => {
+    if (logWindow) {
+        logWindow.webContents.send('minecraft-stdout', s);
+    }
+})
+
+ipcMain.on('minecraft-stderr', (s) => {
+    if (logWindow) {
+        logWindow.webContents.send('minecraft-stderr', s);
+    }
+})
+
+ipcMain.on('update', (event, newRoot) => {
+    if (newRoot !== undefined) {
+        updateSettings(newRoot);
         parking = true
         mainWindow.close();
         createMainWindow();
@@ -209,6 +217,9 @@ ipcMain.on('exit', () => {
     }
 })
 
-export default {
-    service: require('./services'),
+export function commit(type, payload, option) {
+    storePromise.then(() => store.commit(type, payload, option))
+}
+export function dispatch(type, payload, option) {
+    return storePromise.then(() => store.dispatch(type, payload, option))
 }

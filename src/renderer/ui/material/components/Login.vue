@@ -62,8 +62,8 @@
             }
         },
         computed: {
-            ...mapState('auth', ['history', 'clientToken', 'mode', 'modes']),
-            ...mapGetters('auth', [
+            ...mapState('user', ['history', 'clientToken', 'mode', 'modes']),
+            ...mapGetters('user', [
                 'disablePassword',
             ])
         },
@@ -73,7 +73,7 @@
             },
             login () {
                 this.logining = true
-                this.$store.dispatch('auth/login',{ 
+                this.$store.dispatch('user/login',{ 
                     account: this.account,
                     password: this.password,
                     mode: this.mode,

@@ -123,7 +123,8 @@ let rendererConfig = {
       'vue$': 'vue/dist/vue.esm.js',
       'locales': path.join(__dirname, '../locales'),
       'static': path.join(__dirname, '../static'),
-      'shared': path.join(__dirname, '../src/shared')
+      'universal': path.join(__dirname, '../src/universal'),
+      '@universal': path.join(__dirname, '../src/universal'),
     },
     extensions: ['.js', '.vue', '.json', '.css', '.node']
   },

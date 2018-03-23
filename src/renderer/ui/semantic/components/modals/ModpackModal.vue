@@ -56,7 +56,7 @@ export default {
         })
     },
     computed: {
-        ...vuex.mapGetters('auth', ['username']),
+        ...vuex.mapGetters('user', ['username']),
         id() { return this.$route.params.id; },
         selected() { return this.$store.getters['profiles/get'](this.id) }
     },
