@@ -8,11 +8,14 @@
                             <i class="arrow up icon"></i>
                         </div>
                         <transition v-if="type==='add'" name="fade" mode="out-in">
-                            <div :key="deleting?'a':'b'" class="ui red basic button" @click="ondelete">
+                            <div :key="deleting?'a':'b'" class="ui black basic button" @click="ondelete">
                                 {{deleting?$t('!delete'):"X"}}
                             </div>
                         </transition>
-                        <div v-if="type==='add'" class="ui green basic button" @click="$emit('change',val.name)">{{$t('add')}}</div>
+                        <div v-if="type==='add'" class="ui black basic button" @click="$emit('change',val.name)">{{$t('add')}}</div>
+                        <div class="ui basic black button" @click="onexport">
+                            Export
+                        </div>
                         <div v-if="type==='remove'" class="ui red basic button" @click="$emit('change',val.name)">{{$t('remove')}}</div>
                         <div class="ui basic black button" v-if="type === 'remove'" @click="$emit('movedown', val.name)">
                             <i class="arrow down icon"></i>
@@ -67,6 +70,9 @@ export default {
                 this.$emit('delete', this.val.hash)
                 this.deleting = false
             }
+        },
+        onexport() {
+            this.$emit('export', this.val.hash);
         }
     }
 }
@@ -75,16 +81,16 @@ export default {
 <style>
 .fadee-enter-active,
 .fadee-leave-active {
-    opacity: 1;
-    transition: opacity .5s
+  opacity: 1;
+  transition: opacity 0.5s;
 }
 
 .fadee-enter,
 .fadee-leave-to {
-    opacity: 0
+  opacity: 0;
 }
 
 .flip-list-move {
-    transition: transform 1s;
+  transition: transform 1s;
 }
 </style>

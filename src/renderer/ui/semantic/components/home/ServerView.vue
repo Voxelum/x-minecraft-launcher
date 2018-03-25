@@ -34,9 +34,7 @@
                     <router-link to="gamesettings" class="item" style="border-bottom:0;border-top:0;">{{$t('setting.name')}}</router-link>
                     <router-link to="resourcepacks" class="item" style="border-bottom:0;border-top:0;">{{$tc('resourcepack.name', 0)}}</router-link>
                     <router-link to="mods" class="item">{{$tc('mod.name', 0)}}</router-link>
-                    <div class="header item"> {{$t('advanced')}} </div>
-                    <router-link to="forge" class="item"> {{$t('forge.name')}} </router-link>
-                    <!-- <a class="item"> {{$t('liteloader')}} </a> -->
+                    <router-link to="version" class="item"> {{$t('version.name', 0)}}</router-link>
                     <router-link to="launchsettings" class="item">{{$t('launchsetting.name')}}</router-link>
                 </div>
             </div>

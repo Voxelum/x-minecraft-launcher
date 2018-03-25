@@ -9,7 +9,7 @@ import ResourcePackList from './components/home/ResourcePackList'
 import GameSettings from './components/home/GameSettings'
 import ModsList from './components/home/ModsList'
 import MapsList from './components/home/MapsList'
-import ForgeView from './components/home/ForgeView'
+import VersionView from './components/home/VersionView'
 import LaunchSettings from './components/home/LaunchSettings'
 import CardsButtonGroup from './components/home/CardsButtonGroup'
 import ProfileSelectedButtonGroup from './components/home/ProfileSelectedButtonGroup'
@@ -63,8 +63,8 @@ export default {
                     component: ModsList,
                 },
                 {
-                    path: 'forge',
-                    component: ForgeView,
+                    path: 'version',
+                    component: VersionView,
                 },
                 {
                     path: 'maps',
@@ -104,8 +104,8 @@ export default {
                     component: ModsList,
                 },
                 {
-                    path: 'forge',
-                    component: ForgeView,
+                    path: 'version',
+                    component: VersionView,
                 },
                 {
                     path: 'launchsettings',

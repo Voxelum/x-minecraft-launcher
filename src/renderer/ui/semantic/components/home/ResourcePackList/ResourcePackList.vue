@@ -25,14 +25,10 @@
                         {{$t('resourcepack.import')}}
                         <i class="plus icon"></i>
                     </a>
-                    <a class="item" @click="exportResourcePack">
-                        {{$t('resourcepack.export')}}
-                        <i class="upload icon"></i>
-                    </a>
                 </div>
             </div>
             <div class="ui relaxed list">
-                <list-cell v-for="value in unselecting" :key="value.name" :val="value" type="add" @change="add" @delete="ondelete"></list-cell>
+                <list-cell v-for="value in unselecting" :key="value.name" :val="value" type="add" @change="add" @delete="ondelete" @export="onexport"></list-cell>
             </div>
         </div>
         <div class="eight wide column">
@@ -58,16 +54,15 @@ export default {
     }),
     components: { ListCell: () => import('./ListCell') },
     computed: {
-        id() { return this.$route.params.id },
         ...mapGetters('repository', ['resourcepacks']),
         unselecting() {
             return this.resourcepacks.filter(e => this.selectingNames.indexOf(e.name) === -1)
         },
         selecting() {
-            return this.selectingNames.map(name => this.nameToEntry[name])
+            return this.selectingNames.map(name => this.nameToEntry[name]) || []
         },
         selectingNames() {
-            return this.$store.getters[`profiles/${this.id}/resourcepacks`]
+            return this.$store.getters[`profiles/${this.$route.params.id}/settings/resourcepacks`]
         },
         nameToEntry() {
             const map = {}
@@ -85,16 +80,22 @@ export default {
     },
     methods: {
         ...mapActions(['openDialog']),
-        ...mapActions('repository', ['import', 'remove', 'rename']),
+        ...mapActions('repository', ['import', 'remove', 'rename', 'exports']),
         resourcepack(action, pack) {
-            this.$store.commit(`profiles/${this.id}/resourcepack`, { action, pack })
+            this.$store.commit(`profiles/${this.$route.params.id}/settings/resourcepack`,
+                { action, pack })
         },
         add(pack) { this.resourcepack('add', pack) },
         $remove(pack) { this.resourcepack('remove', pack) },
         moveup(name) { this.resourcepack('moveup', name) },
         movedown(name) { this.resourcepack('movedown', name) },
-        exportResourcePack() {
-            // this.openDialog({}).then(this.import)
+        onexport(hash) {
+            const self = this;
+            this.openDialog({ properties: ['openDirectory'] }).then((dir) => {
+                if (dir.length === 0) return;
+                self.$store.dispatch('repository/exports',
+                    { targetDirectory: dir[0], resource: hash });
+            })
         },
         importResourcePack() {
             this.openDialog({

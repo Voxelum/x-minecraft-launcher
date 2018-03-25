@@ -1,3 +1,1 @@
-import inst from './ResourcePackList.vue'
-
-export default inst
+export { default } from './ResourcePackList'

@@ -94,6 +94,8 @@
         "pending": "Downloading...",
         "local": "This version is in the disk",
         "snapshot": "Snapshot",
+        "latest": "Latest",
+        "recommended": "Recommended",
         "all": "All",
         "allVersion": "All versions",
         "release": "Release",

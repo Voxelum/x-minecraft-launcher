@@ -6,6 +6,13 @@ import download from 'ts-minecraft/dist/src/utils/download'
 import Zip from 'jszip'
 import { exec } from 'child_process'
 
+function testJavaVersion(p) {
+    return new Promise((resolve, reject) => {
+        exec(`"${p}" -version`, (err, sout, serr) => {
+            resolve(serr && serr.indexOf('java version') !== -1)
+        });
+    })
+}
 async function findJava() {
     let all = [];
     const file = os.platform() === 'win32' ? 'java.exe' : 'java';
@@ -30,11 +37,7 @@ async function findJava() {
     all.filter(p => fs.existsSync(p)).forEach((p) => { set[p] = 0 })
     all = [];
     for (const p of Object.keys(set)) {
-        if (await new Promise((resolve, reject) => {
-            exec(`"${p}" -version`, (err, sout, serr) => {
-                resolve(serr && serr.indexOf('java version') !== -1)
-            });
-        })) {
+        if (await testJavaVersion(p)) {
             all.push(p);
         }
     }
@@ -126,20 +129,18 @@ export default {
     namespaced: true,
     state: {
         javas: [],
-        blacklist: [],
         default: '',
     },
     getters: {
-        javas: state => state.javas.filter(loc => state.blacklist.indexOf(loc) === -1),
+        all: state => state.javas,
         default: state => state.default,
     },
     mutations: {
         javas(state, inJava) {
             if (inJava instanceof Array) state.javas.push(...inJava);
             else state.push(inJava);
-            if (!state.default) state.default = state.javas[0]; 
+            if (!state.default) state.default = state.javas[0];
         },
-        blackList(state, java) { state.blacklist.push(java) },
         default(state, def) {
             state.default = def;
         },
@@ -148,14 +149,26 @@ export default {
         load(context) {
             return context.dispatch('refresh');
         },
-        add(context, java) {
-            context.commit('javas', context.getters.javas.concat(java))
+        async add(context, java) {
+            const valid = await context.dispatch('test', java);
+            if (valid) context.commit('javas', java);
+            return valid;
         },
         remove(context, java) {
             const newarr = context.getters.javas.filter(j => j !== java);
             if (newarr.length !== context.getters.javas.length) {
-                context.commit('javas', newarr)
+                context.commit('javas', newarr);
             }
+        },
+        /**
+         * Test if this javapath exist and works
+         * @param {*} context 
+         * @param {*} javaPath 
+         */
+        async test(context, javaPath) {
+            const exist = await fs.existsSync(javaPath);
+            if (!exist) return false;
+            return testJavaVersion(javaPath);
         },
         /**
          * scan local java locations and cache

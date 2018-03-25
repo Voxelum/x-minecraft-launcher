@@ -5,36 +5,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import { Mod, ResourcePack } from 'ts-minecraft'
 
-
-/**
- * @type {ResourceParser[]}
- */
-const parsers = [
-    { domain: 'mods', parse: (name, data, type) => Mod.parse(data) },
-    {
-        domain: 'resourcepacks',
-        parse: (name, data, type) => {
-            if (type === '') {
-                return ResourcePack.readFolder(name);
-            }
-            return ResourcePack.read(name, data)
-        },
-    },
-];
-
-async function readFolderFull(folder) {
-    const arr = [];
-    const files = await fs.readdir(folder);
-    for (const f of files) {
-        const st = await fs.stat(f); // eslint-disable-line
-        if (st.isDirectory()) {
-            arr.push(...readFolderFull(`${folder}/${f}`));
-        } else {
-            arr.push({ path: `${folder}/${f}`, data: await fs.readFile(`${folder}/${f}`) }) // eslint-disable-line
-        }
-    }
-    return arr;
-}
+import wrapper from '../helpers/wrapper'
 
 /**
  * 
@@ -48,61 +19,10 @@ async function hashFolder(folder, hasher) {
         if (st.isDirectory()) {
             hashFolder(`${folder}/${f}`, hasher);
         } else {
-            hasher.update(await fs.readFile(`${folder}/${f}`)) // eslint-disable-line
+            hasher.update(await fs.readFile()) // eslint-disable-line
         }
     }
     return hasher;
-}
-
-/**
- * 
- * @param {string} root 
- * @param {string} filePath 
- */
-async function $import(root, filePath, signiture) {
-    const status = await fs.stat(filePath);
-    const name = path.basename(filePath);
-    let data;
-    let type;
-    let hash;
-    if (status.isDirectory()) {
-        type = '';
-        data = await readFolderFull(filePath);
-        const hasher = crypto.createHash('sha1');
-        data.forEach(f => hasher.update(f.data))
-        hash = hasher.digest('hex').toString('utf-8');
-    } else {
-        data = await fs.readFile(filePath);
-        type = path.extname(filePath);
-        hash = crypto.createHash('sha1').update(data).digest('hex').toString('utf-8');
-    }
-    const metaFile = `${hash}.json`;
-    const dataFile = `${hash}${type}`;
-    if (fs.existsSync(dataFile) && fs.existsSync(metaFile)) return undefined;
-
-    let meta;
-    let domain;
-    for (const parser of parsers) {
-        try {
-            meta = parser.parse(name, data, type);
-            if (meta instanceof Promise) meta = await meta; // eslint-disable-line
-            domain = parser.domain;
-            break;
-        } catch (e) { console.warn(`Fail with domain [${parser.domain}]`); console.warn(e) }
-    }
-    if (!domain || !meta) { throw new Error(`Cannot parse ${filePath}.`) }
-
-    const resource = { hash, name, type, meta, domain, signiture };
-    await fs.ensureDir(path.join(root, 'resources'));
-    if (status.isDirectory()) {
-        data.forEach((f) => {
-            
-        })
-    } else {
-        await fs.writeFile(path.join(root, 'resources', `${resource.hash}${resource.type}`), data);
-    }
-    await fs.writeFile(path.join(root, 'resources', `${resource.hash}.json`), JSON.stringify(resource));
-    return resource;
 }
 
 export default {
@@ -111,6 +31,25 @@ export default {
         mods: {},
         resourcepacks: {},
     }),
+    modules: {
+        mods: {
+            namespaced: true,
+            actions: {
+                parse: (context, { name, data, type }) => Mod.parse(data),
+            },
+        },
+        resourcepacks: {
+            namespaced: true,
+            actions: {
+                parse: (context, { name, data, type }) => {
+                    if (type === '') {
+                        return ResourcePack.readFolder(name);
+                    }
+                    return ResourcePack.read(name, data)
+                },
+            },
+        },
+    },
     getters: {
         domains: state => Object.keys(state),
         mods: state => Object.keys(state.mods).map(k => state.mods[k]) || [],
@@ -137,6 +76,8 @@ export default {
         remove(state, resource) { Vue.delete(state[resource.domain], resource.hash); },
     },
     actions: {
+        errors() { },
+
         /**
          * @param {ActionContext} context 
          */
@@ -205,8 +146,67 @@ export default {
                 signiture = infiles.signiture;
                 // data.signiture = files.signiture
             }
+            /**
+             * import single file to repo
+             * 
+             * @param {string} filePath 
+             */
+            const $import = async (filePath, $signiture) => {
+                const status = await fs.stat(filePath);
+                const name = path.basename(filePath);
 
-            const resources = (await Promise.all(files.map(f => $import(root, f, signiture))))
+                const importTaskContext = await context.dispatch('task/create', { id: { text: 'repository.import', args: [name] } }, { root: true })
+
+                let data;
+                let type;
+                let hash;
+
+                importTaskContext.update(1, 4, 'repository.import.checkingfile');
+                if (status.isDirectory()) {
+                    type = '';
+                    hash = (await hashFolder(filePath, crypto.createHash('sha1'))).digest('hex').toString('utf-8');
+                } else {
+                    data = await fs.readFile(filePath);
+                    type = path.extname(filePath);
+                    hash = crypto.createHash('sha1').update(data).digest('hex').toString('utf-8');
+                }
+                const metaFile = path.join(root, 'resources', `${hash}.json`);
+                const dataFile = path.join(root, 'resources', `${hash}${type}`);
+
+                if (fs.existsSync(dataFile) && fs.existsSync(metaFile)) {
+                    importTaskContext.finish('repository.import.existed');
+                    return undefined;
+                }
+
+                let meta;
+                let domain;
+                importTaskContext.update(2, 4, 'repository.import.parsing');
+                const parsers = Object.keys(context.state);
+                for (const parser of parsers) {
+                    try {
+                        meta = context.dispatch(`${parser}/parse`, { name, data, type });
+                        if (meta instanceof Promise) meta = await meta; // eslint-disable-line
+                        domain = parser;
+                        break;
+                    } catch (e) { console.warn(`Fail with domain [${parser.domain}]`); console.warn(e) }
+                }
+                if (!domain || !meta) { throw new Error(`Cannot parse ${filePath}.`) }
+
+                const resource = { hash, name, type, meta, domain, $signiture };
+
+                importTaskContext.update(3, 4, 'repository.import.storing');
+                await fs.ensureDir(path.join(root, 'resources'));
+                if (status.isDirectory()) {
+                    await fs.copy(filePath, dataFile);
+                } else {
+                    await fs.writeFile(dataFile, data);
+                }
+                importTaskContext.update(4, 4, 'repository.import.update');
+                await fs.writeFile(path.join(root, 'resources', `${resource.hash}.json`), JSON.stringify(resource, undefined, 4));
+                importTaskContext.finish();
+                return resource;
+            }
+            const resources = (await Promise.all(files.map(f => $import(f, signiture))))
                 .filter(res => res !== undefined)
 
             context.commit('resources', resources);
@@ -241,7 +241,7 @@ export default {
          * @param {ActionContext} context 
          * @param {{resource:string|Resource, targetDirectory:string}} payload 
          */
-        export(context, payload) {
+        exports(context, payload) {
             const { resource, targetDirectory } = payload
 
             /**
@@ -252,13 +252,12 @@ export default {
             else res = resource;
 
             if (!res) throw new Error(`Cannot find the resource ${resource}`);
-
-            return context.dispatch('export', {
+            return context.dispatch('exports', {
                 file: `resources/${res.hash}${res.type}`,
                 toFolder: targetDirectory,
                 mode: 'copy',
-                name: `${res.hash}${res.type}`,
-            }).then(() => res);
+                name: `${res.name}${res.type}`,
+            }, { root: true }).then(() => res);
         },
         refresh(context, payload) {
         },

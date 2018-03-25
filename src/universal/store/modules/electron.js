@@ -1,4 +1,4 @@
-import { remote } from 'electron'
+import { dialog, BrowserWindow } from 'electron'
 
 export default {
     actions: {
@@ -11,8 +11,8 @@ export default {
          */
         openDialog(context, payload) {
             return new Promise((resolve, reject) => {
-                remote.dialog.showOpenDialog(
-                    remote.BrowserWindow.getFocusedWindow(),
+                dialog.showOpenDialog(
+                    BrowserWindow.getFocusedWindow(),
                     payload,
                     (files) => {
                         files = files || [];
@@ -22,8 +22,8 @@ export default {
         },
         saveDialog(context, payload) {
             return new Promise((resolve, reject) => {
-                remote.dialog.showSaveDialog(
-                    remote.BrowserWindow.getFocusedWindow(),
+                dialog.showSaveDialog(
+                    BrowserWindow.getFocusedWindow(),
                     payload,
                     (file) => {
                         file = file || '';

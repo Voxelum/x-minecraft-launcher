@@ -139,6 +139,9 @@ export default {
         ondrop(event) {
             if (event.dataTransfer && event.dataTransfer.files) {
                 this.import(Array.from(event.dataTransfer.files).map(f => f.path))
+                    .catch((e) => {
+                        console.error(e);
+                    })
             }
             event.preventDefault()
         }

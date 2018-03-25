@@ -38,7 +38,7 @@ export default {
          * @param {ActionContext} context 
          * @param {{ file:string, toFolder:string, name:string, mode:string }} payload 
          */
-        export(context, payload) {
+        exports(context, payload) {
             const { file, toFolder, name, mode } = payload;
             const $mode = mode || 'copy';
             const from = paths.join(context.rootGetters.root, file)
