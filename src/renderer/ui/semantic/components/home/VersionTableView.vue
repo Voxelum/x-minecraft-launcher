@@ -1,42 +1,40 @@
 <template>
-    <div class="ui flowing popup bottom left transition hidden grid">
-        <div class="sixteen wide center aligned column">
-            <div class="ui left icon right action input">
-                <i class="search icon"></i>
-                <input type="text" placeholder="Filter" v-model="filter">
-                <span ref="alphaDropdown" class="ui basic floating dropdown button">
-                    <div class="text">{{$t('version.release')}}</div>
-                    <i class="dropdown icon"></i>
-                    <div class="menu">
-                        <div class="item" @click="filterType='snapshot'">{{$t('version.snapshot')}}</div>
-                        <div class="item" @click="filterType='release'">{{$t('version.release')}}</div>
-                        <div class="item" @click="filterType=''">{{$t('version.all')}}</div>
-                    </div>
-                </span>
-            </div>
-            <div class="ui divider"></div>
-            <div class="ui basic segment " :class="{disabled: metas.length==0}" style='height:300px;overflow-x: hidden;'>
-                <div v-if="metas.length==0" class="ui active inverted dimmer">
-                    <div class="ui indeterminate text loader">{{$t('version.prepare')}}</div>
+    <div class="sixteen wide center aligned column">
+        <div class="ui left icon right action input">
+            <i class="search icon"></i>
+            <input type="text" placeholder="Filter" v-model="filter">
+            <span ref="alphaDropdown" class="ui basic floating dropdown button">
+                <div class="text">{{$t('version.release')}}</div>
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    <div class="item" @click="filterType='snapshot'">{{$t('version.snapshot')}}</div>
+                    <div class="item" @click="filterType='release'">{{$t('version.release')}}</div>
+                    <div class="item" @click="filterType=''">{{$t('version.all')}}</div>
                 </div>
-                <table class="ui very basic selectable celled center aligned table" style='height:300px;overflow-x: hidden;'>
-                    <tbody>
-                        <tr style="cursor: pointer;" v-for="meta in metas" :key="meta.id" :url="meta.url" :version-id='meta.id' @click="onselect(meta.id)">
-                            <td>
-                                <div class="ui ribbon label">{{meta.type}}</div>
-                                <br> {{meta.id}}
-                            </td>
-                            <td>{{meta.releaseTime}}</td>
-                            <td class="selectable" :data-tooltip="$t(`version.${meta.status}`)" data-position="left center" @click="ondownload(meta.id)">
-                                <div style="padding:0 10px 0 10px;pointer-events: none;">
-                                    <i :class="downloadIcon(meta.status)" v-if="meta.status!=='loading'"></i>
-                                    <div class="ui active inline small loader" v-else></div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            </span>
+        </div>
+        <div class="ui divider"></div>
+        <div class="ui basic segment " :class="{disabled: metas.length==0}" style='overflow-x: hidden; max-height:300px'>
+            <div v-if="metas.length==0" class="ui active inverted dimmer">
+                <div class="ui indeterminate text loader">{{$t('version.prepare')}}</div>
             </div>
+            <table class="ui very basic selectable celled center aligned table" style='overflow-x: hidden;'>
+                <tbody>
+                    <tr style="cursor: pointer;" v-for="meta in metas" :key="meta.id" :url="meta.url" :version-id='meta.id' @click="onselect(meta.id)">
+                        <td>
+                            <div class="ui ribbon label">{{meta.type}}</div>
+                            <br> {{meta.id}}
+                        </td>
+                        <td>{{meta.releaseTime}}</td>
+                        <td class="selectable" :data-tooltip="$t(`version.${meta.status}`)" data-position="left center" @click="ondownload(meta.id)">
+                            <div style="padding:0 10px 0 10px;pointer-events: none;">
+                                <i :class="downloadIcon(meta.status)" v-if="meta.status!=='loading'"></i>
+                                <div class="ui active inline small loader" v-else></div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>

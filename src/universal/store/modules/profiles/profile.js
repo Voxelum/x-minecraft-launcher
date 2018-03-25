@@ -21,7 +21,7 @@ export default {
     getters: {
         id: state => state.id,
         name: state => state.name,
-        mcversion: state => state.mcversion,
+        mcversion: state => state.mcversion || '',
         java: state => state.java,
         maxMemory: state => state.maxMemory,
         minMemory: state => state.minMemory,

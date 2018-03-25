@@ -1,3 +1,1 @@
-import Inst from './MapsList'
-
-export default Inst
+export { default } from './MapsList'

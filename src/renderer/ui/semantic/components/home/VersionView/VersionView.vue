@@ -1,0 +1,175 @@
+<template>
+    <div>
+        <div class="ui secondary menu">
+            <div class="active item" data-tab="minecraft" @click="switchToMinecraft">Minecraft</div>
+            <div class="item" data-tab="forge" @click="switchToForge">Forge</div>
+            <div class="item" data-tab="liteloader" @click="switchToLiteloader">Liteloader</div>
+            <div class="right menu">
+                <div class="ui left icon action input">
+                    <i class="search icon"></i>
+                    <input type="text" placeholder="Filter" v-model="filter">
+                    <span ref="alphaDropdown" class="ui basic floating dropdown button">
+                        <div class="text">{{$t(`version.${filterType}`)}}</div>
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <div class="item" v-for="t in filterTypes" :key="t" @click="filterType=t">{{$t(`version.${t}`)}}</div>
+                        </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui divider"></div>
+        <div class="ui active tab" data-tab="minecraft">
+            <table class="ui very basic selectable celled table" style='overflow-x: hidden;'>
+                <tbody>
+                    <mc-version-cell v-for="meta in mcMetas" :meta="meta" :selected="mcVersion===meta.id" :key="meta.id" @select="selectMinecraft(meta)" @download="downloadMinecraft(meta)"></mc-version-cell>
+                </tbody>
+            </table>
+        </div>
+        <div class="ui tab" data-tab="forge">
+            <div class="ui center aligned middle aligned basic segment" v-if="!mcVersion">
+                <br>
+                <h2 class="ui icon header">
+                    <i class="exclamation icon"></i>
+                    <div class="sub header">Please Select Minecraft Version First!</div>
+                </h2>
+            </div>
+            <table v-else class="ui very basic selectable celled table" style='overflow-x: hidden;'>
+                <tbody>
+                    <forge-version-cell v-for="meta in forgeMetas" :meta="meta" :selected="forgeVersion===meta.version" :key="meta.id" @select="selectForge(meta)" @download="downloadForge(meta)"></forge-version-cell>
+                </tbody>
+            </table>
+        </div>
+        <div class="ui tab" data-tab="liteloader">
+            <div class="ui center aligned middle aligned basic segment" v-if="!mcVersion">
+                <br>
+                <h2 class="ui icon header">
+                    <i class="exclamation icon"></i>
+                    <div class="sub header">Please Select Minecraft Version First!</div>
+                </h2>
+            </div>
+            <table v-else class="ui very basic selectable celled table" style='overflow-x: hidden;'>
+                <tbody>
+                    <liteloader-version-cell v-if="liteMetas.release" :meta="liteMetas.release" :selected="liteVersion===liteMetas.release.version" :key="liteMetas.release.id" @select="selectLite(liteMetas.release)" @download="downloadLite(liteMetas.release)"></liteloader-version-cell>
+                    <liteloader-version-cell v-if="liteMetas.snapshot" :meta="liteMetas.snapshot" :selected="liteVersion===liteMetas.snapshot.version" :key="liteMetas.snapshot.id" @select="selectLite(liteMetas.snapshot)" @download="downloadLite(liteMetas.snapshot)"></liteloader-version-cell>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</template>
+
+<script>
+import vuex from 'vuex'
+
+export default {
+    components: {
+        VersionTableView: () => import('../VersionTableView'),
+        McVersionCell: () => import('../McVersionCell'),
+        ForgeVersionCell: () => import('../ForgeVersionCell'),
+        LiteloaderVersionCell: () => import('../LiteloaderVersionCell'),
+
+    },
+    data: () => ({
+        loading: false,
+        filterType: 'release',
+        filterTypes: ['release', 'snapshot', 'all'],
+        filter: '',
+    }),
+    mounted() {
+        $('.secondary.menu .item').tab();
+        $(this.$refs.alphaDropdown).dropdown();
+    },
+    computed: {
+        id() { return this.$route.params.id; },
+        selectingMeta() {
+            return this.$store.getters['versions/versions']
+                .filter(ver => ver.version === this.version)[0]
+        },
+
+        mcMetas() {
+            let metas = this.$store.getters['versions/versions'];
+            if (this.filterType !== 'all')
+                metas = metas.filter(v => v.type === this.filterType)
+            if (this.filter !== '')
+                metas = metas.filter(v => v.id.includes(this.filter))
+            return metas
+        },
+        mcVersion() { return this.$store.getters[`profiles/${this.id}/mcversion`] },
+
+
+        liteVersion() {
+            return this.$store.getters[`profiles/${this.id}/liteloader/version`]
+                || this.$t('version.none')
+        },
+        liteMetas() {
+            return this.$store.getters['versions/liteloader/versionsByMc'](this.mcVersion);
+        },
+
+        forgeVersion() {
+            return this.$store.getters[`profiles/${this.id}/forge/version`]
+                || this.$t('version.none')
+        },
+        forgeMetas() {
+            let metas = this.$store.getters['versions/forge/versionsByMc'](this.mcVersion) || [];
+            if (this.filterType !== 'all')
+                metas = metas.filter(v => v.type === this.filterType)
+            if (this.filter !== '')
+                metas = metas.filter(v => v.id.includes(this.filter))
+            return metas
+        },
+        forgeLatestVersion() {
+            return this.$store.getters['versions/forge/latestByMc'](this.mcVersion)
+        },
+        forgeRecommendedVersion() {
+            return this.$store.getters['versions/forge/recommendedByMc'](this.mcVersion)
+        },
+    },
+    methods: {
+        switchToMinecraft() {
+            $(this.$refs.alphaDropdown).dropdown();
+
+            this.filterTypes = ['release', 'snapshot', 'all']
+            this.filterType = 'release'
+        },
+        switchToForge() {
+            $(this.$refs.alphaDropdown).dropdown();
+            this.filterTypes = ['recommended', 'latest', 'all']
+            this.filterType = 'recommended'
+        },
+        switchToLiteloader() {
+            $(this.$refs.alphaDropdown).dropdown();
+            this.filterTypes = ['all']
+            this.filterType = 'all'
+        },
+
+        downloadMinecraft(meta) { },
+        downloadForge(meta) { },
+        downloadLite(meta) { },
+
+        selectMinecraft(meta) {
+            this.$store.dispatch(`profiles/${this.id}/edit`, { mcversion: meta.id });
+        },
+        selectForge(meta) {
+            this.$store.dispatch(`profiles/${this.id}/forge/setVersion`, meta.version);
+        },
+        selectLite(meta) {
+            console.log(meta);
+            this.$store.dispatch(`profiles/${this.id}/liteloader/setVersion`, meta.version);
+        },
+        installForge() {
+            if (this.selectingMeta)
+                this.$store.dispatch('forge/download', this.selectingMeta);
+        },
+        refresh() {
+            this.loading = true
+            this.$store.dispatch('forge/refresh')
+                .then(() => { this.loading = false });
+        },
+    },
+}
+</script>
+
+<style>
+
+</style>

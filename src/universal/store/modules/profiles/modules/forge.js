@@ -49,7 +49,7 @@ export default {
         validate(context) {
             if (context.state.version === '') {
                 const mcver = context.getters.mcversion;
-                const rec = context.rootGetters['forge/getRecommendedByMc'](mcver);
+                const rec = context.rootGetters['versions/forge/getRecommendedByMc'](mcver);
                 if (!rec) throw new Error();
                 context.commit('version', rec.version)
             }

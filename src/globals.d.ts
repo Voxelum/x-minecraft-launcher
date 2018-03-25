@@ -58,6 +58,13 @@ namespace McModCN {
     }
 }
 
+interface TaskModule {
+    create(payload: { id: string, uuid: string, path: string[] }): string[]
+    update(payload: { path: string[], progress: number, total: number, status: string }): void
+    finish(payload: { path: string[] }): void
+    error(payload: { path: string[], error: any }): void
+}
+
 declare module 'fast-html-parser' {
     interface Node {
         text: string

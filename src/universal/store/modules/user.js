@@ -1,24 +1,11 @@
 import Vue from 'vue'
-import { Auth, GameProfile } from 'ts-minecraft'
+import { Auth } from 'ts-minecraft'
 import { ActionContext } from 'vuex'
-import { v4 } from 'uuid'
 
-const registered = {
-    offline: ({
-        account,
-        clientToken,
-    }) => Auth.offline(account),
-    mojang: ({ account, password, clientToken }) => Auth.Yggdrasil.login({
-        username: account,
-        password,
-        clientToken: clientToken || v4(),
-    }),
-};
 
 export default {
     namespaced: true,
     state: {
-        modes: ['mojang', 'offline'],
         mode: 'mojang',
         /**
          * @type {{[mode:string]: string[]}}
@@ -29,8 +16,36 @@ export default {
          */
         auth: {}, // cached
     },
+    modules: {
+        mojang: {
+            namespaced: true,
+            state: {
+                api: undefined,
+            },
+            mutations: {
+                api(state, api) { state.api = api; },
+            },
+            actions: {
+                login: (context, option) => Auth.Yggdrasil.login(option, context.state.api),
+                refresh: (context, option) => Auth.Yggdrasil.refresh(option, context.state.api),
+                validate: (context, option) => Auth.Yggdrasil.validate(option, context.state.api),
+                invalide: (context, option) => Auth.Yggdrasil.invalide(option, context.state.api),
+                signout: (context, option) => Auth.Yggdrasil.signout(option, context.state.api),
+            },
+        },
+        offline: {
+            namespaced: true,
+            actions: {
+                login: (context, option) => Auth.offline(option.username),
+                refresh(option) { },
+                validate(option, api) { return true; },
+                invalide(option, api) { },
+                signout(option, api) { },
+            },
+        },
+    },
     getters: {
-        modes: state => state.modes,
+        modes: state => Object.keys(state).filter(k => k !== 'mode' && k !== 'auth' && k !== 'history'),
         mode: state => state.mode,
         username: state => (state.auth.selectedProfile ? state.auth.selectedProfile.name : ''),
         id: state => (state.auth.id ? state.auth.id : ''),
@@ -41,10 +56,8 @@ export default {
     },
     mutations: {
         mode(state, mode) {
-            if (state.modes.indexOf(mode) !== -1) {
-                state.mode = mode;
-                if (!state.history[mode]) { state.history[mode] = [] }
-            }
+            state.mode = mode;
+            if (!state.history[mode]) { state.history[mode] = [] }
         },
         setHistory: (state, history) => { state.history = history },
         setCache: (state, cache) => { state.auth = cache },
@@ -68,6 +81,7 @@ export default {
         modes: (state, modes) => { state.modes = modes },
         clear(state) { state.auth = null; },
     },
+
     actions: {
         save(context, payload) {
             const { mutation } = payload;
@@ -77,7 +91,6 @@ export default {
         },
         async load(context) {
             const data = await context.dispatch('read', { path: 'auth.json', fallback: {}, type: 'json' }, { root: true });
-            context.commit('modes', Object.keys(registered));
             context.commit('mode', data.mode);
             context.commit('setHistory', data.history);
             context.commit('setCache', data.auth);
@@ -99,8 +112,8 @@ export default {
          * @return {Promise<Auth>}
          */
         async login(context, payload) {
-            if (!registered[payload.mode]) throw new Error(`Cannot find auth named ${payload.mode}`);
-            const result = registered[payload.mode](payload);
+            if (context.getters.modes.indexOf(payload.mode) === -1) throw new Error(`Cannot find auth named ${payload.mode}`);
+            const result = await context.dispatch(`${payload.mode}/login`);
             if (!result) throw new Error(`Cannot auth the ${payload.account}`);
             if (payload.mode !== 'offline' && payload.texture) {
                 /**

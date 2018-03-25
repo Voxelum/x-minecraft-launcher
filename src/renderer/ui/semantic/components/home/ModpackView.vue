@@ -13,7 +13,9 @@
                                 {{$tc('version.name', 0)}}: {{version}}
                                 <i class="dropdown icon"></i>
                             </h2>
-                            <version-table-view :id="id"></version-table-view>
+                            <div class="ui flowing popup bottom left transition hidden grid">
+                                <version-table-view :id="id" style="max-height:300px;overflow:auto"></version-table-view>
+                            </div>
                         </div>
                     </h1>
                 </div>
@@ -37,20 +39,8 @@
                     <router-link to="maps" class="item"> {{$tc('map.name', 0)}} </router-link>
                     <router-link to="resourcepacks" class="item" style="border-bottom:0;border-top:0;">{{$tc('resourcepack.name', 0)}}</router-link>
                     <router-link to="mods" class="item">{{$tc('mod.name', 0)}}</router-link>
-                    <div ref="acc" class="ui accordion">
-                        <a class="title header item">
-                            {{$t('advanced')}}
-                        </a>
-                        <div class="content">
-                            <router-link to="forge" class="item" data-tab="forge">
-                                {{$t('forge.name')}}
-                            </router-link>
-                            <!-- <router-link class="item" data-tab="liteloader">
-                                {{$t('liteloader')}}
-                            </router-link> -->
-                            <router-link to="launchsettings" class="item">Launch Settings</router-link>
-                        </div>
-                    </div>
+                    <router-link to="version" class="item"> {{$tc('version.name', 0)}}</router-link>
+                    <router-link to="launchsettings" class="item">{{$t('launchsetting.name')}}</router-link>
                 </div>
 
             </div>
@@ -59,7 +49,7 @@
             </div>
             <div class="pusher ui basic segment" style="overflow:auto; width:100%">
                 <transition name="fade" mode="out-in">
-                    <router-view style="padding: 10px 20px 10px 80px"></router-view>
+                    <router-view style="padding: 5px 20px 10px 80px"></router-view>
                 </transition>
             </div>
         </div>
@@ -68,16 +58,10 @@
 
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex'
-import VersionTableView from './VersionTableView'
-import ResourcePackList from './ResourcePackList'
-import GameSettings from './GameSettings'
-import MapsList from './MapsList'
-import ModsList from './ModsList'
 
 export default {
     components: {
-        VersionTableView, ResourcePackList,
-        GameSettings, MapsList, ModsList
+        VersionTableView: () => import('./VersionTableView'),
     },
     computed: {
         ...mapState('versions', ['minecraft']),

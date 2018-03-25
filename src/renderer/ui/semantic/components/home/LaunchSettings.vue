@@ -9,7 +9,7 @@
                         <i class="dropdown icon"></i>
                         <div class="text">{{selectedJava}}</div>
                         <div class="menu">
-                            <li class="item" v-for="value in javas" :key="value" @click="selectJava(value)">
+                            <li class="item" v-for="value in all" :key="value" @click="selectJava(value)">
                                 {{value}}
                             </li>
                         </div>
@@ -54,15 +54,11 @@ export default {
         $(this.$refs.path).dropdown()
     },
     computed: {
-        ...vuex.mapGetters('java', ["javas"]),
+        ...vuex.mapGetters('java', ["all"]),
         id() { return this.$route.params.id },
         selectedJava() { return this.$store.getters[`profiles/${this.id}/java`] },
-        vmOptions() {
-            return this.$store.getters[`profiles/${this.id}/vmOptions`]
-        },
-        mcOptions() {
-            return this.$store.getters[`profiles/${this.id}/mcOptions`]
-        }
+        vmOptions() { return this.$store.getters[`profiles/${this.id}/vmOptions`] },
+        mcOptions() { return this.$store.getters[`profiles/${this.id}/mcOptions`] }
     },
     methods: {
         ...vuex.mapActions(["addJavas", "openDialog", "removeJava"]),
