@@ -224,6 +224,14 @@ export default {
             return Version.checkDependency(version, location)
         },
         /**
+         * 
+         * @param {ActionContext} context 
+         * @param {{version: string, forge: string, liteloader: string}} option 
+         */
+        prepare(context, option) {
+            
+        },
+        /**
          * Refresh the remote versions cache 
          */
         async refresh(context) {

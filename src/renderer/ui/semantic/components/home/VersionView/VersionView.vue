@@ -68,7 +68,6 @@ export default {
         McVersionCell: () => import('../McVersionCell'),
         ForgeVersionCell: () => import('../ForgeVersionCell'),
         LiteloaderVersionCell: () => import('../LiteloaderVersionCell'),
-
     },
     data: () => ({
         loading: false,
@@ -82,10 +81,7 @@ export default {
     },
     computed: {
         id() { return this.$route.params.id; },
-        selectingMeta() {
-            return this.$store.getters['versions/versions']
-                .filter(ver => ver.version === this.version)[0]
-        },
+
 
         mcMetas() {
             let metas = this.$store.getters['versions/versions'];
@@ -98,18 +94,15 @@ export default {
         mcVersion() { return this.$store.getters[`profiles/${this.id}/mcversion`] },
 
 
+        liteMetas() {
+            return this.$store.getters['versions/liteloader/versionsByMc'](this.mcVersion);
+        },
         liteVersion() {
             return this.$store.getters[`profiles/${this.id}/liteloader/version`]
                 || this.$t('version.none')
         },
-        liteMetas() {
-            return this.$store.getters['versions/liteloader/versionsByMc'](this.mcVersion);
-        },
 
-        forgeVersion() {
-            return this.$store.getters[`profiles/${this.id}/forge/version`]
-                || this.$t('version.none')
-        },
+
         forgeMetas() {
             let metas = this.$store.getters['versions/forge/versionsByMc'](this.mcVersion) || [];
             if (this.filterType !== 'all')
@@ -118,17 +111,15 @@ export default {
                 metas = metas.filter(v => v.id.includes(this.filter))
             return metas
         },
-        forgeLatestVersion() {
-            return this.$store.getters['versions/forge/latestByMc'](this.mcVersion)
+        forgeVersion() {
+            return this.$store.getters[`profiles/${this.id}/forge/version`]
+                || this.$t('version.none')
         },
-        forgeRecommendedVersion() {
-            return this.$store.getters['versions/forge/recommendedByMc'](this.mcVersion)
-        },
+
     },
     methods: {
         switchToMinecraft() {
             $(this.$refs.alphaDropdown).dropdown();
-
             this.filterTypes = ['release', 'snapshot', 'all']
             this.filterType = 'release'
         },
@@ -143,9 +134,16 @@ export default {
             this.filterType = 'all'
         },
 
-        downloadMinecraft(meta) { },
-        downloadForge(meta) { },
-        downloadLite(meta) { },
+        downloadMinecraft(meta) {
+            this.$store.dispatch(`versions/download`, meta);
+        },
+        downloadForge(meta) {
+            this.$store.dispatch(`versions/forge/download`, meta);
+        },
+        downloadLite(meta) {
+            this.$store.dispatch(`versions/liteloader/download`, meta);
+
+        },
 
         selectMinecraft(meta) {
             this.$store.dispatch(`profiles/${this.id}/edit`, { mcversion: meta.id });
@@ -154,13 +152,9 @@ export default {
             this.$store.dispatch(`profiles/${this.id}/forge/setVersion`, meta.version);
         },
         selectLite(meta) {
-            console.log(meta);
             this.$store.dispatch(`profiles/${this.id}/liteloader/setVersion`, meta.version);
         },
-        installForge() {
-            if (this.selectingMeta)
-                this.$store.dispatch('forge/download', this.selectingMeta);
-        },
+
         refresh() {
             this.loading = true
             this.$store.dispatch('forge/refresh')
