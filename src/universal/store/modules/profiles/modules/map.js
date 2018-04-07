@@ -10,10 +10,9 @@ const allFiles = folder =>
         .reduce((left, right) => [...left, ...right], []);
 
 export default {
-    namespaced: true,
     state: () => [],
     getters: {
-        all: state => state,
+        maps: state => state,
     },
     mutations: {
         setMaps(state, maps) {
@@ -27,7 +26,7 @@ export default {
         },
     },
     actions: {
-        import(context, locations) {
+        importMap(context, locations) {
             if (typeof locations === 'string') {
                 locations = [locations];
             }
@@ -36,24 +35,47 @@ export default {
             }
             const $import = async (location) => {
                 const id = context.getters.id;
-                const valid = await WorldInfo.valid(location)
-                if (!valid) throw new Error(`Invalid map ${location}`)
+                let mapFileName;
+                const stat = await fs.stat(location);
+                let mapData;
+                if (stat.isDirectory()) {
+                    const entry = await WorldInfo.findEntry(location)
+                    mapData = await WorldInfo.parse(await fs.readFile(paths.join(location, entry)));
 
-                let name = paths.basename(location)
-                if (await context.dispatch('exist', name)) {
-                    name = `-${name}`
+                    mapFileName = paths.basename(location)
+                    if (await context.dispatch('exist', mapFileName, { root: true })) {
+                        mapFileName = `-${mapFileName}`
+                    }
+
+                    await context.dispatch('import', {
+                        file: location,
+                        toFolder: `profiles/${id}/saves/`,
+                        mapFileName,
+                    }, { root: true });
+                } else {
+                    const zip = await Zip().loadAsync(await fs.readFile(location));
+                    const entry = await WorldInfo.findEntry(zip);
+
+                    const ext = paths.extname(location);
+                    mapFileName = paths.basename(location);
+                    mapFileName = mapFileName.substr(0, mapFileName.length - ext.length);
+                    if (await context.dispatch('exist', mapFileName, { root: true })) {
+                        mapFileName = `-${mapFileName}`
+                    }
+
+                    const entryParentDir = paths.dirname(entry);
+
+                    mapData = await WorldInfo.parse(await zip.file(entry).async('nodebuffer'));
+                    for (const file of Object.keys(zip.files).filter(f => !zip.files[f].dir)) {
+                        const relativePath = paths.relative(entryParentDir, file);
+                        const target = paths.join(context.rootGetters.root, `/profiles/${id}/saves/${mapFileName}/${relativePath}`);
+                        const parnet = paths.dirname(target);
+                        await fs.ensureDir(parnet);
+                        zip.files[file].nodeStream().pipe(fs.createWriteStream(target));
+                    }
                 }
-                await context.dispatch('import', {
-                    file: location,
-                    toFolder: `profiles/${id}/saves/`,
-                    name,
-                }, { root: true })
-                const data = await context.dispatch('read', {
-                    path: `profiles/${id}/saves/${name}/level.dat`,
-                }, { root: true })
-                const mapinf = WorldInfo.parse(data);
-                mapinf.filename = name;
-                context.commit('addMap', mapinf);
+                mapData.filename = mapFileName;
+                context.commit('addMap', mapData);
             }
             return Promise.all(locations.map($import))
         },
@@ -62,7 +84,7 @@ export default {
          * @param {ActionContext} context 
          * @param {{file:string, map:string, zip:boolean}} payload
          */
-        async export(context, payload) {
+        async exportMap(context, payload) {
             const id = context.getters.id;
             const exportName = payload.file;
             const map = paths.join(context.rootGetters.root, `profiles/${id}/saves/${payload.map}`)
@@ -76,7 +98,7 @@ export default {
             }
             return fs.copy(map, exportName)
         },
-        delete(context, map) {
+        deleteMap(context, map) {
             const filename = map.filename;
             return context.dispatch('delete', `profiles/${context.getters.id}/saves/${filename}`, { root: true })
                 .then(() => {
@@ -84,9 +106,10 @@ export default {
                 })
         },
         async load(context, payload) {
-            const { id } = payload;
+            const id = context.getters.id;
             const readMap = async (file) => {
-                const exist = await context.dispatch('exist', `profiles/${id}/saves/${file}/level.dat`, { root: true })
+                const exist = await context.dispatch('exist', `profiles/${id}/saves/${file}/level.dat`, { root: true });
+                console.log(`profiles/${id}/saves/${file}/level.dat`)
                 if (!exist) return undefined;
                 const levBuf = await context.dispatch('read', {
                     path: `profiles/${id}/saves/${file}/level.dat`,
@@ -99,12 +122,12 @@ export default {
                         path: `profiles/${id}/saves/${file}/icon.png`,
                         fallback: '',
                     }, { root: true })
-                    if (imgBuf !== '') info.icon = `data:image/png;base64, ${imgBuf.toString('base64')}`;
+                    if (imgBuf) info.icon = `data:image/png;base64, ${imgBuf.toString('base64')}`;
                 } catch (e) {
                     console.error(e)
                 }
                 info.filename = file;
-                return info
+                return info;
             }
             let maps;
             try {
@@ -113,6 +136,7 @@ export default {
             } catch (e) {
                 console.warn(e)
             }
+            maps.id = id;
             context.commit('setMaps', maps);
         },
     },

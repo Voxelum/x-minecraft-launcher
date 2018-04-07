@@ -15,18 +15,10 @@
             </div>
         </div>
         <div class="eight wide column">
-            <div-header>
+            <h5 class="ui horizontal divider header">
                 <i class="disk outline icon"></i>
                 {{$t('resourcepack.available')}}
-            </div-header>
-            <div class="ui flowing popup top left transition hidden">
-                <div class="ui vertical center aligned secondary menu">
-                    <a class="item" @click="importResourcePack">
-                        {{$t('resourcepack.import')}}
-                        <i class="plus icon"></i>
-                    </a>
-                </div>
-            </div>
+            </h5>
             <div class="ui relaxed list">
                 <list-cell v-for="value in unselecting" :key="value.name" :val="value" type="add" @change="add" @delete="ondelete" @export="onexport"></list-cell>
             </div>
@@ -37,7 +29,7 @@
                 {{$t('resourcepack.selected')}}
             </h5>
             <div class="ui relaxed list">
-                <list-cell v-for="value in selecting" :key="value.name" :val="value" type="remove" @change="$remove" @moveup="moveup" @movedown="movedown"></list-cell>
+                <list-cell v-for="value in selecting" :key="value.name" :val="value" type="remove" @change="$remove" @moveup="moveup" @movedown="movedown" @export="onexport"></list-cell>
             </div>
         </div>
     </div>
@@ -113,7 +105,18 @@ export default {
                 })
         },
         ondelete(hash) {
-            this.remove(hash)
+            const self = this;
+            this.$ipc.emit('modal', 'generic', {
+                icon: 'trash',
+                header: 'Delete the resource pack from disk',
+                content: 'This will remove the resource pack file on disk, and it will not be able to redo. Are you sure to do this?',
+                acceptColor: 'red',
+                acceptIcon: 'trash',
+                accept: 'Delete',
+                onAccept() {
+                    self.remove(hash);
+                }
+            })
         },
     },
     mounted() {

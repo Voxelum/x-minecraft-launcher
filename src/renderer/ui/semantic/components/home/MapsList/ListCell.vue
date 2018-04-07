@@ -1,7 +1,7 @@
 <template>
-    <div class="image item">
+    <div class="image item" @contextmenu="openContextMenu">
         <div class="ui tiny rounded image">
-            <img v-if="!imageError" :src="map.icon" @error="imageError = true">
+            <img v-if="!imageError" :src="icon" @error="imageError = true">
             <i v-else class="huge bordered fitted map icon" style="font-size:3.5em"></i>
         </div>
         <div class="content" ref="contextMenu">
@@ -9,7 +9,7 @@
                 {{map.displayName}}
             </h3>
             <div class="meta">
-                {{$t(gameType)}} Mode
+                {{$t(gameType)}}
             </div>
             <div class="extra">
                 <a class="ui label"> {{$t(difficulty)}}</a>
@@ -19,7 +19,7 @@
                     {{$t('remove')}}
                 </a>
                 <a class="ui right floated basic button" @click="$emit('export', map)">
-                    {{$t('export')}}
+                    {{$t('map.export')}}
                 </a>
             </div>
         </div>
@@ -27,15 +27,21 @@
 </template>
 
 <script>
+import defaultIcon from 'static/unknown_server.png'
+import { ipcRenderer } from 'electron'
+
 export default {
     data: () => ({
         imageError: false,
     }),
     props: ['map'],
     computed: {
+        icon() {
+            return this.map.icon || defaultIcon;
+        },
         difficulty() {
             switch (this.map.difficulty) {
-                case 0: return 'difficulty.peasefule'
+                case 0: return 'difficulty.peaseful'
                 case 1: return 'difficulty.easy'
                 case 2: return 'difficulty.normal'
                 case 3: return 'difficulty.hard'
@@ -57,8 +63,23 @@ export default {
     mounted() {
     },
     methods: {
-        exportMap() { },
-        removeMap() { }
+        openContextMenu(event) {
+            const self = this; 
+            ipcRenderer.emit('contextMenu', [
+                {
+                    name: 'Import',
+                    onclick() {
+                        
+                    },
+                },
+                {
+                    name: 'Export',
+                    onclick() {
+                        self.$emit('export');
+                    },
+                },
+            ]);
+        },
     }
 }
 </script>

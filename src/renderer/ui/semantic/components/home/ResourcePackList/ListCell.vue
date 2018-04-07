@@ -4,19 +4,22 @@
             <div class="content">
                 <div class="center">
                     <div class="ui icon buttons">
+                        <div v-if="type==='remove'" class="ui red basic button" @click="$emit('change',val.name)">
+                            <i class="arrow left icon"></i>
+                        </div>
                         <div class="ui basic black button" v-if="type === 'remove'" @click="$emit('moveup', val.name)">
                             <i class="arrow up icon"></i>
                         </div>
-                        <transition v-if="type==='add'" name="fade" mode="out-in">
-                            <div :key="deleting?'a':'b'" class="ui black basic button" @click="ondelete">
-                                {{deleting?$t('!delete'):"X"}}
-                            </div>
-                        </transition>
-                        <div v-if="type==='add'" class="ui black basic button" @click="$emit('change',val.name)">{{$t('add')}}</div>
-                        <div class="ui basic black button" @click="onexport">
-                            Export
+                        <div class="ui red basic button" v-if="type !== 'remove'" @click="ondelete">
+                            <i class="trash alternate icon"></i>
                         </div>
-                        <div v-if="type==='remove'" class="ui red basic button" @click="$emit('change',val.name)">{{$t('remove')}}</div>
+                        <div class="ui basic black button" @click="onexport">
+                            {{$t('export')}}
+                        </div>
+                        <div v-if="type==='add'" class="ui black basic button" @click="$emit('change',val.name)">
+                            <i class="arrow right icon"></i>
+                        </div>
+
                         <div class="ui basic black button" v-if="type === 'remove'" @click="$emit('movedown', val.name)">
                             <i class="arrow down icon"></i>
                         </div>
@@ -40,7 +43,6 @@
 
 export default {
     data: () => ({
-        deleting: false,
         timeout: null,
     }),
     mounted() {
@@ -64,12 +66,7 @@ export default {
     props: ['val', 'type'],
     methods: {
         ondelete() {
-            if (!this.deleting) {
-                this.deleting = true
-            } else {
-                this.$emit('delete', this.val.hash)
-                this.deleting = false
-            }
+            this.$emit('delete', this.val.hash)
         },
         onexport() {
             this.$emit('export', this.val.hash);

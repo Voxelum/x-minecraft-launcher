@@ -1,6 +1,6 @@
 <template>
-    <h5 class="ui horizontal divider header" data-position="bottom center" style="cursor:pointer">
-        <slot></slot>
+    <h5 class="ui horizontal divider header">
+            <slot style="cursor:pointer"></slot>
     </h5>
 </template>
 

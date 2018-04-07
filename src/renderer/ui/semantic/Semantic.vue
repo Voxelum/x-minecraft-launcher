@@ -1,5 +1,5 @@
 <template>
-    <div class="ui celled grid segment" style="margin:0; border-radius:7px;">
+    <div class="ui celled grid segment" style="margin:0; border-radius:7px;" @click="hidePopup" @contextmenu="showPopup">
         <div class="moveable black row" style="border-radius:7px 7px 0 0;">
             <div class="four wide center aligned middle aligned column">
                 <h1 class="inverted ui header">
@@ -16,9 +16,9 @@
                 <user-dropdown></user-dropdown>
                 <skin-view width="210" height="400" :skin="skin"></skin-view>
             </div>
-            <div class="twelve wide column" style="max-height:500px; overflow-x:hidden; overflow-y:auto;">
+            <div class="twelve wide column" style="max-height:500px; overflow-x:hidden; overflow-y:hidden;">
                 <transition name="fade" mode="out-in">
-                    <router-view ref="view"></router-view>
+                    <router-view></router-view>
                 </transition>
             </div>
         </div>
@@ -37,18 +37,21 @@
             </div>
         </div>
         <modals ref='modals'></modals>
+        <context-menu ref="contextMenu" :items="contextMenu"></context-menu>
     </div>
 </template>
 
 <script>
 import vue from 'vue'
 
-import 'static/semantic/semantic.min.css'
-import 'static/semantic/semantic.min.js'
+import 'static/semantic/semantic.css'
+import 'static/semantic/semantic.js'
+import { ipcRenderer } from 'electron'
 
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 
 vue.component('pagination', () => import('./components/Pagination'));
+vue.component('context-menu', () => import('./components/ContextMenu'));
 vue.component('text-component', () => import('./components/TextComponent'))
 vue.component('draggable', () => import('vuedraggable'))
 vue.component('div-header', () => import('./components/DivHeader'))
@@ -66,17 +69,35 @@ export default {
     },
     data: () => ({
         closing: false,
+        contextMenu: [],
+        showingContextMenu: false,
         background: ''//'url(imgs/Background1.png)'
     }),
     computed: {
         ...mapGetters('user', ['skin']),
     },
     mounted() {
+        ipcRenderer.on('contextMenu', (event) => {
+            this.contextMenu = event;
+            this.showingContextMenu = true;
+        })
     },
     methods: {
         showModal(id, args) { this.$ipc.emit('modal', id, args) },
         refresh() { this.$ipc.emit('refresh') },
         close: () => require('electron').ipcRenderer.sendSync('exit'),
+        hidePopup() {
+            this.$refs.contextMenu.hide();
+        },
+        showPopup(event) {
+
+            console.log();
+
+            if (this.showingContextMenu) {
+                this.$refs.contextMenu.show(event.clientX, event.clientY);
+                this.showingContextMenu = false;
+            }
+        },
     },
 }
 </script>

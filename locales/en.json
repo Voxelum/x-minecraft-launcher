@@ -2,6 +2,7 @@
     "hello": "Hello world",
     "edit": "Edit",
     "no": "No",
+    "yes": "Yes",
     "save": "Save",
     "name": "Name",
     "create": "Create",
@@ -68,7 +69,7 @@
         "export": "Export Map"
     },
     "setting": {
-        "name": "Settings",
+        "name": "Setting | Settings",
         "location": "Store Location",
         "theme": "Theme",
         "language": "Language",
@@ -105,10 +106,10 @@
         "selectversionWarn": " Cannot launch without selecting a version"
     },
     "gametype": {
-        "survival": "Survival",
-        "creative": "Creative",
-        "adventure": "Adventure",
-        "spectator": "Spectator",
+        "survival": "Survival Mode",
+        "creative": "Creative Mode",
+        "adventure": "Adventure Mode",
+        "spectator": "Spectator Mode",
         "non": "Non mode"
     },
     "curseforge": "Curseforge",
@@ -144,7 +145,9 @@
         "common": "Common",
         "install": "Install"
     },
-    "liteloader": "LiteLoader",
+    "liteloader": {
+        "name": "LiteLoader"
+    },
     "mojang": {
         "name": "Mojang",
         "account": "Email Adress",
@@ -209,6 +212,9 @@
     "errors.empty": "No error yet",
     "hardcore": "Hardcore mode",
     "cheat": "Cheating",
+    "gamesettings": {
+        "name": "GameSettings"
+    },
     "renderClouds": {
         "name": "Clouds",
         "true": "Fancy",

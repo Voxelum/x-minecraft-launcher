@@ -41,8 +41,9 @@ export default {
             switch (splited[1]) {
                 case 'cards':
                     return [{ path, name: 'home' }];
-                case 'modpack':
-                case 'server':
+                // case 'modpack':
+                // case 'server':
+                case 'profile':
                     if (splited.length < 3) throw new Error(`Unexpected path ${splited}`)
                     return [{ path: `/${splited[0]}/cards`, name: 'home' },
                     { path, name: this.$store.state.profiles[splited[2]].name }];
