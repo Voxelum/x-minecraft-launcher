@@ -17,6 +17,7 @@ export default {
             snapshot: '',
             release: '',
         },
+        raws: [],
     }),
     modules: {
         forge: {
@@ -103,7 +104,7 @@ export default {
             }),
             getters: {
                 versions: state => state.list.versions || [],
-                versionsByMc: state => // [],
+                versionsByMc: state => 
                     version => state.list.versions[version] || [],
             },
             mutations: {
@@ -229,7 +230,7 @@ export default {
          * @param {{version: string, forge: string, liteloader: string}} option 
          */
         prepare(context, option) {
-            
+
         },
         /**
          * Refresh the remote versions cache 

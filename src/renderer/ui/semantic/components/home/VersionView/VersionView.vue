@@ -4,6 +4,7 @@
             <div class="active item" data-tab="minecraft" @click="switchToMinecraft">Minecraft</div>
             <div class="item" data-tab="forge" @click="switchToForge">Forge</div>
             <div class="item" data-tab="liteloader" @click="switchToLiteloader">Liteloader</div>
+            <div class="item" data-tab="raw">Raw</div>
             <div class="right menu">
                 <div class="ui left icon action input">
                     <i class="search icon"></i>
@@ -56,6 +57,8 @@
                 </tbody>
             </table>
         </div>
+         <div class="ui tab" data-tab="raw">
+        </div>
     </div>
 </template>
 
@@ -64,10 +67,9 @@ import vuex from 'vuex'
 
 export default {
     components: {
-        VersionTableView: () => import('../VersionTableView'),
-        McVersionCell: () => import('../McVersionCell'),
-        ForgeVersionCell: () => import('../ForgeVersionCell'),
-        LiteloaderVersionCell: () => import('../LiteloaderVersionCell'),
+        McVersionCell: () => import('./McVersionCell'),
+        ForgeVersionCell: () => import('./ForgeVersionCell'),
+        LiteloaderVersionCell: () => import('./LiteloaderVersionCell'),
     },
     data: () => ({
         loading: false,

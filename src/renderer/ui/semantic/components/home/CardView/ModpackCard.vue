@@ -14,11 +14,11 @@
                 {{this.version}}
             </div>
             <div class="description">
-                {{this.description}}
+                {{this.source.modpack.description}}
             </div>
         </div>
         <div class="extra content">
-            <i class="user icon"></i> {{this.source.author}}
+            <i class="user icon"></i> {{this.source.modpack.author}}
         </div>
     </div>
 </template>

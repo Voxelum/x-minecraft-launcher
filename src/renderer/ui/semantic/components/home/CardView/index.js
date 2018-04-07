@@ -38,7 +38,7 @@ export default {
                 on: {
                     select(eid, esource) {
                         console.log(`select ${`${esource.type}/${eid}`}`)
-                        self.$router.push(`${esource.type}/${eid}`)
+                        self.$router.push(`profile/${eid}`)
                     },
                     delete(eid, esource) {
                         self.$ipc.emit('modal', 'delete', { id: eid, type: esource.type })
