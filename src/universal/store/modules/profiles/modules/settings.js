@@ -123,6 +123,11 @@ export default {
         language: state => state.lang || '',
     },
     mutations: {
+        /**
+         * 
+         * @param {*} state 
+         * @param {{[key:string]: object}} option 
+         */
         edit(state, option) {
             Object.keys(option)
                 .filter(k => state[k] !== undefined && option[k] !== null)

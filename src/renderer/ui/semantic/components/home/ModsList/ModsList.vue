@@ -9,15 +9,15 @@
     <div v-else @drop="ondrop" class="ui grid" style="width:100%">
         <div class="row">
             <div class="eight wide centered column">
-                <div class="ui icon fluid transparent input">
+                <div class="ui icon fluid  input">
                     <i class="filter icon"></i>
-                    <input :placeholder="$t('filter')" v-model="nonSelectKeyword">
+                    <input :placeholder="$t('filter')" class="simple" v-model="nonSelectKeyword">
                 </div>
             </div>
             <div class="eight wide centered column">
-                <div class="ui icon fluid transparent input">
+                <div class="ui icon fluid  input">
                     <i class="filter icon"></i>
-                    <input :placeholder="$t('filter')" v-model="selectKeyword">
+                    <input :placeholder="$t('filter')" class="simple" v-model="selectKeyword">
                 </div>
             </div>
         </div>
@@ -40,7 +40,6 @@
 import vuex from 'vuex'
 import en from 'static/en-cn'
 
-// import ListCell from './ListCell'
 
 const generalized = {}
 function general(w) {
@@ -67,7 +66,7 @@ export default {
         modIdVersions() {
             const modIdVersions = {};
             this.mods.forEach((res) => {
-                res.meta.forEach((mod) => {
+                res.meta.mods.forEach((mod) => {
                     const mInfo = {
                         hash: res.hash,
                         filename: res.name,
@@ -115,11 +114,11 @@ export default {
             }
         },
         addForgeMod(mod) {
-            this.$store.dispatch(`profiles/${this.id}/addForgeMod`,
+            this.$store.dispatch(`profiles/${this.id}/forge/add`,
                 `${mod.modid}:${mod.version}`)
         },
         removeForgeMod(mod) {
-            this.$store.dispatch(`profiles/${this.id}/removeForgeMod`,
+            this.$store.dispatch(`profiles/${this.id}/forge/remove`,
                 `${mod.modid}:${mod.version}`)
         },
         ...vuex.mapActions('repository', ['import']),
@@ -150,5 +149,10 @@ export default {
 </script>
 
 <style>
-
+.simple {
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0px !important;
+}
 </style>

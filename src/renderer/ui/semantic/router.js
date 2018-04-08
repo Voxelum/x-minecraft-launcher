@@ -50,7 +50,7 @@ export default {
             children: [
                 {
                     path: '',
-                    redirect: 'resourcepack',
+                    redirect: 'version',
                 },
                 {
                     path: 'resourcepack',

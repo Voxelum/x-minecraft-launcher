@@ -108,11 +108,11 @@ export default {
             const self = this;
             this.$ipc.emit('modal', 'generic', {
                 icon: 'trash',
-                header: 'Delete the resource pack from disk',
-                content: 'This will remove the resource pack file on disk, and it will not be able to redo. Are you sure to do this?',
+                header: this.$t('resourcepack.delete.header'),
+                content: this.$t('resourcepack.delete.content'),
                 acceptColor: 'red',
                 acceptIcon: 'trash',
-                accept: 'Delete',
+                accept: this.$t('delete'),
                 onAccept() {
                     self.remove(hash);
                 }

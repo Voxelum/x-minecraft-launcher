@@ -148,13 +148,16 @@ export default {
         },
 
         selectMinecraft(meta) {
-            this.$store.dispatch(`profiles/${this.id}/edit`, { mcversion: meta.id });
+            const ver = this.mcVersion === meta.id ? '' : meta.id;
+            this.$store.dispatch(`profiles/${this.id}/edit`, { mcversion: ver });
         },
         selectForge(meta) {
-            this.$store.dispatch(`profiles/${this.id}/forge/setVersion`, meta.version);
+            const ver = this.forgeVersion === meta.version ? '' : meta.version;
+            this.$store.dispatch(`profiles/${this.id}/forge/setVersion`, ver);
         },
         selectLite(meta) {
-            this.$store.dispatch(`profiles/${this.id}/liteloader/setVersion`, meta.version);
+            const ver = this.liteVersion === meta.version ? '' : meta.version;
+            this.$store.dispatch(`profiles/${this.id}/liteloader/setVersion`, ver);
         },
 
         refresh() {

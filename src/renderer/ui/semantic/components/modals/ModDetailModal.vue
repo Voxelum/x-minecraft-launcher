@@ -1,44 +1,45 @@
 <template>
-    <div class="ui modal">
+    <div class="ui modal" style="max-height: 400px; min-height: 400px;">
         <div class="header">
             <div class="ui items">
-                <div class="item">
+                <div class="item" style="height: 100%">
                     <div class="image">
-                        <i class="cube huge icon"></i>
+                        <img v-if="image !== undefined" :src="image">
+                        <i v-else class="cube huge icon"></i>
                     </div>
-                    <div class="content" style="padding: 10px 0 0 0">
+                    <div class="content" style="height: 100%">
                         <a class="header">
-                            <font size='10'>{{name}}</font>
+                            {{name}}
                         </a>
-                        <span v-if="authors.length!==0">by {{authors[0]}}</span>
-                        <div class="meta" v-if="mod.description">
-                            <font size='3'>{{mod.description}}</font>
-                        </div>
-                        <div class="extra">
+                        <span v-if="authors.length!==0">
+                            by {{authors[0]}}
+                        </span>
+                        <div class="meta">
                             <span>{{version}}</span>
                             <span v-if="mod.mcversion"> {{$t('recommendedMinecraftVersion')}} {{mod.mcversion}}</span>
                             <span v-if="acceptingMc">{{$t('acceptingMinecraftVersion')}}: {{acceptingMc}}</span>
                         </div>
-                        <!-- <div class="extra">
+                        <div class="description" v-if="mod.description">
+                            {{mod.description}}
+                        </div>
+
+                        <div class="extra">
                             <div class="ui secondary menu">
-                                <a class="item" :class="{ active: selected === 'Config' }" @click="selected = 'Config'">
+                                <a class="item" :class="{ active: selected === 'Config' }" @click="selectConfig">
                                     Config
                                 </a>
-                                <a class="item" :class="{ active: selected === 'OnCurseforge' }" @click="selected = 'OnCurseforge'">
+                                <a class="item" :class="{ active: selected === 'OnCurseforge' }" @click="selectCurseforge">
                                     On Curseforge
                                 </a>
-                                <a class="item" :class="{ active: selected === 'OnWiki' }" @click="selected = 'OnWiki'"> 
-                                    On Wiki
-                                </a>
                             </div>
-                        </div> -->
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- <div class="content">
-            <component :is="selected"></component>
-        </div> -->
+        <div class="content" style="overflow: auto; min-height: 250px; max-height: 250px;">
+            <component :is="selected" :mod="mod"></component>
+        </div>
         <div class="actions">
             <div class="ui black deny button">
                 {{$t('cancel')}}
@@ -59,6 +60,9 @@ import OnWiki from './ModDetailModal/OnWiki'
 export default {
     components: { Config, OnCurseforge, OnWiki },
     computed: {
+        image() {
+            return this.mod.signiture && this.mod.signiture.source === 'curseforge' ? this.mod.signiture.meta.image : undefined;
+        },
         name() { return this.mod.name || this.mod.modid || 'Unknown' },
         authors() { return this.mod.authorList || [] },
         version() { return this.mod.version || '0.0.0' },
@@ -66,8 +70,17 @@ export default {
     },
     methods: {
         show(mod) {
-            $(this.$el).modal("show");
             this.mod = mod;
+            $(this.$el).modal("show");
+            console.log(this.mod)
+        },
+        selectConfig() {
+            this.selected = 'Config'
+            $(this.$el).modal("refresh");
+        },
+        selectCurseforge() {
+            this.selected = 'OnCurseforge'
+            $(this.$el).modal("refresh");
         }
     },
     mounted() {
