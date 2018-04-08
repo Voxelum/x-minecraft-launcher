@@ -55,6 +55,10 @@
     },
     "market": "Market",
     "resourcepack": {
+        "delete": {
+            "title": "Delete the resource pack",
+            "content": "This will remove the resource pack file from disk, and we cannot redo it. Are you sure to do this?"
+        },
         "name": "Resource Pack | Resource Packs",
         "available": "Avaliable",
         "selected": "Selected",
@@ -143,7 +147,10 @@
         "recommended": "Recommended",
         "latest": "Latest",
         "common": "Common",
-        "install": "Install"
+        "install": "Install",
+        "config": {
+            "hint": "Please at least launch the game with this mod once, so that we can detect its config file!"
+        }
     },
     "liteloader": {
         "name": "LiteLoader"

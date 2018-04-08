@@ -104,7 +104,7 @@ export default {
             }),
             getters: {
                 versions: state => state.list.versions || [],
-                versionsByMc: state => 
+                versionsByMc: state =>
                     version => state.list.versions[version] || [],
             },
             mutations: {
@@ -168,15 +168,38 @@ export default {
             try {
                 metas = await Version.updateVersionMeta({ fallback: container })
                 const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true })
-                const existed = []
-                for (const file of files) {
-                    const exist = await context.dispatch('exist', [`versions/${file}`, `versions/${file}/${file}.jar`, `versions/${file}/${file}.json`], { root: true }); // eslint-disable-line
-                    if (exist) existed.push(file)
+
+                const versionArr = [];
+                const idArr = [];
+                for (const ver of files) {
+                    try {
+                        const resolved = await Version.parse(context.rootGetters.root, ver);
+                        let forge = resolved.libraries.filter(l => l.name.startsWith('net.minecraftforge:forge'))[0];
+                        if (forge) {
+                            forge = forge.substring(forge.lastIndexOf(':') + 1, forge.length);
+                        }
+                        let liteloader = resolved.libraries.filter(l => l.name.startsWith('com.mumfrey:liteloader'))[0];
+                        if (liteloader) {
+                            liteloader = liteloader.substring(liteloader.lastIndexOf(':') + 1, forge.length);
+                        }
+                        idArr.push(resolved.id);
+                        versionArr.push({ forge, liteloader, id: resolved.id, jar: resolved.jar });
+                    } catch (e) {
+                        console.error(e);
+                    }
                 }
-                checkversion(metas, existed)
+                context.commit('raw', versionArr);
+
+                // const existed = []
+                // for (const file of files) {
+                //     const exist = await context.dispatch('exist', [`versions/${file}`, `versions/${file}/${file}.jar`, `versions/${file}/${file}.json`], { root: true }); // eslint-disable-line
+                //     if (exist) existed.push(file)
+                // }
+                // checkversion(metas, existed)
             } catch (e) {
                 console.error(e)
             }
+
             context.commit('update', metas);
         },
         save(context, payload) {

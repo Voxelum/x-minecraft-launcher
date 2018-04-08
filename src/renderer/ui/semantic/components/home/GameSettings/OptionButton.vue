@@ -18,7 +18,7 @@ export default {
     methods: {
         switchValue() {
             this.selected = (this.selected + 1) % this.options.length
-            this.$emit('change', { key: this.id, value: this.options[this.selected] })
+            this.$emit('change', { [this.id]: this.options[this.selected] })
         }
     },
     mounted() {

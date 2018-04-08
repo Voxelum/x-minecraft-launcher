@@ -62,6 +62,10 @@ export default {
             for (const key of keys) {
                 if (context.state[key] !== undefined) {
                     if (context.state[key] !== option[key]) {
+                        if (key === 'mcversion') {
+                            context.dispatch('forge/setVersion', '');
+                            context.commit('liteloader/setVersion', '')
+                        }
                         profile[key] = option[key]
                     }
                 }
