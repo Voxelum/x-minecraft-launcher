@@ -132,7 +132,12 @@
     "user": {
         "signup": "Sign up",
         "profile": "Profile",
-        "logout": "Logout"
+        "logout": "Logout",
+        "name": "Username",
+        "id": "User Id",
+        "email": "Email Address",
+        "birth": "Registered Birthday",
+        "info": "User Information"
     },
     "offline": {
         "name": "Offline",

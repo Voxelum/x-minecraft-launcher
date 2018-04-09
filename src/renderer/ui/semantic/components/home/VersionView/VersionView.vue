@@ -4,7 +4,7 @@
             <div class="active item" data-tab="minecraft" @click="switchToMinecraft">Minecraft</div>
             <div class="item" data-tab="forge" @click="switchToForge">Forge</div>
             <div class="item" data-tab="liteloader" @click="switchToLiteloader">Liteloader</div>
-            <div class="item" data-tab="raw">Raw</div>
+            <div class="item" data-tab="local" @click="switchToLocal">Local</div>
             <div class="right menu">
                 <div class="ui left icon action input">
                     <i class="search icon"></i>
@@ -57,7 +57,20 @@
                 </tbody>
             </table>
         </div>
-         <div class="ui tab" data-tab="raw">
+        <div class="ui tab" data-tab="local">
+            <table class="ui very basic selectable celled table" style='overflow-x: hidden;'>
+                <thead>
+                    <tr>
+                        <th>Version Id</th>
+                        <th>Minecraft</th>
+                        <th>Forge</th>
+                        <th>Liteloader</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <local-version-cell v-for="meta in localVersions" :meta="meta" :selected="forgeVersion===meta.forge && mcVersion===meta.minecraft && liteVersion===meta.liteloader" :key="meta.id" @select="selectLocal"></local-version-cell>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>
@@ -70,6 +83,7 @@ export default {
         McVersionCell: () => import('./McVersionCell'),
         ForgeVersionCell: () => import('./ForgeVersionCell'),
         LiteloaderVersionCell: () => import('./LiteloaderVersionCell'),
+        LocalVersionCell: () => import('./LocalVersionCell'),
     },
     data: () => ({
         loading: false,
@@ -84,6 +98,9 @@ export default {
     computed: {
         id() { return this.$route.params.id; },
 
+        localVersions() {
+            return this.$store.getters['versions/local'];
+        },
 
         mcMetas() {
             let metas = this.$store.getters['versions/versions'];
@@ -120,20 +137,27 @@ export default {
 
     },
     methods: {
-        switchToMinecraft() {
-            $(this.$refs.alphaDropdown).dropdown();
-            this.filterTypes = ['release', 'snapshot', 'all']
-            this.filterType = 'release'
-        },
-        switchToForge() {
-            $(this.$refs.alphaDropdown).dropdown();
-            this.filterTypes = ['recommended', 'latest', 'all']
-            this.filterType = 'recommended'
-        },
-        switchToLiteloader() {
-            $(this.$refs.alphaDropdown).dropdown();
+        switchToLocal() {
             this.filterTypes = ['all']
             this.filterType = 'all'
+            $(this.$refs.alphaDropdown).dropdown();
+        },
+        switchToMinecraft() {
+            this.filterTypes = ['release', 'snapshot', 'all']
+            this.filterType = 'release'
+            $(this.$refs.alphaDropdown).dropdown();
+
+        },
+        switchToForge() {
+            this.filterTypes = ['recommended', 'latest', 'all']
+            this.filterType = 'recommended'
+            $(this.$refs.alphaDropdown).dropdown();
+
+        },
+        switchToLiteloader() {
+            this.filterTypes = ['all']
+            this.filterType = 'all'
+            $(this.$refs.alphaDropdown).dropdown();
         },
 
         downloadMinecraft(meta) {
@@ -147,6 +171,13 @@ export default {
 
         },
 
+
+        selectLocal(local) {
+            this.$store.dispatch(`profiles/${this.id}/edit`, { mcversion: local.minecraft });
+            this.$store.dispatch(`profiles/${this.id}/forge/setVersion`, local.forge || '');
+            this.$store.dispatch(`profiles/${this.id}/liteloader/setVersion`,
+                local.liteloader || '');
+        },
         selectMinecraft(meta) {
             const ver = this.mcVersion === meta.id ? '' : meta.id;
             this.$store.dispatch(`profiles/${this.id}/edit`, { mcversion: ver });
