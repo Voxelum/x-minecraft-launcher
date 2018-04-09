@@ -77,8 +77,7 @@ export default {
         const self = this
         $(this.$refs.authMod).dropdown({
             onChange: (value, text, $selectedItem) => {
-                self.selectMode(value)
-                // self.$store.dispatch('auth/selectMode', value)
+                self.selectLoginMode(value)
             },
         })
         $(this.$refs.accountDropdown).dropdown()
@@ -92,7 +91,7 @@ export default {
         if (!this.logined) this.show()
     },
     methods: {
-        ...vuex.mapActions('user', ['selectMode', 'login']),
+        ...vuex.mapActions('user', ['selectLoginMode', 'login']),
         updateAccount(account) {
             this.account = account;
         },
@@ -137,8 +136,6 @@ export default {
                 this.$store.dispatch('user/login', {
                     account: this.account,
                     password: this.password,
-                    mode: this.mode,
-                    clientToken: this.clientToken,
                 }).then((result) => {
                     this.logining = false
                     this.$emit('login')

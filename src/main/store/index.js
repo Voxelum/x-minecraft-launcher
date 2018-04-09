@@ -12,13 +12,16 @@ Vue.use(Vuex);
  * @param {Vuex.Module} mo 
  * @param {Array<string>} container 
  */
-function discoverLoader(mo, path, container) {
-    if (mo.actions && mo.actions.load) {
+function discoverLoader(mo, path, container, initer) {
+    if (mo.actions && mo.actions.load && mo.namespaced) {
         container.push([...path, 'load'].join('/'));
+    }
+    if (mo.actions && mo.actions.init && mo.namespaced) {
+        initer.push([...path, 'init'].join('/'));
     }
     if (mo.modules) {
         Object.keys(mo.modules).forEach((k) => {
-            discoverLoader(mo.modules[k], [...path, k], container);
+            discoverLoader(mo.modules[k], [...path, k], container, initer);
         })
     }
     return container;
@@ -34,7 +37,8 @@ export function moduleGuards() { }
  * @returns {Promise<Vuex.Store>}
  */
 function load(root) {
-    const loaders = discoverLoader(store, [], []);
+    const initer = [];
+    const loaders = discoverLoader(store, [], [], initer);
     store.state.root = root;
     _loading = true;
     const st = new Vuex.Store(store);
@@ -51,7 +55,19 @@ function load(root) {
             })
         }
         return Promise.resolve();
-    })).then(() => {
+    })).then(() => Promise.all(initer.map((key) => {
+        const action = key;
+        if (st._actions[action]) {
+            console.log(`Found init action [${action}]`)
+            return st.dispatch(action).then((instance) => {
+                console.log(`Inited [${key}]`)
+            }, (err) => {
+                console.error(`An error occured when we init module [${key.substring(0, key.indexOf('/'))}].`)
+                console.error(err);
+            })
+        }
+        return Promise.resolve();
+    }))).then(() => {
         _loading = false;
         console.log('Done loading store!')
         return st

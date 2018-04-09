@@ -20,6 +20,14 @@ export default {
     computed: {
         ...mapGetters('user', ['username']),
     },
+    methods: {
+        logout() {
+            this.$store.dispatch('user/logout')
+                .then(() => {
+                    this.$nextTick(() => $ipc.emit('modal', 'login'))
+                })
+        },
+    },
     mounted() {
         $(this.$el).dropdown({ on: 'hover' })
     },

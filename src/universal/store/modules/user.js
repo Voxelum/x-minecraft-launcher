@@ -1,6 +1,7 @@
 import Vue from 'vue'
-import { Auth } from 'ts-minecraft'
+import { Auth, MojangAccount, MojangService } from 'ts-minecraft'
 import { ActionContext } from 'vuex'
+import { v4 } from 'uuid'
 
 
 export default {
@@ -11,6 +12,7 @@ export default {
          * @type {{[mode:string]: string[]}}
          */
         history: {},
+        clientToken: '',
         /**
          * @type {Auth}
          */
@@ -26,7 +28,7 @@ export default {
                 api(state, api) { state.api = api; },
             },
             actions: {
-                login: (context, option) => Auth.Yggdrasil.login(option, context.state.api),
+                login: (context, option) => Auth.Yggdrasil.login(option),
                 refresh: (context, option) => Auth.Yggdrasil.refresh(option, context.state.api),
                 validate: (context, option) => Auth.Yggdrasil.validate(option, context.state.api),
                 invalide: (context, option) => Auth.Yggdrasil.invalide(option, context.state.api),
@@ -45,7 +47,7 @@ export default {
         },
     },
     getters: {
-        modes: state => Object.keys(state).filter(k => k !== 'mode' && k !== 'auth' && k !== 'history'),
+        modes: state => Object.keys(state).filter(k => k !== 'mode' && k !== 'auth' && k !== 'history' && k !== 'clientToken'),
         mode: state => state.mode,
         username: state => (state.auth.selectedProfile ? state.auth.selectedProfile.name : ''),
         id: state => (state.auth.id ? state.auth.id : ''),
@@ -53,6 +55,7 @@ export default {
         cape: state => (state.auth.cape ? state.auth.cape : ''),
         history: state => state.history[state.mode],
         logined: state => typeof state.auth === 'object' && Object.keys(state.auth).length !== 0,
+        info: state => (state.auth.info ? state.auth.info : {}),
     },
     mutations: {
         mode(state, mode) {
@@ -61,21 +64,24 @@ export default {
         },
         setHistory: (state, history) => { state.history = history },
         setCache: (state, cache) => { state.auth = cache },
+        setClientToken: (state, clientToken) => { state.clientToken = clientToken },
 
-        history(state, { // record the state history
+        login(state, { // record the state history
             auth,
             account,
         }) {
-            state.auth = auth;
+            state.auth = Object.assign({}, auth);
             if (!state.history[state.mode]) Vue.set(state.history, state.mode, [])
-            const his = state.history[state.mode];
-            const idx = his.indexOf(account);
-            if (idx === -1) {
-                his.unshift(account);
-            } else {
-                const first = his[0];
-                Vue.set(his, 0, account);
-                Vue.set(his, idx, first);
+            if (account) {
+                const his = state.history[state.mode];
+                const idx = his.indexOf(account);
+                if (idx === -1) {
+                    his.unshift(account);
+                } else {
+                    const first = his[0];
+                    Vue.set(his, 0, account);
+                    Vue.set(his, idx, first);
+                }
             }
         },
         modes: (state, modes) => { state.modes = modes },
@@ -85,8 +91,7 @@ export default {
     actions: {
         save(context, payload) {
             const { mutation } = payload;
-            if (!mutation.endsWith('/history')) return Promise.resolve()
-            const data = JSON.stringify(context.state, (key, value) => (key === 'modes' ? undefined : value))
+            const data = JSON.stringify(context.state, (key, value) => (key === 'modes' ? undefined : value), undefined, 4);
             return context.dispatch('write', { path: 'auth.json', data }, { root: true })
         },
         async load(context) {
@@ -94,6 +99,7 @@ export default {
             context.commit('mode', data.mode);
             context.commit('setHistory', data.history);
             context.commit('setCache', data.auth);
+            context.commit('setClientToken', data.clientToken || v4());
         },
         /**
          * 
@@ -104,37 +110,95 @@ export default {
         /**
          * Logout and clear current cache.
          */
-        logout({ commit }) { commit('clear') },
+        async logout(context) {
+            const mode = context.state.mode;
+            if (context.getters.modes.indexOf(mode) === -1) {
+                throw new Error(`Cannot find auth named ${mode}`);
+            }
+            if (context.getters.logined) {
+                await context.dispatch(`${mode}/invalide`, {
+                    clientToken: context.state.clientToken,
+                    accessToken: context.state.auth.accessToken,
+                });
+            }
+            context.commit('clear')
+        },
+        /**
+         * Refresh the current user login status
+         */
+        async refresh(context) {
+            const mode = context.state.mode;
+            if (context.getters.modes.indexOf(mode) === -1) {
+                throw new Error(`Cannot find auth named ${mode}`);
+            }
+            if (!context.getters.logined) return;
+            const validate = await context.dispatch(`${mode}/validate`, {
+                clientToken: context.state.clientToken,
+                accessToken: context.state.auth.accessToken,
+            });
+            if (!validate) {
+                context.commit('clear');
+                return;
+            }
+            try {
+                const auth = await context.dispatch(`${mode}/refresh`, {
+                    clientToken: context.state.clientToken,
+                    accessToken: context.state.auth.accessToken,
+                });
+                context.commit('login', {
+                    auth,
+                })
+            } catch (e) {
+                context.commit('clear');
+            }
+        },
         /**
          * 
          * @param {ActionContext} context 
-         * @param {{mode:string, account:string, password?:string, clientToken?:string}} payload 
+         * @param {{account:string, password?:string}} payload 
          * @return {Promise<Auth>}
          */
         async login(context, payload) {
-            if (context.getters.modes.indexOf(payload.mode) === -1) throw new Error(`Cannot find auth named ${payload.mode}`);
-            const result = await context.dispatch(`${payload.mode}/login`);
+            const mode = context.state.mode;
+            if (context.getters.modes.indexOf(mode) === -1) {
+                throw new Error(`Cannot find auth named ${mode}`);
+            }
+            const loginOption = {
+                username: payload.account,
+                password: payload.password,
+                clientToken: context.state.clientToken,
+            };
+            const result = await context.dispatch(`${mode}/login`, loginOption);
             if (!result) throw new Error(`Cannot auth the ${payload.account}`);
-            if (payload.mode !== 'offline' && payload.texture) {
-                /**
-                 * @type {GameProfile}
-                 */
-                const gameProfile = await context.dispatch('gameprofile/fetch', { service: payload.mode, uuid: result.selectedProfile.id, cache: true }, { root: true });
-                const textures = gameProfile.textures;
-                if (textures) {
-                    const skin = textures.textures.SKIN;
-                    if (skin) {
-                        result.skin = {
-                            data: skin.data,
-                            slim: skin.metadata.model === 'slim',
+            try {
+                if (mode !== 'offline' && payload.texture) {
+                    /**
+                     * @type {GameProfile}
+                     */
+                    const gameProfile = await context.dispatch('gameprofile/fetch', { service: mode, uuid: result.selectedProfile.id, cache: true }, { root: true });
+                    const textures = gameProfile.textures;
+                    if (textures) {
+                        const skin = textures.textures.SKIN;
+                        if (skin) {
+                            result.skin = {
+                                data: skin.data,
+                                slim: skin.metadata.model === 'slim',
+                            }
+                        }
+                        if (textures.textures.CAPE) {
+                            result.cape = textures.textures.CAPE.data;
                         }
                     }
-                    if (textures.textures.CAPE) {
-                        result.cape = textures.textures.CAPE.data;
-                    }
                 }
+            } catch (e) {
+                console.warn(e);
             }
-            context.commit('history', {
+            try {
+                result.info = await MojangService.getAccountInfo(result.accessToken);
+            } catch (e) {
+                console.warn(e);
+            }
+            context.commit('login', {
                 auth: result,
                 account: payload.account,
             });

@@ -19,6 +19,7 @@
 export default {
     computed: {
         downloadIcon() {
+            console.log(this.meta)
             return {
                 download: this.meta.status === 'remote',
                 disk: this.meta.status === 'local',
