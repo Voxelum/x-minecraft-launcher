@@ -8,8 +8,8 @@ class TaskProxy {
         this.context = context;
         this.path = path;
     }
-    create(id) {
-        return this.context.dispatch('create', { id, path: this.path });
+    create(name) {
+        return this.context.dispatch('create', { name, path: this.path });
     }
     update(progress, total, description) {
         this.context.commit('update', { path: this.path, progress, total, description });
@@ -22,65 +22,50 @@ class TaskProxy {
 export default {
     namespaced: true,
     state: {
-        tasks: {},
-        finished: [],
+        tasks: {
+        },
+        running: [],
+        all: [],
     },
     getters: {
-        runnings: state => state.tasks,
-        finished: state => state.finished,
-        count: (states, getters) => Object.keys(getters.runnings).length,
+        running: state => state.running,
+        all: state => state.all,
+        get: state => id => state.tasks[id],
     },
     mutations: {
-        update(state, { path, progress, total, description }) {
-            if (!path || path.length === 0) throw new Error();
-            let root = state;
-            for (const p of path) root = root.tasks[p];
-            if (progress) root.progress = progress;
-            if (total) root.total = total;
-            if (description) root.description = description;
-        },
-        create(state, { id, uuid, path }) {
-            const ps = path || []
-            let root = state;
-            for (const p of ps) root = root.tasks[p];
-            Vue.set(root.tasks, uuid, {
-                id,
-                total: -1,
-                progress: -1,
-                tasks: {},
-                error: '',
-                status: 'running',
-            });
-        },
-        finish(state, { path, result, error }) {
-            if (!path || path.length === 0) throw new Error();
-            let root = state;
-            let uuid;
-            let parent;
-            for (const p of path) {
-                parent = root;
-                root = root.tasks[p];
-                uuid = p;
-            }
-            root.status = error ? 'error' : 'finish';
-            root.result = error || result;
+        $finish(state, node) {
+            Vue.delete(state.running, state.running.indexOf(node.id));
 
-            if (parent === state) {
-                state.finished.push(root);
-                Vue.delete(parent.tasks, uuid);
-            }
+            Vue.delete(state.all, state.all.indexOf(node.id))
+            state.all.push(node.id);
+
+            state.tasks[node.id] = Object.freeze(Object.assign({}, node));
+        },
+        $create(state, node) {
+            state.running.push(node.id);
+            state.all.push(node.id);
+
+            state.tasks[node.id] = Object.freeze(Object.assign({}, node));
+        },
+        $update(state, node) {
+            Vue.delete(state.tasks, node.id);
+            Vue.delete(state.running, state.running.indexOf(node.id));
+            Vue.delete(state.all, state.all.indexOf(node.id))
+            state.tasks[node.id] = Object.freeze(Object.assign({}, node));
+            state.running.push(node.id);
+            state.all.push(node.id);
         },
     },
     actions: {
         /**
          * 
          * @param {vuex.ActionContext} context 
-         * @param {{id:string, path: string[]}} payload 
+         * @param {{name:string, path: string[], id?:string}} payload 
          */
         create(context, payload) {
-            const uuid = v4();
-            context.commit('create', { ...payload, uuid });
-            const proxy = new TaskProxy(context, [...(payload.path || []), uuid]);
+            const id = payload.id || v4();
+            context.commit('create', { ...payload, id });
+            const proxy = new TaskProxy(context, [...(payload.path || []), id]);
             return proxy;
         },
         /**
@@ -89,19 +74,37 @@ export default {
          * @param {Task} task 
          */
         async listen(context, task) {
-            await context.dispatch('create', { id: task.id })
-            task.onChild((path, child) => {
-                console.log(`child create ${path}:${child}`);
-                context.dispatch('create', { path, id: child });
+            const root = task.root;
+            root.tasks = {};
+            context.commit('$create', root);
+            const timer = setInterval(() => {
+                if (root.status === 'finish') clearInterval(timer)
+                context.commit('$update', root);
+            }, 500);
+            task.onChild((path, parent, child) => {
+                child.tasks = {};
+                parent.tasks[child.id] = child;
             });
-            task.onFinish((path, result) => {
-                context.commit('finish')
+            task.onFinish((path, result, node) => {
+                node.status = 'finish';
+                if (context.state.tasks[node.id]) {
+                    context.commit('$finish', root);
+                    clearInterval(timer);
+                    const fs = require('fs-extra');
+                    fs.writeFile('C:\\Users\\cijhn\\Desktop\\OUT.json', JSON.stringify(root))
+                }
             });
-            task.onError((path, result) => {
-                context.commit('finish', result);
+            task.onError((path, err, node) => {
+                node.status = 'finish';
+                if (context.state.tasks[node.id]) {
+                    context.commit('$finish', root);
+                    clearInterval(timer);
+                }
             });
-            task.onUpdate((path, progress, total, status) => {
-                context.commit('update', { path, progress, total, status })
+            task.onUpdate((path, update, node) => {
+                node.progress = update.progress;
+                node.total = update.total;
+                node.status = update.status;
             })
         },
     },

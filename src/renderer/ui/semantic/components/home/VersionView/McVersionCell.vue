@@ -6,7 +6,7 @@
             <i v-if="selected" class="ui green check icon"></i>
         </td>
         <td>{{meta.releaseTime}}</td>
-        <td class="selectable" :data-tooltip="$t(`version.${meta.status}`)" data-position="left center" @click="$emit('download', meta.id)">
+        <td class="selectable" :data-tooltip="$t(`version.${meta.status}`)" data-position="left center" @click="onDownload">
             <div style="padding:0 10px 0 10px;pointer-events: none;">
                 <i :class="downloadIcon" v-if="meta.status!=='loading'"></i>
                 <div class="ui active inline small loader" v-else></div>
@@ -25,6 +25,13 @@ export default {
                 outline: this.meta.status === 'local',
                 icon: true,
             }
+        },
+    },
+    methods: {
+        onDownload(event) {
+            this.$emit('download', this.meta.id);
+            event.preventDefault();
+            return false;
         },
     },
     props: ['meta', 'selected'],
