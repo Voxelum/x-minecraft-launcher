@@ -21,24 +21,25 @@
             </div>
         </div>
         <div ref="taskPopup" class="ui button">
-            <i class="tasks icon"></i> {{tasksCount}}
+            <i class="tasks icon"></i> {{running.length}}
         </div>
         <div class="ui flowing popup transition hidden">
-            <div v-if="tasksCount != 0" class="ui middle aligned divided list" style="max-height:300px; min-width:300px; overflow:hidden">
-                <div class="item" v-for="(moduleTask, index) in runningTasks" :key="index">
-                    <div class="content">
-                        <div class="header">{{$t(`${moduleTask.id}.name`)}}</div>
-                        <div class="description">
-                            <br>
-                            <undetermined-progress v-if="moduleTask.total==-1" :active="moduleTask.status==='running'" :error="moduleTask.status==='error'" :status="$t(`${moduleTask.id}.description`)"></undetermined-progress>
-                            <progress-bar v-if="moduleTask.total!=-1" :progress="moduleTask.progress" :total="moduleTask.total" :active="moduleTask.status==='running'" :error="moduleTask.status==='error'"></progress-bar>
+            <div class="ui top attached icon label" style="display: fixed">
+                <span v-if="!expanded">Running</span>
+                <span v-else>All Tasks</span>
 
-                            <!-- {{$t(`${moduleTask.id}.description`)}} -->
-                        </div>
-                    </div>
-                </div>
+                <i style="float: right; margin: 0px" v-if="!expanded" class="expand link icon" @click="expanded = !expanded"></i>
+                <i style="float: right; margin: 0px" v-else class="compress link icon" @click="expanded = !expanded"></i>
             </div>
-            <div v-else>
+            <div v-if="expanded" class="ui selection list" :style="taskStyle">
+                <task-cell class="item" v-for="id in tasks" :key="id" :task="$store.getters['task/get'](id)">
+                </task-cell>
+            </div>
+            <div v-if="!expanded && running.length != 0" class="ui selection list" :style="taskStyle">
+                <task-cell class="item" v-for="id in running" :key="id" :task="$store.getters['task/get'](id)">
+                </task-cell>
+            </div>
+            <div v-if="!expanded && running.length === 0">
                 {{$t('tasks.empty')}}
             </div>
         </div>
@@ -49,11 +50,37 @@
 import { mapGetters } from "vuex";
 export default {
     data: () => ({
-        runningTasks: [],
-        tasksCount:0,
+        expanded: false,
     }),
+    components: {
+        TaskCell: () => import('./TaskCell'),
+    },
     computed: {
-        ...mapGetters(["errors" , "errorsCount"])
+        taskStyle() {
+            if (!this.expanded)
+                return {
+                    'max-height': '300px',
+                    'min-height': '100px',
+                    'min-width': '300px',
+                    overflow: 'auto',
+                }
+            else {
+                return {
+                    'min-height': '300px',
+                    'max-height': '300px',
+                    'max-width': '600px',
+                    'min-width': '600px',
+                    overflow: 'auto',
+                }
+            }
+        },
+        ...mapGetters(["errors", "errorsCount"]),
+        running() {
+            return this.$store.getters['task/running'];
+        },
+        tasks() {
+            return this.$store.getters['task/all'];
+        }
     },
     mounted() {
         $(this.$refs.warningPopup).popup({
@@ -71,17 +98,23 @@ export default {
             total: 2,
             label: 'ratio'
         })
+        const self = this;
         $(this.$refs.taskPopup).popup({
-            hoverable: true,
+            on: 'click',
             position: "top center",
             delay: {
                 show: 300
+            },
+            onHidden() {
+                self.expanded = false;
             }
         });
     }
 };
 </script>
 
-<style>
-
+<style scoped="true">
+.ui.top.center.popup:before {
+  display: none;
+}
 </style>

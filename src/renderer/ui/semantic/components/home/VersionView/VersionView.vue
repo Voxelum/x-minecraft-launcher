@@ -168,7 +168,6 @@ export default {
         },
         downloadLite(meta) {
             this.$store.dispatch(`versions/liteloader/download`, meta);
-
         },
 
 

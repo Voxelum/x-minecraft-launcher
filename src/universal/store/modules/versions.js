@@ -35,7 +35,7 @@ export default {
                 state.latest.snapshot = list.list.latest.snapshot;
             }
         },
-        updateStatus(state, { version, status }) {
+        status(state, { version, status }) {
             version.status = status
         },
         local(state, local) {
@@ -92,7 +92,6 @@ export default {
                     console.error(e);
                 }
             }
-            console.log(versionArr);
             context.commit('local', versionArr);
 
             /**
@@ -129,21 +128,24 @@ export default {
             }
 
             const id = meta.id;
-            context.commit('updateStatus', { version: meta, status: 'loading' })
+            context.commit('status', { version: meta, status: 'loading' })
             let exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
             if (!exist) {
                 try {
                     let location = context.rootGetters.root;
-                    if (typeof location === 'string') location = new MinecraftFolder(location)
-                    if (!(location instanceof MinecraftFolder)) return Promise.reject('Require location as string or MinecraftLocation!')
-                    Version.install('client', meta, location);
+                    if (typeof location === 'string') location = new MinecraftFolder(location);
+                    if (!(location instanceof MinecraftFolder)) return Promise.reject('Require location as string or MinecraftLocation!');
+                    const task = Version.installTask('client', meta, location)
+                    await context.dispatch('task/listen', task, { root: true });
+                    await task.execute();
                 } catch (e) { console.warn(e) }
             }
             exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
             if (exist) {
-                context.commit('updateStatus', { version: meta, status: 'local' })
+                console.log('exist!!!')
+                context.commit('status', { version: meta, status: 'local' })
             } else {
-                context.commit('updateStatus', { version: meta, status: 'remote' })
+                context.commit('status', { version: meta, status: 'remote' })
             }
             return undefined;
         },
@@ -211,10 +213,13 @@ export default {
                     state.list = list.list;
                     state.date = list.date;
                 },
-                status(state, allStatus) {
+                allStatus(state, allStatus) {
                     Object.keys(state.list.number).forEach((key) => {
                         state.list.number[key].status = allStatus[key];
                     })
+                },
+                status(state, { key, status }) {
+                    state.list.number[key].status = status;
                 },
             },
             actions: {
@@ -231,21 +236,15 @@ export default {
                     const struct = Object.assign({}, context.state);
                     const localForgeVersion = {};
                     const localArr = context.rootGetters['versions/local'];
-                    console.log('forge')
-                    console.log(localArr);
                     localArr.forEach((ver) => {
                         if (ver.forge) localForgeVersion[ver.forge] = true;
                     });
-                    console.log(localForgeVersion)
                     const statusMap = {};
                     Object.keys(struct.list.number).forEach((key) => {
                         const verObj = struct.list.number[key];
                         statusMap[key] = localForgeVersion[verObj.version] ? 'local' : 'remote'
-                        if (verObj.status === 'local') {
-                            console.log(verObj);
-                        }
                     })
-                    context.commit('status', statusMap);
+                    context.commit('allStatus', statusMap);
                 },
                 /**
                  * 
@@ -254,8 +253,10 @@ export default {
                  */
                 async download(context, meta) {
                     const task = Forge.installAndCheckTask(meta, context.rootGetters.root, true);
-                    context.dispatch('task/listen', task);
-                    return task.execute();
+                    context.commit('status', { key: meta.build, status: 'loading' });
+                    context.dispatch('task/listen', task, { root: true });
+                    return task.execute().then(() => context.commit('status', { key: meta.build, status: 'local' }))
+                        .catch(() => context.commit('status', { key: meta.build, status: 'remote' }));
                 },
                 async checkLocalForge(context, forgeMeta) {
                     const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true })
@@ -306,7 +307,7 @@ export default {
                 },
                 download(context, meta) {
                     const task = LiteLoader.installAndCheckTask(meta, context.rootGetters.root, true);
-                    context.dispatch('task/listen', task);
+                    context.dispatch('task/listen', task, { root: true });
                     return task.execute();
                 },
                 async refresh(context) {

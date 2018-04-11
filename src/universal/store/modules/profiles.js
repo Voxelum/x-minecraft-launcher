@@ -16,7 +16,14 @@ export default {
         ids: state => state.all,
     },
     mutations: {
-        add(state, payload) { state.all.push(payload.id) },
+        add(state, payload) {
+            /**
+             * Prevent the case that hot reload keep the vuex state
+             */
+            if (state.all.indexOf(payload.id) === -1) {
+                state.all.push(payload.id);
+            }
+        },
         remove(state, id) {
             const idx = state.all.indexOf(id);
             if (idx === -1) return;
