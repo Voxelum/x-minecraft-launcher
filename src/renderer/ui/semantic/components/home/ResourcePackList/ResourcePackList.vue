@@ -38,6 +38,7 @@
 <script>
 import { remote } from 'electron'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import img from 'static/unknown_pack.png'
 
 export default {
     data: () => ({
@@ -51,7 +52,17 @@ export default {
             return this.resourcepacks.filter(e => this.selectingNames.indexOf(e.name) === -1)
         },
         selecting() {
-            return this.selectingNames.map(name => this.nameToEntry[name]) || []
+            return this.selectingNames.map(name => {
+                const res = this.nameToEntry[name];
+                if (res) return res;
+                else return {
+                    name,
+                    meta: {
+                        icon: img,
+                        description: 'Missing resource pack! Launcher cannot launch with it!'
+                    }
+                }
+            }).reverse() || []
         },
         selectingNames() {
             return this.$store.getters[`profiles/${this.$route.params.id}/settings/resourcepacks`]
@@ -120,7 +131,6 @@ export default {
         },
     },
     mounted() {
-        $('#resourcepackList .item').dimmer({ on: 'hover' })
     },
 
 }

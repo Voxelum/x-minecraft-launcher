@@ -94,9 +94,9 @@ export default {
                 });
 
                 await Promise.all(context.rootGetters[`profiles/${profileId}/settings/resourcepacks`]
-                    .map(pack => context.dispatch('link', {
+                    .map(pack => context.dispatch('repository/link', {
                         resource: nameToId[pack],
-                        minecraft: minecraftFolder,
+                        minecraft: option.gamePath,
                     })));
             } catch (e) {
                 console.error('Cannot export resource packs')
@@ -121,9 +121,9 @@ export default {
                 const selectingHashs = selected.map(k => modIdVersions[k])
                     .filter(mod => mod !== undefined);
                 await Promise.all(selectingHashs
-                    .map(hash => context.dispatch('link', {
+                    .map(hash => context.dispatch('repository/link', {
                         resource: hash,
-                        minecraft: minecraftFolder,
+                        minecraft: option.gamePath,
                     })));
             } catch (e) {
                 console.error('Cannot export mods')

@@ -25,6 +25,9 @@ export default {
         },
     },
     actions: {
+        edit(context, payload) {
+            context.commit('edit', payload);
+        },
         async load(context, { id }) {
             const data = await context.dispatch('read', { path: `profiles/${id}/pack-info.json`, fallback: {}, type: 'json' }, { root: true });
             context.commit('edit', data);

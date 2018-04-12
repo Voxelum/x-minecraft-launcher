@@ -84,15 +84,12 @@ export default {
     },
     methods: {
         showModal(id, args) { this.$ipc.emit('modal', id, args) },
-        refresh() { this.$store.dispatch('refresh$'); },
+        refresh() { this.$store.dispatch('$refresh'); },
         close: () => require('electron').ipcRenderer.sendSync('exit'),
         hidePopup() {
             this.$refs.contextMenu.hide();
         },
         showPopup(event) {
-
-            console.log();
-
             if (this.showingContextMenu) {
                 this.$refs.contextMenu.show(event.clientX, event.clientY);
                 this.showingContextMenu = false;

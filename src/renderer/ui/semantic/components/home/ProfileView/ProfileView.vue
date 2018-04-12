@@ -71,9 +71,7 @@ export default {
             this.$store.dispatch(`profiles/${this.id}/edit`, { description: event.target.value })
         },
         refresh() {
-            this.$store.dispatch('refresh')
-            // this.$store.dispatch(`profiles/${this.id}/refresh`)
-            // this.$store.dispatch('versions/refresh')
+            this.$store.dispatch('$refresh')
         },
         openBar() {
             $(this.$refs.sidebar).sidebar('show')

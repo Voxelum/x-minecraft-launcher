@@ -155,7 +155,7 @@ export default {
                 const status = await fs.stat(filePath);
                 const name = path.basename(filePath);
 
-                const importTaskContext = await context.dispatch('task/create', { id: { text: 'repository.import', args: [name] } }, { root: true })
+                const importTaskContext = await context.dispatch('task/create', { name: 'repository.import' }, { root: true })
 
                 let data;
                 let type;
@@ -230,12 +230,12 @@ export default {
 
             if (!res) throw new Error(`Cannot find the resource ${resource}`);
 
-            return context.dispatch('export', {
+            return context.dispatch('exports', {
                 file: `resources/${res.hash}${res.type}`,
                 toFolder: `${minecraft}/${res.domain}`,
                 mode: 'link',
-                name: `${res.name}${res.type}`,
-            }).then(() => res);
+                name: `${res.name}`,
+            }, { root: true }).then(() => res);
         },
         /**
          * @param {ActionContext} context 

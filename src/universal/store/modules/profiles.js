@@ -36,7 +36,6 @@ export default {
             return Promise.all(files.map(id =>
                 context.dispatch('exist', `profiles/${id}/profile.json`, { root: true })
                     .then((exist) => {
-                        console.log(id)
                         if (exist) {
                             context.commit('add', { id });
                             return context.dispatch(`${id}/load`);

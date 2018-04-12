@@ -23,7 +23,7 @@ function convert(node) {
                 if (node.attributes.href) {
                     const href = node.attributes.href;
                     const rLinkIdx = href.indexOf('remoteUrl=');
-                    const newHref = rLinkIdx !== -1 ? 
+                    const newHref = rLinkIdx !== -1 ?
                         `#/external/${href.substring(href.indexOf('remoteUrl=') + 'remoteUrl='.length)}`
                         : `#/external/${href}`
                     attrs = querystring.unescape(querystring.unescape(attrs.replace(href, newHref)))
@@ -307,38 +307,43 @@ export default {
          */
         async download(context, payload) {
             const content = webContents.getFocusedWebContents();
-            // const uuid = await context.dispatch('task/create', { id: 'curseforge.download' });
+            const proxy = await context.dispatch('task/create', { name: 'curseforge.download' }, { root: true });
 
-            const file = await new Promise((resolve, reject) => {
-                content.session.once('will-download', (event, item, $content) => {
-                    const savePath = paths.join(app.getPath('userData'), 'temps', item.getFilename());
-                    if (!this.file) item.setSavePath(savePath);
-                    // item.on('update', ($event, state) => {
-                    //     context.commit('task/update', { path: [uuid], progress: item.getReceivedBytes(), total: item.getTotalBytes() })
-                    // })
-                    item.on('done', ($event, state) => {
-                        switch (state) {
-                            case 'completed':
-                                resolve(savePath)
-                                break;
-                            case 'cancelled':
-                            case 'interrupted':
-                            default:
-                                reject(new Error(state))
-                                break;
-                        }
-                    })
+            try {
+                const file = await new Promise((resolve, reject) => {
+                    content.session.once('will-download', (event, item, $content) => {
+                        const savePath = paths.join(app.getPath('userData'), 'temps', item.getFilename());
+                        if (!this.file) item.setSavePath(savePath);
+                        item.on('updated', (e) => {
+                            proxy.update(item.getReceivedBytes(), item.getTotalBytes());
+                        });
+                        item.on('done', ($event, state) => {
+                            switch (state) {
+                                case 'completed':
+                                    resolve(savePath)
+                                    break;
+                                case 'cancelled':
+                                case 'interrupted':
+                                default:
+                                    reject(new Error(state))
+                                    break;
+                            }
+                        })
+                    });
+                    content.downloadURL(`https://minecraft.curseforge.com${payload.file.href}`)
                 });
-                content.downloadURL(`https://minecraft.curseforge.com${payload.file.href}`)
-            });
-            context.dispatch('repository/import', {
-                files: [file],
-                signiture: {
-                    source: 'curseforge',
-                    date: Date.now(),
-                    meta: payload.project,
-                },
-            }, { root: true });
+                await context.dispatch('repository/import', {
+                    files: [file],
+                    signiture: {
+                        source: 'curseforge',
+                        date: Date.now(),
+                        meta: payload.project,
+                    },
+                }, { root: true });
+                proxy.finish();
+            } catch (e) {
+                proxy.finish(Object.freeze(e));
+            }
         },
     },
 }
