@@ -1,7 +1,7 @@
 <template>
-    <div @drop="ondrop">
-        <router-view></router-view>
-    </div>
+    <!-- <div @drop="ondrop"> -->
+    <router-view @drop="ondrop"></router-view>
+    <!-- </div> -->
 </template>
 
 <script>
