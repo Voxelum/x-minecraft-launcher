@@ -4,17 +4,6 @@
 
 ![Image](/misc/0.png)
 
-## Problems and Solutions
-
-To play Minecraft, players always need various pre-knowledge to handle so many minecraft technical stuff. Even they might know how to do, they still need maintain Minecraft game folder by their own, repeating doing the copy and paste to work. 
-
-Installing a mod requires player download and move the mod file into the mods folder by hand. And if you want to have various mods combination, sometimes you have to keep various minecraft version/game folders. Things become complicated. (Especially for the modpack maker)
-
-This launcher is trying to solve these barrier in the minecraft launching. Though, the complexity of this *launcher* is much higher than normal one. Therefore, I personally want to call it a **Integrated Minecraft Environment**.
-
-My motivation of this project is simple: I'm totally feel tired about manage the multiple minecraft game assets by hand. Therefore, the ultimate goal of this project is **free player hand** ~~(and brain, which makes you life much better and easier)~~.
-
-In this situation, players don't need to ever touch the game files. They don't even need to care about these things. Just care about what game expirence they want and whatever. ~~(That is hard. I hope I could achive this)~~
 ## Features 
 
  - [x] online/offline auth
@@ -35,12 +24,13 @@ In this situation, players don't need to ever touch the game files. They don't e
  - [x] Dynamic appData location
  - [x] Skin preview
  - [ ] Skin upload & export
- - [ ] Model preview
+ - [x] Model preview
+ - [ ] Multi/Cross version matching 
  - [x] JRE detection and installation 
- - [ ] Forge installation
+ - [x] Forge installation
  - [ ] Liteloader installation
  - [ ] Optifine installation
- - [ ] Curseforge support
+ - [x] Curseforge support
  - [ ] Plugin system
 
 #### Contributing
@@ -50,16 +40,17 @@ This project is using [nodejs](https://nodejs.org/) + [electron](https://electro
 File structure:
 
 - locales => all the localization files
-- main => main process, handle/dispatch complex task
-    - service => provide some specific service that renderer process can query. 
+- main => main process, the guard process. Store most of the states of launcher.
+    - store => store loader on main process. 
 - renderer => renderer process, store the single state tree and display UI
-    - store => define the single state tree
-        - modules => all the standalone sub-modules
+    - store => the mirror store of main process store
     - ui => ui template folder, share same single state tree
         - semantic => semantic ui
         - material => material ui
+- universal => some universal things across the main/renderer
+    - store => the definition of store
 - static => static resources
-- test => test files
+- test => test files (basically... no test)
 
 Core minecraft feature is implemented [ts-minecraft](https://github.com/InfinityStudio/ts-minecraft). Therefore some bugs might be cased by this.
 
@@ -92,7 +83,7 @@ npm test
 
 #### Credit
 
-Phoebe, Sumeng Wang, Luca, Charles Tang
+[Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/orgs/CIJHN/people/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/orgs/CIJHN/people/CharlesQT)
 
 ---
 
