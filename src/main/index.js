@@ -130,6 +130,7 @@ function createMainWindow() {
         frame: false,
         transparent: true,
     })
+    mainWindow.setResizable(false);
     mainWindow.setTitle('ILauncher')
     setupIcon(mainWindow)
     mainWindow.loadURL(`${winURL}?logger=false&root=${root}`)

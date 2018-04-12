@@ -63,7 +63,8 @@ export default {
         errors() {
             const all = [...this.$store.getters['java/error']]
             if (this.$route.params.id) {
-                all.push(...this.$store.getters[`profiles/${this.$route.params.id}/error`])
+                if (this.$store.getters[`profiles/${this.$route.params.id}/error`])
+                    all.push(...this.$store.getters[`profiles/${this.$route.params.id}/error`])
             }
             return all;
         },

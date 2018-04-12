@@ -56,6 +56,7 @@ export default {
                     extensions: [''],
                 }]
             }).then((file) => {
+                if (!file || file.length === 0) return;
                 this.$store.dispatch(`profiles/${this.id}/exportMap`,
                     { map: map.filename, file })
             })

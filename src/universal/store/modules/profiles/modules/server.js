@@ -104,7 +104,7 @@ export default {
                     }
                 })
         },
-        refresh$: {
+        $refresh: {
             root: true,
             /**
              * 
@@ -112,7 +112,8 @@ export default {
              * @param {*} force 
              */
             handler(context, force) {
-                console.log(context.state)
+                if (!this.host) return;
+                context.dispatch('refresh', force);
             },
         },
     },

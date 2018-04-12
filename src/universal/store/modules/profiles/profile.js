@@ -42,7 +42,7 @@ export default {
                 errors.push(...getters['server/error']);
             }
             return errors;
-        },  
+        },
     },
     mutations: {
         edit(state, option) {
@@ -57,7 +57,7 @@ export default {
             const data = await context.dispatch('read', { path, fallback: {}, type: 'json' }, { root: true });
             context.commit('edit', data);
             for (const m of Object.keys(modules)) {
-                await context.dispatch(`${m}/load`, { id: context.state.id });
+                if (modules[m].namespaced) await context.dispatch(`${m}/load`, { id: context.state.id });
             }
         },
         save(context) {

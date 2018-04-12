@@ -164,17 +164,21 @@ export default {
                     Vue.delete(states.resourcePacks, states.resourcePacks.indexOf(pack));
                     break;
                 case 'moveup':
-                    idx = states.resourcePacks.indexOf(pack)
-                    if (idx <= 0) return;
-                    temp = states.resourcePacks[idx - 1];
-                    Vue.set(states.resourcePacks, idx - 1, pack)
-                    Vue.set(states.resourcePacks, idx, temp)
-                    break;
-                case 'movedown':
+                /**
+                 * The move up operation actully... move the pack toward the tail.
+                 * The move down is opposite...
+                 */
                     idx = states.resourcePacks.indexOf(pack)
                     if (idx === -1 || idx === states.resourcePacks.length - 1) return;
                     temp = states.resourcePacks[idx + 1];
                     Vue.set(states.resourcePacks, idx + 1, pack)
+                    Vue.set(states.resourcePacks, idx, temp)
+                    break;
+                case 'movedown':
+                    idx = states.resourcePacks.indexOf(pack)
+                    if (idx <= 0) return;
+                    temp = states.resourcePacks[idx - 1];
+                    Vue.set(states.resourcePacks, idx - 1, pack)
                     Vue.set(states.resourcePacks, idx, temp)
                     break;
                 default: break;

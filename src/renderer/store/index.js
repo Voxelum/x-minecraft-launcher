@@ -21,6 +21,7 @@ ipcRenderer.on('vuex-commit', (event, mutation, id) => {
     if (id !== newId) {
         ipcRenderer.send('vuex-sync', lastId);
     } else {
+        console.log(mutation)
         localCommit(mutation.type, mutation.payload);
         lastId = newId;
     }
