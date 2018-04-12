@@ -83,7 +83,7 @@ npm test
 
 #### Credit
 
-[Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/orgs/CIJHN/people/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/orgs/CIJHN/people/CharlesQT)
+[Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)
 
 ---
 
