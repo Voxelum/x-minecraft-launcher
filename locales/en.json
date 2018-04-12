@@ -181,11 +181,6 @@
         },
         "create": "Create a New Modpack"
     },
-    "delete": {
-        "yes": "Delete",
-        "no": "No"
-    },
-    "actionforbidden": "Action Forbidden",
     "server": {
         "profile": "Name Of the Server",
         "ipAddress": "IP Address",
@@ -199,8 +194,7 @@
         "edit": "Edit Server Info",
         "motd": "Server MOTD",
         "error": {
-            "requirehost": "Host IP address is required! Please enter it!",
-            "requirename": "Name is required! Please enter a server name!"
+            "missingHost": "Host IP address is required! Please enter it!"
         },
         "delete": {
             "name": "Delete the server",
@@ -216,12 +210,22 @@
             "description": "Pinging..."
         }
     },
+    "delete": {
+        "yes": "Delete",
+        "no": "No"
+    },
+    "actionforbidden": "Action Forbidden",
     "launchsetting": {
         "name": "Launch Settings",
         "jvm": "JVM Arguments",
         "mc": "Minecraft Arguments"
     },
-    "errors.empty": "No error yet",
+    "error": {
+        "empty": "No error yet",
+        "missingJava": "Please select a Java for this profile!",
+        "missingMinecraft": "Please select a Minecraft version for this profile!",
+        "missingName": "Please name this profile!"
+    },
     "hardcore": "Hardcore mode",
     "cheat": "Cheating",
     "gamesettings": {

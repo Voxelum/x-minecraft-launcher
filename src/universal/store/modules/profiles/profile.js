@@ -30,6 +30,19 @@ export default {
         resolution: state => state.resolution,
 
         type: state => 'modpack',
+
+        error(state, getters, rootState, rootGetters) {
+            const errors = [];
+            if (!state.name) errors.push('error.missingName')
+            if (!state.java) errors.push('error.missingJava');
+            if (!state.mcversion) errors.push('error.missingMinecraft');
+            if (state.type === 'modpack') {
+                errors.push(...getters['modpack/error']);
+            } else {
+                errors.push(...getters['server/error']);
+            }
+            return errors;
+        },  
     },
     mutations: {
         edit(state, option) {
@@ -72,6 +85,5 @@ export default {
             }
             if (Object.keys(profile) !== 0) context.commit('edit', profile);
         },
-        refresh(context, payload) { },
     },
 }

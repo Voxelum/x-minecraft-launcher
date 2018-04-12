@@ -1,10 +1,10 @@
 <template>
-    <a class="ui large" :class="{label:true}" style="margin:5px" :data-tooltip="mod.version" data-inverted="" :data-position="pos(index)">
-        <i v-if="selecting==='false'" class="plus icon" @click="toggle"></i>
-        <i v-if="selecting==='true'" class="reply icon" @click="$emit('remove')"></i>
+    <div class="ui large" :class="{label:true}" style="margin:5px" :data-tooltip="mod.version" data-inverted="" :data-position="pos(index)">
+        <i v-if="selecting==='false'" class="plus link icon" @click="toggle"></i>
+        <i v-if="selecting==='true'" class="reply link icon" @click="$emit('remove')"></i>
         {{mod.name}}
         <a class="detail" @click="onclick">{{$t('detail')}}</a>
-    </a>
+    </div>
 </template>
 
 <script>

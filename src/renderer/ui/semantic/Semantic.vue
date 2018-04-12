@@ -16,7 +16,7 @@
                 <user-dropdown></user-dropdown>
                 <skin-view width="210" height="400" :skin="skin"></skin-view>
             </div>
-            <div class="twelve wide column" style="max-height:500px; overflow-x:hidden; overflow-y:hidden;">
+            <div class="twelve wide column" style="min-height:500px; min-height:500px; overflow-x:hidden; overflow-y:hidden;">
                 <transition name="fade" mode="out-in">
                     <router-view></router-view>
                 </transition>
@@ -84,7 +84,7 @@ export default {
     },
     methods: {
         showModal(id, args) { this.$ipc.emit('modal', id, args) },
-        refresh() { this.$ipc.emit('refresh') },
+        refresh() { this.$store.dispatch('refresh$'); },
         close: () => require('electron').ipcRenderer.sendSync('exit'),
         hidePopup() {
             this.$refs.contextMenu.hide();

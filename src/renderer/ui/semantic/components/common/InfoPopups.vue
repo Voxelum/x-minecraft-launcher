@@ -1,26 +1,22 @@
 <template>
     <span class="non-moveable ui inverted basic icon buttons">
         <div ref="warningPopup" class="ui button">
-            <i class="warning sign icon"></i> {{errorsCount}}
+            <i class="warning sign icon"></i> {{errors.length}}
         </div>
         <div class="ui flowing popup transition hidden">
-            <div v-if="errorsCount != 0" class="ui middle aligned divided list" style="max-height:300px; min-width:300px; overflow:hidden">
+            <div class="ui top attached icon label" style="display: fixed">
+                Errors
+            </div>
+            <div v-if="errors.length != 0" class="ui middle aligned selection divided list" style="max-height:300px; min-width:300px; overflow:hidden">
                 <div v-for="(moduleErr, index) in errors" :key='index' class="item">
-                    {{index}}
-                    <div class="ui middle aligned selection divided list">
-                        <div v-for="err of moduleErr" :key="err" class="item">
-                            <div class="item">
-                                <i class="warning icon"></i> {{$t(`error.${err}`)}}
-                            </div>
-                        </div>
-                    </div>
+                    <i class="warning icon"></i> {{$t(`${moduleErr}`)}}
                 </div>
             </div>
             <div v-else>
-                {{$t('errors.empty')}}
+                {{$t('error.empty')}}
             </div>
         </div>
-        <div ref="taskPopup" class="ui button">
+        <div ref="taskPopup" class="ui button" style="border-top-right-radius: 0.28571429rem; border-bottom-right-radius: 0.285714rem;">
             <i class="tasks icon"></i> {{running.length}}
         </div>
         <div class="ui flowing popup transition hidden">
@@ -32,14 +28,22 @@
                 <i style="float: right; margin: 0px" v-else class="compress link icon" @click="expanded = !expanded"></i>
             </div>
             <div v-if="expanded" class="ui selection list" :style="taskStyle">
-                <task-cell class="item" v-for="id in tasks" :key="id" :task="$store.getters['task/get'](id)">
+                <div v-if="tasks.length === 0" class="ui middle aligned center aligned grid" style="min-height: 280px; max-width: 100%">
+                    <div class="column">
+                        <h2 class="ui icon header">
+                            <i class="sitemap icon"></i>
+                            <div class="sub header">{{$t('task.all.empty')}}</div>
+                        </h2>
+                    </div>
+                </div>
+                <task-cell v-else class="item" v-for="id in tasks" :key="id" :task="$store.getters['task/get'](id)">
                 </task-cell>
             </div>
-            <div v-if="!expanded && running.length != 0" class="ui selection list" :style="taskStyle">
-                <task-cell class="item" v-for="id in running" :key="id" :task="$store.getters['task/get'](id)">
+            <div v-else-if="running.length != 0" class="ui selection list" :style="taskStyle">
+                <task-cell class="item" v-for="id in running" :key="id" :task="$store.getters['task/get'](id)" :canRemove="true">
                 </task-cell>
             </div>
-            <div v-if="!expanded && running.length === 0">
+            <div v-else>
                 {{$t('tasks.empty')}}
             </div>
         </div>
@@ -56,6 +60,13 @@ export default {
         TaskCell: () => import('./TaskCell'),
     },
     computed: {
+        errors() {
+            const all = [...this.$store.getters['java/error']]
+            if (this.$route.params.id) {
+                all.push(...this.$store.getters[`profiles/${this.$route.params.id}/error`])
+            }
+            return all;
+        },
         taskStyle() {
             if (!this.expanded)
                 return {
@@ -74,7 +85,7 @@ export default {
                 }
             }
         },
-        ...mapGetters(["errors", "errorsCount"]),
+        // ...mapGetters(["errors", "errorsCount"]),
         running() {
             return this.$store.getters['task/running'];
         },
@@ -85,6 +96,7 @@ export default {
     mounted() {
         $(this.$refs.warningPopup).popup({
             hoverable: true,
+            on: 'click',
             position: "top center",
             delay: {
                 show: 300

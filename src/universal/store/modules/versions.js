@@ -8,6 +8,14 @@ function checkversion(remoteVersionList, files) {
     }
 }
 
+async function $refresh(context) {
+    const option = context.state.date === '' ? undefined : {
+        fallback: { date: context.state.date || '', list: context.state.list || [] },
+    };
+    const remoteList = await LiteLoader.VersionMetaList.update();
+    context.commit('update', remoteList);
+}
+
 export default {
     namespaced: true,
     state: () => ({
@@ -249,11 +257,12 @@ export default {
                 /**
                  * 
                  * @param {ActionContext} context 
-                 * @param {VersionMeta|string} meta
+                 * @param {VersionMeta} meta
                  */
                 async download(context, meta) {
                     const task = Forge.installAndCheckTask(meta, context.rootGetters.root, true);
                     context.commit('status', { key: meta.build, status: 'loading' });
+                    task.name = `install.${meta.id}`;
                     context.dispatch('task/listen', task, { root: true });
                     return task.execute().then(() => context.commit('status', { key: meta.build, status: 'local' }))
                         .catch(() => context.commit('status', { key: meta.build, status: 'remote' }));
@@ -306,16 +315,19 @@ export default {
                     return context.dispatch('write', { path: 'lite-versions.json', data }, { root: true })
                 },
                 download(context, meta) {
-                    const task = LiteLoader.installAndCheckTask(meta, context.rootGetters.root, true);
+                    const task = LiteLoader
+                        .installAndCheckTask(meta, context.rootGetters.root, true);
                     context.dispatch('task/listen', task, { root: true });
                     return task.execute();
                 },
+                $refresh: {
+                    root: true,
+                    handler(context) {
+                        $refresh(context)
+                    },
+                },
                 async refresh(context) {
-                    const option = context.state.date === '' ? undefined : {
-                        fallback: { date: context.state.date || '', list: context.state.list || [] },
-                    };
-                    const remoteList = await LiteLoader.VersionMetaList.update();
-                    context.commit('update', remoteList);
+                    $refresh(context)
                 },
             },
         },

@@ -134,6 +134,16 @@ export default {
     getters: {
         all: state => state.javas,
         default: state => state.default,
+        error(state) {
+            const errors = []
+            if (state.javas.length === 0) {
+                errors.push('error.installJava');
+            }
+            if (!state.default) {
+                errors.push('error.missingDefaultJava');
+            }
+            return errors;
+        },
     },
     mutations: {
         javas(state, inJava) {

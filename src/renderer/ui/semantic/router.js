@@ -18,6 +18,7 @@ import ProfileSelectedButtonGroup from './components/home/ProfileSelectedButtonG
 
 import MarketView from './components/market/MarketView'
 import Curseforge from './components/market/Curseforge'
+import CurseforgeProjects from './components/market/CurseforgeProjects'
 import CurseforgeProject from './components/market/CurseforgeProject'
 import Mcmodcn from './components/market/McmodCn'
 import McmodcnProject from './components/market/McModCnProject'
@@ -89,11 +90,17 @@ export default {
             components: { buttons: MarketButtonGroup, default: Curseforge },
         },
         {
+            path: 'curseforge/projects/:project',
+            components: { buttons: MarketButtonGroup, default: CurseforgeProjects },
+            props: { default: true, buttons: false },
+        },
+        {
             path: 'curseforge/:id',
             name: 'curseforge-project',
             components: { buttons: MarketButtonGroup, default: CurseforgeProject },
             props: { default: true, buttons: false },
         },
+
         {
             path: 'mcmodcn',
             name: 'mcmodcn',

@@ -1,60 +1,44 @@
 <template>
-    <div>
-        <div v-if="loading" class="ui active inverted dimmer">
-            <div class="ui text loader">Loading</div>
-        </div>
-        <div ref="filterDropdown" class="ui labeled icon top right pointing basic dropdown">
-            <i class="filter icon"></i>
-            <span class="text"><label>{{$t('popular')}}</label></span>
-            <div class="menu">
-                <div class="item" v-for="f of filters" :key="f.value" @click="change({filter: f.value})">
-                    {{f.text}}
+    <div class="ui three doubling cards" style="overflow-x:hidden;">
+        <router-link :to="{ path: 'curseforge/projects/mc-mods', params:{project: 'mc-mods'}}"  class="card">
+            <div class="image">
+                <img src="https://media.forgecdn.net/avatars/thumbnails/52/100/64/64/636111139251397737.png">
+            </div>
+            <div class="content">
+                <div class="header">
+                    Mods
+                </div>
+                <div class="description">
+                    View and download mods from Curseforge
                 </div>
             </div>
-            <i class="dropdown icon"></i>
-        </div>
-        <div ref="versionDropdown" class="ui labeled icon top right pointing scrolling basic dropdown">
-            <i class="filter icon"></i>
-            <span class="text"><label>{{$t('version.allVersion')}}</label></span>
-            <div class="menu">
-                <div class="item" v-for="v of versions" :key="v.value" @click="change({version:v.value})">
-                    {{v.text}}
+        </router-link>
+        <router-link :to="{ path: 'curseforge/projects/texture-packs', params:{project: 'texture-packs'}}" class="card">
+            <div class="image">
+                <img src="https://media.forgecdn.net/avatars/thumbnails/52/102/64/64/636111139761599118.png">
+            </div>
+            <div class="content">
+                <div class="header">
+                    Texture Pack
+                </div>
+                <div class="description">
+                    View and download resource/texture packs from Curseforge
                 </div>
             </div>
-            <i class="dropdown icon"></i>
-        </div>
-        <div class="ui link cards" style="overflow-x:hidden;max-height:350px; margin-top:20px; margin-bottom:20px">
-            <router-link :to="{ path: 'curseforge/'+m.path, params:{id: m.path}}" class="card" v-for="m of projects" :key="m.path">
-                <div class="content">
-                    <img class="right floated mini ui icon" :src="m.icon">
-                    <div class="header">
-                        {{m.name}}
-                    </div>
-                    <span class="meta">
-                        {{m.author}}
-                    </span>
-                    <div class="meta">
-                        <span>
-                            <i class="calendar icon"> </i>
-                            {{m.date}}
-                        </span>
-                        <span>
-                            <i class="download icon"></i>
-                            {{m.count}}
-                        </span>
-                    </div>
-                    <div class="description">
-                        {{m.description}}
-                    </div>
+        </router-link>
+        <router-link :to="{ path: 'curseforge/projects/worlds', params:{project: 'worlds'}}"  class="card">
+            <div class="image">
+                <img src="https://media.forgecdn.net/avatars/thumbnails/52/103/64/64/636111139893035422.png">
+            </div>
+            <div class="content">
+                <div class="header">
+                    World
                 </div>
-                <div class="extra content">
-                    <div class="ui avatar image" v-for="cat of m.categories" :key="cat.href">
-                        <img :src="cat.icon">
-                    </div>
+                <div class="description">
+                    View and download minecraft world from Curseforge
                 </div>
-            </router-link>
-        </div>
-        <pagination :pages="pages" @page="change({page:$event})"></pagination>
+            </div>
+        </router-link>
     </div>
 </template>
 
