@@ -22,7 +22,10 @@ function convert(node) {
                 let attrs = node.rawAttrs === '' ? '' : ` ${node.rawAttrs}`
                 if (node.attributes.href) {
                     const href = node.attributes.href;
-                    const newHref = `#/external/${href.substring(href.indexOf('remoteUrl=') + 'remoteUrl='.length)}`
+                    const rLinkIdx = href.indexOf('remoteUrl=');
+                    const newHref = rLinkIdx !== -1 ? 
+                        `#/external/${href.substring(href.indexOf('remoteUrl=') + 'remoteUrl='.length)}`
+                        : `#/external/${href}`
                     attrs = querystring.unescape(querystring.unescape(attrs.replace(href, newHref)))
                 }
                 text += `<${node.tagName}${attrs}>`

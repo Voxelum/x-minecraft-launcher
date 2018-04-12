@@ -1,6 +1,6 @@
 <template>
-    <div class="ui celled grid segment" style="margin:0; border-radius:7px;" @click="hidePopup" @contextmenu="showPopup">
-        <div class="moveable black row" style="border-radius:7px 7px 0 0;">
+    <div class="ui celled grid segment" style="margin:0; background-color: #f7f7f7;" @click="hidePopup" @contextmenu="showPopup">
+        <div class="top-bar moveable black row" style="">
             <div class="four wide center aligned middle aligned column">
                 <h1 class="inverted ui header">
                     ILauncher
@@ -22,7 +22,7 @@
                 </transition>
             </div>
         </div>
-        <div class="moveable black row" style="height:60px;border-radius: 0 0 7px 7px;">
+        <div class="border-bar moveable black row" style="height:60px;">
             <div class="four wide center aligned middle aligned column">
                 <div class="ui icon inverted button pointing dropdown non-moveable" @click="showModal('settings')">
                     <i class="setting icon"></i>
@@ -104,11 +104,18 @@ export default {
 
 <style>
 .app {
-  border-radius: 7px;
+  /* border-radius: 7px; */
 }
 body {
   background-color: transparent;
-  border-radius: 7px;
+  /* border-radius: 7px; */
+}
+
+.top-bar {
+  /* border-radius: 7px 7px 0 0; */
+}
+.bottom-bar {
+  /* border-radius: 0 0 7px 7px; */
 }
 
 .moveable {
