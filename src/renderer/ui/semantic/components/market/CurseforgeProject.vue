@@ -9,9 +9,9 @@
                     <img :src="image">
                 </div>
                 <div class="content">
-                    <div class="header">
+                    <a class="header" :href="`#/external/https://minecraft.curseforge.com/projects/${id}`">
                         {{name}}
-                    </div>
+                    </a>
                     <div class="meta">
                         <i class="download icon"></i>
                         {{totalDownload}}
