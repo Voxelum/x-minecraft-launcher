@@ -51,7 +51,6 @@ export default {
             })}`
             const parse = (root) => {
                 root = root.removeWhitespace();
-                console.log(root.querySelectorAll('.b-pagination-item'))
                 const pages = root.querySelectorAll('.b-pagination-item')
                     .map(pageItem => pageItem.firstChild.rawText)
                     .filter(text => text.length < 5) // hardcode filter out the non page elem 
