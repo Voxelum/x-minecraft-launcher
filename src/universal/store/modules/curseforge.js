@@ -51,8 +51,10 @@ export default {
             })}`
             const parse = (root) => {
                 root = root.removeWhitespace();
+                console.log(root.querySelectorAll('.b-pagination-item'))
                 const pages = root.querySelectorAll('.b-pagination-item')
                     .map(pageItem => pageItem.firstChild.rawText)
+                    .filter(text => text.length < 5) // hardcode filter out the non page elem 
                     .map(text => Number.parseInt(text, 10))
                     .filter(n => Number.isInteger(n))
                     .reduce((a, b) => (a > b ? a : b))
@@ -254,11 +256,16 @@ export default {
             https://minecraft.curseforge.com${path}/files?filter-game-version=${version}&page=${page}
             `
             const parse = (filespage) => {
-                const pages = filespage.querySelectorAll('.b-pagination-item')
-                    .map(pageItem => pageItem.firstChild.rawText)
-                    .map(text => Number.parseInt(text, 10))
-                    .filter(n => Number.isInteger(n))
-                    .reduce((a, b) => (a > b ? a : b))
+                let pages = filespage.querySelectorAll('.b-pagination-item');
+                if (pages.length === 0) {
+                    pages = 0;
+                } else {
+                    pages = filespage.querySelectorAll('.b-pagination-item')
+                        .map(pageItem => pageItem.firstChild.rawText)
+                        .map(text => Number.parseInt(text, 10))
+                        .filter(n => Number.isInteger(n))
+                        .reduce((a, b) => (a > b ? a : b))
+                }
                 const versions = filespage.querySelector('#filter-game-version').removeWhitespace()
                     .childNodes.map(ver => ({
                         type: ver.attributes.class,

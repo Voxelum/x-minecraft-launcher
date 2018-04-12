@@ -31,7 +31,7 @@ export default {
             }
         }
         return createElement('div', {
-            attrs: { class: 'eleven wide column' },
+            attrs: { class: 'eleven wide column', style: 'overflow: auto;' },
         }, [...right, createElement('div', { attrs: { class: 'ui breadcrumb' } }, rendered)])
     },
     computed: {
@@ -81,6 +81,13 @@ export default {
         },
         renderLink(createElement, path, name, icon = '') {
             const self = this;
+            let localName;
+            if (this.$te()) {
+                localName = this.$t(name);
+            } else if (name.length > 20) {
+                name = `${name.substring(0, 20)}...`
+            }
+
             return createElement('div', {
                 attrs: { class: 'section' },
             }, [createElement('a', {
@@ -88,6 +95,7 @@ export default {
                     // to: path,
                     // href: `#${path}`,
                     class: 'ui inverted circular button non-moveable',
+                    style: 'max-width: 210px;max-height: 36px;',
                 },
                 on: {
                     click() {
