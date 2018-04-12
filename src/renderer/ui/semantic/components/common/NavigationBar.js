@@ -5,7 +5,7 @@ export default {
         const rendered = []
         for (const p of this.paths) {
             let icon = '';
-            switch (name) {
+            switch (p.name) {
                 case 'home':
                     icon = 'home icon'
                     break;
@@ -27,7 +27,7 @@ export default {
             if (this.paths[0].name === 'home') {
                 right.push(this.renderLinkRight(createElement, '/semantic/market', this.$t('market'), 'shop icon'))
             } else {
-                right.push(this.renderLinkRight(createElement, '/semantic/cards', this.$t('home'), 'home icon'))
+                right.push(this.renderLinkRight(createElement, '/semantic/profile', this.$t('home'), 'home icon'))
             }
         }
         return createElement('div', {
@@ -36,46 +36,21 @@ export default {
     },
     computed: {
         paths() {
-            const path = this.$route.fullPath;
-            const splited = path.split('/').slice(1);
-            console.log(splited)
-            switch (splited[1]) {
-                case 'cards':
-                    return [{ path, name: 'home' }];
-                case 'profile':
-                    if (splited.length < 3) throw new Error(`Unexpected path ${splited}`)
-                    return [{ path: `/${splited[0]}/cards`, name: 'home' },
-                    { path, name: this.$store.state.profiles[splited[2]].name }];
-                case 'market':
-                    return [{ path, name: 'market' }];
-                case 'curseforge':
-                    if (splited.length > 2) {
-                        // const arr = [];
-                        // for (let i = 2; i < splited.length; i++) {
-                        //     const element = arr[i];
-                            
-                        // }
-                        // if (splited[2] === 'projects') {
-                         /*    return [{ path: `/${splited[0]}/market`, name: 'market' },
-                            { path: `/${splited[0]}/curseforge`, name: 'curseforge' },
-                            { path, name: splited[2] }]
-                        } */
-                        return [{ path: `/${splited[0]}/market`, name: 'market' },
-                        { path: `/${splited[0]}/curseforge`, name: 'curseforge' },
-                        { path, name: splited[2] }]
-                    }
-                    return [{ path: `/${splited[0]}/market`, name: 'market' },
-                    { path: `/${splited[0]}/curseforge`, name: 'curseforge' }]
-                case 'mcmodcn':
-                    if (splited.length > 2) {
-                        return [{ path: `/${splited[0]}/market`, name: 'market' },
-                        { path: `/${splited[0]}/mcmodcn`, name: 'mcmod' },
-                        { path, name: splited[2] }]
-                    }
-                    return [{ path: `/${splited[0]}/market`, name: 'market' },
-                    { path, name: 'mcmod' }];
-                default: return [];
+            const splited = this.$route.fullPath.split('/').slice(2);
+            const outPath = [];
+            for (let i = 0; i < splited.length; i += 1) {
+                outPath.push({ name: splited[i], path: ['/semantic', ...splited.slice(0, i + 1)].join('/') });
             }
+            if (splited[0] === 'profile') {
+                outPath[0].name = 'home';
+                if (splited.length === 3) {
+                    const current = outPath.pop();
+                    outPath.pop();
+                    current.name = this.$store.state.profiles[splited[1]].name
+                    outPath.push(current);
+                }
+            }
+            return outPath;
         },
     },
     methods: {
@@ -98,13 +73,11 @@ export default {
                 on: {
                     click() { self.$router.replace(path) },
                 },
-            },
-                [createElement('i', {
-                    attrs: {
-                        class: icon,
-                    },
-                }), name,
-                ])])
+            }, [createElement('i', {
+                attrs: {
+                    class: icon,
+                },
+            }), name])])
         },
         renderLink(createElement, path, name, icon = '') {
             const self = this;
@@ -117,7 +90,9 @@ export default {
                     class: 'ui inverted circular button non-moveable',
                 },
                 on: {
-                    click() { self.$router.replace(path) },
+                    click() {
+                        self.$router.replace(path)
+                    },
                 },
             },
                 [createElement('i', {

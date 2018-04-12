@@ -1,7 +1,7 @@
 <template>
     <div class="ui link cards" style="overflow-x:hidden;height:100%">
-        <router-link to="curseforge" class="ui card">
-            <div class="ui  image">
+        <router-link to="market/curseforge" class="ui card">
+            <div class="ui image">
                 <img :src="curseforgeSrc">
             </div>
             <div class="content">
@@ -16,7 +16,7 @@
                 </div>
             </div>
         </router-link>
-        <router-link to="mcmodcn" class="ui card">
+        <router-link to="market/mcmodcn" class="ui card">
             <div class="image">
                 <img :src="mcmodcnSrc">
             </div>
