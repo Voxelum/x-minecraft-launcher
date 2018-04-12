@@ -38,11 +38,10 @@ export default {
         paths() {
             const path = this.$route.fullPath;
             const splited = path.split('/').slice(1);
+            console.log(splited)
             switch (splited[1]) {
                 case 'cards':
                     return [{ path, name: 'home' }];
-                // case 'modpack':
-                // case 'server':
                 case 'profile':
                     if (splited.length < 3) throw new Error(`Unexpected path ${splited}`)
                     return [{ path: `/${splited[0]}/cards`, name: 'home' },
@@ -51,6 +50,16 @@ export default {
                     return [{ path, name: 'market' }];
                 case 'curseforge':
                     if (splited.length > 2) {
+                        // const arr = [];
+                        // for (let i = 2; i < splited.length; i++) {
+                        //     const element = arr[i];
+                            
+                        // }
+                        // if (splited[2] === 'projects') {
+                         /*    return [{ path: `/${splited[0]}/market`, name: 'market' },
+                            { path: `/${splited[0]}/curseforge`, name: 'curseforge' },
+                            { path, name: splited[2] }]
+                        } */
                         return [{ path: `/${splited[0]}/market`, name: 'market' },
                         { path: `/${splited[0]}/curseforge`, name: 'curseforge' },
                         { path, name: splited[2] }]

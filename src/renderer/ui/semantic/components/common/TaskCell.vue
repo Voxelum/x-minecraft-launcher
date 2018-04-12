@@ -1,5 +1,6 @@
 <template>
     <div class="item" style="width: 100%">
+        <i v-if="canRemove" class="cross icon close"></i>
         <i v-if="childs.length != 0 && !expand" @click="expand = true" class="angle right icon"></i>
         <i v-if="childs.length != 0 && expand" @click="expand = false" class="angle down icon"></i>
         <div class="content" style="width: 100%">
@@ -20,7 +21,7 @@
 <script>
 export default {
     name: 'task-cell',
-    props: ['task'],
+    props: ['task', 'canRemove'],
     data: () => ({
         expand: false,
     }),

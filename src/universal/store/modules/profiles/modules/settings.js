@@ -186,6 +186,7 @@ export default {
             const id = mutation.split('/')[1];
             const path = `profiles/${id}/options.txt`
             const data = GameSetting.stringify(context.state);
+            console.log('save setting');
             return context.dispatch('write', { path, data }, { root: true })
         },
         async load(context, { id }) {

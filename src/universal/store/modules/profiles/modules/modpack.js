@@ -9,6 +9,12 @@ export default {
     getters: {
         author: state => state.author,
         description: state => state.description,
+        error(state) {
+            const errors = [];
+            if (!state.author) errors.push('modpack.error.author');
+            if (!state.description) errors.push('modpack.error.description');
+            return errors;
+        },
     },
     mutations: {
         edit(state, data) {

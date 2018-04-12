@@ -1,6 +1,6 @@
 <template>
     <div class="ui vertically grid" style="overflow: hidden;">
-        <component :is="header"></component>
+        <component v-if="type !== ''" :is="header"></component>
         <div class="row">
             <div-header>
                 <label class="cursor: pointer" @mouseenter="openBar">
@@ -8,7 +8,7 @@
                 </label>
             </div-header>
         </div>
-        <div ref="pushable" class="stretched row pushable" style="min-height:350px;max-height:350px; border-right-width:0;border-right-color:transparent;border-radius:0px;">
+        <div ref="pushable" class="stretched row pushable" style="min-height:340px;max-height:340px; border-right-width:0;border-right-color:transparent;border-radius:0px;">
             <div ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;" @mouseleave="closeBar">
                 <div class="sixteen wide column">
                     <router-link to="version" class="item"> {{$tc('version.name', 0)}}</router-link>
@@ -19,9 +19,9 @@
                     <router-link to="launchsetting" class="item">{{$t('launchsetting.name', 0)}}</router-link>
                 </div>
             </div>
-            <div class="pusher ui basic segment" style="overflow:auto; width:100%">
+            <div class="pusher ui basic segment" style="overflow:auto;min-height: 315px; width:100%">
                 <transition name="fade" mode="out-in">
-                    <router-view style="padding: 0px 20px 0px 20px"></router-view>
+                    <router-view style="padding: 0px 20px 0px 20px; overflow:auto; min-height: inherit;"></router-view>
                 </transition>
             </div>
         </div>
@@ -35,9 +35,11 @@ export default {
         ['server-header']: () => import('./ServerHeader'),
     },
     computed: {
+        type() {
+            return this.$store.getters[`profiles/${this.id}/type`];
+        },
         header() {
-            const type = this.$store.getters[`profiles/${this.id}/type`];
-            return `${type}-header`;
+            return `${this.type}-header`;
         },
         selectingRaw() {
             const last = this.$route.path.lastIndexOf('/');
@@ -69,8 +71,9 @@ export default {
             this.$store.dispatch(`profiles/${this.id}/edit`, { description: event.target.value })
         },
         refresh() {
-            this.$store.dispatch(`profiles/${this.id}/refresh`)
-            this.$store.dispatch('versions/refresh')
+            this.$store.dispatch('refresh')
+            // this.$store.dispatch(`profiles/${this.id}/refresh`)
+            // this.$store.dispatch('versions/refresh')
         },
         openBar() {
             $(this.$refs.sidebar).sidebar('show')

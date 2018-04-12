@@ -20,6 +20,13 @@ export default {
         status: state => state.status,
         isLanServer: state => state.isLanServer,
         servers: state => state.servers,
+        error(state) {
+            const errors = [];
+            if (!state.host) {
+                errors.push('server.error.missingHost')
+            }
+            return errors;
+        },
     },
     mutations: {
         add(state, server) {
@@ -59,11 +66,6 @@ export default {
             if (isNone(state.host)) errors.push('profile.nohost')
             return errors;
         },
-        /**
-         * 
-         * @param {vuex.ActionContext} context 
-         * @param {*} force 
-         */
         refresh(context, force) {
             if (context.state.status.pingToServer && !force) return Promise.resolve();
             context.commit('profile', { status: Server.Status.pinging() })
@@ -101,6 +103,17 @@ export default {
                         context.commit('profile', { status: new Server.Status(TextComponent.str('version.unknown'), 'Internet Error', -1, -1, -1) })
                     }
                 })
+        },
+        refresh$: {
+            root: true,
+            /**
+             * 
+             * @param {vuex.ActionContext} context 
+             * @param {*} force 
+             */
+            handler(context, force) {
+                console.log(context.state)
+            },
         },
     },
 }

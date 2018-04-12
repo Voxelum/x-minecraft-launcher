@@ -21,6 +21,13 @@ export default {
         remove(state, mod) {
             Vue.delete(state.mods, state.mods.indexOf(mod));
         },
+        error(state) {
+            const errors = [];
+            if (state.mods.length !== 0 && !state.version) {
+                errors.push('')
+            }
+            return errors; 
+        },
     },
     actions: {
         async load(context, { id }) {

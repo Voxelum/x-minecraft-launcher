@@ -30,8 +30,8 @@ export default {
     methods: {
         onDownload(event) {
             this.$emit('download', this.meta.id);
-            event.preventDefault();
-            return false;
+            event.stopPropagation();
+            return true;
         },
     },
     props: ['meta', 'selected'],

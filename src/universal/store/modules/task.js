@@ -55,6 +55,10 @@ export default {
             state.running.push(node.id);
             state.all.push(node.id);
         },
+        $remove(state, node) {
+            Vue.delete(state.all, state.all.indexOf(node.id));
+            Vue.delete(state.tasks, node.id);
+        },
     },
     actions: {
         /**
@@ -67,6 +71,9 @@ export default {
             context.commit('create', { ...payload, id });
             const proxy = new TaskProxy(context, [...(payload.path || []), id]);
             return proxy;
+        },
+        remove(context, task) {
+            context.commit('$remove', task);
         },
         /**
          * 

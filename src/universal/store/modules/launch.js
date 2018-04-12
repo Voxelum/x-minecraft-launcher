@@ -19,6 +19,15 @@ function onerror(e) {
 }
 
 export default {
+    getters: {
+        error: (state, getters, rootState, rootGetters) => {
+            const errors = [];
+            
+            if (!state.java) errors.push('error.missingJava');
+            if (!state.mcversion) errors.push('error.missingMc');
+            // rootGetters[`profiles/${state.id}/`]
+        },
+    },
     actions: {
         /**
         * @param {ActionContext} context 
@@ -121,12 +130,13 @@ export default {
                 console.error(e)
             }
 
-            console.log(JSON.stringify(option))
+            console.log(JSON.stringify(option));
 
             /**
              * Launch
              */
             return Launcher.launch(option).then((process) => {
+                ipcMain.emit('park');
                 process.on('error', (err) => {
                     console.log(err)
                 })

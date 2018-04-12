@@ -96,7 +96,7 @@ function updateSettings(newRoot) {
         app.setPath('userData', root);
         updated = true;
     }
-    if (updated) fs.writeFile(cfgFile, JSON.stringify({ path: root, theme }))
+    if (updated) fs.writeFile(cfgFile, JSON.stringify({ path: root }))
 }
 
 function setupIcon(window) {
