@@ -27,12 +27,12 @@ import MarketButtonGroup from './components/market/MarketButtonGroup'
 export default {
     path: '/semantic',
     name: 'semantic',
-    redirect: '/semantic/cards',
+    redirect: '/semantic/profile',
     component: SemanticUi,
     children: [
         {
-            path: 'cards',
-            name: 'cards',
+            path: 'profile',
+            name: 'profile',
             components: {
                 default: CardView,
                 buttons: CardsButtonGroup,
@@ -85,29 +85,27 @@ export default {
             components: { buttons: MarketButtonGroup, default: MarketView },
         },
         {
-            path: 'curseforge',
-            name: 'curseforge',
+            path: 'market/curseforge',
+            name: 'market/curseforge',
             components: { buttons: MarketButtonGroup, default: Curseforge },
         },
         {
-            path: 'curseforge/projects/:project',
+            path: 'market/curseforge/:project',
             components: { buttons: MarketButtonGroup, default: CurseforgeProjects },
             props: { default: true, buttons: false },
         },
         {
-            path: 'curseforge/:id',
-            name: 'curseforge-project',
+            path: 'market/curseforge/:project/:id',
             components: { buttons: MarketButtonGroup, default: CurseforgeProject },
             props: { default: true, buttons: false },
         },
-
         {
-            path: 'mcmodcn',
-            name: 'mcmodcn',
+            path: 'market/mcmodcn',
+            name: 'market/mcmodcn',
             components: { buttons: MarketButtonGroup, default: Mcmodcn },
         },
         {
-            path: 'mcmodcn/:id',
+            path: 'market/mcmodcn/:id',
             components: { buttons: MarketButtonGroup, default: McmodcnProject },
             props: { default: true, buttons: false },
         },

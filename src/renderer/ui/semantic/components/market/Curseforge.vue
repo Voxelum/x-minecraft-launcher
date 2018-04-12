@@ -1,6 +1,6 @@
 <template>
     <div class="ui three doubling cards" style="overflow-x:hidden;">
-        <router-link :to="{ path: 'curseforge/projects/mc-mods', params:{project: 'mc-mods'}}"  class="card">
+        <router-link :to="{ path: 'curseforge/mc-mods', params:{project: 'mc-mods'}}"  class="card">
             <div class="image">
                 <img src="https://media.forgecdn.net/avatars/thumbnails/52/100/64/64/636111139251397737.png">
             </div>
@@ -13,7 +13,7 @@
                 </div>
             </div>
         </router-link>
-        <router-link :to="{ path: 'curseforge/projects/texture-packs', params:{project: 'texture-packs'}}" class="card">
+        <router-link :to="{ path: 'curseforge/texture-packs', params:{project: 'texture-packs'}}" class="card">
             <div class="image">
                 <img src="https://media.forgecdn.net/avatars/thumbnails/52/102/64/64/636111139761599118.png">
             </div>
@@ -26,7 +26,7 @@
                 </div>
             </div>
         </router-link>
-        <router-link :to="{ path: 'curseforge/projects/worlds', params:{project: 'worlds'}}"  class="card">
+        <router-link :to="{ path: 'curseforge/worlds', params:{project: 'worlds'}}"  class="card">
             <div class="image">
                 <img src="https://media.forgecdn.net/avatars/thumbnails/52/103/64/64/636111139893035422.png">
             </div>
