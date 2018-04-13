@@ -37,10 +37,10 @@
 export default {
     computed: {
         description() {
-            return this.$store.getters[`profiles/${this.$route.params.id}/modpack/description`]
+            return this.$store.getters[`profiles/${this.$route.params.id}/description`]
         },
         author() {
-            return this.$store.getters[`profiles/${this.$route.params.id}/modpack/author`]
+            return this.$store.getters[`profiles/${this.$route.params.id}/author`]
         },
         version() {
             return this.$store.getters[`profiles/${this.$route.params.id}/mcversion`]

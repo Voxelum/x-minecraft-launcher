@@ -39,6 +39,8 @@ export default {
             return this.$store.getters[`profiles/${this.id}/type`];
         },
         header() {
+            console.log(this.id);
+            console.log(this.type)
             return `${this.type}-header`;
         },
         selectingRaw() {

@@ -16,15 +16,28 @@ for (let i = 0; i < 32; i += 1) {
         ((k & 255) << 16) | ((l & 255) << 8) | (i1 & 255); // eslint-disable-line no-bitwise
 }
 
+function itr(comp) {
+    const arr = [comp]
+    if (comp._siblings.length !== 0) {
+        for (const s of comp._siblings) {
+            arr.push(...itr(s));
+        }
+    }
+    return arr;
+}
+
 export default {
     render(createElement) {
         const arr = []
         if (!this.source) return createElement('div')
-        let iterator
+        let iterator;
+        console.log(this.source)
         if (typeof this.source === 'string') {
             iterator = TextComponent.from(this.source).iterator
-        } else {
+        } else if (this.source.iterator) {
             iterator = this.source.iterator;
+        } else if (this.source._siblings) {
+            iterator = itr(this.source);
         }
         if (iterator) {
             for (const component of iterator) {

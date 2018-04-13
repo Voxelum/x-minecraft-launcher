@@ -2,7 +2,7 @@
     <div class="ui card" v-bind:class="{color}">
         <p class="ui top attached label" :data-tooltip="$tc(this.source.type + '.name', 1)" data-inverted="" :data-position="bound? 'bottom center': 'top center'">
             <i class="server icon"></i>
-            {{this.source.host}}
+            {{host}}
             <i class="right floated large delete icon" :class="{red:hoverDelete}" @mouseover="hoverDelete=true" @mouseout="hoverDelete=false" @click="del"></i>
         </p>
         <div class="content" @click="onclick">
@@ -23,7 +23,7 @@
                 <i class="users icon"></i> {{this.onlinePlayers}} / {{this.capacity}}</span>
             <div class="right floated">
                 <i class="signal icon"></i>
-                {{this.ping === -1 ? 'Cannot connected' : this.ping + ' ms'}}
+                {{this.ping === -1 ? 'Cannot connected' : this.ping.toFixed(2) + ' ms'}}
             </div>
         </div>
     </div>
@@ -36,14 +36,21 @@ export default {
     }),
     computed: {
         name() { return this.source.name; },
-        host() { return this.source.server.host; },
-        port() { return this.source.server.port; },
-        icon() { return this.source.server.status.icon || '' },
-        onlinePlayers() { return this.source.server.status.onlinePlayers || -1 },
-        capacity() { return this.source.server.status.capacity || -1 },
-        ping() { return this.source.server.status.pingToServer || -1 },
-        motd() { return this.source.server.status.motd || '' },
-        version() { return this.source.server.status.gameVersion || 'Unknown' },
+        host() { return this.source.host; },
+        port() { return this.source.port; },
+        icon() { return this.source.status.favicon || '' },
+        onlinePlayers() {
+            return this.source.status.players ? this.source.status.players.online || -1 : -1
+        },
+        capacity() {
+            return this.source.status.players ? this.source.status.players.max || -1 : -1
+        },
+        ping() { return this.source.status.ping || -1 },
+        motd() { return this.source.status.description || '' },
+        version() {
+            return this.source.status.version ?
+                this.source.status.version.name : 'Unknown'
+        },
 
     },
     props: ['color', 'source', 'id', 'bound'],

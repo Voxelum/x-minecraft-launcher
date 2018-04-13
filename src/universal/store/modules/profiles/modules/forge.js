@@ -32,7 +32,7 @@ export default {
     actions: {
         async load(context, { id }) {
             const cfg = await context.dispatch('read', {
-                path: `profiles/${id}/mods.json`,
+                path: `profiles/${id}/forge.json`,
                 fallback: {},
                 type: 'json',
             }, { root: true });
@@ -45,7 +45,7 @@ export default {
         },
         save(context, { mutation }) {
             const id = mutation.split('/')[1];
-            const path = `profiles/${id}/mods.json`
+            const path = `profiles/${id}/forge.json`
             return context.dispatch('write', { path, data: context.state }, { root: true })
         },
         setVersion(context, version) {
