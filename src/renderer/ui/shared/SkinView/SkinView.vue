@@ -18,7 +18,7 @@ export default {
             }
             let slim = nskin.metadata ? nskin.metadata.model === 'slim' : false
             if (nskin.data) {
-                this.$setSkin('data:image/png;base64, ' + nskin.data, slim)
+                this.$setSkin('data:image/png;base64, ' + nskin.data.toString('base64'), slim)
             }
         }
     },
@@ -61,7 +61,7 @@ export default {
         }
         scene.add(character.root)
         if (this.skin) 
-            this.$setSkin('data:image/png;base64, ' + this.skin.data, this.skin.slim)
+            this.$setSkin('data:image/png;base64, ' + this.skin.data.toString('base64'), this.skin.slim)
         camera.lookAt(new THREE.Vector3(0, 0, 0))
 
 

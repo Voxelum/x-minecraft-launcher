@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { Auth, MojangAccount, MojangService } from 'ts-minecraft'
+import { Auth, MojangAccount, MojangService, GameProfile } from 'ts-minecraft'
 import { ActionContext } from 'vuex'
 import { v4 } from 'uuid'
 
@@ -85,7 +85,7 @@ export default {
             }
         },
         modes: (state, modes) => { state.modes = modes },
-        clear(state) { state.auth = null; },
+        clear(state) { state.auth = {}; },
     },
 
     actions: {
@@ -100,6 +100,7 @@ export default {
             context.commit('setHistory', data.history);
             context.commit('setCache', data.auth);
             context.commit('setClientToken', data.clientToken || v4());
+            await context.dispatch('refresh')
         },
         /**
          * 
@@ -145,6 +146,22 @@ export default {
                     clientToken: context.state.clientToken,
                     accessToken: context.state.auth.accessToken,
                 });
+                console.log('refrehsed!');
+                const gameProfile = await context.dispatch('gameprofile/fetch', { service: mode, uuid: auth.selectedProfile.id, cache: true }, { root: true });
+                const textures = gameProfile.textures;
+                if (textures) {
+                    const skin = textures.textures.skin;
+                    if (skin) {
+                        auth.skin = {
+                            data: skin.data,
+                            slim: skin.metadata ? skin.metadata.model === 'slim' : false,
+                        }
+                    }
+                    if (textures.textures.CAPE) {
+                        auth.cape = textures.textures.cape.data;
+                    }
+                }
+
                 context.commit('login', {
                     auth,
                 })
@@ -171,22 +188,26 @@ export default {
             const result = await context.dispatch(`${mode}/login`, loginOption);
             if (!result) throw new Error(`Cannot auth the ${payload.account}`);
             try {
-                if (mode !== 'offline' && payload.texture) {
+                if (mode !== 'offline') {
                     /**
                      * @type {GameProfile}
                      */
                     const gameProfile = await context.dispatch('gameprofile/fetch', { service: mode, uuid: result.selectedProfile.id, cache: true }, { root: true });
+                    
+                    /**
+                     * @type {GameProfile.Textures}
+                     */
                     const textures = gameProfile.textures;
                     if (textures) {
-                        const skin = textures.textures.SKIN;
+                        const skin = textures.textures.skin;
                         if (skin) {
                             result.skin = {
                                 data: skin.data,
-                                slim: skin.metadata.model === 'slim',
+                                slim: skin.metadata ? skin.metadata.model === 'slim' : false,
                             }
                         }
-                        if (textures.textures.CAPE) {
-                            result.cape = textures.textures.CAPE.data;
+                        if (textures.textures.cape) {
+                            result.cape = textures.textures.cape.data;
                         }
                     }
                 }

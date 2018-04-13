@@ -31,7 +31,7 @@
         "jszip": "^3.1.4",
         "semantic-ui": "^2.3.1",
         "treelike-task": "0.0.7",
-        "ts-minecraft": "^3.0.10",
+        "ts-minecraft": "^3.0.12",
         "uuid": "^3.1.0",
         "vue": "^2.3.4",
         "vue-electron": "^1.0.6",
