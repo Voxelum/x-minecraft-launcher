@@ -1,4 +1,30 @@
+import { TextComponent, TextFormatting, Style, Server, NBT } from 'ts-minecraft'
 import modules from './modules'
+
+const STATUS_PINGING = Object.freeze({
+    version: {
+        name: 'Unknown',
+    },
+    players: {
+        max: -1,
+        online: -1,
+    },
+    description: 'Ping...',
+    favicon: '',
+    ping: 0,
+});
+const STATUS_ERROR = Object.freeze({
+    version: {
+        name: 'Unknown',
+    },
+    players: {
+        max: -1,
+        online: -1,
+    },
+    description: 'Error',
+    favicon: '',
+    ping: 0,
+})
 
 export default {
     namespaced: true,
@@ -17,6 +43,28 @@ export default {
         mcversion: '',
 
         type: 'modpack',
+
+        /**
+         * Server section
+         */
+        servers: [],
+        primary: -1,
+
+        host: '',
+        port: 25565,
+        isLanServer: false,
+        icon: '',
+
+        status: {},
+
+        /**
+         * Modpack section
+         */
+
+        author: '',
+        description: '',
+        url: '',
+
     }),
     getters: {
         id: state => state.id,
@@ -29,24 +77,34 @@ export default {
         mcOptions: state => state.mcOptions,
         resolution: state => state.resolution,
 
-        type: state => 'modpack',
+        author: state => state.author,
+        description: state => state.description,
+
+        type: state => state.type,
+
+        host: state => state.host,
+        port: state => state.port,
+        icon: state => state.icon,
+        status: state => state.status,
+        servers: state => state.servers,
 
         error(state, getters, rootState, rootGetters) {
             const errors = [];
-            if (!state.name) errors.push('error.missingName')
+            if (!state.name) errors.push('error.missingName');
             if (!state.java) errors.push('error.missingJava');
             if (!state.mcversion) errors.push('error.missingMinecraft');
             if (state.type === 'modpack') {
-                errors.push(...getters['modpack/error']);
+                if (!state.author) errors.push('modpack.error.author');
+                if (!state.description) errors.push('modpack.error.description');
             } else {
-                errors.push(...getters['server/error']);
+                if (!state.host) errors.push('server.error.missingHost');
+                if (!state.port) errors.push('server.error.missingPort');
             }
             return errors;
         },
     },
     mutations: {
         edit(state, option) {
-            delete option.id;
             Object.keys(option)
                 .forEach((key) => { state[key] = option[key] })
         },
@@ -84,6 +142,54 @@ export default {
                 }
             }
             if (Object.keys(profile) !== 0) context.commit('edit', profile);
+        },
+
+        refresh(context) {
+            if (context.state.type !== 'server') return undefined;
+            context.commit('edit', { status: STATUS_PINGING })
+            if (context.state.host === undefined) return Promise.reject('server.host.empty')
+            return Server.fetchStatusFrame({
+                host: context.state.host,
+                port: context.state.port,
+            }, { protocol: 335 })
+                .then((frame) => {
+                    const all = {
+                        icon: frame.favicon,
+                        status: frame,
+                    }
+                    context.commit('edit', all);
+                }, (err) => {
+                    if (err) {
+                        console.error(err);
+                        if (err.code === 'ETIMEOUT') {
+                            // const timeout = TextComponent.str('server.status.timeout');
+                            // timeout.style = Style.create({ color: TextFormatting.RED })
+                            context.commit('edit', { status: STATUS_ERROR })
+                        } else if (err.code === 'ENOTFOUND') {
+                            // const timeout = TextComponent.str('server.status.nohost');
+                            // timeout.style = Style.create({ color: TextFormatting.RED })
+                            context.commit('edit', { status: STATUS_ERROR })
+                        } else if (err.code === 'ECONNREFUSED') {
+                            // const nohost = TextComponent.str('server.status.refuse');
+                            // nohost.style = Style.create({ color: TextFormatting.RED })
+                            context.commit('edit', { status: STATUS_ERROR })
+                        }
+                    } else {
+                        context.commit('edit', { status: STATUS_ERROR })
+                    }
+                })
+        },
+        $refresh: {
+            root: true,
+            /**
+             * 
+             * @param {vuex.ActionContext} context 
+             * @param {*} force 
+             */
+            handler(context, force) {
+                if (context.state.type !== 'server') return undefined;
+                return context.dispatch('refresh', force);
+            },
         },
     },
 }

@@ -66,8 +66,8 @@ export default {
             this.isEdit = isEdit || false;
             if (this.isEdit) {
                 this.name = this.selected.name;
-                this.description = this.selected.modpack.description;
-                this.author = this.selected.modpack.author;
+                this.description = this.selected.description;
+                this.author = this.selected.author;
             }
             else {
                 this.name = ''
@@ -84,8 +84,6 @@ export default {
             if (this.isEdit) {
                 this.$store.dispatch(`profiles/${this.id}/edit`, {
                     name: this.name,
-                })
-                this.$store.dispatch(`profiles/${this.id}/modpack/edit`, {
                     author: this.author,
                     description: this.description,
                 })
