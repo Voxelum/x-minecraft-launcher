@@ -24,14 +24,14 @@ function group(slim) {
                 right: [32, 8, 40, 16],
                 front: [40, 8, 48, 16],
                 left: [48, 8, 56, 16],
-                back: [56, 8, 64, 16]
+                back: [56, 8, 64, 16],
             },
             top: [8, 0, 16, 8],
-            bottom: [16, 0, 24, 8],
+            bottom: [24, 8, 16, 0],
             right: [0, 8, 8, 16],
             front: [8, 8, 16, 16],
             left: [16, 8, 24, 16],
-            back: [24, 8, 32, 16]
+            back: [24, 8, 32, 16],
         },
         rightLeg: {
             layer: {
@@ -43,14 +43,14 @@ function group(slim) {
                 right: [0, 36, 4, 48],
                 front: [4, 36, 8, 48],
                 left: [8, 36, 12, 48],
-                back: [12, 36, 16, 48]
+                back: [12, 36, 16, 48],
             },
             top: [4, 16, 8, 20],
             bottom: [8, 16, 12, 20],
             right: [0, 20, 4, 32],
             front: [4, 20, 8, 32],
             left: [8, 20, 12, 32],
-            back: [12, 20, 16, 32]
+            back: [12, 20, 16, 32],
         },
         torso: {
             layer: {
@@ -62,14 +62,14 @@ function group(slim) {
                 right: [16, 36, 20, 48],
                 front: [20, 36, 28, 48],
                 left: [28, 36, 32, 48],
-                back: [32, 36, 40, 48]
+                back: [32, 36, 40, 48],
             },
             top: [20, 16, 28, 20],
             bottom: [28, 16, 36, 20],
             right: [16, 20, 20, 32],
             front: [20, 20, 28, 32],
             left: [28, 20, 32, 32],
-            back: [32, 20, 40, 32]
+            back: [32, 20, 40, 32],
         },
         leftArm: {
             layer: {
@@ -81,7 +81,7 @@ function group(slim) {
                 right: [48, 52, 52, 64],
                 front: [52, 52, 56, 64],
                 left: [56, 52, 60, 64],
-                back: [60, 52, 64, 64]
+                back: [60, 52, 64, 64],
             },
 
             top: [36, 48, slim ? 39 : 40, 52],
@@ -89,7 +89,7 @@ function group(slim) {
             left: [32, 52, 36, 64],
             front: [36, 52, slim ? 39 : 40, 64],
             right: [slim ? 39 : 40, 52, slim ? 43 : 44, 64],
-            back: [slim ? 43 : 44, 52, slim ? 46 : 48, 64]
+            back: [slim ? 43 : 44, 52, slim ? 46 : 48, 64],
         },
         rightArm: {
             layer: {
@@ -101,14 +101,14 @@ function group(slim) {
                 left: [48, 36, 52, 48],
                 front: [44, 36, 48, 48],
                 right: [40, 36, 44, 48],
-                back: [52, 36, 64, 48]
+                back: [52, 36, 64, 48],
             },
             top: [44, 16, slim ? 47 : 48, 20],
             bottom: [slim ? 47 : 48, 16, slim ? 50 : 52, 20],
             left: [40, 20, 44, 32],
             front: [44, 20, slim ? 47 : 48, 32],
             right: [slim ? 47 : 48, 20, slim ? 51 : 52, 32],
-            back: [slim ? 51 : 52, 20, slim ? 54 : 56, 32]
+            back: [slim ? 51 : 52, 20, slim ? 54 : 56, 32],
         },
         leftLeg: {
             layer: {
@@ -120,14 +120,14 @@ function group(slim) {
                 right: [0, 52, 4, 64],
                 front: [4, 52, 8, 64],
                 left: [8, 52, 12, 64],
-                back: [12, 52, 16, 64]
+                back: [12, 52, 16, 64],
             },
             top: [20, 48, 24, 52],
             bottom: [24, 48, 28, 52],
             right: [16, 52, 20, 64],
             front: [20, 52, 24, 64],
             left: [24, 52, 28, 64],
-            back: [28, 52, 32, 64]
+            back: [28, 52, 32, 64],
         },
 
         cape: {
@@ -136,7 +136,7 @@ function group(slim) {
             left: [11, 1, 12, 17],
             front: [12, 1, 22, 17],
             right: [0, 1, 1, 17],
-            back: [1, 1, 11, 17]
+            back: [1, 1, 11, 17],
         },
     }
 }
