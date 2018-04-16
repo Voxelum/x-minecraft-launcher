@@ -5,7 +5,7 @@
         </div>
         <div class="ui flowing popup transition hidden">
             <div class="ui top attached icon label" style="display: fixed">
-                Errors
+                {{$tc('error.name', 0)}}
             </div>
             <div v-if="errors.length != 0" class="ui middle aligned selection divided list" style="max-height:300px; min-width:300px; overflow:hidden">
                 <div v-for="(moduleErr, index) in errors" :key='index' class="item">
@@ -21,8 +21,8 @@
         </div>
         <div class="ui flowing popup transition hidden">
             <div class="ui top attached icon label" style="display: fixed">
-                <span v-if="!expanded">Running</span>
-                <span v-else>All Tasks</span>
+                <span v-if="!expanded">{{$t('task.running')}}</span>
+                <span v-else>{{$t('task.all')}}</span>
 
                 <i style="float: right; margin: 0px" v-if="!expanded" class="expand link icon" @click="expanded = !expanded"></i>
                 <i style="float: right; margin: 0px" v-else class="compress link icon" @click="expanded = !expanded"></i>
@@ -32,7 +32,7 @@
                     <div class="column">
                         <h2 class="ui icon header">
                             <i class="sitemap icon"></i>
-                            <div class="sub header">{{$t('task.all.empty')}}</div>
+                            <div class="sub header">{{$t('task.allEmpty')}}</div>
                         </h2>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                 </task-cell>
             </div>
             <div v-else>
-                {{$t('tasks.empty')}}
+                {{$t('task.empty')}}
             </div>
         </div>
     </span>

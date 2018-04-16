@@ -42,13 +42,14 @@ export default {
         author() {
             return this.$store.getters[`profiles/${this.$route.params.id}/author`]
         },
-        version() {
-            return this.$store.getters[`profiles/${this.$route.params.id}/mcversion`]
-                || 'Unselected'
-        },
+       
         name() {
             return this.$store.getters[`profiles/${this.$route.params.id}/name`]
                 || 'Untitled'
+        },
+         version() {
+            return this.$store.getters[`profiles/${this.$route.params.id}/mcversion`]
+                || 'Unselected'
         },
         forgeVersion() {
             return this.$store.getters[`profiles/${this.$route.params.id}/forge/version`]

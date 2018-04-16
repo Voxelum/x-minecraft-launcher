@@ -1,10 +1,10 @@
 <template>
     <div>
         <div class="ui secondary menu">
-            <div class="active item" data-tab="minecraft" @click="switchToMinecraft">Minecraft</div>
-            <div class="item" data-tab="forge" @click="switchToForge">Forge</div>
-            <div class="item" data-tab="liteloader" @click="switchToLiteloader">Liteloader</div>
-            <div class="item" data-tab="local" @click="switchToLocal">Local</div>
+            <div class="active item" data-tab="minecraft" @click="switchToMinecraft">{{$t('minecraft')}}</div>
+            <div class="item" data-tab="forge" @click="switchToForge">{{$t('forge.name')}}</div>
+            <div class="item" data-tab="liteloader" @click="switchToLiteloader">{{$t('liteloader.name')}}</div>
+            <div class="item" data-tab="local" @click="switchToLocal">{{$t('version.locals')}}</div>
             <div class="right menu">
                 <div class="ui left icon action input">
                     <i class="search icon"></i>
@@ -33,7 +33,7 @@
                 <br>
                 <h2 class="ui icon header">
                     <i class="exclamation icon"></i>
-                    <div class="sub header">Please Select Minecraft Version First!</div>
+                    <div class="sub header">{{$t('version.selectHint')}}</div>
                 </h2>
             </div>
             <table v-else class="ui very basic selectable celled table" style='overflow-x: hidden;'>
@@ -47,7 +47,7 @@
                 <br>
                 <h2 class="ui icon header">
                     <i class="exclamation icon"></i>
-                    <div class="sub header">Please Select Minecraft Version First!</div>
+                    <div class="sub header">{{$t('version.selectHint')}}</div>
                 </h2>
             </div>
             <table v-else class="ui very basic selectable celled table" style='overflow-x: hidden;'>
@@ -61,10 +61,10 @@
             <table class="ui very basic selectable celled table" style='overflow-x: hidden;'>
                 <thead>
                     <tr>
-                        <th>Version Id</th>
-                        <th>Minecraft</th>
-                        <th>Forge</th>
-                        <th>Liteloader</th>
+                        <th>{{$t('version.id')}}</th>
+                        <th>{{$t('minecraft')}}</th>
+                        <th>{{$t('forge.name')}}</th>
+                        <th>{{$t('liteloader.name')}}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -169,7 +169,6 @@ export default {
         downloadLite(meta) {
             this.$store.dispatch(`versions/liteloader/download`, meta);
         },
-
 
         selectLocal(local) {
             this.$store.dispatch(`profiles/${this.id}/edit`, { mcversion: local.minecraft });

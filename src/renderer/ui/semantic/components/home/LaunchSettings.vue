@@ -16,11 +16,6 @@
                     </div>
                 </div>
                 <div class="ui two wide column">
-                    <div class="ui fluid button" style="padding-left:27%">
-                        Test
-                    </div>
-                </div>
-                <div class="ui two wide column">
                     <div class="ui icon fluid button" @click="popDialog">
                         <i class="add icon"></i>
                     </div>

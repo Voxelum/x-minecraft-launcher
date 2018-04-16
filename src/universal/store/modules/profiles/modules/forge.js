@@ -9,7 +9,6 @@ export default {
     getters: {
         selected: state => state.mods,
         version: state => state.version,
-        settings: state => state.settings,
     },
     mutations: {
         version(state, version) { state.version = version },

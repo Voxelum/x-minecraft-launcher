@@ -1,13 +1,5 @@
 import { VersionMeta, MinecraftFolder, Version, LiteLoader, Forge, VersionMetaList } from 'ts-minecraft'
 
-function checkversion(remoteVersionList, files) {
-    const versions = new Set(files)
-    for (const ver of remoteVersionList.list.versions) {
-        if (versions.has(ver.id)) ver.status = 'local'
-        else ver.status = 'remote'
-    }
-}
-
 async function $refresh(context) {
     const option = context.state.date === '' ? undefined : {
         fallback: { date: context.state.date || '', list: context.state.list || [] },
@@ -60,6 +52,72 @@ export default {
                 date: data.updateTime,
                 list: data,
             }
+            context.commit('update', container);
+            await context.dispatch('refresh');
+        },
+        save(context, payload) {
+            return context.dispatch('write', {
+                path: 'version.json',
+                data: JSON.stringify(context.state,
+                    (key, val) => {
+                        if (key === 'forge' || key === 'liteloader' || key === 'local') return undefined;
+                        return val;
+                    }),
+            }, { root: true })
+        },
+        /**
+         * 
+         * @param {ActionContext} context 
+         * @param {VersionMeta|string} meta
+         */
+        async download(context, meta) {
+            if (typeof meta === 'string') {
+                if (!context.getters.versionsMap[meta]) throw new Error(`Cannot find the version meta for [${meta}]. Please Refresh the meta cache!`)
+                meta = context.getters.versionsMap[meta];
+            }
+
+            const id = meta.id;
+            context.commit('status', { version: meta, status: 'loading' })
+            let exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
+            if (!exist) {
+                try {
+                    let location = context.rootGetters.root;
+                    if (typeof location === 'string') location = new MinecraftFolder(location);
+                    if (!(location instanceof MinecraftFolder)) return Promise.reject('Require location as string or MinecraftLocation!');
+                    const task = Version.installTask('client', meta, location)
+                    await context.dispatch('task/listen', task, { root: true });
+                    await task.execute();
+                } catch (e) { console.warn(e) }
+            }
+            exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
+            if (exist) {
+                context.commit('status', { version: meta, status: 'local' })
+            } else {
+                context.commit('status', { version: meta, status: 'remote' })
+            }
+            return undefined;
+        },
+        checkClient(context, { version, location }) {
+            if (typeof location === 'string') location = new MinecraftFolder(location)
+            if (!(location instanceof MinecraftFolder)) return Promise.reject('Require location as string or MinecraftLocation!')
+            return Version.checkDependency(version, location)
+        },
+        /**
+         * 
+         * @param {ActionContext} context 
+         * @param {{version: string, forge: string, liteloader: string}} option 
+         */
+        prepare(context, option) {
+
+        },
+        /**
+         * Refresh the remote versions cache 
+         */
+        async refresh(context) {
+            const container = {
+                date: context.state.updateTime,
+                list: context.state,
+            }
             /**
              * Update from internet
              */
@@ -106,83 +164,16 @@ export default {
              * Update version status
              */
             metas.list.versions.forEach((ver) => {
-                versionArr.forEach((verObj) => {
+                for (const verObj of versionArr) {
                     ver.status = 'remote';
-                    if (verObj.minecraft === ver.id) ver.status = 'local';
-                });
+                    if (verObj.minecraft === ver.id) {
+                        ver.status = 'local';
+                        break;
+                    }
+                }
             });
 
             context.commit('update', metas);
-        },
-        save(context, payload) {
-            return context.dispatch('write', {
-                path: 'version.json',
-                data: JSON.stringify(context.state,
-                    (key, val) => {
-                        if (key === 'forge' || key === 'liteloader' || key === 'local') return undefined;
-                        return val;
-                    }),
-            }, { root: true })
-        },
-        /**
-         * 
-         * @param {ActionContext} context 
-         * @param {VersionMeta|string} meta
-         */
-        async download(context, meta) {
-            if (typeof meta === 'string') {
-                if (!context.getters.versionsMap[meta]) throw new Error(`Cannot find the version meta for [${meta}]. Please Refresh the meta cache!`)
-                meta = context.getters.versionsMap[meta];
-            }
-
-            const id = meta.id;
-            context.commit('status', { version: meta, status: 'loading' })
-            let exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
-            if (!exist) {
-                try {
-                    let location = context.rootGetters.root;
-                    if (typeof location === 'string') location = new MinecraftFolder(location);
-                    if (!(location instanceof MinecraftFolder)) return Promise.reject('Require location as string or MinecraftLocation!');
-                    const task = Version.installTask('client', meta, location)
-                    await context.dispatch('task/listen', task, { root: true });
-                    await task.execute();
-                } catch (e) { console.warn(e) }
-            }
-            exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
-            if (exist) {
-                console.log('exist!!!')
-                context.commit('status', { version: meta, status: 'local' })
-            } else {
-                context.commit('status', { version: meta, status: 'remote' })
-            }
-            return undefined;
-        },
-        checkClient(context, { version, location }) {
-            if (typeof location === 'string') location = new MinecraftFolder(location)
-            if (!(location instanceof MinecraftFolder)) return Promise.reject('Require location as string or MinecraftLocation!')
-            return Version.checkDependency(version, location)
-        },
-        /**
-         * 
-         * @param {ActionContext} context 
-         * @param {{version: string, forge: string, liteloader: string}} option 
-         */
-        prepare(context, option) {
-
-        },
-        /**
-         * Refresh the remote versions cache 
-         */
-        async refresh(context) {
-            const remoteList = await Version.updateVersionMeta({ date: context.state.updateTime })
-            const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true })
-            const existed = []
-            for (const file of files) {
-                const exist = await context.dispatch('exist', [`versions/${file}`, `versions/${file}/${file}.jar`, `versions/${file}/${file}.json`], { root: true }); // eslint-disable-line
-                if (exist) existed.push(file)
-            }
-            checkversion(remoteList, existed)
-            context.commit('update', remoteList)
         },
     },
     modules: {
@@ -234,7 +225,7 @@ export default {
                 async load(context, payload) {
                     const struct = await context.dispatch('read', { path: 'forge-versions.json', fallback: {}, type: 'json' }, { root: true });
                     context.commit('update', struct);
-                    return context.dispatch('refresh').then(() => context.dispatch('save'));
+                    return context.dispatch('refresh').then(() => context.dispatch('save'), () => context.dispatch('save'));
                 },
                 save(context, payload) {
                     const data = JSON.stringify(context.state);
@@ -266,13 +257,6 @@ export default {
                     context.dispatch('task/listen', task, { root: true });
                     return task.execute().then(() => context.commit('status', { key: meta.build, status: 'local' }))
                         .catch(() => context.commit('status', { key: meta.build, status: 'remote' }));
-                },
-                async checkLocalForge(context, forgeMeta) {
-                    const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true })
-                    const forgeFolder = `${forgeMeta.mcversion}-forge-${forgeMeta.version}`;
-                    const idx = files.indexOf(forgeFolder)
-                    if (!idx) return false;
-                    return await context.dispatch('exist', [`versions/${forgeFolder}/${forgeFolder}.jar`, `versions/${forgeFolder}/${forgeFolder}.json`], { root: true }); // eslint-disable-line
                 },
                 /**
                 * Refresh the remote versions cache 
@@ -308,7 +292,7 @@ export default {
                 async load(context) {
                     const struct = await context.dispatch('read', { path: 'lite-versions.json', fallback: {}, type: 'json' }, { root: true });
                     context.commit('update', struct);
-                    return context.dispatch('refresh').then(() => context.dispatch('save'));
+                    return context.dispatch('refresh').then(() => context.dispatch('save'), () => context.dispatch('save'));
                 },
                 save(context) {
                     const data = JSON.stringify(context.state);
@@ -323,11 +307,11 @@ export default {
                 $refresh: {
                     root: true,
                     handler(context) {
-                        $refresh(context)
+                        // return $refresh(context)
                     },
                 },
-                async refresh(context) {
-                    $refresh(context)
+                refresh(context) {
+                    return $refresh(context)
                 },
             },
         },

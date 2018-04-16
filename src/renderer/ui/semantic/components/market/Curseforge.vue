@@ -9,7 +9,7 @@
                     Mods
                 </div>
                 <div class="description">
-                    View and download mods from Curseforge
+                    {{$t('curseforge.mod.description')}}
                 </div>
             </div>
         </router-link>
@@ -19,10 +19,10 @@
             </div>
             <div class="content">
                 <div class="header">
-                    Texture Pack
+                    {{$t('resourcepack.name')}}
                 </div>
                 <div class="description">
-                    View and download resource/texture packs from Curseforge
+                    {{$t('curseforge.resourcepack.description')}}
                 </div>
             </div>
         </router-link>
@@ -32,10 +32,10 @@
             </div>
             <div class="content">
                 <div class="header">
-                    World
+                    {{$t('world.name')}}
                 </div>
                 <div class="description">
-                    View and download minecraft world from Curseforge
+                    {{$t('curseforge.world.description')}}
                 </div>
             </div>
         </router-link>

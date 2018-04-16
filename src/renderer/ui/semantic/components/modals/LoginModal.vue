@@ -22,8 +22,8 @@
                         <div class="ui left icon inverted input">
                             <i class="user icon"></i>
                             <div ref="accountDropdown" class="ui floating dropdown">
-                                <div class="menu">
-                                    <div class="item" :id="'acc_'+index" v-for="(h,index) of history" :key="h" :class="{selected:selecting===index }" @click="updateAccount(h)" @keypress.enter="updateAccount(h)">{{h}}</div>
+                                <div class="fluid menu">
+                                    <div style="width:100%" class="item" :id="'acc_'+index" v-for="(h,index) of history" :key="h" :class="{selected:selecting===index }" @click="updateAccount(h)" @keypress.enter="updateAccount(h)">{{h}}</div>
                                 </div>
                             </div>
                             <input type="text" name="email" :placeholder="$t(`${mode}.account`)" @click="handleAccount" v-on:keyup="handleAccount" v-model="account">
@@ -143,10 +143,16 @@ export default {
                     this.$nextTick(() => $(this.$el).modal('hide'))
                 }, (err) => {
                     this.logining = false
-                    this.error = err.message;
+                    this.error = this.$t(err.message);
                 });
             }
         },
     }
 }
 </script>
+
+<style>
+.fluid.menu {
+    width: 352px;
+}
+</style>

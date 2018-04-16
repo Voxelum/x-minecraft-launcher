@@ -31,7 +31,6 @@ export default {
         const arr = []
         if (!this.source) return createElement('div')
         let iterator;
-        console.log(this.source)
         if (typeof this.source === 'string') {
             iterator = TextComponent.from(this.source).iterator
         } else if (this.source.iterator) {

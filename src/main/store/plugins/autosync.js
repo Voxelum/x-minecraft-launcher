@@ -9,7 +9,8 @@ export default
      */
     (store) => {
         ipcMain.on('vuex-sync', (event, currentId) => {
-            if (currentId === mutationHistory.length - 1) {
+            console.log(`sync on renderer: ${currentId}, main: ${mutationHistory.length}`)
+            if (currentId === mutationHistory.length) {
                 return;
             }
             const mutations = mutationHistory.slice(currentId);

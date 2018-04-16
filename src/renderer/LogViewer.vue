@@ -52,9 +52,9 @@ export default {
             log = decode(new Buffer(log), 'gbk')
             this.logs.push({
                 message: log,
-                time: tags[0],
-                thread: tags[1].substring(0, tags[1].indexOf('/')),
-                level: tags[1].substring(tags[1].indexOf('/') + 1)
+                time: tags[0] || '',
+                thread: tags[1] ? tags[1].substring(0, tags[1].indexOf('/')) : '',
+                level: tags[1] ? tags[1].substring(tags[1].indexOf('/') + 1) : ''
             })
         }
     }
@@ -63,14 +63,14 @@ export default {
 
 <style>
 body {
-    overflow-y: hidden;
+  overflow-y: hidden;
 }
 
 .moveable {
-    -webkit-app-region: drag
+  -webkit-app-region: drag;
 }
 
 .non-moveable {
-    -webkit-app-region: no-drag
+  -webkit-app-region: no-drag;
 }
 </style>

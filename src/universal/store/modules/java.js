@@ -170,6 +170,43 @@ export default {
                 context.commit('javas', newarr);
             }
         },
+        async intall(context) {
+            let arch;
+            let system;
+            switch (os.arch()) {
+                case 'x86':
+                case 'x32':
+                    arch = '32'
+                    break;
+                case 'x64':
+                    arch = '64'
+                    break;
+                default:
+                    arch = '32';
+            }
+            switch (os.platform()) {
+                case 'darwin':
+                    system = 'osx'
+                    break;
+                case 'win32':
+                    system = 'windows';
+                    break;
+                case 'linux':
+                    system = 'linux';
+                    break;
+                default:
+            }
+            if (!arch || !system) {
+                throw new Error('Unsupported System!');
+            }
+            if (system !== 'linux') {
+                const info = await context.dispatch('mojang/fetchLauncherInfo');
+                const jInfo = info[system][arch];
+                if (jInfo) {
+                    const url = jInfo.jre.url;
+                }
+            }
+        },
         /**
          * Test if this javapath exist and works
          * @param {*} context 

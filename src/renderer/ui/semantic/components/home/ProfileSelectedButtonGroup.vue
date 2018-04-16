@@ -27,14 +27,31 @@ export default {
         },
         onlaunch() {
             this.launch(this.id).catch((e) => {
-                const type = typeof e === 'string' ? e : e.type;
-                console.error(e)
-                switch (type) {
-                    case 'missing.version':
-                        this.$ipc.emit('modal', 'missingVersion')
+                if (e.type) switch (e.type) {
+                    case 'NoSelectedVersion':
+                        this.$ipc.emit('modal', 'generic', {
+                            icon: 'exclamation',
+                            header: this.$t('version.selectVersion'),
+                            content: this.$t('version.selectversionWarn'),
+                        })
                         break;
-                    case 'profile.noversion':
-                        this.$ipc.emit('modal', 'selectVersion')
+                    case 'MissingMinecraftVersion':
+                        this.$ipc.emit('modal', 'missingVersion', {
+                            type: 'minecraft',
+                            version: e.version
+                        })
+                        break;
+                    case 'MissingForgeVersion':
+                        this.$ipc.emit('modal', 'missingVersion', {
+                            type: 'forge',
+                            version: e.version
+                        })
+                        break;
+                    case 'MissingLiteloaderVersion':
+                        this.$ipc.emit('modal', 'missingVersion', {
+                            type: 'liteloader',
+                            version: e.version
+                        })
                         break;
                     default:
                 }

@@ -41,7 +41,19 @@ export default {
                         self.$router.push(`profile/${eid}`)
                     },
                     delete(eid, esource) {
-                        self.$ipc.emit('modal', 'delete', { id: eid, type: esource.type })
+                        self.$ipc.emit('modal', 'generic', {
+                            icon: 'archive',
+                            header: self.$t(`${esource.type}.delete.name`),
+                            content: self.$t(`${esource.type}.delete.description`),
+                            acceptColor: 'red',
+                            acceptIcon: 'trash',
+                            accept: self.$t('delete.yes'),
+                            denyIcon: 'close',
+                            deny: self.$t('delete.no'),
+                            onAccept() {
+                                self.$store.dispatch('profiles/delete', eid)
+                            },
+                        })
                     },
                 },
             }
