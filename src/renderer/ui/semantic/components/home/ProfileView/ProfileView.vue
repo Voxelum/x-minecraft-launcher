@@ -13,7 +13,7 @@
                 <div class="sixteen wide column">
                     <router-link to="version" class="item"> {{$tc('version.name', 0)}}</router-link>
                     <router-link to="setting" class="item" style="border-bottom:0;border-top:0;">{{$tc('setting.name', 0)}}</router-link>
-                    <router-link to="map" class="item"> {{$tc('map.name', 0)}} </router-link>
+                    <router-link to="map" class="item"> {{$tc('world.name', 0)}} </router-link>
                     <router-link to="resourcepack" class="item" style="border-bottom:0;border-top:0;">{{$tc('resourcepack.name', 0)}}</router-link>
                     <router-link to="mod" class="item">{{$tc('mod.name', 0)}}</router-link>
                     <router-link to="launchsetting" class="item">{{$t('launchsetting.name', 0)}}</router-link>
@@ -39,8 +39,6 @@ export default {
             return this.$store.getters[`profiles/${this.id}/type`];
         },
         header() {
-            console.log(this.id);
-            console.log(this.type)
             return `${this.type}-header`;
         },
         selectingRaw() {
@@ -72,9 +70,6 @@ export default {
         modify(event) {
             this.$store.dispatch(`profiles/${this.id}/edit`, { description: event.target.value })
         },
-        refresh() {
-            this.$store.dispatch('$refresh')
-        },
         openBar() {
             $(this.$refs.sidebar).sidebar('show')
         },
@@ -83,7 +78,6 @@ export default {
         }
     },
     mounted() {
-        this.refresh();
         $(this.$refs.sidebar)
             .sidebar({
                 context: $(this.$refs.pushable),

@@ -28,9 +28,9 @@
                 <label>{{$t('setting.language')}}</label>
                 <div class="ui selection dropdown">
                     <i class="dropdown icon"></i>
-                    <span class="text">{{selectedLanguage}}</span>
+                    <span class="text">{{locale}}</span>
                     <div class="menu">
-                        <div class="item" v-for="l of languages" :key="l" @click="updateLanguage(l)">{{l}}</div>
+                        <div class="item" v-for="l of locales" :key="l" @click="locale = l">{{l}}</div>
                     </div>
                 </div>
             </div>
@@ -46,7 +46,7 @@
                 </div>
             </div>
             <div class="inline field">
-                <div class="ui slider checkbox" @click="resfullscreen=!resfullscreen">
+                <div ref="fullScreen" class="ui slider checkbox" @click="resfullscreen=!resfullscreen">
                     <input type="checkbox" name="auto-download">
                     <label>{{$t('resolution.fullscreen')}}</label>
                 </div>
@@ -59,6 +59,7 @@
 
 <script>
 import vuex from 'vuex'
+import { remote } from 'electron'
 
 export default {
     data() {
@@ -66,20 +67,17 @@ export default {
             reswidth: 400,
             resheight: 400,
             resfullscreen: false,
-            location: '',
+
             selectedTheme: '',
-            selectedLanguage: '',
+            location: '',
+            locale: '',
         }
     },
     computed: {
         ...vuex.mapGetters('appearance', ['theme', 'themes']),
-        ...vuex.mapGetters([
-            'root',
-            // 'autoDownload',
-            // 'javas',
-            // 'defaultJava',
-            'languages',
-            'language']),
+        locales() {
+            return Object.keys(this.$i18n.messages)
+        }
     },
     mounted() {
         $(this.$el).modal({ blurring: true, })
@@ -88,14 +86,12 @@ export default {
     methods: {
         ...vuex.mapActions(['openDialog', 'updateSetting']),
         show() {
-            // this.resheight = this.defaultResolution.height;
-            // this.reswidth = this.defaultResolution.width;
-            // this.resfullscreen = this.defaultResolution.fullscreen;
-            this.location = this.root;
+            this.location = remote.app.getPath('userData');
+            this.locale = this.$i18n.locale;
+
             this.selectedTheme = this.theme;
-            this.selectedLanguage = this.language;
             $(this.$el).modal('show')
-            $('.ui.checkbox').checkbox()
+            $(this.$refs.fullScreen).checkbox()
             $('.selection.dropdown').dropdown()
         },
         browseFolder() {
@@ -111,12 +107,13 @@ export default {
             this.selectedTheme = theme;
         },
         updateLanguage(lang) {
-            this.selectedLanguage = lang;
+            this.locale = lang;
         },
         discard() {
             $(this.$el).modal('hide')
         },
         upload(e) {
+            this.$i18n.locale = this.locale;
             this.updateSetting({
                 resolution: {
                     width: this.reswidth,
@@ -125,7 +122,7 @@ export default {
                 },
                 location: this.location,
                 theme: this.selectedTheme,
-                language: this.selectedLanguage,
+                language: this.locale,
             });
             $(this.$el).modal('hide')
         },

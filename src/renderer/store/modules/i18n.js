@@ -28,18 +28,11 @@ export default {
         i18n: state => instance,
     },
     mutations: {
-        setLanguage(state, language) {
+        language(state, language) {
             state.lang = language;
             instance.locale = state.lang;
         },
     },
     actions: {
-        updateSetting(context, payload) {
-            if (payload.language && typeof payload.language === 'string') {
-                if (context.getters.languages.indexOf(payload.language) !== -1) {
-                    context.commit('setLanguage', payload.language);
-                }
-            }
-        },
     },
 }

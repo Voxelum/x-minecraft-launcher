@@ -6,13 +6,13 @@
             </div>
             <div class="content">
                 <div class="header">
-                    Curseforge
+                    {{$t('curseforge.name')}}
                 </div>
                 <div class="meta">
-                    <span class="date">One of the best community for modder.</span>
+                    <span class="date">{{$t('curseforge.meta')}}</span>
                 </div>
                 <div class="description">
-                    CurseForge is now the largest repository for modded Minecraft featuring thousands of mods, texture packs and worlds.
+                    {{$t('curseforge.description')}}
                 </div>
             </div>
         </router-link>

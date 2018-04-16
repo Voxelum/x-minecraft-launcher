@@ -1,9 +1,62 @@
 import fs from 'fs-extra'
 import paths from 'path'
 import { ActionContext } from 'vuex'
+import { net, webContents, app } from 'electron'
 
 export default {
     actions: {
+        request(context, url) {
+            return new Promise((resolve, reject) => {
+                const req = net.request(url);
+                const bufs = [];
+                req.on('response', (resp) => {
+                    resp.on('error', reject);
+                    resp.on('data', (chunk) => {
+                        bufs.push(chunk);
+                    })
+                    resp.on('end', () => {
+                        resolve(Buffer.concat(bufs))
+                    })
+                })
+                req.on('error', reject);
+                req.end()
+            });
+        },
+        async download(context, payload) {
+            const { url } = payload;
+            const content = webContents.getFocusedWebContents();
+            const proxy = await context.dispatch('task/create',
+                { name: 'download' },
+                { root: true });
+
+            try {
+                const file = await new Promise((resolve, reject) => {
+                    content.session.once('will-download', (event, item, $content) => {
+                        const savePath = paths.join(app.getPath('userData'), 'temps', item.getFilename());
+                        if (!this.file) item.setSavePath(savePath);
+                        item.on('updated', (e) => {
+                            proxy.update(item.getReceivedBytes(), item.getTotalBytes());
+                        });
+                        item.on('done', ($event, state) => {
+                            switch (state) {
+                                case 'completed':
+                                    resolve(savePath)
+                                    break;
+                                case 'cancelled':
+                                case 'interrupted':
+                                default:
+                                    reject(new Error(state))
+                                    break;
+                            }
+                        })
+                    });
+                    content.downloadURL(url)
+                });
+                proxy.finish();
+            } catch (e) {
+                proxy.finish(Object.freeze(e));
+            }
+        },
         /**
          * 
          * @param {ActionContext} context 

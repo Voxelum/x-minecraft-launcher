@@ -19,7 +19,7 @@
                     {{$t('remove')}}
                 </a>
                 <a class="ui right floated basic button" @click="$emit('export', map)">
-                    {{$t('map.export')}}
+                    {{$t('world.export')}}
                 </a>
             </div>
         </div>

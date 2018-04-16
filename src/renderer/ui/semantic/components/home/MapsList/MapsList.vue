@@ -3,7 +3,7 @@
         <br>
         <h2 class="ui icon header">
             <i class="map icon"></i>
-            <div class="sub header">{{$t('map.hint')}}</div>
+            <div class="sub header">{{$t('world.hint')}}</div>
         </h2>
     </div>
     <div @drop="importMap" style="height:100%" v-else>
@@ -45,7 +45,20 @@ export default {
                 Array.from(event.dataTransfer.files).map(f => f.path))
         },
         deleteMap(map) {
-            this.$ipc.emit('modal', 'deleteMap', { id: this.id, map })
+            const self = this;
+            this.$ipc.emit('modal', 'generic', {
+                icon: 'map',
+                header: this.$t('world.delete.header'),
+                content: this.$t('world.delete.content'),
+                acceptColor: 'red',
+                acceptIcon: 'trash',
+                accept: this.$t('delete.yes'),
+                denyIcon: 'close',
+                deny: this.$t('delete.no'),
+                onAccept() {
+                    self.$store.dispatch(`profiles/${self.id}/map/delete`, map)
+                }
+            })
         },
         exportMap(map) {
             this.saveDialog({

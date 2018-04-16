@@ -23,12 +23,12 @@
         </div>
         <div class="row">
             <div class="eight wide column">
-                <div class="ui relaxed divided items" style="height:290px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
+                <div class="ui relaxed divided items" style="max-height:230px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
                     <mod-label :notmatch="m.mcversion!==mcversion" v-for="(m, index) in nonselectedMods" :mod="m" :key="m.hash" :index='index' selecting='false' @toggle="addForgeMod(m)"></mod-label>
                 </div>
             </div>
             <div class="eight wide column">
-                <div class="ui relaxed divided items" style="height:290px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
+                <div class="ui relaxed divided items" style="max-height:230px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
                     <mod-label v-for="(m, index) in selectedMods" :mod="m" :key="m.hash" :index='index' selecting='true' @remove="removeForgeMod(m)"></mod-label>
                 </div>
             </div>

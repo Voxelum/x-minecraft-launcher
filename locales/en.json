@@ -66,11 +66,15 @@
         "import": "Import Resource Pack",
         "export": "Export Resource Pack"
     },
-    "map": {
-        "name": "Map | Maps",
-        "hint": "Drop map's folder/zip here to import map.",
-        "import": "Import Map",
-        "export": "Export Map"
+    "world": {
+        "name": "World | Worlds",
+        "hint": "Drop world's folder/zip here to import the minecraft world.",
+        "import": "Import World",
+        "export": "Export World",
+        "delete": {
+            "header": "Delete the World",
+            "content": "Are you sure to delete this world? This will remove all the data about this world in the disk!"
+        }
     },
     "setting": {
         "name": "Setting | Settings",
@@ -85,11 +89,17 @@
         "fullscreen": "Fullscreen"
     },
     "launch": "Launch",
-    "tasks": {
-        "empty": "No Running Tasks"
+    "task": {
+        "name": "Task | Tasks",
+        "empty": "No Running Tasks",
+        "allEmpty": "No Task Run Yet",
+        "all": "All Tasks",
+        "running": "Running Tasks"
     },
+    "minecraft": "Minecraft",
     "version": {
         "name": "Version | Versions",
+        "locals": "Local Versions",
         "prepare": "Preparing Files",
         "status": "Status",
         "date": "Updated Date",
@@ -100,12 +110,13 @@
         "local": "This version is in the disk",
         "snapshot": "Snapshot",
         "latest": "Latest",
+        "id": "Version ID",
         "recommended": "Recommended",
         "all": "All",
         "allVersion": "All versions",
         "release": "Release",
-        "missing": "Missing Version {version}",
-        "requiredownload": "Missing Version {version}. Please download the version to play.",
+        "missing": "Missing {type} Version {version}",
+        "requiredownload": "Missing {type} Version {version}. Please download the version to play.",
         "selectVersion": "Please select a version!",
         "selectversionWarn": " Cannot launch without selecting a version"
     },
@@ -116,7 +127,21 @@
         "spectator": "Spectator Mode",
         "non": "Non mode"
     },
-    "curseforge": "Curseforge",
+    "curseforge": {
+        "name": "Curseforge",
+        "description": "CurseForge is now the largest repository for modded Minecraft featuring thousands of mods, texture packs and worlds.",
+        "meta": "One of the best community for modder.",
+        "world": {
+            "description": "View and download mods from Curseforge"
+        },
+        "mod": {
+            "description": "View and download resource/texture packs from Curseforge"
+        },
+        "resourcepack": {
+            "description": "View and download worlds from Curseforge"
+        }
+    },
+    "download": "Download",
     "popular": "Porpularity",
     "difficulty": {
         "peaseful": "Peaseful",
@@ -193,6 +218,7 @@
         "port": "Port",
         "edit": "Edit Server Info",
         "motd": "Server MOTD",
+        "expectedVersions": "Supported Versions",
         "error": {
             "missingHost": "Host IP address is required! Please enter it!"
         },
@@ -221,10 +247,12 @@
         "mc": "Minecraft Arguments"
     },
     "error": {
+        "name": "Error | Errors",
         "empty": "No error yet",
         "missingJava": "Please select a Java for this profile!",
         "missingMinecraft": "Please select a Minecraft version for this profile!",
-        "missingName": "Please name this profile!"
+        "missingName": "Please name this profile!",
+        "internetNotConnected": "Please check your Internet connection!"
     },
     "hardcore": "Hardcore mode",
     "cheat": "Cheating",

@@ -1,4 +1,5 @@
 import { TextComponent, TextFormatting, Style, Server, NBT } from 'ts-minecraft'
+import protocols from 'static/protocol.json'
 import modules from './modules'
 
 const STATUS_PINGING = Object.freeze({
@@ -87,6 +88,14 @@ export default {
         icon: state => state.icon,
         status: state => state.status,
         servers: state => state.servers,
+        expectedVersions: (state) => {
+            if (state.status && state.status.version) {
+                const protocol = state.status.version.protocol;
+                const target = protocols[protocol];
+                if (target) return target;
+            } 
+            return [];
+        },
 
         error(state, getters, rootState, rootGetters) {
             const errors = [];
@@ -99,6 +108,11 @@ export default {
             } else {
                 if (!state.host) errors.push('server.error.missingHost');
                 if (!state.port) errors.push('server.error.missingPort');
+                if (state.status) {
+                    if (getters.expectedVersions.indexOf(state.mcversion) === -1) {
+                        errors.push('server.error.wrongVersion');
+                    }
+                }
             }
             return errors;
         },

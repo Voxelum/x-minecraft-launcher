@@ -15,11 +15,18 @@ store.modules = {
 const localStore = new Vuex.Store(store);
 const localCommit = localStore.commit;
 let lastId = 0;
+let syncing = true;
+let syncingQueue = {};
 
 ipcRenderer.on('vuex-commit', (event, mutation, id) => {
+    if (syncing) {
+        syncingQueue[id] = mutation;
+        return;
+    }
     const newId = lastId + 1;
     if (id !== newId) {
         ipcRenderer.send('vuex-sync', lastId);
+        syncing = true;
     } else {
         localCommit(mutation.type, mutation.payload);
         lastId = newId;
@@ -30,6 +37,15 @@ ipcRenderer.on('vuex-sync', (event, mutations, id) => {
         localCommit(mul.type, mul.payload)
     }
     lastId = id;
+    syncing = false;
+    const missing = Object.keys(syncingQueue)
+        .map(k => Number.parseInt(k, 10))
+        .filter(i => i > lastId);
+    if (missing.length !== 0) {
+        for (const key of missing) {
+            console.log(syncingQueue[key])
+        }
+    }
 });
 
 ipcRenderer.send('vuex-sync', 0);

@@ -1,25 +1,73 @@
 <template>
-    <canvas :width="width" :height="height">
+    <canvas :width="width" :height="height" @contextmenu="openMenu">
     </canvas>
 </template>
 
 <script>
 
 import Model from './threex.minecraft'
+import { ipcRenderer } from 'electron'
+
 let THREE = require('three')
 const OrbitControls = require('three-orbit-controls')(THREE)
 export default {
-    props: ['width', 'height', 'skin', 'cape'],
+    props: {
+        width: {
+            type: Number,
+            default: 210,
+        },
+        height: {
+            type: Number,
+            default: 400,
+        },
+        cape: {
+            type: Object,
+        },
+        rotate: {
+            type: Boolean,
+            default: true,
+        },
+        maxDistance: {
+            type: Number,
+            default: 3,
+        },
+        minDistance: {
+            type: Number,
+            default: 1.5,
+        },
+        slim: {
+            type: Boolean,
+            default: false,
+        },
+        data: {
+            required: true,
+        }
+    },
     watch: {
-        skin(nskin) {
-            if (!nskin) {
+        data(nskin) {
+            if (nskin === undefined) {
                 this.$setSkin(undefined)
                 return;
             }
-            let slim = nskin.metadata ? nskin.metadata.model === 'slim' : false
-            if (nskin.data) {
-                this.$setSkin('data:image/png;base64, ' + nskin.data.toString('base64'), slim)
-            }
+            this.$setSkin('data:image/png;base64, ' + nskin.toString('base64'), this.slim)
+        }
+    },
+    methods: {
+        openMenu() {
+            const self = this;
+            ipcRenderer.emit('contextMenu', [
+                {
+                    name: 'Export Skin',
+                    onclick() {
+
+                    },
+                },
+                {
+                    name: 'Upload Skin',
+                    onclick() {
+                    },
+                },
+            ]);
         }
     },
     mounted(e) {
@@ -60,19 +108,21 @@ export default {
             character.updateCape(cape);
         }
         scene.add(character.root)
-        if (this.skin) 
-            this.$setSkin('data:image/png;base64, ' + this.skin.data.toString('base64'), this.skin.slim)
+        if (this.data)
+            this.$setSkin('data:image/png;base64, ' + this.data.toString('base64'), this.slim)
         camera.lookAt(new THREE.Vector3(0, 0, 0))
-
 
         let controls = new OrbitControls(camera, this.$el)
         controls.target = new THREE.Vector3(0, 0, 0)
         controls.enablePan = false
         controls.enableKeys = false
-        controls.maxDistance = 3
-        controls.minDistance = 1.5
-        controls.autoRotate = true
-        controls.autoRotateSpeed = 4
+        controls.maxDistance = this.maxDistance;
+        controls.minDistance = this.minDistance
+        if (this.rotate) {
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 4
+        }
+
 
         requestAnimationFrame(function animate(nowMsec) {
             requestAnimationFrame(animate);

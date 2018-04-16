@@ -2,14 +2,14 @@
     <div class="ui basic modal" style="padding:0 20% 0 20%;">
         <div class="ui icon small header">
             <i class="user icon"></i>
-            {{$t('version.missing', {version})}}
+            {{$t('version.missing', {version, type})}}
         </div>
         <div class="content">
-            {{$t('version.requiredownload', {version})}}
+            {{$t('version.requiredownload', {version, type})}}
         </div>
         <div class="actions">
             <div class="ui basic inverted cancel button">{{$t('cancel')}}</div>
-            <div class="ui basic inverted approve button" @click="download">Download</div>
+            <div class="ui basic inverted approve button" @click="download">{{$t('download')}}</div>
         </div>
     </div>
 </template>
@@ -18,16 +18,24 @@
 import vuex from 'vuex'
 
 export default {
+    data: () => ({
+        type: '',
+        version: '',
+    }),
     computed: {
-        id() { return this.$route.params.id; },
-        version() { return this.$store.getters[`profiles/${this.id}/mcversion`]; },
     },
     mounted() {
         $(this.$el).modal({ blurring: true })
     },
     methods: {
-        show() { $(this.$el).modal('show'); },
-        download() { this.$store.dispatch('versions/download', this.version); },
+        show({ version, type }) {
+            this.type = type;
+            this.version = version;
+            $(this.$el).modal('show');
+        },
+        download() {
+
+        },
     },
 }
 </script>

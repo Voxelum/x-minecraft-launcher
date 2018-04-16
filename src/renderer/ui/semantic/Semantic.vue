@@ -14,7 +14,7 @@
         <div class="row" style="height:500px;" :style="{'background-image' : background}">
             <div class="four wide middle aligned center aligned column">
                 <user-dropdown></user-dropdown>
-                <skin-view width="210" height="400" :skin="skin"></skin-view>
+                <skin-view :data="skin.data" :slim="skin.slim"></skin-view>
             </div>
             <div class="twelve wide column" style="min-height:500px; min-height:500px; overflow-x:hidden; overflow-y:hidden;">
                 <transition name="fade" mode="out-in">
@@ -58,10 +58,10 @@ vue.component('div-header', () => import('./components/DivHeader'))
 vue.component('progress-bar', () => import('./components/ProgressBar'))
 vue.component('undetermined-progress', () => import('./components/UndeterminedProgress'))
 vue.component('labeled-input', () => import('./components/LabeledInput'))
+vue.component('skin-view', () => import('../shared/SkinView'))
 
 export default {
     components: {
-        SkinView: () => import('../shared/SkinView'),
         NavigationBar: () => import('./components/common/NavigationBar'),
         Modals: () => import('./components/modals'),
         InfoPopups: () => import('./components/common/InfoPopups'),
@@ -81,6 +81,7 @@ export default {
             this.contextMenu = event;
             this.showingContextMenu = true;
         })
+        this.refresh();
     },
     methods: {
         showModal(id, args) { this.$ipc.emit('modal', id, args) },

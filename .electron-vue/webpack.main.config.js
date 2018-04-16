@@ -41,7 +41,10 @@ let mainConfig = {
     new webpack.NoEmitOnErrorsPlugin(),
   ],
   resolve: {
-    extensions: ['.js', '.json', '.node']
+    extensions: ['.js', '.json', '.node'],
+    alias: {
+      'static': path.join(__dirname, '../static'),
+    },
   },
   target: 'electron-main'
 }
