@@ -18,6 +18,9 @@ export default {
     mounted() {
         this.$ipc.on('modal', this.show)
     },
+    destroyed() {
+        this.$ipc.removeAllListeners('modal');
+    },
     methods: {
         show(id, args) {
             console.log(`Attempt show modal ${id}`)
