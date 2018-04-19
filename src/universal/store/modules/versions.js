@@ -185,6 +185,7 @@ export default {
                     mcversion: {},
                     promos: {},
                 },
+                status: {},
             }),
             getters: {
                 versions: state => state.list.number || [],
@@ -209,16 +210,16 @@ export default {
             },
             mutations: {
                 update(state, list) {
-                    state.list = list.list;
-                    state.date = list.date;
+                    state.list = Object.freeze(list.list);
+                    state.date = Object.freeze(list.date);
                 },
                 allStatus(state, allStatus) {
-                    Object.keys(state.list.number).forEach((key) => {
-                        state.list.number[key].status = allStatus[key];
+                    Object.keys(allStatus).forEach((key) => {
+                        state.status[key] = allStatus[key];
                     })
                 },
-                status(state, { key, status }) {
-                    state.list.number[key].status = status;
+                status(state, { version, status }) {
+                    state.status[version] = status;
                 },
             },
             actions: {
@@ -241,7 +242,7 @@ export default {
                     const statusMap = {};
                     Object.keys(struct.list.number).forEach((key) => {
                         const verObj = struct.list.number[key];
-                        statusMap[key] = localForgeVersion[verObj.version] ? 'local' : 'remote'
+                        statusMap[verObj.version] = localForgeVersion[verObj.version] ? 'local' : 'remote'
                     })
                     context.commit('allStatus', statusMap);
                 },
@@ -255,8 +256,14 @@ export default {
                     context.commit('status', { key: meta.build, status: 'loading' });
                     task.name = `install.${meta.id}`;
                     context.dispatch('task/listen', task, { root: true });
-                    return task.execute().then(() => context.commit('status', { key: meta.build, status: 'local' }))
-                        .catch(() => context.commit('status', { key: meta.build, status: 'remote' }));
+                    return task.execute().then(() => {
+                        console.log('install forge suc')
+                        context.commit('status', { key: meta.build, status: 'local' })
+                    }).catch((e) => {
+                        console.log('install forge error')
+                        console.log(e)
+                        context.commit('status', { key: meta.build, status: 'remote' })
+                    });
                 },
                 /**
                 * Refresh the remote versions cache 
@@ -276,16 +283,26 @@ export default {
                     versions: {},
                 },
                 date: '',
+                status: {},
             }),
             getters: {
                 versions: state => state.list.versions || [],
                 versionsByMc: state =>
                     version => state.list.versions[version] || [],
+                status: state => version => state.status[version],
             },
             mutations: {
                 update(state, content) {
-                    state.list = content.list;
-                    state.date = content.date;
+                    state.list = Object.freeze(content.list);
+                    state.date = Object.freeze(content.date);
+                },
+                allStatus(state, status) {
+                    for (const id of Object.keys(status)) {
+                        state.status[id] = status[id];
+                    }
+                },
+                status(state, { version, status }) {
+                    state.status[version] = status;
                 },
             },
             actions: {
@@ -294,15 +311,39 @@ export default {
                     context.commit('update', struct);
                     return context.dispatch('refresh').then(() => context.dispatch('save'), () => context.dispatch('save'));
                 },
+                init(context) {
+                    const struct = Object.assign({}, context.state);
+                    const localVers = {};
+                    const localArr = context.rootGetters['versions/local'];
+                    localArr.forEach((ver) => {
+                        if (ver.liteloader) localVers[ver.liteloader] = true;
+                    });
+                    const statusMap = {};
+                    Object.keys(struct.list.versions).forEach((versionId) => {
+                        const verObj = struct.list.versions[versionId];
+                        if (verObj.snapshot) {
+                            statusMap[verObj.snapshot.version] = localVers[verObj.snapshot.version] ? 'local' : 'remote'
+                        }
+                        if (verObj.release) {
+                            statusMap[verObj.release.version] = localVers[verObj.release.version] ? 'local' : 'remote'
+                        }
+                    })
+                    context.commit('allStatus', statusMap);
+                },
                 save(context) {
                     const data = JSON.stringify(context.state);
                     return context.dispatch('write', { path: 'lite-versions.json', data }, { root: true })
                 },
-                download(context, meta) {
+                async download(context, meta) {
                     const task = LiteLoader
                         .installAndCheckTask(meta, context.rootGetters.root, true);
-                    context.dispatch('task/listen', task, { root: true });
-                    return task.execute();
+                    context.commit('status', { version: meta.version, status: 'loading' });
+                    await context.dispatch('task/listen', task, { root: true });
+                    return task.execute().then(() => {
+                        context.commit('status', { version: meta.version, status: 'local' });
+                    }, () => {
+                        context.commit('status', { version: meta.version, status: 'remote' });
+                    });
                 },
                 $refresh: {
                     root: true,

@@ -29,19 +29,23 @@ export default {
                 req.end()
             })
         },
-        uploadSkin(context, skin) {
-            const token = context.state.auth.accessToken;
-            const uuid = context.state.auth.selectedProfile.id;
+        uploadSkin(context, { data, slim }) {
+            const token = context.rootState.user.auth.accessToken;
+            const uuid = context.rootState.user.auth.selectedProfile.id;
             console.log(`uuid ${uuid}, token ${token}`);
-            MojangService.setTexture({
+            return MojangService.setTexture({
                 uuid,
                 accessToken: token,
                 type: 'skin',
                 texture: {
                     metadata: {
-                        model: 'steve',
+                        model: slim ? 'slim' : 'steve',
                     },
+                    data,
                 },
+            }).catch((e) => {
+                console.error(e);
+                throw e
             });
         },
     },

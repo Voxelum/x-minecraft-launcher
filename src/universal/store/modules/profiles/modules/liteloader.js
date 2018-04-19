@@ -31,10 +31,13 @@ export default {
                 }
             }
         },
+        init(context) {
+            
+        },
         addMod(context, mod) {
             context.commit('add', mod);
         },
-        async save(context, mutation) {
+        async save(context, { mutation }) {
             const id = mutation.split('/')[1];
             await context.dispatch('write', {
                 path: `profiles/${id}/liteloader.json`,

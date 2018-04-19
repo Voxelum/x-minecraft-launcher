@@ -1,5 +1,5 @@
    <template>
-    <div class="ui basic modal" style="padding:0 20% 0 20%;">
+    <div class="ui basic modal" style="padding:0 15% 0 15%;">
         <i class="close icon"></i>
         <div class="ui icon small header">
             {{$t('user.info')}}
@@ -65,7 +65,7 @@
                     </table>
                 </div>
             </div>
-            <div class="size wide column">
+            <div class="six wide column">
                 <skin-view :width="210" :height="200" :rotate="false" :slim="skin.slim" :data="skin.data" :maxDistance="1.5"></skin-view>
             </div>
         </div>
@@ -74,11 +74,12 @@
         <div class="ui input" style="width: 70%;  padding-right: 10px; color: white">
             <input ref="url" type="text" class="select-white" placeholder="Place your Skin URL here" style="background-color: transparent; border: 1px solid white; color: white">
         </div>
-        <div class="ui inverted button" style="float: right" @click="importUrl">Load URL</div>
+        <div class="ui right floated inverted button" style="float: right; margin: 0px;" @click="importUrl">Load URL Skin</div>
         <div class="ui divider"></div>
         <div class="ui inverted button" @click="exportSkin">Export Skin</div>
         <div class="ui inverted button" @click="importLocal">Import Local Skin</div>
-        <div class="ui right floated green inverted button" style="margin: 0px;" @click="uploadSkin">Upload</div>
+        <div class="ui right floated green inverted loading button" style="margin: 0px" v-if="uploading" >Upload</div>
+        <div v-else class="ui right floated green inverted button" style="margin: 0px;" @click="uploadSkin">Upload</div>
     </div>
 </template>
  
@@ -92,7 +93,8 @@ export default {
         skin: {
             data: '',
             slim: false,
-        }
+        },
+        uploading: false,
     }),
     mounted() {
     },
@@ -135,6 +137,15 @@ export default {
             })
         },
         uploadSkin() {
+            this.uploading = true;
+            this.$store.dispatch('mojang/uploadSkin', this.skin)
+                .then(() => {
+                    this.uploading = false;
+                    this.$store.dispatch('user/refreshSkin')
+                }, (e) => {
+                    this.uploading = false;
+                    console.error(e)
+                })
         },
         importUrl() {
             const url = this.$refs.url.value;

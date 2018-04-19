@@ -23,7 +23,7 @@
  - [x] Dynamic ui theme loading
  - [x] Dynamic appData location
  - [x] Skin preview
- - [ ] Skin upload & export
+ - [x] Skin upload & export
  - [x] Model preview
  - [ ] Multi/Cross version matching 
  - [x] JRE detection and installation 

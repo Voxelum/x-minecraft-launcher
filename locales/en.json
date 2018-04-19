@@ -118,7 +118,10 @@
         "missing": "Missing {type} Version {version}",
         "requiredownload": "Missing {type} Version {version}. Please download the version to play.",
         "selectVersion": "Please select a version!",
-        "selectversionWarn": " Cannot launch without selecting a version"
+        "selectversionWarn": "Cannot launch without selecting a version",
+        "selectHint": "Please select a version so that we can show the version",
+        "noForge": "There is no Forge for this Minecraft version",
+        "noLiteloader": "There is no Liteloader for this Minecraft version"
     },
     "gametype": {
         "survival": "Survival Mode",
@@ -131,13 +134,16 @@
         "name": "Curseforge",
         "description": "CurseForge is now the largest repository for modded Minecraft featuring thousands of mods, texture packs and worlds.",
         "meta": "One of the best community for modder.",
-        "world": {
+        "worlds": {
+            "name": "Worlds",
             "description": "View and download mods from Curseforge"
         },
-        "mod": {
+        "mc-mods": {
+            "name": "Mods",
             "description": "View and download resource/texture packs from Curseforge"
         },
-        "resourcepack": {
+        "texture-packs": {
+            "name": "Resource Packs",
             "description": "View and download worlds from Curseforge"
         }
     },
@@ -220,16 +226,18 @@
         "motd": "Server MOTD",
         "expectedVersions": "Supported Versions",
         "error": {
-            "missingHost": "Host IP address is required! Please enter it!"
+            "missingHost": "Host IP address is required! Please enter it!",
+            "wrongVersion": "The current selected version doesn't really match the server protocol! This might cause game connection errors."
         },
         "delete": {
             "name": "Delete the server",
             "description": "This will delete all the local data about this server. Are you sure to do this?"
         },
         "status": {
-            "nohost": "Cannot find host!",
-            "timeout": "Connect server timeout!",
-            "refurse": "Server refused!"
+            "ping": "Ping...",
+            "nohost": "§4Cannot find host!",
+            "timeout": "§4Connect server timeout!",
+            "refurse": "§4Server refused!"
         },
         "ping": {
             "name": "Pinging the server",

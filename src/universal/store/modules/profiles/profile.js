@@ -14,18 +14,6 @@ const STATUS_PINGING = Object.freeze({
     favicon: '',
     ping: 0,
 });
-const STATUS_ERROR = Object.freeze({
-    version: {
-        name: 'Unknown',
-    },
-    players: {
-        max: -1,
-        online: -1,
-    },
-    description: 'Error',
-    favicon: '',
-    ping: 0,
-})
 
 export default {
     namespaced: true,
@@ -93,7 +81,7 @@ export default {
                 const protocol = state.status.version.protocol;
                 const target = protocols[protocol];
                 if (target) return target;
-            } 
+            }
             return [];
         },
 
@@ -178,18 +166,70 @@ export default {
                         if (err.code === 'ETIMEOUT') {
                             // const timeout = TextComponent.str('server.status.timeout');
                             // timeout.style = Style.create({ color: TextFormatting.RED })
-                            context.commit('edit', { status: STATUS_ERROR })
+                            context.commit('edit', {
+                                status: {
+                                    version: {
+                                        name: 'unknown',
+                                    },
+                                    players: {
+                                        max: -1,
+                                        online: -1,
+                                    },
+                                    description: 'server.status.timeout',
+                                    favicon: '',
+                                    ping: 0,
+                                },
+                            })
                         } else if (err.code === 'ENOTFOUND') {
                             // const timeout = TextComponent.str('server.status.nohost');
                             // timeout.style = Style.create({ color: TextFormatting.RED })
-                            context.commit('edit', { status: STATUS_ERROR })
+                            context.commit('edit', {
+                                status: {
+                                    version: {
+                                        name: 'unknown',
+                                    },
+                                    players: {
+                                        max: -1,
+                                        online: -1,
+                                    },
+                                    description: 'server.status.nohost',
+                                    favicon: '',
+                                    ping: 0,
+                                },
+                            })
                         } else if (err.code === 'ECONNREFUSED') {
                             // const nohost = TextComponent.str('server.status.refuse');
                             // nohost.style = Style.create({ color: TextFormatting.RED })
-                            context.commit('edit', { status: STATUS_ERROR })
+                            context.commit('edit', {
+                                status: {
+                                    version: {
+                                        name: 'unknown',
+                                    },
+                                    players: {
+                                        max: -1,
+                                        online: -1,
+                                    },
+                                    description: 'server.status.refuse',
+                                    favicon: '',
+                                    ping: 0,
+                                },
+                            })
                         }
                     } else {
-                        context.commit('edit', { status: STATUS_ERROR })
+                        context.commit('edit', {
+                            status: {
+                                version: {
+                                    name: 'Unknown',
+                                },
+                                players: {
+                                    max: -1,
+                                    online: -1,
+                                },
+                                description: 'server.status.ping',
+                                favicon: '',
+                                ping: 0,
+                            },
+                        })
                     }
                 })
         },

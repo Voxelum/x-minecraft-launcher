@@ -3,7 +3,9 @@ import vuex from 'vuex'
 export default {
     render(createElement) {
         const rendered = []
-        for (const p of this.paths) {
+        for (let i = 0; i < this.paths.length; i += 1) {
+            const p = this.paths[i];
+            let name = p.name;
             let icon = '';
             switch (p.name) {
                 case 'home':
@@ -14,11 +16,15 @@ export default {
                     break;
                 case 'curseforge':
                     icon = 'fire icon'
+                    name = 'curseforge.name'
                     break;
                 default:
+                    if (this.paths[i - 1].name === 'curseforge') {
+                        name = `curseforge.${name}.name`
+                    }
                     break;
             }
-            rendered.push(this.renderLink(createElement, p.path, this.$t(p.name), icon),
+            rendered.push(this.renderLink(createElement, p.path, this.$tc(name, 0), icon),
                 this.renderArrow(createElement))
         }
         rendered.pop()
@@ -82,9 +88,8 @@ export default {
         renderLink(createElement, path, name, icon = '') {
             const self = this;
             let localName;
-            if (this.$te()) {
-                localName = this.$t(name);
-            } else if (name.length > 20) {
+            // console.log(this.$t(name)) // this is a really... strange bug
+            if (name.length > 20) {
                 name = `${name.substring(0, 20)}...`
             }
 
@@ -107,7 +112,7 @@ export default {
                     attrs: {
                         class: icon,
                     },
-                }), this.$t(name),
+                }), name,
                 ])])
         },
     },
