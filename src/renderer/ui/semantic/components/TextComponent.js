@@ -32,7 +32,7 @@ export default {
         if (!this.source) return createElement('div')
         let iterator;
         if (typeof this.source === 'string') {
-            iterator = TextComponent.from(this.source).iterator
+            iterator = TextComponent.from(this.$t(this.source, this.args)).iterator
         } else if (this.source.iterator) {
             iterator = this.source.iterator;
         } else if (this.source._siblings) {
@@ -56,13 +56,9 @@ export default {
                     }
                     attrs.style = style;
                 }
-                let text = component.unformatted;
-                if (this.$te(component.unformatted)) {
-                    text = this.$t(component.unformatted, this.args);
-                }
                 arr.push(createElement('span', {
                     attrs,
-                }, [text]))
+                }, [component.unformatted]))
             }
         }
         return createElement('p', {}, arr)

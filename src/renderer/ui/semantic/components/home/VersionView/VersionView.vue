@@ -1,10 +1,10 @@
 <template>
     <div>
         <div class="ui secondary menu">
-            <div class="active item" data-tab="minecraft" @click="switchToMinecraft">{{$t('minecraft')}}</div>
-            <div class="item" data-tab="forge" @click="switchToForge">{{$t('forge.name')}}</div>
-            <div class="item" data-tab="liteloader" @click="switchToLiteloader">{{$t('liteloader.name')}}</div>
-            <div class="item" data-tab="local" @click="switchToLocal">{{$t('version.locals')}}</div>
+           <div class="active item tab-item" data-tab="minecraft" @click="switchToMinecraft">{{$t('minecraft')}}</div>
+            <div class="item tab-item" data-tab="forge" @click="switchToForge">{{$t('forge.name')}}</div>
+            <div class="item tab-item" data-tab="liteloader" @click="switchToLiteloader">{{$t('liteloader.name')}}</div>
+            <div class="item tab-item" data-tab="local" @click="switchToLocal">{{$t('version.locals')}}</div>
             <div class="right menu">
                 <div class="ui left icon action input">
                     <i class="search icon"></i>
@@ -36,6 +36,13 @@
                     <div class="sub header">{{$t('version.selectHint')}}</div>
                 </h2>
             </div>
+            <div class="ui center aligned middle aligned basic segment" v-else-if="forgeMetas.length === 0">
+                <br>
+                <h2 class="ui icon header">
+                    <i class="exclamation icon"></i>
+                    <div class="sub header">{{$t('version.noForge')}}</div>
+                </h2>
+            </div>
             <table v-else class="ui very basic selectable celled table" style='overflow-x: hidden;'>
                 <tbody>
                     <forge-version-cell v-for="meta in forgeMetas" :meta="meta" :selected="forgeVersion===meta.version" :key="meta.id" @select="selectForge(meta)" @download="downloadForge(meta)"></forge-version-cell>
@@ -48,6 +55,13 @@
                 <h2 class="ui icon header">
                     <i class="exclamation icon"></i>
                     <div class="sub header">{{$t('version.selectHint')}}</div>
+                </h2>
+            </div>
+            <div class="ui center aligned middle aligned basic segment" v-else-if="liteMetas.length === 0">
+                <br>
+                <h2 class="ui icon header">
+                    <i class="exclamation icon"></i>
+                    <div class="sub header">{{$t('version.noLiteloader')}}</div>
                 </h2>
             </div>
             <table v-else class="ui very basic selectable celled table" style='overflow-x: hidden;'>
@@ -86,7 +100,7 @@ export default {
         LocalVersionCell: () => import('./LocalVersionCell'),
     },
     data: () => ({
-        loading: false,
+       loading: false,
         filterType: 'release',
         filterTypes: ['release', 'snapshot', 'all'],
         filter: '',
@@ -112,7 +126,6 @@ export default {
         },
         mcVersion() { return this.$store.getters[`profiles/${this.id}/mcversion`] },
 
-
         liteMetas() {
             return this.$store.getters['versions/liteloader/versionsByMc'](this.mcVersion);
         },
@@ -120,7 +133,6 @@ export default {
             return this.$store.getters[`profiles/${this.id}/liteloader/version`]
                 || this.$t('version.none')
         },
-
 
         forgeMetas() {
             let metas = this.$store.getters['versions/forge/versionsByMc'](this.mcVersion) || [];
@@ -134,7 +146,6 @@ export default {
             return this.$store.getters[`profiles/${this.id}/forge/version`]
                 || this.$t('version.none')
         },
-
     },
     methods: {
         switchToLocal() {
@@ -146,13 +157,11 @@ export default {
             this.filterTypes = ['release', 'snapshot', 'all']
             this.filterType = 'release'
             $(this.$refs.alphaDropdown).dropdown();
-
         },
         switchToForge() {
             this.filterTypes = ['recommended', 'latest', 'all']
             this.filterType = 'recommended'
             $(this.$refs.alphaDropdown).dropdown();
-
         },
         switchToLiteloader() {
             this.filterTypes = ['all']
@@ -199,5 +208,10 @@ export default {
 </script>
 
 <style>
-
+.tab-item {
+  cursor: pointer;
+}
+.tab-item:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
 </style>
