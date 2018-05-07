@@ -1,4 +1,4 @@
-   <template>
+<template>
     <div class="ui basic modal" style="padding:0 15% 0 15%;">
         <i class="close icon"></i>
         <div class="ui icon small header">
@@ -72,19 +72,22 @@
 
         <div class="ui divider"></div>
         <div class="ui input" style="width: 70%;  padding-right: 10px; color: white">
-            <input ref="url" type="text" class="select-white" placeholder="Place your Skin URL here" style="background-color: transparent; border: 1px solid white; color: white">
+            <input ref="urlInput" type="text" class="select-white" :class="{error: urlError}" v-model="url" :placeholder="$t('skin.urlHint')" style="background-color: transparent; border: 1px solid white; color: white">
         </div>
-        <div class="ui right floated inverted button" style="float: right; margin: 0px;" @click="importUrl">Load URL Skin</div>
+        <div class="ui right floated inverted loading button" style="float: right; margin: 0px;" v-if="loadingURL">{{$t('skin.loadURL')}}</div>
+        <div class="ui right floated inverted button" :class="{disabled : url===''}" style="float: right; margin: 0px;" @click="importUrl" v-else>{{$t('skin.loadURL')}}</div>
+
         <div class="ui divider"></div>
-        <div class="ui inverted button" @click="exportSkin">Export Skin</div>
-        <div class="ui inverted button" @click="importLocal">Import Local Skin</div>
-        <div class="ui right floated green inverted loading button" style="margin: 0px" v-if="uploading" >Upload</div>
-        <div v-else class="ui right floated green inverted button" style="margin: 0px;" @click="uploadSkin">Upload</div>
+        <div class="ui inverted button" @click="exportSkin">{{$t('skin.export')}}</div>
+        <div class="ui inverted button" @click="importLocal">{{$t('skin.importLocal')}}</div>
+
+        <div class="ui right floated green inverted loading button" style="margin: 0px" v-if="uploading">{{$t('skin.upload')}}</div>
+        <div v-else class="ui right floated green inverted button" :class="{disabled : !changed}" style="margin: 0px;" @click="uploadSkin">{{$t('skin.upload')}}</div>
     </div>
 </template>
  
 <script>
-import fs from 'fs-extra'
+import * as fs from 'fs-extra'
 
 export default {
     data: () => ({
@@ -95,8 +98,15 @@ export default {
             slim: false,
         },
         uploading: false,
+        loadingURL: false,
+        
+        urlError: false,
+        url: '',
+        changed: false,
     }),
     mounted() {
+    },
+    computed: {
     },
     methods: {
         show() {
@@ -105,6 +115,9 @@ export default {
                 .then((out) => {
                     this.info = out;
                 });
+            this.url = '';
+            this.changed = false;
+            this.urlError = false;
             const rskin = this.$store.getters['user/skin'];
             this.skin.data = rskin.data;
             this.skin.slim = rskin.slim;
@@ -131,6 +144,7 @@ export default {
                 return fs.readFile(file[0])
             }).then((data) => {
                 if (!data) return undefined;
+                this.changed = true;
                 this.skin.data = data;
             }).catch((e) => {
                 console.error(e);
@@ -148,14 +162,18 @@ export default {
                 })
         },
         importUrl() {
-            const url = this.$refs.url.value;
-            this.$store.dispatch('request', url)
+            this.loadingURL = true;
+            this.$store.dispatch('request', this.url)
                 .then((buf) => {
                     this.skin.data = buf;
+                    this.loadingURL = false;
+                    this.changed = true;
+                }).catch(e => {
+                    this.urlError = true;
+                    this.loadingURL = false;
+
                 });
         }
-    },
-    computed: {
     },
 }
 </script>

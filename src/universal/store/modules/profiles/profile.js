@@ -137,7 +137,7 @@ export default {
                     if (context.state[key] !== option[key]) {
                         if (key === 'mcversion') {
                             context.dispatch('forge/setVersion', '');
-                            context.commit('liteloader/setVersion', '')
+                            context.dispatch('liteloader/setVersion', '')
                         }
                         profile[key] = option[key]
                     }

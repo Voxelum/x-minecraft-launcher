@@ -4,7 +4,7 @@
         {{username}}
         <i class="dropdown icon"></i>
         <div class="menu">
-            <div class="item" @click="$ipc.emit('modal','profile')">
+            <div :class="{disabled : offline}" class="item" @click="$ipc.emit('modal','profile')">
                 <i class="id card outline icon"></i> {{$t('user.profile')}}
             </div>
             <div class="item" @click="$ipc.emit('modal','login')">
@@ -19,6 +19,9 @@ import { mapGetters } from 'vuex'
 export default {
     computed: {
         ...mapGetters('user', ['username']),
+        offline() {
+            return this.$store.getters['user/mode'] === 'offline';
+        }
     },
     methods: {
         logout() {

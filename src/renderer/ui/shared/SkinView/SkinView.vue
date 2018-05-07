@@ -49,7 +49,7 @@ export default {
                 this.$setSkin(undefined)
                 return;
             }
-            this.$setSkin('data:image/png;base64, ' + nskin.toString('base64'), this.slim)
+            this.$setSkin(nskin, this.slim)
         }
     },
     methods: {
@@ -109,7 +109,7 @@ export default {
         }
         scene.add(character.root)
         if (this.data)
-            this.$setSkin('data:image/png;base64, ' + this.data.toString('base64'), this.slim)
+            this.$setSkin(this.data, this.slim)
         camera.lookAt(new THREE.Vector3(0, 0, 0))
 
         let controls = new OrbitControls(camera, this.$el)

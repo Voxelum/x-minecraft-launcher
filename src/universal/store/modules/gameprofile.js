@@ -14,7 +14,7 @@ export default {
             if (!uuid || uuid == null) throw new Error('UUID cannot be null');
             const profile = await ProfileService.fetch(uuid)
             if (cache) {
-                const tex = await ProfileService.fetchProfileTexture(profile);
+                const tex = await ProfileService.getTextures(profile);
                 profile.properties = undefined;
                 profile.textures = tex;
             }
@@ -24,7 +24,7 @@ export default {
             if (!registered[service]) throw new Error(`No such auth option ${service}`);
             const profile = await ProfileService.lookup(id, { api: registered[service], pubKey })
             if (cache) {
-                const tex = await ProfileService.cacheTextures(profile);
+                const tex = await ProfileService.getTextures(profile);
                 profile.properties = undefined;
                 profile.textures = tex;
             }
