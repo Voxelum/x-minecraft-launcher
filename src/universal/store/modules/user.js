@@ -209,6 +209,13 @@ export default {
                 clientToken: context.state.clientToken,
                 accessToken: context.state.auth.accessToken,
             });
+
+            try {
+                await context.dispatch('refreshSkin');
+            } catch (e) {
+                console.warn(e);
+            }
+            
             if (validate) { return; }
             try {
                 const auth = await context.dispatch(`${mode}/refresh`, {
@@ -219,11 +226,7 @@ export default {
             } catch (e) {
                 context.commit('clear');
             }
-            try {
-                await context.dispatch('refreshSkin');
-            } catch (e) {
-                console.warn(e);
-            }
+            
             try {
                 await context.dispatch('refreshInfo');
             } catch (e) {

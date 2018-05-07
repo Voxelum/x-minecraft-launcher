@@ -244,6 +244,16 @@
             "description": "Pinging..."
         }
     },
+    "skin": {
+        "upload": "Upload",
+        "loadURL": "Load URL Skin",
+        "urlHint": "Place your skin url here",
+        "export": "Export Skin",
+        "importLocal": "Import Local Skin"
+    },
+    "refresh": {
+        "hint": "Refresh user data, and server status."
+    },
     "delete": {
         "yes": "Delete",
         "no": "No"

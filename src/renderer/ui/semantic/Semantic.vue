@@ -27,7 +27,7 @@
                 <div class="ui icon inverted button pointing dropdown non-moveable" @click="showModal('settings')">
                     <i class="setting icon"></i>
                 </div>
-                <div class="ui icon inverted button non-moveable" @click="refresh">
+                <div class="ui icon inverted button non-moveable" @click="refresh" :data-tooltip="$t('refresh.hint')">
                     <i class="refresh icon"></i>
                 </div>
             </div>
