@@ -3,7 +3,6 @@ import { ActionContext } from 'vuex'
 import { MinecraftFolder, Launcher, Version } from 'ts-minecraft'
 import paths from 'path'
 import { ipcMain } from 'electron'
-// import { ipcRenderer } from 'electron'
 
 function onerror(e) {
     if (e.message.startsWith('Cannot find version ') || e.message.startsWith('No version file for ') || e.message.startsWith('No version jar for ')) {
@@ -97,6 +96,7 @@ export default {
 
             if (!auth.accessToken || !auth.selectedProfile || !auth.selectedProfile.name || !auth.selectedProfile.id) return Promise.reject('launch.auth.illegal');
 
+            const debug = profile.logWindow;
             const minecraftFolder = new MinecraftFolder(paths.join(context.rootState.root, 'profiles', profileId));
 
             /**
@@ -282,7 +282,7 @@ export default {
              * Launch
              */
             return Launcher.launch(option).then((process) => {
-                ipcMain.emit('park');
+                ipcMain.emit('park', debug);
                 process.on('error', (err) => {
                     console.log(err)
                 })

@@ -8,17 +8,14 @@ export default {
         allThemes: [],
     },
     getters: {
-        theme: state => state.theme,
         themeMeta: state => state.metas[state.theme],
-        allThemeMetas: state => state.metas,
-        themes: state => state.allThemes,
     },
     mutations: {
         theme(state, theme) {
             state.theme = theme;
         },
         themes(state, themes) {
-
+            state.allThemes = themes; 
         },
     },
     actions: {
@@ -34,15 +31,12 @@ export default {
          * @param {ActionContext} context 
          * @param {{theme?:string}} payload 
          */
-        updateSetting(context, payload) {
+        edit(context, payload) {
             if (payload.theme) {
                 if (payload.theme !== context.state.theme) {
                     context.commit('setTheme', payload.theme)
                 }
             }
-            // if (payload.defaultResolution) {
-            //     context.commit('setDefaultResolution', payload.defaultResolution);
-            // }
         },
     },
 }

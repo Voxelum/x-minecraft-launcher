@@ -13,7 +13,7 @@ export default {
                 req.on('response', (response) => {
                     let str = ''
                     response.on('data', (buf) => { str += buf.toString() });
-                    response.on('end', (buf) => { resolve(str) })
+                    response.on('end', (buf) => { resolve(JSON.parse(str)) })
                 })
                 req.end()
             })
@@ -24,29 +24,10 @@ export default {
                 req.on('response', (response) => {
                     let str = ''
                     response.on('data', (buf) => { str += buf.toString() });
-                    response.on('end', (buf) => { resolve(str) })
+                    response.on('end', (buf) => { resolve(JSON.parse(str)) })
                 })
                 req.end()
             })
-        },
-        uploadSkin(context, { data, slim }) {
-            const token = context.rootState.user.auth.accessToken;
-            const uuid = context.rootState.user.auth.selectedProfile.id;
-            console.log(`uuid ${uuid}, token ${token}`);
-            return MojangService.setTexture({
-                uuid,
-                accessToken: token,
-                type: 'skin',
-                texture: {
-                    metadata: {
-                        model: slim ? 'slim' : 'steve',
-                    },
-                    data,
-                },
-            }).catch((e) => {
-                console.error(e);
-                throw e
-            });
         },
     },
 }

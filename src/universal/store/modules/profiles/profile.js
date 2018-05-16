@@ -54,6 +54,7 @@ export default {
         description: '',
         url: '',
 
+        logWindow: false,
     }),
     getters: {
         id: state => state.id,
@@ -68,6 +69,7 @@ export default {
 
         author: state => state.author,
         description: state => state.description,
+        logWindow: state => state.logWindow,
 
         type: state => state.type,
 
