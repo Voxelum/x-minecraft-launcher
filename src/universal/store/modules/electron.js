@@ -31,8 +31,5 @@ export default {
                     })
             })
         },
-        updateTheme() {
-            // ipcRenderer.send('update', payload.location, payload.theme)
-        },
     },
 }

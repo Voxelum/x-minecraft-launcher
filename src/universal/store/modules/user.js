@@ -1,46 +1,14 @@
 import Vue from 'vue'
-import { Auth, MojangAccount, MojangService, GameProfile } from 'ts-minecraft'
+import { Auth, GameProfile } from 'ts-minecraft'
 import { ActionContext } from 'vuex'
 import { v4 } from 'uuid'
 
-const modules = {
-    mojang: {
-        namespaced: true,
-        state: {
-            api: undefined,
-        },
-        mutations: {
-            api(state, api) { state.api = api; },
-        },
-        actions: {
-            login: (context, option) => Auth.Yggdrasil.login(option),
-            refresh: (context, option) => Auth.Yggdrasil.refresh(option, context.state.api),
-            validate: (context, option) => Auth.Yggdrasil.validate(option, context.state.api),
-            invalide: (context, option) => Auth.Yggdrasil.invalide(option, context.state.api),
-            signout: (context, option) => Auth.Yggdrasil.signout(option, context.state.api),
-        },
-    },
-    offline: {
-        namespaced: true,
-        actions: {
-            login: (context, option) => Auth.offline(option.username),
-            refresh(option) { },
-            validate(option, api) { return true; },
-            invalide(option, api) { },
-            signout(option, api) { },
-        },
-    },
-}
+import auths from './user/auth';
+import profiles from './user/profile';
 
 export default {
     namespaced: true,
     state: {
-        mode: 'mojang',
-        /**
-         * @type {{[mode:string]: string[]}}
-         */
-        history: {},
-        clientToken: v4(),
         /**
          * @type {Auth}
          */
@@ -48,7 +16,7 @@ export default {
             selectedProfile: {
                 id: '',
             },
-        }, // cached
+        },
         skin: {
             data: '',
             slim: false,
@@ -56,23 +24,22 @@ export default {
         cape: '',
         info: {},
     },
-    modules,
+    modules: {
+        auths,
+        profiles,
+    },
     getters: {
-        modes: state => ['mojang', 'offline'],
-        mode: state => state.mode,
+        modes: state => state.auths.modes,
+        mode: state => state.auths.mode,
         username: state => (state.auth.selectedProfile ? state.auth.selectedProfile.name : ''),
         id: state => (state.auth.id ? state.auth.id : ''),
         skin: state => (state.skin),
         info: state => state.info,
         cape: state => state.cape,
-        history: state => state.history[state.mode],
+        history: state => state.auths.history[state.mode],
         logined: state => typeof state.auth === 'object' && Object.keys(state.auth).length !== 0,
     },
     mutations: {
-        mode(state, mode) {
-            state.mode = mode;
-            if (!state.history[mode]) { state.history[mode] = [] }
-        },
         /**
          * 
          * @param {*} state 
@@ -101,31 +68,13 @@ export default {
             state.info.dateOfBirth = info.dateOfBirth;
         },
         config(state, config) {
-            state.clientToken = config.clientToken || state.clientToken;
-            state.history = config.history || state.history;
-            state.mode = config.mode || state.mode;
             state.auth = config.auth || state.auth;
             state.skin = config.skin || state.skin;
             state.cape = config.cape || state.cape;
         },
 
-        login(state, { // record the state history
-            auth,
-            account,
-        }) {
+        login(state, auth) {
             state.auth = Object.assign({}, auth);
-            if (!state.history[state.mode]) Vue.set(state.history, state.mode, [])
-            if (account) {
-                const his = state.history[state.mode];
-                const idx = his.indexOf(account);
-                if (idx === -1) {
-                    his.unshift(account);
-                } else {
-                    const first = his[0];
-                    Vue.set(his, 0, account);
-                    Vue.set(his, idx, first);
-                }
-            }
         },
         clear(state) { state.auth = {}; },
     },
@@ -133,14 +82,22 @@ export default {
     actions: {
         save(context, payload) {
             const { mutation } = payload;
-            const data = JSON.stringify(context.state,
-                (key, value) => ((key === 'mojang' || key === 'offline' || key === 'info')
-                    ? undefined : value), undefined, 4);
+            const data = JSON.stringify({
+                auth: context.state.auth,
+                skin: context.state.skin,
+                cape: context.state.cape,
+
+                clientToken: context.state.auths.clientToken,
+                history: context.state.auths.history,
+                mode: context.state.auths.mode,
+            })
             return context.dispatch('write', { path: 'auth.json', data }, { root: true });
         },
         async load(context) {
             const data = await context.dispatch('read', { path: 'auth.json', fallback: {}, type: 'json' }, { root: true });
             context.commit('config', data);
+            context.commit('auths/config', data);
+            // context.commit('profiles/config', data);
             await context.dispatch('refresh');
         },
         /**
@@ -148,18 +105,13 @@ export default {
          * @param {ActionContext} context 
          * @param {string} mode 
          */
-        selectLoginMode(context, mode) { context.commit('mode', mode); },
+        selectLoginMode(context, mode) { context.commit('auths/mode', mode); },
         /**
          * Logout and clear current cache.
          */
         async logout(context) {
-            const mode = context.state.mode;
-            if (context.getters.modes.indexOf(mode) === -1) {
-                throw new Error(`Cannot find auth named ${mode}`);
-            }
             if (context.getters.logined) {
-                await context.dispatch(`${mode}/invalide`, {
-                    clientToken: context.state.clientToken,
+                await context.dispatch('auths/invalide', {
                     accessToken: context.state.auth.accessToken,
                 });
             }
@@ -181,32 +133,25 @@ export default {
             },
         },
         async refreshSkin(context) {
-            const mode = context.state.mode;
-            const gameProfile = await context.dispatch('gameprofile/fetch', {
-                service: mode,
+            const gameProfile = await context.dispatch('profiles/fetch', {
                 uuid: context.state.auth.selectedProfile.id,
                 cache: true,
-            }, { root: true });
-            const textures = gameProfile.textures;
+            });
+            const textures = await context.dispatch('profiles/getTextures', gameProfile);
             if (textures) context.commit('textures', textures);
         },
         async refreshInfo(context) {
-            const info = await MojangService.getAccountInfo(context.state.auth.accessToken);
+            if (context.state.auths.mode === 'offline') return;
+            const info = await context.dispatch('mojang/fetchUserInfo', context.state.auth.accessToken, { root: true });
             context.commit('info', info);
         },
         /**
          * Refresh the current user login status
          */
         async refresh(context) {
-            const mode = context.state.mode;
-            if (context.getters.modes.indexOf(mode) === -1) {
-                throw new Error(`Cannot find auth named ${mode}`);
-            }
             if (!context.getters.logined) return;
-            if (context.state.mode === 'offline') return;
 
-            const validate = await context.dispatch(`${mode}/validate`, {
-                clientToken: context.state.clientToken,
+            const validate = await context.dispatch('auths/validate', {
                 accessToken: context.state.auth.accessToken,
             });
 
@@ -215,40 +160,44 @@ export default {
             } catch (e) {
                 console.warn(e);
             }
-            
+
             if (validate) { return; }
             try {
-                const auth = await context.dispatch(`${mode}/refresh`, {
-                    clientToken: context.state.clientToken,
+                const auth = await context.dispatch('auths/refresh', {
                     accessToken: context.state.auth.accessToken,
                 });
-                context.commit('login', { auth })
+                context.commit('login', auth);
             } catch (e) {
                 context.commit('clear');
             }
-            
+
             try {
                 await context.dispatch('refreshInfo');
             } catch (e) {
                 console.warn(e);
             }
         },
+
         /**
+         * 
+         * @param {ActionContext} context 
+         * @param {{ data:Buffer, slim:boolean }} payload 
+         */
+        async uploadTexture(context, payload) {
+            return context.dispatch('profiles/setTexture', payload);
+        },
+        /**
+         * Login the user by current login mode. Refresh the skin and account information.
          * 
          * @param {ActionContext} context 
          * @param {{account:string, password?:string}} payload 
          */
         async login(context, payload) {
-            const mode = context.state.mode;
-            if (context.getters.modes.indexOf(mode) === -1) {
-                throw new Error(`Cannot find auth named ${mode}`);
-            }
             const loginOption = {
                 username: payload.account,
                 password: payload.password,
-                clientToken: context.state.clientToken,
             };
-            const result = await context.dispatch(`${mode}/login`, loginOption).catch((e) => {
+            const result = await context.dispatch('auths/login', loginOption).catch((e) => {
                 if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
                     const err = { message: 'error.internetNotConnected' }
                     throw err;
@@ -256,11 +205,7 @@ export default {
                 throw e;
             });
             if (!result) throw new Error(`Cannot auth the ${payload.account}`);
-            context.commit('login', {
-                auth: result,
-                account: payload.account,
-            });
-            if (mode === 'offline') return;
+            context.commit('login', result);
             try {
                 await context.dispatch('refreshSkin');
             } catch (e) {

@@ -11,6 +11,9 @@ Vue.use(Vuex);
 
 export default {
     state,
+    mutations: {
+        root: (st, r) => { st.root = r },
+    },
     modules,
     getters,
     strict: process.env.NODE_ENV !== 'production',
