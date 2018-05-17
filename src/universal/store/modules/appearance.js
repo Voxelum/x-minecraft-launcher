@@ -5,7 +5,7 @@ export default {
     state: {
         theme: 'semantic',
         metas: {},
-        allThemes: [],
+        themes: [],
     },
     getters: {
         themeMeta: state => state.metas[state.theme],
@@ -15,7 +15,7 @@ export default {
             state.theme = theme;
         },
         themes(state, themes) {
-            state.allThemes = themes; 
+            state.themes = themes;
         },
     },
     actions: {
@@ -34,7 +34,7 @@ export default {
         edit(context, payload) {
             if (payload.theme) {
                 if (payload.theme !== context.state.theme) {
-                    context.commit('setTheme', payload.theme)
+                    context.commit('theme', payload.theme)
                 }
             }
         },

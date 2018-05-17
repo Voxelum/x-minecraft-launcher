@@ -1,0 +1,52 @@
+<template>
+    <v-app style="background: transparent">
+        <div style="min-height: 50px; background: transparent" class="moveable"></div>
+        <v-card fill-heigh style="height: 100%; background: transparent;">
+            <v-toolbar dark height="70" width="500">
+                <v-btn  dark flat icon>
+                    <v-icon dark>settings</v-icon>
+                </v-btn>
+                <v-toolbar-title class="mx-auto">
+                    <img :src="logo" width="290" height="90" class="moveable" style="top:-55px; position: absolute;">
+                </v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn icon>
+                    <v-icon dark>close</v-icon>
+                </v-btn>
+            </v-toolbar>
+            <router-view></router-view>
+        </v-card>
+    </v-app>
+</template>
+
+<script>
+import logo from '@/assets/minecraft.logo.png'
+
+export default {
+    data: () => ({
+        logo,
+    }),
+    mounted() {
+    },
+    methods: {
+    },
+}
+</script>
+
+<style>
+.moveable {
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+.non-moveable {
+  -webkit-app-region: no-drag;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+</style>

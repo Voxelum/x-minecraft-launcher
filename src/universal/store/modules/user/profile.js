@@ -1,14 +1,6 @@
 import { v4 } from 'uuid'
 import { ProfileService, GameProfile } from 'ts-minecraft'
 
-
-// const generateAPI = template => ({
-//     profile: uuid => format(template.profile, { uuid }),
-//     profileByName: name => format(template.profileByName, { name }),
-//     texture: (uuid, type) => format(template.texture, { uuid, type }),
-//     publicKey: template.publicKey,
-// });
-
 export default {
     namespaced: true,
     state: {
@@ -18,9 +10,6 @@ export default {
         api(state, api) {
             state.api = Object.freeze(Object.assign({}, api));
         },
-        // apiTemplate(state, apiTemplate) {
-        //     state.api = Object.freeze(generateAPI(apiTemplate));
-        // },
     },
     actions: {
         async setTexture(context, { data, slim }) {

@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { app } from 'electron';
+
 import store from '../../universal/store'
 import plugins from './plugins'
 
@@ -28,20 +30,27 @@ function discoverLoader(mo, path, container, initer) {
 }
 
 let _loading = false;
+let mainStore;
+
+function getStore() {
+    return mainStore;
+}
 
 export function loading() { return _loading }
-export function moduleGuards() { }
+
 /**
  * 
  * @param {string} root 
  * @returns {Promise<Vuex.Store>}
  */
-function load(root) {
+function load() {
+    const root = app.getPath('userData');
     const initer = [];
     const loaders = discoverLoader(store, [], [], initer);
     store.state.root = root;
     _loading = true;
     const st = new Vuex.Store(store);
+    mainStore = st;
 
     return Promise.all(loaders.map((key) => {
         const action = key;
@@ -70,6 +79,7 @@ function load(root) {
     }))).then(() => {
         _loading = false;
         console.log('Done loading store!')
+        st.commit('root', root);
         return st
     }, (err) => {
         _loading = false;

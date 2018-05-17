@@ -12,5 +12,6 @@ thumbs.db
 static/semantic
 /semantic
 *.lock
+*.log
 
 package-lock.json
