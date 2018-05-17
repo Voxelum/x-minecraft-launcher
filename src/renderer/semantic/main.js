@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import url from 'url'
+import i18n from 'universal/i18n';
 import querystring from 'querystring'
-import { webFrame, ipcRenderer } from 'electron'
+import { webFrame, ipcRenderer, remote } from 'electron'
 
 webFrame.setVisualZoomLevelLimits(1, 1)
 
@@ -34,7 +35,7 @@ if (logger === 'true') {
         router,
         components: { App: require('./App').default },
         store,
-        i18n: store.getters.i18n,
+        i18n: i18n(store),
         template: '<App style="max-height:626px; overflow:hidden;"/>',
     }).$mount('#app')
 }

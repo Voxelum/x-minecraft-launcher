@@ -282,13 +282,13 @@ export default {
              * Launch
              */
             return Launcher.launch(option).then((process) => {
-                ipcMain.emit('park', debug);
+                ipcMain.emit('minecraft-start', debug);
                 process.on('error', (err) => {
                     console.log(err)
                 })
                 process.on('exit', (code, signal) => {
                     console.log(`exit: ${code}, signal: ${signal}`)
-                    ipcMain.emit('restart')
+                    ipcMain.emit('minecraft-exit')
                 })
                 process.stdout.on('data', (s) => {
                     ipcMain.emit('minecraft-stdout', s.toString());

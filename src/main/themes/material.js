@@ -26,4 +26,9 @@ export default function setup(winURL) {
     }
 
     createLoginWindow();
+
+    return {
+        dispose() {
+        },
+    }
 }

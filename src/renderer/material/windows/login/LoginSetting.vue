@@ -8,7 +8,7 @@
         </v-card-text>
         <v-card-actions style="padding-left: 40px; padding-right: 40px; padding-top: 0px">
             <v-flex text-xs-center>
-                <v-btn block color="green" round large style="color: white">
+                <v-btn block color="green" round large style="color: white" :disabled="!dirty">
                     Save
                 </v-btn>
             </v-flex>
@@ -25,7 +25,10 @@ export default {
         languages: ['简体中文', 'English'],
         selectedLanguage: 'English',
     }),
-    props: {
+    computed: {
+        dirty() {
+            return false
+        },
     },
     mounted() {
         const win = this.$electron.remote.getCurrentWindow();

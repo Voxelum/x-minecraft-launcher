@@ -46,6 +46,8 @@ export default {
     props: {
     },
     mounted() {
+        const win = this.$electron.remote.getCurrentWindow();
+        win.setSize(400, 680, true);
     },
     methods: {
         login() {

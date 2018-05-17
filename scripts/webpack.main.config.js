@@ -44,6 +44,7 @@ const mainConfig = {
         extensions: ['.js', '.json', '.node'],
         alias: {
             static: path.join(__dirname, '../static'),
+            '@universal': path.join(__dirname, '../src/universal'),
         },
     },
     target: 'electron-main',

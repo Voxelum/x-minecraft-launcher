@@ -9,7 +9,7 @@ import { mapState } from 'vuex'
 
 export default {
     computed: {
-        // ...mapState('appearance', ['theme']),
+        // ...mapState('config', ['theme']),
     },
     beforeMount() {
         // const route = localStorage.getItem('route');
