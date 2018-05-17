@@ -62,36 +62,6 @@ export default {
         validate: (context, option) => context.dispatch(`${context.state.mode}/validate`, { ...option, clientToken: context.state.clientToken }),
         invalide: (context, option) => context.dispatch(`${context.state.mode}/invalide`, { ...option, clientToken: context.state.clientToken }),
         signout: (context, option) => context.dispatch(`${context.state.mode}/signout`, option),
-
-        /**
-         * Register an auth module.
-         * 
-         * @param {*} context 
-         * @param {{id: string, module: Module}} payload 
-         */
-        registerAuthModule(context, payload) {
-            if (!payload || !payload.id || !payload.module) throw new Error('');
-            return context.dispatch('registerModule', {
-                path: `user/auths/${payload.id}`,
-                module: payload.module,
-            }).then(() => {
-                context.commit('addMode', payload.id);
-            })
-        },
-        /**
-         * Unregister an auth module.
-         * 
-         * @param {*} context 
-         * @param {*} id 
-         */
-        unregisterAuthModule(context, id) {
-            if (!id) throw new Error('');
-            return context.dispatch('unregisterModule', {
-                path: `user/auths/${id}`,
-            }).then(() => {
-                context.commit('removeMode', id);
-            })
-        },
     },
     modules: {
         mojang: {

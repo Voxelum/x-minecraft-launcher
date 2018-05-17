@@ -25,7 +25,7 @@ module.exports = {
     'settings': {
         'import/resolver': {
             'webpack': {
-                'config': '.electron-vue/webpack.renderer.config.js'
+                'config': 'scripts/webpack.renderer.config.js'
             }
         }
     },
@@ -46,6 +46,8 @@ module.exports = {
         "indent": ["error", 4, { "SwitchCase": 1 }],
         "space-before-function-paren": ["warn", "never"],
         "no-console": 0,
+        "no-shadow": 0,
+        "no-use-before-define": 0,
         "no-await-in-loop": 0,
         "no-alert": 1,
         "func-names": 0,

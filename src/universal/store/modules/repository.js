@@ -5,8 +5,6 @@ import fs from 'fs-extra'
 import path from 'path'
 import { Mod, ResourcePack } from 'ts-minecraft'
 
-import wrapper from '../helpers/wrapper'
-
 /**
  * 
  * @param {string} folder 
