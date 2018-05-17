@@ -3,8 +3,11 @@
         <div style="min-height: 50px; background: transparent" class="moveable"></div>
         <v-card fill-heigh style="height: 100%; background: transparent;">
             <v-toolbar dark height="70" width="500">
-                <v-btn  dark flat icon>
-                    <v-icon dark>settings</v-icon>
+                <v-btn dark flat icon @click="navigate">
+                    <transition name="fade" mode="out-in">
+                        <v-icon dark v-if="$route.path==='/login'">settings</v-icon>
+                        <v-icon dark v-else>arrow_back</v-icon>
+                    </transition>
                 </v-btn>
                 <v-toolbar-title class="mx-auto">
                     <img :src="logo" width="290" height="90" class="moveable" style="top:-55px; position: absolute;">
@@ -14,7 +17,9 @@
                     <v-icon dark>close</v-icon>
                 </v-btn>
             </v-toolbar>
-            <router-view></router-view>
+            <transition name="fade" mode="out-in">
+                <router-view></router-view>
+            </transition>
         </v-card>
     </v-app>
 </template>
@@ -29,6 +34,13 @@ export default {
     mounted() {
     },
     methods: {
+        navigate() {
+            if (this.$route.path === '/login') {
+                this.$router.replace('/setting')
+            } else {
+                this.$router.replace('/login')
+            }
+        }
     },
 }
 </script>
@@ -44,7 +56,7 @@ export default {
 }
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s;
+  transition: opacity 0.1s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;

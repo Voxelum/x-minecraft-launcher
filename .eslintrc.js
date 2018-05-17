@@ -39,7 +39,6 @@ module.exports = {
         'vue/valid-v-if': 'error',
         // allow optionalDependencies
         'import/no-extraneous-dependencies': ['error', {
-            'optionalDependencies': ['test/unit/index.js']
         }],
         // allow debugger during development
         'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,

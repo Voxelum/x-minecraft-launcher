@@ -3,6 +3,7 @@
 </template>
 
 <script>
+
 import 'vuetify/dist/vuetify.css';
 import '@/assets/google.font.css';
 

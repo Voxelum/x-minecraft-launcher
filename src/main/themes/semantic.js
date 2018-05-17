@@ -5,7 +5,6 @@ export default function setup(winURL) {
     let logWindow; // log win ref
     let mainWindow; // main win ref
     let iconImage; // icon image
-    let parking; // ref for if the game is launching and the launcher is paused
 
     function setupIcon(window) {
         const platform = os.platform()
@@ -71,12 +70,6 @@ export default function setup(winURL) {
     tray.setContextMenu(menu)
     app.setName('ILauncher');
 
-    app.on('window-all-closed', () => {
-        if (parking) return;
-        if (process.platform !== 'darwin') {
-            app.quit()
-        }
-    })
     app.on('activate', () => {
         if (mainWindow === null) createMainWindow()
     })
@@ -102,32 +95,22 @@ export default function setup(winURL) {
 
     ipcMain.on('reset', ipcListen((event, newRoot) => {
         if (newRoot !== undefined) {
-            parking = true
             mainWindow.close();
             createMainWindow();
-            parking = false;
         }
     }))
     /**
      * handle park launcher when the game launch
      */
-    ipcMain.on('park', ipcListen((debug) => {
-        parking = true;
+    ipcMain.on('minecraft-start', ipcListen((debug) => {
         mainWindow.close()
         if (debug) createLogWindow();
     }))
-    ipcMain.on('restart', ipcListen(() => {
+    ipcMain.on('minecraft-exit', ipcListen(() => {
         if (logWindow) {
             logWindow.close();
         }
-        parking = false;
         createMainWindow()
-    }))
-    ipcMain.on('exit', ipcListen(() => {
-        mainWindow.close()
-        if (process.platform !== 'darwin') {
-            app.quit()
-        }
     }))
 
     console.log('finish')

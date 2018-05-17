@@ -1,12 +1,17 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { app } from 'electron';
+import { app, ipcMain } from 'electron';
 
-import store from '../../universal/store'
+import storeTemplate from 'universal/store'
 import plugins from './plugins'
 
-store.plugins.push(...plugins);
+let isLoading = false;
+let store;
 
+const initer = [];
+const loaders = [];
+
+storeTemplate.plugins.push(...plugins);
 Vue.use(Vuex);
 
 /**
@@ -29,64 +34,69 @@ function discoverLoader(mo, path, container, initer) {
     return container;
 }
 
-let _loading = false;
-let mainStore;
-
-function getStore() {
-    return mainStore;
-}
-
-export function loading() { return _loading }
-
+discoverLoader(storeTemplate, [], loaders, initer);
 /**
  * 
  * @param {string} root 
  * @returns {Promise<Vuex.Store>}
  */
-function load() {
+async function load() {
     const root = app.getPath('userData');
-    const initer = [];
-    const loaders = discoverLoader(store, [], [], initer);
-    store.state.root = root;
-    _loading = true;
-    const st = new Vuex.Store(store);
-    mainStore = st;
 
-    return Promise.all(loaders.map((key) => {
-        const action = key;
-        if (st._actions[action]) {
+    storeTemplate.state.root = root; // pre-setup the root
+    isLoading = true;
+    const newStore = new Vuex.Store(storeTemplate);
+
+    // load
+    await Promise.all(loaders.filter(action => newStore._actions[action] !== undefined)
+        .map((action) => {
             console.log(`Found loading action [${action}]`)
-            return st.dispatch(action).then((instance) => {
-                console.log(`Loaded [${key}]`)
-            }, (err) => {
-                console.error(`An error occured when we load module [${key.substring(0, key.indexOf('/'))}].`)
-                console.error(err)
-            })
-        }
-        return Promise.resolve();
-    })).then(() => Promise.all(initer.map((key) => {
-        const action = key;
-        if (st._actions[action]) {
+            return newStore.dispatch(action).then((instance) => { console.log(`Loaded [${action}]`) },
+                (err) => {
+                    console.error(`An error occured when we load module [${action.substring(0, action.indexOf('/'))}].`)
+                    console.error(err)
+                })
+        }));
+    // init
+    await Promise.all(initer.filter(action => newStore._actions[action] !== undefined)
+        .map((action) => {
             console.log(`Found init action [${action}]`)
-            return st.dispatch(action).then((instance) => {
-                console.log(`Inited [${key}]`)
+            return newStore.dispatch(action).then((instance) => {
+                console.log(`Inited [${action}]`)
             }, (err) => {
-                console.error(`An error occured when we init module [${key.substring(0, key.indexOf('/'))}].`)
+                console.error(`An error occured when we init module [${action.substring(0, action.indexOf('/'))}].`)
                 console.error(err);
             })
-        }
-        return Promise.resolve();
-    }))).then(() => {
-        _loading = false;
-        console.log('Done loading store!')
-        st.commit('root', root);
-        return st
-    }, (err) => {
-        _loading = false;
-        console.log('Done loading store with Error')
-        console.log(err)
-        return st
-    })
+        }));
+    isLoading = false;
+    console.log('Done loading store!');
+
+    /**
+     * Force sync the root
+     */
+    newStore.commit('root', root);
+    ipcMain.emit('store-ready', newStore);
+
+    store = newStore;
 }
 
-export default load;
+ipcMain.on('reload', load);
+
+export function commit(type, payload, option) {
+    if (store === undefined) {
+        console.error('shit');
+        return;
+    }
+    store.commit(type, payload, option);
+}
+
+export function dispatch(type, payload, option) {
+    if (store === undefined) {
+        console.error('shit');
+        return;
+    }
+    store.dispatch(type, payload, option);
+}
+
+export function loading() { return isLoading }
+export function getStore() { return store; }

@@ -85,7 +85,7 @@ export default {
         }
     },
     computed: {
-        ...vuex.mapState('appearance', ['theme', 'themes']),
+        ...vuex.mapState('config', ['theme', 'themes']),
         locales() {
             return Object.keys(this.$i18n.messages).map(k => $localeToLanguage[k]);
         }
@@ -127,7 +127,6 @@ export default {
             $(this.$el).modal('hide')
         },
         upload(e) {
-            this.$i18n.locale = this.locale;
             this.updateSetting({
                 resolution: {
                     width: this.reswidth,
@@ -136,7 +135,7 @@ export default {
                 },
                 location: this.location,
                 theme: this.selectedTheme,
-                language: this.locale,
+                locale: this.locale,
             });
             $(this.$el).modal('hide')
         },
