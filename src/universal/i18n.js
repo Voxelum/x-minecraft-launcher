@@ -14,8 +14,10 @@ export default function create(store) {
         },
         silentTranslationWarn: true,
     });
+    console.log('create i18n')
     store.watch(state => state.config.locale, (val, oldVal) => {
         i18n.locale = val;
+        console.log(`language changed ${oldVal} => ${val}`)
     });
     return i18n;
 }

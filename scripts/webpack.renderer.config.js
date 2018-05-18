@@ -95,7 +95,7 @@ function generate(theme) {
             __filename: process.env.NODE_ENV !== 'production',
         },
         plugins: [
-            new ExtractTextPlugin('styles.css'),
+            new ExtractTextPlugin(`${theme}.styles.css`),
             new HtmlWebpackPlugin({
                 filename: `${theme}.html`,
                 template: path.resolve(__dirname, '../src/index.ejs'),

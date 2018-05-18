@@ -9,27 +9,29 @@ let theme; // current selected theme
 let instance; // current theme manager
 
 function setupTheme(newTheme) {
+    console.log(`setup theme ${newTheme}`)
     if (newTheme === theme) return;
     parking = true;
 
     const newSetup = themes[newTheme];
     if (!newSetup) throw new Error(`Cannot found theme ${theme}`);
 
-    theme = newTheme;
-    
     if (instance) { // stop current theme if exist
-        instance.dispose();
+        try {
+            instance.dispose();
+        } catch (e) {
+            console.warn(`An error occure during dispose ${theme}`);
+            console.error(e);
+        }
         BrowserWindow.getAllWindows().forEach(win => win.close())
         instance = undefined;
     }
+    theme = newTheme;
 
-    newSetup(process.env.NODE_ENV === 'development' ?
+    instance = newSetup(process.env.NODE_ENV === 'development' ?
         `http://localhost:9080/${newTheme}.html` :
         `file://${__dirname}/${newTheme}.html`)
-        .then((inst) => {
-            instance = inst;
-        });
-        
+
     parking = false;
 }
 
@@ -50,12 +52,12 @@ ipcMain.on('minecraft-start', () => {
 })
 ipcMain.on('store-ready', (store) => {
     if (app.isReady()) {
-        setupTheme('material'/* store.getters['config/theme'] || 'semantic' */);
+        setupTheme(store.getters['config/theme'] || 'semantic');
     } else {
         app.once('ready', () => {
             setupTheme(store.getters['config/theme'] || 'semantic');
         })
     }
     store.commit('config/themes', Object.keys(themes));
-    store.watch(() => store.getters['config/theme'], setupTheme);
+    store.watch(state => state.config.theme, setupTheme);
 })

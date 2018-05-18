@@ -1,4 +1,6 @@
 import { ActionContext } from 'vuex'
+import { app } from 'electron'
+import locales from 'locales'
 
 export default {
     namespaced: true,
@@ -31,6 +33,8 @@ export default {
             const data = await context.dispatch('read', { path: 'config.json', fallback: {} }, { root: true });
             context.commit('theme', data.theme || 'semantic');
             if (data.locale) context.commit('locale', data.locale);
+            else context.commit('locale', app.getLocale());
+            context.commit('locales', Object.keys(locales));
         },
         save(context) {
             return context.dispatch('write', { path: 'config.json', data: JSON.stringify(context.state) }, { root: true })

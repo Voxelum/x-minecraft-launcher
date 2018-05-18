@@ -75,25 +75,26 @@ export default function setup(winURL) {
     })
 
     const ipcListeners = [];
-    const ipcListen = (listener) => {
-        ipcListeners.push(listener);
+    const ipcListen = (event, listener) => {
+        ipcListeners.push({ event, listener });
+        ipcMain.on(event, listener)
         return listener;
     }
     /**
      * handle log window log message
      */
-    ipcMain.on('minecraft-stdout', ipcListen((s) => {
+    ipcListen('minecraft-stdout', ((s) => {
         if (logWindow) {
             logWindow.webContents.send('minecraft-stdout', s);
         }
     }))
-    ipcMain.on('minecraft-stderr', ipcListen((s) => {
+    ipcListen('minecraft-stderr', ((s) => {
         if (logWindow) {
             logWindow.webContents.send('minecraft-stderr', s);
         }
     }))
 
-    ipcMain.on('reset', ipcListen((event, newRoot) => {
+    ipcListen('reset', ((event, newRoot) => {
         if (newRoot !== undefined) {
             mainWindow.close();
             createMainWindow();
@@ -102,11 +103,11 @@ export default function setup(winURL) {
     /**
      * handle park launcher when the game launch
      */
-    ipcMain.on('minecraft-start', ipcListen((debug) => {
+    ipcListen('minecraft-start', ((debug) => {
         mainWindow.close()
         if (debug) createLogWindow();
     }))
-    ipcMain.on('minecraft-exit', ipcListen(() => {
+    ipcListen('minecraft-exit', (() => {
         if (logWindow) {
             logWindow.close();
         }
@@ -117,7 +118,9 @@ export default function setup(winURL) {
 
     return {
         dispose() {
-            ipcListeners.forEach(ipcMain.removeListener);
+            for (const l of ipcListeners) {
+                ipcMain.removeListener(l.event, l.listener);
+            }
         },
     }
 }

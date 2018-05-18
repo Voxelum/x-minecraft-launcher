@@ -20,6 +20,7 @@ ipcMain.on('reset', (event, newRoot) => {
         fs.writeFile(cfgFile, JSON.stringify({ path: root }));
     }
 });
+
 async function setup() {
     try {
         const buf = await fs.readFile(cfgFile);
@@ -28,6 +29,7 @@ async function setup() {
     } catch (e) {
         root = path.join(appData, '.launcher');
     }
-    ipcMain.emit('reset', root);
+    app.setPath('userData', root);
+    ipcMain.emit('reload');
 }
 setup();

@@ -30,7 +30,7 @@
                     <i class="dropdown icon"></i>
                     <span class="text">{{localeToLanguage(locale)}}</span>
                     <div class="menu">
-                        <div class="item" v-for="l of locales" :key="l" @click="locale = l">{{l}}</div>
+                        <div class="item" v-for="l of locales" :key="l.id" @click="locale = l.id">{{l.name}}</div>
                     </div>
                 </div>
             </div>
@@ -60,17 +60,7 @@
 <script>
 import vuex from 'vuex'
 import { remote } from 'electron'
-
-/**
- * Hard code mapping language
- */
-const $localeToLanguage = {
-    'zh-CN': '简体中文',
-    'zh-TW': '繁體中文',
-    en: 'English',
-    'en-US': 'English (The United State)',
-    'en-UK': 'English (The United Kindom)',
-}
+import $localeToLanguage from 'static/locale.mapping'
 
 export default {
     data() {
@@ -87,7 +77,7 @@ export default {
     computed: {
         ...vuex.mapState('config', ['theme', 'themes']),
         locales() {
-            return Object.keys(this.$i18n.messages).map(k => $localeToLanguage[k]);
+            return Object.keys(this.$i18n.messages).map(k => ({name: $localeToLanguage[k], id: k}));
         }
     },
     mounted() {
@@ -127,16 +117,22 @@ export default {
             $(this.$el).modal('hide')
         },
         upload(e) {
-            this.updateSetting({
-                resolution: {
-                    width: this.reswidth,
-                    height: this.resheight,
-                    fullscreen: this.resfullscreen,
-                },
-                location: this.location,
-                theme: this.selectedTheme,
-                locale: this.locale,
-            });
+            if (this.selectedTheme !== this.theme) {
+                this.$store.commit('config/theme', this.selectedTheme);
+            } 
+            if(this.locale !== this.$store.state.config.locale) {
+                this.$store.commit('config/locale', this.locale);
+            }
+            // this.updateSetting({
+            //     resolution: {
+            //         width: this.reswidth,
+            //         height: this.resheight,
+            //         fullscreen: this.resfullscreen,
+            //     },
+            //     location: this.location,
+            //     theme: this.selectedTheme,
+            //     locale: this.locale,
+            // });
             $(this.$el).modal('hide')
         },
     }
