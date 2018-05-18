@@ -114,8 +114,6 @@ export default function setup(winURL) {
         createMainWindow()
     }))
 
-    console.log('finish')
-
     return {
         dispose() {
             for (const l of ipcListeners) {

@@ -40,7 +40,6 @@ export default {
         const win = this.$electron.remote.getCurrentWindow();
         win.setSize(400, 400, true);
 
-        console.log(this.themes)
         this.selectedLanguage = this.$store.state.config.locale;
     },
     methods: {
