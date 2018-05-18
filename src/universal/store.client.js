@@ -5,19 +5,23 @@ import select from 'universal/store/selector'
 
 export default function (option, mixin) {
     const storeOption = select(option);
+    mixin = mixin || {};
     storeOption.modules = {
         ...storeOption.modules,
-        ...mixin.modules,
+        ...(mixin.modules || {}),
     }
-    storeOption.plugins = {
-        ...storeOption.plugins,
-        ...mixin.plugins,
-    }
+    storeOption.plugins = [
+        ...(storeOption.plugins || []),
+        ...(mixin.plugins || []),
+    ]
 
     const localStore = new Vuex.Store(storeOption);
+    const _commit = localStore.commit;
     const localCommit = (mutation) => {
         if (localStore._mutations[mutation.type]) {
-            localStore.commit(mutation.type, mutation.payload)
+            _commit(mutation.type, mutation.payload)
+        } else {
+            console.log(`discard commit ${mutation.type}`);
         }
     };
 

@@ -1,14 +1,11 @@
-import select from 'universal/store/selector'
+import select from 'universal/store.client'
+import i18n from 'universal/i18n'
 import Vuex from 'vuex'
 import router from './router'
 
-const storeOption = select({ modules: ['user', 'config'] });
-
-console.log(storeOption)
-
-const store = new Vuex.Store(storeOption);
-console.log(Object.keys(store._mutations))
-
+const store = select({ modules: ['user', 'config'] });
 export default {
     router,
+    store,
+    i18n: i18n(store),
 }

@@ -38,7 +38,7 @@
 
 <script>
 import vuex from 'vuex'
-import en from 'static/en-cn'
+import en from 'static/mod.mapping'
 
 
 const generalized = {}

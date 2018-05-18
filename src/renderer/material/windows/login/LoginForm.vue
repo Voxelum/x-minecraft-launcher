@@ -48,6 +48,7 @@ export default {
     mounted() {
         const win = this.$electron.remote.getCurrentWindow();
         win.setSize(400, 680, true);
+        console.log(this.$store.getters['user/username'])
     },
     methods: {
         login() {

@@ -7,7 +7,7 @@ const router = new Router({
     routes: [
         {
             path: '/',
-            redirect: '/setting',
+            redirect: '/login',
             component: () => import('./Login'),
             children: [
                 {

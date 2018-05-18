@@ -13,7 +13,7 @@ const mainConfig = {
         main: path.join(__dirname, '../src/main/index.js'),
     },
     externals: [
-        // ...Object.keys(dependencies || {})
+        ...Object.keys(dependencies || {}),
     ],
     module: {
         rules: [
@@ -44,6 +44,8 @@ const mainConfig = {
         extensions: ['.js', '.json', '.node'],
         alias: {
             static: path.join(__dirname, '../static'),
+            locales: path.join(__dirname, '../locales'),
+            'universal': path.join(__dirname, '../src/universal'),
             '@universal': path.join(__dirname, '../src/universal'),
         },
     },
