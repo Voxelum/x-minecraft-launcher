@@ -16,23 +16,20 @@
             </div>
             <div class="field">
                 <label>{{$t('setting.theme')}}</label>
-                <div class="ui selection dropdown">
-                    <i class="dropdown icon"></i>
-                    <span class="text">{{selectedTheme}}</span>
-                    <div class="menu">
-                        <div class="item" v-for="th of themes" :key="th" @click="updateTheme(th)">{{th}}</div>
-                    </div>
-                </div>
+                <sui-dropdown selection icon="dropdown" :text="selectedTheme" v-model="selectedTheme" :options="themes">
+                </sui-dropdown>
             </div>
             <div class="field">
                 <label>{{$t('setting.language')}}</label>
-                <div class="ui selection dropdown">
+                <sui-dropdown selection icon="dropdown" :text="selectedLocale" v-model="selectedLocale" :options="locales">
+                </sui-dropdown>
+                <!-- <div class="ui selection dropdown">
                     <i class="dropdown icon"></i>
                     <span class="text">{{localeToLanguage(locale)}}</span>
                     <div class="menu">
                         <div class="item" v-for="l of locales" :key="l.id" @click="locale = l.id">{{l.name}}</div>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class="field" :class="{disabled: resfullscreen}">
                 <label>{{$t('setting.resolution')}}</label>
@@ -70,19 +67,23 @@ export default {
             resfullscreen: false,
 
             selectedTheme: '',
+            selectedLocale: '',
             location: '',
-            locale: '',
+            // locale: '',
         }
     },
     computed: {
-        ...vuex.mapState('config', ['theme', 'themes']),
+        ...vuex.mapState('config', ['theme', 'locale']),
+        themes() {
+            return this.$store.state.config.themes.map(t => ({ text: this.$t(t), value: t }))
+        },
         locales() {
-            return Object.keys(this.$i18n.messages).map(k => ({name: $localeToLanguage[k], id: k}));
+            return Object.keys(this.$i18n.messages).map(k => ({ text: $localeToLanguage[k], value: k }));
         }
     },
     mounted() {
         $(this.$el).modal({ blurring: true, })
-        $('.selection.dropdown').dropdown()
+        // $('.selection.dropdown').dropdown()
     },
     methods: {
         localeToLanguage(lang) {
@@ -91,12 +92,12 @@ export default {
         ...vuex.mapActions(['openDialog', 'updateSetting']),
         show() {
             this.location = remote.app.getPath('userData');
-            this.locale = this.$i18n.locale;
-
+            this.selectedLocale = this.$i18n.locale;
             this.selectedTheme = this.theme;
+
             $(this.$el).modal('show')
             $(this.$refs.fullScreen).checkbox()
-            $('.selection.dropdown').dropdown()
+            // $('.selection.dropdown').dropdown('set selected', this.theme)
         },
         browseFolder() {
             const self = this;
@@ -107,20 +108,14 @@ export default {
         cacnelKey(e) {
             e.preventDefault();
         },
-        updateTheme(theme) {
-            this.selectedTheme = theme;
-        },
-        updateLanguage(lang) {
-            this.locale = lang;
-        },
         discard() {
             $(this.$el).modal('hide')
         },
         upload(e) {
             if (this.selectedTheme !== this.theme) {
                 this.$store.commit('config/theme', this.selectedTheme);
-            } 
-            if(this.locale !== this.$store.state.config.locale) {
+            }
+            if (this.selectedLocale !== this.locale) {
                 this.$store.commit('config/locale', this.locale);
             }
             // this.updateSetting({
