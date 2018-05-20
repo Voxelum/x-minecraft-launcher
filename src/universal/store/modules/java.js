@@ -193,11 +193,12 @@ export default {
         async refresh({ state, dispatch, commit }) {
             let all = [];
             const file = os.platform() === 'win32' ? 'javaw.exe' : 'java';
-            process.env.PATH.split(';').forEach(p => all.push(path.join(p, 'bin', file)))
+            const spliter = os.platform() === 'win32' ? ';' : ':';
+            process.env.PATH.split(spliter).forEach(p => all.push(path.join(p, 'bin', file), path.join(p, file)))
 
             const which = () => new Promise((resolve, reject) => {
                 exec('which java', (error, stdout, stderr) => {
-                    resolve(stdout)
+                    resolve(stdout.replace('\n', ''))
                 })
             })
 
@@ -219,10 +220,12 @@ export default {
             } else {
                 all.push(await which())
             }
+            console.log(all);
             const set = {};
             all.filter(p => fs.existsSync(p)).forEach((p) => { set[p] = 0 })
             all = [];
             for (const p of Object.keys(set)) {
+                console.log(p)
                 if (await dispatch('test', p)) {
                     console.log(p)
                     all.push(p);
