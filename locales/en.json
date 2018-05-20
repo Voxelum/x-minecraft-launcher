@@ -267,6 +267,7 @@
     "error": {
         "name": "Error | Errors",
         "empty": "No error yet",
+        "installJava": "Cannot found any JRE. Please install at least one!",
         "missingJava": "Please select a Java for this profile!",
         "missingMinecraft": "Please select a Minecraft version for this profile!",
         "missingName": "Please name this profile!",

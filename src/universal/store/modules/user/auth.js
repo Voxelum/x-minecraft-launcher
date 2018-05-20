@@ -40,6 +40,7 @@ export default {
             state.history = config.history || state.history;
             state.mode = config.mode || state.mode;
         },
+        mode(state, mode) { state.mode = mode; },
         addMode(state, mode) {
             if (state.modes.indexOf(mode) !== -1) return;
             state.modes.push(mode);

@@ -1,48 +1,11 @@
 import { net, app } from 'electron'
 import os from 'os'
 import path from 'path'
+import Vue from 'vue'
 import fs from 'fs-extra'
 import download from 'ts-minecraft/dist/src/utils/download'
 import Zip from 'jszip'
 import { exec } from 'child_process'
-
-function testJavaVersion(p) {
-    return new Promise((resolve, reject) => {
-        exec(`"${p}" -version`, (err, sout, serr) => {
-            resolve(serr && serr.indexOf('java version') !== -1)
-        });
-    })
-}
-async function findJava() {
-    let all = [];
-    const file = os.platform() === 'win32' ? 'java.exe' : 'java';
-    process.env.PATH.split(';').forEach(p => all.push(path.join(p, 'bin', file)))
-    if (process.env.JAVA_HOME) all.push(path.join(process.env.JAVA_HOME, 'bin', file))
-    if (os.platform() === 'win32') {
-        const out = await new Promise((resolve, reject) => {
-            exec('REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome', (error, stdout, stderr) => {
-                if (!stdout) reject();
-                resolve(stdout.split(os.EOL).map(item => (
-                    item.replace(/[\r\n]/g, '')))
-                    .filter(item => item != null && item !== undefined)
-                    .map(item => (item instanceof Array ? item[0] : item))
-                    .map(item => path.join(item, 'bin', 'javaw.exe')))
-            });
-        })
-        all.push(...out);
-    } else if (os.platform() === 'darwin') {
-        all.push('/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java');
-    }
-    const set = {};
-    all.filter(p => fs.existsSync(p)).forEach((p) => { set[p] = 0 })
-    all = [];
-    for (const p of Object.keys(set)) {
-        if (await testJavaVersion(p)) {
-            all.push(p);
-        }
-    }
-    return all;
-}
 
 // https://api.github.com/repos/Indexyz/ojrebuild/releases
 async function installJre() {
@@ -128,32 +91,35 @@ async function installJre() {
 export default {
     namespaced: true,
     state: {
-        javas: [],
+        all: [],
         default: '',
     },
     getters: {
-        all: state => state.javas,
+        all: state => state.all,
         default: state => state.default,
         error(state) {
             const errors = []
-            if (state.javas.length === 0) {
+            if (state.all.length === 0) {
                 errors.push('error.installJava');
-            }
-            if (!state.default) {
-                errors.push('error.missingDefaultJava');
             }
             return errors;
         },
     },
     mutations: {
-        javas(state, inJava) {
-            if (inJava instanceof Array) state.javas.push(...inJava);
-            else state.push(inJava);
-            if (!state.default) state.default = state.javas[0];
+        add(state, java) {
+            if (java instanceof Array) {
+                state.all.push(...java);
+            } else {
+                state.all.push(java);
+            }
+            if (!state.default) state.default = state.all[0];
         },
-        default(state, def) {
-            state.default = def;
+        remove(state, java) {
+            const index = state.all.indexOf(java);
+            if (index !== -1) Vue.delete(state.all, index);
+            if (state.all.length === 0) state.default = '';
         },
+        default(state, def) { state.default = def; },
     },
     actions: {
         load(context) {
@@ -215,20 +181,64 @@ export default {
         async test(context, javaPath) {
             const exist = await fs.existsSync(javaPath);
             if (!exist) return false;
-            return testJavaVersion(javaPath);
+            return new Promise((resolve, reject) => {
+                exec(`"${javaPath}" -version`, (err, sout, serr) => {
+                    resolve(serr && serr.indexOf('java version') !== -1)
+                });
+            })
         },
         /**
          * scan local java locations and cache
          */
-        async refresh({ dispatch, commit }) {
-            const arr = await findJava();
+        async refresh({ state, dispatch, commit }) {
+            let all = [];
+            const file = os.platform() === 'win32' ? 'javaw.exe' : 'java';
+            process.env.PATH.split(';').forEach(p => all.push(path.join(p, 'bin', file)))
+
+            const which = () => new Promise((resolve, reject) => {
+                exec('which java', (error, stdout, stderr) => {
+                    resolve(stdout)
+                })
+            })
+
+            if (process.env.JAVA_HOME) all.push(path.join(process.env.JAVA_HOME, 'bin', file))
+            if (os.platform() === 'win32') {
+                const out = await new Promise((resolve, reject) => {
+                    exec('REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome', (error, stdout, stderr) => {
+                        if (!stdout) reject();
+                        resolve(stdout.split(os.EOL).map(item => item.replace(/[\r\n]/g, ''))
+                            .filter(item => item != null && item !== undefined)
+                            .filter(item => item[0] === ' ') 
+                            .map(item => `${item.split('    ')[3]}\\bin\\javaw.exe`))
+                    });
+                })
+                all.push(...out);
+            } else if (os.platform() === 'darwin') {
+                all.push('/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java');
+                all.push(await which())
+            } else {
+                all.push(await which())
+            }
+            const set = {};
+            all.filter(p => fs.existsSync(p)).forEach((p) => { set[p] = 0 })
+            all = [];
+            for (const p of Object.keys(set)) {
+                if (await dispatch('test', p)) {
+                    console.log(p)
+                    all.push(p);
+                }
+            }
+
             const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
-            if (fs.existsSync(local)) arr.unshift(local);
-            commit('javas', arr);
-            return arr;
+            if (fs.existsSync(local)) all.unshift(local);
+
+            const result = all.filter(p => state.all.indexOf(p) === -1)
+            if (result.length !== 0) commit('add', result);
+
+            return all;
         },
         async download(context) {
-            const arr = await findJava();
+            const arr = await context.dispatch('refresh');
             const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
             if (fs.existsSync(local)) arr.unshift(local);
             if (arr.length === 0) {
