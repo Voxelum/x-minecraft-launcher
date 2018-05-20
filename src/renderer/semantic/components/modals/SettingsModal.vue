@@ -83,21 +83,19 @@ export default {
     },
     mounted() {
         $(this.$el).modal({ blurring: true, })
-        // $('.selection.dropdown').dropdown()
     },
     methods: {
         localeToLanguage(lang) {
             return $localeToLanguage[lang];
         },
-        ...vuex.mapActions(['openDialog', 'updateSetting']),
+        ...vuex.mapActions(['openDialog']),
         show() {
             this.location = remote.app.getPath('userData');
-            this.selectedLocale = this.$i18n.locale;
+            this.selectedLocale = this.locale;
             this.selectedTheme = this.theme;
 
             $(this.$el).modal('show')
             $(this.$refs.fullScreen).checkbox()
-            // $('.selection.dropdown').dropdown('set selected', this.theme)
         },
         browseFolder() {
             const self = this;
@@ -116,7 +114,7 @@ export default {
                 this.$store.commit('config/theme', this.selectedTheme);
             }
             if (this.selectedLocale !== this.locale) {
-                this.$store.commit('config/locale', this.locale);
+                this.$store.commit('config/locale', this.selectedlocale);
             }
             // this.updateSetting({
             //     resolution: {
