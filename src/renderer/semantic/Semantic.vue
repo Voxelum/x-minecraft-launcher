@@ -44,9 +44,12 @@
 <script>
 import vue from 'vue'
 
+import ui from 'semantic-ui-vue'
 import 'static/semantic/semantic.min.css'
 import 'static/semantic/semantic.min.js'
 import { ipcRenderer } from 'electron'
+
+vue.use(ui);
 
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 
