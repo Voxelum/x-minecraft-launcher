@@ -158,7 +158,7 @@ export default {
                     await fs.writeFile(path, fallback);
                     return fallData;
                 }
-                throw e;
+                return {};
             }
         },
     },
