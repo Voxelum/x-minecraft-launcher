@@ -220,14 +220,11 @@ export default {
             } else {
                 all.push(await which())
             }
-            console.log(all);
             const set = {};
             all.filter(p => fs.existsSync(p)).forEach((p) => { set[p] = 0 })
             all = [];
             for (const p of Object.keys(set)) {
-                console.log(p)
                 if (await dispatch('test', p)) {
-                    console.log(p)
                     all.push(p);
                 }
             }
