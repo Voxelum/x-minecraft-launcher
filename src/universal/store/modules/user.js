@@ -133,6 +133,7 @@ export default {
             },
         },
         async refreshSkin(context) {
+            if (context.getters.mode === 'offline') return;
             const gameProfile = await context.dispatch('profiles/fetch', {
                 uuid: context.state.auth.selectedProfile.id,
                 cache: true,

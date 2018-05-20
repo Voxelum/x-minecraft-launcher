@@ -91,9 +91,7 @@ export default {
         },
         selectJava(newPath) {
             console.log(`select ${newPath}`)
-            this.$store.dispatch(`profiles/${this.id}/edit`, { java: newPath }).then(() => {
-                console.log(this.selectedJava)
-            })
+            this.$store.dispatch(`profiles/${this.id}/edit`, { java: newPath })
         },
         removeCurrent() {
             this.removeJava(this.selectedJava)
