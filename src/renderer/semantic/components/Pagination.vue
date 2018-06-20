@@ -25,9 +25,12 @@ export default {
     },
     mounted() {
         this.calculatePages(this.page, this.pages)
-        console.log(`${this.page}/${this.pages}`)
     },
     methods: {
+        /**
+         * @param {number} page
+         * @param {number} total
+         */
         calculatePages(page, total) {
             const start = Math.max(page - 2, 1)
             const end = Math.min(page + 3, total);
@@ -52,5 +55,4 @@ export default {
 </script>
 
 <style>
-
 </style>

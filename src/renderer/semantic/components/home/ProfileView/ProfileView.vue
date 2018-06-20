@@ -3,7 +3,7 @@
         <component v-if="type !== ''" :is="header"></component>
         <div class="row">
             <div-header>
-                <label class="cursor: pointer" @mouseenter="openBar">
+                <label class="header-label" @mouseenter="openBar">
                     <i :class="selectingIcon"></i>{{selecting}}
                 </label>
             </div-header>
@@ -12,8 +12,8 @@
             <div ref="sidebar" class="ui vertical sidebar secondary pointing menu grid" style="background-color:white;width:200px;border-right-style:none;" @mouseleave="closeBar">
                 <div class="sixteen wide column">
                     <router-link to="version" class="item"> {{$tc('version.name', 0)}}</router-link>
-                    <router-link to="setting" class="item" style="border-bottom:0;border-top:0;">{{$tc('setting.name', 0)}}</router-link>
-                    <router-link to="map" class="item"> {{$tc('world.name', 0)}} </router-link>
+                    <router-link to="setting" class="item" style="border-bottom:0;border-top:0;">{{$tc('gamesetting.name', 0)}}</router-link>
+                    <router-link to="world" class="item"> {{$tc('world.name', 0)}} </router-link>
                     <router-link to="resourcepack" class="item" style="border-bottom:0;border-top:0;">{{$tc('resourcepack.name', 0)}}</router-link>
                     <router-link to="mod" class="item">{{$tc('mod.name', 0)}}</router-link>
                     <router-link to="launchsetting" class="item">{{$t('launchsetting.name', 0)}}</router-link>
@@ -51,7 +51,7 @@ export default {
         selectingIcon() {
             let icon;
             switch (this.selectingRaw) {
-                case 'map': icon = 'map outline icon'; break;
+                case 'world': icon = 'map outline icon'; break;
                 case 'setting': icon = 'wrench icon'; break;
                 case 'launchsetting': icon = 'rocket icon'; break;
                 case 'resourcepack': icon = 'image outline icon'; break;
@@ -87,3 +87,21 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+.header-label {
+  cursor: pointer;
+  position: relative;
+  bottom: -5px;
+  padding: 10px;
+  border-radius: 5px;
+}
+.header-label:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.item:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+</style>
+

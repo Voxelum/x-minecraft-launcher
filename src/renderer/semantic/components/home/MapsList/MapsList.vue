@@ -32,10 +32,8 @@ export default {
         maps() { return this.$store.getters[`profiles/${this.id}/maps`] || [] },
     },
     methods: {
-        ...vuex.mapActions(['saveDialog', 'openDialog']),
-
         importDialog() {
-            this.openDialog().then((files) => {
+            this.$openDialog.then((files) => {
                 this.$store.dispatch(`profiles/${this.id}/importMap`, files)
             })
         },
@@ -61,7 +59,7 @@ export default {
             })
         },
         exportMap(map) {
-            this.saveDialog({
+            this.$store.dispatch('saveDialog', {
                 title: 'Export map to',
                 defaultPath: `${map.filename}`,
                 filters: [{

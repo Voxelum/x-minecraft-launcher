@@ -3,9 +3,10 @@ import os from 'os'
 import path from 'path'
 import Vue from 'vue'
 import fs from 'fs-extra'
-import download from 'ts-minecraft/dist/src/utils/download'
+import download from 'ts-minecraft/dist/libs/utils/download'
 import Zip from 'jszip'
 import { exec } from 'child_process'
+import { Module } from 'vuex';
 
 // https://api.github.com/repos/Indexyz/ojrebuild/releases
 async function installJre() {
@@ -209,7 +210,7 @@ export default {
                         if (!stdout) reject();
                         resolve(stdout.split(os.EOL).map(item => item.replace(/[\r\n]/g, ''))
                             .filter(item => item != null && item !== undefined)
-                            .filter(item => item[0] === ' ') 
+                            .filter(item => item[0] === ' ')
                             .map(item => `${item.split('    ')[3]}\\bin\\javaw.exe`))
                     });
                 })

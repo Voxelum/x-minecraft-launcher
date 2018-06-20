@@ -15,7 +15,7 @@ const babelGenerate = require('babel-generator').default;
 //     }
 // }
 
-const fileContent = fs.readFileSync('src/universal/store/modules/appearance.js').toString();
+const fileContent = fs.readFileSync('src/universal/store/modules/config.js').toString();
 
 const result = babel.transform(fileContent, {
     plugins: [

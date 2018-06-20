@@ -34,6 +34,19 @@ function discoverLoader(mo, path, container, initer) {
     return container;
 }
 
+function deepCopyStoreTemplate(template) {
+    const copy = Object.assign({}, template);
+    if (typeof template.state === 'object') {
+        copy.state = JSON.parse(JSON.stringify(template.state));
+    }
+    if (copy.modules) {
+        for (const key of Object.keys(copy.modules)) {
+            copy.modules[key] = deepCopyStoreTemplate(copy.modules[key]);
+        }
+    }
+    return copy;
+}
+
 discoverLoader(storeTemplate, [], loaders, initer);
 /**
  * 
@@ -43,10 +56,10 @@ discoverLoader(storeTemplate, [], loaders, initer);
 async function load() {
     const root = app.getPath('userData');
 
-    storeTemplate.state.root = root; // pre-setup the root
+    const template = deepCopyStoreTemplate(storeTemplate);
+    template.state.root = root; // pre-setup the root
     isLoading = true;
-    const newStore = new Vuex.Store(storeTemplate);
-
+    const newStore = new Vuex.Store(template);
     // load
     await Promise.all(loaders.filter(action => newStore._actions[action] !== undefined)
         .map((action) => {
@@ -68,16 +81,15 @@ async function load() {
                 console.error(err);
             })
         }));
+    newStore.commit('root', root);
     isLoading = false;
     console.log('Done loading store!');
 
     /**
      * Force sync the root
      */
-    newStore.commit('root', root);
-    ipcMain.emit('store-ready', newStore);
-
     store = newStore;
+    ipcMain.emit('store-ready', newStore);
 }
 
 ipcMain.on('reload', load);
@@ -91,11 +103,7 @@ export function commit(type, payload, option) {
 }
 
 export function dispatch(type, payload, option) {
-    if (store === undefined) {
-        console.error('shit');
-        return;
-    }
-    store.dispatch(type, payload, option);
+    return store.dispatch(type, payload, option);
 }
 
 export function loading() { return isLoading }

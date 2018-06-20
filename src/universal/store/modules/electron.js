@@ -1,8 +1,8 @@
-import { dialog, BrowserWindow } from 'electron'
+import { dialog, BrowserWindow, ipcMain } from 'electron'
 
 export default {
     actions: {
-        // exit() { ipcRenderer.sendSync('exit') },
+        exit() { ipcMain.emit('exit') },
         /**
          * 
          * @param {ActionContext} context 

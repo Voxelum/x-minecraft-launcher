@@ -1,13 +1,13 @@
 import Vuex from 'vuex';
 import { ipcMain, webContents } from 'electron'
 
-const mutationHistory = [];
 
 export default
     /**
      * @param {Vuex.Store<any>} store
      */
     (store) => {
+        const mutationHistory = [];
         ipcMain.on('vuex-sync', (event, currentId) => {
             console.log(`sync on renderer: ${currentId}, main: ${mutationHistory.length}`)
             if (currentId === mutationHistory.length) {

@@ -1,26 +1,30 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex, { mapGetters, mapActions } from 'vuex';
 import url from 'url'
 import i18n from 'universal/i18n';
 import querystring from 'querystring'
-import { webFrame, ipcRenderer, remote } from 'electron'
+import { webFrame, ipcRenderer } from 'electron'
 
 webFrame.setVisualZoomLevelLimits(1, 1)
 
 Vue.use({
     install(instance) {
         Vue.prototype.$ipc = ipcRenderer;
-        Vue.prototype.$mapGetters = Vuex.mapGetters;
-        Vue.prototype.$mapActions = Vuex.mapActions;
+        Vue.prototype.$openDialog = option => instance.$store.dispatch('openDialog', option);
+        Vue.prototype.$saveDialog = option => instance.$store.dispatch('saveDialog', option);
     },
 })
+
+$.mapGetters = mapGetters;
+$.mapActions = mapActions;
+
 
 if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'))
 }
 Vue.config.productionTip = false;
 
-const { logger, root } = querystring.parse(url.parse(document.URL).query)
+const { logger } = querystring.parse(url.parse(document.URL).query)
 
 if (logger === 'true') {
     new Vue({
@@ -30,6 +34,8 @@ if (logger === 'true') {
 } else {
     const store = require('./store').default
     const router = require('./router.js').default;
+
+    console.log(`client ${store.state.root}`);
 
     new Vue({
         router,

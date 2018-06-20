@@ -1,5 +1,5 @@
 <template>
-    <div class="ui celled grid segment" style="margin:0; background-color: #f7f7f7;" @click="hidePopup" @contextmenu="showPopup">
+    <div class="ui celled grid segment" style="margin:0;" @click="hidePopup" @contextmenu="showPopup">
         <div class="top-bar moveable black row" style="">
             <div class="four wide center aligned middle aligned column">
                 <h1 class="inverted ui header">
@@ -33,7 +33,9 @@
             </div>
             <div class="twelve wide middle aligned column">
                 <info-popups></info-popups>
-                <router-view name='buttons'></router-view>
+                <transition name="fade" mode="out-in">
+                    <router-view name='buttons'></router-view>
+                </transition>
             </div>
         </div>
         <modals ref='modals'></modals>
@@ -77,7 +79,7 @@ export default {
         background: ''//'url(imgs/Background1.png)'
     }),
     computed: {
-        ...mapGetters('user', ['skin']),
+        skin() { return this.$store.state.user.skin }
     },
     mounted() {
         ipcRenderer.on('contextMenu', (event) => {

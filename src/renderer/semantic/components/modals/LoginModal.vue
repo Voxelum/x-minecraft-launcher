@@ -9,10 +9,10 @@
             </h3>
             <form class="ui large form" :class="{error:error!==''}">
                 <div class="ui inverted segment">
-                    <div class=" field">
+                    <div class="field">
                         <div ref="authMod" class="ui labeled icon dropdown inverted basic button">
                             <i class="world icon"></i>
-                            <span class="text">{{$t(mode+'.name')}}</span>
+                            <span class="text">{{ $t(`${mode}.name`) }}</span>
                             <div class="menu">
                                 <option class="item" v-for="item in modes" :key="item" :value="item">{{$t(`${item}.name`)}}</option>
                             </div>
@@ -23,10 +23,10 @@
                             <i class="user icon"></i>
                             <div ref="accountDropdown" class="ui floating dropdown">
                                 <div class="fluid menu">
-                                    <div style="width:100%" class="item" :id="'acc_'+index" v-for="(h,index) of history" :key="h" :class="{selected:selecting===index }" @click="updateAccount(h)" @keypress.enter="updateAccount(h)">{{h}}</div>
+                                    <div style="width:100%" class="item" v-for="(h, index) of history" :key="h" :class="{ selected: selecting === index }" @click="account = h">{{h}}</div>
                                 </div>
                             </div>
-                            <input type="text" name="email" :placeholder="$t(`${mode}.account`)" @click="handleAccount" v-on:keyup="handleAccount" v-model="account">
+                            <input type="text" name="email" :placeholder="$t(`${mode}.account`)" @click="handleAccount" v-on:keydown="preventUpAndDown" v-on:keyup="handleAccount" v-model="account">
                         </div>
                     </div>
                     <div ref="passwordField" class="field">
@@ -53,9 +53,6 @@
 </template>
 
 <script>
-import vuex from 'vuex'
-import { remote } from 'electron'
-
 export default {
     data: () => ({
         logining: false,
@@ -66,21 +63,18 @@ export default {
         animations: ['jiggle', 'shake', 'tada'],
     }),
     computed: {
-        ...vuex.mapGetters('user', ['history', 'mode', 'modes', 'logined']),
-    },
-    watch: {
-        mode() {
-            console.log('mode change!');
-        }
+        history() { return this.$store.getters['user/history'].filter(t => t.startsWith(this.account)) },
+        ...$.mapGetters('user', ['mode', 'modes', 'logined']),
     },
     mounted() {
-        const self = this
+        const self = this;
+        $(this.$refs.accountDropdown).dropdown()
         $(this.$refs.authMod).dropdown({
             onChange: (value, text, $selectedItem) => {
                 self.selectLoginMode(value)
             },
-        })
-        $(this.$refs.accountDropdown).dropdown()
+            showOnFocus: false,
+        });
         $(this.$el).modal({
             closable: false,
             onHide($element) {
@@ -91,30 +85,48 @@ export default {
         if (!this.logined) this.show()
     },
     methods: {
-        ...vuex.mapActions('user', ['selectLoginMode', 'login']),
-        updateAccount(account) {
-            this.account = account;
-        },
+        ...$.mapActions('user', ['selectLoginMode', 'login']),
         show() {
             $(this.$el).modal('show')
         },
-        handleAccount(event) {
-            if (this.account === '' && event.key === 'Backspace') {
-                $(this.$refs.accountDropdown).dropdown('hide'); return
+        preventUpAndDown(event) {
+            switch (event.key) {
+                case 'ArrowDown':
+                case 'ArrowUp':
+                    event.preventDefault();
             }
-            if (event.key === 'ArrowDown') {
-                this.selecting = Math.max(0, this.selecting - 1)
-            } else if (event.key === 'ArrowUp') {
-                this.selecting = Math.min(history.length - 1, this.selecting + 1)
-            } else if (event.key === 'Enter') {
-                if ($(this.$refs.accountDropdown).dropdown('is visible')) {
-                    this.account = document.getElementById(`acc_${this.selecting}`).innerText;
-                    $(this.$refs.accountDropdown).dropdown('hide')
-                } else this.doLogin()
-            } else if (event.key === 'Tab') {
-                $(this.$refs.accountDropdown).dropdown('hide')
-            } else {
-                $(this.$refs.accountDropdown).dropdown('show')
+        },
+        handleAccount(event) {
+
+            const target = $(this.$refs.accountDropdown);
+            if (this.history.length === 0) {
+                target.dropdown('hide');
+                return false;
+            }
+            const isTargetVisible = target.dropdown('is visible');
+            switch (event.key) {
+                case 'Escape':
+                    target.dropdown('hide')
+                    break;
+                case 'ArrowDown':
+                    if (!isTargetVisible) target.dropdown('show')
+                    this.selecting = Math.min(this.history.length - 1, this.selecting + 1);
+                    break;
+                case 'ArrowUp':
+                    if (!isTargetVisible) target.dropdown('show')
+                    this.selecting = Math.max(0, this.selecting - 1)
+                    break;
+                case 'Enter':
+                    if (isTargetVisible) this.account = this.history[this.selecting];
+                    else this.doLogin()
+                    target.dropdown('hide');
+                    break;
+                case 'Tab':
+                    target.dropdown('hide')
+                    break;
+                default:
+                    if (!isTargetVisible) target.dropdown('show')
+                    if (this.selecting >= this.history.length) this.selecting = this.history.length - 1;
             }
         },
         shake(ref) {
@@ -153,6 +165,6 @@ export default {
 
 <style>
 .fluid.menu {
-    width: 352px;
+  width: 352px;
 }
 </style>

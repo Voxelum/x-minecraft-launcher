@@ -9,10 +9,25 @@ export default function setup(winURL) {
     let marketWinRef; // market window ref
     let parking; // ref for if the game is launching and the launcher is paused
 
+    function createUserWindow() {
+        userWinRef = new BrowserWindow({
+            width: 300,
+            height: 680,
+            resizable: false,
+            frame: false,
+            transparent: true,
+        });
+        userWinRef.setResizable(false)
+        userWinRef.loadURL(`${winURL}?window=user`);
+        userWinRef.on('close', () => { userWinRef = undefined })
+        ipcMain.on('user/close', () => {
+            userWinRef.close();
+        })
+    }
     function createLoginWindow() {
         loginWinRef = new BrowserWindow({
-            width: 400,
-            height: 680,
+            width: 300,
+            height: 480,
             resizable: false,
             frame: false,
             transparent: true,
@@ -22,10 +37,25 @@ export default function setup(winURL) {
         loginWinRef.on('close', () => { loginWinRef = undefined })
     }
 
+    function createProfileWindow() {
+        profileWinRef = new BrowserWindow({
+            width: 700,
+            height: 580,
+            resizable: false,
+            frame: false,
+            transparent: true,
+        });
+        profileWinRef.setResizable(false)
+        profileWinRef.loadURL(`${winURL}?window=profile`);
+        profileWinRef.on('close', () => { profileWinRef = undefined })
+    }
     function createSettingWindow() {
+        
     }
 
     createLoginWindow();
+    // createUserWindow();
+    // createProfileWindow();
 
     return {
         dispose() {

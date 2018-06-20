@@ -13,19 +13,21 @@ if (app.makeSingleInstance(() => { })) {
     app.quit();
 }
 
-ipcMain.on('reset', (event, newRoot) => {
-    if (newRoot !== root) {
-        app.setPath('userData', newRoot);
-        ipcMain.emit('reload');
-        fs.writeFile(cfgFile, JSON.stringify({ path: root }));
-    }
-});
+function setupRoot(newRoot, oldRoot) {
+    if (newRoot === oldRoot) return;
+    app.setPath('userData', newRoot);
+    ipcMain.emit('reload');
+    fs.writeFile(cfgFile, JSON.stringify({ path: newRoot }));
+}
+ipcMain.on('store-ready', (store) => {
+    store.watch(state => state.root, setupRoot)
+})
 
 async function setup() {
     try {
         const buf = await fs.readFile(cfgFile);
         const cfg = JSON.parse(buf.toString());
-        root = cfg.root || path.join(appData, '.launcher');
+        root = cfg.path || path.join(appData, '.launcher');
     } catch (e) {
         root = path.join(appData, '.launcher');
     }
