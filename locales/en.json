@@ -77,7 +77,7 @@
         }
     },
     "setting": {
-        "name": "Setting | Settings",
+        "name": "Global Setting | Global Settings",
         "location": "Store Location",
         "theme": "Theme",
         "language": "Language",
@@ -275,8 +275,8 @@
     },
     "hardcore": "Hardcore mode",
     "cheat": "Cheating",
-    "gamesettings": {
-        "name": "GameSettings"
+    "gamesetting": {
+        "name": "Game Setting | Game Settings"
     },
     "renderClouds": {
         "name": "Clouds",

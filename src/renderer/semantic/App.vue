@@ -5,23 +5,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-
 export default {
-    computed: {
-        // ...mapState('config', ['theme']),
-    },
-    beforeMount() {
-        // const route = localStorage.getItem('route');
-        // console.log(`Initialize to route ${route}`)
-        // if (route && route !== '/') {
-        //     this.$router.replace(route)
-        // } else {
-        //     this.$router.replace(`/${this.theme}`)
-        // }
-    },
     mounted() {
-
         let dragTimer;
         const store = this.$store
         $(document).on('dragover', function (e) {

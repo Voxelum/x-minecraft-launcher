@@ -1,4 +1,4 @@
-import { ActionContext } from 'vuex'
+import { ActionContext, Module } from 'vuex'
 import { app } from 'electron'
 import locales from 'locales'
 
@@ -6,18 +6,26 @@ export default {
     namespaced: true,
     state: {
         theme: 'semantic',
-        metas: {},
         themes: [],
         locale: '',
         locales: [],
+        metaMap: {},
     },
     getters: {
-        themeMeta: state => state.metas[state.theme],
+        themeMeta: state => state.metaMap[state.theme],
     },
     mutations: {
+        /**
+         * @param {ConfigState} state 
+         * @param {string} theme 
+         */
         theme(state, theme) {
             state.theme = theme;
         },
+        /**
+         * @param {ConfigState} state 
+         * @param {string[]} themes 
+         */
         themes(state, themes) {
             state.themes = themes;
         },
@@ -30,7 +38,7 @@ export default {
     },
     actions: {
         async load(context) {
-            const data = await context.dispatch('read', { path: 'config.json', fallback: {} }, { root: true });
+            const data = await context.dispatch('read', { path: 'config.json', fallback: {}, type: 'json' }, { root: true });
             context.commit('theme', data.theme || 'semantic');
             if (data.locale) context.commit('locale', data.locale);
             else context.commit('locale', app.getLocale());
@@ -53,4 +61,4 @@ export default {
             }
         },
     },
-}
+} // as Module<ConfigState, any>

@@ -45,7 +45,7 @@ const mainConfig = {
         alias: {
             static: path.join(__dirname, '../static'),
             locales: path.join(__dirname, '../locales'),
-            'universal': path.join(__dirname, '../src/universal'),
+            universal: path.join(__dirname, '../src/universal'),
             '@universal': path.join(__dirname, '../src/universal'),
         },
     },

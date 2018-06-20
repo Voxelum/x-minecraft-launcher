@@ -2,7 +2,7 @@
     <div class="ui basic modal" style="padding:0 20% 0 20%;">
         <div class="ui icon tiny header">
             <i class="setting icon"></i>
-            {{$t('setting.name', 0)}}
+            {{$tc('setting.name', 0)}}
         </div>
         <form class="ui inverted form">
             <div class="field">
@@ -16,38 +16,13 @@
             </div>
             <div class="field">
                 <label>{{$t('setting.theme')}}</label>
-                <sui-dropdown selection icon="dropdown" :text="selectedTheme" v-model="selectedTheme" :options="themes">
-                </sui-dropdown>
+                <sui-dropdown selection icon="dropdown" :text="selectedTheme" v-model="selectedTheme" :options="themes" />
             </div>
             <div class="field">
                 <label>{{$t('setting.language')}}</label>
-                <sui-dropdown selection icon="dropdown" :text="selectedLocale" v-model="selectedLocale" :options="locales">
-                </sui-dropdown>
-                <!-- <div class="ui selection dropdown">
-                    <i class="dropdown icon"></i>
-                    <span class="text">{{localeToLanguage(locale)}}</span>
-                    <div class="menu">
-                        <div class="item" v-for="l of locales" :key="l.id" @click="locale = l.id">{{l.name}}</div>
-                    </div>
-                </div> -->
+                <sui-dropdown selection icon="dropdown" :text="selectedLocale" v-model="selectedLocale" :options="locales" />
             </div>
-            <div class="field" :class="{disabled: resfullscreen}">
-                <label>{{$t('setting.resolution')}}</label>
-                <div class="two fields">
-                    <div class="field">
-                        <input class="ui basic inverted input" type="text" v-model="reswidth" :placeholder="$t('resolution.width')">
-                    </div>
-                    <div class="field">
-                        <input class="ui basic inverted input" type="text" v-model="resheight" :placeholder="$t('resolution.height')">
-                    </div>
-                </div>
-            </div>
-            <div class="inline field">
-                <div ref="fullScreen" class="ui slider checkbox" @click="resfullscreen=!resfullscreen">
-                    <input type="checkbox" name="auto-download">
-                    <label>{{$t('resolution.fullscreen')}}</label>
-                </div>
-            </div>
+            <sui-divider/>
             <div class="ui inverted right floated button" @click="upload">{{$t('save')}}</div>
             <div class="ui inverted right floated button" @click="discard">{{$t('cancel')}}</div>
         </form>
@@ -55,25 +30,20 @@
 </template>
 
 <script>
-import vuex from 'vuex'
 import { remote } from 'electron'
 import $localeToLanguage from 'static/locale.mapping'
 
 export default {
     data() {
         return {
-            reswidth: 400,
-            resheight: 400,
-            resfullscreen: false,
-
             selectedTheme: '',
             selectedLocale: '',
             location: '',
-            // locale: '',
         }
     },
     computed: {
-        ...vuex.mapState('config', ['theme', 'locale']),
+        theme() { return this.$store.state.config.theme },
+        locale() { return this.$store.state.config.locale },
         themes() {
             return this.$store.state.config.themes.map(t => ({ text: this.$t(t), value: t }))
         },
@@ -88,7 +58,6 @@ export default {
         localeToLanguage(lang) {
             return $localeToLanguage[lang];
         },
-        ...vuex.mapActions(['openDialog']),
         show() {
             this.location = remote.app.getPath('userData');
             this.selectedLocale = this.locale;
@@ -98,10 +67,10 @@ export default {
             $(this.$refs.fullScreen).checkbox()
         },
         browseFolder() {
-            const self = this;
-            this.openDialog({ properties: ['openDirectory', 'createDirectory'] }).then(files => {
-                self.location = files[0] || self.location;
-            })
+            this.$openDialog({ properties: ['openDirectory', 'createDirectory'] })
+                .then(files => {
+                    this.location = files[0] || this.location;
+                })
         },
         cacnelKey(e) {
             e.preventDefault();
@@ -114,7 +83,12 @@ export default {
                 this.$store.commit('config/theme', this.selectedTheme);
             }
             if (this.selectedLocale !== this.locale) {
-                this.$store.commit('config/locale', this.selectedlocale);
+                console.log(this.selectedLocale)
+                this.$store.commit('config/locale', this.selectedLocale);
+            }
+            if (this.location !== this.$store.state.root) {
+                console.log(this.location)
+                this.$store.commit('root', this.location);
             }
             // this.updateSetting({
             //     resolution: {

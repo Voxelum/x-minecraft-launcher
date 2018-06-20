@@ -87,7 +87,6 @@
 </template>
  
 <script>
-import * as fs from 'fs-extra'
 
 export default {
     data: () => ({
@@ -99,7 +98,7 @@ export default {
         },
         uploading: false,
         loadingURL: false,
-        
+
         urlError: false,
         url: '',
         changed: false,
@@ -118,7 +117,7 @@ export default {
             this.url = '';
             this.changed = false;
             this.urlError = false;
-            const rskin = this.$store.getters['user/skin'];
+            const rskin = this.$store.state.user.skin;
             this.skin.data = rskin.data;
             this.skin.slim = rskin.slim;
         },
@@ -136,12 +135,12 @@ export default {
             })
         },
         importLocal() {
-            this.$store.dispatch('openDialog', {
+            this.$openDialog({
                 title: 'Import Skin File to Preview',
                 filters: [{ extensions: ['png'], name: 'Minecraft Skin PNG' }],
             }).then((file) => {
                 if (!file || file.length === 0) return undefined;
-                return fs.readFile(file[0]);
+                return this.$store.dispatch('read', { path: file[0], external: true });
             }).then((data) => {
                 if (!data) return undefined;
                 this.changed = true;

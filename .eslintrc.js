@@ -25,7 +25,7 @@ module.exports = {
     'settings': {
         'import/resolver': {
             'webpack': {
-                'config': 'scripts/webpack.renderer.config.js'
+                'config': 'scripts/webpack.resolve.config.js'
             }
         }
     },
@@ -58,6 +58,7 @@ module.exports = {
         "global-require": 0,
         "no-trailing-spaces": 0,
         "no-unused-vars": 0,
-        "wrap-iife": 0
+        "wrap-iife": 0,
+        "max-len": 1,
     }
 }

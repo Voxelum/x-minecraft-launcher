@@ -56,7 +56,7 @@ export default {
                     outPath.push(current);
                 }
             }
-            console.log(outPath)
+            // console.log(outPath)
             return outPath;
         },
     },

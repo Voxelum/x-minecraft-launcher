@@ -108,7 +108,7 @@ export default {
                 if (lite) expectedId += `-liteloader${lite}`
                 return expectedId;
             }
-            const localVersions = context.rootGetters['versions/local'];
+            const localVersions = context.rootState.versions.local;
             /**
              * cache the mcversion -> forge/lite/mc versions real id 
              */

@@ -79,7 +79,7 @@ export default {
         },
         /**
           * @param {ActionContext} context 
-          * @param {{file:string, toFolder:string, name:string}} payload 
+          * @param {{ file: string, toFolder: string, name: string }} payload 
           */
         import(context, payload) {
             const { file, toFolder, name } = payload;
@@ -101,19 +101,19 @@ export default {
         },
         /**
          * @param {ActionContext} context 
-         * @param {{path:string,data:Buffer|string|any}} payload 
+         * @param {{ path: string, data: Buffer | string | any, external?: boolean }} payload 
          */
         write(context, payload) {
             let { path, data } = payload;
-            path = paths.resolve(context.rootState.root, path)
+            if (!payload.external) path = paths.resolve(context.rootState.root, path);
             if (typeof data === 'object' && !(data instanceof Buffer)) data = JSON.stringify(data, undefined, 4);
-            const parent = paths.dirname(path)
-            return fs.ensureDir(parent).then(() => fs.writeFile(path, data))
+            const parent = paths.dirname(path);
+            return fs.ensureDir(parent).then(() => fs.writeFile(path, data));
         },
         /**
          * 
          * @param {ActionContext} context 
-         * @param {string|string[]} files 
+         * @param {string | string[]} files 
          */
         exist(context, files) {
             if (typeof files === 'string') files = [files]
@@ -124,24 +124,26 @@ export default {
         /**
          * 
          * @param {ActionContext} context 
-         * @param {{path:string, fallback:string|Buffer, type:'string'|'json'|((buf:Buffer)=>any), onread:(path:string)=>void}} payload 
+         * @param {{ path: string, fallback: string | Buffer, type: 'string' | 'json' | ((buf: Buffer) => any), external?: boolean}} payload 
          */
         async read(context, payload) {
             let { path, fallback } = payload;
-            const { type, onread } = payload;
-            path = paths.join(context.rootGetters.root, path)
+            const { type, external } = payload;
+            if (!external) path = paths.join(context.rootGetters.root, path);
+
             if (!fs.existsSync(path)) {
                 if (fallback) {
-                    const fallData = fallback
-                    if (typeof fallback === 'object' && !(fallback instanceof Buffer)) fallback = JSON.stringify(fallback);
-                    await fs.writeFile(path, fallback);
-                    return fallData;
+                    if (!external) {
+                        await fs.writeFile(path, typeof fallback === 'object' && !(fallback instanceof Buffer)
+                            ? JSON.stringify(fallback)
+                            : fallback);
+                    }
+                    return fallback;
                 }
                 return undefined;
             }
-            if (onread) onread(path);
             try {
-                const data = await fs.readFile(path)
+                const data = await fs.readFile(path);
                 if (!type) return data;
                 if (typeof type === 'function') return type(data);
                 switch (type) {
@@ -158,7 +160,7 @@ export default {
                     await fs.writeFile(path, fallback);
                     return fallData;
                 }
-                return {};
+                return undefined;
             }
         },
     },

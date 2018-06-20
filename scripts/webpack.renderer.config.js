@@ -125,6 +125,7 @@ function generate(theme) {
         resolve: {
             alias: {
                 '@': path.join(__dirname, `../src/renderer/${theme}`),
+                renderer: path.join(__dirname, '../src/renderer'),
                 vue$: 'vue/dist/vue.esm.js',
                 locales: path.join(__dirname, '../locales'),
                 static: path.join(__dirname, '../static'),

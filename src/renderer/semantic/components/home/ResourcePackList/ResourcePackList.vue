@@ -36,8 +36,6 @@
 </template>
 
 <script>
-import { remote } from 'electron'
-import { mapActions, mapGetters, mapMutations } from 'vuex'
 import img from 'static/unknown_pack.png'
 
 export default {
@@ -47,7 +45,8 @@ export default {
     }),
     components: { ListCell: () => import('./ListCell') },
     computed: {
-        ...mapGetters('repository', ['resourcepacks']),
+        resourcepacks() { return this.$store.getters['repository/resourcepacks']; },
+        // ...mapGetters('repository', ['resourcepacks']),
         unselecting() {
             return this.resourcepacks.filter(e => this.selectingNames.indexOf(e.name) === -1)
         },
@@ -82,8 +81,12 @@ export default {
 
     },
     methods: {
-        ...mapActions(['openDialog']),
-        ...mapActions('repository', ['import', 'remove', 'rename', 'exports']),
+        import() { return this.$store.dispatch('repository/import') },
+        remove() { return this.$store.dispatch('repository/remove') },
+        rename() { return this.$store.dispatch('repository/rename') },
+        exports() { return this.$store.dispatch('repository/exports') },
+
+        // ...mapActions('repository', ['import', 'remove', 'rename', 'exports']),
         resourcepack(action, pack) {
             this.$store.commit(`profiles/${this.$route.params.id}/settings/resourcepack`,
                 { action, pack })
@@ -94,14 +97,14 @@ export default {
         movedown(name) { this.resourcepack('movedown', name) },
         onexport(hash) {
             const self = this;
-            this.openDialog({ properties: ['openDirectory'] }).then((dir) => {
+            this.$openDialog({ properties: ['openDirectory'] }).then((dir) => {
                 if (dir.length === 0) return;
                 self.$store.dispatch('repository/exports',
                     { targetDirectory: dir[0], resource: hash });
             })
         },
         importResourcePack() {
-            this.openDialog({
+            this.$openDialog({
                 filters: [{ name: 'Resource Packs', extensions: ['zip'] }],
                 properties: ['multiSelections'],
             }).then((files) => {

@@ -4,6 +4,8 @@ import { remote, ipcRenderer } from 'electron';
 import universalStore from 'universal/store';
 import modules from './modules';
 
+console.log(universalStore.state.root)
+
 const store = {
     ...universalStore,
 };
@@ -47,12 +49,6 @@ ipcRenderer.on('vuex-sync', (event, mutations, id) => {
         }
     }
 });
-ipcRenderer.on('vuex-register-module', (event, path, module) => {
-    localStore.registerModule(path, module);
-})
-ipcRenderer.on('vuex-unregister-module', (event, path) => {
-    localStore.unregisterModule(path);
-})
 
 ipcRenderer.send('vuex-sync', 0);
 

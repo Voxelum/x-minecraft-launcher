@@ -1,5 +1,5 @@
 <template>
-    <div class="ui modal" style="max-height: 400px; min-height: 400px;">
+    <div class="ui modal" style="max-height: 400px; min-height: 400px; ">
         <div class="header">
             <div class="ui items">
                 <div class="item" style="height: 100%">

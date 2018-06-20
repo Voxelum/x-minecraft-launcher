@@ -166,8 +166,6 @@ export default {
                     if (err) {
                         console.error(err);
                         if (err.code === 'ETIMEOUT') {
-                            // const timeout = TextComponent.str('server.status.timeout');
-                            // timeout.style = Style.create({ color: TextFormatting.RED })
                             context.commit('edit', {
                                 status: {
                                     version: {
@@ -183,8 +181,6 @@ export default {
                                 },
                             })
                         } else if (err.code === 'ENOTFOUND') {
-                            // const timeout = TextComponent.str('server.status.nohost');
-                            // timeout.style = Style.create({ color: TextFormatting.RED })
                             context.commit('edit', {
                                 status: {
                                     version: {
@@ -200,8 +196,6 @@ export default {
                                 },
                             })
                         } else if (err.code === 'ECONNREFUSED') {
-                            // const nohost = TextComponent.str('server.status.refuse');
-                            // nohost.style = Style.create({ color: TextFormatting.RED })
                             context.commit('edit', {
                                 status: {
                                     version: {

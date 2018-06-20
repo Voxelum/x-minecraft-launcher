@@ -28,10 +28,8 @@ export default {
         content: '',
         acceptColor: '',
         denyColor: '',
-
     }),
     mounted() {
-        const self = this
         $(this.$el).modal({
             blurring: true,
         })
@@ -69,7 +67,8 @@ export default {
         },
     },
     methods: {
-        show({ header, icon, content, acceptIcon, denyIcon, accept, deny, acceptColor, denyColor, onAccept }) {
+        show({ header, icon, content, acceptIcon, denyIcon,
+            accept, deny, acceptColor, denyColor, onAccept }) {
             this.header = header;
             this.content = content;
             this.icon = icon || '';
@@ -94,5 +93,4 @@ export default {
 </script>
 
 <style>
-
 </style>

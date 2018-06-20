@@ -29,6 +29,10 @@ export default {
             if (idx === -1) return;
             Vue.delete(state.all, idx);
         },
+
+        all(state, payload) {
+            state.all = payload;
+        },
     },
     actions: {
         async load(context, payload) {
@@ -59,6 +63,9 @@ export default {
             option.java = option.java || context.rootGetters['java/default'];
             context.commit('add', { id, type });
             if (type) context.commit(`${id}/${type}/edit`, option);
+            if (!option.mcversion) option.mcversion = context.rootGetters['versions/minecraft/release'];
+
+            console.log(option)
             context.dispatch(`${id}/edit`, { ...option, type });
         },
         /**

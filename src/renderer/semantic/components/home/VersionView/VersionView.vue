@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="ui secondary menu">
-           <div class="active item tab-item" data-tab="minecraft" @click="switchToMinecraft">{{$t('minecraft')}}</div>
+            <div class="active item tab-item" data-tab="minecraft" @click="switchToMinecraft">{{$t('minecraft')}}</div>
             <div class="item tab-item" data-tab="forge" @click="switchToForge">{{$t('forge.name')}}</div>
             <div class="item tab-item" data-tab="liteloader" @click="switchToLiteloader">{{$t('liteloader.name')}}</div>
             <div class="item tab-item" data-tab="local" @click="switchToLocal">{{$t('version.locals')}}</div>
@@ -90,8 +90,6 @@
 </template>
 
 <script>
-import vuex from 'vuex'
-
 export default {
     components: {
         McVersionCell: () => import('./McVersionCell'),
@@ -100,7 +98,7 @@ export default {
         LocalVersionCell: () => import('./LocalVersionCell'),
     },
     data: () => ({
-       loading: false,
+        loading: false,
         filterType: 'release',
         filterTypes: ['release', 'snapshot', 'all'],
         filter: '',
@@ -112,12 +110,10 @@ export default {
     computed: {
         id() { return this.$route.params.id; },
 
-        localVersions() {
-            return this.$store.getters['versions/local'];
-        },
+        localVersions() { return this.$store.state.versions.local; },
 
         mcMetas() {
-            let metas = this.$store.getters['versions/versions'];
+            let metas = this.$store.getters['versions/minecraft/versions'];
             if (this.filterType !== 'all')
                 metas = metas.filter(v => v.type === this.filterType)
             if (this.filter !== '')
@@ -127,7 +123,7 @@ export default {
         mcVersion() { return this.$store.getters[`profiles/${this.id}/mcversion`] },
 
         liteMetas() {
-            return this.$store.getters['versions/liteloader/versionsByMc'](this.mcVersion);
+            return this.$store.getters['versions/liteloader/versions'](this.mcVersion);
         },
         liteVersion() {
             return this.$store.getters[`profiles/${this.id}/liteloader/version`]
@@ -135,7 +131,7 @@ export default {
         },
 
         forgeMetas() {
-            let metas = this.$store.getters['versions/forge/versionsByMc'](this.mcVersion) || [];
+            let metas = this.$store.getters['versions/forge/versions'](this.mcVersion) || [];
             if (this.filterType !== 'all')
                 metas = metas.filter(v => v.type === this.filterType)
             if (this.filter !== '')
@@ -170,7 +166,7 @@ export default {
         },
 
         downloadMinecraft(meta) {
-            this.$store.dispatch(`versions/download`, meta);
+            this.$store.dispatch(`versions/minecraft/download`, meta);
         },
         downloadForge(meta) {
             this.$store.dispatch(`versions/forge/download`, meta);

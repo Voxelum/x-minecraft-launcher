@@ -41,12 +41,9 @@
                 }
             ]
         },
-        "mac": {
-        },
-        "win": {
-        },
-        "linux": {
-        }
+        "mac": {},
+        "win": {},
+        "linux": {}
     },
     "dependencies": {
         "fast-html-parser": "^1.0.1",
@@ -54,7 +51,7 @@
         "iconv-lite": "^0.4.18",
         "jszip": "^3.1.5",
         "treelike-task": "0.0.7",
-        "ts-minecraft": "^3.1.0-beta.2",
+        "ts-minecraft": "^3.2.0",
         "uuid": "^3.2.1",
         "vue": "^2.5.16",
         "vue-electron": "^1.0.6",
@@ -63,6 +60,7 @@
     },
     "devDependencies": {
         "babel-core": "^6.25.0",
+        "babel-generator": "^6.26.1",
         "semantic-ui": "^2.3.1",
         "semantic-ui-vue": "^0.2.10",
         "babel-eslint": "^7.2.3",
@@ -103,6 +101,7 @@
         "style-loader": "^0.21.0",
         "stylus": "^0.54.5",
         "stylus-loader": "^3.0.1",
+        "mocha": "^5.2.0",
         "three": "^0.86.0",
         "three-orbit-controls": "^82.1.0",
         "url-loader": "^0.5.9",
@@ -113,7 +112,7 @@
         "vuetify": "^1.0.18",
         "vue-style-loader": "^3.0.1",
         "vue-template-compiler": "^2.3.3",
-        "vuedraggable": "^2.14.1",
+        "vuedraggable": "^2.16.0",
         "webpack": "^3.12.0",
         "webpack-dev-middleware": "^2.0.6",
         "webpack-hot-middleware": "^2.18.0"

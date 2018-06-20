@@ -13,7 +13,7 @@
                     <img :src="logo" width="290" height="90" class="moveable" style="top:-55px; position: absolute;">
                 </v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn icon>
+                <v-btn icon @click="close">
                     <v-icon dark>close</v-icon>
                 </v-btn>
             </v-toolbar>
@@ -40,7 +40,10 @@ export default {
             } else {
                 this.$router.replace('/login')
             }
-        }
+        },
+        close() {
+            this.$store.dispatch('exit');
+        },
     },
 }
 </script>

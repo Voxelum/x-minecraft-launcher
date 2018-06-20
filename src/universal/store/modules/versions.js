@@ -1,139 +1,38 @@
 import { VersionMeta, MinecraftFolder, Version, LiteLoader, Forge, VersionMetaList } from 'ts-minecraft'
 
-async function $refresh(context) {
-    const option = context.state.date === '' ? undefined : {
-        fallback: { date: context.state.date || '', list: context.state.list || [] },
-    };
-    const remoteList = await LiteLoader.VersionMetaList.update();
-    context.commit('update', remoteList);
-}
-
 export default {
     namespaced: true,
     state: () => ({
-        updateTime: '',
-        versions: [],
-        latest: {
-            snapshot: '',
-            release: '',
-        },
+        /**
+         * @type {{forge: string, liteloader: string, minecra: string, id: string, jar: string }[]}
+         * local versions
+         */
         local: [],
+        libraryHost: {},
+        assetHost: '',
     }),
-    getters: {
-        versions: state => state.versions || [],
-        versionsMap: state => state.versions.reduce((o, v) => { o[v.id] = v; return o; }, {}) || {},
-        latestRelease: state => state.latest.release || '',
-        latestSnapshot: state => state.latest.snapshot || '',
-        local: state => state.local,
-    },
     mutations: {
-        update(state, list) {
-            state.updateTime = list.date;
-            if (list.list) {
-                state.versions = list.list.versions;
-                state.latest.release = list.list.latest.release;
-                state.latest.snapshot = list.list.latest.snapshot;
-            }
-        },
-        status(state, { version, status }) {
-            version.status = status
-        },
         local(state, local) {
             state.local = local;
         },
     },
     actions: {
-        async load(context, payload) {
-            /**
-             * @type {VersionMetaList}
-             */
-            const data = await context.dispatch('read', { path: 'version.json', fallback: {}, type: 'json' }, { root: true })
-            const container = {
-                date: data.updateTime,
-                list: data,
-            }
-            context.commit('update', container);
-            await context.dispatch('refresh');
-        },
-        save(context, payload) {
-            return context.dispatch('write', {
-                path: 'version.json',
-                data: JSON.stringify(context.state,
-                    (key, val) => {
-                        if (key === 'forge' || key === 'liteloader' || key === 'local') return undefined;
-                        return val;
-                    }),
-            }, { root: true })
-        },
         /**
-         * 
-         * @param {ActionContext} context 
-         * @param {VersionMeta|string} meta
+         * @param {ActionContext<VersionsState>} context 
          */
-        async download(context, meta) {
-            if (typeof meta === 'string') {
-                if (!context.getters.versionsMap[meta]) throw new Error(`Cannot find the version meta for [${meta}]. Please Refresh the meta cache!`)
-                meta = context.getters.versionsMap[meta];
-            }
-
-            const id = meta.id;
-            context.commit('status', { version: meta, status: 'loading' })
-            let exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
-            if (!exist) {
-                try {
-                    let location = context.rootGetters.root;
-                    if (typeof location === 'string') location = new MinecraftFolder(location);
-                    if (!(location instanceof MinecraftFolder)) return Promise.reject('Require location as string or MinecraftLocation!');
-                    const task = Version.installTask('client', meta, location)
-                    await context.dispatch('task/listen', task, { root: true });
-                    await task.execute();
-                } catch (e) { console.warn(e) }
-            }
-            exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
-            if (exist) {
-                context.commit('status', { version: meta, status: 'local' })
-            } else {
-                context.commit('status', { version: meta, status: 'remote' })
-            }
-            return undefined;
-        },
-        checkClient(context, { version, location }) {
-            if (typeof location === 'string') location = new MinecraftFolder(location)
-            if (!(location instanceof MinecraftFolder)) return Promise.reject('Require location as string or MinecraftLocation!')
-            return Version.checkDependency(version, location)
+        load(context) {
+            context.dispatch('refresh')
         },
         /**
-         * 
-         * @param {ActionContext} context 
-         * @param {{version: string, forge: string, liteloader: string}} option 
-         */
-        prepare(context, option) {
-
-        },
-        /**
-         * Refresh the remote versions cache 
+         * @param {ActionContext<VersionsState>} context 
          */
         async refresh(context) {
-            const container = {
-                date: context.state.updateTime,
-                list: context.state,
-            }
-            /**
-             * Update from internet
-             */
-            let metas = container;
-            try {
-                metas = await Version.updateVersionMeta({ fallback: container })
-            } catch (e) {
-                console.error(e)
-            }
             /**
              * Read local folder
              */
             const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true })
 
-            const versionArr = [];
-            const idArr = [];
+            const versions = [];
             for (const ver of files) {
                 try {
                     const resolved = await Version.parse(context.rootGetters.root, ver);
@@ -146,8 +45,7 @@ export default {
                     if (liteloader) {
                         liteloader = liteloader.name.split(':')[2];
                     }
-                    idArr.push(resolved.id);
-                    versionArr.push({
+                    versions.push({
                         forge,
                         liteloader,
                         id: resolved.id,
@@ -158,25 +56,148 @@ export default {
                     console.error(e);
                 }
             }
-            context.commit('local', versionArr);
-
-            /**
-             * Update version status
-             */
-            metas.list.versions.forEach((ver) => {
-                for (const verObj of versionArr) {
-                    ver.status = 'remote';
-                    if (verObj.minecraft === ver.id) {
-                        ver.status = 'local';
-                        break;
-                    }
-                }
-            });
-
-            context.commit('update', metas);
+            context.commit('local', versions);
+            // context.dispatch('minecraft/updateStatus', versions)
+            // context.dispatch('forge/updateStatus', versions)
+            // context.dispatch('liteloader/updateStatus', versions)
+        },
+        /**
+         * @param {ActionContext<VersionsState>} context
+         * @param {string} version 
+         */
+        checkDependency(context, version) {
+            const location = context.rootState.root;
+            const task = Version.checkDependenciesTask(version, location);
+            context.dispatch('')
+            return Version.checkDependency(version, location)
         },
     },
     modules: {
+        minecraft: {
+            namespaced: true,
+            state: () => ({
+                date: '',
+                list: {
+                    versions: [],
+                    latest: {
+                        snapshot: '',
+                        release: '',
+                    },
+                },
+                status: {},
+            }),
+            getters: {
+                /**
+                 * all versions
+                 */
+                versions: state => state.list.versions,
+                /**
+                 * latest snapshot
+                 */
+                snapshot: state => state.list.latest.snapshot,
+                /**
+                 * latest release
+                 */
+                release: state => state.list.latest.release,
+                /**
+                 * get status of a specific version
+                 */
+                status: state => version => state.status[version],
+            },
+            mutations: {
+                update(state, { date, list }) {
+                    state.date = Object.freeze(date);
+                    state.list = Object.freeze(list);
+                },
+                status(state, { version, status }) {
+                    state.status[version] = status;
+                },
+                allStatus(state, status) {
+                    for (const id of Object.keys(status)) {
+                        state.status[id] = status[id];
+                    }
+                },
+            },
+            actions: {
+                /**
+                * @param {ActionContext<VersionsState.Inner>} context 
+                */
+                async load(context, payload) {
+                    const data = await context.dispatch('read', { path: 'version.json', type: 'json', fallback: undefined }, { root: true })
+                    if (data) context.commit('update', { date: data.date, list: data.list });
+                    await context.dispatch('refresh');
+                },
+                /**
+                * @param {ActionContext<VersionsState.Inner>} context 
+                */
+                save(context, payload) {
+                    return context.dispatch('write', {
+                        path: 'version.json',
+                        data: JSON.stringify({
+                            list: context.state.list,
+                            date: context.state.date,
+                        }),
+                    }, { root: true })
+                },
+                /**
+                 * Download and install a minecract version
+                 *  
+                 * @param {ActionContext<VersionsState.Inner>} context 
+                 * @param {VersionMeta} meta
+                 */
+                async download(context, meta) {
+                    const id = meta.id;
+                    context.commit('status', { version: meta, status: 'loading' })
+                    const exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
+                    if (exist) return Promise.resolve();
+                    const task = Version.installTask('client', meta, context.rootGetters.root)
+                    await context.dispatch('task/listen', task, { root: true });
+                    return task.execute()
+                        .then(() => {
+                            context.commit('status', { version: meta, status: 'local' })
+                        })
+                        .catch((e) => {
+                            console.warn(e)
+                            context.commit('status', { version: meta, status: 'remote' })
+                        });
+                },
+                /**
+                 * @param {ActionContext<VersionsState.Inner>} context 
+                 */
+                init(context) {
+                    const localVersions = {};
+                    context.rootState.versions.local.forEach((ver) => {
+                        if (ver.minecraft) localVersions[ver.minecraft] = true;
+                    });
+                    const statusMap = {};
+                    for (const ver of context.state.list.versions) {
+                        statusMap[ver.id] = localVersions[ver.id] ? 'local' : 'remote';
+                    }
+
+                    context.commit('allStatus', statusMap)
+                },
+                /**
+                 * Refresh the remote versions cache 
+                 * @param {ActionContext<VersionsState.Inner>} context 
+                 */
+                async refresh(context) {
+                    const container = {
+                        date: context.state.date,
+                        list: context.state.list,
+                    }
+                    /**
+                     * Update from internet
+                     */
+                    let metas = container;
+                    try {
+                        metas = await Version.updateVersionMeta({ fallback: container })
+                    } catch (e) {
+                        console.error(e)
+                    }
+                    context.commit('update', metas);
+                },
+            },
+        },
         forge: {
             namespaced: true,
             state: () => ({
@@ -184,34 +205,42 @@ export default {
                 list: {
                     mcversion: {},
                     promos: {},
+                    number: {},
                 },
                 status: {},
             }),
             getters: {
-                versions: state => state.list.number || [],
-                versionsByMc: state =>
-                    version =>
-                        (state.list.mcversion[version] || [])
-                            .map((num) => {
-                                const meta = { status: 'remote', ...state.list.number[num] };
-                                if (state.list.promos[`${version}-recommended`] === num) {
-                                    meta.type = 'recommended';
-                                } else if (state.list.promos[`${version}-latest`] === num) {
-                                    meta.type = 'latest';
-                                } else {
-                                    meta.type = 'snapshot';
-                                }
-                                return meta;
-                            }),
-                latestByMc: state =>
+                /**
+                 * @type { branch: string | null, build: number, files: [string, string, string][], mcversion: string, modified: number, version: string, type: string} 
+                 * get version by minecraft version
+                 */
+                versions: state => version => (state.list.mcversion[version] || []),
+
+                /**
+                 * get latest version by minecraft version
+                 */
+                latest: state =>
                     version => state.list.number[state.list.promos[`${version}-latest`]],
-                recommendedByMc: state =>
+                /**
+                 * get recommended version by minecraft version
+                 */
+                recommended: state =>
                     version => state.list.number[state.list.promos[`${version}-recommended`]],
+                /**
+                 * get version status by actual forge version
+                 */
+                status: state => version => state.status[version] || 'remote',
             },
             mutations: {
                 update(state, list) {
-                    state.list = Object.freeze(list.list);
-                    state.date = Object.freeze(list.date);
+                    if (list.list) {
+                        state.list.mcversion = Object.freeze(list.list.mcversion);
+                        state.list.promos = Object.freeze(list.list.promos);
+                        state.list.number = Object.freeze(list.list.number);
+                    }
+                    if (list.date) {
+                        state.date = Object.freeze(list.date);
+                    }
                 },
                 allStatus(state, allStatus) {
                     Object.keys(allStatus).forEach((key) => {
@@ -223,20 +252,29 @@ export default {
                 },
             },
             actions: {
+                /**
+                * @param {ActionContext<VersionsState.Inner>} context 
+                */
                 async load(context, payload) {
                     const struct = await context.dispatch('read', { path: 'forge-versions.json', fallback: {}, type: 'json' }, { root: true });
                     context.commit('update', struct);
                     return context.dispatch('refresh').then(() => context.dispatch('save'), () => context.dispatch('save'));
                 },
+                /**
+                 * @param {ActionContext<VersionsState.Inner>} context 
+                 */
                 save(context, payload) {
                     const data = JSON.stringify(context.state);
                     return context.dispatch('write', { path: 'forge-versions.json', data }, { root: true })
                 },
+                /**
+                 * @param {ActionContext<VersionsState.Inner>} context 
+                 */
                 init(context) {
                     const struct = Object.assign({}, context.state);
+                    if (!struct.list) return;
                     const localForgeVersion = {};
-                    const localArr = context.rootGetters['versions/local'];
-                    localArr.forEach((ver) => {
+                    context.rootState.versions.local.forEach((ver) => {
                         if (ver.forge) localForgeVersion[ver.forge] = true;
                     });
                     const statusMap = {};
@@ -247,8 +285,9 @@ export default {
                     context.commit('allStatus', statusMap);
                 },
                 /**
+                 * download a specific version from version metadata
                  * 
-                 * @param {ActionContext} context 
+                 * @param {ActionContext<VersionsState.Inner>} context 
                  * @param {VersionMeta} meta
                  */
                 async download(context, meta) {
@@ -267,11 +306,22 @@ export default {
                 },
                 /**
                 * Refresh the remote versions cache 
+                * @param {ActionContext<VersionsState.Inner>} context 
                 */
                 async refresh(context) {
                     const remoteList = await Forge.VersionMetaList.update({
                         fallback: { date: context.state.date || '', list: context.state.list },
                     });
+                    for (const num of Object.keys(remoteList.number)) {
+                        const ver = remoteList.number[num];
+                        if (remoteList.promos[`${ver.version}-recommended`] === num) {
+                            ver.type = 'recommended';
+                        } else if (remoteList.promos[`${ver.version}-latest`] === num) {
+                            ver.type = 'latest';
+                        } else {
+                            ver.type = 'snapshot';
+                        }
+                    }
                     context.commit('update', remoteList);
                 },
             },
@@ -286,9 +336,13 @@ export default {
                 status: {},
             }),
             getters: {
-                versions: state => state.list.versions || [],
-                versionsByMc: state =>
-                    version => state.list.versions[version] || [],
+                /**
+                 * get version from mc version
+                 */
+                versions: state => version => state.list.versions[version] || [],
+                /**
+                 * get status of a specific version
+                 */
                 status: state => version => state.status[version],
             },
             mutations: {
@@ -306,15 +360,21 @@ export default {
                 },
             },
             actions: {
+                /**
+                 * @param {ActionContext<VersionsState.Inner>} context 
+                 */
                 async load(context) {
                     const struct = await context.dispatch('read', { path: 'lite-versions.json', fallback: {}, type: 'json' }, { root: true });
                     context.commit('update', struct);
                     return context.dispatch('refresh').then(() => context.dispatch('save'), () => context.dispatch('save'));
                 },
+                /**
+                 * @param {ActionContext<VersionsState.Inner>} context 
+                 */
                 init(context) {
                     const struct = Object.assign({}, context.state);
                     const localVers = {};
-                    const localArr = context.rootGetters['versions/local'];
+                    const localArr = context.rootState.versions.local;
                     localArr.forEach((ver) => {
                         if (ver.liteloader) localVers[ver.liteloader] = true;
                     });
@@ -330,10 +390,16 @@ export default {
                     })
                     context.commit('allStatus', statusMap);
                 },
+                /**
+                 * @param {ActionContext<VersionsState.Inner>} context 
+                 */
                 save(context) {
                     const data = JSON.stringify(context.state);
                     return context.dispatch('write', { path: 'lite-versions.json', data }, { root: true })
                 },
+                /**
+                 * @param {ActionContext<VersionsState.Inner>} context 
+                 */
                 async download(context, meta) {
                     const task = LiteLoader
                         .installAndCheckTask(meta, context.rootGetters.root, true);
@@ -347,12 +413,22 @@ export default {
                 },
                 $refresh: {
                     root: true,
+                    /**
+                     * @param {ActionContext<VersionsState.Inner>} context 
+                     */
                     handler(context) {
                         // return $refresh(context)
                     },
                 },
-                refresh(context) {
-                    return $refresh(context)
+                /**
+                 * @param {ActionContext<VersionsState.Inner>} context 
+                 */
+                async refresh(context) {
+                    const option = context.state.date === '' ? undefined : {
+                        fallback: { date: context.state.date || '', list: context.state.list || [] },
+                    };
+                    const remoteList = await LiteLoader.VersionMetaList.update();
+                    context.commit('update', remoteList);
                 },
             },
         },

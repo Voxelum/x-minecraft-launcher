@@ -70,7 +70,7 @@ const route = {
                     component: VersionView,
                 },
                 {
-                    path: 'map',
+                    path: 'world',
                     component: MapsList,
                 },
                 {

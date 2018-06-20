@@ -93,13 +93,6 @@ export default function setup(winURL) {
             logWindow.webContents.send('minecraft-stderr', s);
         }
     }))
-
-    ipcListen('reset', ((event, newRoot) => {
-        if (newRoot !== undefined) {
-            mainWindow.close();
-            createMainWindow();
-        }
-    }))
     /**
      * handle park launcher when the game launch
      */

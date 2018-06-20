@@ -16,7 +16,9 @@ function setupTheme(newTheme) {
     const newSetup = themes[newTheme];
     if (!newSetup) throw new Error(`Cannot found theme ${theme}`);
 
+
     if (instance) { // stop current theme if exist
+        console.log('dispose current theme')
         try {
             instance.dispose();
         } catch (e) {
@@ -31,6 +33,9 @@ function setupTheme(newTheme) {
     instance = newSetup(process.env.NODE_ENV === 'development' ?
         `http://localhost:9080/${newTheme}.html` :
         `file://${__dirname}/${newTheme}.html`)
+
+    console.log('instance')
+    console.log(instance);
 
     parking = false;
 }
@@ -52,12 +57,13 @@ ipcMain.on('minecraft-start', () => {
 })
 ipcMain.on('store-ready', (store) => {
     if (app.isReady()) {
-        setupTheme(store.getters['config/theme'] || 'semantic');
+        setupTheme(store.state.config.theme || 'semantic');
     } else {
         app.once('ready', () => {
-            setupTheme(store.getters['config/theme'] || 'semantic');
+            setupTheme(store.state.config.theme || 'semantic');
         })
     }
+    theme = undefined;
     store.commit('config/themes', Object.keys(themes));
     store.watch(state => state.config.theme, setupTheme);
 })

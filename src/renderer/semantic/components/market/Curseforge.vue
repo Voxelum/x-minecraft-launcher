@@ -61,15 +61,10 @@ export default {
     },
     mounted() {
         if (this.projects.length === 0) this.change()
-        $(this.$refs.filterDropdown).dropdown()
-        $(this.$refs.versionDropdown).dropdown()
     },
     created() {
-        $(this.$refs.filterDropdown).dropdown()
-        $(this.$refs.versionDropdown).dropdown()
     },
     methods: {
-        ...vuex.mapActions('curseforge', { fetchMods: 'mods' }),
         /**
          * @param {{path:string, version:string, filter:string}} payload 
          */
@@ -79,7 +74,7 @@ export default {
             const page = payload.page || this.page;
             this.loading = true;
 
-            return this.fetchMods({ page, version, sort: filter })
+            return this.$store.dispatch('curseforge/mods', { page, version, sort: filter })
                 .then((s) => {
                     this.projects = s.mods;
                     this.page = page;
@@ -95,8 +90,8 @@ export default {
             if ((version || filter) && this.page !== 1) page = 1;
             this.fetch({ page, version, filter }).then(() => {
                 this.$nextTick(() => {
-                    $('#filterDropdown').dropdown()
-                    $('#versionDropdown').dropdown()
+                    // $('#filterDropdown').dropdown()
+                    // $('#versionDropdown').dropdown()
                 })
             })
         },

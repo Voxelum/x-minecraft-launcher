@@ -7,9 +7,9 @@
         </v-flex>
         <v-card-text style="padding-left: 40px; padding-right: 40px; padding-bottom: 0px;">
             <v-form v-model="valid">
-                <v-select prepend-icon="router" :items="loginModes" v-model="selectedMode" label="Login Mode" flat></v-select>
-                <v-text-field prepend-icon="person" label="Username" :rule="emailRules" required></v-text-field>
-                <v-text-field prepend-icon="lock" label="Password" type="password" required></v-text-field>
+                <v-select prepend-icon="router" :items="loginModes" v-model="selectedMode" :label="$t('loginMode')" flat></v-select>
+                <v-text-field prepend-icon="person" :label="$t(`${selectedMode}.account`)" :rule="emailRules" required v-model="account"></v-text-field>
+                <v-text-field prepend-icon="lock" :label="$t(`${selectedMode}.password`)" type="password" required :disabled="selectedMode==='offline'" v-model="password"></v-text-field>
                 <v-checkbox v-model="rememberMe" label="Remember me" style="padding-top: 5px;">
                 </v-checkbox>
             </v-form>
@@ -17,11 +17,11 @@
         <v-card-actions style="padding-left: 40px; padding-right: 40px; padding-top: 0px">
             <v-flex text-xs-center>
                 <v-btn block :loading="logining" color="green" round large style="color: white" @click="login">
-                    Login
+                    {{$t('login')}}
                 </v-btn>
                 <div style="margin-top: 25px; margin-bottom: 25px;">
                     <a style="padding-right: 10px;">Forget Password?</a>
-                    <a style="">Dont't have an account?</a>
+                    <a style="">{{$t('signup.description')}} {{$t('user.signup')}}</a>
                 </div>
             </v-flex>
         </v-card-actions>
@@ -32,30 +32,35 @@
 
 export default {
     data: () => ({
+        account: '',
+        password: '',
         logining: false,
         rememberMe: false,
-        username: '',
         valid: false,
         emailRules: [
             v => !!v || 'E-mail is required',
             v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
         ],
-        loginModes: ['offline', 'mojang'],
         selectedMode: 'mojang',
     }),
+    computed: {
+        loginModes() { return this.$store.state.user.auths.modes; }
+    },
     props: {
     },
     mounted() {
         const win = this.$electron.remote.getCurrentWindow();
         win.setSize(400, 680, true);
-        console.log(this.$store.getters['user/username'])
     },
     methods: {
-        login() {
+        async login() {
             this.logining = true;
-            setTimeout(() => {
-                this.logining = false;
-            }, 3000);
+            await this.$store.dispatch('user/selectLoginMode', this.selectedMode);
+            await this.$store.dispatch('user/login', {
+                account: this.account,
+                password: this.password,
+            })
+            this.logining = false;
         }
     },
 }

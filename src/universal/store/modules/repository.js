@@ -4,6 +4,7 @@ import { ActionContext } from 'vuex'
 import fs from 'fs-extra'
 import path from 'path'
 import { Mod, ResourcePack } from 'ts-minecraft'
+import { aStr } from 'universal/utils'
 
 /**
  * 
@@ -74,8 +75,6 @@ export default {
         remove(state, resource) { Vue.delete(state[resource.domain], resource.hash); },
     },
     actions: {
-        errors() { },
-
         /**
          * @param {ActionContext} context 
          */
@@ -83,13 +82,12 @@ export default {
             const files = await context.dispatch('readFolder', { path: 'resources' }, { root: true });
             const contents = []
             for (const file of files.filter(f => f.endsWith('.json'))) {
-                try {
-                    contents.push(await context.dispatch('read', { // eslint-disable-line
-                        path: `resources/${file}`,
-                        fallback: undefined,
-                        type: 'json',
-                    }, { root: true }))
-                } catch (e) { console.warn(e) }
+                const data = await context.dispatch('read', {
+                    path: `resources/${file}`,
+                    fallback: undefined,
+                    type: 'json',
+                }, { root: true })
+                if (data) contents.push(data);
             }
             context.commit('resources', contents)
         },
@@ -97,12 +95,11 @@ export default {
         },
         /**
          * @param {ActionContext} context 
-         * @param {string|Resource} resource 
+         * @param {string | Resource} resource 
          */
         remove(context, resource) {
-            if (typeof resource === 'string') {
-                resource = context.getters.getResource(resource)
-            }
+            if (typeof resource === 'string') resource = context.getters.getResource(resource)
+            if (!resource) return Promise.resolve();
             context.commit('remove', resource)
             return Promise.all([
                 context.dispatch('delete', `resources/${resource.hash}.json`, { root: true }),
@@ -121,9 +118,10 @@ export default {
         },
         /**
          * @param {ActionContext} context 
-         * @param {string[] | string | {signiture:any, files:string[]}} infiles 
+         * @param {string[] | string | {signiture:any, files:string[]}} optionFiles 
          */
-        async import(context, infiles) {
+        async import(context, optionFiles) {
+            if (!optionFiles) throw new Error('Require file path or file path array or files with signiture!');
             const root = context.rootGetters.root;
             const files = [];
             let signiture = {
@@ -131,18 +129,22 @@ export default {
                 date: Date.now(),
                 meta: null,
             };
-            if (infiles instanceof Array) {
-                files.push(...infiles);
+
+            // regulize the signiture
+            if (optionFiles instanceof Array) {
+                optionFiles.forEach((f) => {
+                    if (typeof f !== 'string') throw new Error('Require file path array to import!');
+                })
+                files.push(...optionFiles);
                 signiture.meta = files;
-            } else if (typeof infiles === 'string') {
-                files.push(infiles)
+            } else if (typeof optionFiles === 'string') {
+                files.push(optionFiles)
                 signiture.meta = files;
             } else {
-                if (!infiles.files || !(infiles.files instanceof Array)) throw new Error('Illegal Argument format!')
-                if (!infiles.signiture) throw new Error('Have to have a signiture to import!')
-                files.push(...infiles.files);
-                signiture = infiles.signiture;
-                // data.signiture = files.signiture
+                if (!optionFiles.files || !(optionFiles.files instanceof Array)) throw new Error('Illegal Argument format!')
+                if (!optionFiles.signiture) throw new Error('Have to have a signiture to import!')
+                files.push(...optionFiles.files);
+                signiture = optionFiles.signiture;
             }
             /**
              * import single file to repo
@@ -160,6 +162,7 @@ export default {
                 let hash;
 
                 importTaskContext.update(1, 4, 'repository.import.checkingfile');
+                // take hash of dir or file
                 if (status.isDirectory()) {
                     type = '';
                     hash = (await hashFolder(filePath, crypto.createHash('sha1'))).digest('hex').toString('utf-8');
@@ -171,11 +174,13 @@ export default {
                 const metaFile = path.join(root, 'resources', `${hash}.json`);
                 const dataFile = path.join(root, 'resources', `${hash}${type}`);
 
+                // if exist, abort
                 if (fs.existsSync(dataFile) && fs.existsSync(metaFile)) {
                     importTaskContext.finish('repository.import.existed');
                     return undefined;
                 }
 
+                // use parser to parse metadata
                 let meta;
                 let domain;
                 importTaskContext.update(2, 4, 'repository.import.parsing');
@@ -190,9 +195,11 @@ export default {
                 }
                 if (!domain || !meta) { throw new Error(`Cannot parse ${filePath}.`) }
 
+                // build resource
                 const resource = { hash, name, type, meta, domain, $signiture };
 
                 importTaskContext.update(3, 4, 'repository.import.storing');
+                // write resource to disk
                 await fs.ensureDir(path.join(root, 'resources'));
                 if (status.isDirectory()) {
                     await fs.copy(filePath, dataFile);
@@ -200,6 +207,7 @@ export default {
                     await fs.writeFile(dataFile, data);
                 }
                 importTaskContext.update(4, 4, 'repository.import.update');
+                // store metadata to disk
                 await fs.writeFile(path.join(root, 'resources', `${resource.hash}.json`), JSON.stringify(resource, undefined, 4));
                 importTaskContext.finish();
                 return resource;
@@ -217,7 +225,11 @@ export default {
          * @param {{resource:string|Resource, minecraft:string}} payload 
          */
         link(context, payload) {
+            if (!payload) throw new Error('Require input a resource with minecraft location');
+            
             const { resource, minecraft } = payload
+            if (!resource) throw new Error('Resource cannot be undefined!')
+            if (!minecraft) throw new Error('Minecract location cannot be undefined!')
 
             /**
             * @type {Resource}
@@ -227,7 +239,9 @@ export default {
             else res = resource;
 
             if (!res) throw new Error(`Cannot find the resource ${resource}`);
-
+            if (typeof res !== 'object' || !res.hash || !res.type || !res.domain || !res.name) {
+                throw new Error('The input resource object should be valid!')
+            }
             return context.dispatch('exports', {
                 file: `resources/${res.hash}${res.type}`,
                 toFolder: `${minecraft}/${res.domain}`,

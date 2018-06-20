@@ -1,8 +1,10 @@
 import vuex from 'vuex'
+import draggable from 'vuedraggable'
 
 export default {
     name: 'CardView',
     components: {
+        draggable,
         'modpack-card': () => import('./ModpackCard'),
         'server-card': () => import('./ServerCard'),
     },
@@ -20,10 +22,18 @@ export default {
         const getByKey = this.get;
         const self = this;
         let idx = 0;
-        return createElement('div', {
+        return createElement('draggable', {
             staticClass: 'ui link cards',
             attrs: {
-                style: 'height:105%;overflow:auto',
+                style: 'height: 105%; overflow: auto;',
+            },
+            props: {
+                value: self.$store.state.profiles.all,
+            },
+            on: {
+                input(event) {
+                    self.$store.commit('profiles/all', event);
+                },
             },
         }, this.ids.map((id) => {
             const source = getByKey(id);
@@ -33,7 +43,7 @@ export default {
             const option = {
                 props: { source, id },
                 attrs: {
-                    style: 'max-height:45%',
+                    style: 'max-height:45%;',
                 },
                 on: {
                     select(eid, esource) {

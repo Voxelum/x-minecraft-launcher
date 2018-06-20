@@ -4,20 +4,11 @@
             <label>Java</label>
             <div class="ui grid">
                 <div class="ui fourteen wide column">
-                    <div ref="path" class="ui selection fluid dropdown">
-                        <input type="hidden" name="java path">
-                        <i class="dropdown icon"></i>
-                        <div class="text">{{selectedJava}}</div>
-                        <div class="menu">
-                            <li class="item" v-for="value in all" :key="value" @click="selectJava(value)">
-                                {{value}}
-                            </li>
-                        </div>
-                    </div>
+                    <sui-dropdown fluid selection icon="dropdown" :options="allJavas" :text="selectedJava" @input="selectJava" />
                 </div>
                 <div class="ui two wide column">
                     <div class="ui icon fluid button" @click="popDialog">
-                        <i class="add icon"></i>
+                        <i class="folder icon"></i>
                     </div>
                 </div>
             </div>
@@ -42,19 +33,12 @@
 </template>
 
 <script>
-import vuex from "vuex";
-
 export default {
-    data: () => ({
-    }),
     mounted() {
-        const self = this;
-        $(this.$refs.path).dropdown()
         if (this.showLog) $(this.$refs.checkbox).checkbox('check')
-        // console.log(this.showLog)
     },
     computed: {
-        ...vuex.mapGetters('java', ["all"]),
+        allJavas() { return this.$store.getters['java/all'].map(t => ({ text: t, value: t })) },
         id() { return this.$route.params.id },
         selectedJava() { return this.$store.getters[`profiles/${this.id}/java`] },
         vmOptions() { return this.$store.getters[`profiles/${this.id}/vmOptions`] },
@@ -62,11 +46,8 @@ export default {
         showLog() { return this.$store.getters[`profiles/${this.id}/logWindow`] },
     },
     methods: {
-        ...vuex.mapActions(["addJavas", "openDialog", "removeJava"]),
         toggleLogWindow(log) {
-            this.$store.dispatch(`profiles/${this.id}/edit`, {
-                logWindow: log,
-            });
+            this.$store.dispatch(`profiles/${this.id}/edit`, { logWindow: log, });
         },
         addVM(arg) {
             this.$store.dispatch(`profiles/${this.id}/edit`,
@@ -85,26 +66,15 @@ export default {
                 { mcOptions: this.mcOptions.filter(a => a !== arg) })
         },
         popDialog(event) {
-            this.openDialog({}).then(paths => {
-                this.addJavas(paths[0]);
+            this.$openDialog().then(paths => {
+                if (paths.length === 0) return;
+                this.$store.dispatch(`profiles/${this.id}/edit`, { java: paths[0] })
             });
         },
         selectJava(newPath) {
-            console.log(`select ${newPath}`)
             this.$store.dispatch(`profiles/${this.id}/edit`, { java: newPath })
         },
-        removeCurrent() {
-            this.removeJava(this.selectedJava)
-                .then(() => {
-                    if (this.javas.length !== 0) {
-                        this.$store.dispatch(`profiles/${this.id}/edit`, { java: this.javas[0] })
-                    } else {
-                        this.$store.dispatch(`profiles/${this.id}/edit`, { java: '' })
-                    }
-                })
-        }
     }
-
 };
 </script>
 

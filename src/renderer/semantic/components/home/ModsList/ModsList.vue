@@ -7,7 +7,7 @@
         </h2>
     </div>
     <div v-else @drop="ondrop" class="ui grid" style="width:100%">
-        <div class="row">
+        <div class="row" style="padding: 0;">
             <div class="eight wide centered column">
                 <div class="ui icon fluid  input">
                     <i class="filter icon"></i>
@@ -21,14 +21,14 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" style="padding: 0;">
             <div class="eight wide column">
-                <div class="ui relaxed divided items" style="max-height:230px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
-                    <mod-label :notmatch="m.mcversion!==mcversion" v-for="(m, index) in nonselectedMods" :mod="m" :key="m.hash" :index='index' selecting='false' @toggle="addForgeMod(m)"></mod-label>
+                <div class="ui relaxed divided items" style="direction: rtl;">
+                    <mod-label style="direction:ltr;" :notmatch="m.mcversion!==mcversion" v-for="(m, index) in nonselectedMods" :mod="m" :key="m.hash" :index='index' selecting='false' @toggle="addForgeMod(m)"></mod-label>
                 </div>
             </div>
             <div class="eight wide column">
-                <div class="ui relaxed divided items" style="max-height:230px; padding:0px 20px 0 0;overflow-x:hidden;overflow-x:hidden;">
+                <div class="ui relaxed divided items">
                     <mod-label v-for="(m, index) in selectedMods" :mod="m" :key="m.hash" :index='index' selecting='true' @remove="removeForgeMod(m)"></mod-label>
                 </div>
             </div>
@@ -37,9 +37,7 @@
 </template>
 
 <script>
-import vuex from 'vuex'
 import en from 'static/mod.mapping'
-
 
 const generalized = {}
 function general(w) {
@@ -60,7 +58,7 @@ export default {
     components: { ModLabel: () => import('./ModLabel') },
     computed: {
         id() { return this.$route.params.id },
-        ...vuex.mapGetters('repository', ['mods']),
+        mods() { return this.$store.getters['repository/mods'] },
         mcversion() { return this.$store.getters[`profiles/${this.id}/mcversion`] },
         forgeModNames() { return this.$store.getters[`profiles/${this.id}/forge/selected`] },
         modIdVersions() {
@@ -121,7 +119,7 @@ export default {
             this.$store.dispatch(`profiles/${this.id}/forge/remove`,
                 `${mod.modid}:${mod.version}`)
         },
-        ...vuex.mapActions('repository', ['import']),
+        import() { return this.$store.dispatch('repository/import') },
         valid(keyword, mod) {
             if (keyword === '') return true
             return (mod.name && mod.name.includes(keyword))
@@ -148,7 +146,15 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.ui.relaxed.divided.items {
+  max-height: 250px;
+  min-height: 250px;
+
+  padding: 0px 20px 0 0;
+  overflow-x: hidden;
+  overflow-x: hidden;
+}
 .simple {
   border-top: none !important;
   border-left: none !important;
