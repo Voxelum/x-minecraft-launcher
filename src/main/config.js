@@ -17,6 +17,7 @@ function setupRoot(newRoot, oldRoot) {
     if (newRoot === oldRoot) return;
     app.setPath('userData', newRoot);
     ipcMain.emit('reload');
+    console.log(`setup root ${newRoot}`)
     fs.writeFile(cfgFile, JSON.stringify({ path: newRoot }));
 }
 ipcMain.on('store-ready', (store) => {
@@ -31,7 +32,11 @@ async function setup() {
     } catch (e) {
         root = path.join(appData, '.launcher');
     }
+    console.log(`setup root ${root}`)
     app.setPath('userData', root);
     ipcMain.emit('reload');
 }
-setup();
+setup().catch((e) => {
+    console.error('An error occured during setup root')
+    console.error(e)
+});
