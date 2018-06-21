@@ -36,7 +36,7 @@ export default {
     },
     actions: {
         async load(context) {
-            const json = context.dispatch('read', { path: 'profiles.json', type: 'json' }, { root: true });
+            const json = await context.dispatch('read', { path: 'profiles.json', type: 'json' }, { root: true });
             const profiles = json.profiles;
             if (!(profiles instanceof Array)) return Promise.resolve();
             return Promise.all(profiles.map(id =>
@@ -51,6 +51,12 @@ export default {
                     .catch((e) => { console.error(e) }),
             ))
         },
+        save(context) {
+            return context.dispatch('write', {
+                path: 'profiles.json',
+                data: ({ profiles: context.state.all })
+            }, { root: true })
+        },
         /**
          * @param {ActionContext} context 
          * @param {CreateOption} payload 
@@ -64,7 +70,6 @@ export default {
             const id = uuid();
             option.java = option.java || context.rootGetters['java/default'];
             context.commit('add', { id, type });
-            if (type) context.commit(`${id}/${type}/edit`, option);
             if (!option.mcversion) option.mcversion = context.rootGetters['versions/minecraft/release'];
 
             console.log('Create profile with option')
