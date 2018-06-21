@@ -31,10 +31,7 @@ function setupTheme(newTheme) {
 
     instance = newSetup(process.env.NODE_ENV === 'development' ?
         `http://localhost:9080/${newTheme}.html` :
-        `file://${__dirname}/${newTheme}.html`).catch((e) => {
-            console.error(`An error occured during setup theme ${theme}`)
-            console.error(e)
-        })
+        `file://${__dirname}/${newTheme}.html`)
 
     console.log('instance')
     console.log(instance);
