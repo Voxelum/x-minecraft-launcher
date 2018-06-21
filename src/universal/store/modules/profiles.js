@@ -35,9 +35,11 @@ export default {
         },
     },
     actions: {
-        async load(context, payload) {
-            const files = await context.dispatch('readFolder', { path: 'profiles' }, { root: true });
-            return Promise.all(files.map(id =>
+        async load(context) {
+            const json = context.dispatch('read', { path: 'profiles.json', type: 'json' }, { root: true });
+            const profiles = json.profiles;
+            if (!(profiles instanceof Array)) return Promise.resolve();
+            return Promise.all(profiles.map(id =>
                 context.dispatch('exist', `profiles/${id}/profile.json`, { root: true })
                     .then((exist) => {
                         if (exist) {
@@ -65,8 +67,9 @@ export default {
             if (type) context.commit(`${id}/${type}/edit`, option);
             if (!option.mcversion) option.mcversion = context.rootGetters['versions/minecraft/release'];
 
+            console.log('Create profile with option')
             console.log(option)
-            context.dispatch(`${id}/edit`, { ...option, type });
+            return context.dispatch(`${id}/edit`, { ...option, type });
         },
         /**
          * 
