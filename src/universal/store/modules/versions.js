@@ -105,6 +105,7 @@ export default {
             mutations: {
                 update(state, { date, list }) {
                     state.date = Object.freeze(date);
+                    if (!list) return
                     if (list.versions) {
                         state.list.versions = Object.freeze(list.versions)
                     }
