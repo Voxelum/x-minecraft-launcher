@@ -22,7 +22,14 @@
 
         <div class="ui divider"></div>
         <div class="ui active tab" data-tab="minecraft">
-            <table class="ui very basic selectable celled table" style='overflow-x: hidden;'>
+             <div class="ui center aligned middle aligned basic segment" v-if="mcMetas.length === 0">
+                <br>
+                <h2 class="ui icon header">
+                    <i class="exclamation icon"></i>
+                    <div class="sub header">{{$t('version.noMinecraft')}}</div>
+                </h2>
+            </div>
+            <table v-else class="ui very basic selectable celled table" style='overflow-x: hidden;'>
                 <tbody>
                     <mc-version-cell v-for="meta in mcMetas" :meta="meta" :selected="mcVersion===meta.id" :key="meta.id" @select="selectMinecraft(meta)" @download="downloadMinecraft(meta)"></mc-version-cell>
                 </tbody>
