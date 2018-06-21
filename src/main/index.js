@@ -8,7 +8,7 @@ if (!devMod) {
 }
 
 /* eslint-disable */
-import configSetup from './config'
+import './config'
 export { commit, dispatch } from './store'
-import windowSetup from './windowsManager'
+import './windowsManager'
 /* eslint-enable */
