@@ -15,8 +15,7 @@ function setupTheme(newTheme) {
 
     const newSetup = themes[newTheme];
     if (!newSetup) throw new Error(`Cannot found theme ${theme}`);
-
-
+    if (typeof newSetup !== 'function') throw new Error(`Require theme export default is a async function`);
     if (instance) { // stop current theme if exist
         console.log('dispose current theme')
         try {
@@ -32,7 +31,10 @@ function setupTheme(newTheme) {
 
     instance = newSetup(process.env.NODE_ENV === 'development' ?
         `http://localhost:9080/${newTheme}.html` :
-        `file://${__dirname}/${newTheme}.html`)
+        `file://${__dirname}/${newTheme}.html`).catch((e) => {
+            console.error(`An error occured during setup theme ${theme}`)
+            console.error(e)
+        })
 
     console.log('instance')
     console.log(instance);
