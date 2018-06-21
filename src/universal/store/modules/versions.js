@@ -21,7 +21,7 @@ export default {
          * @param {ActionContext<VersionsState>} context 
          */
         load(context) {
-            context.dispatch('refresh')
+            return context.dispatch('refresh')
         },
         /**
          * @param {ActionContext<VersionsState>} context 
@@ -53,13 +53,11 @@ export default {
                         minecraft,
                     });
                 } catch (e) {
+                    console.error('An error occured during refresh local versions')
                     console.error(e);
                 }
             }
             context.commit('local', versions);
-            // context.dispatch('minecraft/updateStatus', versions)
-            // context.dispatch('forge/updateStatus', versions)
-            // context.dispatch('liteloader/updateStatus', versions)
         },
         /**
          * @param {ActionContext<VersionsState>} context
@@ -67,8 +65,8 @@ export default {
          */
         checkDependency(context, version) {
             const location = context.rootState.root;
-            const task = Version.checkDependenciesTask(version, location);
-            context.dispatch('')
+            // const task = Version.checkDependenciesTask(version, location);
+            // context.dispatch('')
             return Version.checkDependency(version, location)
         },
     },
@@ -107,7 +105,13 @@ export default {
             mutations: {
                 update(state, { date, list }) {
                     state.date = Object.freeze(date);
-                    state.list = Object.freeze(list);
+                    if (list.versions) {
+                        state.list.versions = Object.freeze(list.versions)
+                    }
+                    if (list.latest) {
+                        if (list.latest.snapshot) state.list.latest.snapshot = list.latest.snapshot;
+                        if (list.latest.release) state.list.latest.release = list.latest.release;
+                    }
                 },
                 status(state, { version, status }) {
                     state.status[version] = status;
@@ -125,7 +129,8 @@ export default {
                 async load(context, payload) {
                     const data = await context.dispatch('read', { path: 'version.json', type: 'json', fallback: undefined }, { root: true })
                     if (data) context.commit('update', { date: data.date, list: data.list });
-                    await context.dispatch('refresh');
+                    await context.dispatch('refresh')
+                    await context.dispatch('save')
                 },
                 /**
                 * @param {ActionContext<VersionsState.Inner>} context 
@@ -157,6 +162,7 @@ export default {
                             context.commit('status', { version: meta, status: 'local' })
                         })
                         .catch((e) => {
+                            console.warn(`An error ocurred during download version ${id}`)
                             console.warn(e)
                             context.commit('status', { version: meta, status: 'remote' })
                         });
@@ -189,11 +195,7 @@ export default {
                      * Update from internet
                      */
                     let metas = container;
-                    try {
-                        metas = await Version.updateVersionMeta({ fallback: container })
-                    } catch (e) {
-                        console.error(e)
-                    }
+                    metas = await Version.updateVersionMeta({ fallback: container })
                     context.commit('update', metas);
                 },
             },
@@ -427,7 +429,7 @@ export default {
                     const option = context.state.date === '' ? undefined : {
                         fallback: { date: context.state.date || '', list: context.state.list || [] },
                     };
-                    const remoteList = await LiteLoader.VersionMetaList.update();
+                    const remoteList = await LiteLoader.VersionMetaList.update(option);
                     context.commit('update', remoteList);
                 },
             },
