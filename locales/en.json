@@ -120,6 +120,7 @@
         "selectVersion": "Please select a version!",
         "selectversionWarn": "Cannot launch without selecting a version",
         "selectHint": "Please select a version so that we can show the version",
+        "noMinecraft": "Cannot get minecraft remote version list. Please check your Internet connection!",
         "noForge": "There is no Forge for this Minecraft version",
         "noLiteloader": "There is no Liteloader for this Minecraft version"
     },
