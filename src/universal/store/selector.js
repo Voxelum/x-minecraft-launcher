@@ -1,9 +1,9 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-import state from './state'
-import mutations from './mutations'
-import getters from './getters'
+import state from './state';
+import mutations from './mutations';
+import getters from './getters';
 
 Vue.use(Vuex);
 
@@ -18,18 +18,18 @@ export default function select(option) {
         modules: {},
         getters,
         strict: process.env.NODE_ENV !== 'production',
-    }
+    };
     if (option.modules) {
-        const context = require.context('./modules', false, /\.js$/)
+        const context = require.context('./modules', false, /\.js$/);
         option.modules.concat(['io', 'task', 'electron', 'config'])
             .forEach((m) => {
                 console.log(m);
-                result.modules[m] = context(`./${m}.js`).default
-            })
+                result.modules[m] = context(`./${m}.js`).default;
+            });
     }
     if (option.plugins) {
-        const context = require.context('./plugins', false, /\.js$/)
-        result.plugins = option.plugins.map(k => context(`./${k}.js`).default)
+        const context = require.context('./plugins', false, /\.js$/);
+        result.plugins = option.plugins.map(k => context(`./${k}.js`).default);
     }
     return result;
 }

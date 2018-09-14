@@ -1,16 +1,16 @@
-import url from 'url'
-import querystring from 'querystring'
+import url from 'url';
+import querystring from 'querystring';
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 
 if (!process.env.IS_WEB) {
-    Vue.use(require('vue-electron'))
+    Vue.use(require('vue-electron'));
 }
 Vue.config.productionTip = false;
 
-const { window } = querystring.parse(url.parse(document.URL).query)
+const { window } = querystring.parse(url.parse(document.URL).query);
 
-Vue.use(Vuetify)
+Vue.use(Vuetify);
 
 import(`./windows/${window}`)
     .then(option => new Vue({

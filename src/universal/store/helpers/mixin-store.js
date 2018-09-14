@@ -1,5 +1,5 @@
 function $mixin(target, option) {
-    const container = Object.assign({}, target)
+    const container = Object.assign({}, target);
     for (const key in option) {
         if (option.hasOwnProperty(key)) {
             const single = option[key];
@@ -12,7 +12,7 @@ function $mixin(target, option) {
 }
 function flat(state) {
     if (typeof state === 'function') return state();
-    return state
+    return state;
 }
 export default (target, option) => {
     const inst = {
@@ -21,5 +21,5 @@ export default (target, option) => {
         mutations: $mixin(target.mutations || {}, option.mutations || {}),
         actions: $mixin(target.actions || {}, option.actions || {}),
     };
-    return inst
-}
+    return inst;
+};

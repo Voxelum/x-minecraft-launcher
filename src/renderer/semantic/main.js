@@ -1,11 +1,11 @@
 import Vue from 'vue';
 import Vuex, { mapGetters, mapActions } from 'vuex';
-import url from 'url'
+import url from 'url';
 import i18n from 'universal/i18n';
-import querystring from 'querystring'
-import { webFrame, ipcRenderer } from 'electron'
+import querystring from 'querystring';
+import { webFrame, ipcRenderer } from 'electron';
 
-webFrame.setVisualZoomLevelLimits(1, 1)
+webFrame.setVisualZoomLevelLimits(1, 1);
 
 Vue.use({
     install(instance) {
@@ -13,18 +13,18 @@ Vue.use({
         Vue.prototype.$openDialog = option => instance.$store.dispatch('openDialog', option);
         Vue.prototype.$saveDialog = option => instance.$store.dispatch('saveDialog', option);
     },
-})
+});
 
 $.mapGetters = mapGetters;
 $.mapActions = mapActions;
 
 
 if (!process.env.IS_WEB) {
-    Vue.use(require('vue-electron'))
+    Vue.use(require('vue-electron'));
 }
 Vue.config.productionTip = false;
 
-const { logger } = querystring.parse(url.parse(document.URL).query)
+const { logger } = querystring.parse(url.parse(document.URL).query);
 
 if (logger === 'true') {
     new Vue({
@@ -32,7 +32,7 @@ if (logger === 'true') {
         template: '<Log></Log>',
     }).$mount('#app');
 } else {
-    const store = require('./store').default
+    const store = require('./store').default;
     const router = require('./router.js').default;
 
     console.log(`client ${store.state.root}`);
@@ -43,6 +43,6 @@ if (logger === 'true') {
         store,
         i18n: i18n(store),
         template: '<App style="max-height:626px; overflow:hidden;"/>',
-    }).$mount('#app')
+    }).$mount('#app');
 }
 

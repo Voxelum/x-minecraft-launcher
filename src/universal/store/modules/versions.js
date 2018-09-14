@@ -1,4 +1,4 @@
-import { VersionMeta, MinecraftFolder, Version, LiteLoader, Forge, VersionMetaList } from 'ts-minecraft'
+import { VersionMeta, MinecraftFolder, Version, LiteLoader, Forge, VersionMetaList } from 'ts-minecraft';
 
 export default {
     namespaced: true,
@@ -21,7 +21,7 @@ export default {
          * @param {ActionContext<VersionsState>} context 
          */
         load(context) {
-            return context.dispatch('refresh')
+            return context.dispatch('refresh');
         },
         /**
          * @param {ActionContext<VersionsState>} context 
@@ -30,7 +30,7 @@ export default {
             /**
              * Read local folder
              */
-            const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true })
+            const files = await context.dispatch('readFolder', { path: 'versions' }, { root: true });
 
             const versions = [];
             for (const ver of files) {
@@ -53,7 +53,7 @@ export default {
                         minecraft,
                     });
                 } catch (e) {
-                    console.error('An error occured during refresh local versions')
+                    console.error('An error occured during refresh local versions');
                     console.error(e);
                 }
             }
@@ -67,7 +67,7 @@ export default {
             const location = context.rootState.root;
             // const task = Version.checkDependenciesTask(version, location);
             // context.dispatch('')
-            return Version.checkDependency(version, location)
+            return Version.checkDependency(version, location);
         },
     },
     modules: {
@@ -105,9 +105,9 @@ export default {
             mutations: {
                 update(state, { date, list }) {
                     state.date = Object.freeze(date);
-                    if (!list) return
+                    if (!list) return;
                     if (list.versions) {
-                        state.list.versions = Object.freeze(list.versions)
+                        state.list.versions = Object.freeze(list.versions);
                     }
                     if (list.latest) {
                         if (list.latest.snapshot) state.list.latest.snapshot = list.latest.snapshot;
@@ -128,10 +128,10 @@ export default {
                 * @param {ActionContext<VersionsState.Inner>} context 
                 */
                 async load(context, payload) {
-                    const data = await context.dispatch('read', { path: 'version.json', type: 'json', fallback: undefined }, { root: true })
+                    const data = await context.dispatch('read', { path: 'version.json', type: 'json', fallback: undefined }, { root: true });
                     if (data) context.commit('update', { date: data.date, list: data.list });
-                    await context.dispatch('refresh')
-                    await context.dispatch('save')
+                    await context.dispatch('refresh');
+                    await context.dispatch('save');
                 },
                 /**
                 * @param {ActionContext<VersionsState.Inner>} context 
@@ -143,7 +143,7 @@ export default {
                             list: context.state.list,
                             date: context.state.date,
                         }),
-                    }, { root: true })
+                    }, { root: true });
                 },
                 /**
                  * Download and install a minecract version
@@ -153,19 +153,19 @@ export default {
                  */
                 async download(context, meta) {
                     const id = meta.id;
-                    context.commit('status', { version: meta, status: 'loading' })
+                    context.commit('status', { version: meta, status: 'loading' });
                     const exist = await context.dispatch('exist', [`versions/${id}`, `versions/${id}/${id}.jar`, `versions/${id}/${id}.json`], { root: true });
                     if (exist) return Promise.resolve();
-                    const task = Version.installTask('client', meta, context.rootGetters.root)
+                    const task = Version.installTask('client', meta, context.rootGetters.root);
                     await context.dispatch('task/listen', task, { root: true });
                     return task.execute()
                         .then(() => {
-                            context.commit('status', { version: meta, status: 'local' })
+                            context.commit('status', { version: meta, status: 'local' });
                         })
                         .catch((e) => {
-                            console.warn(`An error ocurred during download version ${id}`)
-                            console.warn(e)
-                            context.commit('status', { version: meta, status: 'remote' })
+                            console.warn(`An error ocurred during download version ${id}`);
+                            console.warn(e);
+                            context.commit('status', { version: meta, status: 'remote' });
                         });
                 },
                 /**
@@ -181,7 +181,7 @@ export default {
                         statusMap[ver.id] = localVersions[ver.id] ? 'local' : 'remote';
                     }
 
-                    context.commit('allStatus', statusMap)
+                    context.commit('allStatus', statusMap);
                 },
                 /**
                  * Refresh the remote versions cache 
@@ -191,12 +191,12 @@ export default {
                     const container = {
                         date: context.state.date,
                         list: context.state.list,
-                    }
+                    };
                     /**
                      * Update from internet
                      */
                     let metas = container;
-                    metas = await Version.updateVersionMeta({ fallback: container })
+                    metas = await Version.updateVersionMeta({ fallback: container });
                     context.commit('update', metas);
                 },
             },
@@ -248,7 +248,7 @@ export default {
                 allStatus(state, allStatus) {
                     Object.keys(allStatus).forEach((key) => {
                         state.status[key] = allStatus[key];
-                    })
+                    });
                 },
                 status(state, { version, status }) {
                     state.status[version] = status;
@@ -268,7 +268,7 @@ export default {
                  */
                 save(context, payload) {
                     const data = JSON.stringify(context.state);
-                    return context.dispatch('write', { path: 'forge-versions.json', data }, { root: true })
+                    return context.dispatch('write', { path: 'forge-versions.json', data }, { root: true });
                 },
                 /**
                  * @param {ActionContext<VersionsState.Inner>} context 
@@ -283,8 +283,8 @@ export default {
                     const statusMap = {};
                     Object.keys(struct.list.number).forEach((key) => {
                         const verObj = struct.list.number[key];
-                        statusMap[verObj.version] = localForgeVersion[verObj.version] ? 'local' : 'remote'
-                    })
+                        statusMap[verObj.version] = localForgeVersion[verObj.version] ? 'local' : 'remote';
+                    });
                     context.commit('allStatus', statusMap);
                 },
                 /**
@@ -299,12 +299,12 @@ export default {
                     task.name = `install.${meta.id}`;
                     context.dispatch('task/listen', task, { root: true });
                     return task.execute().then(() => {
-                        console.log('install forge suc')
-                        context.commit('status', { key: meta.build, status: 'local' })
+                        console.log('install forge suc');
+                        context.commit('status', { key: meta.build, status: 'local' });
                     }).catch((e) => {
-                        console.log('install forge error')
-                        console.log(e)
-                        context.commit('status', { key: meta.build, status: 'remote' })
+                        console.log('install forge error');
+                        console.log(e);
+                        context.commit('status', { key: meta.build, status: 'remote' });
                     });
                 },
                 /**
@@ -385,12 +385,12 @@ export default {
                     Object.keys(struct.list.versions).forEach((versionId) => {
                         const verObj = struct.list.versions[versionId];
                         if (verObj.snapshot) {
-                            statusMap[verObj.snapshot.version] = localVers[verObj.snapshot.version] ? 'local' : 'remote'
+                            statusMap[verObj.snapshot.version] = localVers[verObj.snapshot.version] ? 'local' : 'remote';
                         }
                         if (verObj.release) {
-                            statusMap[verObj.release.version] = localVers[verObj.release.version] ? 'local' : 'remote'
+                            statusMap[verObj.release.version] = localVers[verObj.release.version] ? 'local' : 'remote';
                         }
-                    })
+                    });
                     context.commit('allStatus', statusMap);
                 },
                 /**
@@ -398,7 +398,7 @@ export default {
                  */
                 save(context) {
                     const data = JSON.stringify(context.state);
-                    return context.dispatch('write', { path: 'lite-versions.json', data }, { root: true })
+                    return context.dispatch('write', { path: 'lite-versions.json', data }, { root: true });
                 },
                 /**
                  * @param {ActionContext<VersionsState.Inner>} context 
@@ -436,4 +436,4 @@ export default {
             },
         },
     },
-}
+};

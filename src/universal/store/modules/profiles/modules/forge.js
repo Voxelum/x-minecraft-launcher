@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Vue from 'vue';
 
 export default {
     namespaced: true,
@@ -11,7 +11,7 @@ export default {
         version: state => state.version,
     },
     mutations: {
-        version(state, version) { state.version = version },
+        version(state, version) { state.version = version; },
         add(state, mod) {
             if (mod instanceof Array) {
                 state.mods.push(...mod);
@@ -23,7 +23,7 @@ export default {
         error(state) {
             const errors = [];
             if (state.mods.length !== 0 && !state.version) {
-                errors.push('')
+                errors.push('');
             }
             return errors; 
         },
@@ -44,12 +44,12 @@ export default {
         },
         save(context, { mutation }) {
             const id = mutation.split('/')[1];
-            const path = `profiles/${id}/forge.json`
-            return context.dispatch('write', { path, data: context.state }, { root: true })
+            const path = `profiles/${id}/forge.json`;
+            return context.dispatch('write', { path, data: context.state }, { root: true });
         },
         setVersion(context, version) {
             if (context.state.version !== version) {
-                context.commit('version', version)
+                context.commit('version', version);
             }
         },
         validate(context) {
@@ -57,17 +57,17 @@ export default {
                 const mcver = context.getters.mcversion;
                 const rec = context.rootGetters['versions/forge/getRecommendedByMc'](mcver);
                 if (!rec) throw new Error();
-                context.commit('version', rec.version)
+                context.commit('version', rec.version);
             }
         },
         add(context, mod) {
             // context.dispatch('validateForgeVersion')
             if (context.state.mods.indexOf(mod) === -1) {
-                context.commit('add', mod)
+                context.commit('add', mod);
             }
         },
         remove(context, mod) {
-            context.commit('remove', mod)
+            context.commit('remove', mod);
         },
     },
-}
+};

@@ -1,8 +1,8 @@
-import { dialog, BrowserWindow, ipcMain } from 'electron'
+import { dialog, BrowserWindow, ipcMain } from 'electron';
 
 export default {
     actions: {
-        exit() { ipcMain.emit('exit') },
+        exit() { ipcMain.emit('exit'); },
         /**
          * 
          * @param {ActionContext} context 
@@ -16,8 +16,8 @@ export default {
                     payload,
                     (files) => {
                         files = files || [];
-                        resolve(files)
-                    })
+                        resolve(files);
+                    });
             });
         },
         saveDialog(context, payload) {
@@ -27,9 +27,9 @@ export default {
                     payload,
                     (file) => {
                         file = file || '';
-                        resolve(file)
-                    })
-            })
+                        resolve(file);
+                    });
+            });
         },
     },
-}
+};

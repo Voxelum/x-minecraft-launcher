@@ -1,7 +1,7 @@
-import hparser from 'fast-html-parser'
-import { net } from 'electron'
+import hparser from 'fast-html-parser';
+import { net } from 'electron';
 
-const cache = {}
+const cache = {};
 
 export default
 /**
@@ -15,20 +15,20 @@ export default
     if (cache[url]) return Promise.resolve(cache[url]);
     return new Promise((resolve, reject) => {
         let s = '';
-        const req = net.request(url)
+        const req = net.request(url);
         req.on('response', (msg) => {
-            msg.on('data', (b) => { s += b.toString() })
+            msg.on('data', (b) => { s += b.toString(); });
             msg.on('end', () => {
-                resolve(s)
-            })
-        })
+                resolve(s);
+            });
+        });
         if (url.headers) {
             Object.keys(url.headers).forEach((key) => {
                 req.setHeader(key, url.headers[key]);
-            })
+            });
         }
-        req.on('error', e => reject(e))
-        req.end()
+        req.on('error', e => reject(e));
+        req.end();
     })
         .then(hparser.parse)
         .then(parser)
@@ -38,6 +38,6 @@ export default
                 setTimeout(() => { delete cache[url]; }, 60000);
             }
             return parsed;
-        })
-}
+        });
+};
 

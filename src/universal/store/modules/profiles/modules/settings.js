@@ -1,8 +1,8 @@
-import { GameSetting, WorldInfo } from 'ts-minecraft'
-import Vue from 'vue'
-import fs from 'fs-extra'
-import paths from 'path'
-import Zip from 'jszip'
+import { GameSetting, WorldInfo } from 'ts-minecraft';
+import Vue from 'vue';
+import fs from 'fs-extra';
+import paths from 'path';
+import Zip from 'jszip';
 
 export default {
     namespaced: true,
@@ -134,15 +134,15 @@ export default {
                 .forEach((k) => {
                     if (state[k] instanceof Array) {
                         if (option[k] instanceof Array) {
-                            state[k] = option[k].slice()
+                            state[k] = option[k].slice();
                         } else {
-                            console.error(`Cannot copy the value ${option[k]}`)
+                            console.error(`Cannot copy the value ${option[k]}`);
                             console.error(option);
                         }
                     } else {
-                        state[k] = option[k]
+                        state[k] = option[k];
                     }
-                })
+                });
         },
 
         /**
@@ -157,7 +157,7 @@ export default {
             switch (action) {
                 case 'add':
                     if (states.resourcePacks.indexOf(pack) === -1) {
-                        states.resourcePacks.push(pack)
+                        states.resourcePacks.push(pack);
                     }
                     break;
                 case 'remove':
@@ -168,18 +168,18 @@ export default {
                  * The move up operation actully... move the pack toward the tail.
                  * The move down is opposite...
                  */
-                    idx = states.resourcePacks.indexOf(pack)
+                    idx = states.resourcePacks.indexOf(pack);
                     if (idx === -1 || idx === states.resourcePacks.length - 1) return;
                     temp = states.resourcePacks[idx + 1];
-                    Vue.set(states.resourcePacks, idx + 1, pack)
-                    Vue.set(states.resourcePacks, idx, temp)
+                    Vue.set(states.resourcePacks, idx + 1, pack);
+                    Vue.set(states.resourcePacks, idx, temp);
                     break;
                 case 'movedown':
-                    idx = states.resourcePacks.indexOf(pack)
+                    idx = states.resourcePacks.indexOf(pack);
                     if (idx <= 0) return;
                     temp = states.resourcePacks[idx - 1];
-                    Vue.set(states.resourcePacks, idx - 1, pack)
-                    Vue.set(states.resourcePacks, idx, temp)
+                    Vue.set(states.resourcePacks, idx - 1, pack);
+                    Vue.set(states.resourcePacks, idx, temp);
                     break;
                 default: break;
             }
@@ -188,10 +188,10 @@ export default {
     actions: {
         save(context, { mutation }) {
             const id = mutation.split('/')[1];
-            const path = `profiles/${id}/options.txt`
+            const path = `profiles/${id}/options.txt`;
             const data = GameSetting.stringify(context.state);
             console.log('save setting');
-            return context.dispatch('write', { path, data }, { root: true })
+            return context.dispatch('write', { path, data }, { root: true });
         },
         async load(context, { id }) {
             const options = await context.dispatch('read', {
@@ -201,4 +201,4 @@ export default {
             if (options) context.commit('edit', GameSetting.parseFrame(options));
         },
     },
-}
+};

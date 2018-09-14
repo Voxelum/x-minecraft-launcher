@@ -1,1 +1,1 @@
-export { default } from './ResourcePackList'
+export { default } from './ResourcePackList';

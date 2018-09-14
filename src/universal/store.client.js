@@ -1,25 +1,25 @@
 import Vuex from 'vuex';
 import { remote, ipcRenderer } from 'electron';
 
-import select from 'universal/store/selector'
+import select from 'universal/store/selector';
 
-export default function (option, mixin) {
+export default function(option, mixin) {
     const storeOption = select(option);
     mixin = mixin || {};
     storeOption.modules = {
         ...storeOption.modules,
         ...(mixin.modules || {}),
-    }
+    };
     storeOption.plugins = [
         ...(storeOption.plugins || []),
         ...(mixin.plugins || []),
-    ]
+    ];
 
     const localStore = new Vuex.Store(storeOption);
     const _commit = localStore.commit;
     const localCommit = (mutation) => {
         if (localStore._mutations[mutation.type]) {
-            _commit(mutation.type, mutation.payload)
+            _commit(mutation.type, mutation.payload);
         } else {
             console.log(`discard commit ${mutation.type}`);
         }
@@ -53,10 +53,10 @@ export default function (option, mixin) {
             .filter(i => i > lastId);
         if (missing.length !== 0) {
             for (const key of missing) {
-                console.log(syncingQueue[key])
+                console.log(syncingQueue[key]);
             }
         }
-        syncingQueue = {}
+        syncingQueue = {};
     });
     ipcRenderer.send('vuex-sync', 0);
 

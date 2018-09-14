@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow, app, Tray, Menu, MenuItem, nativeImage } from 'electron'
+import { ipcMain, BrowserWindow, app, Tray, Menu, MenuItem, nativeImage } from 'electron';
 import os from 'os';
 
 export default function setup(winURL) {
@@ -17,12 +17,12 @@ export default function setup(winURL) {
             frame: false,
             transparent: true,
         });
-        userWinRef.setResizable(false)
+        userWinRef.setResizable(false);
         userWinRef.loadURL(`${winURL}?window=user`);
-        userWinRef.on('close', () => { userWinRef = undefined })
+        userWinRef.on('close', () => { userWinRef = undefined; });
         ipcMain.on('user/close', () => {
             userWinRef.close();
-        })
+        });
     }
     function createLoginWindow() {
         loginWinRef = new BrowserWindow({
@@ -32,9 +32,9 @@ export default function setup(winURL) {
             frame: false,
             transparent: true,
         });
-        loginWinRef.setResizable(false)
+        loginWinRef.setResizable(false);
         loginWinRef.loadURL(`${winURL}?window=login`);
-        loginWinRef.on('close', () => { loginWinRef = undefined })
+        loginWinRef.on('close', () => { loginWinRef = undefined; });
     }
 
     function createProfileWindow() {
@@ -45,9 +45,9 @@ export default function setup(winURL) {
             frame: false,
             transparent: true,
         });
-        profileWinRef.setResizable(false)
+        profileWinRef.setResizable(false);
         profileWinRef.loadURL(`${winURL}?window=profile`);
-        profileWinRef.on('close', () => { profileWinRef = undefined })
+        profileWinRef.on('close', () => { profileWinRef = undefined; });
     }
     function createSettingWindow() {
         
@@ -60,5 +60,5 @@ export default function setup(winURL) {
     return {
         dispose() {
         },
-    }
+    };
 }

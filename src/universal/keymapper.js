@@ -166,11 +166,11 @@ const mappings = {
     APPS: 221,
     POWER: 222,
     SLEEP: 223,
-}
+};
 const reversedMapping = Object.keys(mappings).reduce((rev, value) => {
     rev[mappings[value]] = value;
     return rev;
-}, {})
+}, {});
 
 export default {
     getKey(id) {
@@ -180,4 +180,4 @@ export default {
     getName(key) {
         return reversedMapping[key];
     },
-}
+};

@@ -1,11 +1,11 @@
-import { net, app } from 'electron'
-import os from 'os'
-import path from 'path'
-import Vue from 'vue'
-import fs from 'fs-extra'
-import download from 'ts-minecraft/dist/libs/utils/download'
-import Zip from 'jszip'
-import { exec } from 'child_process'
+import { net, app } from 'electron';
+import os from 'os';
+import path from 'path';
+import Vue from 'vue';
+import fs from 'fs-extra';
+import download from 'ts-minecraft/dist/libs/utils/download';
+import Zip from 'jszip';
+import { exec } from 'child_process';
 import { Module } from 'vuex';
 
 // https://api.github.com/repos/Indexyz/ojrebuild/releases
@@ -16,24 +16,24 @@ async function installJre() {
             protocol: 'https:',
             hostname: 'api.github.com',
             path: '/repos/Indexyz/ojrebuild/releases',
-        })
-        req.setHeader('User-Agent', 'ILauncher')
+        });
+        req.setHeader('User-Agent', 'ILauncher');
         req.end();
-        let infojson = ''
+        let infojson = '';
         req.on('response', (response) => {
             response.on('data', (data) => {
                 infojson += data.toString();
-            })
+            });
             response.on('end', () => {
-                resolve(JSON.parse(infojson))
-            })
+                resolve(JSON.parse(infojson));
+            });
             response.on('error', (e) => {
                 console.error(`${response.headers}`);
-            })
-        })
+            });
+        });
         req.on('error', (err) => {
-            reject(err)
-        })
+            reject(err);
+        });
     });
     const latest = info[0];
     let buildSystemId;
@@ -41,10 +41,10 @@ async function installJre() {
     switch (os.arch()) {
         case 'x86':
         case 'x32':
-            arch = 'x86'
+            arch = 'x86';
             break;
         case 'x64':
-            arch = 'x86_64'
+            arch = 'x86_64';
             break;
         default:
             arch = 'x86';
@@ -58,35 +58,35 @@ async function installJre() {
             buildSystemId = 'el6_9';
             break;
         default:
-            buildSystemId = ''
+            buildSystemId = '';
     }
     if (!buildSystemId) throw new Error(`Not supporting system ${os.platform()}`);
-    if (!arch) throw new Error(`Not supporting arch ${os.arch()}`)
+    if (!arch) throw new Error(`Not supporting arch ${os.arch()}`);
     const downURL = latest.assets.map(ass => ass.browser_download_url)
         .filter((ass) => {
             const arr = ass.split('.');
-            return arr[arr.length - 2] === arch // && sys === arr[arr.length - 3]
-        })[0]
+            return arr[arr.length - 2] === arch; // && sys === arr[arr.length - 3]
+        })[0];
     const splt = downURL.split('/');
     const tempFileLoc = path.join(app.getPath('temp'), splt[splt.length - 1]);
     // console.log('start download')
     // console.log(tempFileLoc);
-    await fs.ensureFile(tempFileLoc)
+    await fs.ensureFile(tempFileLoc);
     // console.log(`download url ${downURL}`)
     await download(downURL, tempFileLoc);
-    const jreRoot = path.join(app.getPath('userData'), 'jre')
+    const jreRoot = path.join(app.getPath('userData'), 'jre');
     // console.log(`jreRoot ${jreRoot}`)
-    const zip = await new Zip().loadAsync(await fs.readFile(tempFileLoc))
-    const arr = []
+    const zip = await new Zip().loadAsync(await fs.readFile(tempFileLoc));
+    const arr = [];
     zip.forEach((name, entry) => {
-        const target = path.resolve(jreRoot, name)
+        const target = path.resolve(jreRoot, name);
         arr.push(entry.async('nodebuffer')
             .then(buf => fs.ensureFile(target).then(() => buf))
-            .then(buf => fs.writeFile(target, buf)))
-    })
+            .then(buf => fs.writeFile(target, buf)));
+    });
     await Promise.all(arr);
     // console.log('deleting temp')
-    await fs.unlink(tempFileLoc)
+    await fs.unlink(tempFileLoc);
 }
 
 export default {
@@ -99,7 +99,7 @@ export default {
         all: state => state.all,
         default: state => state.default,
         error(state) {
-            const errors = []
+            const errors = [];
             if (state.all.length === 0) {
                 errors.push('error.installJava');
             }
@@ -137,23 +137,23 @@ export default {
                 context.commit('javas', newarr);
             }
         },
-        async intall(context) {
+        async install(context) {
             let arch;
             let system;
             switch (os.arch()) {
                 case 'x86':
                 case 'x32':
-                    arch = '32'
+                    arch = '32';
                     break;
                 case 'x64':
-                    arch = '64'
+                    arch = '64';
                     break;
                 default:
                     arch = '32';
             }
             switch (os.platform()) {
                 case 'darwin':
-                    system = 'osx'
+                    system = 'osx';
                     break;
                 case 'win32':
                     system = 'windows';
@@ -184,9 +184,9 @@ export default {
             if (!exist) return false;
             return new Promise((resolve, reject) => {
                 exec(`"${javaPath}" -version`, (err, sout, serr) => {
-                    resolve(serr && serr.indexOf('java version') !== -1)
+                    resolve(serr && serr.indexOf('java version') !== -1);
                 });
-            })
+            });
         },
         /**
          * scan local java locations and cache
@@ -195,15 +195,15 @@ export default {
             let all = [];
             const file = os.platform() === 'win32' ? 'javaw.exe' : 'java';
             const spliter = os.platform() === 'win32' ? ';' : ':';
-            process.env.PATH.split(spliter).forEach(p => all.push(path.join(p, 'bin', file), path.join(p, file)))
+            process.env.PATH.split(spliter).forEach(p => all.push(path.join(p, 'bin', file), path.join(p, file)));
 
             const which = () => new Promise((resolve, reject) => {
                 exec('which java', (error, stdout, stderr) => {
-                    resolve(stdout.replace('\n', ''))
-                })
-            })
+                    resolve(stdout.replace('\n', ''));
+                });
+            });
 
-            if (process.env.JAVA_HOME) all.push(path.join(process.env.JAVA_HOME, 'bin', file))
+            if (process.env.JAVA_HOME) all.push(path.join(process.env.JAVA_HOME, 'bin', file));
             if (os.platform() === 'win32') {
                 const out = await new Promise((resolve, reject) => {
                     exec('REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome', (error, stdout, stderr) => {
@@ -211,18 +211,18 @@ export default {
                         resolve(stdout.split(os.EOL).map(item => item.replace(/[\r\n]/g, ''))
                             .filter(item => item != null && item !== undefined)
                             .filter(item => item[0] === ' ')
-                            .map(item => `${item.split('    ')[3]}\\bin\\javaw.exe`))
+                            .map(item => `${item.split('    ')[3]}\\bin\\javaw.exe`));
                     });
-                })
+                });
                 all.push(...out);
             } else if (os.platform() === 'darwin') {
                 all.push('/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java');
-                all.push(await which())
+                all.push(await which());
             } else {
-                all.push(await which())
+                all.push(await which());
             }
             const set = {};
-            all.filter(p => fs.existsSync(p)).forEach((p) => { set[p] = 0 })
+            all.filter(p => fs.existsSync(p)).forEach((p) => { set[p] = 0; });
             all = [];
             for (const p of Object.keys(set)) {
                 if (await dispatch('test', p)) {
@@ -233,7 +233,7 @@ export default {
             const local = path.join(app.getPath('userData'), 'jre', 'bin', 'javaw.exe');
             if (fs.existsSync(local)) all.unshift(local);
 
-            const result = all.filter(p => state.all.indexOf(p) === -1)
+            const result = all.filter(p => state.all.indexOf(p) === -1);
             if (result.length !== 0) commit('add', result);
 
             return all;
@@ -249,4 +249,4 @@ export default {
             return arr;
         },
     },
-}
+};

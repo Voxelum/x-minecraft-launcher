@@ -1,7 +1,7 @@
-import fs from 'fs-extra'
-import paths from 'path'
-import { ActionContext } from 'vuex'
-import { net, webContents, app } from 'electron'
+import fs from 'fs-extra';
+import paths from 'path';
+import { ActionContext } from 'vuex';
+import { net, webContents, app } from 'electron';
 
 export default {
     actions: {
@@ -13,13 +13,13 @@ export default {
                     resp.on('error', reject);
                     resp.on('data', (chunk) => {
                         bufs.push(chunk);
-                    })
+                    });
                     resp.on('end', () => {
-                        resolve(Buffer.concat(bufs))
-                    })
-                })
+                        resolve(Buffer.concat(bufs));
+                    });
+                });
                 req.on('error', reject);
-                req.end()
+                req.end();
             });
         },
         async download(context, payload) {
@@ -40,17 +40,17 @@ export default {
                         item.on('done', ($event, state) => {
                             switch (state) {
                                 case 'completed':
-                                    resolve(savePath)
+                                    resolve(savePath);
                                     break;
                                 case 'cancelled':
                                 case 'interrupted':
                                 default:
-                                    reject(new Error(state))
+                                    reject(new Error(state));
                                     break;
                             }
-                        })
+                        });
                     });
-                    content.downloadURL(url)
+                    content.downloadURL(url);
                 });
                 proxy.finish();
             } catch (e) {
@@ -64,7 +64,7 @@ export default {
          */
         readFolder(context, payload) {
             let { path } = payload;
-            if (!path) throw new Error('Path must not be undefined!')
+            if (!path) throw new Error('Path must not be undefined!');
             path = paths.join(context.rootGetters.root, path);
             return fs.ensureDir(path).then(() => fs.readdir(path));
         },
@@ -75,7 +75,7 @@ export default {
          */
         delete(context, path) {
             path = paths.join(context.rootGetters.root, path);
-            return fs.remove(path)
+            return fs.remove(path);
         },
         /**
           * @param {ActionContext} context 
@@ -83,8 +83,8 @@ export default {
           */
         import(context, payload) {
             const { file, toFolder, name } = payload;
-            const to = paths.join(context.rootGetters.root, toFolder, name || paths.basename(file))
-            return fs.copy(file, to)
+            const to = paths.join(context.rootGetters.root, toFolder, name || paths.basename(file));
+            return fs.copy(file, to);
         },
         /**
          * 
@@ -94,10 +94,10 @@ export default {
         exports(context, payload) {
             const { file, toFolder, name, mode } = payload;
             const $mode = mode || 'copy';
-            const from = paths.join(context.rootGetters.root, file)
-            const to = paths.join(toFolder, name || paths.basename(file))
-            if ($mode === 'link') return fs.link(from, to)
-            return fs.copy(from, to)
+            const from = paths.join(context.rootGetters.root, file);
+            const to = paths.join(toFolder, name || paths.basename(file));
+            if ($mode === 'link') return fs.link(from, to);
+            return fs.copy(from, to);
         },
         /**
          * @param {ActionContext} context 
@@ -116,9 +116,9 @@ export default {
          * @param {string | string[]} files 
          */
         exist(context, files) {
-            if (typeof files === 'string') files = [files]
-            for (const p of files) if (!fs.existsSync(`${context.rootGetters.root}/${p}`)) return false
-            return true
+            if (typeof files === 'string') files = [files];
+            for (const p of files) if (!fs.existsSync(`${context.rootGetters.root}/${p}`)) return false;
+            return true;
         },
 
         /**
@@ -155,7 +155,7 @@ export default {
                 }
             } catch (e) {
                 if (fallback) {
-                    const fallData = fallback
+                    const fallData = fallback;
                     if (typeof fallback === 'object' && !(fallback instanceof Buffer)) fallback = JSON.stringify(fallback);
                     await fs.writeFile(path, fallback);
                     return fallData;
@@ -164,4 +164,4 @@ export default {
             }
         },
     },
-}
+};

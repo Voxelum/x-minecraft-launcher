@@ -108,4 +108,4 @@ export default {
     modelPart_left_pants_leg: true,
     modelPart_right_pants_leg: true,
     modelPart_hat: true,
-}
+};

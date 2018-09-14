@@ -1,1 +1,1 @@
-export { default } from './ModsList'
+export { default } from './ModsList';

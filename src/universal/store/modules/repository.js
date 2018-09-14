@@ -1,10 +1,10 @@
-import crypto from 'crypto'
-import Vue from 'vue'
-import { ActionContext } from 'vuex'
-import fs from 'fs-extra'
-import path from 'path'
-import { Mod, ResourcePack } from 'ts-minecraft'
-import { aStr } from 'universal/utils'
+import crypto from 'crypto';
+import Vue from 'vue';
+import { ActionContext } from 'vuex';
+import fs from 'fs-extra';
+import path from 'path';
+import { Mod, ResourcePack } from 'ts-minecraft';
+import { aStr } from 'universal/utils';
 
 /**
  * 
@@ -44,7 +44,7 @@ export default {
                     if (type === '') {
                         return ResourcePack.readFolder(name);
                     }
-                    return ResourcePack.read(name, data)
+                    return ResourcePack.read(name, data);
                 },
             },
         },
@@ -68,9 +68,9 @@ export default {
          */
         resources: (state, payload) => {
             payload.forEach((res) => {
-                if (!state[res.domain]) Vue.set(state, res.domain, {})
+                if (!state[res.domain]) Vue.set(state, res.domain, {});
                 Vue.set(state[res.domain], res.hash, res);
-            })
+            });
         },
         remove(state, resource) { Vue.delete(state[resource.domain], resource.hash); },
     },
@@ -80,16 +80,16 @@ export default {
          */
         async load(context) {
             const files = await context.dispatch('readFolder', { path: 'resources' }, { root: true });
-            const contents = []
+            const contents = [];
             for (const file of files.filter(f => f.endsWith('.json'))) {
                 const data = await context.dispatch('read', {
                     path: `resources/${file}`,
                     fallback: undefined,
                     type: 'json',
-                }, { root: true })
+                }, { root: true });
                 if (data) contents.push(data);
             }
-            context.commit('resources', contents)
+            context.commit('resources', contents);
         },
         save(context, { mutation, object }) {
         },
@@ -98,13 +98,13 @@ export default {
          * @param {string | Resource} resource 
          */
         remove(context, resource) {
-            if (typeof resource === 'string') resource = context.getters.getResource(resource)
+            if (typeof resource === 'string') resource = context.getters.getResource(resource);
             if (!resource) return Promise.resolve();
-            context.commit('remove', resource)
+            context.commit('remove', resource);
             return Promise.all([
                 context.dispatch('delete', `resources/${resource.hash}.json`, { root: true }),
                 context.dispatch('delete', `resources/${resource.hash}${resource.type}`, { root: true }),
-            ])
+            ]);
         },
         /**
         * @param {ActionContext} context 
@@ -114,7 +114,7 @@ export default {
             if (typeof payload.resource === 'string') payload.resource = context.getters.getResource(payload.resource);
             if (!payload) throw new Error('Cannot find resource');
             context.commit('rename', payload);
-            return context.dispatch('write', { path: `resources/${payload.resource.hash}.json`, data: JSON.stringify(payload.resource) }, { root: true })
+            return context.dispatch('write', { path: `resources/${payload.resource.hash}.json`, data: JSON.stringify(payload.resource) }, { root: true });
         },
         /**
          * @param {ActionContext} context 
@@ -134,15 +134,15 @@ export default {
             if (optionFiles instanceof Array) {
                 optionFiles.forEach((f) => {
                     if (typeof f !== 'string') throw new Error('Require file path array to import!');
-                })
+                });
                 files.push(...optionFiles);
                 signiture.meta = files;
             } else if (typeof optionFiles === 'string') {
-                files.push(optionFiles)
+                files.push(optionFiles);
                 signiture.meta = files;
             } else {
-                if (!optionFiles.files || !(optionFiles.files instanceof Array)) throw new Error('Illegal Argument format!')
-                if (!optionFiles.signiture) throw new Error('Have to have a signiture to import!')
+                if (!optionFiles.files || !(optionFiles.files instanceof Array)) throw new Error('Illegal Argument format!');
+                if (!optionFiles.signiture) throw new Error('Have to have a signiture to import!');
                 files.push(...optionFiles.files);
                 signiture = optionFiles.signiture;
             }
@@ -155,7 +155,7 @@ export default {
                 const status = await fs.stat(filePath);
                 const name = path.basename(filePath);
 
-                const importTaskContext = await context.dispatch('task/create', { name: 'repository.import' }, { root: true })
+                const importTaskContext = await context.dispatch('task/create', { name: 'repository.import' }, { root: true });
 
                 let data;
                 let type;
@@ -191,9 +191,9 @@ export default {
                         if (meta instanceof Promise) meta = await meta; // eslint-disable-line
                         domain = parser;
                         break;
-                    } catch (e) { console.warn(`Fail with domain [${parser.domain}]`); console.warn(e) }
+                    } catch (e) { console.warn(`Fail with domain [${parser.domain}]`); console.warn(e); }
                 }
-                if (!domain || !meta) { throw new Error(`Cannot parse ${filePath}.`) }
+                if (!domain || !meta) { throw new Error(`Cannot parse ${filePath}.`); }
 
                 // build resource
                 const resource = { hash, name, type, meta, domain, $signiture };
@@ -211,9 +211,9 @@ export default {
                 await fs.writeFile(path.join(root, 'resources', `${resource.hash}.json`), JSON.stringify(resource, undefined, 4));
                 importTaskContext.finish();
                 return resource;
-            }
+            };
             const resources = (await Promise.all(files.map(f => $import(f, signiture))))
-                .filter(res => res !== undefined)
+                .filter(res => res !== undefined);
 
             context.commit('resources', resources);
 
@@ -227,20 +227,20 @@ export default {
         link(context, payload) {
             if (!payload) throw new Error('Require input a resource with minecraft location');
             
-            const { resource, minecraft } = payload
-            if (!resource) throw new Error('Resource cannot be undefined!')
-            if (!minecraft) throw new Error('Minecract location cannot be undefined!')
+            const { resource, minecraft } = payload;
+            if (!resource) throw new Error('Resource cannot be undefined!');
+            if (!minecraft) throw new Error('Minecract location cannot be undefined!');
 
             /**
             * @type {Resource}
             */
             let res;
-            if (typeof resource === 'string') res = context.getters.getResource(resource)
+            if (typeof resource === 'string') res = context.getters.getResource(resource);
             else res = resource;
 
             if (!res) throw new Error(`Cannot find the resource ${resource}`);
             if (typeof res !== 'object' || !res.hash || !res.type || !res.domain || !res.name) {
-                throw new Error('The input resource object should be valid!')
+                throw new Error('The input resource object should be valid!');
             }
             return context.dispatch('exports', {
                 file: `resources/${res.hash}${res.type}`,
@@ -254,13 +254,13 @@ export default {
          * @param {{resource:string|Resource, targetDirectory:string}} payload 
          */
         exports(context, payload) {
-            const { resource, targetDirectory } = payload
+            const { resource, targetDirectory } = payload;
 
             /**
             * @type {Resource}
             */
             let res;
-            if (typeof resource === 'string') res = context.getters.getResource(resource)
+            if (typeof resource === 'string') res = context.getters.getResource(resource);
             else res = resource;
 
             if (!res) throw new Error(`Cannot find the resource ${resource}`);
@@ -274,4 +274,4 @@ export default {
         refresh(context, payload) {
         },
     },
-}
+};

@@ -51,7 +51,7 @@ module.exports = {
         "no-alert": 1,
         "func-names": 0,
         "no-underscore-dangle": 0,
-        "semi": 0,
+        "semi": 1,
         "no-restricted-syntax": 0,
         "no-prototype-builtins": 0,
         "no-param-reassign": 0,
@@ -59,6 +59,8 @@ module.exports = {
         "no-trailing-spaces": 0,
         "no-unused-vars": 0,
         "wrap-iife": 0,
-        "max-len": 1,
+        "max-len": 0,
+        "no-mixed-operators": 0,
+        "no-plusplus": 0,
     }
 }

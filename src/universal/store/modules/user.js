@@ -1,6 +1,6 @@
-import Vue from 'vue'
-import { Auth, GameProfile, MojangAccount, ProfileService } from 'ts-minecraft'
-import { v4 } from 'uuid'
+import Vue from 'vue';
+import { Auth, GameProfile, MojangAccount, ProfileService } from 'ts-minecraft';
+import { v4 } from 'uuid';
 import { Module, ActionTree, Action } from 'vuex';
 
 /**
@@ -55,11 +55,11 @@ export default {
                 clientToken: v4(),
             },
             mutations: {
-                save(context, payload) { return context.dispatch('user/save', payload, { root: true }) },
+                save(context, payload) { return context.dispatch('user/save', payload, { root: true }); },
                 config(state, data) {
-                    state.clientToken = data.clientToken || state.clientToken
-                    state.authMode = data.authMode || state.authMode
-                    state.profileMode = data.profileMode || state.profileMode
+                    state.clientToken = data.clientToken || state.clientToken;
+                    state.authMode = data.authMode || state.authMode;
+                    state.profileMode = data.profileMode || state.profileMode;
 
                     if (typeof data.history === 'object') {
                         for (const key of Object.keys(data.history)) {
@@ -68,13 +68,13 @@ export default {
                     }
 
                     if (!state.loginHistory[state.authMode]) {
-                        state.loginHistory[state.authMode] = []
+                        state.loginHistory[state.authMode] = [];
                     }
 
                     if (typeof data.authServices === 'object') {
                         for (const mode of Object.keys(data.authServices)) {
                             if (!state.authServices[mode]) {
-                                state.authServices[mode] = data.authServices[mode]
+                                state.authServices[mode] = data.authServices[mode];
                             }
                         }
                     }
@@ -82,60 +82,60 @@ export default {
                     if (typeof data.profileServices === 'object') {
                         for (const mode of Object.keys(data.profileServices)) {
                             if (!state.profileServices[mode]) {
-                                state.profileServices[mode] = data.profileServices[mode]
+                                state.profileServices[mode] = data.profileServices[mode];
                             }
                         }
                     }
                 },
                 authMode(state, mode) {
-                    state.authMode = mode
+                    state.authMode = mode;
                     if (!state.loginHistory[mode]) {
-                        state.loginHistory[mode] = []
+                        state.loginHistory[mode] = [];
                     }
                 },
                 profileMode(state, mode) {
-                    state.profileMode = mode
+                    state.profileMode = mode;
                 },
                 login(state, account) {
-                    if (!state.loginHistory[state.authMode]) state.loginHistory[state.authMode] = []
-                    state.loginHistory[state.authMode].push(account)
+                    if (!state.loginHistory[state.authMode]) state.loginHistory[state.authMode] = [];
+                    state.loginHistory[state.authMode].push(account);
                 },
             },
             getters: {
-                isServiceCompatible(state) { return state.authMode === state.profileMode },
-                offline(state) { return state.authMode === 'offline' },
-                authService(state) { return state.authServices[state.authMode] },
-                profileService(state) { return state.profileServices[state.profileMode] },
+                isServiceCompatible(state) { return state.authMode === state.profileMode; },
+                offline(state) { return state.authMode === 'offline'; },
+                authService(state) { return state.authServices[state.authMode]; },
+                profileService(state) { return state.profileServices[state.profileMode]; },
             },
             actions: {
                 login(context, option) {
-                    if (context.state.authMode === 'offline') return Auth.offline(option)
-                    return Auth.Yggdrasil.login({ ...option, clientToken: context.state.clientToken }, context.getters.authService)
+                    if (context.state.authMode === 'offline') return Auth.offline(option);
+                    return Auth.Yggdrasil.login({ ...option, clientToken: context.state.clientToken }, context.getters.authService);
                 },
                 refresh(context, option) {
-                    if (context.state.authMode === 'offline') return Promise.resolve()
-                    return Auth.Yggdrasil.refresh(option, context.getters.authService)
+                    if (context.state.authMode === 'offline') return Promise.resolve();
+                    return Auth.Yggdrasil.refresh(option, context.getters.authService);
                 },
                 validate(context, option) {
-                    if (context.state.authMode === 'offline') return true
-                    return Auth.Yggdrasil.validate(option, context.getters.authService)
+                    if (context.state.authMode === 'offline') return true;
+                    return Auth.Yggdrasil.validate(option, context.getters.authService);
                 },
                 invalidate(context, option) {
-                    if (context.state.authMode === 'offline') return Promise.resolve()
-                    return Auth.Yggdrasil.invalide(option, context.getters.authService)
+                    if (context.state.authMode === 'offline') return Promise.resolve();
+                    return Auth.Yggdrasil.invalide(option, context.getters.authService);
                 },
                 signout(context, option) {
-                    if (context.state.authMode === 'offline') return Promise.resolve()
-                    return Auth.Yggdrasil.signout(option, context.getters.authService)
+                    if (context.state.authMode === 'offline') return Promise.resolve();
+                    return Auth.Yggdrasil.signout(option, context.getters.authService);
                 },
                 /**
                  * @param {GameProfile} gameProfile 
                  */
                 fetch(context, gameProfile) {
                     if (context.getters.isServiceCompatible) {
-                        return ProfileService.fetch(gameProfile.id, context.getters.profileService)
+                        return ProfileService.fetch(gameProfile.id, context.getters.profileService);
                     }
-                    return ProfileService.fetch(gameProfile.name, context.getters.profileService)
+                    return ProfileService.fetch(gameProfile.name, context.getters.profileService);
                 },
                 async setTexture(context, { data, slim }) {
                     const accessToken = context.rootState.user.auth.accessToken;
@@ -153,17 +153,17 @@ export default {
                         },
                     }, context.state.api).catch((e) => {
                         console.error(e);
-                        throw e
+                        throw e;
                     });
                 },
                 async getTextures(context, selectingProfile) {
                     let profile;
                     if (context.getters.isServiceCompatible) {
-                        profile = await ProfileService.fetch(selectingProfile.id, context.getters.profileService)
+                        profile = await ProfileService.fetch(selectingProfile.id, context.getters.profileService);
                     } else {
-                        profile = await ProfileService.fetch(selectingProfile.name, context.getters.profileService)
+                        profile = await ProfileService.fetch(selectingProfile.name, context.getters.profileService);
                     }
-                    if (!profile) throw new Error('Profile cannot be undefined')
+                    if (!profile) throw new Error('Profile cannot be undefined');
                     return ProfileService.getTextures(profile);
                 },
             },
@@ -229,7 +229,7 @@ export default {
                 history: context.state.upstream.loginHistory,
                 authMode: context.state.upstream.authMode,
                 profileMode: context.state.upstream.profileMode,
-            })
+            });
             return context.dispatch('write', { path: 'auth.json', data }, { root: true });
         },
         async load(context) {
@@ -248,7 +248,7 @@ export default {
                     accessToken: context.state.auth.accessToken,
                 });
             }
-            context.commit('clear')
+            context.commit('clear');
         },
         $refresh: {
             root: true,
@@ -328,7 +328,7 @@ export default {
             try {
                 const result = await context.dispatch('upstream/login', loginOption).catch((e) => {
                     if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
-                        const err = { message: 'error.internetNotConnected' }
+                        const err = { message: 'error.internetNotConnected' };
                         throw err;
                     }
                     throw e;
@@ -350,4 +350,4 @@ export default {
             }
         },
     },
-}
+};

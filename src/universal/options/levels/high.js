@@ -8,5 +8,5 @@ export default {
     mipmapLevels: 4,
     entityShadows: true,
     particles: 0,
-}
+};
 

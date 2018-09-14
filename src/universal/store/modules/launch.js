@@ -1,20 +1,20 @@
-import fs from 'fs-extra'
-import { ActionContext } from 'vuex'
-import { MinecraftFolder, Launcher, Version } from 'ts-minecraft'
-import paths from 'path'
-import { ipcMain } from 'electron'
+import fs from 'fs-extra';
+import { ActionContext } from 'vuex';
+import { MinecraftFolder, Launcher, Version } from 'ts-minecraft';
+import paths from 'path';
+import { ipcMain } from 'electron';
 
 function onerror(e) {
     if (e.message.startsWith('Cannot find version ') || e.message.startsWith('No version file for ') || e.message.startsWith('No version jar for ')) {
-        e.type = 'missing.version'
+        e.type = 'missing.version';
     } else if (e.message === 'Missing library') {
-        e.type = 'missing.libraries'
+        e.type = 'missing.libraries';
     } else if (e.message === 'Missing asset!') {
-        e.type = 'missing.assets'
+        e.type = 'missing.assets';
     } else if (e.message === 'Missing mainClass' || e.message === 'Missing minecraftArguments') {
-        e.type = 'illegal.version.json'
+        e.type = 'illegal.version.json';
     }
-    return e
+    return e;
 }
 
 /**
@@ -26,7 +26,7 @@ function onerror(e) {
  * @param {string} liteTemp 
  */
 async function mixinVersion(id, location, forgeTemp, liteTemp) {
-    console.log(`mixin version from ${forgeTemp} ${liteTemp}`)
+    console.log(`mixin version from ${forgeTemp} ${liteTemp}`);
     /**
     * @type {Version.Raw}
     */
@@ -45,7 +45,7 @@ async function mixinVersion(id, location, forgeTemp, liteTemp) {
         libraries: liteJson.libraries,
         mainClass: liteJson.mainClass,
         jar: liteJson.jar,
-    }
+    };
     const args = liteJson.arguments ? liteJson.arguments.game : liteJson.minecraftArguments.split(' ');
     const forgeArgs = forgeJson.arguments ? forgeJson.arguments.game : forgeJson.minecraftArguments.split(' ');
     let tweakClass;
@@ -58,7 +58,7 @@ async function mixinVersion(id, location, forgeTemp, liteTemp) {
             type: 'CorruptedVersionJson',
             reason: 'MissingTweakClass',
             version: liteTemp,
-        }
+        };
         throw err;
     }
 
@@ -66,9 +66,9 @@ async function mixinVersion(id, location, forgeTemp, liteTemp) {
         profile.arguments = {
             game: ['--tweakClass', tweakClass, ...forgeArgs],
             jvm: [...liteJson.arguments.jvm],
-        }
+        };
     } else {
-        forgeArgs.unshift(tweakClass)
+        forgeArgs.unshift(tweakClass);
         forgeArgs.unshift('--tweakClass');
         profile.minecraftArguments = forgeArgs.join(' ');
     }
@@ -92,7 +92,7 @@ export default {
             if (!auth) return Promise.reject('launch.auth.empty');
 
             const profile = context.rootGetters['profiles/get'](profileId);
-            if (!profile) return Promise.reject('launch.profile.empty')
+            if (!profile) return Promise.reject('launch.profile.empty');
 
             if (!auth.accessToken || !auth.selectedProfile || !auth.selectedProfile.name || !auth.selectedProfile.id) return Promise.reject('launch.auth.illegal');
 
@@ -104,10 +104,10 @@ export default {
              */
             const getExpect = (mc, forge, lite) => {
                 let expectedId = mc;
-                if (forge) expectedId += `-forge${mc}-${forge}`
-                if (lite) expectedId += `-liteloader${lite}`
+                if (forge) expectedId += `-forge${mc}-${forge}`;
+                if (lite) expectedId += `-liteloader${lite}`;
                 return expectedId;
-            }
+            };
             const localVersions = context.rootState.versions.local;
             /**
              * cache the mcversion -> forge/lite/mc versions real id 
@@ -132,13 +132,13 @@ export default {
                 if (ver.liteloader) container.liteloader.push(ver);
                 if (!ver.forge && ver.liteloader) container.minecraft = ver.id;
                 expectVersionMap[getExpect(ver.minecraft, ver.forge, ver.liteloader)] = ver.id;
-            })
+            });
 
             const mcversion = profile.mcversion;
             if (!mcversion) {
                 const err = {
                     type: 'NoSelectedVersion',
-                }
+                };
                 throw err;
             }
 
@@ -150,7 +150,7 @@ export default {
             let version;
 
             if (!targetVersionId) {
-                console.log(`try to generate version dynamic, ${expectId}`)
+                console.log(`try to generate version dynamic, ${expectId}`);
                 /**
                  * if target version not exist, try to generate version dynamicly
                  */
@@ -159,7 +159,7 @@ export default {
                     const err = {
                         type: 'MissingMinecraftVersion',
                         version: mcversion,
-                    }
+                    };
                     throw err;
                 }
                 const mcTemplate = versionContainer.minecraft;
@@ -177,7 +177,7 @@ export default {
                         const err = {
                             type: 'MissingForgeVersion',
                             version: forgeVersion,
-                        }
+                        };
                         throw err;
                     }
                 }
@@ -193,7 +193,7 @@ export default {
                         const err = {
                             type: 'MissingLiteloaderVersion',
                             version: liteVersion,
-                        }
+                        };
                         throw err;
                     }
                 }
@@ -221,7 +221,7 @@ export default {
                 minMemory: profile.minMemory || 1024,
                 maxMemory: profile.maxMemory || 1024,
                 version,
-            }
+            };
             if (profile.type === 'server') {
                 option.server = { ip: profile.host, port: profile.port };
             }
@@ -245,7 +245,7 @@ export default {
                         minecraft: option.gamePath,
                     })));
             } catch (e) {
-                console.error('Cannot export resource packs')
+                console.error('Cannot export resource packs');
                 console.error(e);
             }
 
@@ -261,7 +261,7 @@ export default {
                 const modIdVersions = {};
                 for (const res of mods) {
                     for (const mod of res.meta.mods) {
-                        modIdVersions[`${mod.meta.modid}:${mod.meta.version}`] = res.hash
+                        modIdVersions[`${mod.meta.modid}:${mod.meta.version}`] = res.hash;
                     }
                 }
                 const selectingHashs = selected.map(k => modIdVersions[k])
@@ -272,8 +272,8 @@ export default {
                         minecraft: option.gamePath,
                     })));
             } catch (e) {
-                console.error('Cannot export mods')
-                console.error(e)
+                console.error('Cannot export mods');
+                console.error(e);
             }
 
             console.log(JSON.stringify(option));
@@ -284,22 +284,22 @@ export default {
             return Launcher.launch(option).then((process) => {
                 ipcMain.emit('minecraft-start', debug);
                 process.on('error', (err) => {
-                    console.log(err)
-                })
+                    console.log(err);
+                });
                 process.on('exit', (code, signal) => {
-                    console.log(`exit: ${code}, signal: ${signal}`)
-                    ipcMain.emit('minecraft-exit')
-                })
+                    console.log(`exit: ${code}, signal: ${signal}`);
+                    ipcMain.emit('minecraft-exit');
+                });
                 process.stdout.on('data', (s) => {
                     ipcMain.emit('minecraft-stdout', s.toString());
-                })
+                });
                 process.stderr.on('data', (s) => {
-                    console.error(s)
-                    ipcMain.emit('minecraft-stderr', s)
-                })
+                    console.error(s);
+                    ipcMain.emit('minecraft-stderr', s);
+                });
             }).catch((e) => {
                 throw (e);
-            })
+            });
         },
     },
-}
+};
