@@ -1,3 +1,3 @@
 export default {
-    root: (st, r) => { st.root = r },
-}
+    root: (st, r) => { st.root = r; },
+};

@@ -1,29 +1,29 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import { shell } from 'electron'
+import Vue from 'vue';
+import Router from 'vue-router';
+import { shell } from 'electron';
 
-import SemanticUi from './Semantic'
+import SemanticUi from './Semantic';
 
-import ProfileView from './components/home/ProfileView'
-import CardView from './components/home/CardView'
+import ProfileView from './components/home/ProfileView';
+import CardView from './components/home/CardView';
 
-import ResourcePackList from './components/home/ResourcePackList'
-import GameSettings from './components/home/GameSettings'
-import ModsList from './components/home/ModsList'
-import MapsList from './components/home/MapsList'
-import VersionView from './components/home/VersionView'
-import LaunchSettings from './components/home/LaunchSettings'
+import ResourcePackList from './components/home/ResourcePackList';
+import GameSettings from './components/home/GameSettings';
+import ModsList from './components/home/ModsList';
+import MapsList from './components/home/MapsList';
+import VersionView from './components/home/VersionView';
+import LaunchSettings from './components/home/LaunchSettings';
 
-import CardsButtonGroup from './components/home/CardsButtonGroup'
-import ProfileSelectedButtonGroup from './components/home/ProfileSelectedButtonGroup'
+import CardsButtonGroup from './components/home/CardsButtonGroup';
+import ProfileSelectedButtonGroup from './components/home/ProfileSelectedButtonGroup';
 
-import MarketView from './components/market/MarketView'
-import Curseforge from './components/market/Curseforge'
-import CurseforgeProjects from './components/market/CurseforgeProjects'
-import CurseforgeProject from './components/market/CurseforgeProject'
-import Mcmodcn from './components/market/McmodCn'
-import McmodcnProject from './components/market/McModCnProject'
-import MarketButtonGroup from './components/market/MarketButtonGroup'
+import MarketView from './components/market/MarketView';
+import Curseforge from './components/market/Curseforge';
+import CurseforgeProjects from './components/market/CurseforgeProjects';
+import CurseforgeProject from './components/market/CurseforgeProject';
+import Mcmodcn from './components/market/McmodCn';
+import McmodcnProject from './components/market/McModCnProject';
+import MarketButtonGroup from './components/market/MarketButtonGroup';
 
 const route = {
     path: '/',
@@ -110,25 +110,25 @@ const route = {
             props: { default: true, buttons: false },
         },
     ],
-}
+};
 
-Vue.use(Router)
+Vue.use(Router);
 
 const router = new Router({
     routes: [route],
-})
+});
 
 router.beforeEach((to, from, next) => {
     if (to && to.path.startsWith('/external/')) {
         shell.openExternal(to.path.substring('/external/'.length));
         next(false);
-    } else if (next) next()
-})
+    } else if (next) next();
+});
 
 router.afterEach((to, from) => {
-    console.log(`${from ? from.fullPath : ''} => ${to.fullPath}`)
+    console.log(`${from ? from.fullPath : ''} => ${to.fullPath}`);
     localStorage.setItem('route', to.fullPath);
-})
+});
 
 
 export default router;

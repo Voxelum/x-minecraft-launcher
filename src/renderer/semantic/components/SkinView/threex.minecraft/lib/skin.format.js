@@ -1,7 +1,7 @@
 
 
 function create(slim) {
-    return decoratePos(decorateDimension(group(slim)))
+    return decoratePos(decorateDimension(group(slim)));
 }
 
 function calculate(model) {
@@ -10,7 +10,7 @@ function calculate(model) {
         h: Math.abs(model.front[1] - model.front[3]) * pixRatio,
         w: Math.abs(model.front[0] - model.front[2]) * pixRatio,
         d: Math.abs(model.right[0] - model.right[2]) * pixRatio,
-    }
+    };
 }
 function group(slim) {
     return {
@@ -138,18 +138,18 @@ function group(slim) {
             right: [0, 1, 1, 17],
             back: [1, 1, 11, 17],
         },
-    }
+    };
 }
 function decorateDimension(group) {
     const pixRatio = 1 / 32;
-    Object.keys(group).map(k => group[k]).forEach(part => {
+    Object.keys(group).map(k => group[k]).forEach((part) => {
         Object.assign(part, calculate(part));
         if (part.layer) {
             part.layer.w *= pixRatio;
             part.layer.h *= pixRatio;
             part.layer.d *= pixRatio;
         }
-    })
+    });
     return group;
 }
 
@@ -167,7 +167,7 @@ function decoratePos(group) {
     group.rightArm.x = -group.torso.w / 2 - group.rightArm.w / 2;
     group.rightArm.y = group.rightLeg.h + group.torso.h - group.rightArm.h / 2;
 
-    group.leftArm.x = group.torso.w / 2 + group.leftArm.w / 2
+    group.leftArm.x = group.torso.w / 2 + group.leftArm.w / 2;
     group.leftArm.y = group.leftLeg.h + group.torso.h - group.leftArm.h / 2;
 
     group.cape.y = group.rightLeg.h + group.torso.h / 5 * 2;
@@ -177,5 +177,5 @@ function decoratePos(group) {
 
 export default {
     steve: create(false),
-    alex: create(true)
-}
+    alex: create(true),
+};

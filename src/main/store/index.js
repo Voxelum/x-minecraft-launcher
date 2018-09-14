@@ -1,9 +1,9 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 import { app, ipcMain } from 'electron';
 
-import storeTemplate from 'universal/store'
-import plugins from './plugins'
+import storeTemplate from 'universal/store';
+import plugins from './plugins';
 
 let isLoading = false;
 let store;
@@ -29,7 +29,7 @@ function discoverLoader(mo, path, container, initer) {
     if (mo.modules) {
         Object.keys(mo.modules).forEach((k) => {
             discoverLoader(mo.modules[k], [...path, k], container, initer);
-        })
+        });
     }
     return container;
 }
@@ -63,23 +63,23 @@ async function load() {
     // load
     await Promise.all(loaders.filter(action => newStore._actions[action] !== undefined)
         .map((action) => {
-            console.log(`Found loading action [${action}]`)
-            return newStore.dispatch(action).then((instance) => { console.log(`Loaded [${action}]`) },
+            console.log(`Found loading action [${action}]`);
+            return newStore.dispatch(action).then((instance) => { console.log(`Loaded [${action}]`); },
                 (err) => {
-                    console.error(`An error occured when we load module [${action.substring(0, action.indexOf('/'))}].`)
-                    console.error(err)
-                })
+                    console.error(`An error occured when we load module [${action.substring(0, action.indexOf('/'))}].`);
+                    console.error(err);
+                });
         }));
     // init
     await Promise.all(initer.filter(action => newStore._actions[action] !== undefined)
         .map((action) => {
-            console.log(`Found init action [${action}]`)
+            console.log(`Found init action [${action}]`);
             return newStore.dispatch(action).then((instance) => {
-                console.log(`Inited [${action}]`)
+                console.log(`Inited [${action}]`);
             }, (err) => {
-                console.error(`An error occured when we init module [${action.substring(0, action.indexOf('/'))}].`)
+                console.error(`An error occured when we init module [${action.substring(0, action.indexOf('/'))}].`);
                 console.error(err);
-            })
+            });
         }));
     newStore.commit('root', root);
     isLoading = false;
@@ -106,5 +106,5 @@ export function dispatch(type, payload, option) {
     return store.dispatch(type, payload, option);
 }
 
-export function loading() { return isLoading }
+export function loading() { return isLoading; }
 export function getStore() { return store; }

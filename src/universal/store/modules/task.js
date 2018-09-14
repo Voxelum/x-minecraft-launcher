@@ -1,7 +1,7 @@
-import { Task } from 'treelike-task'
-import { ActionContext } from 'vuex'
-import Vue from 'vue'
-import { v4 } from 'uuid'
+import { Task } from 'treelike-task';
+import { ActionContext } from 'vuex';
+import Vue from 'vue';
+import { v4 } from 'uuid';
 
 class TaskProxy {
     constructor(context, path) {
@@ -57,12 +57,12 @@ export default {
                 description: '',
                 status: 'running',
                 tasks: {},
-            }
+            };
             if (parent === state) {
                 state.all.push(task.id);
                 state.running.push(task.id);
             }
-            Vue.set(parent.tasks, task.id, task)
+            Vue.set(parent.tasks, task.id, task);
         },
         finish(state, { path, error }) {
             let task = state;
@@ -86,7 +86,7 @@ export default {
         $finish(state, node) {
             Vue.delete(state.running, state.running.indexOf(node.id));
 
-            Vue.delete(state.all, state.all.indexOf(node.id))
+            Vue.delete(state.all, state.all.indexOf(node.id));
             state.all.push(node.id);
 
             Vue.set(state.tasks, node.id, Object.freeze(Object.assign({}, node)));
@@ -100,7 +100,7 @@ export default {
         $update(state, node) {
             Vue.delete(state.tasks, node.id);
             Vue.delete(state.running, state.running.indexOf(node.id));
-            Vue.delete(state.all, state.all.indexOf(node.id))
+            Vue.delete(state.all, state.all.indexOf(node.id));
 
             Vue.set(state.tasks, node.id, Object.freeze(Object.assign({}, node)));
 
@@ -130,7 +130,7 @@ export default {
             root.description = '';
             context.commit('$create', root);
             const timer = setInterval(() => {
-                if (root.status === 'finish') clearInterval(timer)
+                if (root.status === 'finish') clearInterval(timer);
                 context.commit('$update', root);
             }, 500);
             task.onChild((path, parent, child) => {
@@ -156,7 +156,7 @@ export default {
                 node.progress = update.progress;
                 node.total = update.total;
                 node.description = update.status;
-            })
+            });
         },
     },
-}
+};

@@ -1,8 +1,8 @@
-import { WorldInfo } from 'ts-minecraft'
-import fs from 'fs-extra'
-import Zip from 'jszip'
-import paths from 'path'
-import Vue from 'vue'
+import { WorldInfo } from 'ts-minecraft';
+import fs from 'fs-extra';
+import Zip from 'jszip';
+import paths from 'path';
+import Vue from 'vue';
 
 const allFiles = folder =>
     fs.readdirSync(folder)
@@ -19,10 +19,10 @@ export default {
             state.push(...maps);
         },
         addMap(state, map) {
-            state.push(map)
+            state.push(map);
         },
         removeMap(state, map) {
-            Vue.delete(state, state.indexOf(map))
+            Vue.delete(state, state.indexOf(map));
         },
     },
     actions: {
@@ -31,7 +31,7 @@ export default {
                 locations = [locations];
             }
             if (!(locations instanceof Array)) {
-                throw new Error(`Arugment has to be array! ${locations}`)
+                throw new Error(`Arugment has to be array! ${locations}`);
             }
             const $import = async (location) => {
                 const id = context.getters.id;
@@ -39,12 +39,12 @@ export default {
                 const stat = await fs.stat(location);
                 let mapData;
                 if (stat.isDirectory()) {
-                    const entry = await WorldInfo.findEntry(location)
+                    const entry = await WorldInfo.findEntry(location);
                     mapData = await WorldInfo.parse(await fs.readFile(paths.join(location, entry)));
 
-                    mapFileName = paths.basename(location)
+                    mapFileName = paths.basename(location);
                     if (await context.dispatch('exist', mapFileName, { root: true })) {
-                        mapFileName = `-${mapFileName}`
+                        mapFileName = `-${mapFileName}`;
                     }
 
                     await context.dispatch('import', {
@@ -60,7 +60,7 @@ export default {
                     mapFileName = paths.basename(location);
                     mapFileName = mapFileName.substr(0, mapFileName.length - ext.length);
                     if (await context.dispatch('exist', mapFileName, { root: true })) {
-                        mapFileName = `-${mapFileName}`
+                        mapFileName = `-${mapFileName}`;
                     }
 
                     const entryParentDir = paths.dirname(entry);
@@ -76,8 +76,8 @@ export default {
                 }
                 mapData.filename = mapFileName;
                 context.commit('addMap', mapData);
-            }
-            return Promise.all(locations.map($import))
+            };
+            return Promise.all(locations.map($import));
         },
         /**
          * 
@@ -87,29 +87,29 @@ export default {
         async exportMap(context, payload) {
             const id = context.getters.id;
             const exportName = payload.file;
-            const map = paths.join(context.rootGetters.root, `profiles/${id}/saves/${payload.map}`)
+            const map = paths.join(context.rootGetters.root, `profiles/${id}/saves/${payload.map}`);
             if (payload.zip) {
                 const targetZip = exportName;
                 const zip = new Zip();
                 await Promise.all(allFiles(map).map(file =>
                     fs.readFile(file).then(buf => zip.file(paths.relative(map, file), buf)),
-                ))
+                ));
                 return fs.writeFile(targetZip, await zip.generateAsync({ type: 'nodebuffer' }));
             }
-            return fs.copy(map, exportName)
+            return fs.copy(map, exportName);
         },
         deleteMap(context, map) {
             const filename = map.filename;
             return context.dispatch('delete', `profiles/${context.getters.id}/saves/${filename}`, { root: true })
                 .then(() => {
-                    context.commit('removeMap', map)
-                })
+                    context.commit('removeMap', map);
+                });
         },
         async load(context, payload) {
             const id = context.getters.id;
             const readMap = async (file) => {
                 const exist = await context.dispatch('exist', `profiles/${id}/saves/${file}/level.dat`, { root: true });
-                console.log(`profiles/${id}/saves/${file}/level.dat`)
+                console.log(`profiles/${id}/saves/${file}/level.dat`);
                 if (!exist) return undefined;
                 const levBuf = await context.dispatch('read', {
                     path: `profiles/${id}/saves/${file}/level.dat`,
@@ -121,23 +121,23 @@ export default {
                     const imgBuf = await context.dispatch('read', {
                         path: `profiles/${id}/saves/${file}/icon.png`,
                         fallback: '',
-                    }, { root: true })
+                    }, { root: true });
                     if (imgBuf) info.icon = `data:image/png;base64, ${imgBuf.toString('base64')}`;
                 } catch (e) {
-                    console.error(e)
+                    console.error(e);
                 }
                 info.filename = file;
                 return info;
-            }
+            };
             let maps;
             try {
-                const files = (await context.dispatch('readFolder', { path: `profiles/${id}/saves` }, { root: true }))
+                const files = (await context.dispatch('readFolder', { path: `profiles/${id}/saves` }, { root: true }));
                 maps = (await Promise.all(files.map(readMap))).filter(m => m !== undefined);
             } catch (e) {
-                console.warn(e)
+                console.warn(e);
             }
             maps.id = id;
             context.commit('setMaps', maps);
         },
     },
-}
+};

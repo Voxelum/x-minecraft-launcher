@@ -4,7 +4,7 @@ export default {
     },
     mutations: {
         dragover(state, value) {
-            state.dragover = value
+            state.dragover = value;
         },
     },
-}
+};

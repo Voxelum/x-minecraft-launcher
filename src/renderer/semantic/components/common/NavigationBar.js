@@ -1,44 +1,44 @@
-import vuex from 'vuex'
+import vuex from 'vuex';
 
 export default {
     render(createElement) {
-        const rendered = []
+        const rendered = [];
         for (let i = 0; i < this.paths.length; i += 1) {
             const p = this.paths[i];
             let name = p.name;
             let icon = '';
             switch (p.name) {
                 case 'home':
-                    icon = 'home icon'
+                    icon = 'home icon';
                     break;
                 case 'market':
-                    icon = 'shop icon'
+                    icon = 'shop icon';
                     break;
                 case 'curseforge':
-                    icon = 'fire icon'
-                    name = 'curseforge.name'
+                    icon = 'fire icon';
+                    name = 'curseforge.name';
                     break;
                 default:
                     if (this.paths[i - 1].name === 'curseforge') {
-                        name = `curseforge.${name}.name`
+                        name = `curseforge.${name}.name`;
                     }
                     break;
             }
             rendered.push(this.renderLink(createElement, p.path, this.$tc(name, 0), icon),
-                this.renderArrow(createElement))
+                this.renderArrow(createElement));
         }
-        rendered.pop()
+        rendered.pop();
         const right = [];
         if (this.paths[0]) {
             if (this.paths[0].name === 'home') {
-                right.push(this.renderLinkRight(createElement, '/market', this.$t('market'), 'shop icon'))
+                right.push(this.renderLinkRight(createElement, '/market', this.$t('market'), 'shop icon'));
             } else {
-                right.push(this.renderLinkRight(createElement, '/profile', this.$t('home'), 'home icon'))
+                right.push(this.renderLinkRight(createElement, '/profile', this.$t('home'), 'home icon'));
             }
         }
         return createElement('div', {
             attrs: { class: 'eleven wide column', style: 'overflow: auto;' },
-        }, [...right, createElement('div', { attrs: { class: 'ui breadcrumb' } }, rendered)])
+        }, [...right, createElement('div', { attrs: { class: 'ui breadcrumb' } }, rendered)]);
     },
     computed: {
         paths() {
@@ -52,7 +52,7 @@ export default {
                 if (splited.length === 3) {
                     const current = outPath.pop();
                     outPath.pop();
-                    current.name = this.$store.state.profiles[splited[1]].name
+                    current.name = this.$store.state.profiles[splited[1]].name;
                     outPath.push(current);
                 }
             }
@@ -67,7 +67,7 @@ export default {
                     class: 'right chevron inverted icon divider',
                     style: 'color:white',
                 },
-            })
+            });
         },
         renderLinkRight(createElement, path, name, icon) {
             const self = this;
@@ -78,20 +78,20 @@ export default {
                     class: 'ui inverted circular right floated button non-moveable',
                 },
                 on: {
-                    click() { self.$router.replace(path) },
+                    click() { self.$router.replace(path); },
                 },
             }, [createElement('i', {
                 attrs: {
                     class: icon,
                 },
-            }), name])])
+            }), name])]);
         },
         renderLink(createElement, path, name, icon = '') {
             const self = this;
             let localName;
             // console.log(this.$t(name)) // this is a really... strange bug
             if (name.length > 20) {
-                name = `${name.substring(0, 20)}...`
+                name = `${name.substring(0, 20)}...`;
             }
 
             return createElement('div', {
@@ -105,8 +105,8 @@ export default {
                 },
                 on: {
                     click() {
-                        console.log(`replace to ${path}`)
-                        self.$router.replace(path)
+                        console.log(`replace to ${path}`);
+                        self.$router.replace(path);
                     },
                 },
             },
@@ -115,7 +115,7 @@ export default {
                         class: icon,
                     },
                 }), name,
-                ])])
+                ])]);
         },
     },
-}
+};

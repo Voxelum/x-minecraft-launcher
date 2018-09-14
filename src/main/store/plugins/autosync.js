@@ -1,5 +1,5 @@
 import Vuex from 'vuex';
-import { ipcMain, webContents } from 'electron'
+import { ipcMain, webContents } from 'electron';
 
 
 export default
@@ -9,13 +9,13 @@ export default
     (store) => {
         const mutationHistory = [];
         ipcMain.on('vuex-sync', (event, currentId) => {
-            console.log(`sync on renderer: ${currentId}, main: ${mutationHistory.length}`)
+            console.log(`sync on renderer: ${currentId}, main: ${mutationHistory.length}`);
             if (currentId === mutationHistory.length) {
                 return;
             }
             const mutations = mutationHistory.slice(currentId);
             event.sender.send('vuex-sync', mutations, mutationHistory.length);
-        })
+        });
         store.subscribe(
             /**
              * @param {{type: string}} mutation 
@@ -25,6 +25,6 @@ export default
                 const id = mutationHistory.length;
                 webContents.getAllWebContents().forEach((w) => {
                     w.send('vuex-commit', mutation, id);
-                })
+                });
             });
-    }
+    };

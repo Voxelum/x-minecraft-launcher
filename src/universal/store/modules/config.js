@@ -1,6 +1,6 @@
-import { ActionContext, Module } from 'vuex'
-import { app } from 'electron'
-import locales from 'locales'
+import { ActionContext, Module } from 'vuex';
+import { app } from 'electron';
+import locales from 'locales';
 
 export default {
     namespaced: true,
@@ -45,7 +45,7 @@ export default {
             context.commit('locales', Object.keys(locales));
         },
         save(context) {
-            return context.dispatch('write', { path: 'config.json', data: JSON.stringify(context.state) }, { root: true })
+            return context.dispatch('write', { path: 'config.json', data: JSON.stringify(context.state) }, { root: true });
         },
         /**
          * 
@@ -54,11 +54,11 @@ export default {
          */
         edit(context, payload) {
             if (payload.theme || payload.theme !== context.state.theme) {
-                context.commit('theme', payload.theme)
+                context.commit('theme', payload.theme);
             }
             if (payload.locale || payload.locale !== context.state.locale) {
-                context.commit('locale', payload.locale)
+                context.commit('locale', payload.locale);
             }
         },
     },
-} // as Module<ConfigState, any>
+}; // as Module<ConfigState, any>

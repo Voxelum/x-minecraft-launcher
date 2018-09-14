@@ -1,5 +1,5 @@
-import vuex from 'vuex'
-import draggable from 'vuedraggable'
+import vuex from 'vuex';
+import draggable from 'vuedraggable';
 
 export default {
     name: 'CardView',
@@ -12,11 +12,11 @@ export default {
         ...vuex.mapGetters('profiles', ['ids', 'get']),
     },
     created() {
-        this.refresh(false)
-        this.$ipc.on('refresh', this.refresh)
+        this.refresh(false);
+        this.$ipc.on('refresh', this.refresh);
     },
     methods: {
-        refresh(force = true) { this.ids.forEach(id => this.$store.dispatch(`profiles/${id}/refresh`, force)) },
+        refresh(force = true) { this.ids.forEach(id => this.$store.dispatch(`profiles/${id}/refresh`, force)); },
     },
     render(createElement) {
         const getByKey = this.get;
@@ -47,8 +47,8 @@ export default {
                 },
                 on: {
                     select(eid, esource) {
-                        console.log(`select ${`${esource.type}/${eid}`}`)
-                        self.$router.push(`profile/${eid}`)
+                        console.log(`select ${`${esource.type}/${eid}`}`);
+                        self.$router.push(`profile/${eid}`);
                     },
                     delete(eid, esource) {
                         self.$ipc.emit('modal', 'generic', {
@@ -61,17 +61,17 @@ export default {
                             denyIcon: 'close',
                             deny: self.$t('delete.no'),
                             onAccept() {
-                                self.$store.dispatch('profiles/delete', eid)
+                                self.$store.dispatch('profiles/delete', eid);
                             },
-                        })
+                        });
                     },
                 },
-            }
+            };
             if (idx <= 2) {
                 option.props.bound = true;
             }
             idx += 1;
             return createElement(`${source.type}-card`, option);
-        }))
+        }));
     },
-}
+};

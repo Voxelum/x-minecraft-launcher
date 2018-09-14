@@ -1,5 +1,5 @@
 import Vuex from 'vuex';
-import { loading } from '../index'
+import { loading } from '../index';
 
 export default
     /**
@@ -25,13 +25,13 @@ export default
                         .then(() => {
                             console.log(`Module [${module}] saved by ${type}`);
                         }, (err) => {
-                            console.warn(`Module [${module}] saving occured an error:`)
-                            console.warn(err)
+                            console.warn(`Module [${module}] saving occured an error:`);
+                            console.warn(err);
                         })
                         .catch((err) => {
-                            console.warn(`Module [${module}] saving occured an error:`)
-                            console.warn(err)
+                            console.warn(`Module [${module}] saving occured an error:`);
+                            console.warn(err);
                         });
                 }
             });
-    }
+    };

@@ -1,6 +1,6 @@
-import uuid from 'uuid'
-import { ActionContext } from 'vuex'
-import Vue from 'vue'
+import uuid from 'uuid';
+import { ActionContext } from 'vuex';
+import Vue from 'vue';
 
 export default {
     namespaced: true,
@@ -48,14 +48,14 @@ export default {
                         }
                         return Promise.resolve();
                     })
-                    .catch((e) => { console.error(e) }),
-            ))
+                    .catch((e) => { console.error(e); }),
+            ));
         },
         save(context) {
             return context.dispatch('write', {
                 path: 'profiles.json',
-                data: ({ profiles: context.state.all })
-            }, { root: true })
+                data: ({ profiles: context.state.all }),
+            }, { root: true });
         },
         /**
          * @param {ActionContext} context 
@@ -72,8 +72,8 @@ export default {
             context.commit('add', { id, type });
             if (!option.mcversion) option.mcversion = context.rootGetters['versions/minecraft/release'];
 
-            console.log('Create profile with option')
-            console.log(option)
+            console.log('Create profile with option');
+            console.log(option);
             return context.dispatch(`${id}/edit`, { ...option, type });
         },
         /**
@@ -86,4 +86,4 @@ export default {
             return context.dispatch('delete', `profiles/${payload}`, { root: true });
         },
     },
-}
+};

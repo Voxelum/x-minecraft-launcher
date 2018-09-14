@@ -1,3 +1,3 @@
-import inst from './SkinView'
+import inst from './SkinView';
 
 export default inst;

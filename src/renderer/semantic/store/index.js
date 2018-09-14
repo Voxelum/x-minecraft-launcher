@@ -4,7 +4,7 @@ import { remote, ipcRenderer } from 'electron';
 import universalStore from 'universal/store';
 import modules from './modules';
 
-console.log(universalStore.state.root)
+console.log(universalStore.state.root);
 
 const store = {
     ...universalStore,
@@ -36,7 +36,7 @@ ipcRenderer.on('vuex-commit', (event, mutation, id) => {
 });
 ipcRenderer.on('vuex-sync', (event, mutations, id) => {
     for (const mul of mutations) {
-        localCommit(mul.type, mul.payload)
+        localCommit(mul.type, mul.payload);
     }
     lastId = id;
     syncing = false;
@@ -45,7 +45,7 @@ ipcRenderer.on('vuex-sync', (event, mutations, id) => {
         .filter(i => i > lastId);
     if (missing.length !== 0) {
         for (const key of missing) {
-            console.log(syncingQueue[key])
+            console.log(syncingQueue[key]);
         }
     }
 });

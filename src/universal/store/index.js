@@ -1,12 +1,12 @@
 
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-import plugins from './plugins'
-import state from './state'
-import mutations from './mutations'
-import modules from './modules'
-import getters from './getters'
+import plugins from './plugins';
+import state from './state';
+import mutations from './mutations';
+import modules from './modules';
+import getters from './getters';
 
 Vue.use(Vuex);
 
@@ -17,4 +17,4 @@ export default {
     getters,
     strict: process.env.NODE_ENV !== 'production',
     plugins,
-}
+};

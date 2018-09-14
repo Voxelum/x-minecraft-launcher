@@ -1,4 +1,4 @@
-import { LiteLoader } from 'ts-minecraft'
+import { LiteLoader } from 'ts-minecraft';
 
 export default {
     namespaced: true,
@@ -12,7 +12,7 @@ export default {
         mods: state => state.mods,
     },
     mutations: {
-        version(state, version) { state.version = version },
+        version(state, version) { state.version = version; },
         add(state, mod) {
             state.mods.push(mod);
         },
@@ -45,10 +45,10 @@ export default {
                     mods: context.state.mods,
                     version: context.state.version,
                 },
-            }, { root: true })
+            }, { root: true });
         },
         setVersion(context, version) {
             if (context.state.version !== version) context.commit('version', version);
         },
     },
-}
+};

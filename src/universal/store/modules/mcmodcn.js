@@ -1,6 +1,6 @@
-import querystring from 'querystring'
-import parser from 'fast-html-parser'
-import request from '../helpers/request'
+import querystring from 'querystring';
+import parser from 'fast-html-parser';
+import request from '../helpers/request';
 
 
 /**
@@ -12,7 +12,7 @@ function parseFrame(n) {
     const items = n.lastChild;
     let image = block.firstChild.firstChild.attributes.src;
     if (image.startsWith('/')) {
-        image = `http://www.mcmod.cn${image}`
+        image = `http://www.mcmod.cn${image}`;
     }
     const url = block.firstChild.attributes.href;
     return {
@@ -28,7 +28,7 @@ function parseFrame(n) {
             url: c.childNodes[1].attributes.href,
             image: c.childNodes[1].firstChild.attributes.src,
         })),
-    }
+    };
 }
 
 /**
@@ -50,7 +50,7 @@ function parseAllClass(root) {
                 url: titleDetail.lastChild.attributes.href,
                 description: titleDetail.attributes.title,
                 list: left.lastChild.childNodes.map(parseFrame),
-            }
+            };
         });
 }
 
@@ -62,14 +62,14 @@ function parseNews(root) {
                 image: node.childNodes[0].childNodes[0].attributes.src,
                 url: node.childNodes[0].attributes.href,
                 title: node.childNodes[0].attributes.title,
-            }
+            };
         }
         return {
             image: node.childNodes[1].childNodes[0].attributes.src,
             url: node.childNodes[1].attributes.href,
             title: node.childNodes[1].attributes.title,
-        }
-    })
+        };
+    });
     return newsMods;
 }
 
@@ -85,7 +85,7 @@ export default {
             const parse = (randomSection) => {
                 randomSection = randomSection.removeWhitespace();
                 return randomSection.childNodes.map(parseFrame);
-            }
+            };
             return request({
                 method: 'POST',
                 url: 'http://www.mcmod.cn/ajax/index/ajax___index_random.php',
@@ -94,7 +94,7 @@ export default {
                     Origin: 'http://www.mcmod.cn',
                     Referer: 'http://www.mcmod.cn/',
                 },
-            }, parse)
+            }, parse);
             // return context.dispatch('query', {
             //     service: 'mcmod',
             //     action: 'fetchRandom',
@@ -108,7 +108,7 @@ export default {
             return request('http://www.mcmod.cn', root => ({
                 news: parseNews(root),
                 content: parseAllClass(root),
-            }))
+            }));
         },
         /**
          * 
@@ -118,17 +118,17 @@ export default {
             const url = `http://www.mcmod.cn/class/${id}.html`;
             return request(url, (pageCont) => {
                 pageCont = pageCont.removeWhitespace();
-                const infoBlock = pageCont.querySelector('.InfoBlock')
-                const title = pageCont.querySelector('.title')
-                const modimg = pageCont.querySelector('.class_modimg')
-                const classEx = pageCont.querySelector('.class_ex')
-                const modDescription = pageCont.querySelector('.right_inside')
+                const infoBlock = pageCont.querySelector('.InfoBlock');
+                const title = pageCont.querySelector('.title');
+                const modimg = pageCont.querySelector('.class_modimg');
+                const classEx = pageCont.querySelector('.class_ex');
+                const modDescription = pageCont.querySelector('.right_inside');
                 let image = modimg.attributes.src;
                 if (image.startsWith('/')) {
-                    image = `http://www.mcmod.cn${image}`
+                    image = `http://www.mcmod.cn${image}`;
                 }
                 const linksList = infoBlock.childNodes[8].lastChild
-                    .lastChild
+                    .lastChild;
 
                 return {
                     title: title.childNodes[1].text,
@@ -151,8 +151,8 @@ export default {
                     relevantLinks: linksList.childNodes.map(val => val.lastChild.attributes.href),
                     modDescription: modDescription.childNodes[0].childNodes[0]
                         .childNodes[0].childNodes[0].text,
-                }
-            })
+                };
+            });
             // return context.dispatch('query', {
             //     service: 'mcmod',
             //     action: 'fetchDetail',
@@ -160,4 +160,4 @@ export default {
             // }, { root: true })
         },
     },
-}
+};

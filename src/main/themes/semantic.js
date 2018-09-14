@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow, app, Tray, Menu, MenuItem, nativeImage } from 'electron'
+import { ipcMain, BrowserWindow, app, Tray, Menu, MenuItem, nativeImage } from 'electron';
 import os from 'os';
 
 export default function setup(winURL) {
@@ -7,9 +7,9 @@ export default function setup(winURL) {
     let iconImage; // icon image
 
     function setupIcon(window) {
-        const platform = os.platform()
-        if (platform === 'darwin') app.dock.setIcon(iconImage)
-        else window.setIcon(iconImage)
+        const platform = os.platform();
+        if (platform === 'darwin') app.dock.setIcon(iconImage);
+        else window.setIcon(iconImage);
     }
 
     /**
@@ -22,12 +22,12 @@ export default function setup(winURL) {
             resizable: false,
             frame: false,
             transparent: true,
-        })
-        mainWindow.setResizable(false)
-        mainWindow.setTitle('ILauncher')
-        setupIcon(mainWindow)
-        mainWindow.loadURL(`${winURL}?logger=false`)
-        mainWindow.on('closed', () => { mainWindow = null })
+        });
+        mainWindow.setResizable(false);
+        mainWindow.setTitle('ILauncher');
+        setupIcon(mainWindow);
+        mainWindow.loadURL(`${winURL}?logger=false`);
+        mainWindow.on('closed', () => { mainWindow = null; });
     }
 
     /**
@@ -38,27 +38,27 @@ export default function setup(winURL) {
             height: 400,
             width: 600,
             frame: false,
-        })
-        logWindow.setTitle('Log')
-        setupIcon(logWindow)
+        });
+        logWindow.setTitle('Log');
+        setupIcon(logWindow);
         logWindow.loadURL(`${winURL}?logger=true`);
-        logWindow.on('closed', () => { logWindow = null })
+        logWindow.on('closed', () => { logWindow = null; });
         logWindow.webContents.setVisualZoomLevelLimits(1, 1);
         logWindow.webContents.setLayoutZoomLevelLimits(1, 1);
     }
     app.makeSingleInstance((commandLine, workingDirectory) => {
         // Someone tried to run a second instance, we should focus our window.
         if (mainWindow) {
-            if (mainWindow.isMinimized()) mainWindow.restore()
-            mainWindow.focus()
+            if (mainWindow.isMinimized()) mainWindow.restore();
+            mainWindow.focus();
         }
-    })
+    });
 
-    iconImage = nativeImage.createFromPath(`${__static}/logo.png`) // eslint-disable-line no-undef
+    iconImage = nativeImage.createFromPath(`${__static}/logo.png`); // eslint-disable-line no-undef
     createMainWindow();
 
-    const tray = new Tray(iconImage)
-    tray.setToolTip('An Electron Minecraft Launcher')
+    const tray = new Tray(iconImage);
+    tray.setToolTip('An Electron Minecraft Launcher');
     const menu = new Menu();
     menu.append(new MenuItem({
         click: (item, win, event) => {
@@ -66,20 +66,20 @@ export default function setup(winURL) {
         },
         role: 'Hint',
         label: 'Exit',
-    }))
-    tray.setContextMenu(menu)
+    }));
+    tray.setContextMenu(menu);
     app.setName('ILauncher');
 
     app.on('activate', () => {
-        if (mainWindow === null) createMainWindow()
-    })
+        if (mainWindow === null) createMainWindow();
+    });
 
     const ipcListeners = [];
     const ipcListen = (event, listener) => {
         ipcListeners.push({ event, listener });
-        ipcMain.on(event, listener)
+        ipcMain.on(event, listener);
         return listener;
-    }
+    };
     /**
      * handle log window log message
      */
@@ -87,25 +87,25 @@ export default function setup(winURL) {
         if (logWindow) {
             logWindow.webContents.send('minecraft-stdout', s);
         }
-    }))
+    }));
     ipcListen('minecraft-stderr', ((s) => {
         if (logWindow) {
             logWindow.webContents.send('minecraft-stderr', s);
         }
-    }))
+    }));
     /**
      * handle park launcher when the game launch
      */
     ipcListen('minecraft-start', ((debug) => {
-        mainWindow.close()
+        mainWindow.close();
         if (debug) createLogWindow();
-    }))
+    }));
     ipcListen('minecraft-exit', (() => {
         if (logWindow) {
             logWindow.close();
         }
-        createMainWindow()
-    }))
+        createMainWindow();
+    }));
 
     return {
         dispose() {
@@ -113,5 +113,5 @@ export default function setup(winURL) {
                 ipcMain.removeListener(l.event, l.listener);
             }
         },
-    }
+    };
 }
