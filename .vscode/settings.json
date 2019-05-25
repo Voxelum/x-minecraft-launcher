@@ -35,10 +35,9 @@
             "wrap_line_length": 100
         }
     },
-    "aliasFork.alias": {
-        "vue$": "../../../../vue/dist/vue.esm.js",
-        "static": "static",
-        "universal": "src/universal",
-        "renderer": "src/renderer"
-    }
+    "jumpToAliasFile.alias": {
+        "vue$": "vue/dist/vue.esm.js",
+        "static": "/Users/ci010/Workspace/ILauncher/static",
+        "universal": "/Users/ci010/Workspace/ILauncher/src/universal"
+    },
 }
