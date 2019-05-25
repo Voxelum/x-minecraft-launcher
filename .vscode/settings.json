@@ -36,8 +36,9 @@
         }
     },
     "aliasFork.alias": {
-        "vue$": "vue\\dist\\vue.esm.js",
+        "vue$": "../../../../vue/dist/vue.esm.js",
         "static": "static",
-        "universal": "src\\universal"
+        "universal": "src/universal",
+        "renderer": "src/renderer"
     }
 }
