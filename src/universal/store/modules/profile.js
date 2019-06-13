@@ -2,16 +2,15 @@ import Vue from 'vue';
 import { getExpectVersion } from 'universal/utils/versions';
 import { fitin } from 'universal/utils/object';
 
+
 /**
- * @param {string} id
- * @param {import("universal/store/modules/java").JavaModule.Java} java
- * @param {string} mcversion
- * @param {string} author
- * @param {'modpack'|'server'}type
- * @return {import("./profile").ProfileModule.Profile}
+ * @type {import('./profile').TemplateFunction}
  */
-export function createTemplate(id, java, mcversion, author, type = 'modpack') {
-    return {
+export function createTemplate(id, java, mcversion, type = 'modpack') {
+    /**
+     * @type {import('./profile').ProfileModule.ProfileBase}
+     */
+    const base = {
         id,
 
         name: '',
@@ -26,15 +25,9 @@ export function createTemplate(id, java, mcversion, author, type = 'modpack') {
         mcversion,
 
         type,
-        
-        /**
-         * Modpack section
-         */
-        author,
-        description: '',
         url: '',
         icon: '',
-        
+
         showLog: false,
         hideLauncher: true,
 
@@ -53,12 +46,34 @@ export function createTemplate(id, java, mcversion, author, type = 'modpack') {
         },
 
         settings: {},
-        servers: [],
-        maps: [],
+        serverInfos: [],
+        worlds: [],
 
         refreshing: false,
         problems: [],
     };
+    if (type === 'modpack') {
+        /**
+        * @type {import('./profile').ProfileModule.Profile}
+         */
+        const modpack = {
+            author: '',
+            description: '',
+            ...base,
+            type: 'modpack',
+        };
+        return modpack;
+    }
+    /**
+     * @type {import('./profile').ProfileModule.ServerProfile}
+     */
+    const server = {
+        host: '',
+        port: 0,
+        ...base,
+        type: 'server',
+    };
+    return server;
 }
 
 /**
@@ -89,8 +104,17 @@ const mod = {
         },
     },
     mutations: {
+        serverStatus(state, status) {
+            const cur = state.all[state.id];
+            if (cur.type === 'server') {
+                cur.status = status;
+            }
+        },
         refreshingProfile(state, refreshing) {
-            state.all[state.id].refreshing = refreshing;
+            const cur = state.all[state.id];
+            if (cur) {
+                cur.refreshing = refreshing;
+            }
         },
         addProfile(state, profile) {
             /**
@@ -114,8 +138,14 @@ const mod = {
             const prof = state.all[state.id];
 
             prof.name = settings.name || prof.name;
-            prof.author = settings.author || prof.author;
-            prof.description = settings.description || prof.description;
+
+            if (prof.type === 'modpack') {
+                prof.author = settings.author || prof.author;
+                prof.description = settings.description || prof.description;
+            } else {
+                prof.host = settings.host || prof.host;
+                prof.port = settings.port || prof.port;
+            }
 
             if (prof.mcversion !== settings.mcversion && settings.mcversion !== undefined) {
                 prof.mcversion = settings.mcversion;
@@ -154,10 +184,10 @@ const mod = {
         },
 
         serverInfos(state, infos) {
-            state.all[state.id].servers = infos;
+            state.all[state.id].serverInfos = infos;
         },
-        levelData(state, maps) {
-            state.all[state.id].maps = maps;
+        worlds(state, maps) {
+            state.all[state.id].worlds = maps;
         },
         gamesettings(state, settings) {
             fitin(state.all[state.id].settings, settings);
