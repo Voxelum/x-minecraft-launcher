@@ -1,17 +1,38 @@
 <template>
-	<v-form ref="form" v-model="valid" lazy-validation style="height: 100%;">
+	<v-form ref="form" v-model="valid" lazy-validation>
 		<v-container grid-list-xs fill-height style="overflow: auto;">
-			<v-layout row wrap>
+			<v-layout row wrap justify-start align-start>
 				<v-flex tag="h1" style="margin-bottom: 10px;" class="white--text" xs12>
 					<span class="headline">{{$t('profile.setting')}}</span>
 				</v-flex>
 				<v-flex d-flex xs6>
-					<v-text-field outline dark v-model="name" :label="$t('name')" :placeholder="`Minecraft ${mcversion}`"></v-text-field>
+					<v-text-field dark v-model="name" :label="$t('name')" :placeholder="`Minecraft ${mcversion}`"></v-text-field>
+				</v-flex>
+				<v-flex d-flex xs6>
+				</v-flex>
+				<v-flex d-flex xs6>
+					<v-text-field dark v-model="author" :label="$t('author')" :placeholder="$repo.state.user.name"
+					  required></v-text-field>
+				</v-flex>
+				<v-flex d-flex xs6>
+					<v-text-field dark v-model="url" :label="$t('url')" :placeholder="$repo.state.user.name"
+					  required></v-text-field>
+				</v-flex>
+				<v-flex d-flex xs12>
+					<v-text-field dark v-model="description" :label="$t('description')">
+					</v-text-field>
 				</v-flex>
 				<v-flex d-flex xs6>
 					<v-checkbox hide-details dark v-model="hideLauncher" :label="$t('launch.hideLauncher')"></v-checkbox>
 				</v-flex>
 				<v-flex d-flex xs6>
+					<v-checkbox hide-details dark v-model="showLog" :label="$t('launch.showLog')"></v-checkbox>
+				</v-flex>
+				<!-- <v-flex xs6>
+					<forge-version-list style="max-height: 80vh">
+					</forge-version-list>
+				</v-flex> -->
+				<!-- <v-flex d-flex xs6>
 					<version-menu @value="mcversion = $event">
 						<template v-slot="{ on }">
 							<v-text-field style="cursor: pointer !important;" outline dark append-icon="arrow_drop_down"
@@ -19,19 +40,16 @@
 							  v-on="on"></v-text-field>
 						</template>
 					</version-menu>
-				</v-flex>
-				<!-- <v-flex d-flex xs6>
-
 				</v-flex> -->
-				<v-flex d-flex xs6>
+				<!-- <v-flex d-flex xs6>
 					<forge-version-menu @value="onSelectForge">
 						<template v-slot="{ on }">
 							<v-text-field outline dark :value="forgeVersion" append-icon="arrow_drop_down"
 							  placeholder="Disabled" :label="$t('forge.version')" :readonly="true" v-on="on"></v-text-field>
 						</template>
 					</forge-version-menu>
-				</v-flex>
-				<v-flex d-flex xs12 class="local-version">
+				</v-flex> -->
+				<!-- <v-flex d-flex xs12 class="local-version">
 					<v-tooltip top>
 						<template v-slot:activator="{ on }">
 							<v-select style="width: 100%" v-on="on" hide-details dark outline :item-text="(v)=>v.id" :item-value="(v)=>v"
@@ -40,7 +58,7 @@
 						</template>
 						{{$t('profile.localVersionHint')}}
 					</v-tooltip>
-				</v-flex>
+				</v-flex> -->
 				<v-flex d-flex xs6>
 				</v-flex>
 			</v-layout>
@@ -57,9 +75,19 @@ export default {
   components: { ForgeVersionMenu },
   data: function () {
     return {
+      active: 0,
       valid: true,
       hideLauncher: false,
+      showLog: false,
+      type: '',
       name: '',
+
+      host: '',
+      port: -1,
+
+      author: '',
+      description: '',
+      url: '',
     }
   },
   computed: {
@@ -105,15 +133,40 @@ export default {
   },
   methods: {
     save() {
-      this.$repo.dispatch('editProfile', {
+      const payload = {
         name: this.name,
         hideLauncher: this.hideLauncher,
-      });
+        url: this.url,
+        showLog: this.showLog,
+      }
+      if (this.type === 'modpack') {
+        this.$repo.dispatch('editProfile', {
+          ...payload,
+          author: this.author,
+          description: this.description,
+        });
+      } else {
+        this.$repo.dispatch('editProfile', {
+          ...payload,
+          host: this.host,
+          port: this.port,
+        });
+      }
     },
     load() {
       const profile = this.$repo.getters['selectedProfile'];
       this.name = profile.name;
       this.hideLauncher = profile.hideLauncher;
+      this.url = profile.url;
+      this.showLog = profile.showLog;
+      this.type = profile.type;
+      if (profile.type === 'modpack') {
+        this.author = profile.author;
+        this.description = profile.description;
+      } else {
+        this.port = profile.port;
+        this.host = profile.host;
+      }
     },
     onSelectForge(version) {
       if (version) {
@@ -127,6 +180,10 @@ export default {
         event.preventDefault();
       }
     },
+    onMouseWheel(e) {
+      e.stopPropagation();
+      return true;
+    }
   }
 }
 </script>
