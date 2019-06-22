@@ -2,7 +2,6 @@
     "name": "voxelauncher",
     "productName": "VoxeLauncher",
     "version": "0.0.1-alpha.3",
-    "typings": "typings.d.ts",
     "author": "cijhn@hotmail.com",
     "description": "A great minecraft launcher in the feature",
     "license": "MIT",
@@ -15,13 +14,15 @@
         "build": "node scripts/build.js && electron-builder",
         "build:dir": "node scripts/build.js && electron-builder --dir",
         "build:clean": "cross-env BUILD_TARGET=clean node scripts/build.js",
+        "build:locale": "node scripts/build-locale.js",
         "dev": "node scripts/dev-runner.js --no-lazy",
         "pack": "npm run pack:main && npm run pack:renderer",
         "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config scripts/webpack.main.config.js",
         "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config scripts/webpack.renderer.config.js",
         "lint": "eslint --ext .js,.vue src",
         "lint:fix": "eslint --ext .js,.vue --fix src",
-        "test": " mocha test/e2e",
+        "test": "mocha test/e2e",
+        "release": "standard-version",
         "install:native": "cross-env npm_config_runtime=electron electron-builder install-app-deps",
         "postinstall": "npm run install:native"
     },
@@ -89,15 +90,26 @@
             "icon": "build/icons"
         }
     },
+    "commitlint": {
+        "extends": [
+            "@commitlint/config-conventional"
+        ]
+    },
+    "husky": {
+        "hooks": {
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
+    },
     "dependencies": {
         "electron-updater": "^4.0.6",
         "fast-html-parser": "^1.0.1",
         "file-type": "^10.11.0",
         "got": "^9.6.0",
         "iconv-lite": "^0.4.18",
-        "lzma-native": "^4.0.3",
+        "in-gfw": "^1.2.0",
+        "lzma-native": "^4.0.5",
         "treelike-task": "^0.0.15",
-        "ts-minecraft": "^5.0.22-beta",
+        "ts-minecraft": "^5.2.2",
         "uuid": "^3.2.1",
         "vue": "^2.6.10",
         "vue-electron": "^1.0.6",
@@ -109,6 +121,8 @@
         "yazl": "^2.5.1"
     },
     "devDependencies": {
+        "@commitlint/cli": "^8.0.0",
+        "@commitlint/config-conventional": "^8.0.0",
         "babel-eslint": "^10.0.1",
         "cfonts": "^1.1.3",
         "chalk": "^1.1.3",
@@ -117,8 +131,8 @@
         "css-loader": "^2.1.1",
         "del": "^3.0.0",
         "devtron": "^1.4.0",
-        "electron": "^4.2.0",
-        "electron-builder": "^20.40.2",
+        "electron": "^5.0.3",
+        "electron-builder": "^20.43.0",
         "electron-debug": "^1.4.0",
         "electron-devtools-installer": "^2.2.0",
         "eslint": "^5.5.0",
@@ -130,11 +144,14 @@
         "eslint-plugin-vue": "^5.2.2",
         "file-loader": "^1.1.11",
         "html-webpack-plugin": "^3.2.0",
+        "husky": "^2.4.1",
+        "maven-artifact-version": "0.0.1",
         "mini-css-extract-plugin": "^0.4.2",
         "mocha": "^5.2.0",
         "multispinner": "^0.2.1",
         "require-dir": "^1.2.0",
         "spectron": "^5.0.0",
+        "standard-version": "^6.0.1",
         "style-loader": "^0.21.0",
         "three": "^0.86.0",
         "three-orbit-controls": "^82.1.0",

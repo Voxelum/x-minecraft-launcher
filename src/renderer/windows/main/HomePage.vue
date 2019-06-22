@@ -6,7 +6,7 @@
 					<v-icon dark>more_vert</v-icon>
 				</v-btn>
 			</template>
-			{{$t('settings')}}
+			{{$t('profile.setting')}}
 		</v-tooltip>
 
 		<v-tooltip top>
@@ -21,7 +21,12 @@
 		<v-tooltip top>
 			<template v-slot:activator="{ on }">
 				<v-btn v-on="on" style="position: absolute; left: 140px; bottom: 10px; " flat icon dark @click="goTask">
-					<v-icon dark>assignment</v-icon>
+					<v-badge left :value="activeTasksCount !== 0">
+						<template v-slot:badge>
+							<span>{{activeTasksCount}}</span>
+						</template>
+						<v-icon dark>assignment</v-icon>
+					</v-badge>
 				</v-btn>
 			</template>
 			{{$tc('task.manager', 2)}}
@@ -40,10 +45,10 @@
 					<v-list-tile ripple :key="index" @click="fixProblem(item)">
 						<v-list-tile-content>
 							<v-list-tile-title>
-								{{ item.title }}
+								{{ $t(`diagnosis.${item.id}`, item.arguments || {}) }}
 							</v-list-tile-title>
 							<v-list-tile-sub-title>
-								{{ item.message }}
+								{{ $t(`diagnosis.${item.id}.message`, item.arguments || {}) }}
 							</v-list-tile-sub-title>
 						</v-list-tile-content>
 						<v-list-tile-action>
@@ -56,27 +61,15 @@
 
 		<div class="display-1 white--text" style="padding-top: 50px; padding-left: 50px">
 			<span style="margin-right: 10px;">
-				{{profile.name}}
+				{{profile.name || `Minecraft ${profile.mcversion}`}}
 			</span>
 			<v-chip label color="green" v-if="profile.author" outline small :selected="true" style="margin-right: 5px;">
 				{{profile.author}}
 			</v-chip>
 
-			<v-chip v-if="!profile.forceVersion" label color="green" outline small :selected="true">
-				Minecraft: {{profile.mcversion}}
+			<v-chip label color="green" outline small :selected="true">
+				Version: {{$repo.getters['currentVersion'].id}}
 			</v-chip>
-			<v-chip v-else label color="green" outline small :selected="true">
-				Version: {{profile.version}}
-			</v-chip>
-			<!-- <version-menu ref="menu" @value="updateVersion" :disabled="refreshingProfile">
-				<template v-slot="{ on }">
-					<v-chip label color="green" outline small :selected="false" v-on="on">
-						<span style="cursor: pointer !important; ">
-							{{profile.mcversion}}
-						</span>
-					</v-chip>
-				</template>
-			</version-menu> -->
 		</div>
 
 		<v-btn color="grey darken-1" style="position: absolute; right: 10px; bottom: 10px; " dark large
@@ -87,7 +80,7 @@
 
 		<task-dialog v-model="taskDialog" @close="taskDialog=false"></task-dialog>
 		<crash-dialog v-model="crashDialog" :content="crashReport" :location="crashReportLocation" @close="crashDialog=false"></crash-dialog>
-		<java-wizard v-if="missingJava" @task="taskDialog=true" @show="taskDialog=false"></java-wizard>
+		<java-wizard ref="jwizard" @task="taskDialog=true" @show="taskDialog=false"></java-wizard>
 		<v-dialog v-model="tempDialog" persistent width="250">
 			<v-card dark>
 				<v-container>
@@ -109,8 +102,6 @@
 <script>
 export default {
   data: () => ({
-    refreshingProfile: false,
-
     taskDialog: false,
 
     crashDialog: false,
@@ -119,41 +110,40 @@ export default {
 
     tempDialog: false,
     tempDialogText: '',
-
-    problems: [],
   }),
   computed: {
-    missingJava() { return this.$repo.getters['java/missing']; },
-    profile() { return this.$repo.getters['profile/current'] },
+    refreshingProfile() { return this.profile.refreshing; },
+    problems() { return this.profile.problems; },
+    missingJava() { return this.$repo.getters['missingJava']; },
+    profile() { return this.$repo.getters['selectedProfile'] },
+    activeTasksCount() {
+      let count = 0;
+      for (const task of this.$repo.state.task.tasks) {
+        if (task.status === 'running') {
+          count += 1;
+        }
+      }
+      return count;
+    },
   },
   mounted() {
-    this.refreshingProfile = true;
-    this.diagnose().finally(() => {
-      this.refreshingProfile = false;
-    });
+
   },
   watch: {
   },
+  activated() {
+  },
   methods: {
-    async diagnose() {
-      const problems = await this.$repo.dispatch('profile/diagnose');
-      this.problems = problems.map((e) => ({
-        ...e,
-        title: this.$t(`diagnosis.${e.id}`, e.arguments || {}),
-        message: this.$t(`diagnosis.${e.id}.message`, e.arguments || {}),
-      }));
-    },
     async launch() {
       this.tempDialog = true;
       this.tempDialogText = this.$t('launch.checkingProblems');
 
-      await this.diagnose();
-      if (this.problems.some(p => p.autofix)) {
+      const urgency = this.problems.filter(p => !p.optional);
+      if (urgency.some(p => p.autofix)) {
         await this.handleAutoFix();
       }
-      await this.diagnose();
-      if (this.problems.length !== 0) {
-        this.handleManualFix(this.problems[0]);
+      if (urgency.length !== 0) {
+        this.handleManualFix(urgency[0]);
         this.tempDialog = false;
         return;
       }
@@ -188,7 +178,7 @@ export default {
         if (filename) {
           this.tempDialogText = this.$t('profile.export.exportingMessage');
           this.tempDialog = true;
-          this.$repo.dispatch('profile/export', { dest: filename }).then(() => {
+          this.$repo.dispatch('exportProfile', { dest: filename }).then(() => {
             this.tempDialog = false;
           }).catch((e) => {
             this.tempDialog = false;
@@ -201,23 +191,14 @@ export default {
       this.taskDialog = true;
     },
     updateVersion(mcversion) {
-      this.refreshingProfile = true;
-      this.$repo.commit('profile/edit', { mcversion });
-      this.diagnose().then(() => {
-        this.refreshingProfile = false;
-      })
+      this.$repo.dispatch('editProfile', { mcversion });
     },
     fixProblem(problem) {
       console.log(problem);
-      this.refreshingProfile = true;
       if (!problem.autofix) {
-        this.handleManualFix(problem).finally(() => {
-          this.refreshingProfile = false;
-        })
+        this.handleManualFix(problem);
       } else {
-        return this.handleAutoFix().finally(() => {
-          this.refreshingProfile = false;
-        });
+        return this.handleAutoFix();
       }
       return Promise.resolve();
     },
@@ -230,48 +211,21 @@ export default {
           this.$router.push('profile-setting');
           break;
         case 'autoDownload':
-          const handle = await this.$repo.dispatch('java/install');
+          const handle = await this.$repo.dispatch('installJava');
           if (handle) {
             this.taskDialog = true;
-            await this.$repo.dispatch('task/wait', handle);
+            await this.$repo.dispatch('waitTask', handle);
           }
           break;
         case 'manualDownload':
-          return this.$repo.dispatch('java/redirect');
+          return this.$repo.dispatch('redirectToJvmPage');
+        case 'incompatibleJava':
+          return this.$refs.jwizard.display(this.$t('java.incompatibleJava'), this.$t('java.incompatibleJavaHint'));
       }
     },
     async handleAutoFix() {
-      const autofixed = this.problems.filter(p => p.autofix);
-
-      if (autofixed.length === 0) return;
-
-      const profile = this.profile;
-      const { id, mcversion } = profile;
-      const location = this.$repo.state.root;
-
-      if (mcversion === '') return;
-
-      if (autofixed.some(p => p.id === 'missingVersionJson' || p.id === 'missingVersionJar')) {
-        const versionMeta = this.$repo.state.version.minecraft.versions[mcversion];
-        const handle = await this.$repo.dispatch('version/minecraft/download', versionMeta);
-        this.taskDialog = true;
-        await this.$repo.dispatch('task/wait', handle);
-      }
-
-      if (autofixed.some(p => ['missingAssetsIndex', 'missingLibraries', 'missingAssets'].indexOf(p.id) !== -1)) {
-        const handle = await this.$repo.dispatch('version/checkDependencies', mcversion);
-        this.taskDialog = true;
-        await this.$repo.dispatch('task/wait', handle);
-      }
-
-      await this.diagnose();
+      await this.$repo.dispatch('fixProfile', this.problems);
     },
-  },
-  components: {
-    ExportDialog: () => import('./ExportDialog'),
-    TaskDialog: () => import('./TaskDialog'),
-    CrashDialog: () => import('./CrashDialog'),
-    JavaWizard: () => import('./JavaWizard'),
   },
 }
 </script>
@@ -299,5 +253,8 @@ export default {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+.v-badge__badge .primary {
+  left: -13px;
 }
 </style>

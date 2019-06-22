@@ -52,21 +52,47 @@ The renderer is/are just (a) browsers which communicate with main. It maintains 
 
 The project is mainly written by js. Though, by adding tricky typescript definition files (d.ts), we can have useful code snippets even for vue commit/dispatch! That really save my brain and improve the productivity. See the [store definition file](src/universal/store/store.d.ts) for more details.
 
-#### LICENSE 
 
-[MIT](LICENSE)
+## Dev
 
-#### Dev
+This project is designed to easy to dev... hopefully.
 
-Require node 10, (not worked in node 11 & 12), [nodejs download](https://nodejs.org/)
+### Getting Started
 
-Require python 2.7, some cpp compiler to install native module.
+*The installation might be the most hard part.*
 
-On Windows: please use msbuild tool to compile cpp. You can try install it by [windows-build-tools](https://github.com/felixrieseberg/windows-build-tools).
+The development environment require 3 things:
 
-On MacOS: install XCode. 
+1. [Nodejs](https://nodejs.org/) version >= 10
+2. python 2.7
+3. msbuild (Sindows) , clang (MacOs), gcc (linux desktop)
 
-On Linux distr: Never tried. I don't have a linux desktop machine.
+#### Windows Env Tip
+
+If you have neither python 2.7 nor msbuild, you should try
+[windows-build-tools](https://github.com/felixrieseberg/windows-build-tools). It really simplify the verbose installation process. You can just run `npm install --global windows-build-tools` and wait it done.
+
+*Notice that the visual studio installation process is really slow. Some time the process will FREEZE. You can terminate the installation process and run the installation command again.*
+
+#### Mac Env Tip
+
+Python 2.7 should be built in. You should install XCode in addition. 
+
+#### Linux Env Tip
+
+Never tried. I don't have a linux desktop machine.
+
+#### 解决中国国内安装依赖（如electron）太慢的办法
+
+打开你的 git bash，在`npm i`前面加上`registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/"`。使用国内阿里提供的npm以及electron的镜像。
+
+最终输入的command也就是
+
+```bash
+registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/" npm i
+```
+
+### General Process
 
 ``` bash
 # optional on Windows to install build tools
@@ -85,7 +111,74 @@ npm run build
 npm test
 ```
 
-#### Credit
+### Let Typescript Intellisense to help you
+
+The launcher core is in [seperated project](https://github.com/ci010/ts-minecraft) written in typescript. 
+
+At the same time, the launcher core logic is guard by typescript definition file. Since the project enable the `checkJs` option in `jsconfig.json`. The vscode editor will perform type check on the vuex store part, which enable the type intellisense on usage of vuex. 
+
+For example, you will get intellisense during you write the vuex module:
+
+![image](/misc/typehint0.png)
+
+Also, the vscode will hint you in .vue files:
+
+![](/misc/typehint1.png)
+
+You may already notice that, in .vue file, it uses `$repo` but not `$store` property to access vuex store. This is just a redirect. `$repo` is just another reference of `$store`. It's necessary to let the type system accept my type definitoin.
+
+Each vuex module has a corresponding definitoin file. If you want to add a state/getter/mutation/action to a module, you should firstly add the definition of that state/getter/mutation/action in the definition file.
+
+The project overwrite the some vue/vuex definition. You can check [this file](/src/universal/store/store.d.ts) to see the implemantion detail.
+
+### A better Dev experience with VSCode debugger 
+
+The project includes vscode debugger configs. You can add breakpoint on line and debug. Currently, VSCode debugger method only supports debug on main process. 
+
+(You can use chrome devtool for renderer process anyway)
+
+We have two options now:
+
+1. Electron: Main (npm)
+2. Electron: Main (attach)
+
+Please use the attch option since the first one not work now.
+
+With attach option, you should first run `npm run dev`, and then attach debugger by VSCode debugger UI.
+
+### Commit your code
+
+This project follow the [conventional commits](https://www.conventionalcommits.org/en/v1.0.0-beta.3/). In short, the first line of your commit message should be:
+
+```
+commit type: commit description
+```
+
+There are several avaiable commit type: `feat`, `fix`, `refactor`, `style`, `docs`, `chore`, `test`.
+
+Refer from [this gist](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716):
+
+> feat: (new feature for the user, not a new feature for build script)
+>
+> fix: (bug fix for the user, not a fix to a build script)
+>
+> docs: (changes to the documentation)
+>
+> style: (formatting, missing semi colons, etc; no production code change)
+>
+> refactor: (refactoring production code, eg. renaming a variable)
+>
+> test: (adding missing tests, refactoring tests; no production code change)
+>
+> chore: (updating grunt tasks etc; no production code change)
+
+**Your commit will be rejected if you do not follow these rules.**
+
+## LICENSE 
+
+[MIT](LICENSE)
+
+## Credit
 
 [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)
 

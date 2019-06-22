@@ -34,6 +34,8 @@ const mainConfig = {
     resolve: {
         extensions: ['.js', '.json', '.node'],
         alias: {
+            main: path.join(__dirname, '../src/main'),
+            vue$: 'vue/dist/vue.runtime.esm.js',
             static: path.join(__dirname, '../static'),
             universal: path.join(__dirname, '../src/universal'),
         },

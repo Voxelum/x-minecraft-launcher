@@ -1,7 +1,8 @@
-import { app, ipcMain } from 'electron';
+import { app } from 'electron';
 import util from 'util';
 import fs from 'fs';
 import path from 'path';
+import { ipcMain } from './ipc';
 
 let firstRun = true;
 
@@ -19,18 +20,30 @@ function overwrite() {
 
     console.log(path.resolve(root, 'logs', 'main.log'));
     const outstream = fs.createWriteStream(path.resolve(root, 'logs', 'main.log'), { encoding: 'utf-8', flags: 'w+' });
+    /**
+     * @param {any} message
+     * @param {any[]} options
+     */
     console.log = (message, ...options) => {
         const raw = options.length !== 0 ? util.format(message, options) : util.format(message);
         const content = `[INFO] [${new Date().toUTCString()}]: ${raw}`;
         log(content);
         outstream.write(`${content}\n`);
     };
+    /**
+     * @param {any} message
+     * @param {any[]} options
+     */
     console.warn = (message, ...options) => {
         const raw = options.length !== 0 ? util.format(message, options) : util.format(message);
         const content = `[WARN] [${new Date().toUTCString()}]: ${raw}`;
         warn(content);
         outstream.write(`${content}\n`);
     };
+    /**
+     * @param {any} message
+     * @param {any[]} options
+     */
     console.error = (message, ...options) => {
         const raw = options.length !== 0 ? util.format(message, options) : util.format(message);
         const content = `[ERROR] [${new Date().toUTCString()}]: ${raw}`;
@@ -39,36 +52,17 @@ function overwrite() {
     };
 
     if (firstRun) {
-        const senderIdToStreams = {};
-        ipcMain.on('renderer-setup', (event, id) => { // TODO: potential memory leak
-            const loggerPath = path.resolve(root, 'logs', `renderer.${id}.log`);
-            console.log(`Setup renderer logger for window ${id} to ${loggerPath}.`);
-            senderIdToStreams[event.sender.id] = fs.createWriteStream(loggerPath, { encoding: 'utf-8', flags: 'w+' });
-        });
-
-        ipcMain.on('renderer-log', (event, message, ...options) => {
-            const stream = senderIdToStreams[event.sender.id];
-            if (stream) {
-                const raw = options.length !== 0 ? util.format(message, options) : util.format(message);
-                const content = `[INFO] [${new Date().toUTCString()}]: ${raw}`;
-                stream.write(`${content}\n`);
-            }
-        });
-        ipcMain.on('renderer-warn', (event, message, ...options) => {
-            const stream = senderIdToStreams[event.sender.id];
-            if (stream) {
-                const raw = options.length !== 0 ? util.format(message, options) : util.format(message);
-                const content = `[WARN] [${new Date().toUTCString()}]: ${raw}`;
-                stream.write(`${content}\n`);
-            }
-        });
-        ipcMain.on('renderer-error', (event, message, ...options) => {
-            const stream = senderIdToStreams[event.sender.id];
-            if (stream) {
-                const raw = options.length !== 0 ? util.format(message, options) : util.format(message);
-                const content = `[ERROR] [${new Date().toUTCString()}]: ${raw}`;
-                stream.write(`${content}\n`);
-            }
+        const levels = ['INFO', 'WARN', 'ERROR'];
+        ipcMain.on('browser-window-setup', (window, name) => {
+            const loggerPath = path.resolve(root, 'logs', `renderer.${name}.log`);
+            console.log(`Setup renderer logger for window ${name} to ${loggerPath}.`);
+            const stream = fs.createWriteStream(loggerPath, { encoding: 'utf-8', flags: 'w+' });
+            window.webContents.on('console-message', (e, level, message, line, id) => {
+                stream.write(`[${levels[level]}] [${new Date().toUTCString()}] [${id}]: ${message}\n`);
+            });
+            window.once('close', () => {
+                stream.close();
+            });
         });
         firstRun = false;
     }

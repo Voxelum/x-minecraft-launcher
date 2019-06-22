@@ -1,5 +1,5 @@
 import { autoUpdater } from 'electron-updater';
-import { ipcMain } from 'electron';
+import { ipcMain } from './ipc';
 
 if (process.env.NODE_ENV === 'development') {
     autoUpdater.setFeedURL({
@@ -27,5 +27,5 @@ ipcMain.on('store-ready', (store) => {
     autoUpdater.autoDownload = store.state.config.autoDownload;
     autoUpdater.allowPrerelease = store.state.config.allowPrerelease;
 
-    store.dispatch('config/checkUpdate');
+    store.dispatch('checkUpdate');
 });

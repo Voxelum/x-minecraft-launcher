@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import logo from '@/assets/minecraft.logo.png'
+import logo from 'renderer/assets/minecraft.logo.png'
 
 export default {
   data: function () {
@@ -66,13 +66,13 @@ export default {
       passworldRuls: [
         v => !!v || this.$t('login.requirePassword'),
       ],
-      selectedMode: this.$repo.state.user.authMode,
+      selectedMode: this.$repo.state.user.authService,
     }
   },
   computed: {
-    loginModes() { return this.$repo.getters['user/authModes'].map(m => ({ text: this.$t(`login.${m}.name`), value: m })) },
+    loginModes() { return this.$repo.getters['authServices'].map(m => ({ text: this.$t(`login.${m}.name`), value: m })) },
     accountRules() { return this.selectedMode === 'offline' ? this.usernameRules : this.emailRules; },
-    history() { return this.$repo.state.user.loginHistory[this.$repo.state.user.authMode] },
+    history() { return this.$repo.state.user.loginHistory[this.$repo.state.user.authService] },
   },
   watch: {
     selectedMode() {
@@ -92,9 +92,9 @@ export default {
     async login() {
       this.logining = true;
       await this.$nextTick(); // wait a tick to make sure this.account updated. 
-      await this.$repo.dispatch('user/selectLoginMode', this.selectedMode);
+      await this.$repo.dispatch('selectLoginMode', this.selectedMode);
       try {
-        await this.$repo.dispatch('user/login', {
+        await this.$repo.dispatch('login', {
           account: this.account,
           password: this.password,
         })
