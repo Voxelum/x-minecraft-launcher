@@ -43,7 +43,9 @@
 			<v-card class="main-body" color="grey darken-4">
 				<vue-particles color="#dedede" style="position: absolute; width: 100%; height: 100%;" clickMode="repulse"></vue-particles>
 				<transition name="fade-transition" mode="out-in">
-					<router-view></router-view>
+					<keep-alive>
+						<router-view></router-view>
+					</keep-alive>
 				</transition>
 				<notifier></notifier>
 			</v-card>
@@ -52,18 +54,15 @@
 </template>
 
 <script>
-import Notifier from './Notifier';
-
 export default {
   data: () => ({
     loading: false, // disable for now, but it'll be abled if the loading process is too slow..
     localHistory: [],
     timeTraveling: false,
   }),
-  components: { Notifier },
   computed: {
     logined() {
-      return this.$repo.getters['user/logined'];
+      return this.$repo.getters['logined'];
     },
   },
   created() {
@@ -85,12 +84,12 @@ export default {
       this.$store.dispatch('exit');
     },
     goBack() {
-      if (!this.login && this.$route.path === '/login') {
+      if (!this.logined && this.$route.path === '/login') {
         return;
       }
       this.timeTraveling = true;
-      if (this.localHistory.length !== 0) {
-        const before = this.localHistory.pop();
+      const before = this.localHistory.pop();
+      if (before) {
         this.$router.replace(before);
       }
       this.timeTraveling = false;

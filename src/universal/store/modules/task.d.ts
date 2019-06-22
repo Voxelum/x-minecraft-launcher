@@ -1,33 +1,42 @@
-import { Module, Context } from "../store";
 import { Task, TaskNode } from 'treelike-task';
+import { Context, Module, TaskHandle } from "../store";
 
+
+export interface TNode extends TaskNode {
+    _internalId: string
+    tasks: TNode[]
+    time?: string
+    status: string
+}
 export namespace TaskModule {
+
     interface State {
-        tree: { [uuid: string]: TaskNode },
-        tasks: TaskNode[],
+        tree: { [uuid: string]: TNode },
+        tasks: TNode[],
         maxLog: number,
     }
     interface Mutations {
-        create(state: State, option: { id: string, name: string }): void;
-        prune(state: State): void;
-        hook(state: State, option: { id: string, task: Task.Node }): void;
-        $update(state: State, option: {
-            adds: { id: string, node: Task.Node }[],
-            childs: { id: string, node: Task.Node }[],
-            updates: { id: string, progress: number, total: number, message: string, time: string }[],
+        createTask(state: State, option: { id: string, name: string }): void;
+        pruneTasks(state: State): void;
+        hookTask(state: State, option: { id: string, task: TNode }): void;
+        updateBatchTask(state: State, option: {
+            adds: { id: string, node: TNode }[],
+            childs: { id: string, node: TNode }[],
+            updates: { [id: string]: { progress?: number, total?: number, message?: string, time?: string } },
             statuses: { id: string, status: string }[],
         }): void;
     }
 
     type C = Context<TaskModule.State, {}, TaskModule.Mutations, TaskModule.Actions>;
     interface Actions {
-        execute(context: C, task: Task<any>): Promise<string>;
-        spawn(context: C, name: string): Promise<string>;
-        update(context: C, data: { id: string }): Promise<void>;
-        wait(context: C, uuid: string): Promise<any>;
-        cancel(context: C, uuid: string): Promise<void>;
+        executeTask(context: C, task: Task<any>): Promise<TaskHandle>;
+        spawnTask(context: C, name: string): Promise<TaskHandle>;
+        updateTask(context: C, data: { id: TaskHandle, progress: number, total?: number, message?: string }): Promise<void>;
+        waitTask(context: C, uuid: TaskHandle): Promise<any>;
+        finishTask(context: C, payload: { id: TaskHandle }): Promise<void>;
+        cancelTask(context: C, uuid: TaskHandle): Promise<void>;
     }
 
 }
 
-export type TaskModule = Module<TaskModule.State, TaskModule.Mutations, TaskModule.Actions>;
+export type TaskModule = Module<TaskModule.State, {}, TaskModule.Mutations, TaskModule.Actions>;

@@ -7,11 +7,11 @@ import { Menu } from 'electron';
  */
 export default function setup(context, store) {
     /**
-     * @type { import('electron').BrowserWindow }
+     * @type { import('electron').BrowserWindow? }
      */
     let mainRef;
     /**
-    * @type { import('electron').BrowserWindow }
+    * @type { import('electron').BrowserWindow? }
     */
     let loggerRef;
 
@@ -26,7 +26,9 @@ export default function setup(context, store) {
             hasShadow: false,
             maximizable: false,
             icon: resolve(__static, 'apple-touch-icon.png'),
-            // nodeIntegration: false,
+            webPreferences: {
+                nodeIntegration: true,
+            },
         });
         mainRef.show();
         context.configDock((dock) => {
@@ -44,28 +46,26 @@ export default function setup(context, store) {
             hasShadow: false,
             maximizable: false,
             icon: resolve(__static, 'apple-touch-icon.png'),
-            // nodeIntegration: false,
+            webPreferences: {
+                nodeIntegration: true,
+            },
         });
     }
     context.configTray((tray) => {
         tray.on('click', () => {
-            if (loggerRef && !loggerRef.focus()) {
+            if (loggerRef && !loggerRef.isFocused()) {
                 loggerRef.focus();
-            } else if (!mainRef.isFocused()) {
+            } else if (mainRef && !mainRef.isFocused()) {
                 mainRef.focus();
             }
         })
             .on('double-click', () => {
                 if (loggerRef) {
-                    if (!loggerRef.isVisible()) {
-                        loggerRef.show();
-                    } else {
-                        loggerRef.hide();
-                    }
-                } else if (!mainRef.isVisible()) {
-                    mainRef.show();
-                } else {
-                    mainRef.hide();
+                    if (loggerRef.isVisible()) loggerRef.hide();
+                    else loggerRef.show();
+                } else if (mainRef) {
+                    if (mainRef.isVisible()) mainRef.hide();
+                    else mainRef.show();
                 }
             });
     });
@@ -92,7 +92,7 @@ export default function setup(context, store) {
             }
         })
         .on('minecraft-exit', () => {
-            const { hideLauncher } = store.getters['profile/current'];
+            const { hideLauncher } = store.getters.selectedProfile;
             if (hideLauncher) {
                 if (mainRef) {
                     mainRef.show();
@@ -118,22 +118,22 @@ export default function setup(context, store) {
             }
             if (loggerRef) {
                 loggerRef.close();
-                loggerRef = undefined;
+                loggerRef = null;
             }
         })
         .on('minecraft-stdout', (out) => {
             if (waitForReady && out.indexOf('Reloading ResourceManager') !== -1 || out.indexOf('LWJGL Version: ') !== -1) {
                 waitForReady = false;
 
-                if (mainRef.isVisible()) {
+                if (mainRef && mainRef.isVisible()) {
                     mainRef.webContents.send('minecraft-window-ready');
-                    const { hideLauncher } = store.getters['profile/current'];
+                    const { hideLauncher } = store.getters.selectedProfile;
                     if (hideLauncher) {
                         mainRef.hide();
                     }
                 }
 
-                if (loggerRef === undefined && store.getters['profile/current'].showLog) {
+                if (loggerRef === undefined && store.getters.selectedProfile.showLog) {
                     createLoggerWindow();
                 }
 

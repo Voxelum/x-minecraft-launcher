@@ -1,8 +1,8 @@
 <template>
-	<v-container grid-list-md text-xs-center>
+	<v-container grid-list-md text-xs-center style="padding-left: 30px; padding-right: 30px">
 		<v-layout row>
 			<v-flex xs10>
-				<v-text-field v-model="filter" append-icon="filter_list" :label="$t('filter')" solo dark color="green darken-1"></v-text-field>
+				<v-text-field hide-details v-model="filter" append-icon="filter_list" :label="$t('filter')" solo dark color="green darken-1"></v-text-field>
 			</v-flex>
 			<v-flex xs1>
 				<v-tooltip :close-delay="0" left>
@@ -42,10 +42,10 @@
 				</v-tooltip>
 			</v-flex>
 		</v-layout>
-		<!-- <v-flex style="height: 100%"> -->
-		<v-layout row style="overflow: scroll; max-height: 450px;" justify-start fill-height>
-			<v-flex v-for="profile in profiles" :key="profile.id" d-flex xs6 md12>
-				<v-card draggable hover class="mx-auto" color="#grey darken-3" dark @click="selectProfile($event, profile.id)">
+		<v-layout row wrap style="overflow: scroll; max-height: 88vh;" justify-start fill-height>
+			<v-flex d-flex xs12 style="height: 10px;"></v-flex>
+			<v-flex v-for="profile in profiles" :key="profile.id" d-flex>
+				<v-card draggable hover color="#grey darken-3" dark @click="selectProfile($event, profile.id)">
 					<v-tooltip top>
 						<template v-slot:activator="{ on }">
 							<v-btn icon color="red" style="position: absolute; right: 0px;" @click="$event.stopPropagation();doDelete(profile.id)"
@@ -59,7 +59,7 @@
 					</v-tooltip>
 					<v-card-title>
 						<v-icon large left>layers</v-icon>
-						<span class="title font-weight-light">{{ profile.name }}</span>
+						<span class="title font-weight-light">{{ profile.name || `Minecraft ${profile.mcversion}` }}</span>
 					</v-card-title>
 
 					<v-card-text class="headline font-weight-bold">{{ profile.description }}</v-card-text>
@@ -100,9 +100,10 @@
 					</v-card-actions>
 				</v-card>
 			</v-flex>
+			<v-flex d-flex xs12 style="height: 10px;"></v-flex>
 		</v-layout>
 		<v-dialog v-model="wizard" persistent>
-			<add-profile-wizard @quit="wizard=false"></add-profile-wizard>
+			<add-profile-wizard :show="wizard" @quit="wizard=false"></add-profile-wizard>
 		</v-dialog>
 	</v-container>
 </template>
@@ -121,7 +122,7 @@ export default {
   computed: {
     profiles() {
       const filter = this.filter.toLowerCase();
-      return this.$repo.getters['profile/profiles'].filter(profile =>
+      return this.$repo.getters['profiles'].filter(profile =>
         filter === '' ||
         profile.author.toLowerCase().indexOf(filter) !== -1 ||
         profile.name.toLowerCase().indexOf(filter) !== -1 ||
@@ -147,18 +148,18 @@ export default {
         console.log(filenames);
         if (filenames && filenames.length > 0) {
           for (const f of filenames) {
-            this.$repo.dispatch("profile/import", f);
+            this.$repo.dispatch('importProfile', f);
           }
         }
       });
     },
     doDelete(id) {
-      this.$repo.dispatch('profile/delete', id);
+      this.$repo.dispatch('deleteProfile', id);
     },
     doCopy(id) {
     },
     selectProfile(event, id) {
-      this.$repo.commit('profile/select', id);
+      this.$repo.commit('selectProfile', id);
       this.$router.replace('/');
 
       event.stopPropagation();
@@ -185,9 +186,6 @@ export default {
       }, 100);
     }
   },
-  components: {
-    AddProfileWizard: () => import('./AddProfileWizard'),
-  }
 }
 </script>
 

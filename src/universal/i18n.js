@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
 import locales from 'static/locales';
@@ -6,7 +7,7 @@ Vue.use(VueI18n);
 
 export default function create(store) {
     const i18n = new VueI18n({
-        locale: store.getters['config/locale'],
+        locale: store.getters.locale,
         fallbackLocale: 'en',
         messages: locales,
         missing: (locale, key, vm) => {
@@ -40,7 +41,6 @@ export default function create(store) {
     store.watch(state => state.config.locale, (val, oldVal) => {
         i18n.locale = val;
         console.log(`language changed ${oldVal} => ${val}`);
-
         // if (Object.keys(i18n.getLocaleMessage('en')).length === 0) {
         //     store.dispatch('config/getLocale', 'en').then((loc) => { i18n.setLocaleMessage('en', loc); });
         // }

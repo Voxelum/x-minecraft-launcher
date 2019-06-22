@@ -1,5 +1,7 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import ipc from './ipc';
 import getTray from './trayManager';
+import setupDownload from './downloadManager';
 
 const headless = process.env.HEADLESS || false;
 
@@ -18,6 +20,10 @@ let windows = {};
  */
 let parking;
 
+/**
+ * instance of client
+ * @type {import('setup').Instance?}
+ */
 let instance;
 
 /**
@@ -27,6 +33,7 @@ let instance;
  */
 function createWindow(name, option) {
     const ref = new BrowserWindow(option);
+    ipcMain.emit('browser-window-setup', ref, name);
     ref.loadURL(`${baseURL}${name}`);
     console.log(`Create window from ${`${baseURL}${name}`}`);
     ref.webContents.on('will-navigate', (event, url) => {
@@ -41,13 +48,23 @@ function createWindow(name, option) {
         }
     });
     windows[name] = ref;
-    ref.on('close', () => { delete windows[name]; });
+    ref.on('close', () => {
+        delete windows[name];
+        if (Object.keys(windows).length === 0) {
+            app.emit('window-all-closed');
+        }
+    });
     return ref;
 }
 
-
+/**
+ * 
+ * @param {import('setup').Setup} client 
+ * @param {import('vuex').Store<import('universal/store/store').RootState>} store 
+ */
 function setupClient(client, store) {
     parking = true;
+    const tray = getTray();
 
     if (instance) { // stop current client if exist
         try {
@@ -61,16 +78,25 @@ function setupClient(client, store) {
                 ipcMain.removeListener(channel, lis);
             }
         }
-        getTray().removeAllListeners();
+        if (tray) {
+            tray.removeAllListeners();
+        }
         windows = {};
         BrowserWindow.getAllWindows().forEach(win => win.close());
-        instance = undefined;
+        instance = null;
     }
+    /**
+     * @type {import('setup').Instance["listeners"]}
+     */
     const listeners = {};
 
-    instance = client({
+    const hook = client({
         createWindow,
         ipcMain: {
+            /**
+             * @param {string} channel
+             * @param {Function} func
+             */
             on(channel, func) {
                 if (!listeners[channel]) listeners[channel] = [];
                 listeners[channel].push(func);
@@ -78,35 +104,75 @@ function setupClient(client, store) {
             },
         },
         configTray(func) {
-            func(getTray());
+            if (tray) { func(tray); }
+            return this;
         },
         configDock(func) {
             if (app.dock) {
                 func(app.dock);
             }
+            return this;
         },
     }, store);
-    instance.listeners = listeners;
+
+    const newInstance = {
+        ...hook,
+        listeners,
+    };
+    instance = newInstance;
 
     parking = false;
 }
 
-ipcMain
+/**
+ * @type {BrowserWindow?}
+ */
+let guard = null;
+
+export function getGuardWindow() {
+    return guard;
+}
+
+export default { getGuardWindow };
+
+/**
+ * 
+ * @param {import('vuex').Store<import('universal/store/store').RootState>} store 
+ */
+async function setup(store) {
+    if (!headless) {
+        setupClient(await import('./material').then(c => c.default), store);
+    }
+
+    ipcMain.on('online-status-changed', (_, s) => {
+        store.commit('online', s[0]);
+    });
+
+    guard = new BrowserWindow({
+        focusable: false,
+        width: 0,
+        height: 0,
+        show: false,
+        webPreferences: { preload: `${__static}/network-status.js`, devTools: false },
+    });
+    guard.loadURL(`${__static}/index.empty.html`);
+
+    setupDownload(store, guard);
+}
+
+app.on('will-quit', () => {
+    console.log('will quit');
+}).on('before-quit', () => {
+    console.log('before quit');
+}).on('quit', () => {
+    console.log('quit');
+});
+
+ipc
     .on('exit', () => { app.quit(); })
     .on('minecraft-start', () => { parking = true; })
     .on('minecraft-exit', () => { parking = false; })
-    .on('store-ready', (store) => {
-        if (headless) return;
-        import('./material').then(c => c.default).then((c) => {
-            if (app.isReady()) {
-                setupClient(c, store);
-                return;
-            }
-            app.once('ready', () => {
-                setupClient(c, store);
-            });
-        });
-    });
+    .on('store-ready', setup);
 
 app
     .on('window-all-closed', () => {

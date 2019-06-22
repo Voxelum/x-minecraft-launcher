@@ -1,5 +1,5 @@
 <template>
-	<v-app style="background: transparent;">
+	<v-app dark style="background: transparent;">
 		<router-view></router-view>
 		<textarea readonly style="position:absolute;left:-9999px;" ref="clipboard"></textarea>
 	</v-app>
@@ -8,7 +8,7 @@
 <script>
 
 import 'vuetify/dist/vuetify.css';
-import '@/assets/google.font.css';
+import 'renderer/assets/google.font.css';
 import Vue from 'vue';
 
 export default {
