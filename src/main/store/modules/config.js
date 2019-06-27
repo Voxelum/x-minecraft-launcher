@@ -3,6 +3,9 @@ import locales from 'static/locales';
 import { autoUpdater, UpdaterSignal } from 'electron-updater';
 import Task from 'treelike-task';
 import base from 'universal/store/modules/config';
+import isInGFW from 'in-gfw';
+import { overrideNet, unoverrideNet } from 'main/utils/dns-override';
+import dnsOverrideMapping from 'static/dns-override.json';
 
 /**
  * @type {import('universal/store/modules/config').ConfigModule}
@@ -58,9 +61,13 @@ const mod = {
         },
 
         async downloadUpdate(context) {
+            const inGFW = isInGFW();
             if (!context.state.autoDownload) {
                 context.commit('downloadingUpdate', true);
                 const task = Task.create('downloadUpdate', ctx => new Promise((resolve, reject) => {
+                    if (inGFW) {
+                        overrideNet(dnsOverrideMapping);
+                    }
                     autoUpdater.downloadUpdate();
                     const signal = new UpdaterSignal(autoUpdater);
                     signal.updateDownloaded((info) => {
@@ -76,6 +83,7 @@ const mod = {
                         reject(err);
                     });
                 }).finally(() => {
+                    unoverrideNet();
                     context.commit('downloadingUpdate', false);
                 }));
                 return context.dispatch('executeTask', task);
