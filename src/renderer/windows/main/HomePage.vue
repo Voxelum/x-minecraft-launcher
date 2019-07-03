@@ -248,7 +248,11 @@ export default {
           await this.$repo.dispatch('redirectToJvmPage');
           break;
         case 'incompatibleJava':
-          await this.$refs.jwizard.display(this.$t('java.incompatibleJava'), this.$t('java.incompatibleJavaHint'));
+          if (this.$repo.state.java.all.some(j => j.majorVersion === 8)) {
+            await this.$repo.dispatch('editProfile', { java: this.$repo.state.java.all.find(j => j.majorVersion === 8) })
+          } else {
+            await this.$refs.jwizard.display(this.$t('java.incompatibleJava'), this.$t('java.incompatibleJavaHint'));
+          }
           break;
         default:
       }
@@ -273,21 +277,6 @@ export default {
 .v-dialog {
   -webkit-app-region: no-drag;
   user-select: auto;
-}
-.moveable {
-  -webkit-app-region: drag;
-  user-select: none;
-}
-
-.non-moveable {
-  -webkit-app-region: no-drag;
-}
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.01s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
 }
 .v-badge__badge.primary {
   right: -10px;
