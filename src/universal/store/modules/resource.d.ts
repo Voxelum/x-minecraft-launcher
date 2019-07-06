@@ -54,11 +54,11 @@ export declare namespace ResourceModule {
         deployResources(context: C, payload: { resources: Resource<any>[], minecraft: string }): Promise<void>
         readForgeLogo(context: C, id: string): Promise<string>
         removeResource(context: C, resource: string | AnyResource): Promise<void>
-        importResource(context: C, option: ImportOption): Promise<Resource>
+        importResource(context: C, option: ImportOption): Promise<Resource<any>>
         exportResource(context: C, option: { resources: (string | AnyResource)[], targetDirectory: string }): Promise<void>
     }
 }
-export interface ResourceModule extends Module<ResourceModule.State, ResourceModule.Getters, ResourceModule.Mutations, ResourceModule.Actions> { }
+export interface ResourceModule extends Module<"resource", ResourceModule.State, ResourceModule.Getters, ResourceModule.Mutations, ResourceModule.Actions> { }
 
 export type Resource<T> = ResourceModule.Resource<T>;
 declare const mod: ResourceModule;

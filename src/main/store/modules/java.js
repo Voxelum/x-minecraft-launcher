@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { exec } from 'child_process';
 import Task from 'treelike-task';
-import { officialEndpoint, bangbangAPI } from 'main/utils/jre';
+import { officialEndpoint, bangbangAPI, selfHostAPI } from 'main/utils/jre';
 import { requireString } from 'universal/utils/object';
 import inGFW from 'in-gfw';
 import base from 'universal/store/modules/java';
@@ -19,16 +19,23 @@ const mod = {
     actions: {
         async load(context) {
             const loaded = await context.dispatch('getPersistence', { path: 'java.json' });
-            if (loaded && loaded instanceof Array) {
-                context.commit('addJava', loaded.filter(l => typeof l.path === 'string'));
+            if (loaded && loaded.all instanceof Array) {
+                context.commit('addJava', loaded.all.filter(l => typeof l.path === 'string'));
+            }
+            if (context.state.all.length === 0) {
+                await context.dispatch('refreshLocalJava');
             }
         },
         async init(context) {
             if (context.state.all.length === 0) {
                 await context.dispatch('refreshLocalJava');
             } else {
-                await context.state.all.map(j => context.dispatch('resolveJava', j.path)
-                    .then((result) => { if (!result) { context.commit('removeJava', j); } }));
+                const local = path.join(context.rootState.root, 'jre', 'bin', JAVA_FILE);
+                if (!context.state.all.map(j => j.path).some(p => p === local)) {
+                    await context.dispatch('resolveJava', local);
+                }
+                await Promise.all(context.state.all.map(j => context.dispatch('resolveJava', j.path)
+                    .then((result) => { if (!result) { context.commit('removeJava', j); } })));
             }
         },
         async save(context, { mutation }) {
@@ -41,26 +48,33 @@ const mod = {
                 default:
             }
         },
-        async installJava(context) {
-            console.log('Try auto Java from Mojang source');
-            context.commit('refreshingProfile', true);
-            const local = path.join(context.rootState.root, 'jre', 'bin', JAVA_FILE);
-            await context.dispatch('resolveJava', local);
-            for (const j of context.state.all) {
-                if (j.path === local) {
-                    context.commit('refreshingProfile', false);
-                    console.log(`Found exists installation at ${local}`);
-                    return undefined;
+        async installJava(context, fixing) {
+            const task = Task.create('installJre', async (ctx) => {
+                context.commit('refreshingProfile', true);
+
+                const local = path.join(context.rootState.root, 'jre', 'bin', JAVA_FILE);
+                await context.dispatch('resolveJava', local);
+                for (const j of context.state.all) {
+                    if (j.path === local) {
+                        context.commit('refreshingProfile', false);
+                        console.log(`Found exists installation at ${local}`);
+                        return undefined;
+                    }
                 }
-            }
-            const endpoint = await inGFW() ? bangbangAPI : officialEndpoint;
-            const task = Task.create('installJre', endpoint);
-            const handle = await context.dispatch('executeTask', task);
-            context.dispatch('waitTask', handle).finally(() => {
+                const endpoint = await inGFW.net() ? selfHostAPI : officialEndpoint;
+                // const endpoint = officialEndpoint;
+
+                await endpoint(ctx);
+                const java = await context.dispatch('resolveJava', local);
+
+                if (fixing) {
+                    await context.dispatch('editProfile', { java });
+                }
+
                 context.commit('refreshingProfile', false);
-                context.dispatch('refreshLocalJava');
+                return java;
             });
-            return handle;
+            return context.dispatch('executeTask', task);
         },
         async redirectToJvmPage() {
             shell.openExternal('https://www.java.com/download/');
@@ -73,8 +87,8 @@ const mod = {
             const exists = fs.existsSync(javaPath);
             if (!exists) return undefined;
 
-            const resolved = context.state.all.filter(java => java.path === javaPath)[0];
-            if (resolved) return resolved;
+            // const resolved = context.state.all.filter(java => java.path === javaPath)[0];
+            // if (resolved) return resolved;
 
             /**
              * @param {string} str
@@ -88,10 +102,14 @@ const mod = {
                 const proc = exec(`"${javaPath}" -version`, (err, sout, serr) => {
                     const version = getJavaVersion(serr);
                     if (serr && version !== undefined) {
+                        let majorVersion = Number.parseInt(version.split('.')[0], 10);
+                        if (majorVersion === 1) {
+                            majorVersion = Number.parseInt(version.split('.')[1], 10);
+                        }
                         const java = {
                             path: javaPath,
                             version,
-                            majorVersion: Number.parseInt(version.split('.')[0], 10),
+                            majorVersion,
                         };
                         context.commit('addJava', java);
                         resolve(java);
@@ -148,10 +166,10 @@ const mod = {
 
                 state.all.forEach(j => unchecked.add(j.path));
 
-                console.log(`Checking these location for java ${JSON.stringify(Array.from(unchecked))}.`);
+                const checkingList = Array.from(unchecked).filter(jPath => typeof jPath === 'string').filter(p => p !== '');
+                console.log(`Checking these location for java ${JSON.stringify(checkingList)}.`);
 
-                await Promise.all(Array.from(unchecked).filter(jPath => typeof jPath === 'string')
-                    .map(jPath => dispatch('resolveJava', jPath)));
+                await Promise.all(checkingList.map(jPath => dispatch('resolveJava', jPath)));
             } finally {
                 commit('refreshingProfile', false);
             }

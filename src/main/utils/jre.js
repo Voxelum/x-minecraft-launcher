@@ -15,6 +15,7 @@ import { ensureDir, ensureFile } from './fs';
  * @param {Task.Context} context 
  */
 export async function officialEndpoint(context) {
+    console.log('Try auto Java from Mojang source');
     const root = app.getPath('userData');
     function resolveArch() {
         switch (os.arch()) {
@@ -91,12 +92,61 @@ export async function officialEndpoint(context) {
 /**
  * @param {Task.Context} context 
  */
+export async function selfHostAPI(context) {
+    console.log('Try auto Java from self hosted source');
+    const root = app.getPath('userData');
+    function resolveArch() {
+        switch (os.arch()) {
+            case 'x86':
+            case 'x32': return '32';
+            case 'x64': return '64';
+            default: return '32';
+        }
+    }
+    function resolveSystem() {
+        switch (os.platform()) {
+            case 'darwin': return 'osx';
+            case 'win32': return 'win';
+            case 'linux': return 'linux';
+            default: return '';
+        }
+    }
+    const system = resolveSystem();
+    const arch = resolveArch();
+    if (system === '' || system === 'linux') {
+        return;
+    }
+    const url = `https://voxelauncher.azurewebsites.net/api/v1/jre/${system}/${arch}`;
+    const filename = 'jre.lzma';
+    const dest = path.resolve(root, 'temp', filename);
+
+    await ensureFile(dest);
+    await context.execute('download', Utils.downloadFileWork({
+        url,
+        destination: dest,
+    }));
+
+    const javaRoot = path.resolve(root, 'jre');
+    await context.execute('decompress', async () => {
+        await ensureDir(javaRoot);
+
+        await createReadStream(dest)
+            .pipe(createDecompressor())
+            .pipe(createExtractStream(javaRoot))
+            .promise();
+    });
+    await context.execute('cleanup', async () => {
+        await fs.unlink(dest);
+    });
+}
+
+/**
+ * @param {Task.Context} context 
+ */
 export async function bangbangAPI(context) {
+    console.log('Try auto Java from Bangbang source');
     const x64 = os.arch() === 'x64';
     const platform = os.platform();
-    const isWin = platform === 'win32';
-    const isMac = platform === 'darwin';
-    const isLinux = platform === 'linux';
     function resolveJava() {
         switch (platform) {
             case 'darwin': return 'jre_mac.dmg';
