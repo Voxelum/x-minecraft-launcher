@@ -1,8 +1,16 @@
 import parser from 'fast-html-parser';
+import { createWriteStream, promises, existsSync, fstat } from 'fs';
+import { ensureFile, ensureDir } from 'main/utils/fs';
 import request from 'main/utils/request';
+import { join, basename } from 'path';
 import querystring from 'querystring';
+import { finished } from 'stream';
 import Task from 'treelike-task';
-import { downloadToFolder, got } from 'ts-minecraft/dest/libs/utils/network';
+import { downloadFileWork, downloadToFolder, got } from 'ts-minecraft/dest/libs/utils/network';
+import { promisify } from 'util';
+import { bufferEntry, open, openEntryReadStream, walkEntries } from 'yauzlw';
+import fileType from 'file-type';
+import { cpus } from 'os';
 
 /**
  * @param {string} string 
@@ -13,6 +21,10 @@ function localDate(string) {
     return d.toLocaleDateString();
 }
 
+/**
+ * @param {any} n
+ */
+function notText(n) { return !(n instanceof parser.TextNode); }
 /**
  * @param {parser.Node | null} node
  */
@@ -46,11 +58,147 @@ function convert(node) {
 }
 
 /**
+ * @typedef {import('universal/store/modules/curseforge').CurseForgeModule.Modpack} Modpack
  * @type {import('universal/store/modules/curseforge').CurseForgeModule}
  */
 const mod = {
     state: {},
     actions: {
+        async importCurseforgeModpack(context, path) {
+            const stat = await promises.stat(path);
+            if (!stat.isFile()) throw new Error(`Cannot import curseforge modpack ${path}, since it's not a file!`);
+            const buf = await promises.readFile(path);
+            const fType = fileType(buf);
+            if (!fType || fType.ext !== 'zip') throw new Error(`Cannot import curseforge modpack ${path}, since it's not a zip!`);
+            const curseForgeRoot = join(context.rootState.root, 'curseforge');
+
+
+            /**
+             * @param {{url:string, dest: string}[]} pool
+             * @param {Task.Context} ctx 
+             * @param {string[]} modlist
+             */
+            async function downloadWorker(pool, ctx, modlist) {
+                for (let task = pool.pop(); task; task = pool.pop()) {
+                    try {
+                        // we want to ensure the mod is in the disk
+                        // and know the mod's modid & version
+                        let res;
+                        const { url, dest } = task;
+                        const mappingFile = join(curseForgeRoot, `${basename(dest)}.mapping`);
+                        let shouldDownload = true;
+                        if (existsSync(mappingFile)) {
+                            // if we already have the mapping [file id -> resource], we can just check it from memory
+                            const [hash, path] = await promises.readFile(mappingFile).then(b => b.toString().split('\n'));
+                            const cachedResource = context.rootState.resource.mods[hash];
+                            if (cachedResource) {
+                                res = cachedResource;
+                                shouldDownload = false;
+                            }
+                        }
+                        if (shouldDownload) {
+                            // if we don't have the mod, we should download it
+                            await downloadFileWork({ url, destination: dest })(ctx);
+                            res = await context.dispatch('importResource', { path: dest });
+                            await promises.writeFile(mappingFile, `${res.hash}\n${res.path}`);
+                            await promises.unlink(dest);
+                        }
+                        if (res && res.metadata instanceof Array) {
+                            const { modid, version } = res.metadata[0];
+                            // now we should add this mod to modlist
+                            if (modid && version) {
+                                modlist.push(`${modid}:${version}`);
+                            } else {
+                                console.error(`Cannot resolve ${url} as a mod!`);
+                                console.error(JSON.stringify(res));
+                                throw new Error(`Cannot resolve ${url} as a mod!`);
+                            }
+                        } else {
+                            console.error(`Cannot resolve ${url} as a mod!`);
+                            console.error(JSON.stringify(res));
+                            throw new Error(`Cannot resolve ${url} as a mod!`);
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+            }
+
+            const task = Task.create('installCurseforgeModpack', async (ctx) => {
+                const zipFile = await open(buf, { lazyEntries: true, autoClose: false });
+                /** @type {import('yauzlw').Entry[]} */
+                const others = [];
+                let manifestEntry;
+                await walkEntries(zipFile, (entry) => {
+                    if (entry.fileName === 'manifest.json') {
+                        manifestEntry = entry;
+                    } else {
+                        others.push(entry);
+                    }
+                });
+                if (!manifestEntry) throw new Error(`Cannot import curseforge modpack ${path}, since it doesn't have manifest.json`);
+                const manifestBuf = await bufferEntry(zipFile, manifestEntry);
+                /** @type {Modpack} */
+                const manifest = JSON.parse(manifestBuf.toString());
+                const tempRoot = join(context.rootState.root, 'temp', manifest.name);
+
+                await ensureDir(curseForgeRoot);
+                await ensureDir(tempRoot);
+
+                // download required assets (mods)
+
+                const shouldDownloaded = [];
+                for (const f of manifest.files) {
+                    const mapping = join(curseForgeRoot, `${f.fileId}.mapping`);
+                    if (existsSync(mapping)) {
+                        const buf = await promises.readFile(mapping);
+                        if (existsSync(buf.toString())) {
+                            // eslint-disable-next-line no-continue
+                            continue;
+                        }
+                    }
+                    shouldDownloaded.push(f);
+                }
+                const pool = shouldDownloaded.map(f => ({ url: `https://minecraft.curseforge.com/projects/${f.projectId}/files/${f.fileId}/download`, dest: join(tempRoot, f.fileId.toString()) }));
+
+                /** @type {string[]} */
+                const modlist = [];
+                await Promise.all(cpus().map(_ => ctx.execute('mod', c => downloadWorker(pool, c, modlist))));
+
+                // create profile accordingly 
+
+                const forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'));
+                const id = await context.dispatch('createProfile', {
+                    name: manifest.name,
+                    mcversion: manifest.minecraft.version,
+                    author: manifest.author,
+                    forge: {
+                        version: forgeId ? forgeId.id.substring(5) : '',
+                        mods: modlist,
+                    },
+                });
+                const profileFolder = join(context.rootState.root, 'profiles', id);
+
+                // start handle override
+
+                const waitStream = promisify(finished);
+                /** @param {import('yauzlw').Entry} o */
+                async function pipeTo(o) {
+                    const dest = join(profileFolder, o.fileName.substring(manifest.override.length));
+                    const readStream = await openEntryReadStream(zipFile, o);
+                    return waitStream(readStream.pipe(createWriteStream(dest)));
+                }
+                if (manifest.override) {
+                    const overrides = others.filter(e => e.fileName.startsWith(manifest.override));
+                    for (const o of overrides) {
+                        const dest = join(profileFolder, o.fileName.substring(manifest.override.length));
+                        await ensureFile(dest);
+                    }
+                    await Promise.all(overrides.map(o => pipeTo(o)));
+                }
+            });
+            return context.dispatch('executeTask', task);
+        },
         fetchCurseForgeProjects(_, payload = {}) {
             const { page, version, filter, project } = payload;
             if (typeof project !== 'string') throw new Error('Require project be [mc-mod], [resourcepack]');
@@ -62,7 +210,7 @@ const mod = {
             })}`;
             return request(endpoint, (root) => {
                 root = root.removeWhitespace();
-                const pages = root.querySelectorAll('.b-pagination-item')
+                const pages = root.querySelectorAll('.pagination-item')
                     .map(pageItem => pageItem.firstChild.rawText)
                     .filter(text => text.length < 5) // hardcode filter out the non page elem 
                     .map(text => Number.parseInt(text, 10))
@@ -79,34 +227,41 @@ const mod = {
                         text: f.rawText,
                         value: f.attributes.value,
                     }));
-                const all = root.querySelectorAll('.project-list-item').map((item) => {
+                const all = root.querySelectorAll('.project-listing-row').map((item) => {
                     item = item.removeWhitespace();
-                    const [avatar, details] = item.childNodes;
-                    let icon;
-                    try {
-                        icon = avatar.firstChild.firstChild.attributes.src;
-                    } catch (e) {
-                        icon = '';
-                    }
-                    const path = avatar.firstChild.attributes.href;
-                    const [name, status, categories, description] = details.childNodes;
-                    const author = name.lastChild.lastChild.firstChild.rawText;
-                    const count = status.firstChild.firstChild.rawText;
-                    const date = localDate(status.lastChild.firstChild.attributes['data-epoch']);
+
+                    const childs = item.childNodes.filter(notText);
+                    const iconElem = item.querySelector('.project-avatar').querySelector('a');
+                    const url = iconElem.attributes.href;
+                    const icon = iconElem.querySelector('img').attributes.src;
+
+                    const mainBody = childs[1].childNodes.filter(notText);
+                    const categorysBody = childs[2].childNodes.filter(notText)[1];
+
+                    const baseInfo = mainBody[0].childNodes.filter(notText);
+                    const metaInfo = mainBody[1].childNodes.filter(notText);
+                    const description = mainBody[2].text;
+
+                    const name = baseInfo[0].querySelector('h3').rawText;
+                    const author = baseInfo[2].rawText;
+                    const date = metaInfo[1].querySelector('abbr').attributes['data-epoch'];
+                    const count = metaInfo[0].rawText.replace(' Downloads', '');
+
+                    const categories = categorysBody.querySelectorAll('a').map(link => ({
+                        href: link.attributes.href,
+                        icon: link.querySelector('img').attributes.src,
+                        title: link.querySelector('figure').attributes.title,
+                    }));
+
                     return {
-                        path: path.substring(path.lastIndexOf('/') + 1),
-                        name: name.firstChild.firstChild.rawText,
+                        id: url.substring(url.lastIndexOf('/') + 1),
+                        path: url.substring(url.lastIndexOf('/') + 1),
+                        name,
                         author,
-                        description: description.firstChild.rawText,
+                        description,
                         date,
                         count,
-                        categories: categories.firstChild.childNodes.map((ico) => {
-                            const ca = {
-                                href: ico.firstChild.attributes.href,
-                                icon: ico.firstChild.firstChild.attributes.src,
-                            };
-                            return ca;
-                        }),
+                        categories,
                         icon,
                     };
                 });

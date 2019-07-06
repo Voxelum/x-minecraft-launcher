@@ -1,4 +1,4 @@
-import { createReadStream, existsSync, promises as fs, promises } from 'fs';
+import { createReadStream, existsSync, promises as fs } from 'fs';
 import { copy, ensureDir, ensureFile, remove } from 'main/utils/fs';
 import { compressZipTo, includeAllToZip } from 'main/utils/zip';
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
@@ -8,7 +8,7 @@ import { latestMcRelease } from 'static/dummy.json';
 import protocolToVersion from 'static/protocol.json';
 import { Forge, ForgeWebPage, GameSetting, Server, TextComponent, Version, World } from 'ts-minecraft';
 import base, { createTemplate } from 'universal/store/modules/profile';
-import { diff, fitin } from 'universal/utils/object';
+import { willBaselineChange, fitin } from 'universal/utils/object';
 import packFormatMapping from 'universal/utils/packFormatMapping.json';
 import uuid from 'uuid';
 import { createExtractStream } from 'yauzlw';
@@ -72,8 +72,8 @@ const mod = {
                 profile.author = profile.author || rootState.user.name;
             }
 
-            if (option && option.java && typeof profile.java.path === 'string') {
-                const resolved = await dispatch('resolveJava', profile.java.path);
+            if (option && option.java && typeof option.java.path === 'string') {
+                const resolved = await dispatch('resolveJava', option.java.path);
                 if (!resolved) {
                     option.java = undefined;
                 }
@@ -306,7 +306,7 @@ const mod = {
             const isDir = stat.isDirectory();
             let srcFolderPath = location;
             if (!isDir) {
-                const tempDir = await promises.mkdtemp(paths.join(tmpdir(), 'launcher'));
+                const tempDir = await fs.mkdtemp(paths.join(tmpdir(), 'launcher'));
                 await createReadStream(location)
                     .pipe(createExtractStream(tempDir))
                     .promise();
@@ -449,7 +449,7 @@ const mod = {
 
         async editProfile(context, profile) {
             const current = context.state.all[context.state.id];
-            if (diff(profile, current)) {
+            if (willBaselineChange(profile, current)) {
                 context.commit('profile', profile);
                 await context.dispatch('diagnoseProfile');
             }
@@ -665,11 +665,11 @@ const mod = {
             }
 
             java = context.state.all[id].java;
-            if (java.majorVersion > 8) {
-                if (resolvedMcVersion.minorVersion < 13) {
+            if (java && java.majorVersion > 8) {
+                if (!resolvedMcVersion.minorVersion || resolvedMcVersion.minorVersion < 13) {
                     problems.push({
                         id: 'incompatibleJava',
-                        arguments: { java, mcversion },
+                        arguments: { java: java.version, mcversion },
                         optional: true,
                     });
                 }

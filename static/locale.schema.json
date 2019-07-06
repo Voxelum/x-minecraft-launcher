@@ -1080,6 +1080,9 @@
                 "copyOldToNewHint": {
                     "type": "string"
                 },
+                "installAndQuit": {
+                    "type": "string"
+                },
                 "latestVersion": {
                     "type": "string"
                 },
@@ -1093,6 +1096,9 @@
                     "type": "string"
                 },
                 "setRootTitle": {
+                    "type": "string"
+                },
+                "updateToThisVersion": {
                     "type": "string"
                 },
                 "waitReload": {
@@ -1114,11 +1120,13 @@
                 "cleanOldDataHint",
                 "copyOldToNew",
                 "copyOldToNewHint",
+                "installAndQuit",
                 "latestVersion",
                 "noUpdateAvailable",
                 "setRootCause",
                 "setRootDescription",
                 "setRootTitle",
+                "updateToThisVersion",
                 "waitReload"
             ]
         },
@@ -1416,6 +1424,21 @@
                 "fix": {
                     "type": "string"
                 },
+                "incompatibleJava": {
+                    "type": "object",
+                    "properties": {
+                        "": {
+                            "type": "string"
+                        },
+                        "message": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "",
+                        "message"
+                    ]
+                },
                 "incompatibleMod": {
                     "type": "object",
                     "properties": {
@@ -1623,6 +1646,7 @@
             },
             "required": [
                 "fix",
+                "incompatibleJava",
                 "incompatibleMod",
                 "incompatibleResourcePack",
                 "missingAssets",
@@ -1638,6 +1662,9 @@
             ]
         },
         "download": {
+            "type": "string"
+        },
+        "downloadUpdate": {
             "type": "string"
         },
         "error": {
@@ -2049,6 +2076,9 @@
                 "downloadInstaller": {
                     "type": "string"
                 },
+                "downloadJar": {
+                    "type": "string"
+                },
                 "downloadLibraries": {
                     "type": "object",
                     "properties": {
@@ -2064,10 +2094,10 @@
                         "library"
                     ]
                 },
-                "ensureForgeJar": {
+                "installForgeJar": {
                     "type": "string"
                 },
-                "ensureForgeJson": {
+                "installForgeJson": {
                     "type": "string"
                 },
                 "postProcessing": {
@@ -2077,9 +2107,10 @@
             "required": [
                 "",
                 "downloadInstaller",
+                "downloadJar",
                 "downloadLibraries",
-                "ensureForgeJar",
-                "ensureForgeJson",
+                "installForgeJar",
+                "installForgeJson",
                 "postProcessing"
             ]
         },
@@ -2153,6 +2184,12 @@
                 "errorDownload": {
                     "type": "string"
                 },
+                "incompatibleJava": {
+                    "type": "string"
+                },
+                "incompatibleJavaHint": {
+                    "type": "string"
+                },
                 "location": {
                     "type": "string"
                 },
@@ -2181,6 +2218,8 @@
             "required": [
                 "browse",
                 "errorDownload",
+                "incompatibleJava",
+                "incompatibleJavaHint",
                 "location",
                 "maxMemory",
                 "minMemory",
@@ -2817,6 +2856,7 @@
         "checkUpdate",
         "diagnosis",
         "download",
+        "downloadUpdate",
         "error",
         "gamesetting",
         "installAssets",

@@ -1,15 +1,28 @@
 <template>
-	<v-window :value="value" style="height: 100%">
-		<v-window-item ref="items" v-for="(c, i) in components" :key="i" style="height: 100%">
-			<component :selected="i===value && selected" :is="c" @goto="$emit('goto', $event)"></component>
-		</v-window-item>
-	</v-window>
+  <v-window :value="value" style="height: 100%">
+    <v-window-item v-for="(c, i) in components" ref="items" :key="i" style="height: 100%">
+      <component :is="c" :selected="i===value && selected" @goto="$emit('goto', $event)" />
+    </v-window-item>
+  </v-window>
 </template>
 
 <script>
 
 export default {
-  props: ['components', 'selected', 'value'],
+  props: {
+    components: {
+      type: Array,
+      default: () => [],
+    },
+    selected: {
+      type: Boolean,
+      default: false,
+    },
+    value: {
+      type: Number,
+      default: 0,
+    },
+  },
   watch: {
     selected() {
       if (this.selected) {
@@ -18,7 +31,7 @@ export default {
       }
     },
   },
-}
+};
 </script>
 
 <style>

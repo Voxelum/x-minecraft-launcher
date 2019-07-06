@@ -8,7 +8,7 @@ export interface TNode extends TaskNode {
     time?: string
     status: string
 }
-export namespace TaskModule {
+export declare namespace TaskModule {
 
     interface State {
         tree: { [uuid: string]: TNode },
@@ -39,4 +39,4 @@ export namespace TaskModule {
 
 }
 
-export type TaskModule = Module<TaskModule.State, {}, TaskModule.Mutations, TaskModule.Actions>;
+export type TaskModule = Module<"task", TaskModule.State, {}, TaskModule.Mutations, TaskModule.Actions>;

@@ -56,6 +56,10 @@
     "detail": "Detail",
     "diagnosis": {
         "fix": "Fix the Problems",
+        "incompatibleJava": {
+            "": "Current Minecraft {mcversion} doesn't support selected Java version {java}!",
+            "message": "You can ask Launcher to download it for you."
+        },
         "incompatibleMod": {
             "": "{name} mod is incompatible for current {actual} version. Accept {accepted}.",
             "message": "Either the mod actually can run in this version, or you should remove it from list"
@@ -112,6 +116,7 @@
         }
     },
     "download": "Download",
+    "downloadUpdate": "Downloading Update",
     "edit": "Edit",
     "error": {
         "empty": "No error yet",
@@ -240,12 +245,13 @@
     "installForge": {
         "": "Install Forge",
         "downloadInstaller": "Download Installer",
+        "downloadJar": "Download Forge Jar",
         "downloadLibraries": {
             "": "Download Libraries",
             "library": "Install Library {lib}"
         },
-        "ensureForgeJar": "Install Forge Jar",
-        "ensureForgeJson": "Install Forge Json",
+        "installForgeJar": "Install Forge Jar",
+        "installForgeJson": "Install Forge JSON file",
         "postProcessing": "Post Processing"
     },
     "installJre": {
@@ -257,7 +263,7 @@
     },
     "installLibraries": {
         "": "Install Libraries",
-        "library": "Install Library {lib}"
+        "library": "Install Library"
     },
     "installVersion": {
         "": "Install Minecraft Client {version}",
@@ -267,6 +273,8 @@
     "java": {
         "browse": "Browse Java executable",
         "errorDownload": "Auto-download & install failed. Please check your network condition. You can try another way.",
+        "incompatibleJava": "Incompatible Java",
+        "incompatibleJavaHint": "Not supported Java version",
         "location": "Java Location",
         "maxMemory": "Max Memory",
         "minMemory": "Min Memory",
@@ -471,6 +479,7 @@
         "cleanOldDataHint": "Remove all old files including Maps, Resource Packs, and etc",
         "copyOldToNew": "Migrate Data",
         "copyOldToNewHint": "Before clearing data, copy all old data to new place",
+        "installAndQuit": "Restart to Install",
         "language": "Language",
         "latestVersion": "Latest Version",
         "location": "Store Location",
@@ -481,6 +490,7 @@
         "setRootDescription": "This will change the root data folder of this launcher and minecraft.",
         "setRootTitle": "Set to a new storage location",
         "theme": "Theme",
+        "updateToThisVersion": "Download and Install",
         "waitReload": "Migrating data. Please don't close the Launcher or you will lose your data."
     },
     "skin": {

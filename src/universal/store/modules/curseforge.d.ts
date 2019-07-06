@@ -18,6 +18,7 @@ export namespace CurseForgeModule {
     }
 
     interface ProjectPreview {
+        id: string;
         path: string;
         name: string;
         author: string;
@@ -53,7 +54,30 @@ export namespace CurseForgeModule {
 
 
     type C = Context<{}, {}, {}, Actions>
+
+    interface Modpack {
+        manifestType: string;
+        manifestVersion: number;
+        minecraft: {
+            version: string;
+            libraries?: string;
+            modLoaders: {
+                id: string;
+                primary: boolean;
+            }[];
+        };
+        name: string;
+        version: string;
+        author: string;
+        files: {
+            projectId: number;
+            fileId: number;
+            required: boolean;
+        }[];
+        override: string;
+    }
     interface Actions {
+        importCurseforgeModpack(context: C, path: string): Promise<TaskHandle>;
         fetchCurseForgeProjects(context: C, option?: { page?: string, version?: string, filter?: string, project?: string }): Promise<{
             projects: ProjectPreview[], pages: number, versions: Version[], filters: Filter[]
         }>
@@ -73,5 +97,5 @@ export namespace CurseForgeModule {
         downloadAndImportFile(context: C, payload: { project: Project, file: Download }): Promise<TaskHandle>
     }
 }
-export interface CurseForgeModule extends Module<{}, {}, {}, CurseForgeModule.Actions> {
+export interface CurseForgeModule extends Module<"curseforge", {}, {}, {}, CurseForgeModule.Actions> {
 }
