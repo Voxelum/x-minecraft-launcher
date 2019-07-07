@@ -86,12 +86,15 @@ const mod = {
                 maxMemory: profile.maxMemory || 1024,
                 version,
             };
+
+            console.log('Launching a server');
             if (profile.type === 'server') {
                 option.server = { ip: profile.host, port: profile.port };
             }
 
             const { mods, resourcepacks } = await context.dispatch('resolveProfileResources', context.rootState.profile.id);
 
+            console.log(`Deploy ${mods.length} Mods`);
             try {
                 await context.dispatch('deployResources', {
                     resources: resourcepacks,
@@ -101,6 +104,8 @@ const mod = {
                 console.error('Cannot deploy resource packs');
                 console.error(e);
             }
+
+            console.log(`Deploy ${resourcepacks.length} Resource Packs`);
 
             if (profile.forge.version || profile.liteloader.version) {
                 try {
