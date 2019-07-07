@@ -30,10 +30,7 @@
 </template>
 
 <script>
-import AbstractSetting from '../mixin/AbstractSetting';
-
 export default {
-  mixins: [AbstractSetting],
   data() {
     return {
       vmOptions: [],
@@ -53,6 +50,8 @@ export default {
       return this.$repo.state.java.all;
     },
   },
+  activated() { this.save(); },
+  deactivated() { this.load(); },
   methods: {
     save() {
       this.$repo.dispatch('editProfile', {

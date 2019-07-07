@@ -11,7 +11,7 @@
         </v-flex>
         <v-flex d-flex xs6>
           <v-text-field outline hide-details dark readonly :value="$repo.getters.currentVersion.id"
-                        :label="$t('profile.version')" @click="$emit('goto', [0, 0])" />
+                        :label="$t('profile.version')" @click="goVersionPage" />
         </v-flex>
         <v-flex d-flex xs6>
           <v-text-field v-model="author" outline hide-details dark :label="$t('profile.modpack.author')"
@@ -26,22 +26,22 @@
         </v-flex>
 
         <v-flex d-flex xs6>
-          <v-btn outline large @click="$emit('goto', [1, 0])">
+          <v-btn outline large replace to="/game-setting">
             {{ $tc('gamesetting.name', 2) }}
           </v-btn>
         </v-flex>
         <v-flex d-flex xs6>
-          <v-btn outline large @click="$emit('goto', [0, 2])">
+          <v-btn outline large replace to="/advanced-setting">
             {{ $t('profile.launchingDetail') }}
           </v-btn>
         </v-flex>
         <v-flex d-flex xs6>
-          <v-btn outline large @click="$emit('goto', [1, 1])">
+          <v-btn outline large replace to="/resource-pack-setting">
             {{ $tc('resourcepack.name', 2) }}
           </v-btn>
         </v-flex>
         <v-flex d-flex xs6>
-          <v-btn outline large @click="$emit('goto', [2, 0])">
+          <v-btn outline large replace to="/mod-setting">
             {{ $tc('mod.name', 2) }}
           </v-btn>
         </v-flex>
@@ -58,10 +58,8 @@
 </template>
 
 <script>
-import AbstractSetting from '../mixin/AbstractSetting';
 
 export default {
-  mixins: [AbstractSetting],
   data() {
     return {
       active: 0,
@@ -120,6 +118,8 @@ export default {
       console.error(e);
     });
   },
+  activated() { this.load(); },
+  deactivated() { this.save(); },
   methods: {
     save() {
       const payload = {
@@ -172,6 +172,9 @@ export default {
     onMouseWheel(e) {
       e.stopPropagation();
       return true;
+    },
+    goVersionPage() {
+      this.$router.replace('/version-setting');
     },
   },
 };

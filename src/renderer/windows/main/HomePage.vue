@@ -6,7 +6,7 @@
     </v-icon>
     <v-tooltip top>
       <template v-slot:activator="{ on }">
-        <v-btn style="position: absolute; left: 20px; bottom: 10px; " flat icon dark to="/profile-setting" v-on="on">
+        <v-btn style="position: absolute; left: 20px; bottom: 10px; " flat icon dark to="/base-setting" v-on="on">
           <v-icon dark>
             more_vert
           </v-icon>
@@ -232,10 +232,10 @@ export default {
       let handle;
       switch (problem.id) {
         case 'missingVersion':
-          this.$router.push('profile-setting');
+          this.$router.push('base-setting');
           break;
         case 'missingJava':
-          this.$router.push('profile-setting');
+          this.$router.push('base-setting');
           break;
         case 'autoDownload':
           handle = await this.$repo.dispatch('installJava');
