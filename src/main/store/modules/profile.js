@@ -13,40 +13,8 @@ import packFormatMapping from 'universal/utils/packFormatMapping.json';
 import uuid from 'uuid';
 import { createExtractStream } from 'yauzlw';
 import { ZipFile } from 'yazl';
-
-const PINGING_STATUS = Object.freeze({
-    version: {
-        name: 'Unknown',
-        protocol: -1,
-    },
-    players: {
-        max: -1,
-        online: -1,
-    },
-    description: 'Ping...',
-    favicon: '',
-    ping: 0,
-});
-/**
- * 
- * @param {string} description 
- */
-function createFailureServerStatus(description) {
-    return Object.freeze({
-        version: {
-            name: 'Unknown',
-            protocol: -1,
-        },
-        players: {
-            max: -1,
-            online: -1,
-        },
-        description,
-        favicon: '',
-        ping: -1,
-    });
-}
-
+import { PINGING_STATUS, createFailureServerStatus } from 'universal/utils/server-status';
+ 
 /**
  * @type {import('universal/store/modules/profile').ProfileModule}
  */
@@ -228,13 +196,13 @@ const mod = {
         async createAndSelectProfile(context, payload) {
             const id = await context.dispatch('createProfile', payload);
             await context.commit('selectProfile', id);
+            await context.dispatch('diagnoseProfile');
         },
-
 
         async deleteProfile(context, id = context.state.id) {
             if (context.state.id === id) {
                 const allIds = Object.keys(context.state.all);
-                if (allIds.length - 1 === 0) {
+                if (allIds.length === 1) {
                     await context.dispatch('createAndSelectProfile', { type: 'modpack' });
                 } else {
                     context.commit('selectProfile', allIds[0]);
@@ -537,6 +505,11 @@ const mod = {
             } finally {
                 context.commit('refreshingProfile', false);
             }
+        },
+
+        async pingServer(context, payload) {
+            const { host, port = 25565, protocol } = payload;
+            return Server.fetchStatusFrame({ host, port, name: '' }, { protocol });
         },
 
         async diagnoseProfile(context) {
