@@ -34,7 +34,7 @@ export declare namespace ProfileModule {
         port: number;
 
         // cache
-        status?: Server.StatusFrame;
+        status: Server.StatusFrame;
     }
 
     interface Profile extends ProfileBase {
@@ -158,6 +158,8 @@ export declare namespace ProfileModule {
 
         diagnoseProfile(context: C): Promise<Problem[]>;
         fixProfile(context: C, problems: Problem[]): Promise<void>
+
+        pingServer(context: C, payload: { host: string, port: number, protocol: number }): Promise<Server.StatusFrame>
 
         importMap(context: C, path: string): Promise<void>
         deleteMap(context: C, name: string): Promise<void>

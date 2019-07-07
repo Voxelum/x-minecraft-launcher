@@ -1,12 +1,13 @@
 import Vue from 'vue';
 import { getExpectVersion } from 'universal/utils/versions';
 import { fitin } from 'universal/utils/object';
-
+import { UNKNOWN_STATUS } from 'universal/utils/server-status';
 
 /**
  * @type {import('./profile').TemplateFunction}
  */
 export function createTemplate(id, java, mcversion, type = 'modpack') {
+    console.log(`Template from ${type}`);
     /**
      * @type {import('./profile').ProfileModule.ProfileBase}
      */
@@ -72,6 +73,7 @@ export function createTemplate(id, java, mcversion, type = 'modpack') {
         port: 0,
         ...base,
         type: 'server',
+        status: UNKNOWN_STATUS,
     };
     return server;
 }
