@@ -11,7 +11,7 @@
         </v-flex>
         <v-flex d-flex xs6>
           <v-text-field outline hide-details dark readonly :value="$repo.getters.currentVersion.id"
-                        :label="$t('profile.version')" @click="goVersionPage" />
+                        :label="$t('profile.version')" @click="goVersionPage" @focus="goVersionPage" />
         </v-flex>
         <v-flex d-flex xs6>
           <v-text-field v-model="author" outline hide-details dark :label="$t('profile.modpack.author')"
