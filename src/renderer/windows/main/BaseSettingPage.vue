@@ -184,7 +184,7 @@ export default {
 .flex {
   padding: 6px 8px !important;
 }
-button {
+.v-btn {
   margin: 0;
 }
 </style>
