@@ -7,21 +7,13 @@
         <v-icon>arrow_drop_down</v-icon>
       </v-btn>
     </v-toolbar>
-    <v-card flat style="min-height: 300px; max-width: 100%;" dark color="grey darken-4">
+    <v-card flat style="min-height: 300px; max-height: 400px; max-width: 100%; overflow: auto;" dark color="grey darken-4">
       <v-card-text>
         {{ all.length === 0 ? $t('task.empty') : '' }}
         <v-treeview v-model="tree" hoverable transition :open="opened" :items="all" activatable
                     item-key="_internalId" open-on-click item-children="tasks" item-text="localText">
           <template v-slot:append="{ item, open }">
-            <v-icon v-if="item.status !== 'running'" style="margin-right: 5px" :color="item.status === 'successed'?'green':item.status === 'cancelled'?'white':'red'">
-              {{ item.status === 'successed' ? 'check' : item.status === 'cancelled' ? 'stop' :
-                'error_outline' }}
-            </v-icon>
-            <v-progress-circular v-else-if="!hovered[item._internalId]" style="margin-right: 7px" small :size="20" :value="item.progress / item.total * 100"
-                                 :width="3" :indeterminate="item.total === -1" color="white" class="mb-0" @mouseenter="setHoverState(item._internalId, true)" />
-            <v-icon v-else v-ripple color="red" style="cursor: pointer; border-radius: 25px; margin-right: 5px; padding: 1px;" @click="cancelTask" @mouseleave="setHoverState(item._internalId, false)">
-              close 
-            </v-icon>
+            <task-node-status :status="item.status" :total="item.total" :progress="item.progress" />
           </template>
 
           <template v-slot:label="{ item, open }">
@@ -53,7 +45,6 @@ export default {
     tree: [],
     opened: [],
     active: 0,
-    hovered: {},
   }),
   computed: {
     all() { return this.$repo.state.task.tasks; },
@@ -64,9 +55,6 @@ export default {
     },
     onTaskClick(event, item) {
       this.$electron.clipboard.writeText(item.message);
-    },
-    setHoverState(id, state) {
-      Vue.set(this.hovered, id, state);
     },
     cancelTask(event, id) {
       event.stopPropagation();
