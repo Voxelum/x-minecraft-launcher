@@ -7,11 +7,11 @@
       <v-flex xs6 style="margin-top: 10px;">
         <v-layout row align-end justify-end>
           <v-spacer />
-          <v-chip label dark outline style="transition: transform 1s;">
-            Minecraft: {{ mcversion }}
+          <v-chip color="primary" label dark outline style="transition: transform 1s;">
+            Minecraft:  {{ mcversion }}
           </v-chip>
           <v-expand-x-transition>
-            <v-chip v-show="forgeVersion !== ''" label dark outline style="white-space: nowrap">
+            <v-chip v-show="forgeVersion !== ''" color="brown" label dark outline style="white-space: nowrap">
               Forge:
               {{ forgeVersion }}
             </v-chip>
@@ -19,7 +19,7 @@
         </v-layout>
       </v-flex>
       <v-flex xs12>
-        <v-tabs v-model="active" mandatory color="transparent" dark slider-color="primary">
+        <v-tabs v-model="active" mandatory color="transparent" dark :slider-color="barColor">
           <v-tab>
             {{ $t('version.locals') }}
           </v-tab>
@@ -37,7 +37,7 @@
         <v-tabs-items v-model="active" color="transparent" dark slider-color="primary" style="height: 70vh; overflow-y: auto"
                       @mousewheel="onMouseWheel">
           <v-tab-item style="height: 100%" @mousewheel="onMouseWheel">
-            <local-version-list :filter-text="filterText" @value="selectLocalVersion" />
+            <local-version-list :filter-text="filterText" :selected="localVersion" @value="selectLocalVersion" />
           </v-tab-item>
           <v-tab-item style="height: 100%" @mousewheel="onMouseWheel">
             <v-list-tile style="margin: 0px 0;">
@@ -46,7 +46,7 @@
             <v-divider dark />
 
             <minecraft-version-list :filter="filterMinecraft" style="background-color: transparent;"
-                                    :mcversion="mcversion" @value="mcversion = $event.id" />
+                                    :mcversion="mcversion" :selected="mcversion" @value="mcversion = $event.id" />
           </v-tab-item>
           <v-tab-item style="height: 100%" @mousewheel="onMouseWheel">
             <v-list-tile>
@@ -91,6 +91,16 @@ export default {
     };
   },
   computed: {
+    barColor() {
+      switch (this.active) {
+        case 0: return 'white';
+        case 1: return 'primary';
+        case 2: return 'brown';
+        case 3: return 'cyan';
+        default: return 'primary';
+      }
+    },
+    localVersion() { return { minecraft: this.mcversion, forge: this.forgeVersion, liteloader: this.liteloaderVersion }; },
     profile() { return this.$repo.getters.selectedProfile; },
   },
   watch: {

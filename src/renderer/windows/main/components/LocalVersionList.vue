@@ -1,7 +1,7 @@
 <template>
   <v-list v-if="versions.length !== 0" dark style="overflow-y: scroll; scrollbar-width: 0; background-color: transparent;">
     <template v-for="(item, index) in versions">
-      <v-list-tile :key="index" ripple style="margin: 0px 0;" @click="selectVersion(item)">
+      <v-list-tile :key="index" ripple :class="{ grey: isSelected(item), 'darken-1': isSelected(item) }" style="margin: 0px 0;" @click="selectVersion(item)">
         <v-list-tile-avatar>
           <v-btn icon style="cursor: pointer" @click="openVersionDir($event, item)">
             <v-icon> folder </v-icon>
@@ -61,7 +61,10 @@ export default {
     filterText: {
       type: String,
       default: '',
-
+    },
+    selected: {
+      type: Object,
+      default: () => null,
     },
   },
   data() {
@@ -77,6 +80,15 @@ export default {
     },
   },
   methods: {
+    isSelected(v) {
+      if (this.selected === null) return false;
+      console.log(v);
+      console.log(this.selected);
+      console.log(this.selected.minecraft === v.minecraft && this.selected.forge === v.forge && this.selected.liteloader === v.liteloader);
+      console.log('');
+
+      return this.selected.minecraft === v.minecraft && this.selected.forge === v.forge && this.selected.liteloader === v.liteloader;
+    },
     selectVersion(v) {
       this.$emit('value', v);
     },
