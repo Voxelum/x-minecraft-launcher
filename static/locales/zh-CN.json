@@ -501,6 +501,8 @@
         "profileService": "皮肤服务器",
         "refreshAccount": "刷新账号",
         "refreshSkin": "刷新皮肤",
+        "refreshSkinSuccess": "刷新皮肤成功",
+        "refreshSkinFail": "刷新皮肤失败",
         "signup": "注册",
         "skinImport": "导入皮肤",
         "skinImportFile": "从文件导入",

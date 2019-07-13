@@ -532,6 +532,8 @@
         },
         "refreshAccount": "Refresh Account",
         "refreshSkin": "Refresh Skin",
+        "refreshSkinSuccess": "Refresh Skin Succcess",
+        "refreshSkinFail": "Refresh Skin Failed",
         "signup": "Sign Up",
         "skinImport": "Import Skin",
         "skinImportFile": "Open from File",
