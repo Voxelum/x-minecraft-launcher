@@ -42,8 +42,13 @@ const mod = {
             for (let problems = profile.problems.filter(p => p.autofix); problems.length !== 0; problems = profile.problems.filter(p => p.autofix)) {
                 await context.dispatch('fixProfile', problems);
             }
+
             if (profile.problems.some(p => !p.optional)) {
                 context.commit('launchStatus', 'ready');
+                return false;
+            }
+
+            if (context.state.status === 'ready') { // check if we have cancel (set to ready) this launch
                 return false;
             }
 
