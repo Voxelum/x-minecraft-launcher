@@ -44,7 +44,7 @@
       {{ $tc('task.manager', 2) }}
     </v-tooltip>
 
-    <v-menu v-if="problems.length !== 0" offset-y top dark>
+    <v-menu v-if="refreshingProfile || problems.length !== 0" offset-y top dark>
       <v-btn slot="activator" style="position: absolute; left: 200px; bottom: 10px; " :loading="refreshingProfile || missingJava"
              :flat="problems.length !== 0" outline dark :color="problems.length !== 0 ? 'red' : 'white' ">
         <v-icon left dark :color="problems.length !== 0 ? 'red': 'white'">
@@ -86,13 +86,14 @@
       </v-chip>
     </div>
 
-    <v-btn color="grey darken-1" style="position: absolute; right: 10px; bottom: 10px; " dark large
-           :disabled="refreshingProfile || missingJava" :loading="launchStatus !== 'ready' || refreshingProfile"
+    <v-btn color="primary" style="position: absolute; right: 10px; bottom: 10px; " dark large
+           :disabled="refreshingProfile || missingJava"
            @click="launch">
       {{ $t('launch.launch') }}
-      <v-icon right>
+      <v-icon v-if="launchStatus === 'ready'" right> 
         play_arrow
       </v-icon>
+      <v-progress-circular v-else class="v-icon--right" indeterminate :size="20" :width="2" />
     </v-btn>
 
     <task-dialog v-model="taskDialog" @close="taskDialog=false" />
