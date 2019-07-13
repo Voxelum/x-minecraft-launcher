@@ -1,5 +1,5 @@
 <template>
-  <div @mouseenter="enter" @mouseleave="leave" >
+  <div @mouseenter="enter" @mouseleave="leave">
     <v-icon v-if="status !== 'running'" style="margin-right: 5px" :color="status === 'successed'?'green':status === 'cancelled'?'white':'red'">
       {{ status === 'successed' ? 'check' : status === 'cancelled' ? 'stop' :
         'error_outline' }}
