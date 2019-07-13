@@ -1,11 +1,13 @@
 import { createHash } from 'crypto';
 import { createReadStream, promises as fs, promises, existsSync } from 'fs';
+import inGFW from 'in-gfw';
 import { ensureFile, remove } from 'main/utils/fs';
 import { Forge, ForgeWebPage, LiteLoader, MinecraftFolder, Version } from 'ts-minecraft';
 import base from 'universal/store/modules/version';
 import { requireString } from 'universal/utils/object';
 import { getExpectVersion } from 'universal/utils/versions';
 import { shell } from 'electron';
+import { fetchJson } from 'ts-minecraft/dest/libs/utils/network';
 
 /**
  * @type {import('universal/store/modules/version').VersionModule}
@@ -274,9 +276,20 @@ const mod = {
 
             const cur = context.state.forge[version];
             try {
-                const result = await ForgeWebPage.getWebPage({ mcversion: version, fallback: cur });
-                if (result !== cur) {
-                    context.commit('forgeMetadata', result);
+                if (await inGFW.net()) {
+                    const { body, statusCode } = await fetchJson(`https://voxelauncher.azurewebsites.net/api/v1/forge/versions/${version}`, {
+                        headers: {
+                            'If-Modified-Since': cur.timestamp,
+                        },
+                    });
+                    if (statusCode !== 304) {
+                        context.commit('forgeMetadata', body);
+                    }
+                } else {
+                    const result = await ForgeWebPage.getWebPage({ mcversion: version, fallback: cur });
+                    if (result !== cur) {
+                        context.commit('forgeMetadata', result);
+                    }
                 }
             } finally {
                 context.commit('refreshingForge', false);
