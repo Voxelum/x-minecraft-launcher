@@ -401,14 +401,14 @@
                 "wrongVersion": "当前版本与服务器协议不匹配，可能导致连接错误"
             },
             "expectedVersions": "已支持的版本",
-            "host": "主机",
+            "filterVersion": "过滤服务器相应的 Minecraft 版本",
+            "host": "服务器地址",
+            "hostHint": "服务器的ip地址（和端口号）",
             "ipAddress": "IP地址",
             "motd": "服务器 MOTD",
             "name": "服务器名",
-            "ping": {
-                "description": "连接服务器中...",
-                "name": "检测远端服务器连接"
-            },
+            "ping": "Ping 服务器",
+            "pinging": "连接服务器中...",
             "pings": "延迟",
             "players": "玩家",
             "port": "端口",
@@ -418,7 +418,9 @@
                 "ping": "延迟",
                 "refurse": "服务器断开了连接!",
                 "timeout": "服务器响应超时!"
-            }
+            },
+            "unknown": "未知的服务器",
+            "versionHint": "Ping 使用的 Minecraft 版本"
         },
         "setting": "游戏设置",
         "url": "URL",

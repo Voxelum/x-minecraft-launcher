@@ -418,15 +418,15 @@
                 "wrongVersion": "The current selected version doesn't really match the server protocol! This might cause game connection errors."
             },
             "expectedVersions": "Supported Versions",
+            "filterVersion": "Filter server responded Minecraft version",
             "host": "Host",
+            "hostHint": "The host (with port) of the server",
             "ipAddress": "IP Address",
             "motd": "Server MOTD",
             "name": "Name Of the Server",
-            "ping": {
-                "description": "Pinging...",
-                "name": "Pinging the server"
-            },
+            "ping": "Ping",
             "pings": "Pings",
+            "pining": "Pinging...",
             "players": "Players",
             "port": "Port",
             "recommendedMinecraftVersion": "Minecraft Version",
@@ -435,7 +435,9 @@
                 "ping": "Ping...",
                 "refurse": "§4Server refused!",
                 "timeout": "§4Connect server timeout!"
-            }
+            },
+            "unknown": "Unknown Server",
+            "versionHint": "The Minecraft Version To Ping"
         },
         "setting": "Settings",
         "url": "URL",

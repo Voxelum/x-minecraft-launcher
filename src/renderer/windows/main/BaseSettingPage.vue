@@ -13,15 +13,23 @@
           <v-text-field outline hide-details dark readonly :value="$repo.getters.currentVersion.id"
                         :label="$t('profile.version')" @click="goVersionPage" @focus="goVersionPage" />
         </v-flex>
-        <v-flex d-flex xs6>
+        <v-flex v-if="!isServer" d-flex xs6>
           <v-text-field v-model="author" outline hide-details dark :label="$t('profile.modpack.author')"
                         :placeholder="$repo.state.user.name" required />
         </v-flex>
-        <v-flex d-flex xs6>
+        <v-flex v-if="isServer" d-flex xs6>
+          <v-text-field v-model="host" outline hide-details dark :label="$t('profile.server.host')" placeholder="www.whatever.com"
+                        required />
+        </v-flex>
+        <v-flex v-if="isServer" d-flex xs6>
+          <v-text-field v-model="port" outline hide-details dark :label="$t('profile.server.port')" placeholder="25565"
+                        required />
+        </v-flex>
+        <v-flex v-if="!isServer" d-flex xs6>
           <v-text-field v-model="url" outline hide-details dark :label="$t('profile.url')" placeholder="www.whatever.com"
                         required />
         </v-flex>
-        <v-flex d-flex xs12>
+        <v-flex v-if="!isServer" d-flex xs12>
           <v-text-field v-model="description" outline hide-details dark :label="$t('profile.modpack.description')" />
         </v-flex>
 
@@ -78,6 +86,7 @@ export default {
     };
   },
   computed: {
+    isServer() { return this.$repo.getters.selectedProfile.type === 'server'; },
     mcversion: {
       get() { return this.$repo.getters.selectedProfile.mcversion; },
       set(v) { this.$repo.dispatch('editProfile', { mcversion: v }); },
@@ -138,7 +147,7 @@ export default {
         this.$repo.dispatch('editProfile', {
           ...payload,
           host: this.host,
-          port: this.port,
+          port: Number.parseInt(this.port, 10),
         });
       }
     },
