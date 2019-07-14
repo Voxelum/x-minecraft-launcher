@@ -157,6 +157,12 @@ const mod = {
 
             prof.minMemory = settings.minMemory || prof.minMemory;
             prof.maxMemory = settings.maxMemory || prof.maxMemory;
+            if (settings.vmOptions && settings.vmOptions.length !== 0) {
+                prof.vmOptions = Object.seal(settings.vmOptions);
+            }
+            if (settings.mcOptions && settings.mcOptions.length !== 0) {
+                prof.mcOptions = Object.seal(settings.mcOptions);
+            }
             prof.java = settings.java || prof.java;
 
             if (prof.java && !prof.java.path) {
