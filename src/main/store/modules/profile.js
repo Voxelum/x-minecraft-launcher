@@ -417,6 +417,7 @@ const mod = {
             const current = context.state.all[context.state.id];
             if (willBaselineChange(profile, current)) {
                 context.commit('launchStatus', 'ready');
+                console.log(`Modify Profle ${JSON.stringify(profile, null, 4)}`);
                 context.commit('profile', profile);
                 await context.dispatch('diagnoseProfile');
             }
