@@ -50,6 +50,7 @@ const mod = {
             delete option.settings;
             delete option.refreshing;
             delete option.problems;
+            delete option.status;
 
             fitin(profile, option);
 
@@ -100,6 +101,7 @@ const mod = {
         async init({ state, commit, dispatch, rootGetters, rootState }) {
             const profiles = rootGetters.profiles;
             if (profiles.length === 0) {
+                console.log('Cannot find any profile, try to init one default modpack');
                 await dispatch('createAndSelectProfile', { type: 'modpack' });
             } else if (!rootGetters.missingJava) {
                 for (const profile of profiles) {
@@ -186,7 +188,7 @@ const mod = {
             context.commit('addProfile', profile);
 
             console.log('Created profile with option');
-            console.log(profile);
+            console.log(JSON.stringify(profile, null, 4));
 
             return profile.id;
         },
