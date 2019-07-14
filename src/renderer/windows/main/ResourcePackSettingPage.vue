@@ -1,13 +1,20 @@
 <template>
   <v-container grid-list-xs fill-height style="overflow: auto;">
     <v-layout row wrap>
-      <v-flex tag="h1" style="margin-bottom: 10px; padding: 6px; 8px;" class="white--text" xs12>
+      <v-flex tag="h1" class="white--text" xs7>
         <span class="headline">{{ $tc('resourcepack.name', 2) }}</span>
+      </v-flex>
+      <v-flex xs5>
+        <v-text-field v-model="filterSelected" color="primary" class="focus-solo" append-icon="filter_list"
+                      :label="$t('filter')" dark hide-details />
       </v-flex>
       <v-flex d-flex xs6>
         <v-card dark class="card-list" @drop="onDropLeft" @dragover="onDragOver" @mousewheel="onMouseWheel">
-          <v-text-field v-model="filterUnselected" color="primary" class="focus-solo" append-icon="filter_list"
-                        :label="$t('filter')" dark solo hide-details />
+          <v-card-title>
+            <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.unselected') }} </span> 
+          </v-card-title>
+          <!-- <v-divider /> -->
+
           <p v-if="resourcePacks[1].length === 0" class="text-xs-center headline"
              style="position: absolute; top: 120px; right: 0px; user-select: none;">
             <v-icon style="font-size: 50px; display: block;">
@@ -15,14 +22,18 @@
             </v-icon>
             {{ $t('resourcepack.hint') }}
           </p>
-          <resource-pack-card v-for="(pack, index) in resourcePacks[1].filter(r => filterName(r,filterUnselected))"
-                              :key="pack.hash" :data="pack.metadata" :is-selected="false" :index="index" />
+          <div class="list">
+            <resource-pack-card v-for="(pack, index) in resourcePacks[1].filter(r => filterName(r,filterSelected))"
+                                :key="pack.hash" :data="pack.metadata" :is-selected="false" :index="index" />
+          </div>
         </v-card>
       </v-flex>
       <v-flex d-flex xs6>
         <v-card dark class="card-list right" @drop="onDropRight" @dragover="onDragOver" @mousewheel="onMouseWheel">
-          <v-text-field v-model="filterSelected" color="primary" class="focus-solo" append-icon="filter_list"
-                        :label="$t('filter')" dark solo hide-details />
+          <v-card-title>
+            <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.selected') }} </span> 
+          </v-card-title>
+          <!-- <v-divider /> -->
           <p v-if="resourcePacks[0].length === 0" class="text-xs-center headline"
              style="position: absolute; top: 120px; right: 0px; user-select: none;">
             <v-icon style="font-size: 50px; display: block;">
@@ -30,8 +41,10 @@
             </v-icon>
             {{ $t('resourcepack.hint') }}
           </p>
-          <resource-pack-card v-for="(pack, index) in resourcePacks[0].filter(r => filterName(r, filterSelected))"
-                              :key="pack.hash" :data="pack.metadata" :is-selected="true" :index="index" />
+          <div class="list">
+            <resource-pack-card v-for="(pack, index) in resourcePacks[0].filter(r => filterName(r, filterSelected))"
+                                :key="pack.hash" :data="pack.metadata" :is-selected="true" :index="index" />
+          </div>
         </v-card>
       </v-flex>
     </v-layout>
@@ -47,7 +60,6 @@ export default {
   mixins: [SelectionList],
   data() {
     return {
-      filterUnselected: '',
       filterSelected: '',
     };
   },

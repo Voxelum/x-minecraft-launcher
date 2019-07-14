@@ -32,6 +32,8 @@ export default {
       anaglyph3d: { options: [true, false], value: true },
     },
   }),
+  mounted() { this.load(); },
+  destroyed() { this.save(); },
   activated() { this.load(); },
   deactivated() { this.save(); },
   methods: {

@@ -107,6 +107,8 @@ export default {
       this.liteloaderVersion = '';
     },
   },
+  mounted() { this.load(); },
+  destroyed() { this.save(); },
   activated() { this.load(); },
   deactivated() { this.save(); },
   methods: {

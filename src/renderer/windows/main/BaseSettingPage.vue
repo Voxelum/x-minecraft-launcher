@@ -2,7 +2,7 @@
   <v-form ref="form" v-model="valid" lazy-validation>
     <v-container grid-list-xs fill-height style="overflow: auto;">
       <v-layout row wrap justify-start align-start>
-        <v-flex tag="h1" style="margin-bottom: 10px;" class="white--text" xs12>
+        <v-flex tag="h1" class="white--text" xs12>
           <span class="headline">{{ $t('profile.setting') }}</span>
         </v-flex>
         <v-flex d-flex xs6>
@@ -127,6 +127,8 @@ export default {
       console.error(e);
     });
   },
+  mounted() { this.load(); },
+  destroyed() { this.save(); },
   activated() { this.load(); },
   deactivated() { this.save(); },
   methods: {
