@@ -41,11 +41,9 @@
 <script>
 import Vue from 'vue';
 import unknownPack from 'static/unknown_pack.png';
-import SelectionList from '../mixin/SelectionList';
-import ResourcePackCard from './ResourcePackCard';
+import SelectionList from './mixin/SelectionList';
 
 export default {
-  components: { ResourcePackCard },
   mixins: [SelectionList],
   data() {
     return {

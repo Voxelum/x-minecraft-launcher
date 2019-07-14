@@ -68,10 +68,8 @@
 </template>
 
 <script>
-import AbstractSetting from '../mixin/AbstractSetting';
-
 export default {
-  mixins: [AbstractSetting],
+  mixins: [],
   data() {
     return {
       active: 0,
@@ -109,6 +107,8 @@ export default {
       this.liteloaderVersion = '';
     },
   },
+  activated() { this.load(); },
+  deactivated() { this.save(); },
   methods: {
     save() {
       this.$repo.dispatch('editProfile', {
@@ -178,9 +178,5 @@ export default {
 <style scoped=true>
 .flex {
   padding: 6px 8px !important;
-}
-.slide-x-transition {
-}
-.slide-x-transition {
 }
 </style>

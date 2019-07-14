@@ -41,13 +41,10 @@
 <script>
 import Vue from 'vue';
 import unknownPack from 'static/unknown_pack.png';
-import AbstractSetting from '../mixin/AbstractSetting';
-import SelectionList from '../mixin/SelectionList';
-import ModCard from './ModCard';
+import SelectionList from './mixin/SelectionList';
 
 export default {
-  components: { ModCard },
-  mixins: [SelectionList, AbstractSetting],
+  mixins: [SelectionList],
   data() {
     return {
       filterInCompatible: true,
@@ -80,10 +77,6 @@ export default {
   mounted() {
   },
   methods: {
-    load() {
-    },
-    save() {
-    },
     insert(index, toIndex) {
       if (index === toIndex) return;
       const mods = [...this.forge.mods || []];
