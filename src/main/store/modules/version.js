@@ -25,7 +25,11 @@ const mod = {
                 context.dispatch('refreshVersions'),
             ]);
             if (mc) context.commit('minecraftMetadata', mc);
-            if (forge) context.commit('forgeMetadata', forge);
+            if (forge) {
+                for (const value of Object.values(forge)) {
+                    context.commit('forgeMetadata', value);
+                }
+            }
             if (liteloader) context.commit('liteloaderMetadata', liteloader);
         },
         async init(context) {
@@ -277,12 +281,18 @@ const mod = {
             const cur = context.state.forge[version];
             try {
                 if (await inGFW.net()) {
+                    const headers = cur ? {
+                        'If-Modified-Since': cur.timestamp,
+                    } : {};
                     const { body, statusCode } = await fetchJson(`https://voxelauncher.azurewebsites.net/api/v1/forge/versions/${version}`, {
-                        headers: {
-                            'If-Modified-Since': cur.timestamp,
-                        },
+                        headers,
                     });
-                    if (statusCode !== 304) {
+                    console.log(Object.keys(body));
+                    console.log(body.mcversion);
+                    console.log(body.versions);
+
+                    if (statusCode !== 304 && body) {
+                        console.log('commit');
                         context.commit('forgeMetadata', body);
                     }
                 } else {
@@ -291,6 +301,9 @@ const mod = {
                         context.commit('forgeMetadata', result);
                     }
                 }
+            } catch (e) {
+                console.error(`Fail to fetch forge info of ${version}`);
+                console.error(e);
             } finally {
                 context.commit('refreshingForge', false);
             }
