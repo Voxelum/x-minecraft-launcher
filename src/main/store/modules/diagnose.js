@@ -250,6 +250,7 @@ const mod = {
             let java = context.rootState.profile.all[id].java;
 
             if (!java || !java.path || !java.majorVersion || !java.version) {
+                console.log(`Fix java path ${JSON.stringify(java)}`);
                 context.commit('profile', {
                     java: context.rootGetters.defaultJava,
                 });
