@@ -8,6 +8,7 @@ import { requireString } from 'universal/utils/object';
 import { getExpectVersion } from 'universal/utils/versions';
 import { shell } from 'electron';
 import { fetchJson } from 'ts-minecraft/dest/libs/utils/network';
+import { join } from 'path';
 
 /**
  * @type {import('universal/store/modules/version').VersionModule}
@@ -235,7 +236,11 @@ const mod = {
          * download a specific version from version metadata
          */
         async installForge(context, meta) {
-            const task = Forge.installTask(meta, context.rootState.root);
+            const task = Forge.installTask(meta, context.rootState.root, {
+                tempDir: join(context.rootState.root, 'temps'),
+                maven: await inGFW.net() ? 'https://voxelauncher.azurewebsites.net/api/v1' : undefined,
+                java: context.rootGetters.defaultJava.path,
+            });
             const id = await context.dispatch('executeTask', task);
             context.dispatch('waitTask', id)
                 .then(() => context.dispatch('refreshVersions'))
@@ -289,7 +294,6 @@ const mod = {
                     });
 
                     if (statusCode !== 304 && body) {
-                        console.log('commit');
                         context.commit('forgeMetadata', body);
                     }
                 } else {
