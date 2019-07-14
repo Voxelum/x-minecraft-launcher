@@ -48,7 +48,7 @@
         <vue-particles color="#dedede" style="position: absolute; width: 100%; height: 100%;" click-mode="repulse" />
         <transition name="fade-transition" mode="out-in">
           <!-- <keep-alive> -->
-            <router-view />
+          <router-view />
           <!-- </keep-alive> -->
         </transition>
         <notifier />

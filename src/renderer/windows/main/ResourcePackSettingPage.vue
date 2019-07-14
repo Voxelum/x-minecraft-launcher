@@ -8,7 +8,7 @@
         <v-text-field v-model="filterSelected" color="primary" class="focus-solo" append-icon="filter_list"
                       :label="$t('filter')" dark hide-details />
       </v-flex>
-      <v-flex d-flex xs6>
+      <v-flex d-flex xs6 style="padding-right: 5px">
         <v-card dark class="card-list" @drop="onDropLeft" @dragover="onDragOver" @mousewheel="onMouseWheel">
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.unselected') }} </span> 
@@ -28,7 +28,7 @@
           </div>
         </v-card>
       </v-flex>
-      <v-flex d-flex xs6>
+      <v-flex d-flex xs6 style="padding-left: 5px">
         <v-card dark class="card-list right" @drop="onDropRight" @dragover="onDragOver" @mousewheel="onMouseWheel">
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.selected') }} </span> 
