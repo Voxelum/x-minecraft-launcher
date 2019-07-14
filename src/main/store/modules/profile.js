@@ -421,6 +421,11 @@ const mod = {
                 await context.dispatch('diagnoseProfile');
             }
         },
+        
+        async pingServer(context, payload) {
+            const { host, port = 25565, protocol } = payload;
+            return Server.fetchStatusFrame({ host, port, name: '' }, { protocol });
+        },
 
         async pingServers(context) {
             const version = context.getters.serverProtocolVersion;
