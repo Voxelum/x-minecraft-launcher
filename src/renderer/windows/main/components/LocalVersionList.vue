@@ -82,11 +82,6 @@ export default {
   methods: {
     isSelected(v) {
       if (this.selected === null) return false;
-      console.log(v);
-      console.log(this.selected);
-      console.log(this.selected.minecraft === v.minecraft && this.selected.forge === v.forge && this.selected.liteloader === v.liteloader);
-      console.log('');
-
       return this.selected.minecraft === v.minecraft && this.selected.forge === v.forge && this.selected.liteloader === v.liteloader;
     },
     selectVersion(v) {
