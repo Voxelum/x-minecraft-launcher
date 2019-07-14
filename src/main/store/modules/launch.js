@@ -90,6 +90,9 @@ const mod = {
                 minMemory: profile.minMemory || 1024,
                 maxMemory: profile.maxMemory || 1024,
                 version,
+                extraExecOption: {
+                    detached: true,
+                },
             };
 
             console.log('Launching a server');
@@ -179,6 +182,7 @@ const mod = {
                 process.stderr.on('data', (s) => {
                     ipcMain.emit('minecraft-stderr', s.toString());
                 });
+                process.unref();
                 return true;
             }).catch((e) => {
                 throw (e);
