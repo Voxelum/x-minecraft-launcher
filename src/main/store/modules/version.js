@@ -287,9 +287,6 @@ const mod = {
                     const { body, statusCode } = await fetchJson(`https://voxelauncher.azurewebsites.net/api/v1/forge/versions/${version}`, {
                         headers,
                     });
-                    console.log(Object.keys(body));
-                    console.log(body.mcversion);
-                    console.log(body.versions);
 
                     if (statusCode !== 304 && body) {
                         console.log('commit');
