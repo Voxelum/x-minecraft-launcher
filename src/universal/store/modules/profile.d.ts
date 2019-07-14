@@ -135,7 +135,7 @@ export declare namespace ProfileModule {
         serverStatus(state: State, status: Server.StatusFrame): void;
         worlds(state: State, worlds: LevelOnlyWorld[]): void;
         serverInfos(state: State, infos: Server.Info[]): void;
-        gamesettings(state: State, payload: { id: string, settings: GameSetting.Frame }): void;
+        gamesettings(state: State, payload:  GameSetting.Frame ): void;
         refreshingProfile(state: State, refreshing: boolean): void;
     }
 
