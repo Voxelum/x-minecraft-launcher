@@ -13,11 +13,11 @@
         <v-treeview v-model="tree" hoverable transition :open="opened" :items="all" activatable
                     item-key="_internalId" open-on-click item-children="tasks" item-text="localText">
           <template v-slot:append="{ item, open }">
-            <task-node-status :status="item.status" :total="item.total" :progress="item.progress" />
+            <task-node-status :status="item.status" :total="item.total" :progress="item.progress" :hovered="hovered[item._internalId]" />
           </template>
 
           <template v-slot:label="{ item, open }">
-            <div style="padding: 5px 0px;" @click="onTaskClick($event, item)" @contextmenu="showTaskContext($event, item)">
+            <div style="padding: 5px 0px;" @click="onTaskClick($event, item)" @contextmenu="showTaskContext($event, item)" @mouseenter="hovered[item._internalId] = true" @mouseleave="hovered[item._internalId] = false">
               <span style="white-space: nowrap; overflow: hidden;  text-overflow: ellipsis; max-width: 250px;">{{ $t(item.path, item.arguments || {}) }}</span>
               <span style="color: grey; font-size: 12px; font-style: italic; ">{{ item.time }}</span>
               <div style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;">
@@ -45,6 +45,7 @@ export default {
     tree: [],
     opened: [],
     active: 0,
+    hovered: {},
   }),
   computed: {
     all() { return this.$repo.state.task.tasks; },

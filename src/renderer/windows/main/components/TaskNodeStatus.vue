@@ -27,9 +27,15 @@ export default {
       type: Number,
       default: -1,
     },
+    hovered: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
-    return { hovered: false };
+    return {
+      // hovered: false
+    };
   },
   computed: {
     percentage() {
@@ -38,10 +44,10 @@ export default {
   },
   methods: {
     enter() {
-      this.hovered = true;
+      // this.hovered = true;
     },
     leave() {
-      this.hovered = false;
+      // this.hovered = false;
     },
   },
 };
