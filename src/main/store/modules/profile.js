@@ -161,6 +161,7 @@ const mod = {
                             worlds: undefined,
                             problems: undefined,
                             refreshing: undefined,
+                            status: undefined,
                         },
                     });
                     break;
