@@ -421,7 +421,8 @@
                 "refurse": "服务器断开了连接!",
                 "timeout": "服务器响应超时!"
             },
-            "unknown": "未知的服务器",
+            "unknown": "未知服务器",
+            "unknownDescription": "未知服务器，请刷新。",
             "versionHint": "Ping 使用的 Minecraft 版本"
         },
         "setting": "游戏设置",

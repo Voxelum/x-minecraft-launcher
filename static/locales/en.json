@@ -439,6 +439,7 @@
                 "timeout": "§4Connect server timeout!"
             },
             "unknown": "Unknown Server",
+            "unknownDescription": "Unknown Server. Please Refresh",
             "versionHint": "The Minecraft Version To Ping"
         },
         "setting": "Settings",
