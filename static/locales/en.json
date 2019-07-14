@@ -353,7 +353,9 @@
         "hint": "Drop mod's .jar/.litemod here to import.",
         "import": "Import Mod",
         "incompatible": "Incompatible Mod. Accept {accept}. Current: {actual}",
-        "name": "Mod | Mods"
+        "name": "Mod | Mods",
+        "selected": "Selected Mods",
+        "unselected": "Unselected Mods"
     },
     "name": "Name",
     "no": "No",
@@ -468,7 +470,8 @@
         "import": "Import Resource Pack",
         "incompatible": "Incompatible Resource Pack format({format}). Fitin {accept}. Current {actual}.",
         "name": "Resource Pack | Resource Packs",
-        "selected": "Selected"
+        "selected": "Selected Resource Packs",
+        "unselected": "Unselected Resource Packs"
     },
     "save": "Save",
     "setting": {
