@@ -1,7 +1,7 @@
 # Voxelauncher
 
 [![Build Status](https://travis-ci.org/ci010/VoxeLauncher.svg?branch=master)](https://travis-ci.org/ci010/VoxeLauncher)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e75f39022a114ab9aabf266425ae8b9e)](https://www.codacy.com/app/ci010/VoxeLauncher?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ci010/VoxeLauncher&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e75f39022a114ab9aabf266425ae8b9e)](https://www.codacy.com/app/ci010/VoxeLauncher?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ci010/VoxeLauncher&amp;utm_campaign=Badge_Grade) [![Greenkeeper badge](https://badges.greenkeeper.io/ci010/VoxeLauncher.svg)](https://greenkeeper.io/)
 
 > An WIP Minecraft Launcher based on electron-vue 
 
