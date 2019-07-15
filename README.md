@@ -1,7 +1,7 @@
 # Voxelauncher
 
-[![Build Status](https://travis-ci.org/ci010/VoxeLauncher.svg?branch=master)](https://travis-ci.org/ci010/VoxeLauncher)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e75f39022a114ab9aabf266425ae8b9e)](https://www.codacy.com/app/ci010/VoxeLauncher?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ci010/VoxeLauncher&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/voxelum/VoxeLauncher.svg?branch=master)](https://travis-ci.org/voxelum/VoxeLauncher)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e75f39022a114ab9aabf266425ae8b9e)](https://www.codacy.com/app/voxelum/VoxeLauncher?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=voxelum/VoxeLauncher&amp;utm_campaign=Badge_Grade)
 
 > An WIP Minecraft Launcher based on electron-vue 
 
@@ -114,7 +114,7 @@ npm test
 
 ### Let Typescript Intellisense to help you
 
-The launcher core is in [seperated project](https://github.com/ci010/ts-minecraft) written in typescript. 
+The launcher core is in [seperated project](https://github.com/voxelum/ts-minecraft) written in typescript. 
 
 At the same time, the launcher core logic is guard by typescript definition file. Since the project enable the `checkJs` option in `jsconfig.json`. The vscode editor will perform type check on the vuex store part, which enable the type intellisense on usage of vuex. 
 
