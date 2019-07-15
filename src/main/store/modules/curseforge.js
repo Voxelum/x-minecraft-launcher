@@ -203,7 +203,7 @@ const mod = {
             const { page, version, filter, project } = payload;
             if (typeof project !== 'string') throw new Error('Require project be [mc-mod], [resourcepack]');
             const sort = filter;
-            const endpoint = `https://minecraft.curseforge.com/${project}?${querystring.stringify({
+            const endpoint = `https://www.curseforge.com/minecraft/${project}?${querystring.stringify({
                 page: page || '0',
                 'filter-sort': sort || 'popularity',
                 'filter-game-version': version || '',
@@ -233,7 +233,8 @@ const mod = {
                     const childs = item.childNodes.filter(notText);
                     const iconElem = item.querySelector('.project-avatar').querySelector('a');
                     const url = iconElem.attributes.href;
-                    const icon = iconElem.querySelector('img').attributes.src;
+                    const imgTag = iconElem.querySelector('img');
+                    const icon = imgTag ? imgTag.attributes.src : '';
 
                     const mainBody = childs[1].childNodes.filter(notText);
                     const categorysBody = childs[2].childNodes.filter(notText)[1];
