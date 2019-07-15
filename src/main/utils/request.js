@@ -20,7 +20,7 @@ async function request(url, parser) {
     const parsed = hparser.parse(resp.body);
     const result = parser(parsed);
     if (result) {
-        cache[url] = parsed;
+        cache[url] = result;
         setTimeout(() => { delete cache[url]; }, 60000);
     }
     return result;
