@@ -7,6 +7,7 @@ import { UserModule } from './modules/user'
 import { VersionModule, MinecraftModule, ForgeModule, LiteloaderModule } from './modules/version'
 import { ProfileModule, CreateOption } from './modules/profile';
 import { JavaModule } from './modules/java';
+import { CurseForgeModule } from './modules/curseforge';
 import { ResourceModule, Resource } from './modules/resource'
 import { TaskModule } from './modules/task';
 import { DiagnoseModule } from './modules/diagnose';
@@ -44,8 +45,8 @@ interface BaseMutations {
     platform(state: State, platform: NodeJS.Platform): void
 }
 
-type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | ConfigModule | UserModule | LauncherModule | IOModule | DiagnoseModule;
-type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & ConfigModule & UserModule & LauncherModule & IOModule & DiagnoseModule;
+type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | ConfigModule | UserModule | LauncherModule | IOModule | DiagnoseModule | CurseForgeModule;
+type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & ConfigModule & UserModule & LauncherModule & IOModule & DiagnoseModule & CurseForgeModule;
 interface ModulesCollection extends ModulesIntersection { }
 
 type Mutations =
