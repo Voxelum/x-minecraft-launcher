@@ -23,7 +23,7 @@
             <v-card v-if="updateInfo" dark v-on="on">
               <v-card-title>
                 <h3>
-                  <a href="https://github.com/ci010/VoxeLauncher/releases">
+                  <a href="https://github.com/voxelum/VoxeLauncher/releases">
                     {{ updateInfo.releaseName }}
                   </a>
                 </h3>
@@ -54,7 +54,7 @@
                 </v-btn>
               </v-card-actions>
             </v-card>
-            <v-card v-else hover dark style="width: 100%" to="https://github.com/ci010/VoxeLauncher/releases"
+            <v-card v-else hover dark style="width: 100%" to="https://github.com/voxelum/VoxeLauncher/releases"
                     replace>
               <v-container fill-height>
                 <v-layout fill-height justify-space-around align-center>
@@ -76,7 +76,7 @@
       </v-flex>
 
       <p class="white--text" style="position: absolute; bottom: 35px; right: 315px;">
-        <a href="https://github.com/ci010/voxelauncher"> Github Repo</a>
+        <a href="https://github.com/voxelum/voxelauncher"> Github Repo</a>
       </p>
 
       <p class="white--text" style="position: absolute; bottom: 10px; right: 300px;">
