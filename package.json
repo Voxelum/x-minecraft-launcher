@@ -8,7 +8,7 @@
     "main": "./dist/electron/main.js",
     "repository": {
         "type": "git",
-        "url": "https://github.com/ci010/VoxeLauncher.git"
+        "url": "https://github.com/voxelum/voxelauncher.git"
     },
     "scripts": {
         "build": "node scripts/build.js && electron-builder",
@@ -28,14 +28,14 @@
     },
     "build": {
         "productName": "voxelauncher",
-        "appId": "ci010.voxelauncher",
+        "appId": "voxelum.voxelauncher",
         "directories": {
             "output": "build"
         },
         "publish": [
             {
                 "provider": "github",
-                "owner": "ci010",
+                "owner": "voxelum",
                 "repo": "VoxeLauncher"
             }
         ],
