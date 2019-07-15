@@ -2892,5 +2892,5 @@
         "optional",
         "settings"
     ],
-    "$id": "https://raw.githubusercontent.com/ci010/VoxeLauncher/master/static/locale.schema.json"
+    "$id": "https://raw.githubusercontent.com/voxelum/VoxeLauncher/master/static/locale.schema.json"
 }

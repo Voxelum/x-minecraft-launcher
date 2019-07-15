@@ -55,7 +55,7 @@ function sorted(o) {
 const powerLang = {};
 Promise.all(files.map(processFile)).then(() => {
     const schema = generateSchema(powerLang);
-    schema.$id = 'https://raw.githubusercontent.com/ci010/VoxeLauncher/master/static/locale.schema.json';
+    schema.$id = 'https://raw.githubusercontent.com/voxelum/VoxeLauncher/master/static/locale.schema.json';
     fs.writeFileSync(path.resolve(__dirname, '..', 'static', 'locale.schema.json'), JSON.stringify(schema, null, 4));
 });
 

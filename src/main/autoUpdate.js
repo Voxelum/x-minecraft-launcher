@@ -5,7 +5,7 @@ if (process.env.NODE_ENV === 'development') {
     autoUpdater.setFeedURL({
         provider: 'github',
         repo: 'VoxeLauncher',
-        owner: 'ci010',
+        owner: 'voxelum',
     });
     autoUpdater.logger = null;
 }
