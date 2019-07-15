@@ -31,7 +31,12 @@
     "checkUpdate": "检查更新",
     "create": "创建",
     "criticalGraphics": "图像设置",
-    "curseforge": "Curseforge",
+    "curseforge": {
+        "name": "Curseforge",
+        "gameversion": "游戏版本",
+        "sortby": "排序依据",
+        "search": "搜索"
+    },
     "delete": {
         "no": "取消",
         "yes": "删除"

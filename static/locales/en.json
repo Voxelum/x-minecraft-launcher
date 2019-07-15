@@ -37,8 +37,11 @@
             "description": "View and download resource/texture packs from Curseforge",
             "name": "Mods"
         },
+        "gameversion": "Game Version",
+        "sortby": "Sort By",
         "meta": "One of the best community for modder.",
         "name": "Curseforge",
+        "search": "Search",
         "texture-packs": {
             "description": "View and download worlds from Curseforge",
             "name": "Resource Packs"
