@@ -64,41 +64,37 @@ declare module 'fast-html-parser' {
         querySelector(selector: string): Node;
     }
     class TextNode implements Node {
-        readonly text: string;
-        readonly rawText: string;
-        readonly structuredText: string;
-
-        readonly firstChild: Node;
-        readonly lastChild: Node;
-        readonly childNodes: Node[];
+        public readonly text: string;
+        public readonly rawText: string;
+        public readonly structuredText: string;
+        public readonly firstChild: Node;
+        public readonly lastChild: Node;
+        public readonly childNodes: Node[];
+        public readonly attributes: { [key: string]: string };
+        public readonly rawAttributes: string;
+        public readonly rawAttrs: string;
+        public readonly tagName: string;
+        public readonly id: string;
+        public readonly classNames: string[];
 
         public removeWhitespace(): TextNode;
         public trimRight(): TextNode;
         public querySelectorAll(selector: string): TextNode[];
         public querySelector(selector: string): TextNode;
-
-        readonly attributes: { [key: string]: string };
-        readonly rawAttributes: string;
-        readonly rawAttrs: string;
-        readonly tagName: string;
-        readonly id: string;
-        readonly classNames: string[];
     }
     class HTMLElement implements Node {
-        readonly text: string;
-        readonly rawText: string;
-        readonly structuredText: string;
-
-        readonly firstChild: Node;
-        readonly lastChild: Node;
-        readonly childNodes: Node[];
-
-        readonly attributes: { [key: string]: string };
-        readonly rawAttributes: string;
-        readonly rawAttrs: string;
-        readonly tagName: string;
-        readonly id: string;
-        readonly classNames: string[];
+        public readonly text: string;
+        public readonly rawText: string;
+        public readonly structuredText: string;
+        public readonly firstChild: Node;
+        public readonly lastChild: Node;
+        public readonly childNodes: Node[];
+        public readonly attributes: { [key: string]: string };
+        public readonly rawAttributes: string;
+        public readonly rawAttrs: string;
+        public readonly tagName: string;
+        public readonly id: string;
+        public readonly classNames: string[];
 
         public querySelectorAll(selector: string): Node[];
         public querySelector(selector: string): Node;
