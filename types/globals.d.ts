@@ -72,8 +72,10 @@ declare module 'fast-html-parser' {
         lastChild: Node;
         childNodes: Node[];
 
-        removeWhitespace(): TextNode;
-        trimRight(): TextNode;
+        public removeWhitespace(): TextNode;
+        public trimRight(): TextNode;
+        public querySelectorAll(selector: string): TextNode[];
+        public querySelector(selector: string): TextNode;
 
         attributes: { [key: string]: string };
         rawAttributes: string;
@@ -91,8 +93,8 @@ declare module 'fast-html-parser' {
         lastChild: Node;
         childNodes: Node[];
 
-        removeWhitespace(): HTMLElement;
-        trimRight(): HTMLElement;
+        public removeWhitespace(): HTMLElement;
+        public trimRight(): HTMLElement;
 
         attributes: { [key: string]: string };
         rawAttributes: string;
@@ -101,11 +103,11 @@ declare module 'fast-html-parser' {
         id: string;
         classNames: string[];
 
-        querySelectorAll(selector: string): Node[];
-        querySelector(selector: string): Node;
+        public querySelectorAll(selector: string): Node[];
+        public querySelector(selector: string): Node;
 
-        removeWhitespace(): HTMLElement;
-        trimRight(): HTMLElement;
+        public removeWhitespace(): HTMLElement;
+        public trimRight(): HTMLElement;
     }
 
     function parse(raw: string, options?: {
