@@ -64,44 +64,41 @@ declare module 'fast-html-parser' {
         querySelector(selector: string): Node;
     }
     class TextNode implements Node {
-        text: string;
-        rawText: string;
-        structuredText: string;
+        readonly text: string;
+        readonly rawText: string;
+        readonly structuredText: string;
 
-        firstChild: Node;
-        lastChild: Node;
-        childNodes: Node[];
+        readonly firstChild: Node;
+        readonly lastChild: Node;
+        readonly childNodes: Node[];
 
         public removeWhitespace(): TextNode;
         public trimRight(): TextNode;
         public querySelectorAll(selector: string): TextNode[];
         public querySelector(selector: string): TextNode;
 
-        attributes: { [key: string]: string };
-        rawAttributes: string;
-        rawAttrs: string;
-        tagName: string;
-        id: string;
-        classNames: string[];
+        readonly attributes: { [key: string]: string };
+        readonly rawAttributes: string;
+        readonly rawAttrs: string;
+        readonly tagName: string;
+        readonly id: string;
+        readonly classNames: string[];
     }
     class HTMLElement implements Node {
-        text: string;
-        rawText: string;
-        structuredText: string;
+        readonly text: string;
+        readonly rawText: string;
+        readonly structuredText: string;
 
-        firstChild: Node;
-        lastChild: Node;
-        childNodes: Node[];
+        readonly firstChild: Node;
+        readonly lastChild: Node;
+        readonly childNodes: Node[];
 
-        public removeWhitespace(): HTMLElement;
-        public trimRight(): HTMLElement;
-
-        attributes: { [key: string]: string };
-        rawAttributes: string;
-        rawAttrs: string;
-        tagName: string;
-        id: string;
-        classNames: string[];
+        readonly attributes: { [key: string]: string };
+        readonly rawAttributes: string;
+        readonly rawAttrs: string;
+        readonly tagName: string;
+        readonly id: string;
+        readonly classNames: string[];
 
         public querySelectorAll(selector: string): Node[];
         public querySelector(selector: string): Node;
