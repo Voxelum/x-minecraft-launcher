@@ -4,6 +4,7 @@ import colors from 'vuetify/es5/util/colors';
 
 import TextComponent from './TextComponent';
 import SkinView from './skin/SkinView';
+import CurseforgeIcon from './CurseforgeIcon';
 
 if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'));
@@ -11,6 +12,11 @@ if (!process.env.IS_WEB) {
 Vue.config.productionTip = false;
 
 Vue.use(Vuetify, {
+    icons: {
+        curseforge: {
+            component: CurseforgeIcon,
+        },
+    },
     theme: {
         primary: colors.green,
         // secondary: colors.green,

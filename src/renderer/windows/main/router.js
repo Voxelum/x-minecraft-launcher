@@ -55,6 +55,14 @@ const router = new Router({
                     path: '/version-setting',
                     component: () => import('./VersionSettingPage'),
                 },
+                {
+                    path: '/curseforge',
+                    component: () => import('./CurseforgePage'),
+                },
+                {
+                    path: '/curseforge-mods',
+                    component: () => import('./CurseforgeModsPage'),
+                },
             ],
         },
     ],
