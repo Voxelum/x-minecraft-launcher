@@ -1,6 +1,6 @@
 <template>
   <v-container grid-list-md fill-height>
-    <v-layout row wrap>
+    <v-layout row wrap justify-space-around>
       <v-flex tag="h1" class="white--text" xs7>
         <span class="headline">{{ $tc('curseforge.mc-mods.name', 2) }}</span>
       </v-flex>
@@ -37,9 +37,14 @@
         </v-menu>
       </v-flex>
      
-      <div style="overflow: auto; max-height: 60vh">
+      <v-flex style="overflow: auto; max-height: 60vh; min-height: 60vh;" xs12>
+        <v-container v-if="loading" fill-height>
+          <v-layout justify-center align-center fill-height>
+            <v-progress-circular indeterminate :size="100" />
+          </v-layout>
+        </v-container>
         <v-flex v-for="proj in projects" :key="proj.id" d-flex xs12>
-          <v-card hover exact replace :to="`/curseforge/${type}/${proj.id}`">
+          <v-card v-ripple hover exact replace :to="`/curseforge/${type}/${proj.id}`">
             <v-layout fill-height align-center justify-center>
               <v-flex shrink>
                 <v-img :src="proj.icon" :width="64">
@@ -79,23 +84,17 @@
             </v-layout>
           </v-card>
         </v-flex>
-      </div>
+      </v-flex>
       <v-flex xs12 style="z-index: 2">
-        <v-pagination v-model="page" :length="pages" />
+        <v-layout justify-center>
+          <v-pagination v-model="page" :length="pages" total-visible="8" />
+        </v-layout>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-const LOADING_PROJECTS = new Array(5).fill({
-  name: '           ',
-  description: '                   ',
-  author: '',
-  categories: [],
-  date: '0',
-  count: '0',
-});
 
 export default {
   props: {
@@ -113,6 +112,8 @@ export default {
       filters: [],
       version: { text: '', value: '' },
       filter: { text: '' },
+
+      loading: false,
     };
   },
   watch: {
@@ -125,19 +126,24 @@ export default {
   },
   methods: {
     async refresh() {
-      this.projects = LOADING_PROJECTS;
-      const result = await this.$repo.dispatch('fetchCurseForgeProjects', {
-        project: this.type,
-        page: this.page,
-        filter: this.filter.text,
-        version: this.version.text,
-      });
-      const { projects, versions, filters, pages } = result;
+      this.projects = [];
+      this.loading = true;
+      try {
+        const result = await this.$repo.dispatch('fetchCurseForgeProjects', {
+          project: this.type,
+          page: this.page,
+          filter: this.filter.text,
+          version: this.version.text,
+        });
+        const { projects, versions, filters, pages } = result;
 
-      this.projects = projects;
-      this.versions = versions;
-      this.filters = filters;
-      this.pages = pages;
+        this.projects = projects;
+        this.versions = versions;
+        this.filters = filters;
+        this.pages = pages;
+      } finally {
+        this.loading = false;
+      }
     },
   },
 };
