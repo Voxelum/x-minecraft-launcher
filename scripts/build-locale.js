@@ -61,6 +61,7 @@ Promise.all(files.map(processFile)).then(() => {
 
 async function processFile(f) {
     const b = await fs.promises.readFile(f);
+    console.log(f);
     const o = JSON.parse(b.toString());
     discover(powerLang, o);
     const result = { $schema: '../locale.schema.json', ...sorted(o) };
