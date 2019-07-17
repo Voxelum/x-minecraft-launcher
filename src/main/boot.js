@@ -12,6 +12,15 @@ const cfgFile = `${appData}/voxelauncher/launcher.json`;
 
 ipcMain.on('root', handleRootChange);
 
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception');
+    console.error(err);
+});
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Uncaught Rejection');
+    console.error(reason);
+});
+
 /**
  * Handle the root change request from cliean.
  * This will restart the launcher.
