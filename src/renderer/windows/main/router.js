@@ -75,12 +75,19 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-    console.log(`Route ${from.fullPath} -> ${to.fullPath}`);
     const full = to.fullPath.substring(1);
-    if (full.startsWith('https:') || full.startsWith('http:')) {
-        remote.shell.openExternal(full);
+    if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {
+        console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`);
         next(false);
+        if (full.startsWith('external')) {
+            console.log(full.substring('external/'.length));
+            remote.shell.openExternal(full.substring('external/'.length));
+        } else {
+            console.log(full);
+            remote.shell.openExternal(full);
+        }
     } else {
+        console.log(`Route ${from.fullPath} -> ${to.fullPath}`);
         next();
     }
 });
