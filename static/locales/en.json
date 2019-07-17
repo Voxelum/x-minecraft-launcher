@@ -33,15 +33,30 @@
     "criticalGraphics": "Critical Graphics",
     "curseforge": {
         "description": "CurseForge is now the largest repository for modded Minecraft featuring thousands of mods, texture packs and worlds.",
+        "gameversion": "Game Version",
+        "install": "Install",
+        "installed": "Installed",
         "mc-mods": {
-            "description": "View and download resource/texture packs from Curseforge",
+            "description": "View and download mods packs from Curseforge",
             "name": "Mods"
         },
-        "gameversion": "Game Version",
-        "sortby": "Sort By",
         "meta": "One of the best community for modder.",
+        "modpacks": {
+            "description": "View and download modpacks from Curseforge",
+            "name": "Modpacks"
+        },
+        "totalDownloads": "Total Downloads",
+        "createdDate": "Created Date",
+        "lastUpdate": "Last Update Date",
+        "license": "License",
         "name": "Curseforge",
+        "project": {
+            "description": "Description",
+            "files": "Files",
+            "images": "Images"
+        },
         "search": "Search",
+        "sortby": "Sort By",
         "texture-packs": {
             "description": "View and download worlds from Curseforge",
             "name": "Resource Packs"
@@ -233,6 +248,7 @@
         "assets": "Install Asset {hash}",
         "assetsJson": "Check Assets Index File"
     },
+    "installCurseforgeFile": "Install Curseforge File",
     "installDependencies": {
         "": "Install {version}'s Dependencies",
         "installAssets": {
@@ -430,8 +446,8 @@
             "motd": "Server MOTD",
             "name": "Name Of the Server",
             "ping": "Ping",
+            "pinging": "Pinging...",
             "pings": "Pings",
-            "pining": "Pinging...",
             "players": "Players",
             "port": "Port",
             "recommendedMinecraftVersion": "Minecraft Version",
@@ -541,8 +557,8 @@
         },
         "refreshAccount": "Refresh Account",
         "refreshSkin": "Refresh Skin",
-        "refreshSkinSuccess": "Refresh Skin Succcess",
         "refreshSkinFail": "Refresh Skin Failed",
+        "refreshSkinSuccess": "Refresh Skin Succcess",
         "signup": "Sign Up",
         "skinImport": "Import Skin",
         "skinImportFile": "Open from File",

@@ -163,7 +163,127 @@
             "type": "string"
         },
         "curseforge": {
-            "type": "string"
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "gameversion": {
+                    "type": "string"
+                },
+                "install": {
+                    "type": "string"
+                },
+                "mc-mods": {
+                    "type": "object",
+                    "properties": {
+                        "description": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "description",
+                        "name"
+                    ]
+                },
+                "meta": {
+                    "type": "string"
+                },
+                "modpacks": {
+                    "type": "object",
+                    "properties": {
+                        "description": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "description",
+                        "name"
+                    ]
+                },
+                "name": {
+                    "type": "string"
+                },
+                "installed": {
+                    "type": "string"
+                },
+                "project": {
+                    "type": "object",
+                    "properties": {
+                        "description": {
+                            "type": "string"
+                        },
+                        "files": {
+                            "type": "string"
+                        },
+                        "images": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "description",
+                        "files",
+                        "images"
+                    ]
+                },
+                "search": {
+                    "type": "string"
+                },
+                "sortby": {
+                    "type": "string"
+                },
+                "texture-packs": {
+                    "type": "object",
+                    "properties": {
+                        "description": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "description",
+                        "name"
+                    ]
+                },
+                "worlds": {
+                    "type": "object",
+                    "properties": {
+                        "description": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "description",
+                        "name"
+                    ]
+                }
+            },
+            "required": [
+                "description",
+                "gameversion",
+                "install",
+                "mc-mods",
+                "meta",
+                "modpacks",
+                "name",
+                "installed",
+                "project",
+                "search",
+                "sortby",
+                "texture-packs",
+                "worlds"
+            ]
         },
         "delete": {
             "type": "object",
@@ -660,6 +780,12 @@
                 },
                 "incompatible": {
                     "type": "string"
+                },
+                "selected": {
+                    "type": "string"
+                },
+                "unselected": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -668,7 +794,9 @@
                 "import",
                 "name",
                 "compatible",
-                "incompatible"
+                "incompatible",
+                "selected",
+                "unselected"
             ]
         },
         "modpack": {
@@ -899,6 +1027,9 @@
                 },
                 "incompatible": {
                     "type": "string"
+                },
+                "unselected": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -910,7 +1041,8 @@
                 "selected",
                 "compatible",
                 "delete",
-                "incompatible"
+                "incompatible",
+                "unselected"
             ]
         },
         "save": {
@@ -1229,6 +1361,12 @@
                 "refreshSkin": {
                     "type": "string"
                 },
+                "refreshSkinFail": {
+                    "type": "string"
+                },
+                "refreshSkinSuccess": {
+                    "type": "string"
+                },
                 "skinImport": {
                     "type": "string"
                 },
@@ -1279,6 +1417,8 @@
                 "profileService",
                 "refreshAccount",
                 "refreshSkin",
+                "refreshSkinFail",
+                "refreshSkinSuccess",
                 "skinImport",
                 "skinImportFile",
                 "skinImportLink",
@@ -2020,6 +2160,9 @@
                 "assetsJson"
             ]
         },
+        "installCurseforgeFile": {
+            "type": "string"
+        },
         "installDependencies": {
             "type": "object",
             "properties": {
@@ -2510,6 +2653,9 @@
                         "expectedVersions": {
                             "type": "string"
                         },
+                        "filterVersion": {
+                            "type": "string"
+                        },
                         "host": {
                             "type": "string"
                         },
@@ -2525,19 +2671,10 @@
                         "name": {
                             "type": "string"
                         },
-                        "filterVersion": {
-                            "type": "string"
-                        },
                         "ping": {
                             "type": "string"
                         },
-                        "pining": {
-                            "type": "string"
-                        },
-                        "versionHint": {
-                            "type": "string"
-                        },
-                        "unknown": {
+                        "pinging": {
                             "type": "string"
                         },
                         "pings": {
@@ -2575,7 +2712,13 @@
                                 "timeout"
                             ]
                         },
-                        "pinging": {
+                        "unknown": {
+                            "type": "string"
+                        },
+                        "unknownDescription": {
+                            "type": "string"
+                        },
+                        "versionHint": {
                             "type": "string"
                         }
                     },
@@ -2588,22 +2731,22 @@
                         "edit",
                         "error",
                         "expectedVersions",
+                        "filterVersion",
                         "host",
                         "hostHint",
                         "ipAddress",
                         "motd",
                         "name",
-                        "filterVersion",
                         "ping",
-                        "pining",
-                        "versionHint",
-                        "unknown",
+                        "pinging",
                         "pings",
                         "players",
                         "port",
                         "recommendedMinecraftVersion",
                         "status",
-                        "pinging"
+                        "unknown",
+                        "unknownDescription",
+                        "versionHint"
                     ]
                 },
                 "setting": {
@@ -2872,6 +3015,7 @@
         "error",
         "gamesetting",
         "installAssets",
+        "installCurseforgeFile",
         "installDependencies",
         "installForge",
         "installJre",

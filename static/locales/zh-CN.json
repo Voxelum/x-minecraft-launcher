@@ -32,10 +32,37 @@
     "create": "创建",
     "criticalGraphics": "图像设置",
     "curseforge": {
-        "name": "Curseforge",
         "gameversion": "游戏版本",
+        "install": "安装",
+        "installed": "已安装",
+        "mc-mods": {
+            "description": "从 Curseforge 上安装 Mods",
+            "name": "Mods"
+        },
+        "modpacks": {
+            "description": "从 Curseforge 上安装整合包",
+            "name": "整合包"
+        },
+        "name": "Curseforge",
+        "totalDownloads": "总下载量",
+        "createdDate": "创建日期",
+        "lastUpdate": "上次更新日期",
+        "license": "版权许可",
+        "project": {
+            "description": "简介",
+            "files": "文件",
+            "images": "图片"
+        },
+        "search": "搜索",
         "sortby": "排序依据",
-        "search": "搜索"
+        "texture-packs": {
+            "description": "从 Curseforge 上安装资源包",
+            "name": "资源包"
+        },
+        "worlds": {
+            "description": "从 Curseforge 上安装世界存档",
+            "name": "世界存档"
+        }
     },
     "delete": {
         "no": "取消",
@@ -209,6 +236,7 @@
         "assets": "下载资源文件%{hash}",
         "assetsJson": "下载资源文件目录"
     },
+    "installCurseforgeFile": "安装 Curseforge 文件",
     "installDependencies": {
         "": "检查%{version}的依赖",
         "installAssets": {
@@ -512,8 +540,8 @@
         "profileService": "皮肤服务器",
         "refreshAccount": "刷新账号",
         "refreshSkin": "刷新皮肤",
-        "refreshSkinSuccess": "刷新皮肤成功",
         "refreshSkinFail": "刷新皮肤失败",
+        "refreshSkinSuccess": "刷新皮肤成功",
         "signup": "注册",
         "skinImport": "导入皮肤",
         "skinImportFile": "从文件导入",
