@@ -1,6 +1,18 @@
-import { Module, Context, TaskHandle } from "../store";
+import { Context, Module, TaskHandle } from "../store";
 
 export namespace CurseForgeModule {
+    interface State {
+        downloading: { [href: string]: { download: Download, taskId: string } };
+    }
+
+    interface Getters {
+        isFileInstalled: (file: Download) => boolean;
+    }
+
+    interface Mutations {
+        startDownloadCurseforgeFile(state: State, payload: { download: Download, taskId: string });
+        endDownloadCurseforgeFile(state: State, download: Download);
+    }
 
     interface Download {
         type: string;
@@ -12,9 +24,9 @@ export namespace CurseForgeModule {
         downloadCount: string;
     }
     interface Downloads {
-        pages: number,
-        versions: Version[],
-        files: Download[],
+        pages: number;
+        versions: Version[];
+        files: Download[];
     }
 
     interface ProjectPreview {
@@ -33,13 +45,15 @@ export namespace CurseForgeModule {
     }
 
     interface Project {
-        image: string,
-        name: string,
-        createdDate: string,
-        lastFile: string,
-        totalDownload: string,
-        license: string,
-        description: string,
+        projectId: string;
+        name: string;
+        image: string;
+        members: { icon: string, name: string, type: string }[];
+        lastUpdate: string;
+        createdDate: string;
+        totalDownload: string;
+        license: { url: string, name: string };
+        description: string;
     }
 
     interface Version {
@@ -53,7 +67,7 @@ export namespace CurseForgeModule {
     }
 
 
-    type C = Context<{}, {}, {}, Actions>
+    type C = Context<State, Getters, Mutations, Actions>;
 
     interface Modpack {
         manifestType: string;
@@ -76,26 +90,30 @@ export namespace CurseForgeModule {
         }[];
         override: string;
     }
+
+    type ProjectType = 'mc-mods' | 'texture-packs' | 'modpacks' | 'worlds';
     interface Actions {
         importCurseforgeModpack(context: C, path: string): Promise<TaskHandle>;
-        fetchCurseForgeProjects(context: C, option?: { page?: string, version?: string, filter?: string, project?: string }): Promise<{
+        fetchCurseForgeProjects(context: C, option?: { page?: string, version?: string, filter?: string, project: ProjectType }): Promise<{
             projects: ProjectPreview[], pages: number, versions: Version[], filters: Filter[]
-        }>
+        }>;
 
         /**
          * Query the project detail from path.
          */
-        fetchCurseForgeProject(context: C, path: string): Promise<Project>;
+        fetchCurseForgeProject(context: C, payload: { path: string, project: ProjectType | string }): Promise<Project>;
 
         /**
          * Query the project downloadable files.
          */
-        fetchCurseForgeProjectFiles(context: C, payload?: { path?: string, version?: string, page?: number }): Promise<Downloads>
+        fetchCurseForgeProjectFiles(context: C, payload?: { path: string, version?: string, page?: number, project: ProjectType | string }): Promise<Downloads>;
+
+        fetchCurseforgeProjectImages(context: C, payload: { path: string, type: string | ProjectType }): Promise<[{ name: string, url: string, mini: string }]>;
 
         fetchCurseForgeProjectLicense(context: C, licenseUrl: string): Promise<string>;
 
-        downloadAndImportFile(context: C, payload: { project: Project, file: Download }): Promise<TaskHandle>
+        downloadAndImportFile(context: C, payload: { project: { path: string, type: string, id: string }, file: Download }): Promise<TaskHandle>;
     }
 }
-export interface CurseForgeModule extends Module<"curseforge", {}, {}, {}, CurseForgeModule.Actions> {
+export interface CurseForgeModule extends Module<"curseforge", CurseForgeModule.State, CurseForgeModule.Getters, CurseForgeModule.Mutations, CurseForgeModule.Actions> {
 }

@@ -11,6 +11,7 @@ import { promisify } from 'util';
 import { bufferEntry, open, openEntryReadStream, walkEntries } from 'yauzlw';
 import fileType from 'file-type';
 import { cpus } from 'os';
+import base from 'universal/store/modules/curseforge';
 
 /**
  * @param {string} string 
@@ -62,7 +63,7 @@ function convert(node) {
  * @type {import('universal/store/modules/curseforge').CurseForgeModule}
  */
 const mod = {
-    state: {},
+    ...base,
     actions: {
         async importCurseforgeModpack(context, path) {
             const stat = await promises.stat(path);
@@ -100,8 +101,10 @@ const mod = {
                             // if we don't have the mod, we should download it
                             await downloadFileWork({ url, destination: dest })(ctx);
                             res = await context.dispatch('importResource', { path: dest });
-                            await promises.writeFile(mappingFile, `${res.hash}\n${res.path}`);
-                            await promises.unlink(dest);
+                            if (res) {
+                                await promises.writeFile(mappingFile, `${res.hash}\n${res.path}`);
+                                await promises.unlink(dest);
+                            }
                         }
                         if (res && res.metadata instanceof Array) {
                             const { modid, version } = res.metadata[0];
@@ -199,7 +202,7 @@ const mod = {
             });
             return context.dispatch('executeTask', task);
         },
-        fetchCurseForgeProjects(_, payload = {}) {
+        fetchCurseForgeProjects(_, payload = { project: 'mc-mods' }) {
             const { page, version, filter, project } = payload;
             if (typeof project !== 'string') throw new Error('Require project be [mc-mod], [resourcepack]');
             const sort = filter;
@@ -275,71 +278,71 @@ const mod = {
             });
         },
 
-        fetchCurseForgeProject(context, path) {
+        fetchCurseForgeProject(context, { path, project }) {
             if (!path || path == null) throw new Error('Curseforge path cannot be null');
-            path = `/projects/${path}`;
-            const url = `https://minecraft.curseforge.com${path}`;
+            const url = `https://www.curseforge.com/minecraft/${project}/${path}`;
+
+            console.log(`Get curseforge project ${url}`);
 
             return request(url, (root) => {
-                const descontent = root.querySelector('.project-description');
-                const description = convert(descontent);
-                const details = root.querySelector('.project-details').removeWhitespace();
-                const createdDate = localDate(details.childNodes[1].childNodes[1].firstChild.attributes['data-epoch']);
-                const lastFile = localDate(details.childNodes[2].childNodes[1].firstChild.attributes['data-epoch']);
-                const totalDownload = details.childNodes[3].childNodes[1].rawText;
-                const license = details.childNodes[4].childNodes[1].firstChild.attributes.href;
+                const details = root.querySelector('.project-detail').removeWhitespace();
 
-                const projWrap = root.querySelector('.project-user').removeWhitespace();
-                const image = projWrap.firstChild.firstChild.attributes.href;
-                const name = projWrap.childNodes[1].firstChild.rawText;
+                const header = root.querySelector('.game-header').querySelectorAll('.container')[1]
+                    .childNodes.filter(notText)[0];
+                const image = header.querySelector('img').attributes.src;
+                const name = header.querySelector('.font-bold').text;
+                const lastUpdate = header.querySelector('.standard-date').attributes['data-epoch'];
 
-                const files = root.querySelectorAll('.file-tag')
-                    .map((f) => {
-                        f = f.removeWhitespace();
-                        const typeClass = f.firstChild.firstChild.attributes.class;
-                        let type = 'unknonwn';
-                        if (typeClass.includes('release')) type = 'release';
-                        else if (typeClass.includes('alpha')) type = 'alpha';
-                        else if (typeClass.includes('beta')) type = 'beta';
-                        const href = f.childNodes[1].firstChild.attributes.href;
-                        const fname = f.childNodes[1].childNodes[1].rawText;
-                        const date = localDate(f.childNodes[1].childNodes[2].attributes['data-epoch']);
-                        return {
-                            type,
-                            href,
-                            name: fname,
-                            date,
-                        };
-                    });
+                const sides = root.querySelectorAll('.my-4')[1].childNodes.filter(notText);
+                const sideInfoElems = sides[0] // <div class="my-4">
+                    .childNodes.filter(notText)[0] // <div class="pb-4 border-b border-gray--100">
+                    .childNodes.filter(notText)[1] // <div class="flex flex-col mb-3"> 
+                    .childNodes.filter(notText);
+                const projectId = sideInfoElems[0].querySelectorAll('span')[1].rawText;
+                const createdDate = sideInfoElems[1].querySelector('abbr').attributes['data-epoch'];
+                const totalDownload = sideInfoElems[3].querySelectorAll('span')[1].rawText.replace(',', '');
+                const licenseElem = sideInfoElems[4].querySelector('a');
+                const license = { url: licenseElem.attributes.href, name: licenseElem.rawText };
+
+                const members = sides[0] // <div class="my-4">
+                    .querySelectorAll('.mb-2').map(e => ({
+                        icon: e.querySelector('img').attributes.src,
+                        name: e.querySelector('span').rawText,
+                        type: e.querySelectorAll('p')[1].rawText,
+                    }));
+
                 return {
+                    projectId,
                     image,
                     name,
-                    createdDate,
-                    lastFile,
+                    lastUpdate,
+                    members,
                     totalDownload,
+                    createdDate,
                     license,
-                    description,
-                    // downloads: {},
-                    // files,
+                    description: convert(details),
                 };
             });
         },
 
-        fetchCurseForgeProjectFiles(context, payload = {}) {
+        fetchCurseForgeProjectFiles(context, payload) {
+            if (!payload) throw new Error('Require fetch file with project type & project path');
             let { page, version } = payload;
-            const path = `/projects/${payload.path}`;
+            const { project } = payload;
+            const path = `/${project}/${payload.path}`;
 
             if (!path || path == null) throw new Error('Curseforge path cannot be null');
             version = version || '';
             page = page || 1;
-            const url = `https://minecraft.curseforge.com${path}/files?filter-game-version=${version}&page=${page}`;
+            const url = `https://www.curseforge.com/minecraft/${path}/files/all?filter-game-version=${version}&page=${page}`;
+            console.log(`Get curseforge project file ${url}`);
             return request(url, (filespage) => {
-                const pagesElement = filespage.querySelectorAll('.b-pagination-item');
+                const pagesElement = filespage.querySelectorAll('.pagination-item');
                 let page;
                 if (pagesElement.length === 0) {
                     page = 0;
                 } else {
-                    page = filespage.querySelectorAll('.b-pagination-item')
+                    page = pagesElement
                         .map(pageItem => pageItem.firstChild.rawText)
                         .map(text => Number.parseInt(text, 10))
                         .filter(n => Number.isInteger(n))
@@ -351,18 +354,34 @@ const mod = {
                         text: ver.rawText,
                         value: ver.attributes.value,
                     }));
-                const files = filespage.querySelectorAll('.project-file-list-item')
+                const files = filespage.querySelector('.listing-project-file').querySelector('tbody').querySelectorAll('tr')
                     .map(i => i.removeWhitespace())
                     .map(i => ({
-                        type: i.firstChild.firstChild.attributes.title,
-                        name: i.childNodes[1].firstChild.childNodes[1].firstChild.rawText,
-                        href: i.childNodes[1].firstChild.firstChild.firstChild.attributes.href,
+                        type: i.firstChild.querySelector('span').text,
+                        name: i.childNodes[1].firstChild.rawText,
                         size: i.childNodes[2].rawText,
-                        date: localDate(i.childNodes[3].firstChild.attributes['data-epoch']),
-                        version: i.childNodes[4].firstChild.rawText,
+                        date: i.childNodes[3].firstChild.attributes['data-epoch'],
+                        version: i.childNodes[4].firstChild.removeWhitespace().firstChild.rawText,
                         downloadCount: i.childNodes[5].rawText,
+                        href: i.childNodes[6].querySelector('a').attributes.href,
                     }));
                 return { pages: page, versions, files };
+            });
+        },
+
+        async fetchCurseforgeProjectImages(context, { path, type }) {
+            const url = `https://www.curseforge.com/minecraft/${type}/${path}/screenshots`;
+
+            console.log(`Fetch curseforge images from ${url}`);
+
+            return request(url, (root) => {
+                const page = root.querySelector('.project-screenshot-page');
+                return page.querySelectorAll('.justify-center')
+                    .map(i => ({
+                        url: i.attributes['data-featherlight'],
+                        mini: i.querySelector('img').attributes.href,
+                        name: i.querySelector('img').attributes.title,
+                    }));
             });
         },
         async fetchCurseForgeProjectLicense(context, url) {
@@ -370,28 +389,42 @@ const mod = {
             const { body } = await got(`https://minecraft.curseforge.com${url}`);
             return parser.parse(body).querySelector('.module').removeWhitespace().firstChild.rawText;
         },
-        async downloadAndImportFile(context, payload) {
-            const url = `https://minecraft.curseforge.com${payload.file.href}`;
 
-            const task = Task.create('downloadCurseForgeFile', async (ctx) => {
-                const dest = await downloadToFolder({
-                    url,
-                    destination: context.rootGetters.path('temp'),
-                    progress(prog, total) {
-                        ctx.update(prog, total, url);
-                    },
-                });
-                ctx.update(-1, -1);
-                await context.dispatch('importResource', {
-                    path: dest,
-                    metadata: {
-                        source: 'curseforge',
-                        meta: payload.project,
-                    },
-                });
+        async downloadAndImportFile(context, payload) {
+            const url = `https://www.curseforge.com${payload.file.href}/file`;
+
+            const task = Task.create('installCurseforgeFile', async (ctx) => {
+                if (context.rootGetters.isFileInstalled(payload.file)) {
+                    context.commit('endDownloadCurseforgeFile', payload.file);
+                    return;
+                }
+                try {
+                    ctx.update(-1, -1, url);
+                    const dest = await downloadFileWork({
+                        url,
+                        destination: context.rootGetters.path('temp', payload.file.name),
+                    })(ctx);
+                    ctx.update(-1, -1);
+                    await context.dispatch('importResource', {
+                        path: dest,
+                        metadata: {
+                            url,
+                            curseforge: {
+                                href: payload.file.href,
+                                projectId: payload.project.id,
+                                path: payload.project.path,
+                                type: payload.project.type,
+                            },
+                        },
+                    });
+                } finally {
+                    context.commit('endDownloadCurseforgeFile', payload.file);
+                }
             });
 
-            return context.dispatch('executeTask', task);
+            const id = await context.dispatch('executeTask', task);
+            context.commit('startDownloadCurseforgeFile', { download: payload.file, taskId: id });
+            return id;
         },
     },
 };
