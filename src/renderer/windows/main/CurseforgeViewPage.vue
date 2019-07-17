@@ -39,7 +39,7 @@
      
       <div style="overflow: auto; max-height: 60vh">
         <v-flex v-for="proj in projects" :key="proj.id" d-flex xs12>
-          <v-card hover>
+          <v-card hover exact replace :to="`/curseforge/${type}/${proj.id}`">
             <v-layout fill-height align-center justify-center>
               <v-flex shrink>
                 <v-img :src="proj.icon" :width="64">
@@ -98,6 +98,12 @@ const LOADING_PROJECTS = new Array(5).fill({
 });
 
 export default {
+  props: {
+    type: {
+      type: String,
+      default: 'mc-mods',
+    },
+  },
   data() {
     return {
       page: 1,
@@ -121,7 +127,7 @@ export default {
     async refresh() {
       this.projects = LOADING_PROJECTS;
       const result = await this.$repo.dispatch('fetchCurseForgeProjects', {
-        project: 'mc-mods',
+        project: this.type,
         page: this.page,
         filter: this.filter.text,
         version: this.version.text,
