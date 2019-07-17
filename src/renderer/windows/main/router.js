@@ -60,8 +60,14 @@ const router = new Router({
                     component: () => import('./CurseforgePage'),
                 },
                 {
-                    path: '/curseforge-mods',
-                    component: () => import('./CurseforgeModsPage'),
+                    path: '/curseforge/:type',
+                    component: () => import('./CurseforgeViewPage'),
+                    props: true,
+                },
+                {
+                    path: '/curseforge/:type/:id',
+                    component: () => import('./CurseforgeProjectPage'),
+                    props: true,
                 },
             ],
         },
@@ -69,6 +75,7 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
+    console.log(`Route ${from.fullPath} -> ${to.fullPath}`);
     const full = to.fullPath.substring(1);
     if (full.startsWith('https:') || full.startsWith('http:')) {
         remote.shell.openExternal(full);
