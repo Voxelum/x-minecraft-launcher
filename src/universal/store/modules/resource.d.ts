@@ -5,7 +5,7 @@ export declare namespace ResourceModule {
     interface Source {
         path: string,
         date: string | number,
-        [key: string]: string
+        [key: string]: string | Record<string, string>
     }
 
     type ImportOption = {
