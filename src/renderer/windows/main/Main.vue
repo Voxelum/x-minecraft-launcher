@@ -116,6 +116,11 @@ export default {
 .v-input__icon--prepend {
   margin-right: 7px;
 }
+img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
 </style>
 
 <style scoped=true>
