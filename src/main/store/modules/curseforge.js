@@ -300,7 +300,7 @@ const mod = {
                     .childNodes.filter(notText);
                 const projectId = sideInfoElems[0].querySelectorAll('span')[1].rawText;
                 const createdDate = sideInfoElems[1].querySelector('abbr').attributes['data-epoch'];
-                const totalDownload = sideInfoElems[3].querySelectorAll('span')[1].rawText.replace(',', '');
+                const totalDownload = sideInfoElems[3].querySelectorAll('span')[1].rawText;
                 const licenseElem = sideInfoElems[4].querySelector('a');
                 const license = { url: licenseElem.attributes.href, name: licenseElem.rawText };
 
