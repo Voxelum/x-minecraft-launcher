@@ -139,7 +139,7 @@
 import protocolToVersion from 'static/protocol.json';
 import mcToProtocol from 'static/mc-protocol.json';
 
-import unknownServer from 'static/unknown_server.png';
+import unknownServer from 'renderer/assets/unknown_server.png';
 
 export default {
   props: {

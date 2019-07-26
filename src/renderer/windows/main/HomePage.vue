@@ -159,7 +159,7 @@
 </template>
 
 <script>
-import unknownServer from 'static/unknown_server.png';
+import unknownServer from 'renderer/assets/unknown_server.png';
 import { PINGING_STATUS, createFailureServerStatus } from 'universal/utils/server-status';
 
 export default {
