@@ -16,6 +16,7 @@ import { Library } from 'ts-minecraft/dest/libs/version';
 import { IOModule, Actions as IOActions } from './modules/io';
 import modules from './modules/base';
 import { LauncherModule, State as LaunchState, Mutations as LaunchMutations } from './modules/launch';
+import { ClientModule } from './modules/client';
 
 export type TaskHandle = string;
 
@@ -45,8 +46,8 @@ interface BaseMutations {
     platform(state: State, platform: NodeJS.Platform): void
 }
 
-type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | ConfigModule | UserModule | LauncherModule | IOModule | DiagnoseModule | CurseForgeModule;
-type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & ConfigModule & UserModule & LauncherModule & IOModule & DiagnoseModule & CurseForgeModule;
+type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | ConfigModule | UserModule | LauncherModule | IOModule | DiagnoseModule | CurseForgeModule | ClientModule; 
+type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & ConfigModule & UserModule & LauncherModule & IOModule & DiagnoseModule & CurseForgeModule & ClientModule;
 interface ModulesCollection extends ModulesIntersection { }
 
 type Mutations =

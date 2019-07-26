@@ -4,7 +4,6 @@ import { compressZipTo, includeAllToZip } from 'main/utils/zip';
 import { tmpdir } from 'os';
 import paths, { basename, join } from 'path';
 import { latestMcRelease } from 'static/dummy.json';
-import protocolToVersion from 'static/protocol.json';
 import { GameSetting, Server, TextComponent, Version, World } from 'ts-minecraft';
 import base, { createTemplate } from 'universal/store/modules/profile';
 import { fitin, willBaselineChange } from 'universal/utils/object';
@@ -12,7 +11,7 @@ import uuid from 'uuid';
 import { createExtractStream } from 'yauzlw';
 import { ZipFile } from 'yazl';
 import { PINGING_STATUS, createFailureServerStatus } from 'universal/utils/server-status';
- 
+
 /**
  * @type {import('universal/store/modules/profile').ProfileModule}
  */
@@ -425,7 +424,7 @@ const mod = {
                 await context.dispatch('diagnoseProfile');
             }
         },
-        
+
         async pingServer(context, payload) {
             const { host, port = 25565, protocol } = payload;
             return Server.fetchStatusFrame({ host, port, name: '' }, { protocol });
@@ -477,7 +476,7 @@ const mod = {
                 } else if (typeof info.status.description === 'object') {
                     options.description = TextComponent.from(info.status.description).formatted;
                 }
-                options.mcversion = protocolToVersion[info.status.version.protocol][0];
+                options.mcversion = context.rootState.client.protocolMapping.mcversion[info.status.version.protocol][0];
                 if (info.status.modinfo && info.status.modinfo.type === 'FML') {
                     options.forge = {
                         mods: info.status.modinfo.modList.map(m => `${m.modid}:${m.version}`),
