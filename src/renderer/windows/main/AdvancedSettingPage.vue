@@ -11,11 +11,11 @@
       </v-flex>
       <v-flex d-flex xs6>
         <v-text-field v-model="minMemory" hide-details outline type="number" :label="$t('java.minMemory')"
-                      required />
+                      required clearable :placeholder="$t('java.noMemory')" />
       </v-flex>
       <v-flex d-flex xs6>
-        <v-text-field v-model="maxMemory" hide-details outline type="number" :label="$t('java.maxMemory')"
-                      required />
+        <v-text-field v-model="maxMemory" hide-details outline type="number" :label="$t('java.maxMemory')" 
+                      required clearable :placeholder="$t('java.noMemory')" />
       </v-flex>
       <v-flex d-flex xs12>
         <args-combobox v-model="vmOptions" :label="$t('profile.vmOptions')" :create-hint="$t('profile.vmOptionsCreateHint')"
