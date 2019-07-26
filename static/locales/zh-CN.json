@@ -286,6 +286,8 @@
         "maxMemory": "最大内存",
         "minMemory": "最小内存",
         "missing": "没有找到Java",
+        "noMemory": "不设置内存限制",
+
         "missingHint": "启动器在你的电脑上没有找到任何Java。你可以尝试：",
         "noJavaInPath": "还是无法在PATH中找到java可执行文件。你可以尝试其他方法。",
         "noLegalJava": "启动器认为这个Java可执行文件是无效的。请尝试其他的方法。",
@@ -398,6 +400,8 @@
         "localVersionEmpty": "自动生成",
         "localVersionHint": "选择本地版本会覆盖Minecraft版本的设置",
         "mcOptions": "Minecraft 启动选项",
+        "mcOptionsHint": "创建或选择 Minecraft 启动参数",
+        "mcOptionsCreateHint": "回车创建 Minecraft 启动参数",
         "modpack": {
             "add": "添加Mod包",
             "author": "整合包作者",
@@ -463,7 +467,9 @@
         "version": "游戏版本",
         "versionHint": "这个游戏使用的Minecraft版本",
         "versionSetting": "客户端配置",
-        "vmOptions": "JVM 启动选项"
+        "vmOptions": "JVM 启动选项",
+        "vmOptionsHint": "创建或者选择 JVM 启动选项",
+        "vmOptionsCreateHint": "回车创建 JVM 启动选项"
     },
     "refreshResource": "刷新资源",
     "remove": "移除",
