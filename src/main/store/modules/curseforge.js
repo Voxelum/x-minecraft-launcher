@@ -6,12 +6,15 @@ import { join, basename } from 'path';
 import querystring from 'querystring';
 import { finished } from 'stream';
 import Task from 'treelike-task';
-import { downloadFileWork, downloadToFolder, got } from 'ts-minecraft/dest/libs/utils/network';
+import { downloadFileWork, got, fetchJson } from 'ts-minecraft/dest/libs/utils/network';
 import { promisify } from 'util';
 import { bufferEntry, open, openEntryReadStream, walkEntries } from 'yauzlw';
 import fileType from 'file-type';
 import { cpus } from 'os';
 import base from 'universal/store/modules/curseforge';
+
+const CURSEMETA_CACHE = 'https://cursemeta.dries007.net';
+// test url https://cursemeta.dries007.net/238222/2739588 jei
 
 /**
  * @param {string} string 
@@ -75,7 +78,7 @@ const mod = {
 
 
             /**
-             * @param {{url:string, dest: string}[]} pool
+             * @param {{url:string, dest: string, fileId: number}[]} pool
              * @param {Task.Context} ctx 
              * @param {string[]} modlist
              */
@@ -84,29 +87,18 @@ const mod = {
                     try {
                         // we want to ensure the mod is in the disk
                         // and know the mod's modid & version
-                        let res;
-                        const { url, dest } = task;
-                        const mappingFile = join(curseForgeRoot, `${basename(dest)}.mapping`);
-                        let shouldDownload = true;
-                        if (existsSync(mappingFile)) {
-                            // if we already have the mapping [file id -> resource], we can just check it from memory
-                            const [hash, path] = await promises.readFile(mappingFile).then(b => b.toString().split('\n'));
-                            const cachedResource = context.rootState.resource.mods[hash];
-                            if (cachedResource) {
-                                res = cachedResource;
-                                shouldDownload = false;
-                            }
-                        }
-                        if (shouldDownload) {
-                            // if we don't have the mod, we should download it
-                            await downloadFileWork({ url, destination: dest })(ctx);
-                            res = await context.dispatch('importResource', { path: dest });
-                            if (res) {
-                                await promises.writeFile(mappingFile, `${res.hash}\n${res.path}`);
-                                await promises.unlink(dest);
-                            }
-                        }
-                        if (res && res.metadata instanceof Array) {
+                        const { url, dest, fileId } = task;
+                        // if we don't have the mod, we should download it
+                        await downloadFileWork({ url, destination: dest })(ctx);
+                        const res = await context.dispatch('importResource', {
+                            path: dest,
+                            metadata: {
+                                curseforge: {
+                                    fileId,
+                                },
+                            },
+                        });
+                        if (res && res.domain === 'mods' && res.metadata instanceof Array) {
                             const { modid, version } = res.metadata[0];
                             // now we should add this mod to modlist
                             if (modid && version) {
@@ -152,17 +144,17 @@ const mod = {
 
                 const shouldDownloaded = [];
                 for (const f of manifest.files) {
-                    const mapping = join(curseForgeRoot, `${f.fileId}.mapping`);
-                    if (existsSync(mapping)) {
-                        const buf = await promises.readFile(mapping);
-                        if (existsSync(buf.toString())) {
-                            // eslint-disable-next-line no-continue
-                            continue;
-                        }
+                    if (context.getters.isFileInstalled({ id: f.fileId, href: '' })) {
+                        // eslint-disable-next-line
+                        continue;
                     }
                     shouldDownloaded.push(f);
                 }
-                const pool = shouldDownloaded.map(f => ({ url: `https://minecraft.curseforge.com/projects/${f.projectId}/files/${f.fileId}/download`, dest: join(tempRoot, f.fileId.toString()) }));
+                const pool = await Promise.all(shouldDownloaded.map(f => fetchJson(`${CURSEMETA_CACHE}/${f.projectId}/${f.fileId}.json`).then(o => ({
+                    url: o.body.DownloadURL,
+                    dest: join(tempRoot, o.body.FileNameOnDisk),
+                    fileId: f.fileId,
+                }))));
 
                 /** @type {string[]} */
                 const modlist = [];
@@ -357,6 +349,7 @@ const mod = {
                 const files = filespage.querySelector('.listing-project-file').querySelector('tbody').querySelectorAll('tr')
                     .map(i => i.removeWhitespace())
                     .map(i => ({
+                        id: Number.parseInt(i.childNodes[1].firstChild.attributes.href.substring(i.childNodes[1].firstChild.attributes.href.lastIndexOf('/') + 1), 10),
                         type: i.firstChild.querySelector('span').text,
                         name: i.childNodes[1].firstChild.rawText,
                         size: i.childNodes[2].rawText,
@@ -412,6 +405,7 @@ const mod = {
                             curseforge: {
                                 href: payload.file.href,
                                 projectId: payload.project.id,
+                                fileId: payload.file.id,
                                 path: payload.project.path,
                                 type: payload.project.type,
                             },

@@ -6,7 +6,7 @@ export namespace CurseForgeModule {
     }
 
     interface Getters {
-        isFileInstalled: (file: Download) => boolean;
+        isFileInstalled: (file: Pick<Download, "id" | "href">) => boolean;
     }
 
     interface Mutations {
@@ -15,6 +15,7 @@ export namespace CurseForgeModule {
     }
 
     interface Download {
+        id: number;
         type: string;
         name: string;
         href: string;
@@ -108,7 +109,7 @@ export namespace CurseForgeModule {
          */
         fetchCurseForgeProjectFiles(context: C, payload?: { path: string, version?: string, page?: number, project: ProjectType | string }): Promise<Downloads>;
 
-        fetchCurseforgeProjectImages(context: C, payload: { path: string, type: string | ProjectType }): Promise<[{ name: string, url: string, mini: string }]>;
+        fetchCurseforgeProjectImages(context: C, payload: { path: string, type: string | ProjectType }): Promise<{ name: string, url: string, mini: string }[]>;
 
         fetchCurseForgeProjectLicense(context: C, licenseUrl: string): Promise<string>;
 

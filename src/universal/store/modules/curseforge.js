@@ -15,7 +15,7 @@ const mod = {
                 const source = m.source;
                 if ('curseforge' in source && typeof source.curseforge === 'object') {
                     const s = source.curseforge;
-                    if (s.href === file.href) return true;
+                    if (s.href === file.href || s.fileId === file.id) return true;
                 }
                 return false;
             };
