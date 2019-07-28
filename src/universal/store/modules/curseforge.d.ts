@@ -30,12 +30,12 @@ export namespace CurseForgeModule {
     }
 
     interface ProjectPreview {
-        id: string;
-        path: string;
         name: string;
+        title: string;
         author: string;
         description: string;
-        date: string;
+        updatedDate: string;
+        createdDate: string;
         count: string;
         categories: {
             href: string;
@@ -45,11 +45,11 @@ export namespace CurseForgeModule {
     }
 
     interface Project {
-        projectId: string;
+        id: string;
         name: string;
         image: string;
         members: { icon: string, name: string, type: string }[];
-        lastUpdate: string;
+        updatedDate: string;
         createdDate: string;
         totalDownload: string;
         license: { url: string, name: string };
@@ -108,9 +108,20 @@ export namespace CurseForgeModule {
          */
         fetchCurseForgeProjectFiles(context: C, payload?: { path: string, version?: string, page?: number, project: ProjectType | string }): Promise<Downloads>;
 
-        fetchCurseforgeProjectImages(context: C, payload: { path: string, type: string | ProjectType }): Promise<[{ name: string, url: string, mini: string }]>;
+        /**
+         * Fetch the curseforge images of a project
+         */
+        fetchCurseforgeProjectImages(context: C, payload: { path: string, type: string | ProjectType }): Promise<{ name: string, url: string, mini: string }[]>;
 
+        /**
+         * Fetch the license content from project license url
+         */
         fetchCurseForgeProjectLicense(context: C, licenseUrl: string): Promise<string>;
+
+        /**
+         * Perform search under specific curseforge project type
+         */
+        searchCurseforgeProjects(context: C, payload: { keyword: string, type: string | ProjectType }): Promise<ProjectPreview[]>;
 
         downloadAndImportFile(context: C, payload: { project: { path: string, type: string, id: string }, file: Download }): Promise<TaskHandle>;
     }
