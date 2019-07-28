@@ -1,89 +1,108 @@
 <template>
   <v-container grid-list-md fluid>
-    <v-layout wrap style="padding: 6px; 8px;" fill-height>
+    <v-layout wrap style="padding: 6px; 8px; overflow: auto; max-height: 95vh" fill-height>
       <v-flex d-flex xs12 tag="h1" style="margin-bottom: 20px; " class="white--text">
         <span class="headline">{{ $tc('setting.name', 2) }}</span>
       </v-flex>
-      <v-flex d-flex xs6 grow>
-        <v-select v-model="selectedLang" dark :label="$t('setting.language')" :items="langs" />
+      <v-flex d-flex xs12>
+        <v-list three-line subheader style="background: transparent; width: 100%">
+          <v-subheader>{{ $t('setting.general') }}</v-subheader>
+          <v-list-tile>
+            <v-list-tile-content>
+              <v-list-tile-title> {{ $t('setting.language') }} </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ $t('setting.languageDescription') }}
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-select v-model="selectedLang" style="max-width: 185px;" dark hide-details :items="langs" />
+            </v-list-tile-action>
+          </v-list-tile>
+          <v-list-tile>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ $t('setting.location') }}</v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ rootLocation }}
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-btn outline flat style="margin-right: 10px;" @click="browseRootDir">
+                {{ $t('setting.browseRoot') }}
+              </v-btn>
+            </v-list-tile-action>
+            <v-list-tile-action>
+              <v-btn outline flat @click="showRootDir">
+                {{ $t('setting.showRoot') }}
+              </v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
+        </v-list>
       </v-flex>
-      <v-flex d-flex xs6>
-        <v-combobox v-model="rootLocation" dark :label="$t('setting.location')" readonly append-icon="arrow_right"
-                    append-outer-icon="folder" @click:append="showRootDir" @click:append-outer="browseRootDir" />
-      </v-flex>
-      <v-flex d-flex xs6 style="flex-direction: column;">
-        <v-checkbox v-model="autoInstallOnAppQuit" dark :label="$t('setting.autoInstallOnAppQuit')" />
-        <v-checkbox v-model="autoDownload" dark :label="$t('setting.autoDownload')" />
-        <v-checkbox v-model="allowPrerelease" dark :label="$t('setting.allowPrerelease')" />
+      <v-divider dark />
+      <v-flex style="background: transparent">
+        <v-list three-line subheader style="background: transparent">
+          <v-subheader>{{ $t('setting.update') }}</v-subheader>
+          <v-list-tile avatar>
+            <v-list-tile-action>
+              <v-btn icon :loading="checkingUpdate" @click="checkUpdate">
+                <v-icon>
+                  refresh
+                </v-icon>
+              </v-btn>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title> {{ $t('setting.latestVersion') }} </v-list-tile-title>
+              <v-list-tile-sub-title> {{ updateInfo.version }} </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-btn v-if="!readyToUpdate" flat @click="viewUpdateDetail">
+                {{ $t('setting.updateToThisVersion') }}
+              </v-btn>
+              <v-btn v-else block @click="viewUpdateDetail">
+                {{ $t('setting.installAndQuit') }}
+              </v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
+          <v-list-tile avatar>
+            <v-list-tile-action>
+              <v-checkbox v-model="autoInstallOnAppQuit" />
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title> {{ $t('setting.autoInstallOnAppQuit') }} </v-list-tile-title>
+              <v-list-tile-sub-title> {{ $t('setting.autoInstallOnAppQuitDescription') }} </v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile avatar>
+            <v-list-tile-action>
+              <v-checkbox v-model="autoDownload" dark />
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title> {{ $t('setting.autoDownload') }} </v-list-tile-title>
+              <v-list-tile-sub-title> {{ $t('setting.autoDownloadDescription') }} </v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile avatar>
+            <v-list-tile-action>
+              <v-checkbox v-model="allowPrerelease" />
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title> {{ $t('setting.allowPrerelease') }} </v-list-tile-title>
+              <v-list-tile-sub-title> {{ $t('setting.allowPrereleaseDescription') }} </v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
       </v-flex>
 
-      <v-flex d-flex xs6 grow style="color: white;">
-        <v-tooltip top>
-          <template v-slot:activator="{ on }">
-            <v-card v-if="updateInfo" dark v-on="on">
-              <v-card-title>
-                <h3>
-                  <a href="https://github.com/voxelum/VoxeLauncher/releases">
-                    {{ updateInfo.releaseName }}
-                  </a>
-                </h3>
-                <div class="grey--text">
-                  {{ updateInfo.releaseDate }}
-                </div>
-                <v-spacer />
-                <v-chip small>
-                  v{{ updateInfo.version }}
-                </v-chip>
-              </v-card-title>
-              <v-divider />
-              <v-card-text>
-                <div v-html="updateInfo.releaseNotes" />
-              </v-card-text>
-              <v-card-actions>
-                <v-btn v-if="!readyToUpdate" block color="primary" flat :loading="downloadingUpdate" :disabled="downloadingUpdate" @click="downloadThisUpdate">
-                  <v-icon color="white" left>
-                    cloud_download
-                  </v-icon>
-                  {{ $t('setting.updateToThisVersion') }}
-                </v-btn>
-                <v-btn v-else block color="primary" @click="installThisUpdate">
-                  <v-icon color="white" left>
-                    refresh
-                  </v-icon>
-                  {{ $t('setting.installAndQuit') }}
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-            <v-card v-else hover dark style="width: 100%" to="https://github.com/voxelum/VoxeLauncher/releases"
-                    replace>
-              <v-container fill-height>
-                <v-layout fill-height justify-space-around align-center>
-                  <h3 v-if="!checkingUpdate">
-                    {{ $t('setting.noUpdateAvailable') }}
-                  </h3>
-                  <v-progress-circular v-else indeterminate />
-                </v-layout>
-              </v-container>
-            </v-card>
-          </template>
-          {{ $t('setting.latestVersion') }}
-        </v-tooltip>
-      </v-flex>
-      <v-flex d-flex xs6>
-        <v-btn large dark :loading="checkingUpdate" :disabled="checkingUpdate" @click="checkUpdate">
-          {{ $t('setting.checkUpdate') }}
-        </v-btn>
-      </v-flex>
-
-      <p class="white--text" style="position: absolute; bottom: 35px; right: 315px;">
-        <a href="https://github.com/voxelum/voxelauncher"> Github Repo</a>
+      <!-- <p class="white--text" style="position: absolute; bottom: 35px; right: 315px;">
+        <a href="https://github.com/voxelum/voxelauncher"> Github Repo </a>
       </p>
 
       <p class="white--text" style="position: absolute; bottom: 10px; right: 300px;">
         Present by <a href="https://github.com/ci010"> CI010 </a>
-      </p>
+      </p> -->
     </v-layout>
 
+    <update-info v-model="viewingUpdateDetail" />
     <v-dialog :value="reloadDialog" :persistent="!reloadError">
       <v-card v-if="!reloading" dark>
         <v-card-title>
@@ -153,6 +172,8 @@ export default {
       reloadDialog: false,
       reloading: false,
       reloadError: undefined,
+
+      viewingUpdateDetail: false,
     };
   },
   computed: {
@@ -174,10 +195,10 @@ export default {
       get() { return this.$repo.state.config.autoDownload; },
       set(v) { this.$repo.commit('autoDownload', v); },
     },
-    checkingUpdate() { return this.$repo.state.config.checkingUpdate; },
-    downloadingUpdate() { return this.$repo.state.config.downloadingUpdate; },
-    updateInfo() { return this.$repo.state.config.updateInfo; },
     readyToUpdate() { return this.$repo.state.config.readyToUpdate; },
+    downloadingUpdate() { return this.$repo.state.config.downloadingUpdate; },
+    checkingUpdate() { return this.$repo.state.config.checkingUpdate; },
+    updateInfo() { return this.$repo.state.config.updateInfo; },
     langs() { return this.$repo.state.config.locales; },
   },
   methods: {
@@ -185,6 +206,9 @@ export default {
       this.$repo.dispatch('checkUpdate').then((result) => {
         console.log(result);
       });
+    },
+    viewUpdateDetail() {
+      this.viewingUpdateDetail = true;
     },
     showRootDir() {
       this.$electron.remote.shell.openItem(this.rootLocation);
@@ -204,13 +228,6 @@ export default {
     doCancelApplyRoot() {
       this.reloadDialog = false;
       this.rootLocation = this.$repo.state.root;
-    },
-    downloadThisUpdate() {
-      this.$repo.dispatch('downloadUpdate');
-      this.$notify('info', this.$t('setting.startDownloadUpdate'));
-    },
-    installThisUpdate() {
-      this.$repo.dispatch('quitAndInstall');
     },
     doApplyRoot(defer) {
       this.reloading = true;
