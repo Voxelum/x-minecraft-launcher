@@ -165,13 +165,13 @@
         "curseforge": {
             "type": "object",
             "properties": {
-                "description": {
-                    "type": "string"
-                },
                 "gameversion": {
                     "type": "string"
                 },
                 "install": {
+                    "type": "string"
+                },
+                "installed": {
                     "type": "string"
                 },
                 "mc-mods": {
@@ -188,9 +188,6 @@
                         "description",
                         "name"
                     ]
-                },
-                "meta": {
-                    "type": "string"
                 },
                 "modpacks": {
                     "type": "object",
@@ -210,7 +207,16 @@
                 "name": {
                     "type": "string"
                 },
-                "installed": {
+                "totalDownloads": {
+                    "type": "string"
+                },
+                "createdDate": {
+                    "type": "string"
+                },
+                "lastUpdate": {
+                    "type": "string"
+                },
+                "license": {
                     "type": "string"
                 },
                 "project": {
@@ -267,22 +273,32 @@
                         "description",
                         "name"
                     ]
+                },
+                "description": {
+                    "type": "string"
+                },
+                "meta": {
+                    "type": "string"
                 }
             },
             "required": [
-                "description",
                 "gameversion",
                 "install",
+                "installed",
                 "mc-mods",
-                "meta",
                 "modpacks",
                 "name",
-                "installed",
+                "totalDownloads",
+                "createdDate",
+                "lastUpdate",
+                "license",
                 "project",
                 "search",
                 "sortby",
                 "texture-packs",
-                "worlds"
+                "worlds",
+                "description",
+                "meta"
             ]
         },
         "delete": {
@@ -1185,7 +1201,16 @@
                 "theme": {
                     "type": "string"
                 },
+                "general": {
+                    "type": "string"
+                },
+                "update": {
+                    "type": "string"
+                },
                 "allowPrerelease": {
+                    "type": "string"
+                },
+                "allowPrereleaseDescription": {
                     "type": "string"
                 },
                 "apply": {
@@ -1194,7 +1219,16 @@
                 "autoDownload": {
                     "type": "string"
                 },
+                "autoDownloadDescription": {
+                    "type": "string"
+                },
                 "autoInstallOnAppQuit": {
+                    "type": "string"
+                },
+                "viewUpdate": {
+                    "type": "string"
+                },
+                "autoInstallOnAppQuitDescription": {
                     "type": "string"
                 },
                 "checkUpdate": {
@@ -1213,6 +1247,9 @@
                     "type": "string"
                 },
                 "installAndQuit": {
+                    "type": "string"
+                },
+                "languageDescription": {
                     "type": "string"
                 },
                 "latestVersion": {
@@ -1235,6 +1272,12 @@
                 },
                 "waitReload": {
                     "type": "string"
+                },
+                "browseRoot": {
+                    "type": "string"
+                },
+                "showRoot": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -1243,23 +1286,32 @@
                 "name",
                 "resolution",
                 "theme",
+                "general",
+                "update",
                 "allowPrerelease",
+                "allowPrereleaseDescription",
                 "apply",
                 "autoDownload",
+                "autoDownloadDescription",
                 "autoInstallOnAppQuit",
+                "viewUpdate",
+                "autoInstallOnAppQuitDescription",
                 "checkUpdate",
                 "cleanOldData",
                 "cleanOldDataHint",
                 "copyOldToNew",
                 "copyOldToNewHint",
                 "installAndQuit",
+                "languageDescription",
                 "latestVersion",
                 "noUpdateAvailable",
                 "setRootCause",
                 "setRootDescription",
                 "setRootTitle",
                 "updateToThisVersion",
-                "waitReload"
+                "waitReload",
+                "browseRoot",
+                "showRoot"
             ]
         },
         "signup": {
@@ -1353,7 +1405,19 @@
                     "type": "string"
                 },
                 "profileService": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "",
+                        "description"
+                    ]
                 },
                 "refreshAccount": {
                     "type": "string"
@@ -1504,9 +1568,6 @@
                 "noForge": {
                     "type": "string"
                 },
-                "noLiteloader": {
-                    "type": "string"
-                },
                 "noLocalVersion": {
                     "type": "string"
                 },
@@ -1516,10 +1577,13 @@
                 "recommended": {
                     "type": "string"
                 },
-                "selectHint": {
+                "showSnapshot": {
                     "type": "string"
                 },
-                "showSnapshot": {
+                "noLiteloader": {
+                    "type": "string"
+                },
+                "selectHint": {
                     "type": "string"
                 }
             },
@@ -1547,12 +1611,12 @@
                 "latest",
                 "locals",
                 "noForge",
-                "noLiteloader",
                 "noLocalVersion",
                 "noMinecraft",
                 "recommended",
-                "selectHint",
-                "showSnapshot"
+                "showSnapshot",
+                "noLiteloader",
+                "selectHint"
             ]
         },
         "checkUpdate": {
@@ -1801,46 +1865,8 @@
                 "unknownMod"
             ]
         },
-        "download": {
-            "type": "string"
-        },
         "downloadUpdate": {
             "type": "string"
-        },
-        "error": {
-            "type": "object",
-            "properties": {
-                "empty": {
-                    "type": "string"
-                },
-                "installJava": {
-                    "type": "string"
-                },
-                "internetNotConnected": {
-                    "type": "string"
-                },
-                "missingJava": {
-                    "type": "string"
-                },
-                "missingMinecraft": {
-                    "type": "string"
-                },
-                "missingName": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "empty",
-                "installJava",
-                "internetNotConnected",
-                "missingJava",
-                "missingMinecraft",
-                "missingName",
-                "name"
-            ]
         },
         "gamesetting": {
             "type": "object",
@@ -2422,9 +2448,6 @@
         "minecraft": {
             "type": "object",
             "properties": {
-                "name": {
-                    "type": "string"
-                },
                 "settings": {
                     "type": "string"
                 },
@@ -2433,14 +2456,23 @@
                 },
                 "version": {
                     "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             },
             "required": [
-                "name",
                 "settings",
                 "showAlpha",
-                "version"
+                "version",
+                "name"
             ]
+        },
+        "next": {
+            "type": "string"
+        },
+        "optional": {
+            "type": "string"
         },
         "profile": {
             "type": "object",
@@ -2630,24 +2662,24 @@
                         "error": {
                             "type": "object",
                             "properties": {
-                                "missingHost": {
-                                    "type": "string"
-                                },
-                                "wrongVersion": {
-                                    "type": "string"
-                                },
                                 "requirehost": {
                                     "type": "string"
                                 },
                                 "requirename": {
                                     "type": "string"
+                                },
+                                "wrongVersion": {
+                                    "type": "string"
+                                },
+                                "missingHost": {
+                                    "type": "string"
                                 }
                             },
                             "required": [
-                                "missingHost",
-                                "wrongVersion",
                                 "requirehost",
-                                "requirename"
+                                "requirename",
+                                "wrongVersion",
+                                "missingHost"
                             ]
                         },
                         "expectedVersions": {
@@ -2801,54 +2833,11 @@
                 "vmOptions"
             ]
         },
-        "refresh": {
-            "type": "object",
-            "properties": {
-                "hint": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "hint"
-            ]
-        },
         "refreshResource": {
             "type": "string"
         },
-        "skin": {
-            "type": "object",
-            "properties": {
-                "change": {
-                    "type": "string"
-                },
-                "export": {
-                    "type": "string"
-                },
-                "importLocal": {
-                    "type": "string"
-                },
-                "loadURL": {
-                    "type": "string"
-                },
-                "reset": {
-                    "type": "string"
-                },
-                "upload": {
-                    "type": "string"
-                },
-                "urlHint": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "change",
-                "export",
-                "importLocal",
-                "loadURL",
-                "reset",
-                "upload",
-                "urlHint"
-            ]
+        "settings": {
+            "type": "string"
         },
         "task": {
             "type": "object",
@@ -2887,6 +2876,205 @@
                 "name",
                 "running",
                 "successed"
+            ]
+        },
+        "intro": {
+            "type": "object",
+            "properties": {
+                "struct": {
+                    "type": "object",
+                    "properties": {
+                        "root": {
+                            "type": "string"
+                        },
+                        "assets": {
+                            "type": "string"
+                        },
+                        "libraries": {
+                            "type": "string"
+                        },
+                        "jre": {
+                            "type": "string"
+                        },
+                        "logs": {
+                            "type": "string"
+                        },
+                        "profiles": {
+                            "type": "string"
+                        },
+                        "profileFolder": {
+                            "type": "string"
+                        },
+                        "mclogs": {
+                            "type": "string"
+                        },
+                        "profile": {
+                            "type": "string"
+                        },
+                        "temp": {
+                            "type": "string"
+                        },
+                        "options": {
+                            "type": "string"
+                        },
+                        "mods": {
+                            "type": "string"
+                        },
+                        "resourcepacks": {
+                            "type": "string"
+                        },
+                        "modJar": {
+                            "type": "string"
+                        },
+                        "modLite": {
+                            "type": "string"
+                        },
+                        "resourcepack": {
+                            "type": "string"
+                        },
+                        "resources": {
+                            "type": "string"
+                        },
+                        "resourceJson": {
+                            "type": "string"
+                        },
+                        "versions": {
+                            "type": "string"
+                        },
+                        "config": {
+                            "type": "string"
+                        },
+                        "version": {
+                            "type": "string"
+                        },
+                        "forge-versions": {
+                            "type": "string"
+                        },
+                        "lite-versions": {
+                            "type": "string"
+                        },
+                        "java": {
+                            "type": "string"
+                        },
+                        "user": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "root",
+                        "assets",
+                        "libraries",
+                        "jre",
+                        "logs",
+                        "profiles",
+                        "profileFolder",
+                        "mclogs",
+                        "profile",
+                        "temp",
+                        "options",
+                        "mods",
+                        "resourcepacks",
+                        "modJar",
+                        "modLite",
+                        "resourcepack",
+                        "resources",
+                        "resourceJson",
+                        "versions",
+                        "config",
+                        "version",
+                        "forge-versions",
+                        "lite-versions",
+                        "java",
+                        "user"
+                    ]
+                }
+            },
+            "required": [
+                "struct"
+            ]
+        },
+        "download": {
+            "type": "string"
+        },
+        "error": {
+            "type": "object",
+            "properties": {
+                "empty": {
+                    "type": "string"
+                },
+                "installJava": {
+                    "type": "string"
+                },
+                "internetNotConnected": {
+                    "type": "string"
+                },
+                "missingJava": {
+                    "type": "string"
+                },
+                "missingMinecraft": {
+                    "type": "string"
+                },
+                "missingName": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "empty",
+                "installJava",
+                "internetNotConnected",
+                "missingJava",
+                "missingMinecraft",
+                "missingName",
+                "name"
+            ]
+        },
+        "refresh": {
+            "type": "object",
+            "properties": {
+                "hint": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "hint"
+            ]
+        },
+        "skin": {
+            "type": "object",
+            "properties": {
+                "change": {
+                    "type": "string"
+                },
+                "export": {
+                    "type": "string"
+                },
+                "importLocal": {
+                    "type": "string"
+                },
+                "loadURL": {
+                    "type": "string"
+                },
+                "reset": {
+                    "type": "string"
+                },
+                "upload": {
+                    "type": "string"
+                },
+                "urlHint": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "change",
+                "export",
+                "importLocal",
+                "loadURL",
+                "reset",
+                "upload",
+                "urlHint"
             ]
         },
         "world": {
@@ -2929,15 +3117,6 @@
             ]
         },
         "yes": {
-            "type": "string"
-        },
-        "next": {
-            "type": "string"
-        },
-        "optional": {
-            "type": "string"
-        },
-        "settings": {
             "type": "string"
         }
     },
@@ -3010,9 +3189,7 @@
         "version",
         "checkUpdate",
         "diagnosis",
-        "download",
         "downloadUpdate",
-        "error",
         "gamesetting",
         "installAssets",
         "installCurseforgeFile",
@@ -3025,16 +3202,19 @@
         "launcher",
         "log",
         "minecraft",
-        "profile",
-        "refresh",
-        "refreshResource",
-        "skin",
-        "task",
-        "world",
-        "yes",
         "next",
         "optional",
-        "settings"
+        "profile",
+        "refreshResource",
+        "settings",
+        "task",
+        "intro",
+        "download",
+        "error",
+        "refresh",
+        "skin",
+        "world",
+        "yes"
     ],
     "$id": "https://raw.githubusercontent.com/voxelum/VoxeLauncher/master/static/locale.schema.json"
 }

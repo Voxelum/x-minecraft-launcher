@@ -32,10 +32,13 @@
     "create": "Create",
     "criticalGraphics": "Critical Graphics",
     "curseforge": {
+        "createdDate": "Created Date",
         "description": "CurseForge is now the largest repository for modded Minecraft featuring thousands of mods, texture packs and worlds.",
         "gameversion": "Game Version",
         "install": "Install",
         "installed": "Installed",
+        "lastUpdate": "Last Update Date",
+        "license": "License",
         "mc-mods": {
             "description": "View and download mods packs from Curseforge",
             "name": "Mods"
@@ -45,10 +48,6 @@
             "description": "View and download modpacks from Curseforge",
             "name": "Modpacks"
         },
-        "totalDownloads": "Total Downloads",
-        "createdDate": "Created Date",
-        "lastUpdate": "Last Update Date",
-        "license": "License",
         "name": "Curseforge",
         "project": {
             "description": "Description",
@@ -61,6 +60,7 @@
             "description": "View and download worlds from Curseforge",
             "name": "Resource Packs"
         },
+        "totalDownloads": "Total Downloads",
         "worlds": {
             "description": "View and download mods from Curseforge",
             "name": "Worlds"
@@ -289,6 +289,35 @@
         "jar": "Install Version Jar",
         "json": "Install Version Json"
     },
+    "intro": {
+        "struct": {
+            "assets": "Same with vanllia. The assets folder cache the game assets",
+            "config": "The global Launcher config",
+            "forge-versions": "The global cache of Forge version metadata",
+            "java": "The global cache of found java",
+            "jre": "Cache the launcher downloaded JRE (JVM 8)",
+            "libraries": "Same with vanllia.",
+            "lite-versions": "The global cache of Liteloader version metadata",
+            "logs": "Containing Launcher logs but not Minecraft game logs",
+            "mclogs": "The normal Minecraft game logs",
+            "modJar": "The mod jar file",
+            "modLite": "The mod lite loader file",
+            "mods": "The normal mods folder, but managed by resource module in Launcher",
+            "options": "The normal Minecraft game settings",
+            "profile": "The JSON store launch profile config",
+            "profileFolder": "The folder contains a specific launch profile. The name is the uuid",
+            "profiles": "The folder contains each launch profile",
+            "resourceJson": "The resource metadata matching one mod or resourcepack",
+            "resourcepack": "The normal resource pack zip",
+            "resourcepacks": "The normal resourcepacks folder, but managed by resource module in Launcher",
+            "resources": "The folder contains the managed mods/resourcepacks metadata",
+            "root": "The root the your minecraft data folder",
+            "temp": "The temp folder (for download) the Launcher have",
+            "user": "The user auth info cache",
+            "version": "The global cache of Minecraft version metadata",
+            "versions": "Same with vanllia. Save multiple versions' JSON & JAR"
+        }
+    },
     "java": {
         "browse": "Browse Java executable",
         "errorDownload": "Auto-download & install failed. Please check your network condition. You can try another way.",
@@ -496,16 +525,22 @@
     "save": "Save",
     "setting": {
         "allowPrerelease": "Download Prerelease",
+        "allowPrereleaseDescription": "Prerelease might be instable",
         "apply": "Apply Setting",
-        "autoDownload": "Auto Download Update if it's Avaiable",
-        "autoInstallOnAppQuit": "Autoinstall the Update on App Quit",
+        "autoDownload": "Auto Download",
+        "autoDownloadDescription": "Auto Download Update if it's Avaiable",
+        "autoInstallOnAppQuit": "Autoinstall",
+        "autoInstallOnAppQuitDescription": "Autoinstall the Update on App Quit",
+        "browseRoot": "Browse",
         "checkUpdate": "Check Update",
         "cleanOldData": "Clear Data",
         "cleanOldDataHint": "Remove all old files including Maps, Resource Packs, and etc",
         "copyOldToNew": "Migrate Data",
         "copyOldToNewHint": "Before clearing data, copy all old data to new place",
+        "general": "General",
         "installAndQuit": "Restart to Install",
         "language": "Language",
+        "languageDescription": "The display language",
         "latestVersion": "Latest Version",
         "location": "Store Location",
         "name": "Global Setting | Global Settings",
@@ -514,8 +549,11 @@
         "setRootCause": "You will loose all your data (Maps, Resource Packs, Mods) if you don't check \"Migrate data\" option below.",
         "setRootDescription": "This will change the root data folder of this launcher and minecraft.",
         "setRootTitle": "Set to a new storage location",
+        "showRoot": "Show",
         "theme": "Theme",
+        "update": "Update",
         "updateToThisVersion": "Download and Install",
+        "viewUpdate": "View Update Detail",
         "waitReload": "Migrating data. Please don't close the Launcher or you will lose your data."
     },
     "skin": {
