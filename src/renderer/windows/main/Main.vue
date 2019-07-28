@@ -32,8 +32,10 @@
           </v-list-tile-action>
         </v-list-tile>
         <v-list-tile :disabled="!logined" replace to="/curseforge">
-          <v-list-tile-action>
-            <v-icon> $vuetify.icons.curseforge </v-icon>
+          <v-list-tile-action style="padding-right: 2px;">
+            <v-icon :size="14">
+              $vuetify.icons.curseforge
+            </v-icon>
           </v-list-tile-action>
         </v-list-tile>
         <v-spacer />
