@@ -5,9 +5,17 @@
         <span class="headline">{{ $tc('curseforge.mc-mods.name', 2) }}</span>
       </v-flex>
       <v-flex xs5>
-        <v-text-field hide-details :label="$t('curseforge.search')" />
+        <v-text-field v-model="keyword" append-icon="search" hide-details :label="$t('curseforge.search')" @keydown="onSearchKeyDown" />
       </v-flex>
-      <v-flex xs6>
+      <v-flex v-if="searchMode" xs6>
+        <v-btn color="grey darken-3" @click="searchMode = false">
+          <v-icon left>
+            close
+          </v-icon>
+          {{ $t('curseforge.quitSearch') }}
+        </v-btn>
+      </v-flex>
+      <v-flex v-if="!searchMode" xs6>
         <v-menu offset-y allow-overflow>
           <template v-slot:activator="{ on }">
             <v-btn color="grey darken-3" v-on="on">
@@ -22,7 +30,7 @@
         </v-menu>
       </v-flex>
       <v-spacer />
-      <v-flex shrink>
+      <v-flex v-if="!searchMode" shrink>
         <v-menu offset-y allow-overflow>
           <template v-slot:activator="{ on }">
             <v-btn color="grey darken-3" v-on="on">
@@ -63,7 +71,7 @@
               <v-divider vertical style="padding-left: 10px;" inset />
               <v-flex xs6>
                 <v-card-title>
-                  <span style="font-weight: bold;"> {{ proj.name }} </span> by <span> {{ proj.author }} </span>
+                  <span style="font-weight: bold;"> {{ proj.name }} </span>  <span style="padding-left: 3px;"> by {{ proj.author }} </span>
                   <div style="color: grey">
                     {{ proj.count }}
                     {{ new Date(Number.parseInt(proj.date, 10)).toLocaleString() }}
@@ -87,7 +95,7 @@
       </v-flex>
       <v-flex xs12 style="z-index: 2">
         <v-layout justify-center>
-          <v-pagination v-model="page" :length="pages" total-visible="8" />
+          <v-pagination v-model="page" :disabled="searchMode" :length="pages" total-visible="8" />
         </v-layout>
       </v-flex>
     </v-layout>
@@ -114,6 +122,9 @@ export default {
       filter: { text: '' },
 
       loading: false,
+
+      keyword: '',
+      searchMode: false,
     };
   },
   watch: {
@@ -125,6 +136,30 @@ export default {
     this.refresh();
   },
   methods: {
+    onSearchKeyDown(e) {
+      if (e.key === 'Enter') {
+        this.search();
+      }
+    },
+    async search() {
+      if (this.refresh) return;
+      if (this.keyword === '') return;
+      this.projects = [];
+      this.loading = true;
+      this.searchMode = true;
+      try {
+        const projects = await this.$repo.dispatch('searchCurseforgeProjects', {
+          type: this.type,
+          keyword: this.keyword,
+        });
+
+        this.projects = Object.freeze(projects);
+      } catch (e) {
+        this.searchMode = false;
+      } finally {
+        this.loading = false;
+      }
+    },
     async refresh() {
       this.projects = [];
       this.loading = true;
@@ -137,7 +172,7 @@ export default {
         });
         const { projects, versions, filters, pages } = result;
 
-        this.projects = projects;
+        this.projects = Object.freeze(projects);
         this.versions = versions;
         this.filters = filters;
         this.pages = pages;
