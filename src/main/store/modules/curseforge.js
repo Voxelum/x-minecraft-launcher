@@ -59,6 +59,51 @@ function convert(node) {
 }
 
 /**
+ * @param { import('fast-html-parser').HTMLElement } item
+ * @returns { import('universal/store/modules/curseforge').CurseForgeModule.ProjectPreview }
+ */
+function processProjectListingRow(item) {
+    item = item.removeWhitespace();
+
+    const childs = item.childNodes.filter(notText);
+    const iconElem = item.querySelector('.project-avatar').querySelector('a');
+    const url = iconElem.attributes.href;
+    const imgTag = iconElem.querySelector('img');
+    const icon = imgTag ? imgTag.attributes.src : '';
+
+    const mainBody = childs[1].childNodes.filter(notText);
+    const categorysBody = childs[2].childNodes.filter(notText)[1];
+
+    const baseInfo = mainBody[0].childNodes.filter(notText);
+    const metaInfo = mainBody[1].childNodes.filter(notText);
+    const description = mainBody[2].text;
+
+    const title = baseInfo[0].querySelector('h3').rawText;
+    const author = baseInfo[2].rawText;
+    const count = metaInfo[0].rawText.replace(' Downloads', '');
+    const updatedDate = metaInfo[1].querySelector('abbr').attributes['data-epoch'];
+    const createdDate = metaInfo[2].querySelector('abbr').attributes['data-epoch'];
+
+    const categories = categorysBody.querySelectorAll('a').map(link => ({
+        href: link.attributes.href,
+        icon: link.querySelector('img').attributes.src,
+        title: link.querySelector('figure').attributes.title,
+    }));
+
+    return {
+        name: url.substring(url.lastIndexOf('/') + 1),
+        title,
+        author,
+        description,
+        createdDate,
+        updatedDate,
+        count,
+        categories,
+        icon,
+    };
+}
+
+/**
  * @typedef {import('universal/store/modules/curseforge').CurseForgeModule.Modpack} Modpack
  * @type {import('universal/store/modules/curseforge').CurseForgeModule}
  */
@@ -72,7 +117,6 @@ const mod = {
             const fType = fileType(buf);
             if (!fType || fType.ext !== 'zip') throw new Error(`Cannot import curseforge modpack ${path}, since it's not a zip!`);
             const curseForgeRoot = join(context.rootState.root, 'curseforge');
-
 
             /**
              * @param {{url:string, dest: string}[]} pool
@@ -230,45 +274,7 @@ const mod = {
                         text: f.rawText,
                         value: f.attributes.value,
                     }));
-                const all = root.querySelectorAll('.project-listing-row').map((item) => {
-                    item = item.removeWhitespace();
-
-                    const childs = item.childNodes.filter(notText);
-                    const iconElem = item.querySelector('.project-avatar').querySelector('a');
-                    const url = iconElem.attributes.href;
-                    const imgTag = iconElem.querySelector('img');
-                    const icon = imgTag ? imgTag.attributes.src : '';
-
-                    const mainBody = childs[1].childNodes.filter(notText);
-                    const categorysBody = childs[2].childNodes.filter(notText)[1];
-
-                    const baseInfo = mainBody[0].childNodes.filter(notText);
-                    const metaInfo = mainBody[1].childNodes.filter(notText);
-                    const description = mainBody[2].text;
-
-                    const name = baseInfo[0].querySelector('h3').rawText;
-                    const author = baseInfo[2].rawText;
-                    const date = metaInfo[1].querySelector('abbr').attributes['data-epoch'];
-                    const count = metaInfo[0].rawText.replace(' Downloads', '');
-
-                    const categories = categorysBody.querySelectorAll('a').map(link => ({
-                        href: link.attributes.href,
-                        icon: link.querySelector('img').attributes.src,
-                        title: link.querySelector('figure').attributes.title,
-                    }));
-
-                    return {
-                        id: url.substring(url.lastIndexOf('/') + 1),
-                        path: url.substring(url.lastIndexOf('/') + 1),
-                        name,
-                        author,
-                        description,
-                        date,
-                        count,
-                        categories,
-                        icon,
-                    };
-                });
+                const all = root.querySelectorAll('.project-listing-row').map(processProjectListingRow);
                 return {
                     projects: all,
                     pages,
@@ -285,20 +291,20 @@ const mod = {
             console.log(`Get curseforge project ${url}`);
 
             return request(url, (root) => {
-                const details = root.querySelector('.project-detail').removeWhitespace();
+                const details = root.querySelector('.project-detail__content').removeWhitespace();
 
                 const header = root.querySelector('.game-header').querySelectorAll('.container')[1]
                     .childNodes.filter(notText)[0];
                 const image = header.querySelector('img').attributes.src;
                 const name = header.querySelector('.font-bold').text;
-                const lastUpdate = header.querySelector('.standard-date').attributes['data-epoch'];
+                const updatedDate = header.querySelector('.standard-date').attributes['data-epoch'];
 
                 const sides = root.querySelectorAll('.my-4')[1].childNodes.filter(notText);
                 const sideInfoElems = sides[0] // <div class="my-4">
                     .childNodes.filter(notText)[0] // <div class="pb-4 border-b border-gray--100">
                     .childNodes.filter(notText)[1] // <div class="flex flex-col mb-3"> 
                     .childNodes.filter(notText);
-                const projectId = sideInfoElems[0].querySelectorAll('span')[1].rawText;
+                const id = sideInfoElems[0].querySelectorAll('span')[1].rawText;
                 const createdDate = sideInfoElems[1].querySelector('abbr').attributes['data-epoch'];
                 const totalDownload = sideInfoElems[3].querySelectorAll('span')[1].rawText;
                 const licenseElem = sideInfoElems[4].querySelector('a');
@@ -312,13 +318,13 @@ const mod = {
                     }));
 
                 return {
-                    projectId,
-                    image,
+                    id,
                     name,
-                    lastUpdate,
-                    members,
-                    totalDownload,
+                    image,
+                    updatedDate,
                     createdDate,
+                    totalDownload,
+                    members,
                     license,
                     description: convert(details),
                 };
@@ -390,6 +396,10 @@ const mod = {
             return parser.parse(body).querySelector('.module').removeWhitespace().firstChild.rawText;
         },
 
+        async searchCurseforgeProjects(context, { keyword, type }) {
+            const url = `https://www.curseforge.com/minecraft/${type}/search?search=${keyword}`;
+            return request(url, root => root.querySelectorAll('.project-listing-row').map(processProjectListingRow));
+        },
         async downloadAndImportFile(context, payload) {
             const url = `https://www.curseforge.com${payload.file.href}/file`;
 
@@ -403,6 +413,9 @@ const mod = {
                     const dest = await downloadFileWork({
                         url,
                         destination: context.rootGetters.path('temp', payload.file.name),
+                        headers: {
+                            'user-agent': '',
+                        },
                     })(ctx);
                     ctx.update(-1, -1);
                     await context.dispatch('importResource', {
