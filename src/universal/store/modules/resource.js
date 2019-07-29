@@ -8,14 +8,17 @@ const mod = {
         refreshing: false,
         mods: {},
         resourcepacks: {},
+        saves: {},
+        modpacks: {},
     },
     getters: {
-        domains: state => ['mods', 'resourcepacks'],
-        mods: state => Object.keys(state.mods).map(k => state.mods[k]) || [],
-        resourcepacks: state => Object.keys(state.resourcepacks)
-            .map(k => state.resourcepacks[k]) || [],
+        domains: _ => ['mods', 'resourcepacks', 'modpacks', 'saves'],
+        mods: state => Object.values(state.mods) || [],
+        resourcepacks: state => Object.values(state.resourcepacks) || [],
+        saves: state => Object.values(state.saves) || [],
+        modpacks: state => Object.values(state.modpacks) || [],
         getResource: (state, getters) => (hash) => {
-            for (const value of [state.mods, state.resourcepacks]) {
+            for (const value of [state.mods, state.resourcepacks, state.modpacks, state.saves]) {
                 if (value[hash]) return value[hash];
             }
             return undefined;
@@ -29,6 +32,8 @@ const mod = {
             switch (res.domain) {
                 case 'mods':
                 case 'resourcepacks':
+                case 'saves':
+                case 'modpacks':
                     Vue.set(state[res.domain], res.hash, res);
                     break;
                 default:
@@ -40,6 +45,8 @@ const mod = {
                 switch (res.domain) {
                     case 'mods':
                     case 'resourcepacks':
+                    case 'saves':
+                    case 'modpacks':
                         Vue.set(state[res.domain], res.hash, res);
                         break;
                     default:
@@ -51,6 +58,8 @@ const mod = {
             switch (resource.domain) {
                 case 'mods':
                 case 'resourcepacks':
+                case 'saves':
+                case 'modpacks':
                     Vue.delete(state[resource.domain], resource.hash);
                     break;
                 default:
