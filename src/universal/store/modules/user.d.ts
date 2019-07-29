@@ -3,40 +3,42 @@ import { Context, Module } from "../store";
 
 export declare namespace UserModule {
 
-    type Snapshot = Partial<Omit<State, 'info'>>
-    interface State {
-        skin: {
-            data: string,
-            slim: boolean,
-        },
-        cape: string,
+    type Snapshot = Partial<Omit<State, 'info'>>;
 
-        id: string,
-        name: string,
-        accessToken: string,
-        userId: string,
-        userType: UserType,
+    interface SerializedState {
+        id: string;
+        name: string;
+        accessToken: string;
+        userId: string;
+        userType: UserType;
         properties: {
-            [key: string]: string,
-        },
-
-        info: MojangAccount?,
+            [key: string]: string;
+        };
 
         authServices: {
-            mojang: Auth.Yggdrasil.API,
-            [name: string]: Auth.Yggdrasil.API
-        },
+            mojang: Auth.Yggdrasil.API;
+            [name: string]: Auth.Yggdrasil.API;
+        };
         profileServices: {
-            mojang: ProfileService.API,
-            [name: string]: ProfileService.API
-        },
+            mojang: ProfileService.API;
+            [name: string]: ProfileService.API;
+        };
 
-        profileService: string,
-        authService: string,
+        profileService: string;
+        authService: string;
 
-        loginHistory: { [mode: string]: string[] },
+        loginHistory: { [mode: string]: string[] };
 
-        clientToken: string,
+        clientToken: string;
+    }
+    interface State extends SerializedState {
+        skin: {
+            data: string;
+            slim: boolean;
+        };
+        cape: string;
+
+        info: MojangAccount?;
     }
 
     interface Mutations {
