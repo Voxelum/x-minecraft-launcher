@@ -55,6 +55,18 @@
         </v-flex>
 
         <v-flex d-flex xs6>
+          <v-btn outline large replace to="/save">
+            {{ $tc('save.name', 2) }}
+          </v-btn>
+        </v-flex>
+
+        <!-- <v-flex d-flex xs6>
+          <v-btn outline large replace to="/server">
+            {{ $tc('server.name', 2) }}
+          </v-btn>
+        </v-flex> -->
+
+        <v-flex d-flex xs6>
           <v-checkbox v-model="hideLauncher" hide-details dark :label="$t('launch.hideLauncher')" />
         </v-flex>
         <v-flex d-flex xs6>
