@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import { getExpectVersion } from 'universal/utils/versions';
-import { fitin } from 'universal/utils/object';
 import { UNKNOWN_STATUS } from 'universal/utils/server-status';
 
 /**
@@ -32,7 +31,6 @@ export function createTemplate(id, java, mcversion, type = 'modpack') {
         showLog: false,
         hideLauncher: true,
 
-
         forge: {
             mods: [],
             version: '',
@@ -48,7 +46,7 @@ export function createTemplate(id, java, mcversion, type = 'modpack') {
 
         settings: {},
         serverInfos: [],
-        worlds: [],
+        saves: [],
 
         refreshing: false,
         problems: [],
@@ -195,7 +193,7 @@ const mod = {
             state.all[state.id].serverInfos = infos;
         },
         worlds(state, maps) {
-            state.all[state.id].worlds = maps;
+            state.all[state.id].saves = maps;
         },
         gamesettings(state, settings) {
             console.log(`GameSetting ${JSON.stringify(settings, null, 4)}`);
