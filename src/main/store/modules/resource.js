@@ -3,11 +3,11 @@ import { net } from 'electron';
 import { createReadStream, existsSync, promises as fs } from 'fs';
 import { copy, ensureDir, ensureFile } from 'main/utils/fs';
 import paths from 'path';
-import { Forge, LiteLoader, ResourcePack } from 'ts-minecraft';
+import { Forge, LiteLoader, ResourcePack, World } from 'ts-minecraft';
 import base from 'universal/store/modules/resource';
 import { requireString } from 'universal/utils/object';
 import url from 'url';
-import { bufferEntry, open, parseEntries } from 'yauzlw';
+import { bufferEntry, open, parseEntries, createExtractStream } from 'yauzlw';
 
 /**
  * 
@@ -38,6 +38,19 @@ async function readHash(file) {
             // @ts-ignore
             .once('finish', function () { resolve(this.read()); });
     });
+}
+
+/**
+ * @param {Buffer} buf 
+ */
+async function parseCurseforgeModpack(buf) {
+    const z = await open(buf, { lazyEntries: true, autoClose: false });
+    const { 'manifest.json': manifest } = await parseEntries(z, ['manifest.json']);
+    if (manifest) {
+        const buf = await bufferEntry(z, manifest);
+        return JSON.parse(buf.toString());
+    }
+    throw new Error();
 }
 
 /**
@@ -85,6 +98,23 @@ async function parseResource(filename, hash, ext, data, source) {
     Object.freeze(source);
     Object.freeze(meta);
 
+    return buildResource(filename, hash, ext, domain, type, source, meta);
+}
+
+/**
+ * 
+ * @param {string} filename 
+ * @param {string} hash 
+ * @param {string} ext 
+ * @param {string} domain 
+ * @param {string} type 
+ * @param {any} source 
+ * @param {any} meta 
+ * @returns {import('universal/store/modules/resource').Resource<any>}
+ */
+function buildResource(filename, hash, ext, domain, type, source, meta) {
+    Object.freeze(source);
+    Object.freeze(meta);
     return {
         path: '',
         name: getRegularName(type, meta) || paths.basename(paths.basename(filename, '.zip'), '.jar'),
@@ -224,7 +254,7 @@ const mod = {
             return '';
         },
 
-        async importResource(context, { path, metadata = {} }) {
+        async importResource(context, { path, type, metadata = {} }) {
             requireString(path);
 
             const handle = await context.dispatch('spawnTask', 'resource.import');
@@ -291,13 +321,35 @@ const mod = {
             // if exist, abort
             if (existsSync(metaFile)) {
                 context.dispatch('finishTask', { id: handle });
-                return undefined;
+                /** @type {any} */
+                const resource = context.getters.getResource(hash);
+                return resource;
             }
 
             // use parser to parse metadata
             context.dispatch('updateTask', { id: handle, progress: 2, total: 4, message: 'resource.import.parsing' });
 
-            const resource = await parseResource(path, hash, ext, data, source);
+            let resource;
+            switch (type) {
+                case 'forge':
+                case 'mc-mods':
+                    resource = buildResource(path, hash, ext, 'mods', 'forge', source, await Forge.readModMetaData(data));
+                    break;
+                case 'liteloader':
+                    resource = buildResource(path, hash, ext, 'mods', 'liteloader', source, await LiteLoader.meta(data));
+                    break;
+                case 'save':
+                case 'worlds':
+                    resource = buildResource(path, hash, ext, 'saves', 'save', source, {});
+                    break;
+                case 'curseforge-modpack':
+                case 'modpack':
+                    resource = buildResource(path, hash, ext, 'modpacks', 'curseforge-modpack', source, await parseCurseforgeModpack(data));
+                    break;
+                default:
+                    resource = await parseResource(path, hash, ext, data, source);
+                    break;
+            }
 
             console.log(`Import resource ${name}${ext}(${hash}) into ${resource.domain}`);
 
@@ -332,9 +384,9 @@ const mod = {
         async deployResources(context, payload) {
             if (!payload) throw new Error('Require input a resource with minecraft location');
 
-            const { resources, minecraft } = payload;
+            const { resources, profile } = payload;
             if (!resources) throw new Error('Resources cannot be undefined!');
-            if (!minecraft) throw new Error('Minecract location cannot be undefined!');
+            if (!profile) throw new Error('Profile id cannot be undefined!');
 
             const promises = [];
             for (const resource of resources) {
@@ -349,11 +401,22 @@ const mod = {
                 if (typeof res !== 'object' || !res.hash || !res.type || !res.domain || !res.name) {
                     throw new Error('The input resource object should be valid!');
                 }
-                const dest = paths.join(minecraft, res.domain, res.name + res.ext);
-                if (existsSync(dest)) {
-                    await fs.unlink(dest);
+                if (res.domain === 'mods' || res.domain === 'resourcepacks') {
+                    const dest = context.rootGetters.path(profile, res.domain, res.name + res.ext);
+                    if (existsSync(dest)) {
+                        await fs.unlink(dest);
+                    }
+                    promises.push(fs.link(res.path, dest));
+                } else if (res.domain === 'saves') {
+                    const dest = context.rootGetters.path(profile, res.domain, res.name + res.ext);
+                    await createReadStream(res.path)
+                        .pipe(createExtractStream(dest)).promise();
+                } else if (res.domain === 'modpack') {
+                    await context.dispatch('importCurseforgeModpack', {
+                        profile,
+                        path: res.path,
+                    });
                 }
-                promises.push(fs.link(res.path, dest));
             }
             await Promise.all(promises);
         },

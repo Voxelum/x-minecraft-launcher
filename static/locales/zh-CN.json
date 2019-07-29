@@ -46,7 +46,7 @@
             "description": "从 Curseforge 上安装整合包",
             "name": "整合包"
         },
-        "name": "Curseforge",
+        "name": "浏览 Curseforge",
         "project": {
             "description": "简介",
             "files": "文件",
@@ -193,6 +193,10 @@
             "true": "启用"
         },
         "gametype": {
+            "0": "生存模式",
+            "1": "创造模式",
+            "2": "冒险模式",
+            "3": "观察者模式",
             "adventure": "冒险模式",
             "creative": "创造模式",
             "non": "未知模式",
@@ -318,6 +322,7 @@
         "missingHint": "启动器在你的电脑上没有找到任何Java。你可以尝试：",
         "noJavaInPath": "还是无法在PATH中找到java可执行文件。你可以尝试其他方法。",
         "noLegalJava": "启动器认为这个Java可执行文件是无效的。请尝试其他的方法。",
+        "noMemory": "不设置内存限制",
         "refreshAfter": "请在安装后刷新。"
     },
     "launch": {
@@ -376,14 +381,9 @@
             "description": "没有账号?"
         }
     },
-    "map": {
-        "export": "导出地图",
-        "hint": "将地图zip或文件夹拖入此处来导入",
-        "import": "导入地图",
-        "name": "地图 | 地图"
-    },
     "market": "市场",
     "minecraft": {
+        "name": "Minecraft",
         "settings": "Minecraft设置",
         "showAlpha": "显示快照版",
         "version": "Minecraft 版本"
@@ -427,6 +427,8 @@
         "localVersionEmpty": "自动生成",
         "localVersionHint": "选择本地版本会覆盖Minecraft版本的设置",
         "mcOptions": "Minecraft 启动选项",
+        "mcOptionsCreateHint": "回车创建 Minecraft 启动参数",
+        "mcOptionsHint": "创建或选择 Minecraft 启动参数",
         "modpack": {
             "add": "添加Mod包",
             "author": "整合包作者",
@@ -492,7 +494,9 @@
         "version": "游戏版本",
         "versionHint": "这个游戏使用的Minecraft版本",
         "versionSetting": "客户端配置",
-        "vmOptions": "JVM 启动选项"
+        "vmOptions": "JVM 启动选项",
+        "vmOptionsCreateHint": "回车创建 JVM 启动选项",
+        "vmOptionsHint": "创建或者选择 JVM 启动选项"
     },
     "refreshResource": "刷新资源",
     "remove": "移除",
@@ -516,7 +520,27 @@
         "selected": "已选资源包",
         "unselected": "未选资源包"
     },
-    "save": "保存",
+    "save": {
+        "deleteCancel": "取消",
+        "deleteConfirm": "确认删除",
+        "deleteHint": "该操作不可逆，你将永远失去这个存档的记录，你确定要刪除此存档吗？",
+        "deleteTitle": "删除该存档",
+        "copy": {
+            "": "复制存档",
+            "title": "复制存档到其他启动配置",
+            "description": "请勾选你想让存档复制到的启动配置（目标启动配置）",
+            "cancel": "取消复制",
+            "confirm": "开始复制"
+        },
+        "copyTo": {
+            "": "从其他配置导入"
+        },
+        "detail": "显示更多信息",
+        "export": "导出地图",
+        "hint": "将地图zip或文件夹拖入此处来导入",
+        "import": "从文件导入",
+        "name": "地图存档 | 地图存档"
+    },
     "setting": {
         "allowPrerelease": "是否下载抢先版",
         "allowPrereleaseDescription": "抢先版可能不是那么稳定",

@@ -136,10 +136,7 @@
 </template>
 
 <script>
-import protocolToVersion from 'static/protocol.json';
-import mcToProtocol from 'static/mc-protocol.json';
-
-import unknownServer from 'static/unknown_server.png';
+import unknownServer from 'renderer/assets/unknown_server.png';
 
 export default {
   props: {
@@ -193,7 +190,7 @@ export default {
       return this.status.favicon || unknownServer;
     },
     acceptingMcVersion() {
-      return protocolToVersion[this.status.version.protocol] || [];
+      return this.$repo.state.client.protocolMapping.mcversion[this.status.version.protocol] || [];
     },
     ready() {
       return this.valid && this.javaValid;
@@ -260,7 +257,10 @@ export default {
         ping: 0,
       };
       this.pinging = true;
-      this.$repo.dispatch('pingServer', { host: this.host, port: 25565, protocol: Number.parseInt(mcToProtocol[this.mcversion], 10) }).then((frame) => {
+      this.$repo.dispatch('pingServer', { 
+        host: this.host, 
+        port: 25565, 
+        protocol: Number.parseInt(this.$repo.state.client.protocolMapping.protocol[this.mcversion], 10) }).then((frame) => {
         this.status = frame;
       }).finally(() => {
         this.pinging = false;

@@ -27,7 +27,7 @@
 
 <script>
 import { isCompatible } from 'universal/utils/versions';
-import unknownPack from 'static/unknown_pack.png';
+import unknownPack from 'renderer/assets/unknown_pack.png';
 
 export default {
   props: {

@@ -12,7 +12,7 @@ app.on('before-quit', () => {
     }
 });
 app.on('ready', () => {
-    const img = nativeImage.createFromPath(`${__static}/favicon.png`);
+    const img = nativeImage.createFromPath(`${__static}/favicon@2x.png`);
     tray = new Tray(img);
 
     function createMenu() {

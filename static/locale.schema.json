@@ -204,7 +204,7 @@
                         "name"
                     ]
                 },
-                "name": {
+                "totalDownloads": {
                     "type": "string"
                 },
                 "totalDownloads": {
@@ -217,6 +217,9 @@
                     "type": "string"
                 },
                 "license": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 },
                 "project": {
@@ -287,6 +290,10 @@
                 "installed",
                 "mc-mods",
                 "modpacks",
+                "totalDownloads",
+                "createdDate",
+                "lastUpdate",
+                "license",
                 "name",
                 "totalDownloads",
                 "createdDate",
@@ -1062,7 +1069,47 @@
             ]
         },
         "save": {
-            "type": "string"
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "export": {
+                    "type": "string"
+                },
+                "import": {
+                    "type": "string"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "hint": {
+                    "type": "string"
+                },
+                "deleteTitle": {
+                    "type": "string"
+                },
+                "deleteHint": {
+                    "type": "string"
+                },
+                "deleteComfirm": {
+                    "type": "string"
+                },
+                "deleteCancel": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "export",
+                "import",
+                "detail",
+                "hint",
+                "deleteTitle",
+                "deleteHint",
+                "deleteComfirm",
+                "deleteCancel"
+            ]
         },
         "server": {
             "type": "object",
@@ -2022,6 +2069,18 @@
                 "gametype": {
                     "type": "object",
                     "properties": {
+                        "0": {
+                            "type": "string"
+                        },
+                        "1": {
+                            "type": "string"
+                        },
+                        "2": {
+                            "type": "string"
+                        },
+                        "3": {
+                            "type": "string"
+                        },
                         "adventure": {
                             "type": "string"
                         },
@@ -2039,6 +2098,10 @@
                         }
                     },
                     "required": [
+                        "0",
+                        "1",
+                        "2",
+                        "3",
                         "adventure",
                         "creative",
                         "non",
@@ -2371,6 +2434,9 @@
                 "missing": {
                     "type": "string"
                 },
+                "noMemory": {
+                    "type": "string"
+                },
                 "missingHint": {
                     "type": "string"
                 },
@@ -2393,6 +2459,7 @@
                 "maxMemory",
                 "minMemory",
                 "missing",
+                "noMemory",
                 "missingHint",
                 "noJavaInPath",
                 "noLegalJava",
@@ -2542,6 +2609,12 @@
                     "type": "string"
                 },
                 "mcOptions": {
+                    "type": "string"
+                },
+                "mcOptionsHint": {
+                    "type": "string"
+                },
+                "mcOptionsCreateHint": {
                     "type": "string"
                 },
                 "modpack": {
@@ -2798,6 +2871,12 @@
                 },
                 "vmOptions": {
                     "type": "string"
+                },
+                "vmOptionsHint": {
+                    "type": "string"
+                },
+                "vmOptionsCreateHint": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -2818,6 +2897,8 @@
                 "localVersionEmpty",
                 "localVersionHint",
                 "mcOptions",
+                "mcOptionsHint",
+                "mcOptionsCreateHint",
                 "modpack",
                 "name",
                 "nameHint",
@@ -2830,7 +2911,9 @@
                 "version",
                 "versionHint",
                 "versionSetting",
-                "vmOptions"
+                "vmOptions",
+                "vmOptionsHint",
+                "vmOptionsCreateHint"
             ]
         },
         "refreshResource": {

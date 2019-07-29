@@ -2,7 +2,7 @@
   <v-container grid-list-md fill-height>
     <v-layout row wrap justify-space-around>
       <v-flex tag="h1" class="white--text" xs7>
-        <span class="headline">{{ $tc('curseforge.mc-mods.name', 2) }}</span>
+        <span class="headline">{{ $tc(`curseforge.${type}.name`, 2) }}</span>
       </v-flex>
       <v-flex xs5>
         <v-text-field v-model="keyword" append-icon="search" hide-details :label="$t('curseforge.search')" @keydown="onSearchKeyDown" />

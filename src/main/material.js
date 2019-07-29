@@ -58,16 +58,15 @@ export default function setup(context, store) {
             } else if (mainRef && !mainRef.isFocused()) {
                 mainRef.focus();
             }
-        })
-            .on('double-click', () => {
-                if (loggerRef) {
-                    if (loggerRef.isVisible()) loggerRef.hide();
-                    else loggerRef.show();
-                } else if (mainRef) {
-                    if (mainRef.isVisible()) mainRef.hide();
-                    else mainRef.show();
-                }
-            });
+        }).on('double-click', () => {
+            if (loggerRef) {
+                if (loggerRef.isVisible()) loggerRef.hide();
+                else loggerRef.show();
+            } else if (mainRef) {
+                if (mainRef.isVisible()) mainRef.hide();
+                else mainRef.show();
+            }
+        });
     });
     context.configDock((dock) => {
     });

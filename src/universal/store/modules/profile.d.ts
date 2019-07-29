@@ -7,8 +7,8 @@ import { VersionModule } from "./version";
 
 type Problem = DiagnoseModule.Problem;
 
-type CreateProfileOption = Omit<ProfileModule.Profile, 'serverInfos' | 'maps' | 'settings' | 'refreshing' | 'problems' | 'id'> & { type: 'modpack' }
-type CreateServerProfileOption = Omit<ProfileModule.ServerProfile, 'serverInfos' | 'maps' | 'settings' | 'refreshing' | 'problems' | 'id'> & { type: 'server' }
+type CreateProfileOption = Omit<ProfileModule.Profile, 'serverInfos' | 'saves' | 'settings' | 'refreshing' | 'problems' | 'id'> & { type: 'modpack' }
+type CreateServerProfileOption = Omit<ProfileModule.ServerProfile, 'serverInfos' | 'saves' | 'settings' | 'refreshing' | 'problems' | 'id'> & { type: 'server' }
 type CreateOption = DeepPartial<CreateProfileOption | CreateServerProfileOption>;
 
 // From https://github.com/andnp/SimplyTyped/blob/master/src/types/objects.ts
@@ -42,7 +42,7 @@ export declare namespace ProfileModule {
     type ServerOrModpack = Profile | ServerProfile;
     type ServerAndModpack = Profile & ServerProfile;
 
-    type LevelOnlyWorld = Pick<World, 'level' | 'path'>
+    type Save = Pick<World, 'level' | 'path'>
 
     interface ProfileBase {
         /**
@@ -99,7 +99,7 @@ export declare namespace ProfileModule {
 
         // caches
         serverInfos: Server.Info[];
-        worlds: LevelOnlyWorld[];
+        saves: Save[];
         settings: GameSetting.Frame;
         refreshing: boolean,
         problems: Problem[];
@@ -133,7 +133,7 @@ export declare namespace ProfileModule {
 
         profileProblems(state: State, problems: Problem[]): void;
         serverStatus(state: State, status: Server.StatusFrame): void;
-        worlds(state: State, worlds: LevelOnlyWorld[]): void;
+        worlds(state: State, worlds: Save[]): void;
         serverInfos(state: State, infos: Server.Info[]): void;
         gamesettings(state: State, payload: GameSetting.Frame): void;
         refreshingProfile(state: State, refreshing: boolean): void;
@@ -141,26 +141,31 @@ export declare namespace ProfileModule {
 
     type C = Context<State, Getters, Mutations, Actions>
     interface Actions {
-        loadProfile(context: C, id: string): Promise<void>
+        loadProfile(context: C, id: string): Promise<void>;
+        loadProfileGameSettings(context: C, id: string): Promise<GameSetting.Frame>;
+        loadProfileSeverData(context: C, id: string): Promise<Server.Info[]>
+        loadProfileSaves(context: C, id: string): Promise<Pick<World, 'level' | 'path'>[]>;
 
-        createProfile(context: C, option: CreateOption): Promise<string>
-        createAndSelectProfile(context: C, option: CreateOption): Promise<void>
+        selectProfile(context: C, id: string): Promise<void>;
+        createProfile(context: C, option: CreateOption): Promise<string>;
+        createAndSelectProfile(context: C, option: CreateOption): Promise<void>;
         editProfile(context: C, payload: Partial<ServerAndModpack>): Promise<void>;
         deleteProfile(context: C, id: string): Promise<void>
 
-        exportProfile(context: C, option: { id: string, dest: string, noAssets?: boolean }): Promise<void>
-        importProfile(context: C, location: string): Promise<void>
-        resolveProfileResources(context: C, id: string): { mods: Resource<any>[], resourcepacks: Resource<any>[] }
+        exportProfile(context: C, option: { id: string, dest: string, noAssets?: boolean }): Promise<void>;
+        importProfile(context: C, location: string): Promise<void>;
+        resolveProfileResources(context: C, id: string): { mods: Resource<any>[], resourcepacks: Resource<any>[] };
 
-        pingServer(context: C, payload: { host: string, port: number, protocol: number }): Promise<Server.StatusFrame>
+        pingServer(context: C, payload: { host: string, port: number, protocol: number }): Promise<Server.StatusFrame>;
 
-        importMap(context: C, path: string): Promise<void>
-        deleteMap(context: C, name: string): Promise<void>
-        exportMap(context: C, payload: { name: string, destination: string, zip?: boolean }): Promise<void>
+        copySave(context: C, paylod: { src: string, dest: string[] }): Promise<void>;
+        importSave(context: C, path: string): Promise<void>;
+        deleteSave(context: C, name: string): Promise<void>;
+        exportSave(context: C, payload: { path: string, destination: string, zip?: boolean }): Promise<void>;
 
-        pingServers(context: C): Promise<(Server.Info & { status: Server.StatusFrame })[]>
-        refreshProfile(context: C): Promise<void>
-        createProfileFromServer(context: C, info: Server.Info & { status: Server.StatusFrame }): Promise<string>
+        pingServers(context: C): Promise<(Server.Info & { status: Server.StatusFrame })[]>;
+        refreshProfile(context: C): Promise<void>;
+        createProfileFromServer(context: C, info: Server.Info & { status: Server.StatusFrame }): Promise<string>;
     }
 }
 

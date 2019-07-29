@@ -32,6 +32,14 @@ const router = new Router({
                     component: () => import('./LoginPage'),
                 },
                 {
+                    path: '/save',
+                    component: () => import('./SaveViewPage'),
+                },
+                {
+                    path: '/server',
+                    component: () => import('./ServerViewPage'),
+                },
+                {
                     path: '/base-setting',
                     component: () => import('./BaseSettingPage'),
                 },

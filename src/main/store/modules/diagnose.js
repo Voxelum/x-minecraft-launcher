@@ -1,6 +1,5 @@
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
 import { Forge, ForgeWebPage, Version } from 'ts-minecraft';
-import packFormatMapping from 'universal/utils/packFormatMapping.json';
 import base from 'universal/store/modules/diagnose';
 /**
  * 
@@ -233,6 +232,7 @@ const mod = {
                 }
             }
 
+            const packFormatMapping = context.rootState.client.packFormatMapping.mcversion;
             for (const pack of resourcepacks) {
                 if (pack.metadata.format in packFormatMapping) {
                     const acceptVersion = packFormatMapping[pack.metadata.format];

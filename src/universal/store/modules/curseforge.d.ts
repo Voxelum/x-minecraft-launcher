@@ -6,7 +6,7 @@ export namespace CurseForgeModule {
     }
 
     interface Getters {
-        isFileInstalled: (file: Download) => boolean;
+        isFileInstalled: (file: Pick<Download, "id" | "href">) => boolean;
     }
 
     interface Mutations {
@@ -15,6 +15,7 @@ export namespace CurseForgeModule {
     }
 
     interface Download {
+        id: number;
         type: string;
         name: string;
         href: string;
@@ -84,8 +85,8 @@ export namespace CurseForgeModule {
         version: string;
         author: string;
         files: {
-            projectId: number;
-            fileId: number;
+            projectID: number;
+            fileID: number;
             required: boolean;
         }[];
         override: string;
@@ -93,7 +94,7 @@ export namespace CurseForgeModule {
 
     type ProjectType = 'mc-mods' | 'texture-packs' | 'modpacks' | 'worlds';
     interface Actions {
-        importCurseforgeModpack(context: C, path: string): Promise<TaskHandle>;
+        importCurseforgeModpack(context: C, option: { profile: string, path: string }): Promise<TaskHandle>;
         fetchCurseForgeProjects(context: C, option?: { page?: string, version?: string, filter?: string, project: ProjectType }): Promise<{
             projects: ProjectPreview[], pages: number, versions: Version[], filters: Filter[]
         }>;
