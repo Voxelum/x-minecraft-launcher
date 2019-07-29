@@ -1,4 +1,4 @@
-import { createReadStream, existsSync, promises as fs } from 'fs';
+import { createReadStream, existsSync, promises as fs, promises, watch, exists } from 'fs';
 import { copy, ensureDir, ensureFile, remove } from 'main/utils/fs';
 import { compressZipTo, includeAllToZip } from 'main/utils/zip';
 import { tmpdir } from 'os';
@@ -12,12 +12,87 @@ import { createExtractStream } from 'yauzlw';
 import { ZipFile } from 'yazl';
 import { PINGING_STATUS, createFailureServerStatus } from 'universal/utils/server-status';
 
+
+/**
+ * @type {import('fs').FSWatcher}
+ */
+let saveWatcher;
+
+/**
+ * @type {import('fs').FSWatcher}
+ */
+let optionsWatcher;
+
+/**
+ * @type {import('fs').FSWatcher}
+ */
+let serversWatcher;
+
+
 /**
  * @type {import('universal/store/modules/profile').ProfileModule}
  */
 const mod = {
     ...base,
     actions: {
+        async loadProfileGameSettings({ rootGetters, state }, id = state.id) {
+            const opPath = rootGetters.path('profiles', id, 'options.txt');
+            try {
+                const option = await fs.readFile(opPath, 'utf-8').then(b => b.toString()).then(GameSetting.parseFrame);
+                return option || {};
+            } catch (e) {
+                console.warn(`An error ocurrs during parse game options of ${id}.`);
+                console.warn(e);
+                return {};
+            }
+        },
+        async loadProfileSaves({ rootGetters, state }, id = state.id) {
+            /**
+             * @param {string} save
+             */
+            async function loadWorld(save) {
+                const world = await World.load(save, ['level']).catch(_ => undefined);
+                const dest = join(save, 'icon.png');
+                const buf = await promises.readFile(dest);
+                const uri = `data:image/png;base64,${buf.toString('base64')}`;
+                if (world) {
+                    Reflect.set(world, 'icon', uri);
+                }
+                return world;
+            }
+            try {
+                const saveRoot = rootGetters.path('profiles', id, 'saves');
+
+                if (existsSync(saveRoot)) {
+                    const saves = await fs.readdir(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
+
+                    const loaded = await Promise.all(saves.map(s => paths.resolve(saveRoot, s)).map(loadWorld));
+                    /**
+                     * @type {any}
+                     */
+                    const nonNulls = loaded.filter(s => s !== undefined);
+                    return nonNulls;
+                }
+            } catch (e) {
+                console.warn(`An error ocurred during parsing the save of ${id}`);
+                console.warn(e);
+            }
+            return [];
+        },
+        async loadProfileSeverData({ rootGetters, state }, id = state.id) {
+            try {
+                const serverPath = rootGetters.path('profiles', id, 'servers.dat');
+                if (existsSync(serverPath)) {
+                    const serverDat = await fs.readFile(serverPath);
+                    const infos = Server.readInfo(serverDat);
+                    return infos;
+                }
+            } catch (e) {
+                console.warn(`An error occured during loading server infos of ${id}`);
+                console.error(e);
+            }
+            return [];
+        },
         async loadProfile({ commit, dispatch, rootGetters, rootState }, id) {
             if (!existsSync(rootGetters.path('profiles', id, 'profile.json'))) {
                 await remove(rootGetters.path('profiles', id));
@@ -52,47 +127,6 @@ const mod = {
             delete option.status;
 
             fitin(profile, option);
-
-            const opPath = rootGetters.path('profiles', id, 'options.txt');
-            try {
-                const option = await fs.readFile(opPath, 'utf-8').then(b => b.toString()).then(GameSetting.parseFrame);
-                if (option) {
-                    profile.settings = option;
-                }
-            } catch (e) {
-                console.warn(`An error ocurrs during parse game options of ${id}.`);
-                console.warn(e);
-                profile.settings = GameSetting.getDefaultFrame();
-                await fs.writeFile(opPath, GameSetting.stringify(profile.settings));
-            }
-
-            try {
-                const saveRoot = rootGetters.path('profiles', id, 'saves');
-                if (existsSync(saveRoot)) {
-                    const saves = await fs.readdir(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
-                    const savesData = (await Promise.all(saves.map(s => paths.resolve(saveRoot, s))
-                        .map(save => World.load(save, ['level']).catch(_ => undefined))))
-                        .filter(s => s !== undefined);
-                    // @ts-ignore
-                    profile.worlds = savesData;
-                }
-            } catch (e) {
-                console.warn(`An error ocurred during parsing the save of ${id}`);
-                console.warn(e);
-            }
-
-
-            try {
-                const serverPath = rootGetters.path('profiles', id, 'servers.dat');
-                if (existsSync(serverPath)) {
-                    const serverDat = await fs.readFile(serverPath);
-                    const infos = Server.readInfo(serverDat);
-                    profile.serverInfos = infos;
-                }
-            } catch (e) {
-                console.warn(`An error occured during loading server infos of ${id}`);
-                console.error(e);
-            }
 
             commit('addProfile', profile);
         },
@@ -129,9 +163,9 @@ const mod = {
 
             const persis = await dispatch('getPersistence', { path: 'profiles.json' });
             if (persis && persis.selected) {
-                commit('selectProfile', persis.selected);
+                dispatch('selectProfile', persis.selected);
             } else {
-                commit('selectProfile', Object.keys(state.all)[0]);
+                dispatch('selectProfile', Object.keys(state.all)[0]);
             }
         },
 
@@ -149,7 +183,19 @@ const mod = {
                         GameSetting.stringify(context.getters.selectedProfile.settings));
                     break;
                 case 'addProfile':
-                case 'removeProfile':
+                    await context.dispatch('setPersistence', {
+                        path: `profiles/${payload.id}/profile.json`,
+                        data: {
+                            ...payload,
+                            serverInfos: undefined,
+                            settings: undefined,
+                            saves: undefined,
+                            problems: undefined,
+                            refreshing: undefined,
+                            status: undefined,
+                        },
+                    });
+                    break;
                 case 'profile':
                     await context.dispatch('setPersistence', {
                         path: `profiles/${context.state.id}/profile.json`,
@@ -157,13 +203,14 @@ const mod = {
                             ...current,
                             serverInfos: undefined,
                             settings: undefined,
-                            worlds: undefined,
+                            saves: undefined,
                             problems: undefined,
                             refreshing: undefined,
                             status: undefined,
                         },
                     });
                     break;
+                case 'removeProfile':
                 default:
             }
         },
@@ -195,8 +242,41 @@ const mod = {
 
         async createAndSelectProfile(context, payload) {
             const id = await context.dispatch('createProfile', payload);
-            await context.commit('selectProfile', id);
+            await context.dispatch('selectProfile', id);
             await context.dispatch('diagnoseProfile');
+        },
+
+        async selectProfile(context, id) {
+            if (id !== context.state.id) {
+                if (saveWatcher) {
+                    saveWatcher.close();
+                }
+                if (optionsWatcher) {
+                    optionsWatcher.close();
+                }
+                if (serversWatcher) {
+                    serversWatcher.close();
+                }
+                const saveDir = context.rootGetters.path('profiles', id, 'saves');
+                if (existsSync(saveDir)) {
+                    saveWatcher = watch(saveDir, (target, filename) => {
+                        context.dispatch('loadProfileSaves', id);
+                    });
+                }
+                const optionFile = context.rootGetters.path('profiles', id, 'options.txt');
+                if (existsSync(optionFile)) {
+                    optionsWatcher = watch(optionFile, (target, data) => {
+                        context.dispatch('loadProfileGameSettings', id);
+                    });
+                }
+                const seversFile = context.rootGetters.path('profiles', id, 'servers.dat');
+                if (existsSync(seversFile)) {
+                    optionsWatcher = watch(seversFile, (target, data) => {
+                        context.dispatch('loadProfileSeverData', id);
+                    });
+                }
+                context.commit('selectProfile', id);
+            }
         },
 
         async deleteProfile(context, id = context.state.id) {
@@ -205,7 +285,7 @@ const mod = {
                 if (allIds.length === 1) {
                     await context.dispatch('createAndSelectProfile', { type: 'modpack' });
                 } else {
-                    context.commit('selectProfile', allIds[0]);
+                    context.dispatch('selectProfile', allIds[0]);
                 }
             }
             context.commit('removeProfile', id);
@@ -490,25 +570,56 @@ const mod = {
                 port: info.port || 25565,
             });
         },
-        async importMap(context, filePath) {
+        async importSave(context, filePath) {
             const cur = context.getters.selectedProfile;
-            const world = await World.load(filePath, ['level']);
-            const dest = context.rootGetters.path('profiles', cur.id, 'saves', basename(filePath));
-            await ensureFile(dest);
-            await copy(filePath, dest);
-            context.commit('worlds', [...cur.worlds, world]);
-        },
-        async deleteMap(context, name) {
-            const cur = context.getters.selectedProfile;
-            const result = cur.worlds.find(l => l.level.LevelName === name);
-            if (result) {
-                await remove(result.path);
+            try {
+                const world = await World.load(filePath, ['level']);
+                const dest = context.rootGetters.path('profiles', cur.id, 'saves', basename(filePath));
+                await ensureFile(dest);
+                await copy(filePath, dest);
+                context.commit('worlds', [...cur.saves, world]);
+            } catch (e) {
+                console.error(`Cannot import save from ${filePath}`);
+                console.error(e);
+                throw e;
             }
         },
-        async exportMap(context, payload) {
-            const { name, zip, destination } = payload;
-            const cur = context.getters.selectedProfile;
-            const result = cur.worlds.find(l => l.level.LevelName === name);
+        async copySave(context, { src, dest }) {
+            const id = context.state.id;
+            const path = src;
+            const saveName = basename(path);
+            if (!path || !existsSync(path)) {
+                console.log(`Cancel save copying of ${path}`);
+                return;
+            }
+            const expect = context.rootGetters.path('profiles', id, 'saves', saveName);
+            if (path === expect) { // confirm this save is a select profile's save
+                await Promise.all(
+                    dest.map(p => context.rootGetters.path('profiles', p, 'saves', saveName))
+                        .map(p => copy(expect, p)),
+                );
+            } else {
+                console.error(`Cannot copy map ${path}, which is not in selected profile ${id}`);
+            }
+        },
+        async deleteSave(context, path) {
+            console.log(`Start remove save from ${path}`);
+            const id = context.state.id;
+            const saveName = basename(path);
+            if (!path || !existsSync(path)) {
+                console.log(`Cancel map remving of ${path}`);
+                return;
+            }
+            const expect = context.rootGetters.path('profiles', id, 'saves', saveName);
+            if (path === expect) { // confirm this save is a select profile's save
+                await remove(path);
+            } else {
+                console.error(`Cannot remove map ${path}, which is not in selected profile ${id}`);
+            }
+        },
+        async exportSave(context, payload) {
+            const { path, zip, destination } = payload;
+            console.log(`Export map from ${path} to ${destination}.`);
 
             /**
              * @param {string} src 
@@ -525,15 +636,15 @@ const mod = {
                 return promise;
             }
 
-            if (result) {
+            if (path) {
                 try {
                     const stat = await fs.stat(destination);
-                    const dest = stat.isDirectory() ? join(destination, basename(result.path)) : destination;
+                    const dest = stat.isDirectory() ? join(destination, basename(path)) : destination;
                     await ensureFile(destination);
-                    await transferFile(result.path, dest);
+                    await transferFile(path, dest);
                 } catch (e) {
                     await ensureFile(destination);
-                    await transferFile(result.path, destination);
+                    await transferFile(path, destination);
                 }
             }
         },
