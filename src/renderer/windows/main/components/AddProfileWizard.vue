@@ -85,11 +85,11 @@
         </v-form>
 
         <v-layout>
-          <v-btn flat @click="quit">
+          <v-btn flat :disabled="creating" @click="quit">
             {{ $t('cancel') }}
           </v-btn>
           <v-spacer />
-          <v-btn color="primary" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
+          <v-btn color="primary" :loading="creating" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
             {{ $t('create') }}
           </v-btn>
         </v-layout>
@@ -112,6 +112,8 @@ export default {
     const forge = release ? this.$repo.getters.forgeRecommendedOf(release) : '';
     const forgeVersion = forge ? forge.version : '';
     return {
+      creating: false,
+
       step: 1,
       valid: false,
 
@@ -173,9 +175,11 @@ export default {
       return `JRE${java.majorVersion}, ${java.path}`;
     },
     quit() {
+      if (this.creating) return;
       this.$emit('quit');
     },
     doCreate() {
+      this.creating = true;
       this.$repo.dispatch('createAndSelectProfile', {
         name: this.name,
         author: this.author,
@@ -190,6 +194,8 @@ export default {
       }).then(() => {
         this.init();
         this.$router.replace('/');
+      }).finally(() => {
+        this.creating = false;
       });
     },
   },
