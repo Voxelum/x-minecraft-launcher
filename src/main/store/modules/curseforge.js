@@ -4,6 +4,7 @@ import { ensureFile, ensureDir } from 'main/utils/fs';
 import request from 'main/utils/request';
 import { join, basename } from 'path';
 import querystring from 'querystring';
+import { parse as parseUrl } from 'url';
 import { finished } from 'stream';
 import Task from 'treelike-task';
 import { downloadFileWork, got, fetchJson } from 'ts-minecraft/dest/libs/utils/network';
@@ -68,15 +69,16 @@ function convert(node) {
 const mod = {
     ...base,
     actions: {
-        async importCurseforgeModpack(context, path) {
+        async importCurseforgeModpack(context, { profile, path }) {
             const stat = await promises.stat(path);
             if (!stat.isFile()) throw new Error(`Cannot import curseforge modpack ${path}, since it's not a file!`);
-            const buf = await promises.readFile(path);
-            const fType = fileType(buf);
-            if (!fType || fType.ext !== 'zip') throw new Error(`Cannot import curseforge modpack ${path}, since it's not a zip!`);
+            // const buf = await promises.readFile(path);
+            // const fType = fileType(buf);
+            // if (!fType || fType.ext !== 'zip') throw new Error(`Cannot import curseforge modpack ${path}, since it's not a zip!`);
             const curseForgeRoot = join(context.rootState.root, 'curseforge');
-
-
+            console.log(`Import curseforge modpack by path ${path}`);
+            /** @type {import('universal/store/modules/resource').Resource<any>[]} */
+            const modResources = [];
             /**
              * @param {{url:string, dest: string, fileId: number}[]} pool
              * @param {Task.Context} ctx 
@@ -103,6 +105,7 @@ const mod = {
                             // now we should add this mod to modlist
                             if (modid && version) {
                                 modlist.push(`${modid}:${version}`);
+                                modResources.push(res);
                             } else {
                                 console.error(`Cannot resolve ${url} as a mod!`);
                                 console.error(JSON.stringify(res));
@@ -120,7 +123,7 @@ const mod = {
             }
 
             const task = Task.create('installCurseforgeModpack', async (ctx) => {
-                const zipFile = await open(buf, { lazyEntries: true, autoClose: false });
+                const zipFile = await open(path, { lazyEntries: true, autoClose: false });
                 /** @type {import('yauzlw').Entry[]} */
                 const others = [];
                 let manifestEntry;
@@ -133,6 +136,7 @@ const mod = {
                 });
                 if (!manifestEntry) throw new Error(`Cannot import curseforge modpack ${path}, since it doesn't have manifest.json`);
                 const manifestBuf = await bufferEntry(zipFile, manifestEntry);
+                console.log(manifestBuf.toString());
                 /** @type {Modpack} */
                 const manifest = JSON.parse(manifestBuf.toString());
                 const tempRoot = join(context.rootState.root, 'temp', manifest.name);
@@ -144,34 +148,47 @@ const mod = {
 
                 const shouldDownloaded = [];
                 for (const f of manifest.files) {
-                    if (context.getters.isFileInstalled({ id: f.fileId, href: '' })) {
+                    if (context.getters.isFileInstalled({ id: f.fileID, href: '' })) {
                         // eslint-disable-next-line
                         continue;
                     }
                     shouldDownloaded.push(f);
                 }
-                const pool = await Promise.all(shouldDownloaded.map(f => fetchJson(`${CURSEMETA_CACHE}/${f.projectId}/${f.fileId}.json`).then(o => ({
+                const pool = await Promise.all(shouldDownloaded.map(f => fetchJson(`${CURSEMETA_CACHE}/${f.projectID}/${f.fileID}.json`).then(o => ({
                     url: o.body.DownloadURL,
                     dest: join(tempRoot, o.body.FileNameOnDisk),
-                    fileId: f.fileId,
+                    fileId: f.fileID,
                 }))));
 
                 /** @type {string[]} */
                 const modlist = [];
-                await Promise.all(cpus().map(_ => ctx.execute('mod', c => downloadWorker(pool, c, modlist))));
+                await ctx.execute('mod', c => downloadWorker(pool, c, modlist));
+                // await Promise.all(cpus().map(_ => ctx.execute('mod', c => downloadWorker(pool, c, modlist))));
 
                 // create profile accordingly 
-
                 const forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'));
-                const id = await context.dispatch('createProfile', {
-                    name: manifest.name,
-                    mcversion: manifest.minecraft.version,
-                    author: manifest.author,
-                    forge: {
-                        version: forgeId ? forgeId.id.substring(5) : '',
-                        mods: modlist,
-                    },
-                });
+
+                let id;
+                if (profile) {
+                    id = profile;
+                    await context.dispatch('editProfile', {
+                        mcversion: manifest.minecraft.version,
+                        forge: {
+                            version: forgeId ? forgeId.id.substring(5) : '',
+                            mods: modlist,
+                        },
+                    });
+                } else {
+                    id = await context.dispatch('createProfile', {
+                        name: manifest.name,
+                        mcversion: manifest.minecraft.version,
+                        author: manifest.author,
+                        forge: {
+                            version: forgeId ? forgeId.id.substring(5) : '',
+                            mods: modlist,
+                        },
+                    });
+                }
                 const profileFolder = join(context.rootState.root, 'profiles', id);
 
                 // start handle override
@@ -379,12 +396,13 @@ const mod = {
         },
         async fetchCurseForgeProjectLicense(context, url) {
             if (url == null || !url) throw new Error('URL cannot be null');
-            const { body } = await got(`https://minecraft.curseforge.com${url}`);
+            const { body } = await got(`https://www.curseforge.com${url}`);
             return parser.parse(body).querySelector('.module').removeWhitespace().firstChild.rawText;
         },
 
         async downloadAndImportFile(context, payload) {
-            const url = `https://www.curseforge.com${payload.file.href}/file`;
+            const uObject = parseUrl(payload.file.href);
+            const url = `https://www.curseforge.com${uObject.pathname}/file`;
 
             const task = Task.create('installCurseforgeFile', async (ctx) => {
                 if (context.rootGetters.isFileInstalled(payload.file)) {
@@ -396,10 +414,15 @@ const mod = {
                     const dest = await downloadFileWork({
                         url,
                         destination: context.rootGetters.path('temp', payload.file.name),
+                        headers: {
+                            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36',
+                        },
                     })(ctx);
                     ctx.update(-1, -1);
+                    console.log(`Start to import ${payload.file.href}`);
                     await context.dispatch('importResource', {
                         path: dest,
+                        type: payload.project.type,
                         metadata: {
                             url,
                             curseforge: {

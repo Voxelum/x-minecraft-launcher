@@ -21,6 +21,8 @@ const mod = {
             };
             if (rg.mods.find(find)) return true;
             if (rg.resourcepacks.find(find)) return true;
+            if (rg.modpacks.find(find)) return true;
+            if (rg.saves.find(find)) return true;
 
             return false;
         },
