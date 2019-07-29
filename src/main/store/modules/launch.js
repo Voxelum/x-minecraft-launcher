@@ -106,7 +106,7 @@ const mod = {
             try {
                 await context.dispatch('deployResources', {
                     resources: resourcepacks,
-                    minecraft: option.gamePath,
+                    profile: profile.id,
                 });
             } catch (e) {
                 console.error('Cannot deploy resource packs');
@@ -125,7 +125,7 @@ const mod = {
                     await Promise.all(files.map(file => promises.unlink(join(modsDir, file))));
                     await context.dispatch('deployResources', {
                         resources: mods,
-                        minecraft: option.gamePath,
+                        profile: profile.id,
                     });
                 } catch (e) {
                     console.error('Cannot deploy mods');
