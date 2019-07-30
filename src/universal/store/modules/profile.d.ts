@@ -148,7 +148,7 @@ export declare namespace ProfileModule {
 
         selectProfile(context: C, id: string): Promise<void>;
         createProfile(context: C, option: CreateOption): Promise<string>;
-        createAndSelectProfile(context: C, option: CreateOption): Promise<void>;
+        createAndSelectProfile(context: C, option: CreateOption): Promise<string>;
         editProfile(context: C, payload: Partial<ServerAndModpack>): Promise<void>;
         deleteProfile(context: C, id: string): Promise<void>
 
