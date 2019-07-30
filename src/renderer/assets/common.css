@@ -23,6 +23,7 @@
 }
 
 .card-list {
+    max-width: 100%;
     padding: 10px;
     margin: 0px 0px 0px 0px;
     min-height: 80vh;
