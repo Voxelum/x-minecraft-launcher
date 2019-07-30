@@ -1,4 +1,5 @@
 import { Context, Module, TaskHandle } from "../store";
+import { Resource } from "./resource";
 
 export namespace CurseForgeModule {
     interface State {
@@ -7,6 +8,7 @@ export namespace CurseForgeModule {
 
     interface Getters {
         isFileInstalled: (file: Pick<Download, "id" | "href">) => boolean;
+        findFileInstalled: (file: Pick<Download, "id" | "href">) => Resource<any> | undefined;
     }
 
     interface Mutations {
