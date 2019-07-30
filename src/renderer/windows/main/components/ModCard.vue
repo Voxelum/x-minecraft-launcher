@@ -1,7 +1,8 @@
 <template>
   <v-tooltip top>
     <template v-slot:activator="{ on }">
-      <v-card color="darken-1" flat hover :class="{ incompatible: !compatible }" class="draggable-card mod-card white--text" style="margin-top: 10px; padding: 0 10px;"
+      <v-card color="darken-1" flat hover :class="{ incompatible: !compatible }" 
+              class="draggable-card mod-card white--text" style="margin-top: 10px; padding: 0 10px;" 
               draggable v-on="on" @dragstart="onDragStart" @dblclick="tryOpen">
         <v-layout justify-center align-center fill-height>
           <v-flex v-if="icon" xs4 style="padding: 0 10px 0 0;" fill-height>
@@ -58,22 +59,37 @@ export default {
       return this.$repo.getters.selectedProfile.mcversion;
     },
     acceptedRange() {
-      return this.data.acceptedMinecraftVersions ? this.data.acceptedMinecraftVersions : `[${this.data.mcversion}]`;
+      if (this.data.acceptedMinecraftVersions) {
+        return this.data.acceptedMinecraftVersions;
+      }
+      if (/^\[.+\]$/.test(this.data.mcversion)) {
+        return this.data.mcversion;
+      }
+      return `[${this.data.mcversion}]`;
     },
     compatible() {
-      return isCompatible(this.acceptedRange, this.mcversion);
+      try {
+        return isCompatible(this.acceptedRange, this.mcversion);
+      } catch (e) {
+        console.error(this.data.modid);
+        console.error(e);
+        return false;
+      }
     },
   },
   mounted() {
-    this.$repo.dispatch('readForgeLogo', this.hash).then((icon) => {
-      if (typeof icon === 'string' && icon !== '') {
-        this.icon = `data:image/png;base64, ${icon}`;
-      } else {
-        this.icon = unknownPack;
-      }
-    });
+    this.readLogo();
   },
   methods: {
+    readLogo() {
+      this.$repo.dispatch('readForgeLogo', this.hash).then((icon) => {
+        if (typeof icon === 'string' && icon !== '') {
+          this.icon = `data:image/png;base64, ${icon}`;
+        } else {
+          this.icon = unknownPack;
+        }
+      });
+    },
     onDragStart(e) {
       e.dataTransfer.setData('Index', `${this.isSelected ? 'R' : 'L'}${this.index}`);
     },
@@ -91,7 +107,7 @@ export default {
   background-color: #e65100;
 }
 .draggable-card:hover {
-  background-color: #388E3C;
+  background-color: #388e3c;
 }
 
 .title {
