@@ -4,6 +4,10 @@
             dark @click="quitLauncher">
       close
     </v-icon>
+    <v-icon v-ripple style="position: absolute; right: 44px; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
+            dark @click="feedback">
+      help_outline
+    </v-icon>
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-btn style="position: absolute; left: 20px; bottom: 10px; " flat icon dark to="/base-setting" v-on="on">
@@ -44,7 +48,7 @@
       {{ $tc('task.manager', 2) }}
     </v-tooltip>
 
-    <v-menu v-if="refreshingProfile || problems.length !== 0" offset-y top dark>
+    <v-menu v-if="refreshingProfile || problems.length !== 0" offset-y top dark max-height="300">
       <v-btn slot="activator" style="position: absolute; left: 200px; bottom: 10px; " :loading="refreshingProfile || missingJava"
              :flat="problems.length !== 0" outline dark :color="problems.length !== 0 ? 'red' : 'white' ">
         <v-icon left dark :color="problems.length !== 0 ? 'red': 'white'">
@@ -141,6 +145,7 @@
     <crash-dialog v-model="crashDialog" :content="crashReport" :location="crashReportLocation"
                   @close="crashDialog=false" />
     <java-wizard ref="jwizard" @task="taskDialog=true" @show="taskDialog=false" />
+    <helper-dialog v-model="help" />
     <v-dialog v-model="tempDialog" :persistent="launchStatus === 'launching'" width="250">
       <v-card dark>
         <v-container>
@@ -172,6 +177,8 @@ export default {
 
     tempDialog: false,
     tempDialogText: '',
+
+    help: false,
   }),
   computed: {
     icon() { return this.profile.status.favicon || unknownServer; },
@@ -316,6 +323,10 @@ export default {
       setTimeout(() => {
         this.$store.dispatch('quit');
       }, 150);
+    },
+    feedback() {
+      this.help = true;
+      console.log(this.help);
     },
   },
 };
