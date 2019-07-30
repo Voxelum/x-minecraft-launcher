@@ -129,7 +129,7 @@ export default {
       this.$repo.dispatch('editProfile', { forge: { mods } });
     },
     dropFile(path) {
-      this.$repo.dispatch('importResource', path).catch((e) => { console.error(e); });
+      this.$repo.dispatch('importResource', { path }).catch((e) => { console.error(e); });
     },
     filterMod(text, mod) {
       if (!text) return true;

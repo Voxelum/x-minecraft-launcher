@@ -128,7 +128,7 @@ export default {
       });
     },
     dropFile(path) {
-      this.$repo.dispatch('importResource', path).catch((e) => {
+      this.$repo.dispatch('importResource', { path, type: 'resourcepack' }).catch((e) => {
         console.error(e);
       });
     },

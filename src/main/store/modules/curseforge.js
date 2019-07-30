@@ -144,6 +144,7 @@ const mod = {
                                 },
                             },
                             background: true,
+                            type: 'forge',
                         });
                         const res = await context.dispatch('waitTask', handle);
                         if (res && res.domain === 'mods' && res.metadata instanceof Array) {
@@ -371,13 +372,11 @@ const mod = {
         fetchCurseForgeProjectFiles(context, payload) {
             if (!payload) throw new Error('Require fetch file with project type & project path');
             let { page, version } = payload;
-            const { project } = payload;
-            const path = `/${project}/${payload.path}`;
-
+            const { project, path } = payload;
             if (!path || path == null) throw new Error('Curseforge path cannot be null');
             version = version || '';
             page = page || 1;
-            const url = `https://www.curseforge.com/minecraft/${path}/files/all?filter-game-version=${version}&page=${page}`;
+            const url = `https://www.curseforge.com/minecraft/${project}/${path}/files/all?filter-game-version=${version}&page=${page}`;
             console.log(`Get curseforge project file ${url}`);
             return request(url, (filespage) => {
                 const pagesElement = filespage.querySelectorAll('.pagination-item');
