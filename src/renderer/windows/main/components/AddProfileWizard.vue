@@ -55,7 +55,7 @@
                   </v-list-tile-action>
                   <v-list-tile-content>
                     <v-list-tile-title>
-                      {{ p.name || p.mcversion }}
+                      {{ p.metadata.name }}
                     </v-list-tile-title>
                     <v-list-tile-sub-title>
                       Minecraft:
@@ -291,7 +291,7 @@ export default {
           : this.modpacks[this.template - this.profiles.length];
         if (this.template !== -1) {
           if (this.fromModpack) {
-            this.step = 4;
+            this.step = 3;
             this.importTask = await this.$repo.dispatch('importCurseforgeModpack', {
               path: this.modpacks[this.template - this.profiles.length].path,
             });
@@ -317,7 +317,7 @@ export default {
         }
         this.init();
         this.$router.replace('/');
-        this.template =-1;
+        this.template = -1;
       } finally {
         this.creating = false;
       }
