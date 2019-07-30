@@ -1,4 +1,4 @@
-import { Context, Module } from "../store";
+import { Context, Module, TaskHandle } from "../store";
 import { Forge, LiteLoader, ResourcePack, World } from "ts-minecraft";
 
 export declare namespace ResourceModule {
@@ -12,6 +12,7 @@ export declare namespace ResourceModule {
         path: string;
         type?: string | 'forge' | 'liteloader' | 'curseforge-modpack' | 'save';
         metadata?: any;
+        background?: boolean;
     }
 
     interface Resource<T> {
@@ -63,7 +64,7 @@ export declare namespace ResourceModule {
         readForgeLogo(context: C, id: string): Promise<string>;
         removeResource(context: C, resource: string | AnyResource): Promise<void>;
 
-        importResource(context: C, option: ImportOption): Promise<Resource<any>>;
+        importResource(context: C, option: ImportOption): Promise<TaskHandle>;
         exportResource(context: C, option: { resources: (string | AnyResource)[], targetDirectory: string }): Promise<void>;
     }
 }
