@@ -48,7 +48,6 @@
                 </v-icon>
               </v-btn>
             </v-speed-dial>
-            </v-speed-dial>
           </template>
           {{ hoverTextOnImport }}
         </v-tooltip>
@@ -67,7 +66,7 @@
                 </v-icon>
               </v-btn>
             </template>
-            {{ $t('!delete') }}
+            {{ $t('profile.delete') }}
           </v-tooltip>
           <v-card-title>
             <v-icon large left>
