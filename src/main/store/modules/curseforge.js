@@ -181,7 +181,6 @@ const mod = {
                 });
                 if (!manifestEntry) throw new Error(`Cannot import curseforge modpack ${path}, since it doesn't have manifest.json`);
                 const manifestBuf = await bufferEntry(zipFile, manifestEntry);
-                console.log(manifestBuf.toString());
                 /** @type {Modpack} */
                 const manifest = JSON.parse(manifestBuf.toString());
                 const tempRoot = join(context.rootState.root, 'temp', manifest.name);
@@ -219,7 +218,7 @@ const mod = {
                     await context.dispatch('editProfile', {
                         mcversion: manifest.minecraft.version,
                         forge: {
-                            version: forgeId ? forgeId.id.substring(5) : '',
+                            version: forgeId ? forgeId.id.substring(6) : '',
                             mods: modlist,
                         },
                     });
