@@ -100,8 +100,17 @@ function getRegularName(type, meta) {
  */
 async function parseResource(path, hash, ext, data, source, type) {
     switch (type) {
-        case 'forge':
         case 'mc-mods':
+            try {
+                return buildResource(path, hash, ext, 'mods', 'forge', source, await Forge.readModMetaData(data));
+            } catch (e) {
+                try {
+                    return buildResource(path, hash, ext, 'mods', 'liteloader', source, await LiteLoader.meta(data));
+                } catch (e) {
+                    return buildResource(path, hash, ext, 'mods', 'forge', source, {});
+                }
+            }
+        case 'forge':
             return buildResource(path, hash, ext, 'mods', 'forge', source, await Forge.readModMetaData(data));
         case 'liteloader':
             return buildResource(path, hash, ext, 'mods', 'liteloader', source, await LiteLoader.meta(data));
@@ -112,7 +121,7 @@ async function parseResource(path, hash, ext, data, source, type) {
         case 'modpacks':
             return buildResource(path, hash, ext, 'modpacks', 'curseforge-modpack', source, await parseCurseforgeModpack(data));
         default:
-            return guessResources(path, hash, ext, data, source);
+            return guessResource(path, hash, ext, data, source);
     }
 }
 
@@ -125,7 +134,7 @@ async function parseResource(path, hash, ext, data, source, type) {
  * @param {object} source 
  * @return {Promise<import('universal/store/modules/resource').Resource<any>>}
  */
-async function guessResources(path, hash, ext, data, source) {
+async function guessResource(path, hash, ext, data, source) {
     const { meta, domain, type } = await Forge.meta(data).then(meta => ({ domain: 'mods', meta, type: 'forge' }),
         _ => LiteLoader.meta(data).then(meta => ({ domain: 'mods', meta, type: 'liteloader' }),
             _ => ResourcePack.read(path, data).then(meta => ({ domain: 'resourcepacks', meta, type: 'resourcepack' }),
@@ -135,6 +144,7 @@ async function guessResources(path, hash, ext, data, source) {
 
     return buildResource(path, hash, ext, domain, type, source, meta);
 }
+
 
 /**
  * 
@@ -464,11 +474,11 @@ const mod = {
                         await fs.unlink(dest);
                     }
                     promises.push(fs.link(res.path, dest));
-                } else if (res.domain === 'saves') {
+                } else if (res.domain === 'saves') { // save will unzip to the /saves
                     const dest = context.rootGetters.path(profile, res.domain, res.name + res.ext);
                     await createReadStream(res.path)
                         .pipe(createExtractStream(dest)).promise();
-                } else if (res.domain === 'modpack') {
+                } else if (res.domain === 'modpack') { // modpack will override the profile
                     await context.dispatch('importCurseforgeModpack', {
                         profile,
                         path: res.path,
