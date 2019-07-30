@@ -157,6 +157,7 @@
         "three-orbit-controls": "^82.1.0",
         "url-loader": "^1.1.2",
         "vue-loader": "^15.2.4",
+        "vue-observe-visibility": "^0.4.4",
         "vue-particles": "^1.0.9",
         "vue-style-loader": "^4.1.0",
         "vue-template-compiler": "^2.6.10",
