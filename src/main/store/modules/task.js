@@ -189,6 +189,9 @@ const mod = {
 
                 taskWatcher.status(node._internalId, 'failed');
             });
+            if (task.background) {
+                task.root.background = true;
+            }
             task.root.time = new Date().toLocaleTimeString();
             task.root._internalId = uuid;
             task.id = uuid;

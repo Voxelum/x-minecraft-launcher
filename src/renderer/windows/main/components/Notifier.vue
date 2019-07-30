@@ -55,12 +55,14 @@ export default {
     onSuccessed(event, id) {
       this.snackbar = true;
       const task = this.$repo.state.task.tree[id];
+      if (task.background) return;
       this.content = this.$t(task.path, task.arguments || {});
       this.status = 'success';
     },
     onFailed(event, id) {
       this.snackbar = true;
       const task = this.$repo.state.task.tree[id];
+      if (task.background) return;
       this.content = this.$t(task.path, task.arguments || {});
       this.status = 'error';
     },
