@@ -1,11 +1,9 @@
 {
     "$schema": "../locale.schema.json",
-    "!delete": "Delete",
     "actionforbidden": "Action Forbidden",
     "add": "Add",
     "advanced": "Advanced",
     "author": "Author",
-    "basic": "Basic",
     "buttonSettings": {
         "drop": "Drop Items",
         "jump": "Jump",
@@ -247,12 +245,24 @@
     "help": "Help",
     "home": "Home",
     "hotkeyChanges": "Hotkey Changes",
+    "importResource": {
+        "": "Import Resource",
+        "checking": "Checking Local File",
+        "parsing": "Parsing Resource",
+        "storing": "Storing Resource"
+    },
     "installAssets": {
         "": "Install Asset Files",
         "assets": "Install Asset {hash}",
         "assetsJson": "Check Assets Index File"
     },
     "installCurseforgeFile": "Install Curseforge File",
+    "installCurseforgeModpack": {
+        "": "Install Curseforge Modpack",
+        "createProfile": "Create Profile",
+        "installMods": "Install Mods",
+        "resolveEntries": "Resolve Entries"
+    },
     "installDependencies": {
         "": "Install {version}'s Dependencies",
         "installAssets": {
@@ -421,6 +431,7 @@
         "authorHint": "The author of this game integration",
         "baseSetting": "Base Settings",
         "copy": "Duplicate",
+        "delete": "Delete",
         "descriptionHint": "Breifly describe the game",
         "export": {
             "exportingMessage": "Exporting Modpack...",
@@ -460,12 +471,6 @@
         "noLocalVersion": "No Local Version",
         "requireName": "The name is required",
         "select": "Select",
-        "templateSetting": {
-            "": "Template Setting",
-            "profile": "This is a existed profile configuration",
-            "modpack": "This is a modpack configuration",
-            "server": "This is a existed server configuration"
-        },
         "server": {
             "": "Server | Servers",
             "acceptingMinecraftVersion": "Accepting Minecraft Version",
@@ -477,7 +482,6 @@
             },
             "edit": "Edit Server Info",
             "error": {
-                "missingHost": "Host IP address is required! Please enter it!",
                 "wrongVersion": "The current selected version doesn't really match the server protocol! This might cause game connection errors."
             },
             "expectedVersions": "Supported Versions",
@@ -504,6 +508,13 @@
             "versionHint": "The Minecraft Version To Ping"
         },
         "setting": "Settings",
+        "templateSetting": {
+            "": "Template Setting",
+            "importing": "Template Importing",
+            "modpack": "This is a modpack configuration",
+            "profile": "This is a existed profile configuration",
+            "server": "This is a existed server configuration"
+        },
         "url": "URL",
         "version": "Selected Version",
         "versionHint": "The Minecraft version of this game",
@@ -538,22 +549,22 @@
         "unselected": "Unselected Resource Packs"
     },
     "save": {
+        "copy": {
+            "": "Copy Save",
+            "cancel": "Cancel Copy",
+            "confirm": "Start Copy",
+            "description": "Please select destination profile(s) you want the save to go.",
+            "title": "Copy Save to Other Profile"
+        },
+        "copyTo": {
+            "": "Import from other profile"
+        },
         "deleteCancel": "Cancel",
         "deleteConfirm": "Comfirm to delete",
         "deleteHint": "This operation cannot be revert. You will lose this save data forever. Are you sure to delete this save?",
         "deleteTitle": "Delete the Save",
         "detail": "More Info",
         "export": "Export Save",
-        "copyTo": {
-            "": "Import from other profile"
-        },
-        "copy": {
-            "": "Copy Save",
-            "title": "Copy Save to Other Profile",
-            "description": "Please select destination profile(s) you want the save to go.",
-            "cancel": "Cancel Copy",
-            "confirm": "Start Copy"
-        },
         "hint": "Drag save zip here to Import",
         "import": "Import Save",
         "name": "Save | Saves"
@@ -611,7 +622,6 @@
         "running": "Running Tasks",
         "successed": "Successed"
     },
-    "unknown": "unknown",
     "user": {
         "accessToken": "Access Token",
         "authService": "Authorize Service",
@@ -674,16 +684,5 @@
         "snapshot": "Snapshot",
         "status": "Status",
         "unknown": "Unknown Version"
-    },
-    "world": {
-        "delete": {
-            "content": "Are you sure to delete this world? This will remove all the data about this world in the disk!",
-            "header": "Delete the World"
-        },
-        "export": "Export World",
-        "hint": "Drop world's folder/zip here to import the minecraft world.",
-        "import": "Import World",
-        "name": "World | Worlds"
-    },
-    "yes": "Yes"
+    }
 }
