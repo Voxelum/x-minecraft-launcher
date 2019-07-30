@@ -1,3 +1,4 @@
+/* eslint-disable no-continue */
 import parser from 'fast-html-parser';
 import { createWriteStream, promises, existsSync, fstat } from 'fs';
 import { ensureFile, ensureDir } from 'main/utils/fs';
@@ -13,6 +14,7 @@ import { bufferEntry, open, openEntryReadStream, walkEntries } from 'yauzlw';
 import fileType from 'file-type';
 import { cpus } from 'os';
 import base from 'universal/store/modules/curseforge';
+import { getModIdentifier } from 'universal/utils/versions';
 
 const CURSEMETA_CACHE = 'https://cursemeta.dries007.net';
 // test url https://cursemeta.dries007.net/238222/2739588 jei
@@ -148,15 +150,8 @@ const mod = {
                         });
                         const res = await context.dispatch('waitTask', handle);
                         if (res && res.domain === 'mods' && res.metadata instanceof Array) {
-                            const { modid, version } = res.metadata[0];
-                            // now we should add this mod to modlist
-                            if (modid && version) {
-                                modlist.push(`${modid}:${version}`);
-                                modResources.push(res);
-                            } else {
-                                console.error(`Cannot resolve ${url} as a mod!`);
-                                console.error(JSON.stringify(res.metadata));
-                            }
+                            const identity = getModIdentifier(res);
+                            modlist.push(identity);
                         } else {
                             console.error(`Cannot resolve ${url} as a mod!`);
                             console.error(JSON.stringify(res.metadata));

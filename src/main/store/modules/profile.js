@@ -11,6 +11,7 @@ import uuid from 'uuid';
 import { createExtractStream } from 'yauzlw';
 import { ZipFile } from 'yazl';
 import { PINGING_STATUS, createFailureServerStatus } from 'universal/utils/server-status';
+import { getModIdentifier } from 'universal/utils/versions';
 
 
 /**
@@ -384,18 +385,10 @@ const mod = {
                     try {
                         const resource = await context.dispatch('waitTask', await context.dispatch('importResource', { path: paths.resolve(srcFolderPath, 'mods', file) }));
                         if (resource) {
-                            if (resource.type === 'forge') {
-                                /**
-                                 * @type {import('ts-minecraft').Forge.MetaData}
-                                 */
-                                const meta = resource.metadata[0];
-                                forgeMods.push(`${meta.modid}:${meta.version}`);
+                            if (resource.domain === 'mods') {
+                                forgeMods.push(getModIdentifier(resource));
                             } else if (resource.type === 'liteloader') {
-                                /**
-                                 * @type {import('ts-minecraft').LiteLoader.MetaData}
-                                 */
-                                const meta = resource.metadata;
-                                litesMods.push(`${meta.name}:${meta.version}`);
+                                litesMods.push(getModIdentifier(resource));
                             }
                         }
                     } catch (e) {
@@ -407,7 +400,7 @@ const mod = {
             const resourcepacksDir = paths.resolve(srcFolderPath, 'resourcepacks');
             if (existsSync(resourcepacksDir)) {
                 for (const file of await fs.readdir(resourcepacksDir)) {
-                    await context.dispatch('importResource', { path: paths.resolve(srcFolderPath, 'resourcepacks', file) });
+                    await context.dispatch('importResource', { path: paths.resolve(srcFolderPath, 'resourcepacks', file), type: 'resourcepack' });
                 }
             }
 
@@ -473,9 +466,9 @@ const mod = {
                             console.error(`Illegal Forge Metadata ${JSON.stringify(mod, null, 4)}`);
                             return;
                         }
-                        forgeModIdVersions[`${mod.metadata[0].modid}:${mod.metadata[0].version}`] = mod;
+                        forgeModIdVersions[getModIdentifier(mod)] = mod;
                     } else {
-                        liteNameVersions[`${mod.metadata.name}:${mod.metadata.version}`] = mod;
+                        liteNameVersions[getModIdentifier(mod)] = mod;
                     }
                 });
                 modResources.push(...forgeMods.map(key => forgeModIdVersions[key]).filter(r => r !== undefined));
@@ -564,7 +557,7 @@ const mod = {
                 options.mcversion = context.rootState.client.protocolMapping.mcversion[info.status.version.protocol][0];
                 if (info.status.modinfo && info.status.modinfo.type === 'FML') {
                     options.forge = {
-                        mods: info.status.modinfo.modList.map(m => `${m.modid}:${m.version}`),
+                        mods: info.status.modinfo.modList.map(m => `forge://${m.modid}/${m.version}`),
                     };
                 }
             }

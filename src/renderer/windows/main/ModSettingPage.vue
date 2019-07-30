@@ -57,6 +57,7 @@
 <script>
 import Vue from 'vue';
 import unknownPack from 'renderer/assets/unknown_pack.png';
+import { getModIdentifier } from 'universal/utils/versions';
 import SelectionList from './mixin/SelectionList';
 
 export default {
@@ -96,15 +97,12 @@ export default {
       const unselectedMods = [];
       const idToMod = {};
       for (const mod of mods) {
-        const modMeta = mod.metadata[0];
-        if (!modMeta || !modMeta.modid) {
-          console.log(mod);
-          continue;
-        }
-        idToMod[`${modMeta.modid}:${modMeta.version}`] = mod;
-        if (!selected[`${modMeta.modid}:${modMeta.version}`]) unselectedMods.push(mod);
+        const identity = getModIdentifier(mod);
+        idToMod[identity] = mod;
+        if (!selected[identity]) unselectedMods.push(mod);
       }
-      const selectedMods = selectedModsIds.map(id => idToMod[id] || { id, missing: true, metadata: [{ name: 'missing' }] });
+      const selectedMods = selectedModsIds.map(id => idToMod[id]
+        || { id, missing: true, metadata: [{ name: 'missing' }] });
       Object.freeze(selectedMods);
       Object.freeze(unselectedMods);
       return [selectedMods, unselectedMods];
@@ -124,7 +122,7 @@ export default {
       const [selected, unselected] = this.mods;
       const newJoin = unselected[index];
       const mods = [...this.forge.mods || []];
-      mods.unshift(`${newJoin.metadata[0].modid}:${newJoin.metadata[0].version}`);
+      mods.unshift(getModIdentifier(newJoin));
       this.$repo.dispatch('editProfile', { forge: { mods } });
     },
     unselect(index) {
