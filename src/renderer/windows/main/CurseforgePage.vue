@@ -1,6 +1,6 @@
 <template>
   <v-container grid-list-md fill-height>
-    <v-layout row wrap>
+    <v-layout row wrap fill-height style="overflow: auto;">
       <v-flex tag="h1" class="white--text" xs12>
         <span class="headline">{{ $tc('curseforge.name', 2) }}</span>
       </v-flex>
@@ -35,10 +35,12 @@
         </v-card>
       </v-flex>
       <v-flex xs6>
-        <v-card disabled>
+        <v-card v-ripple hover replace to="/curseforge/worlds">
+          <v-card-media>
+            <v-img :src="worlds" />
+          </v-card-media>
           <v-card-title>
             {{ $t('curseforge.worlds.name') }}
-            敬请期待
           </v-card-title>
           <v-card-text>
             {{ $t('curseforge.worlds.description') }}
@@ -46,10 +48,12 @@
         </v-card>
       </v-flex>
       <v-flex xs6>
-        <v-card disabled>
+        <v-card v-ripple hover replace to="/curseforge/modpacks">
+          <v-card-media>
+            <v-img :src="modpack" />
+          </v-card-media>
           <v-card-title>
             {{ $t('curseforge.modpacks.name') }}
-            敬请期待
           </v-card-title>
           <v-card-text>
             {{ $t('curseforge.modpacks.description') }}
@@ -63,11 +67,15 @@
 <script>
 import resourcepack from 'renderer/assets/curseforge.resourcepack.png';
 import mods from 'renderer/assets/curseforge.mods.png';
+import modpack from 'renderer/assets/curseforge_modpack.png';
+import worlds from 'renderer/assets/curseforge_worlds.png';
 
 export default {
   data: () => ({
     resourcepack,
     mods,
+    modpack,
+    worlds,
   }),
 };
 </script>
