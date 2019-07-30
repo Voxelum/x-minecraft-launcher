@@ -418,6 +418,12 @@
             "message": "导出为整合包",
             "title": "导出"
         },
+        "templateSetting": {
+            "": "模板设置",
+            "profile": "这是一个已有的启动配置",
+            "modpack": "这是一个整合包配置",
+            "server": "这是一个已有的服务器启动配置"
+        },
         "forceLocalVersion": "启动指定本地版本",
         "forgeSetting": "Forge设置",
         "importFolder": "从文件夹导入",

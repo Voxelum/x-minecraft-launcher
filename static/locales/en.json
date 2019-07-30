@@ -460,6 +460,12 @@
         "noLocalVersion": "No Local Version",
         "requireName": "The name is required",
         "select": "Select",
+        "templateSetting": {
+            "": "Template Setting",
+            "profile": "This is a existed profile configuration",
+            "modpack": "This is a modpack configuration",
+            "server": "This is a existed server configuration"
+        },
         "server": {
             "": "Server | Servers",
             "acceptingMinecraftVersion": "Accepting Minecraft Version",

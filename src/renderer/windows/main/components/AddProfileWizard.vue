@@ -27,7 +27,7 @@
                   </v-list-tile-action>
                   <v-list-tile-content>
                     <v-list-tile-title>
-                      {{ p.name || p.mcversion }}
+                      {{ p.name || `Minecraft: ${p.mcversion}` }}
                     </v-list-tile-title>
                     <v-list-tile-sub-title>
                       Minecraft: 
@@ -40,7 +40,7 @@
                  
                   <v-list-tile-action>
                     <v-list-tile-action-text>
-                      profile
+                      {{ $t(`profile.templateSetting.${p.type === 'modpack' ? 'profile': 'server'}`) }}
                     </v-list-tile-action-text>
                   </v-list-tile-action>
                 </v-list-tile>
@@ -60,7 +60,7 @@
                  
                   <v-list-tile-action>
                     <v-list-tile-action-text>
-                      template
+                      {{ $t('profile.templateSetting.modpack') }}
                     </v-list-tile-action-text>
                   </v-list-tile-action>
                 </v-list-tile>
