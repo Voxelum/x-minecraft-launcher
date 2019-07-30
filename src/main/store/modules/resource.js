@@ -66,6 +66,9 @@ function getRegularName(type, meta) {
     switch (type) {
         case 'forge':
             fmeta = meta[0];
+            if (!fmeta) {
+                return undefined;
+            }
             if (typeof (fmeta.name || fmeta.modid) !== 'string'
                 || typeof fmeta.mcversion !== 'string'
                 || typeof fmeta.version !== 'string') return undefined;
@@ -179,6 +182,12 @@ const mod = {
         async init(context) {
             context.dispatch('refreshResources');
         },
+        async refreshResource(context, res) {
+            const resource = typeof res === 'string' ? context.getters.getResource(res) : res;
+            if (!resource) return;
+            const newOne = await parseResource(resource.path, resource.hash, resource.ext, await fs.readFile(resource.path), resource.source, resource.type);
+            context.commit('resource', newOne);
+        },
         async refreshResources(context) {
             const task = Task.create('refreshResource', async (ctx) => {
                 const modsDir = context.rootGetters.path('mods');
@@ -194,7 +203,6 @@ const mod = {
                 const touched = {};
                 const total = modsFiles.length + resourcePacksFiles.length + modpacksFiles.length;
                 let finished = 0;
-                const emptyResource = { path: '', name: '', hash: '', ext: '', metadata: {}, domain: '', type: '', source: { path: '', date: '' } };
 
                 /**
                  * @type {import('universal/store/modules/resource').Resource<any>[]}
@@ -270,7 +278,7 @@ const mod = {
                 }
 
                 if (resources.length > 0) {
-                    context.commit('resources', resources.filter(resource => resource !== emptyResource));
+                    context.commit('resources', resources.filter(resource => resource !== undefined));
                 }
                 console.log(`refreshed ${resources.length} resources`);
             });
