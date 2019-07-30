@@ -59,10 +59,12 @@ export declare namespace ResourceModule {
     type C = Context<State, Getters, Mutations, Actions>;
 
     interface Actions {
-        refreshResources(context: C): Promise<void>
+        refreshResources(context: C): Promise<void>;
         deployResources(context: C, payload: { resources: Resource<any>[], profile: string }): Promise<void>;
         readForgeLogo(context: C, id: string): Promise<string>;
         removeResource(context: C, resource: string | AnyResource): Promise<void>;
+
+        refreshResource(context:C, resource: string | AnyResource): Promise<void>;
 
         importResource(context: C, option: ImportOption): Promise<TaskHandle>;
         exportResource(context: C, option: { resources: (string | AnyResource)[], targetDirectory: string }): Promise<void>;

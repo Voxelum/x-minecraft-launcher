@@ -42,15 +42,19 @@ const mod = {
         },
         resources: (state, all) => {
             for (const res of all) {
-                switch (res.domain) {
-                    case 'mods':
-                    case 'resourcepacks':
-                    case 'saves':
-                    case 'modpacks':
-                        Vue.set(state[res.domain], res.hash, res);
-                        break;
-                    default:
-                        console.error(`Cannot accept resource for unknown domain [${res.domain}]`);
+                if (!res) {
+                    console.error('Cannot import undefined resource.');
+                } else {
+                    switch (res.domain) {
+                        case 'mods':
+                        case 'resourcepacks':
+                        case 'saves':
+                        case 'modpacks':
+                            Vue.set(state[res.domain], res.hash, res);
+                            break;
+                        default:
+                            console.error(`Cannot accept resource for unknown domain [${res.domain}]`);
+                    }
                 }
             }
         },

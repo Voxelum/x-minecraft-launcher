@@ -26,6 +26,28 @@ const mod = {
 
             return false;
         },
+        findFileInstalled: (state, _, rt, rg) => (file) => {
+            /**
+             * @param {{ source: any; }} m
+             */
+            const find = (m) => {
+                const source = m.source;
+                if ('curseforge' in source && typeof source.curseforge === 'object') {
+                    const s = source.curseforge;
+                    if (s.href === file.href || s.fileId === file.id) return true;
+                }
+                return false;
+            };
+            let result;
+            /* eslint-disable no-cond-assign */
+            if (result = rg.mods.find(find)) return result;
+            if (result = rg.resourcepacks.find(find)) return result;
+            if (result = rg.modpacks.find(find)) return result;
+            if (result = rg.saves.find(find)) return result;
+            /* eslint-enable no-cond-assign */
+
+            return undefined;
+        },
     },
     mutations: {
         startDownloadCurseforgeFile(state, p) {

@@ -97,6 +97,10 @@ export default {
       const idToMod = {};
       for (const mod of mods) {
         const modMeta = mod.metadata[0];
+        if (!modMeta || !modMeta.modid) {
+          console.log(mod);
+          continue;
+        }
         idToMod[`${modMeta.modid}:${modMeta.version}`] = mod;
         if (!selected[`${modMeta.modid}:${modMeta.version}`]) unselectedMods.push(mod);
       }

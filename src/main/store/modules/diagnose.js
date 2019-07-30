@@ -202,6 +202,7 @@ const mod = {
             const { resourcepacks, mods } = await context.dispatch('resolveProfileResources', id);
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
 
+            const pattern = /^\[.+\]$/;
             for (const mod of mods) {
                 if (mod.type === 'forge') {
                     /**
@@ -209,7 +210,10 @@ const mod = {
                      */
                     const metadatas = mod.metadata;
                     for (const meta of metadatas) {
-                        const acceptVersion = meta.acceptedMinecraftVersions ? meta.acceptedMinecraftVersions : `[${meta.mcversion}]`;
+                        let acceptVersion = meta.acceptedMinecraftVersions;
+                        if (!meta.acceptedMinecraftVersions) {
+                            acceptVersion = pattern.test(meta.mcversion) ? meta.mcversion : `[${meta.mcversion}]`;
+                        }
                         if (!acceptVersion) {
                             problems.push({
                                 id: 'unknownMod',
