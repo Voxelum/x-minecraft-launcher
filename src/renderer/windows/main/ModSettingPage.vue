@@ -5,7 +5,7 @@
         <span class="headline">{{ $tc('mod.name', 2) }}</span>
       </v-flex>
       <v-flex xs5>
-        <v-text-field v-model="filterSelected" color="primary" class="focus-solo" append-icon="filter_list"
+        <v-text-field v-model="filterText" color="primary" class="focus-solo" append-icon="filter_list"
                       :label="$t('filter')" dark hide-details />
       </v-flex>
       <v-flex d-flex xs6 style="padding-right: 5px;">
@@ -21,7 +21,10 @@
             {{ $t('mod.hint') }}
           </p>
           <div class="list">
-            <mod-card v-for="(mod, index) in mods[1].filter(m => filterMod(filterUnselected, m))" :key="mod.hash" :data="mod.metadata[0]"
+            <mod-card v-for="(mod, index) in unselectedMods" :key="mod.hash" v-observe-visibility="{
+                        callback: (v) => checkBuffer(v, index, false),
+                        once: true,
+                      }" :data="mod.metadata[0]"
                       :is-selected="false" :index="index" :hash="mod.hash" />
           </div>
         </v-card>
@@ -39,7 +42,10 @@
             {{ $t('mod.hint') }}
           </p>
           <div class="list">
-            <mod-card v-for="(mod, index) in mods[0].filter(m => filterMod(filterSelected, m))" :key="mod.hash" :data="mod.metadata[0]"
+            <mod-card v-for="(mod, index) in selectedMods" :key="mod.hash" v-observe-visibility="{
+                        callback: (v) => checkBuffer(v, index, true),
+                        once: true,
+                      }" :data="mod.metadata[0]"
                       :is-selected="true" :index="index" :hash="mod.hash" />
           </div>
         </v-card>
@@ -59,13 +65,27 @@ export default {
     return {
       filterInCompatible: true,
       refreshing: false,
-      filterUnselected: '',
-      filterSelected: '',
+      filterText: '',
+
+      unselectedBuffer: 10,
+      selectedBuffer: 10,
     };
   },
   computed: {
     profile() { return this.$repo.getters.selectedProfile; },
     forge() { return this.profile.forge; },
+    filteredUnselected() {
+      return this.mods[1].filter(m => this.filterMod(this.filterText, m));
+    },
+    filteredSelected() {
+      return this.mods[0].filter(m => this.filterMod(this.filterText, m));
+    },
+    unselectedMods() {
+      return this.filteredUnselected.filter((_, i) => i < this.unselectedBuffer);
+    },
+    selectedMods() {
+      return this.filteredSelected.filter((_, i) => i < this.selectedBuffer);
+    },
     mods() {
       const mods = this.$repo.getters.mods;
       const selectedModsIds = this.forge.mods || [];
@@ -81,6 +101,8 @@ export default {
         if (!selected[`${modMeta.modid}:${modMeta.version}`]) unselectedMods.push(mod);
       }
       const selectedMods = selectedModsIds.map(id => idToMod[id] || { id, missing: true, metadata: [{ name: 'missing' }] });
+      Object.freeze(selectedMods);
+      Object.freeze(unselectedMods);
       return [selectedMods, unselectedMods];
     },
   },
@@ -112,6 +134,16 @@ export default {
     filterMod(text, mod) {
       if (!text) return true;
       return mod.name.toLowerCase().indexOf(text.toLowerCase()) !== -1;
+    },
+    checkBuffer(visible, index, right) {
+      if (!visible) return;
+      if (right) {
+        if (this.selectedBuffer - index < 5) {
+          this.selectedBuffer += 10;
+        }
+      } else if (this.unselectedBuffer - index < 5) {
+        this.unselectedBuffer += 10;
+      }
     },
   },
 };

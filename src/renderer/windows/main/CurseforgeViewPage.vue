@@ -52,7 +52,7 @@
           </v-layout>
         </v-container>
         <v-flex v-for="proj in projects" :key="proj.id" d-flex xs12>
-          <v-card v-ripple hover exact replace :to="`/curseforge/${type}/${proj.id}`">
+          <v-card v-ripple hover exact replace :to="`/curseforge/${type}/${proj.name}`">
             <v-layout fill-height align-center justify-center>
               <v-flex shrink>
                 <v-img :src="proj.icon" :width="64">

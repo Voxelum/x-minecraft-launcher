@@ -25,6 +25,7 @@ const mod = {
                 tasks: [],
                 error: null,
                 message: '',
+                background: false,
             };
             state.tree[id] = node;
             state.tasks.push(state.tree[id]);

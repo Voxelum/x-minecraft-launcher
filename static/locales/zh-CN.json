@@ -1,11 +1,9 @@
 {
     "$schema": "../locale.schema.json",
-    "!delete": "删除",
     "actionforbidden": "创建失败",
     "add": "添加",
     "advanced": "高级",
     "author": "作者",
-    "basic": "基础",
     "buttonSettings": {
         "drop": "丢弃",
         "jump": "跳",
@@ -235,12 +233,24 @@
     "help": "帮助",
     "home": "主页",
     "hotkeyChanges": "按键设置",
+    "importResource": {
+        "": "导入资源",
+        "checking": "检查本地文件",
+        "parsing": "解析资源",
+        "storing": "存储资源"
+    },
     "installAssets": {
         "": "下载游戏资源文件",
         "assets": "下载资源文件%{hash}",
         "assetsJson": "下载资源文件目录"
     },
     "installCurseforgeFile": "安装 Curseforge 文件",
+    "installCurseforgeModpack": {
+        "": "安装 Curseforge 整合包",
+        "createProfile": "创建对应配置",
+        "installMods": "安装 Mods",
+        "resolveEntries": "解析整合包"
+    },
     "installDependencies": {
         "": "检查%{version}的依赖",
         "installAssets": {
@@ -412,6 +422,7 @@
         "authorHint": "这个游戏/整合包的制作人",
         "baseSetting": "基础设置",
         "copy": "复制",
+        "delete": "删除",
         "descriptionHint": "简单描述这个游戏/整合包的内容",
         "export": {
             "exportingMessage": "正在导出...",
@@ -490,6 +501,13 @@
             "versionHint": "Ping 使用的 Minecraft 版本"
         },
         "setting": "游戏设置",
+        "templateSetting": {
+            "": "模板设置",
+            "importing": "模板导入",
+            "modpack": "这是一个整合包配置",
+            "profile": "这是一个已有的启动配置",
+            "server": "这是一个已有的服务器启动配置"
+        },
         "url": "URL",
         "version": "游戏版本",
         "versionHint": "这个游戏使用的Minecraft版本",
@@ -521,20 +539,20 @@
         "unselected": "未选资源包"
     },
     "save": {
-        "deleteCancel": "取消",
-        "deleteConfirm": "确认删除",
-        "deleteHint": "该操作不可逆，你将永远失去这个存档的记录，你确定要刪除此存档吗？",
-        "deleteTitle": "删除该存档",
         "copy": {
             "": "复制存档",
-            "title": "复制存档到其他启动配置",
-            "description": "请勾选你想让存档复制到的启动配置（目标启动配置）",
             "cancel": "取消复制",
-            "confirm": "开始复制"
+            "confirm": "开始复制",
+            "description": "请勾选你想让存档复制到的启动配置（目标启动配置）",
+            "title": "复制存档到其他启动配置"
         },
         "copyTo": {
             "": "从其他配置导入"
         },
+        "deleteCancel": "取消",
+        "deleteConfirm": "确认删除",
+        "deleteHint": "该操作不可逆，你将永远失去这个存档的记录，你确定要刪除此存档吗？",
+        "deleteTitle": "删除该存档",
         "detail": "显示更多信息",
         "export": "导出地图",
         "hint": "将地图zip或文件夹拖入此处来导入",
@@ -549,6 +567,7 @@
         "autoDownloadDescription": "自动下载最新的版本",
         "autoInstallOnAppQuit": "自动安装",
         "autoInstallOnAppQuitDescription": "每次 App 退出后自动安装更新",
+        "browseRoot": "更改",
         "checkUpdate": "检查更新",
         "cleanOldData": "清除旧数据",
         "cleanOldDataHint": "移除所有以前的Minecraft数据，包括资源包、地图存档等",
@@ -566,13 +585,13 @@
         "setRootCause": "如果你不勾选下面的“迁移数据”选项，你将会失去现在的所有数据（包括地图存档，资源包等）。",
         "setRootDescription": "这将改变启动器识别的Minecraft根目录。",
         "setRootTitle": "迁移启动器到新的位置",
+        "showRoot": "浏览",
         "theme": "外观主题",
         "update": "升级设置",
         "updateToThisVersion": "下载并安装",
         "viewUpdate": "详细信息",
         "waitReload": "迁移数据中。请勿在此时关闭启动器，否则你将可能失去一部分数据。"
     },
-    "settings": "设置",
     "summery": "简介",
     "task": {
         "cancelled": "已取消",
@@ -584,7 +603,6 @@
         "running": "活跃任务",
         "successed": "成功"
     },
-    "unknown": "未知版本",
     "user": {
         "accessToken": "访问令牌",
         "authService": "验证服务器",

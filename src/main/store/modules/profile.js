@@ -244,6 +244,7 @@ const mod = {
             const id = await context.dispatch('createProfile', payload);
             await context.dispatch('selectProfile', id);
             await context.dispatch('diagnoseProfile');
+            return id;
         },
 
         async selectProfile(context, id) {
@@ -381,7 +382,7 @@ const mod = {
             if (existsSync(modsDir)) {
                 for (const file of await fs.readdir(modsDir)) {
                     try {
-                        const resource = await context.dispatch('importResource', { path: paths.resolve(srcFolderPath, 'mods', file) });
+                        const resource = await context.dispatch('waitTask', await context.dispatch('importResource', { path: paths.resolve(srcFolderPath, 'mods', file) }));
                         if (resource) {
                             if (resource.type === 'forge') {
                                 /**

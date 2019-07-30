@@ -8,6 +8,8 @@ import base from 'universal/store/modules/resource';
 import { requireString } from 'universal/utils/object';
 import url from 'url';
 import { bufferEntry, open, parseEntries, createExtractStream } from 'yauzlw';
+import Task from 'treelike-task';
+import { cpus } from 'os';
 
 /**
  * 
@@ -36,7 +38,8 @@ async function readHash(file) {
         createReadStream(file)
             .pipe(crypto.createHash('sha1').setEncoding('hex'))
             // @ts-ignore
-            .once('finish', function () { resolve(this.read()); });
+            .once('finish', function () { resolve(this.read()); })
+            .once('error', reject);
     });
 }
 
@@ -74,31 +77,60 @@ function getRegularName(type, meta) {
             return `${meta.name}-${meta.mcversion}-${meta.revision}`;
         case 'resourcepack':
             return meta.packName;
+        case 'modpacks':
+        case 'curseforge-modpack':
+            return meta.name;
         default:
-            return 'Unknown';
+            return undefined;
     }
 }
+
 /**
  * 
- * @param {string} filename 
+ * @param {string} path 
+ * @param {string} hash 
+ * @param {string} ext 
+ * @param {Buffer} data 
+ * @param {object} source 
+ * @param {string | undefined | void} type
+ * @return {Promise<import('universal/store/modules/resource').Resource<any>>}
+ */
+async function parseResource(path, hash, ext, data, source, type) {
+    switch (type) {
+        case 'forge':
+        case 'mc-mods':
+            return buildResource(path, hash, ext, 'mods', 'forge', source, await Forge.readModMetaData(data));
+        case 'liteloader':
+            return buildResource(path, hash, ext, 'mods', 'liteloader', source, await LiteLoader.meta(data));
+        case 'save':
+        case 'worlds':
+            return buildResource(path, hash, ext, 'saves', 'save', source, {});
+        case 'curseforge-modpack':
+        case 'modpacks':
+            return buildResource(path, hash, ext, 'modpacks', 'curseforge-modpack', source, await parseCurseforgeModpack(data));
+        default:
+            return guessResources(path, hash, ext, data, source);
+    }
+}
+
+/**
+ * 
+ * @param {string} path 
  * @param {string} hash 
  * @param {string} ext 
  * @param {Buffer} data 
  * @param {object} source 
  * @return {Promise<import('universal/store/modules/resource').Resource<any>>}
  */
-async function parseResource(filename, hash, ext, data, source) {
+async function guessResources(path, hash, ext, data, source) {
     const { meta, domain, type } = await Forge.meta(data).then(meta => ({ domain: 'mods', meta, type: 'forge' }),
         _ => LiteLoader.meta(data).then(meta => ({ domain: 'mods', meta, type: 'liteloader' }),
-            _ => ResourcePack.read(filename, data).then(meta => ({ domain: 'resourcepacks', meta, type: 'resourcepack' }),
+            _ => ResourcePack.read(path, data).then(meta => ({ domain: 'resourcepacks', meta, type: 'resourcepack' }),
                 e => ({ domain: undefined, meta: undefined, type: undefined, error: e }))));
 
-    if (!domain || !meta || !type) throw new Error(`Cannot parse ${filename}.`);
+    if (!domain || !meta || !type) throw new Error(`Cannot parse ${path}.`);
 
-    Object.freeze(source);
-    Object.freeze(meta);
-
-    return buildResource(filename, hash, ext, domain, type, source, meta);
+    return buildResource(path, hash, ext, domain, type, source, meta);
 }
 
 /**
@@ -116,7 +148,7 @@ function buildResource(filename, hash, ext, domain, type, source, meta) {
     Object.freeze(source);
     Object.freeze(meta);
     return {
-        path: '',
+        path: filename,
         name: getRegularName(type, meta) || paths.basename(paths.basename(filename, '.zip'), '.jar'),
         hash,
         ext,
@@ -148,76 +180,102 @@ const mod = {
             context.dispatch('refreshResources');
         },
         async refreshResources(context) {
-            const taskId = await context.dispatch('spawnTask', 'refreshResource');
+            const task = Task.create('refreshResource', async (ctx) => {
+                const modsDir = context.rootGetters.path('mods');
+                const resourcepacksDir = context.rootGetters.path('resourcepacks');
+                const modpacksDir = context.rootGetters.path('modpacks');
+                await ensureDir(modsDir);
+                await ensureDir(resourcepacksDir);
+                await ensureDir(modpacksDir);
+                const modsFiles = await fs.readdir(modsDir);
+                const resourcePacksFiles = await fs.readdir(resourcepacksDir);
+                const modpacksFiles = await fs.readdir(modpacksDir);
 
-            const modsDir = context.rootGetters.path('mods');
-            const resourcepacksDir = context.rootGetters.path('resourcepacks');
-            await ensureDir(modsDir);
-            await ensureDir(resourcepacksDir);
-            const modsFiles = await fs.readdir(modsDir);
-            const resourcePacksFiles = await fs.readdir(resourcepacksDir);
+                const touched = {};
+                const total = modsFiles.length + resourcePacksFiles.length + modpacksFiles.length;
+                let finished = 0;
+                const emptyResource = { path: '', name: '', hash: '', ext: '', metadata: {}, domain: '', type: '', source: { path: '', date: '' } };
 
-            const touched = {};
-            let finished = 0;
-            const emptyResource = { path: '', name: '', hash: '', ext: '', metadata: {}, domain: '', type: '', source: { path: '', date: '' } };
-            /**
-             * @param {string} file
-             * @return {Promise<import('universal/store/modules/resource').Resource<any>>}
-             */
-            async function reimport(file) {
-                try {
-                    const hash = await readHash(file);
-                    const metaFile = paths.join('resources', `${hash}.json`);
+                /**
+                 * @type {import('universal/store/modules/resource').Resource<any>[]}
+                 */
+                const resources = [];
+                /**
+                 * @param {string[]} pool
+                 * @param {string | undefined | void} type
+                 */
+                async function reimport(pool, type) {
+                    while (pool.length !== 0) {
+                        const file = pool.pop();
+                        if (!file) return;
+                        try {
+                            const stat = await fs.stat(file);
+                            const isDir = stat.isDirectory();
+                            if (isDir) {
+                                console.error(`Strange, ${file} is a directory, cannot reimport!`);
+                                // eslint-disable-next-line no-continue
+                                continue;
+                            }
+                            if (stat.size === 0) {
+                                console.error(`Removing empty file ${file} during reimport resources.`);
+                                await fs.unlink(file);
+                                // eslint-disable-next-line no-continue
+                                continue;
+                            }
 
-                    Reflect.set(touched, `${hash}.json`, true);
-                    const metadata = await context.dispatch('getPersistence', { path: metaFile });
-                    if (!metadata) {
-                        const ext = paths.extname(file);
-                        const name = paths.basename(file, ext);
+                            const hash = await readHash(file);
+                            const metaFile = paths.join('resources', `${hash}.json`);
 
-                        const resource = await parseResource(file, hash, ext, await fs.readFile(file), {
-                            name,
-                            path: paths.resolve(file),
-                            date: Date.now(),
-                        });
+                            Reflect.set(touched, `${hash}.json`, true);
+                            const metadata = await context.dispatch('getPersistence', { path: metaFile });
+                            if (!metadata) {
+                                console.log(`Missing metadata file for ${file}. Try to reimport it.`);
+                                const ext = paths.extname(file);
+                                const name = paths.basename(file, ext);
 
-                        resource.path = file;
+                                const resource = await parseResource(file, hash, ext, await fs.readFile(file), {
+                                    name,
+                                    path: paths.resolve(file),
+                                    date: Date.now(),
+                                }, type);
 
-                        await context.dispatch('setPersistence', { path: metaFile, data: resource });
-                        finished += 1;
-                        context.dispatch('updateTask', { id: taskId, progress: finished });
-                        return resource;
+                                await context.dispatch('setPersistence', { path: metaFile, data: resource });
+                                resources.push(resource);
+                            }
+                            resources.push(metadata);
+                        } catch (e) {
+                            console.error(`Cannot resolve resource file ${file}.`);
+                            console.error(e);
+                        } finally {
+                            finished += 1;
+                            ctx.update(finished);
+                        }
                     }
-                    return metadata;
-                } catch (e) {
-                    finished += 1;
-                    context.dispatch('updateTask', { id: taskId, progress: finished });
-
-                    console.error(`Cannot resolve resource file ${file}.`);
-                    console.error(e);
                 }
-                return emptyResource;
-            }
 
-            const allPromises = modsFiles.map(file => context.rootGetters.path('mods', file))
-                .concat(resourcePacksFiles.map(file => context.rootGetters.path('resourcepacks', file)))
-                .map(reimport);
+                ctx.update(0, total);
 
-            context.dispatch('updateTask', { id: taskId, progress: 0, total: allPromises.length });
-            const resources = await Promise.all(allPromises);
+                await Promise.all([
+                    reimport(modsFiles.map(file => context.rootGetters.path('mods', file))),
+                    reimport(resourcePacksFiles.map(file => context.rootGetters.path('resourcepacks', file)), 'resourcepack'),
+                    reimport(modpacksFiles.map(file => context.rootGetters.path('modpacks', file)), 'modpacks'),
+                ]);
 
-            const metaFiles = await context.dispatch('readFolder', 'resources');
+                const metaFiles = await fs.readdir(context.rootGetters.path('resources'));
 
-            for (const metaFile of metaFiles) {
-                if (!Reflect.has(touched, metaFile)) {
-                    await fs.unlink(context.rootGetters.path('resources', metaFile));
+                for (const metaFile of metaFiles) {
+                    if (!Reflect.has(touched, metaFile)) {
+                        await fs.unlink(context.rootGetters.path('resources', metaFile));
+                    }
                 }
-            }
 
-            if (resources.length > 0) {
-                context.commit('resources', resources.filter(resource => resource !== emptyResource));
-            }
-            context.dispatch('finishTask', { id: taskId });
+                if (resources.length > 0) {
+                    context.commit('resources', resources.filter(resource => resource !== emptyResource));
+                }
+                console.log(`refreshed ${resources.length} resources`);
+            });
+            const handle = await context.dispatch('executeTask', task);
+            await context.dispatch('waitTask', handle);
         },
 
         async removeResource(context, resource) {
@@ -254,131 +312,122 @@ const mod = {
             return '';
         },
 
-        async importResource(context, { path, type, metadata = {} }) {
+        async importResource(context, { path, type, metadata = {}, background = false }) {
             requireString(path);
 
-            const handle = await context.dispatch('spawnTask', 'resource.import');
-            const root = context.rootState.root;
+            const task = Task.create('importResource', async (ctx) => {
+                const root = context.rootState.root;
 
-            let data;
-            let ext = '';
-            let hash;
-            let name;
-            let isDir = false;
+                /** @type {Buffer} */
+                let data;
+                let ext = '';
+                let hash = '';
+                let name = '';
+                let isDir = false;
 
-            const theURL = url.parse(path);
-            if (theURL.protocol === 'https:' || theURL.protocol === 'http:') {
-                data = await new Promise((resolve, reject) => {
-                    const req = net.request({ url: path, redirect: 'manual' });
-                    /**
-                     * @type {Buffer[]}
-                     */
-                    const bufs = [];
-                    req.on('response', (resp) => {
-                        resp.on('error', reject);
-                        resp.on('data', (chunk) => { bufs.push(chunk); });
-                        resp.on('end', () => { resolve(Buffer.concat(bufs)); });
+                ctx.update(0, 4, path);
+
+                const theURL = url.parse(path);
+                if (theURL.protocol === 'https:' || theURL.protocol === 'http:') {
+                    data = await new Promise((resolve, reject) => {
+                        const req = net.request({ url: path, redirect: 'manual' });
+                        /**
+                         * @type {Buffer[]}
+                         */
+                        const bufs = [];
+                        req.on('response', (resp) => {
+                            resp.on('error', reject);
+                            resp.on('data', (chunk) => { bufs.push(chunk); });
+                            resp.on('end', () => { resolve(Buffer.concat(bufs)); });
+                        });
+                        req.on('redirect', (code, method, redirectUrl, header) => {
+                            name = paths.basename(redirectUrl, '.zip');
+                            ext = paths.extname(redirectUrl);
+                            req.followRedirect();
+                        });
+
+                        req.on('error', reject);
+                        req.end();
                     });
-                    req.on('redirect', (code, method, redirectUrl, header) => {
-                        name = paths.basename(redirectUrl, '.zip');
-                        ext = paths.extname(redirectUrl);
-                        req.followRedirect();
-                    });
 
-                    req.on('error', reject);
-                    req.end();
+                    hash = crypto.createHash('sha1').update(data).digest('hex');
+                } else {
+                    name = paths.basename(paths.basename(path, '.zip'), '.jar');
+                    const status = await fs.stat(path);
+
+                    if (status.isDirectory()) {
+                        isDir = true;
+                        ext = '';
+                        hash = (await hashFolder(path, crypto.createHash('sha1'))).digest('hex');
+                    } else {
+                        data = await fs.readFile(path);
+                        ext = paths.extname(path);
+                        hash = crypto.createHash('sha1').update(data).digest('hex');
+                    }
+                }
+
+                const source = {
+                    name,
+                    path: paths.resolve(path),
+                    date: Date.now(),
+                    ...metadata,
+                };
+
+                ctx.update(1, 4, path);
+                const checkingResult = await ctx.execute('checking', async () => {
+                    // take hash of dir or file
+                    await ensureDir(paths.join(root, 'resources'));
+                    const metaFile = paths.join(root, 'resources', `${hash}.json`);
+
+                    // if exist, abort
+                    if (existsSync(metaFile)) {
+                        /** @type {any} */
+                        const resource = context.getters.getResource(hash);
+                        return resource;
+                    }
+                    return undefined;
+                });
+                if (checkingResult) return checkingResult;
+
+                ctx.update(2, 4, path);
+                // use parser to parse metadata
+                const { resource, dataFile } = await ctx.execute('parsing', async () => {
+                    const resource = await parseResource(path, hash, ext, data, source, type);
+
+                    console.log(`Import resource ${name}${ext}(${hash}) into ${resource.domain}`);
+
+                    let dataFile = paths.join(root, resource.domain, `${resource.name}${ext}`);
+                    if (existsSync(dataFile)) {
+                        dataFile = paths.join(root, resource.domain, `${resource.name}.${hash}${ext}`);
+                    }
+
+                    resource.path = dataFile;
+                    return { resource, dataFile };
                 });
 
-                hash = crypto.createHash('sha1').update(data).digest('hex');
-            } else {
-                name = paths.basename(paths.basename(path, '.zip'), '.jar');
-                const status = await fs.stat(path);
+                ctx.update(3, 4, path);
+                await ctx.execute('storing', async () => {
+                    // write resource to disk
+                    if (isDir) {
+                        await ensureDir(dataFile);
+                        await copy(path, dataFile);
+                    } else {
+                        await ensureFile(dataFile);
+                        await fs.writeFile(dataFile, data);
+                    }
 
-                if (status.isDirectory()) {
-                    isDir = true;
-                    ext = '';
-                    hash = (await hashFolder(path, crypto.createHash('sha1'))).digest('hex');
-                } else {
-                    data = await fs.readFile(path);
-                    ext = paths.extname(path);
-                    hash = crypto.createHash('sha1').update(data).digest('hex');
-                }
-            }
+                    // store metadata to disk
+                    await fs.writeFile(paths.join(root, 'resources', `${hash}.json`), JSON.stringify(resource, undefined, 4));
 
-            const source = {
-                name,
-                path: paths.resolve(path),
-                date: Date.now(),
-                ...metadata,
-            };
+                    context.commit('resource', resource);
+                });
 
-            context.dispatch('updateTask', { id: handle, progress: 1, total: 4, message: 'resource.import.checkingfile' });
-
-            // take hash of dir or file
-            await ensureDir(paths.join(root, 'resources'));
-            const metaFile = paths.join(root, 'resources', `${hash}.json`);
-
-            // if exist, abort
-            if (existsSync(metaFile)) {
-                context.dispatch('finishTask', { id: handle });
-                /** @type {any} */
-                const resource = context.getters.getResource(hash);
+                ctx.update(4, 4, path);
                 return resource;
-            }
+            });
+            Reflect.set(task, 'background', background);
 
-            // use parser to parse metadata
-            context.dispatch('updateTask', { id: handle, progress: 2, total: 4, message: 'resource.import.parsing' });
-
-            let resource;
-            switch (type) {
-                case 'forge':
-                case 'mc-mods':
-                    resource = buildResource(path, hash, ext, 'mods', 'forge', source, await Forge.readModMetaData(data));
-                    break;
-                case 'liteloader':
-                    resource = buildResource(path, hash, ext, 'mods', 'liteloader', source, await LiteLoader.meta(data));
-                    break;
-                case 'save':
-                case 'worlds':
-                    resource = buildResource(path, hash, ext, 'saves', 'save', source, {});
-                    break;
-                case 'curseforge-modpack':
-                case 'modpack':
-                    resource = buildResource(path, hash, ext, 'modpacks', 'curseforge-modpack', source, await parseCurseforgeModpack(data));
-                    break;
-                default:
-                    resource = await parseResource(path, hash, ext, data, source);
-                    break;
-            }
-
-            console.log(`Import resource ${name}${ext}(${hash}) into ${resource.domain}`);
-
-            let dataFile = paths.join(root, resource.domain, `${resource.name}${ext}`);
-
-            if (existsSync(dataFile)) {
-                dataFile = paths.join(root, resource.domain, `${resource.name}.${hash}${ext}`);
-            }
-
-            resource.path = dataFile;
-
-            context.dispatch('updateTask', { id: handle, progress: 3, total: 4, message: 'resource.import.storing' });
-            // write resource to disk
-            if (isDir) {
-                await ensureDir(dataFile);
-                await copy(path, dataFile);
-            } else {
-                await ensureFile(dataFile);
-                await fs.writeFile(dataFile, data);
-            }
-
-            context.dispatch('updateTask', { id: handle, progress: 4, total: 4, message: 'resource.import.update' });
-            // store metadata to disk
-            await fs.writeFile(paths.join(root, 'resources', `${hash}.json`), JSON.stringify(resource, undefined, 4));
-            context.dispatch('finishTask', { id: handle });
-
-            context.commit('resource', resource);
-
-            return resource;
+            return context.dispatch('executeTask', task);
         },
 
         async deployResources(context, payload) {

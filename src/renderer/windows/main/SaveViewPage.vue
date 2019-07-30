@@ -1,7 +1,7 @@
 <template>
   <v-container grid-list-xs fill-height style="overflow: auto;">
     <v-layout row wrap>
-      <v-flex tag="h1" class="white--text" xs9>
+      <v-flex tag="h1" class="white--text" grow>
         <span class="headline">{{ $tc('save.name', 2) }}</span>
       </v-flex>
       <v-flex shrink>

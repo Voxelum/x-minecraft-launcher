@@ -3,10 +3,11 @@ import { Context, Module, TaskHandle } from "../store";
 
 
 export interface TNode extends TaskNode {
-    _internalId: string
-    tasks: TNode[]
-    time?: string
-    status: string
+    _internalId: string;
+    tasks: TNode[];
+    time?: string;
+    status: string;
+    background: boolean;
 }
 export declare namespace TaskModule {
 
