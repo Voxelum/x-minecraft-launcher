@@ -1,16 +1,18 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
+import VueObserveVisibility from 'vue-observe-visibility';
 import colors from 'vuetify/es5/util/colors';
-
-import TextComponent from './TextComponent';
-import SkinView from './skin/SkinView';
 import CurseforgeIcon from './CurseforgeIcon';
+import SkinView from './skin/SkinView';
+import TextComponent from './TextComponent';
+
 
 if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'));
 }
 Vue.config.productionTip = false;
 
+Vue.use(VueObserveVisibility);
 Vue.use(Vuetify, {
     icons: {
         curseforge: {
