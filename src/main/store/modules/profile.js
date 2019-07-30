@@ -469,6 +469,10 @@ const mod = {
                 Object.keys(mods).forEach((hash) => {
                     const mod = mods[hash];
                     if (mod.type === 'forge') {
+                        if (!mod.metadata[0]) {
+                            console.error(`Illegal Forge Metadata ${JSON.stringify(mod, null, 4)}`);
+                            return;
+                        }
                         forgeModIdVersions[`${mod.metadata[0].modid}:${mod.metadata[0].version}`] = mod;
                     } else {
                         liteNameVersions[`${mod.metadata.name}:${mod.metadata.version}`] = mod;
