@@ -52,7 +52,7 @@
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title> {{ $t('setting.latestVersion') }} </v-list-tile-title>
-              <v-list-tile-sub-title> {{ updateInfo.version }} </v-list-tile-sub-title>
+              <v-list-tile-sub-title> {{ updateInfo.version || 'Unknown' }} </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <v-btn v-if="!readyToUpdate" flat @click="viewUpdateDetail">
@@ -198,7 +198,7 @@ export default {
     readyToUpdate() { return this.$repo.state.config.readyToUpdate; },
     downloadingUpdate() { return this.$repo.state.config.downloadingUpdate; },
     checkingUpdate() { return this.$repo.state.config.checkingUpdate; },
-    updateInfo() { return this.$repo.state.config.updateInfo; },
+    updateInfo() { return this.$repo.state.config.updateInfo || {}; },
     langs() { return this.$repo.state.config.locales; },
   },
   methods: {
