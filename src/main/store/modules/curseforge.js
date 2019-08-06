@@ -1,4 +1,3 @@
-/* eslint-disable no-continue */
 import parser from 'fast-html-parser';
 import { createWriteStream, promises, existsSync, fstat } from 'fs';
 import { ensureFile, ensureDir } from 'main/utils/fs';
@@ -150,8 +149,7 @@ const mod = {
                         });
                         const res = await context.dispatch('waitTask', handle);
                         if (res && res.domain === 'mods' && res.metadata instanceof Array) {
-                            const identity = getModIdentifier(res);
-                            modlist.push(identity);
+                            modlist.push(`resource/${res.hash}`);
                         } else {
                             console.error(`Cannot resolve ${url} as a mod!`);
                             console.error(JSON.stringify(res.metadata));
@@ -194,7 +192,7 @@ const mod = {
 
                 const shouldDownloaded = [];
                 for (const f of manifest.files) {
-                    const file = context.getters.findFileInstalled({ id: f.fileID, href: '' });
+                    const file = context.rootGetters.queryResource({ fileId: f.fileID });
                     if (!file) {
                         shouldDownloaded.push(f);
                         continue;
@@ -206,18 +204,7 @@ const mod = {
                     if (file.type !== 'forge') {
                         continue;
                     }
-                    let metadata = file.metadata;
-                    if (!metadata.every(m => m.modid && m.version)) {
-                        await context.dispatch('refreshResource', file);
-                        metadata = context.getters.findFileInstalled({ id: f.fileID, href: '' });
-                    }
-                    for (const m of file.metadata) {
-                        if (m.modid && m.version) {
-                            modsList.push(`${m.modid}:${m.version}`);
-                        } else {
-                            console.error(`Bad mod file or I cannot parse the mod? ${JSON.stringify(m, null, 4)}`);
-                        }
-                    }
+                    modsList.push(`resource/${file.hash}`);
                 }
                 const pool = await Promise.all(shouldDownloaded.map(f => fetchJson(`${CURSEMETA_CACHE}/${f.projectID}/${f.fileID}.json`).then(o => ({
                     url: o.body.DownloadURL,
@@ -239,19 +226,24 @@ const mod = {
                     if (profile) {
                         id = profile;
                         await context.dispatch('editProfile', {
-                            mcversion: manifest.minecraft.version,
-                            forge: {
-                                version: forgeId ? forgeId.id.substring(6) : '',
+                            version: {
+                                minecraft: manifest.minecraft.version,
+                                forge: forgeId ? forgeId.id.substring(6) : '',
+                                liteloader: '',
+                            },
+                            deployments: {
                                 mods: modsList,
                             },
                         });
                     } else {
                         id = await context.dispatch('createAndSelectProfile', {
                             name: manifest.name,
-                            mcversion: manifest.minecraft.version,
                             author: manifest.author,
-                            forge: {
-                                version: forgeId ? forgeId.id.substring(6) : '',
+                            version: {
+                                minecraft: manifest.minecraft.version,
+                                forge: forgeId ? forgeId.id.substring(6) : '',
+                            },
+                            deployments: {
                                 mods: modsList,
                             },
                         });
@@ -452,9 +444,10 @@ const mod = {
                     })(ctx);
                     ctx.update(-1, -1);
                     console.log(`Start to import ${payload.file.href}`);
-                    await context.dispatch('importResource', {
+                    const handle = await context.dispatch('importResource', {
                         path: dest,
                         type: payload.project.type,
+                        background: true,
                         metadata: {
                             url,
                             curseforge: {
@@ -466,6 +459,7 @@ const mod = {
                             },
                         },
                     });
+                    await context.dispatch('waitTask', handle);
                 } finally {
                     context.commit('endDownloadCurseforgeFile', payload.file);
                 }
