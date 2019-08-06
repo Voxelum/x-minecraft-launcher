@@ -103,7 +103,7 @@
     "dependencies": {
         "electron-updater": "^4.0.6",
         "fast-html-parser": "^1.0.1",
-        "file-type": "^10.11.0",
+        "file-type": "^12.1.0",
         "got": "^9.6.0",
         "iconv-lite": "^0.4.18",
         "in-gfw": "^1.2.0",
@@ -116,7 +116,7 @@
         "vue-i18n": "^7.0.4",
         "vue-router": "^3.0.6",
         "vuetify": "^1.5.14",
-        "vuex": "^3.0.1",
+        "vuex": "^3.1.1",
         "yauzlw": "^0.0.7",
         "yazl": "^2.5.1"
     },
