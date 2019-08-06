@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { net } from 'electron';
-import { createReadStream, existsSync, promises as fs } from 'fs';
+import { createReadStream, existsSync, promises as fs, rename } from 'fs';
 import { copy, ensureDir, ensureFile } from 'main/utils/fs';
 import paths from 'path';
 import { Forge, LiteLoader, ResourcePack, World } from 'ts-minecraft';
@@ -10,6 +10,7 @@ import url from 'url';
 import { bufferEntry, open, parseEntries, createExtractStream } from 'yauzlw';
 import Task from 'treelike-task';
 import { cpus } from 'os';
+import fileType from 'file-type';
 
 /**
  * 
@@ -99,7 +100,13 @@ function getRegularName(type, meta) {
  * @return {Promise<import('universal/store/modules/resource').Resource<any>>}
  */
 async function parseResource(path, hash, ext, data, source, type) {
+    const ft = fileType(data);
+    if (ft) {
+        ext = `.${ft.ext}`;
+    }
     switch (type) {
+        case 'texture-packs':
+            return buildResource(path, hash, ext, 'resourcepacks', 'resourcepack', source, await ResourcePack.read(path, data));
         case 'mc-mods':
             try {
                 return buildResource(path, hash, ext, 'mods', 'forge', source, await Forge.readModMetaData(data));
@@ -162,7 +169,7 @@ function buildResource(filename, hash, ext, domain, type, source, meta) {
     Object.freeze(meta);
     return {
         path: filename,
-        name: getRegularName(type, meta) || paths.basename(paths.basename(filename, '.zip'), '.jar'),
+        name: getRegularName(type, meta) || paths.basename(filename, ext),
         hash,
         ext,
         metadata: meta,
@@ -231,13 +238,11 @@ const mod = {
                             const isDir = stat.isDirectory();
                             if (isDir) {
                                 console.error(`Strange, ${file} is a directory, cannot reimport!`);
-                                // eslint-disable-next-line no-continue
                                 continue;
                             }
                             if (stat.size === 0) {
                                 console.error(`Removing empty file ${file} during reimport resources.`);
                                 await fs.unlink(file);
-                                // eslint-disable-next-line no-continue
                                 continue;
                             }
 
@@ -249,10 +254,8 @@ const mod = {
                             if (!metadata) {
                                 console.log(`Missing metadata file for ${file}. Try to reimport it.`);
                                 const ext = paths.extname(file);
-                                const name = paths.basename(file, ext);
 
                                 const resource = await parseResource(file, hash, ext, await fs.readFile(file), {
-                                    name,
                                     path: paths.resolve(file),
                                     date: Date.now(),
                                 }, type);
@@ -267,6 +270,11 @@ const mod = {
                         } finally {
                             finished += 1;
                             ctx.update(finished);
+                            await new Promise((resolve, reject) => {
+                                setImmediate(() => {
+                                    resolve();
+                                });
+                            });
                         }
                     }
                 }
@@ -288,7 +296,7 @@ const mod = {
                 }
 
                 if (resources.length > 0) {
-                    context.commit('resources', resources.filter(resource => resource !== undefined));
+                    context.commit('resources', resources);
                 }
                 console.log(`refreshed ${resources.length} resources`);
             });
@@ -309,7 +317,7 @@ const mod = {
         async readForgeLogo(context, resourceId) {
             requireString(resourceId);
             if (typeof cache[resourceId] === 'string') return cache[resourceId];
-            const res = context.state.mods[resourceId];
+            const res = context.state.domains.mods[resourceId];
             if (res.type !== 'forge') {
                 throw new Error(`The resource should be forge but get ${res.type}`);
             }
@@ -328,6 +336,15 @@ const mod = {
             }
             cache[resourceId] = '';
             return '';
+        },
+
+        async renameResource(context, option) {
+            const resource = typeof option.resource === 'string' ? context.getters.getResource(option.resource) : option.resource;
+            if (resource) {
+                const newRes = { ...resource, name: option.name };
+                await fs.writeFile(resource.path, JSON.stringify(newRes, null, 4));
+                context.commit('resource', newRes);
+            }
         },
 
         async importResource(context, { path, type, metadata = {}, background = false }) {
@@ -401,7 +418,12 @@ const mod = {
                     if (existsSync(metaFile)) {
                         /** @type {any} */
                         const resource = context.getters.getResource(hash);
-                        return resource;
+                        const newResource = buildResource(resource.path, resource.hash, resource.ext, resource.domain, resource.type, {
+                            ...resource.source,
+                            ...metadata, // overwrite the source sign
+                        }, resource.metadata);
+                        context.commit('resource', newResource);
+                        return newResource;
                     }
                     return undefined;
                 });
@@ -450,8 +472,7 @@ const mod = {
 
         async deployResources(context, payload) {
             if (!payload) throw new Error('Require input a resource with minecraft location');
-
-            const { resources, profile } = payload;
+            const { resourceUrls: resources, profile } = payload;
             if (!resources) throw new Error('Resources cannot be undefined!');
             if (!profile) throw new Error('Profile id cannot be undefined!');
 
@@ -461,21 +482,32 @@ const mod = {
                 * @type {import('universal/store/modules/resource').Resource<any> | undefined}
                 */
                 let res;
-                if (typeof resource === 'string') res = context.getters.getResource(resource);
+                if (typeof resource === 'string') res = context.getters.queryResource(resource);
                 else res = resource;
 
-                if (!res) throw new Error(`Cannot find the resource ${resource}`);
+                if (!res) {
+                    promises.push(Promise.reject(new Error(`Cannot find the resource ${resource}`)));
+                    continue;
+                }
                 if (typeof res !== 'object' || !res.hash || !res.type || !res.domain || !res.name) {
-                    throw new Error('The input resource object should be valid!');
+                    promises.push(Promise.reject(new Error(`The input resource object should be valid! ${JSON.stringify(resource, null, 4)}`)));
+                    continue;
                 }
                 if (res.domain === 'mods' || res.domain === 'resourcepacks') {
-                    const dest = context.rootGetters.path(profile, res.domain, res.name + res.ext);
-                    if (existsSync(dest)) {
-                        await fs.unlink(dest);
+                    const dest = context.rootGetters.path('profiles', profile, res.domain, res.name + res.ext);
+                    try {
+                        const stat = await fs.stat(dest);
+                        if (stat.isSymbolicLink()) {
+                            await fs.unlink(dest);
+                            promises.push(fs.link(res.path, dest));
+                        } else {
+                            console.error(`Cannot deploy resource ${res.hash} -> ${dest}, since the path is occupied.`);
+                        }
+                    } catch (e) {
+                        promises.push(fs.link(res.path, dest));
                     }
-                    promises.push(fs.link(res.path, dest));
                 } else if (res.domain === 'saves') { // save will unzip to the /saves
-                    const dest = context.rootGetters.path(profile, res.domain, res.name + res.ext);
+                    const dest = context.rootGetters.path('profiles', profile, res.domain, res.name + res.ext);
                     await createReadStream(res.path)
                         .pipe(createExtractStream(dest)).promise();
                 } else if (res.domain === 'modpack') { // modpack will override the profile
@@ -485,7 +517,8 @@ const mod = {
                     });
                 }
             }
-            await Promise.all(promises);
+            const r = await Promise.all(promises);
+            return r;
         },
 
         async exportResource(context, payload) {

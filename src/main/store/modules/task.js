@@ -3,6 +3,7 @@ import { v4 } from 'uuid';
 import { ipcMain } from 'electron';
 import { requireString } from 'universal/utils/object';
 import base from 'universal/store/modules/task';
+import Task from 'treelike-task';
 
 class TaskWatcher {
     constructor() {
@@ -145,6 +146,12 @@ const mod = {
         async waitTask(context, uuid) {
             const task = idToTask[uuid];
             if (!task) return Promise.resolve();
+            return task.promise;
+        },
+        async executeAction(context, { action, background, payload }) {
+            const task = Task.create(action, () => context.dispatch(action, payload));
+            task.background = background;
+            await context.dispatch('executeTask', task);
             return task.promise;
         },
         async executeTask(context, task) {

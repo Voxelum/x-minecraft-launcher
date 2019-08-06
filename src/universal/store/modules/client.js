@@ -18,6 +18,8 @@ const mod = {
         },
     },
     getters: {
+        getAcceptMinecraftRangeByFormat: state => format => state.packFormatMapping.mcversion[format] || '',
+        getAcceptMinecraftsByProtocol: state => protocol => state.protocolMapping.mcversion[protocol] || [],
         isResourcePackCompatible: state => (format, mcversion) => isCompatible(mcversion,
             state.packFormatMapping.mcversion[format]),
     },

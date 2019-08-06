@@ -30,6 +30,8 @@ export declare namespace TaskModule {
 
     type C = Context<TaskModule.State, {}, TaskModule.Mutations, TaskModule.Actions>;
     interface Actions {
+        executeAction<T>(context: C, payload: { id: string, payload?: any, background?: boolean }): Promise<any>;
+
         executeTask(context: C, task: Task<any>): Promise<TaskHandle>;
         spawnTask(context: C, name: string): Promise<TaskHandle>;
         updateTask(context: C, data: { id: TaskHandle, progress: number, total?: number, message?: string }): Promise<void>;

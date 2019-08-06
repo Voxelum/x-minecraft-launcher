@@ -10,7 +10,6 @@ export declare namespace ClientModule {
         [range: string]: string;
     };
 
-    type Protocol = string;
     type MinecraftVersion = string;
 
     interface ResourcePackFormatMapping {
@@ -19,11 +18,11 @@ export declare namespace ClientModule {
         };
     }
     interface ClientProtocolMapping {
-        mcversion: {
-            [mcversion: string]: Protocol;
-        };
         protocol: {
-            [protocol: Protocol]: MinecraftVersion[];
+            [mcversion: string]: number;
+        };
+        mcversion: {
+            [protocol: number]: MinecraftVersion[];
         };
     }
 
@@ -33,6 +32,8 @@ export declare namespace ClientModule {
     }
 
     interface Getters {
+        getAcceptMinecraftRangeByFormat(format: number): string;
+        getAcceptMinecraftsByProtocol(protocol: number): string[];
         isResourcePackCompatible(format: number, mcversion: string): boolean;
     }
 

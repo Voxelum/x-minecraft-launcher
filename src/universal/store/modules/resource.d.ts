@@ -16,14 +16,14 @@ export declare namespace ResourceModule {
     }
 
     interface Resource<T> {
-        name: string,
-        path: string,
-        hash: string,
-        ext: string,
-        type: string,
-        domain: string | 'mods' | 'resourcepacks' | 'modpacks' | 'saves',
-        metadata: T,
-        source: Source,
+        name: string;
+        path: string;
+        hash: string;
+        ext: string;
+        type: string;
+        domain: string | 'mods' | 'resourcepacks' | 'modpacks' | 'saves';
+        metadata: T;
+        source: Source;
     }
 
     type AnyResource = Resource<any>;
@@ -35,10 +35,13 @@ export declare namespace ResourceModule {
 
     interface State {
         refreshing: boolean;
-        mods: { [hash: string]: ForgeResource | LiteloaderResource };
-        resourcepacks: { [hash: string]: ResourcePackResource };
-        saves: { [hash: string]: SaveResource };
-        modpacks: { [hash: string]: CurseforgeModpackResource };
+        domains: {
+            [domain: string]: { [hash: string]: Resource<any> };
+            mods: { [hash: string]: ForgeResource | LiteloaderResource };
+            resourcepacks: { [hash: string]: ResourcePackResource };
+            saves: { [hash: string]: SaveResource };
+            modpacks: { [hash: string]: CurseforgeModpackResource };
+        }
     }
     interface Getters {
         domains: string[];
@@ -48,6 +51,12 @@ export declare namespace ResourceModule {
         modpacks: ResourceModule.CurseforgeModpackResource[];
 
         getResource(hash: string): AnyResource | undefined;
+
+        queryResource(payload: string
+            | { modid: string; version: string; }
+            | { fileId: number; }
+            | { fileId: number; projectId: number }
+            | { name: string; version: string; }): AnyResource | undefined;
     }
 
     interface Mutations {
@@ -59,14 +68,41 @@ export declare namespace ResourceModule {
     type C = Context<State, Getters, Mutations, Actions>;
 
     interface Actions {
+        /**
+         * Rescan the local resources files' metadata. This will update the resource's metadata if the resource is modified.
+         */
         refreshResources(context: C): Promise<void>;
-        deployResources(context: C, payload: { resources: Resource<any>[], profile: string }): Promise<void>;
+        /**
+         * Deploy all the resource from `resourceUrls` into profile which uuid equals to `profile`.
+         * 
+         * The `mods` and `resourcepacks` will be deploied by linking the mods & resourcepacks files into the `mods` and `resourcepacks` directory of the profile.
+         * 
+         * The `saves` and `modpack` will be deploied by pasting the saves and modpack overrides into this profile directory.
+         */
+        deployResources(context: C, payload: { resourceUrls: string[], profile: string }): Promise<void[]>;
         readForgeLogo(context: C, id: string): Promise<string>;
+        /**
+         * Remove the resource from the disk. Both the resource metadata and the resource file will be removed. 
+         */
         removeResource(context: C, resource: string | AnyResource): Promise<void>;
 
-        refreshResource(context:C, resource: string | AnyResource): Promise<void>;
+        /**
+         * Same to `refreshResources` except this only scan one resource.
+         */
+        refreshResource(context: C, resource: string | AnyResource): Promise<void>;
 
+        /**
+         * Rename resource, this majorly affect resource pack's displayed file name.
+         */
+        renameResource(context: C, option: { resource: string | AnyResource, name: string }): Promise<void>;
+        /**
+         * Import the resource into the launcher. 
+         */
         importResource(context: C, option: ImportOption): Promise<TaskHandle>;
+
+        /**
+         * Export the resources into target directory. This will simply copy the resource out.
+         */
         exportResource(context: C, option: { resources: (string | AnyResource)[], targetDirectory: string }): Promise<void>;
     }
 }

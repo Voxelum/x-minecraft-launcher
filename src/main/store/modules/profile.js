@@ -1,4 +1,4 @@
-import { createReadStream, existsSync, promises as fs, promises, watch, exists } from 'fs';
+import { createReadStream, existsSync, promises as fs, promises, watch } from 'fs';
 import { copy, ensureDir, ensureFile, remove } from 'main/utils/fs';
 import { compressZipTo, includeAllToZip } from 'main/utils/zip';
 import { tmpdir } from 'os';
@@ -7,12 +7,11 @@ import { latestMcRelease } from 'static/dummy.json';
 import { GameSetting, Server, TextComponent, Version, World } from 'ts-minecraft';
 import base, { createTemplate } from 'universal/store/modules/profile';
 import { fitin, willBaselineChange } from 'universal/utils/object';
+import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/server-status';
+import { getModIdentifier } from 'universal/utils/versions';
 import uuid from 'uuid';
 import { createExtractStream } from 'yauzlw';
 import { ZipFile } from 'yazl';
-import { PINGING_STATUS, createFailureServerStatus } from 'universal/utils/server-status';
-import { getModIdentifier } from 'universal/utils/versions';
-
 
 /**
  * @type {import('fs').FSWatcher}
@@ -36,18 +35,20 @@ let serversWatcher;
 const mod = {
     ...base,
     actions: {
-        async loadProfileGameSettings({ rootGetters, state }, id = state.id) {
+        async loadProfileGameSettings({ rootGetters, state, commit }, id = state.id) {
             const opPath = rootGetters.path('profiles', id, 'options.txt');
             try {
                 const option = await fs.readFile(opPath, 'utf-8').then(b => b.toString()).then(GameSetting.parseFrame);
+                commit('profileCache', { gamesettings: option });
                 return option || {};
             } catch (e) {
                 console.warn(`An error ocurrs during parse game options of ${id}.`);
                 console.warn(e);
+                commit('profileCache', { gamesettings: {} });
                 return {};
             }
         },
-        async loadProfileSaves({ rootGetters, state }, id = state.id) {
+        async loadProfileSaves({ rootGetters, state, commit }, id = state.id) {
             /**
              * @param {string} save
              */
@@ -72,26 +73,30 @@ const mod = {
                      * @type {any}
                      */
                     const nonNulls = loaded.filter(s => s !== undefined);
+                    commit('profileSaves', nonNulls);
                     return nonNulls;
                 }
             } catch (e) {
                 console.warn(`An error ocurred during parsing the save of ${id}`);
                 console.warn(e);
             }
+            commit('profileSaves', []);
             return [];
         },
-        async loadProfileSeverData({ rootGetters, state }, id = state.id) {
+        async loadProfileSeverData({ rootGetters, state, commit }, id = state.id) {
             try {
                 const serverPath = rootGetters.path('profiles', id, 'servers.dat');
                 if (existsSync(serverPath)) {
                     const serverDat = await fs.readFile(serverPath);
                     const infos = Server.readInfo(serverDat);
+                    commit('serverInfos', infos);
                     return infos;
                 }
             } catch (e) {
                 console.warn(`An error occured during loading server infos of ${id}`);
                 console.error(e);
             }
+            commit('serverInfos', []);
             return [];
         },
         async loadProfile({ commit, dispatch, rootGetters, rootState }, id) {
@@ -120,12 +125,36 @@ const mod = {
                 }
             }
 
-            delete option.serverInfos;
-            delete option.worlds;
-            delete option.settings;
-            delete option.refreshing;
-            delete option.problems;
-            delete option.status;
+            // start fix old format
+
+            if (!option.version) option.version = {};
+            if (typeof option.mcversion === 'string') {
+                option.version.minecraft = option.mcversion;
+            }
+
+            if (!option.deployments) option.deployments = {};
+            if (!option.deployments.mods) option.deployments.mods = [];
+
+            if (typeof option.forge === 'object') {
+                if (typeof option.forge.version === 'string') {
+                    option.version.forge = option.forge.version;
+                }
+                const mods = option.forge.mods;
+                if (mods instanceof Array) {
+                    option.deployments.mods.push(...mods.map(s => s.split(':')).map(t => `forge/${t[0]}/${t[1]}`));
+                }
+            }
+            if (typeof option.liteloader === 'object') {
+                if (typeof option.liteloader.version === 'string') {
+                    option.version.liteloader = option.liteloader.version;
+                }
+                const mods = option.liteloader.mods;
+                if (mods instanceof Array) {
+                    option.deployments.mods.push(...mods.map(s => s.split(':')).map(t => `liteloader/${t[0]}/${t[1]}`));
+                }
+            }
+
+            // end fix old format
 
             fitin(profile, option);
 
@@ -164,9 +193,9 @@ const mod = {
 
             const persis = await dispatch('getPersistence', { path: 'profiles.json' });
             if (persis && persis.selected) {
-                dispatch('selectProfile', persis.selected);
+                await dispatch('selectProfile', persis.selected);
             } else {
-                dispatch('selectProfile', Object.keys(state.all)[0]);
+                await dispatch('selectProfile', Object.keys(state.all)[0]);
             }
         },
 
@@ -181,7 +210,9 @@ const mod = {
                     break;
                 case 'gamesettings':
                     await fs.writeFile(context.rootGetters.path('profiles', context.state.id, 'options.txt'),
-                        GameSetting.stringify(context.getters.selectedProfile.settings));
+                        GameSetting.stringify(context.state.settings));
+                    break;
+                case 'serverInfos':
                     break;
                 case 'addProfile':
                     await context.dispatch('setPersistence', {
@@ -261,18 +292,21 @@ const mod = {
                 }
                 const saveDir = context.rootGetters.path('profiles', id, 'saves');
                 if (existsSync(saveDir)) {
+                    await context.dispatch('loadProfileSaves', id);
                     saveWatcher = watch(saveDir, (target, filename) => {
                         context.dispatch('loadProfileSaves', id);
                     });
                 }
                 const optionFile = context.rootGetters.path('profiles', id, 'options.txt');
                 if (existsSync(optionFile)) {
+                    await context.dispatch('loadProfileGameSettings', id);
                     optionsWatcher = watch(optionFile, (target, data) => {
                         context.dispatch('loadProfileGameSettings', id);
                     });
                 }
                 const seversFile = context.rootGetters.path('profiles', id, 'servers.dat');
                 if (existsSync(seversFile)) {
+                    await context.dispatch('loadProfileSeverData', id);
                     optionsWatcher = watch(seversFile, (target, data) => {
                         context.dispatch('loadProfileSeverData', id);
                     });
@@ -287,7 +321,7 @@ const mod = {
                 if (allIds.length === 1) {
                     await context.dispatch('createAndSelectProfile', { type: 'modpack' });
                 } else {
-                    context.dispatch('selectProfile', allIds[0]);
+                    await context.dispatch('selectProfile', allIds[0]);
                 }
             }
             context.commit('removeProfile', id);
@@ -295,22 +329,27 @@ const mod = {
         },
 
 
-        async exportProfile(context, { id = context.state.id, dest, noAssets = false }) {
+        async exportProfile(context, { id = context.state.id, dest, type = 'full' }) {
             const root = context.rootState.root;
             const from = paths.join(root, 'profiles', id);
             const file = new ZipFile();
             const promise = compressZipTo(file, dest);
+
+            if (type === 'curseforge') {
+                throw new Error('Not implemented!');
+            }
+
             await includeAllToZip(from, from, file);
 
             const { resourcepacks, mods } = await context.dispatch('resolveProfileResources', id);
-            const defaultMcversion = context.state.all[id].mcversion;
+            const defaultMcversion = context.state.all[id].version.minecraft;
 
             const carriedVersionPaths = [];
 
             const versionInst = await Version.parse(root, defaultMcversion);
             carriedVersionPaths.push(...versionInst.pathChain);
 
-            if (!noAssets) {
+            if (type === 'full') {
                 const assetsJson = paths.resolve(root, 'assets', 'indexes', `${versionInst.assets}.json`);
                 file.addFile(assetsJson, `assets/indexes/${versionInst.assets}.json`);
                 const objects = await fs.readFile(assetsJson, { encoding: 'utf-8' }).then(b => b.toString()).then(JSON.parse).then(manifest => manifest.objects);
@@ -336,15 +375,11 @@ const mod = {
             }
 
             for (const resourcepack of resourcepacks) {
-                const filename = resourcepack.name + resourcepack.ext;
-                file.addFile(paths.join(root, 'resourcepacks', filename),
-                    `resourcepacks/${filename}`);
+                file.addFile(resourcepack.path, `resourcepacks/${resourcepack.name}${resourcepack.ext}`);
             }
 
             for (const mod of mods) {
-                const filename = mod.name + mod.ext;
-                file.addFile(paths.join(root, 'mods', filename),
-                    `mods/${filename}`);
+                file.addFile(mod.path, `mods/${basename(mod.path)}`);
             }
 
             file.end();
@@ -441,56 +476,19 @@ const mod = {
         resolveProfileResources(context, id = context.state.id) {
             const profile = context.state.all[id];
 
-            const modResources = [];
-            const resourcePackResources = [];
-            if ((profile.forge.mods && profile.forge.mods.length !== 0)
-                || (profile.liteloader.mods && profile.liteloader.mods.length !== 0)) {
-                const forgeMods = profile.forge.mods;
-                const liteloaderMods = profile.liteloader.mods;
-
-                const mods = context.rootState.resource.mods;
-
-                /**
-                 * @type {{[key: string]: import('universal/store/modules/resource').ResourceModule.ForgeResource}}
-                 */
-                const forgeModIdVersions = {};
-                /**
-                * @type {{[key: string]: import('universal/store/modules/resource').ResourceModule.LiteloaderResource}}
-                */
-                const liteNameVersions = {};
-
-                Object.keys(mods).forEach((hash) => {
-                    const mod = mods[hash];
-                    if (mod.type === 'forge') {
-                        if (!mod.metadata[0]) {
-                            console.error(`Illegal Forge Metadata ${JSON.stringify(mod, null, 4)}`);
-                            return;
-                        }
-                        forgeModIdVersions[getModIdentifier(mod)] = mod;
-                    } else {
-                        liteNameVersions[getModIdentifier(mod)] = mod;
-                    }
-                });
-                modResources.push(...forgeMods.map(key => forgeModIdVersions[key]).filter(r => r !== undefined));
-                modResources.push(...liteloaderMods.map(key => liteNameVersions[key]).filter(r => r !== undefined));
-            }
-            if (profile.settings.resourcePacks) {
-                const requiredResourcepacks = profile.settings.resourcePacks;
-
-                /**
-                 * @type {{[name:string]:import('universal/store/modules/resource').ResourceModule.ResourcePackResource}}
-                 */
-                const nameToId = {};
-                const allPacks = context.rootState.resource.resourcepacks;
-                Object.keys(allPacks).forEach((hash) => {
-                    const pack = allPacks[hash];
-                    nameToId[pack.name + pack.ext] = pack;
-                });
-                const requiredResources = requiredResourcepacks.map(packName => nameToId[packName]).filter(r => r !== undefined);
-                resourcePackResources.push(...requiredResources);
+            /**
+             * @type {{[domain:string]: import('universal/store/modules/resource').Resource<any>[]}}
+             */
+            const resources = {};
+            for (const domain of Object.keys(profile.deployments)) {
+                const depl = profile.deployments[domain];
+                if (depl instanceof Array && depl.length !== 0) {
+                    const domainResources = context.rootState.resource.domains[domain];
+                    resources[domain] = depl.map(h => domainResources[h]);
+                }
             }
 
-            return { mods: modResources, resourcepacks: resourcePackResources };
+            return resources;
         },
 
         async editProfile(context, profile) {
@@ -510,10 +508,9 @@ const mod = {
 
         async pingServers(context) {
             const version = context.getters.serverProtocolVersion;
-            const prof = context.getters.selectedProfile;
-            if (prof.serverInfos.length > 0) {
-                const results = await Promise.all(prof.serverInfos.map(s => Server.fetchStatusFrame(s, { protocol: version })));
-                return results.map((r, i) => ({ status: r, ...prof.serverInfos[i] }));
+            if (context.state.serverInfos.length > 0) {
+                const results = await Promise.all(context.state.serverInfos.map(s => Server.fetchStatusFrame(s, { protocol: version })));
+                return results.map((r, i) => ({ status: r, ...context.state.serverInfos[i] }));
             }
             return [];
         },
@@ -554,7 +551,9 @@ const mod = {
                 } else if (typeof info.status.description === 'object') {
                     options.description = TextComponent.from(info.status.description).formatted;
                 }
-                options.mcversion = context.rootState.client.protocolMapping.mcversion[info.status.version.protocol][0];
+                options.versions = {
+                    minecraft: context.rootState.client.protocolMapping.mcversion[info.status.version.protocol][0],
+                };
                 if (info.status.modinfo && info.status.modinfo.type === 'FML') {
                     options.forge = {
                         mods: info.status.modinfo.modList.map(m => `forge://${m.modid}/${m.version}`),
@@ -569,13 +568,12 @@ const mod = {
             });
         },
         async importSave(context, filePath) {
-            const cur = context.getters.selectedProfile;
             try {
-                const world = await World.load(filePath, ['level']);
-                const dest = context.rootGetters.path('profiles', cur.id, 'saves', basename(filePath));
+                const save = await World.load(filePath, ['level']);
+                const dest = context.rootGetters.path('profiles', context.state.id, 'saves', basename(filePath));
                 await ensureFile(dest);
                 await copy(filePath, dest);
-                context.commit('worlds', [...cur.saves, world]);
+                context.commit('profileSaves', [...context.state.saves, save]);
             } catch (e) {
                 console.error(`Cannot import save from ${filePath}`);
                 console.error(e);

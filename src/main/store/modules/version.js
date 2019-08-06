@@ -286,7 +286,7 @@ const mod = {
                     context.commit('refreshingForge', false);
                     return;
                 }
-                version = prof.mcversion;
+                version = prof.version.minecraft;
             }
 
             console.log(`Update forge version list under Minecraft ${version}`);

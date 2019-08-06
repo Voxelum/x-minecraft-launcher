@@ -12,7 +12,6 @@ export function createTemplate(id, java, mcversion, type = 'modpack') {
      */
     const base = {
         id,
-
         name: '',
 
         resolution: { width: 800, height: 400, fullscreen: false },
@@ -22,8 +21,6 @@ export function createTemplate(id, java, mcversion, type = 'modpack') {
         vmOptions: [],
         mcOptions: [],
 
-        mcversion,
-
         type,
         url: '',
         icon: '',
@@ -31,25 +28,14 @@ export function createTemplate(id, java, mcversion, type = 'modpack') {
         showLog: false,
         hideLauncher: true,
 
-        forge: {
+        version: {
+            minecraft: mcversion,
+            forge: '',
+            liteloader: '',
+        },
+        deployments: {
             mods: [],
-            version: '',
         },
-        liteloader: {
-            mods: [],
-            version: '',
-        },
-        optifine: {
-            version: '',
-            settings: {},
-        },
-
-        settings: {},
-        serverInfos: [],
-        saves: [],
-
-        refreshing: false,
-        problems: [],
     };
     if (type === 'modpack') {
         /**
@@ -71,7 +57,6 @@ export function createTemplate(id, java, mcversion, type = 'modpack') {
         port: 0,
         ...base,
         type: 'server',
-        status: UNKNOWN_STATUS,
     };
     return server;
 }
@@ -83,6 +68,17 @@ const mod = {
     state: {
         all: {},
         id: '',
+
+        status: UNKNOWN_STATUS,
+
+        settings: {
+            resourcePacks: [],
+        },
+        serverInfos: [],
+        saves: [],
+
+        refreshing: false,
+        problems: [],
     },
     getters: {
         profiles: state => Object.keys(state.all).map(k => state.all[k]),
@@ -90,9 +86,9 @@ const mod = {
         selectedProfile: state => state.all[state.id],
         currentVersion: (state, getters, rootState) => {
             const current = state.all[state.id];
-            const minecraft = current.mcversion;
-            const forge = current.forge.version;
-            const liteloader = current.liteloader.version;
+            const minecraft = current.version.minecraft;
+            const forge = current.version.forge;
+            const liteloader = current.version.liteloader;
 
             return {
                 id: getExpectVersion(minecraft, forge, liteloader),
@@ -104,18 +100,6 @@ const mod = {
         },
     },
     mutations: {
-        serverStatus(state, status) {
-            const cur = state.all[state.id];
-            if (cur.type === 'server') {
-                cur.status = status;
-            }
-        },
-        refreshingProfile(state, refreshing) {
-            const cur = state.all[state.id];
-            if (cur) {
-                cur.refreshing = refreshing;
-            }
-        },
         addProfile(state, profile) {
             /**
              * Prevent the case that hot reload keep the vuex state
@@ -147,37 +131,53 @@ const mod = {
                 prof.port = settings.port || prof.port;
             }
 
-            if (prof.mcversion !== settings.mcversion && settings.mcversion !== undefined) {
-                prof.mcversion = settings.mcversion;
-                prof.forge.version = '';
-                prof.liteloader.version = '';
+            if (settings.version) {
+                const versions = settings.version;
+                if (prof.version.minecraft !== settings.version.minecraft && typeof versions.minecraft === 'string') {
+                    // if minecraft version changed, all other related versions are rest.
+                    prof.version.minecraft = versions.minecraft;
+                    for (const versionType of Object.keys(prof.version).filter(v => v !== 'minecraft')) {
+                        prof.version[versionType] = '';
+                    }
+                }
+
+                for (const versionType of Object.keys(versions).filter(v => v !== 'minecraft')) {
+                    const ver = versions[versionType];
+                    if (typeof ver === 'string') {
+                        prof.version[versionType] = ver;
+                    }
+                }
             }
 
-            prof.minMemory = settings.minMemory || prof.minMemory;
-            prof.maxMemory = settings.maxMemory || prof.maxMemory;
-            if (settings.vmOptions && settings.vmOptions.length !== 0) {
+            if ('minMemory' in settings && (typeof settings.minMemory === 'number' || typeof settings.minMemory === 'undefined')) {
+                prof.minMemory = settings.minMemory;
+            }
+            if ('maxMemory' in settings && (typeof settings.maxMemory === 'number' || typeof settings.maxMemory === 'undefined')) {
+                prof.maxMemory = settings.maxMemory;
+            }
+
+            if (settings.vmOptions instanceof Array && settings.vmOptions.every(r => typeof r === 'string')) {
                 prof.vmOptions = Object.seal(settings.vmOptions);
             }
-            if (settings.mcOptions && settings.mcOptions.length !== 0) {
+            if (settings.mcOptions instanceof Array && settings.mcOptions.every(r => typeof r === 'string')) {
                 prof.mcOptions = Object.seal(settings.mcOptions);
             }
-            prof.java = settings.java || prof.java;
 
+            prof.java = settings.java || prof.java;
             if (prof.java && !prof.java.path) {
                 Reflect.deleteProperty(prof, 'java');
             }
 
-            prof.type = settings.type || prof.type;
+            prof.url = settings.url || prof.url;
             prof.icon = settings.icon || prof.icon;
 
-            if (settings.forge && typeof settings.forge === 'object') {
-                const { mods, version } = settings.forge;
-                const forge = state.all[state.id].forge;
-                if (mods instanceof Array && mods.every(m => typeof m === 'string')) {
-                    forge.mods = mods;
-                }
-                if (typeof version === 'string') {
-                    forge.version = version;
+            if (typeof settings.deployments === 'object') {
+                const deployments = settings.deployments;
+                for (const domain of Object.keys(deployments)) {
+                    const resources = deployments[domain];
+                    if (resources instanceof Array && resources.every(r => typeof r === 'string')) {
+                        prof.deployments[domain] = resources;
+                    }
                 }
             }
 
@@ -189,17 +189,30 @@ const mod = {
             }
         },
 
-        serverInfos(state, infos) {
-            state.all[state.id].serverInfos = infos;
+        profileCache(state, cache) {
+            if ('gamesettings' in cache && cache.gamesettings) {
+                const settings = cache.gamesettings;
+                const container = state.settings;
+                if (settings.resourcePacks && settings.resourcePacks instanceof Array) {
+                    Vue.set(container, 'resourcePacks', [...settings.resourcePacks]);
+                }
+                for (const [key, value] of Object.entries(settings)) {
+                    if (key in container) {
+                        if (typeof value === typeof Reflect.get(container, key)) {
+                            Vue.set(container, key, value);
+                        }
+                    } else {
+                        Vue.set(container, key, value);
+                    }
+                }
+            }
         },
-        worlds(state, maps) {
-            state.all[state.id].saves = maps;
-        },
+
         gamesettings(state, settings) {
             console.log(`GameSetting ${JSON.stringify(settings, null, 4)}`);
-            const container = state.all[state.id].settings;
+            const container = state.settings;
             if (settings.resourcePacks && settings.resourcePacks instanceof Array) {
-                Vue.set(container, 'resourcePacks', settings.resourcePacks);
+                Vue.set(container, 'resourcePacks', [...settings.resourcePacks]);
             }
             for (const [key, value] of Object.entries(settings)) {
                 if (key in container) {
@@ -211,8 +224,21 @@ const mod = {
                 }
             }
         },
+        serverInfos(state, infos) {
+            state.serverInfos = infos;
+        },
+
+        serverStatus(state, status) {
+            state.status = status;
+        },
+        refreshingProfile(state, refreshing) {
+            state.refreshing = refreshing;
+        },
+        profileSaves(state, saves) {
+            state.saves = saves;
+        },
         profileProblems(state, problems) {
-            state.all[state.id].problems = problems;
+            state.problems = problems;
         },
     },
 };

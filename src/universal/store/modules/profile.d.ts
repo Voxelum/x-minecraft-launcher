@@ -28,9 +28,6 @@ export declare namespace ProfileModule {
         type: 'server';
         host: string;
         port: number;
-
-        // cache
-        status: Server.StatusFrame;
     }
 
     interface Profile extends ProfileBase {
@@ -54,26 +51,28 @@ export declare namespace ProfileModule {
          */
         name: string;
 
-        resolution: { width: number, height: number, fullscreen: boolean };
+        /**
+         * The java object containing the java info
+         */
         java: {
+            /**
+             * The real path of the java paath
+             */
             path: string;
+            /**
+             * The actual version string of the java
+             */
             version: string;
+            /**
+             * The major version of selected java. If the version cannot be found, matching the java by this
+             */
             majorVersion: number;
         },
-        minMemory?: number;
-        maxMemory?: number;
-        vmOptions: string[];
-        mcOptions: string[];
-
-        mcversion: string;
 
         /**
          * Either a modpack or server. The modpack is the common profile. It can export into a modpack 
          */
         type: 'modpack' | 'server';
-
-        url: string;
-        icon: string;
 
         /**
          * Should show a logger window after Minecraft launched
@@ -84,37 +83,80 @@ export declare namespace ProfileModule {
          */
         hideLauncher: boolean;
 
-        forge: {
-            mods: string[],
-            version: string,
-        };
-        liteloader: {
-            mods: string[],
-            version: string,
-        };
-        optifine: {
-            version: string,
-            settings: {},
+        /**
+         * The external resource deployment of this profiles, like mods or resource packs
+         */
+        deployments: {
+            mods: string[];
+            [domain: string]: string[];
         };
 
-        // caches
-        serverInfos: Server.Info[];
-        saves: Save[];
-        settings: GameSetting.Frame;
-        refreshing: boolean,
-        problems: Problem[];
+        /**
+         * The version requirement of the profile.
+         * 
+         * Containing the forge & liteloader & etc.
+         */
+        version: {
+            minecraft: string;
+            forge: string;
+            liteloader: string;
+            [id: string]: string;
+        };
+
+        resolution: { width: number, height: number, fullscreen: boolean };
+        minMemory?: number;
+        maxMemory?: number;
+
+        vmOptions: string[];
+        mcOptions: string[];
+
+        url: string;
+        icon: string;
     }
 
     interface State {
-        all: { [id: string]: ServerOrModpack }
-        id: string
+        /**
+         * All loaded launch profiles
+         */
+        all: { [id: string]: ServerOrModpack };
+        /**
+         * Current selected id
+         */
+        id: string;
+
+        // caches
+        /**
+         * Loaded server dat info 
+         */
+        serverInfos: Server.Info[];
+        /**
+         * The saves cache of current selected profile
+         */
+        saves: Save[];
+        /**
+         * The game setting of current selected profile
+         */
+        settings: GameSetting.Frame & { resourcePacks: Array<string> };
+        /**
+         * The server status of current selected server profile, modpack won't have this.
+         */
+        status: Server.StatusFrame?;
+
+        /**
+         * The problems of current profile
+         */
+        problems: Problem[];
+        /**
+         * If current launcher is refreshing the profile data
+         */
+        refreshing: boolean;
     }
 
     interface Getters {
-        profiles: ServerOrModpack[]
-        serverProtocolVersion: number
-        selectedProfile: ServerOrModpack
-        currentVersion: VersionModule.ResolvedVersion
+        profiles: ServerOrModpack[];
+        serverProtocolVersion: number;
+        selectedProfile: ServerOrModpack;
+        currentVersion: VersionModule.ResolvedVersion;
     }
 
     interface Mutations {
@@ -127,15 +169,24 @@ export declare namespace ProfileModule {
          * Don't use this directly. Use `editProfile` action
          * @param payload The modified data
          */
-        profile(state: State, payload: Partial<ServerAndModpack>): void;
+        profile(state: State, payload: DeepPartial<ServerAndModpack>): void;
 
+        /**
+         * Update server infos in server.dat
+         * @param infos The new server infos
+         */
+        serverInfos(state: State, infos: Server.Info[]): void;
+        /**
+         * Update the game settings in options.txt
+         * @param payload The new game settings.
+         */
+        gamesettings(state: State, payload: GameSetting.Frame): void;
         // non-persistence mutation below, just update cache, nothing saved
 
-        profileProblems(state: State, problems: Problem[]): void;
+        profileCache(state: State, payload: { gamesettings?: GameSetting.Frame } | { serverInfos: Server.Info[] }): void
         serverStatus(state: State, status: Server.StatusFrame): void;
-        worlds(state: State, worlds: Save[]): void;
-        serverInfos(state: State, infos: Server.Info[]): void;
-        gamesettings(state: State, payload: GameSetting.Frame): void;
+        profileSaves(state: State, worlds: Save[]): void;
+        profileProblems(state: State, problems: Problem[]): void;
         refreshingProfile(state: State, refreshing: boolean): void;
     }
 
@@ -146,26 +197,46 @@ export declare namespace ProfileModule {
         loadProfileSeverData(context: C, id: string): Promise<Server.Info[]>
         loadProfileSaves(context: C, id: string): Promise<Pick<World, 'level' | 'path'>[]>;
 
+        /**
+         * Select active profile
+         * @param id the profile uuid
+         */
         selectProfile(context: C, id: string): Promise<void>;
+        /**
+         * Create a launch profile (either a modpack or a server).
+         * @param option The creation option
+         */
         createProfile(context: C, option: CreateOption): Promise<string>;
         createAndSelectProfile(context: C, option: CreateOption): Promise<string>;
         editProfile(context: C, payload: Partial<ServerAndModpack>): Promise<void>;
         deleteProfile(context: C, id: string): Promise<void>
 
-        exportProfile(context: C, option: { id: string, dest: string, noAssets?: boolean }): Promise<void>;
+        /**
+         * Export current profile as a modpack. Can be either curseforge or normal full Minecraft
+         * @param option Which profile is exporting (search by id), where to export (dest), include assets? 
+         */
+        exportProfile(context: C, option: { id: string, dest: string, type: 'full' | 'noAssets' | 'curseforge' }): Promise<void>;
+        /**
+         * Import external profile into the launcher. The profile can be a curseforge zip, or a normal Minecraft file/zip. 
+         * @param location The location of the profile try to import
+         */
         importProfile(context: C, location: string): Promise<void>;
-        resolveProfileResources(context: C, id: string): { mods: Resource<any>[], resourcepacks: Resource<any>[] };
-
-        pingServer(context: C, payload: { host: string, port: number, protocol: number }): Promise<Server.StatusFrame>;
+        /**
+         * Resolve all deployment resources of a profile into `Resource` object.
+         * @param id The profile uuid
+         */
+        resolveProfileResources(context: C, id: string): { [domain: string]: Resource<any>[] };
 
         copySave(context: C, paylod: { src: string, dest: string[] }): Promise<void>;
         importSave(context: C, path: string): Promise<void>;
         deleteSave(context: C, name: string): Promise<void>;
         exportSave(context: C, payload: { path: string, destination: string, zip?: boolean }): Promise<void>;
 
+        pingServer(context: C, payload: { host: string, port: number, protocol: number }): Promise<Server.StatusFrame>;
         pingServers(context: C): Promise<(Server.Info & { status: Server.StatusFrame })[]>;
-        refreshProfile(context: C): Promise<void>;
         createProfileFromServer(context: C, info: Server.Info & { status: Server.StatusFrame }): Promise<string>;
+
+        refreshProfile(context: C): Promise<void>;
     }
 }
 
