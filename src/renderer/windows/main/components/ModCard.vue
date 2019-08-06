@@ -10,11 +10,11 @@
           </v-flex>
           <v-flex xs8 style="padding: 10px 0;">
             <h3>
-              {{ data.name }}
-              {{ data.version }}
+              {{ metadata.name || data.name }}
+              {{ metadata.version }}
             </h3>
             <span style="color: #bdbdbd">
-              {{ data.description }}
+              {{ metadata.description }}
             </span>
           </v-flex>
         </v-layout>
@@ -55,6 +55,9 @@ export default {
     };
   },
   computed: {
+    metadata() {
+      return this.data.metadata[0];
+    },
     mcversion() {
       return this.$repo.getters.selectedProfile.version.minecraft;
     },
@@ -82,13 +85,17 @@ export default {
   },
   methods: {
     readLogo() {
-      this.$repo.dispatch('readForgeLogo', this.hash).then((icon) => {
-        if (typeof icon === 'string' && icon !== '') {
-          this.icon = `data:image/png;base64, ${icon}`;
-        } else {
-          this.icon = unknownPack;
-        }
-      });
+      if (this.data.missing) {
+        this.icon = unknownPack;
+      } else {
+        this.$repo.dispatch('readForgeLogo', this.hash).then((icon) => {
+          if (typeof icon === 'string' && icon !== '') {
+            this.icon = `data:image/png;base64, ${icon}`;
+          } else {
+            this.icon = unknownPack;
+          }
+        });
+      }
     },
     onDragStart(e) {
       e.dataTransfer.setData('Index', `${this.isSelected ? 'R' : 'L'}${this.index}`);

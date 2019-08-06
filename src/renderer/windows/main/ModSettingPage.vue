@@ -24,7 +24,7 @@
             <mod-card v-for="(mod, index) in unselectedMods" :key="mod.hash" v-observe-visibility="{
                         callback: (v) => checkBuffer(v, index, false),
                         once: true,
-                      }" :data="mod.metadata[0]"
+                      }" :data="mod"
                       :is-selected="false" :index="index" :hash="mod.hash" />
           </div>
         </v-card>
@@ -45,7 +45,7 @@
             <mod-card v-for="(mod, index) in selectedMods" :key="mod.hash" v-observe-visibility="{
                         callback: (v) => checkBuffer(v, index, true),
                         once: true,
-                      }" :data="mod.metadata[0]"
+                      }" :data="mod"
                       :is-selected="true" :index="index" :hash="mod.hash" />
           </div>
         </v-card>
