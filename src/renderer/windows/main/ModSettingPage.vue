@@ -57,52 +57,49 @@
 <script>
 import Vue from 'vue';
 import unknownPack from 'renderer/assets/unknown_pack.png';
-import { getModIdentifier } from 'universal/utils/versions';
 import SelectionList from './mixin/SelectionList';
 
 export default {
   mixins: [SelectionList],
   data() {
     return {
-      filterInCompatible: true,
       refreshing: false,
+      filterInCompatible: true,
       filterText: '',
-
-      unselectedBuffer: 10,
-      selectedBuffer: 10,
     };
   },
   computed: {
     profile() { return this.$repo.getters.selectedProfile; },
-    forge() { return this.profile.forge; },
-    filteredUnselected() {
-      return this.mods[1].filter(m => this.filterMod(this.filterText, m));
-    },
-    filteredSelected() {
-      return this.mods[0].filter(m => this.filterMod(this.filterText, m));
-    },
     unselectedMods() {
-      return this.filteredUnselected.filter((_, i) => i < this.unselectedBuffer);
+      return this.mods[1].filter(m => this.filterMod(this.filterText, m))
+        .filter((_, i) => i < this.unselectedBuffer);
     },
     selectedMods() {
-      return this.filteredSelected.filter((_, i) => i < this.selectedBuffer);
+      return this.mods[0].filter(m => this.filterMod(this.filterText, m)).filter((_, i) => i < this.selectedBuffer);
+    },
+    items: {
+      get() {
+        return this.profile.deployments.mods || [];
+      },
+      set(nv) {
+        this.$repo.dispatch('editProfile', { deployments: { mods: nv } });
+      },
+    },
+    unselectedItems() {
+      return this.mods[1];
     },
     mods() {
       const mods = this.$repo.getters.mods;
-      const selectedModsIds = this.forge.mods || [];
-      const selected = {};
-      for (const id of selectedModsIds) {
-        selected[id] = true;
-      }
-      const unselectedMods = [];
-      const idToMod = {};
-      for (const mod of mods) {
-        const identity = getModIdentifier(mod);
-        idToMod[identity] = mod;
-        if (!selected[identity]) unselectedMods.push(mod);
-      }
-      const selectedMods = selectedModsIds.map(id => idToMod[id]
-        || { id, missing: true, metadata: [{ name: 'missing' }] });
+      const selectedModUrls = this.items;
+      const selectedMods = selectedModUrls.map(s => this.$repo.getters.queryResource(s)
+        || { id: s, missing: true, metadata: [{ name: 'missing' }] });
+      const selectedMask = {};
+      selectedMods.forEach((m) => {
+        if (!m.missing) {
+          selectedMask[m.hash] = true;
+        }
+      });
+      const unselectedMods = mods.filter(m => !selectedMask[m.hash]);
       Object.freeze(selectedMods);
       Object.freeze(unselectedMods);
       return [selectedMods, unselectedMods];
@@ -111,41 +108,12 @@ export default {
   mounted() {
   },
   methods: {
-    insert(index, toIndex) {
-      if (index === toIndex) return;
-      const mods = [...this.forge.mods || []];
-      const deleted = mods.splice(index, 1);
-      mods.splice(toIndex, 0, ...deleted);
-      this.$repo.dispatch('editProfile', { forge: { mods } });
-    },
-    select(index) {
-      const [selected, unselected] = this.mods;
-      const newJoin = unselected[index];
-      const mods = [...this.forge.mods || []];
-      mods.unshift(getModIdentifier(newJoin));
-      this.$repo.dispatch('editProfile', { forge: { mods } });
-    },
-    unselect(index) {
-      const mods = [...this.forge.mods || []];
-      Vue.delete(mods, index);
-      this.$repo.dispatch('editProfile', { forge: { mods } });
-    },
     dropFile(path) {
       this.$repo.dispatch('importResource', { path }).catch((e) => { console.error(e); });
     },
     filterMod(text, mod) {
       if (!text) return true;
       return mod.name.toLowerCase().indexOf(text.toLowerCase()) !== -1;
-    },
-    checkBuffer(visible, index, right) {
-      if (!visible) return;
-      if (right) {
-        if (this.selectedBuffer - index < 5) {
-          this.selectedBuffer += 10;
-        }
-      } else if (this.unselectedBuffer - index < 5) {
-        this.unselectedBuffer += 10;
-      }
     },
   },
 };

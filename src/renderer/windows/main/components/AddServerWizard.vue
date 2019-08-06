@@ -190,7 +190,7 @@ export default {
       return this.status.favicon || unknownServer;
     },
     acceptingMcVersion() {
-      return this.$repo.state.client.protocolMapping.mcversion[this.status.version.protocol] || [];
+      return this.$repo.getters.getAcceptMinecraftVersoins(this.status.version.protocol);
     },
     ready() {
       return this.valid && this.javaValid;

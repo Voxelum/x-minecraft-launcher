@@ -80,7 +80,7 @@
     <v-flex d-flex xs12>
       <div class="display-1 white--text" style="padding-top: 50px; padding-left: 50px">
         <span style="margin-right: 10px;">
-          {{ profile.name || `Minecraft ${profile.mcversion}` }}
+          {{ profile.name || `Minecraft ${profile.version.minecraft}` }}
         </span>
         <v-chip v-if="profile.author" label color="green" outline small :selected="true" style="margin-right: 5px;">
           {{ profile.author }}
@@ -183,9 +183,9 @@ export default {
   computed: {
     icon() { return this.profile.status.favicon || unknownServer; },
     isServer() { return this.profile.type === 'server'; },
-    problems() { return this.profile.problems; },
+    problems() { return this.$repo.state.profile.problems; },
     launchStatus() { return this.$repo.state.launch.status; },
-    refreshingProfile() { return this.profile.refreshing; },
+    refreshingProfile() { return this.$repo.state.profile.refreshing; },
     missingJava() { return this.$repo.getters.missingJava; },
     profile() { return this.$repo.getters.selectedProfile; },
     activeTasksCount() {
@@ -237,7 +237,7 @@ export default {
         console.error(e);
       });
       if (!success) {
-        const problems = this.$repo.getters.selectedProfile.problems;
+        const problems = this.$repo.state.profile.problems;
         if (problems.length !== 0) {
           this.tempDialog = false;
           this.handleManualFix(problems[0]);

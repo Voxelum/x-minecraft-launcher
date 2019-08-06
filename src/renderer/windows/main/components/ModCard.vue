@@ -56,7 +56,7 @@ export default {
   },
   computed: {
     mcversion() {
-      return this.$repo.getters.selectedProfile.mcversion;
+      return this.$repo.getters.selectedProfile.version.minecraft;
     },
     acceptedRange() {
       if (this.data.acceptedMinecraftVersions) {

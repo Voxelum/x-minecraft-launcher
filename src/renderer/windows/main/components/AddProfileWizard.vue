@@ -31,14 +31,14 @@
                   </v-list-tile-action>
                   <v-list-tile-content>
                     <v-list-tile-title>
-                      {{ p.name || `Minecraft: ${p.mcversion}` }}
+                      {{ p.name || `Minecraft: ${p.version.minecraft}` }}
                     </v-list-tile-title>
                     <v-list-tile-sub-title>
                       Minecraft: 
-                      {{ p.mcversion }},
+                      {{ p.version.minecraft }},
 
                       Forge:
-                      {{ p.forge.version || 'None' }} {{ p.liteloader.version }}
+                      {{ p.version.forge || 'None' }} {{ p.version.liteloader }}
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
                  
@@ -129,8 +129,8 @@
           <v-container grid-list fill-height style="overflow: auto;">
             <v-layout row wrap>
               <v-flex d-flex xs6>
-                <v-select v-model="javaLocation" class="java-select" hide-details :item-text="getJavaText"
-                          :item-value="getJavaValue" prepend-inner-icon="add" :label="$t('java.location')" :items="javas"
+                <v-select v-model="javaLocation" class="java-select" hide-details :item-text="java => `JRE${java.majorVersion}, ${java.path}`"
+                          :item-value="v => v" prepend-inner-icon="add" :label="$t('java.location')" :items="javas"
                           required :menu-props="{ auto: true, overflowY: true }" />
               </v-flex>
               <v-flex d-flex xs3>
@@ -211,8 +211,8 @@ export default {
   },
   computed: {
     fromModpack() { return this.template >= this.profiles.length; },
-    profiles() { return this.$repo.getters.profiles || []; },
-    modpacks() { return this.$repo.getters.modpacks || []; },
+    profiles() { return this.$repo.getters.profiles; },
+    modpacks() { return this.$repo.getters.modpacks; },
     ready() {
       return this.valid && this.javaValid;
     },
@@ -260,9 +260,9 @@ export default {
       const temp = fromProfile ? this.profiles[i] : this.modpacks[i - this.profiles.length];
 
       if (fromProfile) {
-        this.name = `${temp.name || `Minecraft: ${temp.mcversion}`} +`;
-        this.mcversion = temp.mcversion;
-        this.forgeVersion = temp.forgeVersion;
+        this.mcversion = temp.version.minecraft;
+        this.name = `${temp.name || `Minecraft: ${this.mcversion}`} +`;
+        this.forgeVersion = temp.version.forge;
         this.javaLocation = temp.javaLocation;
         this.description = temp.description;
       } else {
@@ -272,12 +272,6 @@ export default {
       }
 
       this.step = 1;
-    },
-    getJavaValue(java) {
-      return java;
-    },
-    getJavaText(java) {
-      return `JRE${java.majorVersion}, ${java.path}`;
     },
     quit() {
       if (this.creating) return;

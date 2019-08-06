@@ -42,7 +42,7 @@
             {{ $t('resourcepack.hint') }}
           </p>
           <div class="list">
-            <resource-pack-card v-for="(pack, index) in selectedPacks" :key="pack.hash"
+            <resource-pack-card v-for="(pack, index) in selectedPacks" :key="`${pack.hash}${index}`"
                                 v-observe-visibility="{
                                   callback: (v) => checkBuffer(v, index, true),
                                   once: true,
@@ -64,9 +64,6 @@ export default {
   data() {
     return {
       filterText: '',
-
-      unselectedBuffer: 10,
-      selectedBuffer: 10,
     };
   },
   computed: {
@@ -78,7 +75,7 @@ export default {
     },
     resourcePacks() {
       const packs = this.$repo.getters.resourcepacks;
-      const packnames = this.$repo.getters.selectedProfile.settings.resourcePacks || [];
+      const packnames = this.$repo.state.profile.settings.resourcePacks;
 
       const selectedNames = {};
       for (const name of packnames) {
@@ -90,6 +87,7 @@ export default {
       const nameToPack = {};
       for (const pack of packs) {
         nameToPack[pack.name + pack.ext] = pack;
+        nameToPack[pack.name] = pack;
         if (!selectedNames[pack.name + pack.ext]) unselectedPacks.push(pack);
       }
       const selectedPacks = packnames
@@ -98,34 +96,23 @@ export default {
 
       return [selectedPacks, unselectedPacks];
     },
+    unselectedItems() {
+      return this.resourcePacks[1];
+    },
+    items: {
+      get() {
+        return this.$repo.state.profile.settings.resourcePacks;
+      },
+      set(v) {
+        this.$repo.commit('gamesettings', {
+          resourcePacks: v,
+        });
+      },
+    },
   },
   methods: {
-    insert(index, toIndex) {
-      if (index === toIndex) return;
-      const packs = [...this.$repo.getters.selectedProfile.settings.resourcePacks || []];
-
-      const deleted = packs.splice(index, 1);
-      packs.splice(toIndex, 0, ...deleted);
-
-      this.$repo.commit('gamesettings', {
-        resourcePacks: packs,
-      });
-    },
-    select(index) {
-      const [selectedPacks, unselectedPacks] = this.resourcePacks;
-      const newJoin = unselectedPacks[index];
-      const packs = [...this.$repo.getters.selectedProfile.settings.resourcePacks || []];
-      packs.unshift(newJoin.name + newJoin.ext);
-      this.$repo.commit('gamesettings', {
-        resourcePacks: packs,
-      });
-    },
-    unselect(index) {
-      const packs = [...this.$repo.getters.selectedProfile.settings.resourcePacks || []];
-      Vue.delete(packs, index);
-      this.$repo.commit('gamesettings', {
-        resourcePacks: packs,
-      });
+    mapItem(r) {
+      return r.name + r.ext;
     },
     dropFile(path) {
       this.$repo.dispatch('importResource', { path, type: 'resourcepack' }).catch((e) => {
@@ -135,16 +122,6 @@ export default {
     filterName(r, str) {
       if (!str) return true;
       return r.name.toLowerCase().indexOf(str.toLowerCase()) !== -1;
-    },
-    checkBuffer(visible, index, right) {
-      if (!visible) return;
-      if (right) {
-        if (this.selectedBuffer - index < 5) {
-          this.selectedBuffer += 10;
-        }
-      } else if (this.unselectedBuffer - index < 5) {
-        this.unselectedBuffer += 10;
-      }
     },
   },
 };

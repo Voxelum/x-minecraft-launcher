@@ -43,11 +43,9 @@ export default {
     },
   },
   computed: {
-    mcversion() {
-      return this.$repo.getters.selectedProfile.mcversion;
-    },
+    mcversion() { return this.$repo.getters.selectedProfile.version.minecraft; },
     acceptedRange() {
-      return this.$repo.state.client.packFormatMapping.mcversion[this.data.format];
+      return this.$repo.getters.getAcceptMinecraftRangeByFormat(this.data.format);
     },
     compatible() {
       return isCompatible(this.acceptedRange, this.mcversion);

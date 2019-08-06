@@ -72,7 +72,7 @@
             <v-icon large left>
               layers
             </v-icon>
-            <span class="title font-weight-light">{{ profile.name || `Minecraft ${profile.mcversion}` }}</span>
+            <span class="title font-weight-light">{{ profile.name || `Minecraft ${profile.version.minecraft}` }}</span>
           </v-card-title>
 
           <v-card-text class="headline font-weight-bold">
@@ -83,7 +83,7 @@
             <v-list-tile class="grow">
               <v-list-tile-avatar color="grey darken-3">
                 <v-chip label :selected="false" @click="$event.stopPropagation()">
-                  {{ profile.mcversion }}
+                  {{ profile.version.minecraft }}
                 </v-chip>
               </v-list-tile-avatar>
 

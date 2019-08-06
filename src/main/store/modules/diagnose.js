@@ -48,10 +48,10 @@ const mod = {
             context.commit('refreshingProfile', true);
 
             const profile = context.rootGetters.selectedProfile;
-            const { id, mcversion, forge, liteloader } = profile;
+            const { id, version: versions, deployments } = profile;
             const currentVersion = context.rootGetters.currentVersion;
 
-
+            const mcversion = versions.minecraft;
             if (mcversion === '') {
                 context.commit('refreshingProfile', false);
                 context.commit('endFixProblems', unfixed);
@@ -72,12 +72,12 @@ const mod = {
                     }
                     const mcInstallHandle = await context.dispatch('installMinecraft', mcvermeta);
                     await context.dispatch('waitTask', mcInstallHandle);
-                    if (forge.version) {
+                    if (versions.forge) {
                         const forgeVersion = context.rootState.version.forge[mcversion];
                         if (!forgeVersion) {
                             throw new Error('unexpected');
                         }
-                        const found = forgeVersion.versions.find(v => v.version === forge.version);
+                        const found = forgeVersion.versions.find(v => v.version === versions.forge);
                         if (found) {
                             const forge = ForgeWebPage.Version.to(found);
                             const handle = await context.dispatch('installForge', forge);
@@ -132,7 +132,7 @@ const mod = {
         async diagnoseProfile(context) {
             context.commit('refreshingProfile', true);
             const id = context.rootState.profile.id;
-            const { mcversion, forge, liteloader } = context.rootState.profile.all[id];
+            const { version: versions, deployments } = context.rootState.profile.all[id];
             const currentVersion = context.rootGetters.currentVersion;
             const targetVersion = await context.dispatch('resolveVersion', currentVersion)
                 .catch(() => currentVersion.id);
@@ -143,6 +143,7 @@ const mod = {
              * @type {import('universal/store/modules/diagnose').DiagnoseModule.Problem[]}
              */
             const problems = [];
+            const mcversion = versions.minecraft;
             if (!mcversion) {
                 problems.push({ id: 'missingVersion' });
             } else {
@@ -203,25 +204,35 @@ const mod = {
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
 
             const pattern = /^\[.+\]$/;
-            for (const mod of mods) {
-                if (mod.type === 'forge') {
+            if (mods) {
+                for (const mod of mods) {
+                    if (mod.type === 'forge') {
                     /**
                      * @type {Forge.MetaData[]}
                      */
-                    const metadatas = mod.metadata;
-                    for (const meta of metadatas) {
-                        let acceptVersion = meta.acceptedMinecraftVersions;
-                        if (!meta.acceptedMinecraftVersions) {
-                            acceptVersion = pattern.test(meta.mcversion) ? meta.mcversion : `[${meta.mcversion}]`;
-                        }
-                        if (!acceptVersion) {
-                            problems.push({
-                                id: 'unknownMod',
-                                arguments: { name: mod.name, actual: mcversion },
-                                optional: true,
-                            });
-                            break;
-                        } else {
+                        const metadatas = mod.metadata;
+                        for (const meta of metadatas) {
+                            let acceptVersion = meta.acceptedMinecraftVersions;
+                            if (!acceptVersion) {
+                                if (meta.mcversion) {
+                                    acceptVersion = pattern.test(meta.mcversion) ? meta.mcversion : `[${meta.mcversion}]`;
+                                } else {
+                                    problems.push({
+                                        id: 'unknownMod',
+                                        arguments: { name: mod.name, actual: mcversion },
+                                        optional: true,
+                                    });
+                                    continue;
+                                }
+                            }
+                            if (!acceptVersion) {
+                                problems.push({
+                                    id: 'unknownMod',
+                                    arguments: { name: mod.name, actual: mcversion },
+                                    optional: true,
+                                });
+                                continue;
+                            }
                             const range = VersionRange.createFromVersionSpec(acceptVersion);
                             if (range && !range.containsVersion(resolvedMcVersion)) {
                                 problems.push({
@@ -229,28 +240,28 @@ const mod = {
                                     arguments: { name: mod.name, accepted: acceptVersion, actual: mcversion },
                                     optional: true,
                                 });
-                                break;
                             }
                         }
                     }
                 }
             }
 
-            const packFormatMapping = context.rootState.client.packFormatMapping.mcversion;
-            for (const pack of resourcepacks) {
-                if (pack.metadata.format in packFormatMapping) {
-                    const acceptVersion = packFormatMapping[pack.metadata.format];
-                    const range = VersionRange.createFromVersionSpec(acceptVersion);
-                    if (range && !range.containsVersion(resolvedMcVersion)) {
-                        problems.push({
-                            id: 'incompatibleResourcePack',
-                            arguments: { name: pack.name, accepted: acceptVersion, actual: mcversion },
-                            optional: true,
-                        });
+            if (resourcepacks) {
+                const packFormatMapping = context.rootState.client.packFormatMapping.mcversion;
+                for (const pack of resourcepacks) {
+                    if (pack.metadata.format in packFormatMapping) {
+                        const acceptVersion = packFormatMapping[pack.metadata.format];
+                        const range = VersionRange.createFromVersionSpec(acceptVersion);
+                        if (range && !range.containsVersion(resolvedMcVersion)) {
+                            problems.push({
+                                id: 'incompatibleResourcePack',
+                                arguments: { name: pack.name, accepted: acceptVersion, actual: mcversion },
+                                optional: true,
+                            });
+                        }
                     }
                 }
             }
-
             let java = context.rootState.profile.all[id].java;
 
             if (!java || !java.path || !java.majorVersion || !java.version) {
