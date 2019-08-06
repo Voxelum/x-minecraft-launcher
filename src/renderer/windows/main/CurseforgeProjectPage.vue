@@ -85,7 +85,7 @@
             </v-tabs>
           </v-flex>
           <v-flex xs3 fill-height>
-            <v-card >
+            <v-card>
               <v-card-title>
                 {{ $t('curseforge.totalDownloads') }}
                 {{ totalDownload }}
@@ -248,7 +248,6 @@ export default {
       return d.toLocaleDateString();
     },
     install(file) {
-      console.log(file);
       this.$repo.dispatch('downloadAndImportFile', {
         project: { type: this.type, name: this.name, projectId: this.projectId },
         file,
