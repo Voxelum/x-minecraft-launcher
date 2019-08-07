@@ -4,7 +4,7 @@ import { compressZipTo, includeAllToZip } from 'main/utils/zip';
 import { tmpdir } from 'os';
 import paths, { basename, join } from 'path';
 import { latestMcRelease } from 'static/dummy.json';
-import { GameSetting, Server, TextComponent, Version, World } from 'ts-minecraft';
+import { GameSetting, Server, TextComponent, Version, World } from '@xmcl/minecraft-launcher-core';
 import base, { createTemplate } from 'universal/store/modules/profile';
 import { fitin, willBaselineChange } from 'universal/utils/object';
 import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/server-status';
@@ -38,7 +38,7 @@ const mod = {
         async loadProfileGameSettings({ rootGetters, state, commit }, id = state.id) {
             const opPath = rootGetters.path('profiles', id, 'options.txt');
             try {
-                const option = await fs.readFile(opPath, 'utf-8').then(b => b.toString()).then(GameSetting.parseFrame);
+                const option = await fs.readFile(opPath, 'utf-8').then(b => b.toString()).then(GameSetting.parse);
                 commit('profileCache', { gamesettings: option });
                 return option || {};
             } catch (e) {
@@ -88,7 +88,7 @@ const mod = {
                 const serverPath = rootGetters.path('profiles', id, 'servers.dat');
                 if (existsSync(serverPath)) {
                     const serverDat = await fs.readFile(serverPath);
-                    const infos = Server.readInfo(serverDat);
+                    const infos = await Server.readInfo(serverDat);
                     commit('serverInfos', infos);
                     return infos;
                 }
@@ -503,7 +503,7 @@ const mod = {
 
         async pingServer(context, payload) {
             const { host, port = 25565, protocol } = payload;
-            return Server.fetchStatusFrame({ host, port, name: '' }, { protocol });
+            return Server.fetchStatusFrame({ host, port }, { protocol });
         },
 
         async pingServers(context) {

@@ -1,14 +1,12 @@
-import { net, app } from 'electron';
-import os from 'os';
-import { promises as fs, createReadStream, existsSync, mkdirSync } from 'fs';
-import { Utils } from 'ts-minecraft';
-import path, { join } from 'path';
-import Task from 'treelike-task';
-import { createExtractStream } from 'yauzlw';
-import { createDecompressor } from 'lzma-native';
-import { createHash } from 'crypto';
-import { downloadFile, downloadFileWork } from 'ts-minecraft/dest/libs/utils/network';
+import { Net, Task } from '@xmcl/minecraft-launcher-core';
 import { exec } from 'child_process';
+import { createHash } from 'crypto';
+import { app, net } from 'electron';
+import { createReadStream, existsSync, mkdirSync, promises as fs } from 'fs';
+import { createDecompressor } from 'lzma-native';
+import os from 'os';
+import path, { join } from 'path';
+import { createExtractStream } from 'yauzlw';
 import { ensureDir, ensureFile } from './fs';
 
 /**
@@ -63,7 +61,7 @@ export async function officialEndpoint(context) {
     }
     if (needDownload) {
         await ensureFile(dest);
-        await context.execute('download', Utils.downloadFileIfAbsentWork({
+        await context.execute('download', Net.downloadFileIfAbsentWork({
             url,
             destination: dest,
             checksum: {
@@ -121,7 +119,7 @@ export async function selfHostAPI(context) {
     const dest = path.resolve(root, 'temp', filename);
 
     await ensureFile(dest);
-    await context.execute('download', Utils.downloadFileWork({
+    await context.execute('download', Net.downloadFileWork({
         url,
         destination: dest,
     }));
@@ -159,7 +157,7 @@ export async function bangbangAPI(context) {
     const root = app.getPath('userData');
     const javaRoot = path.resolve(root, 'jre');
     const destination = path.resolve(root, 'temp', filename);
-    await context.execute('download', downloadFileWork({
+    await context.execute('download', Net.downloadFileWork({
         url: `http://bmclapi2.bangbang93.com/java/${filename}`,
         destination,
     }));

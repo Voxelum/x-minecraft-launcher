@@ -1,4 +1,4 @@
-import { GameSetting, LevelDataFrame, World, Server } from "ts-minecraft";
+import { GameSetting, LevelDataFrame, World, Server } from "@xmcl/minecraft-launcher-core";
 import { Context, Module } from "../store";
 import { JavaModule } from "./java";
 import { Resource } from './resource';

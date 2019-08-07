@@ -1,7 +1,7 @@
 import { app } from 'electron';
 import { existsSync, promises as fs } from 'fs';
 import paths, { join } from 'path';
-import Task from 'treelike-task';
+import { Task } from '@xmcl/minecraft-launcher-core';
 import { ensureDir } from 'main/utils/fs';
 import { getGuardWindow } from '../../windowsManager';
 

@@ -1,5 +1,5 @@
 import { Context, Module, TaskHandle } from "../store";
-import { Forge, LiteLoader, ResourcePack, World } from "ts-minecraft";
+import { Forge, LiteLoader, ResourcePack, World } from "@xmcl/minecraft-launcher-core";
 
 export declare namespace ResourceModule {
     interface Source {

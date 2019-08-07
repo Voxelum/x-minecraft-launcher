@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from 'electron';
 import { join } from 'path';
-import Task from 'treelike-task';
+import { Task } from '@xmcl/minecraft-launcher-core';
 import { Store } from 'vuex';
 
 /**

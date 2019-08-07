@@ -101,6 +101,7 @@
         }
     },
     "dependencies": {
+        "@xmcl/minecraft-launcher-core": "^0.0.4",
         "electron-updater": "^4.0.6",
         "fast-html-parser": "^1.0.1",
         "file-type": "^12.1.0",
@@ -108,8 +109,6 @@
         "iconv-lite": "^0.4.18",
         "in-gfw": "^1.2.0",
         "lzma-native": "^4.0.5",
-        "treelike-task": "^0.0.15",
-        "ts-minecraft": "^5.2.6",
         "uuid": "^3.2.1",
         "vue": "^2.6.10",
         "vue-electron": "^1.0.6",

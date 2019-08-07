@@ -1,7 +1,5 @@
 import { Store, DispatchOptions, MutationTree, ActionTree, Module as VModule, Action } from 'vuex'
-import { GameProfile, MojangAccount, VersionMeta, Forge, LiteLoader, GameSetting, ForgeWebPage, MojangChallengeResponse, MojangChallenge } from 'ts-minecraft';
 import { RendererInterface, Remote } from 'electron';
-import { Task } from 'treelike-task';
 
 import { UserModule } from './modules/user'
 import { VersionModule, MinecraftModule, ForgeModule, LiteloaderModule } from './modules/version'
@@ -12,7 +10,6 @@ import { ResourceModule, Resource } from './modules/resource'
 import { TaskModule } from './modules/task';
 import { DiagnoseModule } from './modules/diagnose';
 import { ConfigModule } from './modules/config';
-import { Library } from 'ts-minecraft/dest/libs/version';
 import { IOModule, Actions as IOActions } from './modules/io';
 import modules from './modules/base';
 import { LauncherModule, State as LaunchState, Mutations as LaunchMutations } from './modules/launch';

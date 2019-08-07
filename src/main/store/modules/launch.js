@@ -1,4 +1,4 @@
-import { MinecraftFolder, Launcher } from 'ts-minecraft';
+import { Util, Launcher } from '@xmcl/minecraft-launcher-core';
 import paths, { join } from 'path';
 import { ipcMain } from 'electron';
 import base from 'universal/store/modules/launch';
@@ -57,7 +57,7 @@ const mod = {
             commit('launchStatus', 'launching');
 
             const debug = profile.showLog;
-            const minecraftFolder = new MinecraftFolder(paths.join(rootState.root, 'profiles', profile.id));
+            const minecraftFolder = new Util.MinecraftFolder(paths.join(rootState.root, 'profiles', profile.id));
 
             /**
              * real version name

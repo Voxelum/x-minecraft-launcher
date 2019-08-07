@@ -1,7 +1,7 @@
 import { app } from 'electron';
 import locales from 'static/locales';
 import { autoUpdater, UpdaterSignal } from 'electron-updater';
-import Task from 'treelike-task';
+import { Task } from '@xmcl/minecraft-launcher-core';
 import base from 'universal/store/modules/config';
 import isInGFW from 'in-gfw';
 

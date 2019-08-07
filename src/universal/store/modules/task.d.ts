@@ -1,8 +1,8 @@
-import { Task, TaskNode } from 'treelike-task';
+import { Task } from '@xmcl/minecraft-launcher-core';
 import { Context, Module, TaskHandle } from "../store";
 
 
-export interface TNode extends TaskNode {
+export interface TNode extends Task.Node {
     _internalId: string;
     tasks: TNode[];
     time?: string;
