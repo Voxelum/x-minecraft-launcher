@@ -1,5 +1,5 @@
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
-import { Forge, ForgeWebPage, Version } from 'ts-minecraft';
+import { Forge, ForgeWebPage, Version } from '@xmcl/minecraft-launcher-core';
 import base from 'universal/store/modules/diagnose';
 /**
  * 
@@ -131,92 +131,102 @@ const mod = {
 
         async diagnoseProfile(context) {
             context.commit('refreshingProfile', true);
-            const id = context.rootState.profile.id;
-            const { version: versions, deployments } = context.rootState.profile.all[id];
-            const currentVersion = context.rootGetters.currentVersion;
-            const targetVersion = await context.dispatch('resolveVersion', currentVersion)
-                .catch(() => currentVersion.id);
+            try {
+                const id = context.rootState.profile.id;
+                const { version: versions, deployments } = context.rootState.profile.all[id];
+                const currentVersion = context.rootGetters.currentVersion;
+                const targetVersion = await context.dispatch('resolveVersion', currentVersion)
+                    .catch(() => currentVersion.id);
 
-            console.log(`Diagnose for ${targetVersion}`);
+                console.log(`Diagnose for ${targetVersion}`);
 
-            /**
-             * @type {import('universal/store/modules/diagnose').DiagnoseModule.Problem[]}
-             */
-            const problems = [];
-            const mcversion = versions.minecraft;
-            if (!mcversion) {
-                problems.push({ id: 'missingVersion' });
-            } else {
-                const location = context.rootState.root;
-                const versionDiagnosis = await Version.diagnose(targetVersion, location);
+                /**
+                 * @type {import('universal/store/modules/diagnose').DiagnoseModule.Problem[]}
+                 */
+                const problems = [];
+                const mcversion = versions.minecraft;
+                if (!mcversion) {
+                    problems.push({ id: 'missingVersion' });
+                } else {
+                    const location = context.rootState.root;
+                    const versionDiagnosis = await Version.diagnose(targetVersion, location);
 
-                if (versionDiagnosis.missingVersionJar) {
-                    problems.push({
-                        id: 'missingVersionJar',
-                        arguments: { version: mcversion },
-                        autofix: true,
-                    });
-                }
-                if (versionDiagnosis.missingAssetsIndex) {
-                    problems.push({
-                        id: 'missingAssetsIndex',
-                        arguments: { version: mcversion },
-                        autofix: true,
-                    });
-                }
-                if (versionDiagnosis.missingVersionJson !== '') {
-                    problems.push({
-                        id: 'missingVersionJson',
-                        arguments: { version: versionDiagnosis.missingVersionJson },
-                        autofix: true,
-                    });
-                }
-                if (versionDiagnosis.missingLibraries.length !== 0) {
-                    const missingForge = versionDiagnosis.missingLibraries.find(l => l.name.startsWith('net.minecraftforge:forge'));
-                    if (missingForge) {
-                        const [minecraft, forge] = missingForge.name.substring('net.minecraftforge:forge:'.length).split('-');
+                    if (versionDiagnosis.missingVersionJar) {
                         problems.push({
-                            id: 'missingForgeJar',
-                            arguments: { minecraft, forge },
+                            id: 'missingVersionJar',
+                            arguments: { version: mcversion },
                             autofix: true,
                         });
                     }
-                    problems.push({
-                        id: 'missingLibraries',
-                        arguments: {
-                            count: versionDiagnosis.missingLibraries.length,
-                            libraries: versionDiagnosis.missingLibraries.filter(l => !l.name.startsWith('net.minecraftforge:forge')),
-                        },
-                        autofix: true,
-                    });
+                    if (versionDiagnosis.missingAssetsIndex) {
+                        problems.push({
+                            id: 'missingAssetsIndex',
+                            arguments: { version: mcversion },
+                            autofix: true,
+                        });
+                    }
+                    if (versionDiagnosis.missingVersionJson !== '') {
+                        problems.push({
+                            id: 'missingVersionJson',
+                            arguments: { version: versionDiagnosis.missingVersionJson },
+                            autofix: true,
+                        });
+                    }
+                    if (versionDiagnosis.missingLibraries.length !== 0) {
+                        const missingForge = versionDiagnosis.missingLibraries.find(l => l.name.startsWith('net.minecraftforge:forge'));
+                        if (missingForge) {
+                            const [minecraft, forge] = missingForge.name.substring('net.minecraftforge:forge:'.length).split('-');
+                            problems.push({
+                                id: 'missingForgeJar',
+                                arguments: { minecraft, forge },
+                                autofix: true,
+                            });
+                        }
+                        problems.push({
+                            id: 'missingLibraries',
+                            arguments: {
+                                count: versionDiagnosis.missingLibraries.length,
+                                libraries: versionDiagnosis.missingLibraries.filter(l => !l.name.startsWith('net.minecraftforge:forge')),
+                            },
+                            autofix: true,
+                        });
+                    }
+                    const missingAssets = Object.keys(versionDiagnosis.missingAssets);
+                    if (missingAssets.length !== 0) {
+                        problems.push({
+                            id: 'missingAssets',
+                            arguments: { count: missingAssets.length },
+                            autofix: true,
+                        });
+                    }
                 }
-                const missingAssets = Object.keys(versionDiagnosis.missingAssets);
-                if (missingAssets.length !== 0) {
-                    problems.push({
-                        id: 'missingAssets',
-                        arguments: { count: missingAssets.length },
-                        autofix: true,
-                    });
-                }
-            }
 
-            const { resourcepacks, mods } = await context.dispatch('resolveProfileResources', id);
-            const resolvedMcVersion = ArtifactVersion.of(mcversion);
+                const { resourcepacks, mods } = await context.dispatch('resolveProfileResources', id);
+                const resolvedMcVersion = ArtifactVersion.of(mcversion);
 
-            const pattern = /^\[.+\]$/;
-            if (mods) {
-                for (const mod of mods) {
-                    if (mod.type === 'forge') {
-                    /**
-                     * @type {Forge.MetaData[]}
-                     */
-                        const metadatas = mod.metadata;
-                        for (const meta of metadatas) {
-                            let acceptVersion = meta.acceptedMinecraftVersions;
-                            if (!acceptVersion) {
-                                if (meta.mcversion) {
-                                    acceptVersion = pattern.test(meta.mcversion) ? meta.mcversion : `[${meta.mcversion}]`;
-                                } else {
+                const pattern = /^\[.+\]$/;
+                if (mods) {
+                    for (const mod of mods.filter(m => !!m)) {
+                        if (mod.type === 'forge') {
+                            /**
+                             * @type {Forge.MetaData[]}
+                             */
+                            const metadatas = mod.metadata;
+                            for (const meta of metadatas) {
+                                let acceptVersion = meta.acceptedMinecraftVersions;
+                                if (!acceptVersion) {
+                                    if (meta.mcversion) {
+                                        acceptVersion = pattern.test(meta.mcversion) ? meta.mcversion : `[${meta.mcversion}]`;
+                                    } else {
+                                        problems.push({
+                                            id: 'unknownMod',
+                                            arguments: { name: mod.name, actual: mcversion },
+                                            optional: true,
+                                        });
+                                        continue;
+                                    }
+                                }
+                                if (!acceptVersion) {
                                     problems.push({
                                         id: 'unknownMod',
                                         arguments: { name: mod.name, actual: mcversion },
@@ -224,68 +234,61 @@ const mod = {
                                     });
                                     continue;
                                 }
+                                const range = VersionRange.createFromVersionSpec(acceptVersion);
+                                if (range && !range.containsVersion(resolvedMcVersion)) {
+                                    problems.push({
+                                        id: 'incompatibleMod',
+                                        arguments: { name: mod.name, accepted: acceptVersion, actual: mcversion },
+                                        optional: true,
+                                    });
+                                }
                             }
-                            if (!acceptVersion) {
-                                problems.push({
-                                    id: 'unknownMod',
-                                    arguments: { name: mod.name, actual: mcversion },
-                                    optional: true,
-                                });
-                                continue;
-                            }
+                        }
+                    }
+                }
+
+                if (resourcepacks) {
+                    const packFormatMapping = context.rootState.client.packFormatMapping.mcversion;
+                    for (const pack of resourcepacks) {
+                        if (pack.metadata.format in packFormatMapping) {
+                            const acceptVersion = packFormatMapping[pack.metadata.format];
                             const range = VersionRange.createFromVersionSpec(acceptVersion);
                             if (range && !range.containsVersion(resolvedMcVersion)) {
                                 problems.push({
-                                    id: 'incompatibleMod',
-                                    arguments: { name: mod.name, accepted: acceptVersion, actual: mcversion },
+                                    id: 'incompatibleResourcePack',
+                                    arguments: { name: pack.name, accepted: acceptVersion, actual: mcversion },
                                     optional: true,
                                 });
                             }
                         }
                     }
                 }
-            }
+                let java = context.rootState.profile.all[id].java;
 
-            if (resourcepacks) {
-                const packFormatMapping = context.rootState.client.packFormatMapping.mcversion;
-                for (const pack of resourcepacks) {
-                    if (pack.metadata.format in packFormatMapping) {
-                        const acceptVersion = packFormatMapping[pack.metadata.format];
-                        const range = VersionRange.createFromVersionSpec(acceptVersion);
-                        if (range && !range.containsVersion(resolvedMcVersion)) {
-                            problems.push({
-                                id: 'incompatibleResourcePack',
-                                arguments: { name: pack.name, accepted: acceptVersion, actual: mcversion },
-                                optional: true,
-                            });
-                        }
-                    }
-                }
-            }
-            let java = context.rootState.profile.all[id].java;
-
-            if (!java || !java.path || !java.majorVersion || !java.version) {
-                console.log(`Fix java path ${JSON.stringify(java)}`);
-                context.commit('profile', {
-                    java: context.rootGetters.defaultJava,
-                });
-            }
-
-            java = context.rootState.profile.all[id].java;
-            if (java && java.majorVersion > 8) {
-                if (!resolvedMcVersion.minorVersion || resolvedMcVersion.minorVersion < 13) {
-                    problems.push({
-                        id: 'incompatibleJava',
-                        arguments: { java: java.version, mcversion },
-                        optional: true,
+                if (!java || !java.path || !java.majorVersion || !java.version) {
+                    console.log(`Fix java path ${JSON.stringify(java)}`);
+                    context.commit('profile', {
+                        java: context.rootGetters.defaultJava,
                     });
                 }
+
+                java = context.rootState.profile.all[id].java;
+                if (java && java.majorVersion > 8) {
+                    if (!resolvedMcVersion.minorVersion || resolvedMcVersion.minorVersion < 13) {
+                        problems.push({
+                            id: 'incompatibleJava',
+                            arguments: { java: java.version, mcversion },
+                            optional: true,
+                        });
+                    }
+                }
+
+                context.commit('profileProblems', problems);
+
+                return problems;
+            } finally {
+                context.commit('refreshingProfile', false);
             }
-
-            context.commit('profileProblems', problems);
-
-            context.commit('refreshingProfile', false);
-            return problems;
         },
     },
 };

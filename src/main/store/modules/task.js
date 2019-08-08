@@ -3,7 +3,7 @@ import { v4 } from 'uuid';
 import { ipcMain } from 'electron';
 import { requireString } from 'universal/utils/object';
 import base from 'universal/store/modules/task';
-import Task from 'treelike-task';
+import { Task } from '@xmcl/minecraft-launcher-core';
 
 class TaskWatcher {
     constructor() {
@@ -91,11 +91,11 @@ class TaskWatcher {
 
 let taskWatcher = new TaskWatcher();
 /**
- * @type {{[name:string]: import('treelike-task').Task<any>}}
+ * @type {{[name:string]: import('@xmcl/minecraft-launcher-core').Task<any>}}
  */
 let nameToTask = {};
 /**
- * @type {{[name:string]: import('treelike-task').Task<any>}}
+ * @type {{[name:string]: import('@xmcl/minecraft-launcher-core').Task<any>}}
  */
 let idToTask = {};
 

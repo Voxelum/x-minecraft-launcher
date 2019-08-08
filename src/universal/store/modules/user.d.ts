@@ -1,4 +1,4 @@
-import { Auth, GameProfile, MojangAccount, ProfileService, MojangChallenge, MojangChallengeResponse } from 'ts-minecraft';
+import { Auth, GameProfile, MojangAccount, ProfileService, MojangChallenge, MojangChallengeResponse } from '@xmcl/minecraft-launcher-core';
 import { Context, Module } from "../store";
 
 export declare namespace UserModule {
@@ -80,7 +80,7 @@ export declare namespace UserModule {
 
         login(state: State, info: { auth: Auth, account?: string }): void;
         logout(state: State): void;
-        textures(state: State, textures: GameProfile.Textures): void;
+        textures(state: State, textures: GameProfile.TexturesInfo): void;
         mojangInfo(state: State, info: MojangAccount): void;
         authService(state: State, mode: string): void;
         profileService(state: State, mode: string): void;

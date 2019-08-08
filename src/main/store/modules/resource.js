@@ -3,12 +3,11 @@ import { net } from 'electron';
 import { createReadStream, existsSync, promises as fs, rename } from 'fs';
 import { copy, ensureDir, ensureFile } from 'main/utils/fs';
 import paths, { join } from 'path';
-import { Forge, LiteLoader, ResourcePack, World } from 'ts-minecraft';
+import { Forge, LiteLoader, ResourcePack, Task } from '@xmcl/minecraft-launcher-core';
 import base from 'universal/store/modules/resource';
 import { requireString } from 'universal/utils/object';
 import url from 'url';
 import { bufferEntry, open, parseEntries, createExtractStream } from 'yauzlw';
-import Task from 'treelike-task';
 import { cpus } from 'os';
 import fileType from 'file-type';
 
@@ -326,6 +325,9 @@ const mod = {
                 throw new Error(`The resource should be forge but get ${res.type}`);
             }
             const meta = res.metadata[0];
+            if (!meta) {
+                throw new Error(`No metadata file for mod ${JSON.stringify(res, null, 4)}`);
+            }
             if (!meta.logoFile) {
                 cache[resourceId] = '';
                 return '';

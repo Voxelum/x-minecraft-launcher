@@ -42,7 +42,7 @@ This project is using [nodejs](https://nodejs.org/) + [electron](https://electro
 - static => static resources
   - locales => all the localization files
 
-Core minecraft launcher logic is implemented [ts-minecraft](https://github.com/InfinityStudio/ts-minecraft). Therefore some bugs might be cased by this.
+Core minecraft launcher logic is implemented [launcher-core](https://github.com/voxelum/ts-minecraft). Therefore some bugs might be cased by this.
 
 ### Concept/Structure
 

@@ -1,19 +1,15 @@
+import { Task, Net, got } from '@xmcl/minecraft-launcher-core';
 import parser from 'fast-html-parser';
-import { createWriteStream, promises, existsSync, fstat } from 'fs';
-import { ensureFile, ensureDir } from 'main/utils/fs';
+import { createWriteStream, promises } from 'fs';
+import { ensureDir, ensureFile } from 'main/utils/fs';
 import request from 'main/utils/request';
-import { join, basename } from 'path';
+import { join } from 'path';
 import querystring from 'querystring';
-import { parse as parseUrl } from 'url';
 import { finished } from 'stream';
-import Task from 'treelike-task';
-import { downloadFileWork, got, fetchJson } from 'ts-minecraft/dest/libs/utils/network';
+import base from 'universal/store/modules/curseforge';
+import { parse as parseUrl } from 'url';
 import { promisify } from 'util';
 import { bufferEntry, open, openEntryReadStream, walkEntries } from 'yauzlw';
-import fileType from 'file-type';
-import { cpus } from 'os';
-import base from 'universal/store/modules/curseforge';
-import { getModIdentifier } from 'universal/utils/versions';
 
 const CURSEMETA_CACHE = 'https://cursemeta.dries007.net';
 // test url https://cursemeta.dries007.net/238222/2739588 jei
@@ -136,7 +132,7 @@ const mod = {
                         // and know the mod's modid & version
                         const { url, dest, fileId } = task;
                         // if we don't have the mod, we should download it
-                        await downloadFileWork({ url, destination: dest })(ctx);
+                        await Net.downloadFileWork({ url, destination: dest })(ctx);
                         const handle = await context.dispatch('importResource', {
                             path: dest,
                             metadata: {
@@ -206,7 +202,7 @@ const mod = {
                     }
                     modsList.push(`resource/${file.hash}`);
                 }
-                const pool = await Promise.all(shouldDownloaded.map(f => fetchJson(`${CURSEMETA_CACHE}/${f.projectID}/${f.fileID}.json`).then(o => ({
+                const pool = await Promise.all(shouldDownloaded.map(f => Net.fetchJson(`${CURSEMETA_CACHE}/${f.projectID}/${f.fileID}.json`).then(o => ({
                     url: o.body.DownloadURL,
                     dest: join(tempRoot, o.body.FileNameOnDisk),
                     fileId: f.fileID,
@@ -435,7 +431,7 @@ const mod = {
                 }
                 try {
                     ctx.update(-1, -1, url);
-                    const dest = await downloadFileWork({
+                    const dest = await Net.downloadFileWork({
                         url,
                         destination: context.rootGetters.path('temp', payload.file.name),
                         headers: {

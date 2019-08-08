@@ -1,14 +1,13 @@
+import { ForgeInstaller, ForgeWebPage, Installer, LiteLoader, Util, Version, Net } from '@xmcl/minecraft-launcher-core';
 import { createHash } from 'crypto';
-import { createReadStream, promises as fs, promises, existsSync } from 'fs';
+import { shell } from 'electron';
+import { createReadStream, existsSync, promises as fs } from 'fs';
 import inGFW from 'in-gfw';
 import { ensureFile, remove } from 'main/utils/fs';
-import { Forge, ForgeWebPage, LiteLoader, MinecraftFolder, Version } from 'ts-minecraft';
+import { join } from 'path';
 import base from 'universal/store/modules/version';
 import { requireString } from 'universal/utils/object';
 import { getExpectVersion } from 'universal/utils/versions';
-import { shell } from 'electron';
-import { fetchJson } from 'ts-minecraft/dest/libs/utils/network';
-import { join } from 'path';
 
 /**
  * @type {import('universal/store/modules/version').VersionModule}
@@ -120,7 +119,7 @@ const mod = {
                     throw err;
                 }
 
-                const root = new MinecraftFolder(context.rootState.root);
+                const root = new Util.MinecraftFolder(context.rootState.root);
                 const targetId = targetVersion.folder || getExpectVersion(targetVersion.minecraft, targetVersion.forge, targetVersion.liteloader);
 
                 const extended = await Version.extendsVersion(targetId,
@@ -152,7 +151,7 @@ const mod = {
             context.commit('refreshingMinecraft', true);
             const timed = context.state.minecraft;
             console.log('Updating minecraft version metadata');
-            const metas = await Version.updateVersionMeta({ fallback: context.state.minecraft });
+            const metas = await Installer.updateVersionMeta({ fallback: context.state.minecraft });
             if (timed !== metas) {
                 console.log('Found new version meta list. Update it.');
                 context.commit('minecraftMetadata', metas);
@@ -197,20 +196,20 @@ const mod = {
         },
 
         async installLibraries(context, { libraries }) {
-            const task = Version.installLibrariesDirectTask(libraries, context.rootState.root);
+            const task = Installer.installLibrariesDirectTask(Version.resolveLibraries(libraries), context.rootState.root);
             return context.dispatch('executeTask', task);
         },
 
         async installAssets(context, version) {
             const ver = await Version.parse(context.rootState.root, version);
-            const task = Version.installAssetsTask(ver, context.rootState.root);
+            const task = Installer.installAssetsTask(ver);
             return context.dispatch('executeTask', task);
         },
 
         async installDependencies(context, version) {
             const location = context.rootState.root;
             const resolved = await Version.parse(location, version);
-            const task = Version.installDependenciesTask(resolved, location);
+            const task = Installer.installDependenciesTask(resolved);
             const handle = await context.dispatch('executeTask', task);
             return handle;
         },
@@ -221,7 +220,7 @@ const mod = {
         async installMinecraft(context, meta) {
             const id = meta.id;
 
-            const task = Version.downloadVersionTask('client', meta, context.rootState.root);
+            const task = Installer.installVersionTask('client', meta, context.rootState.root);
             const taskId = await context.dispatch('executeTask', task);
 
             context.dispatch('waitTask', taskId)
@@ -238,7 +237,7 @@ const mod = {
          * download a specific version from version metadata
          */
         async installForge(context, meta) {
-            const task = Forge.installTask(meta, context.rootState.root, {
+            const task = ForgeInstaller.installTask(meta, context.rootState.root, {
                 tempDir: join(context.rootState.root, 'temps'),
                 maven: await inGFW.net() ? 'https://voxelauncher.azurewebsites.net/api/v1' : undefined,
                 java: context.rootGetters.defaultJava.path,
@@ -254,7 +253,7 @@ const mod = {
         },
 
         async installLiteloader(context, meta) {
-            const task = LiteLoader.installAndCheckTask(meta, context.rootState.root);
+            const task = LiteLoader.installTask(meta, context.rootState.root);
             const handle = await context.dispatch('executeTask', task);
             context.dispatch('waitTask', handle).finally(() => {
                 context.dispatch('refreshLiteloader', undefined);
@@ -298,7 +297,7 @@ const mod = {
                         'If-Modified-Since': cur.timestamp,
                     } : {};
                     console.log('Using self host to fetch forge versions list');
-                    const { body, statusCode } = await fetchJson(`https://voxelauncher.azurewebsites.net/api/v1/forge/versions/${version}`, {
+                    const { body, statusCode } = await Net.fetchJson(`https://voxelauncher.azurewebsites.net/api/v1/forge/versions/${version}`, {
                         headers,
                     });
 

@@ -1,6 +1,6 @@
-import { Forge, ForgeWebPage, LiteLoader, Version, VersionMetaList } from "ts-minecraft";
-import { Library, VersionMeta } from "ts-minecraft/dest/libs/version";
+import { Forge, ForgeWebPage, LiteLoader, Installer, Version } from "@xmcl/minecraft-launcher-core";
 import { Context, Module, TaskHandle } from "../store";
+import ForgeInstaller from "@xmcl/forge-installer";
 export type Status = 'remote' | 'local';
 
 /**
@@ -11,56 +11,56 @@ export declare namespace VersionModule {
      * An interface to reference a resolved version in 
      * <minecraft folder>/versions/<version-id>/<version-id>.json
      * 
-     * This is more lightweight than ts-minecraft's Version by Version.parse.
+     * This is more lightweight than @xmcl/minecraft-launcher-core's Version by Version.parse.
      */
     interface ResolvedVersion {
         /**
          * Minecraft version of this version. e.g. 1.7.10
          */
-        minecraft: string,
+        minecraft: string;
         /**
          * Forge version of this version. e.g. 14.23.5.2838
          */
-        forge: string,
-        liteloader: string,
+        forge: string;
+        liteloader: string;
         /**
          * The ideal id this version, which is computed by 
          * function universal/utils/versions.js#getExpectVersion
          */
-        id: string,
+        id: string;
         /**
          * The real folder id of the version, which is the <verison-id> in
          * 
          * <minecraft folder>/versions/<version-id>/<version-id>.json
          */
-        folder: string
+        folder: string;
     }
 
     interface WebPage extends ForgeWebPage {
-        latest: number
-        recommended: number
+        latest: number;
+        recommended: number;
     }
 
     interface State {
-        local: ResolvedVersion[]
-        minecraft: Version.MetaContainer
-        refreshingMinecraft: boolean
-        forge: { [mcversion: string]: ForgeWebPage }
-        refreshingForge: boolean
-        liteloader: LiteLoader.VersionMetaList,
-        refreshingLiteloader: boolean
+        local: ResolvedVersion[];
+        minecraft: Installer.VersionMetaList;
+        refreshingMinecraft: boolean;
+        forge: { [mcversion: string]: ForgeWebPage };
+        refreshingForge: boolean;
+        liteloader: LiteLoader.VersionMetaList;
+        refreshingLiteloader: boolean;
     }
 
     interface Getters {
         /**
          * Latest snapshot
          */
-        minecraftSnapshot: VersionMeta | undefined,
+        minecraftSnapshot: Installer.VersionMeta | undefined,
         /**
          * Latest release
          */
-        minecraftRelease: VersionMeta | undefined,
-        minecraftVersion: (mcversion: string) => VersionMeta | undefined,
+        minecraftRelease: Installer.VersionMeta | undefined,
+        minecraftVersion: (mcversion: string) => Installer.VersionMeta | undefined,
         minecraftStatuses: { [minecraftVersion: string]: Status };
 
         /**
@@ -104,12 +104,12 @@ export declare namespace VersionModule {
 
         resolveVersion(context: C, version: Pick<ResolvedVersion, 'minecraft' | 'forge' | 'liteloader' | 'folder'>): Promise<string>
 
-        installLibraries(context: C, payload: { libraries: Library[] }): Promise<TaskHandle>;
+        installLibraries(context: C, payload: { libraries: Version.Library[] }): Promise<TaskHandle>;
         installAssets(context: C, version: string): Promise<TaskHandle>
         installDependencies(context: C, version: string): Promise<TaskHandle>
 
-        installMinecraft(context: C, version: VersionMeta): Promise<TaskHandle>
-        installForge(context: C, version: Forge.VersionMeta): Promise<TaskHandle>
+        installMinecraft(context: C, version: Installer.VersionMeta): Promise<TaskHandle>
+        installForge(context: C, version: ForgeInstaller.VersionMeta): Promise<TaskHandle>
         installLiteloader(context: C, version: LiteLoader.VersionMeta): Promise<TaskHandle>
 
         showVersionDirectory(context: C, version: string): Promise<void>;

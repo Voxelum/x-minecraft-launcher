@@ -1,5 +1,5 @@
 import hparser from 'fast-html-parser';
-import { got } from 'ts-minecraft/dest/libs/utils/network';
+import { got } from '@xmcl/minecraft-launcher-core';
 import { ipcMain } from 'electron';
 
 let ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36';

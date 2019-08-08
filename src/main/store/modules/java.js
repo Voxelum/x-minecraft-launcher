@@ -3,7 +3,7 @@ import os from 'os';
 import path from 'path';
 import fs from 'fs';
 import { exec } from 'child_process';
-import Task from 'treelike-task';
+import { Task } from '@xmcl/minecraft-launcher-core';
 import { officialEndpoint, bangbangAPI, selfHostAPI } from 'main/utils/jre';
 import { requireString } from 'universal/utils/object';
 import inGFW from 'in-gfw';
