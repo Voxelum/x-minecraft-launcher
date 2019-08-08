@@ -14,6 +14,28 @@ import { createExtractStream } from 'yauzlw';
 import { ZipFile } from 'yazl';
 
 /**
+ * @param {string} save
+ */
+async function loadWorld(save) {
+    try {
+        const world = await World.load(save, ['level']).catch(_ => undefined);
+        const dest = join(save, 'icon.png');
+        if (existsSync(dest)) {
+            const buf = await promises.readFile(dest);
+            const uri = `data:image/png;base64,${buf.toString('base64')}`;
+            if (world) {
+                Reflect.set(world, 'icon', uri);
+            }
+        }
+        return world;
+    } catch (e) {
+        console.error(`Cannot load save ${save}`);
+        console.error(e);
+        return undefined;
+    }
+}
+
+/**
  * @type {import('fs').FSWatcher}
  */
 let saveWatcher;
@@ -48,20 +70,25 @@ const mod = {
                 return {};
             }
         },
-        async loadProfileSaves({ rootGetters, state, commit }, id = state.id) {
+        async loadAllProfileSaves({ rootGetters, getters }) {
             /**
-             * @param {string} save
+             * @type {any[]}
              */
-            async function loadWorld(save) {
-                const world = await World.load(save, ['level']).catch(_ => undefined);
-                const dest = join(save, 'icon.png');
-                const buf = await promises.readFile(dest);
-                const uri = `data:image/png;base64,${buf.toString('base64')}`;
-                if (world) {
-                    Reflect.set(world, 'icon', uri);
+            const all = [];
+            for (const profile of getters.profiles) {
+                const saveRoot = rootGetters.path('profiles', profile.id, 'saves');
+
+                if (existsSync(saveRoot)) {
+                    const saves = await fs.readdir(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
+
+                    const loaded = await Promise.all(saves.map(s => paths.resolve(saveRoot, s)).map(loadWorld));
+                    loaded.filter(s => s !== undefined).forEach(s => Reflect.set(s, 'profile', profile.name));
+                    all.push(...loaded);
                 }
-                return world;
             }
+            return all;
+        },
+        async loadProfileSaves({ rootGetters, state, commit }, id = state.id) {
             try {
                 const saveRoot = rootGetters.path('profiles', id, 'saves');
 
@@ -294,6 +321,7 @@ const mod = {
                 if (existsSync(saveDir)) {
                     await context.dispatch('loadProfileSaves', id);
                     saveWatcher = watch(saveDir, (target, filename) => {
+                        console.log(`Detect ${id} profile saves change, reload`);
                         context.dispatch('loadProfileSaves', id);
                     });
                 }
@@ -301,6 +329,7 @@ const mod = {
                 if (existsSync(optionFile)) {
                     await context.dispatch('loadProfileGameSettings', id);
                     optionsWatcher = watch(optionFile, (target, data) => {
+                        console.log(`Detect ${id} profile gamesettings change, reload`);
                         context.dispatch('loadProfileGameSettings', id);
                     });
                 }
@@ -308,6 +337,7 @@ const mod = {
                 if (existsSync(seversFile)) {
                     await context.dispatch('loadProfileSeverData', id);
                     optionsWatcher = watch(seversFile, (target, data) => {
+                        console.log(`Detect ${id} profile server data change, reload`);
                         context.dispatch('loadProfileSeverData', id);
                     });
                 }

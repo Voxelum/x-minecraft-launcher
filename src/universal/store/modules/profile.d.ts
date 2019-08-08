@@ -197,6 +197,8 @@ export declare namespace ProfileModule {
         loadProfileSeverData(context: C, id: string): Promise<Server.Info[]>
         loadProfileSaves(context: C, id: string): Promise<Pick<World, 'level' | 'path'>[]>;
 
+        loadAllProfileSaves(context: C): Promise<Pick<World, 'level' | 'path'>[]>;
+
         /**
          * Select active profile
          * @param id the profile uuid
