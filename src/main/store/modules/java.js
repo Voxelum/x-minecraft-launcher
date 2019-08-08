@@ -1,13 +1,13 @@
 import { app, shell } from 'electron';
 import os from 'os';
 import path from 'path';
-import fs from 'fs';
 import { exec } from 'child_process';
 import { Task } from '@xmcl/minecraft-launcher-core';
 import { officialEndpoint, bangbangAPI, selfHostAPI } from 'main/utils/jre';
 import { requireString } from 'universal/utils/object';
 import inGFW from 'in-gfw';
 import base from 'universal/store/modules/java';
+import fs from 'main/utils/vfs';
 
 const JAVA_FILE = os.platform() === 'win32' ? 'javaw.exe' : 'java';
 
@@ -84,7 +84,7 @@ const mod = {
          */
         async resolveJava(context, javaPath) {
             requireString(javaPath);
-            const exists = fs.existsSync(javaPath);
+            const exists = await fs.exists(javaPath);
             if (!exists) return undefined;
 
             // const resolved = context.state.all.filter(java => java.path === javaPath)[0];

@@ -4,7 +4,7 @@ import {
 
 import { promises as fs, existsSync, mkdirSync } from 'fs';
 import path from 'path';
-import { copy } from 'main/utils/fs';
+import vfs from 'main/utils/vfs';
 
 const appData = app.getPath('appData');
 const persistRoot = `${appData}/voxelauncher`;
@@ -60,7 +60,7 @@ async function handleRootChange(event, { path: newRoot, migrate, clear }) {
         }
 
         if (migrate) {
-            await copy(oldRoot, newRoot);
+            await vfs.copy(oldRoot, newRoot);
         }
 
         if (clear) {

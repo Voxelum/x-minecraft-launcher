@@ -1,11 +1,11 @@
 import fileType from 'file-type';
-import { promises as fs } from 'fs';
 import { parse as parseUrl } from 'url';
 import { Auth, MojangService, ProfileService } from '@xmcl/minecraft-launcher-core';
 import { v4 } from 'uuid';
 import got from 'got';
 import { requireObject, requireString } from 'universal/utils/object';
 import base from 'universal/store/modules/user';
+import fs from 'main/utils/vfs';
 
 /**
  * The possible ways for user auth and profile:

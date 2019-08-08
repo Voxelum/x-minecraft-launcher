@@ -1,9 +1,8 @@
 import { ForgeInstaller, ForgeWebPage, Installer, LiteLoader, Util, Version, Net } from '@xmcl/minecraft-launcher-core';
 import { createHash } from 'crypto';
 import { shell } from 'electron';
-import { createReadStream, existsSync, promises as fs } from 'fs';
 import inGFW from 'in-gfw';
-import { ensureFile, remove } from 'main/utils/fs';
+import fs from 'main/utils/vfs';
 import { join } from 'path';
 import base from 'universal/store/modules/version';
 import { requireString } from 'universal/utils/object';
@@ -127,7 +126,7 @@ const mod = {
 
                 const targetJSON = root.getVersionJson(targetId);
 
-                await ensureFile(targetJSON);
+                await fs.ensureFile(targetJSON);
                 await fs.writeFile(targetJSON, JSON.stringify(extended, null, 4));
 
                 return targetId;
@@ -167,7 +166,7 @@ const mod = {
              */
             function checksum(path) {
                 const hash = createHash('sha1');
-                return new Promise((resolve, reject) => createReadStream(path)
+                return new Promise((resolve, reject) => fs.createReadStream(path)
                     .pipe(hash)
                     .on('error', (e) => { reject(new Error(e)); })
                     .once('finish', () => { resolve(hash.digest('hex')); }));
@@ -375,8 +374,8 @@ const mod = {
             shell.openItem(context.rootGetters.path('versions'));
         },
         async deleteVersion(context, version) {
-            if (existsSync(context.rootGetters.path('versions', version))) {
-                await remove(context.rootGetters.path('versions', version));
+            if (await fs.exists(context.rootGetters.path('versions', version))) {
+                await fs.remove(context.rootGetters.path('versions', version));
             }
             context.commit('localVersions', context.state.local.filter(v => v.folder !== version));
         },

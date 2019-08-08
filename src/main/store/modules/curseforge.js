@@ -1,7 +1,5 @@
 import { Task, Net, got } from '@xmcl/minecraft-launcher-core';
 import parser from 'fast-html-parser';
-import { createWriteStream, promises } from 'fs';
-import { ensureDir, ensureFile } from 'main/utils/fs';
 import request from 'main/utils/request';
 import { join } from 'path';
 import querystring from 'querystring';
@@ -9,7 +7,9 @@ import { finished } from 'stream';
 import base from 'universal/store/modules/curseforge';
 import { parse as parseUrl } from 'url';
 import { promisify } from 'util';
-import { bufferEntry, open, openEntryReadStream, walkEntries } from 'yauzlw';
+import Unzip from '@xmcl/unzip';
+import fs from 'main/utils/vfs';
+
 
 const CURSEMETA_CACHE = 'https://cursemeta.dries007.net';
 // test url https://cursemeta.dries007.net/238222/2739588 jei
@@ -112,7 +112,7 @@ const mod = {
     ...base,
     actions: {
         async importCurseforgeModpack(context, { profile, path }) {
-            const stat = await promises.stat(path);
+            const stat = await fs.stat(path);
             if (!stat.isFile()) throw new Error(`Cannot import curseforge modpack ${path}, since it's not a file!`);
             // const buf = await promises.readFile(path);
             // const fType = fileType(buf);
@@ -157,29 +157,21 @@ const mod = {
             }
 
             const task = Task.create('installCurseforgeModpack', async (ctx) => {
-                const zipFile = await open(path, { lazyEntries: true, autoClose: false });
+                const zipFile = await Unzip.open(path);
 
-                /** @type {import('yauzlw').Entry[]} */
+                /** @type {import('@xmcl/unzip').Unzip.Entry[]} */
                 const others = [];
 
                 /** @type {Modpack} */
                 const manifest = await ctx.execute('resolveEntries', async () => {
-                    // discover all the required entries
-                    let manifestEntry;
-                    await walkEntries(zipFile, (entry) => {
-                        if (entry.fileName === 'manifest.json') {
-                            manifestEntry = entry;
-                        } else {
-                            others.push(entry);
-                        }
-                    });
+                    const manifestEntry = zipFile.entries['manifest.json'];
                     if (!manifestEntry) throw new Error(`Cannot import curseforge modpack ${path}, since it doesn't have manifest.json`);
-                    const manifestBuf = await bufferEntry(zipFile, manifestEntry);
+                    const manifestBuf = await zipFile.readEntry(manifestEntry);
                     return JSON.parse(manifestBuf.toString());
                 });
 
                 const tempRoot = join(context.rootState.root, 'temp', manifest.name);
-                await ensureDir(tempRoot);
+                await fs.ensureDir(tempRoot);
 
                 // download required assets (mods)
 
@@ -249,17 +241,17 @@ const mod = {
                     // start handle override
 
                     const waitStream = promisify(finished);
-                    /** @param {import('yauzlw').Entry} o */
+                    /** @param {import('@xmcl/unzip').Unzip.Entry} o */
                     async function pipeTo(o) {
                         const dest = join(profileFolder, o.fileName.substring(manifest.override.length));
-                        const readStream = await openEntryReadStream(zipFile, o);
-                        return waitStream(readStream.pipe(createWriteStream(dest)));
+                        const readStream = await zipFile.openEntry(o);
+                        return waitStream(readStream.pipe(fs.createWriteStream(dest)));
                     }
                     if (manifest.override) {
                         const overrides = others.filter(e => e.fileName.startsWith(manifest.override));
                         for (const o of overrides) {
                             const dest = join(profileFolder, o.fileName.substring(manifest.override.length));
-                            await ensureFile(dest);
+                            await fs.ensureFile(dest);
                         }
                         await Promise.all(overrides.map(o => pipeTo(o)));
                     }

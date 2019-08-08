@@ -1,5 +1,5 @@
-import { createReadStream, existsSync, promises as fs, promises, watch } from 'fs';
-import { copy, ensureDir, ensureFile, remove } from 'main/utils/fs';
+import { watch } from 'fs';
+import fs from 'main/utils/vfs';
 import { compressZipTo, includeAllToZip } from 'main/utils/zip';
 import { tmpdir } from 'os';
 import paths, { basename, join } from 'path';
@@ -10,7 +10,7 @@ import { fitin, willBaselineChange } from 'universal/utils/object';
 import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/server-status';
 import { getModIdentifier } from 'universal/utils/versions';
 import uuid from 'uuid';
-import { createExtractStream } from 'yauzlw';
+import { Unzip } from '@xmcl/unzip';
 import { ZipFile } from 'yazl';
 
 /**
@@ -20,8 +20,8 @@ async function loadWorld(save) {
     try {
         const world = await World.load(save, ['level']).catch(_ => undefined);
         const dest = join(save, 'icon.png');
-        if (existsSync(dest)) {
-            const buf = await promises.readFile(dest);
+        if (await fs.exists(dest)) {
+            const buf = await fs.readFile(dest);
             const uri = `data:image/png;base64,${buf.toString('base64')}`;
             if (world) {
                 Reflect.set(world, 'icon', uri);
@@ -78,7 +78,7 @@ const mod = {
             for (const profile of getters.profiles) {
                 const saveRoot = rootGetters.path('profiles', profile.id, 'saves');
 
-                if (existsSync(saveRoot)) {
+                if (await fs.exists(saveRoot)) {
                     const saves = await fs.readdir(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
 
                     const loaded = await Promise.all(saves.map(s => paths.resolve(saveRoot, s)).map(loadWorld));
@@ -92,7 +92,7 @@ const mod = {
             try {
                 const saveRoot = rootGetters.path('profiles', id, 'saves');
 
-                if (existsSync(saveRoot)) {
+                if (await fs.exists(saveRoot)) {
                     const saves = await fs.readdir(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
 
                     const loaded = await Promise.all(saves.map(s => paths.resolve(saveRoot, s)).map(loadWorld));
@@ -113,7 +113,7 @@ const mod = {
         async loadProfileSeverData({ rootGetters, state, commit }, id = state.id) {
             try {
                 const serverPath = rootGetters.path('profiles', id, 'servers.dat');
-                if (existsSync(serverPath)) {
+                if (await fs.exists(serverPath)) {
                     const serverDat = await fs.readFile(serverPath);
                     const infos = await Server.readInfo(serverDat);
                     commit('serverInfos', infos);
@@ -127,8 +127,8 @@ const mod = {
             return [];
         },
         async loadProfile({ commit, dispatch, rootGetters, rootState }, id) {
-            if (!existsSync(rootGetters.path('profiles', id, 'profile.json'))) {
-                await remove(rootGetters.path('profiles', id));
+            if (await fs.missing(rootGetters.path('profiles', id, 'profile.json'))) {
+                await fs.remove(rootGetters.path('profiles', id));
                 return;
             }
 
@@ -289,7 +289,7 @@ const mod = {
 
             fitin(profile, payload);
 
-            await ensureDir(context.rootGetters.path('profiles', profile.id));
+            await fs.ensureDir(context.rootGetters.path('profiles', profile.id));
 
             context.commit('addProfile', profile);
 
@@ -318,7 +318,7 @@ const mod = {
                     serversWatcher.close();
                 }
                 const saveDir = context.rootGetters.path('profiles', id, 'saves');
-                if (existsSync(saveDir)) {
+                if (await fs.exists(saveDir)) {
                     await context.dispatch('loadProfileSaves', id);
                     saveWatcher = watch(saveDir, (target, filename) => {
                         console.log(`Detect ${id} profile saves change, reload`);
@@ -326,7 +326,7 @@ const mod = {
                     });
                 }
                 const optionFile = context.rootGetters.path('profiles', id, 'options.txt');
-                if (existsSync(optionFile)) {
+                if (await fs.exists(optionFile)) {
                     await context.dispatch('loadProfileGameSettings', id);
                     optionsWatcher = watch(optionFile, (target, data) => {
                         console.log(`Detect ${id} profile gamesettings change, reload`);
@@ -334,7 +334,7 @@ const mod = {
                     });
                 }
                 const seversFile = context.rootGetters.path('profiles', id, 'servers.dat');
-                if (existsSync(seversFile)) {
+                if (await fs.exists(seversFile)) {
                     await context.dispatch('loadProfileSeverData', id);
                     optionsWatcher = watch(seversFile, (target, data) => {
                         console.log(`Detect ${id} profile server data change, reload`);
@@ -355,7 +355,7 @@ const mod = {
                 }
             }
             context.commit('removeProfile', id);
-            await remove(context.rootGetters.path('profiles', id));
+            await fs.remove(context.rootGetters.path('profiles', id));
         },
 
 
@@ -422,9 +422,9 @@ const mod = {
             let srcFolderPath = location;
             if (!isDir) {
                 const tempDir = await fs.mkdtemp(paths.join(tmpdir(), 'launcher'));
-                await createReadStream(location)
-                    .pipe(createExtractStream(tempDir))
-                    .promise();
+                await fs.createReadStream(location)
+                    .pipe(Unzip.createExtractStream(tempDir))
+                    .wait();
                 srcFolderPath = tempDir;
             }
             const proiflePath = paths.resolve(srcFolderPath, 'profile.json');
@@ -432,8 +432,8 @@ const mod = {
             const id = uuid.v4();
             const destFolderPath = context.rootGetters.path('profiles', id);
 
-            await ensureDir(destFolderPath);
-            await copy(srcFolderPath, destFolderPath, (path) => {
+            await fs.ensureDir(destFolderPath);
+            await fs.copy(srcFolderPath, destFolderPath, (path) => {
                 if (path.endsWith('/versions')) return false;
                 if (path.endsWith('/assets')) return false;
                 if (path.endsWith('/libraries')) return false;
@@ -445,7 +445,7 @@ const mod = {
             const modsDir = paths.resolve(srcFolderPath, 'mods');
             const forgeMods = [];
             const litesMods = [];
-            if (existsSync(modsDir)) {
+            if (await fs.exists(modsDir)) {
                 for (const file of await fs.readdir(modsDir)) {
                     try {
                         const resource = await context.dispatch('waitTask', await context.dispatch('importResource', { path: paths.resolve(srcFolderPath, 'mods', file) }));
@@ -463,16 +463,16 @@ const mod = {
             }
 
             const resourcepacksDir = paths.resolve(srcFolderPath, 'resourcepacks');
-            if (existsSync(resourcepacksDir)) {
+            if (await fs.exists(resourcepacksDir)) {
                 for (const file of await fs.readdir(resourcepacksDir)) {
                     await context.dispatch('importResource', { path: paths.resolve(srcFolderPath, 'resourcepacks', file), type: 'resourcepack' });
                 }
             }
 
-            await copy(paths.resolve(srcFolderPath, 'assets'), paths.resolve(context.rootState.root, 'assets'));
-            await copy(paths.resolve(srcFolderPath, 'libraries'), paths.resolve(context.rootState.root, 'libraries'));
+            await fs.copy(paths.resolve(srcFolderPath, 'assets'), paths.resolve(context.rootState.root, 'assets'));
+            await fs.copy(paths.resolve(srcFolderPath, 'libraries'), paths.resolve(context.rootState.root, 'libraries'));
 
-            await copy(paths.resolve(srcFolderPath, 'versions'), paths.resolve(context.rootState.root, 'versions')); // TODO: check this
+            await fs.copy(paths.resolve(srcFolderPath, 'versions'), paths.resolve(context.rootState.root, 'versions')); // TODO: check this
 
             let profileTemplate = {};
             const isExportFromUs = await fs.stat(proiflePath).then(s => s.isFile()).catch(_ => false);
@@ -499,7 +499,7 @@ const mod = {
             await context.dispatch('loadProfile', id);
 
             if (!isDir) {
-                await remove(srcFolderPath);
+                await fs.remove(srcFolderPath);
             }
         },
 
@@ -601,8 +601,8 @@ const mod = {
             try {
                 const save = await World.load(filePath, ['level']);
                 const dest = context.rootGetters.path('profiles', context.state.id, 'saves', basename(filePath));
-                await ensureFile(dest);
-                await copy(filePath, dest);
+                await fs.ensureFile(dest);
+                await fs.copy(filePath, dest);
                 context.commit('profileSaves', [...context.state.saves, save]);
             } catch (e) {
                 console.error(`Cannot import save from ${filePath}`);
@@ -614,7 +614,7 @@ const mod = {
             const id = context.state.id;
             const path = src;
             const saveName = basename(path);
-            if (!path || !existsSync(path)) {
+            if (!path || await fs.missing(path)) {
                 console.log(`Cancel save copying of ${path}`);
                 return;
             }
@@ -632,13 +632,13 @@ const mod = {
             console.log(`Start remove save from ${path}`);
             const id = context.state.id;
             const saveName = basename(path);
-            if (!path || !existsSync(path)) {
+            if (!path || await fs.missing(path)) {
                 console.log(`Cancel map remving of ${path}`);
                 return;
             }
             const expect = context.rootGetters.path('profiles', id, 'saves', saveName);
             if (path === expect) { // confirm this save is a select profile's save
-                await remove(path);
+                await fs.remove(path);
             } else {
                 console.error(`Cannot remove map ${path}, which is not in selected profile ${id}`);
             }
@@ -653,7 +653,7 @@ const mod = {
              */
             async function transferFile(src, dest) {
                 if (!zip) {
-                    return copy(src, dest);
+                    return fs.copy(src, dest);
                 }
                 const zipFile = new ZipFile();
                 const promise = compressZipTo(zipFile, dest);
@@ -666,10 +666,10 @@ const mod = {
                 try {
                     const stat = await fs.stat(destination);
                     const dest = stat.isDirectory() ? join(destination, basename(path)) : destination;
-                    await ensureFile(destination);
+                    await fs.ensureFile(destination);
                     await transferFile(path, dest);
                 } catch (e) {
-                    await ensureFile(destination);
+                    await fs.ensureFile(destination);
                     await transferFile(path, destination);
                 }
             }

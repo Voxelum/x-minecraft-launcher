@@ -2,7 +2,7 @@ import { Util, Launcher } from '@xmcl/minecraft-launcher-core';
 import paths, { join } from 'path';
 import { ipcMain } from 'electron';
 import base from 'universal/store/modules/launch';
-import { existsSync, mkdirSync, promises } from 'fs';
+import fs from 'main/utils/vfs';
 
 /**
  * @param {{ message: string; type: string; }} e
@@ -105,11 +105,11 @@ const mod = {
                 try {
                     console.log(`Deploying ${profile.deployments[domain].length} resources for ${domain}`);
                     const dir = join(option.gamePath, domain);
-                    if (!existsSync(dir)) {
-                        mkdirSync(dir);
+                    if (await fs.missing(dir)) {
+                        await fs.mkdir(dir);
                     }
-                    const files = await promises.readdir(dir);
-                    await Promise.all(files.map(file => promises.unlink(join(dir, file))));
+                    const files = await fs.readdir(dir);
+                    await Promise.all(files.map(file => fs.unlink(join(dir, file))));
                     await dispatch('deployResources', {
                         resourceUrls: profile.deployments[domain],
                         profile: profile.id,

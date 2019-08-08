@@ -1,13 +1,12 @@
 import crypto from 'crypto';
 import { net } from 'electron';
-import { createReadStream, existsSync, promises as fs, rename } from 'fs';
-import { copy, ensureDir, ensureFile } from 'main/utils/fs';
+import fs from 'main/utils/vfs';
 import paths, { join } from 'path';
 import { Forge, LiteLoader, ResourcePack, Task } from '@xmcl/minecraft-launcher-core';
 import base from 'universal/store/modules/resource';
 import { requireString } from 'universal/utils/object';
 import url from 'url';
-import { bufferEntry, open, parseEntries, createExtractStream } from 'yauzlw';
+import Unzip from '@xmcl/unzip';
 import { cpus } from 'os';
 import fileType from 'file-type';
 
@@ -35,7 +34,7 @@ async function hashFolder(folder, hasher) {
  */
 async function readHash(file) {
     return new Promise((resolve, reject) => {
-        createReadStream(file)
+        fs.createReadStream(file)
             .pipe(crypto.createHash('sha1').setEncoding('hex'))
             // @ts-ignore
             .once('finish', function () { resolve(this.read()); })
@@ -47,10 +46,10 @@ async function readHash(file) {
  * @param {Buffer} buf 
  */
 async function parseCurseforgeModpack(buf) {
-    const z = await open(buf, { lazyEntries: true, autoClose: false });
-    const { 'manifest.json': manifest } = await parseEntries(z, ['manifest.json']);
+    const z = await Unzip.open(buf, { lazyEntries: true });
+    const [manifest] = await z.filterEntries(['manifest.json']);
     if (manifest) {
-        const buf = await bufferEntry(z, manifest);
+        const buf = await z.readEntry(manifest);
         return JSON.parse(buf.toString());
     }
     throw new Error();
@@ -210,10 +209,10 @@ const mod = {
                 const resourcepacksDir = context.rootGetters.path('resourcepacks');
                 const modpacksDir = context.rootGetters.path('modpacks');
                 const savesDir = context.rootGetters.path('saves');
-                await ensureDir(modsDir);
-                await ensureDir(resourcepacksDir);
-                await ensureDir(modpacksDir);
-                await ensureDir(savesDir);
+                await fs.ensureDir(modsDir);
+                await fs.ensureDir(resourcepacksDir);
+                await fs.ensureDir(modpacksDir);
+                await fs.ensureDir(savesDir);
                 const modsFiles = await fs.readdir(modsDir);
                 const resourcePacksFiles = await fs.readdir(resourcepacksDir);
                 const modpacksFiles = await fs.readdir(modpacksDir);
@@ -332,10 +331,10 @@ const mod = {
                 cache[resourceId] = '';
                 return '';
             }
-            const zip = await open(res.path, { lazyEntries: true, autoClose: false });
-            const { [meta.logoFile]: logo } = await parseEntries(zip, [meta.logoFile]);
+            const zip = await Unzip.open(res.path, { lazyEntries: true });
+            const [logo] = await zip.filterEntries([meta.logoFile]);
             if (logo) {
-                const buffer = await bufferEntry(zip, logo);
+                const buffer = await zip.readEntry(logo);
                 const data = buffer.toString('base64');
                 cache[resourceId] = data;
                 return data;
@@ -417,11 +416,11 @@ const mod = {
                 ctx.update(1, 4, path);
                 const checkingResult = await ctx.execute('checking', async () => {
                     // take hash of dir or file
-                    await ensureDir(paths.join(root, 'resources'));
+                    await fs.ensureDir(paths.join(root, 'resources'));
                     const metaFile = paths.join(root, 'resources', `${hash}.json`);
 
                     // if exist, abort
-                    if (existsSync(metaFile)) {
+                    if (await fs.exists(metaFile)) {
                         /** @type {any} */
                         const resource = context.getters.getResource(hash);
                         const newResource = buildResource(resource.path, resource.hash, resource.ext, resource.domain, resource.type, {
@@ -443,7 +442,7 @@ const mod = {
                     console.log(`Import resource ${name}${ext}(${hash}) into ${resource.domain}`);
 
                     let dataFile = paths.join(root, resource.domain, `${resource.name}${resource.ext}`);
-                    if (existsSync(dataFile)) {
+                    if (await fs.exists(dataFile)) {
                         dataFile = paths.join(root, resource.domain, `${resource.name}.${hash}${resource.ext}`);
                     }
 
@@ -455,10 +454,10 @@ const mod = {
                 await ctx.execute('storing', async () => {
                     // write resource to disk
                     if (isDir) {
-                        await ensureDir(dataFile);
-                        await copy(path, dataFile);
+                        await fs.ensureDir(dataFile);
+                        await fs.copy(path, dataFile);
                     } else {
-                        await ensureFile(dataFile);
+                        await fs.ensureFile(dataFile);
                         await fs.writeFile(dataFile, data);
                     }
 
@@ -515,10 +514,11 @@ const mod = {
                 } else if (res.domain === 'saves') { // save will unzip to the /saves
                     const tempDest = context.rootGetters.path('temp', res.hash + res.name + res.ext);
                     const dest = context.rootGetters.path('profiles', profile, res.domain, res.name);
-                    await createReadStream(res.path)
-                        .pipe(createExtractStream(tempDest)).promise();
+                    await fs.ensureDir(dest);
+                    await fs.createReadStream(res.path)
+                        .pipe(Unzip.createExtractStream(tempDest)).wait();
                     const level = join(tempDest, 'level.dat');
-                    if (existsSync(level)) {
+                    if (await fs.exists(level)) {
                         await fs.rename(tempDest, dest);
                     } else {
                         const files = await fs.readdir(tempDest);
@@ -527,8 +527,9 @@ const mod = {
                             const isDir = await fs.stat(p).then(s => s.isDirectory()).catch(_ => false);
                             if (isDir) {
                                 const guessLevel = join(p, 'level.dat');
-                                if (existsSync(guessLevel)) {
-                                    await fs.rename(p, dest);
+                                if (await fs.exists(guessLevel)) {
+                                    await fs.copy(p, dest);
+                                    await fs.remove(tempDest);
                                     break;
                                 }
                             }
@@ -559,7 +560,7 @@ const mod = {
 
                 if (!res) throw new Error(`Cannot find the resource ${resource}`);
 
-                promises.push(copy(res.path, paths.join(targetDirectory, res.name + res.ext)));
+                promises.push(fs.copy(res.path, paths.join(targetDirectory, res.name + res.ext)));
             }
             await Promise.all(promises);
         },

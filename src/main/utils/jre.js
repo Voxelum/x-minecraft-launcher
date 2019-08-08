@@ -2,12 +2,11 @@ import { Net, Task } from '@xmcl/minecraft-launcher-core';
 import { exec } from 'child_process';
 import { createHash } from 'crypto';
 import { app, net } from 'electron';
-import { createReadStream, existsSync, mkdirSync, promises as fs } from 'fs';
 import { createDecompressor } from 'lzma-native';
 import os from 'os';
 import path, { join } from 'path';
-import { createExtractStream } from 'yauzlw';
-import { ensureDir, ensureFile } from './fs';
+import Unzip from '@xmcl/unzip';
+import fs from './vfs';
 
 /**
  * @param {Task.Context} context 
@@ -51,16 +50,16 @@ export async function officialEndpoint(context) {
     const dest = path.resolve(root, 'temp', filename);
 
     let needDownload = true;
-    if (existsSync(dest)) {
+    if (await fs.exists(dest)) {
         needDownload = await new Promise((resolve, reject) => {
             const hash = createHash('sha1');
-            createReadStream(dest)
+            fs.createReadStream(dest)
                 .pipe(hash)
                 .on('finish', () => { resolve(hash.digest('hex') !== sha1); });
         });
     }
     if (needDownload) {
-        await ensureFile(dest);
+        await fs.ensureFile(dest);
         await context.execute('download', Net.downloadFileIfAbsentWork({
             url,
             destination: dest,
@@ -73,12 +72,12 @@ export async function officialEndpoint(context) {
 
     const javaRoot = path.resolve(root, 'jre');
     await context.execute('decompress', async () => {
-        await ensureDir(javaRoot);
+        await fs.ensureDir(javaRoot);
 
-        await createReadStream(dest)
+        await fs.createReadStream(dest)
             .pipe(createDecompressor())
-            .pipe(createExtractStream(javaRoot))
-            .promise();
+            .pipe(Unzip.createExtractStream(javaRoot))
+            .wait();
     });
     await context.execute('cleanup', async () => {
         await fs.unlink(dest);
@@ -118,7 +117,7 @@ export async function selfHostAPI(context) {
     const filename = 'jre.lzma';
     const dest = path.resolve(root, 'temp', filename);
 
-    await ensureFile(dest);
+    await fs.ensureFile(dest);
     await context.execute('download', Net.downloadFileWork({
         url,
         destination: dest,
@@ -126,12 +125,12 @@ export async function selfHostAPI(context) {
 
     const javaRoot = path.resolve(root, 'jre');
     await context.execute('decompress', async () => {
-        await ensureDir(javaRoot);
+        await fs.ensureDir(javaRoot);
 
-        await createReadStream(dest)
+        await fs.createReadStream(dest)
             .pipe(createDecompressor())
-            .pipe(createExtractStream(javaRoot))
-            .promise();
+            .pipe(Unzip.createExtractStream(javaRoot))
+            .wait();
     });
     await context.execute('cleanup', async () => {
         await fs.unlink(dest);
@@ -174,7 +173,7 @@ export async function bangbangAPI(context) {
     switch (platform) {
         case 'darwin':
             await fs.copyFile(join(__static, 'mac-jre-installer.sh'), join(root, 'temp', 'mac-jre-installer.sh'));
-            mkdirSync(join(root, 'jre'));
+            await fs.mkdir(join(root, 'jre'));
             await exec_(join(root, 'temp', 'mac-jre-installer.sh'), { cwd: root });
             break;
         case 'win32':
