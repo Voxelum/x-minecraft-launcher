@@ -101,7 +101,8 @@
         }
     },
     "dependencies": {
-        "@xmcl/minecraft-launcher-core": "^0.0.4",
+        "@xmcl/minecraft-launcher-core": "^0.1.0",
+        "@xmcl/unzip": "^0.1.0",
         "electron-updater": "^4.0.6",
         "fast-html-parser": "^1.0.1",
         "file-type": "^12.1.0",
@@ -116,7 +117,6 @@
         "vue-router": "^3.0.6",
         "vuetify": "^1.5.14",
         "vuex": "^3.1.1",
-        "yauzlw": "^0.0.7",
         "yazl": "^2.5.1"
     },
     "devDependencies": {
