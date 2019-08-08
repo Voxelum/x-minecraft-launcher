@@ -4,6 +4,16 @@
     "add": "添加",
     "advanced": "高级",
     "author": "作者",
+    "feedback": {
+        "": "反馈",
+        "description": "我找到了一个BUG/我想反馈",
+        "github": "Github Issue",
+        "githubDescription": "通过 Github Issue 来反应你的想法",
+        "githubOpenIssue": "Github",
+        "qq": "QQ 群",
+        "qqEnterGroup": "加群",
+        "qqDescription": "加入反馈群直接和作者聊聊吧"
+    },
     "buttonSettings": {
         "drop": "丢弃",
         "jump": "跳",
