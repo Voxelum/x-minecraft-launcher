@@ -143,6 +143,16 @@
         "missingName": "Please name this profile!",
         "name": "Error | Errors"
     },
+    "feedback": {
+        "": "Feedback",
+        "description": "I found a Bug or I want to make a suggestion",
+        "github": "Github Issue",
+        "githubDescription": "Open an Github Issue to tell your thought",
+        "githubOpenIssue": "Github",
+        "qq": "QQ Group",
+        "qqDescription": "Enter the feedback QQ group and direct talk with authors",
+        "qqEnterGroup": "Enter Group"
+    },
     "filter": "Filter",
     "forge": {
         "common": "Common",

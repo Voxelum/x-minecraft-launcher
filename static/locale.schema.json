@@ -108,29 +108,6 @@
         "criticalGraphics": {
             "type": "string"
         },
-        "importResource": {
-            "type": "object",
-            "properties": {
-                "": {
-                    "type": "string"
-                },
-                "checking": {
-                    "type": "string"
-                },
-                "parsing": {
-                    "type": "string"
-                },
-                "storing": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "",
-                "checking",
-                "parsing",
-                "storing"
-            ]
-        },
         "curseforge": {
             "type": "object",
             "properties": {
@@ -978,6 +955,29 @@
         },
         "hotkeyChanges": {
             "type": "string"
+        },
+        "importResource": {
+            "type": "object",
+            "properties": {
+                "": {
+                    "type": "string"
+                },
+                "checking": {
+                    "type": "string"
+                },
+                "parsing": {
+                    "type": "string"
+                },
+                "storing": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "",
+                "checking",
+                "parsing",
+                "storing"
+            ]
         },
         "installAssets": {
             "type": "object",
@@ -2051,6 +2051,45 @@
                 "vmOptionsHint"
             ]
         },
+        "feedback": {
+            "type": "object",
+            "properties": {
+                "": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "github": {
+                    "type": "string"
+                },
+                "githubDescription": {
+                    "type": "string"
+                },
+                "githubOpenIssue": {
+                    "type": "string"
+                },
+                "qq": {
+                    "type": "string"
+                },
+                "qqEnterGroup": {
+                    "type": "string"
+                },
+                "qqDescription": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "",
+                "description",
+                "github",
+                "githubDescription",
+                "githubOpenIssue",
+                "qq",
+                "qqEnterGroup",
+                "qqDescription"
+            ]
+        },
         "refresh": {
             "type": "object",
             "properties": {
@@ -2695,7 +2734,6 @@
         "checkUpdate",
         "create",
         "criticalGraphics",
-        "importResource",
         "curseforge",
         "delete",
         "description",
@@ -2712,6 +2750,7 @@
         "help",
         "home",
         "hotkeyChanges",
+        "importResource",
         "installAssets",
         "installCurseforgeFile",
         "installCurseforgeModpack",
@@ -2736,6 +2775,7 @@
         "ok",
         "popular",
         "profile",
+        "feedback",
         "refresh",
         "refreshResource",
         "remove",
