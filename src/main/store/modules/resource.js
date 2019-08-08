@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { net } from 'electron';
 import { createReadStream, existsSync, promises as fs, rename } from 'fs';
 import { copy, ensureDir, ensureFile } from 'main/utils/fs';
-import paths from 'path';
+import paths, { join } from 'path';
 import { Forge, LiteLoader, ResourcePack, World } from 'ts-minecraft';
 import base from 'universal/store/modules/resource';
 import { requireString } from 'universal/utils/object';
@@ -210,12 +210,15 @@ const mod = {
                 const modsDir = context.rootGetters.path('mods');
                 const resourcepacksDir = context.rootGetters.path('resourcepacks');
                 const modpacksDir = context.rootGetters.path('modpacks');
+                const savesDir = context.rootGetters.path('saves');
                 await ensureDir(modsDir);
                 await ensureDir(resourcepacksDir);
                 await ensureDir(modpacksDir);
+                await ensureDir(savesDir);
                 const modsFiles = await fs.readdir(modsDir);
                 const resourcePacksFiles = await fs.readdir(resourcepacksDir);
                 const modpacksFiles = await fs.readdir(modpacksDir);
+                const savesFiles = await fs.readdir(savesDir);
 
                 const touched = {};
                 const total = modsFiles.length + resourcePacksFiles.length + modpacksFiles.length;
@@ -285,6 +288,7 @@ const mod = {
                     reimport(modsFiles.map(file => context.rootGetters.path('mods', file))),
                     reimport(resourcePacksFiles.map(file => context.rootGetters.path('resourcepacks', file)), 'resourcepack'),
                     reimport(modpacksFiles.map(file => context.rootGetters.path('modpacks', file)), 'modpacks'),
+                    reimport(savesFiles.map(file => context.rootGetters.path('saves', file)), 'save'),
                 ]);
 
                 const metaFiles = await fs.readdir(context.rootGetters.path('resources'));
@@ -436,9 +440,9 @@ const mod = {
 
                     console.log(`Import resource ${name}${ext}(${hash}) into ${resource.domain}`);
 
-                    let dataFile = paths.join(root, resource.domain, `${resource.name}${ext}`);
+                    let dataFile = paths.join(root, resource.domain, `${resource.name}${resource.ext}`);
                     if (existsSync(dataFile)) {
-                        dataFile = paths.join(root, resource.domain, `${resource.name}.${hash}${ext}`);
+                        dataFile = paths.join(root, resource.domain, `${resource.name}.${hash}${resource.ext}`);
                     }
 
                     resource.path = dataFile;
@@ -507,9 +511,27 @@ const mod = {
                         promises.push(fs.link(res.path, dest));
                     }
                 } else if (res.domain === 'saves') { // save will unzip to the /saves
-                    const dest = context.rootGetters.path('profiles', profile, res.domain, res.name + res.ext);
+                    const tempDest = context.rootGetters.path('temp', res.hash + res.name + res.ext);
+                    const dest = context.rootGetters.path('profiles', profile, res.domain, res.name);
                     await createReadStream(res.path)
-                        .pipe(createExtractStream(dest)).promise();
+                        .pipe(createExtractStream(tempDest)).promise();
+                    const level = join(tempDest, 'level.dat');
+                    if (existsSync(level)) {
+                        await fs.rename(tempDest, dest);
+                    } else {
+                        const files = await fs.readdir(tempDest);
+                        for (const f of files) {
+                            const p = join(tempDest, f);
+                            const isDir = await fs.stat(p).then(s => s.isDirectory()).catch(_ => false);
+                            if (isDir) {
+                                const guessLevel = join(p, 'level.dat');
+                                if (existsSync(guessLevel)) {
+                                    await fs.rename(p, dest);
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 } else if (res.domain === 'modpack') { // modpack will override the profile
                     await context.dispatch('importCurseforgeModpack', {
                         profile,
