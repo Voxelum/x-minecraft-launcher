@@ -142,7 +142,7 @@ export default {
       }
     },
     async search() {
-      if (this.refresh) return;
+      if (this.loading) return;
       if (this.keyword === '') return;
       this.projects = [];
       this.loading = true;
