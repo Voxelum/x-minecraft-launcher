@@ -11,7 +11,12 @@
       <v-flex d-flex xs6 style="padding-right: 5px;">
         <v-card dark class="card-list" @drop="onDropLeft" @dragover="onDragOver" @mousewheel="onMouseWheel">
           <v-card-title>
-            <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('mod.unselected') }} </span> 
+            <span v-if="filteringSpecModVersion === ''" class="text-sm-center" style="width: 100%; font-size: 16px;"> 
+              {{ $t('mod.unselected') }} 
+            </span>
+            <v-chip v-else outline color="white" class="text-sm-center" close label @input="filteringSpecModVersion = ''">
+              {{ $t('mod.backToAllMods') }}
+            </v-chip>
           </v-card-title>
           <p v-if="mods[1].length === 0" class="text-xs-center headline"
              style="position: absolute; top: 120px; right: 0px; user-select: none;">
@@ -24,8 +29,8 @@
             <mod-card v-for="(mod, index) in unselectedMods" :key="mod.hash" v-observe-visibility="{
                         callback: (v) => checkBuffer(v, index, false),
                         once: true,
-                      }" :data="mod"
-                      :is-selected="false" :index="index" :hash="mod.hash" />
+                      }" :data="mod" :is-selected="false"
+                      :index="index" :hash="mod.hash" @click="showOnlyThisMod(mod)" />
           </div>
         </v-card>
       </v-flex>
@@ -65,13 +70,21 @@ export default {
     return {
       refreshing: false,
       filterInCompatible: true,
+      filterNonMatchedMinecraftVersion: false,
       filterText: '',
+
+      filteringSpecModVersion: '',
     };
   },
   computed: {
     profile() { return this.$repo.getters.selectedProfile; },
+
     unselectedMods() {
-      return this.mods[1].filter(m => this.filterMod(this.filterText, m))
+      if (this.filteringSpecModVersion !== '') {
+        return this.mods[1].filter(m => m.metadata[0].modid === this.filteringSpecModVersion);
+      }
+      return this.mods[1]
+        .filter(m => this.filterMod(this.filterText, m))
         .filter((_, i) => i < this.unselectedBuffer);
     },
     selectedMods() {
@@ -86,7 +99,10 @@ export default {
       },
     },
     unselectedItems() {
-      return this.mods[1];
+      return this.unselectedMods;
+    },
+    selecetedItems() {
+      return this.selectedMods;
     },
     mods() {
       const mods = this.$repo.getters.mods;
@@ -108,6 +124,9 @@ export default {
   mounted() {
   },
   methods: {
+    showOnlyThisMod(modRes) {
+      this.filteringSpecModVersion = modRes.metadata[0].modid;
+    },
     dropFile(path) {
       this.$repo.dispatch('importResource', { path }).catch((e) => { console.error(e); });
     },

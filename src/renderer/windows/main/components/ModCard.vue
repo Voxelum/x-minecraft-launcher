@@ -3,7 +3,7 @@
     <template v-slot:activator="{ on }">
       <v-card color="darken-1" flat hover :class="{ incompatible: !compatible }" 
               class="draggable-card mod-card white--text" style="margin-top: 10px; padding: 0 10px;" 
-              draggable v-on="on" @dragstart="onDragStart" @dblclick="tryOpen">
+              draggable v-on="on" @dragstart="onDragStart" @dblclick="tryOpen" @click="$emit('click', $event)">
         <v-layout justify-center align-center fill-height>
           <v-flex v-if="icon" xs4 style="padding: 0 10px 0 0;" fill-height>
             <v-img :src="icon" style="height: 100%" contain />

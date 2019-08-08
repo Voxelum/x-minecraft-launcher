@@ -97,7 +97,10 @@ export default {
       return [selectedPacks, unselectedPacks];
     },
     unselectedItems() {
-      return this.resourcePacks[1];
+      return this.unselectedPacks;
+    },
+    selecetedItems() {
+      return this.selectedPacks;
     },
     items: {
       get() {

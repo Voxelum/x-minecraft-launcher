@@ -26,7 +26,6 @@ export default {
         doInsert(index, toIndex) {
             if (index === toIndex) return;
             const items = [...this.items || []];
-            console.log('insert');
             const inserted = items.splice(index, 1);
             items.splice(toIndex, 0, ...inserted);
             this.items = items;
@@ -39,8 +38,10 @@ export default {
             this.items = items;
         },
         doUnselect(index) {
-            const items = [...this.items || []];
-            Vue.delete(items, index);
+            const selecetedItems = [...this.selecetedItems || []];
+            const willDelete = selecetedItems[index];
+            const items = [...this.items];
+            Vue.delete(items, items.indexOf(this.mapItem(willDelete)));
             this.items = items;
         },
         mapItem(i) {
