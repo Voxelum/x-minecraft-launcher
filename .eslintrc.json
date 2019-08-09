@@ -83,6 +83,7 @@
         "object-curly-newline": 0,
         "vue/max-attributes-per-line": 0,
         "vue/html-closing-bracket-newline": 0,
-        "no-continue": 0
+        "no-continue": 0,
+        "import/no-named-as-default": 0
     }
 }
