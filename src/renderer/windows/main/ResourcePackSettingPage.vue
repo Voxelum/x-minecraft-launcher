@@ -25,7 +25,7 @@
                                 v-observe-visibility="{
                                   callback: (v) => checkBuffer(v, index, true),
                                   once: true,
-                                }" :data="pack.metadata" :is-selected="false" :index="index" />
+                                }" :data="pack" :is-selected="false" :index="index" />
           </div>
         </v-card>
       </v-flex>
@@ -46,7 +46,7 @@
                                 v-observe-visibility="{
                                   callback: (v) => checkBuffer(v, index, true),
                                   once: true,
-                                }" :data="pack.metadata" :is-selected="true" :index="index" />
+                                }" :data="pack" :is-selected="true" :index="index" />
           </div>
         </v-card>
       </v-flex>
@@ -92,7 +92,7 @@ export default {
       }
       const selectedPacks = packnames
         .map(name => nameToPack[name]
-          || { name, missing: true, metadata: { packName: name, description: 'Cannot find this pack', icon: unknownPack, format: -1 } });
+          || { name, ext: '', missing: true, metadata: { packName: name, description: 'Cannot find this pack', icon: unknownPack, format: -1 } });
 
       return [selectedPacks, unselectedPacks];
     },
@@ -112,6 +112,9 @@ export default {
         });
       },
     },
+  },
+  async mounted() {
+    await this.$repo.dispatch('loadProfileGameSettings');
   },
   methods: {
     mapItem(r) {

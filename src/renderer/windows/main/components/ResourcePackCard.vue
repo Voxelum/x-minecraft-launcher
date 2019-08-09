@@ -5,20 +5,20 @@
               draggable v-on="on" @dragstart="onDragStart">
         <v-layout justify-center align-center fill-height>
           <v-flex xs6 style="padding: 0;">
-            <v-img style="user-drag: none; user-select: none; height: 125px;" :src="data.icon" contain />
+            <v-img style="user-drag: none; user-select: none; height: 125px;" :src="metadata.icon" contain />
           </v-flex>
           <v-flex xs6 style="padding-top: 10px;">
-            <text-component style="white-space: normal; word-break: break-word;" :source="data.packName"
+            <text-component style="white-space: normal; word-break: break-word;" :source="metadata.packName"
                             class="title" />
-            <text-component style="white-space: normal; word-break: break-word;" :source="data.description" />
+            <text-component style="white-space: normal; word-break: break-word;" :source="metadata.description" />
           </v-flex>
         </v-layout>
       </v-card>
     </template>
-    {{ compatible ? $t('resourcepack.compatible', { format: data.format, version: mcversion }) : $t('resourcepack.incompatible', {
+    {{ compatible ? $t('resourcepack.compatible', { format: metadata.format, version: mcversion }) : $t('resourcepack.incompatible', {
       accept: acceptedRange,
       actual: mcversion,
-      format: data.format
+      format: metadata.format
     }) }}
     <v-divider />
   </v-tooltip>
@@ -43,9 +43,10 @@ export default {
     },
   },
   computed: {
+    metadata() { return this.data.metadata; },
     mcversion() { return this.$repo.getters.selectedProfile.version.minecraft; },
     acceptedRange() {
-      return this.$repo.getters.getAcceptMinecraftRangeByFormat(this.data.format);
+      return this.$repo.getters.getAcceptMinecraftRangeByFormat(this.metadata.format);
     },
     compatible() {
       return isCompatible(this.acceptedRange, this.mcversion);
