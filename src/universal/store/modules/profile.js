@@ -79,6 +79,11 @@ const mod = {
 
         refreshing: false,
         problems: [],
+
+        dirty: {
+            servers: false,
+            saves: false,
+        },
     },
     getters: {
         profiles: state => Object.keys(state.all).map(k => state.all[k]),
@@ -239,6 +244,9 @@ const mod = {
         },
         profileProblems(state, problems) {
             state.problems = problems;
+        },
+        markDirty(state, { dirty, target }) {
+            state.dirty[target] = dirty;
         },
     },
 };

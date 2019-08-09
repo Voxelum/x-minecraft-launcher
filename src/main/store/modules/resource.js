@@ -1,14 +1,13 @@
+import { Forge, LiteLoader, ResourcePack, Task } from '@xmcl/minecraft-launcher-core';
+import Unzip from '@xmcl/unzip';
 import crypto from 'crypto';
 import { net } from 'electron';
+import fileType from 'file-type';
 import fs from 'main/utils/vfs';
-import paths, { join } from 'path';
-import { Forge, LiteLoader, ResourcePack, Task } from '@xmcl/minecraft-launcher-core';
+import paths from 'path';
 import base from 'universal/store/modules/resource';
 import { requireString } from 'universal/utils/object';
 import url from 'url';
-import Unzip from '@xmcl/unzip';
-import { cpus } from 'os';
-import fileType from 'file-type';
 
 /**
  * 
@@ -511,30 +510,8 @@ const mod = {
                     } catch (e) {
                         promises.push(fs.link(res.path, dest));
                     }
-                } else if (res.domain === 'saves') { // save will unzip to the /saves
-                    const tempDest = context.rootGetters.path('temp', res.hash + res.name + res.ext);
-                    const dest = context.rootGetters.path('profiles', profile, res.domain, res.name);
-                    await fs.ensureDir(dest);
-                    await fs.createReadStream(res.path)
-                        .pipe(Unzip.createExtractStream(tempDest)).wait();
-                    const level = join(tempDest, 'level.dat');
-                    if (await fs.exists(level)) {
-                        await fs.rename(tempDest, dest);
-                    } else {
-                        const files = await fs.readdir(tempDest);
-                        for (const f of files) {
-                            const p = join(tempDest, f);
-                            const isDir = await fs.stat(p).then(s => s.isDirectory()).catch(_ => false);
-                            if (isDir) {
-                                const guessLevel = join(p, 'level.dat');
-                                if (await fs.exists(guessLevel)) {
-                                    await fs.copy(p, dest);
-                                    await fs.remove(tempDest);
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                } else if (res.domain === 'saves') { 
+                    await context.dispatch('importSave', res.path);
                 } else if (res.domain === 'modpack') { // modpack will override the profile
                     await context.dispatch('importCurseforgeModpack', {
                         profile,

@@ -150,6 +150,20 @@ export declare namespace ProfileModule {
          * If current launcher is refreshing the profile data
          */
         refreshing: boolean;
+
+        dirty: {
+            /**
+             * Whether the save folder is dirty
+             */
+            saves: boolean;
+
+            /**
+             * Whether the server.dat is dirty
+             */
+            servers: boolean;
+
+            gamesettings: boolean;
+        },
     }
 
     interface Getters {
@@ -188,6 +202,8 @@ export declare namespace ProfileModule {
         profileSaves(state: State, worlds: Save[]): void;
         profileProblems(state: State, problems: Problem[]): void;
         refreshingProfile(state: State, refreshing: boolean): void;
+
+        markDirty(state: State, payload: { target: keyof State['dirty'], dirty: boolean }): void;
     }
 
     type C = Context<State, Getters, Mutations, Actions>
@@ -196,8 +212,9 @@ export declare namespace ProfileModule {
         loadProfileGameSettings(context: C, id: string): Promise<GameSetting.Frame>;
         loadProfileSeverData(context: C, id: string): Promise<Server.Info[]>
         loadProfileSaves(context: C, id: string): Promise<Pick<World, 'level' | 'path'>[]>;
-
         loadAllProfileSaves(context: C): Promise<Pick<World, 'level' | 'path'>[]>;
+
+
 
         /**
          * Select active profile
@@ -229,9 +246,23 @@ export declare namespace ProfileModule {
          */
         resolveProfileResources(context: C, id: string): { [domain: string]: Resource<any>[] };
 
+        /**
+         * Copy current profile `src` save to other profile. The `dest` is the array of profile id. 
+         */
         copySave(context: C, paylod: { src: string, dest: string[] }): Promise<void>;
+        /**
+         * Import external save from its absolute `path`.
+         */
         importSave(context: C, path: string): Promise<void>;
-        deleteSave(context: C, name: string): Promise<void>;
+
+        /**
+         * Delete current selected profile's save by providing the save's full path
+         */
+        deleteSave(context: C, path: string): Promise<void>;
+
+        /**
+         * Export current profile save to any `destination`
+         */
         exportSave(context: C, payload: { path: string, destination: string, zip?: boolean }): Promise<void>;
 
         pingServer(context: C, payload: { host: string, port: number, protocol: number }): Promise<Server.StatusFrame>;

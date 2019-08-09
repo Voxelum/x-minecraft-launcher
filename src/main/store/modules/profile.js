@@ -2,9 +2,9 @@ import { watch } from 'fs';
 import fs from 'main/utils/vfs';
 import { compressZipTo, includeAllToZip } from 'main/utils/zip';
 import { tmpdir } from 'os';
-import paths, { basename, join } from 'path';
+import paths, { basename, join, dirname, relative } from 'path';
 import { latestMcRelease } from 'static/dummy.json';
-import { GameSetting, Server, TextComponent, Version, World } from '@xmcl/minecraft-launcher-core';
+import { GameSetting, Server, TextComponent, Version, World, Task } from '@xmcl/minecraft-launcher-core';
 import base, { createTemplate } from 'universal/store/modules/profile';
 import { fitin, willBaselineChange } from 'universal/utils/object';
 import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/server-status';
@@ -12,13 +12,14 @@ import { getModIdentifier } from 'universal/utils/versions';
 import uuid from 'uuid';
 import { Unzip } from '@xmcl/unzip';
 import { ZipFile } from 'yazl';
+import { createHash } from 'crypto';
 
 /**
  * @param {string} save
  */
 async function loadWorld(save) {
     try {
-        const world = await World.load(save, ['level']).catch(_ => undefined);
+        const world = await World.load(save, ['level']);
         const dest = join(save, 'icon.png');
         if (await fs.exists(dest)) {
             const buf = await fs.readFile(dest);
@@ -70,7 +71,7 @@ const mod = {
                 return {};
             }
         },
-        async loadAllProfileSaves({ rootGetters, getters }) {
+        async loadAllProfileSaves({ state, rootGetters, getters }) {
             /**
              * @type {any[]}
              */
@@ -89,6 +90,10 @@ const mod = {
             return all;
         },
         async loadProfileSaves({ rootGetters, state, commit }, id = state.id) {
+            if (!state.dirty.saves) {
+                return state.saves;
+            }
+            commit('markDirty', { target: 'saves', dirty: false });
             try {
                 const saveRoot = rootGetters.path('profiles', id, 'saves');
 
@@ -100,6 +105,7 @@ const mod = {
                      * @type {any}
                      */
                     const nonNulls = loaded.filter(s => s !== undefined);
+                    console.log(`Save ${saves.length} ${nonNulls.length}`);
                     commit('profileSaves', nonNulls);
                     return nonNulls;
                 }
@@ -129,10 +135,22 @@ const mod = {
         async loadProfile({ commit, dispatch, rootGetters, rootState }, id) {
             if (await fs.missing(rootGetters.path('profiles', id, 'profile.json'))) {
                 await fs.remove(rootGetters.path('profiles', id));
+                console.warn(`Corrupted profile ${id}`);
                 return;
             }
 
-            const option = await dispatch('getPersistence', { path: `profiles/${id}/profile.json` });
+            let option;
+            try {
+                option = await fs.readFile(rootGetters.path('profiles', id, 'profile.json')).then(b => JSON.parse(b.toString()));
+            } catch (e) {
+                console.warn(`Corrupted profile json ${id}`);
+                return;
+            }
+            if (!option) {
+                console.warn(`Corrupted profile ${id}`);
+                return;
+            }
+
             const type = option.type || 'modpack';
             const profile = createTemplate(
                 id,
@@ -319,27 +337,28 @@ const mod = {
                 }
                 const saveDir = context.rootGetters.path('profiles', id, 'saves');
                 if (await fs.exists(saveDir)) {
+                    context.commit('markDirty', { target: 'saves', dirty: true });
                     await context.dispatch('loadProfileSaves', id);
                     saveWatcher = watch(saveDir, (target, filename) => {
-                        console.log(`Detect ${id} profile saves change, reload`);
-                        context.dispatch('loadProfileSaves', id);
+                        console.log(`Detect ${id} profile saves change, dirty. Target: ${target}. Filename: ${filename}.`);
+                        context.commit('markDirty', { target: 'saves', dirty: true });
                     });
                 }
                 const optionFile = context.rootGetters.path('profiles', id, 'options.txt');
                 if (await fs.exists(optionFile)) {
                     await context.dispatch('loadProfileGameSettings', id);
-                    optionsWatcher = watch(optionFile, (target, data) => {
-                        console.log(`Detect ${id} profile gamesettings change, reload`);
-                        context.dispatch('loadProfileGameSettings', id);
-                    });
+                    // optionsWatcher = watch(optionFile, (target, data) => {
+                    //     console.log(`Detect ${id} profile gamesettings change, reload`);
+                    //     context.dispatch('loadProfileGameSettings', id);
+                    // });
                 }
                 const seversFile = context.rootGetters.path('profiles', id, 'servers.dat');
                 if (await fs.exists(seversFile)) {
                     await context.dispatch('loadProfileSeverData', id);
-                    optionsWatcher = watch(seversFile, (target, data) => {
-                        console.log(`Detect ${id} profile server data change, reload`);
-                        context.dispatch('loadProfileSeverData', id);
-                    });
+                    // optionsWatcher = watch(seversFile, (target, data) => {
+                    //     console.log(`Detect ${id} profile server data change, reload`);
+                    //     context.dispatch('loadProfileSeverData', id);
+                    // });
                 }
                 context.commit('selectProfile', id);
             }
@@ -598,12 +617,42 @@ const mod = {
             });
         },
         async importSave(context, filePath) {
-            try {
-                const save = await World.load(filePath, ['level']);
-                const dest = context.rootGetters.path('profiles', context.state.id, 'saves', basename(filePath));
+            /**
+             * @param {string} from
+             */
+            async function performImport(from) {
+                const save = await World.load(from, ['level']);
+                let dest = context.rootGetters.path('profiles', context.state.id, 'saves', save.level.LevelName);
                 await fs.ensureFile(dest);
-                await fs.copy(filePath, dest);
+                while (await fs.exists(dest)) {
+                    dest += ' Copy';
+                }
+                await fs.copy(from, dest);
                 context.commit('profileSaves', [...context.state.saves, save]);
+                await context.dispatch('loadProfileSaves');
+            }
+            try {
+                const stat = await fs.stat(filePath);
+                if (!stat.isDirectory()) {
+                    const tempName = createHash('sha1').update(filePath).digest('hex');
+                    const dest = context.rootGetters.path('temp', tempName); // save will unzip to the /saves
+                    const zip = await Unzip.open(filePath);
+                    const [levelEntry] = await zip.filterEntries(e => e.fileName.endsWith('level.dat'));
+                    if (levelEntry) {
+                        const root = dirname(levelEntry.fileName);
+                        if (root !== '.') {
+                            await zip.extractEntries(dest, e => relative(root, e.fileName));
+                        } else {
+                            await zip.extractEntries(dest);
+                        }
+                        zip.close();
+
+                        await performImport(dest);
+                        await fs.remove(dest);
+                    }
+                } else {
+                    await performImport(filePath);
+                }
             } catch (e) {
                 console.error(`Cannot import save from ${filePath}`);
                 console.error(e);
@@ -622,7 +671,7 @@ const mod = {
             if (path === expect) { // confirm this save is a select profile's save
                 await Promise.all(
                     dest.map(p => context.rootGetters.path('profiles', p, 'saves', saveName))
-                        .map(p => copy(expect, p)),
+                        .map(p => fs.copy(expect, p)),
                 );
             } else {
                 console.error(`Cannot copy map ${path}, which is not in selected profile ${id}`);
@@ -633,15 +682,18 @@ const mod = {
             const id = context.state.id;
             const saveName = basename(path);
             if (!path || await fs.missing(path)) {
-                console.log(`Cancel map remving of ${path}`);
+                console.log(`Cancel map removing of ${path}`);
                 return;
             }
             const expect = context.rootGetters.path('profiles', id, 'saves', saveName);
             if (path === expect) { // confirm this save is a select profile's save
                 await fs.remove(path);
+                context.commit('markDirty', { target: 'saves', dirty: true });
+                await context.dispatch('loadProfileSaves');
             } else {
                 console.error(`Cannot remove map ${path}, which is not in selected profile ${id}`);
             }
+            console.log(`Removed save from ${path}`);
         },
         async exportSave(context, payload) {
             const { path, zip, destination } = payload;
