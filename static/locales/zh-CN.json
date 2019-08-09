@@ -408,6 +408,8 @@
         "showAlpha": "显示快照版",
         "version": "Minecraft 版本"
     },
+    "deleteSave": "删除存档",
+    "importSave": "导入存档",
     "mod": {
         "compatible": "可用于 {version} 版",
         "export": "导出 Mod",
@@ -416,7 +418,8 @@
         "incompatible": "不兼容Minecraft {actual} 的Mod。需要Minecraft {accept}。",
         "name": "Mod | Mods",
         "selected": "已选 Mods",
-        "unselected": "未选 Mods"
+        "unselected": "未选 Mods",
+        "backToAllMods": "返回所有 Mods"
     },
     "name": "名称",
     "next": "下一项",
@@ -556,8 +559,14 @@
             "description": "请勾选你想让存档复制到的启动配置（目标启动配置）",
             "title": "复制存档到其他启动配置"
         },
-        "copyTo": {
-            "": "从其他配置导入"
+        "copyFrom": {
+            "title": "从已有资源导入存档",
+            "from": "来自 {src}",
+            "description": "你可以从其他启动配置中导入存档，或者从已有资源中导入 (如从 curseforge 下载的地图)",
+            "fromProfile": "来自其他启动配置",
+            "fromResource": "来自已导入资源",
+            "confirm": "开始导入",
+            "cancel": "取消"
         },
         "deleteCancel": "取消",
         "deleteConfirm": "确认删除",

@@ -428,8 +428,11 @@
         "incompatible": "Incompatible Mod. Accept {accept}. Current: {actual}",
         "name": "Mod | Mods",
         "selected": "Selected Mods",
-        "unselected": "Unselected Mods"
+        "unselected": "Unselected Mods",
+        "backToAllMods": "Back to All Mods"
     },
+    "deleteSave": "Delete Save",
+    "importSave": "Import Save",
     "name": "Name",
     "no": "No",
     "ok": "Ok",
@@ -566,8 +569,14 @@
             "description": "Please select destination profile(s) you want the save to go.",
             "title": "Copy Save to Other Profile"
         },
-        "copyTo": {
-            "": "Import from other profile"
+        "copyFrom": {
+            "from": "From {src}",
+            "title": "Import Save from Managed Source",
+            "description": "You can deploy save to this profile from other profile, or from managed resources (curseforge)",
+            "fromProfile": "From Profiles",
+            "fromResource": "From Resources",
+            "confirm": "Start Copy",
+            "cancel": "Cancel"
         },
         "deleteCancel": "Cancel",
         "deleteConfirm": "Comfirm to delete",
