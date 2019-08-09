@@ -37,12 +37,13 @@ export default {
   activated() { this.load(); },
   deactivated() { this.save(); },
   methods: {
-    load() {
+    async load() {
+      await this.$repo.dispatch('loadProfileGameSettings');
       const graphics = this.graphics;
       const settings = this.$repo.state.profile.settings;
       for (const setting of Object.keys(graphics)) {
         if (typeof settings[setting] !== 'undefined') {
-          graphics[setting].value = settings[setting] || graphics[setting].value;
+          graphics[setting].value = settings[setting];
         }
       }
     },
