@@ -1,15 +1,15 @@
 <template>
   <v-container grid-list-xs fill-height style="overflow: auto;">
-    <v-layout row wrap>
-      <v-flex tag="h1" class="white--text" grow>
+    <v-layout row wrap align-start>
+      <v-flex tag="h1" class="white--text">
         <span class="headline">{{ $tc('save.name', 2) }}</span>
       </v-flex>
       <v-flex shrink>
-        <v-btn flat @click="doCopyTo">
+        <v-btn flat @click="doCopyFrom">
           <v-icon left>
             input
           </v-icon>
-          {{ $t('save.copyTo') }}
+          {{ $t('save.copyFrom.title') }}
         </v-btn>
       </v-flex>
       <v-flex shrink>
@@ -20,7 +20,7 @@
           {{ $t('save.import') }}
         </v-btn>
       </v-flex>
-      <v-flex xs12 fill-height @drop="onDrop" @dragover="onDragOver">
+      <v-flex xs12 @drop="onDrop" @dragover="onDragOver">
         <v-container v-if="saves.length === 0" fill-height>
           <v-layout fill-height align-center justify-center column>
             <v-flex shrink>
@@ -33,94 +33,60 @@
             </v-flex>
           </v-layout>
         </v-container>
-        <v-card v-for="(s, index) of saves" v-else :key="index" flat hover class="white--text">
-          <v-layout>
-            <v-flex xs3 pa-3>
-              <v-img
-                :src="s.icon"
-                height="125"
-                contain
-              />
-            </v-flex>
-            <v-flex>
-              <v-card-title primary-title>
-                <div>
-                  <div class="headline">
-                    {{ s.level.LevelName }}
-                  </div>
+        <v-container v-else style="overflow-y: auto; max-height: 80vh" grid-list-md>
+          <v-layout row wrap>
+            <v-flex v-for="(s, index) of saves" :key="index">
+              <v-card flat hover class="white--text">
+                <v-layout>
+                  <v-flex xs3>
+                    <v-img
+                      :src="s.icon || unknown"
+                      height="125"
+                      contain
+                    />
+                  </v-flex>
+                  <v-flex>
+                    <v-card-title primary-title>
+                      <div>
+                        <div class="headline">
+                          {{ s.level.LevelName }}
+                        </div>
 
-                  <div>{{ $t(`gamesetting.gametype.${s.level.GameType}`) }}</div>
-                  <div>{{ new Date(s.level.LastPlayed * 1).toLocaleString() }}</div>
-                </div>
-              </v-card-title>
-            </v-flex>
-          </v-layout>
-          <v-divider light />
-          <v-card-actions class="pa-3">
-            <v-btn color="red" flat @click="startDelete(s.path)"> 
-              <v-icon left>
-                delete
-              </v-icon>
-              {{ $t('save.deleteTitle') }}
-            </v-btn>
-            <v-spacer />
-            <v-btn flat @click="startCopy(s.path)">
-              {{ $t('save.copy') }}
-            </v-btn>
-
-
-            <!-- <v-btn flat @click="showDetail">
+                        <div>{{ $t(`gamesetting.gametype.${s.level.GameType}`) }}</div>
+                        <div>{{ new Date(s.level.LastPlayed * 1).toLocaleString() }}</div>
+                      </div>
+                    </v-card-title>
+                  </v-flex>
+                </v-layout>
+                <v-divider light />
+                <v-card-actions>
+                  <v-btn color="red" flat @click="startDelete(s.path)"> 
+                    <v-icon left>
+                      delete
+                    </v-icon>
+                    {{ $t('save.deleteTitle') }}
+                  </v-btn>
+                  <v-spacer />
+                  <!-- <v-btn flat @click="showDetail">
               <v-icon left>
                 map
               </v-icon>
               {{ $t('save.detail') }}
             </v-btn> -->
-            <v-btn flat @click="doExport(s.path)">
-              <v-icon left>
-                launch
-              </v-icon>
-              {{ $t('save.export') }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
+                  <v-btn flat @click="doExport(s.path)">
+                    <v-icon left>
+                      launch
+                    </v-icon>
+                    {{ $t('save.export') }}
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-flex>
+          </v-layout>
+        </v-container>
       </v-flex>
     </v-layout>
-    <v-dialog v-model="copyingTo" width="500">
-      <v-card>
-        <v-card-title
-          class="headline"
-          primary-title
-        >
-          {{ $t('save.copyTo.title') }}
-        </v-card-title>
-        <v-card-text>
-          {{ $t('save.copyTo.description') }}
-        </v-card-text>
-
-        <v-card-text v-if="copyingItem">
-          <v-treeview :items="otherProfilesMaps"></v-treeview>
-        </v-card-text>
-
-        <v-divider />
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="red"
-            flat
-            @click="cancelCopy"
-          >
-            {{ $t('save.copy.cancel') }}
-          </v-btn>
-          <v-btn
-            color="primary"
-            flat
-            @click="doCopy"
-          >
-            {{ $t('save.copy.confirm') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <dialog-copy-save-from v-model="copyFrom" @import="importSave" />
     <v-dialog v-model="copyingItem" width="500">
       <v-card>
         <v-card-title
@@ -198,12 +164,12 @@
 </template>
 
 <script>
+import unknown from 'renderer/assets/unknown_pack.png';
+
 export default {
   data() {
     return {
-      saves: [],
-
-      copyingTo: false,
+      copyFrom: false,
 
       copyingItem: false,
       copying: '',
@@ -211,15 +177,17 @@ export default {
 
       deletingItem: false,
       deleting: '',
+
+      unknown,
     };
   },
   computed: {
+    saves() { return this.$repo.state.profile.saves; },
     profiles() {
       return this.$repo.getters.profiles.filter(p => p.id !== this.$repo.state.profile.id);
     },
   },
   mounted() {
-    this.load();
   },
   methods: {
     onDragOver(event) { event.preventDefault(); return false; },
@@ -234,10 +202,10 @@ export default {
       }
     },
     async load() {
-      const saves = await this.$repo.dispatch('loadProfileSaves');
-      this.saves = saves;
+      await this.$repo.dispatch('loadProfileSaves');
     },
-    doCopyTo() {
+    doCopyFrom() {
+      this.copyFrom = true;
     },
     doImport() {
       this.$electron.remote.dialog.showOpenDialog({
@@ -247,12 +215,13 @@ export default {
       }, (filename, bookmark) => {
         if (filename) {
           for (const file of filename) {
-            this.$repo.dispatch('importSave', filename).then((suc) => {
-              this.$notify('success', 'Import Map');
-            });
+            this.$repo.dispatch('executeAction', { action: 'importSave', payload: file });
           }
         }
       });
+    },
+    importSave({ curseforge }) {
+
     },
     startCopy(path) {
       this.copyingItem = true;
@@ -268,15 +237,9 @@ export default {
       this.copying = '';
     },
     doDelete() {
-      this.$repo.dispatch('deleteSave', this.deleting)
-        .then(() => {
-          this.$notify('success', 'Delete Map');
-        }).catch((e) => {
-          this.$notify('failed', 'Delete Map');
-        }).finally(() => {
-          this.deletingItem = false;
-          this.deleting = '';
-        });
+      this.$repo.dispatch('executeAction', { action: 'deleteSave', payload: this.deleting });
+      this.deletingItem = false;
+      this.deleting = '';
     },
     cancelDelete() {
       this.deletingItem = false;
