@@ -100,9 +100,9 @@ export default function setup(context, store) {
                 mainRef.webContents.send('task-successed', id);
             }
         })
-        .on('task-failed', (id) => {
+        .on('task-failed', (id, error) => {
             if (mainRef) {
-                mainRef.webContents.send('task-failed', id);
+                mainRef.webContents.send('task-failed', id, error);
             }
         })
         .on('minecraft-start', () => {

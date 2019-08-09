@@ -190,7 +190,7 @@ const mod = {
                 // console.error(error);
 
                 if (task.root === node) {
-                    ipcMain.emit('task-failed', node._internalId);
+                    ipcMain.emit('task-failed', node._internalId, error);
                     delete nameToTask[key];
                 }
 

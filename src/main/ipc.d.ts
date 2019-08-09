@@ -24,7 +24,7 @@ export interface CustomEvents {
     on(channel: 'window-close', listener: (event: Event) => void): this;
 
     on(channel: 'task-successed', listener: (id: string) => void): this;
-    on(channel: 'task-failed', listener: (id: string) => void): this;
+    on(channel: 'task-failed', listener: (id: string, error: any) => void): this;
 
     on(channle: 'renderer-setup', listener: (event: Event, id: string) => void): this;
     on(channle: 'renderer-log', listener: (event: Event, text: string, ...args: string[]) => void): this;
