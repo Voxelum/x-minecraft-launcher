@@ -98,7 +98,7 @@ export default {
     };
   },
   computed: {
-    mcversion() { return this.$repo.getters.selectedProfile.mcversion; },
+    mcversion() { return this.$repo.getters.selectedProfile.version.minecraft; },
     isServer() { return this.$repo.getters.selectedProfile.type === 'server'; },
   },
   created() {
