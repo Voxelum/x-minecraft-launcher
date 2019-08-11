@@ -121,12 +121,10 @@ export default {
         },
       });
     },
-    load() {
+    async load() {
       const profile = this.$repo.getters.selectedProfile;
       const { forge, minecraft, liteloader } = profile.version;
       this.mcversion = minecraft;
-      this.forgeVersion = forge;
-      this.liteloader = liteloader;
 
       const ver = this.$repo.state.version.forge[minecraft];
       if (ver) {
@@ -137,6 +135,10 @@ export default {
           .then(r => (r ? r.versions : []))
           .then((r) => { this.forgeVersionList = [...r]; });
       }
+
+      await this.$nextTick();
+      this.forgeVersion = forge;
+      this.liteloader = liteloader;
     },
     onMouseWheel(e) {
       e.stopPropagation();
