@@ -92,6 +92,7 @@ const mod = {
                 version,
                 extraExecOption: {
                     detached: true,
+                    cwd: minecraftFolder.root,
                 },
             };
 
@@ -162,6 +163,7 @@ const mod = {
                 });
                 process.stdout.on('data', (s) => {
                     const string = s.toString();
+                    console.log(string);
                     if (string.indexOf('---- Minecraft Crash Report ----') !== -1) {
                         crashReport = string;
                     } else if (string.indexOf('Crash report saved to:') !== -1) {
@@ -174,6 +176,7 @@ const mod = {
                     ipcMain.emit('minecraft-stdout', string);
                 });
                 process.stderr.on('data', (s) => {
+                    console.log(s.toString());
                     ipcMain.emit('minecraft-stderr', s.toString());
                 });
                 process.unref();
