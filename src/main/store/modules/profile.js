@@ -462,18 +462,13 @@ const mod = {
             });
 
             const modsDir = paths.resolve(srcFolderPath, 'mods');
-            const forgeMods = [];
-            const litesMods = [];
+            const mods = [];
             if (await fs.exists(modsDir)) {
                 for (const file of await fs.readdir(modsDir)) {
                     try {
                         const resource = await context.dispatch('waitTask', await context.dispatch('importResource', { path: paths.resolve(srcFolderPath, 'mods', file) }));
                         if (resource) {
-                            if (resource.domain === 'mods') {
-                                forgeMods.push(getModIdentifier(resource));
-                            } else if (resource.type === 'liteloader') {
-                                litesMods.push(getModIdentifier(resource));
-                            }
+                            mods.push(resource.hash);
                         }
                     } catch (e) {
                         console.error(`Cannot import mod at ${file}.`);
@@ -499,18 +494,11 @@ const mod = {
                 profileTemplate = await fs.readFile(proiflePath).then(buf => buf.toString()).then(JSON.parse, () => ({}));
                 Reflect.deleteProperty(profileTemplate, 'java');
 
-                if (!profileTemplate.forge) {
-                    profileTemplate.forge = {
-                        mods: forgeMods,
+                if (!profileTemplate.deployments) {
+                    profileTemplate.deployments = {
+                        mods,
                     };
                 }
-                if (!profileTemplate.forge.mods) profileTemplate.forge.mods = forgeMods;
-                if (!profileTemplate.liteloader) {
-                    profileTemplate.liteloader = {
-                        mods: litesMods,
-                    };
-                }
-                if (!profileTemplate.liteloader.mods) profileTemplate.liteloader.mods = litesMods;
             }
 
             await fs.writeFile(context.rootGetters.path('profiles', id, 'profile.json'), JSON.stringify(profileTemplate, null, 4));
