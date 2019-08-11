@@ -110,7 +110,13 @@ const mod = {
                         await fs.mkdir(dir);
                     }
                     const files = await fs.readdir(dir);
-                    await Promise.all(files.map(file => fs.unlink(join(dir, file))));
+                    for (const file of files) {
+                        const fp = join(dir, file);
+                        const isLink = await fs.stat(fp).then(s => s.isSymbolicLink());
+                        if (isLink) {
+                            await fs.unlink(fp);
+                        }
+                    }
                     await dispatch('deployResources', {
                         resourceUrls: profile.deployments[domain],
                         profile: profile.id,
@@ -121,12 +127,16 @@ const mod = {
                 }
             }
 
-            // we link the resource pack whatever 
-            await dispatch('deployResources', {
-                resourceUrls: rootGetters.resourcepacks.map(r => r.hash),
-                profile: profile.id,
-            });
-
+            try {
+                // we link the resource pack whatever 
+                await dispatch('deployResources', {
+                    resourceUrls: rootGetters.resourcepacks.map(r => r.hash),
+                    profile: profile.id,
+                });
+            } catch (e) {
+                console.error('Cannot deploy resource packs');
+                console.error(e);
+            }
             console.log('Launching with these option...');
             console.log(JSON.stringify(option));
 
@@ -163,7 +173,6 @@ const mod = {
                 });
                 process.stdout.on('data', (s) => {
                     const string = s.toString();
-                    console.log(string);
                     if (string.indexOf('---- Minecraft Crash Report ----') !== -1) {
                         crashReport = string;
                     } else if (string.indexOf('Crash report saved to:') !== -1) {
@@ -176,7 +185,6 @@ const mod = {
                     ipcMain.emit('minecraft-stdout', string);
                 });
                 process.stderr.on('data', (s) => {
-                    console.log(s.toString());
                     ipcMain.emit('minecraft-stderr', s.toString());
                 });
                 process.unref();

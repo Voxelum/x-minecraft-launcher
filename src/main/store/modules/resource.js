@@ -503,12 +503,12 @@ const mod = {
                         const stat = await fs.stat(dest);
                         if (stat.isSymbolicLink()) {
                             await fs.unlink(dest);
-                            promises.push(fs.link(res.path, dest));
+                            promises.push(fs.symlink(res.path, dest));
                         } else {
                             console.error(`Cannot deploy resource ${res.hash} -> ${dest}, since the path is occupied.`);
                         }
                     } catch (e) {
-                        promises.push(fs.link(res.path, dest));
+                        promises.push(fs.symlink(res.path, dest));
                     }
                 } else if (res.domain === 'saves') { 
                     await context.dispatch('importSave', res.path);
