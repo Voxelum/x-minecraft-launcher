@@ -1,6 +1,6 @@
 import { Module, Context } from "../store";
 
-declare namespace DiagnoseModule {
+export declare namespace DiagnoseModule {
     interface Problem {
         id: string;
         arguments?: { [key: string]: any };

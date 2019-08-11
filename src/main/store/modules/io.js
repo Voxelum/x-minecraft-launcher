@@ -1,8 +1,7 @@
 import { app } from 'electron';
-import { existsSync, promises as fs } from 'fs';
 import paths, { join } from 'path';
-import Task from 'treelike-task';
-import { ensureDir } from 'main/utils/fs';
+import { Task } from '@xmcl/minecraft-launcher-core';
+import fs from 'main/utils/vfs';
 import { getGuardWindow } from '../../windowsManager';
 
 /**
@@ -17,7 +16,7 @@ const mod = {
         async readFolder(context, path) {
             if (!path) throw new Error('Path must not be undefined!');
             path = paths.join(context.rootState.root, path);
-            await ensureDir(path);
+            await fs.ensureDir(path);
             return fs.readdir(path);
         },
 
@@ -28,7 +27,7 @@ const mod = {
 
         async getPersistence(context, { path }) {
             const inPath = `${context.rootState.root}/${path}`;
-            if (!existsSync(inPath)) return undefined;
+            if (await fs.missing(inPath)) return undefined;
             return fs.readFile(inPath, { encoding: 'utf-8' }).then(s => JSON.parse(s.toString())).catch(() => { });
         },
         async electronDownloadFile(context, payload) {

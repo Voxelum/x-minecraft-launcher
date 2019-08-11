@@ -1,20 +1,19 @@
 import { Store, DispatchOptions, MutationTree, ActionTree, Module as VModule, Action } from 'vuex'
-import { GameProfile, MojangAccount, VersionMeta, Forge, LiteLoader, GameSetting, ForgeWebPage, MojangChallengeResponse, MojangChallenge } from 'ts-minecraft';
 import { RendererInterface, Remote } from 'electron';
-import { Task } from 'treelike-task';
 
 import { UserModule } from './modules/user'
 import { VersionModule, MinecraftModule, ForgeModule, LiteloaderModule } from './modules/version'
 import { ProfileModule, CreateOption } from './modules/profile';
 import { JavaModule } from './modules/java';
+import { CurseForgeModule } from './modules/curseforge';
 import { ResourceModule, Resource } from './modules/resource'
 import { TaskModule } from './modules/task';
 import { DiagnoseModule } from './modules/diagnose';
 import { ConfigModule } from './modules/config';
-import { Library } from 'ts-minecraft/dest/libs/version';
 import { IOModule, Actions as IOActions } from './modules/io';
 import modules from './modules/base';
 import { LauncherModule, State as LaunchState, Mutations as LaunchMutations } from './modules/launch';
+import { ClientModule } from './modules/client';
 
 export type TaskHandle = string;
 
@@ -44,8 +43,8 @@ interface BaseMutations {
     platform(state: State, platform: NodeJS.Platform): void
 }
 
-type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | ConfigModule | UserModule | LauncherModule | IOModule | DiagnoseModule;
-type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & ConfigModule & UserModule & LauncherModule & IOModule & DiagnoseModule;
+type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | ConfigModule | UserModule | LauncherModule | IOModule | DiagnoseModule | CurseForgeModule | ClientModule; 
+type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & ConfigModule & UserModule & LauncherModule & IOModule & DiagnoseModule & CurseForgeModule & ClientModule;
 interface ModulesCollection extends ModulesIntersection { }
 
 type Mutations =

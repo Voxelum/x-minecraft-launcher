@@ -23,7 +23,6 @@ for (const table of parsed.querySelectorAll('table')) {
     let current;
     for (const r of all) {
         const a = r.querySelector('a');
-        // eslint-disable-next-line no-continue
         if (!a) continue;
         const name = a.rawText.trim();
         const protocolE = r.querySelectorAll('td')[1];

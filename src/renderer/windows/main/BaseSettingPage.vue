@@ -55,6 +55,18 @@
         </v-flex>
 
         <v-flex d-flex xs6>
+          <v-btn outline large replace to="/save">
+            {{ $tc('save.name', 2) }}
+          </v-btn>
+        </v-flex>
+
+        <v-flex d-flex xs6>
+          <!-- <v-btn outline large replace to="/server">
+            {{ $tc('server.name', 2) }}
+          </v-btn> -->
+        </v-flex>
+
+        <v-flex d-flex xs6>
           <v-checkbox v-model="hideLauncher" hide-details dark :label="$t('launch.hideLauncher')" />
         </v-flex>
         <v-flex d-flex xs6>
@@ -86,41 +98,8 @@ export default {
     };
   },
   computed: {
+    mcversion() { return this.$repo.getters.selectedProfile.version.minecraft; },
     isServer() { return this.$repo.getters.selectedProfile.type === 'server'; },
-    mcversion: {
-      get() { return this.$repo.getters.selectedProfile.mcversion; },
-      set(v) { this.$repo.dispatch('editProfile', { mcversion: v }); },
-    },
-    forgeVersion: {
-      get() { return this.$repo.getters.selectedProfile.forge.version; },
-      set(v) { return this.$repo.dispatch('editProfile', { forge: { version: v } }); },
-    },
-    localVersion: {
-      get() {
-        const ver = this.$repo.getters.currentVersion;
-        return this.localVersions.find(v => ver.id === v.id);
-      },
-      set(v) {
-        const payload = {};
-        if (v.minecraft !== this.mcversion) {
-          this.mcversion = v.minecraft;
-          payload.mcversion = this.mcversion;
-        }
-        const profile = this.$repo.getters.selectedProfile;
-        if (v.forge !== profile.forge.version) {
-          payload.forge = {
-            version: v.forge || '',
-          };
-        }
-        this.$repo.dispatch('editProfile', payload);
-      },
-    },
-    localVersions() {
-      return this.$repo.state.version.local;
-    },
-    versions() {
-      return Object.keys(this.$repo.state.version.minecraft.versions);
-    },
   },
   created() {
     this.$repo.dispatch('refreshForge').catch((e) => {

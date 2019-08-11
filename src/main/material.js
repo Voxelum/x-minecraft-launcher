@@ -58,16 +58,15 @@ export default function setup(context, store) {
             } else if (mainRef && !mainRef.isFocused()) {
                 mainRef.focus();
             }
-        })
-            .on('double-click', () => {
-                if (loggerRef) {
-                    if (loggerRef.isVisible()) loggerRef.hide();
-                    else loggerRef.show();
-                } else if (mainRef) {
-                    if (mainRef.isVisible()) mainRef.hide();
-                    else mainRef.show();
-                }
-            });
+        }).on('double-click', () => {
+            if (loggerRef) {
+                if (loggerRef.isVisible()) loggerRef.hide();
+                else loggerRef.show();
+            } else if (mainRef) {
+                if (mainRef.isVisible()) mainRef.hide();
+                else mainRef.show();
+            }
+        });
     });
     context.configDock((dock) => {
     });
@@ -101,9 +100,9 @@ export default function setup(context, store) {
                 mainRef.webContents.send('task-successed', id);
             }
         })
-        .on('task-failed', (id) => {
+        .on('task-failed', (id, error) => {
             if (mainRef) {
-                mainRef.webContents.send('task-failed', id);
+                mainRef.webContents.send('task-failed', id, error);
             }
         })
         .on('minecraft-start', () => {

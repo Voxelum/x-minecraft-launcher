@@ -31,6 +31,13 @@
             <v-icon>person</v-icon>
           </v-list-tile-action>
         </v-list-tile>
+        <v-list-tile :disabled="!logined" replace to="/curseforge">
+          <v-list-tile-action style="padding-right: 2px;">
+            <v-icon :size="14">
+              $vuetify.icons.curseforge
+            </v-icon>
+          </v-list-tile-action>
+        </v-list-tile>
         <v-spacer />
       </v-list>
       <v-list class="non-moveable" style="position: absolute; bottom: 0px;">
@@ -110,6 +117,11 @@ export default {
 }
 .v-input__icon--prepend {
   margin-right: 7px;
+}
+img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 </style>
 

@@ -8,7 +8,6 @@ const files = fs.readdirSync(base).filter(f => f.endsWith('.json')).map(f => pat
 function discover(dest, src) {
     const keys = Object.keys(src);
     for (const k of keys) {
-        // eslint-disable-next-line no-continue
         if (k === '$schema') continue;
         const v = src[k];
         if (typeof v === 'object') {
@@ -42,7 +41,6 @@ function sorted(o) {
     const result = {};
     const keys = Object.keys(o).sort();
     for (const key of keys) {
-        // eslint-disable-next-line no-continue
         if (key === '$schema') continue;
         if (typeof o[key] === 'object') {
             o[key] = sorted(o[key]);
@@ -61,6 +59,7 @@ Promise.all(files.map(processFile)).then(() => {
 
 async function processFile(f) {
     const b = await fs.promises.readFile(f);
+    console.log(f);
     const o = JSON.parse(b.toString());
     discover(powerLang, o);
     const result = { $schema: '../locale.schema.json', ...sorted(o) };

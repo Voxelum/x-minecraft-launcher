@@ -1,19 +1,20 @@
 <template>
   <v-tooltip top>
     <template v-slot:activator="{ on }">
-      <v-card color="darken-1" flat hover :class="{ incompatible: !compatible }" class="draggable-card mod-card white--text" style="margin-top: 10px; padding: 0 10px;"
-              draggable v-on="on" @dragstart="onDragStart" @dblclick="tryOpen">
+      <v-card color="darken-1" flat hover :class="{ incompatible: !compatible }" 
+              class="draggable-card mod-card white--text" style="margin-top: 10px; padding: 0 10px;" 
+              draggable v-on="on" @dragstart="onDragStart" @dblclick="tryOpen" @click="$emit('click', $event)">
         <v-layout justify-center align-center fill-height>
           <v-flex v-if="icon" xs4 style="padding: 0 10px 0 0;" fill-height>
             <v-img :src="icon" style="height: 100%" contain />
           </v-flex>
           <v-flex xs8 style="padding: 10px 0;">
             <h3>
-              {{ data.name }}
-              {{ data.version }}
+              {{ metadata.name || data.name }}
+              {{ metadata.version }}
             </h3>
             <span style="color: #bdbdbd">
-              {{ data.description }}
+              {{ metadata.description }}
             </span>
           </v-flex>
         </v-layout>
@@ -27,7 +28,7 @@
 
 <script>
 import { isCompatible } from 'universal/utils/versions';
-import unknownPack from 'static/unknown_pack.png';
+import unknownPack from 'renderer/assets/unknown_pack.png';
 
 export default {
   props: {
@@ -54,26 +55,48 @@ export default {
     };
   },
   computed: {
+    metadata() {
+      return this.data.metadata[0];
+    },
     mcversion() {
-      return this.$repo.getters.selectedProfile.mcversion;
+      return this.$repo.getters.selectedProfile.version.minecraft;
     },
     acceptedRange() {
-      return this.data.acceptedMinecraftVersions ? this.data.acceptedMinecraftVersions : `[${this.data.mcversion}]`;
+      if (this.data.acceptedMinecraftVersions) {
+        return this.data.acceptedMinecraftVersions;
+      }
+      if (/^\[.+\]$/.test(this.data.mcversion)) {
+        return this.data.mcversion;
+      }
+      return `[${this.data.mcversion}]`;
     },
     compatible() {
-      return isCompatible(this.acceptedRange, this.mcversion);
+      try {
+        return isCompatible(this.acceptedRange, this.mcversion);
+      } catch (e) {
+        console.error(this.data.modid);
+        console.error(e);
+        return false;
+      }
     },
   },
   mounted() {
-    this.$repo.dispatch('readForgeLogo', this.hash).then((icon) => {
-      if (typeof icon === 'string' && icon !== '') {
-        this.icon = `data:image/png;base64, ${icon}`;
-      } else {
-        this.icon = unknownPack;
-      }
-    });
+    this.readLogo();
   },
   methods: {
+    readLogo() {
+      if (this.data.missing) {
+        this.icon = unknownPack;
+      } else {
+        this.$repo.dispatch('readForgeLogo', this.hash).then((icon) => {
+          if (typeof icon === 'string' && icon !== '') {
+            this.icon = `data:image/png;base64, ${icon}`;
+          } else {
+            this.icon = unknownPack;
+          }
+        });
+      }
+    },
     onDragStart(e) {
       e.dataTransfer.setData('Index', `${this.isSelected ? 'R' : 'L'}${this.index}`);
     },
@@ -91,7 +114,7 @@ export default {
   background-color: #e65100;
 }
 .draggable-card:hover {
-  background-color: #388E3C;
+  background-color: #388e3c;
 }
 
 .title {

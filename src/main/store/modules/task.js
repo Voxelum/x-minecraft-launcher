@@ -3,6 +3,7 @@ import { v4 } from 'uuid';
 import { ipcMain } from 'electron';
 import { requireString } from 'universal/utils/object';
 import base from 'universal/store/modules/task';
+import { Task } from '@xmcl/minecraft-launcher-core';
 
 class TaskWatcher {
     constructor() {
@@ -90,11 +91,11 @@ class TaskWatcher {
 
 let taskWatcher = new TaskWatcher();
 /**
- * @type {{[name:string]: import('treelike-task').Task<any>}}
+ * @type {{[name:string]: import('@xmcl/minecraft-launcher-core').Task<any>}}
  */
 let nameToTask = {};
 /**
- * @type {{[name:string]: import('treelike-task').Task<any>}}
+ * @type {{[name:string]: import('@xmcl/minecraft-launcher-core').Task<any>}}
  */
 let idToTask = {};
 
@@ -147,6 +148,12 @@ const mod = {
             if (!task) return Promise.resolve();
             return task.promise;
         },
+        async executeAction(context, { action, background, payload }) {
+            const task = Task.create(action, () => context.dispatch(action, payload));
+            task.background = background;
+            await context.dispatch('executeTask', task);
+            return task.promise;
+        },
         async executeTask(context, task) {
             const key = JSON.stringify({ name: task.root.name, arguments: task.root.arguments });
 
@@ -183,12 +190,15 @@ const mod = {
                 // console.error(error);
 
                 if (task.root === node) {
-                    ipcMain.emit('task-failed', node._internalId);
+                    ipcMain.emit('task-failed', node._internalId, error);
                     delete nameToTask[key];
                 }
 
                 taskWatcher.status(node._internalId, 'failed');
             });
+            if (task.background) {
+                task.root.background = true;
+            }
             task.root.time = new Date().toLocaleTimeString();
             task.root._internalId = uuid;
             task.id = uuid;

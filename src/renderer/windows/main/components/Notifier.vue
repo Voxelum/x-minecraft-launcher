@@ -5,11 +5,40 @@
     </v-icon>
 
     {{ content }}
-
+    
     {{ $t(`log.${status}`) }}
+    <v-btn v-if="error" style="margin-right: -30px" flat @click="errorDialog = true">
+      <v-icon>arrow_right</v-icon>
+    </v-btn>
     <v-btn color="pink" flat @click="snackbar = false">
       <v-icon>close</v-icon>
     </v-btn>
+    <v-dialog v-model="errorDialog">
+      <v-card>
+        <v-card-title
+          class="headline"
+          primary-title
+        >
+          Error
+        </v-card-title>
+
+        <v-card-text>
+          {{ error }}
+        </v-card-text>
+
+        <v-divider />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            flat
+            @click="errorDialog = false"
+          >
+            {{ $t('ok') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-snackbar>
 </template>
 
@@ -19,9 +48,11 @@ import Vue from 'vue';
 export default {
   data: () => ({
     snackbar: false,
+    errorDialog: false,
 
     content: '',
     status: '',
+    error: '',
 
     icons: {
       success: 'check_circle',
@@ -55,14 +86,17 @@ export default {
     onSuccessed(event, id) {
       this.snackbar = true;
       const task = this.$repo.state.task.tree[id];
+      if (task.background) return;
       this.content = this.$t(task.path, task.arguments || {});
       this.status = 'success';
     },
-    onFailed(event, id) {
+    onFailed(event, id, error) {
       this.snackbar = true;
       const task = this.$repo.state.task.tree[id];
+      if (task.background) return;
       this.content = this.$t(task.path, task.arguments || {});
       this.status = 'error';
+      this.error = error;
     },
   },
 };

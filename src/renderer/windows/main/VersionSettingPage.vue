@@ -114,27 +114,31 @@ export default {
   methods: {
     save() {
       this.$repo.dispatch('editProfile', {
-        mcversion: this.mcversion,
-        forge: {
-          version: this.forgeVersion,
+        version: {
+          minecraft: this.mcversion,
+          forge: this.forgeVersion,
+          liteloader: this.liteloaderVersion,
         },
       });
     },
-    load() {
+    async load() {
       const profile = this.$repo.getters.selectedProfile;
-      this.mcversion = profile.mcversion;
-      this.forgeVersion = profile.forge.version;
+      const { forge, minecraft, liteloader } = profile.version;
+      this.mcversion = minecraft;
 
-      const mcversion = this.mcversion;
-      const ver = this.$repo.state.version.forge[mcversion];
+      const ver = this.$repo.state.version.forge[minecraft];
       if (ver) {
         this.forgeVersionList = ver.versions;
       } else {
         this.forgeVersionList = [];
-        this.$repo.dispatch('getForgeWebPage', this.mcversion)
+        this.$repo.dispatch('getForgeWebPage', minecraft)
           .then(r => (r ? r.versions : []))
           .then((r) => { this.forgeVersionList = [...r]; });
       }
+
+      await this.$nextTick();
+      this.forgeVersion = forge;
+      this.liteloader = liteloader;
     },
     onMouseWheel(e) {
       e.stopPropagation();

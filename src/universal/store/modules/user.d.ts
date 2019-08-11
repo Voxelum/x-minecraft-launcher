@@ -1,42 +1,78 @@
-import { Auth, GameProfile, MojangAccount, ProfileService, MojangChallenge, MojangChallengeResponse } from 'ts-minecraft';
+import { Auth, GameProfile, MojangAccount, ProfileService, MojangChallenge, MojangChallengeResponse } from '@xmcl/minecraft-launcher-core';
 import { Context, Module } from "../store";
 
 export declare namespace UserModule {
 
-    type Snapshot = Partial<Omit<State, 'info'>>
-    interface State {
-        skin: {
-            data: string,
-            slim: boolean,
-        },
-        cape: string,
+    type Snapshot = Partial<Omit<State, 'info'>>;
 
-        id: string,
-        name: string,
-        accessToken: string,
-        userId: string,
-        userType: UserType,
-        properties: {
-            [key: string]: string,
-        },
+    interface SerializedState {
+        /**
+         * The user unique id
+         */
+        id: string;
+        /**
+         * The user name
+         */
+        name: string;
+        /**
+         * The cached access token
+         */
+        accessToken: string;
 
-        info: MojangAccount?,
-
+        /**
+         * All loaded auth services api. Used for ygg auth
+         */
         authServices: {
-            mojang: Auth.Yggdrasil.API,
-            [name: string]: Auth.Yggdrasil.API
-        },
+            mojang: Auth.Yggdrasil.API;
+            [name: string]: Auth.Yggdrasil.API;
+        };
+        /**
+         * All loaded profile services api. Used for 
+         */
         profileServices: {
-            mojang: ProfileService.API,
-            [name: string]: ProfileService.API
-        },
+            mojang: ProfileService.API;
+            [name: string]: ProfileService.API;
+        };
 
-        profileService: string,
-        authService: string,
+        /**
+         * Selected profile service.
+         */
+        profileService: string;
+        /**
+         * Selected auth service.
+         */
+        authService: string;
 
-        loginHistory: { [mode: string]: string[] },
+        /**
+         * The login history of the user for a specific auth services
+         */
+        loginHistory: { [mode: string]: string[] };
 
-        clientToken: string,
+        /**
+         * The client token of current client. The launcher will generate one at first launch.
+         */
+        clientToken: string;
+
+        userId: string;
+        userType: UserType;
+        properties: {
+            [key: string]: string;
+        };
+    }
+    interface State extends SerializedState {
+        skin: {
+            data: string;
+            slim: boolean;
+        };
+        /**
+         * The caced cape data uri
+         */
+        cape: string;
+
+        /**
+         * The mojang user info
+         */
+        info: MojangAccount?;
     }
 
     interface Mutations {
@@ -44,7 +80,7 @@ export declare namespace UserModule {
 
         login(state: State, info: { auth: Auth, account?: string }): void;
         logout(state: State): void;
-        textures(state: State, textures: GameProfile.Textures): void;
+        textures(state: State, textures: GameProfile.TexturesInfo): void;
         mojangInfo(state: State, info: MojangAccount): void;
         authService(state: State, mode: string): void;
         profileService(state: State, mode: string): void;
@@ -63,7 +99,7 @@ export declare namespace UserModule {
 
     type C = Context<State, Getters, Mutations, Actions>;
     interface Actions {
-        selectLoginMode(context: C, mode: string): Promise<void>
+        selectLoginMode(context: C, mode: string): Promise<void>;
 
         login(context: C, payload?: { account: string; password?: string }, options?: DispatchOptions): Promise<void>;
         logout(context: C): Promise<void>;
@@ -72,11 +108,19 @@ export declare namespace UserModule {
         refreshInfo(context: C): Promise<void>;
         refreshSkin(context: C): Promise<void>;
 
+        /**
+         * Check current ip location and determine wether we need to validate user identity by response challenge.
+         * 
+         * See `getChallenges` and `submitChallenges`
+         */
         checkLocation(context: C): Promise<boolean>;
+        /**
+         * Get all the user set challenges for security reasons.
+         */
         getChallenges(context: C): Promise<MojangChallenge[]>;
         submitChallenges(context: C, responses: MojangChallengeResponse[]): Promise<any>;
 
-        uploadSkin(context: C, payload: { data: string | Buffer, slim: boolean }): Promise<void>
+        uploadSkin(context: C, payload: { data: string | Buffer, slim: boolean }): Promise<void>;
         saveSkin(context: C, payload: { skin: { data: string }, path: string }): Promise<void>;
         parseSkin(context: C, path: string): Promise<string | undefined>;
     }

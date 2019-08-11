@@ -48,11 +48,11 @@ export default {
     hovered: {},
   }),
   computed: {
-    all() { return this.$repo.state.task.tasks; },
+    all() { return this.$repo.state.task.tasks.filter(n => !n.background); },
   },
   methods: {
     showTaskContext(event, item) {
-      this.$menu([{ title: 'hello', onClick() { } }], event.clientX, event.clientY);
+      // this.$menu([{ title: 'hello', onClick() { } }], event.clientX, event.clientY);
     },
     onTaskClick(event, item) {
       this.$electron.clipboard.writeText(item.message);

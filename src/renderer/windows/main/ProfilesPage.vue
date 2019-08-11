@@ -37,9 +37,15 @@
                   </v-icon>
                 </v-btn>
               </template>
-              <v-btn style="z-index: 20;" fab small v-on="on" @click="doImport(true)" @mouseenter="enterAltImport"
-                     @mouseleave="leaveAltImport">
+              <v-btn style="z-index: 20;" fab small v-on="on" @click="doImport(true)" @mouseenter="enterImport($t('profile.importFolder'))"
+                     @mouseleave="leaveImport">
                 <v-icon>folder</v-icon>
+              </v-btn>
+              <v-btn style="z-index: 20;" fab small v-on="on" @mouseenter="enterImport($t('profile.importCurseforge'))"
+                     @mouseleave="leaveImport" @click="doImport(false, true)">
+                <v-icon :size="12" style="padding-right: 2px;">
+                  $vuetify.icons.curseforge
+                </v-icon>
               </v-btn>
             </v-speed-dial>
           </template>
@@ -60,13 +66,13 @@
                 </v-icon>
               </v-btn>
             </template>
-            {{ $t('!delete') }}
+            {{ $t('profile.delete') }}
           </v-tooltip>
           <v-card-title>
             <v-icon large left>
               layers
             </v-icon>
-            <span class="title font-weight-light">{{ profile.name || `Minecraft ${profile.mcversion}` }}</span>
+            <span class="title font-weight-light">{{ profile.name || `Minecraft ${profile.version.minecraft}` }}</span>
           </v-card-title>
 
           <v-card-text class="headline font-weight-bold">
@@ -77,7 +83,7 @@
             <v-list-tile class="grow">
               <v-list-tile-avatar color="grey darken-3">
                 <v-chip label :selected="false" @click="$event.stopPropagation()">
-                  {{ profile.mcversion }}
+                  {{ profile.version.minecraft }}
                 </v-chip>
               </v-list-tile-avatar>
 
@@ -132,7 +138,7 @@ export default {
       this.creatingServer = true;
       this.wizard = true;
     },
-    doImport(fromFolder) {
+    doImport(fromFolder, curseforge) {
       const filters = fromFolder ? [] : [{ extensions: ['zip'], name: 'Zip' }];
       const properties = fromFolder ? ['openDirectory'] : ['openFile'];
       this.$electron.remote.dialog.showOpenDialog({
@@ -144,7 +150,11 @@ export default {
         console.log(filenames);
         if (filenames && filenames.length > 0) {
           for (const f of filenames) {
-            this.$repo.dispatch('importProfile', f);
+            if (curseforge) {
+              this.$repo.dispatch('importCurseforgeModpack', f);
+            } else {
+              this.$repo.dispatch('importProfile', f);
+            }
           }
         }
       });
@@ -171,12 +181,12 @@ export default {
         this.hoverTextOnCreate = this.$t('profile.add');
       }, 100);
     },
-    enterAltImport() {
+    enterImport(text) {
       setTimeout(() => {
-        this.hoverTextOnImport = this.$t('profile.importFolder');
+        this.hoverTextOnImport = text;
       }, 100);
     },
-    leaveAltImport() {
+    leaveImport() {
       setTimeout(() => {
         this.hoverTextOnImport = this.$t('profile.importZip');
       }, 100);

@@ -29,7 +29,7 @@ export default {
       useVbo: { options: [true, false], value: true },
       fboEnable: { options: [true, false], value: true },
       enableVsync: { options: [true, false], value: true },
-      anaglyph3d: { options: [true, false], value: true },
+      anaglyph3d: { options: [true, false], value: false },
     },
   }),
   mounted() { this.load(); },
@@ -37,11 +37,14 @@ export default {
   activated() { this.load(); },
   deactivated() { this.save(); },
   methods: {
-    load() {
+    async load() {
+      await this.$repo.dispatch('loadProfileGameSettings');
       const graphics = this.graphics;
-      const settings = this.$repo.getters.selectedProfile.settings;
+      const settings = this.$repo.state.profile.settings;
       for (const setting of Object.keys(graphics)) {
-        graphics[setting].value = settings[setting] || graphics[setting].options[0];
+        if (typeof settings[setting] !== 'undefined') {
+          graphics[setting].value = settings[setting];
+        }
       }
     },
     save() {

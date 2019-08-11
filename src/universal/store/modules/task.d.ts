@@ -1,12 +1,13 @@
-import { Task, TaskNode } from 'treelike-task';
+import { Task } from '@xmcl/minecraft-launcher-core';
 import { Context, Module, TaskHandle } from "../store";
 
 
-export interface TNode extends TaskNode {
-    _internalId: string
-    tasks: TNode[]
-    time?: string
-    status: string
+export interface TNode extends Task.Node {
+    _internalId: string;
+    tasks: TNode[];
+    time?: string;
+    status: string;
+    background: boolean;
 }
 export declare namespace TaskModule {
 
@@ -29,6 +30,8 @@ export declare namespace TaskModule {
 
     type C = Context<TaskModule.State, {}, TaskModule.Mutations, TaskModule.Actions>;
     interface Actions {
+        executeAction<T>(context: C, payload: { id: string, payload?: any, background?: boolean }): Promise<any>;
+
         executeTask(context: C, task: Task<any>): Promise<TaskHandle>;
         spawnTask(context: C, name: string): Promise<TaskHandle>;
         updateTask(context: C, data: { id: TaskHandle, progress: number, total?: number, message?: string }): Promise<void>;

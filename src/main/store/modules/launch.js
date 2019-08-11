@@ -1,8 +1,8 @@
-import { MinecraftFolder, Launcher } from 'ts-minecraft';
+import { Util, Launcher } from '@xmcl/minecraft-launcher-core';
 import paths, { join } from 'path';
 import { ipcMain } from 'electron';
 import base from 'universal/store/modules/launch';
-import { existsSync, mkdirSync, promises } from 'fs';
+import fs from 'main/utils/vfs';
 
 /**
  * @param {{ message: string; type: string; }} e
@@ -26,50 +26,50 @@ function onerror(e) {
 const mod = {
     ...base,
     actions: {
-        async launch(context) {
-            if (context.state.status !== 'ready') {
+        async launch({ state, rootGetters, rootState, commit, dispatch }) {
+            if (state.status !== 'ready') {
                 return false;
             }
             /**
              * current selected profile
              */
-            const profile = context.rootGetters.selectedProfile;
-            const user = context.rootState.user;
+            const profile = rootGetters.selectedProfile;
+            const user = rootState.user;
             if (!profile) return Promise.reject(new Error('launch.profile.empty'));
             if (user.accessToken === '' || user.name === '' || user.id === '') return Promise.reject(new Error('launch.auth.illegal'));
 
-            context.commit('launchStatus', 'checkingProblems');
-            for (let problems = profile.problems.filter(p => p.autofix); problems.length !== 0; problems = profile.problems.filter(p => p.autofix)) {
-                await context.dispatch('fixProfile', problems);
+            commit('launchStatus', 'checkingProblems');
+            for (let problems = rootState.profile.problems.filter(p => p.autofix);
+                problems.length !== 0;
+                problems = rootState.profile.problems.filter(p => p.autofix)) {
+                await dispatch('fixProfile', problems);
             }
 
-            if (profile.problems.some(p => !p.optional)) {
-                context.commit('launchStatus', 'ready');
+            if (rootState.profile.problems.some(p => !p.optional)) {
+                commit('launchStatus', 'ready');
                 return false;
             }
 
-            if (context.state.status === 'ready') { // check if we have cancel (set to ready) this launch
+            if (state.status === 'ready') { // check if we have cancel (set to ready) this launch
                 return false;
             }
 
-            context.commit('launchStatus', 'launching');
+            commit('launchStatus', 'launching');
 
             const debug = profile.showLog;
-            const minecraftFolder = new MinecraftFolder(paths.join(context.rootState.root, 'profiles', profile.id));
+            const minecraftFolder = new Util.MinecraftFolder(paths.join(rootState.root, 'profiles', profile.id));
 
             /**
              * real version name
              */
-            const version = await context.dispatch('resolveVersion', {
+            const version = await dispatch('resolveVersion', {
                 folder: '',
-                minecraft: profile.mcversion,
-                forge: profile.forge.version || '',
-                liteloader: profile.liteloader.version || '',
+                ...profile.version,
             });
 
-            console.log(`Chooose ${version} version.`);
+            console.log(`Will launch with ${version} version.`);
 
-            const java = profile.java || context.rootGetters.defaultJava;
+            const java = profile.java || rootGetters.defaultJava;
             /**
              * Build launch condition
              * @type {Launcher.Option}
@@ -85,13 +85,14 @@ const mod = {
                     properties: user.properties,
                 },
                 gamePath: minecraftFolder.root,
-                resourcePath: context.rootState.root,
+                resourcePath: rootState.root,
                 javaPath: java.path,
-                minMemory: profile.minMemory || 1024,
-                maxMemory: profile.maxMemory || 1024,
+                minMemory: profile.minMemory,
+                maxMemory: profile.maxMemory,
                 version,
                 extraExecOption: {
                     detached: true,
+                    cwd: minecraftFolder.root,
                 },
             };
 
@@ -100,44 +101,48 @@ const mod = {
                 option.server = { ip: profile.host, port: profile.port };
             }
 
-            const { mods, resourcepacks } = await context.dispatch('resolveProfileResources', context.rootState.profile.id);
+            console.log('Deploy all resources...');
+            for (const domain of Object.keys(profile.deployments)) {
+                try {
+                    console.log(`Deploying ${profile.deployments[domain].length} resources for ${domain}`);
+                    const dir = join(option.gamePath, domain);
+                    if (await fs.missing(dir)) {
+                        await fs.mkdir(dir);
+                    }
+                    const files = await fs.readdir(dir);
+                    for (const file of files) {
+                        const fp = join(dir, file);
+                        const isLink = await fs.stat(fp).then(s => s.isSymbolicLink());
+                        if (isLink) {
+                            await fs.unlink(fp);
+                        }
+                    }
+                    await dispatch('deployResources', {
+                        resourceUrls: profile.deployments[domain],
+                        profile: profile.id,
+                    });
+                } catch (e) {
+                    console.error(`Cannot deploy ${domain}`);
+                    console.error(e);
+                }
+            }
 
-            console.log(`Deploy ${mods.length} Mods`);
             try {
-                await context.dispatch('deployResources', {
-                    resources: resourcepacks,
-                    minecraft: option.gamePath,
+                // we link the resource pack whatever 
+                await dispatch('deployResources', {
+                    resourceUrls: rootGetters.resourcepacks.map(r => r.hash),
+                    profile: profile.id,
                 });
             } catch (e) {
                 console.error('Cannot deploy resource packs');
                 console.error(e);
             }
-
-            console.log(`Deploy ${resourcepacks.length} Resource Packs`);
-
-            if (profile.forge.version || profile.liteloader.version) {
-                try {
-                    const modsDir = join(option.gamePath, 'mods');
-                    if (!existsSync(modsDir)) {
-                        mkdirSync(modsDir);
-                    }
-                    const files = await promises.readdir(modsDir);
-                    await Promise.all(files.map(file => promises.unlink(join(modsDir, file))));
-                    await context.dispatch('deployResources', {
-                        resources: mods,
-                        minecraft: option.gamePath,
-                    });
-                } catch (e) {
-                    console.error('Cannot deploy mods');
-                    console.error(e);
-                }
-            }
-
+            console.log('Launching with these option...');
             console.log(JSON.stringify(option));
 
             // Launch
             return Launcher.launch(option).then((process) => {
-                context.commit('launchStatus', 'launched');
+                commit('launchStatus', 'launched');
                 let crashReport = '';
                 let crashReportLocation = '';
                 let waitForReady = true;
@@ -164,7 +169,7 @@ const mod = {
                     } else {
                         ipcMain.emit('minecraft-exit', { code, signal });
                     }
-                    context.commit('launchStatus', 'ready');
+                    commit('launchStatus', 'ready');
                 });
                 process.stdout.on('data', (s) => {
                     const string = s.toString();
@@ -175,7 +180,7 @@ const mod = {
                     } else if (waitForReady && string.indexOf('Reloading ResourceManager') !== -1 || string.indexOf('LWJGL Version: ') !== -1) {
                         waitForReady = false;
                         ipcMain.emit('minecraft-window-ready');
-                        context.commit('launchStatus', 'minecraftReady');
+                        commit('launchStatus', 'minecraftReady');
                     }
                     ipcMain.emit('minecraft-stdout', string);
                 });

@@ -8,3 +8,5 @@ window.addEventListener('online', window.updateOnlineStatus);
 window.addEventListener('offline', window.updateOnlineStatus);
 
 window.updateOnlineStatus();
+
+ipcRenderer.send('user-agent', navigator.userAgent);

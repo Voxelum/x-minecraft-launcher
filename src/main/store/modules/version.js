@@ -1,14 +1,12 @@
+import { ForgeInstaller, ForgeWebPage, Installer, LiteLoader, Util, Version, Net } from '@xmcl/minecraft-launcher-core';
 import { createHash } from 'crypto';
-import { createReadStream, promises as fs, promises, existsSync } from 'fs';
+import { shell } from 'electron';
 import inGFW from 'in-gfw';
-import { ensureFile, remove } from 'main/utils/fs';
-import { Forge, ForgeWebPage, LiteLoader, MinecraftFolder, Version } from 'ts-minecraft';
+import fs from 'main/utils/vfs';
+import { join } from 'path';
 import base from 'universal/store/modules/version';
 import { requireString } from 'universal/utils/object';
 import { getExpectVersion } from 'universal/utils/versions';
-import { shell } from 'electron';
-import { fetchJson } from 'ts-minecraft/dest/libs/utils/network';
-import { join } from 'path';
 
 /**
  * @type {import('universal/store/modules/version').VersionModule}
@@ -120,7 +118,7 @@ const mod = {
                     throw err;
                 }
 
-                const root = new MinecraftFolder(context.rootState.root);
+                const root = new Util.MinecraftFolder(context.rootState.root);
                 const targetId = targetVersion.folder || getExpectVersion(targetVersion.minecraft, targetVersion.forge, targetVersion.liteloader);
 
                 const extended = await Version.extendsVersion(targetId,
@@ -128,7 +126,7 @@ const mod = {
 
                 const targetJSON = root.getVersionJson(targetId);
 
-                await ensureFile(targetJSON);
+                await fs.ensureFile(targetJSON);
                 await fs.writeFile(targetJSON, JSON.stringify(extended, null, 4));
 
                 return targetId;
@@ -152,7 +150,7 @@ const mod = {
             context.commit('refreshingMinecraft', true);
             const timed = context.state.minecraft;
             console.log('Updating minecraft version metadata');
-            const metas = await Version.updateVersionMeta({ fallback: context.state.minecraft });
+            const metas = await Installer.updateVersionMeta({ fallback: context.state.minecraft });
             if (timed !== metas) {
                 console.log('Found new version meta list. Update it.');
                 context.commit('minecraftMetadata', metas);
@@ -163,27 +161,22 @@ const mod = {
 
             if (files.length === 0) return;
 
-            /**
-             * @param {string} path
-             */
-            function checksum(path) {
-                const hash = createHash('sha1');
-                return new Promise((resolve, reject) => createReadStream(path)
-                    .pipe(hash)
-                    .on('error', (e) => { reject(new Error(e)); })
-                    .once('finish', () => { resolve(hash.digest('hex')); }));
-            }
             for (const versionId of files.filter(f => !f.startsWith('.'))) {
                 try {
                     const jsonPath = context.rootGetters.path('versions', versionId, `${versionId}.json`);
-                    const json = await fs.readFile(jsonPath).then(b => b.toString()).then(JSON.parse);
+                    const buf = await fs.readFile(jsonPath);
+                    const json = JSON.parse(buf.toString());
                     if (json.inheritsFrom === undefined && json.assetIndex) {
                         const id = json.id;
                         const meta = context.state.minecraft.versions.find(v => v.id === id);
                         if (meta) {
                             const tokens = meta.url.split('/');
                             const sha1 = tokens[tokens.length - 2];
-                            if (sha1 !== await checksum(jsonPath)) {
+                            const actual = createHash('sha1').update(buf).digest('hex');
+                            if (sha1 !== actual) {
+                                console.log(`Corrupted mc version ${id} ${jsonPath}`);
+                                console.log(`Expect ${sha1}`);
+                                console.log(`Actual ${actual}`);
                                 const taskId = await context.dispatch('installMinecraft', meta);
                                 await context.dispatch('waitTask', taskId);
                             }
@@ -197,20 +190,20 @@ const mod = {
         },
 
         async installLibraries(context, { libraries }) {
-            const task = Version.installLibrariesDirectTask(libraries, context.rootState.root);
+            const task = Installer.installLibrariesDirectTask(Version.resolveLibraries(libraries), context.rootState.root);
             return context.dispatch('executeTask', task);
         },
 
         async installAssets(context, version) {
             const ver = await Version.parse(context.rootState.root, version);
-            const task = Version.installAssetsTask(ver, context.rootState.root);
+            const task = Installer.installAssetsTask(ver);
             return context.dispatch('executeTask', task);
         },
 
         async installDependencies(context, version) {
             const location = context.rootState.root;
             const resolved = await Version.parse(location, version);
-            const task = Version.installDependenciesTask(resolved, location);
+            const task = Installer.installDependenciesTask(resolved);
             const handle = await context.dispatch('executeTask', task);
             return handle;
         },
@@ -221,7 +214,7 @@ const mod = {
         async installMinecraft(context, meta) {
             const id = meta.id;
 
-            const task = Version.downloadVersionTask('client', meta, context.rootState.root);
+            const task = Installer.installVersionTask('client', meta, context.rootState.root);
             const taskId = await context.dispatch('executeTask', task);
 
             context.dispatch('waitTask', taskId)
@@ -238,9 +231,10 @@ const mod = {
          * download a specific version from version metadata
          */
         async installForge(context, meta) {
-            const task = Forge.installTask(meta, context.rootState.root, {
+            const maven = await inGFW.net().then(b => (b ? 'https://voxelauncher.azurewebsites.net/api/v1' : undefined)).catch(e => undefined);
+            const task = ForgeInstaller.installTask(meta, context.rootState.root, {
                 tempDir: join(context.rootState.root, 'temps'),
-                maven: await inGFW.net() ? 'https://voxelauncher.azurewebsites.net/api/v1' : undefined,
+                maven,
                 java: context.rootGetters.defaultJava.path,
             });
             const id = await context.dispatch('executeTask', task);
@@ -254,7 +248,7 @@ const mod = {
         },
 
         async installLiteloader(context, meta) {
-            const task = LiteLoader.installAndCheckTask(meta, context.rootState.root);
+            const task = LiteLoader.installTask(meta, context.rootState.root);
             const handle = await context.dispatch('executeTask', task);
             context.dispatch('waitTask', handle).finally(() => {
                 context.dispatch('refreshLiteloader', undefined);
@@ -286,19 +280,19 @@ const mod = {
                     context.commit('refreshingForge', false);
                     return;
                 }
-                version = prof.mcversion;
+                version = prof.version.minecraft;
             }
 
             console.log(`Update forge version list under Minecraft ${version}`);
 
             const cur = context.state.forge[version];
             try {
-                if (await inGFW.net()) {
+                if (await inGFW.net().catch(_ => false)) {
                     const headers = cur ? {
                         'If-Modified-Since': cur.timestamp,
                     } : {};
                     console.log('Using self host to fetch forge versions list');
-                    const { body, statusCode } = await fetchJson(`https://voxelauncher.azurewebsites.net/api/v1/forge/versions/${version}`, {
+                    const { body, statusCode } = await Net.fetchJson(`https://voxelauncher.azurewebsites.net/api/v1/forge/versions/${version}`, {
                         headers,
                     });
 
@@ -376,8 +370,8 @@ const mod = {
             shell.openItem(context.rootGetters.path('versions'));
         },
         async deleteVersion(context, version) {
-            if (existsSync(context.rootGetters.path('versions', version))) {
-                await remove(context.rootGetters.path('versions', version));
+            if (await fs.exists(context.rootGetters.path('versions', version))) {
+                await fs.remove(context.rootGetters.path('versions', version));
             }
             context.commit('localVersions', context.state.local.filter(v => v.folder !== version));
         },

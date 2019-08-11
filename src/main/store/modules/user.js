@@ -1,11 +1,11 @@
 import fileType from 'file-type';
-import { promises as fs } from 'fs';
 import { parse as parseUrl } from 'url';
-import { Auth, MojangService, ProfileService } from 'ts-minecraft';
+import { Auth, MojangService, ProfileService } from '@xmcl/minecraft-launcher-core';
 import { v4 } from 'uuid';
 import got from 'got';
 import { requireObject, requireString } from 'universal/utils/object';
 import base from 'universal/store/modules/user';
+import fs from 'main/utils/vfs';
 
 /**
  * The possible ways for user auth and profile:
@@ -152,11 +152,11 @@ const mod = {
             if (typeof payload.slim !== 'boolean') payload.slim = false;
 
             const { data, slim } = payload;
-            let buf;
+            let uri;
             if (typeof data === 'string') {
-                buf = Buffer.from(data, 'base64');
+                uri = Buffer.from(data, 'base64');
             } else if (data instanceof Buffer) {
-                buf = data;
+                uri = data;
             } else {
                 throw new Error('Illegal Skin data format! Require a Buffer');
             }
@@ -170,9 +170,9 @@ const mod = {
                     metadata: {
                         model: slim ? 'slim' : 'steve',
                     },
-                    data: buf,
                     url: '',
                 },
+                data: uri,
             }, context.getters.profileService).catch((e) => {
                 console.error(e);
                 throw e;

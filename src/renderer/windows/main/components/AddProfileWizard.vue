@@ -1,18 +1,88 @@
 <template>
-  <v-stepper v-model="step" non-linear dark>
+  <v-stepper v-model="step" dark>
     <v-stepper-header>
-      <v-stepper-step :rules="[() => valid]" editable :complete="step > 1" step="1">
+      <v-stepper-step :rules="[() => valid]" :editable="importTask ===''" :complete="step > 0" step="0">
+        {{ $t('profile.templateSetting') }}
+      </v-stepper-step>
+      <v-divider />
+      <v-stepper-step :rules="[() => valid]" :editable="importTask ===''" :complete="step > 1" step="1">
         {{ $t('profile.baseSetting') }}
       </v-stepper-step>
       <v-divider />
-      <v-stepper-step editable :complete="step > 2" step="2">
+      <v-stepper-step :editable="importTask ===''" :complete="step > 2" step="2">
         {{ $t('profile.advancedSetting') }}
         <small>{{ $t('optional') }}</small>
       </v-stepper-step>
       <v-divider />
+      <v-stepper-step :complete="step > 3" step="3">
+        {{ $t('profile.templateSetting.importing') }}
+      </v-stepper-step>
     </v-stepper-header>
 
     <v-stepper-items>
+      <v-stepper-content step="0">
+        <v-container grid-list fill-height>
+          <v-layout row wrap>
+            <v-flex d-flex xs12>
+              <v-list style="background: transparent" two-line>
+                <v-list-tile v-for="(p, i) in profiles" :key="p.id" ripple @click="selectTemplate(i)">
+                  <v-list-tile-action>
+                    <v-checkbox :value="template === (i)" readonly />
+                  </v-list-tile-action>
+                  <v-list-tile-content>
+                    <v-list-tile-title>
+                      {{ p.name || `Minecraft: ${p.version.minecraft}` }}
+                    </v-list-tile-title>
+                    <v-list-tile-sub-title>
+                      Minecraft: 
+                      {{ p.version.minecraft }},
+
+                      Forge:
+                      {{ p.version.forge || 'None' }} {{ p.version.liteloader }}
+                    </v-list-tile-sub-title>
+                  </v-list-tile-content>
+                 
+                  <v-list-tile-action>
+                    <v-list-tile-action-text>
+                      {{ $t(`profile.templateSetting.${p.type === 'modpack' ? 'profile': 'server'}`) }}
+                    </v-list-tile-action-text>
+                  </v-list-tile-action>
+                </v-list-tile>
+
+                <v-list-tile v-for="(p, i) in modpacks" :key="p.hash" ripple @click="selectTemplate(i + profiles.length)">
+                  <v-list-tile-action>
+                    <v-checkbox :value="template === (i - profiles.length)" readonly />
+                  </v-list-tile-action>
+                  <v-list-tile-content>
+                    <v-list-tile-title>
+                      {{ p.metadata.name }}
+                    </v-list-tile-title>
+                    <v-list-tile-sub-title>
+                      Minecraft:
+                      {{ p.metadata.minecraft.version }}
+                    </v-list-tile-sub-title>
+                  </v-list-tile-content>
+                 
+                  <v-list-tile-action>
+                    <v-list-tile-action-text>
+                      {{ $t('profile.templateSetting.modpack') }}
+                    </v-list-tile-action-text>
+                  </v-list-tile-action>
+                </v-list-tile>
+              </v-list>
+            </v-flex>
+          </v-layout>
+        </v-container>
+        <v-layout>
+          <v-btn flat @click="quit">
+            {{ $t('cancel') }}
+          </v-btn>
+          <v-spacer />
+          <v-btn flat @click="step = 1">
+            {{ $t('next') }}
+          </v-btn>
+        </v-layout>
+      </v-stepper-content>
       <v-stepper-content step="1">
         <v-form ref="form" v-model="valid" lazy-validation style="height: 100%;">
           <v-container grid-list fill-height>
@@ -59,8 +129,8 @@
           <v-container grid-list fill-height style="overflow: auto;">
             <v-layout row wrap>
               <v-flex d-flex xs6>
-                <v-select v-model="javaLocation" class="java-select" hide-details :item-text="getJavaText"
-                          :item-value="getJavaValue" prepend-inner-icon="add" :label="$t('java.location')" :items="javas"
+                <v-select v-model="javaLocation" class="java-select" hide-details :item-text="java => `JRE${java.majorVersion}, ${java.path}`"
+                          :item-value="v => v" prepend-inner-icon="add" :label="$t('java.location')" :items="javas"
                           required :menu-props="{ auto: true, overflowY: true }" />
               </v-flex>
               <v-flex d-flex xs3>
@@ -85,14 +155,17 @@
         </v-form>
 
         <v-layout>
-          <v-btn flat @click="quit">
+          <v-btn flat :disabled="creating" @click="quit">
             {{ $t('cancel') }}
           </v-btn>
           <v-spacer />
-          <v-btn color="primary" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
+          <v-btn color="primary" :loading="creating" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
             {{ $t('create') }}
           </v-btn>
         </v-layout>
+      </v-stepper-content>
+      <v-stepper-content step="3">
+        <task-focus :value="importTask" />
       </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
@@ -112,6 +185,9 @@ export default {
     const forge = release ? this.$repo.getters.forgeRecommendedOf(release) : '';
     const forgeVersion = forge ? forge.version : '';
     return {
+      template: -1,
+      creating: false,
+
       step: 1,
       valid: false,
 
@@ -119,8 +195,8 @@ export default {
       mcversion: release,
       forgeVersion,
       javaLocation: this.$repo.getters.defaultJava,
-      maxMemory: 2048,
-      minMemory: 1024,
+      maxMemory: undefined,
+      minMemory: undefined,
       author: this.$repo.state.user.name,
       description: '',
 
@@ -129,9 +205,14 @@ export default {
       nameRules: [
         v => !!v || this.$t('profile.requireName'),
       ],
+
+      importTask: '',
     };
   },
   computed: {
+    fromModpack() { return this.template >= this.profiles.length; },
+    profiles() { return this.$repo.getters.profiles; },
+    modpacks() { return this.$repo.getters.modpacks; },
     ready() {
       return this.valid && this.javaValid;
     },
@@ -163,34 +244,77 @@ export default {
       const defaultJava = this.$repo.getters.defaultJava;
       this.javaLocation = this.javas.find(j => j.path === defaultJava.path);
 
-      this.minMemory = 1024;
-      this.maxMemory = 2048;
+      this.minMemory = undefined;
+      this.maxMemory = undefined;
     },
-    getJavaValue(java) {
-      return java;
-    },
-    getJavaText(java) {
-      return `JRE${java.majorVersion}, ${java.path}`;
+    selectTemplate(i) {
+      if (this.template === i) {
+        this.template = -1;
+        this.step = 1;
+        return;
+      }
+
+      this.template = i;
+
+      const fromProfile = !this.fromModpack;
+      const temp = fromProfile ? this.profiles[i] : this.modpacks[i - this.profiles.length];
+
+      if (fromProfile) {
+        this.mcversion = temp.version.minecraft;
+        this.name = `${temp.name || `Minecraft: ${this.mcversion}`} +`;
+        this.forgeVersion = temp.version.forge;
+        this.javaLocation = temp.javaLocation;
+        this.description = temp.description;
+      } else {
+        this.name = temp.metadata.name;
+        this.mcversion = temp.metadata.minecraft.version;
+        this.author = temp.metadata.author;
+      }
+
+      this.step = 1;
     },
     quit() {
+      if (this.creating) return;
       this.$emit('quit');
     },
-    doCreate() {
-      this.$repo.dispatch('createAndSelectProfile', {
-        name: this.name,
-        author: this.author,
-        description: this.description,
-        mcversion: this.mcversion,
-        minMemory: this.minMemory,
-        maxMemory: this.maxMemory,
-        java: this.javaLocation,
-        forge: {
-          version: this.forgeVersion,
-        },
-      }).then(() => {
+    async doCreate() {
+      this.creating = true;
+      try {
+        const temp = this.profile
+          ? this.profiles[this.template]
+          : this.modpacks[this.template - this.profiles.length];
+        if (this.template !== -1) {
+          if (this.fromModpack) {
+            this.step = 3;
+            this.importTask = await this.$repo.dispatch('importCurseforgeModpack', {
+              path: this.modpacks[this.template - this.profiles.length].path,
+            });
+            await this.$repo.dispatch('waitTask', this.importTask);
+          } else {
+            await this.$repo.dispatch('createAndSelectProfile', {
+              ...temp,
+            });
+          }
+        } else {
+          await this.$repo.dispatch('createAndSelectProfile', {
+            name: this.name,
+            author: this.author,
+            description: this.description,
+            mcversion: this.mcversion,
+            minMemory: this.minMemory,
+            maxMemory: this.maxMemory,
+            java: this.javaLocation,
+            forge: {
+              version: this.forgeVersion,
+            },
+          });
+        }
         this.init();
         this.$router.replace('/');
-      });
+        this.template = -1;
+      } finally {
+        this.creating = false;
+      }
     },
   },
 };

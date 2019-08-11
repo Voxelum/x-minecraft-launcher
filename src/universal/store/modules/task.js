@@ -25,6 +25,7 @@ const mod = {
                 tasks: [],
                 error: null,
                 message: '',
+                background: false,
             };
             state.tree[id] = node;
             state.tasks.push(state.tree[id]);
@@ -87,7 +88,6 @@ const mod = {
                 }
             }
             for (const s of statuses) {
-                // eslint-disable-next-line no-continue
                 if (!s) { continue; }
                 const { id, status } = s;
                 const task = idToNode[id];

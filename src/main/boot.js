@@ -4,13 +4,22 @@ import {
 
 import { promises as fs, existsSync, mkdirSync } from 'fs';
 import path from 'path';
-import { copy } from 'main/utils/fs';
+import vfs from 'main/utils/vfs';
 
 const appData = app.getPath('appData');
 const persistRoot = `${appData}/voxelauncher`;
 const cfgFile = `${appData}/voxelauncher/launcher.json`;
 
 ipcMain.on('root', handleRootChange);
+
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception');
+    console.error(err);
+});
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Uncaught Rejection');
+    console.error(reason);
+});
 
 /**
  * Handle the root change request from cliean.
@@ -51,7 +60,7 @@ async function handleRootChange(event, { path: newRoot, migrate, clear }) {
         }
 
         if (migrate) {
-            await copy(oldRoot, newRoot);
+            await vfs.copy(oldRoot, newRoot);
         }
 
         if (clear) {

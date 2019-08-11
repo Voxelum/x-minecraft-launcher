@@ -8,7 +8,7 @@
           </v-btn>
         </v-list-tile-avatar>
         <v-list-tile-title>
-          {{ item.id }}
+          {{ item.folder }}
         </v-list-tile-title>
         <v-list-tile-sub-title>
           {{ item.minecraft }}
