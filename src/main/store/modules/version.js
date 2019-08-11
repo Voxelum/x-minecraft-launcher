@@ -236,9 +236,10 @@ const mod = {
          * download a specific version from version metadata
          */
         async installForge(context, meta) {
+            const maven = await inGFW.net().then(b => (b ? 'https://voxelauncher.azurewebsites.net/api/v1' : undefined)).catch(e => undefined);
             const task = ForgeInstaller.installTask(meta, context.rootState.root, {
                 tempDir: join(context.rootState.root, 'temps'),
-                maven: await inGFW.net() ? 'https://voxelauncher.azurewebsites.net/api/v1' : undefined,
+                maven,
                 java: context.rootGetters.defaultJava.path,
             });
             const id = await context.dispatch('executeTask', task);
@@ -291,7 +292,7 @@ const mod = {
 
             const cur = context.state.forge[version];
             try {
-                if (await inGFW.net()) {
+                if (await inGFW.net().catch(_ => false)) {
                     const headers = cur ? {
                         'If-Modified-Since': cur.timestamp,
                     } : {};
