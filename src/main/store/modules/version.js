@@ -161,27 +161,22 @@ const mod = {
 
             if (files.length === 0) return;
 
-            /**
-             * @param {string} path
-             */
-            function checksum(path) {
-                const hash = createHash('sha1');
-                return new Promise((resolve, reject) => fs.createReadStream(path)
-                    .pipe(hash)
-                    .on('error', (e) => { reject(new Error(e)); })
-                    .once('finish', () => { resolve(hash.digest('hex')); }));
-            }
             for (const versionId of files.filter(f => !f.startsWith('.'))) {
                 try {
                     const jsonPath = context.rootGetters.path('versions', versionId, `${versionId}.json`);
-                    const json = await fs.readFile(jsonPath).then(b => b.toString()).then(JSON.parse);
+                    const buf = await fs.readFile(jsonPath);
+                    const json = JSON.parse(buf.toString());
                     if (json.inheritsFrom === undefined && json.assetIndex) {
                         const id = json.id;
                         const meta = context.state.minecraft.versions.find(v => v.id === id);
                         if (meta) {
                             const tokens = meta.url.split('/');
                             const sha1 = tokens[tokens.length - 2];
-                            if (sha1 !== await checksum(jsonPath)) {
+                            const actual = createHash('sha1').update(buf).digest('hex');
+                            if (sha1 !== actual) {
+                                console.log(`Corrupted mc version ${id} ${jsonPath}`);
+                                console.log(`Expect ${sha1}`);
+                                console.log(`Actual ${actual}`);
                                 const taskId = await context.dispatch('installMinecraft', meta);
                                 await context.dispatch('waitTask', taskId);
                             }
