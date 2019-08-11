@@ -280,6 +280,12 @@ const mod = {
                             arguments: { java: java.version, mcversion },
                             optional: true,
                         });
+                    } else if (resolvedMcVersion.minorVersion >= 13 && currentVersion.forge && java.majorVersion > 10) {
+                        problems.push({
+                            id: 'incompatibleJava',
+                            arguments: { java: java.version, mcversion },
+                            optional: true,
+                        });
                     }
                 }
 
