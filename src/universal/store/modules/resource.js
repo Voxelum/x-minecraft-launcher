@@ -87,10 +87,11 @@ const mod = {
             console.log(`Accept resource ${all.length}`);
             for (const res of all) {
                 if (res.domain in state.domains) {
-                    if (!state.domains[res.domain][res.hash]) {
-                        Vue.set(state.domains[res.domain], res.hash, Object.freeze(res));
+                    const domain = state.domains[res.domain];
+                    if (!domain[res.hash]) {
+                        Vue.set(domain, res.hash, Object.freeze(res));
                     } else {
-                        state.domains[res.domain][res.hash] = Object.freeze(res);
+                        domain[res.hash] = Object.freeze(res);
                     }
                 } else {
                     console.error(`Cannot accept resource for unknown domain [${res.domain}]`);

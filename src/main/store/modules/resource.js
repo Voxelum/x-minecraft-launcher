@@ -251,7 +251,7 @@ const mod = {
 
                             Reflect.set(touched, `${hash}.json`, true);
                             const metadata = await context.dispatch('getPersistence', { path: metaFile });
-                            if (!metadata) {
+                            if (!metadata || typeof metadata.domain !== 'string' || typeof metadata.hash !== 'string') {
                                 console.log(`Missing metadata file for ${file}. Try to reimport it.`);
                                 const ext = paths.extname(file);
 
@@ -262,8 +262,9 @@ const mod = {
 
                                 await context.dispatch('setPersistence', { path: metaFile, data: resource });
                                 resources.push(resource);
+                            } else if (!context.state.domains[metadata.domain][metadata.hash]) {
+                                resources.push(metadata);
                             }
-                            resources.push(metadata);
                         } catch (e) {
                             console.error(`Cannot resolve resource file ${file}.`);
                             console.error(e);
@@ -510,7 +511,7 @@ const mod = {
                     } catch (e) {
                         promises.push(fs.symlink(res.path, dest));
                     }
-                } else if (res.domain === 'saves') { 
+                } else if (res.domain === 'saves') {
                     await context.dispatch('importSave', res.path);
                 } else if (res.domain === 'modpack') { // modpack will override the profile
                     await context.dispatch('importCurseforgeModpack', {
