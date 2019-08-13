@@ -77,16 +77,16 @@
       </v-list>
     </v-menu>
 
-    <v-flex d-flex xs12>
+    <v-flex d-flex xs12 style="z-index: 1">
       <div class="display-1 white--text" style="padding-top: 50px; padding-left: 50px">
         <span style="margin-right: 10px;">
           {{ profile.name || `Minecraft ${profile.version.minecraft}` }}
         </span>
-        <v-chip v-if="profile.author" label color="green" outline small :selected="true" style="margin-right: 5px;">
+        <v-chip v-if="profile.author" label color="green" small :selected="true" style="margin-right: 5px;">
           {{ profile.author }}
         </v-chip>
 
-        <v-chip label color="green" outline small :selected="true">
+        <v-chip label color="green" small :selected="true">
           Version: {{ $repo.getters['currentVersion'].id }}
         </v-chip>
       </div>
