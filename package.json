@@ -87,7 +87,15 @@
             ]
         },
         "linux": {
-            "icon": "build/icons"
+            "icon": "build/icons",
+            "target": [
+                {
+                    "target": "deb"
+                },
+                {
+                    "target": "rpm"
+                }
+            ]
         }
     },
     "commitlint": {
@@ -160,6 +168,7 @@
         "vue-particles": "^1.0.9",
         "vue-style-loader": "^4.1.0",
         "vue-template-compiler": "^2.6.10",
+        "vuedraggable": "^2.23.0",
         "webpack": "^4.15.1",
         "webpack-cli": "^3.3.1",
         "webpack-dev-server": "^3.2.1",
