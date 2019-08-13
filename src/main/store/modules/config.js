@@ -44,12 +44,6 @@ const mod = {
                 default:
             }
         },
-        async init(context) {
-            const inside = await isInGFW();
-            if (inside) {
-                autoUpdater.setFeedURL('');
-            }
-        },
 
         async quitAndInstall(context) {
             if (context.state.readyToUpdate) {
@@ -77,6 +71,11 @@ const mod = {
             const task = Task.create('downloadUpdate', async (ctx) => {
                 if (!context.state.autoDownload) {
                     context.commit('downloadingUpdate', true);
+                    const inside = await isInGFW();
+                    if (inside) {
+                        autoUpdater.setFeedURL('https://voxelauncher.blob.core.windows.net/releases');
+                        await autoUpdater.checkForUpdates();
+                    }
                     await new Promise((resolve, reject) => {
                         autoUpdater.downloadUpdate().catch(reject);
                         const signal = new UpdaterSignal(autoUpdater);
