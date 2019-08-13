@@ -44,6 +44,12 @@ const mod = {
                 default:
             }
         },
+        async init(context) {
+            const inside = await isInGFW();
+            if (inside) {
+                autoUpdater.setFeedURL('');
+            }
+        },
 
         async quitAndInstall(context) {
             if (context.state.readyToUpdate) {

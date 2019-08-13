@@ -43,6 +43,12 @@ const mod = {
         settings(state, settings) {
             Object.assign(state.settings, settings);
         },
+        defaultBackgroundImage(state, img) {
+            if (typeof img === 'string') state.defaultBackgroundImage = img;
+        },
+        defaultBlur(state, blur) {
+            if (typeof blur === 'number') state.defaultBlur = blur;
+        },
     },
 };
 
