@@ -36,6 +36,8 @@ export function createTemplate(id, java, mcversion, type = 'modpack') {
         deployments: {
             mods: [],
         },
+        image: null,
+        blur: 4,
     };
     if (type === 'modpack') {
         /**
@@ -67,6 +69,7 @@ export function createTemplate(id, java, mcversion, type = 'modpack') {
 const mod = {
     state: {
         all: {},
+        profileIds: [],
         id: '',
 
         status: UNKNOWN_STATUS,
@@ -83,10 +86,11 @@ const mod = {
         dirty: {
             servers: false,
             saves: false,
+            gamesettings: false,
         },
     },
     getters: {
-        profiles: state => Object.keys(state.all).map(k => state.all[k]),
+        profiles: state => state.profileIds.map(k => state.all[k]),
         serverProtocolVersion: state => 338,
         selectedProfile: state => state.all[state.id],
         currentVersion: (state, getters, rootState) => {
@@ -105,12 +109,18 @@ const mod = {
         },
     },
     mutations: {
+        profileIds(state, ids) {
+            state.profileIds = ids;
+        },
         addProfile(state, profile) {
             /**
              * Prevent the case that hot reload keep the vuex state
              */
             if (!state.all[profile.id]) {
                 Vue.set(state.all, profile.id, profile);
+            }
+            if (state.profileIds.indexOf(profile.id) === -1) {
+                state.profileIds.push(profile.id);
             }
         },
         removeProfile(state, id) {
@@ -191,6 +201,13 @@ const mod = {
             }
             if (typeof settings.hideLauncher === 'boolean') {
                 prof.hideLauncher = settings.hideLauncher;
+            }
+
+            if (typeof settings.image === 'string') {
+                prof.image = settings.image;
+            }
+            if (typeof settings.blur === 'number') {
+                prof.blur = settings.blur;
             }
         },
 

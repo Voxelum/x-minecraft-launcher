@@ -53,49 +53,64 @@
         </v-tooltip>
       </v-flex>
     </v-layout>
-    <v-layout row wrap style="overflow: scroll; max-height: 88vh;" justify-start fill-height>
-      <v-flex d-flex xs12 style="height: 10px;" />
-      <v-flex v-for="profile in profiles" :key="profile.id" d-flex>
-        <v-card draggable hover color="#grey darken-3" dark @click="selectProfile($event, profile.id)">
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-btn icon color="red" style="position: absolute; right: 0px;" flat
-                     @click="$event.stopPropagation();doDelete(profile.id)" v-on="on">
-                <v-icon dark>
-                  close
-                </v-icon>
-              </v-btn>
-            </template>
-            {{ $t('profile.delete') }}
-          </v-tooltip>
-          <v-card-title>
-            <v-icon large left>
-              layers
-            </v-icon>
-            <span class="title font-weight-light">{{ profile.name || `Minecraft ${profile.version.minecraft}` }}</span>
-          </v-card-title>
+    <!-- <v-layout row wrap style="overflow: scroll; max-height: 88vh;" justify-start fill-height> -->
+    <v-flex d-flex xs12 style="height: 10px;" />
+    <draggable v-model="profiles" v-bind="options">
+      <transition-group type="transition" class="layout row wrap justify-start fill-height" 
+                        style="overflow: scroll; max-height: 88vh;">
+        <v-flex v-for="profile in profiles" :key="profile.id" xs6 d-flex>
+          <v-card color="#grey darken-3" hover dark @click="selectProfile($event, profile.id)">
+            <v-tooltip top style="display: none">
+              <template v-slot:activator="{ on }">
+                <v-btn icon color="red" style="position: absolute; right: 0px; z-index: 2" flat
+                       @click="$event.stopPropagation();doDelete(profile.id)" v-on="on">
+                  <v-icon dark>
+                    close
+                  </v-icon>
+                </v-btn>
+              </template>
+              {{ $t('profile.delete') }}
+            </v-tooltip>
+            <v-img
+              :class="{ 'grey': true, 'darken-2': true }"
+              class="white--text"
+              height="100px"
+            >
+              <v-container fill-height fluid>
+                <v-layout fill-height>
+                  <v-flex xs12 align-end flexbox>
+                    <v-icon left>
+                      layers
+                    </v-icon>
+                    <span class="headline">{{ profile.name || `Minecraft ${profile.version.minecraft}` }}</span>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-img>
+            
+            <v-card-text v-if="profile.description" class="headline font-weight-bold">
+              {{ profile.description }}
+            </v-card-text>
 
-          <v-card-text class="headline font-weight-bold">
-            {{ profile.description }}
-          </v-card-text>
+            <v-card-actions style="margin-top: 40px;">
+              <v-list-tile class="grow">
+                <v-list-tile-avatar color="grey darken-3">
+                  <v-chip label :selected="false" @click="$event.stopPropagation()">
+                    {{ profile.version.minecraft }}
+                  </v-chip>
+                </v-list-tile-avatar>
 
-          <v-card-actions style="margin-top: 40px;">
-            <v-list-tile class="grow">
-              <v-list-tile-avatar color="grey darken-3">
-                <v-chip label :selected="false" @click="$event.stopPropagation()">
-                  {{ profile.version.minecraft }}
-                </v-chip>
-              </v-list-tile-avatar>
-
-              <v-list-tile-content>
-                <v-list-tile-title>{{ profile.author }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </v-card-actions>
-        </v-card>
-      </v-flex>
-      <v-flex d-flex xs12 style="height: 10px;" />
-    </v-layout>
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ profile.author }}</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+            </v-card-actions>
+          </v-card>
+        </v-flex>
+      </transition-group>
+    </draggable>
+    <!-- <v-flex d-flex xs12 style="height: 10px;" /> -->
+    <!-- </v-layout> -->
     <v-dialog v-model="wizard" persistent>
       <add-profile-wizard v-if="!creatingServer" :show="wizard" @quit="wizard=false" />
       <add-server-wizard v-else :show="wizard" @quit="wizard=false" />
@@ -114,18 +129,43 @@ export default {
       hoverTextOnImport: this.$t('profile.importZip'),
       creatingServer: false,
       creatingTooltip: false,
+
+      colors: ['blue-grey', 'red', 'pink',
+        'purple', 'green', 'yellow', 'amber',
+        'orange', 'deep-orange', 'brown'],
+
+      options: {
+        animation: 200,
+        group: 'description',
+        disabled: false,
+        ghostClass: 'ghost',
+      },
     };
   },
   computed: {
-    profiles() {
-      const filter = this.filter.toLowerCase();
-      return this.$repo.getters.profiles.filter(profile => filter === ''
-        || profile.author.toLowerCase().indexOf(filter) !== -1
-        || profile.name.toLowerCase().indexOf(filter) !== -1
-        || profile.description.toLowerCase().indexOf(filter) !== -1);
+    profiles: {
+      get() {
+        const filter = this.filter.toLowerCase();
+        return this.$repo.getters.profiles.filter(profile => filter === ''
+          || profile.author.toLowerCase().indexOf(filter) !== -1
+          || profile.name.toLowerCase().indexOf(filter) !== -1
+          || profile.description.toLowerCase().indexOf(filter) !== -1);
+      },
+      set(v) {
+        this.$repo.commit('profileIds', v.map(p => p.id));
+      },
     },
   },
   mounted() {
+    const colors = [...this.colors];
+    const count = colors.length;
+    const newOrder = [];
+    for (let i = 0; i < count; ++i) {
+      const choise = Math.random() * Math.floor(colors.length);
+      console.log(choise);
+      newOrder.push(colors.splice(choise, 1));
+    }
+    this.colors = newOrder;
   },
   methods: {
     createProfile() {
@@ -196,4 +236,7 @@ export default {
 </script>
 
 <style>
+.ghost {
+  opacity: 0.5;
+}
 </style>

@@ -112,6 +112,9 @@ export declare namespace ProfileModule {
 
         url: string;
         icon: string;
+
+        image: string?;
+        blur: number;
     }
 
     interface State {
@@ -119,6 +122,11 @@ export declare namespace ProfileModule {
          * All loaded launch profiles
          */
         all: { [id: string]: ServerOrModpack };
+
+        /**
+         * Sort 
+         */
+        profileIds: string[];
         /**
          * Current selected id
          */
@@ -174,6 +182,7 @@ export declare namespace ProfileModule {
     }
 
     interface Mutations {
+        profileIds(state: State, ids: string[]): void;
         addProfile(state: State, profile: ProfileBase): void;
         removeProfile(state: State, id: string): void;
         selectProfile(state: State, id: string): void;
