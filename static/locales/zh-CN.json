@@ -66,6 +66,7 @@
         "no": "取消",
         "yes": "删除"
     },
+    "deleteSave": "删除存档",
     "description": "简介",
     "detail": "细节",
     "diagnosis": {
@@ -249,6 +250,7 @@
         "parsing": "解析资源",
         "storing": "存储资源"
     },
+    "importSave": "导入存档",
     "installAssets": {
         "": "下载游戏资源文件",
         "assets": "下载资源文件%{hash}",
@@ -408,18 +410,18 @@
         "showAlpha": "显示快照版",
         "version": "Minecraft 版本"
     },
-    "deleteSave": "删除存档",
-    "importSave": "导入存档",
     "mod": {
+        "backToAllMods": "返回所有 Mods",
         "compatible": "可用于 {version} 版",
+        "deletion": "删除 {mod} Mod",
+        "deletionHint": "你将失去这个 Mod 的文件和信息。你确定吗？",
         "export": "导出 Mod",
         "hint": "将Mod的jar文件拖入此处来导入",
         "import": "导入 Mod",
         "incompatible": "不兼容Minecraft {actual} 的Mod。需要Minecraft {accept}。",
         "name": "Mod | Mods",
         "selected": "已选 Mods",
-        "unselected": "未选 Mods",
-        "backToAllMods": "返回所有 Mods"
+        "unselected": "未选 Mods"
     },
     "name": "名称",
     "next": "下一项",
@@ -543,6 +545,8 @@
             "content": "将从磁盘中删除资源包，该操作不可逆，确定继续执行吗",
             "title": "删除资源包"
         },
+        "deletion": "移除 {pack}",
+        "deletionHint": "你将永远失去该资源包的数据以及相关信息，你进行此操作吗？",
         "export": "导出资源包",
         "hint": "将资源包zip或文件夹拖入此处导入",
         "import": "导入资源包",
@@ -560,13 +564,13 @@
             "title": "复制存档到其他启动配置"
         },
         "copyFrom": {
-            "title": "从已有资源导入存档",
-            "from": "来自 {src}",
+            "cancel": "取消",
+            "confirm": "开始导入",
             "description": "你可以从其他启动配置中导入存档，或者从已有资源中导入 (如从 curseforge 下载的地图)",
+            "from": "来自 {src}",
             "fromProfile": "来自其他启动配置",
             "fromResource": "来自已导入资源",
-            "confirm": "开始导入",
-            "cancel": "取消"
+            "title": "从已有资源导入存档"
         },
         "deleteCancel": "取消",
         "deleteConfirm": "确认删除",

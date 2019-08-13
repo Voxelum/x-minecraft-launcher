@@ -68,6 +68,7 @@
         "no": "No",
         "yes": "Delete"
     },
+    "deleteSave": "Delete Save",
     "description": "Description",
     "detail": "Detail",
     "diagnosis": {
@@ -261,6 +262,7 @@
         "parsing": "Parsing Resource",
         "storing": "Storing Resource"
     },
+    "importSave": "Import Save",
     "installAssets": {
         "": "Install Asset Files",
         "assets": "Install Asset {hash}",
@@ -421,18 +423,18 @@
         "version": "Minecraft Version"
     },
     "mod": {
+        "backToAllMods": "Back to All Mods",
         "compatible": "Available on {version}",
+        "deletion": "Deleting {mod} mod",
+        "deletionHint": "You will lose this mod & its metadata forever. Are you sure you want to delete it?",
         "export": "Export Mod",
         "hint": "Drop mod's .jar/.litemod here to import.",
         "import": "Import Mod",
         "incompatible": "Incompatible Mod. Accept {accept}. Current: {actual}",
         "name": "Mod | Mods",
         "selected": "Selected Mods",
-        "unselected": "Unselected Mods",
-        "backToAllMods": "Back to All Mods"
+        "unselected": "Unselected Mods"
     },
-    "deleteSave": "Delete Save",
-    "importSave": "Import Save",
     "name": "Name",
     "no": "No",
     "ok": "Ok",
@@ -553,6 +555,8 @@
             "content": "This will remove the resource pack file from disk, and we cannot redo it. Are you sure to do this?",
             "title": "Delete the resource pack"
         },
+        "deletion": "Deleting {pack}",
+        "deletionHint": "You will lose the data and metadata of this resource pack. You are sure to do this?",
         "export": "Export Resource Pack",
         "hint": "Drop Resource Pack's folder/zip here to import.",
         "import": "Import Resource Pack",
@@ -570,13 +574,13 @@
             "title": "Copy Save to Other Profile"
         },
         "copyFrom": {
-            "from": "From {src}",
-            "title": "Import Save from Managed Source",
+            "cancel": "Cancel",
+            "confirm": "Start Copy",
             "description": "You can deploy save to this profile from other profile, or from managed resources (curseforge)",
+            "from": "From {src}",
             "fromProfile": "From Profiles",
             "fromResource": "From Resources",
-            "confirm": "Start Copy",
-            "cancel": "Cancel"
+            "title": "Import Save from Managed Source"
         },
         "deleteCancel": "Cancel",
         "deleteConfirm": "Comfirm to delete",

@@ -555,6 +555,45 @@
                 "name"
             ]
         },
+        "feedback": {
+            "type": "object",
+            "properties": {
+                "": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "github": {
+                    "type": "string"
+                },
+                "githubDescription": {
+                    "type": "string"
+                },
+                "githubOpenIssue": {
+                    "type": "string"
+                },
+                "qq": {
+                    "type": "string"
+                },
+                "qqDescription": {
+                    "type": "string"
+                },
+                "qqEnterGroup": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "",
+                "description",
+                "github",
+                "githubDescription",
+                "githubOpenIssue",
+                "qq",
+                "qqDescription",
+                "qqEnterGroup"
+            ]
+        },
         "filter": {
             "type": "string"
         },
@@ -1623,6 +1662,15 @@
                 },
                 "unselected": {
                     "type": "string"
+                },
+                "deletionHint": {
+                    "type": "string"
+                },
+                "deletion": {
+                    "type": "string"
+                },
+                "backToAllMods": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -1633,8 +1681,17 @@
                 "incompatible",
                 "name",
                 "selected",
-                "unselected"
+                "unselected",
+                "deletionHint",
+                "deletion",
+                "backToAllMods"
             ]
+        },
+        "deleteSave": {
+            "type": "string"
+        },
+        "importSave": {
+            "type": "string"
         },
         "name": {
             "type": "string"
@@ -2051,45 +2108,6 @@
                 "vmOptionsHint"
             ]
         },
-        "feedback": {
-            "type": "object",
-            "properties": {
-                "": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "github": {
-                    "type": "string"
-                },
-                "githubDescription": {
-                    "type": "string"
-                },
-                "githubOpenIssue": {
-                    "type": "string"
-                },
-                "qq": {
-                    "type": "string"
-                },
-                "qqEnterGroup": {
-                    "type": "string"
-                },
-                "qqDescription": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "",
-                "description",
-                "github",
-                "githubDescription",
-                "githubOpenIssue",
-                "qq",
-                "qqEnterGroup",
-                "qqDescription"
-            ]
-        },
         "refresh": {
             "type": "object",
             "properties": {
@@ -2170,6 +2188,12 @@
                 },
                 "unselected": {
                     "type": "string"
+                },
+                "deletion": {
+                    "type": "string"
+                },
+                "deletionHint": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -2182,7 +2206,9 @@
                 "incompatible",
                 "name",
                 "selected",
-                "unselected"
+                "unselected",
+                "deletion",
+                "deletionHint"
             ]
         },
         "save": {
@@ -2215,15 +2241,39 @@
                         "title"
                     ]
                 },
-                "copyTo": {
+                "copyFrom": {
                     "type": "object",
                     "properties": {
-                        "": {
+                        "from": {
+                            "type": "string"
+                        },
+                        "title": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "string"
+                        },
+                        "fromProfile": {
+                            "type": "string"
+                        },
+                        "fromResource": {
+                            "type": "string"
+                        },
+                        "confirm": {
+                            "type": "string"
+                        },
+                        "cancel": {
                             "type": "string"
                         }
                     },
                     "required": [
-                        ""
+                        "from",
+                        "title",
+                        "description",
+                        "fromProfile",
+                        "fromResource",
+                        "confirm",
+                        "cancel"
                     ]
                 },
                 "deleteCancel": {
@@ -2256,7 +2306,7 @@
             },
             "required": [
                 "copy",
-                "copyTo",
+                "copyFrom",
                 "deleteCancel",
                 "deleteConfirm",
                 "deleteHint",
@@ -2743,6 +2793,7 @@
         "downloadUpdate",
         "edit",
         "error",
+        "feedback",
         "filter",
         "forge",
         "gamesetting",
@@ -2770,12 +2821,13 @@
         "market",
         "minecraft",
         "mod",
+        "deleteSave",
+        "importSave",
         "name",
         "no",
         "ok",
         "popular",
         "profile",
-        "feedback",
         "refresh",
         "refreshResource",
         "remove",
