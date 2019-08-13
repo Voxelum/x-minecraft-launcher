@@ -13,7 +13,7 @@
         <v-treeview v-model="tree" hoverable transition :open="opened" :items="all" activatable
                     item-key="_internalId" open-on-click item-children="tasks" item-text="localText">
           <template v-slot:append="{ item, open }">
-            <task-node-status :status="item.status" :total="item.total" :progress="item.progress" :hovered="hovered[item._internalId]" />
+            <task-node-status :has-child="item.tasks.length !== 0" :status="item.status" :total="item.total" :progress="item.progress" :hovered="hovered[item._internalId]" />
           </template>
 
           <template v-slot:label="{ item, open }">
