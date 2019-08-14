@@ -7,8 +7,12 @@
       <v-flex v-for="name in Object.keys(graphics)" :key="name" d-flex xs6
               @click="triggerGraphic(name)">
         <v-btn dark outline>
-          {{ $t(`gamesetting.${name}.name`) + ' : ' +
-            $t(`gamesetting.${name}.${graphics[name].value}`) }}
+          {{ $t(`gamesetting.${name}.name`) + ' : ' }}
+          <transition name="scroll-y-transition" mode="out-in">
+            <span :key="graphics[name].value" style="padding-left: 5px">
+              {{ $t(`gamesetting.${name}.${graphics[name].value}`) }}
+            </span>
+          </transition>
         </v-btn>
       </v-flex>
     </v-layout>
