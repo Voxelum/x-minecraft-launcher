@@ -74,7 +74,7 @@
           </v-layout>
         </v-container>
         <v-layout>
-          <v-btn flat @click="quit">
+          <v-btn :diable="creating" flat @click="quit">
             {{ $t('cancel') }}
           </v-btn>
           <v-spacer />
@@ -112,14 +112,14 @@
           </v-container>
         </v-form>
         <v-layout>
-          <v-btn flat @click="quit">
+          <v-btn flat :disable="creating" @click="quit">
             {{ $t('cancel') }}
           </v-btn>
           <v-spacer />
           <v-btn flat @click="step = 2">
             {{ $t('next') }}
           </v-btn>
-          <v-btn color="primary" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
+          <v-btn color="primary" :loading="creating" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
             {{ $t('create') }}
           </v-btn>
         </v-layout>
