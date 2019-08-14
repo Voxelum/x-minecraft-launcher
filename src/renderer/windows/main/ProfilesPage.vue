@@ -11,9 +11,15 @@
               <template v-slot:activator>
                 <v-btn flat fab dark small style="margin-left: 5px; margin-top: 5px;" @click="createProfile"
                        v-on="on">
-                  <v-icon dark style="font-size: 28px">
-                    add
-                  </v-icon>
+                  <transition name="scale-transition" mode="out-in">
+                    <v-icon v-if="!dragging" key="a" dark style="font-size: 28px; transition: all 0.2s ease;">
+                      add
+                    </v-icon>
+                    <v-icon v-else key="b" color="red" style="font-size: 28px; transition: all 0.2s ease;"
+                            @drop="onDropDelete" @dragover="$event.preventDefault()">
+                      delete
+                    </v-icon>
+                  </transition>
                 </v-btn>
               </template>
               <v-btn style="z-index: 20;" fab small v-on="on" @mouseenter="enterAltCreate" @mouseleave="leaveAltCreate"
@@ -55,22 +61,23 @@
     </v-layout>
     <!-- <v-layout row wrap style="overflow: scroll; max-height: 88vh;" justify-start fill-height> -->
     <v-flex d-flex xs12 style="height: 10px;" />
-    <draggable v-model="profiles" v-bind="options">
+    <draggable v-model="profiles" v-bind="options" :move="onProfileMove">
       <transition-group type="transition" class="layout row wrap justify-start fill-height" 
                         style="overflow: scroll; max-height: 88vh;">
-        <v-flex v-for="profile in profiles" :key="profile.id" xs6 d-flex>
+        <v-flex v-for="profile in profiles" :key="profile.id" xs6 d-flex 
+                @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
           <v-card color="#grey darken-3" hover dark @click="selectProfile($event, profile.id)">
-            <v-tooltip top style="display: none">
+            <!-- <v-tooltip top style="display: none">
               <template v-slot:activator="{ on }">
                 <v-btn icon color="red" style="position: absolute; right: 0px; z-index: 2" flat
-                       @click="$event.stopPropagation();doDelete(profile.id)" v-on="on">
+                       @click="$event.stopPropagation();startDelete(profile)" v-on="on">
                   <v-icon dark>
                     close
                   </v-icon>
                 </v-btn>
               </template>
               {{ $t('profile.delete') }}
-            </v-tooltip>
+            </v-tooltip> -->
             <v-img
               :class="{ 'grey': true, 'darken-2': true }"
               class="white--text"
@@ -111,6 +118,29 @@
     </draggable>
     <!-- <v-flex d-flex xs12 style="height: 10px;" /> -->
     <!-- </v-layout> -->
+    <v-dialog v-model="isDeletingProfile" width="400">
+      <v-card>
+        <v-card-title>
+          <h2>
+            {{ $t('profile.delete') }}
+          </h2>
+        </v-card-title>
+        <v-card-text>
+          {{ $t('profile.deleteHint', { name: deletingProfile.name, id: deletingProfile.id }) }}
+        </v-card-text>
+        <v-card-actions>
+          <v-btn flat @click="cancelDelete">
+            {{ $t('cancel') }}
+          </v-btn>
+          <v-spacer />
+          <v-btn flat color="red" @click="doDelete">
+            <v-icon left>
+              delete
+            </v-icon> {{ $t('delete.yes') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-dialog v-model="wizard" persistent>
       <add-profile-wizard v-if="!creatingServer" :show="wizard" @quit="wizard=false" />
       <add-server-wizard v-else :show="wizard" @quit="wizard=false" />
@@ -129,6 +159,11 @@ export default {
       hoverTextOnImport: this.$t('profile.importZip'),
       creatingServer: false,
       creatingTooltip: false,
+      isDeletingProfile: false,
+      deletingProfile: {},
+
+      dragging: false,
+      draggingProfile: {},
 
       colors: ['blue-grey', 'red', 'pink',
         'purple', 'green', 'yellow', 'amber',
@@ -162,7 +197,6 @@ export default {
     const newOrder = [];
     for (let i = 0; i < count; ++i) {
       const choise = Math.random() * Math.floor(colors.length);
-      console.log(choise);
       newOrder.push(colors.splice(choise, 1));
     }
     this.colors = newOrder;
@@ -177,6 +211,9 @@ export default {
       this.creatingTooltip = false;
       this.creatingServer = true;
       this.wizard = true;
+    },
+    onDropDelete() {
+      this.startDelete(this.draggingProfile);
     },
     doImport(fromFolder, curseforge) {
       const filters = fromFolder ? [] : [{ extensions: ['zip'], name: 'Zip' }];
@@ -199,10 +236,25 @@ export default {
         }
       });
     },
-    doDelete(id) {
-      this.$repo.dispatch('deleteProfile', id);
+    doDelete() {
+      this.$repo.dispatch('deleteProfile', this.deletingProfile);
+    },
+    cancelDelete() {
+      this.isDeletingProfile = false;
+      this.deletingProfile = {};
+    },
+    startDelete(prof) {
+      this.isDeletingProfile = true;
+      this.deletingProfile = prof;
     },
     doCopy(id) {
+    },
+    onProfileMove(e) {
+      if (this.filter.length !== 0) {
+        console.log('cancelled');
+        return false;
+      }
+      return true;
     },
     selectProfile(event, id) {
       this.$repo.commit('selectProfile', id);
