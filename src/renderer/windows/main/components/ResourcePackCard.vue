@@ -7,7 +7,8 @@
               class="draggable-card white--text" 
               :style="{ transform: dragged ? 'scale(0.8)' : 'scale(1)' }"
               style="margin-top: 10px;"
-              v-on="on" @dragstart="onDragStart" @dragend="onDragEnd">
+              v-on="on"
+              @mousedown="dragged=true" @dragstart="onDragStart" @dragend="onDragEnd">
         <v-layout justify-center align-center fill-height>
           <v-flex xs6 style="padding: 0;">
             <v-img ref="iconImage" style="user-drag: none; user-select: none; height: 125px;" :src="metadata.icon" contain />

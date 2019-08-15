@@ -7,7 +7,8 @@
               class="draggable-card mod-card white--text" 
               :style="{ transform: dragged ? 'scale(0.8)' : 'scale(1)' }"
               style="margin-top: 10px; padding: 0 10px; transition-duration: 0.2s;"
-              v-on="on" @dragstart="onDragStart" @dragend="onDragEnd" @dblclick="tryOpen" @click="$emit('click', $event)">
+              v-on="on" 
+              @mousedown="dragged=true" @dragstart="onDragStart" @dragend="onDragEnd" @click="$emit('click', $event)">
         <v-layout justify-center align-center fill-height>
           <v-flex v-if="icon" xs4 style="padding: 0 10px 0 0;" fill-height>
             <v-img ref="iconImage" :src="icon" style="height: 100%" contain />
