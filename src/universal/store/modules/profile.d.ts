@@ -20,7 +20,7 @@ type DeepPartial<T> = Partial<{
     T[k];
 }>;
 export interface TemplateFunction {
-    (id: string, java: JavaModule.Java, mcversion: string, type: 'modpack' | 'server'): ProfileModule.ServerOrModpack
+    (id: string, java: JavaModule.Java, mcversion: string, type: 'modpack' | 'server', creatingNew: boolean): ProfileModule.ServerOrModpack
 }
 export const createTemplate: TemplateFunction;
 export declare namespace ProfileModule {
@@ -115,6 +115,9 @@ export declare namespace ProfileModule {
 
         image: string?;
         blur: number;
+
+        lastAccessDate: number;
+        creationDate: number;
     }
 
     interface State {
@@ -223,7 +226,10 @@ export declare namespace ProfileModule {
         loadProfileSaves(context: C, id: string): Promise<Pick<World, 'level' | 'path'>[]>;
         loadAllProfileSaves(context: C): Promise<Pick<World, 'level' | 'path'>[]>;
 
-
+        /**
+         * Return the profile's screenshots urls.
+         */
+        listProfileScreenshots(context: C, id: string): Promise<string[]>;
 
         /**
          * Select active profile

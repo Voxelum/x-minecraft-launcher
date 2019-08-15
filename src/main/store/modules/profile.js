@@ -22,11 +22,11 @@ async function loadWorld(save) {
         const world = await World.load(save, ['level']);
         const dest = join(save, 'icon.png');
         if (await fs.exists(dest)) {
-            const buf = await fs.readFile(dest);
-            const uri = `data:image/png;base64,${buf.toString('base64')}`;
-            if (world) {
-                Reflect.set(world, 'icon', uri);
-            }
+            // const buf = await fs.readFile(dest);
+            // const uri = `data:image/png;base64,${buf.toString('base64')}`;
+            // if (world) {
+            Reflect.set(world, 'icon', `file://${dest}`);
+            // }
         }
         return world;
     } catch (e) {
@@ -157,6 +157,7 @@ const mod = {
                 { path: '', version: '', majorVersion: 8 },
                 latestMcRelease,
                 type,
+                false,
             );
 
             if (profile.type === 'modpack') {
@@ -309,6 +310,15 @@ const mod = {
             }
         },
 
+        async listProfileScreenshots(context, id) {
+            const sp = context.rootGetters.path('profiles', id, 'screenshots');
+            if (await fs.exists(sp)) {
+                const files = await fs.readdir(sp);
+                return files.map(f => `file://${sp}/${f}`);
+            }
+            return [];
+        },
+
         async createProfile(context, payload) {
             const latestRelease = context.rootGetters.minecraftRelease || { id: latestMcRelease };
             const profile = createTemplate(
@@ -316,11 +326,14 @@ const mod = {
                 context.rootGetters.defaultJava,
                 latestRelease.id,
                 payload.type || 'modpack',
+                true,
             );
 
             if (profile.type === 'modpack') {
                 profile.author = context.rootState.user.name;
             }
+
+            delete payload.creationDate;
 
             fitin(profile, payload);
 

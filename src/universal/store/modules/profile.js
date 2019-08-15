@@ -5,7 +5,7 @@ import { UNKNOWN_STATUS } from 'universal/utils/server-status';
 /**
  * @type {import('./profile').TemplateFunction}
  */
-export function createTemplate(id, java, mcversion, type = 'modpack') {
+export function createTemplate(id, java, mcversion, type = 'modpack', isCreatingNew) {
     console.log(`Template from ${type}`);
     /**
      * @type {import('./profile').ProfileModule.ProfileBase}
@@ -38,6 +38,9 @@ export function createTemplate(id, java, mcversion, type = 'modpack') {
         },
         image: null,
         blur: 4,
+
+        lastAccessDate: -1,
+        creationDate: isCreatingNew ? Date.now() : -1,
     };
     if (type === 'modpack') {
         /**
@@ -124,6 +127,10 @@ const mod = {
             }
         },
         removeProfile(state, id) {
+            const i = state.profileIds.indexOf(id);
+            if (i !== -1) {
+                Vue.delete(state.profileIds, i);
+            }
             Vue.delete(state.all, id);
         },
         selectProfile(state, id) {
@@ -132,6 +139,7 @@ const mod = {
             } else if (state.id === '') {
                 state.id = Object.keys(state.all)[0];
             }
+            state.all[state.id].lastAccessDate = Date.now();
         },
         profile(state, settings) {
             const prof = state.all[state.id];

@@ -59,63 +59,42 @@
         </v-tooltip>
       </v-flex>
     </v-layout>
-    <!-- <v-layout row wrap style="overflow: scroll; max-height: 88vh;" justify-start fill-height> -->
     <v-flex d-flex xs12 style="height: 10px;" />
-    <draggable v-model="profiles" v-bind="options" :move="onProfileMove">
-      <transition-group type="transition" class="layout row wrap justify-start fill-height" 
-                        style="overflow: scroll; max-height: 88vh;">
-        <v-flex v-for="profile in profiles" :key="profile.id" xs6 d-flex 
+    <v-layout row wrap style="overflow: scroll; max-height: 88vh;" justify-start fill-height>
+      <v-flex v-if="timesliceProfiles[0].length !== 0" style="color: grey" xs12> 
+        {{ $t('profile.today') }}
+      </v-flex>
+      <v-flex v-for="profile in timesliceProfiles[0]" :key="profile.id" xs6
+              @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
+        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" 
+        />
+      </v-flex>
+      <v-flex v-if="timesliceProfiles[1].length !== 0" style="color: grey" xs12> 
+        {{ $t('profile.threeDay') }}
+      </v-flex>
+      <v-flex v-for="profile in timesliceProfiles[1]" :key="profile.id" xs6
+              @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
+        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" 
+        />
+      </v-flex>
+      <v-flex v-if="timesliceProfiles[2].length !== 0" style="color: grey" xs12> 
+        {{ $t('profile.older') }}
+      </v-flex>
+      <v-flex v-for="profile in timesliceProfiles[2]" :key="profile.id" xs6 
+              @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
+        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" 
+        />
+      </v-flex>
+    </v-layout>
+    <!-- <draggable v-model="profiles" v-bind="options" :move="onProfileMove"> -->
+    <!-- <transition-group type="transition" class="layout row wrap justify-start fill-height"  -->
+    <!-- style="overflow: scroll; max-height: 88vh;"> -->
+    <!-- <v-flex v-for="profile in profiles" :key="profile.id" xs6 d-flex 
                 @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-          <v-card color="#grey darken-3" hover dark @click="selectProfile($event, profile.id)">
-            <!-- <v-tooltip top style="display: none">
-              <template v-slot:activator="{ on }">
-                <v-btn icon color="red" style="position: absolute; right: 0px; z-index: 2" flat
-                       @click="$event.stopPropagation();startDelete(profile)" v-on="on">
-                  <v-icon dark>
-                    close
-                  </v-icon>
-                </v-btn>
-              </template>
-              {{ $t('profile.delete') }}
-            </v-tooltip> -->
-            <v-img
-              :class="{ 'grey': true, 'darken-2': true }"
-              class="white--text"
-              height="100px"
-            >
-              <v-container fill-height fluid>
-                <v-layout fill-height>
-                  <v-flex xs12 align-end flexbox>
-                    <v-icon left>
-                      layers
-                    </v-icon>
-                    <span class="headline">{{ profile.name || `Minecraft ${profile.version.minecraft}` }}</span>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-            </v-img>
-            
-            <v-card-text v-if="profile.description" class="headline font-weight-bold">
-              {{ profile.description }}
-            </v-card-text>
-
-            <v-card-actions style="margin-top: 40px;">
-              <v-list-tile class="grow">
-                <v-list-tile-avatar color="grey darken-3">
-                  <v-chip label :selected="false" @click="$event.stopPropagation()">
-                    {{ profile.version.minecraft }}
-                  </v-chip>
-                </v-list-tile-avatar>
-
-                <v-list-tile-content>
-                  <v-list-tile-title>{{ profile.author }}</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-            </v-card-actions>
-          </v-card>
-        </v-flex>
-      </transition-group>
-    </draggable>
+         
+        </v-flex> -->
+    <!-- </transition-group> -->
+    <!-- </draggable> -->
     <!-- <v-flex d-flex xs12 style="height: 10px;" /> -->
     <!-- </v-layout> -->
     <v-dialog v-model="isDeletingProfile" width="400">
@@ -178,6 +157,29 @@ export default {
     };
   },
   computed: {
+    timesliceProfiles() {
+      const filter = this.filter.toLowerCase();
+      const profiles = this.$repo.getters.profiles.filter(profile => filter === ''
+        || (profile.author ? profile.author.toLowerCase().indexOf(filter) !== -1 : false)
+        || profile.name.toLowerCase().indexOf(filter) !== -1
+        || (profile.description ? profile.description.toLowerCase().indexOf(filter) !== -1 : false));
+
+      const today = Math.floor(Date.now() / 1000 / 60 / 60 / 24) * 1000 * 60 * 60 * 24;
+      const threeDays = (Math.floor(Date.now() / 1000 / 60 / 60 / 24) - 3) * 1000 * 60 * 60 * 24;
+      const todayR = [];
+      const threeR = [];
+      const other = [];
+      for (const p of profiles) {
+        if (p.lastAccessDate > today) {
+          todayR.push(p);
+        } else if (p.lastAccessDate > threeDays) {
+          threeR.push(p);
+        } else {
+          other.push(p);
+        }
+      }
+      return [todayR, threeR, other];
+    },
     profiles: {
       get() {
         const filter = this.filter.toLowerCase();
