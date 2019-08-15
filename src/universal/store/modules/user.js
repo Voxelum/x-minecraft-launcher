@@ -109,32 +109,27 @@ const mod = {
             }
         },
         textures(state, textures) {
-            const skin = textures.textures.skin;
-            const cape = textures.textures.cape;
-            if (skin && skin.data) {
-                let data;
-                if (skin.data instanceof Buffer) {
-                    data = skin.data.toString('base64');
-                }
-                if (data) {
-                    state.skin.data = data;
-                    state.skin.slim = skin.metadata ? skin.metadata.model === 'slim' : false;
-                }
+            const skin = textures.textures.SKIN;
+            const cape = textures.textures.CAPE;
+            if (skin) {
+                state.skin.data = skin.url;
+                state.skin.slim = skin.metadata ? skin.metadata.model === 'slim' : false;
             }
-            if (cape && cape.data) {
-                state.cape = cape.data.toString('base64');
+            if (cape) {
+                state.cape = cape.url;
             }
         },
         mojangInfo(state, info) {
             state.info = { ...info };
         },
         login(state, { auth, account }) {
-            state.id = auth.userId;
+            state.id = auth.selectedProfile.id;
             state.accessToken = auth.accessToken;
             state.clientToken = auth.clientToken;
             state.userType = auth.userType;
             state.properties = auth.properties;
             state.name = auth.selectedProfile.name;
+            state.userId = auth.userId;
             if (account) {
                 if (!state.loginHistory[state.authService]) state.loginHistory[state.authService] = [];
                 if (state.loginHistory[state.authService].indexOf(account) !== -1) return;
