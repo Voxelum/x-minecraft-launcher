@@ -10,7 +10,8 @@
 
         <v-combobox ref="accountInput" v-model="account" dark prepend-icon="person" :label="$t(`login.${selectedMode}.account`)"
                     :rules="accountRules" :items="history" :error="accountError" :error-messages="accountErrors"
-                    required @input="accountError=false" />
+                    required
+                    @keypress="resetError" @input="accountError=false" />
 
         <!-- <v-text-field dark prepend-icon="person" :label="$t(`${selectedMode}.account`)" :rules="accountRules" v-model="account" :error="accountError" :error-messages="accountErrors" required @keypress="handleKey"></v-text-field> -->
         <v-text-field v-model="password" dark prepend-icon="lock" :label="$t(`login.${selectedMode}.password`)"
@@ -89,7 +90,14 @@ export default {
   },
   mounted() { },
   methods: {
+    resetError() {
+      this.accountError = false;
+      this.accountErrors = [];
+      this.passwordError = false;
+      this.passwordErrors = [];
+    },
     handleKey(e) {
+      this.resetError();
       if (e.key === 'Enter') {
         this.login();
       }
