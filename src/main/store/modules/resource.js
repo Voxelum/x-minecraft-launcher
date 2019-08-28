@@ -188,6 +188,7 @@ const mod = {
     ...base,
     actions: {
         async load(context) {
+            await fs.ensureDir(context.rootGetters.path('resources'));
             const resources = await fs.readdir(context.rootGetters.path('resources'));
             context.commit('resources', await Promise.all(resources
                 .map(file => context.rootGetters.path('resources', file))
