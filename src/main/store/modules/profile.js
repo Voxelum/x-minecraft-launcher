@@ -161,7 +161,7 @@ const mod = {
             );
 
             if (profile.type === 'modpack') {
-                profile.author = profile.author || rootState.user.name;
+                profile.author = profile.author || rootGetters.selectedGameProfile.name;
             }
 
             if (option && option.java && typeof option.java.path === 'string') {
@@ -330,7 +330,7 @@ const mod = {
             );
 
             if (profile.type === 'modpack') {
-                profile.author = context.rootState.user.name;
+                profile.author = context.rootGetters.selectedProfile.id;
             }
 
             delete payload.creationDate;
