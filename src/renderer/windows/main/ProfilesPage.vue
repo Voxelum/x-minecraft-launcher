@@ -225,7 +225,14 @@ export default {
       });
     },
     doDelete() {
-      this.$repo.dispatch('deleteProfile', this.deletingProfile);
+      if (this.deletingProfile) {
+        this.$repo.dispatch('deleteProfile', this.deletingProfile.id)
+          .finally(() => {
+            this.isDeletingProfile = false;
+          });
+      } else {
+            this.isDeletingProfile = false;
+      }
     },
     cancelDelete() {
       this.isDeletingProfile = false;

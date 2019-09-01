@@ -399,6 +399,10 @@ const mod = {
         },
 
         async deleteProfile(context, id = context.state.id) {
+            if (typeof id !== 'string') {
+                console.error(`Invalid contract! Should pass profile id to delete profile. Get ${id}`);
+                return;
+            }
             if (context.state.id === id) {
                 const allIds = Object.keys(context.state.all);
                 if (allIds.length === 1) {
@@ -408,7 +412,10 @@ const mod = {
                 }
             }
             context.commit('removeProfile', id);
-            await fs.remove(context.rootGetters.path('profiles', id));
+            const profileDir = context.rootGetters.path('profiles', id);
+            if (await fs.exists(profileDir)) {
+                await fs.remove(profileDir);
+            }
         },
 
 
