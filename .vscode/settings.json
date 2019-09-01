@@ -1,7 +1,6 @@
 {
     "eslint.validate": [
         "javascript",
-        "javascriptreact",
         {
             "language": "vue",
             "autoFix": true
@@ -34,4 +33,5 @@
             "wrap_line_length": 100
         }
     },
+    "vetur.useWorkspaceDependencies": true
 }
