@@ -2,7 +2,7 @@
     "name": "voxelauncher",
     "productName": "VoxeLauncher",
     "version": "0.2.0",
-    "author": "cijhn@hotmail.com",
+    "author": "ci010 <cijhn@hotmail.com>",
     "description": "A great minecraft launcher in the feature",
     "license": "MIT",
     "main": "./dist/electron/main.js",
