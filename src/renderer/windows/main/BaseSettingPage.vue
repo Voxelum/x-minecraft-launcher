@@ -15,7 +15,7 @@
         </v-flex>
         <v-flex v-if="!isServer" d-flex xs6>
           <v-text-field v-model="author" outline hide-details dark :label="$t('profile.modpack.author')"
-                        :placeholder="$repo.state.user.name" required />
+                        :placeholder="$repo.getters.selectedGameProfile.name" required />
         </v-flex>
         <v-flex v-if="isServer" d-flex xs6>
           <v-text-field v-model="host" outline hide-details dark :label="$t('profile.server.host')" placeholder="www.whatever.com"

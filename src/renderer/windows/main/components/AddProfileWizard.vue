@@ -197,7 +197,7 @@ export default {
       javaLocation: this.$repo.getters.defaultJava,
       maxMemory: undefined,
       minMemory: undefined,
-      author: this.$repo.state.user.name,
+      author: this.$repo.getters.selectedGameProfile.name,
       description: '',
 
       javaValid: true,
@@ -239,7 +239,7 @@ export default {
       this.mcversion = release;
       this.step = 1;
       this.name = '';
-      this.author = this.$repo.state.user.name;
+      this.author = this.$repo.getters.selectedGameProfile.name;
       this.description = '';
       const defaultJava = this.$repo.getters.defaultJava;
       this.javaLocation = this.javas.find(j => j.path === defaultJava.path);

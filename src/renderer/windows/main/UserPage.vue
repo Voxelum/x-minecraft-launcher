@@ -3,7 +3,7 @@
     <v-tooltip :close-delay="0" left>
       <template v-slot:activator="{ on }">
         <v-speed-dial v-if="security" v-model="fab"
-                      style="position:absolute; z-index: 2; bottom: 80px; left: 85px;" direction="top" :open-on-hover="true">
+                      style="position:absolute; z-index: 2; bottom: 80px; right: 85px;" direction="top" :open-on-hover="true">
           <template v-slot:activator>
             <v-btn v-model="fab" :disabled="pending" fab @click="doLoadSkin" v-on="on" @mouseenter="enterEditBtn">
               <v-icon>edit</v-icon>
@@ -33,15 +33,7 @@
       </v-btn>
     </v-fab-transition>
 
-    <v-layout v-if="security" row fill-height>
-      <v-flex shrink>
-        <v-layout justify-center align-center fill-height>
-          <v-flex style="z-index: 1;">
-            <skin-view :data="skin.data" :slim="skin.slim" @drop="onDropSkin" @dragover="onDragOver" />
-            <v-progress-circular v-if="pending" color="white" indeterminate :size="90" style="position: absolute; top: 30vh; left: 13vh;" />
-          </v-flex>
-        </v-layout>
-      </v-flex>
+    <v-layout row fill-height>
       <v-flex grow>
         <v-layout column fill-height>
           <v-flex d-flex grow>
@@ -49,28 +41,40 @@
               <v-flex tag="h1" class="white--text" xs1 style="margin-bottom: 10px; padding: 6px; 8px;">
                 <span class="headline">{{ $t('user.info') }}</span>
               </v-flex>
-              <v-flex xs1>
-                <v-text-field hide-details :label="$t('user.name')" readonly :value="user.name" color="primary"
-                              dark append-icon="file_copy" @click:append="$copy(user.name)" />
+              <v-flex xs1 style="padding-left: 5px;">
+                <v-text-field hide-details :label="$t('user.name')" readonly :value="gameProfile.name" color="primary"
+                              dark append-icon="file_copy" @click:append="$copy(gameProfile.name)" />
               </v-flex>
-              <v-flex xs1>
+              <v-flex xs1 style="padding-left: 5px;">
                 <v-text-field hide-details :label="$t('user.accessToken')" readonly :value="user.accessToken"
                               color="primary" dark append-icon="file_copy" @click:append="$copy(user.accessToken)" />
               </v-flex>
-              <v-flex xs1>
-                <v-select hide-details :label="$t('user.authService')" readonly :value="user.authService"
-                          :items="authServices" color="primary" dark prepend-inner-icon="add" />
+              <v-flex xs1 style="padding-left: 5px;">
+                <v-select hide-details :label="$t('user.authService')" 
+                          readonly 
+                          dark prepend-inner-icon="add" 
+                          :value="user.authService"
+                          :items="authServices" color="primary" 
+                          @click:prepend-inner="userServiceDialog=true" />
               </v-flex>
-              <v-flex xs1>
-                <v-select hide-details :label="$t('user.profileService')" :items="profileServices" :value="user.profileService"
-                          color="primary" dark prepend-inner-icon="add" />
+              <v-flex xs1 style="padding-left: 5px;">
+                <v-select hide-details :label="$t('user.profileService')" 
+                          :items="profileServices" :value="user.profileService"
+                          color="primary" dark prepend-inner-icon="add" 
+                          @click:prepend-inner="userServiceDialog=true" />
               </v-flex>
 
-              <v-flex xs1>
-                <v-select v-model="skin.slim" hide-details :label="$t('user.skinSlim')"
+              <v-flex xs1 style="padding-left: 5px;">
+                <v-select v-model="skinSlim" hide-details :label="$t('user.skinSlim')"
                           :items="[{text:'Alex', value:true}, {text:'Steve', value:false}]" item-text="text" item-value="value" color="primary" dark />
               </v-flex>
             </v-layout>
+          </v-flex>
+
+          <v-flex d-flex xs12>
+            <v-alert :value="!security" style="cursor: pointer;" @click="securityDialog = true">
+              {{ $t('user.insecureClient') }}
+            </v-alert>
           </v-flex>
 
           <v-flex d-flex shrink>
@@ -96,15 +100,15 @@
           <v-flex d-flex shrink>
             <v-layout wrap>
               <v-flex d-flex xs6>
-                <v-btn block replace to="/login">
+                <v-btn block @click="toggleSwitchUser">
                   <v-icon left dark>
                     compare_arrows
                   </v-icon>
-                  {{ $t('user.switchAccount') }}
+                  {{ $t('user.account.switch') }}
                 </v-btn>
               </v-flex>
               <v-flex d-flex xs6>
-                <v-btn block dark color="red" replace to="/login" @click="doLogout">
+                <v-btn block dark :disabled="offline" color="red" @click="doLogout">
                   <v-icon left dark>
                     exit_to_app
                   </v-icon>
@@ -115,61 +119,75 @@
           </v-flex>
         </v-layout>
       </v-flex>
-    </v-layout>
-    <v-layout v-else column fill-height style="padding: 0 30px;">
-      <v-flex tag="h1" class="white--text" xs1 style="margin-bottom: 10px; padding: 6px; 8px;">
-        <span class="headline">{{ $t('user.challenges') }}</span>
-      </v-flex>
-      <v-flex v-if="waitingChallenges" grow />
-      <v-flex v-if="waitingChallenges" offset-xs4>
-        <v-progress-circular indeterminate :width="7" :size="170" color="white" />
-      </v-flex>
-      <v-flex v-else xs1>
-        <v-text-field v-for="(c, index) in challenges" :key="c.question.id" hide-details outline
-                      :label="c.question.question" color="primary"
-                      dark style="margin-bottom: 10px;" @input="challenges[index].answer.answer=$event;challegesError=undefined" />
-      </v-flex>
-      <v-alert :value="challegesError" type="error" transition="scale-transition">
-        {{ (challegesError||{}).errorMessage }}
-      </v-alert>
-      <v-flex d-flex grow />
-      <v-flex d-flex shrink>
-        <v-layout wrap>
-          <v-flex d-flex xs12 class="white--text">
-            <v-spacer />
-            <a style="z-index: 1" href="https://account.mojang.com/me/changeSecretQuestions">{{ $t('user.forgetChallenges') }}</a>
-          </v-flex>
-          <v-flex d-flex xs12>
-            <v-btn block :loading="submittingChallenges" color="primary" @click="doSumitAnswer">
-              <v-icon left dark>
-                check
-              </v-icon>
-              {{ $t('user.submitChallenges') }}
-            </v-btn>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex d-flex shrink>
-        <v-layout wrap>
-          <v-flex d-flex xs6>
-            <v-btn block replace to="/login">
-              <v-icon left dark>
-                compare_arrows
-              </v-icon>
-              {{ $t('user.switchAccount') }}
-            </v-btn>
-          </v-flex>
-          <v-flex d-flex xs6>
-            <v-btn block dark color="red" replace to="/login" @click="doLogout">
-              <v-icon left dark>
-                exit_to_app
-              </v-icon>
-              {{ $t('user.logout') }}
-            </v-btn>
+      <v-flex shrink>
+        <v-layout justify-center align-center fill-height>
+          <v-flex style="z-index: 1;">
+            <skin-view :data="skinData" :slim="skinSlim" @drop="onDropSkin" @dragover="onDragOver" />
+            <!-- <v-progress-circular v-if="pending" color="white" indeterminate :size="90" style="position: absolute; top: 30vh; right: 13vh;" /> -->
           </v-flex>
         </v-layout>
       </v-flex>
     </v-layout>
+
+    <v-navigation-drawer
+      v-model="switchUserSidebar"
+      right
+      absolute
+      clipped
+      width="230"
+      hide-overlay
+    >
+      <v-list class="pa-1">
+        <v-list-tile avatar>
+          <v-list-tile-avatar>
+            <v-icon> compare_arrows </v-icon>
+          </v-list-tile-avatar>
+
+          <v-list-tile-content>
+            <v-list-tile-title>{{ $t('user.account.switch') }}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+
+      <v-list draggable class="pt-0" two-line>
+        <v-divider />
+
+        <v-list-tile
+          v-for="u in gameProfiles"
+          :key="u.id"
+          draggable
+          @dragstart="draggingUser = true"
+          @dragend="draggingUser = false"
+          @click="switchUser(u)"
+        >
+          <v-list-tile-avatar>
+            <v-chip label outline small>
+              {{ u.authService }}
+            </v-chip>
+          </v-list-tile-avatar>
+
+          <v-list-tile-content>
+            <v-list-tile-title>{{ u.name }}</v-list-tile-title>
+            <v-list-tile-sub-title> {{ u.authService === 'offline' ? u.id : u.account }} </v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
+        <v-list-tile avatar @click="toggleSwitchUser">
+          <v-list-tile-avatar>
+            <v-icon> add </v-icon>
+          </v-list-tile-avatar>
+
+          <v-list-tile-content>
+            <v-list-tile-title> {{ $t('user.account.add') }} </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
+        <v-divider />
+      </v-list>
+    </v-navigation-drawer>
+    
+    <dialog-user-services v-model="userServiceDialog" />
+    <dialog-challenges v-model="securityDialog" />
     <v-dialog v-model="importUrlDialog" width="400">
       <v-card dark>
         <v-container fluid grid-list-md>
@@ -205,6 +223,7 @@ export default {
     return {
       fab: false,
 
+      switchUserSidebar: false,
       hoverTextOnEdit: '',
       skinUrlError: true,
       skinUrlFormat: [
@@ -212,78 +231,50 @@ export default {
         v => !!URL_PATTERN.test(v) || this.$t('user.skinUrlNotValid'),
       ],
       skinUrl: '',
+      skinData: '',
+      skinSlim: false,
 
-      security: true,
-      submittingChallenges: false,
-      waitingChallenges: false,
-      challenges: [],
-      challegesError: undefined,
-
+      securityDialog: false,
+      userServiceDialog: false,
       importUrlDialog: false,
+
       parsingSkin: false,
       uploadingSkin: false,
-      refreshingSkin: false,
-
-      skin: {
-        data: '',
-        slim: false,
-      },
     };
   },
   computed: {
+    user() { return this.$repo.getters.selectedUser; },
+    gameProfile() { return this.$repo.getters.selectedGameProfile; },
+    gameProfiles() { return this.$repo.getters.avaiableGameProfiles; },
+
+    security() { return this.$repo.state.user.security; },
+    offline() { return this.$repo.getters.offline; },
+    refreshingSkin() { return this.$repo.state.user.refreshingSkin; },
     pending() { return this.refreshingSkin || this.uploadingSkin || this.parsingSkin; },
-    offline() { return this.user.authservice === 'offline'; },
-    showChallenges() { return !this.security; },
-    user() { return this.$repo.state.user; },
+
     authServices() { return this.$repo.getters.authServices; },
     profileServices() { return this.$repo.getters.profileServices; },
+
     modified() {
-      const skin = this.$repo.state.user.skin;
-      return skin.data !== this.skin.data || this.skin.slim !== skin.slim;
+      if (this.offline) return false;
+      const skin = this.gameProfile.textures.SKIN;
+      const skinSlim = skin.metadata ? skin.metadata.model === 'slim' : false;
+      return this.skinData !== skin.url || this.skinSlim !== skinSlim;
     },
   },
   mounted() {
     this.doReset();
-    this.waitingChallenges = true;
-    this.$repo.dispatch('checkLocation').then((security) => {
-      console.log(security);
-      this.security = security;
-      if (!this.security) {
-        this.$repo.dispatch('getChallenges').then((c) => {
-          this.challenges = c;
-          this.waitingChallenges = false;
-        }, (e) => {
-          this.waitingChallenges = false;
-          this.challegesError = e;
-        });
-      } else {
-        this.waitingChallenges = false;
-      }
-    });
   },
   methods: {
-    async doSumitAnswer() {
-      this.submittingChallenges = true;
-      await this.$nextTick();
-      await this.$repo.dispatch('submitChallenges', JSON.parse(JSON.stringify(this.challenges.map(c => c.answer)))).then((resp) => {
-        this.security = true;
-      }).catch((e) => {
-        this.challegesError = e;
-      }).finally(() => {
-        this.submittingChallenges = false;
-      });
-    },
     doLogout() {
       return this.$repo.dispatch('logout');
     },
     refreshSkin() {
-      this.refreshingSkin = true;
       this.$repo.dispatch('refreshSkin').then(() => {
         this.$notify('info', this.$t('user.refreshSkinSuccess'));
       }, (e) => {
         this.$notify('error', this.$t('user.refreshSkinFail', e));
       }).finally(() => {
-        this.refreshingSkin = false;
         this.doReset();
       });
     },
@@ -304,7 +295,7 @@ export default {
           // TOOD: use resource module to manage skin
           this.$repo.dispatch('parseSkin', e.dataTransfer.files[i].path).then((skin) => {
             if (skin) {
-              this.skin.data = skin;
+              this.skinData = skin;
             }
           });
         }
@@ -315,7 +306,7 @@ export default {
 
       this.parsingSkin = true;
       this.$repo.dispatch('parseSkin', this.skinUrl).then((skin) => {
-        if (skin) { this.skin.data = skin; }
+        if (skin) { this.skinData = skin; }
       }, (e) => {
         this.$notify('error', this.$t('user.skinParseFailed', e));
       }).finally(() => {
@@ -328,7 +319,7 @@ export default {
         if (filename && filename[0]) {
           this.$repo.dispatch('parseSkin', filename[0]).then((skin) => {
             if (skin) {
-              this.skin.data = skin;
+              this.skinData = skin;
             }
           }, (e) => {
             this.$notify('error', this.$t('user.skinParseFailed', e));
@@ -337,27 +328,31 @@ export default {
       });
     },
     doReset() {
-      const skin = this.$repo.state.user.skin;
-      this.skin.data = skin.data;
-      this.skin.slim = skin.slim;
+      if (this.modified) {
+        const skin = this.gameProfile.textures.SKIN;
+        const skinUrl = skin.url;
+        const skinSlim = skin.metadata ? skin.metadata.model === 'slim' : false;
+
+        this.skinData = skinUrl;
+        this.skinSlim = skinSlim;
+      }
     },
     doUpload() {
       if (this.offline) {
         console.warn('Cannot update skin during offline mode');
       } else {
         this.uploadingSkin = true;
-        this.$repo.dispatch('uploadSkin', this.skin)
-          .then(() => this.refreshSkin(), (e) => {
-            this.$notify('error', this.$t('user.uploadSkinFail', e));
-          }).finally(() => {
-            this.uploadingSkin = false;
-          });
+        this.$repo.dispatch('uploadSkin', { data: this.skinData, slim: this.skinSlim }).then(() => this.refreshSkin(), (e) => {
+          this.$notify('error', this.$t('user.uploadSkinFail', e));
+        }).finally(() => {
+          this.uploadingSkin = false;
+        });
       }
     },
     doSaveSkin() {
       this.$electron.remote.dialog.showSaveDialog({ title: this.$t('user.skinSaveTitle'), defaultPath: `${this.user.name}.png`, filters: [{ extensions: ['png'], name: 'PNG Images' }] }, (filename, bookmark) => {
         if (filename) {
-          this.$repo.dispatch('saveSkin', { path: filename, skin: this.skin });
+          this.$repo.dispatch('saveSkin', { path: filename, skin: { data: this.skinData, slim: this.skinSlim } });
         }
       });
     },
@@ -373,9 +368,33 @@ export default {
     updateSkinUrl(url) {
       this.skinUrlError = this.skinUrlFormat.some(r => typeof r(url) === 'string');
     },
+    switchUser(profile) {
+      this.$repo.dispatch('switchUserProfile', {
+        profileId: profile.id,
+        userId: profile.userId,
+      });
+    },
+    toggleSwitchUser() {
+      this.$electron.ipcRenderer.emit('login', true);
+    },
   },
 };
 </script>
 
-<style scoped=true>
+<style>
+.my-slider-x-transition-enter-active {
+  transition: 0.3 cubic-bezier(0.25, 0.8, 0.5, 1);
+}
+.my-slider-x-transition-leave-active {
+  transition: 0.3 cubic-bezier(0.25, 0.8, 0.5, 1);
+}
+.my-slider-x-transition-move {
+  transition: transform 0.6s;
+}
+.my-slider-x-transition-enter {
+  transform: translateX(100%);
+}
+.my-slider-x-transition-leave-to {
+  transform: translateX(100%);
+}
 </style>
