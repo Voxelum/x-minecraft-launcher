@@ -6,16 +6,6 @@
       </v-btn>
       <v-toolbar-title> {{ $t('feedback') }} </v-toolbar-title>
       <v-spacer />
-      <!-- <v-toolbar-items>
-        <v-btn dark flat>
-          {{ $t('feedback') }}
-        </v-btn>
-      </v-toolbar-items> -->
-      <!-- <template v-slot:extension> -->
-      <!-- <v-tabs v-model="model" centered color="cyan"> -->
-      <!-- <v-tab :key="i" :href="`#tab-${i}`"/> -->
-      <!-- </v-tabs> -->
-      <!-- </template> -->
     </v-toolbar>
     <v-list three-line subheader>
       <v-subheader>{{ $t('feedback.description') }}</v-subheader>
