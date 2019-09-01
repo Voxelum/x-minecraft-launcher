@@ -87,6 +87,7 @@ export default {
     const character = new Model();
     character.root.translateY(-0.5);
     this.$setSkin = (skin, slim) => {
+      console.log(`Set Skin ${skin}`);
       character.updateSkin(skin, slim);
     };
     this.$setCape = (cape) => {
@@ -103,8 +104,8 @@ export default {
     controls.maxDistance = this.maxDistance;
     controls.minDistance = this.minDistance;
     if (this.rotate) {
-      controls.autoRotate = true;
-      controls.autoRotateSpeed = 4;
+      // controls.autoRotate = true;
+      // controls.autoRotateSpeed = 4;
     }
     const self = this;
     requestAnimationFrame(function animate(nowMsec) {
