@@ -144,6 +144,11 @@ const mod = {
         profile(state, settings) {
             const prof = state.all[state.id];
 
+            if (!prof) {
+                console.error(`Cannot commit profile. Illegal State with missing profile ${state.id}`);
+                return;
+            }
+
             prof.name = typeof settings.name === 'string' ? settings.name : prof.name;
 
             if (prof.type === 'modpack') {
