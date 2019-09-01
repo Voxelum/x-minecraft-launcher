@@ -71,7 +71,7 @@ const mod = {
             const task = Task.create('downloadUpdate', async (ctx) => {
                 if (!context.state.autoDownload) {
                     context.commit('downloadingUpdate', true);
-                    const inside = await isInGFW();
+                    const inside = await isInGFW().catch(_ => false);
                     if (inside) {
                         autoUpdater.setFeedURL('https://voxelauncher.blob.core.windows.net/releases');
                         await autoUpdater.checkForUpdates();
