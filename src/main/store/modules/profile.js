@@ -320,11 +320,11 @@ const mod = {
         },
 
         async createProfile(context, payload) {
-            const latestRelease = context.rootGetters.minecraftRelease || { id: latestMcRelease };
+            const latestRelease = context.rootGetters.minecraftRelease;
             const profile = createTemplate(
                 uuid(),
                 context.rootGetters.defaultJava,
-                latestRelease.id,
+                latestRelease ? latestRelease.id : latestMcRelease,
                 payload.type || 'modpack',
                 true,
             );
