@@ -123,7 +123,7 @@
         }
     },
     "dependencies": {
-        "@xmcl/minecraft-launcher-core": "^0.1.9",
+        "@xmcl/minecraft-launcher-core": "^0.1.12",
         "@xmcl/unzip": "^0.2.4",
         "electron-updater": "^4.0.6",
         "fast-html-parser": "^1.0.1",
@@ -137,7 +137,7 @@
         "vue-electron": "^1.0.6",
         "vue-i18n": "^7.0.4",
         "vue-router": "^3.0.6",
-        "vuetify": "^1.5.14",
+        "vuetify": "^1.5.18",
         "vuex": "^3.1.1",
         "yazl": "^2.5.1"
     },
@@ -177,6 +177,7 @@
         "style-loader": "^0.21.0",
         "three": "^0.86.0",
         "three-orbit-controls": "^82.1.0",
+        "typescript": "3.3.1",
         "url-loader": "^1.1.2",
         "vue-loader": "^15.2.4",
         "vue-observe-visibility": "^0.4.4",
