@@ -32,7 +32,10 @@ let instance;
  * @param {import('electron').BrowserViewConstructorOptions} option
  */
 function createWindow(name, option) {
-    const ref = new BrowserWindow(option);
+    const ops = { ...option };
+    if (!ops.webPreferences) { ops.webPreferences = {}; }
+    ops.webPreferences.webSecurity = !isDev; // disable security for loading local image
+    const ref = new BrowserWindow(ops);
     ipcMain.emit('browser-window-setup', ref, name);
     ref.loadURL(`${baseURL}${name}`);
     console.log(`Create window from ${`${baseURL}${name}`}`);

@@ -68,6 +68,7 @@
         "no": "No",
         "yes": "Delete"
     },
+    "deleteSave": "Delete Save",
     "description": "Description",
     "detail": "Detail",
     "diagnosis": {
@@ -91,6 +92,10 @@
         "missingAssetsIndex": {
             "": "Missing assets index file of {version}.",
             "message": "Launcher will download assets index for you"
+        },
+        "missingAuthlibInjector": {
+            "": "Missing authlib-injector",
+            "message": "The authlib-injector is required to use third party auth server!"
         },
         "missingForgeJar": {
             "": "Missing forge {forge} jar for Minecraft {minecraft}",
@@ -154,6 +159,7 @@
         "qqEnterGroup": "Enter Group"
     },
     "filter": "Filter",
+    "finish": "Finish",
     "forge": {
         "common": "Common",
         "config": {
@@ -261,11 +267,13 @@
         "parsing": "Parsing Resource",
         "storing": "Storing Resource"
     },
+    "importSave": "Import Save",
     "installAssets": {
         "": "Install Asset Files",
         "assets": "Install Asset {hash}",
         "assetsJson": "Check Assets Index File"
     },
+    "installAuthlibInjector": "Install authlib-injector",
     "installCurseforgeFile": "Install Curseforge File",
     "installCurseforgeModpack": {
         "": "Install Curseforge Modpack",
@@ -388,31 +396,6 @@
         "success": "Success",
         "warning": "Warning"
     },
-    "login": {
-        "": "Login",
-        "forgetPassword": "Forget Password?",
-        "illegalEmail": "E-mail must be valid",
-        "invalidCredentials": "Invalid credentials. Invalid username or password.",
-        "mode": "Login Mode",
-        "mojang": {
-            "account": "Email Adress",
-            "name": "Mojang",
-            "password": "Password"
-        },
-        "offline": {
-            "account": "Username",
-            "name": "Offline",
-            "password": "No Password"
-        },
-        "rememberMe": "Remember Me",
-        "requireEmail": "E-mail is required",
-        "requirePassword": "Password is required",
-        "requireUsername": "Username is required",
-        "signup": {
-            "": "Sign up",
-            "description": "New to us?"
-        }
-    },
     "market": "Market",
     "minecraft": {
         "name": "Minecraft",
@@ -421,18 +404,18 @@
         "version": "Minecraft Version"
     },
     "mod": {
+        "backToAllMods": "Back to All Mods",
         "compatible": "Available on {version}",
+        "deletion": "Deleting {mod} mod",
+        "deletionHint": "You will lose this mod & its metadata forever. Are you sure you want to delete it?",
         "export": "Export Mod",
         "hint": "Drop mod's .jar/.litemod here to import.",
         "import": "Import Mod",
         "incompatible": "Incompatible Mod. Accept {accept}. Current: {actual}",
         "name": "Mod | Mods",
         "selected": "Selected Mods",
-        "unselected": "Unselected Mods",
-        "backToAllMods": "Back to All Mods"
+        "unselected": "Unselected Mods"
     },
-    "deleteSave": "Delete Save",
-    "importSave": "Import Save",
     "name": "Name",
     "no": "No",
     "ok": "Ok",
@@ -444,7 +427,8 @@
         "authorHint": "The author of this game integration",
         "baseSetting": "Base Settings",
         "copy": "Duplicate",
-        "delete": "Delete",
+        "delete": "Delete Profile",
+        "deleteHint": "The profile {name}({id}) data will be moved from the disk forever. You sure to do this?",
         "descriptionHint": "Breifly describe the game",
         "export": {
             "exportingMessage": "Exporting Modpack...",
@@ -482,6 +466,7 @@
         "name": "Profile Name",
         "nameHint": "The name used to identify the game",
         "noLocalVersion": "No Local Version",
+        "older": "Older",
         "requireName": "The name is required",
         "select": "Select",
         "server": {
@@ -528,6 +513,8 @@
             "profile": "This is a existed profile configuration",
             "server": "This is a existed server configuration"
         },
+        "threeDay": "In Three Days",
+        "today": "Today",
         "url": "URL",
         "version": "Selected Version",
         "versionHint": "The Minecraft version of this game",
@@ -553,6 +540,8 @@
             "content": "This will remove the resource pack file from disk, and we cannot redo it. Are you sure to do this?",
             "title": "Delete the resource pack"
         },
+        "deletion": "Deleting {pack}",
+        "deletionHint": "You will lose the data and metadata of this resource pack. You are sure to do this?",
         "export": "Export Resource Pack",
         "hint": "Drop Resource Pack's folder/zip here to import.",
         "import": "Import Resource Pack",
@@ -570,13 +559,13 @@
             "title": "Copy Save to Other Profile"
         },
         "copyFrom": {
-            "from": "From {src}",
-            "title": "Import Save from Managed Source",
+            "cancel": "Cancel",
+            "confirm": "Start Copy",
             "description": "You can deploy save to this profile from other profile, or from managed resources (curseforge)",
+            "from": "From {src}",
             "fromProfile": "From Profiles",
             "fromResource": "From Resources",
-            "confirm": "Start Copy",
-            "cancel": "Cancel"
+            "title": "Import Save from Managed Source"
         },
         "deleteCancel": "Cancel",
         "deleteConfirm": "Comfirm to delete",
@@ -643,16 +632,36 @@
     },
     "user": {
         "accessToken": "Access Token",
+        "account": {
+            "add": "Add Account",
+            "switch": "Switch Account"
+        },
+        "authMode": "Auth Service",
         "authService": "Authorize Service",
         "birth": "Registered Birthday",
         "challenges": "Anwser questions below to verify your identity",
         "email": "Email Address",
         "forgetChallenges": "I have forgot these questions and I want to change them",
+        "forgetPassword": "Forget Password?",
         "id": "User Id",
+        "illegalEmail": "E-mail must be valid",
         "info": "User Information",
+        "insecureClient": "The Client is insecure! Please validate your identity to upload skin!",
+        "invalidCredentials": "Invalid credentials. Invalid username or password.",
         "logout": "Logout",
+        "mojang": {
+            "account": "Email Adress",
+            "name": "Mojang",
+            "password": "Password"
+        },
         "name": "Username",
+        "offline": {
+            "account": "Username",
+            "name": "Offline",
+            "password": "No Password"
+        },
         "profile": "Profile",
+        "profileMode": "Profile Service",
         "profileService": {
             "": "Profile Service",
             "description": "The service provides your skin info."
@@ -661,7 +670,39 @@
         "refreshSkin": "Refresh Skin",
         "refreshSkinFail": "Refresh Skin Failed",
         "refreshSkinSuccess": "Refresh Skin Succcess",
-        "signup": "Sign Up",
+        "requireEmail": "E-mail is required",
+        "requirePassword": "Password is required",
+        "requireUsername": "Username is required",
+        "service": {
+            "add": "Add More Service",
+            "authLibInjector": "Follow the auth-lib injector suggestion",
+            "authServiceDetail": "Configure Auth Service",
+            "authenticateHint": "Response for normal login request",
+            "baseUrl": "The Base URL",
+            "baseUrlHint": "The base URL of your custom service",
+            "duplicatedName": "There is an existed service named this",
+            "hostName": "Root of Auth Server URL",
+            "hostNameHint": "The base URL of your auth server",
+            "invalidUrl": "Invalid URL",
+            "invalidateHint": "Make current token invalid when user logout",
+            "name": "The identifier of this service",
+            "normal": "Follow the normal step",
+            "profile": "Fetch Profile API",
+            "profileByName": "Query Profile API",
+            "profileByNameHint": "Fetch Profile by User Name",
+            "profileHint": "Fetch Profile by User UUID",
+            "profileServiceDetail": "Configure Profile Service",
+            "refreshHint": "Used to refresh your token",
+            "requireName": "The name cannot be empty",
+            "signoutHint": "",
+            "texture": "Upload Texture API",
+            "textureHint": "Upload Texture by User ID and Access Token",
+            "title": "User Services",
+            "typeOfService": "Choose the Service Type",
+            "validateHint": "Used to check if user's token still valid"
+        },
+        "signup": "Sign up",
+        "signupDescription": "New to us?",
         "skinImport": "Import Skin",
         "skinImportFile": "Open from File",
         "skinImportLink": "Open from Link",
@@ -671,8 +712,7 @@
         "skinSlim": "Skin Type",
         "skinUrlNotEmpty": "Skin URL cannot be empty",
         "skinUrlNotValid": "Skin URL is Invalid",
-        "submitChallenges": "Submit Answers",
-        "switchAccount": "Switch Account"
+        "submitChallenges": "Submit Answers"
     },
     "version": {
         "all": "All versions",

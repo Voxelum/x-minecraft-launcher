@@ -1,12 +1,17 @@
 <template>
   <v-tooltip top>
     <template v-slot:activator="{ on }">
-      <v-card color="darken-1" flat hover :class="{ incompatible: !compatible }" 
-              class="draggable-card mod-card white--text" style="margin-top: 10px; padding: 0 10px;" 
-              draggable v-on="on" @dragstart="onDragStart" @dblclick="tryOpen" @click="$emit('click', $event)">
+      <v-card color="darken-1" 
+              flat hover draggable
+              :class="{ incompatible: !compatible }" 
+              class="draggable-card mod-card white--text" 
+              :style="{ transform: dragged ? 'scale(0.8)' : 'scale(1)' }"
+              style="margin-top: 10px; padding: 0 10px; transition-duration: 0.2s;"
+              v-on="on" 
+              @mousedown="dragged=true" @dragstart="onDragStart" @dragend="onDragEnd" @click="$emit('click', $event)">
         <v-layout justify-center align-center fill-height>
           <v-flex v-if="icon" xs4 style="padding: 0 10px 0 0;" fill-height>
-            <v-img :src="icon" style="height: 100%" contain />
+            <v-img ref="iconImage" :src="icon" style="height: 100%" contain />
           </v-flex>
           <v-flex xs8 style="padding: 10px 0;">
             <h3>
@@ -52,6 +57,7 @@ export default {
   data() {
     return {
       icon: unknownPack,
+      dragged: false,
     };
   },
   computed: {
@@ -98,7 +104,15 @@ export default {
       }
     },
     onDragStart(e) {
+      this.dragged = true;
+      this.$emit('dragstart', e);
+      e.dataTransfer.setDragImage(this.$refs.iconImage.$el, 0, 0);
       e.dataTransfer.setData('Index', `${this.isSelected ? 'R' : 'L'}${this.index}`);
+      e.dataTransfer.setData('Hash', this.data.hash);
+    },
+    onDragEnd(e) {
+      this.dragged = false;
+      this.$emit('dragend', e);
     },
     tryOpen(e) {
       if (this.data.url) {

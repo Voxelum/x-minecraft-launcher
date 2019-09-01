@@ -66,6 +66,7 @@
         "no": "取消",
         "yes": "删除"
     },
+    "deleteSave": "删除存档",
     "description": "简介",
     "detail": "细节",
     "diagnosis": {
@@ -89,6 +90,10 @@
         "missingAssetsIndex": {
             "": "%{version}缺少游戏资源目录",
             "message": "启动器将自动下载并安装游戏资源目录"
+        },
+        "missingAuthlibInjector": {
+            "": "需要安装 authlib-injector",
+            "message": "必须安装 authlib-injector, 第三方验证服务配置才能生效！"
         },
         "missingForgeJar": {
             "": "缺少对应 Minecraft {minecraft} 版本的 Forge {forge} 依赖文件",
@@ -142,6 +147,7 @@
         "qqEnterGroup": "加群"
     },
     "filter": "检索",
+    "finish": "完成",
     "forge": {
         "common": "所有",
         "config": {
@@ -249,11 +255,13 @@
         "parsing": "解析资源",
         "storing": "存储资源"
     },
+    "importSave": "导入存档",
     "installAssets": {
         "": "下载游戏资源文件",
         "assets": "下载资源文件%{hash}",
         "assetsJson": "下载资源文件目录"
     },
+    "installAuthlibInjector": "安装 authlib-injector",
     "installCurseforgeFile": "安装 Curseforge 文件",
     "installCurseforgeModpack": {
         "": "安装 Curseforge 整合包",
@@ -376,31 +384,6 @@
         "success": "成功",
         "warning": "警告"
     },
-    "login": {
-        "": "登陆",
-        "forgetPassword": "忘记密码?",
-        "illegalEmail": "当前Email格式不合法",
-        "invalidCredentials": "无法验证. 用户名或密码错误.",
-        "mode": "登录模式",
-        "mojang": {
-            "account": "邮箱地址",
-            "name": "Mojang",
-            "password": "密码"
-        },
-        "offline": {
-            "account": "用户名",
-            "name": "离线模式",
-            "password": "无需密码"
-        },
-        "rememberMe": "记住密码",
-        "requireEmail": "必须要Email才能登陆",
-        "requirePassword": "请输入密码",
-        "requireUsername": "用户名不能为空",
-        "signup": {
-            "": "注册",
-            "description": "没有账号?"
-        }
-    },
     "market": "市场",
     "minecraft": {
         "name": "Minecraft",
@@ -408,18 +391,18 @@
         "showAlpha": "显示快照版",
         "version": "Minecraft 版本"
     },
-    "deleteSave": "删除存档",
-    "importSave": "导入存档",
     "mod": {
+        "backToAllMods": "返回所有 Mods",
         "compatible": "可用于 {version} 版",
+        "deletion": "删除 {mod} Mod",
+        "deletionHint": "你将失去这个 Mod 的文件和信息。你确定吗？",
         "export": "导出 Mod",
         "hint": "将Mod的jar文件拖入此处来导入",
         "import": "导入 Mod",
         "incompatible": "不兼容Minecraft {actual} 的Mod。需要Minecraft {accept}。",
         "name": "Mod | Mods",
         "selected": "已选 Mods",
-        "unselected": "未选 Mods",
-        "backToAllMods": "返回所有 Mods"
+        "unselected": "未选 Mods"
     },
     "name": "名称",
     "next": "下一项",
@@ -435,7 +418,8 @@
         "authorHint": "这个游戏/整合包的制作人",
         "baseSetting": "基础设置",
         "copy": "复制",
-        "delete": "删除",
+        "delete": "删除游戏",
+        "deleteHint": "游戏 {name}({id}) 的数据将完全被移除。你确定继续此操作吗？",
         "descriptionHint": "简单描述这个游戏/整合包的内容",
         "export": {
             "exportingMessage": "正在导出...",
@@ -473,6 +457,7 @@
         "name": "名称",
         "nameHint": "名称便于以后识别",
         "noLocalVersion": "没有本地版本",
+        "older": "三天前",
         "requireName": "必须填写名称",
         "select": "选择",
         "server": {
@@ -521,6 +506,8 @@
             "profile": "这是一个已有的启动配置",
             "server": "这是一个已有的服务器启动配置"
         },
+        "threeDay": "三天内",
+        "today": "今天",
         "url": "URL",
         "version": "游戏版本",
         "versionHint": "这个游戏使用的Minecraft版本",
@@ -543,6 +530,8 @@
             "content": "将从磁盘中删除资源包，该操作不可逆，确定继续执行吗",
             "title": "删除资源包"
         },
+        "deletion": "移除 {pack}",
+        "deletionHint": "你将永远失去该资源包的数据以及相关信息，你进行此操作吗？",
         "export": "导出资源包",
         "hint": "将资源包zip或文件夹拖入此处导入",
         "import": "导入资源包",
@@ -560,13 +549,13 @@
             "title": "复制存档到其他启动配置"
         },
         "copyFrom": {
-            "title": "从已有资源导入存档",
-            "from": "来自 {src}",
+            "cancel": "取消",
+            "confirm": "开始导入",
             "description": "你可以从其他启动配置中导入存档，或者从已有资源中导入 (如从 curseforge 下载的地图)",
+            "from": "来自 {src}",
             "fromProfile": "来自其他启动配置",
             "fromResource": "来自已导入资源",
-            "confirm": "开始导入",
-            "cancel": "取消"
+            "title": "从已有资源导入存档"
         },
         "deleteCancel": "取消",
         "deleteConfirm": "确认删除",
@@ -624,22 +613,75 @@
     },
     "user": {
         "accessToken": "访问令牌",
+        "account": {
+            "add": "添加账号",
+            "switch": "切换账号"
+        },
+        "authMode": "验证服务",
         "authService": "验证服务器",
         "birth": "登记的生日",
         "challenges": "请回答下列问题来验证你的身份",
         "email": "邮箱",
         "forgetChallenges": "我忘记了这些问题的答案，我想重新设置它们 ",
+        "forgetPassword": "忘记密码?",
         "id": "用户 Id",
+        "illegalEmail": "当前Email格式不合法",
         "info": "用户信息",
+        "insecureClient": "Minecraft 服务器无法验证您的身份，请回答密保问题!",
+        "invalidCredentials": "无法验证. 用户名或密码错误.",
+        "login": "登陆",
         "logout": "登出",
+        "mojang": {
+            "account": "邮箱地址",
+            "name": "Mojang",
+            "password": "密码"
+        },
         "name": "用户名",
+        "offline": {
+            "account": "用户名",
+            "name": "离线模式",
+            "password": "无需密码"
+        },
         "profile": "个人信息",
+        "profileMode": "皮肤服务",
         "profileService": "皮肤服务器",
         "refreshAccount": "刷新账号",
         "refreshSkin": "刷新皮肤",
         "refreshSkinFail": "刷新皮肤失败",
         "refreshSkinSuccess": "刷新皮肤成功",
+        "requireEmail": "必须要Email才能登陆",
+        "requirePassword": "请输入密码",
+        "requireUsername": "用户名不能为空",
+        "service": {
+            "add": "添加更多验证或玩家信息服务器",
+            "authLibInjector": "按照 authlib-injector 推荐流程创建",
+            "authServiceDetail": "配置验证服务器",
+            "authenticateHint": "用来相应玩家登录请求",
+            "baseUrl": "基础 URL",
+            "baseUrlHint": "第三方服务器的根 URL",
+            "duplicatedName": "此名字与已有的服务重名",
+            "hostName": "验证服务器 URL",
+            "hostNameHint": "第三方验证服务器的根 URL 地址",
+            "invalidUrl": "请输入有效的 URL",
+            "invalidateHint": "登出时作废玩家凭证",
+            "name": "服务器名称",
+            "normal": "按照正常流程创建",
+            "profile": "玩家信息 API",
+            "profileByName": "查询玩家信息 API",
+            "profileByNameHint": "通过玩家名字来获取玩家信息",
+            "profileHint": "通过用户 UUID 来获得玩家信息",
+            "profileServiceDetail": "配置玩家信息服务器",
+            "refreshHint": "用来刷新玩家登录凭证",
+            "requireName": "服务器名不能为空",
+            "signoutHint": "用于登出玩家",
+            "texture": "皮肤上传 API",
+            "textureHint": "通过玩家 ID 和凭证来上传皮肤",
+            "title": "配置验证或玩家信息服务器",
+            "typeOfService": "选择配置类型",
+            "validateHint": "用来检验玩家凭证有效性"
+        },
         "signup": "注册",
+        "signupDescription": "没有账号?",
         "skinImport": "导入皮肤",
         "skinImportFile": "从文件导入",
         "skinImportLink": "从链接导入",
@@ -649,8 +691,7 @@
         "skinSlim": "皮肤类型",
         "skinUrlNotEmpty": "皮肤URL不能为空",
         "skinUrlNotValid": "请输入有效的皮肤URL",
-        "submitChallenges": "提交答案",
-        "switchAccount": "切换账号"
+        "submitChallenges": "提交答案"
     },
     "version": {
         "all": "所有版本",

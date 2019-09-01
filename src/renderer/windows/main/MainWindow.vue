@@ -52,7 +52,8 @@
     </v-navigation-drawer>
     <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
       <v-card class="main-body" color="grey darken-4">
-        <vue-particles color="#dedede" style="position: absolute; width: 100%; height: 100%;" click-mode="repulse" />
+        <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;">
+        <vue-particles v-else color="#dedede" style="position: absolute; width: 100%; height: 100%;" click-mode="repulse" />
         <transition name="fade-transition" mode="out-in">
           <!-- <keep-alive> -->
           <router-view />
@@ -60,6 +61,7 @@
         </transition>
         <notifier />
         <context-menu />
+        <dialog-login />
       </v-card>
     </v-layout>
   </v-layout>
@@ -75,11 +77,21 @@ export default {
     timeTraveling: false,
   }),
   computed: {
+    blur() {
+      return this.$repo.getters.selectedProfile.blur || this.$repo.state.config.defaultBlur;
+    },
+    backgroundImage() {
+      return this.$repo.getters.selectedProfile.image || this.$repo.state.config.defaultBackgroundImage;
+    },
     logined() {
       return this.$repo.getters.logined;
     },
   },
-  watch: {},
+  watch: {
+    backgroundImage() {
+      this.refreshImage();
+    },
+  },
   created() {
     this.$router.afterEach((to, from) => {
       if (!this.timeTraveling) this.localHistory.push(from.fullPath);
@@ -89,11 +101,11 @@ export default {
     this.$electron.ipcRenderer.once('vuex-sync', () => {
       this.loading = false;
     });
-    if (!this.logined) {
-      this.$router.push('/login');
-    }
   },
   methods: {
+    refreshImage() {
+      const img = this.backgroundImage;
+    },
     goBack() {
       if (!this.logined && this.$route.path === '/login') {
         return;

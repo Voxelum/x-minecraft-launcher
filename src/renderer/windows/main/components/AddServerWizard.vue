@@ -79,14 +79,14 @@
           </v-container>
         </v-form>
         <v-layout>
-          <v-btn flat @click="quit">
+          <v-btn :disabled="creating" flat @click="quit">
             {{ $t('cancel') }}
           </v-btn>
           <v-spacer />
           <v-btn flat @click="step = 2">
             {{ $t('next') }}
           </v-btn>
-          <v-btn color="primary" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
+          <v-btn :loading="creating" color="primary" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
             {{ $t('create') }}
           </v-btn>
         </v-layout>
@@ -122,11 +122,11 @@
         </v-form>
 
         <v-layout>
-          <v-btn flat @click="quit">
+          <v-btn :disabled="creating" flat @click="quit">
             {{ $t('cancel') }}
           </v-btn>
           <v-spacer />
-          <v-btn color="primary" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
+          <v-btn :loading="creating" color="primary" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
             {{ $t('create') }}
           </v-btn>
         </v-layout>
@@ -152,6 +152,7 @@ export default {
     return {
       step: 1,
       valid: false,
+      creating: false,
 
       name: '',
       versionName: '',
@@ -267,6 +268,7 @@ export default {
       });
     },
     doCreate() {
+      this.creating = true;
       this.$repo.dispatch('createAndSelectProfile', {
         name: this.name,
         mcversion: this.mcversion,
@@ -282,6 +284,8 @@ export default {
       }).then(() => {
         this.init();
         this.$router.replace('/');
+      }).finally(() => {
+        this.creating = false;
       });
     },
   },

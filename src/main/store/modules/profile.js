@@ -22,11 +22,11 @@ async function loadWorld(save) {
         const world = await World.load(save, ['level']);
         const dest = join(save, 'icon.png');
         if (await fs.exists(dest)) {
-            const buf = await fs.readFile(dest);
-            const uri = `data:image/png;base64,${buf.toString('base64')}`;
-            if (world) {
-                Reflect.set(world, 'icon', uri);
-            }
+            // const buf = await fs.readFile(dest);
+            // const uri = `data:image/png;base64,${buf.toString('base64')}`;
+            // if (world) {
+            Reflect.set(world, 'icon', `file://${dest}`);
+            // }
         }
         return world;
     } catch (e) {
@@ -157,10 +157,11 @@ const mod = {
                 { path: '', version: '', majorVersion: 8 },
                 latestMcRelease,
                 type,
+                false,
             );
 
             if (profile.type === 'modpack') {
-                profile.author = profile.author || rootState.user.name;
+                profile.author = profile.author || rootGetters.selectedGameProfile.name;
             }
 
             if (option && option.java && typeof option.java.path === 'string') {
@@ -237,10 +238,27 @@ const mod = {
             }
 
             const persis = await dispatch('getPersistence', { path: 'profiles.json' });
-            if (persis && persis.selected) {
-                await dispatch('selectProfile', persis.selected);
-            } else {
-                await dispatch('selectProfile', Object.keys(state.all)[0]);
+
+            if (persis) {
+                if (persis.selected) {
+                    await dispatch('selectProfile', persis.selected);
+                } else {
+                    await dispatch('selectProfile', Object.keys(state.all)[0]);
+                }
+                /**
+                 * @type {string[]}
+                 */
+                const orders = persis.profiles;
+                if (persis.profiles instanceof Array && orders.every(p => typeof p === 'string')) {
+                    const finalOrder = [
+                        ...orders.filter(id => state.all[id]),
+                        ...Object.keys(state.all).filter(id => orders.indexOf(id) === -1),
+                    ];
+                    commit('profileIds', finalOrder);
+                }
+                if (!orders) {
+                    commit('profileIds', Object.keys(state.all));
+                }
             }
         },
 
@@ -292,6 +310,15 @@ const mod = {
             }
         },
 
+        async listProfileScreenshots(context, id) {
+            const sp = context.rootGetters.path('profiles', id, 'screenshots');
+            if (await fs.exists(sp)) {
+                const files = await fs.readdir(sp);
+                return files.map(f => `file://${sp}/${f}`);
+            }
+            return [];
+        },
+
         async createProfile(context, payload) {
             const latestRelease = context.rootGetters.minecraftRelease || { id: latestMcRelease };
             const profile = createTemplate(
@@ -299,11 +326,14 @@ const mod = {
                 context.rootGetters.defaultJava,
                 latestRelease.id,
                 payload.type || 'modpack',
+                true,
             );
 
             if (profile.type === 'modpack') {
-                profile.author = context.rootState.user.name;
+                profile.author = context.rootGetters.selectedProfile.id;
             }
+
+            delete payload.creationDate;
 
             fitin(profile, payload);
 

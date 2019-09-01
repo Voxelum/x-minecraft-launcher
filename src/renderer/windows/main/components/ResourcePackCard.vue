@@ -1,11 +1,17 @@
 <template>
   <v-tooltip top>
     <template v-slot:activator="{ on }">
-      <v-card color="darken-1" flat hover :class="{ incompatible: !compatible }" class="draggable-card white--text" style="margin-top: 10px;"
-              draggable v-on="on" @dragstart="onDragStart">
+      <v-card color="darken-1" 
+              flat hover draggable
+              :class="{ incompatible: !compatible }" 
+              class="draggable-card white--text" 
+              :style="{ transform: dragged ? 'scale(0.8)' : 'scale(1)' }"
+              style="margin-top: 10px;"
+              v-on="on"
+              @mousedown="dragged=true" @dragstart="onDragStart" @dragend="onDragEnd">
         <v-layout justify-center align-center fill-height>
           <v-flex xs6 style="padding: 0;">
-            <v-img style="user-drag: none; user-select: none; height: 125px;" :src="metadata.icon" contain />
+            <v-img ref="iconImage" style="user-drag: none; user-select: none; height: 125px;" :src="metadata.icon" contain />
           </v-flex>
           <v-flex xs6 style="padding-top: 10px;">
             <text-component style="white-space: normal; word-break: break-word;" :source="metadata.packName"
@@ -42,6 +48,11 @@ export default {
       default: 0,
     },
   },
+  data() {
+    return {
+      dragged: false,
+    };
+  },
   computed: {
     metadata() { return this.data.metadata; },
     mcversion() { return this.$repo.getters.selectedProfile.version.minecraft; },
@@ -54,7 +65,15 @@ export default {
   },
   methods: {
     onDragStart(e) {
+      this.dragged = true;
+      this.$emit('dragstart', e);
+      e.dataTransfer.setDragImage(this.$refs.iconImage.$el, 0, 0);
       e.dataTransfer.setData('Index', `${this.isSelected ? 'R' : 'L'}${this.index}`);
+      e.dataTransfer.setData('Hash', this.data.hash);
+    },
+    onDragEnd(e) {
+      this.$emit('dragend', e);
+      this.dragged = false;
     },
   },
 };

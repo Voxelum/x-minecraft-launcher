@@ -43,7 +43,7 @@ const mod = {
                         return undefined;
                     default:
                         for (const domain of Object.values(state.domains)) {
-                            if (domain[q]) return domain[q];
+                            if (domain[qObject]) return domain[qObject];
                         }
                 }
             }
@@ -78,15 +78,21 @@ const mod = {
         },
         resource: (state, res) => {
             if (res.domain in state.domains) {
-                Vue.set(state.domains[res.domain], res.hash, res);
+                Vue.set(state.domains[res.domain], res.hash, Object.freeze(res));
             } else {
                 console.error(`Cannot accept resource for unknown domain [${res.domain}]`);
             }
         },
         resources: (state, all) => {
+            console.log(`Accept resource ${all.length}`);
             for (const res of all) {
                 if (res.domain in state.domains) {
-                    Vue.set(state.domains[res.domain], res.hash, res);
+                    const domain = state.domains[res.domain];
+                    if (!domain[res.hash]) {
+                        Vue.set(domain, res.hash, Object.freeze(res));
+                    } else {
+                        domain[res.hash] = Object.freeze(res);
+                    }
                 } else {
                     console.error(`Cannot accept resource for unknown domain [${res.domain}]`);
                 }

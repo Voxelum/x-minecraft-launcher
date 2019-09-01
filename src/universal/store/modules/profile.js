@@ -5,7 +5,7 @@ import { UNKNOWN_STATUS } from 'universal/utils/server-status';
 /**
  * @type {import('./profile').TemplateFunction}
  */
-export function createTemplate(id, java, mcversion, type = 'modpack') {
+export function createTemplate(id, java, mcversion, type = 'modpack', isCreatingNew) {
     console.log(`Template from ${type}`);
     /**
      * @type {import('./profile').ProfileModule.ProfileBase}
@@ -36,6 +36,11 @@ export function createTemplate(id, java, mcversion, type = 'modpack') {
         deployments: {
             mods: [],
         },
+        image: null,
+        blur: 4,
+
+        lastAccessDate: -1,
+        creationDate: isCreatingNew ? Date.now() : -1,
     };
     if (type === 'modpack') {
         /**
@@ -67,6 +72,7 @@ export function createTemplate(id, java, mcversion, type = 'modpack') {
 const mod = {
     state: {
         all: {},
+        profileIds: [],
         id: '',
 
         status: UNKNOWN_STATUS,
@@ -83,10 +89,11 @@ const mod = {
         dirty: {
             servers: false,
             saves: false,
+            gamesettings: false,
         },
     },
     getters: {
-        profiles: state => Object.keys(state.all).map(k => state.all[k]),
+        profiles: state => state.profileIds.map(k => state.all[k]),
         serverProtocolVersion: state => 338,
         selectedProfile: state => state.all[state.id],
         currentVersion: (state, getters, rootState) => {
@@ -105,6 +112,9 @@ const mod = {
         },
     },
     mutations: {
+        profileIds(state, ids) {
+            state.profileIds = ids;
+        },
         addProfile(state, profile) {
             /**
              * Prevent the case that hot reload keep the vuex state
@@ -112,8 +122,15 @@ const mod = {
             if (!state.all[profile.id]) {
                 Vue.set(state.all, profile.id, profile);
             }
+            if (state.profileIds.indexOf(profile.id) === -1) {
+                state.profileIds.push(profile.id);
+            }
         },
         removeProfile(state, id) {
+            const i = state.profileIds.indexOf(id);
+            if (i !== -1) {
+                Vue.delete(state.profileIds, i);
+            }
             Vue.delete(state.all, id);
         },
         selectProfile(state, id) {
@@ -122,6 +139,7 @@ const mod = {
             } else if (state.id === '') {
                 state.id = Object.keys(state.all)[0];
             }
+            state.all[state.id].lastAccessDate = Date.now();
         },
         profile(state, settings) {
             const prof = state.all[state.id];
@@ -191,6 +209,13 @@ const mod = {
             }
             if (typeof settings.hideLauncher === 'boolean') {
                 prof.hideLauncher = settings.hideLauncher;
+            }
+
+            if (typeof settings.image === 'string') {
+                prof.image = settings.image;
+            }
+            if (typeof settings.blur === 'number') {
+                prof.blur = settings.blur;
             }
         },
 

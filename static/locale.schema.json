@@ -114,9 +114,6 @@
                 "createdDate": {
                     "type": "string"
                 },
-                "description": {
-                    "type": "string"
-                },
                 "gameversion": {
                     "type": "string"
                 },
@@ -146,9 +143,6 @@
                         "description",
                         "name"
                     ]
-                },
-                "meta": {
-                    "type": "string"
                 },
                 "modpacks": {
                     "type": "object",
@@ -225,18 +219,22 @@
                         "description",
                         "name"
                     ]
+                },
+                "description": {
+                    "type": "string"
+                },
+                "meta": {
+                    "type": "string"
                 }
             },
             "required": [
                 "createdDate",
-                "description",
                 "gameversion",
                 "install",
                 "installed",
                 "lastUpdate",
                 "license",
                 "mc-mods",
-                "meta",
                 "modpacks",
                 "name",
                 "project",
@@ -244,7 +242,9 @@
                 "sortby",
                 "texture-packs",
                 "totalDownloads",
-                "worlds"
+                "worlds",
+                "description",
+                "meta"
             ]
         },
         "delete": {
@@ -261,6 +261,9 @@
                 "no",
                 "yes"
             ]
+        },
+        "deleteSave": {
+            "type": "string"
         },
         "description": {
             "type": "string"
@@ -335,6 +338,21 @@
                     ]
                 },
                 "missingAssetsIndex": {
+                    "type": "object",
+                    "properties": {
+                        "": {
+                            "type": "string"
+                        },
+                        "message": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "",
+                        "message"
+                    ]
+                },
+                "missingAuthlibInjector": {
                     "type": "object",
                     "properties": {
                         "": {
@@ -501,6 +519,7 @@
                 "incompatibleResourcePack",
                 "missingAssets",
                 "missingAssetsIndex",
+                "missingAuthlibInjector",
                 "missingForgeJar",
                 "missingJava",
                 "missingLibraries",
@@ -511,48 +530,49 @@
                 "unknownMod"
             ]
         },
-        "download": {
-            "type": "string"
-        },
         "downloadUpdate": {
             "type": "string"
         },
         "edit": {
             "type": "string"
         },
-        "error": {
+        "feedback": {
             "type": "object",
             "properties": {
-                "empty": {
+                "": {
                     "type": "string"
                 },
-                "installJava": {
+                "description": {
                     "type": "string"
                 },
-                "internetNotConnected": {
+                "github": {
                     "type": "string"
                 },
-                "missingJava": {
+                "githubDescription": {
                     "type": "string"
                 },
-                "missingMinecraft": {
+                "githubOpenIssue": {
                     "type": "string"
                 },
-                "missingName": {
+                "qq": {
                     "type": "string"
                 },
-                "name": {
+                "qqDescription": {
+                    "type": "string"
+                },
+                "qqEnterGroup": {
                     "type": "string"
                 }
             },
             "required": [
-                "empty",
-                "installJava",
-                "internetNotConnected",
-                "missingJava",
-                "missingMinecraft",
-                "missingName",
-                "name"
+                "",
+                "description",
+                "github",
+                "githubDescription",
+                "githubOpenIssue",
+                "qq",
+                "qqDescription",
+                "qqEnterGroup"
             ]
         },
         "filter": {
@@ -979,6 +999,9 @@
                 "storing"
             ]
         },
+        "importSave": {
+            "type": "string"
+        },
         "installAssets": {
             "type": "object",
             "properties": {
@@ -997,6 +1020,9 @@
                 "assets",
                 "assetsJson"
             ]
+        },
+        "installAuthlibInjector": {
+            "type": "string"
         },
         "installCurseforgeFile": {
             "type": "string"
@@ -1472,105 +1498,6 @@
                 "warning"
             ]
         },
-        "login": {
-            "type": "object",
-            "properties": {
-                "": {
-                    "type": "string"
-                },
-                "forgetPassword": {
-                    "type": "string"
-                },
-                "illegalEmail": {
-                    "type": "string"
-                },
-                "invalidCredentials": {
-                    "type": "string"
-                },
-                "mode": {
-                    "type": "string"
-                },
-                "mojang": {
-                    "type": "object",
-                    "properties": {
-                        "account": {
-                            "type": "string"
-                        },
-                        "name": {
-                            "type": "string"
-                        },
-                        "password": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "account",
-                        "name",
-                        "password"
-                    ]
-                },
-                "offline": {
-                    "type": "object",
-                    "properties": {
-                        "account": {
-                            "type": "string"
-                        },
-                        "name": {
-                            "type": "string"
-                        },
-                        "password": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "account",
-                        "name",
-                        "password"
-                    ]
-                },
-                "rememberMe": {
-                    "type": "string"
-                },
-                "requireEmail": {
-                    "type": "string"
-                },
-                "requirePassword": {
-                    "type": "string"
-                },
-                "requireUsername": {
-                    "type": "string"
-                },
-                "signup": {
-                    "type": "object",
-                    "properties": {
-                        "": {
-                            "type": "string"
-                        },
-                        "description": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "",
-                        "description"
-                    ]
-                }
-            },
-            "required": [
-                "",
-                "forgetPassword",
-                "illegalEmail",
-                "invalidCredentials",
-                "mode",
-                "mojang",
-                "offline",
-                "rememberMe",
-                "requireEmail",
-                "requirePassword",
-                "requireUsername",
-                "signup"
-            ]
-        },
         "market": {
             "type": "string"
         },
@@ -1600,7 +1527,16 @@
         "mod": {
             "type": "object",
             "properties": {
+                "backToAllMods": {
+                    "type": "string"
+                },
                 "compatible": {
+                    "type": "string"
+                },
+                "deletion": {
+                    "type": "string"
+                },
+                "deletionHint": {
                     "type": "string"
                 },
                 "export": {
@@ -1626,7 +1562,10 @@
                 }
             },
             "required": [
+                "backToAllMods",
                 "compatible",
+                "deletion",
+                "deletionHint",
                 "export",
                 "hint",
                 "import",
@@ -1639,10 +1578,22 @@
         "name": {
             "type": "string"
         },
+        "next": {
+            "type": "string"
+        },
+        "finish": {
+            "type": "string"
+        },
         "no": {
             "type": "string"
         },
+        "nodescription": {
+            "type": "string"
+        },
         "ok": {
+            "type": "string"
+        },
+        "optional": {
             "type": "string"
         },
         "popular": {
@@ -1670,6 +1621,9 @@
                     "type": "string"
                 },
                 "delete": {
+                    "type": "string"
+                },
+                "deleteHint": {
                     "type": "string"
                 },
                 "descriptionHint": {
@@ -1803,6 +1757,9 @@
                 "noLocalVersion": {
                     "type": "string"
                 },
+                "older": {
+                    "type": "string"
+                },
                 "requireName": {
                     "type": "string"
                 },
@@ -1845,20 +1802,20 @@
                         "error": {
                             "type": "object",
                             "properties": {
-                                "wrongVersion": {
-                                    "type": "string"
-                                },
                                 "requirehost": {
                                     "type": "string"
                                 },
                                 "requirename": {
                                     "type": "string"
+                                },
+                                "wrongVersion": {
+                                    "type": "string"
                                 }
                             },
                             "required": [
-                                "wrongVersion",
                                 "requirehost",
-                                "requirename"
+                                "requirename",
+                                "wrongVersion"
                             ]
                         },
                         "expectedVersions": {
@@ -1990,6 +1947,12 @@
                         "server"
                     ]
                 },
+                "threeDay": {
+                    "type": "string"
+                },
+                "today": {
+                    "type": "string"
+                },
                 "url": {
                     "type": "string"
                 },
@@ -2020,6 +1983,7 @@
                 "baseSetting",
                 "copy",
                 "delete",
+                "deleteHint",
                 "descriptionHint",
                 "export",
                 "forceLocalVersion",
@@ -2037,11 +2001,14 @@
                 "name",
                 "nameHint",
                 "noLocalVersion",
+                "older",
                 "requireName",
                 "select",
                 "server",
                 "setting",
                 "templateSetting",
+                "threeDay",
+                "today",
                 "url",
                 "version",
                 "versionHint",
@@ -2049,56 +2016,6 @@
                 "vmOptions",
                 "vmOptionsCreateHint",
                 "vmOptionsHint"
-            ]
-        },
-        "feedback": {
-            "type": "object",
-            "properties": {
-                "": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "github": {
-                    "type": "string"
-                },
-                "githubDescription": {
-                    "type": "string"
-                },
-                "githubOpenIssue": {
-                    "type": "string"
-                },
-                "qq": {
-                    "type": "string"
-                },
-                "qqEnterGroup": {
-                    "type": "string"
-                },
-                "qqDescription": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "",
-                "description",
-                "github",
-                "githubDescription",
-                "githubOpenIssue",
-                "qq",
-                "qqEnterGroup",
-                "qqDescription"
-            ]
-        },
-        "refresh": {
-            "type": "object",
-            "properties": {
-                "hint": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "hint"
             ]
         },
         "refreshResource": {
@@ -2150,6 +2067,12 @@
                         "title"
                     ]
                 },
+                "deletion": {
+                    "type": "string"
+                },
+                "deletionHint": {
+                    "type": "string"
+                },
                 "export": {
                     "type": "string"
                 },
@@ -2176,6 +2099,8 @@
                 "available",
                 "compatible",
                 "delete",
+                "deletion",
+                "deletionHint",
                 "export",
                 "hint",
                 "import",
@@ -2215,15 +2140,39 @@
                         "title"
                     ]
                 },
-                "copyTo": {
+                "copyFrom": {
                     "type": "object",
                     "properties": {
-                        "": {
+                        "cancel": {
+                            "type": "string"
+                        },
+                        "confirm": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "string"
+                        },
+                        "from": {
+                            "type": "string"
+                        },
+                        "fromProfile": {
+                            "type": "string"
+                        },
+                        "fromResource": {
+                            "type": "string"
+                        },
+                        "title": {
                             "type": "string"
                         }
                     },
                     "required": [
-                        ""
+                        "cancel",
+                        "confirm",
+                        "description",
+                        "from",
+                        "fromProfile",
+                        "fromResource",
+                        "title"
                     ]
                 },
                 "deleteCancel": {
@@ -2256,7 +2205,7 @@
             },
             "required": [
                 "copy",
-                "copyTo",
+                "copyFrom",
                 "deleteCancel",
                 "deleteConfirm",
                 "deleteHint",
@@ -2399,41 +2348,6 @@
                 "waitReload"
             ]
         },
-        "skin": {
-            "type": "object",
-            "properties": {
-                "change": {
-                    "type": "string"
-                },
-                "export": {
-                    "type": "string"
-                },
-                "importLocal": {
-                    "type": "string"
-                },
-                "loadURL": {
-                    "type": "string"
-                },
-                "reset": {
-                    "type": "string"
-                },
-                "upload": {
-                    "type": "string"
-                },
-                "urlHint": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "change",
-                "export",
-                "importLocal",
-                "loadURL",
-                "reset",
-                "upload",
-                "urlHint"
-            ]
-        },
         "summery": {
             "type": "string"
         },
@@ -2482,6 +2396,9 @@
                 "accessToken": {
                     "type": "string"
                 },
+                "authMode": {
+                    "type": "string"
+                },
                 "authService": {
                     "type": "string"
                 },
@@ -2497,23 +2414,202 @@
                 "forgetChallenges": {
                     "type": "string"
                 },
+                "forgetPassword": {
+                    "type": "string"
+                },
                 "id": {
+                    "type": "string"
+                },
+                "illegalEmail": {
                     "type": "string"
                 },
                 "info": {
                     "type": "string"
                 },
+                "invalidCredentials": {
+                    "type": "string"
+                },
+                "insecureClient": {
+                    "type": "string"
+                },
+                "login": {
+                    "type": "string"
+                },
                 "logout": {
                     "type": "string"
+                },
+                "mojang": {
+                    "type": "object",
+                    "properties": {
+                        "account": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "password": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "account",
+                        "name",
+                        "password"
+                    ]
                 },
                 "name": {
                     "type": "string"
                 },
+                "offline": {
+                    "type": "object",
+                    "properties": {
+                        "account": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "password": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "account",
+                        "name",
+                        "password"
+                    ]
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "authServiceDetail": {
+                            "type": "string"
+                        },
+                        "typeOfService": {
+                            "type": "string"
+                        },
+                        "profileServiceDetail": {
+                            "type": "string"
+                        },
+                        "baseUrl": {
+                            "type": "string"
+                        },
+                        "invalidUrl": {
+                            "type": "string"
+                        },
+                        "add": {
+                            "type": "string"
+                        },
+                        "baseUrlHint": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "normal": {
+                            "type": "string"
+                        },
+                        "requireName": {
+                            "type": "string"
+                        },
+                        "duplicatedName": {
+                            "type": "string"
+                        },
+                        "authLibInjector": {
+                            "type": "string"
+                        },
+                        "profile": {
+                            "type": "string"
+                        },
+                        "profileHint": {
+                            "type": "string"
+                        },
+                        "profileByName": {
+                            "type": "string"
+                        },
+                        "profileByNameHint": {
+                            "type": "string"
+                        },
+                        "texture": {
+                            "type": "string"
+                        },
+                        "textureHint": {
+                            "type": "string"
+                        },
+                        "hostName": {
+                            "type": "string"
+                        },
+                        "hostNameHint": {
+                            "type": "string"
+                        },
+                        "authenticateHint": {
+                            "type": "string"
+                        },
+                        "refreshHint": {
+                            "type": "string"
+                        },
+                        "validateHint": {
+                            "type": "string"
+                        },
+                        "invalidateHint": {
+                            "type": "string"
+                        },
+                        "signoutHint": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "title",
+                        "authServiceDetail",
+                        "typeOfService",
+                        "profileServiceDetail",
+                        "baseUrl",
+                        "invalidUrl",
+                        "add",
+                        "baseUrlHint",
+                        "name",
+                        "normal",
+                        "requireName",
+                        "duplicatedName",
+                        "authLibInjector",
+                        "profile",
+                        "profileHint",
+                        "profileByName",
+                        "profileByNameHint",
+                        "texture",
+                        "textureHint",
+                        "hostName",
+                        "hostNameHint",
+                        "authenticateHint",
+                        "refreshHint",
+                        "validateHint",
+                        "invalidateHint",
+                        "signoutHint"
+                    ]
+                },
                 "profile": {
                     "type": "string"
                 },
-                "profileService": {
+                "profileMode": {
                     "type": "string"
+                },
+                "profileService": {
+                    "type": "object",
+                    "properties": {
+                        "": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "",
+                        "description"
+                    ]
                 },
                 "refreshAccount": {
                     "type": "string"
@@ -2527,7 +2623,19 @@
                 "refreshSkinSuccess": {
                     "type": "string"
                 },
+                "requireEmail": {
+                    "type": "string"
+                },
+                "requirePassword": {
+                    "type": "string"
+                },
+                "requireUsername": {
+                    "type": "string"
+                },
                 "signup": {
+                    "type": "string"
+                },
+                "signupDescription": {
                     "type": "string"
                 },
                 "skinImport": {
@@ -2560,28 +2668,54 @@
                 "submitChallenges": {
                     "type": "string"
                 },
-                "switchAccount": {
-                    "type": "string"
+                "account": {
+                    "type": "object",
+                    "properties": {
+                        "add": {
+                            "type": "string"
+                        },
+                        "switch": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "add",
+                        "switch"
+                    ]
                 }
             },
             "required": [
                 "accessToken",
+                "authMode",
                 "authService",
                 "birth",
                 "challenges",
                 "email",
                 "forgetChallenges",
+                "forgetPassword",
                 "id",
+                "illegalEmail",
                 "info",
+                "invalidCredentials",
+                "insecureClient",
+                "login",
                 "logout",
+                "mojang",
                 "name",
+                "offline",
+                "service",
                 "profile",
+                "profileMode",
                 "profileService",
                 "refreshAccount",
                 "refreshSkin",
                 "refreshSkinFail",
                 "refreshSkinSuccess",
+                "requireEmail",
+                "requirePassword",
+                "requireUsername",
                 "signup",
+                "signupDescription",
                 "skinImport",
                 "skinImportFile",
                 "skinImportLink",
@@ -2592,7 +2726,7 @@
                 "skinUrlNotEmpty",
                 "skinUrlNotValid",
                 "submitChallenges",
-                "switchAccount"
+                "account"
             ]
         },
         "version": {
@@ -2631,9 +2765,6 @@
                 "noForge": {
                     "type": "string"
                 },
-                "noLiteloader": {
-                    "type": "string"
-                },
                 "noLocalVersion": {
                     "type": "string"
                 },
@@ -2661,9 +2792,6 @@
                 "requiredownload": {
                     "type": "string"
                 },
-                "selectHint": {
-                    "type": "string"
-                },
                 "selectVersion": {
                     "type": "string"
                 },
@@ -2681,6 +2809,12 @@
                 },
                 "unknown": {
                     "type": "string"
+                },
+                "noLiteloader": {
+                    "type": "string"
+                },
+                "selectHint": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -2695,7 +2829,6 @@
                 "missing",
                 "name",
                 "noForge",
-                "noLiteloader",
                 "noLocalVersion",
                 "noMinecraft",
                 "pending",
@@ -2705,23 +2838,99 @@
                 "releaseDate",
                 "remote",
                 "requiredownload",
-                "selectHint",
                 "selectVersion",
                 "selectversionWarn",
                 "showSnapshot",
                 "snapshot",
                 "status",
-                "unknown"
+                "unknown",
+                "noLiteloader",
+                "selectHint"
             ]
         },
-        "next": {
+        "download": {
             "type": "string"
         },
-        "nodescription": {
-            "type": "string"
+        "error": {
+            "type": "object",
+            "properties": {
+                "empty": {
+                    "type": "string"
+                },
+                "installJava": {
+                    "type": "string"
+                },
+                "internetNotConnected": {
+                    "type": "string"
+                },
+                "missingJava": {
+                    "type": "string"
+                },
+                "missingMinecraft": {
+                    "type": "string"
+                },
+                "missingName": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "empty",
+                "installJava",
+                "internetNotConnected",
+                "missingJava",
+                "missingMinecraft",
+                "missingName",
+                "name"
+            ]
         },
-        "optional": {
-            "type": "string"
+        "refresh": {
+            "type": "object",
+            "properties": {
+                "hint": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "hint"
+            ]
+        },
+        "skin": {
+            "type": "object",
+            "properties": {
+                "change": {
+                    "type": "string"
+                },
+                "export": {
+                    "type": "string"
+                },
+                "importLocal": {
+                    "type": "string"
+                },
+                "loadURL": {
+                    "type": "string"
+                },
+                "reset": {
+                    "type": "string"
+                },
+                "upload": {
+                    "type": "string"
+                },
+                "urlHint": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "change",
+                "export",
+                "importLocal",
+                "loadURL",
+                "reset",
+                "upload",
+                "urlHint"
+            ]
         }
     },
     "required": [
@@ -2736,13 +2945,13 @@
         "criticalGraphics",
         "curseforge",
         "delete",
+        "deleteSave",
         "description",
         "detail",
         "diagnosis",
-        "download",
         "downloadUpdate",
         "edit",
-        "error",
+        "feedback",
         "filter",
         "forge",
         "gamesetting",
@@ -2751,7 +2960,9 @@
         "home",
         "hotkeyChanges",
         "importResource",
+        "importSave",
         "installAssets",
+        "installAuthlibInjector",
         "installCurseforgeFile",
         "installCurseforgeModpack",
         "installDependencies",
@@ -2766,31 +2977,32 @@
         "launchsetting",
         "liteloader",
         "log",
-        "login",
         "market",
         "minecraft",
         "mod",
         "name",
+        "next",
+        "finish",
         "no",
+        "nodescription",
         "ok",
+        "optional",
         "popular",
         "profile",
-        "feedback",
-        "refresh",
         "refreshResource",
         "remove",
         "resolution",
         "resourcepack",
         "save",
         "setting",
-        "skin",
         "summery",
         "task",
         "user",
         "version",
-        "next",
-        "nodescription",
-        "optional"
+        "download",
+        "error",
+        "refresh",
+        "skin"
     ],
     "$id": "https://raw.githubusercontent.com/voxelum/VoxeLauncher/master/static/locale.schema.json"
 }

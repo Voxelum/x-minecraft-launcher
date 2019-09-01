@@ -11,9 +11,15 @@
               <template v-slot:activator>
                 <v-btn flat fab dark small style="margin-left: 5px; margin-top: 5px;" @click="createProfile"
                        v-on="on">
-                  <v-icon dark style="font-size: 28px">
-                    add
-                  </v-icon>
+                  <transition name="scale-transition" mode="out-in">
+                    <v-icon v-if="!dragging" key="a" dark style="font-size: 28px; transition: all 0.2s ease;">
+                      add
+                    </v-icon>
+                    <v-icon v-else key="b" color="red" style="font-size: 28px; transition: all 0.2s ease;"
+                            @drop="onDropDelete" @dragover="$event.preventDefault()">
+                      delete
+                    </v-icon>
+                  </transition>
                 </v-btn>
               </template>
               <v-btn style="z-index: 20;" fab small v-on="on" @mouseenter="enterAltCreate" @mouseleave="leaveAltCreate"
@@ -53,49 +59,53 @@
         </v-tooltip>
       </v-flex>
     </v-layout>
+    <v-flex d-flex xs12 style="height: 10px;" />
     <v-layout row wrap style="overflow: scroll; max-height: 88vh;" justify-start fill-height>
-      <v-flex d-flex xs12 style="height: 10px;" />
-      <v-flex v-for="profile in profiles" :key="profile.id" d-flex>
-        <v-card draggable hover color="#grey darken-3" dark @click="selectProfile($event, profile.id)">
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-btn icon color="red" style="position: absolute; right: 0px;" flat
-                     @click="$event.stopPropagation();doDelete(profile.id)" v-on="on">
-                <v-icon dark>
-                  close
-                </v-icon>
-              </v-btn>
-            </template>
-            {{ $t('profile.delete') }}
-          </v-tooltip>
-          <v-card-title>
-            <v-icon large left>
-              layers
-            </v-icon>
-            <span class="title font-weight-light">{{ profile.name || `Minecraft ${profile.version.minecraft}` }}</span>
-          </v-card-title>
-
-          <v-card-text class="headline font-weight-bold">
-            {{ profile.description }}
-          </v-card-text>
-
-          <v-card-actions style="margin-top: 40px;">
-            <v-list-tile class="grow">
-              <v-list-tile-avatar color="grey darken-3">
-                <v-chip label :selected="false" @click="$event.stopPropagation()">
-                  {{ profile.version.minecraft }}
-                </v-chip>
-              </v-list-tile-avatar>
-
-              <v-list-tile-content>
-                <v-list-tile-title>{{ profile.author }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </v-card-actions>
-        </v-card>
+      <v-flex v-if="timesliceProfiles[0].length !== 0" style="color: grey" xs12> 
+        {{ $t('profile.today') }}
       </v-flex>
-      <v-flex d-flex xs12 style="height: 10px;" />
+      <v-flex v-for="profile in timesliceProfiles[0]" :key="profile.id" xs6
+              @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
+        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" />
+      </v-flex>
+      <v-flex v-if="timesliceProfiles[1].length !== 0" style="color: grey" xs12> 
+        {{ $t('profile.threeDay') }}
+      </v-flex>
+      <v-flex v-for="profile in timesliceProfiles[1]" :key="profile.id" xs6
+              @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
+        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" />
+      </v-flex>
+      <v-flex v-if="timesliceProfiles[2].length !== 0" style="color: grey" xs12> 
+        {{ $t('profile.older') }}
+      </v-flex>
+      <v-flex v-for="profile in timesliceProfiles[2]" :key="profile.id" xs6 
+              @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
+        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" />
+      </v-flex>
     </v-layout>
+    <v-dialog v-model="isDeletingProfile" width="400">
+      <v-card>
+        <v-card-title>
+          <h2>
+            {{ $t('profile.delete') }}
+          </h2>
+        </v-card-title>
+        <v-card-text>
+          {{ $t('profile.deleteHint', { name: deletingProfile.name, id: deletingProfile.id }) }}
+        </v-card-text>
+        <v-card-actions>
+          <v-btn flat @click="cancelDelete">
+            {{ $t('cancel') }}
+          </v-btn>
+          <v-spacer />
+          <v-btn flat color="red" @click="doDelete">
+            <v-icon left>
+              delete
+            </v-icon> {{ $t('delete.yes') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-dialog v-model="wizard" persistent>
       <add-profile-wizard v-if="!creatingServer" :show="wizard" @quit="wizard=false" />
       <add-server-wizard v-else :show="wizard" @quit="wizard=false" />
@@ -114,18 +124,70 @@ export default {
       hoverTextOnImport: this.$t('profile.importZip'),
       creatingServer: false,
       creatingTooltip: false,
+      isDeletingProfile: false,
+      deletingProfile: {},
+
+      dragging: false,
+      draggingProfile: {},
+
+      colors: ['blue-grey', 'red', 'pink',
+        'purple', 'green', 'yellow', 'amber',
+        'orange', 'deep-orange', 'brown'],
+
+      options: {
+        animation: 200,
+        group: 'description',
+        disabled: false,
+        ghostClass: 'ghost',
+      },
     };
   },
   computed: {
-    profiles() {
+    timesliceProfiles() {
       const filter = this.filter.toLowerCase();
-      return this.$repo.getters.profiles.filter(profile => filter === ''
-        || profile.author.toLowerCase().indexOf(filter) !== -1
+      const profiles = this.$repo.getters.profiles.filter(profile => filter === ''
+        || (profile.author ? profile.author.toLowerCase().indexOf(filter) !== -1 : false)
         || profile.name.toLowerCase().indexOf(filter) !== -1
-        || profile.description.toLowerCase().indexOf(filter) !== -1);
+        || (profile.description ? profile.description.toLowerCase().indexOf(filter) !== -1 : false));
+
+      const today = Math.floor(Date.now() / 1000 / 60 / 60 / 24) * 1000 * 60 * 60 * 24;
+      const threeDays = (Math.floor(Date.now() / 1000 / 60 / 60 / 24) - 3) * 1000 * 60 * 60 * 24;
+      const todayR = [];
+      const threeR = [];
+      const other = [];
+      for (const p of profiles) {
+        if (p.lastAccessDate > today) {
+          todayR.push(p);
+        } else if (p.lastAccessDate > threeDays) {
+          threeR.push(p);
+        } else {
+          other.push(p);
+        }
+      }
+      return [todayR, threeR, other];
+    },
+    profiles: {
+      get() {
+        const filter = this.filter.toLowerCase();
+        return this.$repo.getters.profiles.filter(profile => filter === ''
+          || profile.author.toLowerCase().indexOf(filter) !== -1
+          || profile.name.toLowerCase().indexOf(filter) !== -1
+          || profile.description.toLowerCase().indexOf(filter) !== -1);
+      },
+      set(v) {
+        this.$repo.commit('profileIds', v.map(p => p.id));
+      },
     },
   },
   mounted() {
+    const colors = [...this.colors];
+    const count = colors.length;
+    const newOrder = [];
+    for (let i = 0; i < count; ++i) {
+      const choise = Math.random() * Math.floor(colors.length);
+      newOrder.push(colors.splice(choise, 1));
+    }
+    this.colors = newOrder;
   },
   methods: {
     createProfile() {
@@ -137,6 +199,9 @@ export default {
       this.creatingTooltip = false;
       this.creatingServer = true;
       this.wizard = true;
+    },
+    onDropDelete() {
+      this.startDelete(this.draggingProfile);
     },
     doImport(fromFolder, curseforge) {
       const filters = fromFolder ? [] : [{ extensions: ['zip'], name: 'Zip' }];
@@ -159,10 +224,25 @@ export default {
         }
       });
     },
-    doDelete(id) {
-      this.$repo.dispatch('deleteProfile', id);
+    doDelete() {
+      this.$repo.dispatch('deleteProfile', this.deletingProfile);
+    },
+    cancelDelete() {
+      this.isDeletingProfile = false;
+      this.deletingProfile = {};
+    },
+    startDelete(prof) {
+      this.isDeletingProfile = true;
+      this.deletingProfile = prof;
     },
     doCopy(id) {
+    },
+    onProfileMove(e) {
+      if (this.filter.length !== 0) {
+        console.log('cancelled');
+        return false;
+      }
+      return true;
     },
     selectProfile(event, id) {
       this.$repo.commit('selectProfile', id);
@@ -196,4 +276,7 @@ export default {
 </script>
 
 <style>
+.ghost {
+  opacity: 0.5;
+}
 </style>

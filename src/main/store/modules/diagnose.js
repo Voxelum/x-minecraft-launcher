@@ -120,6 +120,11 @@ const mod = {
                     const handle = await context.dispatch('installLibraries', { libraries: missingLibs.arguments.libraries });
                     await context.dispatch('waitTask', handle);
                 }
+
+                if (unfixed.find(p => p.id === 'missingAuthlibInjector')) {
+                    await context.dispatch('ensureAuthlibInjection');
+                }
+
                 await context.dispatch('diagnoseProfile');
             } catch (e) {
                 context.commit('endFixProblems', unfixed);
@@ -285,6 +290,17 @@ const mod = {
                             id: 'incompatibleJava',
                             arguments: { java: java.version, mcversion },
                             optional: true,
+                        });
+                    }
+                }
+
+                const user = context.rootGetters.selectedUser;
+
+                if (user.authService !== 'mojang' && user.authService !== 'offline') {
+                    const libs = await context.dispatch('listAuthlibs');
+                    if (libs.length === 0) {
+                        problems.push({
+                            id: 'missingAuthlibInjector',
                         });
                     }
                 }

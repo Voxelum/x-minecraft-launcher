@@ -21,6 +21,9 @@ export declare namespace ConfigModule {
         readyToUpdate: boolean;
         checkingUpdate: boolean;
         downloadingUpdate: boolean;
+
+        defaultBackgroundImage: string?;
+        defaultBlur: number;
     }
 
     interface Mutations {
@@ -34,6 +37,8 @@ export declare namespace ConfigModule {
         downloadingUpdate(state: State, prog: boolean): void;
         checkingUpdate(state: State, prog: boolean): void;
         settings(state: State, settings: { [key: string]: number | string | boolean | object }): void;
+        defaultBackgroundImage(state: State, img: string?): void;
+        defaultBlur(state: State, blur: number): void;
     }
     type C = Context<State, {}, Mutations, Actions>;
     interface Actions {

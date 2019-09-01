@@ -1,11 +1,32 @@
+import { Auth, MojangService, Net, ProfileService, Task, UserType } from '@xmcl/minecraft-launcher-core';
 import fileType from 'file-type';
-import { parse as parseUrl } from 'url';
-import { Auth, MojangService, ProfileService } from '@xmcl/minecraft-launcher-core';
-import { v4 } from 'uuid';
 import got from 'got';
-import { requireObject, requireString } from 'universal/utils/object';
-import base from 'universal/store/modules/user';
 import fs from 'main/utils/vfs';
+import { ComparableVersion } from 'maven-artifact-version';
+import { basename, join } from 'path';
+import base from 'universal/store/modules/user';
+import { requireObject, requireString } from 'universal/utils/object';
+import { parse as parseUrl } from 'url';
+import { v4 } from 'uuid';
+
+/**
+ * @param {string} username 
+ */
+function offline(username) {
+    const prof = {
+        id: v4(),
+        name: username,
+    };
+    return {
+        accessToken: v4(),
+        clientToken: v4(),
+        selectedProfile: prof,
+        profiles: [prof],
+        userId: v4(),
+        properties: {},
+        userType: UserType.Legacy,
+    };
+}
 
 /**
  * The possible ways for user auth and profile:
@@ -21,7 +42,6 @@ import fs from 'main/utils/vfs';
  * Module Requirement:
  * 
  * login, by user name and password
- * selectLoginMode, select the loginMode
  * 
  * getGameProfile, get profile by user uuid or user name
  * selectGameProfileService, select the profile service 
@@ -33,14 +53,16 @@ const mod = {
     actions: {
         async save(context, { mutation }) {
             switch (mutation) {
-                case 'login':
-                case 'logout':
-                case 'textures':
+                case 'addUserProfile':
+                case 'setUserProfile':
+                case 'updateGameProfile':
+                case 'updateUserProfile':
                 case 'authService':
                 case 'profileService':
+                case 'invalidateAuth':
                     await context.dispatch('setPersistence', {
                         path: 'user.json',
-                        data: Object.assign({}, context.state),
+                        data: { ...context.state, cape: undefined, info: undefined, security: undefined, refreshingSecurity: undefined, refreshingSkin: undefined },
                     });
                     break;
                 default:
@@ -57,8 +79,30 @@ const mod = {
                 const profileServices = typeof data.profileServices === 'object' ? data.profileServices : {};
                 profileServices.mojang = ProfileService.API_MOJANG;
                 data.profileServices = profileServices;
+
+                delete data.info;
+                delete data.refreshingSecurity;
+                delete data.refreshingSkin;
+                delete data.security;
+
+                if (data.id) { // data fix
+                    data.profiles = {
+                        [data.userId]: {
+                            id: data.userId,
+                            type: data.userType,
+                            account: '',
+                            profileService: data.profileService,
+                            authService: data.authService,
+                            properties: data.properties,
+                            profiles: [{ id: data.id, name: data.name }],
+                        },
+                    };
+                    data.selectedUser = data.userId;
+                    data.selectedGameProfile = data.id;
+                }
                 context.commit('userSnapshot', data);
             } else {
+                console.log('Not found local user record, use default setting');
                 context.commit('userSnapshot', {
                     authServices: {
                         mojang: Auth.Yggdrasil.API_MOJANG,
@@ -66,7 +110,11 @@ const mod = {
                     profileServices: {
                         mojang: ProfileService.API_MOJANG,
                     },
-                    clientToken: v4(),
+                    clientToken: v4().replace(/-/g, ''),
+                    profiles: {},
+                    selectedUser: '',
+                    selectedUserProfile: '',
+                    loginHistory: [],
                 });
             }
         },
@@ -79,53 +127,67 @@ const mod = {
          * Logout and clear current cache.
          */
         async logout(context) {
+            const user = context.getters.selectedUser;
             if (context.getters.logined) {
-                if (context.state.authService !== 'offline') {
+                if (user.authService !== 'offline') {
                     await Auth.Yggdrasil.invalide({
-                        accessToken: context.state.accessToken,
+                        accessToken: user.accessToken,
                         clientToken: context.state.clientToken,
                     }, context.getters.authService);
                 }
             }
-            context.commit('logout');
+            context.commit('invalidateAuth');
         },
 
         async checkLocation(context) {
             if (!context.getters.logined) return true;
-            if (context.state.authService !== 'mojang') {
-                return true;
-            }
+            const user = context.getters.selectedUser;
+            if (user.authService !== 'mojang') return true;
+            if (context.state.refreshingSecurity) return true;
+            context.commit('refreshingSecurity', true);
             try {
-                const result = await MojangService.checkLocation(context.state.accessToken);
+                const result = await MojangService.checkLocation(user.accessToken);
+                context.commit('userSecurity', result);
                 return result;
             } catch (e) {
                 if (e.error === 'ForbiddenOperationException' && e.errorMessage === 'Current IP is not secured') {
+                    context.commit('userSecurity', false);
                     return false;
                 }
                 throw e;
+            } finally {
+                context.commit('refreshingSecurity', false);
             }
         },
 
         async getChallenges(context) {
             if (!context.getters.logined) return [];
-            if (context.state.profileService !== 'mojang') return [];
-
-            return MojangService.getChallenges(context.state.accessToken);
+            const user = context.getters.selectedUser;
+            if (user.profileService !== 'mojang') return [];
+            return MojangService.getChallenges(user.accessToken);
         },
 
-        submitChallenges(context, responses) {
+        async submitChallenges(context, responses) {
             if (!context.getters.logined) throw new Error('Cannot submit challenge if not logined');
-            if (context.state.profileService !== 'mojang') throw new Error('Cannot sumit challenge if login mode is not mojang!');
+            const user = context.getters.selectedUser;
+            if (user.authService !== 'mojang') throw new Error('Cannot sumit challenge if login mode is not mojang!');
             if (!(responses instanceof Array)) throw new Error('Expect responses Array!');
-            return MojangService.responseChallenges(context.state.accessToken, responses);
+            const result = await MojangService.responseChallenges(user.accessToken, responses);
+            context.commit('userSecurity', true);
+            return result;
         },
 
         async refreshSkin(context) {
-            if (context.state.profileService === 'offline') return;
-            if (context.state.name === '') return;
+            const user = context.getters.selectedUser;
+            const gameProfile = context.getters.selectedGameProfile;
+            if (user.profileService === '') return;
+            if (gameProfile.name === '') return;
             if (!context.getters.logined) return;
+            if (context.state.refreshingSkin) return;
 
-            const { id, name } = context.state;
+            context.commit('refreshingSkin', true);
+
+            const { id, name } = gameProfile;
 
             try {
                 let profile;
@@ -135,10 +197,29 @@ const mod = {
                     profile = await ProfileService.lookup(name, { api: context.getters.profileService });
                     profile = await ProfileService.fetch(profile.id, { api: context.getters.profileService });
                 }
-                const textures = await ProfileService.getTextures(profile);
-                if (textures) context.commit('textures', textures);
+                const textures = await ProfileService.getTextures(profile, false);
+                const skin = textures.textures.SKIN;
+
+                if (textures && skin) {
+                    context.commit('updateGameProfile', { userId: user.id, profile: { ...gameProfile, textures: { ...textures.textures, SKIN: skin } } });
+                }
             } catch (e) {
-                console.warn(`Cannot refresh the skin data for user ${context.state.name}(${context.state.id}).`);
+                console.warn(`Cannot refresh the skin data for user ${name}(${id}).`);
+                console.warn(e);
+                throw e;
+            } finally {
+                context.commit('refreshingSkin', false);
+            }
+        },
+
+        async refreshInfo(context) {
+            const user = context.getters.selectedUser;
+            if (user.authService !== 'mojang') return;
+            try {
+                const info = await MojangService.getAccountInfo(user.accessToken);
+                context.commit('mojangInfo', info);
+            } catch (e) {
+                console.warn(`Cannot refresh mojang info for user ${user.account}.`);
                 console.warn(e);
                 throw e;
             }
@@ -148,6 +229,9 @@ const mod = {
         async uploadSkin(context, payload) {
             requireObject(payload);
             requireString(payload.data);
+
+            const user = context.getters.selectedUser;
+            const gameProfile = context.getters.selectedGameProfile;
 
             if (typeof payload.slim !== 'boolean') payload.slim = false;
 
@@ -160,8 +244,8 @@ const mod = {
             } else {
                 throw new Error('Illegal Skin data format! Require a Buffer');
             }
-            const accessToken = context.rootState.user.accessToken;
-            const uuid = context.rootState.user.id;
+            const accessToken = user.accessToken;
+            const uuid = gameProfile.id;
             return ProfileService.setTexture({
                 uuid,
                 accessToken,
@@ -178,19 +262,6 @@ const mod = {
                 throw e;
             });
         },
-
-        async refreshInfo(context) {
-            if (context.state.authService !== 'mojang') return;
-            try {
-                const info = await MojangService.getAccountInfo(context.state.accessToken);
-                context.commit('mojangInfo', info);
-            } catch (e) {
-                console.warn(`Cannot refresh mojang info for user ${context.state.name} (${context.state.id}).`);
-                console.warn(e);
-                throw e;
-            }
-        },
-
         async saveSkin(context, { skin, path }) {
             requireObject(skin);
             requireString(skin.data);
@@ -223,9 +294,11 @@ const mod = {
         async refreshUser(context) {
             if (!context.getters.logined) return;
 
+            const user = context.getters.selectedUser;
+
             if (!context.getters.offline) {
                 const validate = await Auth.Yggdrasil.validate({
-                    accessToken: context.state.accessToken,
+                    accessToken: user.accessToken,
                     clientToken: context.state.clientToken,
                 }, context.getters.authService);
 
@@ -235,26 +308,23 @@ const mod = {
                 }
                 try {
                     const result = await Auth.Yggdrasil.refresh({
+                        accessToken: user.accessToken,
                         clientToken: context.state.clientToken,
-                        accessToken: context.state.accessToken,
                     });
-                    context.commit('login', { auth: result });
+                    context.commit('updateUserProfile', result);
                     context.dispatch('checkLocation');
                     context.dispatch('refreshInfo').catch(_ => _);
                 } catch (e) {
-                    context.commit('logout');
+                    context.commit('invalidateAuth');
                 }
             }
 
             context.dispatch('refreshSkin').catch(_ => _);
         },
 
-
-        async selectLoginMode(context, mode) {
-            requireString(mode);
-            if (context.state.authServices[mode] || mode === 'offline') {
-                context.commit('authService', mode);
-            }
+        async switchUserProfile({ commit, dispatch }, payload) {
+            commit('setUserProfile', payload);
+            await dispatch('refreshUser');
         },
 
         /**
@@ -265,15 +335,23 @@ const mod = {
             requireObject(payload);
             requireString(payload.account);
 
+            const selectedUserProfile = context.getters.selectedUser;
+
+            const { account, password } = payload;
+            const {
+                authService = password ? 'mojang' : 'offline',
+                profileService = 'mojang',
+            } = payload;
+
             try {
                 /**
                  * @type {Auth}
                  */
-                const result = context.state.authService === 'offline'
-                    ? Auth.offline(payload.account)
+                const result = authService === 'offline'
+                    ? offline(account)
                     : await Auth.Yggdrasil.login({
-                        username: payload.account,
-                        password: payload.password,
+                        username: account,
+                        password,
                         clientToken: context.state.clientToken,
                     }, context.getters.authService).catch((e) => {
                         if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
@@ -283,10 +361,26 @@ const mod = {
                         throw e;
                     });
 
-                context.commit('login', {
-                    auth: result,
-                    account: payload.account,
-                });
+                if (authService !== selectedUserProfile.authService
+                    || profileService !== selectedUserProfile.profileService
+                    || (authService !== 'offline' && account !== selectedUserProfile.account)) {
+                    context.commit('addUserProfile', {
+                        account,
+                        authService,
+                        profileService,
+                        id: result.userId,
+                        type: result.userType,
+                        accessToken: result.accessToken,
+                        profiles: result.profiles.map(p => ({ ...p, textures: { SKIN: { url: '' } } })),
+                    });
+
+                    context.commit('setUserProfile', {
+                        profileId: result.selectedProfile.id,
+                        userId: result.userId,
+                    });
+                } else {
+                    context.commit('updateUserProfile', result);
+                }
                 await context.dispatch('refreshSkin').catch(_ => _);
                 await context.dispatch('refreshInfo').catch(_ => _);
             } catch (e) {
@@ -294,6 +388,52 @@ const mod = {
                 console.error(e);
                 throw e;
             }
+        },
+        async fetchAuthlibArtifacts(context) {
+            const { body, statusCode, statusMessage } = await Net.fetchJson('https://authlib-injector.yushi.moe/artifacts.json');
+            if (statusCode !== 200) throw new Error(statusMessage);
+            return body;
+        },
+        async listAuthlibs(context) {
+            const parent = context.rootGetters.path('authlibs');
+            await fs.ensureDir(parent);
+            const vers = await fs.readdir(parent);
+            return vers.map(p => join(parent, p));
+        },
+        async ensureAuthlibInjection(context) {
+            const task = Task.create('installAuthlibInjector', async (ctx) => {
+                const parent = context.rootGetters.path('authlibs');
+                await fs.ensureDir(parent);
+                const existeds = await fs.readdir(parent);
+                if (existeds.length !== 0) {
+                    let greatest = existeds[0];
+                    let greatestVer;
+                    for (const f of existeds) {
+                        const ver = new ComparableVersion(f.split('-')[2]);
+                        if (!greatestVer) {
+                            greatest = f;
+                            greatestVer = ver;
+                        } else if (ver.compareTo(greatestVer) > 0) {
+                            greatest = f;
+                            greatestVer = ver;
+                        }
+                    }
+                    return join(parent, greatest);
+                }
+                const { body, statusCode, statusMessage } = await Net.fetchJson('https://authlib-injector.yushi.moe/artifact/latest.json');
+                if (statusCode !== 200) throw new Error(statusMessage);
+                const dest = context.rootGetters.path('authlibs', basename(body.download_url));
+                await Net.downloadFileIfAbsentWork({
+                    destination: dest,
+                    url: body.download_url,
+                    checksum: {
+                        algorithm: 'sha256',
+                        hash: body.checksums.sha256,
+                    },
+                })(ctx);
+                return dest;
+            });
+            return context.dispatch('waitTask', await context.dispatch('executeTask', task));
         },
     },
 };

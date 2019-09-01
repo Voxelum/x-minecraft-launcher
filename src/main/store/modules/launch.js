@@ -1,4 +1,4 @@
-import { Util, Launcher } from '@xmcl/minecraft-launcher-core';
+import { Util, Launcher, UserType } from '@xmcl/minecraft-launcher-core';
 import paths, { join } from 'path';
 import { ipcMain } from 'electron';
 import base from 'universal/store/modules/launch';
@@ -34,9 +34,10 @@ const mod = {
              * current selected profile
              */
             const profile = rootGetters.selectedProfile;
-            const user = rootState.user;
+            const user = rootGetters.selectedUser;
+            const gameProfile = rootGetters.selectedGameProfile;
             if (!profile) return Promise.reject(new Error('launch.profile.empty'));
-            if (user.accessToken === '' || user.name === '' || user.id === '') return Promise.reject(new Error('launch.auth.illegal'));
+            if (user.accessToken === '' || gameProfile.name === '' || gameProfile.id === '') return Promise.reject(new Error('launch.auth.illegal'));
 
             commit('launchStatus', 'checkingProblems');
             for (let problems = rootState.profile.problems.filter(p => p.autofix);
@@ -76,12 +77,9 @@ const mod = {
              */
             const option = {
                 auth: {
-                    selectedProfile: {
-                        id: user.id,
-                        name: user.name,
-                    },
+                    selectedProfile: gameProfile,
                     accessToken: user.accessToken,
-                    userType: user.userType,
+                    userType: UserType.Mojang,
                     properties: user.properties,
                 },
                 gamePath: minecraftFolder.root,
@@ -94,6 +92,10 @@ const mod = {
                     detached: true,
                     cwd: minecraftFolder.root,
                 },
+                yggdrasilAgent: user.authService !== 'mojang' && user.authService !== 'offline' ? {
+                    jar: await dispatch('ensureAuthlibInjection'),
+                    server: rootGetters.authService.hostName,
+                } : undefined,
             };
 
             console.log('Launching a server');

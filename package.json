@@ -1,8 +1,8 @@
 {
     "name": "voxelauncher",
     "productName": "VoxeLauncher",
-    "version": "0.2.0-beta.1",
-    "author": "cijhn@hotmail.com",
+    "version": "0.2.0",
+    "author": "ci010 <cijhn@hotmail.com>",
     "description": "A great minecraft launcher in the feature",
     "license": "MIT",
     "main": "./dist/electron/main.js",
@@ -58,7 +58,15 @@
             ]
         },
         "mac": {
-            "icon": "build/icons/icon.icns"
+            "icon": "build/icons/icon.icns",
+            "target": [
+                {
+                    "target": "dir"
+                },
+                {
+                    "target": "dmg"
+                }
+            ]
         },
         "win": {
             "icon": "build/icons/icon.ico",
@@ -87,7 +95,18 @@
             ]
         },
         "linux": {
-            "icon": "build/icons"
+            "icon": "build/icons",
+            "target": [
+                {
+                    "target": "deb"
+                },
+                {
+                    "target": "AppImage"
+                },
+                {
+                    "target": "snap"
+                }
+            ]
         }
     },
     "commitlint": {
@@ -101,7 +120,7 @@
         }
     },
     "dependencies": {
-        "@xmcl/minecraft-launcher-core": "^0.1.9",
+        "@xmcl/minecraft-launcher-core": "^0.1.12",
         "@xmcl/unzip": "^0.2.4",
         "electron-updater": "^4.0.6",
         "fast-html-parser": "^1.0.1",
@@ -115,7 +134,7 @@
         "vue-electron": "^1.0.6",
         "vue-i18n": "^7.0.4",
         "vue-router": "^3.0.6",
-        "vuetify": "^1.5.14",
+        "vuetify": "^1.5.18",
         "vuex": "^3.1.1",
         "yazl": "^2.5.1"
     },
@@ -154,12 +173,14 @@
         "style-loader": "^0.21.0",
         "three": "^0.86.0",
         "three-orbit-controls": "^82.1.0",
+        "typescript": "3.3.1",
         "url-loader": "^1.1.2",
         "vue-loader": "^15.2.4",
         "vue-observe-visibility": "^0.4.4",
         "vue-particles": "^1.0.9",
         "vue-style-loader": "^4.1.0",
         "vue-template-compiler": "^2.6.10",
+        "vuedraggable": "^2.23.0",
         "webpack": "^4.15.1",
         "webpack-cli": "^3.3.1",
         "webpack-dev-server": "^3.2.1",

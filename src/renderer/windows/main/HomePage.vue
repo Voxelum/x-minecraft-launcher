@@ -77,16 +77,16 @@
       </v-list>
     </v-menu>
 
-    <v-flex d-flex xs12>
+    <v-flex d-flex xs12 style="z-index: 1">
       <div class="display-1 white--text" style="padding-top: 50px; padding-left: 50px">
         <span style="margin-right: 10px;">
           {{ profile.name || `Minecraft ${profile.version.minecraft}` }}
         </span>
-        <v-chip v-if="profile.author" label color="green" outline small :selected="true" style="margin-right: 5px;">
+        <v-chip v-if="profile.author" label color="green" small :selected="false" style="margin-right: 5px;">
           {{ profile.author }}
         </v-chip>
 
-        <v-chip label color="green" outline small :selected="true">
+        <v-chip label class="pointer" color="green" small :selected="false" @click="$router.replace('/version-setting')">
           Version: {{ $repo.getters['currentVersion'].id }}
         </v-chip>
       </div>
@@ -104,11 +104,11 @@
             <v-card-title>
               <div>
                 <div style="font-size: 20px;">
-                  {{ $t(profile.status.version.name) }}
+                  {{ $t(status.version.name) }}
                 </div>
-                <text-component :source="profile.status.description" />
+                <text-component :source="status.description" />
 
-                <div> {{ $t('profile.server.players') }} : {{ profile.status.players.online + '/' + profile.status.players.max }} </div>
+                <div> {{ $t('profile.server.players') }} : {{ status.players.online + '/' + status.players.max }} </div>
               </div>
             </v-card-title>
           </v-flex>
@@ -118,7 +118,7 @@
           <v-icon left>
             signal_cellular_alt
           </v-icon>
-          <div>  {{ $t('profile.server.pings') }} : {{ profile.status.ping }} ms </div>
+          <div>  {{ $t('profile.server.pings') }} : {{ status.ping }} ms </div>
         
           <v-spacer />
           <v-btn v-if="isServer" flat dark large @click="refreshServer">
@@ -181,7 +181,8 @@ export default {
     help: false,
   }),
   computed: {
-    icon() { return this.profile.status.favicon || unknownServer; },
+    status() { return this.$repo.state.profile.status || {}; },
+    icon() { return this.status.favicon || unknownServer; },
     isServer() { return this.profile.type === 'server'; },
     problems() { return this.$repo.state.profile.problems; },
     launchStatus() { return this.$repo.state.launch.status; },
@@ -222,7 +223,7 @@ export default {
     },
   },
   mounted() {
-
+    
   },
   activated() {
   },
@@ -346,5 +347,9 @@ export default {
   height: 20px;
   width: 20px;
   font-size: 12px;
+}
+
+.pointer * {
+  cursor: pointer !important;
 }
 </style>

@@ -25,7 +25,8 @@
                                 v-observe-visibility="{
                                   callback: (v) => checkBuffer(v, index, true),
                                   once: true,
-                                }" :data="pack" :is-selected="false" :index="index" />
+                                }" :data="pack" :is-selected="false" :index="index" 
+                                @dragstart="dragging = true" @dragend="dragging = false"/>
           </div>
         </v-card>
       </v-flex>
@@ -51,6 +52,47 @@
         </v-card>
       </v-flex>
     </v-layout>
+    <v-fab-transition>
+      <v-btn
+        v-if="dragging"
+        style="right: 40vw; bottom: 10px;"
+        large
+        absolute
+        dark
+        fab
+        bottom
+        color="red"
+        @dragover="onDragOver" @drop="onDropDelete"
+      >
+        <v-icon> delete </v-icon>
+      </v-btn>
+    </v-fab-transition>
+    <v-dialog v-model="isDeletingPack" width="400" persistance>
+      <v-card>
+        <v-card-title primary-title>
+          <div>
+            <h3 class="headline mb-0">
+              {{ $t('resourcepack.deletion', { pack: deletingPack ? deletingPack.name : '' }) }}
+            </h3>
+            <div> {{ $t('resourcepack.deletionHint') }} </div>
+          </div>
+        </v-card-title>
+
+        <v-divider />
+        <v-card-actions>
+          <v-btn flat @click="isDeletingPack = false; deletingPack = null">
+            {{ $t('no') }}
+          </v-btn>
+          <v-spacer />
+          <v-btn flat color="red" @click="confirmDeletingPack">
+            <v-icon left>
+              delete
+            </v-icon>
+            {{ $t('yes') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -64,6 +106,10 @@ export default {
   data() {
     return {
       filterText: '',
+      dragging: false,
+
+      isDeletingPack: false,
+      deletingPack: null,
     };
   },
   computed: {
@@ -117,6 +163,19 @@ export default {
     await this.$repo.dispatch('loadProfileGameSettings');
   },
   methods: {
+    confirmDeletingPack() {
+      this.isDeletingPack = false;
+      this.$repo.dispatch('removeResource', this.deletingPack.hash);
+      this.deletingPack = null;
+    },
+    onDropDelete(e) {
+      const hash = e.dataTransfer.getData('Hash');
+      const res = this.$repo.getters.queryResource(hash);
+      if (res) {
+        this.isDeletingPack = true;
+        this.deletingPack = res;
+      }
+    },
     mapItem(r) {
       return r.name + r.ext;
     },

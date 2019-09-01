@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuetify from 'vuetify';
 import VueObserveVisibility from 'vue-observe-visibility';
 import colors from 'vuetify/es5/util/colors';
+import draggable from 'vuedraggable';
 import CurseforgeIcon from './CurseforgeIcon';
 import SkinView from './skin/SkinView';
 import TextComponent from './TextComponent';
@@ -28,6 +29,7 @@ Vue.use(Vuetify, {
 
 Vue.component('text-component', TextComponent);
 Vue.component('skin-view', SkinView);
+Vue.component('draggable', draggable);
 
 /**
  * 

@@ -1,7 +1,7 @@
 <template>
   <div @mouseenter="enter" @mouseleave="leave">
     <v-icon v-if="status !== 'running'" style="margin-right: 5px" :color="status === 'successed'?'green':status === 'cancelled'?'white':'red'">
-      {{ status === 'successed' ? 'check' : status === 'cancelled' ? 'stop' :
+      {{ status === 'successed' ? (hasChild ? 'done_all' : 'check') : status === 'cancelled' ? 'stop' :
         'error_outline' }}
     </v-icon>
     <v-progress-circular v-else-if="total === -1 || !hovered" style="margin-right: 7px" small :size="20" :value="percentage"
@@ -28,6 +28,10 @@ export default {
       default: -1,
     },
     hovered: {
+      type: Boolean,
+      default: false,
+    },
+    hasChild: {
       type: Boolean,
       default: false,
     },
