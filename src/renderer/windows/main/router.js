@@ -1,7 +1,7 @@
 import Router from 'vue-router';
 import Vue from 'vue';
 import { remote } from 'electron';
-import Main from './Main';
+import MainWindow from './MainWindow';
 
 Vue.use(Router);
 
@@ -9,7 +9,7 @@ const router = new Router({
     routes: [
         {
             path: '/',
-            component: Main,
+            component: MainWindow,
             children: [
                 {
                     path: '/',
@@ -26,10 +26,6 @@ const router = new Router({
                 {
                     path: '/user',
                     component: () => import('./UserPage'),
-                },
-                {
-                    path: '/login',
-                    component: () => import('./LoginPage'),
                 },
                 {
                     path: '/save',
