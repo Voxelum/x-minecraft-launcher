@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/voxelum/voxelauncher/compare/v0.2.0-beta.1...v0.2.0) (2019-09-01)
+
+
+### Bug Fixes
+
+* adapt skin load for new api ([398686a](https://github.com/voxelum/voxelauncher/commit/398686a))
+* adjust home page ui style ([031973f](https://github.com/voxelum/voxelauncher/commit/031973f))
+* disable secur on dev ([91d2aee](https://github.com/voxelum/voxelauncher/commit/91d2aee))
+* distinguish the task leaf & parent ([ef7f616](https://github.com/voxelum/voxelauncher/commit/ef7f616))
+* do not force update resources ([21b118e](https://github.com/voxelum/voxelauncher/commit/21b118e))
+* error on resources dir on load ([686ce80](https://github.com/voxelum/voxelauncher/commit/686ce80))
+* guard the profile wizard button ([e9a71a3](https://github.com/voxelum/voxelauncher/commit/e9a71a3))
+* make the model not rotate for perf ([9b76154](https://github.com/voxelum/voxelauncher/commit/9b76154))
+* **locale:** deletion text ([d74d60d](https://github.com/voxelum/voxelauncher/commit/d74d60d))
+* only switch to azure when try to update ([57b6290](https://github.com/voxelum/voxelauncher/commit/57b6290))
+* optimize Card UX ([de27a6b](https://github.com/voxelum/voxelauncher/commit/de27a6b))
+* prevent dup assign for resource ([fd265ff](https://github.com/voxelum/voxelauncher/commit/fd265ff))
+* prevent failure due to the network ([90192d3](https://github.com/voxelum/voxelauncher/commit/90192d3))
+* remove LoginPage ([af8e4c5](https://github.com/voxelum/voxelauncher/commit/af8e4c5))
+* reset error if account/passwd change ([ae529fd](https://github.com/voxelum/voxelauncher/commit/ae529fd))
+* the server display ([b8b7923](https://github.com/voxelum/voxelauncher/commit/b8b7923))
+
+
+### Features
+
+* add bg image support in api level ([b06eaee](https://github.com/voxelum/voxelauncher/commit/b06eaee))
+* add last access date for profile ([6424808](https://github.com/voxelum/voxelauncher/commit/6424808))
+* include draggable dep ([c38d2d0](https://github.com/voxelum/voxelauncher/commit/c38d2d0))
+* **locale:** support user related local text ([9283d07](https://github.com/voxelum/voxelauncher/commit/9283d07))
+* support challenge in dialog ([f20a8b9](https://github.com/voxelum/voxelauncher/commit/f20a8b9))
+* support deletion ([8026d6d](https://github.com/voxelum/voxelauncher/commit/8026d6d))
+* support profile ordering ([b3870dc](https://github.com/voxelum/voxelauncher/commit/b3870dc))
+* support switch user & add custom auth server ([7bd05ef](https://github.com/voxelum/voxelauncher/commit/7bd05ef))
+* trr support authlib-injector ([4ea8877](https://github.com/voxelum/voxelauncher/commit/4ea8877))
+
+
+
 ## 0.2.0-beta.1 (2019-08-11)
 
 
