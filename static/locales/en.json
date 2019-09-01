@@ -701,6 +701,7 @@
             "typeOfService": "Choose the Service Type",
             "validateHint": "Used to check if user's token still valid"
         },
+        "login": "Login",
         "signup": "Sign up",
         "signupDescription": "New to us?",
         "skinImport": "Import Skin",
