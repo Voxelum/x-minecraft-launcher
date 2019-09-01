@@ -330,7 +330,11 @@ const mod = {
             );
 
             if (profile.type === 'modpack') {
-                profile.author = context.rootGetters.selectedProfile.id;
+                if (context.rootGetters.selectedGameProfile) {
+                    profile.author = context.rootGetters.selectedGameProfile.name;
+                } else {
+                    profile.author = '';
+                }
             }
 
             delete payload.creationDate;
