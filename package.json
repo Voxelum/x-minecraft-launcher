@@ -37,12 +37,6 @@
                 "provider": "github",
                 "owner": "voxelum",
                 "repo": "VoxeLauncher"
-            },
-            {
-                "provider": "azure",
-                "account": "voxelauncher",
-                "container": "releases",
-                "url": "https://voxelauncher.blob.core.windows.net/releases"
             }
         ],
         "files": [
@@ -156,7 +150,6 @@
         "electron-builder": "^20.43.0",
         "electron-debug": "^1.4.0",
         "electron-devtools-installer": "^2.2.0",
-        "electron-publisher-azure": "^0.0.2",
         "eslint": "^5.5.0",
         "eslint-config-airbnb-base": "^13.1.0",
         "eslint-friendly-formatter": "^4.0.1",
