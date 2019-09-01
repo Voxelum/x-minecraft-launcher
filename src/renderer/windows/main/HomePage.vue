@@ -223,7 +223,7 @@ export default {
     },
   },
   mounted() {
-
+    
   },
   activated() {
   },
