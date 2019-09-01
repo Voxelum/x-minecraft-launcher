@@ -65,8 +65,8 @@
 </template>
 
 <script>
-import resourcepack from 'renderer/assets/curseforge.resourcepack.png';
-import mods from 'renderer/assets/curseforge.mods.png';
+import resourcepack from 'renderer/assets/curseforge_resourcepack.png';
+import mods from 'renderer/assets/curseforge_mods.png';
 import modpack from 'renderer/assets/curseforge_modpack.png';
 import worlds from 'renderer/assets/curseforge_worlds.png';
 

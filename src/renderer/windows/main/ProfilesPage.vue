@@ -66,37 +66,23 @@
       </v-flex>
       <v-flex v-for="profile in timesliceProfiles[0]" :key="profile.id" xs6
               @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" 
-        />
+        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" />
       </v-flex>
       <v-flex v-if="timesliceProfiles[1].length !== 0" style="color: grey" xs12> 
         {{ $t('profile.threeDay') }}
       </v-flex>
       <v-flex v-for="profile in timesliceProfiles[1]" :key="profile.id" xs6
               @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" 
-        />
+        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" />
       </v-flex>
       <v-flex v-if="timesliceProfiles[2].length !== 0" style="color: grey" xs12> 
         {{ $t('profile.older') }}
       </v-flex>
       <v-flex v-for="profile in timesliceProfiles[2]" :key="profile.id" xs6 
               @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" 
-        />
+        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" />
       </v-flex>
     </v-layout>
-    <!-- <draggable v-model="profiles" v-bind="options" :move="onProfileMove"> -->
-    <!-- <transition-group type="transition" class="layout row wrap justify-start fill-height"  -->
-    <!-- style="overflow: scroll; max-height: 88vh;"> -->
-    <!-- <v-flex v-for="profile in profiles" :key="profile.id" xs6 d-flex 
-                @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-         
-        </v-flex> -->
-    <!-- </transition-group> -->
-    <!-- </draggable> -->
-    <!-- <v-flex d-flex xs12 style="height: 10px;" /> -->
-    <!-- </v-layout> -->
     <v-dialog v-model="isDeletingProfile" width="400">
       <v-card>
         <v-card-title>

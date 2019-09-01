@@ -102,7 +102,7 @@
       </p> -->
     </v-layout>
 
-    <update-info v-model="viewingUpdateDetail" />
+    <dialog-update-info v-model="viewingUpdateDetail" />
     <v-dialog :value="reloadDialog" :persistent="!reloadError">
       <v-card v-if="!reloading" dark>
         <v-card-title>
