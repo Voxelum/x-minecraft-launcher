@@ -184,7 +184,7 @@ Here we list the features & corresponding files to implement the features.
 
 | Feature                              | Core Logic File             | Related Vuex Actions                                           | Who Trigger                     | UI                          |
 | ------------------------------------ | --------------------------- | -------------------------------------------------------------- | ------------------------------- | --------------------------- |
-| User Login                           | user.js                     | login                                                          | User by UI                      | LoginPage.vue               |
+| User Login                           | user.js                     | login                                                          | User by UI                      | DialogLogin.vue               |
 | User Skin Display                    | user.js                     | refreshSkin                                                    | -                               | UserPage.vue                |
 | User Skin Upload                     | user.js                     | uploadSkin                                                     | User by UI                      | UserPage.vue                |
 | User Mojang Identity Validataition   | user.js                     | checkLocation, getChallenges, submitChallenges                 | Launcher Initialize, User by UI | UserPage.vue                |
