@@ -72,10 +72,10 @@ const mod = {
                 if (!context.state.autoDownload) {
                     context.commit('downloadingUpdate', true);
                     const inside = await isInGFW().catch(_ => false);
-                    if (inside) {
-                        autoUpdater.setFeedURL('https://voxelauncher.blob.core.windows.net/releases');
-                        await autoUpdater.checkForUpdates();
-                    }
+                    // if (inside) {
+                    //     autoUpdater.setFeedURL('https://voxelauncher.blob.core.windows.net/releases');
+                    //     await autoUpdater.checkForUpdates();
+                    // }
                     await new Promise((resolve, reject) => {
                         autoUpdater.downloadUpdate().catch(reject);
                         const signal = new UpdaterSignal(autoUpdater);
