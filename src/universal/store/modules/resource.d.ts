@@ -3,9 +3,9 @@ import { Forge, LiteLoader, ResourcePack, World } from "@xmcl/minecraft-launcher
 
 export declare namespace ResourceModule {
     interface Source {
-        path: string,
-        date: string | number,
-        [key: string]: string | Record<string, string>
+        path: string;
+        date: string;
+        [key: string]: string | Record<string, string>;
     }
 
     type ImportOption = {

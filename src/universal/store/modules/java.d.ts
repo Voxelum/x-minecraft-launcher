@@ -1,16 +1,11 @@
 import { Module, Context, TaskHandle } from "../store";
+import { Java, JavaConfig } from './java.config';
 
 export declare namespace JavaModule {
+    interface State extends JavaConfig {
 
-    interface Java {
-        path: string;
-        version: string;
-        majorVersion: number;
     }
-    interface State {
-        all: Java[]
-        default: number
-    }
+
     interface Getters {
         defaultJava: Java
         missingJava: boolean

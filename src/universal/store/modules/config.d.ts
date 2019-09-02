@@ -17,12 +17,12 @@ export declare namespace ConfigModule {
         autoInstallOnAppQuit: boolean;
         allowPrerelease: boolean;
 
-        updateInfo: UpdateInfo?;
+        updateInfo: UpdateInfo | null;
         readyToUpdate: boolean;
         checkingUpdate: boolean;
         downloadingUpdate: boolean;
 
-        defaultBackgroundImage: string?;
+        defaultBackgroundImage: string | null;
         defaultBlur: number;
     }
 
@@ -37,7 +37,7 @@ export declare namespace ConfigModule {
         downloadingUpdate(state: State, prog: boolean): void;
         checkingUpdate(state: State, prog: boolean): void;
         settings(state: State, settings: { [key: string]: number | string | boolean | object }): void;
-        defaultBackgroundImage(state: State, img: string?): void;
+        defaultBackgroundImage(state: State, img: string | null): void;
         defaultBlur(state: State, blur: number): void;
     }
     type C = Context<State, {}, Mutations, Actions>;

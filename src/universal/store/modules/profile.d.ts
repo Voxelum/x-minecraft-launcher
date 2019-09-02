@@ -4,11 +4,12 @@ import { JavaModule } from "./java";
 import { Resource } from './resource';
 import { DiagnoseModule } from './diagnose';
 import { VersionModule } from "./version";
+import { ServerProfileConfig, ModpackProfileConfig, ProfileConfig, ProfilesConfig } from './profile.config';
 
 type Problem = DiagnoseModule.Problem;
 
-type CreateProfileOption = Omit<ProfileModule.Profile, 'serverInfos' | 'saves' | 'settings' | 'refreshing' | 'problems' | 'id'> & { type: 'modpack' }
-type CreateServerProfileOption = Omit<ProfileModule.ServerProfile, 'serverInfos' | 'saves' | 'settings' | 'refreshing' | 'problems' | 'id'> & { type: 'server' }
+type CreateProfileOption = Omit<ModpackProfileConfig, 'id'> & { type: 'modpack' }
+type CreateServerProfileOption = Omit<ServerProfileConfig, 'id'> & { type: 'server' }
 type CreateOption = DeepPartial<CreateProfileOption | CreateServerProfileOption>;
 
 // From https://github.com/andnp/SimplyTyped/blob/master/src/types/objects.ts
@@ -24,101 +25,10 @@ export interface TemplateFunction {
 }
 export const createTemplate: TemplateFunction;
 export declare namespace ProfileModule {
-    interface ServerProfile extends ProfileBase {
-        type: 'server';
-        host: string;
-        port: number;
-    }
-
-    interface Profile extends ProfileBase {
-        type: 'modpack';
-        author: string;
-        description: string;
-    }
-
-    type ServerOrModpack = Profile | ServerProfile;
-    type ServerAndModpack = Profile & ServerProfile;
+    type ServerOrModpack = ModpackProfileConfig | ServerProfileConfig;
+    type ServerAndModpack = ModpackProfileConfig & ServerProfileConfig;
 
     type Save = Pick<World, 'level' | 'path'>
-
-    interface ProfileBase {
-        /**
-         * The unique id (uuid) of the profile. The profile data will be stored into profiles/${id}/profile.json according to this.
-         */
-        id: string;
-        /**
-         * The display name of the profile. It will also be the modpack display name
-         */
-        name: string;
-
-        /**
-         * The java object containing the java info
-         */
-        java: {
-            /**
-             * The real path of the java paath
-             */
-            path: string;
-            /**
-             * The actual version string of the java
-             */
-            version: string;
-            /**
-             * The major version of selected java. If the version cannot be found, matching the java by this
-             */
-            majorVersion: number;
-        },
-
-        /**
-         * Either a modpack or server. The modpack is the common profile. It can export into a modpack 
-         */
-        type: 'modpack' | 'server';
-
-        /**
-         * Should show a logger window after Minecraft launched
-         */
-        showLog: boolean;
-        /**
-         * Should launcher hide after Minecraft launched
-         */
-        hideLauncher: boolean;
-
-        /**
-         * The external resource deployment of this profiles, like mods or resource packs
-         */
-        deployments: {
-            mods: string[];
-            [domain: string]: string[];
-        };
-
-        /**
-         * The version requirement of the profile.
-         * 
-         * Containing the forge & liteloader & etc.
-         */
-        version: {
-            minecraft: string;
-            forge: string;
-            liteloader: string;
-            [id: string]: string;
-        };
-
-        resolution: { width: number, height: number, fullscreen: boolean };
-        minMemory?: number;
-        maxMemory?: number;
-
-        vmOptions: string[];
-        mcOptions: string[];
-
-        url: string;
-        icon: string;
-
-        image: string?;
-        blur: number;
-
-        lastAccessDate: number;
-        creationDate: number;
-    }
 
     interface State {
         /**
@@ -126,10 +36,6 @@ export declare namespace ProfileModule {
          */
         all: { [id: string]: ServerOrModpack };
 
-        /**
-         * Sort 
-         */
-        profileIds: string[];
         /**
          * Current selected id
          */
@@ -151,7 +57,7 @@ export declare namespace ProfileModule {
         /**
          * The server status of current selected server profile, modpack won't have this.
          */
-        status: Server.StatusFrame?;
+        status: Server.StatusFrame | null;
 
         /**
          * The problems of current profile
@@ -186,7 +92,7 @@ export declare namespace ProfileModule {
 
     interface Mutations {
         profileIds(state: State, ids: string[]): void;
-        addProfile(state: State, profile: ProfileBase): void;
+        addProfile(state: State, profile: ProfileConfig): void;
         removeProfile(state: State, id: string): void;
         selectProfile(state: State, id: string): void;
 

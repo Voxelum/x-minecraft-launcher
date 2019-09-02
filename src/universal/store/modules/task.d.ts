@@ -6,7 +6,6 @@ export interface TNode extends Task.Node {
     _internalId: string;
     tasks: TNode[];
     time?: string;
-    status: string;
     background: boolean;
 }
 export declare namespace TaskModule {
