@@ -179,27 +179,27 @@ export default {
   computed: {
     selectedLang: {
       get() {
-        return this.langs.find(l => l === this.$repo.state.config.locale) || 'en';
+        return this.langs.find(l => l === this.$repo.state.setting.locale) || 'en';
       },
       set(v) { this.$repo.commit('locale', v); },
     },
     allowPrerelease: {
-      get() { return this.$repo.state.config.allowPrerelease; },
+      get() { return this.$repo.state.setting.allowPrerelease; },
       set(v) { this.$repo.commit('allowPrerelease', v); },
     },
     autoInstallOnAppQuit: {
-      get() { return this.$repo.state.config.autoInstallOnAppQuit; },
+      get() { return this.$repo.state.setting.autoInstallOnAppQuit; },
       set(v) { this.$repo.commit('autoInstallOnAppQuit', v); },
     },
     autoDownload: {
-      get() { return this.$repo.state.config.autoDownload; },
+      get() { return this.$repo.state.setting.autoDownload; },
       set(v) { this.$repo.commit('autoDownload', v); },
     },
-    readyToUpdate() { return this.$repo.state.config.readyToUpdate; },
-    downloadingUpdate() { return this.$repo.state.config.downloadingUpdate; },
-    checkingUpdate() { return this.$repo.state.config.checkingUpdate; },
-    updateInfo() { return this.$repo.state.config.updateInfo || {}; },
-    langs() { return this.$repo.state.config.locales; },
+    readyToUpdate() { return this.$repo.state.setting.readyToUpdate; },
+    downloadingUpdate() { return this.$repo.state.setting.downloadingUpdate; },
+    checkingUpdate() { return this.$repo.state.setting.checkingUpdate; },
+    updateInfo() { return this.$repo.state.setting.updateInfo || {}; },
+    langs() { return this.$repo.state.setting.locales; },
   },
   methods: {
     checkUpdate() {

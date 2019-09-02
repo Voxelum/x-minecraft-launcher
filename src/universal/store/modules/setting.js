@@ -1,5 +1,5 @@
 /**
- * @type {import('./config').ConfigModule}
+ * @type {import('./setting').SettingModule}
  */
 const mod = {
     state: {
@@ -12,7 +12,8 @@ const mod = {
         downloadingUpdate: false,
         checkingUpdate: false,
         autoDownload: false,
-        settings: {},
+        defaultBackgroundImage: null,
+        defaultBlur: 0,
     },
     mutations: {
         downloadingUpdate(state, d) { state.downloadingUpdate = !!d; },
@@ -41,7 +42,7 @@ const mod = {
             state.allowPrerelease = config.allowPrerelease || false;
         },
         settings(state, settings) {
-            Object.assign(state.settings, settings);
+            // Object.assign(state.settings, settings);
         },
         defaultBackgroundImage(state, img) {
             if (typeof img === 'string') state.defaultBackgroundImage = img;

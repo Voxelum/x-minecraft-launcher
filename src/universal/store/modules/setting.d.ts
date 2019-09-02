@@ -1,29 +1,17 @@
 import { Module, Context } from "../store";
 import { UpdateInfo } from "electron-updater";
+import { SettingConfig } from "./setting.config";
 
-export declare namespace ConfigModule {
-    interface State {
-        /**
-         * The display language of the launcher
-         */
-        locale: string;
+export declare namespace SettingModule {
+    interface State extends SettingConfig {
         /**
          * All supported languages of the launcher
          */
         locales: string[];
-        settings: { [key: string]: number | string | boolean | object };
-
-        autoDownload: boolean;
-        autoInstallOnAppQuit: boolean;
-        allowPrerelease: boolean;
-
         updateInfo: UpdateInfo | null;
         readyToUpdate: boolean;
         checkingUpdate: boolean;
         downloadingUpdate: boolean;
-
-        defaultBackgroundImage: string | null;
-        defaultBlur: number;
     }
 
     interface Mutations {
@@ -47,8 +35,8 @@ export declare namespace ConfigModule {
         checkUpdate(context: C): Promise<string>;
     }
 }
-export interface ConfigModule extends Module<"config", ConfigModule.State, {}, ConfigModule.Mutations, ConfigModule.Actions> { }
+export interface SettingModule extends Module<"setting", SettingModule.State, {}, SettingModule.Mutations, SettingModule.Actions> { }
 
-declare const mod: ConfigModule;
+declare const mod: SettingModule;
 
 export default mod;

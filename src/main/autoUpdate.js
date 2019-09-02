@@ -11,21 +11,21 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 ipcMain.on('store-ready', (store) => {
-    store.watch(state => state.config.autoInstallOnAppQuit, (autoInstallOnAppQuit) => {
+    store.watch(state => state.setting.autoInstallOnAppQuit, (autoInstallOnAppQuit) => {
         autoUpdater.autoInstallOnAppQuit = autoInstallOnAppQuit;
     });
-    store.watch(state => state.config.allowPrerelease, (allowPrerelease) => {
+    store.watch(state => state.setting.allowPrerelease, (allowPrerelease) => {
         autoUpdater.allowPrerelease = allowPrerelease;
     });
-    store.watch(state => state.config.autoDownload, (autoDownload) => {
+    store.watch(state => state.setting.autoDownload, (autoDownload) => {
         autoUpdater.autoDownload = autoDownload;
     });
 
     console.log(`Current version is ${autoUpdater.currentVersion.raw}`);
 
-    autoUpdater.autoInstallOnAppQuit = store.state.config.autoInstallOnAppQuit;
-    autoUpdater.autoDownload = store.state.config.autoDownload;
-    autoUpdater.allowPrerelease = store.state.config.allowPrerelease;
+    autoUpdater.autoInstallOnAppQuit = store.state.setting.autoInstallOnAppQuit;
+    autoUpdater.autoDownload = store.state.setting.autoDownload;
+    autoUpdater.allowPrerelease = store.state.setting.allowPrerelease;
 
     store.dispatch('checkUpdate');
 });

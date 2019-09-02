@@ -9,7 +9,7 @@ import { CurseForgeModule } from './modules/curseforge';
 import { ResourceModule, Resource } from './modules/resource'
 import { TaskModule } from './modules/task';
 import { DiagnoseModule } from './modules/diagnose';
-import { ConfigModule } from './modules/config';
+import { SettingModule } from './modules/setting';
 import { IOModule, Actions as IOActions } from './modules/io';
 import { LauncherModule, State as LaunchState, Mutations as LaunchMutations } from './modules/launch';
 import { ClientModule } from './modules/client';
@@ -42,8 +42,8 @@ interface BaseMutations {
     platform(state: BaseState, platform: NodeJS.Platform): void
 }
 
-type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | ConfigModule | UserModule | LauncherModule | IOModule | DiagnoseModule | CurseForgeModule | ClientModule; 
-type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & ConfigModule & UserModule & LauncherModule & IOModule & DiagnoseModule & CurseForgeModule & ClientModule;
+type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | SettingModule | UserModule | LauncherModule | IOModule | DiagnoseModule | CurseForgeModule | ClientModule; 
+type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & SettingModule & UserModule & LauncherModule & IOModule & DiagnoseModule & CurseForgeModule & ClientModule;
 interface ModulesCollection extends ModulesIntersection { }
 
 type Mutations =

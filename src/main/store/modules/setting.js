@@ -2,17 +2,17 @@ import { app } from 'electron';
 import locales from 'static/locales';
 import { autoUpdater, UpdaterSignal } from 'electron-updater';
 import { Task } from '@xmcl/minecraft-launcher-core';
-import base from 'universal/store/modules/config';
+import base from 'universal/store/modules/setting';
 import isInGFW from 'in-gfw';
 
 /**
- * @type {import('universal/store/modules/config').ConfigModule}
+ * @type {import('universal/store/modules/setting').ConfigModule}
  */
 const mod = {
     ...base,
     actions: {
         async load(context) {
-            const data = await context.dispatch('getPersistence', { path: 'config.json' }) || {};
+            const data = await context.dispatch('getPersistence', { path: 'setting.json' }) || {};
             context.commit('config', {
                 locale: data.locale || app.getLocale(),
                 locales: Object.keys(locales),
@@ -31,7 +31,7 @@ const mod = {
                 case 'autoDownload':
                 case 'settings':
                     await context.dispatch('setPersistence', {
-                        path: 'config.json',
+                        path: 'setting.json',
                         data: {
                             locale: context.state.locale,
                             autoInstallOnAppQuit: context.state.autoInstallOnAppQuit,
