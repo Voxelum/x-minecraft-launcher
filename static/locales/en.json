@@ -648,6 +648,7 @@
         "info": "User Information",
         "insecureClient": "The Client is insecure! Please validate your identity to upload skin!",
         "invalidCredentials": "Invalid credentials. Invalid username or password.",
+        "login": "Login",
         "logout": "Logout",
         "mojang": {
             "account": "Email Adress",
@@ -701,7 +702,6 @@
             "typeOfService": "Choose the Service Type",
             "validateHint": "Used to check if user's token still valid"
         },
-        "login": "Login",
         "signup": "Sign up",
         "signupDescription": "New to us?",
         "skinImport": "Import Skin",
