@@ -1,6 +1,8 @@
 import { app } from 'electron';
 import paths, { join } from 'path';
 import { Task } from '@xmcl/minecraft-launcher-core';
+import Ajv from 'ajv';
+import { createContext, runInContext } from 'vm';
 import fs from 'main/utils/vfs';
 import { getGuardWindow } from '../../windowsManager';
 
@@ -25,10 +27,24 @@ const mod = {
             return fs.writeFile(inPath, JSON.stringify(data, null, 4), { encoding: 'utf-8' });
         },
 
-        async getPersistence(context, { path }) {
+        async getPersistence(context, { path, schema }) {
             const inPath = `${context.rootState.root}/${path}`;
             if (await fs.missing(inPath)) return undefined;
-            return fs.readFile(inPath, { encoding: 'utf-8' }).then(s => JSON.parse(s.toString())).catch(() => { });
+            const read = await fs.readFile(inPath, { encoding: 'utf-8' }).then(s => JSON.parse(s.toString())).catch(() => { });
+            if (read && schema) {
+                const schemaObject = await fs.readFile(join(__static, 'persistence-schema', `${schema}.json`)).then(s => JSON.parse(s.toString()));
+                const ajv = new Ajv({ useDefaults: true, removeAdditional: true });
+                const validation = ajv.compile(schemaObject);
+                const valid = validation(read);
+                if (!valid) {
+                    const context = createContext({ object: read });
+                    if (validation.errors) {
+                        const cmd = validation.errors.map(e => `delete object${e.dataPath};`);
+                        runInContext(cmd.join('\n'), context);
+                    }
+                }
+            }
+            return read;
         },
         async electronDownloadFile(context, payload) {
             const win = getGuardWindow();
