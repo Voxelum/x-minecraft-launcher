@@ -30,21 +30,28 @@ const mod = {
         async getPersistence(context, { path, schema }) {
             const inPath = `${context.rootState.root}/${path}`;
             if (await fs.missing(inPath)) return undefined;
-            const read = await fs.readFile(inPath, { encoding: 'utf-8' }).then(s => JSON.parse(s.toString())).catch(() => { });
-            if (read && schema) {
+            const originalString = await fs.readFile(inPath, { encoding: 'utf-8' }).then(b => b.toString()).catch(() => '{}');
+            const object = JSON.parse(originalString);
+            if (object && schema) {
                 const schemaObject = await fs.readFile(join(__static, 'persistence-schema', `${schema}.json`)).then(s => JSON.parse(s.toString()));
                 const ajv = new Ajv({ useDefaults: true, removeAdditional: true });
                 const validation = ajv.compile(schemaObject);
-                const valid = validation(read);
+                const valid = validation(object);
                 if (!valid) {
-                    const context = createContext({ object: read });
+                    console.warn(`Found invalid config file on ${path}.`);
+                    const context = createContext({ object });
                     if (validation.errors) {
+                        validation.errors.forEach(e => console.warn(e));
                         const cmd = validation.errors.map(e => `delete object${e.dataPath};`);
                         runInContext(cmd.join('\n'), context);
                     }
+                    console.warn('Try to remove those invalid keys. This might cause problem.');
+                    console.warn(originalString);
+                    console.warn('VS');
+                    console.warn(JSON.stringify(object, null, 4));
                 }
             }
-            return read;
+            return object;
         },
         async electronDownloadFile(context, payload) {
             const win = getGuardWindow();

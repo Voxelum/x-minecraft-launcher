@@ -6,7 +6,7 @@ type C = Context<{}, {}, {}, Actions>;
 export interface Actions {
     readFolder(context: C, folder: string): Promise<string[]>;
     setPersistence(context: C, payload: { path: string, data: object }): Promise<void>;
-    getPersistence(context: C, payload: { path: string, schema: string }): Promise<any>;
+    getPersistence(context: C, payload: { path: string, schema?: string }): Promise<any>;
 
     electronDownloadFile(context: C, payload: { url: string }): Promise<TaskHandle>
 }

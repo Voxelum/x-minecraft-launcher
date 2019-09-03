@@ -6,13 +6,13 @@ import base from 'universal/store/modules/setting';
 import isInGFW from 'in-gfw';
 
 /**
- * @type {import('universal/store/modules/setting').ConfigModule}
+ * @type {import('universal/store/modules/setting').SettingModule}
  */
 const mod = {
     ...base,
     actions: {
         async load(context) {
-            const data = await context.dispatch('getPersistence', { path: 'setting.json' }) || {};
+            const data = await context.dispatch('getPersistence', { path: 'setting.json', schema: 'SettingConfig' }) || {};
             context.commit('config', {
                 locale: data.locale || app.getLocale(),
                 locales: Object.keys(locales),

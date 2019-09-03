@@ -69,7 +69,7 @@ const mod = {
             }
         },
         async load(context) {
-            const data = await context.dispatch('getPersistence', { path: 'user.json' });
+            const data = await context.dispatch('getPersistence', { path: 'user.json', schema: 'UserConfig' });
 
             if (typeof data === 'object') {
                 const authService = typeof data.authServices === 'object' ? data.authServices : {};

@@ -141,7 +141,7 @@ const mod = {
 
             let option;
             try {
-                option = await fs.readFile(rootGetters.path('profiles', id, 'profile.json')).then(b => JSON.parse(b.toString()));
+                option = await dispatch('getPersistence', { path: `profiles/${id}/profile.json`, schema: 'ProfileConfig' });
             } catch (e) {
                 console.warn(`Corrupted profile json ${id}`);
                 return;
@@ -237,11 +237,11 @@ const mod = {
                 return;
             }
 
-            const persis = await dispatch('getPersistence', { path: 'profiles.json' });
+            const persis = await dispatch('getPersistence', { path: 'profiles.json', schema: 'ProfilesConfig' });
 
             if (persis) {
-                if (persis.selected) {
-                    await dispatch('selectProfile', persis.selected);
+                if (persis.selectedProfile) {
+                    await dispatch('selectProfile', persis.selectedProfile);
                 } else {
                     await dispatch('selectProfile', Object.keys(state.all)[0]);
                 }
@@ -268,14 +268,12 @@ const mod = {
                 case 'selectProfile':
                     await context.dispatch('setPersistence', {
                         path: 'profiles.json',
-                        data: { selected: payload },
+                        data: { selectedProfile: payload },
                     });
                     break;
                 case 'gamesettings':
                     await fs.writeFile(context.rootGetters.path('profiles', context.state.id, 'options.txt'),
                         GameSetting.stringify(context.state.settings));
-                    break;
-                case 'serverInfos':
                     break;
                 case 'addProfile':
                     await context.dispatch('setPersistence', {
@@ -305,7 +303,6 @@ const mod = {
                         },
                     });
                     break;
-                case 'removeProfile':
                 default:
             }
         },
