@@ -43,7 +43,7 @@ export default {
   },
   computed: {
     percentage() {
-      return this.progress / this.total;
+      return this.progress / this.total * 100;
     },
   },
   methods: {
