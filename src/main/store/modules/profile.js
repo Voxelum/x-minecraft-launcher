@@ -245,20 +245,6 @@ const mod = {
                 } else {
                     await dispatch('selectProfile', Object.keys(state.all)[0]);
                 }
-                /**
-                 * @type {string[]}
-                 */
-                const orders = persis.profiles;
-                if (persis.profiles instanceof Array && orders.every(p => typeof p === 'string')) {
-                    const finalOrder = [
-                        ...orders.filter(id => state.all[id]),
-                        ...Object.keys(state.all).filter(id => orders.indexOf(id) === -1),
-                    ];
-                    commit('profileIds', finalOrder);
-                }
-                if (!orders) {
-                    commit('profileIds', Object.keys(state.all));
-                }
             }
         },
 

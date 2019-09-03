@@ -119,13 +119,13 @@ export interface ProfileConfig {
     creationDate: number;
 }
 
-export interface ModpackProfileConfig extends ProfileConfig {
+export interface ServerProfileConfig extends ProfileConfig {
     type: 'server';
     host: string;
     port: number;
 }
 
-export interface ServerProfileConfig extends ProfileConfig {
+export interface ModpackProfileConfig extends ProfileConfig {
     type: 'modpack';
     author: string;
     description: string;

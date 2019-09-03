@@ -8,7 +8,7 @@ import { UNKNOWN_STATUS } from 'universal/utils/server-status';
 export function createTemplate(id, java, mcversion, type = 'modpack', isCreatingNew) {
     console.log(`Template from ${type}`);
     /**
-     * @type {import('./profile').ProfileModule.ProfileBase}
+     * @type {import('./profile.config').ProfileConfig}
      */
     const base = {
         id,
@@ -44,7 +44,7 @@ export function createTemplate(id, java, mcversion, type = 'modpack', isCreating
     };
     if (type === 'modpack') {
         /**
-        * @type {import('./profile').ProfileModule.Profile}
+        * @type {import('./profile.config').ModpackProfileConfig}
          */
         const modpack = {
             author: '',
@@ -55,7 +55,7 @@ export function createTemplate(id, java, mcversion, type = 'modpack', isCreating
         return modpack;
     }
     /**
-     * @type {import('./profile').ProfileModule.ServerProfile}
+     * @type {import('./profile.config').ServerProfileConfig}
      */
     const server = {
         host: '',
@@ -72,7 +72,6 @@ export function createTemplate(id, java, mcversion, type = 'modpack', isCreating
 const mod = {
     state: {
         all: {},
-        profileIds: [],
         id: '',
 
         status: UNKNOWN_STATUS,
@@ -93,7 +92,7 @@ const mod = {
         },
     },
     getters: {
-        profiles: state => state.profileIds.map(k => state.all[k]),
+        profiles: state => Object.keys(state.all).map(k => state.all[k]),
         serverProtocolVersion: state => 338,
         selectedProfile: state => state.all[state.id],
         currentVersion: (state, getters, rootState) => {
@@ -112,9 +111,6 @@ const mod = {
         },
     },
     mutations: {
-        profileIds(state, ids) {
-            state.profileIds = ids;
-        },
         addProfile(state, profile) {
             /**
              * Prevent the case that hot reload keep the vuex state
@@ -122,15 +118,8 @@ const mod = {
             if (!state.all[profile.id]) {
                 Vue.set(state.all, profile.id, profile);
             }
-            if (state.profileIds.indexOf(profile.id) === -1) {
-                state.profileIds.push(profile.id);
-            }
         },
         removeProfile(state, id) {
-            const i = state.profileIds.indexOf(id);
-            if (i !== -1) {
-                Vue.delete(state.profileIds, i);
-            }
             Vue.delete(state.all, id);
         },
         selectProfile(state, id) {

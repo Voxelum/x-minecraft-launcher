@@ -91,7 +91,6 @@ export declare namespace ProfileModule {
     }
 
     interface Mutations {
-        profileIds(state: State, ids: string[]): void;
         addProfile(state: State, profile: ProfileConfig): void;
         removeProfile(state: State, id: string): void;
         selectProfile(state: State, id: string): void;
