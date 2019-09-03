@@ -2522,6 +2522,9 @@
                 "invalidCredentials": {
                     "type": "string"
                 },
+                "login": {
+                    "type": "string"
+                },
                 "logout": {
                     "type": "string"
                 },
@@ -2707,9 +2710,6 @@
                         "validateHint"
                     ]
                 },
-                "login": {
-                    "type": "string"
-                },
                 "signup": {
                     "type": "string"
                 },
@@ -2762,6 +2762,7 @@
                 "info",
                 "insecureClient",
                 "invalidCredentials",
+                "login",
                 "logout",
                 "mojang",
                 "name",
@@ -2777,7 +2778,6 @@
                 "requirePassword",
                 "requireUsername",
                 "service",
-                "login",
                 "signup",
                 "signupDescription",
                 "skinImport",

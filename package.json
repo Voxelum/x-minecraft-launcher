@@ -117,12 +117,11 @@
     },
     "husky": {
         "hooks": {
-            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-            "pre-push": "npm run build:locale && npm run build:schema"
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
         }
     },
     "dependencies": {
-        "@xmcl/minecraft-launcher-core": "^0.1.13",
+        "@xmcl/minecraft-launcher-core": "^0.1.14",
         "@xmcl/unzip": "^0.2.4",
         "ajv": "^6.10.2",
         "electron-updater": "^4.0.6",
