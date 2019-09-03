@@ -190,13 +190,22 @@ const mod = {
         },
 
         async installLibraries(context, { libraries }) {
-            const task = Installer.installLibrariesDirectTask(Version.resolveLibraries(libraries), context.rootState.root);
+            let option = {};
+            if (await inGFW().catch(_ => false)) {
+                option = { libraryHost: lib => `https://http://bmclapi.bangbang93.com/maven/${lib.path}` };
+            }
+
+            const task = Installer.installLibrariesDirectTask(Version.resolveLibraries(libraries), context.rootState.root, option);
             return context.dispatch('executeTask', task);
         },
 
         async installAssets(context, version) {
             const ver = await Version.parse(context.rootState.root, version);
-            const task = Installer.installAssetsTask(ver);
+            let option = {};
+            if (await inGFW().catch(_ => false)) {
+                option = { assetsHost: 'http://bmclapi2.bangbang93.com/assets' };
+            }
+            const task = Installer.installAssetsTask(ver, option);
             return context.dispatch('executeTask', task);
         },
 
@@ -214,7 +223,12 @@ const mod = {
         async installMinecraft(context, meta) {
             const id = meta.id;
 
-            const task = Installer.installVersionTask('client', meta, context.rootState.root);
+            let option = {};
+            if (await inGFW().catch(_ => false)) {
+                option = { client: `https://bmclapi2.bangbang93.com/version/${meta.id}/client` };
+            }
+
+            const task = Installer.installVersionTask('client', meta, context.rootState.root, option);
             const taskId = await context.dispatch('executeTask', task);
 
             context.dispatch('waitTask', taskId)
