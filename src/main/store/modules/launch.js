@@ -40,10 +40,11 @@ const mod = {
             if (user.accessToken === '' || gameProfile.name === '' || gameProfile.id === '') return Promise.reject(new Error('launch.auth.illegal'));
 
             commit('launchStatus', 'checkingProblems');
-            for (let problems = rootState.profile.problems.filter(p => p.autofix);
-                problems.length !== 0;
-                problems = rootState.profile.problems.filter(p => p.autofix)) {
-                await dispatch('fixProfile', problems);
+
+            for (let problems = rootState.profile.problems.filter(p => p.autofix), i = 0;
+                problems.length !== 0 && i < 3;
+                problems = rootState.profile.problems.filter(p => p.autofix), i += 1) {
+                await dispatch('fixProfile', rootState.profile.problems.filter(p => p.autofix));
             }
 
             if (rootState.profile.problems.some(p => !p.optional)) {
@@ -80,7 +81,7 @@ const mod = {
                     selectedProfile: gameProfile,
                     accessToken: user.accessToken,
                     userType: UserType.Mojang,
-                    properties: user.properties,
+                    properties: {},
                 },
                 gamePath: minecraftFolder.root,
                 resourcePath: rootState.root,
