@@ -37,6 +37,7 @@ const mod = {
         },
         config(state, config) {
             state.locale = config.locale;
+            state.locales = config.locales;
             state.autoDownload = config.autoDownload || false;
             state.autoInstallOnAppQuit = config.autoDownload || false;
             state.allowPrerelease = config.allowPrerelease || false;

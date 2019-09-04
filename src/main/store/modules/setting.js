@@ -19,7 +19,10 @@ const mod = {
                 autoInstallOnAppQuit: data.autoInstallOnAppQuit,
                 autoDownload: data.autoDownload,
                 allowPrerelease: data.allowPrerelease,
-                settings: data.settings,
+                useBmclAPI: data.useBmclAPI,
+                defaultBackgroundImage: data.defaultBackgroundImage,
+                defaultBlur: data.defaultBlur,
+                // settings: data.settings,
             });
         },
         async save(context, { mutation }) {

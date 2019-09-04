@@ -15,7 +15,7 @@ export declare namespace SettingModule {
     }
 
     interface Mutations {
-        config(state: State, payload: SettingConfig): void;
+        config(state: State, payload: SettingConfig & { locales: string[] }): void;
         locale(state: State, locale: string): void;
         allowPrerelease(state: State, allow: boolean): void;
         autoInstallOnAppQuit(state: State, autoInstallOnAppQuit: boolean): void;
