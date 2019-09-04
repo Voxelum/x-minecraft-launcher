@@ -27,12 +27,13 @@ const mod = {
         },
         async save(context, { mutation }) {
             switch (mutation) {
-                case 'config':
                 case 'locale':
                 case 'allowPrerelease':
                 case 'autoInstallOnAppQuit':
                 case 'autoDownload':
-                case 'settings':
+                case 'defaultBackgroundImage':
+                case 'defaultBlur':
+                case 'useBmclApi': 
                     await context.dispatch('setPersistence', {
                         path: 'setting.json',
                         data: {
@@ -40,7 +41,9 @@ const mod = {
                             autoInstallOnAppQuit: context.state.autoInstallOnAppQuit,
                             autoDownload: context.state.autoDownload,
                             allowPrerelease: context.state.allowPrerelease,
-                            settings: context.state.settings,
+                            useBmclAPI: context.state.useBmclAPI,
+                            defaultBackgroundImage: context.state.defaultBackgroundImage,
+                            defaultBlur: context.state.defaultBlur,
                         },
                     });
                     break;
