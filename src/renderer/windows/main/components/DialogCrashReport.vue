@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="value" persistent>
+  <v-dialog v-model="value" persistent>
     <v-toolbar dark tabs color="grey darken-3">
       <v-toolbar-title>{{ $t('launch.crash') }}</v-toolbar-title>
       <v-spacer />
@@ -11,7 +11,7 @@
           {{ $t('launch.openCrashReport') }}
         </v-btn>
       </v-toolbar-items>
-      <v-btn icon @click="$emit('close')">
+      <v-btn icon @click="$emit('input', false)">
         <v-icon>close</v-icon>
       </v-btn>
     </v-toolbar>
@@ -27,16 +27,23 @@ export default {
   props: {
     value: {
       type: Boolean,
-      default: true,
+      default: false,
     },
-    content: {
-      type: String,
-      default: '',
-    },
-    location: {
-      type: String,
-      default: '',
-    },
+  },
+  data() {
+    return {
+      content: '',
+      location: '', 
+    };
+  },
+  mounted() {
+    this.$electron.ipcRenderer.on('minecraft-exit', (event, status) => {
+      if (status.crashReport) {
+        this.$emit('input', true);
+        this.content = status.crashReport;
+        this.location = status.crashReportLocation || '';
+      }
+    });
   },
   methods: {
     openFile() {
