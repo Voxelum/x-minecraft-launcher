@@ -32,7 +32,9 @@ const mod = {
                 case 'allowPrerelease':
                 case 'autoInstallOnAppQuit':
                 case 'autoDownload':
-                case 'settings':
+                case 'defaultBackgroundImage':
+                case 'defaultBlur':
+                case 'useBmclApi': 
                     await context.dispatch('setPersistence', {
                         path: 'setting.json',
                         data: {
