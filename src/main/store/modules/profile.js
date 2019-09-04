@@ -403,60 +403,66 @@ const mod = {
 
 
         async exportProfile(context, { id = context.state.id, dest, type = 'full' }) {
-            const root = context.rootState.root;
-            const from = paths.join(root, 'profiles', id);
-            const file = new ZipFile();
-            const promise = compressZipTo(file, dest);
+            if (context.state.refreshing) return;
+            context.commit('refreshingProfile', true);
+            try {
+                const root = context.rootState.root;
+                const from = paths.join(root, 'profiles', id);
+                const file = new ZipFile();
+                const promise = compressZipTo(file, dest);
 
-            if (type === 'curseforge') {
-                throw new Error('Not implemented!');
-            }
-
-            await includeAllToZip(from, from, file);
-
-            const { resourcepacks, mods } = await context.dispatch('resolveProfileResources', id);
-            const defaultMcversion = context.state.all[id].version.minecraft;
-
-            const carriedVersionPaths = [];
-
-            const versionInst = await Version.parse(root, defaultMcversion);
-            carriedVersionPaths.push(...versionInst.pathChain);
-
-            if (type === 'full') {
-                const assetsJson = paths.resolve(root, 'assets', 'indexes', `${versionInst.assets}.json`);
-                file.addFile(assetsJson, `assets/indexes/${versionInst.assets}.json`);
-                const objects = await fs.readFile(assetsJson, { encoding: 'utf-8' }).then(b => b.toString()).then(JSON.parse).then(manifest => manifest.objects);
-                for (const hash of Object.keys(objects).map(k => objects[k].hash)) {
-                    file.addFile(paths.resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`);
+                if (type === 'curseforge') {
+                    throw new Error('Not implemented!');
                 }
-            }
 
+                await includeAllToZip(from, from, file);
 
-            for (const verPath of carriedVersionPaths) {
-                const versionId = paths.basename(verPath);
-                const versionFiles = await fs.readdir(verPath);
-                for (const versionFile of versionFiles) {
-                    if (!await fs.stat(paths.join(verPath, versionFile)).then(s => s.isDirectory())) {
-                        file.addFile(paths.join(verPath, versionFile), `versions/${versionId}/${versionFile}`);
+                const { resourcepacks, mods } = await context.dispatch('resolveProfileResources', id);
+                const defaultMcversion = context.state.all[id].version.minecraft;
+
+                const carriedVersionPaths = [];
+
+                const versionInst = await Version.parse(root, defaultMcversion);
+                carriedVersionPaths.push(...versionInst.pathChain);
+
+                if (type === 'full') {
+                    const assetsJson = paths.resolve(root, 'assets', 'indexes', `${versionInst.assets}.json`);
+                    file.addFile(assetsJson, `assets/indexes/${versionInst.assets}.json`);
+                    const objects = await fs.readFile(assetsJson, { encoding: 'utf-8' }).then(b => b.toString()).then(JSON.parse).then(manifest => manifest.objects);
+                    for (const hash of Object.keys(objects).map(k => objects[k].hash)) {
+                        file.addFile(paths.resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`);
                     }
                 }
-            }
 
-            for (const lib of versionInst.libraries) {
-                file.addFile(paths.resolve(root, 'libraries', lib.download.path),
-                    `libraries/${lib.download.path}`);
-            }
 
-            for (const resourcepack of resourcepacks) {
-                file.addFile(resourcepack.path, `resourcepacks/${resourcepack.name}${resourcepack.ext}`);
-            }
+                for (const verPath of carriedVersionPaths) {
+                    const versionId = paths.basename(verPath);
+                    const versionFiles = await fs.readdir(verPath);
+                    for (const versionFile of versionFiles) {
+                        if (!await fs.stat(paths.join(verPath, versionFile)).then(s => s.isDirectory())) {
+                            file.addFile(paths.join(verPath, versionFile), `versions/${versionId}/${versionFile}`);
+                        }
+                    }
+                }
 
-            for (const mod of mods) {
-                file.addFile(mod.path, `mods/${basename(mod.path)}`);
-            }
+                for (const lib of versionInst.libraries) {
+                    file.addFile(paths.resolve(root, 'libraries', lib.download.path),
+                        `libraries/${lib.download.path}`);
+                }
 
-            file.end();
-            return promise;
+                for (const resourcepack of resourcepacks) {
+                    file.addFile(resourcepack.path, `resourcepacks/${resourcepack.name}${resourcepack.ext}`);
+                }
+
+                for (const mod of mods) {
+                    file.addFile(mod.path, `mods/${basename(mod.path)}`);
+                }
+
+                file.end();
+                await promise;
+            } finally {
+                context.commit('refreshingProfile', false);
+            } 
         },
 
         async importProfile(context, location) {
