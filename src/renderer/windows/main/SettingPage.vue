@@ -170,6 +170,8 @@
 </template>
 
 <script>
+import langIndex from 'static/locales/index.json';
+
 export default {
   data() {
     return {
@@ -188,7 +190,7 @@ export default {
   computed: {
     selectedLang: {
       get() {
-        return this.langs.find(l => l === this.$repo.state.setting.locale) || 'en';
+        return this.langs.find(l => l.value === this.$repo.state.setting.locale) || 'en';
       },
       set(v) { this.$repo.commit('locale', v); },
     },
@@ -212,7 +214,12 @@ export default {
     downloadingUpdate() { return this.$repo.state.setting.downloadingUpdate; },
     checkingUpdate() { return this.$repo.state.setting.checkingUpdate; },
     updateInfo() { return this.$repo.state.setting.updateInfo || {}; },
-    langs() { return this.$repo.state.setting.locales; },
+    langs() {
+      return this.$repo.state.setting.locales.map(l => ({
+        value: l,
+        text: langIndex[l],
+      })); 
+    },
   },
   methods: {
     checkUpdate() {
