@@ -155,8 +155,8 @@
         "githubDescription": "Open an Github Issue to tell your thought",
         "githubOpenIssue": "Github",
         "qq": "QQ Group",
-        "qqDescription": "Enter the feedback QQ group and direct talk with authors",
-        "qqEnterGroup": "Enter Group"
+        "qqDescription": "Enter the feedback QQ group and direct talk with authors. Group Number: {number}",
+        "qqEnterGroup": "Join"
     },
     "filter": "Filter",
     "finish": "Finish",
@@ -374,7 +374,17 @@
         "launchingSlow": "Still launching... Starting graphic engine can be slow...",
         "openCrashReport": "Open Crash Report",
         "openCrashReportFolder": "Open Crash Report Folder",
-        "showLog": "Show Minecraft Log"
+        "showLog": "Show Minecraft Log",
+        "failed": {
+            "general": "General Launch Failed",
+            "generalText": "If you enconter this several times, please contact author!",
+            "unresolvableProblems": "Unresolvable Problems",
+            "unresolvableProblemsText": "Existed some problems cannot be resolved. If you cannot handle this, please contact author for help!",
+            "illegalAuth": "Illegal User Auth!",
+            "illegalAuthText": "Illegal user auth state! Please login or switch account to revalidate your account!",
+            "selectProfileEmpty": "Empty Profile",
+            "selectProfileEmptyText": "This is too bad. Please retry or consider recreate your launch profile. If you still encounter this, please contact author!"
+        }
     },
     "launcher": {
         "checkUpdate": "Check Update",

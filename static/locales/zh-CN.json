@@ -143,7 +143,7 @@
         "githubDescription": "通过 Github Issue 来反应你的想法",
         "githubOpenIssue": "Github",
         "qq": "QQ 群",
-        "qqDescription": "加入反馈群直接和作者聊聊吧",
+        "qqDescription": "加入反馈群直接和作者聊聊吧，群号 {number}",
         "qqEnterGroup": "加群"
     },
     "filter": "检索",
@@ -362,7 +362,17 @@
         "launchingSlow": "还在启动…Minecraft图形界面启动的会比较慢呢~",
         "openCrashReport": "打开崩溃日志",
         "openCrashReportFolder": "打开崩溃日志文件夹",
-        "showLog": "Minecraft启动后显示日志"
+        "showLog": "Minecraft启动后显示日志",
+        "failed": {
+            "general": "启动失败",
+            "generalText": "如果你反复出现同样的问题，请联系作者!",
+            "unresolvableProblems": "无法处理某些启动问题",
+            "unresolvableProblemsText": "启动器无法自动处理一些启动前置需求。你可以尝试在主页让启动器自动修复。如果你反复遇到此问题，请联系作者",
+            "illegalAuth": "用户数据为空",
+            "illegalAuthText": "无效的用户数据！请尝试重新登陆或切换账号",
+            "selectProfileEmpty": "启动配置为空",
+            "selectProfileEmptyText": "很奇怪，你可以尝试重新创建当前的启动配置。如果你老遇到这个问题请联系作者!"
+        }
     },
     "launcher": {
         "checkUpdate": "检查更新",
