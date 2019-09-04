@@ -6,9 +6,9 @@
       </v-flex>
       <v-flex xs6>
         <v-card v-ripple hover replace to="/curseforge/mc-mods">
-          <v-card-media>
+          <v-responsive>
             <v-img :src="mods" />
-          </v-card-media>
+          </v-responsive>
           <v-card-title>
             <h2>
               {{ $t('curseforge.mc-mods.name') }}
@@ -21,9 +21,9 @@
       </v-flex>
       <v-flex xs6>
         <v-card v-ripple hover replace to="/curseforge/texture-packs">
-          <v-card-media>
+          <v-responsive>
             <v-img :src="resourcepack" />
-          </v-card-media>
+          </v-responsive>
           <v-card-title>
             <h2>
               {{ $t('curseforge.texture-packs.name') }}
@@ -36,11 +36,13 @@
       </v-flex>
       <v-flex xs6>
         <v-card v-ripple hover replace to="/curseforge/worlds">
-          <v-card-media>
+          <v-responsive>
             <v-img :src="worlds" />
-          </v-card-media>
+          </v-responsive>
           <v-card-title>
-            {{ $t('curseforge.worlds.name') }}
+            <h2>
+              {{ $t('curseforge.worlds.name') }}
+            </h2>
           </v-card-title>
           <v-card-text>
             {{ $t('curseforge.worlds.description') }}
@@ -49,11 +51,13 @@
       </v-flex>
       <v-flex xs6>
         <v-card v-ripple hover replace to="/curseforge/modpacks">
-          <v-card-media>
+          <v-responsive>
             <v-img :src="modpack" />
-          </v-card-media>
+          </v-responsive>
           <v-card-title>
-            {{ $t('curseforge.modpacks.name') }}
+            <h2>
+              {{ $t('curseforge.modpacks.name') }}
+            </h2>
           </v-card-title>
           <v-card-text>
             {{ $t('curseforge.modpacks.description') }}
