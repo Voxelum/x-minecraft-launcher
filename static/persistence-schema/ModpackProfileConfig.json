@@ -5,14 +5,14 @@
             "description": "Either a modpack or server. The modpack is the common profile. It can export into a modpack",
             "type": "string",
             "enum": [
-                "server"
+                "modpack"
             ]
         },
-        "host": {
+        "author": {
             "type": "string"
         },
-        "port": {
-            "type": "number"
+        "description": {
+            "type": "string"
         },
         "id": {
             "description": "The unique id (uuid) of the profile. The profile data will be stored into profiles/${id}/profile.json according to this.",
@@ -179,11 +179,12 @@
         }
     },
     "required": [
+        "author",
         "blur",
         "creationDate",
         "deployments",
+        "description",
         "hideLauncher",
-        "host",
         "icon",
         "id",
         "image",
@@ -191,7 +192,6 @@
         "lastAccessDate",
         "mcOptions",
         "name",
-        "port",
         "resolution",
         "showLog",
         "type",
