@@ -616,6 +616,8 @@
         "showRoot": "Show",
         "theme": "Theme",
         "update": "Update",
+        "useBmclAPI": "Use BMCL API",
+        "useBmclAPIDescription": "Use BMCLAPI to download Minecraft when you are in China Mainland. (This won't affect if you're not in China mainland)",
         "updateToThisVersion": "Download and Install",
         "viewUpdate": "View Update Detail",
         "waitReload": "Migrating data. Please don't close the Launcher or you will lose your data."

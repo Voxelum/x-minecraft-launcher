@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-md fluid>
+  <v-container grid-list-md fluid style="z-index: 1">
     <v-layout wrap style="padding: 6px; 8px; overflow: auto; max-height: 95vh" fill-height>
       <v-flex d-flex xs12 tag="h1" style="margin-bottom: 20px; " class="white--text">
         <span class="headline">{{ $tc('setting.name', 2) }}</span>
@@ -35,6 +35,15 @@
                 {{ $t('setting.showRoot') }}
               </v-btn>
             </v-list-tile-action>
+          </v-list-tile>
+          <v-list-tile>
+            <v-list-tile-action>
+              <v-checkbox v-model="useBmclAPI" />
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title> {{ $t('setting.useBmclAPI') }} </v-list-tile-title>
+              <v-list-tile-sub-title> {{ $t('setting.useBmclAPIDescription') }} </v-list-tile-sub-title>
+            </v-list-tile-content>
           </v-list-tile>
         </v-list>
       </v-flex>
@@ -194,6 +203,10 @@ export default {
     autoDownload: {
       get() { return this.$repo.state.setting.autoDownload; },
       set(v) { this.$repo.commit('autoDownload', v); },
+    },
+    useBmclAPI: {
+      get() { return this.$repo.state.setting.useBmclAPI; },
+      set(v) { this.$repo.commit('useBmclApi', v); },
     },
     readyToUpdate() { return this.$repo.state.setting.readyToUpdate; },
     downloadingUpdate() { return this.$repo.state.setting.downloadingUpdate; },

@@ -191,18 +191,25 @@ const mod = {
 
         async installLibraries(context, { libraries }) {
             let option = {};
-            if (await inGFW().catch(_ => false)) {
+            if (await inGFW().catch(_ => false) && context.rootState.setting.useBmclAPI) {
                 option = { libraryHost: lib => `https://http://bmclapi.bangbang93.com/maven/${lib.path}` };
             }
 
             const task = Installer.installLibrariesDirectTask(Version.resolveLibraries(libraries), context.rootState.root, option);
-            return context.dispatch('executeTask', task);
+            const handle = await context.dispatch('executeTask', task);
+            context.dispatch('waitTask', handle).catch((e) => {
+                if ('libraryHost' in option) {
+                    return Installer.installLibrariesDirectTask(Version.resolveLibraries(libraries), context.rootState.root);
+                }
+                throw e;
+            });
+            return handle;
         },
 
         async installAssets(context, version) {
             const ver = await Version.parse(context.rootState.root, version);
             let option = {};
-            if (await inGFW().catch(_ => false)) {
+            if (await inGFW().catch(_ => false) && context.rootState.setting.useBmclAPI) {
                 option = { assetsHost: 'http://bmclapi2.bangbang93.com/assets' };
             }
             const task = Installer.installAssetsTask(ver, option);
@@ -224,7 +231,7 @@ const mod = {
             const id = meta.id;
 
             let option = {};
-            if (await inGFW().catch(_ => false)) {
+            if (await inGFW().catch(_ => false) && context.rootState.setting.useBmclAPI) {
                 option = { client: `https://bmclapi2.bangbang93.com/version/${meta.id}/client` };
             }
 

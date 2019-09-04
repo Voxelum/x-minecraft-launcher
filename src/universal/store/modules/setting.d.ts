@@ -15,7 +15,7 @@ export declare namespace SettingModule {
     }
 
     interface Mutations {
-        config(state: State, payload: Pick<State, 'locale' | 'settings' | 'autoDownload' | 'autoInstallOnAppQuit' | 'allowPrerelease' | 'locales'>): void;
+        config(state: State, payload: SettingConfig): void;
         locale(state: State, locale: string): void;
         allowPrerelease(state: State, allow: boolean): void;
         autoInstallOnAppQuit(state: State, autoInstallOnAppQuit: boolean): void;
@@ -27,6 +27,7 @@ export declare namespace SettingModule {
         settings(state: State, settings: { [key: string]: number | string | boolean | object }): void;
         defaultBackgroundImage(state: State, img: string | null): void;
         defaultBlur(state: State, blur: number): void;
+        useBmclApi(state: State, use: boolean): void;
     }
     type C = Context<State, {}, Mutations, Actions>;
     interface Actions {

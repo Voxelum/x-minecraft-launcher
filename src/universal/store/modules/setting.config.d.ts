@@ -29,4 +29,10 @@ export interface SettingConfig {
      * @default 0
      */
     defaultBlur: number;
+
+    /**
+     * Use bmcl API in China Mainland
+     * @default true
+     */
+    useBmclAPI: boolean;
 }

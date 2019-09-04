@@ -607,6 +607,8 @@
         "theme": "外观主题",
         "update": "升级设置",
         "updateToThisVersion": "下载并安装",
+        "useBmclAPI": "使用 BMCL API",
+        "useBmclAPIDescription": "当你在大陆时，优先使用 BMCLAPI 来下载 Minecraft",
         "viewUpdate": "详细信息",
         "waitReload": "迁移数据中。请勿在此时关闭启动器，否则你将可能失去一部分数据。"
     },

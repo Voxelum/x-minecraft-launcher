@@ -14,6 +14,7 @@ const mod = {
         autoDownload: false,
         defaultBackgroundImage: null,
         defaultBlur: 0,
+        useBmclAPI: true,
     },
     mutations: {
         downloadingUpdate(state, d) { state.downloadingUpdate = !!d; },
@@ -36,10 +37,10 @@ const mod = {
         },
         config(state, config) {
             state.locale = config.locale;
-            state.locales = config.locales;
             state.autoDownload = config.autoDownload || false;
             state.autoInstallOnAppQuit = config.autoDownload || false;
             state.allowPrerelease = config.allowPrerelease || false;
+            state.useBmclAPI = typeof config.useBmclAPI === 'boolean' ? config.useBmclAPI : true;
         },
         settings(state, settings) {
             // Object.assign(state.settings, settings);
@@ -49,6 +50,9 @@ const mod = {
         },
         defaultBlur(state, blur) {
             if (typeof blur === 'number') state.defaultBlur = blur;
+        },
+        useBmclApi(state, use) {
+            state.useBmclAPI = use;
         },
     },
 };
