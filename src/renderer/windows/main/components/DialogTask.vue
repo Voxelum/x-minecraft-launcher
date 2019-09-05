@@ -1,9 +1,9 @@
 <template>
-  <v-dialog v-model="value" persistent hide-overlay width="500" style="max-height: 100%">
+  <v-dialog :value="value" persistent hide-overlay width="500" style="max-height: 100%" @input="$emit('input', value)">
     <v-toolbar dark tabs color="grey darken-3">
       <v-toolbar-title>{{ $t('task.manager') }}</v-toolbar-title>
       <v-spacer />
-      <v-btn icon @click="$emit('close')">
+      <v-btn icon @click="$emit('input', value)">
         <v-icon>arrow_drop_down</v-icon>
       </v-btn>
     </v-toolbar>
@@ -62,7 +62,6 @@ export default {
       this.$repo.dispatch('cancelTask', id);
     },
   },
-
 };
 </script>
 
