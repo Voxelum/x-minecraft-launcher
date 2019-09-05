@@ -145,7 +145,7 @@ export default {
       return false;
     },
     async refreshForgeVersion(force) {
-      if (force || this.mcversion !== this.profile.mcversion) {
+      if (force || this.mcversion !== this.profile.version.mcversion) {
         this.forgeVersionList = [];
         let r;
         if (force) {
