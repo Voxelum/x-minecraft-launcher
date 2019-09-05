@@ -118,7 +118,7 @@
             }
         },
         "missingLibraries": {
-            "": "Missing {count} Libraries",
+            "": "no-op | Missing {name} Library | no-op | Missing {count} Libraries",
             "message": "Launcher will install libraries for you"
         },
         "missingVersion": "Please select a Minecraft version for this profile!",
