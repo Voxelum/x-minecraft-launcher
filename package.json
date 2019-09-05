@@ -121,7 +121,7 @@
         }
     },
     "dependencies": {
-        "@xmcl/minecraft-launcher-core": "^0.1.14",
+        "@xmcl/minecraft-launcher-core": "^0.1.15",
         "@xmcl/unzip": "^0.2.4",
         "ajv": "^6.10.2",
         "electron-updater": "^4.0.6",
