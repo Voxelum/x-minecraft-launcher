@@ -219,7 +219,6 @@ const mod = {
                         });
                     }
                 }
-                dispatch('diagnoseFull');
             }
         },
         async load({ state, commit, dispatch }) {
@@ -336,7 +335,6 @@ const mod = {
         async createAndSelectProfile(context, payload) {
             const id = await context.dispatch('createProfile', payload);
             await context.dispatch('selectProfile', id);
-            context.dispatch('diagnoseFull');
             return id;
         },
 

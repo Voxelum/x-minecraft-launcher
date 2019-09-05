@@ -14,12 +14,18 @@ const mod = {
             context.commit('refreshingProfile', true);
             try {
                 if (mutation === 'selectProfile') {
-                    await context.dispatch('diagnoseFull');
-                    return;
-                }
-                if (mutation === 'profile') {
+                    await context.dispatch('diagnoseVersion');
+                    await context.dispatch('diagnoseJava');
+                    await context.dispatch('diagnoseMods');
+                    await context.dispatch('diagnoseResourcePacks');
+                    await context.dispatch('diagnoseServer');
+                } else if (mutation === 'profile') {
                     if ('version' in payload) {
-                        await context.dispatch('diagnoseFull');
+                        await context.dispatch('diagnoseVersion');
+                        await context.dispatch('diagnoseJava');
+                        await context.dispatch('diagnoseMods');
+                        await context.dispatch('diagnoseResourcePacks');
+                        await context.dispatch('diagnoseServer');
                         return;
                     }
 
@@ -34,7 +40,7 @@ const mod = {
                             await context.dispatch('diagnoseResourcePacks');
                         }
                     }
-                } else if (mutation === 'setUserProfile' || mutation === 'addUserProfile') {
+                } else if (mutation === 'setUserProfile') {
                     await context.dispatch('diagnoseUser');
                 } else if (mutation === 'serverStatus') {
                     await context.dispatch('diagnoseServer');
@@ -244,14 +250,6 @@ const mod = {
             context.commit('postProblems', tree);
         },
         async diagnoseFull(context) {
-            // context.commit('refreshingProfile', true);
-            await context.dispatch('diagnoseVersion');
-            await context.dispatch('diagnoseJava');
-            await context.dispatch('diagnoseMods');
-            await context.dispatch('diagnoseResourcePacks');
-            await context.dispatch('diagnoseServer');
-            await context.dispatch('diagnoseUser');
-            // context.commit('refreshingProfile', false);
         },
         async fixProfile(context, problems) {
             const unfixed = problems.filter(p => p.autofix)
