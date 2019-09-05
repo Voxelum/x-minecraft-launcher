@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="value" :persistent="launchStatus === 'launching'" @input="$emit('input', $event)">
+  <v-dialog :value="value" :width="500" :persistent="launchStatus === 'launching'" @input="$emit('input', $event)">
     <v-card v-if="launchStatus === 'error'" color="error">
       <v-card-title primary-title>
         {{ $t(`launch.failed.${launchErrorType}`) }}
