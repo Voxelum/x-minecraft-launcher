@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="value" persistent>
+  <v-dialog :value="value" persistent @input="$emit('input', $event)">
     <v-toolbar dark tabs color="grey darken-3">
       <v-toolbar-title>{{ $t('launch.crash') }}</v-toolbar-title>
       <v-spacer />

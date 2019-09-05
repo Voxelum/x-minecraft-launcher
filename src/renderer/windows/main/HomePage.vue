@@ -161,6 +161,7 @@ export default {
     taskDialog: false,
     launchStatusDialog: false,
     feedbackDialog: false,
+    crashDialog: false,
   }),
   computed: {
     status() { return this.$repo.state.profile.status || {}; },
@@ -172,13 +173,7 @@ export default {
     missingJava() { return this.$repo.getters.missingJava; },
     profile() { return this.$repo.getters.selectedProfile; },
     activeTasksCount() {
-      let count = 0;
-      for (const task of this.$repo.state.task.tasks) {
-        if (task.status === 'running') {
-          count += 1;
-        }
-      }
-      return count;
+      return this.$repo.state.task.tasks.filter(t => t.status === 'running').length;
     },
   },
   mounted() {
@@ -236,6 +231,8 @@ export default {
           } else {
             await this.$refs.jwizard.display(this.$t('java.incompatibleJava'), this.$t('java.incompatibleJavaHint'));
           }
+          break;
+        case 'missingModsOnServer':
           break;
         default:
       }
