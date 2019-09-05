@@ -49,6 +49,19 @@ const mod = {
                 context.commit('refreshingProfile', false);
             }
         },
+        async init(context) {
+            context.commit('refreshingProfile', true);
+            try {
+                await context.dispatch('diagnoseVersion');
+                await context.dispatch('diagnoseJava');
+                await context.dispatch('diagnoseMods');
+                await context.dispatch('diagnoseResourcePacks');
+                await context.dispatch('diagnoseServer');
+                await context.dispatch('diagnoseUser');
+            } finally {
+                context.commit('refreshingProfile', false);
+            }
+        },
         async diagnoseMods(context) {
             const id = context.rootState.profile.id;
             const { version } = context.rootState.profile.all[id];
@@ -253,7 +266,7 @@ const mod = {
         },
         async fixProfile(context, problems) {
             const unfixed = problems.filter(p => p.autofix)
-                .filter(p => context.state.registry[p.id].fixing);
+                .filter(p => !context.state.registry[p.id].fixing);
 
             if (unfixed.length === 0) return;
 
