@@ -127,9 +127,9 @@ const mod = {
 
                 await context.dispatch('diagnoseProfile');
             } catch (e) {
-                context.commit('endFixProblems', unfixed);
                 console.error(e);
             } finally {
+                context.commit('endFixProblems', unfixed);
                 context.commit('refreshingProfile', false);
             }
         },
