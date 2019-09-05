@@ -59,7 +59,7 @@ export declare namespace VersionModule {
         /**
          * Latest release
          */
-        minecraftRelease: Installer.VersionMeta | undefined,
+        minecraftRelease: Installer.VersionMeta,
         minecraftVersion: (mcversion: string) => Installer.VersionMeta | undefined,
         minecraftStatuses: { [minecraftVersion: string]: Status };
 
