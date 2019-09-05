@@ -2,11 +2,8 @@ import { GameSetting, LevelDataFrame, World, Server } from "@xmcl/minecraft-laun
 import { Context, Module } from "../store";
 import { JavaModule } from "./java";
 import { Resource } from './resource';
-import { DiagnoseModule } from './diagnose';
 import { VersionModule } from "./version";
 import { ServerProfileConfig, ModpackProfileConfig, ProfileConfig, ProfilesConfig } from './profile.config';
-
-type Problem = DiagnoseModule.Problem;
 
 type CreateProfileOption = Omit<ModpackProfileConfig, 'id'> & { type: 'modpack' }
 type CreateServerProfileOption = Omit<ServerProfileConfig, 'id'> & { type: 'server' }
@@ -58,11 +55,6 @@ export declare namespace ProfileModule {
          * The server status of current selected server profile, modpack won't have this.
          */
         status: Server.StatusFrame | null;
-
-        /**
-         * The problems of current profile
-         */
-        problems: Problem[];
         /**
          * If current launcher is refreshing the profile data
          */
@@ -88,6 +80,7 @@ export declare namespace ProfileModule {
         serverProtocolVersion: number;
         selectedProfile: ServerOrModpack;
         currentVersion: VersionModule.ResolvedVersion;
+        deployingResources: { [domain: string]: Resource<any>[] };
     }
 
     interface Mutations {
@@ -117,7 +110,6 @@ export declare namespace ProfileModule {
         profileCache(state: State, payload: { gamesettings?: GameSetting.Frame } | { serverInfos: Server.Info[] }): void
         serverStatus(state: State, status: Server.StatusFrame): void;
         profileSaves(state: State, worlds: Save[]): void;
-        profileProblems(state: State, problems: Problem[]): void;
         refreshingProfile(state: State, refreshing: boolean): void;
 
         markDirty(state: State, payload: { target: keyof State['dirty'], dirty: boolean }): void;

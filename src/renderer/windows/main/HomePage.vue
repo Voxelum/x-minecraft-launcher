@@ -58,7 +58,7 @@
           {{ problems.length !== 0 ?
             'warning' : 'check_circle' }}
         </v-icon>
-        {{ $tc('diagnosis.problem', problems.length, {count: problems.length}) }}
+        {{ $tc('diagnosis.problem', problems.length, { count: problems.length }) }}
       </v-btn>
 
       <v-list>
@@ -66,7 +66,7 @@
           <v-list-tile :key="index" ripple @click="fixProblem(item)">
             <v-list-tile-content>
               <v-list-tile-title>
-                {{ $t(`diagnosis.${item.id}`, item.arguments || {}) }}
+                {{ $tc(`diagnosis.${item.id}`, item.arguments.count || 0, item.arguments) }}
               </v-list-tile-title>
               <v-list-tile-sub-title>
                 {{ $t(`diagnosis.${item.id}.message`, item.arguments || {}) }}
@@ -166,7 +166,7 @@ export default {
     status() { return this.$repo.state.profile.status || {}; },
     icon() { return this.status.favicon || unknownServer; },
     isServer() { return this.profile.type === 'server'; },
-    problems() { return this.$repo.state.profile.problems; },
+    problems() { return this.$repo.getters.problems; },
     launchStatus() { return this.$repo.state.launch.status; },
     refreshingProfile() { return this.$repo.state.profile.refreshing; },
     missingJava() { return this.$repo.getters.missingJava; },

@@ -83,7 +83,6 @@ const mod = {
         saves: [],
 
         refreshing: false,
-        problems: [],
 
         dirty: {
             servers: false,
@@ -108,6 +107,23 @@ const mod = {
                 liteloader,
                 folder: getExpectVersion(minecraft, forge, liteloader),
             };
+        },
+        deployingResources: (state, _, rootState) => {
+            const profile = state.all[state.id];
+
+            /**
+             * @type {{[domain:string]: import('universal/store/modules/resource').Resource<any>[]}}
+             */
+            const resources = {};
+            for (const domain of Object.keys(profile.deployments)) {
+                const depl = profile.deployments[domain];
+                if (depl instanceof Array && depl.length !== 0) {
+                    const domainResources = rootState.resource.domains[domain];
+                    resources[domain] = depl.map(h => domainResources[h]);
+                }
+            }
+
+            return resources;
         },
     },
     mutations: {
@@ -260,9 +276,6 @@ const mod = {
         },
         profileSaves(state, saves) {
             state.saves = saves;
-        },
-        profileProblems(state, problems) {
-            state.problems = problems;
         },
         markDirty(state, { dirty, target }) {
             state.dirty[target] = dirty;

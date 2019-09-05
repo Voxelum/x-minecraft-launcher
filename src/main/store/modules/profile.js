@@ -8,7 +8,6 @@ import { GameSetting, Server, TextComponent, Version, World, Task } from '@xmcl/
 import base, { createTemplate } from 'universal/store/modules/profile';
 import { fitin, willBaselineChange } from 'universal/utils/object';
 import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/server-status';
-import { getModIdentifier } from 'universal/utils/versions';
 import uuid from 'uuid';
 import { Unzip } from '@xmcl/unzip';
 import { ZipFile } from 'yazl';
@@ -220,8 +219,8 @@ const mod = {
                         });
                     }
                 }
+                dispatch('diagnoseFull');
             }
-            dispatch('diagnoseProfile');
         },
         async load({ state, commit, dispatch }) {
             const dirs = await dispatch('readFolder', 'profiles');
@@ -307,7 +306,7 @@ const mod = {
             const profile = createTemplate(
                 uuid(),
                 context.rootGetters.defaultJava,
-                latestRelease ? latestRelease.id : latestMcRelease,
+                latestRelease.id,
                 payload.type || 'modpack',
                 true,
             );
@@ -337,7 +336,7 @@ const mod = {
         async createAndSelectProfile(context, payload) {
             const id = await context.dispatch('createProfile', payload);
             await context.dispatch('selectProfile', id);
-            await context.dispatch('diagnoseProfile');
+            context.dispatch('diagnoseFull');
             return id;
         },
 
@@ -462,7 +461,7 @@ const mod = {
                 await promise;
             } finally {
                 context.commit('refreshingProfile', false);
-            } 
+            }
         },
 
         async importProfile(context, location) {
@@ -564,7 +563,6 @@ const mod = {
                 context.commit('launchStatus', 'ready');
                 console.log(`Modify Profle ${JSON.stringify(profile, null, 4)}`);
                 context.commit('profile', profile);
-                await context.dispatch('diagnoseProfile');
             }
         },
 

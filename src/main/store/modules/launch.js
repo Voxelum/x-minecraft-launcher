@@ -49,14 +49,14 @@ const mod = {
                     return false;
                 }
 
-                for (let problems = rootState.profile.problems.filter(p => p.autofix), i = 0;
+                for (let problems = rootGetters.problems.filter(p => p.autofix), i = 0;
                     problems.length !== 0 && i < 3;
-                    problems = rootState.profile.problems.filter(p => p.autofix), i += 1) {
-                    await dispatch('fixProfile', rootState.profile.problems.filter(p => p.autofix));
+                    problems = rootGetters.problems.filter(p => p.autofix), i += 1) {
+                    await dispatch('fixProfile', rootGetters.problems.filter(p => p.autofix));
                 }
 
-                if (rootState.profile.problems.some(p => !p.optional)) {
-                    commit('launchErrors', { type: 'unresolvableProblems', content: rootState.profile.problems.filter(p => !p.optional) });
+                if (rootGetters.problems.some(p => !p.optional)) {
+                    commit('launchErrors', { type: 'unresolvableProblems', content: rootGetters.problems.filter(p => !p.optional) });
                     return false;
                 }
 
