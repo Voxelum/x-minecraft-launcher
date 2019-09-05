@@ -16,6 +16,7 @@ const mod = {
             incompatibleResourcePack: { fixing: false, autofix: false, optional: true, actived: [] },
             missingAuthlibInjector: { fixing: false, autofix: true, optional: false, actived: [] },
             incompatibleJava: { fixing: false, autofix: true, optional: false, actived: [] },
+            missingModsOnServer: { fixing: false, autofix: false, optional: false, actived: [] },
         },
     },
     getters: {
@@ -51,7 +52,11 @@ const mod = {
         postProblems(state, problems) {
             for (const [id, value] of Object.entries(problems)) {
                 if (value instanceof Array) {
-                    state.registry[id].actived = value;
+                    if (!state.registry[id]) {
+                        console.error(`This should not happen! Missing problem registry ${id}.`);
+                    } else {
+                        state.registry[id].actived = value;
+                    }
                 }
             }
         },

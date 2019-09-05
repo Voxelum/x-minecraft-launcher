@@ -36,6 +36,7 @@ export declare namespace DiagnoseModule {
             incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string; }, false, true>;
             incompatibleJava: Registry<{ java: string; mcversion: string }>;
             missingAuthlibInjector: Registry<{}>;
+            missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
 
             [id: string]: {
                 fixing: boolean;
@@ -67,7 +68,7 @@ export declare namespace DiagnoseModule {
         diagnoseJava(context: C): Promise<void>;
         diagnoseServer(context: C): Promise<void>;
         diagnoseUser(context: C): Promise<void>;
-        
+
         fixProfile(context: C, problems: Problem[]): Promise<void>
     }
 }

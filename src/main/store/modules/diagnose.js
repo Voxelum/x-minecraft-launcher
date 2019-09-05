@@ -10,31 +10,38 @@ const mod = {
     actions: {
         async save(context, { mutation, payload }) {
             // TODO: check if this works 
-            if (context.rootState.profile.refreshing) return;
+            if (context.rootState.profile.refreshing || mutation === 'refreshingProfile') return;
             context.commit('refreshingProfile', true);
-            if (mutation === 'profile') {
-                if ('version' in payload) {
+            try {
+                if (mutation === 'selectProfile') {
                     await context.dispatch('diagnoseFull');
                     return;
                 }
+                if (mutation === 'profile') {
+                    if ('version' in payload) {
+                        await context.dispatch('diagnoseFull');
+                        return;
+                    }
 
-                if ('java' in payload) {
-                    await context.dispatch('diagnoseJava');
-                }
-                if ('deployments' in payload) {
-                    if ('mods' in payload.deployments) {
-                        await context.dispatch('diagnoseMods');
+                    if ('java' in payload) {
+                        await context.dispatch('diagnoseJava');
                     }
-                    if ('resourcepacks' in payload.deployments) {
-                        await context.dispatch('diagnoseResourcePacks');
+                    if ('deployments' in payload) {
+                        if ('mods' in payload.deployments) {
+                            await context.dispatch('diagnoseMods');
+                        }
+                        if ('resourcepacks' in payload.deployments) {
+                            await context.dispatch('diagnoseResourcePacks');
+                        }
                     }
+                } else if (mutation === 'setUserProfile' || mutation === 'addUserProfile') {
+                    await context.dispatch('diagnoseUser');
+                } else if (mutation === 'serverStatus') {
+                    await context.dispatch('diagnoseServer');
                 }
-            } else if (mutation === 'setUserProfile' || mutation === 'addUserProfile') {
-                await context.dispatch('diagnoseUser');
-            } else if (mutation === 'serverStatus') {
-                await context.dispatch('diagnoseServer');
+            } finally {
+                context.commit('refreshingProfile', false);
             }
-            context.commit('refreshingProfile', false);
         },
         async diagnoseMods(context) {
             const id = context.rootState.profile.id;
@@ -174,7 +181,7 @@ const mod = {
 
             if (stat && stat.modinfo) {
                 const info = stat.modinfo;
-                tree.missingModsOnServer.push(info.modList);
+                tree.missingModsOnServer.push(...info.modList);
             }
 
             context.commit('postProblems', tree);
@@ -237,14 +244,14 @@ const mod = {
             context.commit('postProblems', tree);
         },
         async diagnoseFull(context) {
-            context.commit('refreshingProfile', true);
+            // context.commit('refreshingProfile', true);
             await context.dispatch('diagnoseVersion');
             await context.dispatch('diagnoseJava');
             await context.dispatch('diagnoseMods');
             await context.dispatch('diagnoseResourcePacks');
             await context.dispatch('diagnoseServer');
             await context.dispatch('diagnoseUser');
-            context.commit('refreshingProfile', false);
+            // context.commit('refreshingProfile', false);
         },
         async fixProfile(context, problems) {
             const unfixed = problems.filter(p => p.autofix)
