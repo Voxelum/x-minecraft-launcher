@@ -5,7 +5,7 @@
       close
     </v-icon>
     <v-icon v-ripple style="position: absolute; right: 44px; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
-            dark @click="feedback">
+            dark @click="showFeedbackDialog">
       help_outline
     </v-icon>
     <v-tooltip top>
@@ -25,7 +25,7 @@
                flat icon dark 
                :loading="refreshingProfile"
                v-on="on"
-               @click="goExport">
+               @click="showExportDialog">
           <v-icon dark>
             share
           </v-icon>
@@ -37,7 +37,7 @@
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-btn style="position: absolute; left: 140px; bottom: 10px; " flat icon dark v-on="on"
-               @click="goTask">
+               @click="showTaskDialog">
           <v-badge right :value="activeTasksCount !== 0">
             <template v-slot:badge>
               <span>{{ activeTasksCount }}</span>
@@ -146,7 +146,7 @@
 
     <dialog-task v-model="taskDialog" />
     <dialog-crash-report v-model="crashDialog" />
-    <java-wizard ref="jwizard" @task="taskDialog=true" @show="taskDialog=false" />
+    <dialog-java-wizard v-model="javaWizardDialog" @task="taskDialog=true" />
     <dialog-feedback v-model="feedbackDialog" />
     <dialog-launch-status v-model="launchStatusDialog" />
   </v-layout>
@@ -162,6 +162,7 @@ export default {
     launchStatusDialog: false,
     feedbackDialog: false,
     crashDialog: false,
+    javaWizardDialog: false,
   }),
   computed: {
     status() { return this.$repo.state.profile.status || {}; },
@@ -176,9 +177,10 @@ export default {
       return this.$repo.state.task.tasks.filter(t => t.status === 'running').length;
     },
   },
-  mounted() {
-  },
-  activated() {
+  watch: {
+    javaWizardDialog() { 
+      this.taskDialog = false;
+    },
   },
   methods: {
     async launch() {
@@ -188,7 +190,7 @@ export default {
       }
       await this.$repo.dispatch('launch');
     },
-    goExport() {
+    showExportDialog() {
       if (this.refreshingProfile) return;
       this.$electron.remote.dialog.showSaveDialog({
         title: this.$t('profile.export.title'),
@@ -203,33 +205,36 @@ export default {
         }
       });
     },
-    goTask() {
+    showTaskDialog() {
       this.taskDialog = true;
     },
-    updateVersion(mcversion) {
-      this.$repo.dispatch('editProfile', { mcversion });
+    showFeedbackDialog() {
+      this.feedbackDialog = true;
     },
     fixProblem(problem) {
       console.log(problem);
       if (!problem.autofix) {
-        return this.handleManualFix(problem);
+        this.handleManualFix(problem);
+      } else {
+        this.handleAutoFix();
       }
-      return this.handleAutoFix();
     },
     async handleManualFix(problem) {
       let handle;
       switch (problem.id) {
-        case 'missingVersion':
-          this.$router.push('base-setting');
+        case 'unknownMod':
+        case 'incompatibleMod':
+          this.$router.replace('/mod-setting');
           break;
-        case 'missingJava': 
-          this.$router.push('base-setting');
+        case 'incompatibleResourcePack':
+          this.$router.replace('/resource-pack-setting');
           break;
         case 'incompatibleJava':
           if (this.$repo.state.java.all.some(j => j.majorVersion === 8)) {
             await this.$repo.dispatch('editProfile', { java: this.$repo.state.java.all.find(j => j.majorVersion === 8) });
+            // TODO: notify user here the launcher switch java version
           } else {
-            await this.$refs.jwizard.display(this.$t('java.incompatibleJava'), this.$t('java.incompatibleJavaHint'));
+            this.javaWizardDialog = true;
           }
           break;
         case 'missingModsOnServer':
@@ -237,19 +242,16 @@ export default {
         default:
       }
     },
-    async handleAutoFix() {
-      await this.$repo.dispatch('fixProfile', this.problems);
+    handleAutoFix() {
+      this.$repo.dispatch('fixProfile', this.problems);
     },
-    async refreshServer() {
-      await this.$repo.dispatch('refreshProfile');
+    refreshServer() {
+      this.$repo.dispatch('refreshProfile');
     },
     quitLauncher() {
       setTimeout(() => {
         this.$store.dispatch('quit');
       }, 150);
-    },
-    feedback() {
-      this.feedbackDialog = true;
     },
   },
 };

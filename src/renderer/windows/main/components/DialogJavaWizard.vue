@@ -1,15 +1,15 @@
 <template>
-  <v-dialog v-model="show" :persistent="missing" width="600">
+  <v-dialog :value="value" :persistent="missing" width="600" @input="$emit('input', $event)">
     <v-card dark color="grey darken-4">
       <v-toolbar dark tabs color="grey darken-3">
         <v-toolbar-title>
-          {{ reason || $t('java.missing') }}
+          {{ reason }}
         </v-toolbar-title>
       </v-toolbar>
       <v-window v-model="step">
         <v-window-item :value="0">
           <v-card-text>
-            {{ hint || $t('java.missingHint') }}
+            {{ hint }}
           </v-card-text>
 
           <v-list style="width: 100%" class="grey darken-4" dark>
@@ -102,9 +102,6 @@ export default {
   },
   data() {
     return {
-      show: this.missing,
-      reason: null,
-      hint: null,
       step: 0,
 
       items: [],
@@ -126,12 +123,18 @@ export default {
     };
   },
   computed: {
+    reason() {
+      return !this.missing ? this.$t('java.incompatibleJava') : this.$t('java.missing');
+    },
+    hint() {
+      return !this.missing ? this.$t('java.incompatibleJavaHint') : this.$t('java.missingHint');
+    },
     missing() {
       return this.$repo.getters.missingJava;
     },
   },
   mounted() {
-    this.show = this.missing;
+    this.$emit('input', this.missing);
   },
   methods: {
     async fixProblem(index) {
@@ -140,7 +143,7 @@ export default {
       switch (index) {
         case 0:
           handle = await this.$repo.dispatch('installJava', true);
-          this.show = false;
+          this.$emit('input', false);
           this.$emit('task');
           this.items = this.$repo.state.task.tree[handle].tasks;
           try {
@@ -176,8 +179,7 @@ export default {
       this.$repo.dispatch('refreshLocalJava').finally(() => {
         if (this.missing) {
           this.status = 'error';
-          this.$emit('show');
-          this.show = true;
+          this.$emit('input', true);
         } else {
           this.reason = null;
           this.hint = null;
@@ -187,11 +189,6 @@ export default {
     back() {
       this.step = 0;
       this.status = 'none';
-    },
-    display(reason, hint) {
-      this.show = true;
-      this.reason = reason;
-      this.hint = hint;
     },
   },
 };
