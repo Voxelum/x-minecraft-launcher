@@ -15,7 +15,7 @@ const mod = {
             incompatibleMod: { fixing: false, autofix: false, optional: true, actived: [] },
             incompatibleResourcePack: { fixing: false, autofix: false, optional: true, actived: [] },
             missingAuthlibInjector: { fixing: false, autofix: true, optional: false, actived: [] },
-            incompatibleJava: { fixing: false, autofix: true, optional: false, actived: [] },
+            incompatibleJava: { fixing: false, autofix: false, optional: false, actived: [] },
             missingModsOnServer: { fixing: false, autofix: false, optional: false, actived: [] },
         },
     },
