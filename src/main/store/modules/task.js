@@ -5,6 +5,8 @@ import { requireString } from 'universal/utils/object';
 import base from 'universal/store/modules/task';
 import { Task } from '@xmcl/minecraft-launcher-core';
 
+const TASK_FORCE_THRESHOLD = 30;
+
 class TaskWatcher {
     constructor() {
         /** @type {NodeJS.Timeout|undefined} */
@@ -19,6 +21,8 @@ class TaskWatcher {
         this.updates = {};
         /** @type {{ id: string, status: string }[]} */
         this.statuses = [];
+
+        this.forceUpdate = () => {};
     }
 
     /**
@@ -27,6 +31,7 @@ class TaskWatcher {
      */
     add(id, node) {
         this.adds.push({ id, node });
+        this.checkBatchSize();
     }
 
     /**
@@ -44,6 +49,7 @@ class TaskWatcher {
         } else {
             this.updates[uuid] = update;
         }
+        this.checkBatchSize();
     }
 
     /**
@@ -55,6 +61,7 @@ class TaskWatcher {
             id,
             node,
         });
+        this.checkBatchSize();
     }
 
     /**
@@ -63,6 +70,13 @@ class TaskWatcher {
      */
     status(uuid, status) {
         this.statuses.push({ id: uuid, status });
+        this.checkBatchSize();
+    }
+
+    checkBatchSize() {
+        if (this.adds.length + this.statuses.length + this.childs.length + Object.keys(this.updates).length > TASK_FORCE_THRESHOLD) {
+            this.forceUpdate();
+        }
     }
 
     /**
@@ -70,7 +84,7 @@ class TaskWatcher {
      */
     ensureListener(context) {
         if (this.listener === undefined) {
-            this.listener = setInterval(() => {
+            this.forceUpdate = () => {
                 if (this.adds.length !== 0 || this.childs.length !== 0 || Object.keys(this.updates).length !== 0 || this.statuses.length !== 0) {
                     context.commit('updateBatchTask', {
                         adds: this.adds,
@@ -84,7 +98,8 @@ class TaskWatcher {
                     this.updates = {};
                     this.statuses = [];
                 }
-            }, 500);
+            };
+            this.listener = setInterval(this.forceUpdate, 500);
         }
     }
 }
