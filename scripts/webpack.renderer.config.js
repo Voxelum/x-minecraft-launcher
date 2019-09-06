@@ -102,7 +102,6 @@ const rendererConfig = {
                 ? path.resolve(__dirname, '../node_modules')
                 : false,
         }),
-        new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin(),
     ],
     output: {
@@ -127,6 +126,7 @@ const rendererConfig = {
  */
 if (process.env.NODE_ENV !== 'production') {
     rendererConfig.plugins.push(
+        new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
             __static: `"${path.join(__dirname, '../static').replace(/\\/g, '\\\\')}"`,
         }),
