@@ -7,14 +7,12 @@ node_js: "10.16.0"
 matrix:
   include:
   - os: osx
-    env: npm_lifecycle_event=release
     osx_image: xcode8.3
   - os: linux
     dist: trusty
-    env: CC=clang CXX=clang++ npm_config_clang=1 npm_lifecycle_event=release
+    env: CC=clang CXX=clang++ npm_config_clang=1
     compiler: clang
   - os: windows
-    env: npm_lifecycle_event=release
 cache:
   directories:
   - node_modules
@@ -43,6 +41,7 @@ script:
 #- xvfb-maybe node_modules/.bin/karma start test/unit/karma.conf.js
 #- yarn run pack && xvfb-maybe node_modules/.bin/mocha test/e2e
 - npm run build
+- npm run release
 branches:
   only:
   - master

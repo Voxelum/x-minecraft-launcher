@@ -11,8 +11,7 @@
         "url": "https://github.com/voxelum/voxelauncher.git"
     },
     "scripts": {
-        "build": "node scripts/build.js && electron-builder",
-        "build:dir": "node scripts/build.js && electron-builder --dir",
+        "build": "node scripts/build.js",
         "build:clean": "cross-env BUILD_TARGET=clean node scripts/build.js",
         "build:locale": "node scripts/build-locale.js",
         "build:schema": "node scripts/build-schema.js",
@@ -23,7 +22,8 @@
         "lint": "eslint --ext .js,.vue src",
         "lint:fix": "eslint --ext .js,.vue --fix src",
         "test": "mocha test/e2e",
-        "release": "standard-version",
+        "release": "electron-builder",
+        "version": "standard-version",
         "install:native": "cross-env npm_config_runtime=electron electron-builder install-app-deps",
         "postinstall": "npm run install:native"
     },
