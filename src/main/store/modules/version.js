@@ -1,4 +1,4 @@
-import { ForgeInstaller, ForgeWebPage, Installer, LiteLoader, Util, Version, Net } from '@xmcl/minecraft-launcher-core';
+import { ForgeInstaller, ForgeWebPage, Installer, LiteLoader, Util, Version, Net, ResolvedLibrary, JavaExecutor } from '@xmcl/minecraft-launcher-core';
 import { createHash } from 'crypto';
 import { shell } from 'electron';
 import inGFW from 'in-gfw';
@@ -190,16 +190,25 @@ const mod = {
         },
 
         async installLibraries(context, { libraries }) {
+            /**
+             * @type {ResolvedLibrary[]}
+             */
+            let resolved;
+            if ('downloads' in libraries[0]) {
+                resolved = Version.resolveLibraries(libraries);
+            } else {
+                resolved = libraries;
+            }
             let option = {};
             if (await inGFW().catch(_ => false) && context.rootState.setting.useBmclAPI) {
                 option = { libraryHost: lib => `https://http://bmclapi.bangbang93.com/maven/${lib.path}` };
             }
 
-            const task = Installer.installLibrariesDirectTask(Version.resolveLibraries(libraries), context.rootState.root, option);
+            const task = Installer.installLibrariesDirectTask(resolved, context.rootState.root, option);
             const handle = await context.dispatch('executeTask', task);
             context.dispatch('waitTask', handle).catch((e) => {
                 if ('libraryHost' in option) {
-                    return Installer.installLibrariesDirectTask(Version.resolveLibraries(libraries), context.rootState.root);
+                    return Installer.installLibrariesDirectTask(resolved, context.rootState.root);
                 }
                 throw e;
             });
@@ -254,9 +263,10 @@ const mod = {
         async installForge(context, meta) {
             const maven = await inGFW.net().then(b => (b ? 'https://voxelauncher.azurewebsites.net/api/v1' : undefined)).catch(e => undefined);
             const task = ForgeInstaller.installTask(meta, context.rootState.root, {
-                tempDir: join(context.rootState.root, 'temps'),
+                tempDir: join(context.rootState.root, 'temp'),
                 maven,
-                java: context.rootGetters.defaultJava.path,
+                java: JavaExecutor.createSimple(context.rootGetters.defaultJava.path),
+                clearTempDirAfterInstall: false,
             });
             const id = await context.dispatch('executeTask', task);
             context.dispatch('waitTask', id)
