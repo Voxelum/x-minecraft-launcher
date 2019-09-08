@@ -1,1 +1,1 @@
-exports = require('electron-publisher-azure').default;
+module.exports = require('electron-publisher-azure').default;
