@@ -70,6 +70,14 @@
     "description": "简介",
     "detail": "细节",
     "diagnosis": {
+        "badForge": {
+            "": "Forge 安装可能失败 {minecraft}-{forge}",
+            "message": "也许你应该尝试重新安装此版本 Forge"
+        },
+        "badForgeProcessedFiles": {
+            "": "Forge 需要生成文件才能启动 {jar}",
+            "message": "点击来让 Forge 完成安装"
+        },
         "fix": "问题修复",
         "incompatibleJava": {
             "": "Minecraft {mcversion} 不支持 Java {java}!",
@@ -116,7 +124,7 @@
             }
         },
         "missingLibraries": {
-            "": "缺少{count}个库文件",
+            "": "缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少{count}个库文件",
             "message": "启动器将自动下载并安装库文件"
         },
         "missingVersion": "请选择一个Minecraft版本！",
@@ -278,7 +286,7 @@
         },
         "installLibraries": {
             "": "下载依赖运行库",
-            "library": "检查库文件%{lib}"
+            "library": "检查库文件"
         }
     },
     "installForge": {
@@ -356,23 +364,23 @@
     "launch": {
         "checkingProblems": "检测问题中",
         "crash": "游戏崩溃了!!",
+        "failed": {
+            "general": "启动失败",
+            "generalText": "如果你反复出现同样的问题，请联系作者!",
+            "illegalAuth": "用户数据为空",
+            "illegalAuthText": "无效的用户数据！请尝试重新登陆或切换账号",
+            "selectProfileEmpty": "启动配置为空",
+            "selectProfileEmptyText": "很奇怪，你可以尝试重新创建当前的启动配置。如果你老遇到这个问题请联系作者!",
+            "unresolvableProblems": "无法处理某些启动问题",
+            "unresolvableProblemsText": "启动器无法自动处理一些启动前置需求。你可以尝试在主页让启动器自动修复。如果你反复遇到此问题，请联系作者"
+        },
         "hideLauncher": "Minecraft启动后隐藏启动器",
         "launch": "启动",
         "launching": "启动中...",
         "launchingSlow": "还在启动…Minecraft图形界面启动的会比较慢呢~",
         "openCrashReport": "打开崩溃日志",
         "openCrashReportFolder": "打开崩溃日志文件夹",
-        "showLog": "Minecraft启动后显示日志",
-        "failed": {
-            "general": "启动失败",
-            "generalText": "如果你反复出现同样的问题，请联系作者!",
-            "unresolvableProblems": "无法处理某些启动问题",
-            "unresolvableProblemsText": "启动器无法自动处理一些启动前置需求。你可以尝试在主页让启动器自动修复。如果你反复遇到此问题，请联系作者",
-            "illegalAuth": "用户数据为空",
-            "illegalAuthText": "无效的用户数据！请尝试重新登陆或切换账号",
-            "selectProfileEmpty": "启动配置为空",
-            "selectProfileEmptyText": "很奇怪，你可以尝试重新创建当前的启动配置。如果你老遇到这个问题请联系作者!"
-        }
+        "showLog": "Minecraft启动后显示日志"
     },
     "launcher": {
         "checkUpdate": "检查更新",
@@ -444,6 +452,11 @@
         "localVersion": "本地版本",
         "localVersionEmpty": "自动生成",
         "localVersionHint": "选择本地版本会覆盖Minecraft版本的设置",
+        "logsCrashes": {
+            "crashes": "崩溃报告",
+            "logs": "日志",
+            "title": "日志或崩溃报告"
+        },
         "mcOptions": "Minecraft 启动选项",
         "mcOptionsCreateHint": "回车创建 Minecraft 启动参数",
         "mcOptionsHint": "创建或选择 Minecraft 启动参数",

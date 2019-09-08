@@ -1,6 +1,12 @@
 {
     "type": "object",
     "properties": {
+        "en": {
+            "type": "string"
+        },
+        "zh-CN": {
+            "type": "string"
+        },
         "actionforbidden": {
             "type": "string"
         },
@@ -114,9 +120,6 @@
                 "createdDate": {
                     "type": "string"
                 },
-                "description": {
-                    "type": "string"
-                },
                 "gameversion": {
                     "type": "string"
                 },
@@ -146,9 +149,6 @@
                         "description",
                         "name"
                     ]
-                },
-                "meta": {
-                    "type": "string"
                 },
                 "modpacks": {
                     "type": "object",
@@ -225,18 +225,22 @@
                         "description",
                         "name"
                     ]
+                },
+                "description": {
+                    "type": "string"
+                },
+                "meta": {
+                    "type": "string"
                 }
             },
             "required": [
                 "createdDate",
-                "description",
                 "gameversion",
                 "install",
                 "installed",
                 "lastUpdate",
                 "license",
                 "mc-mods",
-                "meta",
                 "modpacks",
                 "name",
                 "project",
@@ -244,7 +248,9 @@
                 "sortby",
                 "texture-packs",
                 "totalDownloads",
-                "worlds"
+                "worlds",
+                "description",
+                "meta"
             ]
         },
         "delete": {
@@ -510,6 +516,36 @@
                         "",
                         "message"
                     ]
+                },
+                "badForge": {
+                    "type": "object",
+                    "properties": {
+                        "": {
+                            "type": "string"
+                        },
+                        "message": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "",
+                        "message"
+                    ]
+                },
+                "badForgeProcessedFiles": {
+                    "type": "object",
+                    "properties": {
+                        "": {
+                            "type": "string"
+                        },
+                        "message": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "",
+                        "message"
+                    ]
                 }
             },
             "required": [
@@ -527,52 +563,16 @@
                 "missingVersionJar",
                 "missingVersionJson",
                 "problem",
-                "unknownMod"
+                "unknownMod",
+                "badForge",
+                "badForgeProcessedFiles"
             ]
-        },
-        "download": {
-            "type": "string"
         },
         "downloadUpdate": {
             "type": "string"
         },
         "edit": {
             "type": "string"
-        },
-        "error": {
-            "type": "object",
-            "properties": {
-                "empty": {
-                    "type": "string"
-                },
-                "installJava": {
-                    "type": "string"
-                },
-                "internetNotConnected": {
-                    "type": "string"
-                },
-                "missingJava": {
-                    "type": "string"
-                },
-                "missingMinecraft": {
-                    "type": "string"
-                },
-                "missingName": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "empty",
-                "installJava",
-                "internetNotConnected",
-                "missingJava",
-                "missingMinecraft",
-                "missingName",
-                "name"
-            ]
         },
         "feedback": {
             "type": "object",
@@ -1449,6 +1449,45 @@
                 },
                 "showLog": {
                     "type": "string"
+                },
+                "failed": {
+                    "type": "object",
+                    "properties": {
+                        "general": {
+                            "type": "string"
+                        },
+                        "generalText": {
+                            "type": "string"
+                        },
+                        "unresolvableProblems": {
+                            "type": "string"
+                        },
+                        "unresolvableProblemsText": {
+                            "type": "string"
+                        },
+                        "illegalAuth": {
+                            "type": "string"
+                        },
+                        "illegalAuthText": {
+                            "type": "string"
+                        },
+                        "selectProfileEmpty": {
+                            "type": "string"
+                        },
+                        "selectProfileEmptyText": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "general",
+                        "generalText",
+                        "unresolvableProblems",
+                        "unresolvableProblemsText",
+                        "illegalAuth",
+                        "illegalAuthText",
+                        "selectProfileEmpty",
+                        "selectProfileEmptyText"
+                    ]
                 }
             },
             "required": [
@@ -1460,7 +1499,8 @@
                 "launchingSlow",
                 "openCrashReport",
                 "openCrashReportFolder",
-                "showLog"
+                "showLog",
+                "failed"
             ]
         },
         "launcher": {
@@ -1619,10 +1659,19 @@
         "name": {
             "type": "string"
         },
+        "next": {
+            "type": "string"
+        },
         "no": {
             "type": "string"
         },
+        "nodescription": {
+            "type": "string"
+        },
         "ok": {
+            "type": "string"
+        },
+        "optional": {
             "type": "string"
         },
         "popular": {
@@ -1675,6 +1724,25 @@
                         "exportingMessage",
                         "message",
                         "title"
+                    ]
+                },
+                "logsCrashes": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "logs": {
+                            "type": "string"
+                        },
+                        "crashes": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "title",
+                        "logs",
+                        "crashes"
                     ]
                 },
                 "forceLocalVersion": {
@@ -1831,20 +1899,20 @@
                         "error": {
                             "type": "object",
                             "properties": {
-                                "wrongVersion": {
-                                    "type": "string"
-                                },
                                 "requirehost": {
                                     "type": "string"
                                 },
                                 "requirename": {
                                     "type": "string"
+                                },
+                                "wrongVersion": {
+                                    "type": "string"
                                 }
                             },
                             "required": [
-                                "wrongVersion",
                                 "requirehost",
-                                "requirename"
+                                "requirename",
+                                "wrongVersion"
                             ]
                         },
                         "expectedVersions": {
@@ -2015,6 +2083,7 @@
                 "deleteHint",
                 "descriptionHint",
                 "export",
+                "logsCrashes",
                 "forceLocalVersion",
                 "forgeSetting",
                 "importFolder",
@@ -2045,17 +2114,6 @@
                 "vmOptions",
                 "vmOptionsCreateHint",
                 "vmOptionsHint"
-            ]
-        },
-        "refresh": {
-            "type": "object",
-            "properties": {
-                "hint": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "hint"
             ]
         },
         "refreshResource": {
@@ -2347,6 +2405,12 @@
                 "updateToThisVersion": {
                     "type": "string"
                 },
+                "useBmclAPI": {
+                    "type": "string"
+                },
+                "useBmclAPIDescription": {
+                    "type": "string"
+                },
                 "viewUpdate": {
                     "type": "string"
                 },
@@ -2384,43 +2448,10 @@
                 "theme",
                 "update",
                 "updateToThisVersion",
+                "useBmclAPI",
+                "useBmclAPIDescription",
                 "viewUpdate",
                 "waitReload"
-            ]
-        },
-        "skin": {
-            "type": "object",
-            "properties": {
-                "change": {
-                    "type": "string"
-                },
-                "export": {
-                    "type": "string"
-                },
-                "importLocal": {
-                    "type": "string"
-                },
-                "loadURL": {
-                    "type": "string"
-                },
-                "reset": {
-                    "type": "string"
-                },
-                "upload": {
-                    "type": "string"
-                },
-                "urlHint": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "change",
-                "export",
-                "importLocal",
-                "loadURL",
-                "reset",
-                "upload",
-                "urlHint"
             ]
         },
         "summery": {
@@ -2576,7 +2607,19 @@
                     "type": "string"
                 },
                 "profileService": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "",
+                        "description"
+                    ]
                 },
                 "refreshAccount": {
                     "type": "string"
@@ -2828,9 +2871,6 @@
                 "noForge": {
                     "type": "string"
                 },
-                "noLiteloader": {
-                    "type": "string"
-                },
                 "noLocalVersion": {
                     "type": "string"
                 },
@@ -2858,9 +2898,6 @@
                 "requiredownload": {
                     "type": "string"
                 },
-                "selectHint": {
-                    "type": "string"
-                },
                 "selectVersion": {
                     "type": "string"
                 },
@@ -2878,6 +2915,12 @@
                 },
                 "unknown": {
                     "type": "string"
+                },
+                "noLiteloader": {
+                    "type": "string"
+                },
+                "selectHint": {
+                    "type": "string"
                 }
             },
             "required": [
@@ -2892,7 +2935,6 @@
                 "missing",
                 "name",
                 "noForge",
-                "noLiteloader",
                 "noLocalVersion",
                 "noMinecraft",
                 "pending",
@@ -2902,26 +2944,104 @@
                 "releaseDate",
                 "remote",
                 "requiredownload",
-                "selectHint",
                 "selectVersion",
                 "selectversionWarn",
                 "showSnapshot",
                 "snapshot",
                 "status",
-                "unknown"
+                "unknown",
+                "noLiteloader",
+                "selectHint"
             ]
         },
-        "next": {
+        "download": {
             "type": "string"
         },
-        "nodescription": {
-            "type": "string"
+        "error": {
+            "type": "object",
+            "properties": {
+                "empty": {
+                    "type": "string"
+                },
+                "installJava": {
+                    "type": "string"
+                },
+                "internetNotConnected": {
+                    "type": "string"
+                },
+                "missingJava": {
+                    "type": "string"
+                },
+                "missingMinecraft": {
+                    "type": "string"
+                },
+                "missingName": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "empty",
+                "installJava",
+                "internetNotConnected",
+                "missingJava",
+                "missingMinecraft",
+                "missingName",
+                "name"
+            ]
         },
-        "optional": {
-            "type": "string"
+        "refresh": {
+            "type": "object",
+            "properties": {
+                "hint": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "hint"
+            ]
+        },
+        "skin": {
+            "type": "object",
+            "properties": {
+                "change": {
+                    "type": "string"
+                },
+                "export": {
+                    "type": "string"
+                },
+                "importLocal": {
+                    "type": "string"
+                },
+                "loadURL": {
+                    "type": "string"
+                },
+                "reset": {
+                    "type": "string"
+                },
+                "upload": {
+                    "type": "string"
+                },
+                "urlHint": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "change",
+                "export",
+                "importLocal",
+                "loadURL",
+                "reset",
+                "upload",
+                "urlHint"
+            ]
         }
     },
     "required": [
+        "en",
+        "zh-CN",
         "actionforbidden",
         "add",
         "advanced",
@@ -2937,10 +3057,8 @@
         "description",
         "detail",
         "diagnosis",
-        "download",
         "downloadUpdate",
         "edit",
-        "error",
         "feedback",
         "filter",
         "finish",
@@ -2972,25 +3090,27 @@
         "minecraft",
         "mod",
         "name",
+        "next",
         "no",
+        "nodescription",
         "ok",
+        "optional",
         "popular",
         "profile",
-        "refresh",
         "refreshResource",
         "remove",
         "resolution",
         "resourcepack",
         "save",
         "setting",
-        "skin",
         "summery",
         "task",
         "user",
         "version",
-        "next",
-        "nodescription",
-        "optional"
+        "download",
+        "error",
+        "refresh",
+        "skin"
     ],
     "$id": "https://raw.githubusercontent.com/voxelum/VoxeLauncher/master/static/locale.schema.json"
 }
