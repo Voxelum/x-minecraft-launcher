@@ -209,7 +209,7 @@ const mod = {
 
                 let errorMessage;
                 if (error instanceof Error) {
-                    errorMessage = error.stack;
+                    errorMessage = error.toString();
                 } else {
                     errorMessage = JSON.stringify(error, null, 4);
                 }
