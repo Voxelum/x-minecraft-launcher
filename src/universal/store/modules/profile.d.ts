@@ -181,6 +181,14 @@ export declare namespace ProfileModule {
         pingServers(context: C): Promise<(Server.Info & { status: Server.StatusFrame })[]>;
         createProfileFromServer(context: C, info: Server.Info & { status: Server.StatusFrame }): Promise<string>;
 
+        listLogs(context: C): Promise<string[]>;
+        removeLog(context: C, name: string): Promise<void>;
+        getLogContent(context: C, name: string): Promise<string>;
+
+        listCrashReports(context: C): Promise<string[]>;
+        removeCrashReport(context: C, name: string): Promise<void>;
+        getCrashReportContent(context: C, name: string): Promise<string>;
+
         refreshProfile(context: C): Promise<void>;
     }
 }

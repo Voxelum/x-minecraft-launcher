@@ -1,4 +1,5 @@
 import { watch } from 'fs';
+import { gunzip } from 'zlib';
 import fs from 'main/utils/vfs';
 import { compressZipTo, includeAllToZip } from 'main/utils/zip';
 import { tmpdir } from 'os';
@@ -12,6 +13,7 @@ import uuid from 'uuid';
 import { Unzip } from '@xmcl/unzip';
 import { ZipFile } from 'yazl';
 import { createHash } from 'crypto';
+import { vfs } from '@xmcl/minecraft-launcher-core/node_modules/@xmcl/util';
 
 /**
  * @param {string} save
@@ -70,7 +72,7 @@ const mod = {
                 return {};
             }
         },
-        async loadAllProfileSaves({ state, rootGetters, getters }) {
+        async loadAllProfileSaves({ rootGetters, getters }) {
             /**
              * @type {any[]}
              */
@@ -739,6 +741,48 @@ const mod = {
                     await transferFile(path, destination);
                 }
             }
+        },
+        async listLogs(context) {
+            const files = await context.dispatch('readFolder', `profiles/${context.state.id}/logs`);
+            return files.filter(f => f !== '.DS_Store');
+        },
+        async removeLog(context, name) {
+            const filePath = context.rootGetters.path('profiles', context.state.id, 'logs', name);
+            await fs.remove(filePath);
+        },
+        async getLogContent(context, name) {
+            const filePath = context.rootGetters.path('profiles', context.state.id, 'logs', name);
+            const buf = await fs.readFile(filePath);
+            if (name.endsWith('.gz')) {
+                return new Promise((resolve, reject) => {
+                    gunzip(buf, (e, r) => {
+                        if (e) reject(e);
+                        else resolve(r.toString());
+                    });
+                });
+            }
+            return buf.toString();
+        },
+        async listCrashReports(context) {
+            const files = await context.dispatch('readFolder', `profiles/${context.state.id}/crash-reports`);
+            return files.filter(f => f !== '.DS_Store');
+        },
+        async removeCrashReport(context, name) {
+            const filePath = context.rootGetters.path('profiles', context.state.id, 'crash-reports', name);
+            await fs.remove(filePath);
+        },
+        async getCrashReportContent(context, name) {
+            const filePath = context.rootGetters.path('profiles', context.state.id, 'crash-reports', name);
+            const buf = await fs.readFile(filePath);
+            if (name.endsWith('.gz')) {
+                return new Promise((resolve, reject) => {
+                    gunzip(buf, (e, r) => {
+                        if (e) reject(e);
+                        else resolve(r.toString());
+                    });
+                });
+            }
+            return buf.toString();
         },
     },
 };
