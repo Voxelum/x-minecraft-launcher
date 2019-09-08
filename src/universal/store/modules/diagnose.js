@@ -17,6 +17,9 @@ const mod = {
             missingAuthlibInjector: { fixing: false, autofix: true, optional: false, actived: [] },
             incompatibleJava: { fixing: false, autofix: false, optional: false, actived: [] },
             missingModsOnServer: { fixing: false, autofix: false, optional: false, actived: [] },
+            badForge: { fixing: false, autofix: true, optional: false, actived: [] },
+            badForgeIncomplete: { fixing: false, autofix: true, optional: false, actived: [] },
+            badForgeProcessedFiles: { fixing: false, autofix: true, optional: true, actived: [] },
         },
     },
     getters: {
@@ -31,7 +34,7 @@ const mod = {
                 if (id === 'missingLibraries' && reg.actived.length >= 3) {
                     problems.push({
                         id,
-                        arguments: { count: reg.actived.length },
+                        arguments: { count: reg.actived.length, libraries: reg.actived },
                         autofix: reg.autofix,
                         optional: reg.optional,
                     });

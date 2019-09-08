@@ -1,5 +1,6 @@
 import { Module, Context } from "../store";
-import { ResolvedLibrary } from "@xmcl/version";
+import { ResolvedLibrary, Version } from "@xmcl/version";
+import { ForgeInstaller } from "@xmcl/minecraft-launcher-core";
 
 export type Problem = DiagnoseModule.Problem;
 export declare namespace DiagnoseModule {
@@ -34,9 +35,13 @@ export declare namespace DiagnoseModule {
             unknownMod: Registry<{ name: string; actual: string; }, false, true>;
             incompatibleMod: Registry<{ name: string; actual: string; accepted: string; }, false, true>;
             incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string; }, false, true>;
-            incompatibleJava: Registry<{ java: string; mcversion: string }>;
+            incompatibleJava: Registry<{ java: string; mcversion: string }, false, false>;
             missingAuthlibInjector: Registry<{}>;
             missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
+            badForge: Registry<{ forge: string; minecraft: string }>;
+            badForgeIncomplete: Registry<{ count: number; libraries: Version.NormalLibrary[] }>;
+            badForgeProcessedFiles: Registry<ForgeInstaller.Diagnosis["badProcessedFiles"][number], true, true>;
+
 
             [id: string]: {
                 fixing: boolean;

@@ -1,5 +1,5 @@
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
-import { Forge, ForgeWebPage, Version } from '@xmcl/minecraft-launcher-core';
+import { Forge, ForgeWebPage, Version, ForgeInstaller, Util, Task, JavaExecutor, MinecraftFolder } from '@xmcl/minecraft-launcher-core';
 import base from 'universal/store/modules/diagnose';
 
 /**
@@ -52,6 +52,7 @@ const mod = {
         async init(context) {
             context.commit('refreshingProfile', true);
             try {
+                console.log('do full diagnose');
                 await context.dispatch('diagnoseVersion');
                 await context.dispatch('diagnoseJava');
                 await context.dispatch('diagnoseMods');
@@ -217,7 +218,7 @@ const mod = {
             /**
              * @type {Pick<import('universal/store/modules/diagnose').DiagnoseModule.ProblemReport, 
              *  'missingVersionJar' | 'missingAssetsIndex' | 'missingVersionJson' |'missingForgeJar'| 'missingLibraries' |
-             *  'missingAssets' | 'missingVersion'>}
+             *  'missingAssets' | 'missingVersion' | 'badForgeProcessedFiles' | 'badForge' | 'badForgeIncomplete' >}
              */
             const tree = {
                 missingVersion: [],
@@ -227,6 +228,9 @@ const mod = {
                 missingForgeJar: [],
                 missingLibraries: [],
                 missingAssets: [],
+                badForge: [],
+                badForgeIncomplete: [],
+                badForgeProcessedFiles: [],
             };
             const mcversion = versions.minecraft;
             if (!mcversion) {
@@ -260,10 +264,24 @@ const mod = {
                 }
             }
 
+            const mcArt = ArtifactVersion.parseVersion(currentVersion.minecraft);
+            if (currentVersion.forge && mcArt.minorVersion && mcArt.minorVersion >= 13) {
+                // TODO: handle cases if liteloader existed
+                const diagnosis = await ForgeInstaller.diagnoseForgeVersion(targetVersion, context.rootState.root);
+                if (!diagnosis.badVersionJson) {
+                    if (diagnosis.badInstall) {
+                        tree.badForge.push({ forge: currentVersion.forge, minecraft: currentVersion.minecraft });
+                    } else if (diagnosis.missingInstallDependencies.length !== 0) {
+                        tree.badForgeIncomplete.push({ count: diagnosis.missingInstallDependencies.length, libraries: diagnosis.missingInstallDependencies });
+                    } else if (diagnosis.badProcessedFiles.length !== 0) {
+                        tree.badForgeProcessedFiles.push(...diagnosis.badProcessedFiles);
+                    }
+                }
+            }
+
             context.commit('postProblems', tree);
         },
-        async diagnoseFull(context) {
-        },
+        async diagnoseFull(context) { },
         async fixProfile(context, problems) {
             const unfixed = problems.filter(p => p.autofix)
                 .filter(p => !context.state.registry[p.id].fixing);
@@ -324,6 +342,36 @@ const mod = {
                     // TODO: support liteloader & fabric
                 }
 
+                const badForgeProcessedFiles = unfixed.filter(p => p.id === 'badForgeProcessedFiles');
+                if (badForgeProcessedFiles.length > 0) {
+                    Reflect.set(recheck, 'diagnoseVersion', true);
+                    const targetVersion = await context.dispatch('resolveVersion', currentVersion)
+                        .catch(() => currentVersion.id);
+                    const handle = await context.dispatch('executeTask', Task.create('installForge', async (c) => {
+                        try {
+                            await c.execute('postProcessing', async (cc) => {
+                                const root = new MinecraftFolder(context.rootState.root);
+                                const total = badForgeProcessedFiles.length;
+                                let i = 0;
+                                cc.update(i, total);
+                                for (const proc of badForgeProcessedFiles) {
+                                    await ForgeInstaller.postProcess(root, proc.arguments, JavaExecutor.createSimple(context.rootGetters.defaultJava.path));
+                                    cc.update(i += 1);
+                                }
+                            });
+                        } catch (e) {
+                            await ForgeInstaller.installByInstallerPartialTask(
+                                targetVersion,
+                                context.rootState.root,
+                                {
+                                    java: JavaExecutor.createSimple(context.rootGetters.defaultJava.path),
+                                },
+                            ).work(c);
+                        }
+                    }));
+                    await context.dispatch('waitTask', handle);
+                }
+
                 const missingForgeJar = unfixed.find(p => p.id === 'missingForgeJar');
                 if (missingForgeJar && missingForgeJar.arguments) {
                     const { minecraft, forge } = missingForgeJar.arguments;
@@ -353,9 +401,15 @@ const mod = {
                     }
                 }
                 const missingLibs = unfixed.find(p => p.id === 'missingLibraries');
-                if (missingLibs && missingLibs.arguments && missingLibs.arguments.libraries) {
+                if (missingLibs && missingLibs.arguments) {
                     Reflect.set(recheck, 'diagnoseVersion', true);
-                    const handle = await context.dispatch('installLibraries', { libraries: missingLibs.arguments.libraries });
+                    let handle;
+                    if (missingLibs.arguments.libraries instanceof Array) {
+                        handle = await context.dispatch('installLibraries', { libraries: missingLibs.arguments.libraries });
+                    } else {
+                        const all = unfixed.filter(p => p.id === 'missingLibraries');
+                        handle = await context.dispatch('installLibraries', { libraries: all.map(p => p.arguments) });
+                    }
                     await context.dispatch('waitTask', handle);
                 }
 
@@ -363,16 +417,15 @@ const mod = {
                     Reflect.set(recheck, 'diagnoseServer', true);
                     await context.dispatch('ensureAuthlibInjection');
                 }
-
-                for (const action of Object.keys(recheck)) {
-                    // @ts-ignore
-                    await context.dispatch(action);
-                }
             } catch (e) {
                 console.error(e);
             } finally {
                 context.commit('endResolveProblems', unfixed);
                 context.commit('refreshingProfile', false);
+                for (const action of Object.keys(recheck)) {
+                    // @ts-ignore
+                    await context.dispatch(action);
+                }
             }
         },
 
