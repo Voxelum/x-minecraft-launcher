@@ -50,9 +50,9 @@ const mod = {
                 }
 
                 for (let problems = rootGetters.problems.filter(p => p.autofix), i = 0;
-                    problems.length !== 0 && i < 3;
+                    problems.length !== 0 && i < 1;
                     problems = rootGetters.problems.filter(p => p.autofix), i += 1) {
-                    await dispatch('fixProfile', rootGetters.problems.filter(p => p.autofix));
+                    await dispatch('fixProfile', rootGetters.problems.filter(p => !p.optional && p.autofix));
                 }
 
                 if (rootGetters.problems.some(p => !p.optional)) {
