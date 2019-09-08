@@ -68,7 +68,7 @@
             "icon": "build/icons/icon.icns",
             "target": [
                 {
-                    "target": "dir"
+                    "target": "zip"
                 },
                 {
                     "target": "dmg"
@@ -161,7 +161,7 @@
         "del": "^3.0.0",
         "devtron": "^1.4.0",
         "electron": "^5.0.3",
-        "electron-builder": "^20.43.0",
+        "electron-builder": "^21.2.0",
         "electron-debug": "^1.4.0",
         "electron-devtools-installer": "^2.2.0",
         "electron-publisher-azure": "^0.0.3",
