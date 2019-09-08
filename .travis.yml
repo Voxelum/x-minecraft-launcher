@@ -4,6 +4,8 @@ sudo: required
 language: node_js
 node_js: "10.16.0"
 
+env: npm_lifecycle_event=release
+
 matrix:
   include:
   - os: osx
