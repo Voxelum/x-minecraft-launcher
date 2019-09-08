@@ -44,6 +44,7 @@
             </template>
             <v-icon dark>
               assignment
+              <!-- subtitles -->
             </v-icon>
           </v-badge>
         </v-btn>
@@ -53,8 +54,8 @@
 
     <v-menu v-show="refreshingProfile || problems.length !== 0" offset-y top dark max-height="300">
       <v-btn slot="activator" style="position: absolute; left: 200px; bottom: 10px; " :loading="refreshingProfile || missingJava"
-             :flat="problems.length !== 0" outline dark :color="problems.length !== 0 ? 'red' : 'white' ">
-        <v-icon left dark :color="problems.length !== 0 ? 'red': 'white'">
+             :flat="problems.length !== 0" outline dark :color="problemsLevelColor">
+        <v-icon left dark :color="problemsLevelColor">
           {{ problems.length !== 0 ?
             'warning' : 'check_circle' }}
         </v-icon>
@@ -144,6 +145,7 @@
       <v-progress-circular v-else class="v-icon--right" indeterminate :size="20" :width="2" />
     </v-btn>
 
+    <dialog-logs v-model="logsDialog" />
     <dialog-task v-model="taskDialog" />
     <dialog-crash-report v-model="crashDialog" />
     <dialog-java-wizard v-model="javaWizardDialog" @task="taskDialog=true" />
@@ -158,6 +160,7 @@ import { PINGING_STATUS, createFailureServerStatus } from 'universal/utils/serve
 
 export default {
   data: () => ({
+    logsDialog: false,
     taskDialog: false,
     launchStatusDialog: false,
     feedbackDialog: false,
@@ -169,6 +172,7 @@ export default {
     icon() { return this.status.favicon || unknownServer; },
     isServer() { return this.profile.type === 'server'; },
     problems() { return this.$repo.getters.problems; },
+    problemsLevelColor() { return this.problems.some(p => !p.optional) ? 'red' : 'warning'; },
     launchStatus() { return this.$repo.state.launch.status; },
     refreshingProfile() { return this.$repo.state.profile.refreshing; },
     missingJava() { return this.$repo.getters.missingJava; },
@@ -178,9 +182,11 @@ export default {
     },
   },
   watch: {
-    javaWizardDialog() { 
+    javaWizardDialog() {
       this.taskDialog = false;
     },
+  },
+  mounted() {
   },
   methods: {
     async launch() {
@@ -204,6 +210,9 @@ export default {
           });
         }
       });
+    },
+    showLogDialog() {
+      this.logsDialog = true;
     },
     showTaskDialog() {
       this.taskDialog = true;

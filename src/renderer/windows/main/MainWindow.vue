@@ -41,6 +41,13 @@
         <v-spacer />
       </v-list>
       <v-list class="non-moveable" style="position: absolute; bottom: 0px;">
+        <!-- <v-list-tile @click="">
+          <v-list-tile-action>
+            <v-icon dark>
+              assignment
+            </v-icon>
+          </v-list-tile-action>
+        </v-list-tile> -->
         <v-list-tile replace to="/setting">
           <v-list-tile-action>
             <v-icon dark>
