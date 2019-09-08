@@ -35,15 +35,15 @@
         },
         "publish": [
             {
+                "provider": "github",
+                "owner": "voxelum",
+                "repo": "VoxeLauncher"
+            },
+            {
                 "provider": "custom",
                 "providerName": "azure",
                 "container": "releases",
                 "account": "voxelauncher"
-            },
-            {
-                "provider": "github",
-                "owner": "voxelum",
-                "repo": "VoxeLauncher"
             }
         ],
         "files": [
