@@ -1,4 +1,5 @@
 import { watch } from 'fs';
+import { gunzip } from 'zlib';
 import fs from 'main/utils/vfs';
 import { compressZipTo, includeAllToZip } from 'main/utils/zip';
 import { tmpdir } from 'os';
@@ -8,7 +9,6 @@ import { GameSetting, Server, TextComponent, Version, World, Task } from '@xmcl/
 import base, { createTemplate } from 'universal/store/modules/profile';
 import { fitin, willBaselineChange } from 'universal/utils/object';
 import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/server-status';
-import { getModIdentifier } from 'universal/utils/versions';
 import uuid from 'uuid';
 import { Unzip } from '@xmcl/unzip';
 import { ZipFile } from 'yazl';
@@ -71,7 +71,7 @@ const mod = {
                 return {};
             }
         },
-        async loadAllProfileSaves({ state, rootGetters, getters }) {
+        async loadAllProfileSaves({ rootGetters, getters }) {
             /**
              * @type {any[]}
              */
@@ -141,7 +141,7 @@ const mod = {
 
             let option;
             try {
-                option = await fs.readFile(rootGetters.path('profiles', id, 'profile.json')).then(b => JSON.parse(b.toString()));
+                option = await dispatch('getPersistence', { path: `profiles/${id}/profile.json`, schema: 'ProfileConfig' });
             } catch (e) {
                 console.warn(`Corrupted profile json ${id}`);
                 return;
@@ -221,7 +221,6 @@ const mod = {
                     }
                 }
             }
-            dispatch('diagnoseProfile');
         },
         async load({ state, commit, dispatch }) {
             const dirs = await dispatch('readFolder', 'profiles');
@@ -237,27 +236,13 @@ const mod = {
                 return;
             }
 
-            const persis = await dispatch('getPersistence', { path: 'profiles.json' });
+            const persis = await dispatch('getPersistence', { path: 'profiles.json', schema: 'ProfilesConfig' });
 
             if (persis) {
-                if (persis.selected) {
-                    await dispatch('selectProfile', persis.selected);
+                if (persis.selectedProfile) {
+                    await dispatch('selectProfile', persis.selectedProfile);
                 } else {
                     await dispatch('selectProfile', Object.keys(state.all)[0]);
-                }
-                /**
-                 * @type {string[]}
-                 */
-                const orders = persis.profiles;
-                if (persis.profiles instanceof Array && orders.every(p => typeof p === 'string')) {
-                    const finalOrder = [
-                        ...orders.filter(id => state.all[id]),
-                        ...Object.keys(state.all).filter(id => orders.indexOf(id) === -1),
-                    ];
-                    commit('profileIds', finalOrder);
-                }
-                if (!orders) {
-                    commit('profileIds', Object.keys(state.all));
                 }
             }
         },
@@ -268,14 +253,12 @@ const mod = {
                 case 'selectProfile':
                     await context.dispatch('setPersistence', {
                         path: 'profiles.json',
-                        data: { selected: payload },
+                        data: { selectedProfile: payload },
                     });
                     break;
                 case 'gamesettings':
                     await fs.writeFile(context.rootGetters.path('profiles', context.state.id, 'options.txt'),
                         GameSetting.stringify(context.state.settings));
-                    break;
-                case 'serverInfos':
                     break;
                 case 'addProfile':
                     await context.dispatch('setPersistence', {
@@ -305,7 +288,6 @@ const mod = {
                         },
                     });
                     break;
-                case 'removeProfile':
                 default:
             }
         },
@@ -320,7 +302,7 @@ const mod = {
         },
 
         async createProfile(context, payload) {
-            const latestRelease = context.rootGetters.minecraftRelease || { id: latestMcRelease };
+            const latestRelease = context.rootGetters.minecraftRelease;
             const profile = createTemplate(
                 uuid(),
                 context.rootGetters.defaultJava,
@@ -330,7 +312,11 @@ const mod = {
             );
 
             if (profile.type === 'modpack') {
-                profile.author = context.rootGetters.selectedProfile.id;
+                if (context.rootGetters.selectedGameProfile) {
+                    profile.author = context.rootGetters.selectedGameProfile.name;
+                } else {
+                    profile.author = '';
+                }
             }
 
             delete payload.creationDate;
@@ -350,7 +336,6 @@ const mod = {
         async createAndSelectProfile(context, payload) {
             const id = await context.dispatch('createProfile', payload);
             await context.dispatch('selectProfile', id);
-            await context.dispatch('diagnoseProfile');
             return id;
         },
 
@@ -395,6 +380,10 @@ const mod = {
         },
 
         async deleteProfile(context, id = context.state.id) {
+            if (typeof id !== 'string') {
+                console.error(`Invalid contract! Should pass profile id to delete profile. Get ${id}`);
+                return;
+            }
             if (context.state.id === id) {
                 const allIds = Object.keys(context.state.all);
                 if (allIds.length === 1) {
@@ -404,65 +393,74 @@ const mod = {
                 }
             }
             context.commit('removeProfile', id);
-            await fs.remove(context.rootGetters.path('profiles', id));
+            const profileDir = context.rootGetters.path('profiles', id);
+            if (await fs.exists(profileDir)) {
+                await fs.remove(profileDir);
+            }
         },
 
 
         async exportProfile(context, { id = context.state.id, dest, type = 'full' }) {
-            const root = context.rootState.root;
-            const from = paths.join(root, 'profiles', id);
-            const file = new ZipFile();
-            const promise = compressZipTo(file, dest);
+            if (context.state.refreshing) return;
+            context.commit('refreshingProfile', true);
+            try {
+                const root = context.rootState.root;
+                const from = paths.join(root, 'profiles', id);
+                const file = new ZipFile();
+                const promise = compressZipTo(file, dest);
 
-            if (type === 'curseforge') {
-                throw new Error('Not implemented!');
-            }
-
-            await includeAllToZip(from, from, file);
-
-            const { resourcepacks, mods } = await context.dispatch('resolveProfileResources', id);
-            const defaultMcversion = context.state.all[id].version.minecraft;
-
-            const carriedVersionPaths = [];
-
-            const versionInst = await Version.parse(root, defaultMcversion);
-            carriedVersionPaths.push(...versionInst.pathChain);
-
-            if (type === 'full') {
-                const assetsJson = paths.resolve(root, 'assets', 'indexes', `${versionInst.assets}.json`);
-                file.addFile(assetsJson, `assets/indexes/${versionInst.assets}.json`);
-                const objects = await fs.readFile(assetsJson, { encoding: 'utf-8' }).then(b => b.toString()).then(JSON.parse).then(manifest => manifest.objects);
-                for (const hash of Object.keys(objects).map(k => objects[k].hash)) {
-                    file.addFile(paths.resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`);
+                if (type === 'curseforge') {
+                    throw new Error('Not implemented!');
                 }
-            }
 
+                await includeAllToZip(from, from, file);
 
-            for (const verPath of carriedVersionPaths) {
-                const versionId = paths.basename(verPath);
-                const versionFiles = await fs.readdir(verPath);
-                for (const versionFile of versionFiles) {
-                    if (!await fs.stat(paths.join(verPath, versionFile)).then(s => s.isDirectory())) {
-                        file.addFile(paths.join(verPath, versionFile), `versions/${versionId}/${versionFile}`);
+                const { resourcepacks, mods } = await context.dispatch('resolveProfileResources', id);
+                const defaultMcversion = context.state.all[id].version.minecraft;
+
+                const carriedVersionPaths = [];
+
+                const versionInst = await Version.parse(root, defaultMcversion);
+                carriedVersionPaths.push(...versionInst.pathChain);
+
+                if (type === 'full') {
+                    const assetsJson = paths.resolve(root, 'assets', 'indexes', `${versionInst.assets}.json`);
+                    file.addFile(assetsJson, `assets/indexes/${versionInst.assets}.json`);
+                    const objects = await fs.readFile(assetsJson, { encoding: 'utf-8' }).then(b => b.toString()).then(JSON.parse).then(manifest => manifest.objects);
+                    for (const hash of Object.keys(objects).map(k => objects[k].hash)) {
+                        file.addFile(paths.resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`);
                     }
                 }
-            }
 
-            for (const lib of versionInst.libraries) {
-                file.addFile(paths.resolve(root, 'libraries', lib.download.path),
-                    `libraries/${lib.download.path}`);
-            }
 
-            for (const resourcepack of resourcepacks) {
-                file.addFile(resourcepack.path, `resourcepacks/${resourcepack.name}${resourcepack.ext}`);
-            }
+                for (const verPath of carriedVersionPaths) {
+                    const versionId = paths.basename(verPath);
+                    const versionFiles = await fs.readdir(verPath);
+                    for (const versionFile of versionFiles) {
+                        if (!await fs.stat(paths.join(verPath, versionFile)).then(s => s.isDirectory())) {
+                            file.addFile(paths.join(verPath, versionFile), `versions/${versionId}/${versionFile}`);
+                        }
+                    }
+                }
 
-            for (const mod of mods) {
-                file.addFile(mod.path, `mods/${basename(mod.path)}`);
-            }
+                for (const lib of versionInst.libraries) {
+                    file.addFile(paths.resolve(root, 'libraries', lib.download.path),
+                        `libraries/${lib.download.path}`);
+                }
 
-            file.end();
-            return promise;
+                for (const resourcepack of resourcepacks) {
+                    file.addFile(resourcepack.path, `resourcepacks/${resourcepack.name}${resourcepack.ext}`);
+                }
+
+                for (const mod of mods) {
+                    file.addFile(mod.path, `mods/${basename(mod.path)}`);
+                }
+
+                file.end();
+                await promise;
+            } finally {
+                context.commit('refreshingProfile', false);
+            }
         },
 
         async importProfile(context, location) {
@@ -564,7 +562,6 @@ const mod = {
                 context.commit('launchStatus', 'ready');
                 console.log(`Modify Profle ${JSON.stringify(profile, null, 4)}`);
                 context.commit('profile', profile);
-                await context.dispatch('diagnoseProfile');
             }
         },
 
@@ -743,6 +740,48 @@ const mod = {
                     await transferFile(path, destination);
                 }
             }
+        },
+        async listLogs(context) {
+            const files = await context.dispatch('readFolder', `profiles/${context.state.id}/logs`);
+            return files.filter(f => f !== '.DS_Store');
+        },
+        async removeLog(context, name) {
+            const filePath = context.rootGetters.path('profiles', context.state.id, 'logs', name);
+            await fs.remove(filePath);
+        },
+        async getLogContent(context, name) {
+            const filePath = context.rootGetters.path('profiles', context.state.id, 'logs', name);
+            const buf = await fs.readFile(filePath);
+            if (name.endsWith('.gz')) {
+                return new Promise((resolve, reject) => {
+                    gunzip(buf, (e, r) => {
+                        if (e) reject(e);
+                        else resolve(r.toString());
+                    });
+                });
+            }
+            return buf.toString();
+        },
+        async listCrashReports(context) {
+            const files = await context.dispatch('readFolder', `profiles/${context.state.id}/crash-reports`);
+            return files.filter(f => f !== '.DS_Store');
+        },
+        async removeCrashReport(context, name) {
+            const filePath = context.rootGetters.path('profiles', context.state.id, 'crash-reports', name);
+            await fs.remove(filePath);
+        },
+        async getCrashReportContent(context, name) {
+            const filePath = context.rootGetters.path('profiles', context.state.id, 'crash-reports', name);
+            const buf = await fs.readFile(filePath);
+            if (name.endsWith('.gz')) {
+                return new Promise((resolve, reject) => {
+                    gunzip(buf, (e, r) => {
+                        if (e) reject(e);
+                        else resolve(r.toString());
+                    });
+                });
+            }
+            return buf.toString();
         },
     },
 };

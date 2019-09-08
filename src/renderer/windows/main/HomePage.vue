@@ -5,7 +5,7 @@
       close
     </v-icon>
     <v-icon v-ripple style="position: absolute; right: 44px; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
-            dark @click="feedback">
+            dark @click="showFeedbackDialog">
       help_outline
     </v-icon>
     <v-tooltip top>
@@ -21,8 +21,11 @@
 
     <v-tooltip top>
       <template v-slot:activator="{ on }">
-        <v-btn style="position: absolute; left: 80px; bottom: 10px; " flat icon dark v-on="on"
-               @click="goExport">
+        <v-btn style="position: absolute; left: 80px; bottom: 10px; " 
+               flat icon dark 
+               :loading="refreshingProfile"
+               v-on="on"
+               @click="showExportDialog">
           <v-icon dark>
             share
           </v-icon>
@@ -34,13 +37,14 @@
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-btn style="position: absolute; left: 140px; bottom: 10px; " flat icon dark v-on="on"
-               @click="goTask">
+               @click="showTaskDialog">
           <v-badge right :value="activeTasksCount !== 0">
             <template v-slot:badge>
               <span>{{ activeTasksCount }}</span>
             </template>
             <v-icon dark>
               assignment
+              <!-- subtitles -->
             </v-icon>
           </v-badge>
         </v-btn>
@@ -48,14 +52,14 @@
       {{ $tc('task.manager', 2) }}
     </v-tooltip>
 
-    <v-menu v-if="refreshingProfile || problems.length !== 0" offset-y top dark max-height="300">
+    <v-menu v-show="refreshingProfile || problems.length !== 0" offset-y top dark max-height="300">
       <v-btn slot="activator" style="position: absolute; left: 200px; bottom: 10px; " :loading="refreshingProfile || missingJava"
-             :flat="problems.length !== 0" outline dark :color="problems.length !== 0 ? 'red' : 'white' ">
-        <v-icon left dark :color="problems.length !== 0 ? 'red': 'white'">
+             :flat="problems.length !== 0" outline dark :color="problemsLevelColor">
+        <v-icon left dark :color="problemsLevelColor">
           {{ problems.length !== 0 ?
             'warning' : 'check_circle' }}
         </v-icon>
-        {{ $tc('diagnosis.problem', problems.length, {count: problems.length}) }}
+        {{ $tc('diagnosis.problem', problems.length, { count: problems.length }) }}
       </v-btn>
 
       <v-list>
@@ -63,7 +67,7 @@
           <v-list-tile :key="index" ripple @click="fixProblem(item)">
             <v-list-tile-content>
               <v-list-tile-title>
-                {{ $t(`diagnosis.${item.id}`, item.arguments || {}) }}
+                {{ $tc(`diagnosis.${item.id}`, item.arguments.count || 0, item.arguments) }}
               </v-list-tile-title>
               <v-list-tile-sub-title>
                 {{ $t(`diagnosis.${item.id}.message`, item.arguments || {}) }}
@@ -95,7 +99,7 @@
     <v-flex d-flex xs6 style="margin: 40px 0 0 40px;">
       <v-card v-if="isServer" class="white--text">
         <v-layout>
-          <v-flex xs5 style=" padding: 5px 0">
+          <v-flex xs5 style="padding: 5px 0">
             <v-card-title>
               <v-img :src="icon" height="125px" style="max-height: 125px;" contain />
             </v-card-title>
@@ -141,25 +145,12 @@
       <v-progress-circular v-else class="v-icon--right" indeterminate :size="20" :width="2" />
     </v-btn>
 
-    <task-dialog v-model="taskDialog" @close="taskDialog=false" />
-    <crash-dialog v-model="crashDialog" :content="crashReport" :location="crashReportLocation"
-                  @close="crashDialog=false" />
-    <java-wizard ref="jwizard" @task="taskDialog=true" @show="taskDialog=false" />
-    <helper-dialog v-model="help" />
-    <v-dialog v-model="tempDialog" :persistent="launchStatus === 'launching'" width="250">
-      <v-card dark>
-        <v-container>
-          <v-layout align-center justify-center column>
-            <v-flex>
-              <v-progress-circular :size="70" :width="7" color="white" indeterminate />
-            </v-flex>
-            <v-flex mt-3>
-              {{ tempDialogText }}
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-card>
-    </v-dialog>
+    <dialog-logs v-model="logsDialog" />
+    <dialog-task v-model="taskDialog" />
+    <dialog-crash-report v-model="crashDialog" />
+    <dialog-java-wizard v-model="javaWizardDialog" @task="taskDialog=true" />
+    <dialog-feedback v-model="feedbackDialog" />
+    <dialog-launch-status v-model="launchStatusDialog" />
   </v-layout>
 </template>
 
@@ -169,91 +160,44 @@ import { PINGING_STATUS, createFailureServerStatus } from 'universal/utils/serve
 
 export default {
   data: () => ({
+    logsDialog: false,
     taskDialog: false,
-
+    launchStatusDialog: false,
+    feedbackDialog: false,
     crashDialog: false,
-    crashReport: '',
-    crashReportLocation: '',
-
-    tempDialog: false,
-    tempDialogText: '',
-
-    help: false,
+    javaWizardDialog: false,
   }),
   computed: {
     status() { return this.$repo.state.profile.status || {}; },
     icon() { return this.status.favicon || unknownServer; },
     isServer() { return this.profile.type === 'server'; },
-    problems() { return this.$repo.state.profile.problems; },
+    problems() { return this.$repo.getters.problems; },
+    problemsLevelColor() { return this.problems.some(p => !p.optional) ? 'red' : 'warning'; },
     launchStatus() { return this.$repo.state.launch.status; },
     refreshingProfile() { return this.$repo.state.profile.refreshing; },
     missingJava() { return this.$repo.getters.missingJava; },
     profile() { return this.$repo.getters.selectedProfile; },
     activeTasksCount() {
-      let count = 0;
-      for (const task of this.$repo.state.task.tasks) {
-        if (task.status === 'running') {
-          count += 1;
-        }
-      }
-      return count;
+      return this.$repo.state.task.tasks.filter(t => t.status === 'running').length;
     },
   },
   watch: {
-    launchStatus() {
-      switch (this.launchStatus) {
-        case 'ready':
-          this.tempDialog = false;
-          break;
-        case 'checkingProblems':
-          this.tempDialog = true;
-          this.tempDialogText = this.$t('launch.checkingProblems');
-          break;
-        case 'launching':
-          this.tempDialog = true;
-          this.tempDialogText = this.$t('launch.launching');
-          setTimeout(() => { this.tempDialogText = this.$t('launch.launchingSlow'); }, 4000);
-          break;
-        // case 'launched':
-        case 'minecraftReady':
-          this.tempDialog = false;
-          break;
-        default:
-      }
+    javaWizardDialog() {
+      this.taskDialog = false;
     },
   },
   mounted() {
-    
-  },
-  activated() {
   },
   methods: {
     async launch() {
       if (this.launchStatus !== 'ready') {
-        this.tempDialog = true;
+        this.launchStatusDialog = true;
         return;
       }
-
-      const success = await this.$repo.dispatch('launch').catch((e) => {
-        console.error(e);
-      });
-      if (!success) {
-        const problems = this.$repo.state.profile.problems;
-        if (problems.length !== 0) {
-          this.tempDialog = false;
-          this.handleManualFix(problems[0]);
-          return;
-        }
-      }
-      this.$electron.ipcRenderer.once('minecraft-exit', (event, status) => {
-        if (status.crashReport) {
-          this.crashDialog = true;
-          this.crashReport = status.crashReport;
-          this.crashReportLocation = status.crashReportLocation || '';
-        }
-      });
+      await this.$repo.dispatch('launch');
     },
-    goExport() {
+    showExportDialog() {
+      if (this.refreshingProfile) return;
       this.$electron.remote.dialog.showSaveDialog({
         title: this.$t('profile.export.title'),
         filters: [{ name: 'zip', extensions: ['zip'] }],
@@ -261,73 +205,62 @@ export default {
         defaultPath: `${this.profile.name}.zip`,
       }, (filename, bookmark) => {
         if (filename) {
-          this.tempDialogText = this.$t('profile.export.exportingMessage');
-          this.tempDialog = true;
-          this.$repo.dispatch('exportProfile', { dest: filename }).then(() => {
-            this.tempDialog = false;
-          }).catch((e) => {
-            this.tempDialog = false;
+          this.$repo.dispatch('exportProfile', { dest: filename }).catch((e) => {
             console.error(e);
           });
         }
       });
     },
-    goTask() {
+    showLogDialog() {
+      this.logsDialog = true;
+    },
+    showTaskDialog() {
       this.taskDialog = true;
     },
-    updateVersion(mcversion) {
-      this.$repo.dispatch('editProfile', { mcversion });
+    showFeedbackDialog() {
+      this.feedbackDialog = true;
     },
     fixProblem(problem) {
       console.log(problem);
       if (!problem.autofix) {
-        return this.handleManualFix(problem);
+        this.handleManualFix(problem);
+      } else {
+        this.handleAutoFix();
       }
-      return this.handleAutoFix();
     },
     async handleManualFix(problem) {
       let handle;
       switch (problem.id) {
-        case 'missingVersion':
-          this.$router.push('base-setting');
+        case 'unknownMod':
+        case 'incompatibleMod':
+          this.$router.replace('/mod-setting');
           break;
-        case 'missingJava':
-          this.$router.push('base-setting');
-          break;
-        case 'autoDownload':
-          handle = await this.$repo.dispatch('installJava');
-          if (handle) {
-            this.taskDialog = true;
-            await this.$repo.dispatch('waitTask', handle);
-          }
-          break;
-        case 'manualDownload':
-          await this.$repo.dispatch('redirectToJvmPage');
+        case 'incompatibleResourcePack':
+          this.$router.replace('/resource-pack-setting');
           break;
         case 'incompatibleJava':
           if (this.$repo.state.java.all.some(j => j.majorVersion === 8)) {
             await this.$repo.dispatch('editProfile', { java: this.$repo.state.java.all.find(j => j.majorVersion === 8) });
+            // TODO: notify user here the launcher switch java version
           } else {
-            await this.$refs.jwizard.display(this.$t('java.incompatibleJava'), this.$t('java.incompatibleJavaHint'));
+            this.javaWizardDialog = true;
           }
+          break;
+        case 'missingModsOnServer':
           break;
         default:
       }
     },
-    async handleAutoFix() {
-      await this.$repo.dispatch('fixProfile', this.problems);
+    handleAutoFix() {
+      this.$repo.dispatch('fixProfile', this.problems);
     },
-    async refreshServer() {
-      await this.$repo.dispatch('refreshProfile');
+    refreshServer() {
+      this.$repo.dispatch('refreshProfile');
     },
     quitLauncher() {
       setTimeout(() => {
         this.$store.dispatch('quit');
       }, 150);
-    },
-    feedback() {
-      this.help = true;
-      console.log(this.help);
     },
   },
 };

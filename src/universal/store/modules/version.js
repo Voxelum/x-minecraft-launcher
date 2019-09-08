@@ -1,5 +1,6 @@
 import { fitin } from 'universal/utils/object';
 import Vue from 'vue';
+import lastestRelease from 'universal/utils/lasteRelease';
 
 /**
  * @type {import('./version').VersionModule}
@@ -44,7 +45,7 @@ const mod = {
         /**
          * latest release
          */
-        minecraftRelease: state => state.minecraft.versions.find(v => v.id === state.minecraft.latest.release),
+        minecraftRelease: state => state.minecraft.versions.find(v => v.id === state.minecraft.latest.release) || lastestRelease,
 
         minecraftVersion: state => version => state.minecraft.versions.find(v => v.id === version),
 

@@ -14,7 +14,7 @@ const plugin = (store) => {
             tc: state => (key, count, ...values) => i18n.tc(key, count, values),
         },
     });
-    store.watch(state => state.config.locale, (val, oldVal) => {
+    store.watch(state => state.setting.locale, (val, oldVal) => {
         i18n.locale = val;
         ipcMain.emit('locale-changed');
     });

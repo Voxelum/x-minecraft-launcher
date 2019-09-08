@@ -2,16 +2,15 @@ import { Store, DispatchOptions, MutationTree, ActionTree, Module as VModule, Ac
 import { RendererInterface, Remote } from 'electron';
 
 import { UserModule } from './modules/user'
-import { VersionModule, MinecraftModule, ForgeModule, LiteloaderModule } from './modules/version'
+import { VersionModule } from './modules/version'
 import { ProfileModule, CreateOption } from './modules/profile';
 import { JavaModule } from './modules/java';
 import { CurseForgeModule } from './modules/curseforge';
 import { ResourceModule, Resource } from './modules/resource'
 import { TaskModule } from './modules/task';
 import { DiagnoseModule } from './modules/diagnose';
-import { ConfigModule } from './modules/config';
+import { SettingModule } from './modules/setting';
 import { IOModule, Actions as IOActions } from './modules/io';
-import modules from './modules/base';
 import { LauncherModule, State as LaunchState, Mutations as LaunchMutations } from './modules/launch';
 import { ClientModule } from './modules/client';
 
@@ -38,13 +37,13 @@ interface BaseState {
     platform: NodeJS.Platform
 }
 interface BaseMutations {
-    root(state: State, root: string): void
-    online(state: State, online: boolean): void
-    platform(state: State, platform: NodeJS.Platform): void
+    root(state: BaseState, root: string): void
+    online(state: BaseState, online: boolean): void
+    platform(state: BaseState, platform: NodeJS.Platform): void
 }
 
-type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | ConfigModule | UserModule | LauncherModule | IOModule | DiagnoseModule | CurseForgeModule | ClientModule; 
-type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & ConfigModule & UserModule & LauncherModule & IOModule & DiagnoseModule & CurseForgeModule & ClientModule;
+type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | SettingModule | UserModule | LauncherModule | IOModule | DiagnoseModule | CurseForgeModule | ClientModule; 
+type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & SettingModule & UserModule & LauncherModule & IOModule & DiagnoseModule & CurseForgeModule & ClientModule;
 interface ModulesCollection extends ModulesIntersection { }
 
 type Mutations =
@@ -76,32 +75,35 @@ interface Repo extends Store<RootState> {
 declare module "vue/types/vue" {
     interface Vue {
         $repo: Repo
-        $store: Repo
         $electron: RendererInterface
     }
 }
 
-interface Commit<Mutations> {
-    <T extends keyof Mutations>(type: T, payload?: Parameters<Mutations[T]>[1]): void;
+type ObjectWithFunctions<T> = {
+    [K in keyof T]: (...args: any) => any;
+};
+
+interface Commit<MU extends ObjectWithFunctions<MU>> {
+    <T extends keyof MU>(type: T, payload?: Parameters<MU[T]>[1]): void;
 }
 
-interface Dispatch<Actions> {
-    <T extends keyof Actions>(type: T, payload?: Parameters<Actions[T]>[1]): ReturnType<Actions[T]>;
+interface Dispatch<AC extends ObjectWithFunctions<AC>> {
+    <T extends keyof AC>(type: T, payload?: Parameters<AC[T]>[1]): ReturnType<AC[T]>;
 }
 
-type UseGetters<GetterTree> = {
+type UseGetters<GetterTree extends ObjectWithFunctions<GetterTree>> = {
     [K in keyof GetterTree]: ReturnType<GetterTree[K]>
 }
 
-interface Context<S, G, M, A> {
-    state: S, dispatch: RootDispatch & Dispatch<A>; commit: Commit<M> & RootCommit, rootGetters: RootGetters, getters: G, rootState: RootState;
-};
+interface Context<S, G, M extends ObjectWithFunctions<M>, A extends ObjectWithFunctions<A>> {
+    state: S; dispatch: RootDispatch & Dispatch<A>; commit: Commit<M> & RootCommit, rootGetters: RootGetters, getters: G, rootState: RootState;
+}
 
 type GetterTree<S, G> = {
     [P in keyof G]: (state: S, getters: G, rootState: RootState, rootGetters: RootGetters) => G[P];
 }
 
-interface Module<N, S, G, M, A> extends VModule<S, RootState> {
+interface Module<N, S, G, M extends ObjectWithFunctions<M>, A extends ObjectWithFunctions<A>> {
     name?: N;
     state?: S;
     mutations?: M;

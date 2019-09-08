@@ -78,7 +78,7 @@ const mod = {
     getters: {
         avaiableGameProfiles: state => Object.values(state.profiles)
             .map(p => p.profiles.map(prof => ({ ...prof, userId: p.id, authService: p.authService, profileService: p.profileService, account: p.account })))
-            .reduce((a, b) => [...a, ...b]),
+            .reduce((a, b) => [...a, ...b], []),
         selectedUser: state => state.profiles[state.selectedUser]
             || { account: '', profileService: '', authService: 'offline', accessToken: '', profiles: [], properties: {} },
         selectedGameProfile: (state, getters) => getters.selectedUser.profiles.find(p => p.id === state.selectedUserProfile)

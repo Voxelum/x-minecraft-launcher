@@ -18,7 +18,7 @@
           {{ $t('user.account.add') }}
         </v-tab>
 
-        <v-tab>
+        <v-tab :disabled="gameProfiles.length === 0">
           <v-icon left>
             people
           </v-icon>
@@ -117,30 +117,9 @@
               </v-list-tile>
             </template>
           </v-list>
-          <!-- <v-container grid-list-md>
-            <v-layout row wrap style="max-height: 40vh; overflow-y: auto">
-              <v-flex v-for="p of gameProfiles" :key="p.id" d-flex xs6 draggable>
-                <v-card :color="selectedUserProfile === p ? 'green': 'transparent'" flat hover @click="selectedUserProfile = p">
-                  <v-container>
-                    <v-layout row>
-                      <v-flex xs4 style="height: 64px; max-width: 64px; overflow: hidden">
-                        <img style="image-rendering: pixelated; transform: scale(9.5) translate(17.5px, 4.8px)" :src="sample">
-                      </v-flex>
-                      <v-flex xs8>
-                        {{ p.name }}
-                        <span style="line-wrap: auto">
-                          ({{ p.id }})
-                        </span>
-                      </v-flex>
-                    </v-layout>
-                  </v-container>
-                </v-card>
-              </v-flex>
-            </v-layout>
-          </v-container> -->
           <v-card-actions style="padding-left: 40px; padding-right: 40px;">
             <v-flex text-xs-center style="z-index: 1;">
-              <v-btn block :loading="logining" color="green" round large style="color: white" dark @click="comfirmSwitchUser">
+              <v-btn block :disabled="gameProfiles.length === 0 || selectedUserProfile === {}" :loading="logining" color="green" round large style="color: white" dark @click="comfirmSwitchUser">
                 {{ $t('user.account.switch') }}
               </v-btn>
             </v-flex>

@@ -1,6 +1,12 @@
 {
     "type": "object",
     "properties": {
+        "en": {
+            "type": "string"
+        },
+        "zh-CN": {
+            "type": "string"
+        },
         "actionforbidden": {
             "type": "string"
         },
@@ -510,6 +516,36 @@
                         "",
                         "message"
                     ]
+                },
+                "badForge": {
+                    "type": "object",
+                    "properties": {
+                        "": {
+                            "type": "string"
+                        },
+                        "message": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "",
+                        "message"
+                    ]
+                },
+                "badForgeProcessedFiles": {
+                    "type": "object",
+                    "properties": {
+                        "": {
+                            "type": "string"
+                        },
+                        "message": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "",
+                        "message"
+                    ]
                 }
             },
             "required": [
@@ -527,7 +563,9 @@
                 "missingVersionJar",
                 "missingVersionJson",
                 "problem",
-                "unknownMod"
+                "unknownMod",
+                "badForge",
+                "badForgeProcessedFiles"
             ]
         },
         "downloadUpdate": {
@@ -576,6 +614,9 @@
             ]
         },
         "filter": {
+            "type": "string"
+        },
+        "finish": {
             "type": "string"
         },
         "forge": {
@@ -1408,6 +1449,45 @@
                 },
                 "showLog": {
                     "type": "string"
+                },
+                "failed": {
+                    "type": "object",
+                    "properties": {
+                        "general": {
+                            "type": "string"
+                        },
+                        "generalText": {
+                            "type": "string"
+                        },
+                        "unresolvableProblems": {
+                            "type": "string"
+                        },
+                        "unresolvableProblemsText": {
+                            "type": "string"
+                        },
+                        "illegalAuth": {
+                            "type": "string"
+                        },
+                        "illegalAuthText": {
+                            "type": "string"
+                        },
+                        "selectProfileEmpty": {
+                            "type": "string"
+                        },
+                        "selectProfileEmptyText": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "general",
+                        "generalText",
+                        "unresolvableProblems",
+                        "unresolvableProblemsText",
+                        "illegalAuth",
+                        "illegalAuthText",
+                        "selectProfileEmpty",
+                        "selectProfileEmptyText"
+                    ]
                 }
             },
             "required": [
@@ -1419,7 +1499,8 @@
                 "launchingSlow",
                 "openCrashReport",
                 "openCrashReportFolder",
-                "showLog"
+                "showLog",
+                "failed"
             ]
         },
         "launcher": {
@@ -1581,9 +1662,6 @@
         "next": {
             "type": "string"
         },
-        "finish": {
-            "type": "string"
-        },
         "no": {
             "type": "string"
         },
@@ -1646,6 +1724,25 @@
                         "exportingMessage",
                         "message",
                         "title"
+                    ]
+                },
+                "logsCrashes": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "logs": {
+                            "type": "string"
+                        },
+                        "crashes": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "title",
+                        "logs",
+                        "crashes"
                     ]
                 },
                 "forceLocalVersion": {
@@ -1986,6 +2083,7 @@
                 "deleteHint",
                 "descriptionHint",
                 "export",
+                "logsCrashes",
                 "forceLocalVersion",
                 "forgeSetting",
                 "importFolder",
@@ -2307,6 +2405,12 @@
                 "updateToThisVersion": {
                     "type": "string"
                 },
+                "useBmclAPI": {
+                    "type": "string"
+                },
+                "useBmclAPIDescription": {
+                    "type": "string"
+                },
                 "viewUpdate": {
                     "type": "string"
                 },
@@ -2344,6 +2448,8 @@
                 "theme",
                 "update",
                 "updateToThisVersion",
+                "useBmclAPI",
+                "useBmclAPIDescription",
                 "viewUpdate",
                 "waitReload"
             ]
@@ -2396,6 +2502,21 @@
                 "accessToken": {
                     "type": "string"
                 },
+                "account": {
+                    "type": "object",
+                    "properties": {
+                        "add": {
+                            "type": "string"
+                        },
+                        "switch": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "add",
+                        "switch"
+                    ]
+                },
                 "authMode": {
                     "type": "string"
                 },
@@ -2426,10 +2547,10 @@
                 "info": {
                     "type": "string"
                 },
-                "invalidCredentials": {
+                "insecureClient": {
                     "type": "string"
                 },
-                "insecureClient": {
+                "invalidCredentials": {
                     "type": "string"
                 },
                 "login": {
@@ -2479,117 +2600,6 @@
                         "password"
                     ]
                 },
-                "service": {
-                    "type": "object",
-                    "properties": {
-                        "title": {
-                            "type": "string"
-                        },
-                        "authServiceDetail": {
-                            "type": "string"
-                        },
-                        "typeOfService": {
-                            "type": "string"
-                        },
-                        "profileServiceDetail": {
-                            "type": "string"
-                        },
-                        "baseUrl": {
-                            "type": "string"
-                        },
-                        "invalidUrl": {
-                            "type": "string"
-                        },
-                        "add": {
-                            "type": "string"
-                        },
-                        "baseUrlHint": {
-                            "type": "string"
-                        },
-                        "name": {
-                            "type": "string"
-                        },
-                        "normal": {
-                            "type": "string"
-                        },
-                        "requireName": {
-                            "type": "string"
-                        },
-                        "duplicatedName": {
-                            "type": "string"
-                        },
-                        "authLibInjector": {
-                            "type": "string"
-                        },
-                        "profile": {
-                            "type": "string"
-                        },
-                        "profileHint": {
-                            "type": "string"
-                        },
-                        "profileByName": {
-                            "type": "string"
-                        },
-                        "profileByNameHint": {
-                            "type": "string"
-                        },
-                        "texture": {
-                            "type": "string"
-                        },
-                        "textureHint": {
-                            "type": "string"
-                        },
-                        "hostName": {
-                            "type": "string"
-                        },
-                        "hostNameHint": {
-                            "type": "string"
-                        },
-                        "authenticateHint": {
-                            "type": "string"
-                        },
-                        "refreshHint": {
-                            "type": "string"
-                        },
-                        "validateHint": {
-                            "type": "string"
-                        },
-                        "invalidateHint": {
-                            "type": "string"
-                        },
-                        "signoutHint": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "title",
-                        "authServiceDetail",
-                        "typeOfService",
-                        "profileServiceDetail",
-                        "baseUrl",
-                        "invalidUrl",
-                        "add",
-                        "baseUrlHint",
-                        "name",
-                        "normal",
-                        "requireName",
-                        "duplicatedName",
-                        "authLibInjector",
-                        "profile",
-                        "profileHint",
-                        "profileByName",
-                        "profileByNameHint",
-                        "texture",
-                        "textureHint",
-                        "hostName",
-                        "hostNameHint",
-                        "authenticateHint",
-                        "refreshHint",
-                        "validateHint",
-                        "invalidateHint",
-                        "signoutHint"
-                    ]
-                },
                 "profile": {
                     "type": "string"
                 },
@@ -2632,6 +2642,117 @@
                 "requireUsername": {
                     "type": "string"
                 },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "add": {
+                            "type": "string"
+                        },
+                        "authLibInjector": {
+                            "type": "string"
+                        },
+                        "authServiceDetail": {
+                            "type": "string"
+                        },
+                        "authenticateHint": {
+                            "type": "string"
+                        },
+                        "baseUrl": {
+                            "type": "string"
+                        },
+                        "baseUrlHint": {
+                            "type": "string"
+                        },
+                        "duplicatedName": {
+                            "type": "string"
+                        },
+                        "hostName": {
+                            "type": "string"
+                        },
+                        "hostNameHint": {
+                            "type": "string"
+                        },
+                        "invalidUrl": {
+                            "type": "string"
+                        },
+                        "invalidateHint": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "normal": {
+                            "type": "string"
+                        },
+                        "profile": {
+                            "type": "string"
+                        },
+                        "profileByName": {
+                            "type": "string"
+                        },
+                        "profileByNameHint": {
+                            "type": "string"
+                        },
+                        "profileHint": {
+                            "type": "string"
+                        },
+                        "profileServiceDetail": {
+                            "type": "string"
+                        },
+                        "refreshHint": {
+                            "type": "string"
+                        },
+                        "requireName": {
+                            "type": "string"
+                        },
+                        "signoutHint": {
+                            "type": "string"
+                        },
+                        "texture": {
+                            "type": "string"
+                        },
+                        "textureHint": {
+                            "type": "string"
+                        },
+                        "title": {
+                            "type": "string"
+                        },
+                        "typeOfService": {
+                            "type": "string"
+                        },
+                        "validateHint": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "add",
+                        "authLibInjector",
+                        "authServiceDetail",
+                        "authenticateHint",
+                        "baseUrl",
+                        "baseUrlHint",
+                        "duplicatedName",
+                        "hostName",
+                        "hostNameHint",
+                        "invalidUrl",
+                        "invalidateHint",
+                        "name",
+                        "normal",
+                        "profile",
+                        "profileByName",
+                        "profileByNameHint",
+                        "profileHint",
+                        "profileServiceDetail",
+                        "refreshHint",
+                        "requireName",
+                        "signoutHint",
+                        "texture",
+                        "textureHint",
+                        "title",
+                        "typeOfService",
+                        "validateHint"
+                    ]
+                },
                 "signup": {
                     "type": "string"
                 },
@@ -2667,25 +2788,11 @@
                 },
                 "submitChallenges": {
                     "type": "string"
-                },
-                "account": {
-                    "type": "object",
-                    "properties": {
-                        "add": {
-                            "type": "string"
-                        },
-                        "switch": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "add",
-                        "switch"
-                    ]
                 }
             },
             "required": [
                 "accessToken",
+                "account",
                 "authMode",
                 "authService",
                 "birth",
@@ -2696,14 +2803,13 @@
                 "id",
                 "illegalEmail",
                 "info",
-                "invalidCredentials",
                 "insecureClient",
+                "invalidCredentials",
                 "login",
                 "logout",
                 "mojang",
                 "name",
                 "offline",
-                "service",
                 "profile",
                 "profileMode",
                 "profileService",
@@ -2714,6 +2820,7 @@
                 "requireEmail",
                 "requirePassword",
                 "requireUsername",
+                "service",
                 "signup",
                 "signupDescription",
                 "skinImport",
@@ -2725,8 +2832,7 @@
                 "skinSlim",
                 "skinUrlNotEmpty",
                 "skinUrlNotValid",
-                "submitChallenges",
-                "account"
+                "submitChallenges"
             ]
         },
         "version": {
@@ -2934,6 +3040,8 @@
         }
     },
     "required": [
+        "en",
+        "zh-CN",
         "actionforbidden",
         "add",
         "advanced",
@@ -2953,6 +3061,7 @@
         "edit",
         "feedback",
         "filter",
+        "finish",
         "forge",
         "gamesetting",
         "hello",
@@ -2982,7 +3091,6 @@
         "mod",
         "name",
         "next",
-        "finish",
         "no",
         "nodescription",
         "ok",

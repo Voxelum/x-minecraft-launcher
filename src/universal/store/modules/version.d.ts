@@ -1,4 +1,4 @@
-import { Forge, ForgeWebPage, LiteLoader, Installer, Version } from "@xmcl/minecraft-launcher-core";
+import { Forge, ForgeWebPage, LiteLoader, Installer, Version, ResolvedLibrary } from "@xmcl/minecraft-launcher-core";
 import { Context, Module, TaskHandle } from "../store";
 import ForgeInstaller from "@xmcl/forge-installer";
 export type Status = 'remote' | 'local';
@@ -59,7 +59,7 @@ export declare namespace VersionModule {
         /**
          * Latest release
          */
-        minecraftRelease: Installer.VersionMeta | undefined,
+        minecraftRelease: Installer.VersionMeta,
         minecraftVersion: (mcversion: string) => Installer.VersionMeta | undefined,
         minecraftStatuses: { [minecraftVersion: string]: Status };
 
@@ -104,7 +104,7 @@ export declare namespace VersionModule {
 
         resolveVersion(context: C, version: Pick<ResolvedVersion, 'minecraft' | 'forge' | 'liteloader' | 'folder'>): Promise<string>
 
-        installLibraries(context: C, payload: { libraries: Version.Library[] }): Promise<TaskHandle>;
+        installLibraries(context: C, payload: { libraries: (Version.Library | ResolvedLibrary)[] }): Promise<TaskHandle>;
         installAssets(context: C, version: string): Promise<TaskHandle>
         installDependencies(context: C, version: string): Promise<TaskHandle>
 

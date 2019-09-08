@@ -153,7 +153,7 @@ export default {
           },
          
           {
-            name: 'config.json',
+            name: 'setting.json',
             id: 'config',
             diff: true,
             file: 'json',

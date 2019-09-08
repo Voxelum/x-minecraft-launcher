@@ -18,7 +18,7 @@ const mod = {
     ...base,
     actions: {
         async load(context) {
-            const loaded = await context.dispatch('getPersistence', { path: 'java.json' });
+            const loaded = await context.dispatch('getPersistence', { path: 'java.json', schema: 'JavaConfig' });
             if (loaded && loaded.all instanceof Array) {
                 context.commit('addJava', loaded.all.filter(l => typeof l.path === 'string'));
             }

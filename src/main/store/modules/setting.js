@@ -2,42 +2,48 @@ import { app } from 'electron';
 import locales from 'static/locales';
 import { autoUpdater, UpdaterSignal } from 'electron-updater';
 import { Task } from '@xmcl/minecraft-launcher-core';
-import base from 'universal/store/modules/config';
+import base from 'universal/store/modules/setting';
 import isInGFW from 'in-gfw';
 
 /**
- * @type {import('universal/store/modules/config').ConfigModule}
+ * @type {import('universal/store/modules/setting').SettingModule}
  */
 const mod = {
     ...base,
     actions: {
         async load(context) {
-            const data = await context.dispatch('getPersistence', { path: 'config.json' }) || {};
+            const data = await context.dispatch('getPersistence', { path: 'setting.json', schema: 'SettingConfig' }) || {};
             context.commit('config', {
                 locale: data.locale || app.getLocale(),
                 locales: Object.keys(locales),
                 autoInstallOnAppQuit: data.autoInstallOnAppQuit,
                 autoDownload: data.autoDownload,
                 allowPrerelease: data.allowPrerelease,
-                settings: data.settings,
+                useBmclAPI: data.useBmclAPI,
+                defaultBackgroundImage: data.defaultBackgroundImage,
+                defaultBlur: data.defaultBlur,
+                // settings: data.settings,
             });
         },
         async save(context, { mutation }) {
             switch (mutation) {
-                case 'config':
                 case 'locale':
                 case 'allowPrerelease':
                 case 'autoInstallOnAppQuit':
                 case 'autoDownload':
-                case 'settings':
+                case 'defaultBackgroundImage':
+                case 'defaultBlur':
+                case 'useBmclApi': 
                     await context.dispatch('setPersistence', {
-                        path: 'config.json',
+                        path: 'setting.json',
                         data: {
                             locale: context.state.locale,
                             autoInstallOnAppQuit: context.state.autoInstallOnAppQuit,
                             autoDownload: context.state.autoDownload,
                             allowPrerelease: context.state.allowPrerelease,
-                            settings: context.state.settings,
+                            useBmclAPI: context.state.useBmclAPI,
+                            defaultBackgroundImage: context.state.defaultBackgroundImage,
+                            defaultBlur: context.state.defaultBlur,
                         },
                     });
                     break;
@@ -72,10 +78,10 @@ const mod = {
                 if (!context.state.autoDownload) {
                     context.commit('downloadingUpdate', true);
                     const inside = await isInGFW().catch(_ => false);
-                    if (inside) {
-                        autoUpdater.setFeedURL('https://voxelauncher.blob.core.windows.net/releases');
-                        await autoUpdater.checkForUpdates();
-                    }
+                    // if (inside) {
+                    //     autoUpdater.setFeedURL('https://voxelauncher.blob.core.windows.net/releases');
+                    //     await autoUpdater.checkForUpdates();
+                    // }
                     await new Promise((resolve, reject) => {
                         autoUpdater.downloadUpdate().catch(reject);
                         const signal = new UpdaterSignal(autoUpdater);

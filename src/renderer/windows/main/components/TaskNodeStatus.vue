@@ -1,8 +1,7 @@
 <template>
   <div @mouseenter="enter" @mouseleave="leave">
     <v-icon v-if="status !== 'running'" style="margin-right: 5px" :color="status === 'successed'?'green':status === 'cancelled'?'white':'red'">
-      {{ status === 'successed' ? (hasChild ? 'done_all' : 'check') : status === 'cancelled' ? 'stop' :
-        'error_outline' }}
+      {{ icon }}
     </v-icon>
     <v-progress-circular v-else-if="total === -1 || !hovered" style="margin-right: 7px" small :size="20" :value="percentage"
                          :width="3" :indeterminate="total === -1" color="white" class="mb-0" />
@@ -42,8 +41,18 @@ export default {
     };
   },
   computed: {
+    icon() {
+      switch (this.status) {
+        case 'successed':
+          return this.hasChild ? 'done_all' : 'check';
+        case 'cancelled':
+          return 'stop';
+        default:
+          return 'error_outline';
+      }
+    },
     percentage() {
-      return this.progress / this.total;
+      return this.progress / this.total * 100;
     },
   },
   methods: {

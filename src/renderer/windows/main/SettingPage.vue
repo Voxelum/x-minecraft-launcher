@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-md fluid>
+  <v-container grid-list-md fluid style="z-index: 1">
     <v-layout wrap style="padding: 6px; 8px; overflow: auto; max-height: 95vh" fill-height>
       <v-flex d-flex xs12 tag="h1" style="margin-bottom: 20px; " class="white--text">
         <span class="headline">{{ $tc('setting.name', 2) }}</span>
@@ -35,6 +35,15 @@
                 {{ $t('setting.showRoot') }}
               </v-btn>
             </v-list-tile-action>
+          </v-list-tile>
+          <v-list-tile>
+            <v-list-tile-action>
+              <v-checkbox v-model="useBmclAPI" />
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title> {{ $t('setting.useBmclAPI') }} </v-list-tile-title>
+              <v-list-tile-sub-title> {{ $t('setting.useBmclAPIDescription') }} </v-list-tile-sub-title>
+            </v-list-tile-content>
           </v-list-tile>
         </v-list>
       </v-flex>
@@ -161,6 +170,8 @@
 </template>
 
 <script>
+import langIndex from 'static/locales/index.json';
+
 export default {
   data() {
     return {
@@ -179,27 +190,36 @@ export default {
   computed: {
     selectedLang: {
       get() {
-        return this.langs.find(l => l === this.$repo.state.config.locale) || 'en';
+        return this.langs.find(l => l.value === this.$repo.state.setting.locale) || 'en';
       },
       set(v) { this.$repo.commit('locale', v); },
     },
     allowPrerelease: {
-      get() { return this.$repo.state.config.allowPrerelease; },
+      get() { return this.$repo.state.setting.allowPrerelease; },
       set(v) { this.$repo.commit('allowPrerelease', v); },
     },
     autoInstallOnAppQuit: {
-      get() { return this.$repo.state.config.autoInstallOnAppQuit; },
+      get() { return this.$repo.state.setting.autoInstallOnAppQuit; },
       set(v) { this.$repo.commit('autoInstallOnAppQuit', v); },
     },
     autoDownload: {
-      get() { return this.$repo.state.config.autoDownload; },
+      get() { return this.$repo.state.setting.autoDownload; },
       set(v) { this.$repo.commit('autoDownload', v); },
     },
-    readyToUpdate() { return this.$repo.state.config.readyToUpdate; },
-    downloadingUpdate() { return this.$repo.state.config.downloadingUpdate; },
-    checkingUpdate() { return this.$repo.state.config.checkingUpdate; },
-    updateInfo() { return this.$repo.state.config.updateInfo || {}; },
-    langs() { return this.$repo.state.config.locales; },
+    useBmclAPI: {
+      get() { return this.$repo.state.setting.useBmclAPI; },
+      set(v) { this.$repo.commit('useBmclApi', v); },
+    },
+    readyToUpdate() { return this.$repo.state.setting.readyToUpdate; },
+    downloadingUpdate() { return this.$repo.state.setting.downloadingUpdate; },
+    checkingUpdate() { return this.$repo.state.setting.checkingUpdate; },
+    updateInfo() { return this.$repo.state.setting.updateInfo || {}; },
+    langs() {
+      return this.$repo.state.setting.locales.map(l => ({
+        value: l,
+        text: langIndex[l],
+      })); 
+    },
   },
   methods: {
     checkUpdate() {

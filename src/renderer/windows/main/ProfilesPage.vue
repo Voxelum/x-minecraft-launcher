@@ -166,18 +166,6 @@ export default {
       }
       return [todayR, threeR, other];
     },
-    profiles: {
-      get() {
-        const filter = this.filter.toLowerCase();
-        return this.$repo.getters.profiles.filter(profile => filter === ''
-          || profile.author.toLowerCase().indexOf(filter) !== -1
-          || profile.name.toLowerCase().indexOf(filter) !== -1
-          || profile.description.toLowerCase().indexOf(filter) !== -1);
-      },
-      set(v) {
-        this.$repo.commit('profileIds', v.map(p => p.id));
-      },
-    },
   },
   mounted() {
     const colors = [...this.colors];
@@ -225,7 +213,14 @@ export default {
       });
     },
     doDelete() {
-      this.$repo.dispatch('deleteProfile', this.deletingProfile);
+      if (this.deletingProfile) {
+        this.$repo.dispatch('deleteProfile', this.deletingProfile.id)
+          .finally(() => {
+            this.isDeletingProfile = false;
+          });
+      } else {
+        this.isDeletingProfile = false;
+      }
     },
     cancelDelete() {
       this.isDeletingProfile = false;

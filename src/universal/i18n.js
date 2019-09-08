@@ -38,7 +38,7 @@ export default function create(store) {
             choice].concat(args));
         return result;
     };
-    store.watch(state => state.config.locale, (val, oldVal) => {
+    store.watch(state => state.setting.locale, (val, oldVal) => {
         i18n.locale = val;
         console.log(`language changed ${oldVal} => ${val}`);
         // if (Object.keys(i18n.getLocaleMessage('en')).length === 0) {

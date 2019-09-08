@@ -2,6 +2,56 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0-beta.0](https://github.com/voxelum/voxelauncher/compare/v0.2.0...v0.3.0-beta.0) (2019-09-08)
+
+
+### Bug Fixes
+
+* add guard for profile commit ([84218fa](https://github.com/voxelum/voxelauncher/commit/84218fa))
+* disable the switch user option if there is non ([2f853f7](https://github.com/voxelum/voxelauncher/commit/2f853f7))
+* fail of game profiles due to empty ([7fc086c](https://github.com/voxelum/voxelauncher/commit/7fc086c))
+* let task batch fire on threshold ([8a7094e](https://github.com/voxelum/voxelauncher/commit/8a7094e))
+* let the task update the failure to message ([fa84f2d](https://github.com/voxelum/voxelauncher/commit/fa84f2d))
+* not end task if the fix is finished ([4aeddfb](https://github.com/voxelum/voxelauncher/commit/4aeddfb))
+* only check security on mojang ([83d5c5f](https://github.com/voxelum/voxelauncher/commit/83d5c5f))
+* other setting save ([d5b026e](https://github.com/voxelum/voxelauncher/commit/d5b026e))
+* prevent infinity loop on fixing unfixable problems ([f4808ea](https://github.com/voxelum/voxelauncher/commit/f4808ea))
+* profile deletion ([9862d49](https://github.com/voxelum/voxelauncher/commit/9862d49))
+* remove useless profile ids ([b59389e](https://github.com/voxelum/voxelauncher/commit/b59389e))
+* temp disable the azure replacement ([003d10f](https://github.com/voxelum/voxelauncher/commit/003d10f))
+* try prevent crash on author assign ([94ca271](https://github.com/voxelum/voxelauncher/commit/94ca271))
+* **curseforge:** wrong title font ([69be34c](https://github.com/voxelum/voxelauncher/commit/69be34c))
+* **diagnose:** add forge and provide a workaround ([91d46eb](https://github.com/voxelum/voxelauncher/commit/91d46eb))
+* **diagnose:** infinity loop and missingModsOnServer ([63ec558](https://github.com/voxelum/voxelauncher/commit/63ec558))
+* **diagnose:** make incompatibleJava not autofix ([d6828cc](https://github.com/voxelum/voxelauncher/commit/d6828cc))
+* **diagnose:** optimize the diagnose progress ([5b10cd9](https://github.com/voxelum/voxelauncher/commit/5b10cd9))
+* **forge:** adapt new forge installation ([e48f99b](https://github.com/voxelum/voxelauncher/commit/e48f99b))
+* **forge:** forge list refresh condition ([0768e8f](https://github.com/voxelum/voxelauncher/commit/0768e8f))
+* **launch:** now will only check problem once ([a995bab](https://github.com/voxelum/voxelauncher/commit/a995bab))
+* **locale:** add missing login string ([4f50718](https://github.com/voxelum/voxelauncher/commit/4f50718))
+* **locale:** lib and forge text ([9e9fb8c](https://github.com/voxelum/voxelauncher/commit/9e9fb8c))
+* **locale:** make the lib text display for multiple case ([ca3b13d](https://github.com/voxelum/voxelauncher/commit/ca3b13d))
+* **setting:** the setting not loaded ([84c35a4](https://github.com/voxelum/voxelauncher/commit/84c35a4))
+* **task:** simplify the error msg ([34ebdc8](https://github.com/voxelum/voxelauncher/commit/34ebdc8))
+* **ui:** crash dialog binding ([0ab72c9](https://github.com/voxelum/voxelauncher/commit/0ab72c9))
+* **ui:** dialog task close ([6cafb5d](https://github.com/voxelum/voxelauncher/commit/6cafb5d))
+* **ui:** revert the width of launching dialog ([e92f9b4](https://github.com/voxelum/voxelauncher/commit/e92f9b4))
+* **ui:** wrong progress display ([e1ffb9d](https://github.com/voxelum/voxelauncher/commit/e1ffb9d))
+* **version:** make launcher store a default full version ([821ceea](https://github.com/voxelum/voxelauncher/commit/821ceea))
+* use bmcl api not saved ([4cc226a](https://github.com/voxelum/voxelauncher/commit/4cc226a))
+
+
+### Features
+
+* try support bmcl api ([5deafc2](https://github.com/voxelum/voxelauncher/commit/5deafc2))
+* **download:** support bmcl api toggle ([e3080a9](https://github.com/voxelum/voxelauncher/commit/e3080a9))
+* **feedback:** add group # explicitly ([0eb62c0](https://github.com/voxelum/voxelauncher/commit/0eb62c0))
+* **launch:** record launch error ([ca2686c](https://github.com/voxelum/voxelauncher/commit/ca2686c))
+* **profile:** provide log/crash api on main ([a247c6a](https://github.com/voxelum/voxelauncher/commit/a247c6a))
+* **setting:** display localized lang title ([d690580](https://github.com/voxelum/voxelauncher/commit/d690580))
+
+
+
 ## [0.2.0](https://github.com/voxelum/voxelauncher/compare/v0.2.0-beta.1...v0.2.0) (2019-09-01)
 
 

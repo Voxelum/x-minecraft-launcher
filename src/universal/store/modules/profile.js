@@ -8,7 +8,7 @@ import { UNKNOWN_STATUS } from 'universal/utils/server-status';
 export function createTemplate(id, java, mcversion, type = 'modpack', isCreatingNew) {
     console.log(`Template from ${type}`);
     /**
-     * @type {import('./profile').ProfileModule.ProfileBase}
+     * @type {import('./profile.config').ProfileConfig}
      */
     const base = {
         id,
@@ -44,7 +44,7 @@ export function createTemplate(id, java, mcversion, type = 'modpack', isCreating
     };
     if (type === 'modpack') {
         /**
-        * @type {import('./profile').ProfileModule.Profile}
+        * @type {import('./profile.config').ModpackProfileConfig}
          */
         const modpack = {
             author: '',
@@ -55,7 +55,7 @@ export function createTemplate(id, java, mcversion, type = 'modpack', isCreating
         return modpack;
     }
     /**
-     * @type {import('./profile').ProfileModule.ServerProfile}
+     * @type {import('./profile.config').ServerProfileConfig}
      */
     const server = {
         host: '',
@@ -72,7 +72,6 @@ export function createTemplate(id, java, mcversion, type = 'modpack', isCreating
 const mod = {
     state: {
         all: {},
-        profileIds: [],
         id: '',
 
         status: UNKNOWN_STATUS,
@@ -84,7 +83,6 @@ const mod = {
         saves: [],
 
         refreshing: false,
-        problems: [],
 
         dirty: {
             servers: false,
@@ -93,7 +91,7 @@ const mod = {
         },
     },
     getters: {
-        profiles: state => state.profileIds.map(k => state.all[k]),
+        profiles: state => Object.keys(state.all).map(k => state.all[k]),
         serverProtocolVersion: state => 338,
         selectedProfile: state => state.all[state.id],
         currentVersion: (state, getters, rootState) => {
@@ -110,11 +108,25 @@ const mod = {
                 folder: getExpectVersion(minecraft, forge, liteloader),
             };
         },
+        deployingResources: (state, _, rootState) => {
+            const profile = state.all[state.id];
+
+            /**
+             * @type {{[domain:string]: import('universal/store/modules/resource').Resource<any>[]}}
+             */
+            const resources = {};
+            for (const domain of Object.keys(profile.deployments)) {
+                const depl = profile.deployments[domain];
+                if (depl instanceof Array && depl.length !== 0) {
+                    const domainResources = rootState.resource.domains[domain];
+                    resources[domain] = depl.map(h => domainResources[h]);
+                }
+            }
+
+            return resources;
+        },
     },
     mutations: {
-        profileIds(state, ids) {
-            state.profileIds = ids;
-        },
         addProfile(state, profile) {
             /**
              * Prevent the case that hot reload keep the vuex state
@@ -122,15 +134,8 @@ const mod = {
             if (!state.all[profile.id]) {
                 Vue.set(state.all, profile.id, profile);
             }
-            if (state.profileIds.indexOf(profile.id) === -1) {
-                state.profileIds.push(profile.id);
-            }
         },
         removeProfile(state, id) {
-            const i = state.profileIds.indexOf(id);
-            if (i !== -1) {
-                Vue.delete(state.profileIds, i);
-            }
             Vue.delete(state.all, id);
         },
         selectProfile(state, id) {
@@ -143,6 +148,11 @@ const mod = {
         },
         profile(state, settings) {
             const prof = state.all[state.id];
+
+            if (!prof) {
+                console.error(`Cannot commit profile. Illegal State with missing profile ${state.id}`);
+                return;
+            }
 
             prof.name = typeof settings.name === 'string' ? settings.name : prof.name;
 
@@ -266,9 +276,6 @@ const mod = {
         },
         profileSaves(state, saves) {
             state.saves = saves;
-        },
-        profileProblems(state, problems) {
-            state.problems = problems;
         },
         markDirty(state, { dirty, target }) {
             state.dirty[target] = dirty;

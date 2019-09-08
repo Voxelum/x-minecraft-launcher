@@ -247,7 +247,7 @@ export default {
     gameProfile() { return this.$repo.getters.selectedGameProfile; },
     gameProfiles() { return this.$repo.getters.avaiableGameProfiles; },
 
-    security() { return this.$repo.state.user.security; },
+    security() { return this.user.authServices === 'mojang' ? this.$repo.state.user.security : true; },
     offline() { return this.$repo.getters.offline; },
     refreshingSkin() { return this.$repo.state.user.refreshingSkin; },
     pending() { return this.refreshingSkin || this.uploadingSkin || this.parsingSkin; },

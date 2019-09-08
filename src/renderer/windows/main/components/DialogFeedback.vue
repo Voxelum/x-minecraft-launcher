@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="value" hide-overlay transition="dialog-bottom-transition" @input="$emit('input', false)" width="500">
+  <v-dialog :value="value" hide-overlay transition="dialog-bottom-transition" width="500" @input="$emit('input', false)">
     <v-toolbar color="warning">
       <v-btn icon dark @click="$emit('input', false)">
         <v-icon>close</v-icon>
@@ -23,7 +23,9 @@
       <v-list-tile avatar>
         <v-list-tile-content>
           <v-list-tile-title> {{ $t('feedback.qq') }} </v-list-tile-title>
-          <v-list-tile-sub-title> {{ $t('feedback.qqDescription') }} </v-list-tile-sub-title>
+          <v-list-tile-sub-title style="max-width: 80%">
+            {{ $t('feedback.qqDescription', { number: 858391850 }) }}
+          </v-list-tile-sub-title>
         </v-list-tile-content>
 
         <v-list-tile-action>

@@ -61,10 +61,10 @@ export default {
     },
   },
   computed: {
-    checkingUpdate() { return this.$repo.state.config.checkingUpdate; },
-    downloadingUpdate() { return this.$repo.state.config.downloadingUpdate; },
-    updateInfo() { return this.$repo.state.config.updateInfo; },
-    readyToUpdate() { return this.$repo.state.config.readyToUpdate; },
+    checkingUpdate() { return this.$repo.state.setting.checkingUpdate; },
+    downloadingUpdate() { return this.$repo.state.setting.downloadingUpdate; },
+    updateInfo() { return this.$repo.state.setting.updateInfo; },
+    readyToUpdate() { return this.$repo.state.setting.readyToUpdate; },
   },
   methods: {
     downloadThisUpdate() {

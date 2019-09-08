@@ -1,5 +1,5 @@
 /**
- * @type {import('./config').ConfigModule}
+ * @type {import('./setting').SettingModule}
  */
 const mod = {
     state: {
@@ -12,7 +12,9 @@ const mod = {
         downloadingUpdate: false,
         checkingUpdate: false,
         autoDownload: false,
-        settings: {},
+        defaultBackgroundImage: null,
+        defaultBlur: 0,
+        useBmclAPI: true,
     },
     mutations: {
         downloadingUpdate(state, d) { state.downloadingUpdate = !!d; },
@@ -39,15 +41,19 @@ const mod = {
             state.autoDownload = config.autoDownload || false;
             state.autoInstallOnAppQuit = config.autoDownload || false;
             state.allowPrerelease = config.allowPrerelease || false;
+            state.useBmclAPI = typeof config.useBmclAPI === 'boolean' ? config.useBmclAPI : true;
         },
         settings(state, settings) {
-            Object.assign(state.settings, settings);
+            // Object.assign(state.settings, settings);
         },
         defaultBackgroundImage(state, img) {
             if (typeof img === 'string') state.defaultBackgroundImage = img;
         },
         defaultBlur(state, blur) {
             if (typeof blur === 'number') state.defaultBlur = blur;
+        },
+        useBmclApi(state, use) {
+            state.useBmclAPI = use;
         },
     },
 };
