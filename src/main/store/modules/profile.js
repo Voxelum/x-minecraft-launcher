@@ -13,7 +13,6 @@ import uuid from 'uuid';
 import { Unzip } from '@xmcl/unzip';
 import { ZipFile } from 'yazl';
 import { createHash } from 'crypto';
-import { vfs } from '@xmcl/minecraft-launcher-core/node_modules/@xmcl/util';
 
 /**
  * @param {string} save
