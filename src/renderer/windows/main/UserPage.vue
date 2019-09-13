@@ -21,13 +21,13 @@
     </v-tooltip>
 
     <v-fab-transition>
-      <v-btn v-show="modified" fab small absolute style="bottom: 100px; left: 45px; z-index: 2;"
+      <v-btn v-show="modified" fab small absolute style="bottom: 100px; right: 45px; z-index: 2;"
              :disabled="pending" @click="doReset">
         <v-icon>clear</v-icon>
       </v-btn>
     </v-fab-transition>
     <v-fab-transition>
-      <v-btn v-show="modified" fab small absolute style="bottom: 100px; left: 157px; z-index: 2;"
+      <v-btn v-show="modified" fab small absolute style="bottom: 100px; right: 157px; z-index: 2;"
              :disabled="pending" @click="doUpload">
         <v-icon>check</v-icon>
       </v-btn>
@@ -129,63 +129,6 @@
       </v-flex>
     </v-layout>
 
-    <v-navigation-drawer
-      v-model="switchUserSidebar"
-      right
-      absolute
-      clipped
-      width="230"
-      hide-overlay
-    >
-      <v-list class="pa-1">
-        <v-list-tile avatar>
-          <v-list-tile-avatar>
-            <v-icon> compare_arrows </v-icon>
-          </v-list-tile-avatar>
-
-          <v-list-tile-content>
-            <v-list-tile-title>{{ $t('user.account.switch') }}</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-
-      <v-list draggable class="pt-0" two-line>
-        <v-divider />
-
-        <v-list-tile
-          v-for="u in gameProfiles"
-          :key="u.id"
-          draggable
-          @dragstart="draggingUser = true"
-          @dragend="draggingUser = false"
-          @click="switchUser(u)"
-        >
-          <v-list-tile-avatar>
-            <v-chip label outline small>
-              {{ u.authService }}
-            </v-chip>
-          </v-list-tile-avatar>
-
-          <v-list-tile-content>
-            <v-list-tile-title>{{ u.name }}</v-list-tile-title>
-            <v-list-tile-sub-title> {{ u.authService === 'offline' ? u.id : u.account }} </v-list-tile-sub-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-tile avatar @click="toggleSwitchUser">
-          <v-list-tile-avatar>
-            <v-icon> add </v-icon>
-          </v-list-tile-avatar>
-
-          <v-list-tile-content>
-            <v-list-tile-title> {{ $t('user.account.add') }} </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-divider />
-      </v-list>
-    </v-navigation-drawer>
-    
     <dialog-user-services v-model="userServiceDialog" />
     <dialog-challenges v-model="securityDialog" />
     <v-dialog v-model="importUrlDialog" width="400">
@@ -223,7 +166,6 @@ export default {
     return {
       fab: false,
 
-      switchUserSidebar: false,
       hoverTextOnEdit: '',
       skinUrlError: true,
       skinUrlFormat: [
