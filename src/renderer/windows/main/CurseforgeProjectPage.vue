@@ -1,12 +1,12 @@
 <template>
-  <v-container grid-list-md fill-height style="z-index: 10">
+  <v-container grid-list-md fill-height style="z-index: 10; padding">
     <v-layout row wrap>
       <v-flex tag="h1" class="white--text" xs12>
         <span class="headline">{{ name || id }}</span>
       </v-flex>
       <v-flex xs12>
         <v-layout fill-height row>
-          <v-flex xs9>
+          <v-flex xs8>
             <v-tabs v-model="tab" dark slider-color="yellow">
               <v-tab>
                 {{ $t('curseforge.project.description') }}
@@ -84,28 +84,72 @@
               </v-tab-item>
             </v-tabs>
           </v-flex>
-          <v-flex xs3 fill-height>
-            <v-card>
-              <v-card-title>
-                {{ $t('curseforge.totalDownloads') }}
-                {{ totalDownload }}
-              </v-card-title>
+          <v-flex xs4 fill-height>
+            <v-layout column>
+              <v-flex xs6>
+                <v-card style="max-height: 214px; min-height: 214px;">
+                  <v-card-title>
+                    <div style="font-weight: 500;">
+                      {{ $t('curseforge.createdDate') }}
+                    </div>
+                    <div style="color: grey">
+                      {{ computeDate(createdDate) }}
+                    </div>
 
-              <v-card-title>
-                {{ $t('curseforge.createdDate') }}
-                {{ computeDate(createdDate) }}
-              </v-card-title>
-
-              <v-card-title>
-                {{ $t('curseforge.lastUpdate') }}
-                {{ computeDate(lastUpdate) }}
-              </v-card-title>
-
-              <v-card-text>
-                {{ $t('curseforge.license') }}
-                {{ license.name }}
-              </v-card-text>
-            </v-card>
+                    <div style="font-weight: 500;">
+                      {{ $t('curseforge.lastUpdate') }}
+                    </div>
+                    <div style="color: grey">
+                      {{ computeDate(lastUpdate) }}
+                    </div>
+                  </v-card-title>
+                  <v-card-text>
+                    <div style="font-weight: 500;">
+                      {{ $t('curseforge.totalDownloads') }}
+                    </div>
+                    <div style="color: grey">
+                      {{ totalDownload }}
+                    </div>
+                    <div style="font-weight: 500;">
+                      {{ $t('curseforge.license') }}
+                    </div>
+                    <div style="color: grey">
+                      {{ license.name }}
+                    </div>
+                  </v-card-text>
+                </v-card>
+              </v-flex>
+              <v-flex xs6>
+                <v-card style="max-height: 232px; min-height: 232px;">
+                  <v-card-title primary-title style="font-weight: 500;">
+                    {{ $t('curseforge.recentFiles') }}
+                  </v-card-title>
+                  <div style="max-height: 160px; min-height: 160px; overflow: auto">
+                    <v-list>
+                      <v-tooltip v-for="(file, i) in recentFiles" :key="file.href" top>
+                        <template v-slot:activator="{ on }">
+                          <v-list-tile :v-ripple="!recentFilesStat[i]" @click="installPreview(file, i)" v-on="on">
+                            <v-list-tile-content>
+                              <v-list-tile-title>{{ file.name }}</v-list-tile-title>
+                              <v-list-tile-sub-title>
+                                {{ computeDate(file.date) }}
+                              </v-list-tile-sub-title>
+                            </v-list-tile-content>
+                            <v-list-tile-action>
+                              <v-icon v-if="!isFileDownloading(file)">
+                                {{ recentFilesStat[i] ? 'dns' : 'cloud_download' }}
+                              </v-icon>
+                              <v-progress-circular v-else indeterminate :size="24" :width="2" />
+                            </v-list-tile-action>
+                          </v-list-tile>
+                        </template>
+                        {{ file.name }}
+                      </v-tooltip>
+                    </v-list>
+                  </div>
+                </v-card>
+              </v-flex>
+            </v-layout>
           </v-flex>
         </v-layout>
       </v-flex>
@@ -142,6 +186,7 @@ export default {
       totalDownload: '',
       license: '',
       description: '',
+      recentFiles: [],
 
       page: 1,
       pages: 1,
@@ -157,6 +202,9 @@ export default {
     };
   },
   computed: {
+    recentFilesStat() {
+      return this.recentFiles.map(file => this.$repo.getters.isFileInstalled(file));
+    },
     fileStats() {
       return this.files.map(file => this.$repo.getters.isFileInstalled(file));
     },
@@ -183,15 +231,16 @@ export default {
     async refresh() {
       this.refreshingProject = true;
       try {
-        const { name, image, createdDate, lastUpdate, totalDownload, license, description, projectId } = await this.$repo.dispatch('fetchCurseForgeProject', { path: this.id, project: this.type });
+        const { name, image, createdDate, updatedDate, totalDownload, license, description, projectId, files } = await this.$repo.dispatch('fetchCurseForgeProject', { path: this.id, project: this.type });
         this.name = name;
         this.image = image;
         this.createdDate = createdDate;
-        this.lastUpdate = lastUpdate;
+        this.lastUpdate = updatedDate;
         this.totalDownload = totalDownload;
         this.license = license;
         this.description = description;
         this.projectId = projectId;
+        this.recentFiles = files;
 
         const imgs = this.$el.getElementsByTagName('img');
         for (let i = 0; i < imgs.length; ++i) {
@@ -214,6 +263,12 @@ export default {
         });
         this.pages = pages;
         this.versions = versions;
+        // this.files = [];
+        // await this.$nextTick();
+        // for (const file of files) {
+        //   this.files.push(file);
+        //   await this.$nextTick();
+        // }
         this.files = files;
       } finally {
         this.refreshingFile = false;
@@ -235,8 +290,11 @@ export default {
     },
     getColor(type) {
       switch (type) {
+        case 'release':
         case 'R': return 'primary';
+        case 'alpha':
         case 'A': return 'red';
+        case 'beta':
         case 'B': return 'orange';
         default:
           return '';
@@ -247,10 +305,29 @@ export default {
       d.setUTCSeconds(Number.parseInt(date, 10));
       return d.toLocaleDateString();
     },
+    /**
+     * @type {import('universal/store/modules/curseforge').CurseforgeModule.Download}
+     */
     install(file) {
       this.$repo.dispatch('downloadAndImportFile', {
-        project: { type: this.type, name: this.name, projectId: this.projectId },
-        file,
+        id: file.id,
+        name: file.name,
+        href: file.href,
+        projectType: this.type,
+        projectPath: this.id,
+        projectId: this.projectId,
+      });
+    },
+    installPreview(file, index) {
+      if (this.recentFilesStat[index]) return;
+      if (this.isFileDownloading(file.href)) return;
+      this.$repo.dispatch('downloadAndImportFile', {
+        id: file.id,
+        name: file.name,
+        href: file.href,
+        projectType: this.type,
+        projectPath: this.id,
+        projectId: this.projectId,
       });
     },
     isFileDownloading(file) {
