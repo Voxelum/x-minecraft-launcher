@@ -37,19 +37,13 @@
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-btn style="position: absolute; left: 140px; bottom: 10px; " flat icon dark v-on="on"
-               @click="showTaskDialog">
-          <v-badge right :value="activeTasksCount !== 0">
-            <template v-slot:badge>
-              <span>{{ activeTasksCount }}</span>
-            </template>
-            <v-icon dark>
-              assignment
-              <!-- subtitles -->
-            </v-icon>
-          </v-badge>
+               @click="showLogDialog">
+          <v-icon dark>
+            subtitles
+          </v-icon>
         </v-btn>
       </template>
-      {{ $tc('task.manager', 2) }}
+      {{ $t('profile.logsCrashes.title') }}
     </v-tooltip>
 
     <v-menu v-show="refreshingProfile || problems.length !== 0" offset-y top dark max-height="300">
@@ -139,16 +133,15 @@
            :disabled="refreshingProfile || missingJava"
            @click="launch">
       {{ $t('launch.launch') }}
-      <v-icon v-if="launchStatus === 'ready'" right> 
+      <v-icon v-if="launchStatus === 'ready' || launchStatus === 'error'" right> 
         play_arrow
       </v-icon>
       <v-progress-circular v-else class="v-icon--right" indeterminate :size="20" :width="2" />
     </v-btn>
 
     <dialog-logs v-model="logsDialog" />
-    <dialog-task v-model="taskDialog" />
     <dialog-crash-report v-model="crashDialog" />
-    <dialog-java-wizard v-model="javaWizardDialog" @task="taskDialog=true" />
+    <dialog-java-wizard v-model="javaWizardDialog" @task="$electron.ipcRenderer.emit('task')" />
     <dialog-feedback v-model="feedbackDialog" />
     <dialog-launch-status v-model="launchStatusDialog" />
   </v-layout>
@@ -161,7 +154,6 @@ import { PINGING_STATUS, createFailureServerStatus } from 'universal/utils/serve
 export default {
   data: () => ({
     logsDialog: false,
-    taskDialog: false,
     launchStatusDialog: false,
     feedbackDialog: false,
     crashDialog: false,
@@ -177,13 +169,10 @@ export default {
     refreshingProfile() { return this.$repo.state.profile.refreshing; },
     missingJava() { return this.$repo.getters.missingJava; },
     profile() { return this.$repo.getters.selectedProfile; },
-    activeTasksCount() {
-      return this.$repo.state.task.tasks.filter(t => t.status === 'running').length;
-    },
   },
   watch: {
     javaWizardDialog() {
-      this.taskDialog = false;
+      this.$electron.ipcRenderer.emit('task', false);
     },
   },
   mounted() {
@@ -213,9 +202,6 @@ export default {
     },
     showLogDialog() {
       this.logsDialog = true;
-    },
-    showTaskDialog() {
-      this.taskDialog = true;
     },
     showFeedbackDialog() {
       this.feedbackDialog = true;

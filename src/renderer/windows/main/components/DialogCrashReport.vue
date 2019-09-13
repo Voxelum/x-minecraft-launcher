@@ -33,19 +33,21 @@ export default {
   data() {
     return {
       content: '',
-      location: '', 
+      location: '',
     };
   },
   mounted() {
-    this.$electron.ipcRenderer.on('minecraft-exit', (event, status) => {
+    this.$electron.ipcRenderer.removeListener('minecraft-exit', this.onMinecraftExit);
+    this.$electron.ipcRenderer.on('minecraft-exit', this.onMinecraftExit);
+  },
+  methods: {
+    onMinecraftExit(event, status) {
       if (status.crashReport) {
         this.$emit('input', true);
         this.content = status.crashReport;
         this.location = status.crashReportLocation || '';
       }
-    });
-  },
-  methods: {
+    },
     openFile() {
       this.$repo.dispatch('openItem', this.location);
     },
