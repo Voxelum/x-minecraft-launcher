@@ -120,7 +120,6 @@
             ]
         },
         "snap": {
-            "icon": "build/icons",
             "publish": ["github"]
         }
     },
