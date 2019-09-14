@@ -18,7 +18,7 @@ export default function setup(context, store) {
     function createMainWindow() {
         mainRef = context.createWindow('main.html', {
             title: 'VoxeLauncher',
-            width: 770,
+            width: 800,
             height: 580,
             resizable: false,
             frame: false,

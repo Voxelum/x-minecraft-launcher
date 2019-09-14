@@ -363,7 +363,7 @@ const mod = {
 
                 if (authService !== selectedUserProfile.authService
                     || profileService !== selectedUserProfile.profileService
-                    || (authService !== 'offline' && account !== selectedUserProfile.account)) {
+                    || (authService === 'offline' && account !== selectedUserProfile.account)) {
                     context.commit('addUserProfile', {
                         account,
                         authService,

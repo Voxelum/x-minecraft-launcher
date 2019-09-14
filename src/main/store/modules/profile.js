@@ -743,7 +743,7 @@ const mod = {
         },
         async listLogs(context) {
             const files = await context.dispatch('readFolder', `profiles/${context.state.id}/logs`);
-            return files.filter(f => f !== '.DS_Store');
+            return files.filter(f => f !== '.DS_Store' && f.endsWith('.gz') || f.endsWith('.txt'));
         },
         async removeLog(context, name) {
             const filePath = context.rootGetters.path('profiles', context.state.id, 'logs', name);
@@ -764,7 +764,7 @@ const mod = {
         },
         async listCrashReports(context) {
             const files = await context.dispatch('readFolder', `profiles/${context.state.id}/crash-reports`);
-            return files.filter(f => f !== '.DS_Store');
+            return files.filter(f => f !== '.DS_Store' && f.endsWith('.gz') || f.endsWith('.txt'));
         },
         async removeCrashReport(context, name) {
             const filePath = context.rootGetters.path('profiles', context.state.id, 'crash-reports', name);

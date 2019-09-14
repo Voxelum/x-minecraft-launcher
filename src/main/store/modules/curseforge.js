@@ -11,6 +11,12 @@ import Unzip from '@xmcl/unzip';
 import fs from 'main/utils/vfs';
 
 
+/**
+ * @param {import('universal/store/modules/curseforge').CurseForgeModule.DownloadFile} file 
+ */
+function getHref(file) {
+    return `https://www.curseforge.com/minecraft/${file.projectType}/${file.projectPath}/download/${file.id}/file`;
+}
 const CURSEMETA_CACHE = 'https://cursemeta.dries007.net';
 // test url https://cursemeta.dries007.net/238222/2739588 jei
 
@@ -310,19 +316,38 @@ const mod = {
                     .childNodes.filter(notText)[0];
                 const image = header.querySelector('img').attributes.src;
                 const name = header.querySelector('.font-bold').text;
-                const updatedDate = header.querySelector('.standard-date').attributes['data-epoch'];
+                const updatedDate = Number.parseInt(header.querySelector('.standard-date').attributes['data-epoch'], 10);
 
                 const sides = root.querySelectorAll('.my-4')[1].childNodes.filter(notText);
                 const sideInfoElems = sides[0] // <div class="my-4">
                     .childNodes.filter(notText)[0] // <div class="pb-4 border-b border-gray--100">
                     .childNodes.filter(notText)[1] // <div class="flex flex-col mb-3"> 
                     .childNodes.filter(notText);
-                const id = sideInfoElems[0].querySelectorAll('span')[1].rawText;
-                const createdDate = sideInfoElems[1].querySelector('abbr').attributes['data-epoch'];
+                const id = Number.parseInt(sideInfoElems[0].querySelectorAll('span')[1].rawText, 10);
+                const createdDate = Number.parseInt(sideInfoElems[1].querySelector('abbr').attributes['data-epoch'], 10);
                 const totalDownload = sideInfoElems[3].querySelectorAll('span')[1].rawText;
                 const licenseElem = sideInfoElems[4].querySelector('a');
                 const license = { url: licenseElem.attributes.href, name: licenseElem.rawText };
 
+                const filesElems = root.querySelectorAll('.cf-recentfiles'); // <ul class="cf-recentfiles">
+                const files = filesElems.map((e) => {
+                    e = e.removeWhitespace();
+                    const body = e.firstChild;
+                    const type = body.firstChild.querySelector('span').attributes.title.toLocaleLowerCase();
+                    const [nameElem, timeElem] = body.childNodes[1].removeWhitespace().childNodes;
+                    const downloadElem = body.childNodes[2].querySelector('a');
+                    const href = nameElem.attributes.href;
+                    const id = Number.parseInt(href.substring(href.lastIndexOf('/') + 1), 10);
+                    const name = nameElem.attributes['data-name'];
+                    const date = Number.parseInt(timeElem.attributes['data-epoch'], 10);
+                    return {
+                        id,
+                        type,
+                        name,
+                        date,
+                        href: downloadElem.attributes.href,
+                    };
+                });
                 const members = sides[0] // <div class="my-4">
                     .querySelectorAll('.mb-2').map(e => ({
                         icon: e.querySelector('img').attributes.src,
@@ -332,6 +357,8 @@ const mod = {
 
                 return {
                     id,
+                    path,
+                    type: project,
                     name,
                     image,
                     updatedDate,
@@ -339,6 +366,7 @@ const mod = {
                     totalDownload,
                     members,
                     license,
+                    files,
                     description: convert(details),
                 };
             });
@@ -413,48 +441,49 @@ const mod = {
             return request(url, root => root.querySelectorAll('.project-listing-row').map(processProjectListingRow));
         },
         async downloadAndImportFile(context, payload) {
-            const uObject = parseUrl(payload.file.href);
+            const href = payload.href || getHref(payload);
+            const uObject = parseUrl(href);
             const url = `https://www.curseforge.com${uObject.pathname}/file`;
 
             const task = Task.create('installCurseforgeFile', async (ctx) => {
-                if (context.rootGetters.isFileInstalled(payload.file)) {
-                    context.commit('endDownloadCurseforgeFile', payload.file);
+                if (context.rootGetters.isFileInstalled(payload)) {
+                    context.commit('endDownloadCurseforgeFile', payload);
                     return;
                 }
                 try {
                     ctx.update(-1, -1, url);
                     const dest = await Net.downloadFileWork({
                         url,
-                        destination: context.rootGetters.path('temp', payload.file.name),
+                        destination: context.rootGetters.path('temp', payload.name),
                         headers: {
                             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36',
                         },
                     })(ctx);
                     ctx.update(-1, -1);
-                    console.log(`Start to import ${payload.file.href}`);
+                    console.log(`Start to import ${href}`);
                     const handle = await context.dispatch('importResource', {
                         path: dest,
-                        type: payload.project.type,
+                        type: payload.projectType,
                         background: true,
                         metadata: {
                             url,
                             curseforge: {
-                                href: payload.file.href,
-                                projectId: payload.project.id,
-                                fileId: payload.file.id,
-                                path: payload.project.path,
-                                type: payload.project.type,
+                                href: payload.href,
+                                projectId: payload.projectId,
+                                fileId: payload.id,
+                                path: payload.projectPath,
+                                type: payload.projectType,
                             },
                         },
                     });
                     await context.dispatch('waitTask', handle);
                 } finally {
-                    context.commit('endDownloadCurseforgeFile', payload.file);
+                    context.commit('endDownloadCurseforgeFile', payload);
                 }
             });
 
             const id = await context.dispatch('executeTask', task);
-            context.commit('startDownloadCurseforgeFile', { download: payload.file, taskId: id });
+            context.commit('startDownloadCurseforgeFile', { download: payload, taskId: id });
             return id;
         },
     },

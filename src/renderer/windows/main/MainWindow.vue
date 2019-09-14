@@ -1,7 +1,8 @@
 <template>
   <vue-particles v-if="loading" color="#dedede" style="position: absolute; width: 100%; height: 100%;" />
   <v-layout v-else fill-height>
-    <v-navigation-drawer :value="true" mini-variant stateless dark style="border-radius: 2px 0 0 2px;"
+    <v-navigation-drawer :value="true" mini-variant stateless dark 
+                         style="border-radius: 2px 0 0 2px;"
                          class="moveable">
       <v-toolbar flat class="transparent">
         <v-list class="pa-0 non-moveable">
@@ -41,13 +42,19 @@
         <v-spacer />
       </v-list>
       <v-list class="non-moveable" style="position: absolute; bottom: 0px;">
-        <!-- <v-list-tile @click="">
+        <v-list-tile v-ripple @click="showTaskDialog">
           <v-list-tile-action>
-            <v-icon dark>
-              assignment
-            </v-icon>
+            <v-badge right :value="activeTasksCount !== 0">
+              <template v-slot:badge>
+                <span>{{ activeTasksCount }}</span>
+              </template>
+              <v-icon dark>
+                assignment
+              </v-icon>
+            </v-badge>
           </v-list-tile-action>
-        </v-list-tile> -->
+        </v-list-tile>
+        <v-divider dark style="display: block !important;" />
         <v-list-tile replace to="/setting">
           <v-list-tile-action>
             <v-icon dark>
@@ -69,6 +76,7 @@
         <notifier />
         <context-menu />
         <dialog-login />
+        <dialog-task v-model="taskDialog" />
       </v-card>
     </v-layout>
   </v-layout>
@@ -82,8 +90,12 @@ export default {
     loading: false, // disable for now, but it'll be abled if the loading process is too slow..
     localHistory: [],
     timeTraveling: false,
+    taskDialog: false,
   }),
   computed: {
+    activeTasksCount() {
+      return this.$repo.state.task.tasks.filter(t => t.status === 'running').length;
+    },
     blur() {
       return this.$repo.getters.selectedProfile.blur || this.$repo.state.setting.defaultBlur;
     },
@@ -108,6 +120,7 @@ export default {
     this.$electron.ipcRenderer.once('vuex-sync', () => {
       this.loading = false;
     });
+    this.$electron.ipcRenderer.on('task', this.showTaskDialog);
   },
   methods: {
     refreshImage() {
@@ -123,6 +136,13 @@ export default {
         this.$router.replace(before);
       }
       this.timeTraveling = false;
+    },
+    showTaskDialog(show) {
+      if (typeof show === 'boolean') {
+        this.taskDialog = show;
+      } else {
+        this.taskDialog = true;
+      }
     },
   },
 };
@@ -146,7 +166,7 @@ img {
 
 <style scoped=true>
 .main-body {
-  max-width: 690px;
+  max-width: 720px;
   width: 100%;
   border-radius: 0px 2px 2px 0;
 }

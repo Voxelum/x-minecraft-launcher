@@ -190,7 +190,9 @@ const mod = {
         async load(context) {
             await fs.ensureDir(context.rootGetters.path('resources'));
             const resources = await fs.readdir(context.rootGetters.path('resources'));
+
             context.commit('resources', await Promise.all(resources
+                .filter(file => !file.startsWith('.'))
                 .map(file => context.rootGetters.path('resources', file))
                 .map(file => fs.readFile(file).then(b => JSON.parse(b.toString())))));
         },

@@ -3,7 +3,7 @@ import { Resource } from "./resource";
 
 export namespace CurseForgeModule {
     interface State {
-        downloading: { [href: string]: { download: Download, taskId: string } };
+        downloading: { [href: string]: { download: DownloadFile, taskId: string } };
     }
 
     interface Getters {
@@ -12,26 +12,38 @@ export namespace CurseForgeModule {
     }
 
     interface Mutations {
-        startDownloadCurseforgeFile(state: State, payload: { download: Download, taskId: string });
-        endDownloadCurseforgeFile(state: State, download: Download);
+        startDownloadCurseforgeFile(state: State, payload: { download: DownloadFile, taskId: string });
+        endDownloadCurseforgeFile(state: State, download: DownloadFile);
     }
 
-    interface Download {
+    type ProjectType = 'mc-mods' | 'texture-packs' | 'worlds' | 'modpacks';
+
+    interface DownloadFile {
         id: number;
-        type: string;
         name: string;
         href: string;
-        size: string;
-        date: string;
-        version: string;
-        downloadCount: string;
+
+        projectType: ProjectType;
+        projectPath: string;
+        projectId?: number;
     }
+
     interface Downloads {
         pages: number;
         versions: Version[];
         files: Download[];
     }
+    interface Download {
+        id: number;
+        name: string;
+        href: string;
 
+        type: string;
+        size: string;
+        date: string;
+        version: string;
+        downloadCount: string;
+    }
     interface ProjectPreview {
         name: string;
         title: string;
@@ -47,15 +59,46 @@ export namespace CurseForgeModule {
         icon: string;
     }
 
+    /**
+     * Project detail info
+     */
     interface Project {
-        id: string;
+        /**
+         * Number id of the project
+         */
+        id: number;
+        /**
+         * mc-mods/jei, jei is the path
+         */
+        path: string;
+        type: ProjectType;
+        /**
+         * Display name
+         */
         name: string;
+        /**
+         * Image url
+         */
         image: string;
         members: { icon: string, name: string, type: string }[];
-        updatedDate: string;
-        createdDate: string;
+        updatedDate: number;
+        createdDate: number;
         totalDownload: string;
         license: { url: string, name: string };
+        files: {
+            /**
+             * number id of the file
+             */
+            id: number;
+            type: string;
+            /**
+             * Display name
+             */
+            name: string;
+            date: number;
+
+            href: string;
+        }[];
         description: string;
     }
 
@@ -94,7 +137,6 @@ export namespace CurseForgeModule {
         override: string;
     }
 
-    type ProjectType = 'mc-mods' | 'texture-packs' | 'modpacks' | 'worlds';
     interface Actions {
         fetchCurseForgeProjects(context: C, option?: { page?: string, version?: string, filter?: string, project: ProjectType }): Promise<{
             projects: ProjectPreview[], pages: number, versions: Version[], filters: Filter[]
@@ -103,7 +145,7 @@ export namespace CurseForgeModule {
         /**
          * Query the project detail from path.
          */
-        fetchCurseForgeProject(context: C, payload: { path: string, project: ProjectType | string }): Promise<Project>;
+        fetchCurseForgeProject(context: C, payload: { path: string, project: ProjectType }): Promise<Project>;
 
         /**
          * Query the project downloadable files.
@@ -126,7 +168,8 @@ export namespace CurseForgeModule {
         searchCurseforgeProjects(context: C, payload: { keyword: string, type: string | ProjectType }): Promise<ProjectPreview[]>;
 
         importCurseforgeModpack(context: C, option: { profile: string, path: string }): Promise<TaskHandle>;
-        downloadAndImportFile(context: C, payload: { project: { path: string, type: string, id: string }, file: Download }): Promise<TaskHandle>;
+
+        downloadAndImportFile(context: C, payload: DownloadFile): Promise<TaskHandle>;
     }
 }
 export interface CurseForgeModule extends Module<"curseforge", CurseForgeModule.State, CurseForgeModule.Getters, CurseForgeModule.Mutations, CurseForgeModule.Actions> {

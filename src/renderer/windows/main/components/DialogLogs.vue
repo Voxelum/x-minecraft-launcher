@@ -1,6 +1,6 @@
 <template>
-  <v-dialog :value="value" :width="600" @input="$emit('input', $event)">
-    <v-toolbar color="orange">
+  <v-dialog :value="value" :width="550" @input="$emit('input', $event)">
+    <v-toolbar color="warning">
       <v-toolbar-title class="white--text">
         {{ $t('profile.logsCrashes.title') }}
       </v-toolbar-title>
@@ -15,13 +15,13 @@
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
-    <v-card style="min-height: 450px; max-height: 450px; overflow: auto">
-      <transition name="fade-transition" mode="out-in">
+    <transition name="fade-transition" mode="out-in">
+      <div style="min-height: 450px; max-height: 450px; overflow: auto; background: #424242">
         <v-list v-if="!content" :key="0">
           <v-list-tile v-for="i in files" :key="i" v-ripple avatar @click="showFile(i)">
             <v-list-tile-avatar>
               <v-icon>
-                call_to_action
+                clear_all
               </v-icon>
             </v-list-tile-avatar>
             <v-list-tile-content>
@@ -29,7 +29,7 @@
             </v-list-tile-content>
             <v-list-tile-action>
               <v-list-tile-action>
-                <v-btn icon color="red" flat>
+                <v-btn icon color="red" flat @click="removeFile($event, i)">
                   <v-icon>delete</v-icon>
                 </v-btn>
               </v-list-tile-action>
@@ -44,7 +44,7 @@
               <v-icon left>
                 arrow_back
               </v-icon>
-              Back
+              {{ $t('back') }}
             </v-btn>
           </v-card-title>
           <v-textarea 
@@ -56,8 +56,9 @@
             hide-details
             :value="content" style="margin: 8px;" />
         </div>
-      </transition>
-    </v-card>
+      </div>
+    </transition>
+    </div>
   </v-dialog>
 </template>
 
@@ -103,7 +104,15 @@ export default {
         this.loadingList = false;
       });
     },
-    removeFile(i) {
+    removeFile(event, i) {
+      if (this.showCrash) {
+        this.$repo.dispatch('removeCrashReport', i);
+        this.loadCrashes();
+      } else {
+        this.$repo.dispatch('removeLog', i);
+        this.loadLogs();
+      }
+      event.preventDefault();
     },
     showFile(i) {
       const name = i;

@@ -54,6 +54,9 @@ export default {
       }
       this.$setSkin(nskin, this.slim);
     },
+    slim(slim) {
+      this.$setSkin(this.data, slim);
+    },
   },
   destroyed() {
     this.disposed = true;

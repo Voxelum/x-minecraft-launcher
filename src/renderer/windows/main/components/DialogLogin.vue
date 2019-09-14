@@ -270,6 +270,7 @@ export default {
           authService: this.selectedAuthService,
           profileService: this.selectedAuthService,
         });
+        this.show = false;
       } catch (e) {
         if (
           e.type === 'ForbiddenOperationException'

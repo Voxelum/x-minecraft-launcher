@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/voxelum/voxelauncher/compare/v0.3.0-beta.0...v0.3.0) (2019-09-14)
+
+
+### Bug Fixes
+
+* **curseforge:** align the cards ([012d433](https://github.com/voxelum/voxelauncher/commit/012d433))
+* **login:** add account if offline username diff ([a70639f](https://github.com/voxelum/voxelauncher/commit/a70639f))
+* **login:** hide the login dialog if success ([957cc2c](https://github.com/voxelum/voxelauncher/commit/957cc2c))
+* **profile:** filter out the useless logs & crashes ([fa2c590](https://github.com/voxelum/voxelauncher/commit/fa2c590))
+* **resource:** filter out hidden file from load ([d50343d](https://github.com/voxelum/voxelauncher/commit/d50343d))
+* **user:** update the skin model after change type ([dffbb2b](https://github.com/voxelum/voxelauncher/commit/dffbb2b))
+* enable the auto update ([7759bc2](https://github.com/voxelum/voxelauncher/commit/7759bc2))
+* now rm file works ([f93fa40](https://github.com/voxelum/voxelauncher/commit/f93fa40))
+
+
+### Features
+
+* **curseforge:** add recent file tab ([292142d](https://github.com/voxelum/voxelauncher/commit/292142d))
+
+
+
 ## [0.3.0-beta.0](https://github.com/voxelum/voxelauncher/compare/v0.2.0...v0.3.0-beta.0) (2019-09-08)
 
 
