@@ -115,10 +115,13 @@
                     "target": "AppImage"
                 },
                 {
-                    "target": "snap",
-                    "publish": ["github"]
+                    "target": "snap"
                 }
             ]
+        },
+        "snap": {
+            "icon": "build/icons",
+            "publish": ["github"]
         }
     },
     "commitlint": {
