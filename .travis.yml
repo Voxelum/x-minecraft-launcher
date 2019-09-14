@@ -41,7 +41,7 @@ script:
 #- xvfb-maybe node_modules/.bin/karma start test/unit/karma.conf.js
 #- yarn run pack && xvfb-maybe node_modules/.bin/mocha test/e2e
 - npm run build
-- npm run release
+- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run release; fi
 branches:
   only:
   - master
