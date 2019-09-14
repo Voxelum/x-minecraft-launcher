@@ -33,7 +33,7 @@ const mod = {
                 case 'autoDownload':
                 case 'defaultBackgroundImage':
                 case 'defaultBlur':
-                case 'useBmclApi': 
+                case 'useBmclApi':
                     await context.dispatch('setPersistence', {
                         path: 'setting.json',
                         data: {
@@ -74,36 +74,55 @@ const mod = {
         },
 
         async downloadUpdate(context) {
+            /**
+             * @param {Task.Context} ctx 
+             */
+            function download(ctx) {
+                return new Promise((resolve, reject) => {
+                    autoUpdater.downloadUpdate().catch(reject);
+                    const signal = new UpdaterSignal(autoUpdater);
+                    signal.updateDownloaded((info) => {
+                        resolve(info);
+                    });
+                    signal.progress((info) => {
+                        ctx.update(info.transferred, info.total);
+                    });
+                    signal.updateCancelled((info) => {
+                        reject(info);
+                    });
+                    autoUpdater.on('error', (err) => {
+                        reject(err);
+                    });
+                });
+            }
             const task = Task.create('downloadUpdate', async (ctx) => {
                 if (!context.state.autoDownload) {
                     context.commit('downloadingUpdate', true);
-                    const inside = await isInGFW().catch(_ => false);
-                    // if (inside) {
-                    //     autoUpdater.setFeedURL('https://voxelauncher.blob.core.windows.net/releases');
-                    //     await autoUpdater.checkForUpdates();
-                    // }
-                    await new Promise((resolve, reject) => {
-                        autoUpdater.downloadUpdate().catch(reject);
-                        const signal = new UpdaterSignal(autoUpdater);
-                        signal.updateDownloaded((info) => {
-                            resolve(info);
-                        });
-                        signal.progress((info) => {
-                            ctx.update(info.transferred, info.total);
-                        });
-                        signal.updateCancelled((info) => {
-                            reject(info);
-                        });
-                        autoUpdater.on('error', (err) => {
-                            reject(err);
-                        });
-                    }).then(() => {
+                    const swapDownloadSrc = await isInGFW().catch(_ => false);
+                    let oldFeedUrl = '';
+                    if (swapDownloadSrc) {
+                        oldFeedUrl = autoUpdater.getFeedURL() || '';
+                        autoUpdater.setFeedURL('https://voxelauncher.blob.core.windows.net/releases');
+                        await autoUpdater.checkForUpdates();
+                    }
+                    try {
+                        let promise = download(ctx);
+                        if (swapDownloadSrc) {
+                            promise = promise.catch(async (e) => {
+                                console.warn('Cannot download update from azure source. Switch to github source!');
+                                console.warn(e);
+                                autoUpdater.setFeedURL(oldFeedUrl);
+                                await autoUpdater.checkForUpdates();
+                                return download(ctx);
+                            });
+                        }
+                        await promise;
                         context.commit('readyToUpdate', true);
-                    }).catch(() => {
+                    } catch (e) {
                         context.commit('readyToUpdate', false);
-                    }).finally(() => {
+                    } finally {
                         context.commit('downloadingUpdate', false);
-                    });
+                    }
                 } else {
                     throw 'cancelled';
                 }
