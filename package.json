@@ -1,5 +1,6 @@
 {
     "name": "voxelauncher",
+    "private": true,
     "productName": "VoxeLauncher",
     "version": "0.3.0-beta.0",
     "author": "ci010 <cijhn@hotmail.com>",
