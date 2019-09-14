@@ -1,3 +1,7 @@
+import { fitin } from 'universal/utils/object';
+import Vue from 'vue';
+import lastestRelease from 'universal/utils/lasteRelease.json';
+
 import { Forge, ForgeWebPage, LiteLoader, Installer, Version, ResolvedLibrary } from "@xmcl/minecraft-launcher-core";
 import { Context, Module, TaskHandle } from "../store";
 import ForgeInstaller from "@xmcl/forge-installer";
@@ -83,7 +87,7 @@ export declare namespace VersionModule {
         refreshingLiteloader(state: State, refreshing: boolean): void;
 
         localVersions(state: State, local: ResolvedVersion[]): void;
-        minecraftMetadata(state: State, metadatas: Version.MetaContainer): void;
+        minecraftMetadata(state: State, metadatas: Installer.VersionMetaList): void;
         forgeMetadata(state: State, metadatas: ForgeWebPage): void;
         liteloaderMetadata(state: State, metadatas: LiteLoader.VersionMetaList): void;
     }
@@ -122,5 +126,110 @@ export declare namespace VersionModule {
 export interface VersionModule extends Module<"version", VersionModule.State, VersionModule.Getters, VersionModule.Mutations, VersionModule.Actions> {
 }
 
-declare const mod: VersionModule;
+const mod: VersionModule = {
+    state: {
+        /**
+         * local versions
+         */
+        local: [],
+        refreshingMinecraft: false,
+        refreshingForge: false,
+        refreshingLiteloader: false,
+        minecraft: {
+            timestamp: '',
+            latest: {
+                snapshot: '',
+                release: '',
+            },
+            versions: [],
+        },
+        forge: {
+
+        },
+        liteloader: {
+            timestamp: '',
+            meta: {
+                description: '',
+                authors: '',
+                url: '',
+                updated: '',
+                updatedTime: 0,
+            },
+            versions: {},
+        },
+    },
+    getters: {
+        /**
+         * latest snapshot
+         */
+        minecraftSnapshot: state => state.minecraft.versions.find(v => v.id === state.minecraft.latest.snapshot),
+        /**
+         * latest release
+         */
+        minecraftRelease: state => state.minecraft.versions.find(v => v.id === state.minecraft.latest.release) || lastestRelease,
+
+        minecraftVersion: state => version => state.minecraft.versions.find(v => v.id === version),
+
+        minecraftStatuses: (state, _, rootStates) => {
+            const localVersions: { [k: string]: boolean } = {};
+            rootStates.version.local.forEach((ver) => {
+                if (ver.minecraft) localVersions[ver.minecraft] = true;
+            });
+            const statusMap: { [key: string]: import('./version').Status } = {};
+            for (const ver of state.minecraft.versions) {
+                statusMap[ver.id] = localVersions[ver.id] ? 'local' : 'remote';
+            }
+            return statusMap;
+        },
+        forgeVersionsOf: state => version => (state.forge[version]),
+        forgeLatestOf: state => (version) => {
+            const versions = state.forge[version];
+            if (!versions) return undefined;
+            return versions.versions.find(v => v.type === 'latest');
+        },
+        forgeRecommendedOf: state => (version) => {
+            const versions = state.forge[version];
+            if (!versions) return undefined;
+            return versions.versions.find(v => v.type === 'recommended');
+        },
+        forgeStatuses: (state, _, rootState) => {
+            const statusMap: { [key: string]: import('./version').Status } = {};
+            const localForgeVersion: { [k: string]: boolean } = {};
+            rootState.version.local.forEach((ver) => {
+                if (ver.forge) localForgeVersion[ver.forge] = true;
+            });
+
+            Object.keys(state.forge).forEach((mcversion) => {
+                const container = state.forge[mcversion];
+                if (container.versions) {
+                    container.versions.forEach((version) => {
+                        statusMap[version.version] = localForgeVersion[version.version] ? 'local' : 'remote';
+                    });
+                }
+            });
+            return statusMap;
+        },
+        liteloaderVersionsOf: state => version => state.liteloader.versions[version],
+    },
+    mutations: {
+        refreshingMinecraft(state, r) { state.refreshingMinecraft = r; },
+        refreshingForge(state, r) { state.refreshingForge = r; },
+        refreshingLiteloader(state, r) { state.refreshingLiteloader = r; },
+
+        localVersions(state, local) {
+            state.local = local;
+        },
+        minecraftMetadata(state, metadata) {
+            fitin(state.minecraft, metadata);
+        },
+        forgeMetadata(state, metadata) {
+            const { mcversion } = metadata;
+            Vue.set(state.forge, mcversion, metadata);
+        },
+        liteloaderMetadata(state, metadata) {
+            fitin(state.liteloader, metadata);
+        },
+    },
+};
+
 export default mod;

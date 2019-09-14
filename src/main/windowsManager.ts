@@ -1,7 +1,31 @@
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, shell, BrowserWindowConstructorOptions, BrowserViewConstructorOptions, Tray, Dock } from 'electron';
 import ipc from './ipc';
 import getTray from './trayManager';
 import setupDownload from './downloadManager';
+
+import { CustomEvents } from './ipc';
+import { Repo, RootState } from '../universal/store/store';
+import { Store } from 'vuex';
+
+export interface ClientInstance extends Hook {
+    /**
+     * All client listeners
+     */
+    listeners: { [channel: string]: Function[] };
+}
+
+export interface Hook {
+    requestFocus(): void;
+    dispose(): void;
+}
+export interface ClientContext {
+    createWindow(url: string, option: BrowserWindowConstructorOptions): BrowserWindow;
+    ipcMain: CustomEvents;
+    configTray(func: (tray: Tray) => void): this;
+    configDock(func: (dock: Dock) => void): this;
+}
+
+export type ClientBootstrap = (context: ClientContext, store: Repo) => Hook;
 
 const headless = process.env.HEADLESS || false;
 
@@ -11,27 +35,27 @@ const baseURL = isDev
     : `file://${__dirname}/`;
 /**
  * A map to keep running browser
- * @type {{[name: string] : BrowserWindow}}
  */
-let windows = {};
+let windows: { [name: string]: BrowserWindow } = {};
 /**
  * ref for if the game is launching and the launcher is paused
- * @type {boolean}
  */
-let parking;
+let parking: boolean;
 
 /**
  * instance of client
- * @type {import('setup').Instance?}
  */
-let instance;
+let instance: ClientInstance | null;
+
+/**
+ * The instance of the guard window
+ */
+let guard: BrowserWindow | null = null;
 
 /**
  * Create a window 
- * @param {string} name
- * @param {import('electron').BrowserViewConstructorOptions} option
  */
-function createWindow(name, option) {
+function createWindow(name: string, option: BrowserViewConstructorOptions) {
     const ops = { ...option };
     if (!ops.webPreferences) { ops.webPreferences = {}; }
     ops.webPreferences.webSecurity = !isDev; // disable security for loading local image
@@ -61,12 +85,7 @@ function createWindow(name, option) {
     return ref;
 }
 
-/**
- * 
- * @param {import('setup').Setup} client 
- * @param {import('vuex').Store<import('universal/store/store').RootState>} store 
- */
-function setupClient(client, store) {
+function setupClient(client: ClientBootstrap, store: Store<RootState>) {
     parking = true;
     const tray = getTray();
 
@@ -89,19 +108,12 @@ function setupClient(client, store) {
         BrowserWindow.getAllWindows().forEach(win => win.close());
         instance = null;
     }
-    /**
-     * @type {import('setup').Instance["listeners"]}
-     */
-    const listeners = {};
+    const listeners: ClientInstance['listeners'] = {};
 
     const hook = client({
         createWindow,
         ipcMain: {
-            /**
-             * @param {string} channel
-             * @param {Function} func
-             */
-            on(channel, func) {
+            on(channel: string, func: Function) {
                 if (!listeners[channel]) listeners[channel] = [];
                 listeners[channel].push(func);
                 return ipcMain.addListener(channel, func);
@@ -128,27 +140,12 @@ function setupClient(client, store) {
     parking = false;
 }
 
-/**
- * @type {BrowserWindow?}
- */
-let guard = null;
-
-export function getGuardWindow() {
-    return guard;
-}
-
-export default { getGuardWindow };
-
-/**
- * 
- * @param {import('vuex').Store<import('universal/store/store').RootState>} store 
- */
-async function setup(store) {
+async function setup(store: Store<RootState>) {
     if (!headless) {
         setupClient(await import('./material').then(c => c.default), store);
     }
 
-    ipcMain.on('online-status-changed', (_, s) => {
+    ipcMain.on('online-status-changed', (_: any, s: any) => {
         store.commit('online', s[0]);
     });
 
@@ -184,3 +181,11 @@ app
         if (process.platform !== 'darwin') { app.quit(); }
     })
     .on('second-instance', () => { if (instance) instance.requestFocus(); });
+
+
+
+export function getGuardWindow() {
+    return guard;
+}
+
+export default { getGuardWindow };

@@ -1,4 +1,6 @@
-import { Event, IpcMain, BrowserWindow } from "electron";
+import { ipcMain as i } from 'electron';
+
+import { Event, BrowserWindow } from "electron";
 import { RootState } from "universal/store/store";
 import { Store } from "vuex";
 
@@ -32,9 +34,10 @@ export interface CustomEvents {
     on(channle: 'renderer-error', listener: (event: Event, text: string, ...args: string[]) => void): this;
 }
 
-export declare const ipcMain: CustomEvents;
-export default ipcMain;
 declare module "electron" {
     interface IpcMain extends CustomEvents {
     }
 }
+
+export const ipcMain: CustomEvents = i;
+export default ipcMain;

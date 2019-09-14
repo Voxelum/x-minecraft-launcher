@@ -1,7 +1,8 @@
+import Vue from 'vue';
 import { Context, Module, TaskHandle } from "../store";
 import { Resource } from "./resource";
 
-export namespace CurseForgeModule {
+export declare namespace CurseForgeModule {
     interface State {
         downloading: { [href: string]: { download: DownloadFile, taskId: string } };
     }
@@ -12,8 +13,8 @@ export namespace CurseForgeModule {
     }
 
     interface Mutations {
-        startDownloadCurseforgeFile(state: State, payload: { download: DownloadFile, taskId: string });
-        endDownloadCurseforgeFile(state: State, download: DownloadFile);
+        startDownloadCurseforgeFile(state: State, payload: { download: DownloadFile, taskId: string }): void;
+        endDownloadCurseforgeFile(state: State, download: DownloadFile): void;
     }
 
     type ProjectType = 'mc-mods' | 'texture-packs' | 'worlds' | 'modpacks';
@@ -174,3 +175,61 @@ export namespace CurseForgeModule {
 }
 export interface CurseForgeModule extends Module<"curseforge", CurseForgeModule.State, CurseForgeModule.Getters, CurseForgeModule.Mutations, CurseForgeModule.Actions> {
 }
+
+
+const mod: CurseForgeModule = {
+    state: {
+        downloading: {},
+    },
+    getters: {
+        isFileInstalled: (state, _, rt, rg) => (file) => {
+            /**
+             */
+            const find = (m: { source: any; }) => {
+                const source = m.source;
+                if ('curseforge' in source && typeof source.curseforge === 'object') {
+                    const s = source.curseforge;
+                    if (s.href === file.href || s.fileId === file.id) return true;
+                }
+                return false;
+            };
+            if (rg.mods.find(find)) return true;
+            if (rg.resourcepacks.find(find)) return true;
+            if (rg.modpacks.find(find)) return true;
+            if (rg.saves.find(find)) return true;
+
+            return false;
+        },
+        findFileInstalled: (state, _, rt, rg) => (file) => {
+            /**
+             */
+            const find = (m: { source: any; }) => {
+                const source = m.source;
+                if ('curseforge' in source && typeof source.curseforge === 'object') {
+                    const s = source.curseforge;
+                    if (s.href === file.href || s.fileId === file.id) return true;
+                }
+                return false;
+            };
+            let result;
+            /* eslint-disable no-cond-assign */
+            if (result = rg.mods.find(find)) return result;
+            if (result = rg.resourcepacks.find(find)) return result;
+            if (result = rg.modpacks.find(find)) return result;
+            if (result = rg.saves.find(find)) return result;
+            /* eslint-enable no-cond-assign */
+
+            return undefined;
+        },
+    },
+    mutations: {
+        startDownloadCurseforgeFile(state, p) {
+            Vue.set(state.downloading, p.download.href, p);
+        },
+        endDownloadCurseforgeFile(state, p) {
+            Vue.delete(state.downloading, p.href);
+        },
+    },
+};
+
+export default mod;

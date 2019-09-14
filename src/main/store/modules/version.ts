@@ -4,14 +4,11 @@ import { shell } from 'electron';
 import inGFW from 'in-gfw';
 import fs from 'main/utils/vfs';
 import { join } from 'path';
-import base from 'universal/store/modules/version';
+import base, { VersionModule } from 'universal/store/modules/version';
 import { requireString } from 'universal/utils/object';
 import { getExpectVersion } from 'universal/utils/versions';
 
-/**
- * @type {import('universal/store/modules/version').VersionModule}
- */
-const mod = {
+const mod: VersionModule = {
     state: base.state,
     getters: base.getters,
     mutations: base.mutations,
@@ -26,7 +23,7 @@ const mod = {
             if (mc) context.commit('minecraftMetadata', mc);
             if (forge) {
                 for (const value of Object.values(forge)) {
-                    context.commit('forgeMetadata', value);
+                    context.commit('forgeMetadata', value as any);
                 }
             }
             if (liteloader) context.commit('liteloaderMetadata', liteloader);
@@ -190,18 +187,15 @@ const mod = {
         },
 
         async installLibraries(context, { libraries }) {
-            /**
-             * @type {ResolvedLibrary[]}
-             */
-            let resolved;
+            let resolved: ResolvedLibrary[];
             if ('downloads' in libraries[0]) {
                 resolved = Version.resolveLibraries(libraries);
             } else {
-                resolved = libraries;
+                resolved = libraries as any; // TODO: typecheck
             }
             let option = {};
-            if (await inGFW().catch(_ => false) && context.rootState.setting.useBmclAPI) {
-                option = { libraryHost: lib => `https://http://bmclapi.bangbang93.com/maven/${lib.path}` };
+            if (await inGFW().catch(() => false) && context.rootState.setting.useBmclAPI) {
+                option = { libraryHost: (lib: ResolvedLibrary) => `https://http://bmclapi.bangbang93.com/maven/${lib.path}` };
             }
 
             const task = Installer.installLibrariesDirectTask(resolved, context.rootState.root, option);
@@ -218,7 +212,7 @@ const mod = {
         async installAssets(context, version) {
             const ver = await Version.parse(context.rootState.root, version);
             let option = {};
-            if (await inGFW().catch(_ => false) && context.rootState.setting.useBmclAPI) {
+            if (await inGFW().catch((_: any) => false) && context.rootState.setting.useBmclAPI) {
                 option = { assetsHost: 'http://bmclapi2.bangbang93.com/assets' };
             }
             const task = Installer.installAssetsTask(ver, option);
@@ -240,7 +234,7 @@ const mod = {
             const id = meta.id;
 
             let option = {};
-            if (await inGFW().catch(_ => false) && context.rootState.setting.useBmclAPI) {
+            if (await inGFW().catch(() => false) && context.rootState.setting.useBmclAPI) {
                 option = { client: `https://bmclapi2.bangbang93.com/version/${meta.id}/client` };
             }
 

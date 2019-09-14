@@ -35,6 +35,14 @@ declare module NodeJS {
 
 declare var __static: string;
 
+declare module 'long' {
+    export = Long.default
+}
+
+declare module 'bytebuffer' {
+    export = ByteBuffer.default
+}
+
 declare module 'locales' {
     const locales: object;
     export default locales;

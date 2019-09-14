@@ -3,11 +3,7 @@ import { join } from 'path';
 import { Task } from '@xmcl/minecraft-launcher-core';
 import { Store } from 'vuex';
 
-/**
- * @param {Store<any>} store 
- * @param {BrowserWindow} window guard window
- */
-export default function setup(store, window) {
+export default function setup(store: Store<any>, window: BrowserWindow) {
     window.webContents.session.on('will-download', (event, item, contents) => {
         const downloadTask = Task.create('download', (context) => {
             const savePath = join(app.getPath('userData'), 'temps', item.getFilename());

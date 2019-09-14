@@ -7,6 +7,9 @@
     "description": "A great minecraft launcher in the future",
     "license": "MIT",
     "main": "./dist/electron/main.js",
+    "engines": {
+        "node": ">=10.0.0"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/voxelum/voxelauncher.git"
@@ -120,7 +123,10 @@
             ]
         },
         "snap": {
-            "publish": ["github", "custom"]
+            "publish": [
+                "github",
+                "custom"
+            ]
         }
     },
     "commitlint": {
@@ -156,6 +162,9 @@
     "devDependencies": {
         "@commitlint/cli": "^8.1.0",
         "@commitlint/config-conventional": "^8.0.0",
+        "@types/bytebuffer": "^5.0.40",
+        "@types/got": "^9.6.7",
+        "@types/long": "^4.0.0",
         "babel-eslint": "^10.0.1",
         "cfonts": "^1.1.3",
         "chalk": "^1.1.3",
@@ -189,7 +198,8 @@
         "style-loader": "^0.21.0",
         "three": "^0.86.0",
         "three-orbit-controls": "^82.1.0",
-        "typescript": "3.3.1",
+        "ts-loader": "^6.1.0",
+        "typescript": "^3.6.3",
         "typescript-json-schema": "^0.40.0",
         "url-loader": "^1.1.2",
         "vue-loader": "^15.2.4",
@@ -197,7 +207,6 @@
         "vue-particles": "^1.0.9",
         "vue-style-loader": "^4.1.0",
         "vue-template-compiler": "^2.6.10",
-        "vuedraggable": "^2.23.0",
         "webpack": "^4.15.1",
         "webpack-cli": "^3.3.1",
         "webpack-dev-server": "^3.2.1",

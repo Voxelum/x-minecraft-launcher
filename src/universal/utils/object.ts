@@ -1,17 +1,8 @@
-/**
- * @param {any} object
- * @param {string} [message]
- */
-export function requireNumber(object, message) {
+export function requireNumber(object: any, message: string) {
     if (typeof object !== 'number') throw new Error(message || 'Require a number!');
 }
 
-/**
- * @param {any} a 
- * @param {any} b 
- * @returns {boolean}
- */
-export function deepEquals(a, b) {
+export function deepEquals(a: any, b: any): boolean {
     const ta = typeof a;
     const tb = typeof b;
     if (ta !== tb) return false;
@@ -28,12 +19,7 @@ export function deepEquals(a, b) {
     return a === b;
 }
 
-/**
- * @param {any} baseline 
- * @param {any} option The optional value will update to baseline
- * @return {boolean}
- */
-export function willBaselineChange(baseline, option) {
+export function willBaselineChange(baseline: any, option: any): boolean {
     if (isNullOrUndefine(option)) return false;
     for (const key of Object.keys(option)) {
         const stateValue = baseline[key];
@@ -58,11 +44,8 @@ export function willBaselineChange(baseline, option) {
 }
 /**
  * 
- * @param {any} target 
- * @param {any} option 
- * @return {boolean}
  */
-export function diff(target, option) {
+export function diff(target: any, option: any): boolean {
     if (target === undefined && option === undefined) {
         return false;
     }
@@ -76,14 +59,14 @@ export function diff(target, option) {
  * @param {any} object
  * @param {string} [message]
  */
-export function requireObject(object, message) {
+export function requireObject(object: any, message?: string) {
     if (typeof object !== 'object') throw new Error(message || 'Require a object!');
 }
 /**
  * @param {any} object
  * @param {string} [message]
  */
-export function requireString(object, message) {
+export function requireString(object: any, message?: any) {
     if (typeof object !== 'string') throw new Error(message || `Require a string! But get ${typeof object}`);
 }
 /**
@@ -91,15 +74,12 @@ export function requireString(object, message) {
  * @param {any} type
  * @param {any} message
  */
-export function requireType(object, type, message) {
+export function requireType(object: any, type: any, message: any) {
     if (!(object instanceof type)) {
         throw new Error(message || `Require object ${object} be the type ${type}`);
     }
 }
-/**
- * @param {null | undefined} object
- */
-export function isNullOrUndefine(object) {
+export function isNullOrUndefine(object: any) {
     return object === undefined || object === null;
 }
 
@@ -107,7 +87,7 @@ export function isNullOrUndefine(object) {
  * @param {any} state
  * @param {any} option
  */
-export function fitin(state, option) {
+export function fitin(state: any, option: any) {
     if (isNullOrUndefine(option)) return;
     for (const key of Object.keys(option)) {
         const stateValue = state[key];
@@ -134,34 +114,34 @@ export function fitin(state, option) {
  * 
  * @param {any} a 
  */
-export function aArr(a) {
+export function aArr(a: any) {
     return a instanceof Array;
 }
 /**
  * @param {any} a
  */
-export function aStr(a) {
+export function aStr(a: any) {
     if (typeof a !== 'string') throw new Error('Require String');
 }
 
 /**
  * @param {any} a
  */
-export function aNum(a) {
+export function aNum(a: any) {
     if (typeof a !== 'number') throw new Error('Require Number');
 }
 
 /**
  * @param {any} a
  */
-export function aBool(a) {
+export function aBool(a: any) {
     if (typeof a !== 'boolean') throw new Error('Require Boolean');
 }
 
 /**
  * @param {any} a
  */
-export function aStrArr(a) {
+export function aStrArr(a: any) {
     if (!(a instanceof Array)) throw new Error('Require String Array');
     for (const i of a) if (typeof i !== 'string') throw new Error('Require String Array');
 }
@@ -170,6 +150,6 @@ export function aStrArr(a) {
  * @param {any} a
  * @param {any} instance
  */
-export function aInstance(a, instance) {
+export function aInstance(a: any, instance: any) {
     if (!(a instanceof instance)) throw new Error(`Require ${instance}`);
 }

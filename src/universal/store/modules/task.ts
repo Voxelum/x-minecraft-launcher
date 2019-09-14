@@ -1,9 +1,51 @@
 import Vue from 'vue';
 
-/**
- * @type {import('./task').TaskModule}
- */
-const mod = {
+import { Task } from '@xmcl/minecraft-launcher-core';
+import { Context, Module, TaskHandle } from "../store";
+
+
+export interface TNode extends Task.Node {
+    _internalId: string;
+    tasks: TNode[];
+    time?: string;
+    background: boolean;
+}
+export declare namespace TaskModule {
+
+    interface State {
+        tree: { [uuid: string]: TNode },
+        tasks: TNode[],
+        maxLog: number,
+    }
+    interface Mutations {
+        createTask(state: State, option: { id: string, name: string }): void;
+        pruneTasks(state: State): void;
+        hookTask(state: State, option: { id: string, task: TNode }): void;
+        updateBatchTask(state: State, option: {
+            adds: { id: string, node: TNode }[],
+            childs: { id: string, node: TNode }[],
+            updates: { [id: string]: { progress?: number, total?: number, message?: string, time?: string } },
+            statuses: { id: string, status: string }[],
+        }): void;
+    }
+
+    type C = Context<TaskModule.State, {}, TaskModule.Mutations, TaskModule.Actions>;
+    interface Actions {
+        executeAction<T>(context: C, payload: { id: string, payload?: any, background?: boolean }): Promise<any>;
+
+        executeTask(context: C, task: Task<any>): Promise<TaskHandle>;
+        spawnTask(context: C, name: string): Promise<TaskHandle>;
+        updateTask(context: C, data: { id: TaskHandle, progress: number, total?: number, message?: string }): Promise<void>;
+        waitTask(context: C, uuid: TaskHandle): Promise<any>;
+        finishTask(context: C, payload: { id: TaskHandle }): Promise<void>;
+        cancelTask(context: C, uuid: TaskHandle): Promise<void>;
+    }
+
+}
+
+export type TaskModule = Module<"task", TaskModule.State, {}, TaskModule.Mutations, TaskModule.Actions>;
+
+const mod: TaskModule = {
     state: {
         tree: {},
         tasks: [],
@@ -12,10 +54,7 @@ const mod = {
     },
     mutations: {
         createTask(state, { id, name }) {
-            /**
-            * @type {import('./task').TNode}
-            */
-            const node = {
+            const node: TNode = {
                 _internalId: id,
                 name,
                 total: -1,
@@ -31,11 +70,7 @@ const mod = {
             state.tasks.push(state.tree[id]);
         },
         pruneTasks(state) {
-            /**
-             * 
-             * @param {import('./task').TNode} task 
-             */
-            function remove(task) {
+            function remove(task: TNode) {
                 if (task.tasks && task.tasks.length !== 0) {
                     task.tasks.forEach(remove);
                 }
@@ -92,7 +127,7 @@ const mod = {
                 const { id, status } = s;
                 const task = idToNode[id];
                 if (task) {
-                    task.status = status;
+                    task.status = status as any;
                 } else {
                     console.log(`Cannot update status for task ${id}.`);
                 }

@@ -24,11 +24,8 @@ process.on('unhandledRejection', (reason, promise) => {
 /**
  * Handle the root change request from cliean.
  * This will restart the launcher.
- * 
- * @param {any} event 
- * @param {{path: string, migrate: boolean, clear: boolean}} param1 
  */
-async function handleRootChange(event, { path: newRoot, migrate, clear }) {
+async function handleRootChange(event: any, { path: newRoot, migrate, clear }: { path: string, migrate: boolean, clear: boolean }) {
     const oldRoot = app.getPath('userData');
     if (oldRoot === newRoot) {
         event.sender.send('root');
@@ -37,10 +34,7 @@ async function handleRootChange(event, { path: newRoot, migrate, clear }) {
 
     console.log(`Start to migrate root, ${oldRoot} -> ${newRoot}`);
 
-    /**
-     * @param {string} file 
-     */
-    async function remove(file) {
+    async function remove(file: string) {
         const s = await fs.stat(file).catch((_) => { });
         if (!s) return;
         if (s.isDirectory()) {
@@ -81,10 +75,10 @@ async function handleRootChange(event, { path: newRoot, migrate, clear }) {
 
 /**
  * 
- * @param {string} newRoot new launcher root location
- * @param {string | undefined} oldRoot old launcher root location
+ * @param newRoot new launcher root location
+ * @param oldRoot old launcher root location
  */
-function setupRoot(newRoot, oldRoot) {
+function setupRoot(newRoot: string, oldRoot?: string) {
     if (newRoot === oldRoot) return;
     app.setPath('userData', newRoot);
     if (!existsSync(newRoot)) {

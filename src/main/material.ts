@@ -1,19 +1,13 @@
 
 import { resolve } from 'path';
-import { Menu } from 'electron';
+import { Menu, BrowserWindow } from 'electron';
+import { ClientContext } from './windowsManager';
+import { Store } from 'vuex';
+import { RootState } from 'universal/store/store';
 
-/**
- * @type {import('./setup').Setup}
- */
-export default function setup(context, store) {
-    /**
-     * @type { import('electron').BrowserWindow? }
-     */
-    let mainRef;
-    /**
-    * @type { import('electron').BrowserWindow? }
-    */
-    let loggerRef;
+export default function setup(context: ClientContext, store: Store<RootState>) {
+    let mainRef: BrowserWindow | null;
+    let loggerRef: BrowserWindow | null;
 
     function createMainWindow() {
         mainRef = context.createWindow('main.html', {

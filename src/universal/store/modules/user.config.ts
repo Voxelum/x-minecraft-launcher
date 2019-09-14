@@ -1,6 +1,6 @@
 import { Auth, GameProfile, ProfileService } from '@xmcl/minecraft-launcher-core';
 
-interface GameProfileAndTexture extends GameProfile {
+export interface GameProfileAndTexture extends GameProfile {
     textures: {
         SKIN: GameProfile.Texture,
         CAPE?: GameProfile.Texture,
@@ -8,7 +8,7 @@ interface GameProfileAndTexture extends GameProfile {
     }
 }
 
-interface UserProfile {
+export interface UserProfile {
     id: string;
     type: string;
     /**
@@ -37,7 +37,7 @@ interface UserProfile {
     profiles: GameProfileAndTexture[];
 }
 
-interface UserConfig {
+export interface UserConfig {
     /**
      * All saved user profiles
      */

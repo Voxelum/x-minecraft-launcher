@@ -1,11 +1,12 @@
-// @ts-nocheck
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
 import locales from 'static/locales';
 
 Vue.use(VueI18n);
 
-const i18n = new VueI18n({
+// TODO: refactor
+
+const i18n: any = new VueI18n({
     locale: 'en',
     fallbackLocale: 'en',
     messages: locales,
@@ -14,8 +15,8 @@ const i18n = new VueI18n({
     },
     silentTranslationWarn: true,
 });
-const { _t, _tc } = i18n;
-i18n._t = function (k, v, l, h, ...args) {
+const { _t, _tc } = i18n as any;
+i18n._t = function (k: string, v: any, l: any, h: any, ...args: any[]) {
     if (args[0] instanceof Array) {
         args = args[0];
     }
@@ -29,11 +30,11 @@ i18n._t = function (k, v, l, h, ...args) {
     }
     return result;
 };
-i18n._tc = (key,
-    _locale,
-    messages,
-    host,
-    choice, ...args) => {
+i18n._tc = (key: string,
+    _locale: any,
+    messages: any[],
+    host: any,
+    choice: any, ...args: any[]) => {
     const result = _tc.apply(i18n, [
         key,
         _locale,

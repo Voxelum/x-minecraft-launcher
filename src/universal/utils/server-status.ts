@@ -26,11 +26,7 @@ export const PINGING_STATUS = Object.freeze({
     ping: 0,
 });
 
-/**
- * 
- * @param {string} description 
- */
-export function createFailureServerStatus(description) {
+export function createFailureServerStatus(description: string) {
     return Object.freeze({
         version: {
             name: 'profile.server.unknown',

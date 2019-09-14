@@ -20,31 +20,19 @@ function overwrite() {
 
     console.log(path.resolve(root, 'logs', 'main.log'));
     const outstream = fs.createWriteStream(path.resolve(root, 'logs', 'main.log'), { encoding: 'utf-8', flags: 'w+' });
-    /**
-     * @param {any} message
-     * @param {any[]} options
-     */
-    console.log = (message, ...options) => {
+    console.log = (message: any, ...options: any[]) => {
         const raw = options.length !== 0 ? util.format(message, options) : util.format(message);
         const content = `[INFO] [${new Date().toUTCString()}]: ${raw}`;
         log(content);
         outstream.write(`${content}\n`);
     };
-    /**
-     * @param {any} message
-     * @param {any[]} options
-     */
-    console.warn = (message, ...options) => {
+    console.warn = (message: any, ...options: any[]) => {
         const raw = options.length !== 0 ? util.format(message, options) : util.format(message);
         const content = `[WARN] [${new Date().toUTCString()}]: ${raw}`;
         warn(content);
         outstream.write(`${content}\n`);
     };
-    /**
-     * @param {any} message
-     * @param {any[]} options
-     */
-    console.error = (message, ...options) => {
+    console.error = (message: any, ...options: any[]) => {
         const raw = options.length !== 0 ? util.format(message, options) : util.format(message);
         const content = `[ERROR] [${new Date().toUTCString()}]: ${raw}`;
         error(content);

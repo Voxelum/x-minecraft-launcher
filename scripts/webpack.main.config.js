@@ -14,6 +14,12 @@ const mainConfig = {
     module: {
         rules: [
             {
+                test: /\.ts$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+                include: [path.join(__dirname, '../src/main'), path.join(__dirname, '../src/universal')],
+            },
+            {
                 test: /\.node$/,
                 use: 'node-loader',
             },
@@ -32,7 +38,7 @@ const mainConfig = {
         new webpack.NoEmitOnErrorsPlugin(),
     ],
     resolve: {
-        extensions: ['.js', '.json', '.node'],
+        extensions: ['.js', '.ts', '.json', '.node'],
         alias: {
             main: path.join(__dirname, '../src/main'),
             vue$: 'vue/dist/vue.runtime.esm.js',

@@ -19,6 +19,21 @@ export interface Mutations {
 
 export type LauncherModule = Module<"launch", State, {}, Mutations, Actions>;
 
-declare const mod: LauncherModule;
+const mod: LauncherModule = {
+    state: {
+        status: 'ready',
+        errorType: '',
+        errors: [],
+    },
+    mutations: {
+        launchStatus(state, status) {
+            state.status = status;
+        },
+        launchErrors(state, error) {
+            state.errorType = error.type;
+            state.errors = error.content;
+        },
+    },
+};
 
 export default mod;

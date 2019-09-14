@@ -1,10 +1,7 @@
 import { app, Menu, Tray, dialog, ipcMain, nativeImage } from 'electron';
 import i18n from './i18n';
 
-/**
- * @type {Tray?}
- */
-let tray = null;
+let tray: Tray | null = null;
 
 app.on('before-quit', () => {
     if (tray !== null) {
@@ -27,10 +24,7 @@ app.on('ready', () => {
                     const mem = process.getProcessMemoryInfo();
                     const sysmem = process.getSystemMemoryInfo();
 
-                    /**
-                     * @type {Promise<Electron.ProcessMemoryInfo>}
-                     */
-                    const p = mem instanceof Promise ? mem : Promise.resolve(mem);
+                    const p: Promise<Electron.ProcessMemoryInfo> = mem instanceof Promise ? mem : Promise.resolve(mem);
                     p.then((m) => {
                         dialog.showMessageBox({
                             type: 'info',
