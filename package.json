@@ -109,10 +109,14 @@
                     "target": "deb"
                 },
                 {
+                    "target": "rpm"
+                },
+                {
                     "target": "AppImage"
                 },
                 {
-                    "target": "snap"
+                    "target": "snap",
+                    "publish": "github"
                 }
             ]
         }
