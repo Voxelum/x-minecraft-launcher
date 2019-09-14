@@ -12,7 +12,7 @@
         "url": "https://github.com/voxelum/voxelauncher.git"
     },
     "scripts": {
-        "build": "npm run lint && node scripts/build.js",
+        "build": "node scripts/build.js",
         "build:clean": "cross-env BUILD_TARGET=clean node scripts/build.js",
         "build:locale": "node scripts/build-locale.js",
         "build:schema": "node scripts/build-schema.js",
