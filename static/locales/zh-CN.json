@@ -50,6 +50,7 @@
             "files": "文件",
             "images": "图片"
         },
+        "recentFiles": "近期文件",
         "search": "搜索",
         "sortby": "排序依据",
         "texture-packs": {
@@ -446,6 +447,7 @@
         },
         "forceLocalVersion": "启动指定本地版本",
         "forgeSetting": "Forge设置",
+        "importCurseforge": "从 Curseforge 模组包导入",
         "importFolder": "从文件夹导入",
         "importZip": "从压缩包导入",
         "launchingDetail": "启动配置",

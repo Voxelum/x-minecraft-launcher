@@ -52,6 +52,7 @@
             "files": "Files",
             "images": "Images"
         },
+        "recentFiles": "Recent Files",
         "search": "Search",
         "sortby": "Sort By",
         "texture-packs": {
@@ -455,6 +456,7 @@
         },
         "forceLocalVersion": "Launch by Selected Local Version",
         "forgeSetting": "Forge Settings",
+        "importCurseforge": "Import from Curseforge Modpack",
         "importFolder": "Import from Folder",
         "importZip": "Import from Zip",
         "launchingDetail": "Launch Detail",
