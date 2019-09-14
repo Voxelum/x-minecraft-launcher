@@ -116,7 +116,7 @@
                 },
                 {
                     "target": "snap",
-                    "publish": "github"
+                    "publish": ["github"]
                 }
             ]
         }
