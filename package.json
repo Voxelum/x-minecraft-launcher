@@ -4,7 +4,7 @@
     "productName": "VoxeLauncher",
     "version": "0.3.0-beta.0",
     "author": "ci010 <cijhn@hotmail.com>",
-    "description": "A great minecraft launcher in the feature",
+    "description": "A great minecraft launcher in the future",
     "license": "MIT",
     "main": "./dist/electron/main.js",
     "repository": {
@@ -12,7 +12,7 @@
         "url": "https://github.com/voxelum/voxelauncher.git"
     },
     "scripts": {
-        "build": "node scripts/build.js",
+        "build": "npm run lint && node scripts/build.js",
         "build:clean": "cross-env BUILD_TARGET=clean node scripts/build.js",
         "build:locale": "node scripts/build-locale.js",
         "build:schema": "node scripts/build-schema.js",
@@ -165,7 +165,7 @@
         "electron-builder": "^21.2.0",
         "electron-debug": "^1.4.0",
         "electron-devtools-installer": "^2.2.0",
-        "electron-publisher-azure": "^0.0.3",
+        "electron-publisher-azure": "0.0.4",
         "eslint": "^5.5.0",
         "eslint-config-airbnb-base": "^13.1.0",
         "eslint-friendly-formatter": "^4.0.1",
