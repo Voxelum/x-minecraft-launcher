@@ -1,9 +1,9 @@
-import { app } from 'electron';
-import paths, { join } from 'path';
 import { Task } from '@xmcl/minecraft-launcher-core';
 import Ajv from 'ajv';
-import { createContext, runInContext } from 'vm';
+import { app } from 'electron';
 import fs from 'main/utils/vfs';
+import paths, { join } from 'path';
+import { createContext, runInContext } from 'vm';
 import { getGuardWindow } from '../../windowsManager';
 
 /**
@@ -22,8 +22,17 @@ const mod = {
             return fs.readdir(path);
         },
 
-        async setPersistence(context, { path, data }) {
+        async setPersistence(context, { path, data, schema }) {
             const inPath = `${context.rootState.root}/${path}`;
+            if (schema) {
+                const schemaObject = await fs.readFile(join(__static, 'persistence-schema', `${schema}.json`)).then(s => JSON.parse(s.toString()));
+                const ajv = new Ajv({ useDefaults: true, removeAdditional: true });
+                const validation = ajv.compile(schemaObject);
+                const valid = validation(data);
+                if (!valid) {
+                    throw new Error(`Cannot persistence the ${path} as input invalid!`);
+                }
+            }
             return fs.writeFile(inPath, JSON.stringify(data, null, 4), { encoding: 'utf-8' });
         },
 
