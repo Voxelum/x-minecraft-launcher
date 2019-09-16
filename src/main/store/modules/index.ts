@@ -4,10 +4,7 @@
  */
 
 const files = require.context('.', false, /\.js$/);
-/**
- * @type {import('vuex').ModuleTree<import('universal/store/store').BaseState>}
- */
-const modules = {};
+const modules: import('vuex').ModuleTree<import('universal/store/store').BaseState> = {};
 
 files.keys().forEach((key) => {
     if (key === './index.js') return;

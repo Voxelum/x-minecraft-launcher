@@ -4,17 +4,14 @@ import request from 'main/utils/request';
 import { join } from 'path';
 import querystring from 'querystring';
 import { finished } from 'stream';
-import base from 'universal/store/modules/curseforge';
+import base, { CurseForgeModule } from 'universal/store/modules/curseforge';
 import { parse as parseUrl } from 'url';
 import { promisify } from 'util';
 import Unzip from '@xmcl/unzip';
 import fs from 'main/utils/vfs';
 
 
-/**
- * @param {import('universal/store/modules/curseforge').CurseForgeModule.DownloadFile} file 
- */
-function getHref(file) {
+function getHref(file: CurseForgeModule.DownloadFile) {
     return `https://www.curseforge.com/minecraft/${file.projectType}/${file.projectPath}/download/${file.id}/file`;
 }
 const CURSEMETA_CACHE = 'https://cursemeta.dries007.net';
@@ -23,20 +20,17 @@ const CURSEMETA_CACHE = 'https://cursemeta.dries007.net';
 /**
  * @param {string} string 
  */
-function localDate(string) {
+function localDate(string: string) {
     const d = new Date(0);
     d.setUTCSeconds(Number.parseInt(string, 10));
     return d.toLocaleDateString();
 }
 
-/**
- * @param {any} n
- */
-function notText(n) { return !(n instanceof parser.TextNode); }
+function notText(n: any) { return !(n instanceof parser.TextNode); }
 /**
  * @param {parser.Node | null} node
  */
-function convert(node) {
+function convert(node: parser.Node | null) {
     if (node === null || !node) return '';
     let text = '';
     if (node instanceof parser.TextNode) {

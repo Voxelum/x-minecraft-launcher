@@ -1,11 +1,8 @@
-import base from 'universal/store/modules/client';
+import base, { ClientModule } from 'universal/store/modules/client';
 import { join } from 'path';
 import fs from 'main/utils/vfs';
 
-/**
- * @type {import('universal/store/modules/client').ClientModule}
- */
-const mod = {
+const mod: ClientModule = {
     ...base,
     actions: {
         async load(context) {

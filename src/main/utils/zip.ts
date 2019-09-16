@@ -7,7 +7,7 @@ import { ZipFile } from 'yazl';
  * @param {string} real
  * @param {ZipFile} zip
  */
-export async function includeAllToZip(root, real, zip) {
+export async function includeAllToZip(root: string, real: string, zip: ZipFile) {
     const relativePath = relative(root, real);
     const stat = await promises.stat(real);
     if (stat.isDirectory()) {
@@ -26,7 +26,7 @@ export async function includeAllToZip(root, real, zip) {
  * @param {ZipFile} zip
  * @param {string} dest
  */
-export function compressZipTo(zip, dest) {
+export function compressZipTo(zip: ZipFile, dest: string) {
     return new Promise((resolve, reject) => {
         zip.outputStream.pipe(createWriteStream(dest))
             .on('close', () => { resolve(); })

@@ -3,23 +3,21 @@ import os from 'os';
 import path from 'path';
 import { exec } from 'child_process';
 import { Task } from '@xmcl/minecraft-launcher-core';
-import { officialEndpoint, bangbangAPI, selfHostAPI } from 'main/utils/jre';
+import { officialEndpoint, selfHostAPI } from 'main/utils/jre';
 import { requireString } from 'universal/utils/object';
 import inGFW from 'in-gfw';
-import base from 'universal/store/modules/java';
+import { JavaConfig } from 'universal/store/modules/java.config';
+import base, { JavaModule } from 'universal/store/modules/java';
 import fs from 'main/utils/vfs';
 
 const JAVA_FILE = os.platform() === 'win32' ? 'javaw.exe' : 'java';
 
-/**
- * @type { import("universal/store/modules/java").JavaModule }
- */
-const mod = {
+const mod: JavaModule = {
     ...base,
     actions: {
         async load(context) {
-            const loaded = await context.dispatch('getPersistence', { path: 'java.json', schema: 'JavaConfig' });
-            if (loaded && loaded.all instanceof Array) {
+            const loaded: JavaConfig = await context.dispatch('getPersistence', { path: 'java.json', schema: 'JavaConfig' });
+            if (loaded) {
                 context.commit('addJava', loaded.all.filter(l => typeof l.path === 'string'));
             }
             if (context.state.all.length === 0) {
@@ -90,10 +88,7 @@ const mod = {
             // const resolved = context.state.all.filter(java => java.path === javaPath)[0];
             // if (resolved) return resolved;
 
-            /**
-             * @param {string} str
-             */
-            const getJavaVersion = (str) => {
+            const getJavaVersion = (str: string) => {
                 const match = /(\d+\.\d+\.\d+)(_(\d+))?/.exec(str);
                 if (match === null) return undefined;
                 return match[1];
@@ -128,24 +123,24 @@ const mod = {
         async refreshLocalJava({ state, dispatch, commit }) {
             commit('refreshingProfile', true);
             try {
-                const unchecked = new Set();
+                const unchecked = new Set<string>();
 
                 unchecked.add(path.join(app.getPath('userData'), 'jre', 'bin', JAVA_FILE));
                 if (process.env.JAVA_HOME) unchecked.add(path.join(process.env.JAVA_HOME, 'bin', JAVA_FILE));
 
-                const which = () => new Promise((resolve, reject) => {
+                const which = () => new Promise<string>((resolve, reject) => {
                     exec('which java', (error, stdout, stderr) => {
                         resolve(stdout.replace('\n', ''));
                     });
                 });
-                const where = () => new Promise((resolve, reject) => {
+                const where = () => new Promise<string[]>((resolve, reject) => {
                     exec('where java', (error, stdout, stderr) => {
                         resolve(stdout.split('\r\n'));
                     });
                 });
 
                 if (os.platform() === 'win32') {
-                    const out = await new Promise((resolve, reject) => {
+                    const out = await new Promise<string[]>((resolve, reject) => {
                         exec('REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome', (error, stdout, stderr) => {
                             if (!stdout) resolve([]);
                             resolve(stdout.split(os.EOL).map(item => item.replace(/[\r\n]/g, ''))

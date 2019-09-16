@@ -4,15 +4,12 @@ import got from 'got';
 import fs from 'main/utils/vfs';
 import { ComparableVersion } from 'maven-artifact-version';
 import { basename, join } from 'path';
-import base from 'universal/store/modules/user';
+import base, { UserModule } from 'universal/store/modules/user';
 import { requireObject, requireString } from 'universal/utils/object';
 import { parse as parseUrl } from 'url';
 import { v4 } from 'uuid';
 
-/**
- * @param {string} username 
- */
-function offline(username) {
+function offline(username: string) {
     const prof = {
         id: v4(),
         name: username,
@@ -46,9 +43,8 @@ function offline(username) {
  * getGameProfile, get profile by user uuid or user name
  * selectGameProfileService, select the profile service 
  * 
- * @type {import('universal/store/modules/user').UserModule}
  */
-const mod = {
+const mod: UserModule = {
     ...base,
     actions: {
         async save(context, { mutation }) {

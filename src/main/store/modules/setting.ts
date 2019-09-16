@@ -2,13 +2,10 @@ import { app } from 'electron';
 import locales from 'static/locales';
 import { autoUpdater, UpdaterSignal } from 'electron-updater';
 import { Task } from '@xmcl/minecraft-launcher-core';
-import base from 'universal/store/modules/setting';
+import base, { SettingModule } from 'universal/store/modules/setting';
 import isInGFW from 'in-gfw';
 
-/**
- * @type {import('universal/store/modules/setting').SettingModule}
- */
-const mod = {
+const mod: SettingModule = {
     ...base,
     actions: {
         async load(context) {
@@ -77,7 +74,7 @@ const mod = {
             /**
              * @param {Task.Context} ctx 
              */
-            function download(ctx) {
+            function download(ctx: Task.Context) {
                 return new Promise((resolve, reject) => {
                     autoUpdater.downloadUpdate().catch(reject);
                     const signal = new UpdaterSignal(autoUpdater);

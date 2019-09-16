@@ -1,13 +1,10 @@
 import { Util, Launcher, UserType } from '@xmcl/minecraft-launcher-core';
 import paths, { join } from 'path';
 import { ipcMain } from 'electron';
-import base from 'universal/store/modules/launch';
+import base, { LauncherModule } from 'universal/store/modules/launch';
 import fs from 'main/utils/vfs';
 
-/**
- * @param {{ message: string; type: string; }} e
- */
-function onerror(e) {
+function onerror(e: { message: string; type: string; }) {
     if (e.message.startsWith('Cannot find version ') || e.message.startsWith('No version file for ') || e.message.startsWith('No version jar for ')) {
         e.type = 'missing.version';
     } else if (e.message === 'Missing library') {
@@ -20,10 +17,7 @@ function onerror(e) {
     return e;
 }
 
-/**
- * @type { import('universal/store/modules/launch').LauncherModule }
- */
-const mod = {
+const mod: LauncherModule = {
     ...base,
     actions: {
         async launch({ state, rootGetters, rootState, commit, dispatch }) {
@@ -82,9 +76,8 @@ const mod = {
                 const java = profile.java || rootGetters.defaultJava;
                 /**
                  * Build launch condition
-                 * @type {Launcher.Option}
                  */
-                const option = {
+                const option: Launcher.Option = {
                     auth: {
                         selectedProfile: gameProfile,
                         accessToken: user.accessToken,

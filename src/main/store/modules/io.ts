@@ -5,15 +5,14 @@ import fs from 'main/utils/vfs';
 import paths, { join } from 'path';
 import { createContext, runInContext } from 'vm';
 import { getGuardWindow } from '../../windowsManager';
+import { IOModule } from 'universal/store/modules/io';
 
 /**
  * @type {{[url: string]: Promise<string>}}
  */
 const downloadingGuard = {};
-/**
- * @type {import('universal/store/modules/io').IOModule}
- */
-const mod = {
+
+const mod: IOModule = {
     actions: {
         async readFolder(context, path) {
             if (!path) throw new Error('Path must not be undefined!');

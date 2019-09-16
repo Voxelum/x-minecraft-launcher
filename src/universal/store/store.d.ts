@@ -42,7 +42,7 @@ interface BaseMutations {
     platform(state: BaseState, platform: NodeJS.Platform): void
 }
 
-type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | SettingModule | UserModule | LauncherModule | IOModule | DiagnoseModule | CurseForgeModule | ClientModule; 
+type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | SettingModule | UserModule | LauncherModule | IOModule | DiagnoseModule | CurseForgeModule | ClientModule;
 type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & SettingModule & UserModule & LauncherModule & IOModule & DiagnoseModule & CurseForgeModule & ClientModule;
 interface ModulesCollection extends ModulesIntersection { }
 
@@ -96,7 +96,12 @@ type UseGetters<GetterTree extends ObjectWithFunctions<GetterTree>> = {
 }
 
 interface Context<S, G, M extends ObjectWithFunctions<M>, A extends ObjectWithFunctions<A>> {
-    state: S; dispatch: RootDispatch & Dispatch<A>; commit: Commit<M> & RootCommit, rootGetters: RootGetters, getters: G, rootState: RootState;
+    state: S;
+    getters: G;
+    commit: Commit<M> & RootCommit;
+    dispatch: RootDispatch & Dispatch<A>;
+    rootGetters: RootGetters;
+    rootState: RootState;
 }
 
 type GetterTree<S, G> = {
@@ -106,13 +111,13 @@ type GetterTree<S, G> = {
 interface Module<N, S, G, M extends ObjectWithFunctions<M>, A extends ObjectWithFunctions<A>> {
     name?: N;
     state?: S;
+    getters?: GetterTree<S, G>;
     mutations?: M;
     actions?: A & {
         load?: LoadFunction<Context<S, G, M, A>>
         save?: SaveFunction<Context<S, G, M, A>>
         init?: LoadFunction<Context<S, G, M, A>>
     };
-    getters?: GetterTree<S, G>;
 }
 
 type StateTree = {

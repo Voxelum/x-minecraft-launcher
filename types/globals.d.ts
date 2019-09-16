@@ -10,6 +10,14 @@ interface NodeRequire extends NodeRequireFunction {
             keys(): string[],
         };
 }
+declare module "in-gfw" {
+    namespace GFW {
+        function net(): Promise<boolean>;
+        function os(): Promise<boolean>;
+    }
+    function GFW(): Promise<boolean>;
+    export = GFW;
+}
 
 declare module "static/protocol.json" {
     type ProtocolToVersion = {

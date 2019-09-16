@@ -1,11 +1,8 @@
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
 import { Forge, ForgeWebPage, Version, ForgeInstaller, Util, Task, JavaExecutor, MinecraftFolder } from '@xmcl/minecraft-launcher-core';
-import base from 'universal/store/modules/diagnose';
+import base, { DiagnoseModule } from 'universal/store/modules/diagnose';
 
-/**
- * @type {import('universal/store/modules/diagnose').DiagnoseModule}
- */
-const mod = {
+const mod: DiagnoseModule = {
     ...base,
     actions: {
         async save(context, { mutation, payload }) {
@@ -73,10 +70,7 @@ const mod = {
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
             const pattern = /^\[.+\]$/;
 
-            /**
-             * @type {Pick<import('universal/store/modules/diagnose').DiagnoseModule.ProblemReport, 'unknownMod' | 'incompatibleMod'>}
-             */
-            const tree = {
+            const tree: Pick<DiagnoseModule.ProblemReport, 'unknownMod' | 'incompatibleMod'> = {
                 unknownMod: [],
                 incompatibleMod: [],
             };
@@ -115,10 +109,7 @@ const mod = {
 
             if (!resourcepacks) return;
 
-            /**
-             * @type {Pick<import('universal/store/modules/diagnose').DiagnoseModule.ProblemReport, 'incompatibleResourcePack'>}
-             */
-            const tree = {
+            const tree: Pick<DiagnoseModule.ProblemReport, 'incompatibleResourcePack'> = {
                 incompatibleResourcePack: [],
             };
 
@@ -138,10 +129,7 @@ const mod = {
         async diagnoseUser(context) {
             const user = context.rootGetters.selectedUser;
 
-            /**
-             * @type {Pick<import('universal/store/modules/diagnose').DiagnoseModule.ProblemReport, 'missingAuthlibInjector'>}
-             */
-            const tree = {
+            const tree: Pick<DiagnoseModule.ProblemReport, 'missingAuthlibInjector'> = {
                 missingAuthlibInjector: [],
             };
 
@@ -172,10 +160,7 @@ const mod = {
 
             java = profile.java;
 
-            /**
-             * @type {Pick<import('universal/store/modules/diagnose').DiagnoseModule.ProblemReport, 'incompatibleJava'>}
-             */
-            const tree = {
+            const tree: Pick<DiagnoseModule.ProblemReport, 'incompatibleJava'> = {
                 incompatibleJava: [],
             };
 
@@ -192,10 +177,7 @@ const mod = {
         async diagnoseServer(context) {
             const stat = context.rootState.profile.status;
 
-            /**
-             * @type {Pick<import('universal/store/modules/diagnose').DiagnoseModule.ProblemReport, 'missingModsOnServer'>}
-             */
-            const tree = {
+            const tree: Pick<DiagnoseModule.ProblemReport, 'missingModsOnServer'> = {
                 missingModsOnServer: [],
             };
 
@@ -215,12 +197,9 @@ const mod = {
 
             console.log(`Diagnose for version ${targetVersion}`);
 
-            /**
-             * @type {Pick<import('universal/store/modules/diagnose').DiagnoseModule.ProblemReport, 
-             *  'missingVersionJar' | 'missingAssetsIndex' | 'missingVersionJson' |'missingForgeJar'| 'missingLibraries' |
-             *  'missingAssets' | 'missingVersion' | 'badForgeProcessedFiles' | 'badForge' | 'badForgeIncomplete' >}
-             */
-            const tree = {
+            const tree: Pick<DiagnoseModule.ProblemReport,
+                'missingVersionJar' | 'missingAssetsIndex' | 'missingVersionJson' | 'missingForgeJar' | 'missingLibraries' |
+                'missingAssets' | 'missingVersion' | 'badForgeProcessedFiles' | 'badForge' | 'badForgeIncomplete'> = {
                 missingVersion: [],
                 missingVersionJar: [],
                 missingAssetsIndex: [],

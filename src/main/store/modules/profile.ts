@@ -1,23 +1,21 @@
-import { watch } from 'fs';
+import { watch, FSWatcher } from 'fs';
 import { gunzip } from 'zlib';
 import fs from 'main/utils/vfs';
 import { compressZipTo, includeAllToZip } from 'main/utils/zip';
 import { tmpdir } from 'os';
 import paths, { basename, join, dirname, relative } from 'path';
 import { latestMcRelease } from 'static/dummy.json';
-import { GameSetting, Server, TextComponent, Version, World, Task } from '@xmcl/minecraft-launcher-core';
-import base, { createTemplate } from 'universal/store/modules/profile';
+import { GameSetting, Server, TextComponent, Version, World } from '@xmcl/minecraft-launcher-core';
+import base, { createTemplate, ProfileModule } from 'universal/store/modules/profile';
 import { fitin, willBaselineChange } from 'universal/utils/object';
 import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/server-status';
 import uuid from 'uuid';
 import { Unzip } from '@xmcl/unzip';
 import { ZipFile } from 'yazl';
 import { createHash } from 'crypto';
+import { ServerProfileConfig } from 'universal/store/modules/profile.config';
 
-/**
- * @param {string} save
- */
-async function loadWorld(save) {
+async function loadWorld(save: string) {
     try {
         const world = await World.load(save, ['level']);
         const dest = join(save, 'icon.png');
@@ -36,17 +34,10 @@ async function loadWorld(save) {
     }
 }
 
-/**
- * @type {import('fs').FSWatcher}
- */
-let saveWatcher;
+let saveWatcher: FSWatcher;
 let isSavesDirty = false;
 
-
-/**
- * @type {import('universal/store/modules/profile').ProfileModule}
- */
-const mod = {
+const mod: ProfileModule = {
     ...base,
     actions: {
         async loadProfileGameSettings({ rootGetters, state, commit }, id = state.id) {
@@ -76,7 +67,7 @@ const mod = {
                     const saves = await fs.readdir(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
 
                     const loaded = await Promise.all(saves.map(s => paths.resolve(saveRoot, s)).map(loadWorld));
-                    loaded.filter(s => s !== undefined).forEach(s => Reflect.set(s, 'profile', profile.name));
+                    loaded.filter(s => s !== undefined).forEach(s => Reflect.set(s!, 'profile', profile.name));
                     all.push(...loaded);
                 }
             }
@@ -94,10 +85,7 @@ const mod = {
                     const saves = await fs.readdir(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
 
                     const loaded = await Promise.all(saves.map(s => paths.resolve(saveRoot, s)).map(loadWorld));
-                    /**
-                     * @type {any}
-                     */
-                    const nonNulls = loaded.filter(s => s !== undefined);
+                    const nonNulls: any = loaded.filter(s => s !== undefined);
                     console.log(`Save ${saves.length} ${nonNulls.length}`);
                     commit('profileSaves', nonNulls);
                     return nonNulls;
@@ -478,7 +466,7 @@ const mod = {
 
             await fs.copy(paths.resolve(srcFolderPath, 'versions'), paths.resolve(context.rootState.root, 'versions')); // TODO: check this
 
-            let profileTemplate = {};
+            let profileTemplate: any = {}; // TODO: typecheck
             const isExportFromUs = await fs.stat(proiflePath).then(s => s.isFile()).catch(_ => false);
             if (isExportFromUs) {
                 profileTemplate = await fs.readFile(proiflePath).then(buf => buf.toString()).then(JSON.parse, () => ({}));
@@ -503,10 +491,7 @@ const mod = {
         resolveProfileResources(context, id = context.state.id) {
             const profile = context.state.all[id];
 
-            /**
-             * @type {{[domain:string]: import('universal/store/modules/resource').Resource<any>[]}}
-             */
-            const resources = {};
+            const resources: { [domain: string]: import('universal/store/modules/resource').Resource<any>[] } = {};
             for (const domain of Object.keys(profile.deployments)) {
                 const depl = profile.deployments[domain];
                 if (depl instanceof Array && depl.length !== 0) {
@@ -569,7 +554,7 @@ const mod = {
             }
         },
         async createProfileFromServer(context, info) {
-            const options = {};
+            const options: Partial<ServerProfileConfig> = {};
             options.name = info.name;
             if (info.status) {
                 // if (typeof info.status.description === 'string') {
@@ -577,8 +562,10 @@ const mod = {
                 // } else if (typeof info.status.description === 'object') {
                 //     options.description = TextComponent.from(info.status.description).formatted;
                 // }
-                options.versions = {
+                options.version = {
                     minecraft: context.rootState.client.protocolMapping.mcversion[info.status.version.protocol][0],
+                    forge: '',
+                    liteloader: '',
                 };
                 if (info.status.modinfo && info.status.modinfo.type === 'FML') {
                     options.deployments = {
@@ -594,10 +581,7 @@ const mod = {
             });
         },
         async importSave(context, filePath) {
-            /**
-             * @param {string} from
-             */
-            async function performImport(from) {
+            async function performImport(from: string) {
                 const save = await World.load(from, ['level']);
                 let dest = context.rootGetters.path('profiles', context.state.id, 'saves', save.level.LevelName);
                 await fs.ensureFile(dest);
@@ -676,11 +660,7 @@ const mod = {
             const { path, zip, destination } = payload;
             console.log(`Export map from ${path} to ${destination}.`);
 
-            /**
-             * @param {string} src 
-             * @param {string} dest 
-             */
-            async function transferFile(src, dest) {
+            async function transferFile(src: string, dest: string) {
                 if (!zip) {
                     return fs.copy(src, dest);
                 }

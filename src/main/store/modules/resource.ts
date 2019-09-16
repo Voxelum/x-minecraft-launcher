@@ -5,7 +5,7 @@ import { net } from 'electron';
 import fileType from 'file-type';
 import fs from 'main/utils/vfs';
 import paths from 'path';
-import base from 'universal/store/modules/resource';
+import base, { ResourceModule, Resource } from 'universal/store/modules/resource';
 import { requireString } from 'universal/utils/object';
 import url from 'url';
 
@@ -14,7 +14,7 @@ import url from 'url';
  * @param {string} folder 
  * @param {crypto.Hash} hasher 
  */
-async function hashFolder(folder, hasher) {
+async function hashFolder(folder: string, hasher: crypto.Hash) {
     const files = await fs.readdir(folder);
     for (const f of files) {
         const st = await fs.stat(f); // eslint-disable-line
@@ -31,8 +31,8 @@ async function hashFolder(folder, hasher) {
  * 
  * @param {string} file 
  */
-async function readHash(file) {
-    return new Promise((resolve, reject) => {
+async function readHash(file: string) {
+    return new Promise<string>((resolve, reject) => {
         fs.createReadStream(file)
             .pipe(crypto.createHash('sha1').setEncoding('hex'))
             // @ts-ignore
@@ -44,7 +44,7 @@ async function readHash(file) {
 /**
  * @param {Buffer} buf 
  */
-async function parseCurseforgeModpack(buf) {
+async function parseCurseforgeModpack(buf: Buffer) {
     const z = await Unzip.open(buf, { lazyEntries: true });
     const [manifest] = await z.filterEntries(['manifest.json']);
     if (manifest) {
@@ -59,7 +59,7 @@ async function parseCurseforgeModpack(buf) {
  * @param {string} type 
  * @param {any} meta 
  */
-function getRegularName(type, meta) {
+function getRegularName(type: string, meta: any) {
     let fmeta;
     switch (type) {
         case 'forge':
@@ -96,7 +96,7 @@ function getRegularName(type, meta) {
  * @param {string | undefined | void} type
  * @return {Promise<import('universal/store/modules/resource').Resource<any>>}
  */
-async function parseResource(path, hash, ext, data, source, type) {
+async function parseResource(path: string, hash: string, ext: string, data: Buffer, source: ResourceModule.Source, type?: string): Promise<Resource<any>> {
     const ft = fileType(data);
     if (ft) {
         ext = `.${ft.ext}`;
@@ -138,7 +138,7 @@ async function parseResource(path, hash, ext, data, source, type) {
  * @param {object} source 
  * @return {Promise<import('universal/store/modules/resource').Resource<any>>}
  */
-async function guessResource(path, hash, ext, data, source) {
+async function guessResource(path: string, hash: string, ext: string, data: Buffer, source: ResourceModule.Source): Promise<any> {
     const { meta, domain, type } = await Forge.meta(data).then(meta => ({ domain: 'mods', meta, type: 'forge' }),
         _ => LiteLoader.meta(data).then(meta => ({ domain: 'mods', meta, type: 'liteloader' }),
             _ => ResourcePack.read(path, data).then(meta => ({ domain: 'resourcepacks', meta, type: 'resourcepack' }),
@@ -161,7 +161,7 @@ async function guessResource(path, hash, ext, data, source) {
  * @param {any} meta 
  * @returns {import('universal/store/modules/resource').Resource<any>}
  */
-function buildResource(filename, hash, ext, domain, type, source, meta) {
+function buildResource(filename: string, hash: string, ext: string, domain: string, type: string, source: ResourceModule.Source, meta: any): Resource<any> {
     Object.freeze(source);
     Object.freeze(meta);
     return {
@@ -180,11 +180,8 @@ function buildResource(filename, hash, ext, domain, type, source, meta) {
 /**
  * @type {{[key: string]: string}}
  */
-const cache = {};
-/**
- * @type {import('universal/store/modules/resource').ResourceModule}
- */
-const mod = {
+const cache: { [key: string]: string } = {};
+const mod: ResourceModule = {
     ...base,
     actions: {
         async load(context) {
@@ -224,15 +221,12 @@ const mod = {
                 const total = modsFiles.length + resourcePacksFiles.length + modpacksFiles.length;
                 let finished = 0;
 
-                /**
-                 * @type {import('universal/store/modules/resource').Resource<any>[]}
-                 */
-                const resources = [];
+                const resources: Resource<any>[] = [];
                 /**
                  * @param {string[]} pool
                  * @param {string | undefined | void} type
                  */
-                async function reimport(pool, type) {
+                async function reimport(pool: string[], type?: string) {
                     while (pool.length !== 0) {
                         const file = pool.pop();
                         if (!file) return;
@@ -260,7 +254,7 @@ const mod = {
 
                                 const resource = await parseResource(file, hash, ext, await fs.readFile(file), {
                                     path: paths.resolve(file),
-                                    date: Date.now(),
+                                    date: Date.now().toString(),
                                 }, type);
 
                                 await context.dispatch('setPersistence', { path: metaFile, data: resource });
@@ -361,8 +355,7 @@ const mod = {
             const task = Task.create('importResource', async (ctx) => {
                 const root = context.rootState.root;
 
-                /** @type {Buffer} */
-                let data;
+                let data: Buffer;
                 let ext = '';
                 let hash = '';
                 let name = '';
@@ -374,10 +367,7 @@ const mod = {
                 if (theURL.protocol === 'https:' || theURL.protocol === 'http:') {
                     data = await new Promise((resolve, reject) => {
                         const req = net.request({ url: path, redirect: 'manual' });
-                        /**
-                         * @type {Buffer[]}
-                         */
-                        const bufs = [];
+                        const bufs: Buffer[] = [];
                         req.on('response', (resp) => {
                             resp.on('error', reject);
                             resp.on('data', (chunk) => { bufs.push(chunk); });
@@ -424,14 +414,15 @@ const mod = {
 
                     // if exist, abort
                     if (await fs.exists(metaFile)) {
-                        /** @type {any} */
                         const resource = context.getters.getResource(hash);
-                        const newResource = buildResource(resource.path, resource.hash, resource.ext, resource.domain, resource.type, {
-                            ...resource.source,
-                            ...metadata, // overwrite the source sign
-                        }, resource.metadata);
-                        context.commit('resource', newResource);
-                        return newResource;
+                        if (resource) {
+                            const newResource = buildResource(resource.path, resource.hash, resource.ext, resource.domain, resource.type, {
+                                ...resource.source,
+                                ...metadata, // overwrite the source sign
+                            }, resource.metadata);
+                            context.commit('resource', newResource);
+                            return newResource;
+                        }
                     }
                     return undefined;
                 });

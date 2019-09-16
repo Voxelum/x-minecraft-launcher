@@ -8,10 +8,7 @@ import path, { join } from 'path';
 import Unzip from '@xmcl/unzip';
 import fs from './vfs';
 
-/**
- * @param {Task.Context} context 
- */
-export async function officialEndpoint(context) {
+export async function officialEndpoint(context: Task.Context) {
     console.log('Try auto Java from Mojang source');
     const root = app.getPath('userData');
     function resolveArch() {
@@ -85,11 +82,7 @@ export async function officialEndpoint(context) {
     return version;
 }
 
-
-/**
- * @param {Task.Context} context 
- */
-export async function selfHostAPI(context) {
+export async function selfHostAPI(context: Task.Context) {
     console.log('Try auto Java from self hosted source');
     const root = app.getPath('userData');
     function resolveArch() {
@@ -137,10 +130,7 @@ export async function selfHostAPI(context) {
     });
 }
 
-/**
- * @param {Task.Context} context 
- */
-export async function bangbangAPI(context) {
+export async function bangbangAPI(context: Task.Context) {
     console.log('Try auto Java from Bangbang source');
     const x64 = os.arch() === 'x64';
     const platform = os.platform();
@@ -161,7 +151,7 @@ export async function bangbangAPI(context) {
         destination,
     }));
 
-    function exec_(cmd, option = {}) {
+    function exec_(cmd: string, option = {}) {
         return new Promise((resolve, reject) => {
             exec(cmd, option, (err, stdout, stderr) => {
                 if (err) { reject(err); } else {

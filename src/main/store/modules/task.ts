@@ -2,7 +2,7 @@
 import { v4 } from 'uuid';
 import { ipcMain } from 'electron';
 import { requireString } from 'universal/utils/object';
-import base from 'universal/store/modules/task';
+import base, { TaskModule } from 'universal/store/modules/task';
 import { Task } from '@xmcl/minecraft-launcher-core';
 
 const TASK_FORCE_THRESHOLD = 30;
@@ -120,10 +120,7 @@ ipcMain.on('reload', () => { // reload to discard old record to prevent memory l
     idToTask = {};
 });
 
-/**
- * @type {import('universal/store/modules/task').TaskModule}
- */
-const mod = {
+const mod: TaskModule = {
     ...base,
     actions: {
         async spawnTask(context, name) {
