@@ -40,16 +40,7 @@ async function loadWorld(save) {
  * @type {import('fs').FSWatcher}
  */
 let saveWatcher;
-
-/**
- * @type {import('fs').FSWatcher}
- */
-let optionsWatcher;
-
-/**
- * @type {import('fs').FSWatcher}
- */
-let serversWatcher;
+let isSavesDirty = false;
 
 
 /**
@@ -65,8 +56,10 @@ const mod = {
                 commit('profileCache', { gamesettings: option });
                 return option || {};
             } catch (e) {
-                console.warn(`An error ocurrs during parse game options of ${id}.`);
-                console.warn(e);
+                if (!e.message.startsWith('ENOENT:')) {
+                    console.warn(`An error ocurrs during parse game options of ${id}.`);
+                    console.warn(e);
+                }
                 commit('profileCache', { gamesettings: {} });
                 return {};
             }
@@ -90,10 +83,10 @@ const mod = {
             return all;
         },
         async loadProfileSaves({ rootGetters, state, commit }, id = state.id) {
-            if (!state.dirty.saves) {
+            if (!isSavesDirty) {
                 return state.saves;
             }
-            commit('markDirty', { target: 'saves', dirty: false });
+            isSavesDirty = false;
             try {
                 const saveRoot = rootGetters.path('profiles', id, 'saves');
 
@@ -110,8 +103,10 @@ const mod = {
                     return nonNulls;
                 }
             } catch (e) {
-                console.warn(`An error ocurred during parsing the save of ${id}`);
-                console.warn(e);
+                if (!e.message.startsWith('ENOENT:')) {
+                    console.warn(`An error ocurred during parsing the save of ${id}`);
+                    console.warn(e);
+                }
             }
             commit('profileSaves', []);
             return [];
@@ -254,6 +249,7 @@ const mod = {
                     await context.dispatch('setPersistence', {
                         path: 'profiles.json',
                         data: { selectedProfile: payload },
+                        schema: 'ProfilesConfig',
                     });
                     break;
                 case 'gamesettings':
@@ -263,29 +259,15 @@ const mod = {
                 case 'addProfile':
                     await context.dispatch('setPersistence', {
                         path: `profiles/${payload.id}/profile.json`,
-                        data: {
-                            ...payload,
-                            serverInfos: undefined,
-                            settings: undefined,
-                            saves: undefined,
-                            problems: undefined,
-                            refreshing: undefined,
-                            status: undefined,
-                        },
+                        data: payload,
+                        schema: 'ProfileConfig',
                     });
                     break;
                 case 'profile':
                     await context.dispatch('setPersistence', {
                         path: `profiles/${context.state.id}/profile.json`,
-                        data: {
-                            ...current,
-                            serverInfos: undefined,
-                            settings: undefined,
-                            saves: undefined,
-                            problems: undefined,
-                            refreshing: undefined,
-                            status: undefined,
-                        },
+                        data: current,
+                        schema: 'ProfileConfig',
                     });
                     break;
                 default:
@@ -344,37 +326,17 @@ const mod = {
                 if (saveWatcher) {
                     saveWatcher.close();
                 }
-                if (optionsWatcher) {
-                    optionsWatcher.close();
-                }
-                if (serversWatcher) {
-                    serversWatcher.close();
-                }
                 const saveDir = context.rootGetters.path('profiles', id, 'saves');
                 if (await fs.exists(saveDir)) {
-                    context.commit('markDirty', { target: 'saves', dirty: true });
+                    isSavesDirty = true;
                     await context.dispatch('loadProfileSaves', id);
                     saveWatcher = watch(saveDir, (target, filename) => {
                         console.log(`Detect ${id} profile saves change, dirty. Target: ${target}. Filename: ${filename}.`);
-                        context.commit('markDirty', { target: 'saves', dirty: true });
+                        isSavesDirty = true;
                     });
                 }
-                const optionFile = context.rootGetters.path('profiles', id, 'options.txt');
-                if (await fs.exists(optionFile)) {
-                    await context.dispatch('loadProfileGameSettings', id);
-                    // optionsWatcher = watch(optionFile, (target, data) => {
-                    //     console.log(`Detect ${id} profile gamesettings change, reload`);
-                    //     context.dispatch('loadProfileGameSettings', id);
-                    // });
-                }
-                const seversFile = context.rootGetters.path('profiles', id, 'servers.dat');
-                if (await fs.exists(seversFile)) {
-                    await context.dispatch('loadProfileSeverData', id);
-                    // optionsWatcher = watch(seversFile, (target, data) => {
-                    //     console.log(`Detect ${id} profile server data change, reload`);
-                    //     context.dispatch('loadProfileSeverData', id);
-                    // });
-                }
+                await context.dispatch('loadProfileGameSettings', id);
+                await context.dispatch('loadProfileSeverData', id);
                 context.commit('selectProfile', id);
             }
         },
@@ -610,17 +572,17 @@ const mod = {
             const options = {};
             options.name = info.name;
             if (info.status) {
-                if (typeof info.status.description === 'string') {
-                    options.description = info.status.description;
-                } else if (typeof info.status.description === 'object') {
-                    options.description = TextComponent.from(info.status.description).formatted;
-                }
+                // if (typeof info.status.description === 'string') {
+                //     options.description = info.status.description;
+                // } else if (typeof info.status.description === 'object') {
+                //     options.description = TextComponent.from(info.status.description).formatted;
+                // }
                 options.versions = {
                     minecraft: context.rootState.client.protocolMapping.mcversion[info.status.version.protocol][0],
                 };
                 if (info.status.modinfo && info.status.modinfo.type === 'FML') {
-                    options.forge = {
-                        mods: info.status.modinfo.modList.map(m => `forge://${m.modid}/${m.version}`),
+                    options.deployments = {
+                        mods: info.status.modinfo.modList.map(m => `forge/${m.modid}/${m.version}`),
                     };
                 }
             }
@@ -703,7 +665,7 @@ const mod = {
             const expect = context.rootGetters.path('profiles', id, 'saves', saveName);
             if (path === expect) { // confirm this save is a select profile's save
                 await fs.remove(path);
-                context.commit('markDirty', { target: 'saves', dirty: true });
+                isSavesDirty = true;
                 await context.dispatch('loadProfileSaves');
             } else {
                 console.error(`Cannot remove map ${path}, which is not in selected profile ${id}`);

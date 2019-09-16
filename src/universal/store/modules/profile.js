@@ -83,12 +83,6 @@ const mod = {
         saves: [],
 
         refreshing: false,
-
-        dirty: {
-            servers: false,
-            saves: false,
-            gamesettings: false,
-        },
     },
     getters: {
         profiles: state => Object.keys(state.all).map(k => state.all[k]),
@@ -276,9 +270,6 @@ const mod = {
         },
         profileSaves(state, saves) {
             state.saves = saves;
-        },
-        markDirty(state, { dirty, target }) {
-            state.dirty[target] = dirty;
         },
     },
 };

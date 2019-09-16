@@ -59,20 +59,6 @@ export declare namespace ProfileModule {
          * If current launcher is refreshing the profile data
          */
         refreshing: boolean;
-
-        dirty: {
-            /**
-             * Whether the save folder is dirty
-             */
-            saves: boolean;
-
-            /**
-             * Whether the server.dat is dirty
-             */
-            servers: boolean;
-
-            gamesettings: boolean;
-        },
     }
 
     interface Getters {
@@ -111,8 +97,6 @@ export declare namespace ProfileModule {
         serverStatus(state: State, status: Server.StatusFrame): void;
         profileSaves(state: State, worlds: Save[]): void;
         refreshingProfile(state: State, refreshing: boolean): void;
-
-        markDirty(state: State, payload: { target: keyof State['dirty'], dirty: boolean }): void;
     }
 
     type C = Context<State, Getters, Mutations, Actions>
