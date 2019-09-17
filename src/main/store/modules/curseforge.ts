@@ -63,7 +63,7 @@ function convert(node: parser.Node | null) {
  * @param { import('fast-html-parser').HTMLElement } item
  * @returns { import('universal/store/modules/curseforge').CurseForgeModule.ProjectPreview }
  */
-function processProjectListingRow(item) {
+function processProjectListingRow(item: import('fast-html-parser').HTMLElement): CurseForgeModule.ProjectPreview {
     item = item.removeWhitespace();
 
     const childs = item.childNodes.filter(notText);
@@ -106,9 +106,8 @@ function processProjectListingRow(item) {
 
 /**
  * @typedef {import('universal/store/modules/curseforge').CurseForgeModule.Modpack} Modpack
- * @type {import('universal/store/modules/curseforge').CurseForgeModule}
  */
-const mod = {
+const mod: CurseForgeModule = {
     ...base,
     actions: {
         async importCurseforgeModpack(context, { profile, path }) {
@@ -118,14 +117,7 @@ const mod = {
             // const fType = fileType(buf);
             // if (!fType || fType.ext !== 'zip') throw new Error(`Cannot import curseforge modpack ${path}, since it's not a zip!`);
             console.log(`Import curseforge modpack by path ${path}`);
-            /** @type {import('universal/store/modules/resource').Resource<any>[]} */
-            const modResources = [];
-            /**
-             * @param {{url:string, dest: string, fileId: number}[]} pool
-             * @param {Task.Context} ctx 
-             * @param {string[]} modlist
-             */
-            async function downloadWorker(pool, ctx, modlist) {
+            async function downloadWorker(pool: { url: string, dest: string, fileId: number }[], ctx: Task.Context, modlist: string[]) {
                 for (let task = pool.pop(); task; task = pool.pop()) {
                     try {
                         // we want to ensure the mod is in the disk
@@ -159,11 +151,9 @@ const mod = {
             const task = Task.create('installCurseforgeModpack', async (ctx) => {
                 const zipFile = await Unzip.open(path);
 
-                /** @type {import('@xmcl/unzip').Unzip.Entry[]} */
-                const others = [];
+                const others: Unzip.Entry[] = [];
 
-                /** @type {Modpack} */
-                const manifest = await ctx.execute('resolveEntries', async () => {
+                const manifest: CurseForgeModule.Modpack = await ctx.execute('resolveEntries', async () => {
                     const manifestEntry = zipFile.entries['manifest.json'];
                     if (!manifestEntry) throw new Error(`Cannot import curseforge modpack ${path}, since it doesn't have manifest.json`);
                     const manifestBuf = await zipFile.readEntry(manifestEntry);
@@ -175,8 +165,7 @@ const mod = {
 
                 // download required assets (mods)
 
-                /** @type {string[]} */
-                const modsList = [];
+                const modsList: string[] = [];
 
                 const shouldDownloaded = [];
                 for (const f of manifest.files) {
@@ -242,7 +231,7 @@ const mod = {
 
                     const waitStream = promisify(finished);
                     /** @param {import('@xmcl/unzip').Unzip.Entry} o */
-                    async function pipeTo(o) {
+                    async function pipeTo(o: Unzip.Entry) {
                         const dest = join(profileFolder, o.fileName.substring(manifest.override.length));
                         const readStream = await zipFile.openEntry(o);
                         return waitStream(readStream.pipe(fs.createWriteStream(dest)));

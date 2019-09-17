@@ -10,18 +10,10 @@ ipcMain.on('user-agent', (event, arg) => {
 
 /**
  * In memory cache
- * @type {{[key:string]: any}}
  */
-const cache = {};
+const cache: { [key: string]: any } = {};
 
-/**
- * @template T
- * 
- * @param {string|any} url
- * @param {(element:hparser.HTMLElement) => T} parser
- * @returns {Promise<T>}
- */
-async function request(url, parser) {
+async function request<T>(url: string, parser: (element: hparser.HTMLElement) => T) {
     if (cache[url]) return cache[url];
     const resp = await got.get(url, {
         headers: {

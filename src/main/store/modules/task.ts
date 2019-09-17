@@ -1,44 +1,27 @@
-// @ts-nocheck
 import { v4 } from 'uuid';
 import { ipcMain } from 'electron';
 import { requireString } from 'universal/utils/object';
-import base, { TaskModule } from 'universal/store/modules/task';
+import base, { TaskModule, TNode } from 'universal/store/modules/task';
 import { Task } from '@xmcl/minecraft-launcher-core';
 
 const TASK_FORCE_THRESHOLD = 30;
 
+interface Progress { progress?: number, total?: number, message?: string, time?: string }
 class TaskWatcher {
-    constructor() {
-        /** @type {NodeJS.Timeout|undefined} */
-        this.listener = undefined;
-        /** 
-         * @type {{ id: string, node: import('./task').TNode }[]} 
-         */
-        this.adds = [];
-        /** @type {{ id: string, node: import('./task').TNode }[]} */
-        this.childs = [];
-        /** @type {{ [id: string]: { progress?: number, total?: number, message?: string, time?: string } }} */
-        this.updates = {};
-        /** @type {{ id: string, status: string }[]} */
-        this.statuses = [];
+    private listener: NodeJS.Timeout | undefined;
+    private adds: { id: string, node: TNode }[] = [];
+    private childs: { id: string, node: TNode }[] = [];
+    private updates: { [id: string]: Progress } = {};
+    private statuses: { id: string, status: string }[] = []
 
-        this.forceUpdate = () => {};
-    }
+    private forceUpdate: () => void = () => { };
 
-    /**
-     * @param {string} id
-     * @param {any} node
-     */
-    add(id, node) {
+    add(id: string, node: TNode) {
         this.adds.push({ id, node });
         this.checkBatchSize();
     }
 
-    /**
-     * @param {string} uuid
-     * @param {{ id?: string; progress?: any; total?: any; message?: any; time?: string; }} update
-     */
-    update(uuid, update) {
+    update(uuid: string, update: Progress) {
         const last = this.updates[uuid];
         if (last) {
             this.updates[uuid] = {
@@ -52,11 +35,7 @@ class TaskWatcher {
         this.checkBatchSize();
     }
 
-    /**
-     * @param {string} id 
-     * @param {import('./task').TNode} node 
-     */
-    child(id, node) {
+    child(id: string, node: TNode) {
         this.childs.push({
             id,
             node,
@@ -64,11 +43,7 @@ class TaskWatcher {
         this.checkBatchSize();
     }
 
-    /**
-     * @param {string} uuid
-     * @param {string} status
-     */
-    status(uuid, status) {
+    status(uuid: string, status: string) {
         this.statuses.push({ id: uuid, status });
         this.checkBatchSize();
     }
@@ -79,10 +54,7 @@ class TaskWatcher {
         }
     }
 
-    /**
-     * @param {import("universal/store/modules/task").TaskModule.C} context
-     */
-    ensureListener(context) {
+    ensureListener(context: TaskModule.C) {
         if (this.listener === undefined) {
             this.forceUpdate = () => {
                 if (this.adds.length !== 0 || this.childs.length !== 0 || Object.keys(this.updates).length !== 0 || this.statuses.length !== 0) {
@@ -105,14 +77,8 @@ class TaskWatcher {
 }
 
 let taskWatcher = new TaskWatcher();
-/**
- * @type {{[name:string]: import('@xmcl/minecraft-launcher-core').Task<any>}}
- */
-let nameToTask = {};
-/**
- * @type {{[name:string]: import('@xmcl/minecraft-launcher-core').Task<any>}}
- */
-let idToTask = {};
+let nameToTask: { [name: string]: Task<any> } = {};
+let idToTask: { [name: string]: Task<any> } = {};
 
 ipcMain.on('reload', () => { // reload to discard old record to prevent memory leak
     taskWatcher = new TaskWatcher();
@@ -126,10 +92,7 @@ const mod: TaskModule = {
         async spawnTask(context, name) {
             requireString(name);
             const id = v4();
-            /**
-            * @type {import('./task').TNode}
-            */
-            const node = {
+            const node: TNode = {
                 _internalId: id,
                 name,
                 total: -1,
