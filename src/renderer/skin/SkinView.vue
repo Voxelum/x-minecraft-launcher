@@ -22,6 +22,7 @@ export default {
     cape: {
       type: Object,
       required: false,
+      default: null,
     },
     rotate: {
       type: Boolean,
@@ -40,7 +41,9 @@ export default {
       default: false,
     },
     data: {
+      type: Object,
       required: true,
+      default: null,
     },
   },
   data: () => ({
@@ -107,15 +110,16 @@ export default {
     controls.maxDistance = this.maxDistance;
     controls.minDistance = this.minDistance;
     if (this.rotate) {
-      // controls.autoRotate = true;
-      // controls.autoRotateSpeed = 4;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 4;
     }
     const self = this;
     requestAnimationFrame(function animate(nowMsec) {
       if (self.disposed) return;
       requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
+      if (this.rotate || controls.update()) {
+        renderer.render(scene, camera);
+      }
     });
   },
   methods: {
