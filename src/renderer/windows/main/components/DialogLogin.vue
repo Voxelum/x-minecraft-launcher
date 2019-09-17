@@ -48,7 +48,7 @@
                           dark 
                           prepend-icon="person"
                           required 
-                          :label="$t(`user.${selectedAuthService}.account`)"
+                          :label="$t(`user.${selectedAuthService === 'offline' ? 'offline' : 'mojang'}.account`)"
                           :rules="accountRules" 
                           :items="history" 
                           :error="accountError" 
@@ -60,7 +60,7 @@
                             prepend-icon="lock" 
                             type="password" 
                             required
-                            :label="$t(`user.${selectedAuthService}.password`)"
+                            :label="$t(`user.${selectedAuthService === 'offline' ? 'offline' : 'mojang'}.password`)"
                             :rules="passwordRules" 
                             :disabled="selectedAuthService==='offline'" 
                             :error="passwordError"
@@ -167,13 +167,13 @@ export default {
   computed: {
     authServices() {
       return this.$repo.getters.authServices.map(m => ({
-        text: this.$t(`user.${m}.name`),
+        text: m === 'offline' || m === 'mojang' ? this.$t(`user.${m}.name`) : m,
         value: m,
       }));
     },
     profileServices() {
       return this.$repo.getters.profileServices.map(m => ({
-        text: this.$t(`user.${m}.name`),
+        text: m === 'offline' || m === 'mojang' ? this.$t(`user.${m}.name`) : m,
         value: m,
       }));
     },
@@ -256,7 +256,7 @@ export default {
         });
       }
     },
-    deleteGameProfile(profile) { 
+    deleteGameProfile(profile) {
       this.$repo.commit('removeUserProfile', profile.userId);
     },
     async login() {

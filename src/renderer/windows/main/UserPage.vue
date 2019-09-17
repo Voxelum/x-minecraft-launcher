@@ -59,6 +59,7 @@
               </v-flex>
               <v-flex xs1 style="padding-left: 5px;">
                 <v-select hide-details :label="$t('user.profileService')" 
+                          readonly
                           :items="profileServices" :value="user.profileService"
                           color="primary" dark prepend-inner-icon="add" 
                           @click:prepend-inner="userServiceDialog=true" />
