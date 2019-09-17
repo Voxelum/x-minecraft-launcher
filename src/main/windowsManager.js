@@ -35,6 +35,7 @@ function createWindow(name, option) {
     const ops = { ...option };
     if (!ops.webPreferences) { ops.webPreferences = {}; }
     ops.webPreferences.webSecurity = !isDev; // disable security for loading local image
+    ops.webPreferences.nodeIntegration = isDev; // enable node for webpack in dev
     const ref = new BrowserWindow(ops);
     ipcMain.emit('browser-window-setup', ref, name);
     ref.loadURL(`${baseURL}${name}`);

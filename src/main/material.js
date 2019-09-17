@@ -26,9 +26,6 @@ export default function setup(context, store) {
             hasShadow: false,
             maximizable: false,
             icon: resolve(__static, 'apple-touch-icon.png'),
-            webPreferences: {
-                nodeIntegration: true,
-            },
         });
         mainRef.show();
         context.configDock((dock) => {
@@ -46,9 +43,6 @@ export default function setup(context, store) {
             hasShadow: false,
             maximizable: false,
             icon: resolve(__static, 'apple-touch-icon.png'),
-            webPreferences: {
-                nodeIntegration: true,
-            },
         });
     }
     context.configTray((tray) => {
