@@ -166,6 +166,9 @@ export default {
         && this.newAuth.validate === ''
         && this.newAuth.invalidate === ''
         && this.newAuth.signout === '') {
+          if (!this.baseUrl.startsWith('http://') && !this.baseUrl.startsWith('https://')) {
+            this.baseUrl = `http://${this.baseUrl}`;
+          }
           if (this.template === 0) {
             this.newAuth.hostName = `${this.baseUrl}`;
           } else {
