@@ -343,6 +343,8 @@ const mod = {
                 profileService = 'mojang',
             } = payload;
 
+            const usingAuthService = context.state.authServices[authService];
+
             try {
                 /**
                  * @type {Auth}
@@ -353,7 +355,7 @@ const mod = {
                         username: account,
                         password,
                         clientToken: context.state.clientToken,
-                    }, context.getters.authService).catch((e) => {
+                    }, usingAuthService).catch((e) => {
                         if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
                             const err = { message: 'error.internetNotConnected' };
                             throw err;
