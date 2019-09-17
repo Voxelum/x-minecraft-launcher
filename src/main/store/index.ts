@@ -3,17 +3,15 @@ import { app, ipcMain, shell } from 'electron';
 import { join } from 'path';
 import { platform } from 'os';
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex, { Store, StoreOptions } from 'vuex';
 import modules from './modules';
 import plugins from './plugins';
+import { BaseState } from 'universal/store/store';
 
 Vue.use(Vuex);
 
 let isLoading = false;
-/**
- * @type {import('vuex').Store<import('universal/store/store').BaseState>?}
- */
-let store;
+let store: Store<BaseState> | null = null;
 
 /**
  * Load the store from disk
@@ -23,11 +21,7 @@ async function load() {
     store = null;
     const root = app.getPath('userData');
 
-    /**
-     * @param {typeof mod} template 
-     * @return {typeof mod} 
-     */
-    function deepCopyStoreTemplate(template) {
+    function deepCopyStoreTemplate(template: typeof mod) {
         const copy = Object.assign({}, template);
         if (typeof template.state === 'object') {
             copy.state = JSON.parse(JSON.stringify(template.state));
@@ -39,11 +33,7 @@ async function load() {
         }
         return copy;
     }
-
-    /**
-     * @type {import('vuex').StoreOptions<import('universal/store/store').BaseState>}
-     */
-    const mod = {
+    const mod: StoreOptions<BaseState> = {
         state: {
             root,
             platform: platform(),
@@ -75,10 +65,8 @@ async function load() {
     };
     const template = deepCopyStoreTemplate(mod); // deep copy the template so there is no strange reference
 
-    // @ts-ignore
     const newStore = new Vuex.Store(template);
 
-    // load
     isLoading = true;
 
     let startingTime = Date.now();
@@ -117,12 +105,7 @@ async function load() {
 
 ipcMain.on('reload', load);
 
-/**
- * @param {any} type
- * @param {any} payload
- * @param {any} option
- */
-export function commit(type, payload, option) {
+export function commit(type: string, payload: any, option: any) {
     if (store === undefined) {
         return;
     }
@@ -135,12 +118,7 @@ export function commit(type, payload, option) {
     ipcMain.emit(`postcommit/${type}`, { type, payload, option });
 }
 
-/**
- * @param {string} type 
- * @param {any} payload 
- * @param {any} option 
- */
-export function dispatch(type, payload, option) {
+export function dispatch(type: string, payload: any, option: any) {
     if (!store) {
         console.error(`Cannot dispatch ${type} since the store is null.`);
         return Promise.reject(new Error(`Cannot dispatch ${type} since the store is null.`));

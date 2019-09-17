@@ -176,10 +176,6 @@ function buildResource(filename: string, hash: string, ext: string, domain: stri
     };
 }
 
-
-/**
- * @type {{[key: string]: string}}
- */
 const cache: { [key: string]: string } = {};
 const mod: ResourceModule = {
     ...base,

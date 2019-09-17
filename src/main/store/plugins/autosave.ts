@@ -1,10 +1,8 @@
 
 import { loading } from '../index';
+import { Store } from 'vuex';
 
-/**
- * @type {import('vuex').Plugin<any>}
- */
-function autosave(store) {
+function autosave(store: Store<any>) {
     store.subscribe(
         (mutation) => {
             if (loading()) return;
