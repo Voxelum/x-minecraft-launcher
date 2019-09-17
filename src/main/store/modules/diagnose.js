@@ -281,7 +281,6 @@ const mod = {
 
             context.commit('postProblems', tree);
         },
-        async diagnoseFull(context) { },
         async fixProfile(context, problems) {
             const unfixed = problems.filter(p => p.autofix)
                 .filter(p => !context.state.registry[p.id].fixing);

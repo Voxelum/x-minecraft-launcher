@@ -287,6 +287,7 @@ export default {
       }
     },
     async fetchFileChangelog() {
+      // todo: impl this
     },
     getColor(type) {
       switch (type) {

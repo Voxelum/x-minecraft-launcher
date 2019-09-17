@@ -26,7 +26,7 @@
                                   callback: (v) => checkBuffer(v, index, true),
                                   once: true,
                                 }" :data="pack" :is-selected="false" :index="index" 
-                                @dragstart="dragging = true" @dragend="dragging = false"/>
+                                @dragstart="dragging = true" @dragend="dragging = false" />
           </div>
         </v-card>
       </v-flex>
