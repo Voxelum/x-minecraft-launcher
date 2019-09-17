@@ -24,16 +24,17 @@ const mod = {
 
         async setPersistence(context, { path, data, schema }) {
             const inPath = `${context.rootState.root}/${path}`;
+            const deepCopy = JSON.parse(JSON.stringify(data));
             if (schema) {
                 const schemaObject = await fs.readFile(join(__static, 'persistence-schema', `${schema}.json`)).then(s => JSON.parse(s.toString()));
                 const ajv = new Ajv({ useDefaults: true, removeAdditional: true });
                 const validation = ajv.compile(schemaObject);
-                const valid = validation(data);
+                const valid = validation(deepCopy);
                 if (!valid) {
                     throw new Error(`Cannot persistence the ${path} as input invalid!`);
                 }
             }
-            return fs.writeFile(inPath, JSON.stringify(data, null, 4), { encoding: 'utf-8' });
+            return fs.writeFile(inPath, JSON.stringify(deepCopy, null, 4), { encoding: 'utf-8' });
         },
 
         async getPersistence(context, { path, schema }) {
