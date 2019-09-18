@@ -10,19 +10,6 @@ export function useSelectedProfileVersion() {
     return toRefs(store.getters.selectedProfile.version);
 }
 
-export function useServerStatus() {
-    const store = useStore();
-
-    const status: Ref<ServerStatusFrame> = computed(() => store.state.profile.status || {
-        favicon: unknownServer,
-        version: { name: '', protocol: 0 },
-        description: '',
-        ping: 0,
-        players: { max: 0, online: 0 },
-    });
-    
-}
-
 export function useJava() {
     const store = useStore();
 
