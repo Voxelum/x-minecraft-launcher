@@ -4,26 +4,25 @@ import { Task } from '@xmcl/minecraft-launcher-core';
 import { Context, Module, TaskHandle } from "../store";
 
 
-export interface TNode extends Task.Node {
+export interface TaskNodeWrapper extends Task.Node {
     _internalId: string;
-    tasks: TNode[];
+    tasks: TaskNodeWrapper[];
     time?: string;
-    background: boolean;
 }
 export declare namespace TaskModule {
 
     interface State {
-        tree: { [uuid: string]: TNode },
-        tasks: TNode[],
+        tree: { [uuid: string]: TaskNodeWrapper },
+        tasks: TaskNodeWrapper[],
         maxLog: number,
     }
     interface Mutations {
         createTask(state: State, option: { id: string, name: string }): void;
         pruneTasks(state: State): void;
-        hookTask(state: State, option: { id: string, task: TNode }): void;
+        hookTask(state: State, option: { id: string, task: TaskNodeWrapper }): void;
         updateBatchTask(state: State, option: {
-            adds: { id: string, node: TNode }[],
-            childs: { id: string, node: TNode }[],
+            adds: { id: string, node: TaskNodeWrapper }[],
+            childs: { id: string, node: TaskNodeWrapper }[],
             updates: { [id: string]: { progress?: number, total?: number, message?: string, time?: string } },
             statuses: { id: string, status: string }[],
         }): void;
@@ -54,7 +53,7 @@ const mod: TaskModule = {
     },
     mutations: {
         createTask(state, { id, name }) {
-            const node: TNode = {
+            const node: TaskNodeWrapper = {
                 _internalId: id,
                 name,
                 total: -1,
@@ -64,13 +63,12 @@ const mod: TaskModule = {
                 tasks: [],
                 error: null,
                 message: '',
-                background: false,
             };
             state.tree[id] = node;
             state.tasks.push(state.tree[id]);
         },
         pruneTasks(state) {
-            function remove(task: TNode) {
+            function remove(task: TaskNodeWrapper) {
                 if (task.tasks && task.tasks.length !== 0) {
                     task.tasks.forEach(remove);
                 }

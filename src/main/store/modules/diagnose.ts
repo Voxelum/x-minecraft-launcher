@@ -1,5 +1,5 @@
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
-import { Forge, ForgeWebPage, Version, ForgeInstaller, Util, Task, JavaExecutor, MinecraftFolder } from '@xmcl/minecraft-launcher-core';
+import { Forge, ForgeWebPage, Version, ForgeInstaller, Util, Task, JavaExecutor, MinecraftFolder, ResolvedLibrary } from '@xmcl/minecraft-launcher-core';
 import base, { DiagnoseModule } from 'universal/store/modules/diagnose';
 
 const mod: DiagnoseModule = {
@@ -333,7 +333,7 @@ const mod: DiagnoseModule = {
                                 let i = 0;
                                 cc.update(i, total);
                                 for (const proc of badForgeProcessedFiles) {
-                                    await ForgeInstaller.postProcess(root, proc.arguments, JavaExecutor.createSimple(context.rootGetters.defaultJava.path));
+                                    await ForgeInstaller.postProcess(root, proc.arguments as any, JavaExecutor.createSimple(context.rootGetters.defaultJava.path));
                                     cc.update(i += 1);
                                 }
                             });
@@ -386,7 +386,7 @@ const mod: DiagnoseModule = {
                         handle = await context.dispatch('installLibraries', { libraries: missingLibs.arguments.libraries });
                     } else {
                         const all = unfixed.filter(p => p.id === 'missingLibraries');
-                        handle = await context.dispatch('installLibraries', { libraries: all.map(p => p.arguments) });
+                        handle = await context.dispatch('installLibraries', { libraries: all.map(p => p.arguments as ResolvedLibrary) });
                     }
                     await context.dispatch('waitTask', handle);
                 }

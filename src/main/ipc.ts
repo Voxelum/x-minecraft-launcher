@@ -5,6 +5,9 @@ import { RootState } from "universal/store/store";
 import { Store } from "vuex";
 
 export interface CustomEvents {
+    on(channel: 'vuex-dispatch', listener: (event: Event, payload: { action: string; payload: any; option: any; id: number }) => void): this;
+    on(channel: 'vuex-sync', listener: (event: Event, eventId: number) => void): this;
+
     on(channel: 'browser-window-setup', listener: (window: BrowserWindow, name: string) => void): this;
     on(channel: 'exit', listener: () => void): this;
     on(channel: 'locale-changed', listener: () => void): this;
@@ -35,7 +38,8 @@ export interface CustomEvents {
 }
 
 declare module "electron" {
-    interface IpcMain extends CustomEvents {
+    interface IpcMain extends EventEmitter, CustomEvents {
+
     }
 }
 

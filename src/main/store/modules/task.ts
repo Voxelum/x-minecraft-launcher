@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { ipcMain } from 'electron';
 import { requireString } from 'universal/utils/object';
-import base, { TaskModule, TNode } from 'universal/store/modules/task';
+import base, { TaskModule, TaskNodeWrapper } from 'universal/store/modules/task';
 import { Task } from '@xmcl/minecraft-launcher-core';
 
 const TASK_FORCE_THRESHOLD = 30;
@@ -9,14 +9,14 @@ const TASK_FORCE_THRESHOLD = 30;
 interface Progress { progress?: number, total?: number, message?: string, time?: string }
 class TaskWatcher {
     private listener: NodeJS.Timeout | undefined;
-    private adds: { id: string, node: TNode }[] = [];
-    private childs: { id: string, node: TNode }[] = [];
+    private adds: { id: string, node: TaskNodeWrapper }[] = [];
+    private childs: { id: string, node: TaskNodeWrapper }[] = [];
     private updates: { [id: string]: Progress } = {};
     private statuses: { id: string, status: string }[] = []
 
     private forceUpdate: () => void = () => { };
 
-    add(id: string, node: TNode) {
+    add(id: string, node: TaskNodeWrapper) {
         this.adds.push({ id, node });
         this.checkBatchSize();
     }
@@ -35,7 +35,7 @@ class TaskWatcher {
         this.checkBatchSize();
     }
 
-    child(id: string, node: TNode) {
+    child(id: string, node: TaskNodeWrapper) {
         this.childs.push({
             id,
             node,
@@ -76,9 +76,24 @@ class TaskWatcher {
     }
 }
 
+interface WrappedTask<T> extends Task<T> {
+    promise: Promise<T>;
+    id: string;
+    background: boolean;
+    onChild(listener: (parentNode: TaskNodeWrapper, childNode: TaskNodeWrapper) => void): this;
+    onError(listener: (error: any, childNode: TaskNodeWrapper) => void): this;
+    onUpdate(listener: (update: {
+        progress: number;
+        total?: number;
+        message?: string;
+    }, childNode: Task.Node) => void): this;
+    onFinish(listener: (result: any, childNode: Task.Node) => void): this;
+
+}
+
 let taskWatcher = new TaskWatcher();
-let nameToTask: { [name: string]: Task<any> } = {};
-let idToTask: { [name: string]: Task<any> } = {};
+let nameToTask: { [name: string]: WrappedTask<any> } = {};
+let idToTask: { [name: string]: WrappedTask<any> } = {};
 
 ipcMain.on('reload', () => { // reload to discard old record to prevent memory leak
     taskWatcher = new TaskWatcher();
@@ -92,7 +107,7 @@ const mod: TaskModule = {
         async spawnTask(context, name) {
             requireString(name);
             const id = v4();
-            const node: TNode = {
+            const node: TaskNodeWrapper = {
                 _internalId: id,
                 name,
                 total: -1,
@@ -124,8 +139,8 @@ const mod: TaskModule = {
             return task.promise;
         },
         async executeAction(context, { action, background, payload }) {
-            const task = Task.create(action, () => context.dispatch(action, payload));
-            task.background = background;
+            const task = Task.create(action, () => context.dispatch(action, payload)) as WrappedTask<any>;
+            task.background = background || true;
             await context.dispatch('executeTask', task);
             return task.promise;
         },
