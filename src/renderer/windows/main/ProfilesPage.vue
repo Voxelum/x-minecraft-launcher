@@ -204,7 +204,9 @@ export default {
         if (filenames && filenames.length > 0) {
           for (const f of filenames) {
             if (curseforge) {
-              this.$repo.dispatch('importCurseforgeModpack', f);
+              this.$repo.dispatch('importResource', { path: f, type: 'curseforge-modpack', background: true })
+                .then(task => this.$repo.dispatch('waitTask', task)
+                  .then(() => this.$repo.dispatch('importCurseforgeModpack', { path: f })));
             } else {
               this.$repo.dispatch('importProfile', f);
             }
