@@ -1,9 +1,9 @@
-import Vuex from 'vuex';
+import Vuex, { MutationPayload } from 'vuex';
 import { remote, ipcRenderer } from 'electron';
 
 import storeOption from 'universal/store';
 
-export default function (option) {
+export default function (option: string[]) {
     storeOption.modules = {
         ...storeOption.modules,
     };
@@ -13,7 +13,7 @@ export default function (option) {
 
     const localStore = new Vuex.Store(storeOption);
     const _commit = localStore.commit;
-    const localCommit = (mutation) => {
+    const localCommit = (mutation: MutationPayload) => {
         if (localStore._mutations[mutation.type]) {
             _commit(mutation.type, mutation.payload);
         } else {
@@ -23,7 +23,7 @@ export default function (option) {
 
     let lastId = 0;
     let syncing = true;
-    let syncingQueue = {};
+    let syncingQueue: { [id: string]: MutationPayload } = {};
 
     ipcRenderer.on('vuex-commit', (event, mutation, id) => {
         if (syncing) {
@@ -71,9 +71,8 @@ export default function (option) {
     }
 
     /**
-     * @param {string[]} path 
      */
-    function createMutationProxy(path) {
+    function createMutationProxy(path: string[]) {
         return new Proxy(dummy, {
             get(target, key) {
                 if (!target[key]) target[key] = createMutationProxy([...path, key]);
@@ -86,9 +85,8 @@ export default function (option) {
     }
     function dummy() { }
     /**
-     * @param {string[]} path 
      */
-    function createDispatchProxy(path) {
+    function createDispatchProxy(path: string[]) {
         return new Proxy(dummy, {
             get(target, key) {
                 if (!target[key]) target[key] = createDispatchProxy([...path, key]);
@@ -102,7 +100,7 @@ export default function (option) {
     /**
      * @param {string[]} path 
      */
-    function createGettersProxy(path) {
+    function createGettersProxy(path: string[]) {
         return new Proxy({}, {
             get(target, key) {
                 const realKey = [...path, key].join('/');

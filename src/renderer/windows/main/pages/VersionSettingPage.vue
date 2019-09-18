@@ -77,7 +77,6 @@ export default {
       filterText: '',
 
       showAlpha: false,
-
       showBuggy: false,
       recommendedAndLatestOnly: true,
 

@@ -1,7 +1,7 @@
 import Router from 'vue-router';
 import Vue from 'vue';
 import { remote } from 'electron';
-import MainWindow from './MainWindow';
+import MainWindow from './MainWindow.vue';
 
 Vue.use(Router);
 
@@ -13,64 +13,64 @@ const router = new Router({
             children: [
                 {
                     path: '/',
-                    component: () => import('./HomePage'),
+                    component: () => import('./pages/HomePage.vue'),
                 },
                 {
                     path: '/profiles',
-                    component: () => import('./ProfilesPage'),
+                    component: () => import('./pages/ProfilesPage.vue'),
                 },
                 {
                     path: '/setting',
-                    component: () => import('./SettingPage'),
+                    component: () => import('./pages/SettingPage.vue'),
                 },
                 {
                     path: '/user',
-                    component: () => import('./UserPage'),
+                    component: () => import('./pages/UserPage.vue'),
                 },
                 {
                     path: '/save',
-                    component: () => import('./SaveViewPage'),
+                    component: () => import('./pages/SaveViewPage.vue'),
                 },
                 {
                     path: '/server',
-                    component: () => import('./ServerViewPage'),
+                    component: () => import('./pages/ServerViewPage.vue'),
                 },
                 {
                     path: '/base-setting',
-                    component: () => import('./BaseSettingPage'),
+                    component: () => import('./pages/BaseSettingPage.vue'),
                 },
                 {
                     path: '/advanced-setting',
-                    component: () => import('./AdvancedSettingPage'),
+                    component: () => import('./pages/AdvancedSettingPage.vue'),
                 },
                 {
                     path: '/mod-setting',
-                    component: () => import('./ModSettingPage'),
+                    component: () => import('./pages/ModSettingPage.vue'),
                 },
                 {
                     path: '/game-setting',
-                    component: () => import('./GameSettingPage'),
+                    component: () => import('./pages/GameSettingPage.vue'),
                 },
                 {
                     path: '/resource-pack-setting',
-                    component: () => import('./ResourcePackSettingPage'),
+                    component: () => import('./pages/ResourcePackSettingPage.vue'),
                 },
                 {
                     path: '/version-setting',
-                    component: () => import('./VersionSettingPage'),
+                    component: () => import('./pages/VersionSettingPage.vue'),
                 },
                 {
                     path: '/curseforge',
-                    component: () => import('./CurseforgePage'),
+                    component: () => import('./pages/CurseforgePage.vue'),
                 },
                 {
                     path: '/curseforge/:type',
-                    component: () => import('./CurseforgeViewPage'),
+                    component: () => import('./pages/CurseforgeViewPage.vue'),
                     props: true,
                 },
                 {
                     path: '/curseforge/:type/:id',
-                    component: () => import('./CurseforgeProjectPage'),
+                    component: () => import('./pages/CurseforgeProjectPage.vue'),
                     props: true,
                 },
             ],

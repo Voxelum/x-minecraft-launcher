@@ -11,7 +11,52 @@
   </div>
 </template>
 
-<script>
+<script lang=ts>
+import { createComponent, computed } from '@vue/composition-api';
+
+interface Data {
+  status: string;
+}
+
+const component = createComponent({
+  props: {
+    status: {
+      type: String,
+      default: '',
+    },
+    progress: {
+      type: Number,
+      default: -1,
+    },
+    total: {
+      type: Number,
+      default: -1,
+    },
+    hovered: {
+      type: Boolean,
+      default: false,
+    },
+    hasChild: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  setup(props) {
+    const icon = computed(() => {
+      switch (props.status) {
+        case 'successed':
+          return props.hasChild ? 'done_all' : 'check';
+        case 'cancelled':
+          return 'stop';
+        default:
+          return 'error_outline';
+      }
+    });
+    // props.status;
+    return { icon };
+  },
+});
+
 export default {
   props: {
     status: {
@@ -35,34 +80,34 @@ export default {
       default: false,
     },
   },
-  data() {
-    return {
-      // hovered: false
-    };
+  setup(props) {
+    const status = props.status;
+    return {};
   },
-  computed: {
-    icon() {
-      switch (this.status) {
-        case 'successed':
-          return this.hasChild ? 'done_all' : 'check';
-        case 'cancelled':
-          return 'stop';
-        default:
-          return 'error_outline';
-      }
-    },
-    percentage() {
-      return this.progress / this.total * 100;
-    },
-  },
-  methods: {
-    enter() {
-      // this.hovered = true;
-    },
-    leave() {
-      // this.hovered = false;
-    },
-  },
+  
+  // computed: {
+  //   icon() {
+  //     switch (this.status) {
+  //       case 'successed':
+  //         return this.hasChild ? 'done_all' : 'check';
+  //       case 'cancelled':
+  //         return 'stop';
+  //       default:
+  //         return 'error_outline';
+  //     }
+  //   },
+  //   percentage() {
+  //     return this.progress / this.total * 100;
+  //   },
+  // },
+  // methods: {
+  //   enter() {
+  //     // this.hovered = true;
+  //   },
+  //   leave() {
+  //     // this.hovered = false;
+  //   },
+  // },
 };
 </script>
 

@@ -35,6 +35,15 @@ const rendererConfig = {
                 use: ['vue-style-loader', 'css-loader'],
             },
             {
+                test: /\.ts$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+                include: [path.join(__dirname, '../src/renderer'), path.join(__dirname, '../src/universal')],
+                options: {
+                    appendTsSuffixTo: [/\.vue$/],
+                },
+            },
+            {
                 test: /\.vue$/,
                 use: {
                     loader: 'vue-loader',

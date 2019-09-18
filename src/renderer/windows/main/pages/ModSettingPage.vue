@@ -113,7 +113,7 @@
 <script>
 import Vue from 'vue';
 import unknownPack from 'renderer/assets/unknown_pack.png';
-import SelectionList from './mixin/SelectionList';
+import SelectionList from '../mixin/SelectionList';
 
 export default {
   mixins: [SelectionList],

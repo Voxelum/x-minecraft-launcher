@@ -1,12 +1,13 @@
-import Vue from 'vue';
+import Vue, { ComponentOptions } from 'vue';
 import Vuetify from 'vuetify';
+import VueCompositionApi from '@vue/composition-api';
 import VueObserveVisibility from 'vue-observe-visibility';
 import colors from 'vuetify/es5/util/colors';
-import draggable from 'vuedraggable';
-import CurseforgeIcon from './CurseforgeIcon';
-import SkinView from './skin/SkinView';
-import TextComponent from './TextComponent';
+import CurseforgeIcon from './CurseforgeIcon.vue';
+import SkinView from './skin/SkinView.vue';
+import TextComponent from './TextComponent.vue';
 
+Vue.use(VueCompositionApi);
 
 if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'));
@@ -26,16 +27,10 @@ Vue.use(Vuetify, {
         accent: colors.green.accent3,
     },
 });
-
 Vue.component('text-component', TextComponent);
 Vue.component('skin-view', SkinView);
-Vue.component('draggable', draggable);
 
-/**
- * 
- * @param {import('vue').ComponentOptions} option 
- */
-export default function (option) {
+export default function (option: ComponentOptions<Vue>) {
     const App = require('./App').default;
     const vue = new Vue({
         ...option,

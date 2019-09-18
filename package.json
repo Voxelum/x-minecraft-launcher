@@ -140,6 +140,7 @@
         }
     },
     "dependencies": {
+        "@vue/composition-api": "^0.3.1",
         "@xmcl/minecraft-launcher-core": "^0.1.20",
         "@xmcl/unzip": "^0.2.4",
         "ajv": "^6.10.2",
@@ -163,6 +164,7 @@
         "@commitlint/cli": "^8.1.0",
         "@commitlint/config-conventional": "^8.0.0",
         "@types/bytebuffer": "^5.0.40",
+        "@types/lzma-native": "^4.0.0",
         "@types/got": "^9.6.7",
         "@types/long": "^4.0.0",
         "@types/uuid": "^3.4.5",

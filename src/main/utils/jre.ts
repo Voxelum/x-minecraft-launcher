@@ -27,7 +27,7 @@ export async function officialEndpoint(context: Task.Context) {
             default: return '';
         }
     }
-    const info = await context.execute('fetchInfo', () => new Promise((resolve, reject) => {
+    const info: { [system: string]: { [arch: string]: { jre: { sha1: string; url: string; version: string } } } } = await context.execute('fetchInfo', () => new Promise((resolve, reject) => {
         const req = net.request('https://launchermeta.mojang.com/mc/launcher.json');
         req.on('response', (response) => {
             let str = '';

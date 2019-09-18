@@ -6,10 +6,20 @@ import router from './router';
 import './components';
 
 import start from '../../start';
+import { Repo } from 'universal/store/store';
+import VueRouter from 'vue-router';
 
 Vue.use(VueParticles);
 
 const store = select({ modules: ['user', 'profile', 'version', 'resource'] });
+
+export function useStore(): Repo {
+    return store as any as Repo;
+}
+
+export function useRouter(): VueRouter {
+    return router;
+}
 
 start({
     router,
