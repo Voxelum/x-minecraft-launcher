@@ -435,7 +435,8 @@ const mod = {
                 })(ctx);
                 return dest;
             });
-            return context.dispatch('waitTask', await context.dispatch('executeTask', task));
+            await context.dispatch('waitTask', await context.dispatch('executeTask', task));
+            await context.dispatch('diagnoseUser');
         },
     },
 };
