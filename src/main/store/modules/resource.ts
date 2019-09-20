@@ -9,11 +9,6 @@ import base, { ResourceModule, Resource } from 'universal/store/modules/resource
 import { requireString } from 'universal/utils/object';
 import url from 'url';
 
-/**
- * 
- * @param {string} folder 
- * @param {crypto.Hash} hasher 
- */
 async function hashFolder(folder: string, hasher: crypto.Hash) {
     const files = await fs.readdir(folder);
     for (const f of files) {
@@ -27,10 +22,6 @@ async function hashFolder(folder: string, hasher: crypto.Hash) {
     return hasher;
 }
 
-/**
- * 
- * @param {string} file 
- */
 async function readHash(file: string) {
     return new Promise<string>((resolve, reject) => {
         fs.createReadStream(file)
@@ -41,9 +32,6 @@ async function readHash(file: string) {
     });
 }
 
-/**
- * @param {Buffer} buf 
- */
 async function parseCurseforgeModpack(buf: Buffer) {
     const z = await Unzip.open(buf, { lazyEntries: true });
     const [manifest] = await z.filterEntries(['manifest.json']);
@@ -86,16 +74,6 @@ function getRegularName(type: string, meta: any) {
     }
 }
 
-/**
- * 
- * @param {string} path 
- * @param {string} hash 
- * @param {string} ext 
- * @param {Buffer} data 
- * @param {object} source 
- * @param {string | undefined | void} type
- * @return {Promise<import('universal/store/modules/resource').Resource<any>>}
- */
 async function parseResource(path: string, hash: string, ext: string, data: Buffer, source: ResourceModule.Source, type?: string): Promise<Resource<any>> {
     const ft = fileType(data);
     if (ft) {
@@ -129,15 +107,6 @@ async function parseResource(path: string, hash: string, ext: string, data: Buff
     }
 }
 
-/**
- * 
- * @param {string} path 
- * @param {string} hash 
- * @param {string} ext 
- * @param {Buffer} data 
- * @param {object} source 
- * @return {Promise<import('universal/store/modules/resource').Resource<any>>}
- */
 async function guessResource(path: string, hash: string, ext: string, data: Buffer, source: ResourceModule.Source): Promise<any> {
     const { meta, domain, type } = await Forge.meta(data).then(meta => ({ domain: 'mods', meta, type: 'forge' }),
         _ => LiteLoader.meta(data).then(meta => ({ domain: 'mods', meta, type: 'liteloader' }),
@@ -149,18 +118,6 @@ async function guessResource(path: string, hash: string, ext: string, data: Buff
     return buildResource(path, hash, ext, domain, type, source, meta);
 }
 
-
-/**
- * 
- * @param {string} filename 
- * @param {string} hash 
- * @param {string} ext 
- * @param {string} domain 
- * @param {string} type 
- * @param {any} source 
- * @param {any} meta 
- * @returns {import('universal/store/modules/resource').Resource<any>}
- */
 function buildResource(filename: string, hash: string, ext: string, domain: string, type: string, source: ResourceModule.Source, meta: any): Resource<any> {
     Object.freeze(source);
     Object.freeze(meta);

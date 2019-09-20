@@ -20,11 +20,7 @@ async function loadWorld(save: string) {
         const world = await World.load(save, ['level']);
         const dest = join(save, 'icon.png');
         if (await fs.exists(dest)) {
-            // const buf = await fs.readFile(dest);
-            // const uri = `data:image/png;base64,${buf.toString('base64')}`;
-            // if (world) {
             Reflect.set(world, 'icon', `file://${dest}`);
-            // }
         }
         return world;
     } catch (e) {
