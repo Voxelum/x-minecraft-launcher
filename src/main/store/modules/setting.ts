@@ -71,9 +71,6 @@ const mod: SettingModule = {
         },
 
         async downloadUpdate(context) {
-            /**
-             * @param {Task.Context} ctx 
-             */
             function download(ctx: Task.Context) {
                 return new Promise((resolve, reject) => {
                     autoUpdater.downloadUpdate().catch(reject);
