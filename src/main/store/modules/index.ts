@@ -3,12 +3,12 @@
  * in a one-shot manner. There should not be any reason to edit this file.
  */
 
-const files = require.context('.', false, /\.js$/);
+const files = require.context('.', false, /\.ts$/);
 const modules: import('vuex').ModuleTree<import('universal/store/store').BaseState> = {};
 
 files.keys().forEach((key) => {
-    if (key === './index.js') return;
-    modules[key.replace(/(\.\/|\.js)/g, '')] = files(key).default;
+    if (key === './index.ts') return;
+    modules[key.replace(/(\.\/|\.ts)/g, '')] = files(key).default;
 });
 
 export default modules;

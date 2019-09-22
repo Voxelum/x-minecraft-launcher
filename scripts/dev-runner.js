@@ -80,7 +80,7 @@ function startRenderer() {
 
 function startMain() {
     return new Promise((resolve, reject) => {
-        mainConfig.entry.main = [path.join(__dirname, '../src/main/index.dev.js')].concat(mainConfig.entry.main);
+        mainConfig.entry.main = [path.join(__dirname, '../src/main/index.dev.ts')].concat(mainConfig.entry.main);
         mainConfig.mode = 'development';
 
         const compiler = webpack(mainConfig);

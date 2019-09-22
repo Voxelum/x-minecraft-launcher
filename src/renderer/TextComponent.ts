@@ -1,6 +1,7 @@
 import { TextComponent } from '@xmcl/minecraft-launcher-core';
+import { createComponent, createElement } from '@vue/composition-api';
 
-const colorCode = [];
+const colorCode = new Array<number>(32);
 for (let i = 0; i < 32; i += 1) {
     const j = ((i >> 3) & 1) * 85; // eslint-disable-line no-bitwise
     let k = (((i >> 2) & 1) * 170) + j; // eslint-disable-line no-bitwise
@@ -15,7 +16,7 @@ for (let i = 0; i < 32; i += 1) {
     colorCode[i] = ((k & 255) << 16) | ((l & 255) << 8) | (i1 & 255); // eslint-disable-line no-bitwise
 }
 
-function itr(comp) {
+function itr(comp: any) {
     const arr = [comp];
     if (comp._siblings.length !== 0) {
         for (const s of comp._siblings) {
@@ -25,22 +26,30 @@ function itr(comp) {
     return arr;
 }
 
-export default {
-    render(createElement) {
+export default createComponent({
+    props: {
+        source: TextComponent,
+        localized: String,
+        args: { type: Object, default: () => { Object.create(null); } },
+        styled: { type: String, default: 'true' },
+    },
+    setup({ source, styled }, context) {
         const arr = [];
-        if (!this.source) return createElement('div');
+        if (!source) return createElement('div');
+        const src: TextComponent = source as any;
         let iterator;
-        if (typeof this.source === 'string') {
-            iterator = TextComponent.from(this.$t(this.source, this.args)).iterator;
-        } else if (this.source.iterator) {
-            iterator = this.source.iterator;
-        } else if (this.source._siblings) {
-            iterator = itr(this.source);
+        if (typeof src === 'string') {
+            iterator = TextComponent.from(src).iterator;
+            // iterator = TextComponent.from(context.root.$t(src, args)).iterator;
+        } else if ('iterator' in src) {
+            iterator = src.iterator;
+        } else if ((src as any)._siblings) {
+            iterator = itr(src);
         }
         if (iterator) {
             for (const component of iterator) {
-                const attrs = {};
-                if (this.styled === 'true') {
+                const attrs: any = {};
+                if (styled === 'true') {
                     let style = '';
                     if (component.style.bold) style += 'font-weight:bold;';
                     if (component.style.underlined) style += 'text-decoration:underline;';
@@ -63,11 +72,6 @@ export default {
             }
         }
         return createElement('p', {}, arr);
-    },
-    props: {
-        source: TextComponent,
-        localized: String,
-        args: { type: Object, default: () => { Object.create(null); } },
-        styled: { type: String, default: 'true' },
-    },
-};
+    }
+});
+

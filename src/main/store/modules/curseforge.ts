@@ -59,10 +59,6 @@ function convert(node: parser.Node | null) {
     return text;
 }
 
-/**
- * @param { import('fast-html-parser').HTMLElement } item
- * @returns { import('universal/store/modules/curseforge').CurseForgeModule.ProjectPreview }
- */
 function processProjectListingRow(item: import('fast-html-parser').HTMLElement): CurseForgeModule.ProjectPreview {
     item = item.removeWhitespace();
 
@@ -104,9 +100,6 @@ function processProjectListingRow(item: import('fast-html-parser').HTMLElement):
     };
 }
 
-/**
- * @typedef {import('universal/store/modules/curseforge').CurseForgeModule.Modpack} Modpack
- */
 const mod: CurseForgeModule = {
     ...base,
     actions: {
@@ -435,9 +428,10 @@ const mod: CurseForgeModule = {
                 }
                 try {
                     ctx.update(-1, -1, url);
-                    const dest = await Net.downloadFileWork({
+                    const destination = context.rootGetters.path('temp', payload.name);
+                    await Net.downloadFileWork({
                         url,
-                        destination: context.rootGetters.path('temp', payload.name),
+                        destination,
                         headers: {
                             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36',
                         },
@@ -445,7 +439,7 @@ const mod: CurseForgeModule = {
                     ctx.update(-1, -1);
                     console.log(`Start to import ${href}`);
                     const handle = await context.dispatch('importResource', {
-                        path: dest,
+                        path: destination,
                         type: payload.projectType,
                         background: true,
                         metadata: {

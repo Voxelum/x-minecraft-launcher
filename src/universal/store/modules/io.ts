@@ -11,6 +11,6 @@ export interface Actions {
     electronDownloadFile(context: C, payload: { url: string }): Promise<TaskHandle>
 }
 
-declare const mod: IOModule;
+const mod: IOModule = {}
 
 export default mod;

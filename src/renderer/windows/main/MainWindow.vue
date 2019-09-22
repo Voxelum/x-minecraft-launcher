@@ -91,25 +91,39 @@ import {
   toRefs,
   computed,
   watch,
+  createComponent,
 } from '@vue/composition-api';
 import { ipcRenderer } from 'electron';
 import { useStore, useRouter } from './index';
 
-export default {
+export default createComponent({
   setup(props, ctx) {
     const router = useRouter();
-  
+
     const store = useStore();
-    const data = reactive({
+    const template: {
+      loading: boolean;
+      localHistory: string[];
+      timeTraveling: boolean;
+      taskDialog: boolean;
+    } = {
       loading: false, // disable for now, but it'll be abled if the loading process is too slow..
       localHistory: [],
       timeTraveling: false,
       taskDialog: false,
-    });
+    };
+    const data = reactive(template);
 
-    const activeTasksCount = computed(() => store.state.task.tasks.filter(t => t.status === 'running').length);
-    const blur = computed(() => store.getters.selectedProfile.blur || store.state.setting.defaultBlur);
-    const backgroundImage = computed(() => store.getters.selectedProfile.image || store.state.setting.defaultBackgroundImage);
+    const activeTasksCount = computed(
+      () => store.state.task.tasks.filter(t => t.status === 'running').length,
+    );
+    const blur = computed(
+      () => store.getters.selectedProfile.blur || store.state.setting.defaultBlur,
+    );
+    const backgroundImage = computed(
+      () => store.getters.selectedProfile.image
+        || store.state.setting.defaultBackgroundImage,
+    );
     const logined = computed(() => store.getters.logined);
 
     watch(backgroundImage, () => {
@@ -151,15 +165,15 @@ export default {
       data.timeTraveling = false;
     }
 
-    return { 
-      ...toRefs(data), 
-      activeTasksCount, 
+    return {
+      ...toRefs(data),
+      activeTasksCount,
       showTaskDialog,
       blur,
       logined,
     };
   },
-};
+});
 </script>
 
 <style>

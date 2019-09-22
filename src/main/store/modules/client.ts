@@ -13,11 +13,8 @@ const mod: ClientModule = {
                 if (object.eTag) {
                     // request server for new one
                 }
-                /**
-                 * @type any
-                 */
-                const mcversionMapping = {};
-                for (const [mc, prot] of Object.values(object.protocol)) {
+                const mcversionMapping: any = {};
+                for (const [mc, prot] of Object.entries(object.protocol)) {
                     if (!mcversionMapping[mc]) mcversionMapping[mc] = [];
                     mcversionMapping[mc].push(prot);
                 }

@@ -3,26 +3,29 @@ import Vue from 'vue';
 import { Task } from '@xmcl/minecraft-launcher-core';
 import { Context, Module, TaskHandle } from "../store";
 
-
-export interface TaskNodeWrapper extends Task.Node {
+export interface WrappedTask<T> extends Task<T, TaskState> {
+    id: string;
+    background: boolean;
+}
+export interface TaskState extends Task.State {
     _internalId: string;
-    tasks: TaskNodeWrapper[];
+    children: TaskState[];
     time?: string;
 }
 export declare namespace TaskModule {
 
     interface State {
-        tree: { [uuid: string]: TaskNodeWrapper },
-        tasks: TaskNodeWrapper[],
+        tree: { [uuid: string]: TaskState },
+        tasks: TaskState[],
         maxLog: number,
     }
     interface Mutations {
         createTask(state: State, option: { id: string, name: string }): void;
         pruneTasks(state: State): void;
-        hookTask(state: State, option: { id: string, task: TaskNodeWrapper }): void;
+        hookTask(state: State, option: { id: string, task: TaskState }): void;
         updateBatchTask(state: State, option: {
-            adds: { id: string, node: TaskNodeWrapper }[],
-            childs: { id: string, node: TaskNodeWrapper }[],
+            adds: { id: string, node: TaskState }[],
+            childs: { id: string, node: TaskState }[],
             updates: { [id: string]: { progress?: number, total?: number, message?: string, time?: string } },
             statuses: { id: string, status: string }[],
         }): void;
@@ -30,7 +33,7 @@ export declare namespace TaskModule {
 
     type C = Context<TaskModule.State, {}, TaskModule.Mutations, TaskModule.Actions>;
     interface Actions {
-        executeAction<T>(context: C, payload: { id: string, payload?: any, background?: boolean }): Promise<any>;
+        executeAction<T>(context: C, payload: { action: string, payload?: any, background?: boolean }): Promise<any>;
 
         executeTask(context: C, task: Task<any>): Promise<TaskHandle>;
         spawnTask(context: C, name: string): Promise<TaskHandle>;
@@ -53,14 +56,14 @@ const mod: TaskModule = {
     },
     mutations: {
         createTask(state, { id, name }) {
-            const node: TaskNodeWrapper = {
+            const node: TaskState = {
                 _internalId: id,
                 name,
                 total: -1,
                 progress: -1,
                 status: 'running',
                 path: name,
-                tasks: [],
+                children: [],
                 error: null,
                 message: '',
             };
@@ -68,9 +71,9 @@ const mod: TaskModule = {
             state.tasks.push(state.tree[id]);
         },
         pruneTasks(state) {
-            function remove(task: TaskNodeWrapper) {
-                if (task.tasks && task.tasks.length !== 0) {
-                    task.tasks.forEach(remove);
+            function remove(task: TaskState) {
+                if (task.children && task.children.length !== 0) {
+                    task.children.forEach(remove);
                 }
                 Vue.delete(state.tree, task._internalId);
             }
@@ -104,7 +107,7 @@ const mod: TaskModule = {
                 if (!idToNode[id]) {
                     console.log(`Cannot add child ${node._internalId} for parent ${id}.`);
                 } else {
-                    idToNode[id].tasks.push(local);
+                    idToNode[id].children.push(local);
                     idToNode[node._internalId] = local;
                 }
             }

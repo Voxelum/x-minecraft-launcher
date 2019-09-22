@@ -1,4 +1,3 @@
-
 interface NodeRequire extends NodeRequireFunction {
     resolve: RequireResolve;
     cache: any;
@@ -46,7 +45,15 @@ declare var __static: string;
 declare module 'long' {
     export = Long.default
 }
+declare module "*.png" {
+    const value: string;
+    export default value;
+}
 
+declare module 'vue-particles' {
+    const module: import("vue").PluginObject<any>;
+    export default module;
+}
 declare module 'bytebuffer' {
     export = ByteBuffer.default
 }

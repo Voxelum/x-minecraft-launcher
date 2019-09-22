@@ -5,7 +5,7 @@ import VueObserveVisibility from 'vue-observe-visibility';
 import colors from 'vuetify/es5/util/colors';
 import CurseforgeIcon from './CurseforgeIcon.vue';
 import SkinView from './skin/SkinView.vue';
-import TextComponent from './TextComponent.vue';
+import TextComponent from './TextComponent';
 
 Vue.use(VueCompositionApi);
 
@@ -27,7 +27,7 @@ Vue.use(Vuetify, {
         accent: colors.green.accent3,
     },
 });
-Vue.component('text-component', TextComponent);
+Vue.component('text-component', TextComponent as any);
 Vue.component('skin-view', SkinView);
 
 export default function (option: ComponentOptions<Vue>) {
@@ -36,6 +36,6 @@ export default function (option: ComponentOptions<Vue>) {
         ...option,
         render: h => h(App),
     });
-    Vue.prototype.$repo = vue.$store;
+    Vue.prototype.$repo = (vue as any).$store;
     vue.$mount('#app');
 }

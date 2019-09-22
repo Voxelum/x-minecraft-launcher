@@ -3,10 +3,13 @@ const webpack = require('webpack');
 
 const { dependencies } = require('../package.json');
 
+/**
+ * @type {import('webpack').Configuration}
+ */
 const mainConfig = {
     mode: process.env.NODE_ENV,
     entry: {
-        main: path.join(__dirname, '../src/main/index.js'),
+        main: path.join(__dirname, '../src/main/index.ts'),
     },
     externals: [
         ...Object.keys(dependencies || {}),

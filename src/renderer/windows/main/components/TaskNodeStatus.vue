@@ -57,58 +57,7 @@ const component = createComponent({
   },
 });
 
-export default {
-  props: {
-    status: {
-      type: String,
-      default: '',
-    },
-    progress: {
-      type: Number,
-      default: -1,
-    },
-    total: {
-      type: Number,
-      default: -1,
-    },
-    hovered: {
-      type: Boolean,
-      default: false,
-    },
-    hasChild: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  setup(props) {
-    const status = props.status;
-    return {};
-  },
-  
-  // computed: {
-  //   icon() {
-  //     switch (this.status) {
-  //       case 'successed':
-  //         return this.hasChild ? 'done_all' : 'check';
-  //       case 'cancelled':
-  //         return 'stop';
-  //       default:
-  //         return 'error_outline';
-  //     }
-  //   },
-  //   percentage() {
-  //     return this.progress / this.total * 100;
-  //   },
-  // },
-  // methods: {
-  //   enter() {
-  //     // this.hovered = true;
-  //   },
-  //   leave() {
-  //     // this.hovered = false;
-  //   },
-  // },
-};
+export default component;
 </script>
 
 <style>

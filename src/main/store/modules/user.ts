@@ -9,21 +9,6 @@ import { requireObject, requireString } from 'universal/utils/object';
 import { parse as parseUrl } from 'url';
 import { v4 } from 'uuid';
 
-function offline(username: string) {
-    const prof = {
-        id: v4(),
-        name: username,
-    };
-    return {
-        accessToken: v4(),
-        clientToken: v4(),
-        selectedProfile: prof,
-        profiles: [prof],
-        userId: v4(),
-        properties: {},
-        userType: UserType.Legacy,
-    };
-}
 
 /**
  * The possible ways for user auth and profile:
@@ -342,11 +327,8 @@ const mod: UserModule = {
             const usingAuthService = context.state.authServices[authService];
 
             try {
-                /**
-                 * @type {Auth}
-                 */
-                const result = authService === 'offline'
-                    ? offline(account)
+                const result: Auth = authService === 'offline'
+                    ? Auth.offline(account)
                     : await Auth.Yggdrasil.login({
                         username: account,
                         password,

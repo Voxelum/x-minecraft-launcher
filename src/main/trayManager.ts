@@ -1,5 +1,5 @@
 import { app, Menu, Tray, dialog, ipcMain, nativeImage } from 'electron';
-import i18n from './i18n';
+import { t } from './i18n';
 
 let tray: Tray | null = null;
 
@@ -14,10 +14,10 @@ app.on('ready', () => {
 
     function createMenu() {
         return Menu.buildFromTemplate([
-            { type: 'normal', label: i18n.t('launcher.checkUpdate').toString() },
+            { type: 'normal', label: t('launcher.checkUpdate') },
             { type: 'separator' },
             {
-                label: i18n.t('launcher.showDiagnosis').toString(),
+                label: t('launcher.showDiagnosis'),
                 type: 'normal',
                 click() {
                     const cpu = process.getCPUUsage();
@@ -36,7 +36,7 @@ app.on('ready', () => {
             },
             { type: 'separator' },
             {
-                label: i18n.t('launcher.quit').toString(),
+                label: t('launcher.quit'),
                 type: 'normal',
                 click(item, window, event) {
                     app.quit();
@@ -49,7 +49,7 @@ app.on('ready', () => {
 
     ipcMain.on('locale-changed', () => {
         if (tray) {
-            tray.setToolTip(i18n.t('launcher.title').toString());
+            tray.setToolTip(t('launcher.title'));
             tray.setContextMenu(createMenu());
         }
     });

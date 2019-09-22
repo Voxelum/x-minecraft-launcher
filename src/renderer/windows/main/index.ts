@@ -11,7 +11,7 @@ import VueRouter from 'vue-router';
 
 Vue.use(VueParticles);
 
-const store = select({ modules: ['user', 'profile', 'version', 'resource'] });
+const store = select(['user', 'profile', 'version', 'resource']);
 
 export function useStore(): Repo {
     return store as any as Repo;

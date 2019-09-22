@@ -7,7 +7,7 @@ const router = new Router({
     routes: [
         {
             path: '/',
-            component: () => import('./Logger'),
+            component: () => import('./Logger.vue'),
         },
     ],
 });

@@ -11,7 +11,7 @@ export default function (option: string[]) {
         ...(storeOption.plugins || []),
     ];
 
-    const localStore = new Vuex.Store(storeOption);
+    const localStore: any = new Vuex.Store(storeOption);
     const _commit = localStore.commit;
     const localCommit = (mutation: MutationPayload) => {
         if (localStore._mutations[mutation.type]) {
@@ -25,7 +25,7 @@ export default function (option: string[]) {
     let syncing = true;
     let syncingQueue: { [id: string]: MutationPayload } = {};
 
-    ipcRenderer.on('vuex-commit', (event, mutation, id) => {
+    ipcRenderer.on('vuex-commit', (event: any, mutation: MutationPayload, id: number) => {
         if (syncing) {
             syncingQueue[id] = mutation;
             return;
@@ -39,7 +39,7 @@ export default function (option: string[]) {
             lastId = newId;
         }
     });
-    ipcRenderer.on('vuex-sync', (event, mutations, id) => {
+    ipcRenderer.on('vuex-sync', (event: any, mutations: MutationPayload[], id: number) => {
         mutations.forEach(localCommit);
         lastId = id;
         syncing = false;
@@ -59,22 +59,21 @@ export default function (option: string[]) {
     const remoteCall = remote.require('./main');
 
     let actionSeq = 0;
-    function dispatchProxy(action, payload, option) {
+    function dispatchProxy(action: string, payload: any, option: any) {
         const id = actionSeq++;
         ipcRenderer.send('vuex-dispatch', { action, payload, option, id });
         return new Promise((resolve, reject) => {
-            ipcRenderer.once(`vuex-dispatch-${id}`, (event, { error, result }) => {
+            ipcRenderer.once(`vuex-dispatch-${id}`, (event: any, { error, result }: { error: any; result: any }) => {
                 if (error) reject(error);
                 else resolve(result);
             });
         });
     }
 
-    /**
-     */
+    function dummy() { }
     function createMutationProxy(path: string[]) {
         return new Proxy(dummy, {
-            get(target, key) {
+            get(target: any, key: string) {
                 if (!target[key]) target[key] = createMutationProxy([...path, key]);
                 return target[key];
             },
@@ -83,12 +82,9 @@ export default function (option: string[]) {
             },
         });
     }
-    function dummy() { }
-    /**
-     */
     function createDispatchProxy(path: string[]) {
         return new Proxy(dummy, {
-            get(target, key) {
+            get(target: any, key: string) {
                 if (!target[key]) target[key] = createDispatchProxy([...path, key]);
                 return target[key];
             },
@@ -97,12 +93,9 @@ export default function (option: string[]) {
             },
         });
     }
-    /**
-     * @param {string[]} path 
-     */
     function createGettersProxy(path: string[]) {
         return new Proxy({}, {
-            get(target, key) {
+            get(target: any, key: string) {
                 const realKey = [...path, key].join('/');
                 if (realKey in localStore.getters) {
                     return localStore.getters[realKey];

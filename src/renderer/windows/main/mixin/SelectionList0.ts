@@ -38,9 +38,9 @@ function useSelectionList<T, R>(
     }
     function doSelect(index: number) {
         const newJoin = unselectedItems[index];
-        const newItem = mapItem(newJoin);
+        const newItem: R = mapItem(newJoin);
         const items = [...data.items || []];
-        items.unshift(newItem);
+        items.unshift(newItem as any);
         data.items = items;
     }
     function doUnselect(index: number) {

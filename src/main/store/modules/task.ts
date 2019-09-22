@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { ipcMain } from 'electron';
 import { requireString } from 'universal/utils/object';
-import base, { TaskModule, TaskNodeWrapper } from 'universal/store/modules/task';
+import base, { TaskModule, TaskState } from 'universal/store/modules/task';
 import { Task } from '@xmcl/minecraft-launcher-core';
 
 const TASK_FORCE_THRESHOLD = 30;
@@ -9,14 +9,14 @@ const TASK_FORCE_THRESHOLD = 30;
 interface Progress { progress?: number, total?: number, message?: string, time?: string }
 class TaskWatcher {
     private listener: NodeJS.Timeout | undefined;
-    private adds: { id: string, node: TaskNodeWrapper }[] = [];
-    private childs: { id: string, node: TaskNodeWrapper }[] = [];
+    private adds: { id: string, node: TaskState }[] = [];
+    private childs: { id: string, node: TaskState }[] = [];
     private updates: { [id: string]: Progress } = {};
     private statuses: { id: string, status: string }[] = []
 
     private forceUpdate: () => void = () => { };
 
-    add(id: string, node: TaskNodeWrapper) {
+    add(id: string, node: TaskState) {
         this.adds.push({ id, node });
         this.checkBatchSize();
     }
@@ -35,7 +35,7 @@ class TaskWatcher {
         this.checkBatchSize();
     }
 
-    child(id: string, node: TaskNodeWrapper) {
+    child(id: string, node: TaskState) {
         this.childs.push({
             id,
             node,
@@ -76,19 +76,10 @@ class TaskWatcher {
     }
 }
 
-interface WrappedTask<T> extends Task<T> {
+interface WrappedTask<T> extends Task<T, TaskState> {
     promise: Promise<T>;
     id: string;
     background: boolean;
-    onChild(listener: (parentNode: TaskNodeWrapper, childNode: TaskNodeWrapper) => void): this;
-    onError(listener: (error: any, childNode: TaskNodeWrapper) => void): this;
-    onUpdate(listener: (update: {
-        progress: number;
-        total?: number;
-        message?: string;
-    }, childNode: Task.Node) => void): this;
-    onFinish(listener: (result: any, childNode: Task.Node) => void): this;
-
 }
 
 let taskWatcher = new TaskWatcher();
@@ -107,14 +98,14 @@ const mod: TaskModule = {
         async spawnTask(context, name) {
             requireString(name);
             const id = v4();
-            const node: TaskNodeWrapper = {
+            const node: TaskState = {
                 _internalId: id,
                 name,
                 total: -1,
                 progress: -1,
                 status: 'running',
                 path: name,
-                tasks: [],
+                children: [],
                 error: null,
                 message: '',
             };
@@ -139,12 +130,13 @@ const mod: TaskModule = {
             return task.promise;
         },
         async executeAction(context, { action, background, payload }) {
-            const task = Task.create(action, () => context.dispatch(action, payload)) as WrappedTask<any>;
+            const task = Task.create(action, () => context.dispatch(action as any, payload)) as WrappedTask<any>;
             task.background = background || true;
             await context.dispatch('executeTask', task);
             return task.promise;
         },
-        async executeTask(context, task) {
+        async executeTask(context, taskIn) {
+            const task: WrappedTask<any> = taskIn as WrappedTask<any>;
             const key = JSON.stringify({ name: task.root.name, arguments: task.root.arguments });
 
             if (nameToTask[key]) {
@@ -156,26 +148,26 @@ const mod: TaskModule = {
             taskWatcher.ensureListener(context);
             const uuid = task.id || v4();
             let _internalId = 0;
-            task.onChild((parent, child) => {
+            task.on('child', (parent, child) => {
                 child._internalId = `${uuid}-${_internalId}`;
                 _internalId += 1;
 
                 child.time = new Date().toLocaleTimeString();
                 taskWatcher.child(parent._internalId, child);
             });
-            task.onUpdate((update, node) => {
+            task.on('update', (update, node) => {
                 taskWatcher.update(node._internalId, update);
             });
-            task.onFinish((result, node) => {
-                if (task.root === node) {
+            task.on('finish', (result, node) => {
+                if (task.root === node && !task.background) {
                     ipcMain.emit('task-successed', node._internalId);
                     delete nameToTask[key];
                 }
 
                 taskWatcher.status(node._internalId, 'successed');
             });
-            task.onError((error, node) => {
-                if (task.root === node) {
+            task.on('error', (error, node) => {
+                if (task.root === node && !task.background) {
                     ipcMain.emit('task-failed', node._internalId, error);
                     console.error(`Task [${node.name}] failed.`);
                     console.error(error);
@@ -192,7 +184,7 @@ const mod: TaskModule = {
                 taskWatcher.status(node._internalId, 'failed');
             });
             if (task.background) {
-                task.root.background = true;
+                task.background = true;
             }
             task.root.time = new Date().toLocaleTimeString();
             task.root._internalId = uuid;
@@ -200,9 +192,7 @@ const mod: TaskModule = {
 
             context.commit('hookTask', { id: uuid, task: task.root });
 
-            const promise = task.execute();
-
-            task.promise = promise;
+            task.execute();
 
             nameToTask[key] = task;
             idToTask[uuid] = task;

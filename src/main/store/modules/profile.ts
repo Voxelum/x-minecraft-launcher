@@ -52,10 +52,7 @@ const mod: ProfileModule = {
             }
         },
         async loadAllProfileSaves({ rootGetters, getters }) {
-            /**
-             * @type {any[]}
-             */
-            const all = [];
+            const all: any = [];
             for (const profile of getters.profiles) {
                 const saveRoot = rootGetters.path('profiles', profile.id, 'saves');
 

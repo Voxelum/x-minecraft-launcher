@@ -13,16 +13,16 @@ import { onMounted, onBeforeMount } from '@vue/composition-api';
 import { ipcRenderer } from 'electron';
 
 export default {
-  setup() {
+  setup(data, context) {
     ipcRenderer.on('copy', (text: string) => {
-      const clipboard = this.$refs.clipboard;
+      const clipboard: any = context.root.$refs.clipboard;
       clipboard.value = text;
       clipboard.select();
       document.execCommand('copy');
     });
     onMounted(() => {
-      Vue.prototype.$copy = (text) => {
-        const clipboard = this.$refs.clipboard;
+      Vue.prototype.$copy = (text: string) => {
+        const clipboard: any = context.root.$refs.clipboard;
         clipboard.value = text;
         clipboard.select();
         document.execCommand('copy');
