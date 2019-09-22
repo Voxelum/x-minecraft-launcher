@@ -82,7 +82,7 @@
   </v-layout>
 </template>
 
-<script lang=ts>
+<script>
 import 'renderer/assets/common.css';
 import {
   onMounted,
@@ -96,17 +96,11 @@ import {
 import { ipcRenderer } from 'electron';
 import { useStore, useRouter } from './index';
 
-export default createComponent({
+export default {
   setup(props, ctx) {
     const router = useRouter();
-
     const store = useStore();
-    const template: {
-      loading: boolean;
-      localHistory: string[];
-      timeTraveling: boolean;
-      taskDialog: boolean;
-    } = {
+    const template = {
       loading: false, // disable for now, but it'll be abled if the loading process is too slow..
       localHistory: [],
       timeTraveling: false,
@@ -141,7 +135,7 @@ export default createComponent({
       ipcRenderer.on('task', showTaskDialog);
     });
 
-    function showTaskDialog(show: boolean) {
+    function showTaskDialog(show) {
       if (typeof show === 'boolean') {
         data.taskDialog = show;
       } else {
@@ -170,10 +164,12 @@ export default createComponent({
       activeTasksCount,
       showTaskDialog,
       blur,
+      goBack,
       logined,
+      backgroundImage,
     };
   },
-});
+};
 </script>
 
 <style>

@@ -269,7 +269,7 @@ const mod: ProfileModule = {
     getters: {
         profiles: state => Object.keys(state.all).map(k => state.all[k]),
         serverProtocolVersion: state => 338,
-        selectedProfile: state => state.all[state.id],
+        selectedProfile: state => state.all[state.id] || { version: {} },
         currentVersion: (state, getters, rootState) => {
             const current = state.all[state.id];
             const minecraft = current.version.minecraft;

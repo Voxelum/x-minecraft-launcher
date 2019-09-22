@@ -11,12 +11,8 @@
   </div>
 </template>
 
-<script lang=ts>
+<script>
 import { createComponent, computed } from '@vue/composition-api';
-
-interface Data {
-  status: string;
-}
 
 const component = createComponent({
   props: {
@@ -52,8 +48,9 @@ const component = createComponent({
           return 'error_outline';
       }
     });
+    const percentage = computed(() => props.progress / props.total * 100);
     // props.status;
-    return { icon };
+    return { icon, percentage, enter() { }, leave() { } };
   },
 });
 

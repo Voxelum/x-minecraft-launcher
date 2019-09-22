@@ -5,7 +5,7 @@
   </v-app>
 </template>
 
-<script lang=ts>
+<script>
 import 'vuetify/dist/vuetify.css';
 import 'renderer/assets/google.font.css';
 import Vue from 'vue';
@@ -14,15 +14,15 @@ import { ipcRenderer } from 'electron';
 
 export default {
   setup(data, context) {
-    ipcRenderer.on('copy', (text: string) => {
-      const clipboard: any = context.root.$refs.clipboard;
+    ipcRenderer.on('copy', (text) => {
+      const clipboard = context.root.$refs.clipboard;
       clipboard.value = text;
       clipboard.select();
       document.execCommand('copy');
     });
     onMounted(() => {
-      Vue.prototype.$copy = (text: string) => {
-        const clipboard: any = context.root.$refs.clipboard;
+      Vue.prototype.$copy = (text) => {
+        const clipboard = context.root.$refs.clipboard;
         clipboard.value = text;
         clipboard.select();
         document.execCommand('copy');
