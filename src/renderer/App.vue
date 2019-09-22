@@ -6,8 +6,6 @@
 </template>
 
 <script>
-import 'vuetify/dist/vuetify.css';
-import 'renderer/assets/google.font.css';
 import Vue from 'vue';
 import { onMounted, onBeforeMount } from '@vue/composition-api';
 import { ipcRenderer } from 'electron';

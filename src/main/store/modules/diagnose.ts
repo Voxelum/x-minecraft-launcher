@@ -49,7 +49,7 @@ const mod: DiagnoseModule = {
         async init(context) {
             context.commit('refreshingProfile', true);
             try {
-                console.log('do full diagnose');
+                console.log('Init with a full diagnose');
                 await context.dispatch('diagnoseVersion');
                 await context.dispatch('diagnoseJava');
                 await context.dispatch('diagnoseMods');

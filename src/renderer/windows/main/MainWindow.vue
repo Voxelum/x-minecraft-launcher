@@ -101,7 +101,7 @@ export default {
     const router = useRouter();
     const store = useStore();
     const template = {
-      loading: false, // disable for now, but it'll be abled if the loading process is too slow..
+      loading: true,
       localHistory: [],
       timeTraveling: false,
       taskDialog: false,

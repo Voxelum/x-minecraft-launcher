@@ -182,10 +182,7 @@ export interface ProfileModule extends Module<"profile", ProfileModule.State, Pr
 
 export function createTemplate(id: string, java: Java, mcversion: string, type: 'modpack' | 'server', isCreatingNew: boolean): ProfileModule.ServerOrModpack {
     console.log(`Template from ${type}`);
-    /**
-     * @type {import('./profile.config').ProfileConfig}
-     */
-    const base = {
+    const base: ProfileConfig = {
         id,
         name: '',
 
@@ -255,7 +252,7 @@ const mod: ProfileModule = {
         serverProtocolVersion: state => 338,
         selectedProfile: state => state.all[state.id] || { version: {} },
         currentVersion: (state, getters, rootState) => {
-            const current = state.all[state.id];
+            const current = getters.selectedProfile;
             const minecraft = current.version.minecraft;
             const forge = current.version.forge;
             const liteloader = current.version.liteloader;
@@ -271,7 +268,7 @@ const mod: ProfileModule = {
         deployingResources: (state, _, rootState) => {
             const profile = state.all[state.id];
 
-            const resources: { [domain: string]: import('universal/store/modules/resource').Resource<any>[] } = {};
+            const resources: { [domain: string]: Resource<any>[] } = {};
             for (const domain of Object.keys(profile.deployments)) {
                 const depl = profile.deployments[domain];
                 if (depl instanceof Array && depl.length !== 0) {

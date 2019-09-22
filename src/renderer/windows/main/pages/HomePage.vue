@@ -150,104 +150,115 @@
 <script>
 import unknownServer from 'renderer/assets/unknown_server.png';
 import { PINGING_STATUS, createFailureServerStatus } from 'universal/utils/server-status';
+import { reactive, computed, toRefs, watch, ref } from '@vue/composition-api';
+import { useStore, useRouter } from '..';
+import { ipcRenderer, remote } from 'electron';
 
 export default {
-  data: () => ({
-    logsDialog: false,
-    launchStatusDialog: false,
-    feedbackDialog: false,
-    crashDialog: false,
-    javaWizardDialog: false,
-  }),
-  computed: {
-    status() { return this.$repo.state.profile.status || {}; },
-    icon() { return this.status.favicon || unknownServer; },
-    isServer() { return this.profile.type === 'server'; },
-    problems() { return this.$repo.getters.problems; },
-    problemsLevelColor() { return this.problems.some(p => !p.optional) ? 'red' : 'warning'; },
-    launchStatus() { return this.$repo.state.launch.status; },
-    refreshingProfile() { return this.$repo.state.profile.refreshing; },
-    missingJava() { return this.$repo.getters.missingJava; },
-    profile() { return this.$repo.getters.selectedProfile; },
-  },
-  watch: {
-    javaWizardDialog() {
-      this.$electron.ipcRenderer.emit('task', false);
-    },
-  },
-  mounted() {
-  },
-  methods: {
-    async launch() {
-      if (this.launchStatus !== 'ready') {
-        this.launchStatusDialog = true;
-        return;
+  setup(props, context) {
+    const $t = context.root.$t;
+    const router = useRouter();
+    const { getters, state, dispatch } = useStore();
+    const data = reactive({
+      logsDialog: false,
+      launchStatusDialog: false,
+      feedbackDialog: false,
+      crashDialog: false,
+      javaWizardDialog: false,
+    });
+    const status = computed(() => state.profile.status || {});
+    const icon = computed(() => status.favicon || unknownServer);
+    const isServer = computed(() => profile.type === 'server');
+    const profile = computed(() => getters.selectedProfile);
+    const problems = computed(() => getters.problems);
+    const problemsLevelColor = computed(() => (getters.problems.some(p => !p.optional) ? 'red' : 'warning'));
+    const launchStatus = computed(() => state.launch.status);
+    const refreshingProfile = computed(() => state.profile.refreshing);
+    const missingJava = computed(() => getters.missingJava);
+
+    watch(() => {
+      if (data.javaWizardDialog) {
+        ipcRenderer.emit('task', false);
       }
-      await this.$repo.dispatch('launch');
-    },
-    showExportDialog() {
-      if (this.refreshingProfile) return;
-      this.$electron.remote.dialog.showSaveDialog({
-        title: this.$t('profile.export.title'),
-        filters: [{ name: 'zip', extensions: ['zip'] }],
-        message: this.$t('profile.export.message'),
-        defaultPath: `${this.profile.name}.zip`,
-      }, (filename, bookmark) => {
-        if (filename) {
-          this.$repo.dispatch('exportProfile', { dest: filename }).catch((e) => {
-            console.error(e);
-          });
-        }
-      });
-    },
-    showLogDialog() {
-      this.logsDialog = true;
-    },
-    showFeedbackDialog() {
-      this.feedbackDialog = true;
-    },
-    fixProblem(problem) {
-      console.log(problem);
-      if (!problem.autofix) {
-        this.handleManualFix(problem);
-      } else {
-        this.handleAutoFix();
-      }
-    },
-    async handleManualFix(problem) {
+    });
+
+    async function handleManualFix(problem) {
       let handle;
       switch (problem.id) {
         case 'unknownMod':
         case 'incompatibleMod':
-          this.$router.replace('/mod-setting');
+          router.replace('/mod-setting');
           break;
         case 'incompatibleResourcePack':
-          this.$router.replace('/resource-pack-setting');
+          router.replace('/resource-pack-setting');
           break;
         case 'incompatibleJava':
-          if (this.$repo.state.java.all.some(j => j.majorVersion === 8)) {
-            await this.$repo.dispatch('editProfile', { java: this.$repo.state.java.all.find(j => j.majorVersion === 8) });
+          if (state.java.all.some(j => j.majorVersion === 8)) {
+            await dispatch('editProfile', { java: state.java.all.find(j => j.majorVersion === 8) });
             // TODO: notify user here the launcher switch java version
           } else {
-            this.javaWizardDialog = true;
+            data.javaWizardDialog = true;
           }
           break;
         case 'missingModsOnServer':
           break;
         default:
       }
-    },
-    handleAutoFix() {
-      this.$repo.dispatch('fixProfile', this.problems);
-    },
-    refreshServer() {
-      this.$repo.dispatch('refreshProfile');
-    },
-    quitLauncher() {
-      setTimeout(() => {
-        this.$store.dispatch('quit');
-      }, 150);
-    },
+    }
+    function handleAutoFix() {
+      dispatch('fixProfile', problems.value);
+    }
+
+    return {
+      ...toRefs(data),
+      status,
+      icon,
+      isServer,
+      profile,
+      problems,
+      problemsLevelColor,
+      launchStatus,
+      refreshingProfile,
+      missingJava,
+      async launch() {
+        if (launchStatus.value !== 'ready') {
+          data.launchStatusDialog = true;
+          return;
+        }
+        await dispatch('launch');
+      },
+      showExportDialog() {
+        if (refreshingProfile.value) return;
+        remote.dialog.showSaveDialog({
+          title: $t('profile.export.title'),
+          filters: [{ name: 'zip', extensions: ['zip'] }],
+          message: $t('profile.export.message'),
+          defaultPath: `${data.profile.name}.zip`,
+        }, (filename, bookmark) => {
+          if (filename) {
+            dispatch('exportProfile', { dest: filename }).catch((e) => {
+              console.error(e);
+            });
+          }
+        });
+      },
+      showLogDialog() { data.logsDialog = true; },
+      showFeedbackDialog() { data.feedbackDialog = true; },
+      fixProblem(problem) {
+        console.log(problem);
+        if (!problem.autofix) {
+          handleManualFix(problem);
+        } else {
+          handleAutoFix();
+        }
+      },
+      refreshServer() { dispatch('refreshProfile'); },
+      quitLauncher() {
+        setTimeout(() => {
+          dispatch('quit');
+        }, 150);
+      },
+    };
   },
 };
 </script>
