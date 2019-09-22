@@ -1,11 +1,11 @@
 import { Net, Task } from '@xmcl/minecraft-launcher-core';
+import Unzip from '@xmcl/unzip';
 import { exec } from 'child_process';
 import { createHash } from 'crypto';
 import { app, net } from 'electron';
 import { createDecompressor } from 'lzma-native';
 import os from 'os';
-import path, { join } from 'path';
-import Unzip from '@xmcl/unzip';
+import { basename, join, resolve } from 'path';
 import fs from './vfs';
 
 export async function officialEndpoint(context: Task.Context) {
@@ -43,8 +43,8 @@ export async function officialEndpoint(context: Task.Context) {
     }
     const { sha1, url, version } = info[system][arch].jre;
 
-    const filename = path.basename(url);
-    const dest = path.resolve(root, 'temp', filename);
+    const filename = basename(url);
+    const dest = resolve(root, 'temp', filename);
 
     let needDownload = true;
     if (await fs.exists(dest)) {
@@ -67,7 +67,7 @@ export async function officialEndpoint(context: Task.Context) {
         }));
     }
 
-    const javaRoot = path.resolve(root, 'jre');
+    const javaRoot = resolve(root, 'jre');
     await context.execute('decompress', async () => {
         await fs.ensureDir(javaRoot);
 
@@ -108,7 +108,7 @@ export async function selfHostAPI(context: Task.Context) {
     }
     const url = `https://voxelauncher.azurewebsites.net/api/v1/jre/${system}/${arch}`;
     const filename = 'jre.lzma';
-    const dest = path.resolve(root, 'temp', filename);
+    const dest = resolve(root, 'temp', filename);
 
     await fs.ensureFile(dest);
     await context.execute('download', Net.downloadFileWork({
@@ -116,7 +116,7 @@ export async function selfHostAPI(context: Task.Context) {
         destination: dest,
     }));
 
-    const javaRoot = path.resolve(root, 'jre');
+    const javaRoot = resolve(root, 'jre');
     await context.execute('decompress', async () => {
         await fs.ensureDir(javaRoot);
 
@@ -144,8 +144,8 @@ export async function bangbangAPI(context: Task.Context) {
     }
     const filename = resolveJava();
     const root = app.getPath('userData');
-    const javaRoot = path.resolve(root, 'jre');
-    const destination = path.resolve(root, 'temp', filename);
+    const javaRoot = resolve(root, 'jre');
+    const destination = resolve(root, 'temp', filename);
     await context.execute('download', Net.downloadFileWork({
         url: `http://bmclapi2.bangbang93.com/java/${filename}`,
         destination,

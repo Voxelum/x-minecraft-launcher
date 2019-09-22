@@ -123,7 +123,7 @@
       <v-flex shrink>
         <v-layout justify-center align-center fill-height>
           <v-flex style="z-index: 1;">
-            <skin-view :data="skinData" :slim="skinSlim" :rotate="false" @drop="onDropSkin" @dragover="onDragOver" />
+            <skin-view :href="skinData" :slim="skinSlim" :rotate="false" @drop="onDropSkin" @dragover="onDragOver" />
             <!-- <v-progress-circular v-if="pending" color="white" indeterminate :size="90" style="position: absolute; top: 30vh; right: 13vh;" /> -->
           </v-flex>
         </v-layout>

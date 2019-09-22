@@ -188,23 +188,19 @@ class PlayerModel {
         }
         const img = new Image();
         img.onload = () => { reload(img); };
-        if (skin instanceof Buffer) {
-            img.src = `data:image/png;base64, ${skin.toString('base64')}`;
-        } else if (typeof skin === 'string') {
-            try {
-                const url = new URL(skin);
-                switch (url.protocol) {
-                    case 'data:':
-                    case 'https:':
-                    case 'http:':
-                        img.src = skin;
-                        break;
-                    default:
-                        throw new Error(`Unsupported protocol ${url.protocol}!`);
-                }
-            } catch (e) {
-                img.src = `data:image/png;base64, ${skin}`;
+        try {
+            const url = new URL(skin);
+            switch (url.protocol) {
+                case 'data:':
+                case 'https:':
+                case 'http:':
+                    img.src = skin;
+                    break;
+                default:
+                    throw new Error(`Unsupported protocol ${url.protocol}!`);
             }
+        } catch (e) {
+            img.src = `data:image/png;base64, ${skin}`;
         }
         console.log(`Load Skin ${img.src}`);
         return this;

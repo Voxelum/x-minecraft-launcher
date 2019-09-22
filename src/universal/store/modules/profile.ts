@@ -2,12 +2,12 @@ import Vue from 'vue';
 import { getExpectVersion } from 'universal/utils/versions';
 import { UNKNOWN_STATUS } from 'universal/utils/server-status';
 
-import { GameSetting, LevelDataFrame, World, Server } from "@xmcl/minecraft-launcher-core";
+import { GameSetting, World, Server } from "@xmcl/minecraft-launcher-core";
 import { Context, Module } from "../store";
-import { JavaModule, Java } from "./java";
+import { Java } from "./java";
 import { Resource } from './resource';
 import { VersionModule } from "./version";
-import { ServerProfileConfig, ModpackProfileConfig, ProfileConfig, ProfilesConfig } from './profile.config';
+import { ServerProfileConfig, ModpackProfileConfig, ProfileConfig } from './profile.config';
 
 type CreateProfileOption = Omit<ModpackProfileConfig, 'id'> & { type: 'modpack' }
 type CreateServerProfileOption = Omit<ServerProfileConfig, 'id'> & { type: 'server' }
@@ -59,20 +59,6 @@ export declare namespace ProfileModule {
          * If current launcher is refreshing the profile data
          */
         refreshing: boolean;
-
-        dirty: {
-            /**
-             * Whether the save folder is dirty
-             */
-            saves: boolean;
-
-            /**
-             * Whether the server.dat is dirty
-             */
-            servers: boolean;
-
-            gamesettings: boolean;
-        },
     }
 
     interface Getters {
@@ -111,8 +97,6 @@ export declare namespace ProfileModule {
         serverStatus(state: State, status: Server.StatusFrame): void;
         profileSaves(state: State, worlds: Save[]): void;
         refreshingProfile(state: State, refreshing: boolean): void;
-
-        markDirty(state: State, payload: { target: keyof State['dirty'], dirty: boolean }): void;
     }
 
     type C = Context<State, Getters, Mutations, Actions>

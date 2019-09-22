@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import { net } from 'electron';
 import fileType from 'file-type';
 import fs from 'main/utils/vfs';
-import paths from 'path';
+import { extname, basename, join, resolve } from 'path';
 import base, { ResourceModule, Resource } from 'universal/store/modules/resource';
 import { requireString } from 'universal/utils/object';
 import url from 'url';
@@ -123,7 +123,7 @@ function buildResource(filename: string, hash: string, ext: string, domain: stri
     Object.freeze(meta);
     return {
         path: filename,
-        name: getRegularName(type, meta) || paths.basename(filename, ext),
+        name: getRegularName(type, meta) || basename(filename, ext),
         hash,
         ext,
         metadata: meta,
@@ -182,7 +182,7 @@ const mod: ResourceModule = {
                 async function reimport(pool: string[], type?: string) {
                     while (pool.length !== 0) {
                         const file = pool.pop();
-                        if (!file) return;
+                        if (!file || file.endsWith('.DS_Store')) return;
                         try {
                             const stat = await fs.stat(file);
                             const isDir = stat.isDirectory();
@@ -197,16 +197,16 @@ const mod: ResourceModule = {
                             }
 
                             const hash = await readHash(file);
-                            const metaFile = paths.join('resources', `${hash}.json`);
+                            const metaFile = join('resources', `${hash}.json`);
 
                             Reflect.set(touched, `${hash}.json`, true);
                             const metadata = await context.dispatch('getPersistence', { path: metaFile });
                             if (!metadata || typeof metadata.domain !== 'string' || typeof metadata.hash !== 'string') {
                                 console.log(`Missing metadata file for ${file}. Try to reimport it.`);
-                                const ext = paths.extname(file);
+                                const ext = extname(file);
 
                                 const resource = await parseResource(file, hash, ext, await fs.readFile(file), {
-                                    path: paths.resolve(file),
+                                    path: resolve(file),
                                     date: Date.now().toString(),
                                 }, type);
 
@@ -327,8 +327,8 @@ const mod: ResourceModule = {
                             resp.on('end', () => { resolve(Buffer.concat(bufs)); });
                         });
                         req.on('redirect', (code, method, redirectUrl, header) => {
-                            name = paths.basename(redirectUrl, '.zip');
-                            ext = paths.extname(redirectUrl);
+                            name = basename(redirectUrl, '.zip');
+                            ext = extname(redirectUrl);
                             req.followRedirect();
                         });
 
@@ -338,7 +338,7 @@ const mod: ResourceModule = {
 
                     hash = crypto.createHash('sha1').update(data).digest('hex');
                 } else {
-                    name = paths.basename(paths.basename(path, '.zip'), '.jar');
+                    name = basename(basename(path, '.zip'), '.jar');
                     const status = await fs.stat(path);
 
                     if (status.isDirectory()) {
@@ -347,14 +347,14 @@ const mod: ResourceModule = {
                         hash = (await hashFolder(path, crypto.createHash('sha1'))).digest('hex');
                     } else {
                         data = await fs.readFile(path);
-                        ext = paths.extname(path);
+                        ext = extname(path);
                         hash = crypto.createHash('sha1').update(data).digest('hex');
                     }
                 }
 
                 const source = {
                     name,
-                    path: paths.resolve(path),
+                    path: resolve(path),
                     date: Date.now(),
                     ...metadata,
                 };
@@ -362,8 +362,8 @@ const mod: ResourceModule = {
                 ctx.update(1, 4, path);
                 const checkingResult = await ctx.execute('checking', async () => {
                     // take hash of dir or file
-                    await fs.ensureDir(paths.join(root, 'resources'));
-                    const metaFile = paths.join(root, 'resources', `${hash}.json`);
+                    await fs.ensureDir(join(root, 'resources'));
+                    const metaFile = join(root, 'resources', `${hash}.json`);
 
                     // if exist, abort
                     if (await fs.exists(metaFile)) {
@@ -388,9 +388,9 @@ const mod: ResourceModule = {
 
                     console.log(`Import resource ${name}${ext}(${hash}) into ${resource.domain}`);
 
-                    let dataFile = paths.join(root, resource.domain, `${resource.name}${resource.ext}`);
+                    let dataFile = join(root, resource.domain, `${resource.name}${resource.ext}`);
                     if (await fs.exists(dataFile)) {
-                        dataFile = paths.join(root, resource.domain, `${resource.name}.${hash}${resource.ext}`);
+                        dataFile = join(root, resource.domain, `${resource.name}.${hash}${resource.ext}`);
                     }
 
                     resource.path = dataFile;
@@ -409,7 +409,7 @@ const mod: ResourceModule = {
                     }
 
                     // store metadata to disk
-                    await fs.writeFile(paths.join(root, 'resources', `${hash}.json`), JSON.stringify(resource, undefined, 4));
+                    await fs.writeFile(join(root, 'resources', `${hash}.json`), JSON.stringify(resource, undefined, 4));
 
                     context.commit('resource', resource);
                 });
@@ -485,7 +485,7 @@ const mod: ResourceModule = {
 
                 if (!res) throw new Error(`Cannot find the resource ${resource}`);
 
-                promises.push(fs.copy(res.path, paths.join(targetDirectory, res.name + res.ext)));
+                promises.push(fs.copy(res.path, join(targetDirectory, res.name + res.ext)));
             }
             await Promise.all(promises);
         },

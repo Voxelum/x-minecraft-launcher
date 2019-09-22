@@ -413,8 +413,9 @@ const mod: UserModule = {
                 })(ctx);
                 return dest;
             });
-            await context.dispatch('waitTask', await context.dispatch('executeTask', task));
+            const dest = await context.dispatch('waitTask', await context.dispatch('executeTask', task));
             await context.dispatch('diagnoseUser');
+            return dest;
         },
     },
 };

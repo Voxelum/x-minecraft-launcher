@@ -7,11 +7,6 @@ import { createContext, runInContext } from 'vm';
 import { getGuardWindow } from '../../windowsManager';
 import { IOModule } from 'universal/store/modules/io';
 
-/**
- * @type {{[url: string]: Promise<string>}}
- */
-const downloadingGuard = {};
-
 const mod: IOModule = {
     actions: {
         async readFolder(context, path) {

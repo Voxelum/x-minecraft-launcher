@@ -66,7 +66,6 @@ export declare namespace DiagnoseModule {
     }
     type C = Context<State, {}, Mutations, Actions>;
     interface Actions {
-        diagnoseFull(context: C): Promise<void>;
         diagnoseVersion(context: C): Promise<void>;
         diagnoseMods(context: C): Promise<void>;
         diagnoseResourcePacks(context: C): Promise<void>;

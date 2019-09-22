@@ -3,7 +3,7 @@ declare class PlayerModel {
         skin: string | Buffer | HTMLImageElement,
         cape: string | Buffer | HTMLImageElement,
         isSlim: boolean,
-    }) { }
+    });
 
     readonly root: THREE.Object3D;
 

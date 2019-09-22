@@ -3,13 +3,13 @@ import { gunzip } from 'zlib';
 import fs from 'main/utils/vfs';
 import { compressZipTo, includeAllToZip } from 'main/utils/zip';
 import { tmpdir } from 'os';
-import paths, { basename, join, dirname, relative } from 'path';
+import uuid from 'uuid';
+import paths, { basename, resolve, join, dirname, relative } from 'path';
 import { latestMcRelease } from 'static/dummy.json';
-import { GameSetting, Server, TextComponent, Version, World } from '@xmcl/minecraft-launcher-core';
+import { GameSetting, Server, Version, World } from '@xmcl/minecraft-launcher-core';
 import base, { createTemplate, ProfileModule } from 'universal/store/modules/profile';
 import { fitin, willBaselineChange } from 'universal/utils/object';
 import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/server-status';
-import uuid from 'uuid';
 import { Unzip } from '@xmcl/unzip';
 import { ZipFile } from 'yazl';
 import { createHash } from 'crypto';
@@ -59,7 +59,7 @@ const mod: ProfileModule = {
                 if (await fs.exists(saveRoot)) {
                     const saves = await fs.readdir(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
 
-                    const loaded = await Promise.all(saves.map(s => paths.resolve(saveRoot, s)).map(loadWorld));
+                    const loaded = await Promise.all(saves.map(s => resolve(saveRoot, s)).map(loadWorld));
                     loaded.filter(s => s !== undefined).forEach(s => Reflect.set(s!, 'profile', profile.name));
                     all.push(...loaded);
                 }
@@ -77,7 +77,7 @@ const mod: ProfileModule = {
                 if (await fs.exists(saveRoot)) {
                     const saves = await fs.readdir(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
 
-                    const loaded = await Promise.all(saves.map(s => paths.resolve(saveRoot, s)).map(loadWorld));
+                    const loaded = await Promise.all(saves.map(s => resolve(saveRoot, s)).map(loadWorld));
                     const nonNulls: any = loaded.filter(s => s !== undefined);
                     console.log(`Save ${saves.length} ${nonNulls.length}`);
                     commit('profileSaves', nonNulls);
@@ -348,7 +348,7 @@ const mod: ProfileModule = {
             context.commit('refreshingProfile', true);
             try {
                 const root = context.rootState.root;
-                const from = paths.join(root, 'profiles', id);
+                const from = join(root, 'profiles', id);
                 const file = new ZipFile();
                 const promise = compressZipTo(file, dest);
 
@@ -367,27 +367,27 @@ const mod: ProfileModule = {
                 carriedVersionPaths.push(...versionInst.pathChain);
 
                 if (type === 'full') {
-                    const assetsJson = paths.resolve(root, 'assets', 'indexes', `${versionInst.assets}.json`);
+                    const assetsJson = resolve(root, 'assets', 'indexes', `${versionInst.assets}.json`);
                     file.addFile(assetsJson, `assets/indexes/${versionInst.assets}.json`);
                     const objects = await fs.readFile(assetsJson, { encoding: 'utf-8' }).then(b => b.toString()).then(JSON.parse).then(manifest => manifest.objects);
                     for (const hash of Object.keys(objects).map(k => objects[k].hash)) {
-                        file.addFile(paths.resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`);
+                        file.addFile(resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`);
                     }
                 }
 
 
                 for (const verPath of carriedVersionPaths) {
-                    const versionId = paths.basename(verPath);
+                    const versionId = basename(verPath);
                     const versionFiles = await fs.readdir(verPath);
                     for (const versionFile of versionFiles) {
-                        if (!await fs.stat(paths.join(verPath, versionFile)).then(s => s.isDirectory())) {
-                            file.addFile(paths.join(verPath, versionFile), `versions/${versionId}/${versionFile}`);
+                        if (!await fs.stat(join(verPath, versionFile)).then(s => s.isDirectory())) {
+                            file.addFile(join(verPath, versionFile), `versions/${versionId}/${versionFile}`);
                         }
                     }
                 }
 
                 for (const lib of versionInst.libraries) {
-                    file.addFile(paths.resolve(root, 'libraries', lib.download.path),
+                    file.addFile(resolve(root, 'libraries', lib.download.path),
                         `libraries/${lib.download.path}`);
                 }
 
@@ -411,13 +411,13 @@ const mod: ProfileModule = {
             const isDir = stat.isDirectory();
             let srcFolderPath = location;
             if (!isDir) {
-                const tempDir = await fs.mkdtemp(paths.join(tmpdir(), 'launcher'));
+                const tempDir = await fs.mkdtemp(join(tmpdir(), 'launcher'));
                 await fs.createReadStream(location)
                     .pipe(Unzip.createExtractStream(tempDir))
                     .wait();
                 srcFolderPath = tempDir;
             }
-            const proiflePath = paths.resolve(srcFolderPath, 'profile.json');
+            const proiflePath = resolve(srcFolderPath, 'profile.json');
 
             const id = uuid.v4();
             const destFolderPath = context.rootGetters.path('profiles', id);
@@ -432,12 +432,12 @@ const mod: ProfileModule = {
                 return true;
             });
 
-            const modsDir = paths.resolve(srcFolderPath, 'mods');
+            const modsDir = resolve(srcFolderPath, 'mods');
             const mods = [];
             if (await fs.exists(modsDir)) {
                 for (const file of await fs.readdir(modsDir)) {
                     try {
-                        const resource = await context.dispatch('waitTask', await context.dispatch('importResource', { path: paths.resolve(srcFolderPath, 'mods', file) }));
+                        const resource = await context.dispatch('waitTask', await context.dispatch('importResource', { path: resolve(srcFolderPath, 'mods', file) }));
                         if (resource) {
                             mods.push(resource.hash);
                         }
@@ -447,17 +447,17 @@ const mod: ProfileModule = {
                 }
             }
 
-            const resourcepacksDir = paths.resolve(srcFolderPath, 'resourcepacks');
+            const resourcepacksDir = resolve(srcFolderPath, 'resourcepacks');
             if (await fs.exists(resourcepacksDir)) {
                 for (const file of await fs.readdir(resourcepacksDir)) {
-                    await context.dispatch('importResource', { path: paths.resolve(srcFolderPath, 'resourcepacks', file), type: 'resourcepack' });
+                    await context.dispatch('importResource', { path: resolve(srcFolderPath, 'resourcepacks', file), type: 'resourcepack' });
                 }
             }
 
-            await fs.copy(paths.resolve(srcFolderPath, 'assets'), paths.resolve(context.rootState.root, 'assets'));
-            await fs.copy(paths.resolve(srcFolderPath, 'libraries'), paths.resolve(context.rootState.root, 'libraries'));
+            await fs.copy(resolve(srcFolderPath, 'assets'), resolve(context.rootState.root, 'assets'));
+            await fs.copy(resolve(srcFolderPath, 'libraries'), resolve(context.rootState.root, 'libraries'));
 
-            await fs.copy(paths.resolve(srcFolderPath, 'versions'), paths.resolve(context.rootState.root, 'versions')); // TODO: check this
+            await fs.copy(resolve(srcFolderPath, 'versions'), resolve(context.rootState.root, 'versions')); // TODO: check this
 
             let profileTemplate: any = {}; // TODO: typecheck
             const isExportFromUs = await fs.stat(proiflePath).then(s => s.isFile()).catch(_ => false);
