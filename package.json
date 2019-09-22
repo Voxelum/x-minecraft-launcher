@@ -2,7 +2,7 @@
     "name": "voxelauncher",
     "private": true,
     "productName": "VoxeLauncher",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "A great minecraft launcher in the future",
     "license": "MIT",

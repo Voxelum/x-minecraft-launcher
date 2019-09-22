@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.1](https://github.com/voxelum/voxelauncher/compare/v0.3.0...v0.3.1) (2019-09-22)
+
+
+### Bug Fixes
+
+* **login:** login use selected auth service ([f0e7b0f](https://github.com/voxelum/voxelauncher/commit/f0e7b0f))
+* **profile:** import to resources before create profile ([76ad177](https://github.com/voxelum/voxelauncher/commit/76ad177))
+* **skin:** optimize the skin update perf ([cfaf16a](https://github.com/voxelum/voxelauncher/commit/cfaf16a))
+* **user:** login text and user skin profile behavior ([db83b86](https://github.com/voxelum/voxelauncher/commit/db83b86))
+* **user:** make http as a default protocol ([b20c22d](https://github.com/voxelum/voxelauncher/commit/b20c22d))
+* fix the server creation and clean up ([8211819](https://github.com/voxelum/voxelauncher/commit/8211819))
+* **user:** refresh user problems after install authlib ([0829fe2](https://github.com/voxelum/voxelauncher/commit/0829fe2))
+
+
+
 ## [0.3.0](https://github.com/voxelum/voxelauncher/compare/v0.3.0-beta.0...v0.3.0) (2019-09-14)
 
 
