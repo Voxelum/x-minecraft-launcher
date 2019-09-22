@@ -4,6 +4,7 @@
 </template>
 
 <script>
+import { reactive, onUnmounted, watch, toRefs } from '@vue/composition-api';
 import Model from './skin-model';
 
 const THREE = require('three');
@@ -22,6 +23,7 @@ export default {
     cape: {
       type: Object,
       required: false,
+      default: null,
     },
     rotate: {
       type: Boolean,
@@ -39,86 +41,60 @@ export default {
       type: Boolean,
       default: false,
     },
-    data: {
+    href: {
+      type: String,
       required: true,
+      default: null,
     },
   },
-  data: () => ({
-    disposed: false,
-  }),
-  watch: {
-    data(nskin) {
-      if (nskin === undefined) {
-        this.$setSkin(undefined);
-        return;
-      }
-      this.$setSkin(nskin, this.slim);
-    },
-    slim(slim) {
-      this.$setSkin(this.data, slim);
-    },
-  },
-  destroyed() {
-    this.disposed = true;
-  },
-  mounted(e) {
-    // console.log("===========START===========")
-    // let canvas = this.$el;
-    // let gl = canvas.getContext("webgl");
-    // console.log(gl.getParameter(gl.RENDERER));
-    // console.log(gl.getParameter(gl.VENDOR));
-    // console.log(getUnmaskedInfo(gl).vendor);
-    // console.log(getUnmaskedInfo(gl).renderer);
-    // function getUnmaskedInfo(gl) {
-    //     let unMaskedInfo = {
-    //         renderer: '',
-    //         vendor: ''
-    //     };
-    //     let dbgRenderInfo = gl.getExtension("WEBGL_debug_renderer_info");
-    //     if (dbgRenderInfo != null) {
-    //         unMaskedInfo.renderer = gl.getParameter(dbgRenderInfo.UNMASKED_RENDERER_WEBGL);
-    //         unMaskedInfo.vendor = gl.getParameter(dbgRenderInfo.UNMASKED_VENDOR_WEBGL);
-    //     }
-    //     return unMaskedInfo;
-    // }
-    // console.log("===========END===========")
-    const renderer = new THREE.WebGLRenderer({ canvas: this.$el, antialias: true, alpha: true });
+  setup(props, context) {
+    const data = reactive({
+      disposed: false,
+    });
+    onUnmounted(() => {
+      data.disposed = true;
+    });
+    watch([props.href, props.slim], () => {
+      character.updateSkin(props.href, props.slim);
+    });
+    const renderer = new THREE.WebGLRenderer({ canvas: context.root.$el, antialias: true, alpha: true });
     const scene = new THREE.Scene();
-
-    const camera = new THREE.PerspectiveCamera(45, this.width / this.height, 0.5, 5);
-    camera.position.z = 3;
     const character = new Model();
-    character.root.translateY(-0.5);
-    this.$setSkin = (skin, slim) => {
-      console.log(`Set Skin ${skin}`);
-      character.updateSkin(skin, slim);
-    };
-    this.$setCape = (cape) => {
-      character.updateCape(cape);
-    };
-    scene.add(character.root);
-    if (this.data) this.$setSkin(this.data, this.slim);
+    const camera = new THREE.PerspectiveCamera(45, props.width / props.height, 0.5, 5);
+    const controls = new OrbitControls(camera, context.root.$el);
+
+    camera.position.z = 3;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-    const controls = new OrbitControls(camera, this.$el);
+    character.root.translateY(-0.5);
+    if (props.href) character.updateSkin(props.href, props.slim);
+
     controls.target = new THREE.Vector3(0, 0, 0);
     controls.enablePan = false;
     controls.enableKeys = false;
     controls.maxDistance = this.maxDistance;
     controls.minDistance = this.minDistance;
-    if (this.rotate) {
-      // controls.autoRotate = true;
-      // controls.autoRotateSpeed = 4;
+    if (props.rotate) {
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 4;
+    } else {
+      controls.autoRotate = false;
     }
-    const self = this;
+
+    scene.add(character.root);
     requestAnimationFrame(function animate(nowMsec) {
-      if (self.disposed) return;
+      if (data.disposed) return;
       requestAnimationFrame(animate);
-      controls.update();
+      const result = controls.update();
       renderer.render(scene, camera);
+      // console.log(result);
+      // if (self.rotate || result) {
+      // renderer.render(scene, camera);
+      // }
     });
-  },
-  methods: {
+    return {
+      ...toRefs(data),
+    };
   },
 };
 </script>

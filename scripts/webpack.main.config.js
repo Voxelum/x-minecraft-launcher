@@ -3,16 +3,25 @@ const webpack = require('webpack');
 
 const { dependencies } = require('../package.json');
 
+/**
+ * @type {import('webpack').Configuration}
+ */
 const mainConfig = {
     mode: process.env.NODE_ENV,
     entry: {
-        main: path.join(__dirname, '../src/main/index.js'),
+        main: path.join(__dirname, '../src/main/index.ts'),
     },
     externals: [
         ...Object.keys(dependencies || {}),
     ],
     module: {
         rules: [
+            {
+                test: /\.ts$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+                include: [path.join(__dirname, '../src/main'), path.join(__dirname, '../src/universal')],
+            },
             {
                 test: /\.node$/,
                 use: 'node-loader',
@@ -32,7 +41,7 @@ const mainConfig = {
         new webpack.NoEmitOnErrorsPlugin(),
     ],
     resolve: {
-        extensions: ['.js', '.json', '.node'],
+        extensions: ['.js', '.ts', '.json', '.node'],
         alias: {
             main: path.join(__dirname, '../src/main'),
             vue$: 'vue/dist/vue.runtime.esm.js',

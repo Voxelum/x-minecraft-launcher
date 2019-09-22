@@ -58,7 +58,6 @@
         </div>
       </div>
     </transition>
-    </div>
   </v-dialog>
 </template>
 

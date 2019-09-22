@@ -9,6 +9,6 @@ module.exports = {
             universal: path.join(__dirname, '../src/universal'),
             renderer: path.join(__dirname, '../src/renderer'),
         },
-        extensions: ['.js', '.vue', '.json', '.css', '.node'],
+        extensions: ['.ts', '.js', '.vue', '.json', '.css', '.node'],
     },
 };

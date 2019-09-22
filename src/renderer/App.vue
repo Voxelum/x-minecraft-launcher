@@ -6,33 +6,27 @@
 </template>
 
 <script>
-
-import 'vuetify/dist/vuetify.css';
-import 'renderer/assets/google.font.css';
 import Vue from 'vue';
+import { onMounted, onBeforeMount } from '@vue/composition-api';
+import { ipcRenderer } from 'electron';
 
 export default {
-  computed: {
-  },
-  beforeMount() {
-  },
-  created() {
-    this.$electron.ipcRenderer.on('copy', (text) => {
-      const clipboard = this.$refs.clipboard;
+  setup(data, context) {
+    ipcRenderer.on('copy', (text) => {
+      const clipboard = context.root.$refs.clipboard;
       clipboard.value = text;
       clipboard.select();
       document.execCommand('copy');
     });
-  },
-  mounted() {
-    Vue.prototype.$copy = (text) => {
-      const clipboard = this.$refs.clipboard;
-      clipboard.value = text;
-      clipboard.select();
-      document.execCommand('copy');
-    };
-  },
-  methods: {
+    onMounted(() => {
+      Vue.prototype.$copy = (text) => {
+        const clipboard = context.root.$refs.clipboard;
+        clipboard.value = text;
+        clipboard.select();
+        document.execCommand('copy');
+      };
+    });
+    return {};
   },
 };
 </script>

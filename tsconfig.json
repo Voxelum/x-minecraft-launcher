@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "target": "es2018",
+        "baseUrl": ".",
+        "sourceMap": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "paths": {
+            "universal/*": [
+                "src/universal/*"
+            ],
+            "static/*": [
+                "static/*"
+            ],
+            "main/*": [
+                "src/main/*"
+            ],
+            "renderer/*": [
+                "src/renderer/*"
+            ]
+        }
+    },
+    "include": [
+        "types/*",
+        "src/**/*"
+    ]
+}

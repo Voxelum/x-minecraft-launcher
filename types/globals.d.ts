@@ -1,4 +1,3 @@
-
 interface NodeRequire extends NodeRequireFunction {
     resolve: RequireResolve;
     cache: any;
@@ -9,6 +8,14 @@ interface NodeRequire extends NodeRequireFunction {
             (key: string): any,
             keys(): string[],
         };
+}
+declare module "in-gfw" {
+    namespace GFW {
+        function net(): Promise<boolean>;
+        function os(): Promise<boolean>;
+    }
+    function GFW(): Promise<boolean>;
+    export = GFW;
 }
 
 declare module "static/protocol.json" {
@@ -34,6 +41,22 @@ declare module NodeJS {
 }
 
 declare var __static: string;
+
+declare module 'long' {
+    export = Long.default
+}
+declare module "*.png" {
+    const value: string;
+    export default value;
+}
+
+declare module 'vue-particles' {
+    const module: import("vue").PluginObject<any>;
+    export default module;
+}
+declare module 'bytebuffer' {
+    export = ByteBuffer.default
+}
 
 declare module 'locales' {
     const locales: object;

@@ -18,12 +18,15 @@ const { dependencies } = require('../package.json');
  */
 const whiteListedModules = ['vue', 'vuetify'];
 
+/**
+ * @type {import('webpack').Configuration}
+ */
 const rendererConfig = {
     mode: process.env.NODE_ENV,
     devtool: '#cheap-module-eval-source-map',
     entry: {
-        renderer: path.join(__dirname, '../src/renderer/windows/main/index.js'),
-        logger: path.join(__dirname, '../src/renderer/windows/logger/index.js'),
+        renderer: path.join(__dirname, '../src/renderer/windows/main/index.ts'),
+        logger: path.join(__dirname, '../src/renderer/windows/logger/index.ts'),
     },
     externals: [
         ...Object.keys(dependencies || {}).filter(d => !whiteListedModules.includes(d)),
@@ -35,6 +38,12 @@ const rendererConfig = {
                 use: ['vue-style-loader', 'css-loader'],
             },
             {
+                test: /\.ts$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+                include: [path.join(__dirname, '../src/renderer'), path.join(__dirname, '../src/universal')],
+            },
+            {
                 test: /\.vue$/,
                 use: {
                     loader: 'vue-loader',
@@ -43,6 +52,7 @@ const rendererConfig = {
                         loaders: {
                             sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1',
                             scss: 'vue-style-loader!css-loader!sass-loader',
+                            typescript: 'ts-loader',
                         },
                     },
                 },
@@ -115,7 +125,7 @@ const rendererConfig = {
             static: path.join(__dirname, '../static'),
             universal: path.join(__dirname, '../src/universal'),
         },
-        extensions: ['.js', '.vue', '.json', '.css', '.node'],
+        extensions: ['.ts', '.js', '.vue', '.json', '.css', '.node'],
     },
     target: 'electron-renderer',
 };

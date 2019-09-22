@@ -114,7 +114,7 @@
 </template>
 
 <script>
-const HTTP_EXP = /(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+const HTTP_EXP = /(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
 export default {
   props: {
     modify: {
@@ -166,6 +166,9 @@ export default {
         && this.newAuth.validate === ''
         && this.newAuth.invalidate === ''
         && this.newAuth.signout === '') {
+          if (!this.baseUrl.startsWith('http://') && !this.baseUrl.startsWith('https://')) {
+            this.baseUrl = `http://${this.baseUrl}`;
+          }
           if (this.template === 0) {
             this.newAuth.hostName = `${this.baseUrl}`;
           } else {

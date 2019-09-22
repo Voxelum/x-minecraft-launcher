@@ -12,7 +12,9 @@
 </template>
 
 <script>
-export default {
+import { createComponent, computed } from '@vue/composition-api';
+
+const component = createComponent({
   props: {
     status: {
       type: String,
@@ -35,35 +37,24 @@ export default {
       default: false,
     },
   },
-  data() {
-    return {
-      // hovered: false
-    };
-  },
-  computed: {
-    icon() {
-      switch (this.status) {
+  setup(props) {
+    const icon = computed(() => {
+      switch (props.status) {
         case 'successed':
-          return this.hasChild ? 'done_all' : 'check';
+          return props.hasChild ? 'done_all' : 'check';
         case 'cancelled':
           return 'stop';
         default:
           return 'error_outline';
       }
-    },
-    percentage() {
-      return this.progress / this.total * 100;
-    },
+    });
+    const percentage = computed(() => props.progress / props.total * 100);
+    // props.status;
+    return { icon, percentage, enter() { }, leave() { } };
   },
-  methods: {
-    enter() {
-      // this.hovered = true;
-    },
-    leave() {
-      // this.hovered = false;
-    },
-  },
-};
+});
+
+export default component;
 </script>
 
 <style>

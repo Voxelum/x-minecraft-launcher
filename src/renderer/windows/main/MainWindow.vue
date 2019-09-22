@@ -84,66 +84,90 @@
 
 <script>
 import 'renderer/assets/common.css';
+import {
+  onMounted,
+  onBeforeMount,
+  reactive,
+  toRefs,
+  computed,
+  watch,
+  createComponent,
+} from '@vue/composition-api';
+import { ipcRenderer } from 'electron';
+import { useStore, useRouter } from './index';
 
 export default {
-  data: () => ({
-    loading: false, // disable for now, but it'll be abled if the loading process is too slow..
-    localHistory: [],
-    timeTraveling: false,
-    taskDialog: false,
-  }),
-  computed: {
-    activeTasksCount() {
-      return this.$repo.state.task.tasks.filter(t => t.status === 'running').length;
-    },
-    blur() {
-      return this.$repo.getters.selectedProfile.blur || this.$repo.state.setting.defaultBlur;
-    },
-    backgroundImage() {
-      return this.$repo.getters.selectedProfile.image || this.$repo.state.setting.defaultBackgroundImage;
-    },
-    logined() {
-      return this.$repo.getters.logined;
-    },
-  },
-  watch: {
-    backgroundImage() {
-      this.refreshImage();
-    },
-  },
-  created() {
-    this.$router.afterEach((to, from) => {
-      if (!this.timeTraveling) this.localHistory.push(from.fullPath);
+  setup(props, ctx) {
+    const router = useRouter();
+    const store = useStore();
+    const template = {
+      loading: true,
+      localHistory: [],
+      timeTraveling: false,
+      taskDialog: false,
+    };
+    const data = reactive(template);
+
+    const activeTasksCount = computed(
+      () => store.state.task.tasks.filter(t => t.status === 'running').length,
+    );
+    const blur = computed(
+      () => store.getters.selectedProfile.blur || store.state.setting.defaultBlur,
+    );
+    const backgroundImage = computed(
+      () => store.getters.selectedProfile.image
+        || store.state.setting.defaultBackgroundImage,
+    );
+    const logined = computed(() => store.getters.logined);
+
+    watch(backgroundImage, () => {
+      refreshImage();
     });
-  },
-  mounted() {
-    this.$electron.ipcRenderer.once('vuex-sync', () => {
-      this.loading = false;
+
+    router.afterEach((to, from) => {
+      if (!data.timeTraveling) data.localHistory.push(from.fullPath);
     });
-    this.$electron.ipcRenderer.on('task', this.showTaskDialog);
-  },
-  methods: {
-    refreshImage() {
-      const img = this.backgroundImage;
-    },
-    goBack() {
-      if (!this.logined && this.$route.path === '/login') {
+
+    onMounted(() => {
+      ipcRenderer.once('vuex-sync', () => {
+        data.loading = false;
+      });
+      ipcRenderer.on('task', showTaskDialog);
+    });
+
+    function showTaskDialog(show) {
+      if (typeof show === 'boolean') {
+        data.taskDialog = show;
+      } else {
+        data.taskDialog = true;
+      }
+    }
+
+    function refreshImage() {
+      const img = backgroundImage;
+    }
+
+    function goBack() {
+      if (!logined.value && router.currentRoute.path === '/login') {
         return;
       }
-      this.timeTraveling = true;
-      const before = this.localHistory.pop();
+      data.timeTraveling = true;
+      const before = data.localHistory.pop();
       if (before) {
-        this.$router.replace(before);
+        router.replace(before);
       }
-      this.timeTraveling = false;
-    },
-    showTaskDialog(show) {
-      if (typeof show === 'boolean') {
-        this.taskDialog = show;
-      } else {
-        this.taskDialog = true;
-      }
-    },
+      data.timeTraveling = false;
+    }
+
+    return {
+      ...toRefs(data),
+      activeTasksCount,
+      showTaskDialog,
+      blur,
+      goBack,
+      logined,
+      backgroundImage,
+    };
   },
 };
 </script>
