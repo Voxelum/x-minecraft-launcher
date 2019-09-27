@@ -1,7 +1,7 @@
 import { Auth, MojangAccount, MojangChallenge, MojangChallengeResponse, ProfileService } from '@xmcl/minecraft-launcher-core';
 import { fitin } from 'universal/utils/object';
 import Vue from 'vue';
-import { Context, Module } from "../store";
+import { Context, Module } from "..";
 import { GameProfileAndTexture, UserConfig, UserProfile } from './user.config';
 
 export declare namespace UserModule {
@@ -51,7 +51,7 @@ export declare namespace UserModule {
         refreshingSkin(state: State, refresh: boolean): void;
     }
 
-    type C = Context<State, Getters, Mutations, Actions>;
+    type C = Context<State, Getters>;
     interface Actions {
         login(context: C, payload?: { account: string; password?: string, authService?: string, profileService?: string }): Promise<void>;
         switchUserProfile(context: C, profile: { userId: string; profileId: string }): Promise<void>;

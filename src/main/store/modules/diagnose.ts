@@ -75,10 +75,7 @@ const mod: DiagnoseModule = {
                 incompatibleMod: [],
             };
             for (const mod of mods.filter(m => !!m && m.type === 'forge')) {
-                /**
-                 * @type {Forge.MetaData[]}
-                 */
-                const metadatas = mod.metadata;
+                const metadatas: Forge.MetaData[] = mod.metadata;
                 for (const meta of metadatas) {
                     let acceptVersion = meta.acceptedMinecraftVersions;
                     if (!acceptVersion) {

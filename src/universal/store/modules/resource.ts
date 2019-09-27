@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { Context, Module, TaskHandle } from "../store";
+import { Context, Module } from "..";
 import { Forge, LiteLoader, ResourcePack, World } from "@xmcl/minecraft-launcher-core";
 
 export declare namespace ResourceModule {
@@ -66,7 +66,7 @@ export declare namespace ResourceModule {
         refreshingResource(state: State, refresh: boolean): void;
         removeResource(state: State, resource: ResourceModule.AnyResource): void;
     }
-    type C = Context<State, Getters, Mutations, Actions>;
+    type C = Context<State, Getters>;
 
     interface Actions {
         /**

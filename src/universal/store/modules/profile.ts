@@ -3,7 +3,7 @@ import { getExpectVersion } from 'universal/utils/versions';
 import { UNKNOWN_STATUS } from 'universal/utils/server-status';
 
 import { GameSetting, World, Server } from "@xmcl/minecraft-launcher-core";
-import { Context, Module } from "../store";
+import { Context, Module } from "..";
 import { Java } from "./java";
 import { Resource } from './resource';
 import { VersionModule } from "./version";
@@ -13,14 +13,6 @@ type CreateProfileOption = Omit<ModpackProfileConfig, 'id'> & { type: 'modpack' 
 type CreateServerProfileOption = Omit<ServerProfileConfig, 'id'> & { type: 'server' }
 type CreateOption = DeepPartial<CreateProfileOption | CreateServerProfileOption>;
 
-// From https://github.com/andnp/SimplyTyped/blob/master/src/types/objects.ts
-type DeepPartial<T> = Partial<{
-    [k in keyof T]:
-    T[k] extends unknown[] ? Array<DeepPartial<T[k][number]>> :
-    T[k] extends Function ? T[k] :
-    T[k] extends object ? DeepPartial<T[k]> :
-    T[k];
-}>;
 export declare namespace ProfileModule {
     type ServerOrModpack = ModpackProfileConfig | ServerProfileConfig;
     type ServerAndModpack = ModpackProfileConfig & ServerProfileConfig;
@@ -99,7 +91,7 @@ export declare namespace ProfileModule {
         refreshingProfile(state: State, refreshing: boolean): void;
     }
 
-    type C = Context<State, Getters, Mutations, Actions>
+    type C = Context<State, Getters>
     interface Actions {
         loadProfile(context: C, id: string): Promise<void>;
         loadProfileGameSettings(context: C, id: string): Promise<GameSetting.Frame>;

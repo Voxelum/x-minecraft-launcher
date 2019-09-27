@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { requireString, requireObject } from '../../utils/object';
 
-import { Module, Context, TaskHandle } from "../store";
+import { Module, Context } from "..";
 import { Java, JavaConfig } from './java.config';
 
 export { Java };
@@ -20,7 +20,7 @@ export declare namespace JavaModule {
         removeJava(type: State, java: Java): void
         defaultJava(type: State, java: Java): void
     }
-    type C = Context<State, Getters, Mutations, Actions>
+    type C = Context<State, Getters>
     interface Actions {
         installJava(context: C, fix?: boolean): Promise<TaskHandle>
         refreshLocalJava(context: C): Promise<void>

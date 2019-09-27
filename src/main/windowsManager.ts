@@ -4,7 +4,7 @@ import getTray from './trayManager';
 import setupDownload from './downloadManager';
 
 import { CustomEvents } from './ipc';
-import { Repo, RootState } from '../universal/store/store';
+import { Repo, RootState } from '../universal/store';
 import { Store } from 'vuex';
 
 export interface ClientInstance extends Hook {

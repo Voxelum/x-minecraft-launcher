@@ -4,7 +4,7 @@
  */
 
 const files = require.context('.', false, /\.ts$/);
-const modules: import('vuex').ModuleTree<import('universal/store/store').BaseState> = {};
+const modules: import('vuex').ModuleTree<import('universal/store').BaseState> = {};
 
 files.keys().forEach((key) => {
     if (key === './index.ts') return;

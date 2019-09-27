@@ -1,6 +1,6 @@
 import { CustomEvents } from './ipc';
 import { BrowserWindow, BrowserWindowConstructorOptions, Tray, Dock } from 'electron';
-import { Repo } from '../universal/store/store';
+import { Repo } from '../universal/store';
 interface Instance {
     requestFocus(): void;
     dispose(): void;

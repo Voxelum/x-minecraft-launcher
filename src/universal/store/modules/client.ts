@@ -1,5 +1,5 @@
 import { isCompatible } from 'universal/utils/versions';
-import { Module, Context } from "../store";
+import { Module, Context } from "..";
 
 export namespace ClientModule {
     export type ProtocolToVersion = {
@@ -40,7 +40,7 @@ export namespace ClientModule {
         packFormatMapping(state: State, mapping: ResourcePackFormatMapping): void;
         protocolMapping(state: State, mapping: ClientProtocolMapping): void;
     }
-    type C = Context<State, Getters, Mutations, Actions>;
+    type C = Context<State, Getters>;
     export interface Actions {
     }
 }

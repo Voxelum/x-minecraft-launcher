@@ -1,4 +1,4 @@
-import { Module, Context } from "../store";
+import { Module, Context } from "..";
 import { UpdateInfo } from "electron-updater";
 import { SettingConfig } from "./setting.config";
 
@@ -29,7 +29,7 @@ export declare namespace SettingModule {
         defaultBlur(state: State, blur: number): void;
         useBmclApi(state: State, use: boolean): void;
     }
-    type C = Context<State, {}, Mutations, Actions>;
+    type C = Context<State, {}>;
     interface Actions {
         downloadUpdate(context: C): Promise<string>;
         quitAndInstall(context: C): Promise<void>;

@@ -1,6 +1,6 @@
-import { Module, Context } from "../store";
+import { Module, Context } from "..";
 
-export type C = Context<State, {}, Mutations, Actions>;
+export type C = Context<State, {}>;
 export interface Actions {
     launch(context: C, profileId?: string): Promise<boolean>;
 }

@@ -1,7 +1,7 @@
 import Vue from 'vue';
 
 import { Task } from '@xmcl/minecraft-launcher-core';
-import { Context, Module, TaskHandle } from "../store";
+import { Context, Module } from "..";
 
 export interface WrappedTask<T> extends Task<T, TaskState> {
     id: string;
@@ -31,7 +31,7 @@ export declare namespace TaskModule {
         }): void;
     }
 
-    type C = Context<TaskModule.State, {}, TaskModule.Mutations, TaskModule.Actions>;
+    type C = Context<TaskModule.State, {}>;
     interface Actions {
         executeAction<T>(context: C, payload: { action: string, payload?: any, background?: boolean }): Promise<any>;
 

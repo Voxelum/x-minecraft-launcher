@@ -9,6 +9,16 @@ interface NodeRequire extends NodeRequireFunction {
             keys(): string[],
         };
 }
+
+type TaskHandle = string;
+// From https://github.com/andnp/SimplyTyped/blob/master/src/types/objects.ts
+type DeepPartial<T> = Partial<{
+    [k in keyof T]:
+    T[k] extends unknown[] ? Array<DeepPartial<T[k][number]>> :
+    T[k] extends Function ? T[k] :
+    T[k] extends object ? DeepPartial<T[k]> :
+    T[k];
+}>;
 declare module "in-gfw" {
     namespace GFW {
         function net(): Promise<boolean>;

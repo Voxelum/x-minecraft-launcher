@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { Context, Module, TaskHandle } from "../store";
+import { Context, Module } from "..";
 import { Resource } from "./resource";
 
 export declare namespace CurseForgeModule {
@@ -114,7 +114,7 @@ export declare namespace CurseForgeModule {
     }
 
 
-    type C = Context<State, Getters, Mutations, Actions>;
+    type C = Context<State, Getters>;
 
     interface Modpack {
         manifestType: string;

@@ -6,7 +6,7 @@ import Vue from 'vue';
 import Vuex, { Store, StoreOptions } from 'vuex';
 import modules from './modules';
 import plugins from './plugins';
-import { BaseState } from 'universal/store/store';
+import { BaseState } from 'universal/store';
 
 Vue.use(Vuex);
 

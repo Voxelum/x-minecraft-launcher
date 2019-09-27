@@ -1,14 +1,14 @@
-import { app, shell } from 'electron';
-import os from 'os';
-import path from 'path';
-import { exec } from 'child_process';
 import { Task } from '@xmcl/minecraft-launcher-core';
-import { officialEndpoint, selfHostAPI } from 'main/utils/jre';
-import { requireString } from 'universal/utils/object';
+import { exec } from 'child_process';
+import { app, shell } from 'electron';
 import inGFW from 'in-gfw';
-import { JavaConfig } from 'universal/store/modules/java.config';
-import base, { JavaModule } from 'universal/store/modules/java';
+import { officialEndpoint, selfHostAPI } from 'main/utils/jre';
 import fs from 'main/utils/vfs';
+import os from 'os';
+import { join } from 'path';
+import base, { JavaModule } from 'universal/store/modules/java';
+import { JavaConfig } from 'universal/store/modules/java.config';
+import { requireString } from 'universal/utils/object';
 
 const JAVA_FILE = os.platform() === 'win32' ? 'javaw.exe' : 'java';
 
@@ -28,7 +28,7 @@ const mod: JavaModule = {
             if (context.state.all.length === 0) {
                 context.dispatch('refreshLocalJava');
             } else {
-                const local = path.join(context.rootState.root, 'jre', 'bin', JAVA_FILE);
+                const local = join(context.rootState.root, 'jre', 'bin', JAVA_FILE);
                 if (!context.state.all.map(j => j.path).some(p => p === local)) {
                     context.dispatch('resolveJava', local);
                 }
@@ -50,7 +50,7 @@ const mod: JavaModule = {
             const task = Task.create('installJre', async (ctx) => {
                 context.commit('refreshingProfile', true);
 
-                const local = path.join(context.rootState.root, 'jre', 'bin', JAVA_FILE);
+                const local = join(context.rootState.root, 'jre', 'bin', JAVA_FILE);
                 await context.dispatch('resolveJava', local);
                 for (const j of context.state.all) {
                     if (j.path === local) {
@@ -125,8 +125,8 @@ const mod: JavaModule = {
             try {
                 const unchecked = new Set<string>();
 
-                unchecked.add(path.join(app.getPath('userData'), 'jre', 'bin', JAVA_FILE));
-                if (process.env.JAVA_HOME) unchecked.add(path.join(process.env.JAVA_HOME, 'bin', JAVA_FILE));
+                unchecked.add(join(app.getPath('userData'), 'jre', 'bin', JAVA_FILE));
+                if (process.env.JAVA_HOME) unchecked.add(join(process.env.JAVA_HOME, 'bin', JAVA_FILE));
 
                 const which = () => new Promise<string>((resolve, reject) => {
                     exec('which java', (error, stdout, stderr) => {

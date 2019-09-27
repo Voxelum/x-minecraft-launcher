@@ -3,7 +3,7 @@ import Vue from 'vue';
 import lastestRelease from 'universal/utils/lasteRelease.json';
 
 import { Forge, ForgeWebPage, LiteLoader, Installer, Version, ResolvedLibrary } from "@xmcl/minecraft-launcher-core";
-import { Context, Module, TaskHandle } from "../store";
+import { Context, Module } from "..";
 import ForgeInstaller from "@xmcl/forge-installer";
 export type Status = 'remote' | 'local';
 
@@ -92,7 +92,7 @@ export declare namespace VersionModule {
         liteloaderMetadata(state: State, metadatas: LiteLoader.VersionMetaList): void;
     }
 
-    type C = Context<State, {}, Mutations, Actions>;
+    type C = Context<State, {}>;
     interface Actions {
         refresh(context: C): Promise<void>
 

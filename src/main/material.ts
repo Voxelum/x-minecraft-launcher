@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import { Menu, BrowserWindow } from 'electron';
 import { ClientContext } from './windowsManager';
 import { Store } from 'vuex';
-import { RootState } from 'universal/store/store';
+import { RootState } from 'universal/store';
 
 export default function setup(context: ClientContext, store: Store<RootState>) {
     let mainRef: BrowserWindow | null;

@@ -1,4 +1,4 @@
-import { Module, Context } from "../store";
+import { Module, Context } from "..";
 import { ResolvedLibrary, Version } from "@xmcl/version";
 import { ForgeInstaller } from "@xmcl/minecraft-launcher-core";
 
@@ -64,7 +64,7 @@ export declare namespace DiagnoseModule {
         startResolveProblems(state: State, problems: Problem[]): void;
         endResolveProblems(state: State, problems: Problem[]): void;
     }
-    type C = Context<State, {}, Mutations, Actions>;
+    type C = Context<State, {}>;
     interface Actions {
         diagnoseVersion(context: C): Promise<void>;
         diagnoseMods(context: C): Promise<void>;

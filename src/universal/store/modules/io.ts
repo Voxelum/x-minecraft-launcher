@@ -1,8 +1,8 @@
-import { Context, Module, TaskHandle } from "../store";
+import { Context, Module } from "..";
 
 export type IOModule = Module<"io", {}, {}, {}, Actions>;
 
-type C = Context<{}, {}, {}, Actions>;
+type C = Context<{}, {}>;
 export interface Actions {
     readFolder(context: C, folder: string): Promise<string[]>;
     setPersistence(context: C, payload: { path: string, data: object, schema?: string }): Promise<void>;
