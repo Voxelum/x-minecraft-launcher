@@ -32,10 +32,6 @@ const router = new Router({
                     component: () => import('./pages/SaveViewPage.vue'),
                 },
                 {
-                    path: '/server',
-                    component: () => import('./pages/ServerViewPage.vue'),
-                },
-                {
                     path: '/base-setting',
                     component: () => import('./pages/BaseSettingPage.vue'),
                 },
