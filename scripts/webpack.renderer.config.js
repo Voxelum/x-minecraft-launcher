@@ -38,12 +38,6 @@ const rendererConfig = {
                 use: ['vue-style-loader', 'css-loader'],
             },
             {
-                test: /\.ts$/,
-                use: 'ts-loader',
-                exclude: /node_modules/,
-                include: [path.join(__dirname, '../src/renderer'), path.join(__dirname, '../src/universal')],
-            },
-            {
                 test: /\.vue$/,
                 use: {
                     loader: 'vue-loader',
@@ -52,10 +46,18 @@ const rendererConfig = {
                         loaders: {
                             sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1',
                             scss: 'vue-style-loader!css-loader!sass-loader',
-                            typescript: 'ts-loader',
                         },
                     },
                 },
+            },
+            {
+                test: /\.ts$/,
+                use: {
+                    loader: 'ts-loader',
+                    options: { appendTsSuffixTo: [/\.vue$/] },
+                },
+                exclude: /node_modules/,
+                include: [path.join(__dirname, '../src/renderer'), path.join(__dirname, '../src/universal')],
             },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
