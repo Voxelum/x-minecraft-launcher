@@ -25,48 +25,57 @@
   </v-card>
 </template>
 
-<script>
+<script lang=ts>
+import { createComponent, reactive, toRefs } from '@vue/composition-api';
+import { clipboard, ipcRenderer } from 'electron';
 
-const pattern = /^\[(.+)\] \[(.+)\]: (.+)/;
-export default {
-  data: () => ({
-    logs: [],
-  }),
-  computed: {
-  },
-  mounted() {
-    this.$electron.ipcRenderer.on('minecraft-stdout', (event, str) => {
-      this.accept(str);
-    });
-    this.$electron.ipcRenderer.on('minecraft-error', (event, str) => {
+interface Log {
+  time?: string;
+  raw: string;
+  content?: string;
+  src?: string
+}
 
+export default createComponent({
+  setup() {
+    const pattern = /^\[(.+)\] \[(.+)\]: (.+)/;
+    const data: { logs: Log[] } = reactive({
+      logs: [],
     });
-  },
-  methods: {
-    close() {
-      this.$electron.ipcRenderer.send('window-hide');
-    },
-    onClick(l) {
-      this.$copy(l.raw);
-    },
-    accept(log) {
+    ipcRenderer.on('minecraft-stdout', (event: Event, str: string) => {
+      accept(str);
+    });
+    ipcRenderer.on('minecraft-error', (event: Event, str: string) => {
+      accept(str);
+    });
+    function accept(log: string) {
       const matched = pattern.exec(log);
       if (matched) {
         const [full, time, src, content] = matched;
-        this.logs.push({
+        data.logs.push({
           time,
           src,
           content,
           raw: log,
         });
       } else {
-        this.logs.push({
+        data.logs.push({
           raw: log,
         });
       }
-    },
+    }
+    return {
+      ...toRefs(data),
+      close() {
+        ipcRenderer.send('window-hide');
+      },
+      onClick(log: Log) {
+        clipboard.clear();
+        clipboard.writeText(log.raw);
+      },
+    };
   },
-};
+});
 </script>
 
 <style>

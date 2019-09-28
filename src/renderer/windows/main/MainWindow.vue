@@ -82,7 +82,7 @@
   </v-layout>
 </template>
 
-<script>
+<script lang=ts>
 import 'renderer/assets/common.css';
 import {
   onMounted,
@@ -96,11 +96,16 @@ import {
 import { ipcRenderer } from 'electron';
 import { useStore, useRouter } from './index';
 
-export default {
+export default createComponent({
   setup(props, ctx) {
     const router = useRouter();
     const store = useStore();
-    const template = {
+    const template: {
+      loading: boolean,
+      localHistory: string [],
+      timeTraveling: boolean,
+      taskDialog: boolean,
+    } = {
       loading: true,
       localHistory: [],
       timeTraveling: false,
@@ -135,7 +140,7 @@ export default {
       ipcRenderer.on('task', showTaskDialog);
     });
 
-    function showTaskDialog(show) {
+    function showTaskDialog(show: boolean) {
       if (typeof show === 'boolean') {
         data.taskDialog = show;
       } else {
@@ -169,7 +174,7 @@ export default {
       backgroundImage,
     };
   },
-};
+});
 </script>
 
 <style>

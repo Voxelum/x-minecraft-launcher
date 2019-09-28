@@ -29,70 +29,86 @@
   </v-container>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
+<script lang=ts>
+import { useStore, useI18n, l } from '..';
+import { reactive, computed, onMounted, onDeactivated, createComponent, onActivated, onUnmounted, toRefs } from '@vue/composition-api';
+import { Java } from 'universal/store/modules/java';
+import { remote } from 'electron';
+
+export default createComponent({
+  setup() {
+    const { dispatch, state, getters } = useStore();
+    const { t } = useI18n();
+    const data: {
+      vmOptions: Array<{text: string}>;
+      mcOptions: Array<{text: string}>;
+      maxMemory?: number;
+      minMemory?: number;
+      memoryRange: number[];
+      memoryRule: Function[];
+      java: Java;
+    } = reactive({
       vmOptions: [],
       mcOptions: [],
-
       maxMemory: undefined,
       minMemory: undefined,
       memoryRange: [256, 10240],
-      memoryRule: [v => Number.isInteger(v)],
+      memoryRule: [(v: any) => Number.isInteger(v)],
 
       javaValid: true,
-      java: { path: '', version: '' },
-    };
-  },
-  computed: {
-    javas() {
-      return this.$repo.state.java.all;
-    },
-  },
-  mounted() { this.load(); },
-  destroyed() { this.save(); },
-  activated() { this.load(); },
-  deactivated() { this.save(); },
-  methods: {
-    save() {
-      this.$repo.dispatch('editProfile', {
-        minMemory: this.minMemory,
-        maxMemory: this.maxMemory,
-        vmOptions: this.vmOptions.map(o => o.text),
-        mcOptions: this.mcOptions.map(o => o.text),
-        java: this.java,
+      java: { path: '', version: '', majorVersion: 0 },
+    });
+    const javas = computed(() => state.java.all);
+    function save() {
+      dispatch('editProfile', {
+        minMemory: data.minMemory,
+        maxMemory: data.maxMemory,
+        vmOptions: data.vmOptions.map(o => o.text),
+        mcOptions: data.mcOptions.map(o => o.text),
+        java: data.java,
       });
-    },
-    load() {
-      const profile = this.$repo.getters.selectedProfile;
-      this.maxMemory = profile.maxMemory;
-      this.minMemory = profile.minMemory;
-      this.vmOptions = profile.vmOptions.map(a => ({ text: a }));
-      this.mcOptions = profile.mcOptions.map(a => ({ text: a }));
+    }
+    function load() {
+      const profile = getters.selectedProfile;
+      data.maxMemory = profile.maxMemory;
+      data.minMemory = profile.minMemory;
+      data.vmOptions = profile.vmOptions.map(a => ({ text: a }));
+      data.mcOptions = profile.mcOptions.map(a => ({ text: a }));
 
       if (profile.java) {
-        this.java = this.javas.find(j => j.path === profile.java.path);
+        const found = javas.value.find(j => j.path === profile.java.path);
+        if (found) {
+          data.java = found; 
+        }
       }
-    },
-
-    browseFile() {
-      this.$electron.remote.dialog.showOpenDialog({
-        title: this.$t('java.browse'),
-      }, (filePaths, bookmarks) => {
-        filePaths.forEach((p) => {
-          this.$repo.dispatch('resolveJava', p);
+    }
+    onMounted(() => load());
+    onActivated(() => load());
+    onDeactivated(() => save());
+    onUnmounted(() => save());
+    return {
+      ...toRefs(data),
+      javas,
+      browseFile() {
+        remote.dialog.showOpenDialog({
+          // title: t('java.browse').toString(),
+          title: l`java.browser`,
+        }, (filePaths, bookmarks) => {
+          if (!filePaths) return;
+          filePaths.forEach((p) => {
+            dispatch('resolveJava', p);
+          });
         });
-      });
-    },
-    getJavaValue(java) {
-      return java;
-    },
-    getJavaText(java) {
-      return `JRE${java.majorVersion}, ${java.path}`;
-    },
+      },
+      getJavaValue(java: Java) {
+        return java;
+      },
+      getJavaText(java: Java) {
+        return `JRE${java.majorVersion}, ${java.path}`;
+      },
+    };
   },
-};
+});
 </script>
 
 <style scoped=true>

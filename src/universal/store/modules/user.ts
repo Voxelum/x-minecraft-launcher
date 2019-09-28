@@ -22,12 +22,21 @@ export declare namespace UserModule {
         selectedGameProfile: GameProfileAndTexture;
         avaiableGameProfiles: (GameProfileAndTexture & { userId: string; authService: string; profileService: string; account: string; })[];
 
+        /**
+         * Does user logined? This include the case that user logins as offline mode.
+         */
         logined: boolean;
+        /**
+         * If current mode is offline mode
+         */
         offline: boolean;
+        /**
+         * Is the auth service & profile service are the same
+         */
+        isServiceCompatible: boolean;
+
         authServices: string[];
         profileServices: string[];
-
-        isServiceCompatible: boolean;
         authService: Auth.Yggdrasil.API;
         profileService: ProfileService.API;
     }

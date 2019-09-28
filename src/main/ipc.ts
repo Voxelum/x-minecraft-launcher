@@ -1,7 +1,7 @@
 import { ipcMain as i } from 'electron';
 
 import { Event, BrowserWindow } from "electron";
-import { RootState } from "universal/store/store";
+import { RootState } from "universal/store";
 import { Store } from "vuex";
 
 export interface CustomEvents {

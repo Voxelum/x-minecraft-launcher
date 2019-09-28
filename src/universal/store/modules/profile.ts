@@ -12,7 +12,7 @@ import { ServerProfileConfig, ModpackProfileConfig, ProfileConfig } from './prof
 type CreateProfileOption = Omit<ModpackProfileConfig, 'id'> & { type: 'modpack' }
 type CreateServerProfileOption = Omit<ServerProfileConfig, 'id'> & { type: 'server' }
 type CreateOption = DeepPartial<CreateProfileOption | CreateServerProfileOption>;
-
+const DEFAULT_PROFILE: ProfileConfig = createTemplate('', { majorVersion: 8, path: '', version: '' }, '', 'modpack', false);
 export declare namespace ProfileModule {
     type ServerOrModpack = ModpackProfileConfig | ServerProfileConfig;
     type ServerAndModpack = ModpackProfileConfig & ServerProfileConfig;
@@ -173,7 +173,6 @@ export interface ProfileModule extends Module<"profile", ProfileModule.State, Pr
 }
 
 export function createTemplate(id: string, java: Java, mcversion: string, type: 'modpack' | 'server', isCreatingNew: boolean): ProfileModule.ServerOrModpack {
-    console.log(`Template from ${type}`);
     const base: ProfileConfig = {
         id,
         name: '',
@@ -242,7 +241,7 @@ const mod: ProfileModule = {
     getters: {
         profiles: state => Object.keys(state.all).map(k => state.all[k]),
         serverProtocolVersion: state => 338,
-        selectedProfile: state => state.all[state.id] || { version: {} },
+        selectedProfile: state => state.all[state.id] || DEFAULT_PROFILE,
         currentVersion: (state, getters, rootState) => {
             const current = getters.selectedProfile;
             const minecraft = current.version.minecraft;
@@ -257,8 +256,8 @@ const mod: ProfileModule = {
                 folder: getExpectVersion(minecraft, forge, liteloader),
             };
         },
-        deployingResources: (state, _, rootState) => {
-            const profile = state.all[state.id];
+        deployingResources: (_, getters, rootState) => {
+            const profile = getters.selectedProfile;
 
             const resources: { [domain: string]: Resource<any>[] } = {};
             for (const domain of Object.keys(profile.deployments)) {
