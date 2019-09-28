@@ -593,8 +593,19 @@
         "name": "地图存档 | 地图存档"
     },
     "setting": {
+        "appearance": "外观",
         "allowPrerelease": "是否下载抢先版",
         "allowPrereleaseDescription": "抢先版可能不是那么稳定",
+        "showParticle": "显示粒子",
+        "showParticleDescription": "是否在背景显示粒子效果 (这会影响性能，觉得卡可以关了)",
+        "particleMode": {
+            "": "粒子特效",
+            "push": "增加",
+            "remove": "移除",
+            "repulse": "击退",
+            "bubble": "旗袍"
+        },
+        "particleModeDescription": "选择当你点击粒子时的特效",
         "apply": "开始迁移",
         "autoDownload": "自动下载",
         "autoDownloadDescription": "自动下载最新的版本",

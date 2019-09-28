@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-md fluid style="z-index: 1">
+  <v-container grid-list-md fluid style="z-index: 2">
     <v-layout wrap style="padding: 6px; 8px; overflow: auto; max-height: 95vh" fill-height>
       <v-flex d-flex xs12 tag="h1" style="margin-bottom: 20px; " class="white--text">
         <span class="headline">{{ $tc('setting.name', 2) }}</span>
@@ -99,6 +99,25 @@
               <v-list-tile-sub-title> {{ $t('setting.allowPrereleaseDescription') }} </v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
+          <v-subheader>{{ $t('setting.appearance') }}</v-subheader>
+          <v-list-tile avatar>
+            <v-list-tile-action>
+              <v-checkbox v-model="showParticle" />
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title> {{ $t('setting.showParticle') }} </v-list-tile-title>
+              <v-list-tile-sub-title> {{ $t('setting.showParticleDescription') }} </v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile>
+            <v-list-tile-content>
+              <v-list-tile-title> {{ $t('setting.particleMode') }} </v-list-tile-title>
+              <v-list-tile-sub-title> {{ $t('setting.particleModeDescription') }} </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-select v-model="particleMode" :items="particleModes" />
+            </v-list-tile-action>
+          </v-list-tile>
         </v-list>
       </v-flex>
 
@@ -170,12 +189,18 @@
 </template>
 
 <script>
+import { createComponent, reactive, ref, toRefs, computed, watch } from '@vue/composition-api';
 import langIndex from 'static/locales/index.json';
+import { useStore, useI18n, useParticle, l } from '..';
+import { remote, ipcRenderer } from 'electron';
 
-export default {
-  data() {
-    return {
-      rootLocation: this.$repo.state.root,
+export default createComponent({
+  setup() {
+    const { showParticle, particleMode } = useParticle();
+    const { dispatch, state, commit } = useStore();
+    const i18n = useI18n();
+    const data = reactive({
+      rootLocation: state.root,
 
       clearData: false,
       migrateData: false,
@@ -185,84 +210,97 @@ export default {
       reloadError: undefined,
 
       viewingUpdateDetail: false,
+      particleModes: ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: i18n.t(`setting.particleMode.${t}`) })),
+    });
+    const langs = computed(() => state.setting.locales.map(l => ({
+      value: l,
+      text: langIndex[l],
+    })));
+    const selectedLang = computed({
+      get: () => langs.value.find(l => l.value === state.setting.locale) || 'en',
+      set: v => commit('locale', v),
+    });
+    watch(selectedLang, () => {
+      data.particleModes = ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: i18n.t(`setting.particleMode.${t}`) }));
+    });
+    const allowPrerelease = computed({
+      get: () => state.setting.allowPrerelease,
+      set: v => commit('allowPrerelease', v),
+    });
+    const autoInstallOnAppQuit = computed({
+      get: () => state.setting.autoInstallOnAppQuit,
+      set: v => commit('autoInstallOnAppQuit', v),
+    });
+    const autoDownload = computed({
+      get: () => state.setting.autoDownload,
+      set: v => commit('autoDownload', v),
+    });
+    const useBmclAPI = computed({
+      get: () => state.setting.useBmclAPI,
+      set: v => commit('useBmclApi', v),
+    });
+    const readyToUpdate = computed(() => state.setting.readyToUpdate);
+    const checkingUpdate = computed(() => state.setting.checkingUpdate);
+    const downloadingUpdate = computed(() => state.setting.downloadingUpdate);
+    const updateInfo = computed(() => state.setting.updateInfo || {});
+    return {
+      ...toRefs(data),
+      langs,
+      selectedLang,
+      allowPrerelease,
+      autoInstallOnAppQuit,
+      autoDownload,
+      useBmclAPI,
+      downloadingUpdate,
+      checkingUpdate,
+      updateInfo,
+      readyToUpdate,
+      showParticle,
+      particleMode,
+      checkUpdate() {
+        dispatch('checkUpdate').then((result) => {
+          console.log(result);
+        });
+      },
+      viewUpdateDetail() {
+        data.viewingUpdateDetail = true;
+      },
+      showRootDir() {
+        remote.shell.openItem(data.rootLocation);
+      },
+      browseRootDir() {
+        remote.dialog.showOpenDialog({
+          title: l`setting.selectRootDirectory`,
+          defaultPath: data.rootLocation,
+          properties: ['openDirectory', 'createDirectory'],
+        }, (paths, bookmarks) => {
+          if (paths && paths.length !== 0) {
+            data.rootLocation = paths[0];
+            data.reloadDialog = true;
+          }
+        });
+      },
+      doCancelApplyRoot() {
+        data.reloadDialog = false;
+        data.rootLocation = state.root;
+      },
+      doApplyRoot(defer) {
+        data.reloading = true;
+        ipcRenderer.once('root', (error) => {
+          data.reloading = false;
+          if (error) {
+            data.reloadError = error;
+          } else {
+            data.reloadDialog = false;
+          }
+        });
+        ipcRenderer.send('root', { path: data.rootLocation, migrate: data.migrateData, clear: data.clearData });
+      },
     };
   },
-  computed: {
-    selectedLang: {
-      get() {
-        return this.langs.find(l => l.value === this.$repo.state.setting.locale) || 'en';
-      },
-      set(v) { this.$repo.commit('locale', v); },
-    },
-    allowPrerelease: {
-      get() { return this.$repo.state.setting.allowPrerelease; },
-      set(v) { this.$repo.commit('allowPrerelease', v); },
-    },
-    autoInstallOnAppQuit: {
-      get() { return this.$repo.state.setting.autoInstallOnAppQuit; },
-      set(v) { this.$repo.commit('autoInstallOnAppQuit', v); },
-    },
-    autoDownload: {
-      get() { return this.$repo.state.setting.autoDownload; },
-      set(v) { this.$repo.commit('autoDownload', v); },
-    },
-    useBmclAPI: {
-      get() { return this.$repo.state.setting.useBmclAPI; },
-      set(v) { this.$repo.commit('useBmclApi', v); },
-    },
-    readyToUpdate() { return this.$repo.state.setting.readyToUpdate; },
-    downloadingUpdate() { return this.$repo.state.setting.downloadingUpdate; },
-    checkingUpdate() { return this.$repo.state.setting.checkingUpdate; },
-    updateInfo() { return this.$repo.state.setting.updateInfo || {}; },
-    langs() {
-      return this.$repo.state.setting.locales.map(l => ({
-        value: l,
-        text: langIndex[l],
-      })); 
-    },
-  },
   methods: {
-    checkUpdate() {
-      this.$repo.dispatch('checkUpdate').then((result) => {
-        console.log(result);
-      });
-    },
-    viewUpdateDetail() {
-      this.viewingUpdateDetail = true;
-    },
-    showRootDir() {
-      this.$electron.remote.shell.openItem(this.rootLocation);
-    },
-    browseRootDir() {
-      this.$electron.remote.dialog.showOpenDialog({
-        title: this.$t('setting.selectRootDirectory'),
-        defaultPath: this.rootLocation,
-        properties: ['openDirectory', 'createDirectory'],
-      }, (paths, bookmarks) => {
-        if (paths && paths.length !== 0) {
-          this.rootLocation = paths[0];
-          this.reloadDialog = true;
-        }
-      });
-    },
-    doCancelApplyRoot() {
-      this.reloadDialog = false;
-      this.rootLocation = this.$repo.state.root;
-    },
-    doApplyRoot(defer) {
-      this.reloading = true;
-      this.$electron.ipcRenderer.once('root', (error) => {
-        this.reloading = false;
-        if (error) {
-          this.reloadError = error;
-        } else {
-          this.reloadDialog = false;
-        }
-      });
-      this.$electron.ipcRenderer.send('root', { path: this.rootLocation, migrate: this.migrateData, clear: this.clearData });
-    },
   },
-};
+});
 </script>
 
 <style>

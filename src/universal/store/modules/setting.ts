@@ -1,6 +1,6 @@
 import { Module, Context } from "..";
 import { UpdateInfo } from "electron-updater";
-import { SettingConfig } from "./setting.config";
+import { SettingConfig, ParticleMode } from "./setting.config";
 
 export declare namespace SettingModule {
     interface State extends SettingConfig {
@@ -28,6 +28,8 @@ export declare namespace SettingModule {
         defaultBackgroundImage(state: State, img: string | null): void;
         defaultBlur(state: State, blur: number): void;
         useBmclApi(state: State, use: boolean): void;
+        showParticle(state: State, showParticle: boolean): void;
+        particleMode(state: State, particleMode: ParticleMode): void;
     }
     type C = Context<State, {}>;
     interface Actions {
@@ -37,6 +39,7 @@ export declare namespace SettingModule {
     }
 }
 export interface SettingModule extends Module<"setting", SettingModule.State, {}, SettingModule.Mutations, SettingModule.Actions> { }
+export { ParticleMode }
 
 const mod: SettingModule = {
     state: {
@@ -52,6 +55,8 @@ const mod: SettingModule = {
         defaultBackgroundImage: null,
         defaultBlur: 0,
         useBmclAPI: true,
+        showParticle: false,
+        particleMode: ParticleMode.REPULSE,
     },
     mutations: {
         downloadingUpdate(state, d) { state.downloadingUpdate = !!d; },
@@ -79,6 +84,8 @@ const mod: SettingModule = {
             state.autoInstallOnAppQuit = config.autoDownload || false;
             state.allowPrerelease = config.allowPrerelease || false;
             state.useBmclAPI = typeof config.useBmclAPI === 'boolean' ? config.useBmclAPI : true;
+            state.showParticle = config.showParticle;
+            state.particleMode = config.particleMode;
         },
         settings(state, settings) {
             // Object.assign(state.settings, settings);
@@ -89,9 +96,9 @@ const mod: SettingModule = {
         defaultBlur(state, blur) {
             if (typeof blur === 'number') state.defaultBlur = blur;
         },
-        useBmclApi(state, use) {
-            state.useBmclAPI = use;
-        },
+        useBmclApi(state, use) { state.useBmclAPI = use; },
+        showParticle(state, v) { state.showParticle = v; },
+        particleMode(state, v) { state.particleMode = v; },
     },
 };
 

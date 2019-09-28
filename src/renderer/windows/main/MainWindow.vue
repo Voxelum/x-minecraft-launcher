@@ -66,8 +66,8 @@
     </v-navigation-drawer>
     <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
       <v-card class="main-body" color="grey darken-4">
-        <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;">
-        <vue-particles v-else color="#dedede" style="position: absolute; width: 100%; height: 100%;" click-mode="repulse" />
+        <!-- <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;"> -->
+        <vue-particles v-if="showParticle" color="#dedede" style="position: absolute; width: 100%; height: 100%; z-index: 0; tabindex = -1;" :click-mode="particleMode" />
         <transition name="fade-transition" mode="out-in">
           <!-- <keep-alive> -->
           <router-view />
@@ -94,10 +94,11 @@ import {
   createComponent,
 } from '@vue/composition-api';
 import { ipcRenderer } from 'electron';
-import { useStore, useRouter } from './index';
+import { useStore, useRouter, useParticle } from './index';
 
 export default createComponent({
   setup(props, ctx) {
+    const { particleMode, showParticle } = useParticle();
     const router = useRouter();
     const store = useStore();
     const template: {
@@ -164,6 +165,13 @@ export default createComponent({
       data.timeTraveling = false;
     }
 
+    watch(particleMode, () => {
+      if (showParticle.value) {
+        showParticle.value = false;
+        setImmediate(() => { showParticle.value = true; });
+      }
+    });
+
     return {
       ...toRefs(data),
       activeTasksCount,
@@ -172,6 +180,8 @@ export default createComponent({
       goBack,
       logined,
       backgroundImage,
+      particleMode,
+      showParticle,
     };
   },
 });

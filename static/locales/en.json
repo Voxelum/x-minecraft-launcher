@@ -603,8 +603,19 @@
         "name": "Save | Saves"
     },
     "setting": {
+        "appearance": "Appearance",
         "allowPrerelease": "Download Prerelease",
         "allowPrereleaseDescription": "Prerelease might be instable",
+        "showParticle": "Show Particles",
+        "showParticleDescription": "Show particles in background (May impact performance)",
+        "particleMode": {
+            "": "Particle Mode",
+            "push": "Push",
+            "remove": "Remove",
+            "repulse": "Repulse",
+            "bubble": "Bubble"
+        },
+        "particleModeDescription": "Select the particle click behavior",
         "apply": "Apply Setting",
         "autoDownload": "Auto Download",
         "autoDownloadDescription": "Auto Download Update if it's Avaiable",

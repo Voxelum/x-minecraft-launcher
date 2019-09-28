@@ -19,6 +19,8 @@ const mod: SettingModule = {
                 useBmclAPI: data.useBmclAPI,
                 defaultBackgroundImage: data.defaultBackgroundImage,
                 defaultBlur: data.defaultBlur,
+                particleMode: data.particleMode,
+                showParticle: data.showParticle,
                 // settings: data.settings,
             });
         },
@@ -30,6 +32,8 @@ const mod: SettingModule = {
                 case 'autoDownload':
                 case 'defaultBackgroundImage':
                 case 'defaultBlur':
+                case 'showParticle':
+                case 'particleMode':
                 case 'useBmclApi':
                     await context.dispatch('setPersistence', {
                         path: 'setting.json',
@@ -41,6 +45,8 @@ const mod: SettingModule = {
                             useBmclAPI: context.state.useBmclAPI,
                             defaultBackgroundImage: context.state.defaultBackgroundImage,
                             defaultBlur: context.state.defaultBlur,
+                            showParticle: context.state.showParticle,
+                            particleMode: context.state.particleMode,
                         },
                     });
                     break;

@@ -1,4 +1,4 @@
-import { toRefs } from '@vue/composition-api';
+import { toRefs, computed } from '@vue/composition-api';
 import { Repo } from 'universal/store';
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
@@ -45,6 +45,21 @@ export function l(strings: TemplateStringsArray) {
     return _i18n.t(strings[0], arguments);
 }
 
+export function useParticle() {
+    const { state, commit } = store;
+    const showParticle = computed({
+        get: () => state.setting.showParticle,
+        set: v => commit('showParticle', v),
+    });
+    const particleMode = computed({
+        get: () => state.setting.particleMode,
+        set: v => commit('particleMode', v),
+    });
+    return {
+        showParticle,
+        particleMode,
+    }
+}
 
 start({
     router,

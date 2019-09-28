@@ -1,3 +1,10 @@
+export enum ParticleMode {
+    PUSH = "push",
+    REMOVE = "remove",
+    REPULSE = "repulse",
+    BUBBLE = "bubble",
+}
+
 export interface SettingConfig {
     /**
      * The display language of the launcher
@@ -35,4 +42,16 @@ export interface SettingConfig {
      * @default true
      */
     useBmclAPI: boolean;
+
+    /**
+     * Show particle on background
+     * @default true
+     */
+    showParticle: boolean;
+
+    /**
+     * The particle click mode
+     * @default "repulse"
+     */
+    particleMode: ParticleMode;
 }
