@@ -1,10 +1,10 @@
 <template>
-  <canvas style="z-index: 10;" :width="width" :height="height" @dragover="$emit('dragover', $event)"
+  <canvas ref="canvas" style="z-index: 10;" :width="width" :height="height" @dragover="$emit('dragover', $event)"
           @drop="$emit('drop', $event)" />
 </template>
 
 <script>
-import { reactive, onUnmounted, watch, toRefs } from '@vue/composition-api';
+import { reactive, onUnmounted, watch, toRefs, ref, onMounted } from '@vue/composition-api';
 import Model from './skin-model';
 
 const THREE = require('three');
@@ -48,51 +48,56 @@ export default {
     },
   },
   setup(props, context) {
+    const canvas = ref(null);
     const data = reactive({
       disposed: false,
     });
     onUnmounted(() => {
       data.disposed = true;
     });
-    watch([props.href, props.slim], () => {
-      character.updateSkin(props.href, props.slim);
+    onMounted(() => {
+      const renderer = new THREE.WebGLRenderer({ canvas: canvas.value, antialias: true, alpha: true });
+      const scene = new THREE.Scene();
+      const character = new Model();
+      const camera = new THREE.PerspectiveCamera(45, props.width / props.height, 0.5, 5);
+      const controls = new OrbitControls(camera, context.root.$el);
+
+      camera.position.z = 3;
+      camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+      character.root.translateY(-0.5);
+      if (props.href) character.updateSkin(props.href, props.slim);
+
+      controls.target = new THREE.Vector3(0, 0, 0);
+      controls.enablePan = false;
+      controls.enableKeys = false;
+      controls.maxDistance = props.maxDistance;
+      controls.minDistance = props.minDistance;
+      if (props.rotate) {
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 4;
+      } else {
+        controls.autoRotate = false;
+      }
+
+      scene.add(character.root);
+      requestAnimationFrame(function animate(nowMsec) {
+        if (data.disposed) return;
+        requestAnimationFrame(animate);
+        const result = controls.update();
+        renderer.render(scene, camera);
+        // console.log(result);
+        // if (self.rotate || result) {
+        // renderer.render(scene, camera);
+        // }
+      });
+      watch([() => props.href, () => props.slim], () => {
+        character.updateSkin(props.href, props.slim);
+      });
     });
-    const renderer = new THREE.WebGLRenderer({ canvas: context.root.$el, antialias: true, alpha: true });
-    const scene = new THREE.Scene();
-    const character = new Model();
-    const camera = new THREE.PerspectiveCamera(45, props.width / props.height, 0.5, 5);
-    const controls = new OrbitControls(camera, context.root.$el);
 
-    camera.position.z = 3;
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
-
-    character.root.translateY(-0.5);
-    if (props.href) character.updateSkin(props.href, props.slim);
-
-    controls.target = new THREE.Vector3(0, 0, 0);
-    controls.enablePan = false;
-    controls.enableKeys = false;
-    controls.maxDistance = this.maxDistance;
-    controls.minDistance = this.minDistance;
-    if (props.rotate) {
-      controls.autoRotate = true;
-      controls.autoRotateSpeed = 4;
-    } else {
-      controls.autoRotate = false;
-    }
-
-    scene.add(character.root);
-    requestAnimationFrame(function animate(nowMsec) {
-      if (data.disposed) return;
-      requestAnimationFrame(animate);
-      const result = controls.update();
-      renderer.render(scene, camera);
-      // console.log(result);
-      // if (self.rotate || result) {
-      // renderer.render(scene, camera);
-      // }
-    });
     return {
+      canvas,
       ...toRefs(data),
     };
   },
