@@ -16,12 +16,13 @@ const settings = {
  */
 const compilerOptions = {
     strictNullChecks: true,
+    esModuleInterop: true,
 };
 
 const dir = resolve(__dirname, '..', 'src/universal/store/modules');
-const files = fs.readdirSync(dir).filter(f => f.endsWith('.config.d.ts')).map(f => join(dir, f));
+const files = fs.readdirSync(dir).filter(f => f.endsWith('.config.ts')).map(f => join(dir, f));
 console.log('Generate json schema from these definition files:');
-files.map(f => f.substring(0, f.length - 5).replace(/\\/g, '/')).forEach(f => console.log(f));
+files.map(f => f.substring(0, f.length - 3).replace(/\\/g, '/')).forEach(f => console.log(f));
 
 const program = TJS.getProgramFromFiles(files, compilerOptions);
 const generator = TJS.buildGenerator(program, settings);
