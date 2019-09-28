@@ -1,4 +1,3 @@
-// @ts-nocheck
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
 import locales from 'static/locales';
@@ -41,19 +40,6 @@ export default function create(store: any) {
     store.watch((state: any) => state.setting.locale, (val: any, oldVal: any) => {
         i18n.locale = val;
         console.log(`language changed ${oldVal} => ${val}`);
-        // if (Object.keys(i18n.getLocaleMessage('en')).length === 0) {
-        //     store.dispatch('config/getLocale', 'en').then((loc) => { i18n.setLocaleMessage('en', loc); });
-        // }
-        // if (Object.keys(i18n.getLocaleMessage(val)).length === 0) {
-        //     store.dispatch('config/getLocale', val).then((loc) => {
-        //         i18n.setLocaleMessage(val, loc);
-        //         i18n.locale = val;
-        //         console.log(`language changed ${oldVal} => ${val}`);
-        //     });
-        // } else {
-        //     i18n.locale = val;
-        //     console.log(`language changed ${oldVal} => ${val}`);
-        // }
     });
     return i18n;
 }
