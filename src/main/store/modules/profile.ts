@@ -4,7 +4,7 @@ import fs from 'main/utils/vfs';
 import { compressZipTo, includeAllToZip } from 'main/utils/zip';
 import { tmpdir } from 'os';
 import uuid from 'uuid';
-import paths, { basename, resolve, join, dirname, relative } from 'path';
+import { basename, resolve, join, dirname, relative } from 'path';
 import { latestMcRelease } from 'static/dummy.json';
 import { GameSetting, Server, Version, World } from '@xmcl/minecraft-launcher-core';
 import base, { createTemplate, ProfileModule } from 'universal/store/modules/profile';
@@ -79,7 +79,7 @@ const mod: ProfileModule = {
 
                     const loaded = await Promise.all(saves.map(s => resolve(saveRoot, s)).map(loadWorld));
                     const nonNulls: any = loaded.filter(s => s !== undefined);
-                    console.log(`Save ${saves.length} ${nonNulls.length}`);
+                    console.log(`Loaded ${nonNulls.length} saves.`);
                     commit('profileSaves', nonNulls);
                     return nonNulls;
                 }
@@ -98,6 +98,7 @@ const mod: ProfileModule = {
                 if (await fs.exists(serverPath)) {
                     const serverDat = await fs.readFile(serverPath);
                     const infos = await Server.readInfo(serverDat);
+                    console.log(`Loaded server infos.`);
                     commit('serverInfos', infos);
                     return infos;
                 }
