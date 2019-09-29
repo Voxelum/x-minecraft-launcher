@@ -8,6 +8,7 @@ module.exports = {
             main: path.join(__dirname, '../src/main'),
             universal: path.join(__dirname, '../src/universal'),
             renderer: path.join(__dirname, '../src/renderer'),
+            '@': path.join(__dirname, '../src/renderer'),
         },
         extensions: ['.ts', '.js', '.vue', '.json', '.css', '.node'],
     },
