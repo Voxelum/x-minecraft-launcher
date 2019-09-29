@@ -1,9 +1,8 @@
 import Vuex, { MutationPayload } from 'vuex';
 import { remote, ipcRenderer } from 'electron';
-
 import storeOption from 'universal/store';
 
-export default function (option: string[]) {
+export default function createStore(option: string[]) {
     storeOption.modules = {
         ...storeOption.modules,
     };

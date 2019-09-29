@@ -191,8 +191,10 @@
 <script>
 import { createComponent, reactive, ref, toRefs, computed, watch } from '@vue/composition-api';
 import langIndex from 'static/locales/index.json';
-import { useStore, useI18n, useParticle, l } from '..';
+import { useI18n, l } from '..';
 import { remote, ipcRenderer } from 'electron';
+import useParticle from '@/hooks/useParticle';
+import useStore from '@/hooks/useStore';
 
 export default createComponent({
   setup() {

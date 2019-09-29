@@ -46,35 +46,7 @@
       {{ $t('profile.logsCrashes.title') }}
     </v-tooltip>
 
-    <v-menu v-show="refreshingProfile || problems.length !== 0" offset-y top dark max-height="300">
-      <v-btn slot="activator" style="position: absolute; left: 200px; bottom: 10px; " :loading="refreshingProfile || missingJava"
-             :flat="problems.length !== 0" outline dark :color="problemsLevelColor">
-        <v-icon left dark :color="problemsLevelColor">
-          {{ problems.length !== 0 ?
-            'warning' : 'check_circle' }}
-        </v-icon>
-        {{ $tc('diagnosis.problem', problems.length, { count: problems.length }) }}
-      </v-btn>
-
-      <v-list>
-        <template v-for="(item, index) in problems">
-          <v-list-tile :key="index" ripple @click="fixProblem(item)">
-            <v-list-tile-content>
-              <v-list-tile-title>
-                {{ $tc(`diagnosis.${item.id}`, item.arguments.count || 0, item.arguments) }}
-              </v-list-tile-title>
-              <v-list-tile-sub-title>
-                {{ $t(`diagnosis.${item.id}.message`, item.arguments || {}) }}
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
-              <v-icon> {{ item.autofix?'build':'arrow_right' }} </v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
-        </template>
-      </v-list>
-    </v-menu>
-
+    <problems-bar />
     <v-flex d-flex xs12 style="z-index: 1">
       <div class="display-1 white--text" style="padding-top: 50px; padding-left: 50px">
         <span style="margin-right: 10px;">
@@ -91,43 +63,8 @@
     </v-flex>
     
     <v-flex d-flex xs6 style="margin: 40px 0 0 40px;">
-      <v-card v-if="isServer" class="white--text">
-        <v-layout>
-          <v-flex xs5 style="padding: 5px 0">
-            <v-card-title>
-              <v-img :src="icon" height="125px" style="max-height: 125px;" contain />
-            </v-card-title>
-          </v-flex>
-          <v-flex xs7>
-            <v-card-title>
-              <div>
-                <div style="font-size: 20px;">
-                  {{ $t(status.version.name) }}
-                </div>
-                <text-component :source="status.description" />
-
-                <div> {{ $t('profile.server.players') }} : {{ status.players.online + '/' + status.players.max }} </div>
-              </div>
-            </v-card-title>
-          </v-flex>
-        </v-layout>
-        <v-divider light />
-        <v-card-actions class="pa-3">
-          <v-icon left>
-            signal_cellular_alt
-          </v-icon>
-          <div>  {{ $t('profile.server.pings') }} : {{ status.ping }} ms </div>
-        
-          <v-spacer />
-          <v-btn v-if="isServer" flat dark large @click="refreshServer">
-            <v-icon>
-              refresh
-            </v-icon>
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+      <server-status-card v-if="isServer" />
     </v-flex>
-
 
     <v-btn color="primary" style="position: absolute; right: 10px; bottom: 10px; " dark large
            :disabled="refreshingProfile || missingJava"
@@ -144,6 +81,7 @@
     <dialog-java-wizard v-model="javaWizardDialog" @task="$electron.ipcRenderer.emit('task')" />
     <dialog-feedback v-model="feedbackDialog" />
     <dialog-launch-status v-model="launchStatusDialog" />
+    <dialog-download-missing-server-mods v-model="downloadMissingModsDialog" />
   </v-layout>
 </template>
 
@@ -151,7 +89,8 @@
 import unknownServer from 'renderer/assets/unknown_server.png';
 import { PINGING_STATUS, createFailureServerStatus } from 'universal/utils/server-status';
 import { reactive, computed, toRefs, watch, ref } from '@vue/composition-api';
-import { useStore, useRouter } from '..';
+import useStore from '@/hooks/useStore';
+import useRouter from '@/hooks/useRouter';
 import { ipcRenderer, remote } from 'electron';
 
 export default {
@@ -165,13 +104,10 @@ export default {
       feedbackDialog: false,
       crashDialog: false,
       javaWizardDialog: false,
+      downloadMissingModsDialog: false,
     });
-    const status = computed(() => state.profile.status || {});
-    const icon = computed(() => status.favicon || unknownServer);
-    const isServer = computed(() => profile.type === 'server');
     const profile = computed(() => getters.selectedProfile);
-    const problems = computed(() => getters.problems);
-    const problemsLevelColor = computed(() => (getters.problems.some(p => !p.optional) ? 'red' : 'warning'));
+    const isServer = computed(() => profile.value.type === 'server');
     const launchStatus = computed(() => state.launch.status);
     const refreshingProfile = computed(() => state.profile.refreshing);
     const missingJava = computed(() => getters.missingJava);
@@ -181,42 +117,10 @@ export default {
         ipcRenderer.emit('task', false);
       }
     });
-
-    async function handleManualFix(problem) {
-      let handle;
-      switch (problem.id) {
-        case 'unknownMod':
-        case 'incompatibleMod':
-          router.replace('/mod-setting');
-          break;
-        case 'incompatibleResourcePack':
-          router.replace('/resource-pack-setting');
-          break;
-        case 'incompatibleJava':
-          if (state.java.all.some(j => j.majorVersion === 8)) {
-            await dispatch('editProfile', { java: state.java.all.find(j => j.majorVersion === 8) });
-            // TODO: notify user here the launcher switch java version
-          } else {
-            data.javaWizardDialog = true;
-          }
-          break;
-        case 'missingModsOnServer':
-          break;
-        default:
-      }
-    }
-    function handleAutoFix() {
-      dispatch('fixProfile', problems.value);
-    }
-
     return {
       ...toRefs(data),
-      status,
-      icon,
       isServer,
       profile,
-      problems,
-      problemsLevelColor,
       launchStatus,
       refreshingProfile,
       missingJava,
@@ -244,15 +148,6 @@ export default {
       },
       showLogDialog() { data.logsDialog = true; },
       showFeedbackDialog() { data.feedbackDialog = true; },
-      fixProblem(problem) {
-        console.log(problem);
-        if (!problem.autofix) {
-          handleManualFix(problem);
-        } else {
-          handleAutoFix();
-        }
-      },
-      refreshServer() { dispatch('refreshProfile'); },
       quitLauncher() {
         setTimeout(() => {
           dispatch('quit');

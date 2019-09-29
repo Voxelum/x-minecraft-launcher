@@ -94,16 +94,19 @@ import {
   createComponent,
 } from '@vue/composition-api';
 import { ipcRenderer } from 'electron';
-import { useStore, useRouter, useParticle } from './index';
+import useRouter from '@/hooks/useRouter';
+import useStore from '@/hooks/useStore';
+import useParticle from '@/hooks/useParticle';
 
 export default createComponent({
   setup(props, ctx) {
     const { particleMode, showParticle } = useParticle();
     const router = useRouter();
     const store = useStore();
+
     const template: {
       loading: boolean,
-      localHistory: string [],
+      localHistory: string[],
       timeTraveling: boolean,
       taskDialog: boolean,
     } = {

@@ -12,10 +12,6 @@ export default {
   setup(data, context) {
     onMounted(() => {
       Vue.prototype.$copy = (text) => {
-        // const clipboard = context.root.$refs.clipboard;
-        // clipboard.value = text;
-        // clipboard.select();
-        // document.execCommand('copy');
       };
     });
     return {};
