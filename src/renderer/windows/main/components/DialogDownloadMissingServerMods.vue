@@ -18,13 +18,23 @@
             <v-list-tile-title>{{ item.version }}</v-list-tile-title>
           </v-list-tile-content>
           <v-list-tile-action>
-            <v-progress-circular indeterminate />
+            <v-chip>
+              {{ $t(`mod.${item.status}`) }}
+              <v-icon>{{ icons[item.status] }}</v-icon>
+            </v-chip>
+            <v-progress-circular :width="2"
+                                 :size="20" 
+                                 indeterminate />
           </v-list-tile-action>
         </v-list-tile>
       </v-list>
       <v-card-actions>
-        <v-btn color="success">
-          Start
+        <v-btn flat @click="checkAvailabilities">
+          Check Availability
+        </v-btn>
+        <v-spacer />
+        <v-btn flat :disabled="!canDownload">
+          Download All
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -32,14 +42,51 @@
 </template>
 
 <script>
-export default {
+import { reactive, createComponent, computed, toRefs } from '@vue/composition-api';
+
+export default createComponent({
   props: {
     items: {
       type: Array,
       default: () => [],
     },
   },
-};
+  setup(props) {
+    const icons = {
+      existed: 'done',
+      absent: 'clear',
+    };
+    const state = reactive({
+      items: props.items.map(i => ({ ...i, status: 'unknown', task: '' })),
+    });
+    const canDownload = computed(() => state.items.some(i => i.status === 'existed'));
+
+    async function checkAvailability(mod) {
+      // await new Promise((resolve, reject) => {
+      //   setTimeout(() => resolve(), 2000);
+      // });
+      for (const m of mod) {
+        m.status = 'existed';
+      }
+    }
+    async function checkAvailabilities() {
+      const unchecked = [];
+      for (const i of this.items) {
+        if (i.status !== 'loading') {
+          i.status = 'loading';
+          unchecked.push(i);
+        }
+      }
+      await this.checkAvailability(unchecked);
+    }
+    return {
+      ...toRefs(state),
+      checkAvailabilities,
+      canDownload,
+      icons,
+    };
+  },
+});
 </script>
 
 <style>

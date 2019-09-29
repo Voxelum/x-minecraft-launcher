@@ -75,9 +75,11 @@
         </transition>
         <notifier />
         <context-menu />
-        <dialog-login />
-        <dialog-task v-model="taskDialog" />
       </v-card>
+
+      <dialog-java-wizard />
+      <dialog-login />
+      <dialog-task />
     </v-layout>
   </v-layout>
 </template>
@@ -92,6 +94,7 @@ import {
   computed,
   watch,
   createComponent,
+  InjectionKey,
 } from '@vue/composition-api';
 import { ipcRenderer } from 'electron';
 import useRouter from '@/hooks/useRouter';

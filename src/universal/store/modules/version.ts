@@ -106,7 +106,7 @@ export declare namespace VersionModule {
 
         getForgeWebPage(context: C, mcversion: string): Promise<ForgeWebPage | undefined>
 
-        resolveVersion(context: C, version: Pick<ResolvedVersion, 'minecraft' | 'forge' | 'liteloader' | 'folder'>): Promise<string>
+        resolveVersion(context: C, version: Pick<ResolvedVersion, 'minecraft' | 'forge' | 'liteloader'>): Promise<string>
 
         installLibraries(context: C, payload: { libraries: (Version.Library | ResolvedLibrary)[] }): Promise<TaskHandle>;
         installAssets(context: C, version: string): Promise<TaskHandle>

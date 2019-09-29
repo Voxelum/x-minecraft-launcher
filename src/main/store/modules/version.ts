@@ -116,7 +116,7 @@ const mod: VersionModule = {
                 }
 
                 const root = new Util.MinecraftFolder(context.rootState.root);
-                const targetId = targetVersion.folder || getExpectVersion(targetVersion.minecraft, targetVersion.forge, targetVersion.liteloader);
+                const targetId = getExpectVersion(targetVersion.minecraft, targetVersion.forge, targetVersion.liteloader);
 
                 const extended = await Version.extendsVersion(targetId,
                     await Version.parse(root, forge.folder), await Version.parse(root, liteloader.folder));

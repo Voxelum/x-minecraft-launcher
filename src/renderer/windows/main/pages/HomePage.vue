@@ -75,13 +75,13 @@
       </v-icon>
       <v-progress-circular v-else class="v-icon--right" indeterminate :size="20" :width="2" />
     </v-btn>
-
-    <dialog-logs v-model="logsDialog" />
+    <!-- <dialog-logs v-model="logsDialog" />
     <dialog-crash-report v-model="crashDialog" />
     <dialog-java-wizard v-model="javaWizardDialog" @task="$electron.ipcRenderer.emit('task')" />
     <dialog-feedback v-model="feedbackDialog" />
     <dialog-launch-status v-model="launchStatusDialog" />
     <dialog-download-missing-server-mods v-model="downloadMissingModsDialog" />
+    <dialog-launch-status v-model="launchStatusDialog" /> -->
   </v-layout>
 </template>
 

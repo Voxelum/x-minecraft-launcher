@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="value" :persistent="missing" width="600" @input="$emit('input', $event)">
+  <v-dialog v-model="isShown" :persistent="missing" width="600">
     <v-card dark color="grey darken-4">
       <v-toolbar dark tabs color="grey darken-3">
         <v-toolbar-title>
@@ -93,6 +93,12 @@
 </template>
 
 <script>
+import { reactive, computed, toRefs, onMounted, onUnmounted } from '@vue/composition-api';
+import { remote } from 'electron';
+import { watch } from 'fs';
+import { useStore, useI18n } from '..';
+import { useDialog, useDialogSelf } from '.';
+
 export default {
   props: {
     value: {
@@ -100,8 +106,10 @@ export default {
       default: false,
     },
   },
-  data() {
-    return {
+  setup() {
+    const { getters, state, dispatch } = useStore();
+    const { t } = useI18n();
+    const data = reactive({
       step: 0,
 
       items: [],
@@ -111,85 +119,92 @@ export default {
 
       options: [{
         autofix: true,
-        title: this.$t('diagnosis.missingJava.autoDownload'),
-        message: this.$t('diagnosis.missingJava.autoDownload.message'),
+        title: t('diagnosis.missingJava.autoDownload'),
+        message: t('diagnosis.missingJava.autoDownload.message'),
       }, {
-        title: this.$t('diagnosis.missingJava.manualDownload'),
-        message: this.$t('diagnosis.missingJava.manualDownload.message'),
+        title: t('diagnosis.missingJava.manualDownload'),
+        message: t('diagnosis.missingJava.manualDownload.message'),
       }, {
-        title: this.$t('diagnosis.missingJava.selectJava'),
-        message: this.$t('diagnosis.missingJava.selectJava.message'),
+        title: t('diagnosis.missingJava.selectJava'),
+        message: t('diagnosis.missingJava.selectJava.message'),
       }],
-    };
-  },
-  computed: {
-    reason() {
-      return !this.missing ? this.$t('java.incompatibleJava') : this.$t('java.missing');
-    },
-    hint() {
-      return !this.missing ? this.$t('java.incompatibleJavaHint') : this.$t('java.missingHint');
-    },
-    missing() {
-      return this.$repo.getters.missingJava;
-    },
-  },
-  mounted() {
-    this.$emit('input', this.missing);
-  },
-  methods: {
-    async fixProblem(index) {
-      this.step = index + 1;
-      let handle;
-      switch (index) {
-        case 0:
-          handle = await this.$repo.dispatch('installJava', true);
-          this.$emit('input', false);
-          this.$emit('task');
-          this.items = this.$repo.state.task.tree[handle].tasks;
-          try {
-            await this.$repo.dispatch('waitTask', handle);
-          } catch (e) {
-            this.downloadError = e;
-          }
-          this.refresh();
-          break;
-        case 1:
-          await this.$repo.dispatch('redirectToJvmPage');
-          break;
-        case 2:
-          this.status = 'resolving';
-          this.$electron.remote.dialog.showOpenDialog({
-            title: this.$t('java.browse'),
-          }, (filepaths, bookmarks) => {
-            filepaths.forEach((p) => {
-              this.$repo.dispatch('resolveJava', p)
-                .then((r) => {
-                  if (!r) {
-                    this.status = 'error';
-                  }
-                });
-            });
-          });
-          break;
-        default:
-      }
-    },
-    refresh() {
-      this.status = 'resolving';
-      this.$repo.dispatch('refreshLocalJava').finally(() => {
-        if (this.missing) {
-          this.status = 'error';
-          this.$emit('input', true);
+    });
+    const { show, isShown } = useDialogSelf('java-wizard');
+    const missing = computed(() => getters.missingJava);
+    const reason = computed(() => (!missing.value ? t('java.incompatibleJava') : t('java.missing')));
+    const hint = computed(() => (!missing.value ? t('java.incompatibleJavaHint') : t('java.missingHint')));
+
+    let unwatch;
+    onMounted(() => {
+      updateValue();
+      unwatch = watch(missing, updateValue);
+    });
+    onUnmounted(() => {
+      unwatch();
+    });
+
+    function updateValue() {
+      if (missing.value) { show(); }
+    }
+    function refresh() {
+      data.status = 'resolving';
+      dispatch('refreshLocalJava').finally(() => {
+        if (missing.value) {
+          data.status = 'error';
+          show();
         } else {
-          this.reason = null;
-          this.hint = null;
+          data.reason = null;
+          data.hint = null;
         }
       });
-    },
-    back() {
-      this.step = 0;
-      this.status = 'none';
-    },
+    }
+    return {
+      ...toRefs(data),
+      isShown,
+      reason,
+      hint,
+      missing,
+      async fixProblem(index) {
+        data.step = index + 1;
+        let handle;
+        switch (index) {
+          case 0:
+            handle = await dispatch('installJava', true);
+            show('task');
+            data.items = state.task.tree[handle].tasks;
+            try {
+              await dispatch('waitTask', handle);
+            } catch (e) {
+              data.downloadError = e;
+            }
+            refresh();
+            break;
+          case 1:
+            await dispatch('redirectToJvmPage');
+            break;
+          case 2:
+            data.status = 'resolving';
+            remote.dialog.showOpenDialog({
+              title: t('java.browse'),
+            }, (filepaths, bookmarks) => {
+              filepaths.forEach((p) => {
+                dispatch('resolveJava', p)
+                  .then((r) => {
+                    if (!r) {
+                      data.status = 'error';
+                    }
+                  });
+              });
+            });
+            break;
+          default:
+        }
+      },
+      back() {
+        data.step = 0;
+        data.status = 'none';
+      },
+    };
   },
 };
 </script>
