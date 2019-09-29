@@ -508,6 +508,7 @@ const mod: ProfileModule = {
 
         async pingServer(context, payload) {
             const { host, port = 25565, protocol } = payload;
+            console.log(`Ping server ${host}:${port} with ${protocol}`);
             return Server.fetchStatusFrame({ host, port }, { protocol });
         },
 
@@ -524,12 +525,14 @@ const mod: ProfileModule = {
             if (prof.type === 'server') {
                 context.commit('serverStatus', PINGING_STATUS);
                 const { host, port } = prof;
+                console.log(`Ping server ${host}:${port}`);
                 try {
                     const status = await Server.fetchStatusFrame({
                         host, port,
                     });
                     context.commit('serverStatus', status);
                 } catch (e) {
+                    console.error(e);
                     switch (e.code) {
                         case 'ETIMEOUT':
                             context.commit('serverStatus', createFailureServerStatus('server.status.timeout'));
