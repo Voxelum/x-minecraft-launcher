@@ -93,11 +93,12 @@
 </template>
 
 <script>
-import { reactive, computed, toRefs, onMounted, onUnmounted } from '@vue/composition-api';
+import { reactive, computed, toRefs, onMounted, onUnmounted, watch } from '@vue/composition-api';
 import { remote } from 'electron';
-import { watch } from 'fs';
-import { useStore, useI18n } from '..';
-import { useDialog, useDialogSelf } from '.';
+import { useI18n } from '..';
+import { useDialogSelf } from '@/hooks/useDialog';
+import useStore from '@/hooks/useStore';
+// import { useDialog, useDialogSelf } from '.';
 
 export default {
   props: {
