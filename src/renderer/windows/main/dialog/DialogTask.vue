@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="value" persistent hide-overlay width="500" style="max-height: 100%" @input="$emit('input', value)">
+  <v-dialog v-model="shown" persistent hide-overlay width="500" style="max-height: 100%">
     <v-toolbar dark tabs color="grey darken-3">
       <v-toolbar-title>{{ $t('task.manager') }}</v-toolbar-title>
       <v-spacer />
@@ -33,6 +33,11 @@
 
 <script>
 import Vue from 'vue';
+// import { useDialogSelf, useStore } from '@/hooks';
+import { reactive, computed, toRefs } from '@vue/composition-api';
+import { clipboard } from 'electron';
+import { useDialogSelf } from '@/hooks/useDialog';
+import useStore from '@/hooks/useStore';
 
 export default {
   props: {
@@ -41,26 +46,31 @@ export default {
       default: false,
     },
   },
-  data: () => ({
-    tree: [],
-    opened: [],
-    active: 0,
-    hovered: {},
-  }),
-  computed: {
-    all() { return this.$repo.state.task.tasks.filter(n => !n.background); },
-  },
-  methods: {
-    showTaskContext(event, item) {
-      // this.$menu([{ title: 'hello', onClick() { } }], event.clientX, event.clientY);
-    },
-    onTaskClick(event, item) {
-      this.$electron.clipboard.writeText(item.message);
-    },
-    cancelTask(event, id) {
-      event.stopPropagation();
-      this.$repo.dispatch('cancelTask', id);
-    },
+  setup() {
+    const { state, dispatch } = useStore();
+    useDialogSelf();
+    const data = reactive({
+      tree: [],
+      opened: [],
+      active: 0,
+      hovered: {},
+    });
+    const all = computed(() => state.task.tasks.filter(n => !n.background));
+
+    return {
+      ...toRefs(data),
+      all,
+      showTaskContext(event, item) {
+        // this.$menu([{ title: 'hello', onClick() { } }], event.clientX, event.clientY);
+      },
+      onTaskClick(event, item) {
+        clipboard.writeText(item.message);
+      },
+      cancelTask(event, id) {
+        event.stopPropagation();
+        dispatch('cancelTask', id);
+      },
+    };
   },
 };
 </script>
