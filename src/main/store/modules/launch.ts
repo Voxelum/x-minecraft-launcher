@@ -42,7 +42,7 @@ const mod: LauncherModule = {
                     commit('launchErrors', { type: 'illegalAuth', content: [] });
                     return false;
                 }
-
+                
                 for (let problems = rootGetters.problems.filter(p => p.autofix), i = 0;
                     problems.length !== 0 && i < 1;
                     problems = rootGetters.problems.filter(p => p.autofix), i += 1) {
@@ -67,7 +67,6 @@ const mod: LauncherModule = {
                  * real version name
                  */
                 const version = await dispatch('resolveVersion', {
-                    folder: '',
                     ...profile.version,
                 });
 
