@@ -12,14 +12,17 @@ ipcMain.on('user-agent', (event, arg) => {
  * In memory cache
  */
 const cache: { [key: string]: any } = {};
+let cookie: string = '';
 
 async function request<T>(url: string, parser: (element: hparser.HTMLElement) => T) {
     if (cache[url]) return cache[url];
     const resp = await got.get(url, {
         headers: {
             'user-agent': ua,
+            cookie,
         },
     });
+    cookie = resp.headers.cookie || '';
     const parsed = hparser.parse(resp.body);
     const result = parser(parsed);
     if (result) {
