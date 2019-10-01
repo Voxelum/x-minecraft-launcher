@@ -1,5 +1,15 @@
 <template>
   <v-container grid-list-md text-xs-center style="padding-left: 30px; padding-right: 30px">
+    <v-btn
+      absolute
+      fab
+      color="primary"
+      style="right: 20px; bottom: 20px;"
+      :loading="pinging"
+      @click="refresh"
+    >
+      <v-icon>refresh</v-icon>
+    </v-btn>
     <v-layout row>
       <v-flex xs10>
         <v-text-field v-model="filter" hide-details append-icon="filter_list" :label="$t('filter')" solo dark color="green darken-1" />
@@ -83,6 +93,7 @@
         <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" />
       </v-flex>
     </v-layout>
+    
     <v-dialog v-model="isDeletingProfile" width="400">
       <v-card>
         <v-card-title>
@@ -114,14 +125,21 @@
 </template>
 
 <script>
+import { reactive, toRefs, computed, onMounted } from '@vue/composition-api';
+import { useI18n, useNativeDialog, useDialog, useStore, useNotifier, useRouter } from '@/hooks';
 
 export default {
-  data() {
-    return {
+  setup() {
+    const { t } = useI18n();
+    const { showOpenDialog } = useNativeDialog();
+    const { dispatch, commit, getters } = useStore();
+    const { notify } = useNotifier();
+    const router = useRouter();
+    const data = reactive({
       filter: '',
       wizard: false,
-      hoverTextOnCreate: this.$t('profile.add'),
-      hoverTextOnImport: this.$t('profile.importZip'),
+      hoverTextOnCreate: t('profile.add'),
+      hoverTextOnImport: t('profile.importZip'),
       creatingServer: false,
       creatingTooltip: false,
       isDeletingProfile: false,
@@ -130,22 +148,11 @@ export default {
       dragging: false,
       draggingProfile: {},
 
-      colors: ['blue-grey', 'red', 'pink',
-        'purple', 'green', 'yellow', 'amber',
-        'orange', 'deep-orange', 'brown'],
-
-      options: {
-        animation: 200,
-        group: 'description',
-        disabled: false,
-        ghostClass: 'ghost',
-      },
-    };
-  },
-  computed: {
-    timesliceProfiles() {
-      const filter = this.filter.toLowerCase();
-      const profiles = this.$repo.getters.profiles.filter(profile => filter === ''
+      pinging: false,
+    });
+    const timesliceProfiles = computed(() => {
+      const filter = data.filter.toLowerCase();
+      const profiles = getters.profiles.filter(profile => filter === ''
         || (profile.author ? profile.author.toLowerCase().indexOf(filter) !== -1 : false)
         || profile.name.toLowerCase().indexOf(filter) !== -1
         || (profile.description ? profile.description.toLowerCase().indexOf(filter) !== -1 : false));
@@ -165,109 +172,131 @@ export default {
         }
       }
       return [todayR, threeR, other];
-    },
-  },
-  mounted() {
-    const colors = [...this.colors];
-    const count = colors.length;
-    const newOrder = [];
-    for (let i = 0; i < count; ++i) {
-      const choise = Math.random() * Math.floor(colors.length);
-      newOrder.push(colors.splice(choise, 1));
+    });
+    function startDelete(prof) {
+      data.isDeletingProfile = true;
+      data.deletingProfile = prof;
     }
-    this.colors = newOrder;
-  },
-  methods: {
-    createProfile() {
-      this.creatingTooltip = false;
-      this.creatingServer = false;
-      this.wizard = true;
-    },
-    createServer() {
-      this.creatingTooltip = false;
-      this.creatingServer = true;
-      this.wizard = true;
-    },
-    onDropDelete() {
-      this.startDelete(this.draggingProfile);
-    },
-    doImport(fromFolder, curseforge) {
-      const filters = fromFolder ? [] : [{ extensions: ['zip'], name: 'Zip' }];
-      const properties = fromFolder ? ['openDirectory'] : ['openFile'];
-      this.$electron.remote.dialog.showOpenDialog({
-        title: this.$t('profile.import.title'),
-        description: this.$t('profile.import.description'),
-        filters,
-        properties,
-      }, (filenames, bookmarks) => {
-        console.log(filenames);
-        if (filenames && filenames.length > 0) {
-          for (const f of filenames) {
-            if (curseforge) {
-              this.$repo.dispatch('importResource', { path: f, type: 'curseforge-modpack', background: true })
-                .then(task => this.$repo.dispatch('waitTask', task)
-                  .then(() => this.$repo.dispatch('importCurseforgeModpack', { path: f })));
-            } else {
-              this.$repo.dispatch('importProfile', f);
+    onMounted(() => {
+      // const colors = [...this.colors];
+      // const count = colors.length;
+      // const newOrder = [];
+      // for (let i = 0; i < count; ++i) {
+      //   const choise = Math.random() * Math.floor(colors.length);
+      //   newOrder.push(colors.splice(choise, 1));
+      // }
+      // this.colors = newOrder;
+    });
+    return {
+      ...toRefs(data),
+      timesliceProfiles,
+      options: {
+        animation: 200,
+        group: 'description',
+        disabled: false,
+        ghostClass: 'ghost',
+      },
+      createProfile() {
+        data.creatingTooltip = false;
+        data.creatingServer = false;
+        data.wizard = true;
+      },
+      createServer() {
+        data.creatingTooltip = false;
+        data.creatingServer = true;
+        data.wizard = true;
+      },
+      onDropDelete() {
+        startDelete(data.draggingProfile);
+      },
+      doImport(fromFolder, curseforge) {
+        const filters = fromFolder ? [] : [{ extensions: ['zip'], name: 'Zip' }];
+        const properties = fromFolder ? ['openDirectory'] : ['openFile'];
+        showOpenDialog({
+          title: t('profile.import.title'),
+          description: t('profile.import.description'),
+          filters,
+          properties,
+        }, (filenames, bookmarks) => {
+          console.log(filenames);
+          if (filenames && filenames.length > 0) {
+            for (const f of filenames) {
+              if (curseforge) {
+                dispatch('importResource', { path: f, type: 'curseforge-modpack', background: true })
+                  .then(task => dispatch('waitTask', task)
+                    .then(() => dispatch('importCurseforgeModpack', { path: f })));
+              } else {
+                dispatch('importProfile', f);
+              }
             }
           }
-        }
-      });
-    },
-    doDelete() {
-      if (this.deletingProfile) {
-        this.$repo.dispatch('deleteProfile', this.deletingProfile.id)
-          .finally(() => {
-            this.isDeletingProfile = false;
+        });
+      },
+      doDelete() {
+        if (data.deletingProfile) {
+          dispatch('deleteProfile', data.deletingProfile.id).finally(() => {
+            data.isDeletingProfile = false;
           });
-      } else {
-        this.isDeletingProfile = false;
-      }
-    },
-    cancelDelete() {
-      this.isDeletingProfile = false;
-      this.deletingProfile = {};
-    },
-    startDelete(prof) {
-      this.isDeletingProfile = true;
-      this.deletingProfile = prof;
-    },
-    doCopy(id) {
-    },
-    onProfileMove(e) {
-      if (this.filter.length !== 0) {
-        console.log('cancelled');
-        return false;
-      }
-      return true;
-    },
-    selectProfile(event, id) {
-      this.$repo.commit('selectProfile', id);
-      this.$router.replace('/');
-
-      event.stopPropagation();
-      return true;
-    },
-    enterAltCreate() {
-      setTimeout(() => {
-        this.hoverTextOnCreate = this.$t('profile.addServer');
-      }, 100);
-    },
-    leaveAltCreate() {
-      setTimeout(() => {
-        this.hoverTextOnCreate = this.$t('profile.add');
-      }, 100);
-    },
-    enterImport(text) {
-      setTimeout(() => {
-        this.hoverTextOnImport = text;
-      }, 100);
-    },
-    leaveImport() {
-      setTimeout(() => {
-        this.hoverTextOnImport = this.$t('profile.importZip');
-      }, 100);
-    },
+        } else {
+          data.isDeletingProfile = false;
+        }
+      },
+      cancelDelete() {
+        data.isDeletingProfile = false;
+        data.deletingProfile = {};
+      },
+      doCopy(id) {
+      },
+      onProfileMove(e) {
+        if (data.filter.length !== 0) {
+          return false;
+        }
+        return true;
+      },
+      selectProfile(event, id) {
+        commit('selectProfile', id);
+        router.replace('/');
+        event.stopPropagation();
+        return true;
+      },
+      enterAltCreate() {
+        setTimeout(() => {
+          data.hoverTextOnCreate = t('profile.addServer');
+        }, 100);
+      },
+      leaveAltCreate() {
+        setTimeout(() => {
+          data.hoverTextOnCreate = t('profile.add');
+        }, 100);
+      },
+      enterImport(text) {
+        setTimeout(() => {
+          data.hoverTextOnImport = text;
+        }, 100);
+      },
+      leaveImport() {
+        setTimeout(() => {
+          data.hoverTextOnImport = t('profile.importZip');
+        }, 100);
+      },
+      refresh() {
+        if (data.pinging) return;
+        data.pinging = true;
+        dispatch('pingProfiles').then(() => {
+          notify('success', t('profile.refreshServers'));
+        }, (e) => {
+          notify('error', t('profile.refreshServers'), e);
+        }).finally(() => {
+          data.pinging = false;
+        });
+      },
+      // colors: ['blue-grey', 'red', 'pink',
+      //   'purple', 'green', 'yellow', 'amber',
+      //   'orange', 'deep-orange', 'brown'],
+    };
+  },
+  methods: {
+    
   },
 };
 </script>

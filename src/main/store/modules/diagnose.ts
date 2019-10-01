@@ -172,7 +172,7 @@ const mod: DiagnoseModule = {
             context.commit('postProblems', tree);
         },
         async diagnoseServer(context) {
-            const stat = context.rootState.profile.status;
+            const stat = context.rootState.profile.statuses[context.rootState.profile.id];
 
             const tree: Pick<DiagnoseModule.ProblemReport, 'missingModsOnServer'> = {
                 missingModsOnServer: [],

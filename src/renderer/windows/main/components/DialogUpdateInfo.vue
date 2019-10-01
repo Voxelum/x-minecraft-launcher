@@ -69,7 +69,7 @@ export default {
   methods: {
     downloadThisUpdate() {
       this.$repo.dispatch('downloadUpdate');
-      this.$notify('info', this.$t('setting.startDownloadUpdate'));
+      // this.$notify('info', this.$t('setting.startDownloadUpdate'));
     },
     installThisUpdate() {
       this.$repo.dispatch('quitAndInstall');

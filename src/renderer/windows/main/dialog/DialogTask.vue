@@ -33,9 +33,9 @@
 
 <script>
 import Vue from 'vue';
-import { useStore, useDialogSelf } from '@/hooks';
-import { reactive, computed, toRefs } from '@vue/composition-api';
-import { clipboard } from 'electron';
+import { useStore, useDialogSelf, useNotifier, useI18n } from '@/hooks';
+import { reactive, computed, toRefs, onMounted, onUnmounted } from '@vue/composition-api';
+import { clipboard, ipcRenderer } from 'electron';
 
 export default {
   props: {
@@ -47,6 +47,9 @@ export default {
   setup() {
     const { state, dispatch } = useStore();
     const { showDialog, isShown } = useDialogSelf('task');
+    const { t } = useI18n();
+    const { notify } = useNotifier();
+
     const data = reactive({
       tree: [],
       opened: [],
@@ -55,6 +58,25 @@ export default {
     });
     const all = computed(() => state.task.tasks.filter(n => !n.background));
 
+    function onSuccessed(event, id) {
+      const task = state.task.tree[id];
+      if (task.background) return;
+      notify('success', t(task.path, task.arguments || {}));
+    }
+    function onFailed(event, id, error) {
+      const task = state.task.tree[id];
+      if (task.background) return;
+      notify('error', t(task.path, task.arguments || {}), error);
+    }
+    onMounted(() => {
+      ipcRenderer.addListener('task-successed', onSuccessed);
+      ipcRenderer.addListener('task-failed', onFailed);
+    });
+    onUnmounted(() => {
+      ipcRenderer.removeListener('task-successed', onSuccessed);
+      ipcRenderer.removeListener('task-failed', onFailed);
+    });
+    
     return {
       ...toRefs(data),
       all,
