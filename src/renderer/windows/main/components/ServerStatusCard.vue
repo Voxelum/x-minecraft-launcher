@@ -20,7 +20,7 @@
     </v-layout>
     <v-divider light />
     <v-card-actions class="pa-3">
-      <v-icon left>
+      <v-icon left style="margin-right: 16px !important" :style="{ color: ping < 100 ? 'green' : ping < 300 ? 'orange' : 'red' }">
         signal_cellular_alt
       </v-icon>
       <div>  {{ $t('profile.server.pings') }} : {{ ping }} ms </div>
