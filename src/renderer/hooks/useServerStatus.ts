@@ -3,9 +3,12 @@ import { ServerStatusFrame } from '@xmcl/common';
 import unknownServer from '@/assets/unknown_server.png';
 import { useStore } from './useStore';
 
-export function useServerStatus() {
+
+export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
     const { state } = useStore();
-    const status: Ref<ServerStatusFrame> = computed(() => state.profile.status || {
+
+    const using = ref || computed(() => state.profile.statuses[state.profile.id])
+    const status: Ref<ServerStatusFrame> = computed(() => using.value || {
         version: {
             name: '',
             protocol: 0,
@@ -26,4 +29,9 @@ export function useServerStatus() {
         favicon: computed(() => status.value.favicon || unknownServer),
         ping: computed(() => status.value.ping),
     };
+}
+
+export function useServerStatusForProfile(id: string) {
+    const { state } = useStore();
+    return useServerStatus(computed(() => state.profile.statuses[id]));
 }

@@ -5,7 +5,7 @@
         <span class="headline">{{ $tc('curseforge.name', 2) }}</span>
       </v-flex>
       <v-flex v-for="target in targets" :key="target" xs6>
-        <v-card :v-ripple="!online" :hover="!online" replace :to="online ? `/curseforge/${target}` : undefined" :disabled="!online">
+        <v-card draggable="false" :ripple="!online" :hover="!online" replace :to="online ? `/curseforge/${target}` : undefined" :disabled="!online">
           <v-responsive>
             <v-img :src="images[target]">
               <v-expand-transition>
@@ -37,7 +37,7 @@ import mods from '@/assets/curseforge_mods.png';
 import modpack from '@/assets/curseforge_modpack.png';
 import worlds from '@/assets/curseforge_worlds.png';
 import { computed } from '@vue/composition-api';
-import useNetworkStatus from '@/hooks/useNetworkStatus';
+import { useNetworkStatus } from '@/hooks';
 
 export default {
   setup() {
