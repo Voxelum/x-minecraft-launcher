@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="value" :width="550" @input="$emit('input', $event)">
+  <v-dialog v-model="isShown" :width="550">
     <v-toolbar color="warning">
       <v-toolbar-title class="white--text">
         {{ $t('profile.logsCrashes.title') }}
@@ -62,15 +62,14 @@
 </template>
 
 <script>
+import { reactive, toRefs, watch } from '@vue/composition-api';
+import { useStore, useDialogSelf } from '@/hooks';
+
 export default {
-  props: {
-    value: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
+  setup() {
+    const { dispatch } = useStore();
+    const { isShown } = useDialogSelf('logs');
+    const data = reactive({
       showCrash: false,
 
       loadingContent: false,
@@ -79,75 +78,73 @@ export default {
       files: [],
 
       content: '',
-    };
-  },
-  watch: {
-    value() {
-      this.loadLogs();
-    },
-  },
-  methods: {
-    loadLogs() {
-      this.loadingList = true;
-      this.$repo.dispatch('listLogs').then((l) => {
-        this.files = l;
+    });
+    watch(isShown, (s) => { if (s) { loadLogs(); } });
+    function loadLogs() {
+      data.loadingList = true;
+      dispatch('listLogs').then((l) => {
+        data.files = l;
       }).finally(() => {
-        this.loadingList = false;
+        data.loadingList = false;
       });
-    },
-    loadCrashes() {
-      this.loadingList = true;
-      this.$repo.dispatch('listCrashes').then((l) => {
-        this.files = l;
+    }
+    function loadCrashes() {
+      data.loadingList = true;
+      dispatch('listCrashes').then((l) => {
+        data.files = l;
       }).finally(() => {
-        this.loadingList = false;
+        data.loadingList = false;
       });
-    },
-    removeFile(event, i) {
-      if (this.showCrash) {
-        this.$repo.dispatch('removeCrashReport', i);
-        this.loadCrashes();
-      } else {
-        this.$repo.dispatch('removeLog', i);
-        this.loadLogs();
-      }
-      event.preventDefault();
-    },
-    showFile(i) {
-      const name = i;
-      if (name !== this.showedFile) {
-        this.loadingContent = true;
-        this.showedFile = name;
-        if (this.showCrash) {
-          this.$repo.dispatch('getLogContent', name)
-            .then((c) => {
-              this.content = c;
-            }).finally(() => {
-              this.loadingContent = false;
-            });
+    }
+    return {
+      isShown,
+      ...toRefs(data),
+      removeFile(event, i) {
+        if (data.showCrash) {
+          dispatch('removeCrashReport', i);
+          loadCrashes();
         } else {
-          this.$repo.dispatch('getLogContent', name)
-            .then((c) => {
-              this.content = c;
-            }).finally(() => {
-              this.loadingContent = false;
-            });
+          dispatch('removeLog', i);
+          loadLogs();
         }
-      }
-    },
-    goBack() {
-      this.content = '';
-    },
-    goLog() {
-      this.showCrash = false;
-      this.content = '';
-      this.loadLogs();
-    },
-    goCrash() {
-      this.showCrash = true;
-      this.content = '';
-      this.loadCrashes();
-    },
+        event.preventDefault();
+      },
+      showFile(i) {
+        const name = i;
+        if (name !== data.showedFile) {
+          data.loadingContent = true;
+          data.showedFile = name;
+          if (data.showCrash) {
+            dispatch('getLogContent', name)
+              .then((c) => {
+                data.content = c;
+              }).finally(() => {
+                data.loadingContent = false;
+              });
+          } else {
+            dispatch('getLogContent', name)
+              .then((c) => {
+                data.content = c;
+              }).finally(() => {
+                data.loadingContent = false;
+              });
+          }
+        }
+      },
+      goBack() {
+        data.content = '';
+      },
+      goLog() {
+        data.showCrash = false;
+        data.content = '';
+        loadLogs();
+      },
+      goCrash() {
+        data.showCrash = true;
+        data.content = '';
+        loadCrashes();
+      },
+    };
   },
 };
 </script>

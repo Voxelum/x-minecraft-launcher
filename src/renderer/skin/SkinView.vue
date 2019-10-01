@@ -1,5 +1,5 @@
 <template>
-  <canvas ref="canvas" style="z-index: 10;" :width="width" :height="height" @dragover="$emit('dragover', $event)"
+  <canvas ref="canvas" :width="width" :height="height" @dragover="$emit('dragover', $event)"
           @drop="$emit('drop', $event)" />
 </template>
 
@@ -60,7 +60,7 @@ export default {
       const scene = new THREE.Scene();
       const character = new Model();
       const camera = new THREE.PerspectiveCamera(45, props.width / props.height, 0.5, 5);
-      const controls = new OrbitControls(camera, context.root.$el);
+      const controls = new OrbitControls(camera, canvas.value);
 
       camera.position.z = 3;
       camera.lookAt(new THREE.Vector3(0, 0, 0));

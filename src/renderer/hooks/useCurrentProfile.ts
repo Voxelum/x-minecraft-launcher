@@ -1,8 +1,8 @@
-import useStore from "@/hooks/useStore";
 import { toRefs, computed, ref, watch, onMounted, onUnmounted } from "@vue/composition-api";
 import { ProfileModule } from "universal/store/modules/profile";
 import { Data } from "@vue/composition-api/dist/component";
 import { getExpectVersion } from "universal/utils/versions";
+import { useStore } from "./useStore";
 
 export default function useCurrentProfile() {
     const { state, getters } = useStore();
@@ -27,10 +27,10 @@ export function useCurrentProfileVersion() {
         profile.version.forge,
         profile.version.liteloader));
 
-    let watcher = () => {};
+    let watcher = () => { };
 
     dispatch('resolveVersion', profile.version)
-                .then((f) => { folder.value = f; });
+        .then((f) => { folder.value = f; });
 
     onMounted(() => {
         watcher = watch(id, () => {

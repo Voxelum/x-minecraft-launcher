@@ -95,10 +95,7 @@
 <script>
 import { reactive, computed, toRefs, onMounted, onUnmounted, watch } from '@vue/composition-api';
 import { remote } from 'electron';
-import { useI18n } from '..';
-import { useDialogSelf } from '@/hooks/useDialog';
-import useStore from '@/hooks/useStore';
-// import { useDialog, useDialogSelf } from '.';
+import { useDialog, useDialogSelf, useI18n, useStore } from '@/hooks';
 
 export default {
   props: {
@@ -130,7 +127,7 @@ export default {
         message: t('diagnosis.missingJava.selectJava.message'),
       }],
     });
-    const { show, isShown } = useDialogSelf('java-wizard');
+    const { showDialog, isShown } = useDialogSelf('java-wizard');
     const missing = computed(() => getters.missingJava);
     const reason = computed(() => (!missing.value ? t('java.incompatibleJava') : t('java.missing')));
     const hint = computed(() => (!missing.value ? t('java.incompatibleJavaHint') : t('java.missingHint')));
@@ -145,14 +142,14 @@ export default {
     });
 
     function updateValue() {
-      if (missing.value) { show(); }
+      if (missing.value) { showDialog(); }
     }
     function refresh() {
       data.status = 'resolving';
       dispatch('refreshLocalJava').finally(() => {
         if (missing.value) {
           data.status = 'error';
-          show();
+          showDialog();
         } else {
           data.reason = null;
           data.hint = null;
@@ -165,13 +162,14 @@ export default {
       reason,
       hint,
       missing,
+      refresh,
       async fixProblem(index) {
         data.step = index + 1;
         let handle;
         switch (index) {
           case 0:
             handle = await dispatch('installJava', true);
-            show('task');
+            showDialog('task');
             data.items = state.task.tree[handle].tasks;
             try {
               await dispatch('waitTask', handle);

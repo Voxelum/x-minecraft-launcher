@@ -1,5 +1,5 @@
 <template>
-  <v-dialog>
+  <v-dialog v-model="isShown">
     <v-toolbar color="primary">
       Download Missing Server Mods
     </v-toolbar>
@@ -30,11 +30,11 @@
       </v-list>
       <v-card-actions>
         <v-btn flat @click="checkAvailabilities">
-          Check Availability
+          {{ $t('mod.checkAvailabilities') }}
         </v-btn>
         <v-spacer />
         <v-btn flat :disabled="!canDownload">
-          Download All
+          {{ $t('mod.downloadAll') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -43,15 +43,11 @@
 
 <script>
 import { reactive, createComponent, computed, toRefs } from '@vue/composition-api';
+import { useDialogSelf } from '@/hooks';
 
 export default createComponent({
-  props: {
-    items: {
-      type: Array,
-      default: () => [],
-    },
-  },
   setup(props) {
+    const { isShown, dialogOption } = useDialogSelf('download-missing-mods');
     const icons = {
       existed: 'done',
       absent: 'clear',
@@ -71,19 +67,20 @@ export default createComponent({
     }
     async function checkAvailabilities() {
       const unchecked = [];
-      for (const i of this.items) {
+      for (const i of dialogOption.value) {
         if (i.status !== 'loading') {
           i.status = 'loading';
           unchecked.push(i);
         }
       }
-      await this.checkAvailability(unchecked);
+      await checkAvailability(unchecked);
     }
     return {
       ...toRefs(state),
       checkAvailabilities,
       canDownload,
       icons,
+      isShown,
     };
   },
 });

@@ -30,8 +30,7 @@
 </template>
 
 <script>
-import useStore from '@/hooks/useStore';
-import useRouter from '@/hooks/useRouter';
+import { useStore, useRouter } from '@/hooks';
 import { computed } from '@vue/composition-api';
 
 export default {

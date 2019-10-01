@@ -1,7 +1,7 @@
-import useStore from "./useStore";
+import { useStore } from "./useStore";
 import { computed } from "@vue/composition-api";
 
-export default function useParticle() {
+export function useParticle() {
     const { state, commit } = useStore();
     const showParticle = computed({
         get: () => state.setting.showParticle,

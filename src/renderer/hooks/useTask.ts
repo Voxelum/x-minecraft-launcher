@@ -1,4 +1,4 @@
-import useStore from "@/hooks/useStore";
+import { useStore } from "./useStore";
 import { computed } from "@vue/composition-api";
 
 export function useTask(taskHandle: TaskHandle) {
@@ -19,3 +19,12 @@ export function useTask(taskHandle: TaskHandle) {
     }
 }
 
+export function useTasks() {
+    const { state, getters } = useStore();
+    const activeTasksCount = computed(
+        () => state.task.tasks.filter(t => t.status === 'running').length,
+    );
+    return {
+        activeTasksCount,
+    }
+}

@@ -1,9 +1,9 @@
 import { computed, Ref } from '@vue/composition-api';
 import { ServerStatusFrame } from '@xmcl/common';
-import unknownServer from 'renderer/assets/unknown_server.png';
-import useStore from './useStore';
+import unknownServer from '@/assets/unknown_server.png';
+import { useStore } from './useStore';
 
-export default function useServerStatus() {
+export function useServerStatus() {
     const { state } = useStore();
     const status: Ref<ServerStatusFrame> = computed(() => state.profile.status || {
         version: {

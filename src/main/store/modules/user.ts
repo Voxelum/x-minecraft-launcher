@@ -267,7 +267,7 @@ const mod: UserModule = {
             if (type && type.ext === 'png') {
                 return buf.toString('base64');
             }
-            return undefined;
+            throw new Error('Illegal File Type')
         },
         /**
          * Refresh the current user login status

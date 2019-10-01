@@ -30,8 +30,8 @@
 </template>
 
 <script lang=ts>
-import useStore from '@/hooks/useStore';
-import { useI18n, l } from '..';
+import { useStore, useI18n } from '@/hooks';
+import { l } from '..';
 import { reactive, computed, onMounted, onDeactivated, createComponent, onActivated, onUnmounted, toRefs } from '@vue/composition-api';
 import { Java } from 'universal/store/modules/java';
 import { remote } from 'electron';

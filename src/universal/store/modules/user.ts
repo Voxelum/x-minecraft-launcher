@@ -35,8 +35,9 @@ export declare namespace UserModule {
          */
         isServiceCompatible: boolean;
 
-        authServices: string[];
-        profileServices: string[];
+        authServices: string[]; // TODO: remove
+        profileServices: string[]; // TODO: remove
+
         authService: Auth.Yggdrasil.API;
         profileService: ProfileService.API;
     }
@@ -84,7 +85,7 @@ export declare namespace UserModule {
 
         uploadSkin(context: C, payload: { data: string | Buffer, slim: boolean }): Promise<void>;
         saveSkin(context: C, payload: { skin: { data: string }, path: string }): Promise<void>;
-        parseSkin(context: C, path: string): Promise<string | undefined>;
+        parseSkin(context: C, path: string): Promise<string>;
 
         listAuthlibs(context: C): Promise<string[]>;
         fetchAuthlibArtifacts(context: C): Promise<{ latest_build_number: number, artifacts: { build_number: number, version: string }[] }>;

@@ -1,7 +1,7 @@
 <template>
-  <v-dialog :value="value" hide-overlay transition="dialog-bottom-transition" width="500" @input="$emit('input', false)">
+  <v-dialog v-model="isShown" hide-overlay transition="dialog-bottom-transition" width="500">
     <v-toolbar color="warning">
-      <v-btn icon dark @click="$emit('input', false)">
+      <v-btn icon dark @click="closeDialog()">
         <v-icon>close</v-icon>
       </v-btn>
       <v-toolbar-title> {{ $t('feedback') }} </v-toolbar-title>
@@ -39,20 +39,20 @@
 </template>
 
 <script>
+import { reactive, toRefs } from '@vue/composition-api';
+import { useDialogSelf } from '@/hooks';
+
 export default {
-  props: {
-    value: {
-      type: Boolean,
-      default: () => false,
-    },
-  },
-  data: () => ({
-    hovered: {},
-  }),
-  watch: {
-    value() {
-      this.$emit('value', this.value);
-    },
+  setup() {
+    const data = reactive({
+      hovered: {},
+    });
+    const { closeDialog, isShown } = useDialogSelf('feedback'); 
+    return {
+      ...toRefs(data),
+      closeDialog,
+      isShown,
+    };
   },
 };
 </script>

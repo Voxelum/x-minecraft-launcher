@@ -1,9 +1,9 @@
 <template>
-  <v-dialog v-model="shown" persistent hide-overlay width="500" style="max-height: 100%">
+  <v-dialog v-model="isShown" persistent hide-overlay width="500" style="max-height: 100%">
     <v-toolbar dark tabs color="grey darken-3">
       <v-toolbar-title>{{ $t('task.manager') }}</v-toolbar-title>
       <v-spacer />
-      <v-btn icon @click="$emit('input', false)">
+      <v-btn icon @click="close">
         <v-icon>arrow_drop_down</v-icon>
       </v-btn>
     </v-toolbar>
@@ -33,11 +33,9 @@
 
 <script>
 import Vue from 'vue';
-// import { useDialogSelf, useStore } from '@/hooks';
+import { useStore, useDialogSelf } from '@/hooks';
 import { reactive, computed, toRefs } from '@vue/composition-api';
 import { clipboard } from 'electron';
-import { useDialogSelf } from '@/hooks/useDialog';
-import useStore from '@/hooks/useStore';
 
 export default {
   props: {
@@ -48,7 +46,7 @@ export default {
   },
   setup() {
     const { state, dispatch } = useStore();
-    useDialogSelf();
+    const { showDialog, isShown } = useDialogSelf('task');
     const data = reactive({
       tree: [],
       opened: [],
@@ -60,6 +58,8 @@ export default {
     return {
       ...toRefs(data),
       all,
+      isShown,
+      close() { showDialog(''); },
       showTaskContext(event, item) {
         // this.$menu([{ title: 'hello', onClick() { } }], event.clientX, event.clientY);
       },

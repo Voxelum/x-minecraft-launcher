@@ -20,9 +20,6 @@ Vue.use(VueParticles);
 const store = createStore([]);
 const _i18n = i18n(store);
 
-export function useI18n(): VueI18n & { t(): string } {
-    return _i18n;
-}
 export function l(strings: TemplateStringsArray) {
     return _i18n.t(strings[0], arguments);
 }

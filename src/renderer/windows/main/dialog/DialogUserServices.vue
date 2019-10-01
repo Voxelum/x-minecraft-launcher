@@ -1,12 +1,12 @@
 <template>
-  <v-dialog :value="value" width="550" @input="$emit('input', $event)">
+  <v-dialog v-model="isShown" width="550">
     <v-toolbar color="primary">
       <h2>
         {{ $t('user.service.title') }}
       </h2>
       <v-spacer />
       <v-toolbar-items>
-        <v-btn icon flat @click="$emit('input', false)">
+        <v-btn icon flat @click="closeDialog()">
           <v-icon>close</v-icon>
         </v-btn>
       </v-toolbar-items>
@@ -58,16 +58,15 @@
 </template>
 
 <script>
+import { reactive, toRefs, computed, onMounted, watch } from '@vue/composition-api';
+import { useCurrentUser, useStore, useDialogSelf, useMutations } from '@/hooks';
 
 export default {
-  props: {
-    value: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
+  setup() {
+    const { state } = useStore();
+    const { isShown, closeDialog } = useDialogSelf('user-service');
+    const { removeService } = useMutations('removeService');
+    const data = reactive({
       editingService: -1,
       addingService: false,
       authOrProfile: 0,
@@ -76,17 +75,24 @@ export default {
 
       newAuthServiceName: '',
       newAuthServiceHost: '',
-    };
-  },
-  computed: {
-    services() {
+    });
+
+    onMounted(() => {
+      watch(isShown, (s) => {
+        if (s) {
+          data.addingService = false;
+        }
+      });
+    });
+
+    const services = computed(() => {
       const keys = [];
-      for (const k of Object.keys(this.$repo.state.user.authServices)) {
+      for (const k of Object.keys(state.user.authServices)) {
         if (keys.indexOf(k) === -1) {
           keys.push(k);
         }
       }
-      for (const k of Object.keys(this.$repo.state.user.profileServices)) {
+      for (const k of Object.keys(state.user.profileServices)) {
         if (keys.indexOf(k) === -1) {
           keys.push(k);
         }
@@ -94,50 +100,30 @@ export default {
       return keys.map(name => ({
         text: name,
         value: name,
-        body: { 
-          ...(this.$repo.state.user.authServices[name] || {}),
-          ...(this.$repo.state.user.profileServices[name] || {}),
+        body: {
+          ...(state.user.authServices[name] || {}),
+          ...(state.user.profileServices[name] || {}),
         },
       }));
-    },
-    authServices() {
-      return Object.entries(this.$repo.state.user.authServices)
-        .map(([name, value]) => ({
-          text: this.$t(`user.${name}.name`),
-          value: name,
-          body: value,
-        }));
-    },
-    profileServices() {
-      return this.$repo.getters.profileServices.map(m => ({
-        text: this.$t(`user.${m}.name`),
-        value: m,
-      }));
-    },
-    gameProfiles() { return this.$repo.getters.avaiableGameProfiles; },
-    logined() { return this.$repo.getters.logined; },
-  },
-  watch: {
-    value() {
-      if (this.value) {
-        this.addingService = false;
-      }
-    },
-  },
-  mounted() {
-  },
-  methods: {
-    remove(s) {
-      this.$repo.commit('removeService', s.value);
-    },
-    newOrEdit(s) {
-      if (s) {
-        this.initing = s.value;
-      } else {
-        this.initing = '';
-      }
-      this.addingService = true;
-    },
+    });
+
+    return {
+      ...toRefs(data),
+      services,
+      isShown,
+      closeDialog() { closeDialog(); },
+      remove(s) {
+        removeService(s.value);
+      },
+      newOrEdit(s) {
+        if (s) {
+          data.initing = s.value;
+        } else {
+          data.initing = '';
+        }
+        data.addingService = true;
+      },
+    };
   },
 };
 </script>

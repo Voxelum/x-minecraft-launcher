@@ -5,7 +5,7 @@
       close
     </v-icon>
     <v-icon v-ripple style="position: absolute; right: 44px; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
-            dark @click="showFeedbackDialog">
+            dark @click="showFeedbackDialog()">
       help_outline
     </v-icon>
     <v-tooltip top>
@@ -37,7 +37,7 @@
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-btn style="position: absolute; left: 140px; bottom: 10px; " flat icon dark v-on="on"
-               @click="showLogDialog">
+               @click="showLogDialog()">
           <v-icon dark>
             subtitles
           </v-icon>
@@ -75,50 +75,28 @@
       </v-icon>
       <v-progress-circular v-else class="v-icon--right" indeterminate :size="20" :width="2" />
     </v-btn>
-    <!-- <dialog-logs v-model="logsDialog" />
-    <dialog-crash-report v-model="crashDialog" />
-    <dialog-java-wizard v-model="javaWizardDialog" @task="$electron.ipcRenderer.emit('task')" />
-    <dialog-feedback v-model="feedbackDialog" />
-    <dialog-launch-status v-model="launchStatusDialog" />
-    <dialog-download-missing-server-mods v-model="downloadMissingModsDialog" />
-    <dialog-launch-status v-model="launchStatusDialog" /> -->
   </v-layout>
 </template>
 
 <script>
-import unknownServer from 'renderer/assets/unknown_server.png';
-import { PINGING_STATUS, createFailureServerStatus } from 'universal/utils/server-status';
 import { reactive, computed, toRefs, watch, ref } from '@vue/composition-api';
-import useStore from '@/hooks/useStore';
-import useRouter from '@/hooks/useRouter';
-import { ipcRenderer, remote } from 'electron';
+import unknownServer from '@/assets/unknown_server.png';
+import { useStore, useDialog, useI18n, useNativeDialog } from '@/hooks';
 
 export default {
   setup(props, context) {
-    const $t = context.root.$t;
-    const router = useRouter();
+    const { t } = useI18n();
     const { getters, state, dispatch } = useStore();
-    const data = reactive({
-      logsDialog: false,
-      launchStatusDialog: false,
-      feedbackDialog: false,
-      crashDialog: false,
-      javaWizardDialog: false,
-      downloadMissingModsDialog: false,
-    });
+    const { showSaveDialog } = useNativeDialog();
+    const { showDialog: showLogDialog } = useDialog('logs');
+    const { showDialog: showFeedbackDialog } = useDialog('feedback');
     const profile = computed(() => getters.selectedProfile);
     const isServer = computed(() => profile.value.type === 'server');
     const launchStatus = computed(() => state.launch.status);
     const refreshingProfile = computed(() => state.profile.refreshing);
     const missingJava = computed(() => getters.missingJava);
 
-    watch(() => {
-      if (data.javaWizardDialog) {
-        ipcRenderer.emit('task', false);
-      }
-    });
     return {
-      ...toRefs(data),
       isServer,
       profile,
       launchStatus,
@@ -126,18 +104,17 @@ export default {
       missingJava,
       async launch() {
         if (launchStatus.value !== 'ready') {
-          data.launchStatusDialog = true;
           return;
         }
         await dispatch('launch');
       },
       showExportDialog() {
         if (refreshingProfile.value) return;
-        remote.dialog.showSaveDialog({
-          title: $t('profile.export.title'),
+        showSaveDialog({
+          title: t('profile.export.title'),
           filters: [{ name: 'zip', extensions: ['zip'] }],
-          message: $t('profile.export.message'),
-          defaultPath: `${data.profile.name}.zip`,
+          message: t('profile.export.message'),
+          defaultPath: `${profile.value.name}.zip`,
         }, (filename, bookmark) => {
           if (filename) {
             dispatch('exportProfile', { dest: filename }).catch((e) => {
@@ -146,8 +123,8 @@ export default {
           }
         });
       },
-      showLogDialog() { data.logsDialog = true; },
-      showFeedbackDialog() { data.feedbackDialog = true; },
+      showLogDialog,
+      showFeedbackDialog,
       quitLauncher() {
         setTimeout(() => {
           dispatch('quit');

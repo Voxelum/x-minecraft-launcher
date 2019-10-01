@@ -73,14 +73,11 @@
           <router-view />
           <!-- </keep-alive> -->
         </transition>
-        <notifier />
         <context-menu />
       </v-card>
-
-      <dialog-java-wizard />
-      <dialog-login />
-      <dialog-task />
     </v-layout>
+    <notifier />
+    <dialogs />
   </v-layout>
 </template>
 
@@ -95,70 +92,76 @@ import {
   watch,
   createComponent,
   InjectionKey,
+  ref,
+  provide,
 } from '@vue/composition-api';
 import { ipcRenderer } from 'electron';
-import useRouter from '@/hooks/useRouter';
-import useStore from '@/hooks/useStore';
-import useParticle from '@/hooks/useParticle';
+import {
+  useDialog,
+  useParticle,
+  useStore,
+  useRouter,
+  useCurrentUserStatus,
+  useBackgroundImage,
+  useTasks,
+  DIALOG_SHOWING,
+  DIALOG_OPTION,
+  DIALOG_RESULT,
+  provideDialog,
+  provideNotifier,
+} from '@/hooks';
+import dialogs from './dialog';
 
 export default createComponent({
+  components: { dialogs },
   setup(props, ctx) {
+    provideDialog();
+    provideNotifier();
+  
     const { particleMode, showParticle } = useParticle();
+    const { activeTasksCount } = useTasks();
+    const { logined } = useCurrentUserStatus();
+    const { showDialog } = useDialog('task');
+    const { blur, backgroundImage } = useBackgroundImage();
     const router = useRouter();
-    const store = useStore();
 
-    const template: {
-      loading: boolean,
-      localHistory: string[],
-      timeTraveling: boolean,
-      taskDialog: boolean,
-    } = {
+    const data = reactive<{
+      loading: boolean;
+      localHistory: string[];
+      timeTraveling: boolean;
+      taskDialog: boolean;
+    }>({
       loading: true,
       localHistory: [],
       timeTraveling: false,
       taskDialog: false,
-    };
-    const data = reactive(template);
-
-    const activeTasksCount = computed(
-      () => store.state.task.tasks.filter(t => t.status === 'running').length,
-    );
-    const blur = computed(
-      () => store.getters.selectedProfile.blur || store.state.setting.defaultBlur,
-    );
-    const backgroundImage = computed(
-      () => store.getters.selectedProfile.image
-        || store.state.setting.defaultBackgroundImage,
-    );
-    const logined = computed(() => store.getters.logined);
-
-    watch(backgroundImage, () => {
-      refreshImage();
     });
-
-    router.afterEach((to, from) => {
-      if (!data.timeTraveling) data.localHistory.push(from.fullPath);
-    });
-
+    
     onMounted(() => {
       ipcRenderer.once('vuex-sync', () => {
         data.loading = false;
       });
-      ipcRenderer.on('task', showTaskDialog);
+      watch(backgroundImage, () => {
+        refreshImage();
+      });
+      watch(particleMode, () => {
+        if (showParticle.value) {
+          showParticle.value = false;
+          setImmediate(() => {
+            showParticle.value = true;
+          });
+        }
+      });
     });
-
-    function showTaskDialog(show: boolean) {
-      if (typeof show === 'boolean') {
-        data.taskDialog = show;
-      } else {
-        data.taskDialog = true;
-      }
+    router.afterEach((to, from) => {
+      if (!data.timeTraveling) data.localHistory.push(from.fullPath);
+    });
+    function showTaskDialog() {
+      showDialog();
     }
-
     function refreshImage() {
       const img = backgroundImage;
     }
-
     function goBack() {
       if (!logined.value && router.currentRoute.path === '/login') {
         return;
@@ -170,13 +173,6 @@ export default createComponent({
       }
       data.timeTraveling = false;
     }
-
-    watch(particleMode, () => {
-      if (showParticle.value) {
-        showParticle.value = false;
-        setImmediate(() => { showParticle.value = true; });
-      }
-    });
 
     return {
       ...toRefs(data),

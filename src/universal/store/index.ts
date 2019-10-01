@@ -68,10 +68,10 @@ type SaveFunction<C> = (context: C, payload: { mutation: keyof Mutations, payloa
 type LoadFunction<C> = (context: C) => Promise<void>;
 type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | SettingModule | UserModule | LauncherModule | IOModule | DiagnoseModule | CurseForgeModule | ClientModule;
 type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & SettingModule & UserModule & LauncherModule & IOModule & DiagnoseModule & CurseForgeModule & ClientModule;
-type Mutations =
+export type Mutations =
     Required<ModulesIntersection>["mutations"] &
     BaseMutations;
-type Actions =
+export type Actions =
     Required<ModulesIntersection>["actions"] &
     BaseActions;
 // type AllGetters = UseGetters<Required<ModulesCollection>["getters"]> & BaseGetters;

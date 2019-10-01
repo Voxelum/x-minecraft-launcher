@@ -36,8 +36,7 @@
 </template>
 
 <script>
-import useServerStatus from '@/hooks/useServerStatus';
-import useStore from '@/hooks/useStore';
+import { useServerStatus, useStore } from '@/hooks';
 import { ref } from '@vue/composition-api';
 
 export default {

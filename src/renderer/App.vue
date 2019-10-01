@@ -11,8 +11,6 @@ import { onMounted } from '@vue/composition-api';
 export default {
   setup(data, context) {
     onMounted(() => {
-      Vue.prototype.$copy = (text) => {
-      };
     });
     return {};
   },

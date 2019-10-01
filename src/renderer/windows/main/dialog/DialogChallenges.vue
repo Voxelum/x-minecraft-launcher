@@ -1,14 +1,14 @@
 
 <template>
-  <v-dialog :value="value" width="500" @input="$emit('input', $event)">
+  <v-dialog v-model="isShown" width="500">
     <v-card>
       <v-container grid-list-md>
         <v-layout column fill-height style="padding: 0 30px;">
           <v-flex tag="h1" class="white--text" xs1>
             <span class="headline">{{ $t('user.challenges') }}</span>
           </v-flex>
-          <v-flex v-if="waitingSecurity" grow />
-          <v-flex v-if="waitingSecurity || challenges.length === 0" offset-xs4>
+          <v-flex v-if="refreshingSecurity" grow />
+          <v-flex v-if="refreshingSecurity || challenges.length === 0" offset-xs4>
             <v-progress-circular indeterminate :width="7" :size="170" color="white" />
           </v-flex>
           <v-flex v-else xs1>
@@ -43,65 +43,64 @@
 </template>
 
 <script>
+import { reactive, toRefs, onMounted, watch } from '@vue/composition-api';
+import { useDialogSelf, useCurrentUserStatus, useStore } from '@/hooks';
+
 export default {
-  props: {
-    value: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
+  setup() {
+    const { isShown, closeDialog, showDialog } = useDialogSelf('challenge');
+    const { offline, security, refreshingSecurity } = useCurrentUserStatus();
+    const { dispatch } = useStore();
+    const data = reactive({
       submittingChallenges: false,
       challenges: [],
       challegesError: undefined,
-    };
-  },
-  computed: {
-    offline() { return this.$repo.getters.offline; },
-    security() { return this.$repo.state.user.security; },
-    waitingSecurity() { return this.$repo.state.user.refreshingSecurity; },
-  },
-  watch: {
-    value() {
-      if (this.value) {
-        this.checkSecurity();
+    });
+    function checkSecurity() {
+      if (offline.value) return;
+      if (!security.value) {
+        closeDialog();
       }
-    },
-  },
-  mounted() {
-  },
-  methods: {
-    checkSecurity() {
-      if (this.offline) return;
-      if (!this.security) {
-        this.$emit('input', true);
-      }
-      this.$repo.dispatch('checkLocation').then(() => {
-        if (!this.security) {
-          this.$emit('input', true);
-          this.$repo.dispatch('getChallenges').then((c) => {
-            this.challenges = c;
+      dispatch('checkLocation').then(() => {
+        if (!security.value) {
+          showDialog();
+          dispatch('getChallenges').then((c) => {
+            data.challenges = c;
           }, (e) => {
-            this.challegesError = e;
+            data.challegesError = e;
           });
         }
       });
-    },
-    async doSumitAnswer() {
-      this.submittingChallenges = true;
-      await this.$nextTick();
-      await this.$repo.dispatch('submitChallenges', JSON.parse(JSON.stringify(this.challenges.map(c => c.answer)))).then((resp) => {
-      }).then(() => {
-        if (this.security) {
-          this.$emit('input', false);
+    }
+    onMounted(() => {
+      watch(isShown, (v) => {
+        if (v) {
+          checkSecurity();
         }
-      }, (e) => {
-        this.challegesError = e;
-      }).finally(() => {
-        this.submittingChallenges = false;
       });
-    },
+    });
+    
+    return {
+      offline,
+      security,
+      ...toRefs(data),
+      refreshingSecurity,
+      isShown,
+      async doSumitAnswer() {
+        data.submittingChallenges = true;
+        // await this.$nextTick();
+        await dispatch('submitChallenges', JSON.parse(JSON.stringify(data.challenges.map(c => c.answer)))).then((resp) => {
+        }).then(() => {
+          if (security.value) {
+            closeDialog();
+          }
+        }, (e) => {
+          data.challegesError = e;
+        }).finally(() => {
+          data.submittingChallenges = false;
+        });
+      },
+    };
   },
 };
 </script>

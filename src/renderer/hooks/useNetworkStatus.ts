@@ -1,6 +1,6 @@
 import { onMounted, onUnmounted, ref } from "@vue/composition-api";
 
-export default function useNetworkStatus() {
+export function useNetworkStatus() {
     const online = ref(navigator.onLine);
 
     function updateStatus() {
