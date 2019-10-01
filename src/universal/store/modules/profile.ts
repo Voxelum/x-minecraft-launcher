@@ -2,7 +2,7 @@ import Vue from 'vue';
 import { getExpectVersion } from 'universal/utils/versions';
 import { UNKNOWN_STATUS } from 'universal/utils/server-status';
 
-import { GameSetting, World, Server } from "@xmcl/minecraft-launcher-core";
+import { GameSetting, World, Server, ServerInfoFrame } from "@xmcl/minecraft-launcher-core";
 import { Context, Module } from "..";
 import { Java } from "./java";
 import { Resource } from './resource';
@@ -44,13 +44,14 @@ export declare namespace ProfileModule {
          */
         settings: GameSetting.Frame & { resourcePacks: Array<string> };
         /**
-         * The server status of current selected server profile, modpack won't have this.
-         */
-        status: Server.StatusFrame | null;
-        /**
          * If current launcher is refreshing the profile data
          */
         refreshing: boolean;
+
+        /**
+         * The server statuses of all server profiles, modpack won't have this.
+         */
+        statuses: { [id: string]: Server.StatusFrame | undefined };
     }
 
     interface Getters {
@@ -89,6 +90,7 @@ export declare namespace ProfileModule {
         serverStatus(state: State, status: Server.StatusFrame): void;
         profileSaves(state: State, worlds: Save[]): void;
         refreshingProfile(state: State, refreshing: boolean): void;
+        profileStatus(state: State, statuses: { [id: string]: Server.StatusFrame }): void;
     }
 
     type C = Context<State, Getters>
@@ -155,6 +157,7 @@ export declare namespace ProfileModule {
 
         pingServer(context: C, payload: { host: string, port: number, protocol: number }): Promise<Server.StatusFrame>;
         pingServers(context: C): Promise<(Server.Info & { status: Server.StatusFrame })[]>;
+        pingProfiles(context: C): Promise<void>;
         createProfileFromServer(context: C, info: Server.Info & { status: Server.StatusFrame }): Promise<string>;
 
         listLogs(context: C): Promise<string[]>;
@@ -228,8 +231,6 @@ const mod: ProfileModule = {
         all: {},
         id: '',
 
-        status: UNKNOWN_STATUS,
-
         settings: {
             resourcePacks: [],
         },
@@ -237,6 +238,7 @@ const mod: ProfileModule = {
         saves: [],
 
         refreshing: false,
+        statuses: {},
     },
     getters: {
         profiles: state => Object.keys(state.all).map(k => state.all[k]),
@@ -283,6 +285,7 @@ const mod: ProfileModule = {
         removeProfile(state, id) {
             Vue.delete(state.all, id);
         },
+        
         selectProfile(state, id) {
             if (state.all[id]) {
                 state.id = id;
@@ -412,9 +415,13 @@ const mod: ProfileModule = {
         serverInfos(state, infos) {
             state.serverInfos = infos;
         },
-
         serverStatus(state, status) {
-            state.status = status;
+            Vue.set(state.statuses, state.id, status);
+        },
+        profileStatus(state, statues) {
+            for (const [key, value] of Object.entries(statues)) {
+                Vue.set(state.statuses, key, value);
+            }
         },
         refreshingProfile(state, refreshing) {
             state.refreshing = refreshing;

@@ -131,6 +131,14 @@ export interface ModpackProfileConfig extends ProfileConfig {
     description: string;
 }
 
+export interface ServerOrModpackConfig extends ProfileConfig {
+    type: 'server' | 'modpack';
+    author: string;
+    description: string;
+    host: string;
+    port: number;
+}
+
 export interface ProfilesConfig {
     selectedProfile: string;
 }

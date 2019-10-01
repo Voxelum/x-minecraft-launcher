@@ -118,7 +118,7 @@ const mod: ProfileModule = {
 
             let option;
             try {
-                option = await dispatch('getPersistence', { path: `profiles/${id}/profile.json`, schema: 'ProfileConfig' });
+                option = await dispatch('getPersistence', { path: `profiles/${id}/profile.json`, schema: 'ServerOrModpackConfig' });
             } catch (e) {
                 console.warn(`Corrupted profile json ${id}`);
                 return;
@@ -249,7 +249,7 @@ const mod: ProfileModule = {
                     await context.dispatch('setPersistence', {
                         path: `profiles/${context.state.id}/profile.json`,
                         data: current,
-                        schema: 'ProfileConfig',
+                        schema: current.type === 'modpack' ? 'ModpackProfileConfig' : 'ServerProfileConfig',
                     });
                     break;
                 default:
@@ -496,7 +496,6 @@ const mod: ProfileModule = {
 
             return resources;
         },
-
         async editProfile(context, profile) {
             const current = context.state.all[context.state.id];
             if (willBaselineChange(profile, current)) {
@@ -504,6 +503,11 @@ const mod: ProfileModule = {
                 console.log(`Modify Profle ${JSON.stringify(profile, null, 4)}`);
                 context.commit('profile', profile);
             }
+        },
+        async pingProfiles(context) {
+            const all: ServerProfileConfig[] = Object.values(context.state.all).filter(p => p.type === 'server') as any;
+            const results = await Promise.all(all.map(async p => ({ [p.id]: await Server.fetchStatusFrame(p) })));
+            context.commit('profileStatus', results.reduce(Object.assign, {}));
         },
 
         async pingServer(context, payload) {
