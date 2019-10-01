@@ -3,7 +3,7 @@
     <v-tooltip :close-delay="0" left>
       <template v-slot:activator="{ on }">
         <v-speed-dial v-if="security" v-model="fab"
-                      style="position:absolute; z-index: 2; bottom: 80px; right: 85px;" direction="top" :open-on-hover="true">
+                      style="position:absolute; z-index: 2; bottom: 80px; right: 100px;" direction="top" :open-on-hover="true">
           <template v-slot:activator>
             <v-btn v-model="fab" :disabled="pending" fab @click="loadSkin" v-on="on" @mouseenter="enterEditBtn">
               <v-icon>edit</v-icon>
@@ -100,7 +100,7 @@
           <v-flex d-flex shrink>
             <v-layout wrap>
               <v-flex d-flex xs6>
-                <v-btn block :disabled="pending" @click="refreshSkin">
+                <v-btn block :disabled="pending" color="secondary" @click="refreshSkin">
                   <v-icon left>
                     refresh
                   </v-icon>
@@ -108,7 +108,7 @@
                 </v-btn>
               </v-flex>
               <v-flex d-flex xs6>
-                <v-btn block :disabled="pending" @click="refreshAccount">
+                <v-btn block :disabled="pending" color="secondary" @click="refreshAccount">
                   <v-icon left>
                     refresh
                   </v-icon>
@@ -120,7 +120,7 @@
           <v-flex d-flex shrink>
             <v-layout wrap>
               <v-flex d-flex xs6>
-                <v-btn block @click="toggleSwitchUser">
+                <v-btn block color="secondary" @click="toggleSwitchUser"> 
                   <v-icon left dark>
                     compare_arrows
                   </v-icon>
