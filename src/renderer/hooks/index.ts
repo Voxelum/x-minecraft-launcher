@@ -12,5 +12,9 @@ export * from './useBackgroundImage';
 export * from './useNativeDialog';
 export * from './useLaunchStatus';
 export * from './useNotifier';
+export * from './useMissingMods';
+export * from './useSaveLoad';
+export * from './useJava';
+
 
 
