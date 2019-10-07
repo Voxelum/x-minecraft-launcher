@@ -431,6 +431,17 @@
         "hint": "Drop mod's .jar/.litemod here to import.",
         "import": "Import Mod",
         "incompatible": "Incompatible Mod. Accept {accept}. Current: {actual}",
+        "missing": {
+            "absent": "",
+            "checkAvailabilities": "",
+            "downloadAll": "",
+            "downloadDescription": "",
+            "downloadTitle": "Download Missing Mods",
+            "downloading": "",
+            "existed": "",
+            "loading": "",
+            "unknown": ""
+        },
         "name": "Mod | Mods",
         "selected": "Selected Mods",
         "unselected": "Unselected Mods"
@@ -492,6 +503,7 @@
         "nameHint": "The name used to identify the game",
         "noLocalVersion": "No Local Version",
         "older": "Older",
+        "refreshServers": "Refresh Servers",
         "requireName": "The name is required",
         "select": "Select",
         "server": {
@@ -603,19 +615,9 @@
         "name": "Save | Saves"
     },
     "setting": {
-        "appearance": "Appearance",
         "allowPrerelease": "Download Prerelease",
         "allowPrereleaseDescription": "Prerelease might be instable",
-        "showParticle": "Show Particles",
-        "showParticleDescription": "Show particles in background (May impact performance)",
-        "particleMode": {
-            "": "Particle Mode",
-            "push": "Push",
-            "remove": "Remove",
-            "repulse": "Repulse",
-            "bubble": "Bubble"
-        },
-        "particleModeDescription": "Select the particle click behavior",
+        "appearance": "Appearance",
         "apply": "Apply Setting",
         "autoDownload": "Auto Download",
         "autoDownloadDescription": "Auto Download Update if it's Avaiable",
@@ -635,10 +637,20 @@
         "location": "Store Location",
         "name": "Global Setting | Global Settings",
         "noUpdateAvailable": "No Update Available",
+        "particleMode": {
+            "": "Particle Mode",
+            "bubble": "Bubble",
+            "push": "Push",
+            "remove": "Remove",
+            "repulse": "Repulse"
+        },
+        "particleModeDescription": "Select the particle click behavior",
         "resolution": "Default Resolution",
         "setRootCause": "You will loose all your data (Maps, Resource Packs, Mods) if you don't check \"Migrate data\" option below.",
         "setRootDescription": "This will change the root data folder of this launcher and minecraft.",
         "setRootTitle": "Set to a new storage location",
+        "showParticle": "Show Particles",
+        "showParticleDescription": "Show particles in background (May impact performance)",
         "showRoot": "Show",
         "theme": "Theme",
         "update": "Update",

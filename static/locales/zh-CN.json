@@ -4,6 +4,7 @@
     "add": "添加",
     "advanced": "高级",
     "author": "作者",
+    "back": "返回",
     "buttonSettings": {
         "drop": "丢弃",
         "jump": "跳",
@@ -419,6 +420,17 @@
         "hint": "将Mod的jar文件拖入此处来导入",
         "import": "导入 Mod",
         "incompatible": "不兼容Minecraft {actual} 的Mod。需要Minecraft {accept}。",
+        "missing": {
+            "absent": "",
+            "checkAvailabilities": "",
+            "downloadAll": "",
+            "downloadDescription": "",
+            "downloadTitle": "服务器缺失一些 Mod",
+            "downloading": "",
+            "existed": "已存在",
+            "loading": "",
+            "unknown": ""
+        },
         "name": "Mod | Mods",
         "selected": "已选 Mods",
         "unselected": "未选 Mods"
@@ -483,6 +495,7 @@
         "nameHint": "名称便于以后识别",
         "noLocalVersion": "没有本地版本",
         "older": "三天前",
+        "refreshServers": "刷新服务器",
         "requireName": "必须填写名称",
         "select": "选择",
         "server": {
@@ -593,19 +606,9 @@
         "name": "地图存档 | 地图存档"
     },
     "setting": {
-        "appearance": "外观",
         "allowPrerelease": "是否下载抢先版",
         "allowPrereleaseDescription": "抢先版可能不是那么稳定",
-        "showParticle": "显示粒子",
-        "showParticleDescription": "是否在背景显示粒子效果 (这会影响性能，觉得卡可以关了)",
-        "particleMode": {
-            "": "粒子特效",
-            "push": "增加",
-            "remove": "移除",
-            "repulse": "击退",
-            "bubble": "旗袍"
-        },
-        "particleModeDescription": "选择当你点击粒子时的特效",
+        "appearance": "外观",
         "apply": "开始迁移",
         "autoDownload": "自动下载",
         "autoDownloadDescription": "自动下载最新的版本",
@@ -625,10 +628,20 @@
         "location": "数据存储位置",
         "name": "设置",
         "noUpdateAvailable": "目前没有可用更新",
+        "particleMode": {
+            "": "粒子特效",
+            "bubble": "旗袍",
+            "push": "增加",
+            "remove": "移除",
+            "repulse": "击退"
+        },
+        "particleModeDescription": "选择当你点击粒子时的特效",
         "resolution": "Minecraft默认窗口大小",
         "setRootCause": "如果你不勾选下面的“迁移数据”选项，你将会失去现在的所有数据（包括地图存档，资源包等）。",
         "setRootDescription": "这将改变启动器识别的Minecraft根目录。",
         "setRootTitle": "迁移启动器到新的位置",
+        "showParticle": "显示粒子",
+        "showParticleDescription": "是否在背景显示粒子效果 (这会影响性能，觉得卡可以关了)",
         "showRoot": "浏览",
         "theme": "外观主题",
         "update": "升级设置",
