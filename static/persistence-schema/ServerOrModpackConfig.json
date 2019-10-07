@@ -186,13 +186,10 @@
         }
     },
     "required": [
-        "author",
         "blur",
         "creationDate",
         "deployments",
-        "description",
         "hideLauncher",
-        "host",
         "icon",
         "id",
         "image",
@@ -200,7 +197,6 @@
         "lastAccessDate",
         "mcOptions",
         "name",
-        "port",
         "resolution",
         "showLog",
         "type",

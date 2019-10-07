@@ -179,21 +179,27 @@
             "type": "object",
             "properties": {
                 "hostName": {
+                    "description": "The host url, like https://xxx.xxx.com",
                     "type": "string"
                 },
                 "authenticate": {
+                    "description": "Authenticate path, in the form of `/your-endpoint`.\nUse to login",
                     "type": "string"
                 },
                 "refresh": {
+                    "description": "Use to refresh access token",
                     "type": "string"
                 },
                 "validate": {
+                    "description": "Use to validate the user access token",
                     "type": "string"
                 },
                 "invalidate": {
+                    "description": "Use to logout user (invalidate user access token)",
                     "type": "string"
                 },
                 "signout": {
+                    "description": "Use to logout user (by username and password)",
                     "type": "string"
                 }
             },
@@ -214,12 +220,15 @@
                     "type": "string"
                 },
                 "profile": {
+                    "description": "Full url to query profile by uuid. Place the uuid as `${uuid}` in this url",
                     "type": "string"
                 },
                 "profileByName": {
+                    "description": "Full url to query profile by name. Place the name as `${name}` in this url",
                     "type": "string"
                 },
                 "texture": {
+                    "description": "Full url to set texture by profile uuid and texture type. Place uuid as `${uuid}` and type as `${type}`",
                     "type": "string"
                 }
             },
