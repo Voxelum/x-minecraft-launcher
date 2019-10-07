@@ -1,11 +1,10 @@
 # Voxelauncher
 
 [![Build Status](https://travis-ci.org/voxelum/VoxeLauncher.svg?branch=master)](https://travis-ci.org/voxelum/VoxeLauncher)
+<!-- [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e75f39022a114ab9aabf266425ae8b9e)](https://www.codacy.com/app/voxelum/VoxeLauncher?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=voxelum/VoxeLauncher&amp;utm_campaign=Badge_Grade) -->
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 > An WIP Minecraft Launcher based on electron-vue 
-
-[Old Readme](README.old.md)
 
 ## General RoadMap
 
@@ -45,13 +44,10 @@ The main is the "backend" of the launcher. It manages the windows, and all the p
 
 The renderer is/are just (a) browsers which communicate with main. It maintains a copy of the store. (I can be a full copy, or a partial copy) User's input will trigger an [action](https://vuex.vuejs.org/guide/actions.html) or [commit](https://vuex.vuejs.org/guide/mutations.html), and it will be sync to the main. Though, it does't require any extra action for developer. The local commit and action will automatically send to main. The developer can treat the renderer as a normal vue application.
 
-### Project Tech Stack
+### Using Vscode Typescript Intellisense
 
-After a whole refactor, the project is mostly covered by Typescript.
+The project is mainly written by js. Though, by adding tricky typescript definition files (d.ts), we can have useful code snippets even for vue commit/dispatch! That really save my brain and improve the productivity. See the [store definition file](src/universal/store/store.d.ts) for more details.
 
-Though, this is not optimized now. Typescript on vue side now is lagging the dev compile time. Maybe optimize it later.
-
-The vue part is migrating to [vue composition API](https://github.com/vuejs/composition-api) interface.
 
 ## Dev
 
@@ -115,7 +111,7 @@ npm test
 
 The launcher core is in [seperated project](https://github.com/voxelum/minecraft-launcher-core-node) written in typescript. 
 
-At the same time, the launcher core logic is guard by typescript.
+At the same time, the launcher core logic is guard by typescript definition file. Since the project enable the `checkJs` option in `jsconfig.json`. The vscode editor will perform type check on the vuex store part, which enable the type intellisense on usage of vuex. 
 
 For example, you will get intellisense during you write the vuex module:
 
@@ -125,22 +121,11 @@ Also, the vscode will hint you in .vue files:
 
 ![](/misc/typehint1.png)
 
-*The image is a little bit outdate since we are using composition api now.*
-
-#### Recommended way to interact with Vuex
-
-- Create a new file for hook in `src/renderer/hooks` folder, and export the hook throw `src/renderer/hooks/index.ts`
-  - Wrap vuex operation in your hook
-- Import your hook by `import { yourHook } from '@/hooks'` in your vue file
-- Use hook in vue file without directly access of vuex
-
-#### Legacy way to use Vuex
-
 You may already notice that, in .vue file, it uses `$repo` but not `$store` property to access vuex store. This is just a redirect. `$repo` is just another reference of `$store`. It's necessary to let the type system accept my type definitoin.
 
 Each vuex module has a corresponding definitoin file. If you want to add a state/getter/mutation/action to a module, you should firstly add the definition of that state/getter/mutation/action in the definition file.
 
-The project overwrite the some vue/vuex definition. You can check [this file](/src/universal/store/index.ts) to see the implemantion detail.
+The project overwrite the some vue/vuex definition. You can check [this file](/src/universal/store/store.d.ts) to see the implemantion detail.
 
 ### A better Dev experience with VSCode debugger 
 
@@ -191,37 +176,37 @@ Here we list the features & corresponding files to implement the features.
 
 | Feature                              | Core Logic File             | Related Vuex Actions                                           | Who Trigger                     | UI                          |
 | ------------------------------------ | --------------------------- | -------------------------------------------------------------- | ------------------------------- | --------------------------- |
-| User Login                           | user.ts                     | login                                                          | User by UI                      | DialogLogin.vue               |
-| User Skin Display                    | user.ts                     | refreshSkin                                                    | -                               | UserPage.vue                |
-| User Skin Upload                     | user.ts                     | uploadSkin                                                     | User by UI                      | UserPage.vue                |
-| User Mojang Identity Validataition   | user.ts                     | checkLocation, getChallenges, submitChallenges                 | Launcher Initialize, User by UI | UserPage.vue                |
-| User Logout                          | user.ts                     | logout                                                         | User by UI                      | UserPage.vue                |
-| Launch Profile Creation              | profile.ts                  | createProfile, createAndSelectProfile                          | User by UI                      | ProfilesPage.vue            |
-| Server Profile Creation              | profile.ts                  | createProfile, createAndSelectProfile, createProfileFromServer | User by UI                      | ProfilesPage.vue            |
-| Edit Basic Profile Setting           | profile.ts                  | editProfile                                                    | User by UI                      | BaseSettingPage.vue         |
-| Edit Launch Setting (Java)           | profile.ts                  | editProfile                                                    | User by UI                      | AdvancedSettingPage.vue     |
-| Select Mods to Launch                | profile.ts                  | editProfile                                                    | User by UI                      | ModSettingPage.vue          |
-| Select Resource Packs to Launch      | profile.ts                  | editProfile                                                    | User by UI                      | ResourcePackSettingPage.vue |
-| Modify Game Setting                  | profile.ts                  | mutation: gamesettings                                         | User by UI                      | GameSettingPage.vue         |
-| Select Launch Version                | profile.ts                  | editProfile                                                    | User by UI                      | VersionSettingPage.vue      |
-| Ping Server                          | profile.ts                  | pingServer                                                     | User by UI                      | HomePage.vue                |
-| Ping All Servers in a Profile        | profile.ts                  | pingServers                                                    | User by UI                      | HomePage.vue                |
-| Import Modpack                       | profile.ts                  | importProfile                                                  | User by UI                      | HomePage.vue                |
-| Export Modpack                       | profile.ts                  | exportProfile                                                  | User by UI                      | HomePage.vue                |
-| Diagnose Profile (Detect Problems)   | diagnose.ts                 | diagnoseProfile                                                | Any Changes by editProfile      | -                           |
-| Fix Profile Problems                 | diagnose.ts                 | fixProfile                                                     | User by UI                      | HomePage.vue                |
-| Auto Detect Java Location on Disk    | java.ts                     | refreshLocalJava                                               | Launcher Initialize             | -                           |
-| Install Java                         | java.ts                     | installJava                                                    | User by UI                      | JavaWizard.vue              |
-| Fetch Minecraft Versions List        | version.ts                  | refreshMinecraft                                               | Launcher Initialize             | VersionSettingPage.vue      |
-| Fetch Forge Versions List            | version.ts                  | refreshForge                                                   | User by UI, Launcher Initialize | VersionSettingPage.vue      |
-| Install Minecraft Version            | version.ts                  | installMinecraft                                               | User Fix Problems               | -                           |
-| Install Forge Version                | version.ts                  | installForge                                                   | User Fix Problems               | -                           |
-| Scan Installed Versions on Disk      | version.ts                  | refreshVersions                                                | User Fix Problems               | -                           |
-| Install Version Missing Dependencies | version.ts                  | installDependencies                                            | User Fix Problems               | -                           |
-| Import Mods                          | resource.ts                 | importResource                                                 | User by UI                      | ModSettingPage.vue          |
-| Import Resource Packs                | resource.ts                 | importResource                                                 | User by UI                      | ResourcePackSettingPage.vue |
-| Display Mod Compatibility            | universal/utils/versions.ts | -                                                              | UI Initialize                   | ModCard.vue                 |
-| Display Resource Pack Compatibility  | universal/utils/versions.ts | -                                                              | UI Initialize                   | ResourcePackCard.vue        |
+| User Login                           | user.js                     | login                                                          | User by UI                      | DialogLogin.vue               |
+| User Skin Display                    | user.js                     | refreshSkin                                                    | -                               | UserPage.vue                |
+| User Skin Upload                     | user.js                     | uploadSkin                                                     | User by UI                      | UserPage.vue                |
+| User Mojang Identity Validataition   | user.js                     | checkLocation, getChallenges, submitChallenges                 | Launcher Initialize, User by UI | UserPage.vue                |
+| User Logout                          | user.js                     | logout                                                         | User by UI                      | UserPage.vue                |
+| Launch Profile Creation              | profile.js                  | createProfile, createAndSelectProfile                          | User by UI                      | ProfilesPage.vue            |
+| Server Profile Creation              | profile.js                  | createProfile, createAndSelectProfile, createProfileFromServer | User by UI                      | ProfilesPage.vue            |
+| Edit Basic Profile Setting           | profile.js                  | editProfile                                                    | User by UI                      | BaseSettingPage.vue         |
+| Edit Launch Setting (Java)           | profile.js                  | editProfile                                                    | User by UI                      | AdvancedSettingPage.vue     |
+| Select Mods to Launch                | profile.js                  | editProfile                                                    | User by UI                      | ModSettingPage.vue          |
+| Select Resource Packs to Launch      | profile.js                  | editProfile                                                    | User by UI                      | ResourcePackSettingPage.vue |
+| Modify Game Setting                  | profile.js                  | mutation: gamesettings                                         | User by UI                      | GameSettingPage.vue         |
+| Select Launch Version                | profile.js                  | editProfile                                                    | User by UI                      | VersionSettingPage.vue      |
+| Ping Server                          | profile.js                  | pingServer                                                     | User by UI                      | HomePage.vue                |
+| Ping All Servers in a Profile        | profile.js                  | pingServers                                                    | User by UI                      | HomePage.vue                |
+| Import Modpack                       | profile.js                  | importProfile                                                  | User by UI                      | HomePage.vue                |
+| Export Modpack                       | profile.js                  | exportProfile                                                  | User by UI                      | HomePage.vue                |
+| Diagnose Profile (Detect Problems)   | diagnose.js                 | diagnoseProfile                                                | Any Changes by editProfile      | -                           |
+| Fix Profile Problems                 | diagnose.js                 | fixProfile                                                     | User by UI                      | HomePage.vue                |
+| Auto Detect Java Location on Disk    | java.js                     | refreshLocalJava                                               | Launcher Initialize             | -                           |
+| Install Java                         | java.js                     | installJava                                                    | User by UI                      | JavaWizard.vue              |
+| Fetch Minecraft Versions List        | version.js                  | refreshMinecraft                                               | Launcher Initialize             | VersionSettingPage.vue      |
+| Fetch Forge Versions List            | version.js                  | refreshForge                                                   | User by UI, Launcher Initialize | VersionSettingPage.vue      |
+| Install Minecraft Version            | version.js                  | installMinecraft                                               | User Fix Problems               | -                           |
+| Install Forge Version                | version.js                  | installForge                                                   | User Fix Problems               | -                           |
+| Scan Installed Versions on Disk      | version.js                  | refreshVersions                                                | User Fix Problems               | -                           |
+| Install Version Missing Dependencies | version.js                  | installDependencies                                            | User Fix Problems               | -                           |
+| Import Mods                          | resource.js                 | importResource                                                 | User by UI                      | ModSettingPage.vue          |
+| Import Resource Packs                | resource.js                 | importResource                                                 | User by UI                      | ResourcePackSettingPage.vue |
+| Display Mod Compatibility            | universal/utils/versions.js | -                                                              | UI Initialize                   | ModCard.vue                 |
+| Display Resource Pack Compatibility  | universal/utils/versions.js | -                                                              | UI Initialize                   | ResourcePackCard.vue        |
 
 
 ## LICENSE 
