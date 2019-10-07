@@ -39,7 +39,7 @@ export default {
     const router = useRouter();
     const problems = computed(() => getters.problems);
     const problemsLevelColor = computed(() => (getters.problems.some(p => !p.optional) ? 'red' : 'warning'));
-    const refreshing = computed(() => state.profile.refreshing);
+    const refreshing = computed(() => getters.refreshing);
 
     async function handleManualFix(problem) {
       let handle;
