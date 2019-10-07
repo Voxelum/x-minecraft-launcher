@@ -25,56 +25,64 @@
       </template>
     </v-toolbar>
     <v-tabs-items v-model="tab">
-      <v-tab-item v-for="item in 2" :key="item">
-        <div style="min-height: 450px; max-height: 450px; overflow: auto; background: #424242">
-          <v-list v-if="!content" :key="0">
-            <v-list-tile v-for="i in files" :key="i" v-ripple avatar @click="showFile(i)">
-              <v-list-tile-avatar>
-                <v-icon>
-                  clear_all
-                </v-icon>
-              </v-list-tile-avatar>
-              <v-list-tile-content>
-                <v-list-tile-title>{{ i }}</v-list-tile-title>
-              </v-list-tile-content>
-              <v-list-tile-action>
-                <v-list-tile-action>
-                  <v-btn icon color="red" flat @click="removeFile($event, i)">
-                    <v-icon>delete</v-icon>
+      <template v-for="item in [0, 1]">
+        <v-tab-item :key="item">
+          <div style="min-height: 450px; max-height: 450px; overflow: auto; background: #424242">
+            <transition name="fade-transition" mode="out-in">
+              <v-list v-if="contents[item] === ''" :key="0">
+                <v-list-tile v-for="i in files[item]" :key="i" v-ripple :disabled="loadingContent" avatar @click="showFile(i)">
+                  <v-list-tile-avatar>
+                    <v-icon>
+                      clear_all
+                    </v-icon>
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title>{{ i }}</v-list-tile-title>
+                  </v-list-tile-content>
+                  <v-list-tile-action>
+                    <v-btn icon color="white" flat @click="openFile($event, i)">
+                      <v-icon>folder</v-icon>
+                    </v-btn>
+                  </v-list-tile-action>
+                  <v-list-tile-action>
+                    <v-btn icon color="red" flat @click="removeFile($event, i)">
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-list-tile-action>
+                </v-list-tile>
+              </v-list>
+              <div v-else :key="1">
+                <v-card-title primary-title>
+                  {{ showedFile }}
+                  <v-spacer />
+                  <v-btn flat @click="goBack">
+                    <v-icon left>
+                      arrow_back
+                    </v-icon>
+                    {{ $t('back') }}
                   </v-btn>
-                </v-list-tile-action>
-              </v-list-tile-action>
-            </v-list-tile>
-          </v-list>
-          <div v-else :key="1">
-            <v-card-title primary-title>
-              {{ showedFile }}
-              <v-spacer />
-              <v-btn flat @click="goBack">
-                <v-icon left>
-                  arrow_back
-                </v-icon>
-                {{ $t('back') }}
-              </v-btn>
-            </v-card-title>
-            <v-textarea 
-              auto-grow
-              autofocus
-              box
-              readonly
-              no-resize
-              hide-details
-              :value="content" style="margin: 8px;" />
+                </v-card-title>
+                <v-textarea 
+                  auto-grow
+                  autofocus
+                  box
+                  readonly
+                  hide-details
+                  :value="contents[item]" 
+                  style="margin: 8px;" />
+              </div>
+            </transition>
           </div>
-        </div>
-      </v-tab-item>
+        </v-tab-item>
+      </template>
     </v-tabs-items>
   </v-dialog>
 </template>
 
 <script>
-import { reactive, toRefs, watch } from '@vue/composition-api';
+import { reactive, toRefs, watch, set } from '@vue/composition-api';
 import { useStore, useDialogSelf } from '@/hooks';
+import { remote } from 'electron';
 
 export default {
   setup() {
@@ -86,15 +94,15 @@ export default {
       loadingContent: false,
       loadingList: false,
       showedFile: '',
-      files: [],
+      files: [[], []],
 
-      content: '',
+      contents: ['', ''],
     });
     watch(isShown, (s) => { if (s) { loadLogs(); } });
     function loadLogs() {
       data.loadingList = true;
       dispatch('listLogs').then((l) => {
-        data.files = l;
+        data.files[0] = l;
       }).finally(() => {
         data.loadingList = false;
       });
@@ -102,7 +110,7 @@ export default {
     function loadCrashes() {
       data.loadingList = true;
       dispatch('listCrashReports').then((l) => {
-        data.files = l;
+        data.files[1] = l;
       }).finally(() => {
         data.loadingList = false;
       });
@@ -122,37 +130,42 @@ export default {
       },
       showFile(i) {
         const name = i;
+        if (data.loadingContent) return;
         if (name !== data.showedFile) {
           data.loadingContent = true;
           data.showedFile = name;
           if (data.tab === 1) {
-            dispatch('getLogContent', name)
+            dispatch('getCrashReportContent', name)
               .then((c) => {
-                data.content = c;
+                data.contents[1] = c;
               }).finally(() => {
                 data.loadingContent = false;
               });
           } else {
             dispatch('getLogContent', name)
               .then((c) => {
-                data.content = c;
+                data.contents[0] = c;
               }).finally(() => {
                 data.loadingContent = false;
               });
           }
         }
       },
+      openFile(event, i) {
+        const name = i;
+
+        event.preventDefault();
+        // remote.shell.showItemInFolder()
+      },
       goBack() {
-        data.content = '';
+        set(data.contents, data.tab, '');
       },
       goLog() {
         data.tab = 0;
-        data.content = '';
         loadLogs();
       },
       goCrash() {
         data.tab = 1;
-        data.content = '';
         loadCrashes();
       },
       close() {
