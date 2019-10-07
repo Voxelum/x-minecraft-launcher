@@ -141,8 +141,8 @@
     },
     "dependencies": {
         "@vue/composition-api": "^0.3.1",
-        "@xmcl/minecraft-launcher-core": "^0.1.22",
-        "@xmcl/unzip": "^0.2.4",
+        "@xmcl/minecraft-launcher-core": "^0.1.24",
+        "@xmcl/unzip": "^0.2.5",
         "ajv": "^6.10.2",
         "electron-updater": "^4.0.6",
         "fast-html-parser": "^1.0.1",
