@@ -37,22 +37,28 @@
 
 <script>
 import { useServerStatus, useStore } from '@/hooks';
-import { ref } from '@vue/composition-api';
+import { ref, onMounted } from '@vue/composition-api';
 
 export default {
   setup() {
     const status = useServerStatus();
     const loading = ref(false);
     const { dispatch } = useStore();
+    function refreshServer() {
+      loading.value = true;
+      dispatch('refreshProfile').finally(() => {
+        loading.value = false;
+      });
+    }
+    onMounted(() => {
+      if (status.ping.value === -1) {
+        refreshServer();
+      }
+    });
     return {
       ...status,
       loading,
-      refreshServer() {
-        loading.value = true;
-        dispatch('refreshProfile').finally(() => {
-          loading.value = false;
-        });
-      },
+      refreshServer,
     };
   },
 };

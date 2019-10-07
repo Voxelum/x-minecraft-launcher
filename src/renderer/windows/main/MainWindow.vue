@@ -1,9 +1,12 @@
 <template>
   <vue-particles v-if="loading" color="#dedede" style="position: absolute; width: 100%; height: 100%;" />
   <v-layout v-else fill-height>
-    <v-navigation-drawer :value="true" mini-variant stateless dark 
+    <v-navigation-drawer :value="true" :mini-variant="mini" stateless dark 
                          style="border-radius: 2px 0 0 2px;"
-                         class="moveable">
+                         class="moveable"
+                         @mouseenter="onEnterBar"
+                         @mouseover="onHoverBar"
+                         @mouseleave="onLeaveBar">
       <v-toolbar flat class="transparent">
         <v-list class="pa-0 non-moveable">
           <v-list-tile avatar @click="goBack">
@@ -73,15 +76,15 @@
           <router-view />
           <!-- </keep-alive> -->
         </transition>
-        <context-menu />
       </v-card>
     </v-layout>
+    <context-menu />
     <notifier />
     <dialogs />
   </v-layout>
 </template>
 
-<script lang=ts>
+<script>
 import 'renderer/assets/common.css';
 import {
   onMounted,
@@ -104,9 +107,6 @@ import {
   useCurrentUserStatus,
   useBackgroundImage,
   useTasks,
-  DIALOG_SHOWING,
-  DIALOG_OPTION,
-  DIALOG_RESULT,
   provideDialog,
   provideNotifier,
 } from '@/hooks';
@@ -125,16 +125,12 @@ export default createComponent({
     const { blur, backgroundImage } = useBackgroundImage();
     const router = useRouter();
 
-    const data = reactive<{
-      loading: boolean;
-      localHistory: string[];
-      timeTraveling: boolean;
-      taskDialog: boolean;
-    }>({
+    const data = reactive({
       loading: true,
       localHistory: [],
       timeTraveling: false,
       taskDialog: false,
+      mini: true,
     });
     
     onMounted(() => {
@@ -174,6 +170,8 @@ export default createComponent({
       data.timeTraveling = false;
     }
 
+    let startHoverTime = -1;
+
     return {
       ...toRefs(data),
       activeTasksCount,
@@ -184,6 +182,18 @@ export default createComponent({
       backgroundImage,
       particleMode,
       showParticle,
+      onEnterBar() {
+        startHoverTime = Date.now();
+      },
+      onHoverBar() {
+        if (Date.now() - startHoverTime > 1000) {
+          data.mini = true;
+        }
+      },
+      onLeaveBar() {
+        startHoverTime = -1;
+        data.mini = false;
+      },
     };
   },
 });
