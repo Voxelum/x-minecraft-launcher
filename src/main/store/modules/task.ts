@@ -1,6 +1,6 @@
 import { v4 } from 'uuid';
 import { ipcMain } from 'electron';
-import { requireString } from 'universal/utils/object';
+import { requireString } from 'main/utils';
 import base, { TaskModule, TaskState } from 'universal/store/modules/task';
 import { Task } from '@xmcl/minecraft-launcher-core';
 
@@ -166,7 +166,7 @@ const mod: TaskModule = {
 
                 taskWatcher.status(node._internalId, 'successed');
             });
-            task.on('error', (error, node) => {
+            task.on('node-error', (error, node) => {
                 if (task.root === node && !task.background) {
                     ipcMain.emit('task-failed', node._internalId, error);
                     console.error(`Task [${node.name}] failed.`);

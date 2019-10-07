@@ -1,9 +1,9 @@
 
+import { BrowserWindow, Menu } from 'electron';
 import { resolve } from 'path';
-import { Menu, BrowserWindow } from 'electron';
-import { ClientContext } from './windowsManager';
-import { Store } from 'vuex';
 import { RootState } from 'universal/store';
+import { Store } from 'vuex';
+import { ClientContext } from './windowsManager';
 
 export default function setup(context: ClientContext, store: Store<RootState>) {
     let mainRef: BrowserWindow | null;

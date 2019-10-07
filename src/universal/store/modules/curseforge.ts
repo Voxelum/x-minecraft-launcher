@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { Context, Module } from "..";
 import { Resource } from "./resource";
+import { Forge } from '@xmcl/minecraft-launcher-core';
 
 export declare namespace CurseForgeModule {
     interface State {
@@ -20,9 +21,12 @@ export declare namespace CurseForgeModule {
     type ProjectType = 'mc-mods' | 'texture-packs' | 'worlds' | 'modpacks';
 
     interface DownloadFile {
+        /**
+         * The number id of the curseforge file 
+         */
         id: number;
         name: string;
-        href: string;
+        href?: string;
 
         projectType: ProjectType;
         projectPath: string;
@@ -170,6 +174,7 @@ export declare namespace CurseForgeModule {
 
         importCurseforgeModpack(context: C, option: { profile: string, path: string }): Promise<TaskHandle>;
 
+        fetchMetadataByModId(context: C, option: { modid: string; version: string }): Promise<Forge.MetaData & { projectId: string; fileId: string }>;
         downloadAndImportFile(context: C, payload: DownloadFile): Promise<TaskHandle>;
     }
 }
@@ -224,10 +229,10 @@ const mod: CurseForgeModule = {
     },
     mutations: {
         startDownloadCurseforgeFile(state, p) {
-            Vue.set(state.downloading, p.download.href, p);
+            Vue.set(state.downloading, p.download.id.toString(), p);
         },
         endDownloadCurseforgeFile(state, p) {
-            Vue.delete(state.downloading, p.href);
+            Vue.delete(state.downloading, p.id.toString());
         },
     },
 };

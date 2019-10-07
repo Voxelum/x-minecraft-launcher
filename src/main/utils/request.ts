@@ -1,35 +1,51 @@
-import hparser from 'fast-html-parser';
-import { got } from '@xmcl/minecraft-launcher-core';
-import { ipcMain } from 'electron';
+import { vfs } from '@xmcl/util';
+import { app, BrowserWindow } from 'electron';
+import { HTMLElement, parse as parseHTML } from 'fast-html-parser';
+import { basename, join } from 'path';
 
-let ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36';
-// @ts-ignore
-ipcMain.on('user-agent', (event, arg) => {
-    ua = arg;
+let browser: BrowserWindow;
+let tempRoot: string = '';
+function getTempRoot() {
+    if (tempRoot === '')
+        tempRoot = join(app.getPath('userData'), 'temps');
+    return tempRoot;
+}
+const waitBrowser = new Promise((resolve, reject) => {
+    app.once('ready', () => {
+        browser = new BrowserWindow({
+            focusable: false,
+            webPreferences: {
+                javascript: false
+            },
+            show: false,
+        });
+        browser.setFocusable(false);
+        resolve();
+    })
 });
 
-/**
- * In memory cache
- */
-const cache: { [key: string]: any } = {};
-let cookie: string = '';
 
-async function request<T>(url: string, parser: (element: hparser.HTMLElement) => T) {
-    if (cache[url]) return cache[url];
-    const resp = await got.get(url, {
-        headers: {
-            'user-agent': ua,
-            cookie,
-        },
-    });
-    cookie = resp.headers.cookie || '';
-    const parsed = hparser.parse(resp.body);
-    const result = parser(parsed);
-    if (result) {
-        cache[url] = result;
-        setTimeout(() => { delete cache[url]; }, 60000);
-    }
-    return result;
+export async function request<T>(url: string, transformToObject: (element: HTMLElement) => T) {
+    const body = await fetchPageFromBrowser(url, getTempRoot())
+    const html = parseHTML(body);
+    return transformToObject(html);
 }
 
-export default request;
+async function fetchPageFromBrowser(url: string, root: string) {
+    await waitBrowser;
+    const cachePath = join(root, basename(new URL(url).pathname));
+    browser.loadURL(url, {
+        httpReferrer: browser.webContents.getURL() || '',
+    });
+    await new Promise((resolve, reject) => {
+        browser.webContents.once('did-finish-load', () => {
+            browser.webContents.savePage(cachePath, 'HTMLOnly', (e) => {
+                if (e) reject(e);
+                else resolve();
+            });
+        });
+    })
+    const buffer = await vfs.readFile(cachePath);
+    return buffer.toString();
+}
+

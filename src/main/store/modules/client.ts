@@ -1,6 +1,6 @@
 import base, { ClientModule } from 'universal/store/modules/client';
 import { join } from 'path';
-import fs from 'main/utils/vfs';
+import { fs } from 'main/utils';
 
 const mod: ClientModule = {
     ...base,

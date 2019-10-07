@@ -2,9 +2,9 @@ import {
     app, ipcMain,
 } from 'electron';
 
-import { promises as fs, existsSync, mkdirSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 import path from 'path';
-import vfs from 'main/utils/vfs';
+import { fs } from 'main/utils';
 
 const appData = app.getPath('appData');
 const persistRoot = `${appData}/voxelauncher`;
@@ -54,7 +54,7 @@ async function handleRootChange(event: any, { path: newRoot, migrate, clear }: {
         }
 
         if (migrate) {
-            await vfs.copy(oldRoot, newRoot);
+            await fs.copy(oldRoot, newRoot);
         }
 
         if (clear) {

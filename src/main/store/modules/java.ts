@@ -1,16 +1,14 @@
 import { Task } from '@xmcl/minecraft-launcher-core';
 import { exec } from 'child_process';
 import { app, shell } from 'electron';
-import inGFW from 'in-gfw';
-import { officialEndpoint, selfHostAPI } from 'main/utils/jre';
-import fs from 'main/utils/vfs';
-import os from 'os';
+import { fs, installJreFromMojang, platform, installJreFromSelfHost, gfw } from 'main/utils';
+import { EOL } from 'os';
 import { join } from 'path';
 import base, { JavaModule } from 'universal/store/modules/java';
 import { JavaConfig } from 'universal/store/modules/java.config';
 import { requireString } from 'universal/utils/object';
 
-const JAVA_FILE = os.platform() === 'win32' ? 'javaw.exe' : 'java';
+const JAVA_FILE = platform.name === 'windows' ? 'javaw.exe' : 'java';
 
 const mod: JavaModule = {
     ...base,
@@ -48,18 +46,18 @@ const mod: JavaModule = {
         },
         async installJava(context, fixing) {
             const task = Task.create('installJre', async (ctx) => {
-                context.commit('refreshingProfile', true);
+                context.commit('aquireProfile');
 
                 const local = join(context.rootState.root, 'jre', 'bin', JAVA_FILE);
                 await context.dispatch('resolveJava', local);
                 for (const j of context.state.all) {
                     if (j.path === local) {
-                        context.commit('refreshingProfile', false);
+                        context.commit('releaseProfile');
                         console.log(`Found exists installation at ${local}`);
                         return undefined;
                     }
                 }
-                const endpoint = await inGFW.net() ? selfHostAPI : officialEndpoint;
+                const endpoint = await gfw() ? installJreFromSelfHost : installJreFromMojang;
                 // const endpoint = officialEndpoint;
 
                 await endpoint(ctx);
@@ -69,7 +67,7 @@ const mod: JavaModule = {
                     await context.dispatch('editProfile', { java });
                 }
 
-                context.commit('refreshingProfile', false);
+                context.commit('releaseProfile');
                 return java;
             });
             return context.dispatch('executeTask', task);
@@ -121,7 +119,7 @@ const mod: JavaModule = {
          * scan local java locations and cache
          */
         async refreshLocalJava({ state, dispatch, commit }) {
-            commit('refreshingProfile', true);
+            commit('aquireProfile');
             try {
                 const unchecked = new Set<string>();
 
@@ -139,11 +137,11 @@ const mod: JavaModule = {
                     });
                 });
 
-                if (os.platform() === 'win32') {
+                if (platform.name === 'windows') {
                     const out = await new Promise<string[]>((resolve, reject) => {
                         exec('REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome', (error, stdout, stderr) => {
                             if (!stdout) resolve([]);
-                            resolve(stdout.split(os.EOL).map(item => item.replace(/[\r\n]/g, ''))
+                            resolve(stdout.split(EOL).map(item => item.replace(/[\r\n]/g, ''))
                                 .filter(item => item != null && item !== undefined)
                                 .filter(item => item[0] === ' ')
                                 .map(item => `${item.split('    ')[3]}\\bin\\javaw.exe`));
@@ -152,7 +150,7 @@ const mod: JavaModule = {
                     for (const o of [...out, ...await where()]) {
                         unchecked.add(o);
                     }
-                } else if (os.platform() === 'darwin') {
+                } else if (platform.name === 'osx') {
                     unchecked.add('/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java');
                     unchecked.add(await which());
                 } else {
@@ -166,7 +164,7 @@ const mod: JavaModule = {
 
                 await Promise.all(checkingList.map(jPath => dispatch('resolveJava', jPath)));
             } finally {
-                commit('refreshingProfile', false);
+                commit('releaseProfile');
             }
         },
     },

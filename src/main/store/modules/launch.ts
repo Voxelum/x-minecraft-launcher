@@ -1,8 +1,8 @@
 import { Util, Launcher, UserType } from '@xmcl/minecraft-launcher-core';
-import paths, { join } from 'path';
+import { join } from 'path';
 import { ipcMain } from 'electron';
 import base, { LauncherModule } from 'universal/store/modules/launch';
-import fs from 'main/utils/vfs';
+import { fs } from 'main/utils';
 
 function onerror(e: { message: string; type: string; }) {
     if (e.message.startsWith('Cannot find version ') || e.message.startsWith('No version file for ') || e.message.startsWith('No version jar for ')) {
@@ -42,7 +42,7 @@ const mod: LauncherModule = {
                     commit('launchErrors', { type: 'illegalAuth', content: [] });
                     return false;
                 }
-                
+
                 for (let problems = rootGetters.problems.filter(p => p.autofix), i = 0;
                     problems.length !== 0 && i < 1;
                     problems = rootGetters.problems.filter(p => p.autofix), i += 1) {
@@ -61,7 +61,7 @@ const mod: LauncherModule = {
                 commit('launchStatus', 'launching');
 
                 const debug = profile.showLog;
-                const minecraftFolder = new Util.MinecraftFolder(paths.join(rootState.root, 'profiles', profile.id));
+                const minecraftFolder = new Util.MinecraftFolder(join(rootState.root, 'profiles', profile.id));
 
                 /**
                  * real version name

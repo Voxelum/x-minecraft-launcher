@@ -1,9 +1,9 @@
-import { app } from 'electron';
-import locales from 'static/locales';
-import { autoUpdater, UpdaterSignal } from 'electron-updater';
 import { Task } from '@xmcl/minecraft-launcher-core';
+import { app } from 'electron';
+import { autoUpdater, UpdaterSignal } from 'electron-updater';
+import { gfw } from 'main/utils';
+import locales from 'static/locales';
 import base, { SettingModule } from 'universal/store/modules/setting';
-import isInGFW from 'in-gfw';
 
 const mod: SettingModule = {
     ...base,
@@ -98,7 +98,7 @@ const mod: SettingModule = {
             const task = Task.create('downloadUpdate', async (ctx) => {
                 if (!context.state.autoDownload) {
                     context.commit('downloadingUpdate', true);
-                    const swapDownloadSrc = await isInGFW().catch(_ => false);
+                    const swapDownloadSrc = await gfw();
                     let oldFeedUrl = '';
                     if (swapDownloadSrc) {
                         oldFeedUrl = autoUpdater.getFeedURL() || '';

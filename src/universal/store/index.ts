@@ -38,6 +38,7 @@ export interface BaseMutations {
     platform(state: BaseState, platform: NodeJS.Platform): void
 }
 export interface BaseActions {
+    quit(context: Context<BaseState, BaseGetters>): Promise<void>;
     showItemInFolder(context: Context<BaseState, BaseGetters>, item: string): Promise<void>;
     openItem(context: Context<BaseState, BaseGetters>, item: string): Promise<void>;
 }

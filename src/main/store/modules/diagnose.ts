@@ -7,8 +7,8 @@ const mod: DiagnoseModule = {
     actions: {
         async save(context, { mutation, payload }) {
             // TODO: check if this works 
-            if (context.rootState.profile.refreshing || mutation === 'refreshingProfile') return;
-            context.commit('refreshingProfile', true);
+            if (context.rootState.profile.refreshing || mutation === 'aquireProfile' || mutation === 'releaseProfile') return;
+            context.commit('aquireProfile');
             try {
                 if (mutation === 'selectProfile') {
                     await context.dispatch('diagnoseVersion');
@@ -43,11 +43,11 @@ const mod: DiagnoseModule = {
                     await context.dispatch('diagnoseServer');
                 }
             } finally {
-                context.commit('refreshingProfile', false);
+                context.commit('releaseProfile');
             }
         },
         async init(context) {
-            context.commit('refreshingProfile', true);
+            context.commit('aquireProfile');
             try {
                 console.log('Init with a full diagnose');
                 await context.dispatch('diagnoseVersion');
@@ -57,7 +57,7 @@ const mod: DiagnoseModule = {
                 await context.dispatch('diagnoseServer');
                 await context.dispatch('diagnoseUser');
             } finally {
-                context.commit('refreshingProfile', false);
+                context.commit('releaseProfile');
             }
         },
         async diagnoseMods(context) {
@@ -266,7 +266,7 @@ const mod: DiagnoseModule = {
             const recheck = {};
 
             context.commit('startResolveProblems', unfixed);
-            context.commit('refreshingProfile', true);
+            context.commit('aquireProfile');
 
             const profile = context.rootGetters.selectedProfile;
             const { version: versions } = profile;
@@ -274,7 +274,7 @@ const mod: DiagnoseModule = {
 
             const mcversion = versions.minecraft;
             if (mcversion === '') {
-                context.commit('refreshingProfile', false);
+                context.commit('releaseProfile');
                 context.commit('endResolveProblems', unfixed);
                 return;
             }
@@ -296,7 +296,7 @@ const mod: DiagnoseModule = {
                     Reflect.set(recheck, 'diagnoseVersion', true);
                     const mcvermeta = context.rootState.version.minecraft.versions.find(v => v.id === mcversion);
                     if (!mcvermeta) {
-                        throw { error: 'missingVersionMeta', version: mcvermeta };
+                        throw { error: 'MissingVersionMeta', version: mcvermeta };
                     }
                     const mcInstallHandle = await context.dispatch('installMinecraft', mcvermeta);
                     await context.dispatch('waitTask', mcInstallHandle);
@@ -396,7 +396,7 @@ const mod: DiagnoseModule = {
                 console.error(e);
             } finally {
                 context.commit('endResolveProblems', unfixed);
-                context.commit('refreshingProfile', false);
+                context.commit('releaseProfile');
                 for (const action of Object.keys(recheck)) {
                     // @ts-ignore
                     await context.dispatch(action);

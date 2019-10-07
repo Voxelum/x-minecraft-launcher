@@ -1,19 +1,17 @@
-import { watch, FSWatcher } from 'fs';
-import { gunzip } from 'zlib';
-import fs from 'main/utils/vfs';
-import { compressZipTo, includeAllToZip } from 'main/utils/zip';
-import { tmpdir } from 'os';
-import uuid from 'uuid';
-import { basename, resolve, join, dirname, relative } from 'path';
-import { latestMcRelease } from 'static/dummy.json';
 import { GameSetting, Server, Version, World } from '@xmcl/minecraft-launcher-core';
-import base, { createTemplate, ProfileModule } from 'universal/store/modules/profile';
-import { fitin, willBaselineChange } from 'universal/utils/object';
-import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/server-status';
 import { Unzip } from '@xmcl/unzip';
-import { ZipFile } from 'yazl';
 import { createHash } from 'crypto';
+import { FSWatcher, watch } from 'fs';
+import { compressZipTo, fitin, fs, includeAllToZip, willBaselineChange } from 'main/utils';
+import { tmpdir } from 'os';
+import { basename, dirname, join, relative, resolve } from 'path';
+import { latestMcRelease } from 'static/dummy.json';
+import base, { createTemplate, ProfileModule } from 'universal/store/modules/profile';
 import { ServerProfileConfig } from 'universal/store/modules/profile.config';
+import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/server-status';
+import { v4 } from 'uuid';
+import { ZipFile } from 'yazl';
+import { gunzip } from 'zlib';
 
 async function loadWorld(save: string) {
     try {
@@ -268,7 +266,7 @@ const mod: ProfileModule = {
         async createProfile(context, payload) {
             const latestRelease = context.rootGetters.minecraftRelease;
             const profile = createTemplate(
-                uuid(),
+                v4(),
                 context.rootGetters.defaultJava,
                 latestRelease.id,
                 payload.type || 'modpack',
@@ -346,7 +344,7 @@ const mod: ProfileModule = {
 
         async exportProfile(context, { id = context.state.id, dest, type = 'full' }) {
             if (context.state.refreshing) return;
-            context.commit('refreshingProfile', true);
+            context.commit('aquireProfile');
             try {
                 const root = context.rootState.root;
                 const from = join(root, 'profiles', id);
@@ -403,7 +401,7 @@ const mod: ProfileModule = {
                 file.end();
                 await promise;
             } finally {
-                context.commit('refreshingProfile', false);
+                context.commit('releaseProfile');
             }
         },
 
@@ -420,7 +418,7 @@ const mod: ProfileModule = {
             }
             const proiflePath = resolve(srcFolderPath, 'profile.json');
 
-            const id = uuid.v4();
+            const id = v4();
             const destFolderPath = context.rootGetters.path('profiles', id);
 
             await fs.ensureDir(destFolderPath);

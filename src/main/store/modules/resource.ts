@@ -1,15 +1,14 @@
 import { Forge, LiteLoader, ResourcePack, Task } from '@xmcl/minecraft-launcher-core';
-import Unzip from '@xmcl/unzip';
-import crypto from 'crypto';
+import { createHash, Hash } from 'crypto';
 import { net } from 'electron';
 import fileType from 'file-type';
-import fs from 'main/utils/vfs';
+import { fs, requireString } from 'main/utils';
 import { extname, basename, join, resolve } from 'path';
 import base, { ResourceModule, Resource } from 'universal/store/modules/resource';
-import { requireString } from 'universal/utils/object';
 import url from 'url';
+import Unzip from '@xmcl/unzip';
 
-async function hashFolder(folder: string, hasher: crypto.Hash) {
+async function hashFolder(folder: string, hasher: Hash) {
     const files = await fs.readdir(folder);
     for (const f of files) {
         const st = await fs.stat(f); // eslint-disable-line
@@ -25,7 +24,7 @@ async function hashFolder(folder: string, hasher: crypto.Hash) {
 async function readHash(file: string) {
     return new Promise<string>((resolve, reject) => {
         fs.createReadStream(file)
-            .pipe(crypto.createHash('sha1').setEncoding('hex'))
+            .pipe(createHash('sha1').setEncoding('hex'))
             // @ts-ignore
             .once('finish', function () { resolve(this.read()); })
             .once('error', reject);
@@ -336,7 +335,7 @@ const mod: ResourceModule = {
                         req.end();
                     });
 
-                    hash = crypto.createHash('sha1').update(data).digest('hex');
+                    hash = createHash('sha1').update(data).digest('hex');
                 } else {
                     name = basename(basename(path, '.zip'), '.jar');
                     const status = await fs.stat(path);
@@ -344,11 +343,11 @@ const mod: ResourceModule = {
                     if (status.isDirectory()) {
                         isDir = true;
                         ext = '';
-                        hash = (await hashFolder(path, crypto.createHash('sha1'))).digest('hex');
+                        hash = (await hashFolder(path, createHash('sha1'))).digest('hex');
                     } else {
                         data = await fs.readFile(path);
                         ext = extname(path);
-                        hash = crypto.createHash('sha1').update(data).digest('hex');
+                        hash = createHash('sha1').update(data).digest('hex');
                     }
                 }
 

@@ -2,43 +2,31 @@ import { Net, Task } from '@xmcl/minecraft-launcher-core';
 import Unzip from '@xmcl/unzip';
 import { exec } from 'child_process';
 import { createHash } from 'crypto';
-import { app, net } from 'electron';
+import { app } from 'electron';
 import { createDecompressor } from 'lzma-native';
-import os from 'os';
+import { platform } from './index';
 import { basename, join, resolve } from 'path';
-import fs from './vfs';
+import { fs } from './vfs';
 
-export async function officialEndpoint(context: Task.Context) {
+function resolveArch() {
+    switch (platform.arch) {
+        case 'x86':
+        case 'x32': return '32';
+        case 'x64': return '64';
+        default: return '32';
+    }
+}
+
+export async function installJreFromMojang(context: Task.Context) {
     console.log('Try auto Java from Mojang source');
     const root = app.getPath('userData');
-    function resolveArch() {
-        switch (os.arch()) {
-            case 'x86':
-            case 'x32': return '32';
-            case 'x64': return '64';
-            default: return '32';
-        }
-    }
-    function resolveSystem() {
-        switch (os.platform()) {
-            case 'darwin': return 'osx';
-            case 'win32': return 'windows';
-            case 'linux': return 'linux';
-            default: return '';
-        }
-    }
-    const info: { [system: string]: { [arch: string]: { jre: { sha1: string; url: string; version: string } } } } = await context.execute('fetchInfo', () => new Promise((resolve, reject) => {
-        const req = net.request('https://launchermeta.mojang.com/mc/launcher.json');
-        req.on('response', (response) => {
-            let str = '';
-            response.on('data', (buf) => { str += buf.toString(); });
-            response.on('end', () => { resolve(JSON.parse(str)); });
-        });
-        req.end();
-    }));
-    const system = resolveSystem();
+
+    const info: { [system: string]: { [arch: string]: { jre: { sha1: string; url: string; version: string } } } }
+        = await context.execute('fetchInfo',
+            () => Net.fetchJson('https://launchermeta.mojang.com/mc/launcher.json').then(r => r.body));
+    const system = platform.name;
     const arch = resolveArch();
-    if (system === '' || system === 'linux') {
+    if (system === 'unknown' || system === 'linux') {
         return '';
     }
     const { sha1, url, version } = info[system][arch].jre;
@@ -82,28 +70,18 @@ export async function officialEndpoint(context: Task.Context) {
     return version;
 }
 
-export async function selfHostAPI(context: Task.Context) {
+export async function installJreFromSelfHost(context: Task.Context) {
     console.log('Try auto Java from self hosted source');
     const root = app.getPath('userData');
-    function resolveArch() {
-        switch (os.arch()) {
-            case 'x86':
-            case 'x32': return '32';
-            case 'x64': return '64';
-            default: return '32';
-        }
-    }
     function resolveSystem() {
-        switch (os.platform()) {
-            case 'darwin': return 'osx';
-            case 'win32': return 'win';
-            case 'linux': return 'linux';
-            default: return '';
+        switch (platform.name) {
+            case 'windows': return 'win';
+            default: return platform.name;
         }
     }
     const system = resolveSystem();
     const arch = resolveArch();
-    if (system === '' || system === 'linux') {
+    if (system === 'unknown' || system === 'linux') {
         return;
     }
     const url = `https://voxelauncher.azurewebsites.net/api/v1/jre/${system}/${arch}`;
@@ -130,14 +108,13 @@ export async function selfHostAPI(context: Task.Context) {
     });
 }
 
-export async function bangbangAPI(context: Task.Context) {
+export async function installJreFromBMCLAPI(context: Task.Context) {
     console.log('Try auto Java from Bangbang source');
-    const x64 = os.arch() === 'x64';
-    const platform = os.platform();
+    const x64 = platform.arch === 'x64';
     function resolveJava() {
-        switch (platform) {
-            case 'darwin': return 'jre_mac.dmg';
-            case 'win32': return x64 ? 'jre_x64.exe' : 'jre_x86.exe';
+        switch (platform.name) {
+            case 'osx': return 'jre_mac.dmg';
+            case 'windows': return x64 ? 'jre_x64.exe' : 'jre_x86.exe';
             case 'linux': return x64 ? 'jre_x64.tar.gz' : 'jre_x86.tar.gz';
             default: return '';
         }
@@ -160,13 +137,13 @@ export async function bangbangAPI(context: Task.Context) {
             });
         });
     }
-    switch (platform) {
-        case 'darwin':
+    switch (platform.name) {
+        case 'osx':
             await fs.copyFile(join(__static, 'mac-jre-installer.sh'), join(root, 'temp', 'mac-jre-installer.sh'));
             await fs.mkdir(join(root, 'jre'));
             await exec_(join(root, 'temp', 'mac-jre-installer.sh'), { cwd: root });
             break;
-        case 'win32':
+        case 'windows':
             await exec_([destination, `INSTALLDIR=${javaRoot}`, 'STATIC=1', 'INSTALL_SILENT=1', 'SPONSORS=0'].join(' '));
             break;
         case 'linux':

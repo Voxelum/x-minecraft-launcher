@@ -1,14 +1,13 @@
-import { Task, Net, got } from '@xmcl/minecraft-launcher-core';
-import parser from 'fast-html-parser';
-import request from 'main/utils/request';
+import { got, Net, Task } from '@xmcl/minecraft-launcher-core';
+import Unzip from '@xmcl/unzip';
+import { TextNode, HTMLElement, Node, parse as parseHtml } from 'fast-html-parser';
+import { request, fs } from 'main/utils';
 import { join } from 'path';
 import querystring from 'querystring';
 import { finished } from 'stream';
 import base, { CurseForgeModule } from 'universal/store/modules/curseforge';
 import { parse as parseUrl } from 'url';
 import { promisify } from 'util';
-import Unzip from '@xmcl/unzip';
-import fs from 'main/utils/vfs';
 
 
 function getHref(file: CurseForgeModule.DownloadFile) {
@@ -26,16 +25,13 @@ function localDate(string: string) {
     return d.toLocaleDateString();
 }
 
-function notText(n: any) { return !(n instanceof parser.TextNode); }
-/**
- * @param {parser.Node | null} node
- */
-function convert(node: parser.Node | null) {
+function notText(n: any) { return !(n instanceof TextNode); }
+function convert(node: Node | null) {
     if (node === null || !node) return '';
     let text = '';
-    if (node instanceof parser.TextNode) {
+    if (node instanceof TextNode) {
         text += node.rawText;
-    } else if (node instanceof parser.HTMLElement) {
+    } else if (node instanceof HTMLElement) {
         if (node.tagName !== null) {
             if (node.tagName === 'a') {
                 let attrs = node.rawAttrs === '' ? '' : ` ${node.rawAttrs}`;
@@ -223,7 +219,6 @@ const mod: CurseForgeModule = {
                     // start handle override
 
                     const waitStream = promisify(finished);
-                    /** @param {import('@xmcl/unzip').Unzip.Entry} o */
                     async function pipeTo(o: Unzip.Entry) {
                         const dest = join(profileFolder, o.fileName.substring(manifest.override.length));
                         const readStream = await zipFile.openEntry(o);
@@ -409,20 +404,26 @@ const mod: CurseForgeModule = {
         async fetchCurseForgeProjectLicense(context, url) {
             if (url == null || !url) throw new Error('URL cannot be null');
             const { body } = await got(`https://www.curseforge.com${url}`);
-            return parser.parse(body).querySelector('.module').removeWhitespace().firstChild.rawText;
+            return parseHtml(body).querySelector('.module').removeWhitespace().firstChild.rawText;
         },
-
         async searchCurseforgeProjects(context, { keyword, type }) {
             const url = `https://www.curseforge.com/minecraft/${type}/search?search=${keyword}`;
             return request(url, root => root.querySelectorAll('.project-listing-row').map(processProjectListingRow));
         },
+
+        async fetchMetadataByModId(context, { modid, version }) {
+            // http://voxelauncher.azurewebsites.net/api/v1/mods/file/{modid}/{version}
+            const result = await Net.fetchJson(`http://voxelauncher.azurewebsites.net/api/v1/mods/file/${modid}/${version}`, { method: 'HEAD' });
+            return result.body as any;
+        },
+
         async downloadAndImportFile(context, payload) {
             const href = payload.href || getHref(payload);
             const uObject = parseUrl(href);
             const url = `https://www.curseforge.com${uObject.pathname}/file`;
 
             const task = Task.create('installCurseforgeFile', async (ctx) => {
-                if (context.rootGetters.isFileInstalled(payload)) {
+                if (context.rootGetters.isFileInstalled({ id: payload.id, href })) {
                     context.commit('endDownloadCurseforgeFile', payload);
                     return;
                 }

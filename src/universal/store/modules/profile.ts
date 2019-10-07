@@ -44,10 +44,9 @@ export declare namespace ProfileModule {
          */
         settings: GameSetting.Frame & { resourcePacks: Array<string> };
         /**
-         * If current launcher is refreshing the profile data
+         * The instance currently lock the profile
          */
-        refreshing: boolean;
-
+        refreshing: number;
         /**
          * The server statuses of all server profiles, modpack won't have this.
          */
@@ -60,6 +59,10 @@ export declare namespace ProfileModule {
         selectedProfile: ServerOrModpack;
         currentVersion: VersionModule.ResolvedVersion;
         deployingResources: { [domain: string]: Resource<any>[] };
+        /**
+         * If current launcher is refreshing the profile data
+         */
+        refreshing: boolean;
     }
 
     interface Mutations {
@@ -89,8 +92,10 @@ export declare namespace ProfileModule {
         profileCache(state: State, payload: { gamesettings?: GameSetting.Frame } | { serverInfos: Server.Info[] }): void
         serverStatus(state: State, status: Server.StatusFrame): void;
         profileSaves(state: State, worlds: Save[]): void;
-        refreshingProfile(state: State, refreshing: boolean): void;
         profileStatus(state: State, statuses: { [id: string]: Server.StatusFrame }): void;
+
+        aquireProfile(state: State): void;
+        releaseProfile(state: State): void;
     }
 
     type C = Context<State, Getters>
@@ -124,7 +129,7 @@ export declare namespace ProfileModule {
          * Export current profile as a modpack. Can be either curseforge or normal full Minecraft
          * @param option Which profile is exporting (search by id), where to export (dest), include assets? 
          */
-        exportProfile(context: C, option: { id: string, dest: string, type: 'full' | 'noAssets' | 'curseforge' }): Promise<void>;
+        exportProfile(context: C, option: { id?: string, dest: string, type: 'full' | 'no-assets' | 'curseforge' }): Promise<void>;
         /**
          * Import external profile into the launcher. The profile can be a curseforge zip, or a normal Minecraft file/zip. 
          * @param location The location of the profile try to import
@@ -237,7 +242,7 @@ const mod: ProfileModule = {
         serverInfos: [],
         saves: [],
 
-        refreshing: false,
+        refreshing: 0,
         statuses: {},
     },
     getters: {
@@ -258,6 +263,7 @@ const mod: ProfileModule = {
                 folder: getExpectVersion(minecraft, forge, liteloader),
             };
         },
+        refreshing(state) { return state.refreshing > 0; },
         deployingResources: (_, getters, rootState) => {
             const profile = getters.selectedProfile;
 
@@ -285,7 +291,7 @@ const mod: ProfileModule = {
         removeProfile(state, id) {
             Vue.delete(state.all, id);
         },
-        
+
         selectProfile(state, id) {
             if (state.all[id]) {
                 state.id = id;
@@ -423,11 +429,14 @@ const mod: ProfileModule = {
                 Vue.set(state.statuses, key, value);
             }
         },
-        refreshingProfile(state, refreshing) {
-            state.refreshing = refreshing;
-        },
         profileSaves(state, saves) {
             state.saves = saves;
+        },
+        aquireProfile(state) {
+            state.refreshing++;
+        },
+        releaseProfile(state) {
+            state.refreshing--;
         },
     },
 };

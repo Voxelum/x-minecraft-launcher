@@ -1,12 +1,9 @@
 import { ForgeInstaller, ForgeWebPage, Installer, LiteLoader, Util, Version, Net, ResolvedLibrary, JavaExecutor } from '@xmcl/minecraft-launcher-core';
 import { createHash } from 'crypto';
 import { shell } from 'electron';
-import inGFW from 'in-gfw';
-import fs from 'main/utils/vfs';
+import { fs, getExpectVersion, requireString, gfw } from 'main/utils';
 import { join } from 'path';
 import base, { VersionModule } from 'universal/store/modules/version';
-import { requireString } from 'universal/utils/object';
-import { getExpectVersion } from 'universal/utils/versions';
 
 const mod: VersionModule = {
     state: base.state,
@@ -194,7 +191,7 @@ const mod: VersionModule = {
                 resolved = libraries as any; // TODO: typecheck
             }
             let option = {};
-            if (await inGFW().catch(() => false) && context.rootState.setting.useBmclAPI) {
+            if (await gfw() && context.rootState.setting.useBmclAPI) {
                 option = { libraryHost: (lib: ResolvedLibrary) => `https://http://bmclapi.bangbang93.com/maven/${lib.path}` };
             }
 
@@ -212,7 +209,7 @@ const mod: VersionModule = {
         async installAssets(context, version) {
             const ver = await Version.parse(context.rootState.root, version);
             let option = {};
-            if (await inGFW().catch((_: any) => false) && context.rootState.setting.useBmclAPI) {
+            if (await gfw() && context.rootState.setting.useBmclAPI) {
                 option = { assetsHost: 'http://bmclapi2.bangbang93.com/assets' };
             }
             const task = Installer.installAssetsTask(ver, option);
@@ -234,7 +231,7 @@ const mod: VersionModule = {
             const id = meta.id;
 
             let option = {};
-            if (await inGFW().catch(() => false) && context.rootState.setting.useBmclAPI) {
+            if (await gfw() && context.rootState.setting.useBmclAPI) {
                 option = { client: `https://bmclapi2.bangbang93.com/version/${meta.id}/client` };
             }
 
@@ -255,7 +252,7 @@ const mod: VersionModule = {
          * download a specific version from version metadata
          */
         async installForge(context, meta) {
-            const maven = await inGFW.net().then(b => (b ? 'https://voxelauncher.azurewebsites.net/api/v1' : undefined)).catch(e => undefined);
+            const maven = await gfw().then(b => (b ? 'https://voxelauncher.azurewebsites.net/api/v1' : undefined)).catch(e => undefined);
             const task = ForgeInstaller.installTask(meta, context.rootState.root, {
                 tempDir: join(context.rootState.root, 'temp'),
                 maven,
@@ -312,7 +309,7 @@ const mod: VersionModule = {
 
             const cur = context.state.forge[version];
             try {
-                if (await inGFW.net().catch(_ => false)) {
+                if (await gfw()) {
                     const headers = cur ? {
                         'If-Modified-Since': cur.timestamp,
                     } : {};

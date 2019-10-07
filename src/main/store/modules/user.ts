@@ -1,11 +1,10 @@
 import { Auth, MojangService, Net, ProfileService, Task, UserType } from '@xmcl/minecraft-launcher-core';
 import fileType from 'file-type';
 import got from 'got';
-import fs from 'main/utils/vfs';
+import { fs, requireObject, requireString } from 'main/utils';
 import { ComparableVersion } from 'maven-artifact-version';
 import { basename, join } from 'path';
 import base, { UserModule } from 'universal/store/modules/user';
-import { requireObject, requireString } from 'universal/utils/object';
 import { parse as parseUrl } from 'url';
 import { v4 } from 'uuid';
 
@@ -100,9 +99,7 @@ const mod: UserModule = {
             }
         },
         async init(context) {
-            if (!context.getters.offline) {
-                context.dispatch('refreshUser');
-            }
+            context.dispatch('refreshUser');
         },
         /**
          * Logout and clear current cache.
@@ -195,14 +192,37 @@ const mod: UserModule = {
 
         async refreshInfo(context) {
             const user = context.getters.selectedUser;
-            if (user.authService !== 'mojang') return;
-            try {
-                const info = await MojangService.getAccountInfo(user.accessToken);
-                context.commit('mojangInfo', info);
-            } catch (e) {
-                console.warn(`Cannot refresh mojang info for user ${user.account}.`);
-                console.warn(e);
-                throw e;
+
+            if (!context.getters.offline) {
+                const validate = await Auth.Yggdrasil.validate({
+                    accessToken: user.accessToken,
+                    clientToken: context.state.clientToken,
+                }, context.getters.authService).catch(e => false);
+
+                if (validate) {
+                    context.dispatch('checkLocation');
+                    return;
+                }
+                try {
+                    const result = await Auth.Yggdrasil.refresh({
+                        accessToken: user.accessToken,
+                        clientToken: context.state.clientToken,
+                    });
+                    context.commit('updateUserProfile', result);
+                    context.dispatch('checkLocation');
+
+                    if (user.authService === 'mojang') {
+                        try {
+                            const info = await MojangService.getAccountInfo(user.accessToken);
+                            context.commit('mojangInfo', info);
+                        } catch (e) {
+                            console.warn(`Cannot refresh mojang info for user ${user.account}.`);
+                            console.warn(e);
+                        }
+                    }
+                } catch (e) {
+                    context.commit('invalidateAuth');
+                }
             }
         },
 
@@ -274,32 +294,7 @@ const mod: UserModule = {
          */
         async refreshUser(context) {
             if (!context.getters.logined) return;
-
-            const user = context.getters.selectedUser;
-
-            if (!context.getters.offline) {
-                const validate = await Auth.Yggdrasil.validate({
-                    accessToken: user.accessToken,
-                    clientToken: context.state.clientToken,
-                }, context.getters.authService);
-
-                if (validate) {
-                    context.dispatch('checkLocation');
-                    return;
-                }
-                try {
-                    const result = await Auth.Yggdrasil.refresh({
-                        accessToken: user.accessToken,
-                        clientToken: context.state.clientToken,
-                    });
-                    context.commit('updateUserProfile', result);
-                    context.dispatch('checkLocation');
-                    context.dispatch('refreshInfo').catch(_ => _);
-                } catch (e) {
-                    context.commit('invalidateAuth');
-                }
-            }
-
+            context.dispatch('refreshInfo').catch(_ => _);
             context.dispatch('refreshSkin').catch(_ => _);
         },
 

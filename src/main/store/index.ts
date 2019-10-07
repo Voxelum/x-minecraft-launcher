@@ -52,7 +52,9 @@ async function load() {
         },
         actions: {
             async quit() {
-                app.quit();
+                setTimeout(() => {
+                    app.quit();
+                }, 150);
             },
             async showItemInFolder(context, item) {
                 shell.showItemInFolder(item);

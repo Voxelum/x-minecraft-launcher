@@ -1,8 +1,8 @@
 import { Task } from '@xmcl/minecraft-launcher-core';
 import Ajv from 'ajv';
 import { app } from 'electron';
-import fs from 'main/utils/vfs';
-import paths, { join } from 'path';
+import { fs } from 'main/utils';
+import { join } from 'path';
 import { createContext, runInContext } from 'vm';
 import { getGuardWindow } from '../../windowsManager';
 import { IOModule } from 'universal/store/modules/io';
@@ -11,7 +11,7 @@ const mod: IOModule = {
     actions: {
         async readFolder(context, path) {
             if (!path) throw new Error('Path must not be undefined!');
-            path = paths.join(context.rootState.root, path);
+            path = join(context.rootState.root, path);
             await fs.ensureDir(path);
             return fs.readdir(path);
         },
@@ -42,17 +42,16 @@ const mod: IOModule = {
                 const validation = ajv.compile(schemaObject);
                 const valid = validation(object);
                 if (!valid) {
-                    console.warn(`Found invalid config file on ${path}.`);
+                    console.warn(`Found invalid config file on ${path} in schema ${schema}.`);
+                    // console.warn('Try to remove those invalid keys. This might cause problem.');
+                    // console.warn(originalString);
                     const context = createContext({ object });
                     if (validation.errors) {
                         validation.errors.forEach(e => console.warn(e));
                         const cmd = validation.errors.map(e => `delete object${e.dataPath};`);
+                        console.log(cmd.join('\n'));
                         runInContext(cmd.join('\n'), context);
                     }
-                    console.warn('Try to remove those invalid keys. This might cause problem.');
-                    console.warn(originalString);
-                    console.warn('VS');
-                    console.warn(JSON.stringify(object, null, 4));
                 }
             }
             return object;
