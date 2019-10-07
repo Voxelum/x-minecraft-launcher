@@ -204,7 +204,9 @@ export default {
     async function login() {
       data.logining = true;
       accountInput.value.blur();
-      await this.$nextTick(); // wait a tick to make sure this.account updated.
+      await new Promise((resolve, reject) => {
+        setImmediate(() => resolve());
+      }); // wait a tick to make sure this.account updated.
       try {
         await dispatch('login', {
           account: data.account,
