@@ -25,30 +25,30 @@
   </v-card>
 </template>
 
-<script lang=ts>
+<script>
 import { createComponent, reactive, toRefs } from '@vue/composition-api';
 import { clipboard, ipcRenderer } from 'electron';
 
-interface Log {
-  time?: string;
-  raw: string;
-  content?: string;
-  src?: string
-}
+// interface Log {
+//   time?: string;
+//   raw: string;
+//   content?: string;
+//   src?: string
+// }
 
 export default createComponent({
   setup() {
     const pattern = /^\[(.+)\] \[(.+)\]: (.+)/;
-    const data: { logs: Log[] } = reactive({
+    const data = reactive({
       logs: [],
     });
-    ipcRenderer.on('minecraft-stdout', (event: Event, str: string) => {
+    ipcRenderer.on('minecraft-stdout', (event, str) => {
       accept(str);
     });
-    ipcRenderer.on('minecraft-error', (event: Event, str: string) => {
+    ipcRenderer.on('minecraft-error', (event, str) => {
       accept(str);
     });
-    function accept(log: string) {
+    function accept(log) {
       const matched = pattern.exec(log);
       if (matched) {
         const [full, time, src, content] = matched;
@@ -69,7 +69,7 @@ export default createComponent({
       close() {
         ipcRenderer.send('window-hide');
       },
-      onClick(log: Log) {
+      onClick(log) {
         clipboard.clear();
         clipboard.writeText(log.raw);
       },
