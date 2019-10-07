@@ -5,7 +5,7 @@
         <span class="headline">{{ $tc('curseforge.name', 2) }}</span>
       </v-flex>
       <v-flex v-for="target in targets" :key="target" xs6>
-        <v-card draggable="false" :ripple="!online" :hover="!online" replace :to="online ? `/curseforge/${target}` : undefined" :disabled="!online">
+        <v-card draggable="false" :ripple="online" :hover="online" replace :to="online ? `/curseforge/${target}` : undefined" :disabled="!online">
           <v-responsive>
             <v-img :src="images[target]">
               <v-expand-transition>
