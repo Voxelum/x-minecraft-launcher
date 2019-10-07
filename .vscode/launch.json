@@ -13,9 +13,6 @@
                 "${workspaceFolder}/dist/*.js",
                 "${workspaceFolder}/src/**/*.js"
             ],
-            "skipFiles": [
-                "init.js"
-            ],
             "runtimeExecutable": "npm",
             "runtimeArgs": [
                 "run-script",

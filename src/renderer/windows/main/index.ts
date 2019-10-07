@@ -1,6 +1,5 @@
 import createStore from '@/store';
 import Vue from 'vue';
-import VueI18n from 'vue-i18n';
 import VueObserveVisibility from 'vue-observe-visibility';
 import VueParticles from 'vue-particles';
 import SkinView from '../../skin/SkinView.vue';
