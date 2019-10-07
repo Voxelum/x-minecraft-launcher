@@ -100,7 +100,7 @@
           <v-flex d-flex shrink>
             <v-layout wrap>
               <v-flex d-flex xs6>
-                <v-btn block :disabled="pending" color="secondary" @click="refreshSkin">
+                <v-btn block :disabled="pending" color="secondary" @click="refreshSkin()">
                   <v-icon left>
                     refresh
                   </v-icon>
@@ -108,7 +108,7 @@
                 </v-btn>
               </v-flex>
               <v-flex d-flex xs6>
-                <v-btn block :disabled="pending" color="secondary" @click="refreshAccount">
+                <v-btn block :disabled="pending" color="secondary" @click="refreshAccount()">
                   <v-icon left>
                     refresh
                   </v-icon>
@@ -128,7 +128,7 @@
                 </v-btn>
               </v-flex>
               <v-flex d-flex xs6>
-                <v-btn block dark :disabled="offline" color="red" @click="logout">
+                <v-btn block dark :disabled="offline" color="red" @click="logout()">
                   <v-icon left dark>
                     exit_to_app
                   </v-icon>
