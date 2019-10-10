@@ -30,19 +30,39 @@
 </template>
 
 <script lang=ts>
-import { useStore, useI18n } from '@/hooks';
-import { l } from '..';
-import { reactive, computed, onMounted, onDeactivated, createComponent, onActivated, onUnmounted, toRefs } from '@vue/composition-api';
+import {
+  useI18n,
+  useAutoSaveLoad,
+  useNativeDialog,
+  useCurrentProfile,
+  useJava,
+} from '@/hooks';
+import {
+  reactive,
+  computed,
+  createComponent,
+  toRefs,
+} from '@vue/composition-api';
 import { Java } from 'universal/store/modules/java';
-import { remote } from 'electron';
 
 export default createComponent({
   setup() {
-    const { dispatch, state, getters } = useStore();
     const { t } = useI18n();
+    const { showOpenDialog } = useNativeDialog();
+    const {
+      edit,
+      maxMemory,
+      minMemory,
+      vmOptions,
+      mcOptions,
+      java,
+    } = useCurrentProfile();
+    const { all: javas, add } = useJava();
+    useAutoSaveLoad(save, load);
+
     const data: {
-      vmOptions: Array<{text: string}>;
-      mcOptions: Array<{text: string}>;
+      vmOptions: Array<{ text: string }>;
+      mcOptions: Array<{ text: string }>;
       maxMemory?: number;
       minMemory?: number;
       memoryRange: number[];
@@ -59,9 +79,8 @@ export default createComponent({
       javaValid: true,
       java: { path: '', version: '', majorVersion: 0 },
     });
-    const javas = computed(() => state.java.all);
     function save() {
-      dispatch('editProfile', {
+      edit({
         minMemory: data.minMemory,
         maxMemory: data.maxMemory,
         vmOptions: data.vmOptions.map(o => o.text),
@@ -70,43 +89,29 @@ export default createComponent({
       });
     }
     function load() {
-      const profile = getters.selectedProfile;
-      data.maxMemory = profile.maxMemory;
-      data.minMemory = profile.minMemory;
-      data.vmOptions = profile.vmOptions.map(a => ({ text: a }));
-      data.mcOptions = profile.mcOptions.map(a => ({ text: a }));
+      data.maxMemory = maxMemory.value;
+      data.minMemory = minMemory.value;
+      data.vmOptions = vmOptions.value.map(a => ({ text: a }));
+      data.mcOptions = mcOptions.value.map(a => ({ text: a }));
 
-      if (profile.java) {
-        const found = javas.value.find(j => j.path === profile.java.path);
+      if (java.value) {
+        const found = javas.value.find(j => j.path === java.value.path);
         if (found) {
-          data.java = found; 
+          data.java = found;
         }
       }
     }
-    onMounted(() => load());
-    onActivated(() => load());
-    onDeactivated(() => save());
-    onUnmounted(() => save());
     return {
       ...toRefs(data),
       javas,
-      browseFile() {
-        remote.dialog.showOpenDialog({
-          // title: t('java.browse').toString(),
-          title: l`java.browser`,
-        }, (filePaths, bookmarks) => {
-          if (!filePaths) return;
-          filePaths.forEach((p) => {
-            dispatch('resolveJava', p);
-          });
+      async browseFile() {
+        const { filePaths, bookmarks } = await showOpenDialog({
+          title: t('java.browser'),
         });
+        filePaths.forEach(add);
       },
-      getJavaValue(java: Java) {
-        return java;
-      },
-      getJavaText(java: Java) {
-        return `JRE${java.majorVersion}, ${java.path}`;
-      },
+      getJavaValue: (java: Java) => java,
+      getJavaText: (java: Java) => `JRE${java.majorVersion}, ${java.path}`,
     };
   },
 });
