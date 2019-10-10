@@ -9,6 +9,9 @@ export function useCurrentProfile() {
     const profile: ProfileModule.ServerAndModpack & Data = getters.selectedProfile as any;
     const refProfile = toRefs(profile);
 
+    const maxMemory = computed(() => profile.maxMemory);
+    const minMemory = computed(() => profile.minMemory);
+
     const isServer = computed(() => profile.type === 'server');
     const refreshing = computed(() => getters.refreshing);
 
@@ -24,6 +27,8 @@ export function useCurrentProfile() {
 
     return {
         ...refProfile,
+        maxMemory,
+        minMemory,
         isServer,
         edit,
         exportTo,
