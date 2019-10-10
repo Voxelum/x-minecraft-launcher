@@ -7,7 +7,7 @@
         </v-flex>
         <v-flex d-flex xs6>
           <v-text-field v-model="name" outline hide-details dark :label="$t('profile.name')"
-                        :placeholder="`Minecraft ${mcversion}`" />
+                        :placeholder="`Minecraft ${version.minecraft}`" />
         </v-flex>
         <v-flex d-flex xs6>
           <v-text-field outline hide-details dark readonly :value="$repo.getters.currentVersion.id"
@@ -54,6 +54,8 @@
           </v-btn>
         </v-flex>
 
+        {{ a }}
+
         <v-flex d-flex xs6>
           <v-btn outline large replace to="/save">
             {{ $tc('save.name', 2) }}
@@ -78,10 +80,21 @@
 </template>
 
 <script>
+import { reactive, toRefs, computed } from '@vue/composition-api';
+import {
+  useCurrentProfile,
+  useStore,
+  useAutoSaveLoad,
+  useRouter,
+} from '@/hooks';
 
 export default {
-  data() {
-    return {
+  setup() {
+    const { version, isServer, showLog, hideLauncher, name, author,
+      url, type, description, port, host, edit } = useCurrentProfile();
+    const { replace } = useRouter();
+    const { dispatch } = useStore();
+    const data = reactive({
       active: 0,
       valid: true,
       hideLauncher: false,
@@ -89,83 +102,71 @@ export default {
       type: '',
       name: '',
 
-      host: '',
-      port: -1,
+      host: '', // mc.hypixel.com
+      port: -1, // 25565
 
       author: '',
       description: '',
       url: '',
-    };
-  },
-  computed: {
-    mcversion() { return this.$repo.getters.selectedProfile.version.minecraft; },
-    isServer() { return this.$repo.getters.selectedProfile.type === 'server'; },
-  },
-  created() {
-    this.$repo.dispatch('refreshForge').catch((e) => {
+    });
+    useAutoSaveLoad(save, load);
+
+    dispatch('refreshForge').catch((e) => {
       console.error(e);
     });
-  },
-  mounted() { this.load(); },
-  destroyed() { this.save(); },
-  activated() { this.load(); },
-  deactivated() { this.save(); },
-  methods: {
-    save() {
+
+    function save() {
       const payload = {
-        name: this.name,
-        hideLauncher: this.hideLauncher,
-        url: this.url,
-        showLog: this.showLog,
+        name: data.name,
+        hideLauncher: data.hideLauncher,
+        url: data.url,
+        showLog: data.showLog,
       };
-      if (this.type === 'modpack') {
-        this.$repo.dispatch('editProfile', {
+      if (data.type === 'modpack') {
+        edit({
           ...payload,
-          author: this.author,
-          description: this.description,
+          author: data.author,
+          description: data.description,
         });
       } else {
-        this.$repo.dispatch('editProfile', {
+        edit({
           ...payload,
-          host: this.host,
-          port: Number.parseInt(this.port, 10),
+          host: data.host,
+          port: Number.parseInt(data.port, 10),
         });
       }
-    },
-    load() {
-      const profile = this.$repo.getters.selectedProfile;
-      this.name = profile.name;
-      this.hideLauncher = profile.hideLauncher;
-      this.url = profile.url;
-      this.showLog = profile.showLog;
-      this.type = profile.type;
-      if (profile.type === 'modpack') {
-        this.author = profile.author;
-        this.description = profile.description;
+    }
+    function load() {
+      data.name = name.value;
+      data.hideLauncher = hideLauncher.value;
+      data.url = url.value;
+      data.showLog = showLog.value;
+      data.type = type.value;
+      if (type.value === 'modpack') {
+        data.author = author.value;
+        data.description = description.value;
       } else {
-        this.port = profile.port;
-        this.host = profile.host;
+        data.port = port.value;
+        data.host = host.value;
       }
-    },
-    onSelectForge(version) {
+    }
+    function onSelectForge(version) {
       if (version) {
-        this.forgeVersion = version.version;
+        data.forgeVersion = version.version;
       } else {
-        this.forgeVersion = '';
+        data.forgeVersion = '';
       }
-    },
-    onNameInput(event) {
-      if (!this.editingName) {
-        event.preventDefault();
-      }
-    },
-    onMouseWheel(e) {
-      e.stopPropagation();
-      return true;
-    },
-    goVersionPage() {
-      this.$router.replace('/version-setting');
-    },
+    }
+    function goVersionPage() {
+      replace('/version-setting');
+    }
+    return {
+      ...toRefs(data),
+      isServer,
+      version,
+      onSelectForge,
+      goVersionPage,
+    };
   },
 };
 </script>

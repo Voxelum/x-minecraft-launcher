@@ -7,7 +7,6 @@ import { useStore } from "./useStore";
 export function useCurrentProfile() {
     const { state, getters, dispatch } = useStore();
     const profile: ProfileModule.ServerAndModpack & Data = getters.selectedProfile as any;
-    const refProfile = toRefs(profile);
 
     const maxMemory = computed(() => profile.maxMemory);
     const minMemory = computed(() => profile.minMemory);
@@ -15,6 +14,9 @@ export function useCurrentProfile() {
     const isServer = computed(() => profile.type === 'server');
     const refreshing = computed(() => getters.refreshing);
 
+    /**
+     * Edit current profile
+     */
     function edit(option: Partial<ProfileModule.ServerAndModpack>) {
         dispatch('editProfile', option);
     }
@@ -26,7 +28,7 @@ export function useCurrentProfile() {
     }
 
     return {
-        ...refProfile,
+        ...toRefs(profile),
         maxMemory,
         minMemory,
         isServer,
