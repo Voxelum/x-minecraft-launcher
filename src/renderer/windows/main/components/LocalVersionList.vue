@@ -3,7 +3,7 @@
     <template v-for="(item, index) in versions">
       <v-list-tile :key="index" ripple :class="{ grey: isSelected(item), 'darken-1': isSelected(item) }" style="margin: 0px 0;" @click="selectVersion(item)">
         <v-list-tile-avatar>
-          <v-btn icon style="cursor: pointer" @click="openVersionDir($event, item)">
+          <v-btn icon style="cursor: pointer" @click.stop="openVersionDir(item)">
             <v-icon> folder </v-icon>
           </v-btn>
         </v-list-tile-avatar>
@@ -15,7 +15,7 @@
         </v-list-tile-sub-title>
         <v-list-tile-action style="justify-content: flex-end;">
           <v-btn style="cursor: pointer" icon color="red"
-                 flat @mousedown="$event.stopPropagation()" @click="deleteVersion($event, item)">
+                 flat @mousedown.stop @click.stop="startDelete(item)">
             <v-icon>delete</v-icon>
           </v-btn>
         </v-list-tile-action>
@@ -56,62 +56,58 @@
 </template>
 
 <script>
-export default {
+import { createComponent, reactive, computed } from '@vue/composition-api';
+import { useLocalVersions, useCurrentProfile } from '@/hooks';
+
+export default createComponent({
   props: {
     filterText: {
       type: String,
       default: '',
     },
-    selected: {
-      type: Object,
-      default: () => null,
-    },
   },
-  data() {
-    return {
+  setup(props) {
+    const data = reactive({
       deletingVersion: false,
       deletingVersionId: '',
+    });
+    const { localVersions, deleteVersion } = useLocalVersions();
+    const { version, edit } = useCurrentProfile();
+    const selected = computed(() => localVersions.value.find(v => v.minecraft === version.value.minecraft && v.forge === version.value.forge && v.liteloader === version.value.liteloader));
+    const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1));
+
+    function isSelected(v) {
+      if (!selected.selected) return false;
+      return selected.value.minecraft === v.minecraft && selected.value.forge === v.forge && selected.value.liteloader === v.liteloader;
+    }
+    function selectVersion(v) {
+      edit({ version: v });
+    }
+    function browseVersoinsFolder() {
+      // this.$repo.dispatch('showVersionsDirectory');
+    }
+    function openVersionDir(event, v) {
+      // this.$repo.dispatch('showVersionDirectory', v.folder);
+    }
+    function startDelete(event, v) {
+      data.deletingVersion = true;
+      data.deletingVersionId = v.folder;
+    }
+    function comfireDeleting() {
+      deleteVersion(data.deletingVersionId);
+      data.deletingVersion = false;
+      data.deletingVersionId = '';
+    }
+    function cancelDeleting() {
+      data.deletingVersion = false;
+      data.deletingVersionId = '';
+    }
+
+    return {
+      versions,
     };
   },
-  computed: {
-    versions() {
-      return this.$repo.state.version.local
-        .filter(version => version.id.indexOf(this.filterText) !== -1);
-    },
-  },
-  methods: {
-    isSelected(v) {
-      if (this.selected === null) return false;
-      return this.selected.minecraft === v.minecraft && this.selected.forge === v.forge && this.selected.liteloader === v.liteloader;
-    },
-    selectVersion(v) {
-      this.$emit('value', v);
-    },
-    browseVersoinsFolder() {
-      this.$repo.dispatch('showVersionsDirectory');
-    },
-    openVersionDir(event, v) {
-      event.stopPropagation();
-      this.$repo.dispatch('showVersionDirectory', v.folder);
-      return false;
-    },
-    deleteVersion(event, v) {
-      event.stopPropagation();
-      this.deletingVersion = true;
-      this.deletingVersionId = v.folder;
-      return false;
-    },
-    comfireDeleting() {
-      this.$repo.dispatch('deleteVersion', this.deletingVersionId);
-      this.deletingVersion = false;
-      this.deletingVersionId = '';
-    },
-    cancelDeleting() {
-      this.deletingVersion = false;
-      this.deletingVersionId = '';
-    },
-  },
-};
+});
 </script>
 
 <style>

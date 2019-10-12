@@ -79,6 +79,7 @@
       </v-card>
     </v-layout>
     <context-menu />
+    <search-bar />
     <notifier />
     <dialogs />
   </v-layout>

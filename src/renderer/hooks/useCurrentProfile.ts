@@ -72,3 +72,19 @@ export function useCurrentProfileVersion() {
     };
 }
 
+export function useProfileMods() {
+    const { getters, dispatch } = useStore();
+
+    const mods = computed({
+        get() {
+            return getters.selectedProfile.deployments.mods || [];
+        },
+        set(nv: string[]) {
+            dispatch('editProfile', { deployments: { mods: nv } });
+        },
+    });
+
+    return {
+        mods,
+    }
+}

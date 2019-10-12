@@ -142,7 +142,7 @@
       <v-flex shrink>
         <v-layout justify-center align-center fill-height>
           <v-flex style="z-index: 1">
-            <skin-view :href="skinUrl" :slim="skinSlim" :rotate="false" @drop="onDropSkin" @dragover="onDragOver" />
+            <skin-view :href="skinUrl" :slim="skinSlim" :rotate="false" @drop.prevent="onDropSkin" @dragover.prevent />
             <!-- <v-progress-circular v-if="pending" color="white" indeterminate :size="90" style="position: absolute; top: 30vh; right: 13vh;" /> -->
           </v-flex>
         </v-layout>
@@ -301,12 +301,7 @@ export default {
       toggleSwitchUser() {
         showLoginDialog('login', true);
       },
-      onDragOver(e) {
-        e.preventDefault();
-        return false;
-      },
       onDropSkin(e) {
-        e.preventDefault();
         const length = e.dataTransfer.files.length;
         if (length > 0) {
           console.log(`Detect drop import ${length} file(s).`);

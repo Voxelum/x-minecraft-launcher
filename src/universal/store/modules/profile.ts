@@ -1,13 +1,11 @@
-import Vue from 'vue';
+import { GameSetting, Server, World } from "@xmcl/minecraft-launcher-core";
 import { getExpectVersion } from 'universal/utils/versions';
-import { UNKNOWN_STATUS } from 'universal/utils/server-status';
-
-import { GameSetting, World, Server, ServerInfoFrame } from "@xmcl/minecraft-launcher-core";
+import Vue from 'vue';
 import { Context, Module } from "..";
 import { Java } from "./java";
+import { ModpackProfileConfig, ProfileConfig, ServerProfileConfig } from './profile.config';
 import { Resource } from './resource';
 import { VersionModule } from "./version";
-import { ServerProfileConfig, ModpackProfileConfig, ProfileConfig } from './profile.config';
 
 type CreateProfileOption = Omit<ModpackProfileConfig, 'id'> & { type: 'modpack' }
 type CreateServerProfileOption = Omit<ServerProfileConfig, 'id'> & { type: 'server' }
@@ -291,7 +289,6 @@ const mod: ProfileModule = {
         removeProfile(state, id) {
             Vue.delete(state.all, id);
         },
-
         selectProfile(state, id) {
             if (state.all[id]) {
                 state.id = id;

@@ -1,5 +1,5 @@
 <template>
-  <v-list dark style="overflow-y: scroll; scrollbar-width: 0;" @mousewheel="onMouseWheel">
+  <v-list dark style="overflow-y: scroll; scrollbar-width: 0;" @mousewheel.stop>
     <template v-for="(item, index) in versions">
       <v-list-tile :key="index" :class="{ grey: selected === item.id, 'darken-1': selected === item.id }" ripple @click="selectVersion(item)">
         <v-list-tile-avatar>
@@ -51,10 +51,6 @@ export default {
     },
   },
   methods: {
-    onMouseWheel(e) {
-      e.stopPropagation();
-      return true;
-    },
     selectVersion(v) {
       this.$emit('value', v);
     },

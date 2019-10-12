@@ -3,7 +3,7 @@ import Vue from 'vue';
 import VueObserveVisibility from 'vue-observe-visibility';
 import VueParticles from 'vue-particles';
 import SkinView from '../../skin/SkinView.vue';
-import start from '../../start';
+import app from '../../app';
 import TextComponent from '../../TextComponent';
 import '../../useVuetify';
 import './components';
@@ -23,7 +23,7 @@ export function l(strings: TemplateStringsArray) {
     return _i18n.t(strings[0], arguments);
 }
 
-start({
+app({
     router,
     store,
     i18n: _i18n,

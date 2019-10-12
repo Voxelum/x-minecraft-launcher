@@ -15,6 +15,6 @@ export * from './useNotifier';
 export * from './useMissingMods';
 export * from './useSaveLoad';
 export * from './useJava';
-
-
-
+export * from './useSelectionList';
+export * from './useResource';
+export * from './useVersion';

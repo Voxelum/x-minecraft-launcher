@@ -1,50 +1,62 @@
 <template>
   <transition name="scale-transition">
-    <v-text-field v-show="show" ref="self" style="position: fixed; z-index: 2; right: 30px" solo append-icon="filter_list"
-                  @focus="focused=true" @blur="focused=false" @keyup="handleKeyUp"
-                  @input="$emit('input', $event)" />
+    <v-text-field v-show="show" 
+                  ref="self" 
+                  v-model="text" 
+                  style="position: fixed; z-index: 2; right: 30px" 
+                  solo
+                  append-icon="filter_list" 
+                  @focus="focused=true" 
+                  @blur="focused=false"
+                  @keyup="handleKeyup" />
   </transition>
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      show: false,
-      ctrlKey: '',
-      focused: false,
-    };
-  },
-  mounted() {
-    document.addEventListener('keyup', this.handleKeyUp);
-    document.addEventListener('keydown', this.handleKeydown);
-  },
-  destroyed() {
-    document.addEventListener('keyup', this.handleKeyUp);
-    document.addEventListener('keydown', this.handleKeydown);
-  },
-  methods: {
-    handleKeydown(e) {
+import Vue from 'vue';
+import { createComponent, inject, ref, onMounted, onUnmounted } from '@vue/composition-api';
+
+export default createComponent({
+  setup() {
+    const show = inject('search-bar-shown', ref(false));
+    const text = inject('search-text', ref(''));
+    const focused = ref(false);
+    const self = ref(null);
+    function handleKeydown(e) {
       if (e.code === 'KeyF' && (e.ctrlKey || e.metaKey)) {
-        if (this.show && !this.focused) {
-          this.$nextTick().then(() => {
-            this.$refs.self.focus();
+        if (show.value && !focused.value) {
+          Vue.nextTick(() => {
+            self.value.focus();
           });
         } else {
-          this.show = !this.show;
-          this.$nextTick().then(() => {
-            this.$refs.self.focus();
+          show.value = !show.value;
+          Vue.nextTick(() => {
+            self.value.focus();
           });
         }
       }
-    },
-    handleKeyUp(e) {
+    }
+    function handleKeyup(e) {
       if (e.code === 'Escape') {
-        this.show = false;
+        show.value = false;
       }
-    },
+    }
+    onMounted(() => {
+      document.addEventListener('keyup', handleKeyup);
+      document.addEventListener('keydown', handleKeydown);
+    });
+    onUnmounted(() => {
+      document.addEventListener('keyup', handleKeyup);
+      document.addEventListener('keydown', handleKeydown);
+    });
+    return {
+      show,
+      focused,
+      self,
+      text,
+    };
   },
-};
+});
 </script>
 
 <style>

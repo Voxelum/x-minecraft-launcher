@@ -26,7 +26,7 @@
                       add
                     </v-icon>
                     <v-icon v-else key="b" color="red" style="font-size: 28px; transition: all 0.2s ease;"
-                            @drop="onDropDelete" @dragover="$event.preventDefault()">
+                            @drop="onDropDelete" @dragover.prevent>
                       delete
                     </v-icon>
                   </transition>
@@ -76,21 +76,21 @@
       </v-flex>
       <v-flex v-for="profile in timesliceProfiles[0]" :key="profile.id" xs6
               @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" />
+        <card-profile-preview :profile="profile" @click.stop="selectProfile(profile.id)" />
       </v-flex>
       <v-flex v-if="timesliceProfiles[1].length !== 0" style="color: grey" xs12> 
         {{ $t('profile.threeDay') }}
       </v-flex>
       <v-flex v-for="profile in timesliceProfiles[1]" :key="profile.id" xs6
               @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" />
+        <card-profile-preview :profile="profile" @click.stop="selectProfile(profile.id)" />
       </v-flex>
       <v-flex v-if="timesliceProfiles[2].length !== 0" style="color: grey" xs12> 
         {{ $t('profile.older') }}
       </v-flex>
       <v-flex v-for="profile in timesliceProfiles[2]" :key="profile.id" xs6 
               @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <card-profile-preview :profile="profile" @click="selectProfile($event, profile.id)" />
+        <card-profile-preview :profile="profile" @click.stop="selectProfile(profile.id)" />
       </v-flex>
     </v-layout>
     
@@ -253,11 +253,9 @@ export default {
         }
         return true;
       },
-      selectProfile(event, id) {
+      selectProfile(id) {
         commit('selectProfile', id);
         router.replace('/');
-        event.stopPropagation();
-        return true;
       },
       enterAltCreate() {
         setTimeout(() => {

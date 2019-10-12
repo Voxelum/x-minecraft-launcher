@@ -11,7 +11,7 @@ if (!process.env.IS_WEB) {
 }
 Vue.config.productionTip = false;
 
-export default function (option: ComponentOptions<Vue>) {
+export default function app(option: ComponentOptions<Vue>) {
     const App = require('./App').default;
     const vue = new Vue({
         ...option,

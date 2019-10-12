@@ -20,7 +20,7 @@
           {{ $t('save.import') }}
         </v-btn>
       </v-flex>
-      <v-flex xs12 @drop="onDrop" @dragover="onDragOver">
+      <v-flex xs12 @drop.prevent="onDrop" @dragover.prevent>
         <v-container v-if="saves.length === 0" fill-height>
           <v-layout fill-height align-center justify-center column>
             <v-flex shrink>
@@ -190,9 +190,7 @@ export default {
   mounted() {
   },
   methods: {
-    onDragOver(event) { event.preventDefault(); return false; },
     onDrop(event) {
-      event.preventDefault();
       const length = event.dataTransfer.files.length;
       if (length > 0) {
         for (let i = 0; i < length; ++i) {

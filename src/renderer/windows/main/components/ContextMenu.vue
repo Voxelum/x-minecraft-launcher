@@ -1,13 +1,13 @@
 <template>
   <v-menu
-    v-model="showMenu"
+    v-model="show"
     :position-x="x"
     :position-y="y"
     absolute
     offset-y
     z-index="205"
   >
-    <v-list id="cm">
+    <v-list>
       <v-list-tile
         v-for="(item, index) in items"
         :key="index"
@@ -20,33 +20,23 @@
 </template>
 
 <script>
-import Vue from 'vue';
+import { createComponent, inject, ref } from '@vue/composition-api';
 
-export default {
-  data() {
+export default createComponent({
+  setup() {
+    const show = inject('context-menu', ref(false));
+    const x = inject('context-menu-x', ref(0));
+    const y = inject('context-menu-y', ref(0));
+    const items = inject('context-menu-items', ref([]));
+
     return {
-      showMenu: true,
-      x: 10,
-      y: 10,
-      items: [],
+      show,
+      x,
+      y,
+      items,
     };
   },
-  created() {
-    Vue.prototype.$menu = this.show;
-  },
-  methods: {
-    show(items, x, y) {
-      console.log('show');
-      this.x = x;
-      this.y = y;
-      this.items = items;
-      this.showMenu = true;
-    },
-    hide() {
-      this.showMenu = false;
-    },
-  },
-};
+});
 </script>
 
 <style>

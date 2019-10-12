@@ -1,27 +1,27 @@
+import { computed, Ref, ref } from '@vue/composition-api';
 import Vue from 'vue';
-import { reactive } from '@vue/composition-api';
 
-function useSelectionList<T, R>(
-    mapItem: <T, R>(item: T) => R,
-    selecetedItems: T[],
-    unselectedItems: T[],
-    dropFile: (file: File) => void,
-    rightList: Element,
+export function useSelectionList<T, R>(
+    items: Ref<R[]>,
+    computeUnselectedItems: () => T[],
+    computeSelecetedItems: () => T[],
+    onFileDropped: (file: File) => void,
+    mapItem: (item: T) => R,
 ) {
-    const items: R[] = [];
-    const data = reactive({
-        unselectedBuffer: 10,
-        selectedBuffer: 10,
-        items,
-    });
-    function checkBuffer(visible: boolean, index: number, right: boolean) {
+    const unselectedBuffer = ref(0);
+    const selectedBuffer = ref(0);
+    const rightList: Ref<Element> = ref(null) as any;
+    const selecetedItems = computed(() => computeSelecetedItems().filter((_, i) => i < selectedBuffer.value));
+    const unselectedItems = computed(() => computeUnselectedItems().filter((_, i) => i < unselectedBuffer.value));
+
+    function onItemVisibile(visible: boolean, index: number, right: boolean) {
         if (!visible) return;
         if (right) {
-            if (data.selectedBuffer - index < 5) {
-                data.selectedBuffer += 10;
+            if (selectedBuffer.value - index < 5) {
+                selectedBuffer.value += 10;
             }
-        } else if (data.unselectedBuffer - index < 5) {
-            data.unselectedBuffer += 10;
+        } else if (unselectedBuffer.value - index < 5) {
+            unselectedBuffer.value += 10;
         }
     }
     function onMouseWheel(event: Event) { event.stopPropagation(); return true; }
@@ -31,24 +31,24 @@ function useSelectionList<T, R>(
 
     function doInsert(index: number, toIndex: number) {
         if (index === toIndex) return;
-        const items = [...data.items || []];
-        const inserted = items.splice(index, 1);
-        items.splice(toIndex, 0, ...inserted);
-        data.items = items;
+        const copy = [...items.value]
+        const inserted = copy.splice(index, 1);
+        copy.splice(toIndex, 0, ...inserted);
+        items.value = copy;
     }
     function doSelect(index: number) {
-        const newJoin = unselectedItems[index];
+        const newJoin = unselectedItems.value[index];
         const newItem: R = mapItem(newJoin);
-        const items = [...data.items || []];
-        items.unshift(newItem as any);
-        data.items = items;
+        const copy = [...items.value || []];
+        copy.unshift(newItem as any);
+        items.value = copy;
     }
     function doUnselect(index: number) {
-        const selected = [...selecetedItems || []];
+        const selected = [...selecetedItems.value || []];
         const willDelete = selected[index];
-        const items = [...data.items];
-        Vue.delete(items, items.indexOf(mapItem(willDelete)));
-        data.items = items;
+        const copy = [...items.value];
+        Vue.delete(copy, copy.indexOf(mapItem(willDelete)));
+        items.value = copy;
     }
     function handleDrop(event: DragEvent, left: boolean) {
         event.preventDefault();
@@ -57,7 +57,7 @@ function useSelectionList<T, R>(
         if (length > 0) {
             console.log(`Detect drop import ${length} file(s).`);
             for (let i = 0; i < length; ++i) {
-                dropFile(event.dataTransfer.files[i]);
+                onFileDropped(event.dataTransfer.files[i]);
             }
         }
         const indexText = event.dataTransfer.getData('Index');
@@ -73,7 +73,7 @@ function useSelectionList<T, R>(
             } else if (left) {
                 doUnselect(index);
             } else {
-                const all = rightList.getElementsByClassName('draggable-card');
+                const all = rightList.value.getElementsByClassName('draggable-card');
                 for (let i = 0; i < all.length; ++i) {
                     const elem = all.item(i);
                     if (!elem) continue;
@@ -91,7 +91,11 @@ function useSelectionList<T, R>(
         }
     }
     return {
-        checkBuffer,
+        rightList,
+        selecetedItems,
+        unselectedItems,
+
+        onItemVisibile,
         onMouseWheel,
         onDragOver,
         onDropLeft,

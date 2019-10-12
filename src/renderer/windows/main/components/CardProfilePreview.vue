@@ -36,19 +36,19 @@
     <v-card-actions style="">
       <v-list-tile class="grow">
         <v-list-tile-content style="overflow-x: auto; max-width: 275px; white-space: nowrap; display: block;">
-          <v-chip label small :selected="false" @click="$event.stopPropagation()">
+          <v-chip label small :selected="false" @click.stop>
             <v-avatar>
               <v-icon>power</v-icon>
             </v-avatar>
             {{ profile.version.minecraft }}
           </v-chip>
-          <v-chip v-if="profile.type === 'server'" small label :selected="false" @click="$event.stopPropagation()">
+          <v-chip v-if="profile.type === 'server'" small label :selected="false" @click.stop>
             <v-avatar>
               <v-icon>people</v-icon>
             </v-avatar>
             {{ players.online }}  /{{ players.max }} 
           </v-chip>
-          <v-chip v-if="profile.type === 'server'" small label :selected="false" @click="$event.stopPropagation()">
+          <v-chip v-if="profile.type === 'server'" small label :selected="false" @click.stop>
             <v-avatar>
               <v-icon :style="{ color: ping < 100 ? 'green' : ping < 300 ? 'orange' : 'red' }">
                 signal_cellular_alt
@@ -56,10 +56,10 @@
             </v-avatar>
             {{ ping }} ms  
           </v-chip>
-          <v-chip v-if="profile.type === 'server'" small label :selected="false" @click="$event.stopPropagation()">
+          <v-chip v-if="profile.type === 'server'" small label :selected="false" @click.stop>
             {{ version.name }}  
           </v-chip>
-          <v-chip v-if="profile.type === 'modpack'" small label :selected="false" @click="$event.stopPropagation()">
+          <v-chip v-if="profile.type === 'modpack'" small label :selected="false" @click.stop>
             <v-avatar>
               <v-icon>person</v-icon>
             </v-avatar>

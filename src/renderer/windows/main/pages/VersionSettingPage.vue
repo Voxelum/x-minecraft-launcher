@@ -26,29 +26,27 @@
           <v-tab>
             Minecraft
           </v-tab>
-          <v-tab @click="refreshForgeVersion(false)">
+          <v-tab>
             Forge
           </v-tab>
           <v-tab>
             Liteloader
           </v-tab>
         </v-tabs>
-        <search-bar @input="filterText=$event" />
         <v-tabs-items v-model="active" color="transparent" dark slider-color="primary" style="height: 70vh; overflow-y: auto"
-                      @mousewheel="onMouseWheel">
-          <v-tab-item style="height: 100%" @mousewheel="onMouseWheel">
+                      @mousewheel.stop>
+          <v-tab-item style="height: 100%" @mousewheel.stop>
             <local-version-list :filter-text="filterText" :selected="localVersion" @value="selectLocalVersion" />
           </v-tab-item>
-          <v-tab-item style="height: 100%" @mousewheel="onMouseWheel">
+          <v-tab-item style="height: 100%" @mousewheel.stop>
             <v-list-tile style="margin: 0px 0;">
               <v-checkbox v-model="showAlpha" :label="$t('minecraft.showAlpha')" />
             </v-list-tile>
             <v-divider dark />
-
             <minecraft-version-list :filter="filterMinecraft" style="background-color: transparent;"
                                     :mcversion="mcversion" :selected="mcversion" @value="mcversion = $event.id" />
           </v-tab-item>
-          <v-tab-item style="height: 100%" @mousewheel="onMouseWheel">
+          <v-tab-item style="height: 100%" @mousewheel.stop>
             <v-list-tile>
               <v-checkbox v-model="recommendedAndLatestOnly" :label="$t('forge.recommendedAndLatestOnly')" />
               <v-spacer />
@@ -56,9 +54,9 @@
             </v-list-tile>
             <v-divider dark />
             <forge-version-list style="background-color: transparent" :refreshing="$repo.state.version.refreshingForge" :version-list="forgeVersionList"
-                                :mcversion="mcversion" :filter="filterForge" @refresh="refreshForgeVersion(true)" @value="forgeVersion = $event ? $event.version : ''" />
+                                :mcversion="mcversion" :filter="filterForge" @refresh="refreshForgeVersion" @value="forgeVersion = $event ? $event.version : ''" />
           </v-tab-item>
-          <v-tab-item style="height: 100%" @mousewheel="onMouseWheel">
+          <v-tab-item style="height: 100%" @mousewheel.stop>
             <liteloader-version-list :mcversion="mcversion" :filter-text="filterText" @value="liteloaderVersion = $event ? $event.version : ''" />
           </v-tab-item>
         </v-tabs-items>
@@ -68,10 +66,14 @@
 </template>
 
 <script>
-export default {
-  mixins: [],
-  data() {
-    return {
+import { createComponent, reactive, computed, ref, onMounted, onUnmounted, toRefs, provide } from '@vue/composition-api';
+import { useAutoSaveLoad, useCurrentProfile, useForgeVersions } from '@/hooks';
+import Vue from 'vue';
+
+export default createComponent({
+  setup() {
+    provide('filter-text', ref(''));
+    const data = reactive({
       active: 0,
       searchPanel: false,
       filterText: '',
@@ -83,22 +85,64 @@ export default {
       mcversion: '',
       forgeVersion: '',
       liteloaderVersion: '',
-
-      forgeVersionList: [],
-    };
-  },
-  computed: {
-    barColor() {
-      switch (this.active) {
+    });
+    const refs = toRefs(data);
+    const { edit, version } = useCurrentProfile();
+    const { list, refresh, refreshing } = useForgeVersions(refs.mcversion);
+    const barColor = computed(() => {
+      switch (data.active) {
         case 0: return 'white';
         case 1: return 'primary';
         case 2: return 'brown';
         case 3: return 'cyan';
         default: return 'primary';
       }
-    },
+    });
+    function save() {
+      edit({
+        version: {
+          minecraft: data.mcversion,
+          forge: data.forgeVersion,
+          liteloader: data.liteloaderVersion,
+        },
+      });
+    }
+    async function load() {
+      const { forge, minecraft, liteloader } = version.value;
+      data.mcversion = minecraft;
+      data.forgeVersion = forge;
+      data.liteloader = liteloader;
+    }
+
+    useAutoSaveLoad(save, load);
+
+    function filterMinecraft(v) {
+      if (!data.showAlpha && v.type !== 'release') return false;
+      return v.id.indexOf(data.filterText) !== -1;
+    }
+    function filterForge(version) {
+      if (data.recommendedAndLatestOnly && version.type !== 'recommended' && version.type !== 'latest') return false;
+      if (data.showBuggy && version.type !== 'buggy') return true;
+      return version.version.indexOf(data.filterText) !== -1;
+    }
+    function selectLocalVersion(v) {
+      data.mcversion = v.minecraft;
+      Vue.nextTick().then(() => {
+        data.forgeVersion = v.forge;
+        data.liteloaderVersion = v.liteloader;
+      });
+    }
+
+    return {
+      forgeVersionList: list,
+      refresh,
+      refreshing,
+      filterMinecraft,
+      filterForge,
+    };
+  },
+  computed: {
     localVersion() { return { minecraft: this.mcversion, forge: this.forgeVersion, liteloader: this.liteloaderVersion }; },
-    profile() { return this.$repo.getters.selectedProfile; },
   },
   watch: {
     mcversion() {
@@ -106,78 +150,7 @@ export default {
       this.liteloaderVersion = '';
     },
   },
-  mounted() { this.load(); },
-  destroyed() { this.save(); },
-  activated() { this.load(); },
-  deactivated() { this.save(); },
-  methods: {
-    save() {
-      this.$repo.dispatch('editProfile', {
-        version: {
-          minecraft: this.mcversion,
-          forge: this.forgeVersion,
-          liteloader: this.liteloaderVersion,
-        },
-      });
-    },
-    async load() {
-      const profile = this.$repo.getters.selectedProfile;
-      const { forge, minecraft, liteloader } = profile.version;
-      this.mcversion = minecraft;
-
-      const ver = this.$repo.state.version.forge[minecraft];
-      if (ver) {
-        this.forgeVersionList = ver.versions;
-      } else {
-        this.forgeVersionList = [];
-        this.$repo.dispatch('getForgeWebPage', minecraft)
-          .then(r => (r ? r.versions : []))
-          .then((r) => { this.forgeVersionList = [...r]; });
-      }
-
-      await this.$nextTick();
-      this.forgeVersion = forge;
-      this.liteloader = liteloader;
-    },
-    onMouseWheel(e) {
-      e.stopPropagation();
-      return false;
-    },
-    async refreshForgeVersion(force) {
-      if (force || this.mcversion !== this.profile.version.mcversion) {
-        this.forgeVersionList = [];
-        let r;
-        if (force) {
-          await this.$repo.dispatch('refreshForge', this.mcversion);
-          r = this.$repo.state.version.forge[this.mcversion];
-        } else {
-          r = await this.$repo.dispatch('getForgeWebPage', this.mcversion);
-        }
-        await this.$nextTick();
-        this.forgeVersionList = r ? Object.freeze([...r.versions]) : Object.freeze([]);
-      }
-    },
-    filterMinecraft(v) {
-      if (!this.showAlpha && v.type !== 'release') return false;
-      return v.id.indexOf(this.filterText) !== -1;
-    },
-    filterForge(version) {
-      if (this.recommendedAndLatestOnly && version.type !== 'recommended' && version.type !== 'latest') return false;
-      if (this.showBuggy && version.type !== 'buggy') return true;
-      return version.version.indexOf(this.filterText) !== -1;
-    },
-    selectLocalVersion(v) {
-      this.mcversion = v.minecraft;
-      this.$nextTick().then(() => {
-        this.forgeVersion = v.forge;
-        this.liteloaderVersion = v.liteloader;
-      });
-    },
-    onKeyPress(e) {
-      console.log(e.code);
-    },
-  },
-};
+});
 </script>
 
 <style scoped=true>

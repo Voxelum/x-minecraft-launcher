@@ -40,12 +40,12 @@
                     <v-list-tile-title>{{ i }}</v-list-tile-title>
                   </v-list-tile-content>
                   <v-list-tile-action>
-                    <v-btn icon color="white" flat @click="openFile($event, i)">
+                    <v-btn icon color="white" flat @click.prevent="openFile(i)">
                       <v-icon>folder</v-icon>
                     </v-btn>
                   </v-list-tile-action>
                   <v-list-tile-action>
-                    <v-btn icon color="red" flat @click="removeFile($event, i)">
+                    <v-btn icon color="red" flat @click.prevent="removeFile(i)">
                       <v-icon>delete</v-icon>
                     </v-btn>
                   </v-list-tile-action>
@@ -118,7 +118,7 @@ export default {
     return {
       isShown,
       ...toRefs(data),
-      removeFile(event, i) {
+      removeFile(i) {
         if (data.tab === 1) {
           dispatch('removeCrashReport', i);
           loadCrashes();
@@ -126,7 +126,6 @@ export default {
           dispatch('removeLog', i);
           loadLogs();
         }
-        event.preventDefault();
       },
       showFile(i) {
         const name = i;
@@ -153,8 +152,6 @@ export default {
       },
       openFile(event, i) {
         const name = i;
-
-        event.preventDefault();
         // remote.shell.showItemInFolder()
       },
       goBack() {

@@ -1,7 +1,7 @@
 import router from './router';
-import start from '../../start';
+import app from '../../app';
 import '../../useVuetify';
 
-start({
+app({
     router,
 });

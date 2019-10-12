@@ -89,7 +89,6 @@ export default {
         clipboard.writeText(item.message);
       },
       cancelTask(event, id) {
-        event.stopPropagation();
         dispatch('cancelTask', id);
       },
     };
