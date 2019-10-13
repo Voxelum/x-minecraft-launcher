@@ -1,4 +1,4 @@
-export * from './useCurrentProfile';
+export * from './useProfile';
 export * from './useUser';
 export * from './useDialog';
 export * from './useNetworkStatus';
@@ -18,3 +18,5 @@ export * from './useJava';
 export * from './useSelectionList';
 export * from './useResource';
 export * from './useVersion';
+export * from './useSettings';
+export * from './useMod';

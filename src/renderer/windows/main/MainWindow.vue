@@ -1,5 +1,5 @@
 <template>
-  <vue-particles v-if="loading" color="#dedede" style="position: absolute; width: 100%; height: 100%;" />
+  <v-container v-if="loading" color="primary" align-center justify-center style="position: absolute; width: 100%; height: 100%; background-color: #212121"/>
   <v-layout v-else fill-height>
     <v-navigation-drawer :value="true" :mini-variant="mini" stateless dark 
                          style="border-radius: 2px 0 0 2px;"
@@ -86,7 +86,8 @@
 </template>
 
 <script>
-import 'renderer/assets/common.css';
+import '@/assets/common.css';
+import logo from '@/assets/logo.png';
 import {
   onMounted,
   onBeforeMount,
@@ -195,6 +196,7 @@ export default createComponent({
         startHoverTime = -1;
         data.mini = false;
       },
+      logo,
     };
   },
 });

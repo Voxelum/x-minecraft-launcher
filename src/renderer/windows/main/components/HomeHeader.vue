@@ -10,7 +10,7 @@
       <v-avatar v-if="isServer">
         <img :src="favicon">
       </v-avatar>
-      Version: {{ version.id }}
+      Version: {{ folder }}
     </v-chip>
     <v-chip v-if="isServer" label class="pointer" small :selected="false" outline>
       <v-avatar>
@@ -31,19 +31,22 @@
 
 <script>
 import {
-  useCurrentProfile,
+  useProfile,
   useServerStatus,
+  useProfileVersion,
 } from '@/hooks';
 
 export default {
   setup() {
-    const { version, name, author, isServer } = useCurrentProfile();
+    const { version, name, author, isServer } = useProfile();
+    const { folder } = useProfileVersion();
     const { players, ping, favicon } = useServerStatus();
     return {
       version,
       name,
       author, 
       isServer,
+      folder,
       ...(isServer.value ? {
         players, 
         ping, 

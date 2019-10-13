@@ -1,7 +1,7 @@
 <template>
-  <v-list dark style="overflow-y: scroll; scrollbar-width: 0;" @mousewheel.stop>
+  <v-list dark style="overflow-y: scroll; scrollbar-width: 0; background-color: transparent;" @mousewheel.stop>
     <template v-for="(item, index) in versions">
-      <v-list-tile :key="index" :class="{ grey: selected === item.id, 'darken-1': selected === item.id }" ripple @click="selectVersion(item)">
+      <v-list-tile :key="index" :class="{ grey: value === item.id, 'darken-1': value === item.id }" ripple @click="selectVersion(item)">
         <v-list-tile-avatar>
           <v-icon v-if="statuses[item.id] !== 'loading'">
             {{ statuses[item.id] === 'remote' ? 'cloud' : 'folder' }}
@@ -27,35 +27,45 @@
 </template>
 
 <script>
-export default {
+import { createComponent, computed } from '@vue/composition-api';
+import { useMinecraftVersions } from '@/hooks';
+
+export default createComponent({
   props: {
-    filter: {
-      type: Function,
-      default: () => true,
+    showAlpha: {
+      type: Boolean,
+      default: () => false,
+    },
+    filterText: {
+      type: String,
+      default: () => '',
     },
     showTime: {
       type: Boolean,
       default: true,
     },
-    selected: {
+    value: {
       type: String,
       default: () => '',
     },
   },
-  computed: {
-    statuses() {
-      return this.$repo.getters.minecraftStatuses;
-    },
-    versions() {
-      return this.$repo.state.version.minecraft.versions.filter(this.filter);
-    },
+  setup(props, context) {
+    const { versions, statuses } = useMinecraftVersions();
+    function selectVersion(v) {
+      context.emit('input', v.id);
+    }
+
+    function filterMinecraft(v) {
+      if (!props.showAlpha && v.type !== 'release') return false;
+      return v.id.indexOf(props.filterText) !== -1;
+    }
+    return {
+      versions: computed(() => versions.value.filter(v => v.type === 'release')),
+      statuses,
+      selectVersion,
+    };
   },
-  methods: {
-    selectVersion(v) {
-      this.$emit('value', v);
-    },
-  },
-};
+});
 </script>
 
 <style>

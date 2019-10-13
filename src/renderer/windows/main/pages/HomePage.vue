@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap>
     <v-icon v-ripple style="position: absolute; right: 0; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
-            dark @click="quitLauncher">
+            dark @click="quit">
       close
     </v-icon>
     <v-icon v-ripple style="position: absolute; right: 44px; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
@@ -47,23 +47,12 @@
     </v-tooltip>
 
     <problems-bar />
-    <v-flex d-flex xs12 style="z-index: 1">
-      <div class="display-1 white--text" style="padding-top: 50px; padding-left: 50px">
-        <span style="margin-right: 10px;">
-          {{ profile.name || `Minecraft ${profile.version.minecraft}` }}
-        </span>
-        <v-chip v-if="profile.author" label color="green" small :selected="false" style="margin-right: 5px;">
-          {{ profile.author }}
-        </v-chip>
-
-        <v-chip label class="pointer" color="green" small :selected="false" @click="$router.replace('/version-setting')">
-          Version: {{ $repo.getters['currentVersion'].id }}
-        </v-chip>
-      </div>
+    <v-flex d-flex xs12 style="z-index: 1; padding-top: 50px; padding-left: 50px">
+      <home-header />
     </v-flex>
     
-    <v-flex d-flex xs6 style="margin: 40px 0 0 40px;">
-      <server-status-card v-if="isServer" />
+    <v-flex v-if="isServer" d-flex xs12 style="margin: 40px;">
+      <server-status-bar />
     </v-flex>
 
     <v-btn color="primary" style="position: absolute; right: 10px; bottom: 10px; " dark large
@@ -80,55 +69,41 @@
 
 <script>
 import { reactive, computed, toRefs, watch, ref } from '@vue/composition-api';
-import unknownServer from '@/assets/unknown_server.png';
-import { useStore, useDialog, useI18n, useNativeDialog } from '@/hooks';
+import { useStore, useDialog, useI18n, useLaunch, useNativeDialog, useProfile, useJava } from '@/hooks';
 
 export default {
   setup(props, context) {
     const { t } = useI18n();
-    const { getters, state, dispatch } = useStore();
     const { showSaveDialog } = useNativeDialog();
     const { showDialog: showLogDialog } = useDialog('logs');
     const { showDialog: showFeedbackDialog } = useDialog('feedback');
-    const profile = computed(() => getters.selectedProfile);
-    const isServer = computed(() => profile.value.type === 'server');
-    const launchStatus = computed(() => state.launch.status);
-    const refreshingProfile = computed(() => state.profile.refreshing);
-    const missingJava = computed(() => getters.missingJava);
+    const { refreshing: refreshingProfile, name, isServer, exportTo } = useProfile();
+    const { launch, status: launchStatus, quit } = useLaunch();
+    const { missing: missingJava } = useJava();
 
     return {
       isServer,
-      profile,
       launchStatus,
       refreshingProfile,
       missingJava,
-      async launch() {
-        if (launchStatus.value !== 'ready') {
-          return;
-        }
-        await dispatch('launch');
-      },
+      launch,
+      showLogDialog,
+      showFeedbackDialog,
+      quit,
       showExportDialog() {
         if (refreshingProfile.value) return;
         showSaveDialog({
           title: t('profile.export.title'),
           filters: [{ name: 'zip', extensions: ['zip'] }],
           message: t('profile.export.message'),
-          defaultPath: `${profile.value.name}.zip`,
+          defaultPath: `${name.value}.zip`,
         }, (filename, bookmark) => {
           if (filename) {
-            dispatch('exportProfile', { dest: filename }).catch((e) => {
+            exportTo({ dest: filename }).catch((e) => {
               console.error(e);
             });
           }
         });
-      },
-      showLogDialog,
-      showFeedbackDialog,
-      quitLauncher() {
-        setTimeout(() => {
-          dispatch('quit');
-        }, 150);
       },
     };
   },

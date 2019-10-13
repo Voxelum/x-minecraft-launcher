@@ -1,57 +1,58 @@
+import ForgeInstaller from "@xmcl/forge-installer";
+import { ForgeWebPage, Installer, LiteLoader, ResolvedLibrary, Version } from "@xmcl/minecraft-launcher-core";
+import lastestRelease from 'universal/utils/lasteRelease.json';
 import { fitin } from 'universal/utils/object';
 import Vue from 'vue';
-import lastestRelease from 'universal/utils/lasteRelease.json';
-
-import { Forge, ForgeWebPage, LiteLoader, Installer, Version, ResolvedLibrary } from "@xmcl/minecraft-launcher-core";
 import { Context, Module } from "..";
-import ForgeInstaller from "@xmcl/forge-installer";
+
 export type Status = 'remote' | 'local';
 
 /**
- * The module handle the local/remote version related work 
- */
-export declare namespace VersionModule {
-    /**
      * An interface to reference a resolved version in 
      * <minecraft folder>/versions/<version-id>/<version-id>.json
      * 
      * This is more lightweight than @xmcl/minecraft-launcher-core's Version by Version.parse.
      */
-    interface ResolvedVersion {
-        /**
-         * Minecraft version of this version. e.g. 1.7.10
-         */
-        minecraft: string;
-        /**
-         * Forge version of this version. e.g. 14.23.5.2838
-         */
-        forge: string;
-        liteloader: string;
-        /**
-         * The ideal id this version, which is computed by 
-         * function universal/utils/versions.js#getExpectVersion
-         */
-        id: string;
-        /**
-         * The real folder id of the version, which is the <verison-id> in
-         * 
-         * <minecraft folder>/versions/<version-id>/<version-id>.json
-         */
-        folder: string;
-    }
+export interface LocalVersion {
+    /**
+     * Minecraft version of this version. e.g. 1.7.10
+     */
+    minecraft: string;
+    /**
+     * Forge version of this version. e.g. 14.23.5.2838
+     */
+    forge: string;
+    liteloader: string;
+    /**
+     * The ideal id this version, which is computed by 
+     * function universal/utils/versions.js#getExpectVersion
+     */
+    id: string;
+    /**
+     * The real folder id of the version, which is the <verison-id> in
+     * 
+     * <minecraft folder>/versions/<version-id>/<version-id>.json
+     */
+    folder: string;
+}
 
+/**
+ * The module handle the local/remote version related work 
+ */
+export declare namespace VersionModule {
     interface WebPage extends ForgeWebPage {
         latest: number;
         recommended: number;
     }
 
     interface State {
-        local: ResolvedVersion[];
+        local: LocalVersion[];
         minecraft: Installer.VersionMetaList;
-        refreshingMinecraft: boolean;
         forge: { [mcversion: string]: ForgeWebPage };
-        refreshingForge: boolean;
         liteloader: LiteLoader.VersionMetaList;
+
+        refreshingMinecraft: boolean;
+        refreshingForge: boolean;
         refreshingLiteloader: boolean;
     }
 
@@ -86,7 +87,7 @@ export declare namespace VersionModule {
         refreshingForge(state: State, refreshing: boolean): void;
         refreshingLiteloader(state: State, refreshing: boolean): void;
 
-        localVersions(state: State, local: ResolvedVersion[]): void;
+        localVersions(state: State, local: LocalVersion[]): void;
         minecraftMetadata(state: State, metadatas: Installer.VersionMetaList): void;
         forgeMetadata(state: State, metadatas: ForgeWebPage): void;
         liteloaderMetadata(state: State, metadatas: LiteLoader.VersionMetaList): void;
@@ -106,7 +107,7 @@ export declare namespace VersionModule {
 
         getForgeWebPage(context: C, mcversion: string): Promise<ForgeWebPage | undefined>
 
-        resolveVersion(context: C, version: Pick<ResolvedVersion, 'minecraft' | 'forge' | 'liteloader'>): Promise<string>
+        resolveVersion(context: C, version: Pick<LocalVersion, 'minecraft' | 'forge' | 'liteloader'>): Promise<string>
 
         installLibraries(context: C, payload: { libraries: (Version.Library | ResolvedLibrary)[] }): Promise<TaskHandle>;
         installAssets(context: C, version: string): Promise<TaskHandle>

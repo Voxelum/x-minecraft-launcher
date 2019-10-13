@@ -3,37 +3,6 @@ import { Context, Module } from "..";
 import { Forge, LiteLoader, ResourcePack, World } from "@xmcl/minecraft-launcher-core";
 
 export declare namespace ResourceModule {
-    interface Source {
-        path: string;
-        date: string;
-        [key: string]: string | Record<string, string>;
-    }
-
-    type ImportOption = {
-        path: string;
-        type?: string | 'forge' | 'liteloader' | 'curseforge-modpack' | 'save';
-        metadata?: any;
-        background?: boolean;
-    }
-
-    interface Resource<T> {
-        name: string;
-        path: string;
-        hash: string;
-        ext: string;
-        type: string;
-        domain: string | 'mods' | 'resourcepacks' | 'modpacks' | 'saves';
-        metadata: T;
-        source: Source;
-    }
-
-    type AnyResource = Resource<any>;
-    type ForgeResource = Resource<Forge.MetaData[]> & { type: 'forge' };
-    type LiteloaderResource = Resource<LiteLoader.MetaData> & { type: 'liteloader' };
-    type ResourcePackResource = Resource<ResourcePack> & { type: 'resourcepack' };
-    type CurseforgeModpackResource = Resource<any> & { type: 'curseforge-modpack' };
-    type SaveResource = Resource<Pick<World, 'path' | 'level'>> & { type: 'save' };
-
     interface State {
         refreshing: boolean;
         domains: {
@@ -46,10 +15,10 @@ export declare namespace ResourceModule {
     }
     interface Getters {
         domains: string[];
-        mods: (ResourceModule.ForgeResource | ResourceModule.LiteloaderResource)[];
-        resourcepacks: ResourceModule.ResourcePackResource[];
-        saves: ResourceModule.SaveResource[];
-        modpacks: ResourceModule.CurseforgeModpackResource[];
+        mods: (ForgeResource | LiteloaderResource)[];
+        resourcepacks: ResourcePackResource[];
+        saves: SaveResource[];
+        modpacks: CurseforgeModpackResource[];
 
         getResource(hash: string): AnyResource | undefined;
 
@@ -61,10 +30,10 @@ export declare namespace ResourceModule {
     }
 
     interface Mutations {
-        resource(state: State, resource: ResourceModule.AnyResource): void;
-        resources(state: State, resources: ResourceModule.AnyResource[]): void;
+        resource(state: State, resource: AnyResource): void;
+        resources(state: State, resources: AnyResource[]): void;
         refreshingResource(state: State, refresh: boolean): void;
-        removeResource(state: State, resource: ResourceModule.AnyResource): void;
+        removeResource(state: State, resource: AnyResource): void;
     }
     type C = Context<State, Getters>;
 
@@ -109,7 +78,36 @@ export declare namespace ResourceModule {
 }
 export interface ResourceModule extends Module<"resource", ResourceModule.State, ResourceModule.Getters, ResourceModule.Mutations, ResourceModule.Actions> { }
 
-export type Resource<T> = ResourceModule.Resource<T>;
+export interface Source {
+    path: string;
+    date: string;
+    [key: string]: string | Record<string, string>;
+}
+
+export type ImportOption = {
+    path: string;
+    type?: string | 'forge' | 'liteloader' | 'curseforge-modpack' | 'save';
+    metadata?: any;
+    background?: boolean;
+}
+
+export interface Resource<T> {
+    name: string;
+    path: string;
+    hash: string;
+    ext: string;
+    type: string;
+    domain: string | 'mods' | 'resourcepacks' | 'modpacks' | 'saves';
+    metadata: T;
+    source: Source;
+}
+
+export type AnyResource = Resource<any>;
+export type ForgeResource = Resource<Forge.MetaData[]> & { type: 'forge' };
+export type LiteloaderResource = Resource<LiteLoader.MetaData> & { type: 'liteloader' };
+export type ResourcePackResource = Resource<ResourcePack> & { type: 'resourcepack' };
+export type CurseforgeModpackResource = Resource<any> & { type: 'curseforge-modpack' };
+export type SaveResource = Resource<Pick<World, 'path' | 'level'>> & { type: 'save' };
 
 const mod: ResourceModule = {
     state: {
@@ -149,6 +147,11 @@ const mod: ResourceModule = {
                         break;
                     case 'file':
                         return undefined;
+                    case 'resource':
+                        for (const domain of Object.values(state.domains)) {
+                            if (domain[res[0]]) return domain[res[0]];
+                        }
+                        break;
                     default:
                         for (const domain of Object.values(state.domains)) {
                             if (domain[qObject]) return domain[qObject];

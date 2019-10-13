@@ -15,8 +15,11 @@ const waitBrowser = new Promise((resolve, reject) => {
         browser = new BrowserWindow({
             focusable: false,
             webPreferences: {
-                javascript: false
+                javascript: false,
+                devTools: false
             },
+            width: 0,
+            height: 0,
             show: false,
         });
         browser.setFocusable(false);

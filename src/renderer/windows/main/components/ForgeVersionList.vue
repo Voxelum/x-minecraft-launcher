@@ -6,7 +6,7 @@
       </v-flex>
     </v-layout>
   </v-container>
-  <v-list v-else-if="versionList.length !== 0" dark style="overflow-y: scroll; scrollbar-width: 0;">
+  <v-list v-else-if="versions.length !== 0" dark style="overflow-y: scroll; scrollbar-width: 0; background-color: transparent;">
     <v-list-tile ripple @click="selectVersion(null)">
       <v-list-tile-avatar>
         <v-icon> close </v-icon>
@@ -14,7 +14,11 @@
       {{ $t('forge.disable') }}
     </v-list-tile>
     <template v-for="(item, index) in versions">
-      <v-list-tile :key="index" ripple @click="selectVersion(item)">
+      <v-list-tile 
+        :key="index"
+        :class="{ grey: value === item.version, 'darken-1': value === item.version }" 
+        ripple 
+        @click="selectVersion(item)">
         <v-list-tile-avatar>
           <v-icon v-if="statuses[item.version] !== 'loading'">
             {{ statuses[item.version] === 'remote' ? 'cloud' : 'folder' }}
@@ -41,11 +45,11 @@
   <v-container v-else fill-height>
     <v-layout align-center justify-center row fill-height>
       <v-flex shrink tag="h3" class="white--text">
-        <v-btn outline large @click="$emit('refresh')">
+        <v-btn outline large @click="refresh">
           <v-icon left>
             refresh
           </v-icon>
-          {{ $t('forge.noVersion', {version:mcversion}) }}
+          {{ $t('forge.noVersion', { version: minecraft }) }}
         </v-btn>
       </v-flex>
     </v-layout>
@@ -53,46 +57,58 @@
 </template>
 
 <script>
-export default {
+import { createComponent, reactive, ref, computed } from '@vue/composition-api';
+import { useForgeVersions } from '../../../hooks';
+
+export default createComponent({
   props: {
-    mcversion: {
+    minecraft: {
       type: String,
       default: '',
     },
-    refreshing: {
+    value: {
+      type: String,
+      default: '',
+    },
+    showBuggy: {
       type: Boolean,
       default: false,
     },
-    versionList: {
-      type: Array,
-      default: () => [],
+    filterText: {
+      type: String,
+      default: '',
     },
-    filter: {
-      type: Function,
-      default: () => true,
-    },
-  },
-  data: () => ({
-    iconMapping: {
-      buggy: 'bug_report',
-      recommended: 'star',
-      latest: 'fiber_new',
-    },
-  }),
-  computed: {
-    statuses() {
-      return this.$repo.getters.forgeStatuses;
-    },
-    versions() {
-      return this.versionList.filter(this.filter);
+    recommendedOnly: {
+      type: Boolean,
+      default: false,
     },
   },
-  methods: {
-    selectVersion(item) {
-      this.$emit('value', item);
-    },
+  setup(props, context) {
+    const mcversion = computed(() => props.minecraft);
+    const { statuses, versions, refreshing, refresh } = useForgeVersions(mcversion);
+    function selectVersion(item) {
+      context.emit('input', item.version);
+    }
+    function filterForge(version) {
+      if (props.recommendedOnly && version.type !== 'recommended' && version.type !== 'latest') return false;
+      if (props.showBuggy && version.type !== 'buggy') return true;
+      return version.version.indexOf(props.filterText) !== -1;
+    }
+    const filteredVersions = computed(() => versions.value.filter(filterForge));
+    return {
+      iconMapping: {
+        buggy: 'bug_report',
+        recommended: 'star',
+        latest: 'fiber_new',
+      },
+      statuses,
+      versions: filteredVersions,
+      refreshing,
+      refresh,
+      selectVersion,
+    };
   },
-};
+});
 </script>
 
 <style>

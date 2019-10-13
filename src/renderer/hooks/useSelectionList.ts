@@ -8,8 +8,8 @@ export function useSelectionList<T, R>(
     onFileDropped: (file: File) => void,
     mapItem: (item: T) => R,
 ) {
-    const unselectedBuffer = ref(0);
-    const selectedBuffer = ref(0);
+    const unselectedBuffer = ref(10);
+    const selectedBuffer = ref(10);
     const rightList: Ref<Element> = ref(null) as any;
     const selecetedItems = computed(() => computeSelecetedItems().filter((_, i) => i < selectedBuffer.value));
     const unselectedItems = computed(() => computeUnselectedItems().filter((_, i) => i < unselectedBuffer.value));

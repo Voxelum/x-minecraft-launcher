@@ -152,7 +152,7 @@
 </template>
 
 <script>
-import { useCurrentUser, useI18n, useActions, useCurrentUserSkin, useDialog, useNativeDialog } from '@/hooks';
+import { useCurrentUser, useNotifier, useI18n, useActions, useCurrentUserSkin, useDialog, useNativeDialog } from '@/hooks';
 import { reactive, toRefs, onMounted, computed } from '@vue/composition-api';
 import { clipboard } from 'electron';
 
@@ -174,6 +174,7 @@ export default {
     const { showDialog, onDialogClosed: onSkinImportDialogClosed } = useDialog('skin-import');
     const { showDialog: showLoginDialog } = useDialog('login');
     const { showDialog: showUserServiceDialog } = useDialog('user-service');
+    const { notify } = useNotifier();
 
     const {
       logout,
@@ -282,12 +283,13 @@ export default {
         showSaveDialog({
           title: t('user.skinSaveTitle'),
           defaultPath: `${name.value}.png`,
-          filters: [{ extensions: ['png'], name: 'PNG Images' }] },
-        (filename, bookmark) => {
-          if (filename) {
-            saveSkin({ path: filename, skin: { data: data.skinUrl, slim: data.skinSlim } });
-          }
-        });
+          filters: [{ extensions: ['png'], name: 'PNG Images' }]
+        },
+          (filename, bookmark) => {
+            if (filename) {
+              saveSkin({ path: filename, skin: { data: data.skinUrl, slim: data.skinSlim } });
+            }
+          });
       },
       enterEditBtn() {
         data.hoverTextOnEdit = t('user.skinImportFile');
@@ -313,6 +315,7 @@ export default {
         }
       },
       copyToClipBoard(text) {
+        notify('success', t('copy.success'));
         clipboard.clear();
         clipboard.writeText(text);
       },

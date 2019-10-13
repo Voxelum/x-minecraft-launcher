@@ -51,7 +51,7 @@ function startRenderer() {
 
         compiler.hooks.compilation.tap('compilation', (compilation) => {
             compilation.hooks.htmlWebpackPluginAfterEmit.tapAsync('html-webpack-plugin-after-emit', (data, cb) => {
-                hotMiddleware.publish({ action: 'reload' });
+                // hotMiddleware.publish({ action: 'reload' });
                 cb();
             });
         });

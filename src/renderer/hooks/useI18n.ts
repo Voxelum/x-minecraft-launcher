@@ -8,5 +8,8 @@ export function useI18n() {
     if (!i18n) throw new Error('Cannot find i18n. Maybe router not loaded?');
     return {
         t(key: string, values?: any[] | { [key: string]: any }): string { return i18n.t(key, values) as any; },
+        l(keys: TemplateStringsArray): string {
+            return i18n.t(keys[0], arguments) as string;
+        },
     };
 }

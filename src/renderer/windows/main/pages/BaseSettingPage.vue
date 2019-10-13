@@ -54,8 +54,6 @@
           </v-btn>
         </v-flex>
 
-        {{ a }}
-
         <v-flex d-flex xs6>
           <v-btn outline large replace to="/save">
             {{ $tc('save.name', 2) }}
@@ -82,7 +80,7 @@
 <script>
 import { reactive, toRefs, computed } from '@vue/composition-api';
 import {
-  useCurrentProfile,
+  useProfile,
   useStore,
   useAutoSaveLoad,
   useRouter,
@@ -91,8 +89,8 @@ import {
 export default {
   setup() {
     const { version, isServer, showLog, hideLauncher, name, author,
-      url, type, description, port, host, edit } = useCurrentProfile();
-    const { replace } = useRouter();
+      url, type, description, port, host, edit } = useProfile();
+    const router = useRouter();
     const { dispatch } = useStore();
     const data = reactive({
       active: 0,
@@ -158,7 +156,7 @@ export default {
       }
     }
     function goVersionPage() {
-      replace('/version-setting');
+      router.replace('/version-setting');
     }
     return {
       ...toRefs(data),

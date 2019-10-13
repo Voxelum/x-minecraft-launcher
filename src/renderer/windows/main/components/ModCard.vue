@@ -8,7 +8,12 @@
               :style="{ transform: dragged ? 'scale(0.8)' : 'scale(1)' }"
               style="margin-top: 10px; padding: 0 10px; transition-duration: 0.2s;"
               v-on="on" 
-              @mousedown="dragged=true" @dragstart="onDragStart" @dragend="onDragEnd" @click="$emit('click', $event)">
+              @mousedown="dragged=true" 
+              @dragstart="onDragStart" 
+              @dragend="onDragEnd"
+              @mouseup="dragged=false"
+              @mouseleave="dragged=false"
+              @click="$emit('click', $event)">
         <v-layout justify-center align-center fill-height>
           <v-flex v-if="icon" xs4 style="padding: 0 10px 0 0;" fill-height>
             <v-img ref="iconImage" :src="icon" style="height: 100%" contain />
@@ -33,9 +38,11 @@
 
 <script>
 import { isCompatible } from 'universal/utils/versions';
-import unknownPack from 'renderer/assets/unknown_pack.png';
+import { createComponent, ref, onMounted, computed } from '@vue/composition-api';
+import { shell } from 'electron';
+import { useStore, useForgeModResource } from '@/hooks';
 
-export default {
+export default createComponent({
   props: {
     data: {
       required: true,
@@ -49,78 +56,47 @@ export default {
       required: true,
       type: Number,
     },
-    hash: {
-      required: true,
-      type: String,
-    },
   },
-  data() {
+  setup(props, context) {
+    const { icon, metadata, acceptedRange, compatible } = useForgeModResource(props.data);
+    const dragged = ref(false);
+    const iconImage = ref(null);
+  
+
+    function onDragStart(e) {
+      dragged.value = true;
+      e.dataTransfer.setDragImage(iconImage.value.$el, 0, 0);
+      e.dataTransfer.setData('Index', `${props.isSelected ? 'R' : 'L'}${props.index}`);
+      e.dataTransfer.setData('Hash', props.data.hash);
+      context.emit('dragstart', e);
+    }
+    function onDragEnd(e) {
+      dragged.value = false;
+      context.emit('dragend', e);
+    }
+    function tryOpen(e) {
+      if (props.data.url) {
+        shell.openExternal(props.data.url);
+      }
+    }
+
     return {
-      icon: unknownPack,
-      dragged: false,
+      dragged,
+      icon,
+      iconImage,
+      metadata,
+      compatible,
+      acceptedRange,
+      onDragEnd,
+      onDragStart,
     };
   },
   computed: {
-    metadata() {
-      return this.data.metadata[0];
-    },
     mcversion() {
       return this.$repo.getters.selectedProfile.version.minecraft;
     },
-    acceptedRange() {
-      if (this.data.acceptedMinecraftVersions) {
-        return this.data.acceptedMinecraftVersions;
-      }
-      if (/^\[.+\]$/.test(this.data.mcversion)) {
-        return this.data.mcversion;
-      }
-      return `[${this.data.mcversion}]`;
-    },
-    compatible() {
-      try {
-        return isCompatible(this.acceptedRange, this.mcversion);
-      } catch (e) {
-        console.error(this.data.modid);
-        console.error(e);
-        return false;
-      }
-    },
   },
-  mounted() {
-    this.readLogo();
-  },
-  methods: {
-    readLogo() {
-      if (this.data.missing) {
-        this.icon = unknownPack;
-      } else {
-        this.$repo.dispatch('readForgeLogo', this.hash).then((icon) => {
-          if (typeof icon === 'string' && icon !== '') {
-            this.icon = `data:image/png;base64, ${icon}`;
-          } else {
-            this.icon = unknownPack;
-          }
-        });
-      }
-    },
-    onDragStart(e) {
-      this.dragged = true;
-      this.$emit('dragstart', e);
-      e.dataTransfer.setDragImage(this.$refs.iconImage.$el, 0, 0);
-      e.dataTransfer.setData('Index', `${this.isSelected ? 'R' : 'L'}${this.index}`);
-      e.dataTransfer.setData('Hash', this.data.hash);
-    },
-    onDragEnd(e) {
-      this.dragged = false;
-      this.$emit('dragend', e);
-    },
-    tryOpen(e) {
-      if (this.data.url) {
-        this.$electron.shell.openExternal(this.data.url);
-      }
-    },
-  },
-};
+});
 </script>
 
 <style scoped=true>

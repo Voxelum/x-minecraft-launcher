@@ -127,7 +127,7 @@
             }
         },
         "missingLibraries": {
-            "": "Missing {name} Library | Missing {name} Library | Missing {name} Library | Missing {count} Libraries",
+            "": "Missing {name} Library | Missing {name} Library | Missing {count} Libraries | Missing {count} Libraries",
             "message": "Launcher will install libraries for you"
         },
         "missingVersion": "Please select a Minecraft version for this profile!",
@@ -794,5 +794,8 @@
         "snapshot": "Snapshot",
         "status": "Status",
         "unknown": "Unknown Version"
+    },
+    "copy": {
+        "success": "Copy to clipboard"
     }
 }

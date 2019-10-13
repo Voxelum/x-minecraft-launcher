@@ -4,15 +4,17 @@ import { Data } from "@vue/composition-api/dist/component";
 import { getExpectVersion } from "universal/utils";
 import { useStore } from "./useStore";
 
-export function useCurrentProfile() {
-    const { state, getters, dispatch } = useStore();
+export function useProfile() {
+    const { getters, dispatch } = useStore();
     const profile: ProfileModule.ServerAndModpack & Data = getters.selectedProfile as any;
 
     const maxMemory = computed(() => profile.maxMemory);
     const minMemory = computed(() => profile.minMemory);
+    const author = computed(() => profile.author || '');
 
     const isServer = computed(() => profile.type === 'server');
     const refreshing = computed(() => getters.refreshing);
+    const refs = toRefs(profile);
 
     /**
      * Edit current profile
@@ -28,7 +30,8 @@ export function useCurrentProfile() {
     }
 
     return {
-        ...toRefs(profile),
+        ...refs,
+        author,
         maxMemory,
         minMemory,
         isServer,
@@ -39,7 +42,7 @@ export function useCurrentProfile() {
     };
 }
 
-export function useCurrentProfileVersion() {
+export function useProfileVersion() {
     const { getters, dispatch } = useStore();
 
     const profile: ProfileModule.ServerOrModpack & Data = getters.selectedProfile as any;
@@ -53,12 +56,14 @@ export function useCurrentProfileVersion() {
     let watcher = () => { };
 
     dispatch('resolveVersion', profile.version)
-        .then((f) => { folder.value = f; });
+        .then((f) => { folder.value = f; })
+        .catch((e) => console.error(e));
 
     onMounted(() => {
         watcher = watch(id, () => {
             dispatch('resolveVersion', profile.version)
-                .then((f) => { folder.value = f; });
+                .then((f) => { folder.value = f; })
+                .catch((e) => console.error(e));
         });
     })
     onUnmounted(() => {

@@ -1,6 +1,6 @@
 import router from './router';
-import app from '../../app';
-import '../../useVuetify';
+import app from '@/loadApp';
+import '@/useVuetify';
 
 app({
     router,

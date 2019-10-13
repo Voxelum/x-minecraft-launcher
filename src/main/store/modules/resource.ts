@@ -4,7 +4,7 @@ import { net } from 'electron';
 import fileType from 'file-type';
 import { fs, requireString } from 'main/utils';
 import { extname, basename, join, resolve } from 'path';
-import base, { ResourceModule, Resource } from 'universal/store/modules/resource';
+import base, { ResourceModule, Resource, Source } from 'universal/store/modules/resource';
 import url from 'url';
 import Unzip from '@xmcl/unzip';
 
@@ -73,7 +73,7 @@ function getRegularName(type: string, meta: any) {
     }
 }
 
-async function parseResource(path: string, hash: string, ext: string, data: Buffer, source: ResourceModule.Source, type?: string): Promise<Resource<any>> {
+async function parseResource(path: string, hash: string, ext: string, data: Buffer, source: Source, type?: string): Promise<Resource<any>> {
     const ft = fileType(data);
     if (ft) {
         ext = `.${ft.ext}`;
@@ -106,7 +106,7 @@ async function parseResource(path: string, hash: string, ext: string, data: Buff
     }
 }
 
-async function guessResource(path: string, hash: string, ext: string, data: Buffer, source: ResourceModule.Source): Promise<any> {
+async function guessResource(path: string, hash: string, ext: string, data: Buffer, source: Source): Promise<any> {
     const { meta, domain, type } = await Forge.meta(data).then(meta => ({ domain: 'mods', meta, type: 'forge' }),
         _ => LiteLoader.meta(data).then(meta => ({ domain: 'mods', meta, type: 'liteloader' }),
             _ => ResourcePack.read(path, data).then(meta => ({ domain: 'resourcepacks', meta, type: 'resourcepack' }),
@@ -117,7 +117,7 @@ async function guessResource(path: string, hash: string, ext: string, data: Buff
     return buildResource(path, hash, ext, domain, type, source, meta);
 }
 
-function buildResource(filename: string, hash: string, ext: string, domain: string, type: string, source: ResourceModule.Source, meta: any): Resource<any> {
+function buildResource(filename: string, hash: string, ext: string, domain: string, type: string, source: Source, meta: any): Resource<any> {
     Object.freeze(source);
     Object.freeze(meta);
     return {

@@ -12,9 +12,10 @@
 </template>
 
 <script>
-import steve from 'renderer/assets/steve_skin.png';
+import steve from '@/assets/steve_skin.png';
+import { createComponent, reactive, ref, toRefs } from '@vue/composition-api';
 
-export default {
+export default createComponent({
   props: {
     src: {
       type: String,
@@ -25,38 +26,35 @@ export default {
       default: 64,
     },
   },
-  data() {
-    return {
+  setup(props) {
+    const data = reactive({
       steve,
       textureWidth: 0,
       textureHeight: 0,
+    });
+    const image = ref(null);
+    const style = () => ({
+      'transform-origin': '0 0',
+      transform: `scale(8) translate(${translateX.value}px, ${translateY.value}px)`,
+      'min-width': this.textureWidth,
+      'min-height': this.textureHeight,
+    });
+
+    const translateX = () => -props.dimension / 8;
+    const translateY = () => -props.dimension / 8;
+
+    function onload() {
+      data.textureWidth = image.value.naturalWidth;
+      data.textureHeight = image.value.naturalHeight;
+    }
+    return {
+      ...toRefs(data),
+      style,
+      image,
+      onload,
     };
   },
-  computed: {
-    style() {
-      return {
-        'transform-origin': '0 0',
-        transform: `scale(8) translate(${this.translateX}px, ${this.translateY}px)`,
-        'min-width': this.textureWidth,
-        'min-height': this.textureHeight,
-      };
-    },
-    translateX() {
-      return -this.dimension / 8;
-    },
-    translateY() {
-      return -this.dimension / 8;
-    },
-  },
-  created() {
-  },
-  methods: {
-    onload() {
-      this.textureWidth = this.$refs.image.naturalWidth;
-      this.textureHeight = this.$refs.image.naturalHeight;
-    },
-  },
-};
+});
 </script>
 
 <style>

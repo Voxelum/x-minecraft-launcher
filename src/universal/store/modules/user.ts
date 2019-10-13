@@ -6,14 +6,12 @@ import { GameProfileAndTexture, UserConfig, UserProfile } from './user.config';
 
 export declare namespace UserModule {
     interface State extends UserConfig {
-        refreshingSkin: boolean;
-
         /**
          * The mojang user info
          */
         info: MojangAccount | null;
-
         security: boolean;
+        refreshingSkin: boolean;
         refreshingSecurity: boolean;
     }
 

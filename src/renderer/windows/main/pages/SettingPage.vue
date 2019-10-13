@@ -15,7 +15,11 @@
               </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-select v-model="selectedLang" style="max-width: 185px;" dark hide-details :items="langs" />
+              <v-select v-model="selectedLocale" style="max-width: 185px;" dark hide-details :items="locales" :item-text="i => localeIndex[i]" :item-value="i => i" >
+                <template v-slot:default="{ item }">
+                  {{ localeIndex[item] }}
+                </template>
+              </v-select>
             </v-list-tile-action>
           </v-list-tile>
           <v-list-tile>
@@ -190,16 +194,28 @@
 
 <script>
 import { createComponent, reactive, ref, toRefs, computed, watch } from '@vue/composition-api';
-import langIndex from 'static/locales/index.json';
-import { l } from '..';
+import localeIndex from 'static/locales/index.json';
 import { remote, ipcRenderer } from 'electron';
-import { useStore, useI18n, useParticle } from '@/hooks';
+import { useStore, useI18n, useParticle, useSettings } from '@/hooks';
 
 export default createComponent({
   setup() {
     const { showParticle, particleMode } = useParticle();
     const { dispatch, state, commit } = useStore();
-    const i18n = useI18n();
+    const {
+      locales,
+      selectedLocale,
+      allowPrerelease,
+      autoInstallOnAppQuit,
+      autoDownload,
+      useBmclAPI,
+      downloadingUpdate,
+      checkingUpdate,
+      updateInfo,
+      readyToUpdate,
+      checkUpdate,
+    } = useSettings();
+    const { l, t: tr } = useI18n();
     const data = reactive({
       rootLocation: state.root,
 
@@ -211,43 +227,15 @@ export default createComponent({
       reloadError: undefined,
 
       viewingUpdateDetail: false,
-      particleModes: ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: i18n.t(`setting.particleMode.${t}`) })),
+      particleModes: ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: tr(`setting.particleMode.${t}`) })),
     });
-    const langs = computed(() => state.setting.locales.map(l => ({
-      value: l,
-      text: langIndex[l],
-    })));
-    const selectedLang = computed({
-      get: () => langs.value.find(l => l.value === state.setting.locale) || 'en',
-      set: v => commit('locale', v),
+    watch(selectedLocale, () => {
+      data.particleModes = ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: tr(`setting.particleMode.${t}`) }));
     });
-    watch(selectedLang, () => {
-      data.particleModes = ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: i18n.t(`setting.particleMode.${t}`) }));
-    });
-    const allowPrerelease = computed({
-      get: () => state.setting.allowPrerelease,
-      set: v => commit('allowPrerelease', v),
-    });
-    const autoInstallOnAppQuit = computed({
-      get: () => state.setting.autoInstallOnAppQuit,
-      set: v => commit('autoInstallOnAppQuit', v),
-    });
-    const autoDownload = computed({
-      get: () => state.setting.autoDownload,
-      set: v => commit('autoDownload', v),
-    });
-    const useBmclAPI = computed({
-      get: () => state.setting.useBmclAPI,
-      set: v => commit('useBmclApi', v),
-    });
-    const readyToUpdate = computed(() => state.setting.readyToUpdate);
-    const checkingUpdate = computed(() => state.setting.checkingUpdate);
-    const downloadingUpdate = computed(() => state.setting.downloadingUpdate);
-    const updateInfo = computed(() => state.setting.updateInfo || {});
     return {
       ...toRefs(data),
-      langs,
-      selectedLang,
+      locales,
+      selectedLocale,
       allowPrerelease,
       autoInstallOnAppQuit,
       autoDownload,
@@ -258,11 +246,8 @@ export default createComponent({
       readyToUpdate,
       showParticle,
       particleMode,
-      checkUpdate() {
-        dispatch('checkUpdate').then((result) => {
-          console.log(result);
-        });
-      },
+      checkUpdate,
+      localeIndex,
       viewUpdateDetail() {
         data.viewingUpdateDetail = true;
       },

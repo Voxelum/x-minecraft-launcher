@@ -5,7 +5,7 @@ import { useStore } from './useStore';
 
 
 export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
-    const { state } = useStore();
+    const { state, dispatch } = useStore();
 
     const using = ref || computed(() => state.profile.statuses[state.profile.id])
     const status: Ref<ServerStatusFrame> = computed(() => using.value || {
@@ -22,12 +22,17 @@ export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
         ping: -1,
     });
 
+    async function refresh() {
+        await dispatch('refreshProfile');
+    }
+
     return {
         version: computed(() => status.value.version),
         players: computed(() => status.value.players),
         description: computed(() => status.value.description),
         favicon: computed(() => status.value.favicon || unknownServer),
         ping: computed(() => status.value.ping),
+        refresh,
     };
 }
 

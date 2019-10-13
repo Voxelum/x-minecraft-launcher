@@ -32,7 +32,8 @@
                         callback: (v) => onItemVisibile(v, index, false),
                         once: true,
                       }" 
-                      :data="mod" :index="index" :hash="mod.hash"
+                      :data="mod" :index="index" 
+                      :hash="mod.hash"
                       :is-selected="false"
                       @dragstart="draggingMod = true"
                       @dragend="draggingMod = false"
@@ -142,6 +143,7 @@ export default createComponent({
       const unselectedMods = mods.filter(m => !selectedMask[m.hash]);
       Object.freeze(selectedMods);
       Object.freeze(unselectedMods);
+
       return [selectedMods, unselectedMods];
     });
     function filterMod(text, mod) {
@@ -182,6 +184,8 @@ export default createComponent({
       ),
       onDropDelete,
       filterByModId,
+      mods,
+      onConfirmDeleteMod,
     };
   },
 });

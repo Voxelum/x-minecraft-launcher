@@ -1,5 +1,5 @@
 import { useStore } from "./useStore";
-import { ResourceModule } from "universal/store/modules/resource";
+import { ForgeResource, LiteloaderResource, ImportOption, ResourcePackResource, CurseforgeModpackResource } from "universal/store/modules/resource";
 import { computed, Ref } from "@vue/composition-api";
 
 export function useResourceOperation() {
@@ -7,7 +7,7 @@ export function useResourceOperation() {
     return {
         queryResource: getters.queryResource,
         getResource: getters.getResource,
-        importResource(option: ResourceModule.ImportOption) {
+        importResource(option: ImportOption) {
             return dispatch('importResource', option);
         },
         removeResource(id: string) {
@@ -17,16 +17,16 @@ export function useResourceOperation() {
 }
 
 export function useResource(domain: 'mods'): {
-    resourcesTree: Ref<{ [hash: string]: ResourceModule.ForgeResource | ResourceModule.LiteloaderResource }>;
-    resources: Ref<Array<ResourceModule.ForgeResource | ResourceModule.LiteloaderResource>>
+    resourcesTree: Ref<{ [hash: string]: ForgeResource | LiteloaderResource }>;
+    resources: Ref<Array<ForgeResource | LiteloaderResource>>
 } & ReturnType<typeof useResourceOperation>;
 export function useResource(domain: 'resourcepacks'): {
-    resourcesTree: Ref<{ [hash: string]: ResourceModule.ResourcePackResource }>;
-    resources: Ref<Array<ResourceModule.ResourcePackResource>>
+    resourcesTree: Ref<{ [hash: string]: ResourcePackResource }>;
+    resources: Ref<Array<ResourcePackResource>>
 } & ReturnType<typeof useResourceOperation>;
 export function useResource(domain: 'modpacks'): {
-    resourcesTree: Ref<{ [hash: string]: ResourceModule.CurseforgeModpackResource }>;
-    resources: Ref<Array<ResourceModule.CurseforgeModpackResource>>
+    resourcesTree: Ref<{ [hash: string]: CurseforgeModpackResource }>;
+    resources: Ref<Array<CurseforgeModpackResource>>
 } & ReturnType<typeof useResourceOperation>;
 export function useResource(domain: string) {
     const { state } = useStore();

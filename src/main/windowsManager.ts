@@ -149,16 +149,16 @@ async function setup(store: Store<RootState>) {
         store.commit('online', s[0]);
     });
 
-    guard = new BrowserWindow({
-        focusable: false,
-        width: 0,
-        height: 0,
-        show: false,
-        webPreferences: { preload: `${__static}/network-status.js`, devTools: false },
-    });
-    guard.loadURL(`${__static}/index.empty.html`);
+    // guard = new BrowserWindow({
+    //     focusable: false,
+    //     width: 0,
+    //     height: 0,
+    //     show: false,
+    //     webPreferences: { preload: `${__static}/network-status.js`, devTools: false },
+    // });
+    // guard.loadURL(`${__static}/index.empty.html`);
 
-    setupDownload(store, guard);
+    // setupDownload(store, guard);
 }
 
 app.on('will-quit', () => {

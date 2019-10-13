@@ -34,16 +34,16 @@ export default createComponent({
         args: { type: Object, default: () => { Object.create(null); } },
         styled: { type: String, default: 'true' },
     },
-    setup({ source, styled, args }, context) {
+    setup(props, context) {
         const { t } = useI18n();
         return () => {
             const arr = [];
-            if (!source) return createElement('div');
-            const src: TextComponent = source as any;
+            if (!props.source) return createElement('div');
+            const src: TextComponent = props.source as any;
             let iterator;
             if (typeof src === 'string') {
                 // iterator = TextComponent.from(src).iterator;
-                iterator = TextComponent.from(t(src, args)).iterator;
+                iterator = TextComponent.from(t(src, props.args)).iterator;
             } else if ('iterator' in src) {
                 iterator = src.iterator;
             } else if ((src as any)._siblings) {
@@ -52,7 +52,7 @@ export default createComponent({
             if (iterator) {
                 for (const component of iterator) {
                     const attrs: any = {};
-                    if (styled === 'true') {
+                    if (props.styled === 'true') {
                         let style = '';
                         if (component.style.bold) style += 'font-weight:bold;';
                         if (component.style.underlined) style += 'text-decoration:underline;';

@@ -56,8 +56,8 @@
 </template>
 
 <script>
-import { createComponent, reactive, computed } from '@vue/composition-api';
-import { useLocalVersions, useCurrentProfile } from '@/hooks';
+import { createComponent, reactive, computed, toRefs } from '@vue/composition-api';
+import { useLocalVersions, useProfile } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -65,23 +65,26 @@ export default createComponent({
       type: String,
       default: '',
     },
+    value: {
+      type: Object,
+      default: () => {},
+    },
   },
-  setup(props) {
+  setup(props, context) {
     const data = reactive({
       deletingVersion: false,
       deletingVersionId: '',
     });
     const { localVersions, deleteVersion } = useLocalVersions();
-    const { version, edit } = useCurrentProfile();
-    const selected = computed(() => localVersions.value.find(v => v.minecraft === version.value.minecraft && v.forge === version.value.forge && v.liteloader === version.value.liteloader));
+    const { version, edit } = useProfile();
     const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1));
 
     function isSelected(v) {
-      if (!selected.selected) return false;
-      return selected.value.minecraft === v.minecraft && selected.value.forge === v.forge && selected.value.liteloader === v.liteloader;
+      if (!props.value) return false;
+      return props.value.minecraft === v.minecraft && props.value.forge === v.forge && props.value.liteloader === v.liteloader;
     }
     function selectVersion(v) {
-      edit({ version: v });
+      context.emit('input', v);
     }
     function browseVersoinsFolder() {
       // this.$repo.dispatch('showVersionsDirectory');
@@ -104,7 +107,15 @@ export default createComponent({
     }
 
     return {
+      ...toRefs(data),
       versions,
+      isSelected,
+      cancelDeleting,
+      comfireDeleting,
+      startDelete,
+      openVersionDir,
+      browseVersoinsFolder,
+      selectVersion,
     };
   },
 });

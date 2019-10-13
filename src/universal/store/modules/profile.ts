@@ -5,7 +5,7 @@ import { Context, Module } from "..";
 import { Java } from "./java";
 import { ModpackProfileConfig, ProfileConfig, ServerProfileConfig } from './profile.config';
 import { Resource } from './resource';
-import { VersionModule } from "./version";
+import { LocalVersion } from "./version";
 
 type CreateProfileOption = Omit<ModpackProfileConfig, 'id'> & { type: 'modpack' }
 type CreateServerProfileOption = Omit<ServerProfileConfig, 'id'> & { type: 'server' }
@@ -55,7 +55,7 @@ export declare namespace ProfileModule {
         profiles: ServerOrModpack[];
         serverProtocolVersion: number;
         selectedProfile: ServerOrModpack;
-        currentVersion: VersionModule.ResolvedVersion;
+        currentVersion: LocalVersion;
         deployingResources: { [domain: string]: Resource<any>[] };
         /**
          * If current launcher is refreshing the profile data

@@ -126,7 +126,7 @@
             }
         },
         "missingLibraries": {
-            "": "缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少{count}个库文件",
+            "": "缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少{count}个库文件 | 缺少{count}个库文件",
             "message": "启动器将自动下载并安装库文件"
         },
         "missingVersion": "请选择一个Minecraft版本！",
@@ -771,5 +771,8 @@
         "snapshot": "快照",
         "status": "状态",
         "unknown": "未知的版本"
+    },
+    "copy": {
+        "success": "复制到剪贴板"
     }
 }

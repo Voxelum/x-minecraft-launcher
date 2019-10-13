@@ -54,6 +54,7 @@ export default createComponent({
       focused,
       self,
       text,
+      handleKeyup,
     };
   },
 });

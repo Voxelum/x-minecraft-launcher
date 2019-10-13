@@ -29,14 +29,14 @@
 </template>
 
 <script>
-import { useLaunchStatus, useDialogSelf, useI18n } from '@/hooks';
+import { useLaunch, useDialogSelf, useI18n } from '@/hooks';
 import { ref, onMounted, watch } from '@vue/composition-api';
 
 export default {
   setup() {
     const progressText = ref('');
     const { t } = useI18n();
-    const { errorType, errors, status } = useLaunchStatus();
+    const { errorType, errors, status } = useLaunch();
     const { isShown, showDialog, closeDialog } = useDialogSelf('launch-status');
     onMounted(() => {
       watch(status, (s) => {

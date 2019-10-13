@@ -34,7 +34,7 @@ import {
   useI18n,
   useAutoSaveLoad,
   useNativeDialog,
-  useCurrentProfile,
+  useProfile,
   useJava,
 } from '@/hooks';
 import {
@@ -56,7 +56,7 @@ export default createComponent({
       vmOptions,
       mcOptions,
       java,
-    } = useCurrentProfile();
+    } = useProfile();
     const { all: javas, add } = useJava();
     useAutoSaveLoad(save, load);
 

@@ -2,27 +2,25 @@ import { Module, Context } from "..";
 import { ResolvedLibrary, Version } from "@xmcl/version";
 import { ForgeInstaller } from "@xmcl/minecraft-launcher-core";
 
-export type Problem = DiagnoseModule.Problem;
+export interface Problem {
+    id: string;
+    arguments?: { [key: string]: any };
+    autofix?: boolean;
+    optional?: boolean;
+}
+
+export type ProblemReport = {
+    [K in keyof DiagnoseModule.State['registry']]: DiagnoseModule.State['registry'][K]['actived']
+}
+
+export interface Registry<A, AF = true, OP = false> {
+    fixing: boolean;
+    autofix: AF;
+    optional: OP;
+    actived: A[];
+}
+
 export declare namespace DiagnoseModule {
-    interface Problem {
-        id: string;
-        arguments?: { [key: string]: any };
-        autofix?: boolean;
-        optional?: boolean;
-    }
-
-    type ProblemReport = {
-        [K in keyof State['registry']]: State['registry'][K]['actived']
-    }
-
-    interface Registry<A, AF = true, OP = false> {
-        fixing: boolean;
-        autofix: AF;
-        optional: OP;
-        actived: A[];
-    }
-
-
     interface State {
         registry: {
             missingVersion: Registry<{}>;
@@ -41,7 +39,6 @@ export declare namespace DiagnoseModule {
             badForge: Registry<{ forge: string; minecraft: string }>;
             badForgeIncomplete: Registry<{ count: number; libraries: Version.NormalLibrary[] }>;
             badForgeProcessedFiles: Registry<ForgeInstaller.Diagnosis["badProcessedFiles"][number], true, true>;
-
 
             [id: string]: {
                 fixing: boolean;
@@ -101,10 +98,7 @@ const mod: DiagnoseModule = {
     },
     getters: {
         problems(state) {
-            /**
-             * @type {import('./diagnose').DiagnoseModule.Problem[]}
-             */
-            const problems = [];
+            const problems: Problem[] = [];
 
             for (const [id, reg] of Object.entries(state.registry)) {
                 if (reg.actived.length === 0) continue;

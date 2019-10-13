@@ -1,6 +1,6 @@
 import { useStore } from "./useStore";
 import { Ref, onMounted, watch, computed, onUnmounted } from "@vue/composition-api";
-import { useCurrentProfileVersion } from "./useCurrentProfile";
+import { useProfileVersion } from "./useProfile";
 
 export function useVersions() {
     const { dispatch } = useStore();
@@ -19,7 +19,7 @@ export function useVersions() {
 export function useLocalVersions() {
     const { state } = useStore();
     const localVersions = computed(() => state.version.local);
-    const { minecraft, forge, liteloader } = useCurrentProfileVersion();
+    const { minecraft, forge, liteloader } = useProfileVersion();
     const selected = computed(() => localVersions.value.find(v => v.minecraft == minecraft.value
         && v.forge === forge.value && v.liteloader === liteloader.value));
 
@@ -30,18 +30,32 @@ export function useLocalVersions() {
     };
 }
 
-export function useForgeVersions(minecraftVersion: Ref<string>) {
-    const { dispatch, state } = useStore();
+export function useMinecraftVersions() {
+    const { state, getters } = useStore();
+    const versions = computed(() => state.version.minecraft.versions);
+    const release = computed(() => state.version.minecraft.versions.find(v => v.id === state.version.minecraft.latest.release));
+    const snapshot = computed(() => state.version.minecraft.versions.find(v => v.id === state.version.minecraft.latest.snapshot));
+    const statuses = computed(() => getters.minecraftStatuses);
 
-    const list = computed(() => {
-        return state.version.forge[minecraftVersion.value] || { mcversion: minecraftVersion.value, timestamp: -1, versions: [] }
-    });
+    return {
+        versions,
+        release,
+        snapshot,
+        statuses,
+    };
+}
+
+export function useForgeVersions(minecraftVersion: Ref<string>) {
+    const { dispatch, state, getters } = useStore();
+
+    const versions = computed(() => (state.version.forge[minecraftVersion.value] || { versions: [] }).versions);
     const refreshing = computed(() => state.version.refreshingForge);
+    const statuses = computed(() => getters.forgeStatuses);
 
     let handle = () => { };
     onMounted(() => {
         handle = watch(minecraftVersion, (v) => {
-            if (list.value.versions.length === 0) {
+            if (versions.value.length === 0) {
                 dispatch('refreshForge', minecraftVersion.value)
             }
         })
@@ -54,9 +68,11 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
         return dispatch('refreshForge', minecraftVersion.value);
     }
 
+
     return {
-        list,
+        versions,
         refresh,
         refreshing,
+        statuses,
     }
 }
