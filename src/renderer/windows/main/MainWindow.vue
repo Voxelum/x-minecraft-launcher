@@ -87,7 +87,6 @@
 
 <script>
 import '@/assets/common.css';
-import logo from '@/assets/logo.png';
 import {
   onMounted,
   onBeforeMount,
@@ -196,7 +195,6 @@ export default createComponent({
         startHoverTime = -1;
         data.mini = false;
       },
-      logo,
     };
   },
 });
