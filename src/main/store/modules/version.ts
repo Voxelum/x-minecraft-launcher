@@ -254,10 +254,8 @@ const mod: VersionModule = {
         async installForge(context, meta) {
             const maven = await gfw().then(b => (b ? 'https://voxelauncher.azurewebsites.net/api/v1' : undefined)).catch(e => undefined);
             const task = ForgeInstaller.installTask(meta, context.rootState.root, {
-                tempDir: join(context.rootState.root, 'temp'),
                 maven,
                 java: JavaExecutor.createSimple(context.rootGetters.defaultJava.path),
-                clearTempDirAfterInstall: false,
             });
             const id = await context.dispatch('executeTask', task);
             context.dispatch('waitTask', id)
