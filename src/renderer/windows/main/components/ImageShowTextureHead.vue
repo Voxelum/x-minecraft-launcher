@@ -13,7 +13,7 @@
 
 <script>
 import steve from '@/assets/steve_skin.png';
-import { createComponent, reactive, ref, toRefs } from '@vue/composition-api';
+import { createComponent, reactive, ref, toRefs, computed } from '@vue/composition-api';
 
 export default createComponent({
   props: {
@@ -33,15 +33,15 @@ export default createComponent({
       textureHeight: 0,
     });
     const image = ref(null);
-    const style = () => ({
+    const style = computed(() => ({
       'transform-origin': '0 0',
       transform: `scale(8) translate(${translateX.value}px, ${translateY.value}px)`,
-      'min-width': this.textureWidth,
-      'min-height': this.textureHeight,
-    });
+      'min-width': data.textureWidth,
+      'min-height': data.textureHeight,
+    }));
 
-    const translateX = () => -props.dimension / 8;
-    const translateY = () => -props.dimension / 8;
+    const translateX = computed(() => -props.dimension / 8);
+    const translateY = computed(() => -props.dimension / 8);
 
     function onload() {
       data.textureWidth = image.value.naturalWidth;
