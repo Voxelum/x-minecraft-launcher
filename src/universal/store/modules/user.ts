@@ -84,10 +84,6 @@ export declare namespace UserModule {
         uploadSkin(context: C, payload: { data: string | Buffer, slim: boolean }): Promise<void>;
         saveSkin(context: C, payload: { skin: { data: string }, path: string }): Promise<void>;
         parseSkin(context: C, path: string): Promise<string>;
-
-        listAuthlibs(context: C): Promise<string[]>;
-        fetchAuthlibArtifacts(context: C): Promise<{ latest_build_number: number, artifacts: { build_number: number, version: string }[] }>;
-        ensureAuthlibInjection(context: C, version?: string): Promise<string>;
     }
 }
 

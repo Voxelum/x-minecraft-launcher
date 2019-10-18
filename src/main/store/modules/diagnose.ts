@@ -284,8 +284,6 @@ const mod: DiagnoseModule = {
                     }
                 }
 
-                console.log(JSON.stringify(tree));
-
                 context.commit('postProblems', tree);
             } finally {
                 context.commit('releaseProfile');
