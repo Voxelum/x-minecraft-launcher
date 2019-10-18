@@ -13,20 +13,19 @@
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.unselected') }} </span> 
           </v-card-title>
-          <p v-if="resourcePacks[1].length === 0" class="text-xs-center headline"
-             style="position: absolute; top: 120px; right: 0px; user-select: none;">
-            <v-icon style="font-size: 50px; display: block;">
-              save_alt
-            </v-icon>
-            {{ $t('resourcepack.hint') }}
-          </p>
-          <div class="list">
-            <resource-pack-card v-for="(pack, index) in unselectedPacks" :key="pack.hash" 
+          <hint v-if="unselectedItems.length === 0" icon="save_alt" :text="$t('resourcepack.hint')" :absolute="true" />
+          <div v-else class="list">
+            <resource-pack-card v-for="(pack, index) in unselectedItems"
+                                :key="pack.hash" 
                                 v-observe-visibility="{
-                                  callback: (v) => checkBuffer(v, index, true),
+                                  callback: (v) => onItemVisibile(v, index, true),
                                   once: true,
-                                }" :data="pack" :is-selected="false" :index="index" 
-                                @dragstart="dragging = true" @dragend="dragging = false" />
+                                }" 
+                                :data="pack" 
+                                :is-selected="false" 
+                                :index="index" 
+                                @dragstart="dragging = true" 
+                                @dragend="dragging = false" />
           </div>
         </v-card>
       </v-flex>
@@ -35,19 +34,17 @@
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.selected') }} </span> 
           </v-card-title>
-          <p v-if="resourcePacks[0].length === 0" class="text-xs-center headline"
-             style="position: absolute; top: 120px; right: 0px; user-select: none;">
-            <v-icon style="font-size: 50px; display: block;">
-              save_alt
-            </v-icon>
-            {{ $t('resourcepack.hint') }}
-          </p>
-          <div class="list">
-            <resource-pack-card v-for="(pack, index) in selectedPacks" :key="`${pack.hash}${index}`"
+          <hint v-if="selecetedItems.length === 0" icon="save_alt" :text="$t('resourcepack.hint')" :absolute="true" />
+          <div v-else ref="rightList" class="list">
+            <resource-pack-card v-for="(pack, index) in selecetedItems" 
+                                :key="`${pack.hash}${index}`"
                                 v-observe-visibility="{
-                                  callback: (v) => checkBuffer(v, index, true),
+                                  callback: (v) => onItemVisibile(v, index, true),
                                   once: true,
-                                }" :data="pack" :is-selected="true" :index="index" />
+                                }" 
+                                :data="pack" 
+                                :is-selected="true" 
+                                :index="index" />
           </div>
         </v-card>
       </v-flex>
@@ -97,34 +94,26 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import unknownPack from 'renderer/assets/unknown_pack.png';
-import SelectionList from '../mixin/SelectionList';
+import { createComponent, reactive, inject, ref, toRefs, computed, onMounted } from '@vue/composition-api';
+import { useSelectionList, useProfileResourcePacks, useResource } from '@/hooks';
 
-export default {
-  mixins: [SelectionList],
-  data() {
-    return {
-      filterText: '',
+export default createComponent({
+  setup() {
+    const filterText = inject('filter-text', ref(''));
+    const { resourcePacks: packNames } = useProfileResourcePacks();
+    const { resources, importResource, queryResource, removeResource } = useResource('resourcepacks');
+    const data = reactive({
       dragging: false,
-
       isDeletingPack: false,
       deletingPack: null,
-    };
-  },
-  computed: {
-    selectedPacks() {
-      return this.resourcePacks[0].filter(m => this.filterName(m, this.filterText)).filter((_, i) => i < this.selectedBuffer);
-    },
-    unselectedPacks() {
-      return this.resourcePacks[1].filter(m => this.filterName(m, this.filterText)).filter((_, i) => i < this.unselectedBuffer);
-    },
-    resourcePacks() {
-      const packs = this.$repo.getters.resourcepacks;
-      const packnames = this.$repo.state.profile.settings.resourcePacks;
+    });
+    const resourcePacks = computed(() => {
+      const packs = resources.value;
+      const packnames = packNames.value;
 
       const selectedNames = {};
-      for (const name of packnames) {
+      for (const name of packNames.value) {
         selectedNames[name] = true;
       }
 
@@ -136,60 +125,48 @@ export default {
         nameToPack[pack.name] = pack;
         if (!selectedNames[pack.name + pack.ext]) unselectedPacks.push(pack);
       }
-      const selectedPacks = packnames
+      const selectedPacks = packNames.value
         .map(name => nameToPack[name]
           || { name, ext: '', missing: true, metadata: { packName: name, description: 'Cannot find this pack', icon: unknownPack, format: -1 } });
 
       return [selectedPacks, unselectedPacks];
-    },
-    unselectedItems() {
-      return this.unselectedPacks;
-    },
-    selecetedItems() {
-      return this.selectedPacks;
-    },
-    items: {
-      get() {
-        return this.$repo.state.profile.settings.resourcePacks;
-      },
-      set(v) {
-        this.$repo.commit('gamesettings', {
-          resourcePacks: v,
-        });
-      },
-    },
-  },
-  async mounted() {
-    await this.$repo.dispatch('loadProfileGameSettings');
-  },
-  methods: {
-    confirmDeletingPack() {
-      this.isDeletingPack = false;
-      this.$repo.dispatch('removeResource', this.deletingPack.hash);
-      this.deletingPack = null;
-    },
-    onDropDelete(e) {
+    });
+    function filterName(r) {
+      if (!filterText.value) return true;
+      return r.name.toLowerCase().indexOf(filterText.value.toLowerCase()) !== -1;
+    }
+    async function dropFile(path) {
+      await importResource({ path, type: 'resourcepack' });
+    }
+    async function confirmDeletingPack() {
+      data.isDeletingPack = false;
+      data.deletingPack = null;
+      removeResource(data.deletingPack.hash);
+    }
+    function onDropDelete(e) {
       const hash = e.dataTransfer.getData('Hash');
-      const res = this.$repo.getters.queryResource(hash);
+      const res = queryResource(hash);
       if (res) {
-        this.isDeletingPack = true;
-        this.deletingPack = res;
+        data.isDeletingPack = true;
+        data.deletingPack = res;
       }
-    },
-    mapItem(r) {
-      return r.name + r.ext;
-    },
-    dropFile(path) {
-      this.$repo.dispatch('importResource', { path, type: 'resourcepack' }).catch((e) => {
-        console.error(e);
-      });
-    },
-    filterName(r, str) {
-      if (!str) return true;
-      return r.name.toLowerCase().indexOf(str.toLowerCase()) !== -1;
-    },
+    }
+    return {
+      ...toRefs(data),
+      filterText,
+      ...useSelectionList(packNames,
+        () => resourcePacks.value[1].filter(filterName),
+        () => resourcePacks.value[0].filter(filterName),
+        dropFile,
+        r => r.name + r.ext),
+      confirmDeletingPack,
+      onDropDelete,
+    };
   },
-};
+  // async mounted() {
+  //   await this.$repo.dispatch('loadProfileGameSettings');
+  // },
+});
 </script>
 
 <style>

@@ -1,4 +1,4 @@
-import { Auth, MojangService, Net, ProfileService, Task, UserType } from '@xmcl/minecraft-launcher-core';
+import { Auth, MojangService, Net, ProfileService, Task, UserType, LibraryInfo, Version, Installer } from '@xmcl/minecraft-launcher-core';
 import fileType from 'file-type';
 import got from 'got';
 import { fs, requireObject, requireString } from 'main/utils';
@@ -363,54 +363,6 @@ const mod: UserModule = {
                 console.error(e);
                 throw e;
             }
-        },
-        async fetchAuthlibArtifacts(context) {
-            const { body, statusCode, statusMessage } = await Net.fetchJson('https://authlib-injector.yushi.moe/artifacts.json');
-            if (statusCode !== 200) throw new Error(statusMessage);
-            return body;
-        },
-        async listAuthlibs(context) {
-            const parent = context.rootGetters.path('authlibs');
-            await fs.ensureDir(parent);
-            const vers = await fs.readdir(parent);
-            return vers.map(p => join(parent, p));
-        },
-        async ensureAuthlibInjection(context) {
-            const task = Task.create('installAuthlibInjector', async (ctx) => {
-                const parent = context.rootGetters.path('authlibs');
-                await fs.ensureDir(parent);
-                const existeds = await fs.readdir(parent);
-                if (existeds.length !== 0) {
-                    let greatest = existeds[0];
-                    let greatestVer;
-                    for (const f of existeds) {
-                        const ver = new ComparableVersion(f.split('-')[2]);
-                        if (!greatestVer) {
-                            greatest = f;
-                            greatestVer = ver;
-                        } else if (ver.compareTo(greatestVer) > 0) {
-                            greatest = f;
-                            greatestVer = ver;
-                        }
-                    }
-                    return join(parent, greatest);
-                }
-                const { body, statusCode, statusMessage } = await Net.fetchJson('https://authlib-injector.yushi.moe/artifact/latest.json');
-                if (statusCode !== 200) throw new Error(statusMessage);
-                const dest = context.rootGetters.path('authlibs', basename(body.download_url));
-                await Net.downloadFileIfAbsentWork({
-                    destination: dest,
-                    url: body.download_url,
-                    checksum: {
-                        algorithm: 'sha256',
-                        hash: body.checksums.sha256,
-                    },
-                })(ctx);
-                return dest;
-            });
-            const dest = await context.dispatch('waitTask', await context.dispatch('executeTask', task));
-            await context.dispatch('diagnoseUser');
-            return dest;
         },
     },
 };

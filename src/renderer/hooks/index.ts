@@ -19,4 +19,4 @@ export * from './useSelectionList';
 export * from './useResource';
 export * from './useVersion';
 export * from './useSettings';
-export * from './useMod';
+export * from './useCompatible';

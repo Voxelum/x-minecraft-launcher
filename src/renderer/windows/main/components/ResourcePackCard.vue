@@ -8,7 +8,10 @@
               :style="{ transform: dragged ? 'scale(0.8)' : 'scale(1)' }"
               style="margin-top: 10px;"
               v-on="on"
-              @mousedown="dragged=true" @dragstart="onDragStart" @dragend="onDragEnd">
+              @mousedown="dragged=true" 
+              @dragstart="onDragStart" 
+              @dragend.prevent="onDragEnd"
+              @mouseleave="dragged=false">
         <v-layout justify-center align-center fill-height>
           <v-flex xs6 style="padding: 0;">
             <v-img ref="iconImage" style="user-drag: none; user-select: none; height: 125px;" :src="metadata.icon" contain />
@@ -31,9 +34,10 @@
 </template>
 
 <script>
-import { isCompatible } from 'universal/utils/versions';
+import { createComponent, reactive, ref, toRefs } from '@vue/composition-api';
+import { useResourcePackResource, useProfileVersionBase, useCompatible } from '@/hooks';
 
-export default {
+export default createComponent({
   props: {
     data: {
       type: Object,
@@ -48,35 +52,38 @@ export default {
       default: 0,
     },
   },
-  data() {
-    return {
+  setup(props, context) {
+    const data = reactive({
       dragged: false,
+    });
+    const iconImage = ref(null);
+    const { metadata, icon, acceptedRange } = useResourcePackResource(props.data);
+    const { minecraft } = useProfileVersionBase();
+    const { compatible } = useCompatible(acceptedRange, minecraft);
+    function onDragStart(e) {
+      data.dragged = true;
+      context.emit('dragstart', e);
+      e.dataTransfer.setDragImage(iconImage.value.$el, 0, 0);
+      e.dataTransfer.setData('Index', `${props.isSelected ? 'R' : 'L'}${props.index}`);
+      e.dataTransfer.setData('Hash', props.data.hash);
+    }
+    function onDragEnd(e) {
+      context.emit('dragend', e);
+      data.dragged = false;
+    }
+    return {
+      ...toRefs(data),
+      metadata,
+      icon,
+      compatible,
+      acceptedRange,
+      iconImage,
+      onDragStart,
+      onDragEnd,
+      mcversion: minecraft,
     };
   },
-  computed: {
-    metadata() { return this.data.metadata; },
-    mcversion() { return this.$repo.getters.selectedProfile.version.minecraft; },
-    acceptedRange() {
-      return this.$repo.getters.getAcceptMinecraftRangeByFormat(this.metadata.format);
-    },
-    compatible() {
-      return isCompatible(this.acceptedRange, this.mcversion);
-    },
-  },
-  methods: {
-    onDragStart(e) {
-      this.dragged = true;
-      this.$emit('dragstart', e);
-      e.dataTransfer.setDragImage(this.$refs.iconImage.$el, 0, 0);
-      e.dataTransfer.setData('Index', `${this.isSelected ? 'R' : 'L'}${this.index}`);
-      e.dataTransfer.setData('Hash', this.data.hash);
-    },
-    onDragEnd(e) {
-      this.$emit('dragend', e);
-      this.dragged = false;
-    },
-  },
-};
+});
 </script>
 
 <style scoped=true>
@@ -86,7 +93,6 @@ export default {
 .draggable-card:hover {
   background-color: #388e3c;
 }
-
 .title {
   max-width: 100%;
   white-space: nowrap;

@@ -144,8 +144,7 @@ const mod: DiagnoseModule = {
                 };
 
                 if (user.authService !== 'mojang' && user.authService !== 'offline') {
-                    const libs = await context.dispatch('listAuthlibs');
-                    if (libs.length === 0) {
+                    if (!await context.dispatch('doesAuthlibInjectionExisted')) {
                         tree.missingAuthlibInjector.push({});
                     }
                 }

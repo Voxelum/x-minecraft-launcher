@@ -9,7 +9,7 @@ import { LocalVersion } from "./version";
 
 type CreateProfileOption = Omit<ModpackProfileConfig, 'id'> & { type: 'modpack' }
 type CreateServerProfileOption = Omit<ServerProfileConfig, 'id'> & { type: 'server' }
-type CreateOption = DeepPartial<CreateProfileOption | CreateServerProfileOption>;
+export type CreateOption = DeepPartial<CreateProfileOption | CreateServerProfileOption>;
 const DEFAULT_PROFILE: ProfileConfig = createTemplate('', { majorVersion: 8, path: '', version: '' }, '', 'modpack', false);
 export declare namespace ProfileModule {
     type ServerOrModpack = ModpackProfileConfig | ServerProfileConfig;
@@ -158,7 +158,7 @@ export declare namespace ProfileModule {
          */
         exportSave(context: C, payload: { path: string, destination: string, zip?: boolean }): Promise<void>;
 
-        pingServer(context: C, payload: { host: string, port: number, protocol: number }): Promise<Server.StatusFrame>;
+        pingServer(context: C, payload: { host: string, port?: number, protocol?: number }): Promise<Server.StatusFrame>;
         pingServers(context: C): Promise<(Server.Info & { status: Server.StatusFrame })[]>;
         pingProfiles(context: C): Promise<void>;
         createProfileFromServer(context: C, info: Server.Info & { status: Server.StatusFrame }): Promise<string>;

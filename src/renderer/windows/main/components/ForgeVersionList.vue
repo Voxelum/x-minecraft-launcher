@@ -7,7 +7,7 @@
     </v-layout>
   </v-container>
   <v-list v-else-if="versions.length !== 0" dark style="overflow-y: scroll; scrollbar-width: 0; background-color: transparent;">
-    <v-list-tile ripple @click="selectVersion(null)">
+    <v-list-tile ripple @click="selectVersion({ version: null })">
       <v-list-tile-avatar>
         <v-icon> close </v-icon>
       </v-list-tile-avatar>
@@ -29,7 +29,7 @@
         <v-list-tile-title>
           {{ item.version }}
         </v-list-tile-title>
-        <v-list-tile-sub-title>
+        <v-list-tile-sub-title v-if="showTime">
           {{ item.date }}
         </v-list-tile-sub-title>
 
@@ -77,6 +77,10 @@ export default createComponent({
     filterText: {
       type: String,
       default: '',
+    },
+    showTime: {
+      type: Boolean,
+      default: true,
     },
     recommendedOnly: {
       type: Boolean,

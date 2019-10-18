@@ -18,7 +18,7 @@
           {{ $t('user.account.add') }}
         </v-tab>
 
-        <v-tab :disabled="gameProfiles.length === 0">
+        <v-tab :disabled="avaiableGameProfiles.length === 0">
           <v-icon left>
             people
           </v-icon>
@@ -31,13 +31,19 @@
               <v-layout>
                 <v-flex xs6>
                   <v-select v-model="selectedAuthService" 
-                            prepend-icon="vpn_key" :items="authServices" 
+                            prepend-icon="vpn_key" 
+                            :items="authServices" 
+                            :item-value="t => t"
+                            :item-text="t => $te(`user.${t}.name`) ? $t(`user.${t}.name`) : t"
                             :label="$t('user.authMode')"
                             flat dark />
                 </v-flex>
                 <v-flex xs6>
                   <v-select v-model="selectedProfileService" 
-                            prepend-icon="receipt" :items="profileServices" 
+                            prepend-icon="receipt" 
+                            :items="profileServices" 
+                            :item-value="t => t"
+                            :item-text="t => $te(`user.${t}.name`) ? $t(`user.${t}.name`) : t"
                             :label="$t('user.profileMode')"
                             flat dark />
                 </v-flex>
@@ -83,7 +89,7 @@
         </v-tab-item>
         <v-tab-item :key="1">
           <v-list three-line> 
-            <template v-for="p in gameProfiles">
+            <template v-for="p in avaiableGameProfiles">
               <v-list-tile :key="p.id" 
                            ripple avatar 
                            :class="{ green: isUserSelected(p) }"
@@ -119,7 +125,7 @@
           </v-list>
           <v-card-actions style="padding-left: 40px; padding-right: 40px;">
             <v-flex text-xs-center style="z-index: 1;">
-              <v-btn block :disabled="gameProfiles.length === 0 || userId === ''" :loading="logining" color="green" round large style="color: white" dark @click="comfirmSwitchUser">
+              <v-btn block :disabled="avaiableGameProfiles.length === 0 || userId === ''" :loading="logining" color="green" round large style="color: white" dark @click="comfirmSwitchUser">
                 {{ $t('user.account.switch') }}
               </v-btn>
             </v-flex>
@@ -132,14 +138,21 @@
 
 <script>
 import { reactive, computed, watch, toRefs, onMounted, onUnmounted, ref } from '@vue/composition-api';
-import { useCurrentUser, useDialogSelf, useStore, useI18n } from '@/hooks';
+import { useCurrentUser, useDialogSelf, useI18n, useLogin } from '@/hooks';
 
 export default {
   setup(props, context) {
-    const { dispatch, getters, commit } = useStore();
+    const { t } = useI18n();
     const { loginHistory, logined, account, authService, profileService, id } = useCurrentUser();
     const { closeDialog, isShown, showDialog, dialogOption: switchingUser } = useDialogSelf('login');
-    const { t } = useI18n();
+    const {
+      avaiableGameProfiles,
+      profileServices,
+      authServices,
+      login: loginAccount,
+      removeAccount,
+      switchAccount,
+    } = useLogin();
     const usernameRules = [v => !!v || t('user.requireUsername')];
     const emailRules = [
       v => !!v || t('user.requireEmail'),
@@ -150,6 +163,7 @@ export default {
     const data = reactive({
       userId: '',
       profileId: '',
+
       account: '',
       password: '',
       selectedAuthService: '',
@@ -167,16 +181,6 @@ export default {
     });
     const accountInput = ref(null);
     const form = ref(null);
-
-    const gameProfiles = computed(() => getters.avaiableGameProfiles);
-    const authServices = computed(() => getters.authServices.map(m => ({
-      text: m === 'offline' || m === 'mojang' ? t(`user.${m}.name`) : m,
-      value: m,
-    })));
-    const profileServices = computed(() => getters.profileServices.map(m => ({
-      text: m === 'offline' || m === 'mojang' ? t(`user.${m}.name`) : m,
-      value: m,
-    })));
     const accountRules = computed(() => (data.selectedAuthService === 'offline'
       ? usernameRules
       : emailRules));
@@ -204,11 +208,9 @@ export default {
     async function login() {
       data.logining = true;
       accountInput.value.blur();
-      await new Promise((resolve, reject) => {
-        setImmediate(() => resolve());
-      }); // wait a tick to make sure this.account updated.
+      await context.root.$nextTick(); // wait a tick to make sure this.account updated.
       try {
-        await dispatch('login', {
+        await loginAccount({
           account: data.account,
           password: data.password,
           authService: data.selectedAuthService,
@@ -275,7 +277,7 @@ export default {
       resetError,
       switchingUser,
       login,
-      gameProfiles,
+      avaiableGameProfiles,
       profileServices,
       authServices,
       accountRules,
@@ -286,7 +288,7 @@ export default {
       form,
       isUserSelected,
       deleteGameProfile(profile) {
-        commit('removeUserProfile', profile.userId);
+        removeAccount(profile.userId);
       },
       selectUserProfile(profile) {
         data.userId = profile.userId;
@@ -296,7 +298,7 @@ export default {
         if (switchingUser.value) {
           console.log(`Select User profile ${data.userId} ${data.profileId}.`);
           try {
-            await dispatch('switchUserProfile', {
+            await switchAccount({
               userId: data.userId,
               profileId: data.profileId,
             });

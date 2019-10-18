@@ -18,16 +18,10 @@
               modid = {{ filteringModId }}
             </v-chip>
           </v-card-title>
-          <p v-if="mods[1].length === 0" class="text-xs-center headline"
-             style="position: absolute; top: 120px; right: 0px; user-select: none;">
-            <v-icon style="font-size: 50px; display: block;">
-              save_alt
-            </v-icon>
-            {{ $t('mod.hint') }}
-          </p>
-          <div class="list" @drop="onDropLeft" @dragover="onDragOver">
+          <hint v-if="mods[1].length === 0" icon="save_alt" :text="$t('mod.hint')" :absolute="true" />
+          <div v-else class="list" @drop="onDropLeft" @dragover="onDragOver">
             <mod-card v-for="(mod, index) in unselectedItems" 
-                      :key="mod.hash" 
+                      :key="mod.hash"
                       v-observe-visibility="{
                         callback: (v) => onItemVisibile(v, index, false),
                         once: true,
@@ -42,18 +36,12 @@
         </v-card>
       </v-flex>
       <v-flex d-flex xs6 style="padding-left: 5px;">
-        <v-card ref="rightList" dark class="card-list right" @drop="onDropRight" @dragover="onDragOver" @mousewheel="onMouseWheel">
+        <v-card dark class="card-list right" style="display: flex; flex-flow: column;" @drop="onDropRight" @dragover="onDragOver" @mousewheel="onMouseWheel">
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('mod.selected') }} </span> 
           </v-card-title>
-          <p v-if="mods[0].length === 0" class="text-xs-center headline"
-             style="position: absolute; top: 120px; right: 0px; user-select: none;">
-            <v-icon style="font-size: 50px; display: block;">
-              save_alt
-            </v-icon>
-            {{ $t('mod.hint') }}
-          </p>
-          <div class="list">
+          <hint v-if="mods[0].length === 0" icon="save_alt" :text="$t('mod.hint')" :absolute="true" />
+          <div v-else ref="rightList" class="list">
             <mod-card v-for="(mod, index) in selecetedItems" 
                       :key="mod.hash" 
                       v-observe-visibility="{

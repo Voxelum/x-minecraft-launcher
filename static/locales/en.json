@@ -367,6 +367,7 @@
         "location": "Java Location",
         "maxMemory": "Max Memory",
         "minMemory": "Min Memory",
+        "autoAlloc": "Auto Allocated",
         "missing": "Missing Java",
         "missingHint": "The Launcher cannot detect any java in your computer. You can:",
         "noJavaInPath": "Still cannot find the java in PATH enviroment variable. You can try another way.",

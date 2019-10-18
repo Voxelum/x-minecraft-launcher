@@ -25,7 +25,7 @@
           <v-layout row wrap>
             <v-flex d-flex xs12>
               <v-list style="background: transparent" two-line>
-                <v-list-tile v-for="(p, i) in profiles" :key="p.id" ripple @click="selectTemplate(i)">
+                <v-list-tile v-for="(p, i) in profiles" :key="p.id" ripple @click="selectProfileTemplate(i)">
                   <v-list-tile-action>
                     <v-checkbox :value="template === (i)" readonly />
                   </v-list-tile-action>
@@ -49,7 +49,10 @@
                   </v-list-tile-action>
                 </v-list-tile>
 
-                <v-list-tile v-for="(p, i) in modpacks" :key="p.hash" ripple @click="selectTemplate(i + profiles.length)">
+                <v-list-tile v-for="(p, i) in modpacks" 
+                             :key="p.hash" 
+                             ripple 
+                             @click="selectModpackTemplate(i)">
                   <v-list-tile-action>
                     <v-checkbox :value="template === (i - profiles.length)" readonly />
                   </v-list-tile-action>
@@ -84,28 +87,49 @@
         </v-layout>
       </v-stepper-content>
       <v-stepper-content step="1">
-        <v-form ref="form" v-model="valid" lazy-validation style="height: 100%;">
+        <v-form ref="form" 
+                v-model="valid" 
+                lazy-validation 
+                style="height: 100%;">
           <v-container grid-list fill-height>
             <v-layout row wrap>
               <v-flex d-flex xs4>
-                <v-text-field v-model="name" dark persistent-hint :hint="$t('profile.nameHint')" :label="$t('name')"
-                              :rules="nameRules" required />
-              </v-flex>
-              <v-flex d-flex xs4>
-                <v-text-field v-model="author" dark persistent-hint :hint="$t('profile.authorHint')" :label="$t('author')"
+                <v-text-field v-model="name" 
+                              dark 
+                              persistent-hint 
+                              :hint="$t('profile.nameHint')" 
+                              :label="$t('name')"
+                              :rules="nameRules"
                               required />
               </v-flex>
               <v-flex d-flex xs4>
-                <version-menu @value="mcversion = $event">
+                <v-text-field v-model="author" 
+                              dark 
+                              persistent-hint 
+                              :hint="$t('profile.authorHint')" 
+                              :label="$t('author')"
+                              required />
+              </v-flex>
+              <v-flex d-flex xs4>
+                <version-menu @input="mcversion = $event">
                   <template v-slot="{ on }">
-                    <v-text-field v-model="mcversion" dark append-icon="arrow" persistent-hint
-                                  :hint="$t('profile.versionHint')" :label="$t('minecraft.version')" :readonly="true" @click:append="on.keydown"
+                    <v-text-field v-model="mcversion" 
+                                  dark 
+                                  append-icon="arrow" 
+                                  persistent-hint
+                                  :hint="$t('profile.versionHint')" 
+                                  :label="$t('minecraft.version')" 
+                                  :readonly="true" 
+                                  @click:append="on.keydown"
                                   v-on="on" />
                   </template>
                 </version-menu>
               </v-flex>
               <v-flex d-flex xs12>
-                <v-text-field v-model="description" dark persistent-hint :hint="$t('profile.descriptionHint')"
+                <v-text-field v-model="description" 
+                              dark 
+                              persistent-hint 
+                              :hint="$t('profile.descriptionHint')"
                               :label="$t('description')" />
               </v-flex>
             </v-layout>
@@ -119,7 +143,10 @@
           <v-btn flat @click="step = 2">
             {{ $t('next') }}
           </v-btn>
-          <v-btn color="primary" :loading="creating" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
+          <v-btn color="primary" 
+                 :loading="creating" 
+                 :disabled="!valid || name === '' || mcversion === ''" 
+                 @click="doCreate">
             {{ $t('create') }}
           </v-btn>
         </v-layout>
@@ -129,23 +156,45 @@
           <v-container grid-list fill-height style="overflow: auto;">
             <v-layout row wrap>
               <v-flex d-flex xs6>
-                <v-select v-model="javaLocation" class="java-select" hide-details :item-text="java => `JRE${java.majorVersion}, ${java.path}`"
-                          :item-value="v => v" prepend-inner-icon="add" :label="$t('java.location')" :items="javas"
-                          required :menu-props="{ auto: true, overflowY: true }" />
+                <v-select v-model="javaLocation" 
+                          class="java-select" 
+                          :item-text="java => `JRE${java.majorVersion}, ${java.path}`"
+                          :item-value="v => v" 
+                          :label="$t('java.location')" 
+                          :items="javas"
+                          :menu-props="{ auto: true, overflowY: true }" 
+                          prepend-inner-icon="add" 
+                          hide-details
+                          required 
+                />
               </v-flex>
               <v-flex d-flex xs3>
-                <v-text-field v-model="minMemory" hide-details type="number" :label="$t('java.minMemory')"
+                <v-text-field v-model="minMemory" 
+                              hide-details 
+                              type="number" 
+                              :label="$t('java.minMemory')"
+                              :placeholder="$t('java.autoAlloc')"
                               required />
               </v-flex>
               <v-flex d-flex xs3>
-                <v-text-field v-model="maxMemory" hide-details type="number" :label="$t('java.maxMemory')"
+                <v-text-field v-model="maxMemory" 
+                              hide-details 
+                              type="number" 
+                              :label="$t('java.maxMemory')"
+                              :placeholder="$t('java.autoAlloc')"
                               required />
               </v-flex>
               <v-flex d-flex xs6>
-                <forge-version-menu :mcversion="mcversion" @value="forgeVersion = $event.version">
+                <forge-version-menu :minecraft="mcversion" @input="forgeVersion = $event">
                   <template v-slot="{ on }">
-                    <v-text-field v-model="forgeVersion" dark append-icon="arrow" persistent-hint
-                                  :hint="$t('profile.versionHint')" :label="$t('forge.version')" :readonly="true" @click:append="on.keydown"
+                    <v-text-field v-model="forgeVersion" 
+                                  dark 
+                                  append-icon="arrow" 
+                                  persistent-hint
+                                  :hint="$t('profile.versionHint')" 
+                                  :label="$t('forge.version')" 
+                                  :readonly="true" 
+                                  @click:append="on.keydown"
                                   v-on="on" />
                   </template>
                 </forge-version-menu>
@@ -159,7 +208,10 @@
             {{ $t('cancel') }}
           </v-btn>
           <v-spacer />
-          <v-btn color="primary" :loading="creating" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
+          <v-btn color="primary" 
+                 :loading="creating" 
+                 :disabled="!valid || name === '' || mcversion === ''" 
+                 @click="doCreate">
             {{ $t('create') }}
           </v-btn>
         </v-layout>
@@ -172,6 +224,8 @@
 </template>
 
 <script>
+import { reactive, toRefs, computed, onMounted, watch } from '@vue/composition-api';
+import { useI18n, useProfileCreation, useJava, useProfileVersionBase, useProfile, useCurrentUser, useForgeVersions, useRouter, useProfileTemplates, useCurseforgeImport, useTask, useStore, useMinecraftVersions } from '../../../hooks';
 
 export default {
   props: {
@@ -180,11 +234,17 @@ export default {
       default: false,
     },
   },
-  data() {
-    const release = this.$repo.getters.minecraftRelease.id;
-    const forge = release ? this.$repo.getters.forgeRecommendedOf(release) : '';
-    const forgeVersion = forge ? forge.version : '';
-    return {
+  setup(props, context) {
+    const { t } = useI18n();
+    const { createAndSelectProfile } = useProfileCreation();
+    const router = useRouter();
+    const staticData = {
+      memoryRule: [v => Number.isInteger(v)],
+      nameRules: [
+        v => !!v || t('profile.requireName'),
+      ],
+    };
+    const data = reactive({
       template: -1,
       creating: false,
 
@@ -192,130 +252,140 @@ export default {
       valid: false,
 
       name: '',
-      mcversion: release,
-      forgeVersion,
-      javaLocation: this.$repo.getters.defaultJava,
+      mcversion: '',
+      forgeVersion: '',
+      javaLocation: undefined,
       maxMemory: undefined,
       minMemory: undefined,
-      author: this.$repo.getters.selectedGameProfile.name,
+      author: '',
       description: '',
 
       javaValid: true,
-      memoryRule: [v => Number.isInteger(v)],
-      nameRules: [
-        v => !!v || this.$t('profile.requireName'),
-      ],
 
       importTask: '',
-    };
-  },
-  computed: {
-    fromModpack() { return this.template >= this.profiles.length; },
-    profiles() { return this.$repo.getters.profiles; },
-    modpacks() { return this.$repo.getters.modpacks; },
-    ready() {
-      return this.valid && this.javaValid;
-    },
-    versions() {
-      return Object.keys(this.$repo.state.version.minecraft.versions);
-    },
-    javas() {
-      return this.$repo.state.java.all;
-    },
-  },
-  watch: {
-    show() {
-      if (this.show) {
-        this.init();
-      }
-    },
-  },
-  methods: {
-    init() {
-      const release = this.$repo.getters.minecraftRelease.id;
-      const forge = release ? this.$repo.getters.forgeRecommendedOf(release) : '';
-      const forgeVersion = forge ? forge.version : '';
-      this.forgeVersion = forgeVersion;
-      this.mcversion = release;
-      this.step = 1;
-      this.name = '';
-      this.author = this.$repo.getters.selectedGameProfile.name;
-      this.description = '';
-      const defaultJava = this.$repo.getters.defaultJava;
-      this.javaLocation = this.javas.find(j => j.path === defaultJava.path);
+    });
+    const { name } = useCurrentUser();
+    const { all: javas, default: defaultJava } = useJava();
+    const { release } = useMinecraftVersions();
+    const { profiles, modpacks } = useProfileTemplates();
+    const { importCurseforgeModpack } = useCurseforgeImport();
+    const { dispatch } = useStore();
+    const fromModpack = computed(() => data.template >= profiles.value.length);
+    const template = computed(() => (!fromModpack.value ? profiles.value[data.template] : modpacks.value[data.template - profiles.value.length]));
+    const ready = computed(() => data.valid && data.javaValid);
+    function init() {
+      data.step = 1;
+      data.name = '';
+      data.author = name.value;
+      data.description = '';
+      data.mcversion = release.value.id;
+      data.forgeVersion = '';
 
-      this.minMemory = undefined;
-      this.maxMemory = undefined;
-    },
-    selectTemplate(i) {
-      if (this.template === i) {
-        this.template = -1;
-        this.step = 1;
+      data.javaLocation = javas.value.find(j => j.path === defaultJava.value.path);
+      data.minMemory = undefined;
+      data.maxMemory = undefined;
+    }
+    function selectProfileTemplate(i) {
+      if (data.template === i) {
+        data.template = -1;
+        data.step = 1;
         return;
       }
-
-      this.template = i;
-
-      const fromProfile = !this.fromModpack;
-      const temp = fromProfile ? this.profiles[i] : this.modpacks[i - this.profiles.length];
-
-      if (fromProfile) {
-        this.mcversion = temp.version.minecraft;
-        this.name = `${temp.name || `Minecraft: ${this.mcversion}`} +`;
-        this.forgeVersion = temp.version.forge;
-        this.javaLocation = temp.javaLocation;
-        this.description = temp.description;
-      } else {
-        this.name = temp.metadata.name;
-        this.mcversion = temp.metadata.minecraft.version;
-        this.author = temp.metadata.author;
+      data.template = i;
+      const temp = template.value;
+      data.mcversion = temp.version.minecraft;
+      data.name = `${temp.name || `Minecraft: ${data.mcversion}`} +`;
+      data.forgeVersion = temp.version.forge;
+      if (temp.javaLocation) {
+        data.javaLocation = javas.value.find(j => j.path === temp.javaLocation.path);
       }
+      data.description = temp.description;
 
-      this.step = 1;
-    },
-    quit() {
-      if (this.creating) return;
-      this.$emit('quit');
-    },
-    async doCreate() {
-      this.creating = true;
+      data.step = 1;
+    }
+    function selectModpackTemplate(i) {
+      i += profiles.length;
+      if (data.template === i) {
+        data.template = -1;
+        data.step = 1;
+        return;
+      }
+      data.template = i;
+      const temp = template.value;
+      data.name = temp.metadata.name;
+      data.mcversion = temp.metadata.minecraft.version;
+      data.author = temp.metadata.author;
+
+      data.step = 1;
+    }
+    function quit() {
+      if (data.creating) return;
+      context.emit('quit');
+    }
+    onMounted(() => {
+      watch(computed(() => props.show), () => {
+        init();
+      });
+    });
+    async function doCreate() {
+      data.creating = true;
       try {
-        const temp = this.profile
-          ? this.profiles[this.template]
-          : this.modpacks[this.template - this.profiles.length];
-        if (this.template !== -1) {
-          if (this.fromModpack) {
-            this.step = 3;
-            this.importTask = await this.$repo.dispatch('importCurseforgeModpack', {
-              path: this.modpacks[this.template - this.profiles.length].path,
+        if (data.template !== -1) {
+          const temp = template.value;
+          if (fromModpack.value) {
+            data.step = 3;
+            data.importTask = await importCurseforgeModpack({
+              path: modpacks.value[data.template - profiles.value.length].path,
             });
-            await this.$repo.dispatch('waitTask', this.importTask);
+            await dispatch('waitTask', data.importTask);
           } else {
-            await this.$repo.dispatch('createAndSelectProfile', {
+            await createAndSelectProfile({
               ...temp,
+              name: data.name,
+              author: data.author,
+              description: data.description,
+              mcversion: data.mcversion,
+              minMemory: data.minMemory,
+              maxMemory: data.maxMemory,
+              java: data.javaLocation,
+              forge: {
+                version: data.forgeVersion,
+              },
             });
           }
         } else {
-          await this.$repo.dispatch('createAndSelectProfile', {
-            name: this.name,
-            author: this.author,
-            description: this.description,
-            mcversion: this.mcversion,
-            minMemory: this.minMemory,
-            maxMemory: this.maxMemory,
-            java: this.javaLocation,
+          await createAndSelectProfile({
+            name: data.name,
+            author: data.author,
+            description: data.description,
+            mcversion: data.mcversion,
+            minMemory: data.minMemory,
+            maxMemory: data.maxMemory,
+            java: data.javaLocation,
             forge: {
-              version: this.forgeVersion,
+              version: data.forgeVersion,
             },
           });
         }
-        this.init();
-        this.$router.replace('/');
-        this.template = -1;
+        init();
+        router.replace('/');
+        data.template = -1;
       } finally {
-        this.creating = false;
+        data.creating = false;
       }
-    },
+    }
+    return {
+      ...toRefs(data),
+      ...staticData,
+      quit,
+      javas,
+      selectProfileTemplate,
+      selectModpackTemplate,
+      doCreate,
+      ready,
+      profiles,
+      modpacks,
+    };
   },
 };
 </script>

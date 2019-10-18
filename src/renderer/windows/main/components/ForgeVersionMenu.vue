@@ -20,64 +20,46 @@
         </v-tooltip>
       </template>
     </v-text-field>
-    <forge-version-list :mcversion="mcversion" :version-list="versions" style="max-height: 180px;" @value="selectVersion" />
+    <forge-version-list 
+      :minecraft="minecraft" 
+      :recommended-only="recommendedAndLatestOnly" 
+      :show-buggy="false" 
+      :show-time="false"
+      :filter-text="filterText" 
+      style="max-height: 180px; background-color: #424242" 
+      @input="selectVersion" />
   </v-menu>
 </template>
 
 <script>
+import { reactive, toRefs } from '@vue/composition-api';
+
 export default {
   props: {
     disabled: {
       type: Boolean,
       default: false,
     },
-    mcversion: {
+    minecraft: {
       type: String,
       default: undefined,
     },
   },
-  data: () => ({
-    opened: false,
-    showBuggy: false,
-    recommendedAndLatestOnly: true,
-    filterText: '',
-
-    versions: [],
-  }),
-  watch: {
-    opend() {
-      console.log(this.opened);
-      if (this.opened) {
-        this.refresh();
-      }
-    },
-  },
-  mounted() {
-    this.refresh();
-  },
-  methods: {
-    refresh() {
-      if (!this.mcversion) return;
-
-      const ver = this.$repo.state.version.forge[this.mcversion];
-      if (ver) {
-        this.versions = ver.versions.filter(this.filterForge);
-      } else {
-        this.$repo.dispatch('getForgeWebPage', this.mcversion)
-          .then(r => (r ? r.versions : []))
-          .then((r) => { this.versions = r.filter(this.filterForge); });
-      }
-    },
-    selectVersion(item) {
-      console.log(item);
-      this.$emit('value', item);
-      this.opened = false;
-    },
-    filterForge(version) {
-      if (this.recommendedAndLatestOnly && version.type !== 'recommended' && version.type !== 'latest') return false;
-      if (this.showBuggy && version.type !== 'buggy') return true;
-      return version.version.indexOf(this.filterText) !== -1;
-    },
+  setup(props, context) {
+    const data = reactive({
+      opened: false,
+      showBuggy: false,
+      recommendedAndLatestOnly: true,
+      filterText: '',
+    });
+    function selectVersion(item) {
+      context.emit('input', item);
+      data.opened = false;
+    }
+    return {
+      ...toRefs(data),
+      selectVersion,
+    };
   },
 };
 </script>

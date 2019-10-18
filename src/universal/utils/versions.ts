@@ -7,6 +7,7 @@ import { Resource } from 'universal/store/modules/resource';
  * @param {string} version 
  */
 export function isCompatible(range: string, version: string) {
+    if (range === "[*]") return true;
     return VersionRange.createFromVersionSpec(range)!.containsVersion(ArtifactVersion.of(version));
 }
 

@@ -21,7 +21,7 @@
                 <v-card>
                   <v-layout justify-center align-center>
                     <v-flex xs3>
-                      <img :src="icon" style="max-width: 80px; max-height: 80px; min-height: 80px; margin: 5px 0 0 30px;">
+                      <img :src="favicon" style="max-width: 80px; max-height: 80px; min-height: 80px; margin: 5px 0 0 30px;">
                     </v-flex>
                     <v-flex xs9>
                       <v-layout row>
@@ -29,19 +29,19 @@
                           <v-icon left>
                             title
                           </v-icon>
-                          {{ $t(status.version.name) }}
+                          {{ $t(version.name) }}
                         </v-flex>
                         <v-flex>
                           <v-icon left>
                             people
                           </v-icon>
-                          {{ status.players.online + '/' + status.players.max }}
+                          {{ players.online + '/' + players.max }}
                         </v-flex>
                         <v-flex>
                           <v-icon left>
                             signal_cellular_alt
                           </v-icon>
-                          {{ status.ping }}
+                          {{ ping }}
                         </v-flex>
                       </v-layout>
                     </v-flex>
@@ -57,7 +57,7 @@
                               required />
               </v-flex>
               <v-flex d-flex xs4>
-                <version-menu :extra-filter="versionFilter" @value="mcversion = $event">
+                <version-menu :accept-range="acceptingVersion" @input="mcversion = $event">
                   <template v-slot="{ on }">
                     <v-text-field v-model="mcversion" dark append-icon="arrow" persistent-hint
                                   :hint="$t('profile.server.versionHint')" :label="$t('minecraft.version')" :readonly="true" @click:append="on.keydown"
@@ -71,7 +71,7 @@
               </v-flex>
               <v-flex d-flex xs4 />
               <v-flex d-flex xs4>
-                <v-btn :loading="pinging" :disabled="!host||!port" @click="ping">
+                <v-btn :loading="pinging" :disabled="!host || !port" @click="refresh">
                   {{ $t('profile.server.ping') }}
                 </v-btn>
               </v-flex>
@@ -96,8 +96,8 @@
           <v-container grid-list fill-height style="overflow: auto;">
             <v-layout row wrap>
               <v-flex d-flex xs6>
-                <v-select v-model="javaLocation" class="java-select" hide-details :item-text="getJavaText"
-                          :item-value="getJavaValue" prepend-inner-icon="add" :label="$t('java.location')" :items="javas"
+                <v-select v-model="javaLocation" class="java-select" hide-details :item-text="java => `JRE${java.majorVersion}, ${java.path}`"
+                          :item-value="v => v" prepend-inner-icon="add" :label="$t('java.location')" :items="javas"
                           required :menu-props="{ auto: true, overflowY: true }" />
               </v-flex>
               <v-flex d-flex xs3>
@@ -109,7 +109,7 @@
                               required />
               </v-flex>
               <v-flex d-flex xs6>
-                <forge-version-menu :mcversion="mcversion" @value="forgeVersion = $event.version">
+                <forge-version-menu :minecraft="mcversion" @input="forgeVersion = $event">
                   <template v-slot="{ on }">
                     <v-text-field v-model="forgeVersion" dark append-icon="arrow" persistent-hint
                                   :hint="$t('profile.versionHint')" :label="$t('forge.version')" :readonly="true" @click:append="on.keydown"
@@ -136,7 +136,8 @@
 </template>
 
 <script>
-import unknownServer from 'renderer/assets/unknown_server.png';
+import { useMinecraftVersions, useForgeVersions, useJava, useServerStatus, useI18n, useServer, useRouter, useProfileCreation } from '@/hooks';
+import { reactive, toRefs, ref, computed, onMounted, onUnmounted, watch } from '@vue/composition-api';
 
 export default {
   props: {
@@ -145,149 +146,112 @@ export default {
       default: false,
     },
   },
-  data() {
-    const release = this.$repo.getters.minecraftRelease.id;
-    const forge = release ? this.$repo.getters.forgeRecommendedOf(release) : '';
-    const forgeVersion = forge ? forge.version : '';
-    return {
+  setup(props, context) {
+    const { release, snapshot } = useMinecraftVersions();
+    const { versions: forgeVersions, recommended, latest } = useForgeVersions(release);
+    const { default: defaultJava, all: javas } = useJava();
+    const { createAndSelectProfile } = useProfileCreation();
+    const { t } = useI18n();
+    const router = useRouter();
+
+    const staticData = {
+      memoryRule: [v => Number.isInteger(v)],
+      nameRules: [
+        v => !!v || t('profile.requireName'),
+      ],
+    };
+    const data = reactive({
       step: 1,
       valid: false,
       creating: false,
 
       name: '',
-      versionName: '',
       host: '',
       port: 25565,
-      mcversion: release,
-      forgeVersion,
-      javaLocation: this.$repo.getters.defaultJava,
+      protocol: undefined,
+
+      mcversion: '',
+      forgeVersion: '',
+      javaLocation: '',
       maxMemory: 2048,
       minMemory: 1024,
-      status: {
-        version: {
-          name: 'profile.server.unknown',
-          protocol: -1,
-        },
-        players: {
-          max: -1,
-          online: -1,
-        },
-        description: 'profile.server.unknownDescription',
-        favicon: '',
-        ping: 0,
-      },
-      pinging: false,
 
       filterVersion: false,
       javaValid: true,
-      memoryRule: [v => Number.isInteger(v)],
-      nameRules: [
-        v => !!v || this.$t('profile.requireName'),
-      ],
-    };
-  },
-  computed: {
-    icon() {
-      return this.status.favicon || unknownServer;
-    },
-    acceptingMcVersion() {
-      return this.$repo.getters.getAcceptMinecraftVersoins(this.status.version.protocol);
-    },
-    ready() {
-      return this.valid && this.javaValid;
-    },
-    versions() {
-      return Object.keys(this.$repo.state.version.minecraft.versions);
-    },
-    javas() {
-      return this.$repo.state.java.all;
-    },
-  },
-  watch: {
-    show() {
-      if (this.show) {
-        this.init();
-      }
-    },
-  },
-  methods: {
-    versionFilter(v) {
-      if (!this.filterVersion) {
-        return true;
-      }
-      if (this.acceptingMcVersion.length === 0) {
-        return true;
-      }
-      return this.acceptingMcVersion.indexOf(v.id) !== -1;
-    },
-    init() {
-      const release = this.$repo.getters.minecraftRelease.id;
-      const forge = release ? this.$repo.getters.forgeRecommendedOf(release) : '';
-      const forgeVersion = forge ? forge.version : '';
-      this.forgeVersion = forgeVersion;
-      this.mcversion = release;
-      this.step = 1;
-      this.name = '';
-      const defaultJava = this.$repo.getters.defaultJava;
-      this.javaLocation = this.javas.find(j => j.path === defaultJava.path);
+    });
+    const ready = computed(() => data.valid && data.javaValid);
+    const dataRef = toRefs(data);
 
-      this.minMemory = 1024;
-      this.maxMemory = 2048;
-    },
-    getJavaValue(java) {
-      return java;
-    },
-    getJavaText(java) {
-      return `JRE${java.majorVersion}, ${java.path}`;
-    },
-    quit() {
-      this.$emit('quit');
-    },
-    ping() {
-      this.status = {
-        version: {
-          name: 'profile.server.ping',
-          protocol: -1,
-        },
-        players: {
-          max: -1,
-          online: -1,
-        },
-        description: 'profile.server.pingDescription',
-        favicon: '',
-        ping: 0,
-      };
-      this.pinging = true;
-      this.$repo.dispatch('pingServer', { 
-        host: this.host, 
-        port: 25565, 
-        protocol: Number.parseInt(this.$repo.state.client.protocolMapping.protocol[this.mcversion], 10) }).then((frame) => {
-        this.status = frame;
-      }).finally(() => {
-        this.pinging = false;
+    const {
+      favicon,
+      acceptingVersion,
+      refresh,
+      version,
+      players,
+      ping,
+      pinging,
+    } = useServer(dataRef);
+
+    function init() {
+      data.step = 1;
+      data.name = '';
+      data.mcversion = release.value.id;
+      data.forgeVersion = (recommended.value || latest.value || { version: '' }).version;
+      data.minMemory = 1024;
+      data.maxMemory = 2048;
+      data.javaLocation = javas.value.find(j => j.path === defaultJava.value.path);
+    }
+    function quit() {
+      context.emit('quit');
+    }
+    async function doCreate() {
+      try {
+        await createAndSelectProfile({
+          name: data.name,
+          mcversion: data.mcversion,
+          minMemory: data.minMemory,
+          maxMemory: data.maxMemory,
+          java: data.javaLocation,
+          type: 'server',
+          host: data.host,
+          port: data.port,
+          forge: {
+            version: data.forgeVersion,
+          },
+        });
+        init();
+        router.replace('/');
+      } finally {
+        data.creating = false;
+      }
+    }
+    let handle = () => { };
+    onMounted(() => {
+      handle = watch(computed(() => props.show), () => {
+        if (props.show) {
+          init();
+        }
       });
-    },
-    doCreate() {
-      this.creating = true;
-      this.$repo.dispatch('createAndSelectProfile', {
-        name: this.name,
-        mcversion: this.mcversion,
-        minMemory: this.minMemory,
-        maxMemory: this.maxMemory,
-        java: this.javaLocation,
-        type: 'server',
-        host: this.host,
-        port: this.port,
-        forge: {
-          version: this.forgeVersion,
-        },
-      }).then(() => {
-        this.init();
-        this.$router.replace('/');
-      }).finally(() => {
-        this.creating = false;
-      });
-    },
+    });
+    onUnmounted(() => {
+      handle();
+    });
+
+    return {
+      ...toRefs(data),
+      ...staticData,
+      favicon,
+      acceptingVersion,
+      refresh,
+      version,
+      players,
+      ping,
+      ready,
+      javas,
+      doCreate,
+      quit,
+      pinging,
+    };
   },
 };
 </script>

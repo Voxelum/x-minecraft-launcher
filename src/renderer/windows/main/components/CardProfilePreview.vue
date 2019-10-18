@@ -59,7 +59,7 @@
           <v-chip v-if="profile.type === 'server'" small label :selected="false" @click.stop>
             {{ version.name }}  
           </v-chip>
-          <v-chip v-if="profile.type === 'modpack'" small label :selected="false" @click.stop>
+          <v-chip v-if="profile.type === 'modpack' && profile.author" small label :selected="false" @click.stop>
             <v-avatar>
               <v-icon>person</v-icon>
             </v-avatar>

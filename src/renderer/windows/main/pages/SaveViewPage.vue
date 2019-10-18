@@ -21,18 +21,7 @@
         </v-btn>
       </v-flex>
       <v-flex xs12 @drop.prevent="onDrop" @dragover.prevent>
-        <v-container v-if="saves.length === 0" fill-height>
-          <v-layout fill-height align-center justify-center column>
-            <v-flex shrink>
-              <p class="text-xs-center headline">
-                <v-icon style="font-size: 50px; display: block;">
-                  map
-                </v-icon>
-                {{ $t('save.hint') }}
-              </p>
-            </v-flex>
-          </v-layout>
-        </v-container>
+        <hint v-if="saves.length === 0" :absolute="true" icon="map" :text="$t('save.hint')" />
         <v-container v-else style="overflow-y: auto; max-height: 80vh" grid-list-md>
           <v-layout row wrap>
             <v-flex v-for="(s, index) of saves" :key="index">

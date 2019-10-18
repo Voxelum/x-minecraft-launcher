@@ -5,14 +5,14 @@
         <v-speed-dial v-if="security" v-model="fab"
                       style="position:absolute; z-index: 2; bottom: 80px; right: 100px;" direction="top" :open-on-hover="true">
           <template v-slot:activator>
-            <v-btn v-model="fab" :disabled="pending" fab @click="loadSkin" v-on="on" @mouseenter="enterEditBtn">
+            <v-btn v-model="fab" color="secondary" :disabled="pending" fab @click="loadSkin" v-on="on" @mouseenter="enterEditBtn">
               <v-icon>edit</v-icon>
             </v-btn>
           </template>
-          <v-btn :disabled="pending" fab small v-on="on" @click="openUploadSkinDialog" @mouseenter="enterLinkBtn">
+          <v-btn :disabled="pending" color="secondary" fab small v-on="on" @click="openUploadSkinDialog" @mouseenter="enterLinkBtn">
             <v-icon>link</v-icon>
           </v-btn>
-          <v-btn :disabled="pending" fab small v-on="on" @click="saveSkin" @mouseenter="enterSaveBtn">
+          <v-btn :disabled="pending" color="secondary" fab small v-on="on" @click="saveSkin" @mouseenter="enterSaveBtn">
             <v-icon>save</v-icon>
           </v-btn>
         </v-speed-dial>

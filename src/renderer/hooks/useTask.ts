@@ -2,12 +2,15 @@ import { useStore } from "./useStore";
 import { computed } from "@vue/composition-api";
 
 export function useTask(taskHandle: TaskHandle) {
-    const { state } = useStore();
+    const { state, dispatch } = useStore();
     const taskState = state.task.tree[taskHandle];
     const status = computed(() => taskState.status);
     const progress = computed(() => taskState.progress);
     const total = computed(() => taskState.total);
     const message = computed(() => taskState.message);
+    function wait() {
+        return dispatch('waitTask', taskHandle);
+    }
     return {
         id: taskState._internalId,
         name: taskState.name,
@@ -16,6 +19,7 @@ export function useTask(taskHandle: TaskHandle) {
         total,
         message,
         status,
+        wait,
     }
 }
 

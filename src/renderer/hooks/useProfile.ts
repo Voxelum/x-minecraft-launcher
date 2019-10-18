@@ -1,5 +1,5 @@
 import { toRefs, computed, ref, watch, onMounted, onUnmounted } from "@vue/composition-api";
-import { ProfileModule } from "universal/store/modules/profile";
+import { ProfileModule, CreateOption } from "universal/store/modules/profile";
 import { Data } from "@vue/composition-api/dist/component";
 import { getExpectVersion } from "universal/utils";
 import { useStore } from "./useStore";
@@ -40,6 +40,51 @@ export function useProfile() {
         refresh,
         refreshing,
     };
+}
+
+export function useProfileCreation() {
+    const { dispatch } = useStore();
+    function createAndSelectProfile(option: CreateOption) {
+        return dispatch('createAndSelectProfile', option);
+    }
+    return {
+        createAndSelectProfile,
+    }
+}
+
+export function useProfileVersionBase() {
+    const { getters } = useStore();
+    const profile: ProfileModule.ServerOrModpack & Data = getters.selectedProfile as any;
+    return {
+        ...toRefs(profile.version),
+    };
+}
+
+export function useProfileTemplates() {
+    const { getters } = useStore();
+    return {
+        profiles: computed(() => getters.profiles),
+        modpacks: computed(() => getters.modpacks),
+    }
+}
+
+
+export function useProfileResourcePacks() {
+    const { state, commit } = useStore();
+    const resourcePacks = computed({
+        get: () => state.profile.settings.resourcePacks,
+        set: (p) => { commit('gamesettings', { resourcePacks: p }) }
+    });
+    return {
+        resourcePacks,
+    };
+}
+
+export function useProfileGameSetting() {
+    const { state } = useStore();
+    return {
+        ...toRefs(state.profile.settings)
+    }
 }
 
 export function useProfileVersion() {

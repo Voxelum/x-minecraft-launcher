@@ -162,11 +162,11 @@ async function setup(store: Store<RootState>) {
 }
 
 app.on('will-quit', () => {
-    console.log('will quit');
+    console.log('App will quit');
 }).on('before-quit', () => {
-    console.log('before quit');
+    console.log('Before App quit');
 }).on('quit', () => {
-    console.log('quit');
+    console.log('Quit');
 });
 
 ipc

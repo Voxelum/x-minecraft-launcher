@@ -20,40 +20,49 @@
         </v-tooltip>
       </template>
     </v-text-field>
-    <minecraft-version-list :show-time="false" :filter="filter" style="max-height: 180px;" @value="selectVersion" />
+    <minecraft-version-list 
+      :show-time="false" 
+      :show-alpha="showAlpha"
+      :filter-text="filterText"
+      :accept-range="acceptRange"
+      style="max-height: 180px; background-color: #424242"
+      @input="selectVersion" />
   </v-menu>
 </template>
 
 <script>
-export default {
+import { createComponent, reactive, toRefs, computed } from '@vue/composition-api';
+
+export default createComponent({
   props: {
     disabled: {
       type: Boolean,
       default: false,
     },
-    // eslint-disable-next-line vue/prop-name-casing
-    'extra-filter': {
-      type: Function,
-      default: () => true,
+    acceptRange: {
+      type: String,
+      default: '[*]',
     },
   },
-  data: () => ({
-    opened: false,
-    showAlpha: false,
-    filterText: '',
-  }),
+  setup(props, context) {
+    const data = reactive({
+      opened: false,
+      showAlpha: false,
+      filterText: '',
+    });
+    function selectVersion(item) {
+      context.emit('input', item.id);
+      data.opened = false;
+    }
+    return {
+      ...toRefs(data),
+      selectVersion,
+    };
+  },
   methods: {
-    selectVersion(item) {
-      this.$emit('value', item.id);
-      this.opened = false;
-    },
-    filter(v) {
-      if (!this.showAlpha && v.type !== 'release') return false;
-      if (!this.extraFilter(v)) return false;
-      return v.id.indexOf(this.filterText) !== -1;
-    },
+
   },
-};
+});
 </script>
 
 <style>

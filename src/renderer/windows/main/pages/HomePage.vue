@@ -8,6 +8,7 @@
             dark @click="showFeedbackDialog()">
       help_outline
     </v-icon>
+
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-btn style="position: absolute; left: 20px; bottom: 10px; " flat icon dark to="/base-setting" v-on="on">

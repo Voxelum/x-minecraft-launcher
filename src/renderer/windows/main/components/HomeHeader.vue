@@ -3,12 +3,18 @@
     <span style="margin-right: 10px;">
       {{ name || `Minecraft ${version.minecraft}` }}
     </span>
-    <v-chip v-if="!isServer" label color="green" small :selected="false" style="margin-right: 5px;">
+    <v-chip v-if="!isServer && author" label color="green" small :selected="false" style="margin-right: 5px;">
+      <v-avatar>
+        <v-icon>person</v-icon>
+      </v-avatar>
       {{ author }}
     </v-chip>
     <v-chip label class="pointer" color="green" small :selected="false" @click="$router.replace('/version-setting')">
-      <v-avatar v-if="isServer">
-        <img :src="favicon">
+      <v-avatar>
+        <img v-if="isServer" :src="favicon">
+        <v-icon v-else>
+          power
+        </v-icon>
       </v-avatar>
       Version: {{ folder }}
     </v-chip>
@@ -44,12 +50,12 @@ export default {
     return {
       version,
       name,
-      author, 
+      author,
       isServer,
       folder,
       ...(isServer.value ? {
-        players, 
-        ping, 
+        players,
+        ping,
         favicon,
       } : {
         author,

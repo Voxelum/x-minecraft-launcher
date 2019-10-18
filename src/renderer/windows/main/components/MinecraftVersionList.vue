@@ -28,7 +28,7 @@
 
 <script>
 import { createComponent, computed } from '@vue/composition-api';
-import { useMinecraftVersions } from '@/hooks';
+import { useMinecraftVersions, useCompatible, useIsCompatible } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -39,6 +39,10 @@ export default createComponent({
     filterText: {
       type: String,
       default: () => '',
+    },
+    acceptingRange: {
+      type: String,
+      default: '[*]',
     },
     showTime: {
       type: Boolean,
@@ -51,16 +55,18 @@ export default createComponent({
   },
   setup(props, context) {
     const { versions, statuses } = useMinecraftVersions();
+    const { isCompatible } = useIsCompatible();
     function selectVersion(v) {
       context.emit('input', v.id);
     }
 
     function filterMinecraft(v) {
       if (!props.showAlpha && v.type !== 'release') return false;
+      if (!isCompatible(props.acceptingRange, v.id)) return false;
       return v.id.indexOf(props.filterText) !== -1;
     }
     return {
-      versions: computed(() => versions.value.filter(v => v.type === 'release')),
+      versions: computed(() => versions.value.filter(filterMinecraft)),
       statuses,
       selectVersion,
     };

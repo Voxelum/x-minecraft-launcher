@@ -15,11 +15,11 @@
               </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-select v-model="selectedLocale" style="max-width: 185px;" dark hide-details :items="locales" :item-text="i => localeIndex[i]" :item-value="i => i" >
-                <template v-slot:default="{ item }">
-                  {{ localeIndex[item] }}
-                </template>
-              </v-select>
+              <v-select v-model="selectedLocale" 
+                        style="max-width: 185px;" 
+                        dark 
+                        hide-details 
+                        :items="locales" />
             </v-list-tile-action>
           </v-list-tile>
           <v-list-tile>
@@ -234,7 +234,7 @@ export default createComponent({
     });
     return {
       ...toRefs(data),
-      locales,
+      locales: locales.map(l => ({ text: localeIndex[l], value: l })),
       selectedLocale,
       allowPrerelease,
       autoInstallOnAppQuit,

@@ -15,6 +15,7 @@ import { SettingModule } from './modules/setting';
 import { TaskModule } from './modules/task';
 import { UserModule } from './modules/user';
 import { VersionModule } from './modules/version';
+import { AuthLibModule } from './modules/authlib';
 
 Vue.use(Vuex);
 
@@ -67,16 +68,14 @@ export default {
 
 type SaveFunction<C> = (context: C, payload: { mutation: keyof Mutations, payload: any }) => Promise<void>;
 type LoadFunction<C> = (context: C) => Promise<void>;
-type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | SettingModule | UserModule | LauncherModule | IOModule | DiagnoseModule | CurseForgeModule | ClientModule;
-type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & SettingModule & UserModule & LauncherModule & IOModule & DiagnoseModule & CurseForgeModule & ClientModule;
+type AllModules = VersionModule | ProfileModule | JavaModule | ResourceModule | TaskModule | SettingModule | UserModule | LauncherModule | IOModule | DiagnoseModule | CurseForgeModule | ClientModule | AuthLibModule;
+type ModulesIntersection = VersionModule & ProfileModule & JavaModule & ResourceModule & TaskModule & SettingModule & UserModule & LauncherModule & IOModule & DiagnoseModule & CurseForgeModule & ClientModule & AuthLibModule;
 export type Mutations =
     Required<ModulesIntersection>["mutations"] &
     BaseMutations;
 export type Actions =
     Required<ModulesIntersection>["actions"] &
     BaseActions;
-// type AllGetters = UseGetters<Required<ModulesCollection>["getters"]> & BaseGetters;
-
 
 type ObjectWithFunctions<T> = {
     [K in keyof T]: (...args: any) => any;
@@ -90,7 +89,6 @@ type GetterTree<S, G> = {
 type StateTree = BaseState & {
     [K in Required<AllModules>["name"]]: Extract<Required<AllModules>, { name: K }>["state"]
 };
-
 
 export interface RootState extends StateTree {}
 export interface RootGetters extends UseGetters<Required<ModulesIntersection>["getters"]>, BaseGetters { }

@@ -40,7 +40,7 @@
 import { isCompatible } from 'universal/utils/versions';
 import { createComponent, ref, onMounted, computed } from '@vue/composition-api';
 import { shell } from 'electron';
-import { useStore, useForgeModResource } from '@/hooks';
+import { useStore, useForgeModResource, useCompatible, useProfileVersionBase } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -58,10 +58,11 @@ export default createComponent({
     },
   },
   setup(props, context) {
-    const { icon, metadata, acceptedRange, compatible } = useForgeModResource(props.data);
+    const { icon, metadata, acceptedRange } = useForgeModResource(props.data);
+    const { minecraft } = useProfileVersionBase();
+    const { compatible } = useCompatible(acceptedRange, minecraft);
     const dragged = ref(false);
     const iconImage = ref(null);
-  
 
     function onDragStart(e) {
       dragged.value = true;
@@ -89,12 +90,8 @@ export default createComponent({
       acceptedRange,
       onDragEnd,
       onDragStart,
+      mcversion: minecraft,
     };
-  },
-  computed: {
-    mcversion() {
-      return this.$repo.getters.selectedProfile.version.minecraft;
-    },
   },
 });
 </script>

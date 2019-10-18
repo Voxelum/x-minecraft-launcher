@@ -357,6 +357,7 @@
         "maxMemory": "最大内存",
         "minMemory": "最小内存",
         "missing": "没有找到Java",
+        "autoAlloc": "自动分配",
         "missingHint": "启动器在你的电脑上没有找到任何Java。你可以尝试：",
         "noJavaInPath": "还是无法在PATH中找到java可执行文件。你可以尝试其他方法。",
         "noLegalJava": "启动器认为这个Java可执行文件是无效的。请尝试其他的方法。",

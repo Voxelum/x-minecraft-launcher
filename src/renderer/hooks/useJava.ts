@@ -4,7 +4,7 @@ import { computed } from "@vue/composition-api";
 export function useJava() {
     const { state, getters, dispatch } = useStore();
     const all = computed(() => state.java.all);
-    const defaultJava = computed(() => state.java.all);
+    const defaultJava = computed(() => state.java.all[state.java.default]);
     const missing = computed(() => getters.missingJava);
 
     function add(java: string) {
