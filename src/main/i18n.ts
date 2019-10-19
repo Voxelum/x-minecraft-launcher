@@ -23,11 +23,22 @@ function format(templateString: string, args?: object) {
     return result;
 }
 
+function find(queryPath: string[], node: LocalNode): string | LocalNode | undefined {
+    let content: LocalNode | string = node;
+    for (const p of queryPath) {
+        if (typeof content === 'string') return undefined;
+        const next: LocalNode | string | undefined = content[p];
+        if (!next) return undefined;
+        content = next;
+    }
+    return content;
+}
+
 export function t(key: string, args?: object) {
-    const content = usingLocaleContent;
-    const result = content[key] || defaultLocaleContent[key];
+    const queryPath = key.split('.');
+    const result = find(queryPath, usingLocaleContent) || find(queryPath, defaultLocaleContent);
     if (!result) return key;
-    const templateString = typeof result === 'object' ? (result as any)[''] : result;
+    const templateString = typeof result === 'object' ? result[''] as string : result;
     return format(templateString, args);
 }
 
