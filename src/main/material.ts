@@ -1,11 +1,10 @@
 
 import { BrowserWindow, Menu } from 'electron';
 import { resolve } from 'path';
-import { RootState } from 'universal/store';
-import { Store } from 'vuex';
+import { Store } from 'universal/store';
 import { ClientContext } from './windowsManager';
 
-export default function setup(context: ClientContext, store: Store<RootState>) {
+export default function setup(context: ClientContext, store: Store) {
     let mainRef: BrowserWindow | null;
     let loggerRef: BrowserWindow | null;
 

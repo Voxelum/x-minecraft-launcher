@@ -7,7 +7,7 @@ const AUTHLIB_ORG_NAME = 'org.to2mbn:authlibinjector';
 
 const mod: AuthLibModule = {
     actions: {
-        async doesAuthlibInjectionExisted(context) {
+        async doesAuthlibInjectionExisted(context): Promise<boolean> {
             const jsonPath = context.rootGetters.path('authlib-injection.json');
             const mc = new MinecraftFolder(context.rootState.root);
             let content = await fs.readFile(jsonPath).then((b) => JSON.parse(b.toString())).catch(_ => undefined);
@@ -16,7 +16,7 @@ const mod: AuthLibModule = {
             const libPath = mc.getLibraryByPath(info.path);
             return await fs.validate(libPath, { algorithm: 'sha256', hash: content.checksums.sha256 });
         },
-        async ensureAuthlibInjection(context) {
+        async ensureAuthlibInjection(context): Promise<string> {
             const task = Task.create('installAuthlibInjector', async (ctx) => {
                 const jsonPath = context.rootGetters.path('authlib-injection.json');
                 const mc = new MinecraftFolder(context.rootState.root);
@@ -57,7 +57,7 @@ const mod: AuthLibModule = {
             });
             const dest = await context.dispatch('waitTask', await context.dispatch('executeTask', task));
             await context.dispatch('diagnoseUser');
-            return dest;
+            return dest as string;
         }
     },
 };

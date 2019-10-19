@@ -1,6 +1,7 @@
-import { Module, Context } from "..";
-import { ResolvedLibrary, Version } from "@xmcl/version";
 import { ForgeInstaller } from "@xmcl/minecraft-launcher-core";
+import { ResolvedLibrary, Version } from "@xmcl/version";
+import { SaveAction, InitAction } from "..";
+import { ModuleOption } from "../root";
 
 export interface Problem {
     id: string;
@@ -10,7 +11,7 @@ export interface Problem {
 }
 
 export type ProblemReport = {
-    [K in keyof DiagnoseModule.State['registry']]: DiagnoseModule.State['registry'][K]['actived']
+    [K in keyof State['registry']]: State['registry'][K]['actived']
 }
 
 export interface Registry<A, AF = true, OP = false> {
@@ -20,60 +21,58 @@ export interface Registry<A, AF = true, OP = false> {
     actived: A[];
 }
 
-export declare namespace DiagnoseModule {
-    interface State {
-        registry: {
-            missingVersion: Registry<{}>;
-            missingVersionJar: Registry<{ version: string }>;
-            missingAssetsIndex: Registry<{ version: string }>;
-            missingVersionJson: Registry<{ version: string }>;
-            missingForgeJar: Registry<{ minecraft: string; forge: string }>;
-            missingLibraries: Registry<ResolvedLibrary>;
-            missingAssets: Registry<{ count: number }>;
-            unknownMod: Registry<{ name: string; actual: string; }, false, true>;
-            incompatibleMod: Registry<{ name: string; actual: string; accepted: string; }, false, true>;
-            incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string; }, false, true>;
-            incompatibleJava: Registry<{ java: string; mcversion: string }, false, false>;
-            missingAuthlibInjector: Registry<{}>;
-            missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
-            badForge: Registry<{ forge: string; minecraft: string }>;
-            badForgeIncomplete: Registry<{ count: number; libraries: Version.NormalLibrary[] }>;
-            badForgeProcessedFiles: Registry<ForgeInstaller.Diagnosis["badProcessedFiles"][number], true, true>;
+interface State {
+    registry: {
+        missingVersion: Registry<{}>;
+        missingVersionJar: Registry<{ version: string }>;
+        missingAssetsIndex: Registry<{ version: string }>;
+        missingVersionJson: Registry<{ version: string }>;
+        missingForgeJar: Registry<{ minecraft: string; forge: string }>;
+        missingLibraries: Registry<ResolvedLibrary>;
+        missingAssets: Registry<{ count: number }>;
+        unknownMod: Registry<{ name: string; actual: string; }, false, true>;
+        incompatibleMod: Registry<{ name: string; actual: string; accepted: string; }, false, true>;
+        incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string; }, false, true>;
+        incompatibleJava: Registry<{ java: string; mcversion: string }, false, false>;
+        missingAuthlibInjector: Registry<{}>;
+        missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
+        badForge: Registry<{ forge: string; minecraft: string }>;
+        badForgeIncomplete: Registry<{ count: number; libraries: Version.NormalLibrary[] }>;
+        badForgeProcessedFiles: Registry<ForgeInstaller.Diagnosis["badProcessedFiles"][number], true, true>;
 
-            [id: string]: {
-                fixing: boolean;
-                autofix: boolean;
-                optional: boolean;
-                actived: { [key: string]: any }[];
-            };
+        [id: string]: {
+            fixing: boolean;
+            autofix: boolean;
+            optional: boolean;
+            actived: { [key: string]: any }[];
         };
-    }
-
-    interface Getters {
-        /**
-         * The problems of current launcher state
-         */
-        problems: Problem[];
-    }
-
-    interface Mutations {
-        postProblems(state: State, problems: Partial<ProblemReport>): void;
-        startResolveProblems(state: State, problems: Problem[]): void;
-        endResolveProblems(state: State, problems: Problem[]): void;
-    }
-    type C = Context<State, {}>;
-    interface Actions {
-        diagnoseVersion(context: C): Promise<void>;
-        diagnoseMods(context: C): Promise<void>;
-        diagnoseResourcePacks(context: C): Promise<void>;
-        diagnoseJava(context: C): Promise<void>;
-        diagnoseServer(context: C): Promise<void>;
-        diagnoseUser(context: C): Promise<void>;
-
-        fixProfile(context: C, problems: Problem[]): Promise<void>
-    }
+    };
 }
-export interface DiagnoseModule extends Module<"diagnose", DiagnoseModule.State, DiagnoseModule.Getters, DiagnoseModule.Mutations, DiagnoseModule.Actions> { }
+
+interface Getters {
+    /**
+     * The problems of current launcher state
+     */
+    problems: Problem[];
+}
+
+interface Mutations {
+    postProblems: Partial<ProblemReport>;
+    startResolveProblems: Problem[];
+    endResolveProblems: Problem[];
+}
+
+interface Actions extends SaveAction, InitAction {
+    diagnoseVersion: () => void;
+    diagnoseMods: () => void;
+    diagnoseResourcePacks: () => void;
+    diagnoseJava: () => void;
+    diagnoseServer: () => void;
+    diagnoseUser: () => void;
+    fixProfile: (problems: Problem[]) => void;
+}
+
+export type DiagnoseModule = ModuleOption<State, Getters, Mutations, Actions>;
 
 const mod: DiagnoseModule = {
     state: {

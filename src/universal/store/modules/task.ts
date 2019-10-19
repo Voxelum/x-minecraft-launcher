@@ -1,7 +1,7 @@
-import Vue from 'vue';
-
 import { Task } from '@xmcl/minecraft-launcher-core';
-import { Context, Module } from "..";
+import Vue from 'vue';
+import { ModuleOption } from "../root";
+
 
 export interface WrappedTask<T> extends Task<T, TaskState> {
     id: string;
@@ -12,40 +12,36 @@ export interface TaskState extends Task.State {
     children: TaskState[];
     time?: string;
 }
-export declare namespace TaskModule {
 
-    interface State {
-        tree: { [uuid: string]: TaskState },
-        tasks: TaskState[],
-        maxLog: number,
-    }
-    interface Mutations {
-        createTask(state: State, option: { id: string, name: string }): void;
-        pruneTasks(state: State): void;
-        hookTask(state: State, option: { id: string, task: TaskState }): void;
-        updateBatchTask(state: State, option: {
-            adds: { id: string, node: TaskState }[],
-            childs: { id: string, node: TaskState }[],
-            updates: { [id: string]: { progress?: number, total?: number, message?: string, time?: string } },
-            statuses: { id: string, status: string }[],
-        }): void;
-    }
-
-    type C = Context<TaskModule.State, {}>;
-    interface Actions {
-        executeAction<T>(context: C, payload: { action: string, payload?: any, background?: boolean }): Promise<any>;
-
-        executeTask(context: C, task: Task<any>): Promise<TaskHandle>;
-        spawnTask(context: C, name: string): Promise<TaskHandle>;
-        updateTask(context: C, data: { id: TaskHandle, progress: number, total?: number, message?: string }): Promise<void>;
-        waitTask(context: C, uuid: TaskHandle): Promise<any>;
-        finishTask(context: C, payload: { id: TaskHandle }): Promise<void>;
-        cancelTask(context: C, uuid: TaskHandle): Promise<void>;
-    }
-
+interface State {
+    tree: { [uuid: string]: TaskState },
+    tasks: TaskState[],
+    maxLog: number,
+}
+interface Mutations {
+    createTask: { id: string, name: string };
+    pruneTasks: (state: State) => void;
+    hookTask: { id: string, task: TaskState };
+    updateBatchTask: {
+        adds: { id: string, node: TaskState }[],
+        childs: { id: string, node: TaskState }[],
+        updates: { [id: string]: { progress?: number, total?: number, message?: string, time?: string } },
+        statuses: { id: string, status: string }[],
+    };
 }
 
-export type TaskModule = Module<"task", TaskModule.State, {}, TaskModule.Mutations, TaskModule.Actions>;
+
+interface Actions {
+    executeAction<T>(payload: { action: string, payload?: any, background?: boolean }): Promise<any>;
+    executeTask: (task: Task<any>) => TaskHandle;
+    spawnTask: (name: string) => TaskHandle;
+    updateTask: (data: { id: TaskHandle, progress: number, total?: number, message?: string }) => void;
+    waitTask: (uuid: TaskHandle) => any;
+    finishTask: (payload: { id: TaskHandle }) => void;
+    cancelTask: (uuid: TaskHandle) => void;
+}
+
+export type TaskModule = ModuleOption<State, {}, Mutations, Actions>;
 
 const mod: TaskModule = {
     state: {

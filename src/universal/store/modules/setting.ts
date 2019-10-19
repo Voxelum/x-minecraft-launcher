@@ -1,45 +1,44 @@
-import { Module, Context } from "..";
 import { UpdateInfo } from "electron-updater";
-import { SettingConfig, ParticleMode } from "./setting.config";
+import { SaveLoadAction } from "..";
+import { ModuleOption } from "../root";
+import { ParticleMode, SettingConfig } from "./setting.config";
 
-export declare namespace SettingModule {
-    interface State extends SettingConfig {
-        /**
-         * All supported languages of the launcher
-         */
-        locales: string[];
-        updateInfo: UpdateInfo | null;
-        readyToUpdate: boolean;
-        checkingUpdate: boolean;
-        downloadingUpdate: boolean;
-    }
-
-    interface Mutations {
-        config(state: State, payload: SettingConfig & { locales: string[] }): void;
-        locale(state: State, locale: string): void;
-        allowPrerelease(state: State, allow: boolean): void;
-        autoInstallOnAppQuit(state: State, autoInstallOnAppQuit: boolean): void;
-        readyToUpdate(state: State, readyToUpdate: boolean): void;
-        autoDownload(state: State, autoDownload: boolean): void;
-        updateInfo(state: State, updateInfo: UpdateInfo): void;
-        downloadingUpdate(state: State, prog: boolean): void;
-        checkingUpdate(state: State, prog: boolean): void;
-        settings(state: State, settings: { [key: string]: number | string | boolean | object }): void;
-        defaultBackgroundImage(state: State, img: string | null): void;
-        defaultBlur(state: State, blur: number): void;
-        useBmclApi(state: State, use: boolean): void;
-        showParticle(state: State, showParticle: boolean): void;
-        particleMode(state: State, particleMode: ParticleMode): void;
-    }
-    type C = Context<State, {}>;
-    interface Actions {
-        downloadUpdate(context: C): Promise<string>;
-        quitAndInstall(context: C): Promise<void>;
-        checkUpdate(context: C): Promise<string>;
-    }
+interface State extends SettingConfig {
+    /**
+     * All supported languages of the launcher
+     */
+    locales: string[];
+    updateInfo: UpdateInfo | null;
+    readyToUpdate: boolean;
+    checkingUpdate: boolean;
+    downloadingUpdate: boolean;
 }
-export interface SettingModule extends Module<"setting", SettingModule.State, {}, SettingModule.Mutations, SettingModule.Actions> { }
-export { ParticleMode }
+
+interface Mutations {
+    config: SettingConfig & { locales: string[] };
+    locale: string;
+    allowPrerelease: boolean;
+    autoInstallOnAppQuit: boolean;
+    readyToUpdate: boolean;
+    autoDownload: boolean;
+    updateInfo: UpdateInfo;
+    downloadingUpdate: boolean;
+    checkingUpdate: boolean;
+    settings: { [key: string]: number | string | boolean | object };
+    defaultBackgroundImage: string | null;
+    defaultBlur: number;
+    useBmclApi: boolean;
+    showParticle: boolean;
+    particleMode: ParticleMode;
+}
+
+interface Actions extends SaveLoadAction {
+    downloadUpdate: () => string;
+    quitAndInstall: () => void;
+    checkUpdate: () => string;
+}
+
+export type SettingModule = ModuleOption<State, {}, Mutations, Actions>;
 
 const mod: SettingModule = {
     state: {
@@ -103,3 +102,5 @@ const mod: SettingModule = {
 };
 
 export default mod;
+export { ParticleMode };
+

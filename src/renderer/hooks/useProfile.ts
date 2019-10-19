@@ -1,12 +1,12 @@
 import { toRefs, computed, ref, watch, onMounted, onUnmounted } from "@vue/composition-api";
-import { ProfileModule, CreateOption } from "universal/store/modules/profile";
+import { CreateOption, ServerAndModpack, ServerOrModpack } from "universal/store/modules/profile";
 import { Data } from "@vue/composition-api/dist/component";
 import { getExpectVersion } from "universal/utils";
 import { useStore } from "./useStore";
 
 export function useProfile() {
     const { getters, dispatch } = useStore();
-    const profile: ProfileModule.ServerAndModpack & Data = getters.selectedProfile as any;
+    const profile: ServerAndModpack & Data = getters.selectedProfile as any;
 
     const maxMemory = computed(() => profile.maxMemory);
     const minMemory = computed(() => profile.minMemory);
@@ -19,7 +19,7 @@ export function useProfile() {
     /**
      * Edit current profile
      */
-    function edit(option: Partial<ProfileModule.ServerAndModpack>) {
+    function edit(option: Partial<ServerAndModpack>) {
         dispatch('editProfile', option);
     }
     function exportTo(destination: string, type: 'full' | 'curseforge' | 'no-assets') {
@@ -54,7 +54,7 @@ export function useProfileCreation() {
 
 export function useProfileVersionBase() {
     const { getters } = useStore();
-    const profile: ProfileModule.ServerOrModpack & Data = getters.selectedProfile as any;
+    const profile: ServerOrModpack & Data = getters.selectedProfile as any;
     return {
         ...toRefs(profile.version),
     };
@@ -90,7 +90,7 @@ export function useProfileGameSetting() {
 export function useProfileVersion() {
     const { getters, dispatch } = useStore();
 
-    const profile: ProfileModule.ServerOrModpack & Data = getters.selectedProfile as any;
+    const profile: ServerOrModpack & Data = getters.selectedProfile as any;
 
     const refVersion = toRefs(profile.version);
     const folder = ref('');
