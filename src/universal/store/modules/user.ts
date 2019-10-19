@@ -1,94 +1,93 @@
 import { Auth, MojangAccount, MojangChallenge, MojangChallengeResponse, ProfileService } from '@xmcl/minecraft-launcher-core';
 import { fitin } from 'universal/utils/object';
 import Vue from 'vue';
-import { Context, Module } from "..";
+import { SaveLoadAction, InitAction } from '..';
+import { ModuleOption } from "../root";
 import { GameProfileAndTexture, UserConfig, UserProfile } from './user.config';
 
-export declare namespace UserModule {
-    interface State extends UserConfig {
-        /**
-         * The mojang user info
-         */
-        info: MojangAccount | null;
-        security: boolean;
-        refreshingSkin: boolean;
-        refreshingSecurity: boolean;
-    }
-
-    interface Getters {
-        selectedUser: UserProfile;
-        selectedGameProfile: GameProfileAndTexture;
-        avaiableGameProfiles: (GameProfileAndTexture & { userId: string; authService: string; profileService: string; account: string; })[];
-
-        /**
-         * Does user logined? This include the case that user logins as offline mode.
-         */
-        logined: boolean;
-        /**
-         * If current mode is offline mode
-         */
-        offline: boolean;
-        /**
-         * Is the auth service & profile service are the same
-         */
-        isServiceCompatible: boolean;
-
-        authServices: string[]; // TODO: remove
-        profileServices: string[]; // TODO: remove
-
-        authService: Auth.Yggdrasil.API;
-        profileService: ProfileService.API;
-    }
-    interface Mutations {
-        userSnapshot(state: State, snapshot: UserConfig): void;
-
-        invalidateAuth(state: State): void;
-        updateGameProfile(state: State, payload: { userId: string; profile: GameProfileAndTexture }): void;
-        updateUserProfile(state: State, auth: Auth): void;
-        addUserProfile(state: State, profile: UserProfile): void;
-        setUserProfile(state: State, profile: { userId: string; profileId: string }): void;
-        removeUserProfile(state: State, userId: string): void;
-
-        authService(state: State, service: { name: string, api: Auth.Yggdrasil.API }): void;
-        profileService(state: State, service: { name: string, api: ProfileService.API }): void;
-        removeService(state: State, name: string): void;
-
-        mojangInfo(state: State, info: MojangAccount): void;
-        userSecurity(state: State, security: boolean): void;
-        refreshingSecurity(state: State, refreshing: boolean): void;
-        refreshingSkin(state: State, refresh: boolean): void;
-    }
-
-    type C = Context<State, Getters>;
-    interface Actions {
-        login(context: C, payload?: { account: string; password?: string, authService?: string, profileService?: string }): Promise<void>;
-        switchUserProfile(context: C, profile: { userId: string; profileId: string }): Promise<void>;
-        logout(context: C): Promise<void>;
-
-        refreshUser(context: C): Promise<void>;
-        refreshInfo(context: C): Promise<void>;
-        refreshSkin(context: C): Promise<void>;
-
-        /**
-         * Check current ip location and determine wether we need to validate user identity by response challenge.
-         * 
-         * See `getChallenges` and `submitChallenges`
-         */
-        checkLocation(context: C): Promise<boolean>;
-        /**
-         * Get all the user set challenges for security reasons.
-         */
-        getChallenges(context: C): Promise<MojangChallenge[]>;
-        submitChallenges(context: C, responses: MojangChallengeResponse[]): Promise<any>;
-
-        uploadSkin(context: C, payload: { data: string | Buffer, slim: boolean }): Promise<void>;
-        saveSkin(context: C, payload: { skin: { data: string }, path: string }): Promise<void>;
-        parseSkin(context: C, path: string): Promise<string>;
-    }
+interface State extends UserConfig {
+    /**
+     * The mojang user info
+     */
+    info: MojangAccount | null;
+    security: boolean;
+    refreshingSkin: boolean;
+    refreshingSecurity: boolean;
 }
 
-export interface UserModule extends Module<"user", UserModule.State, UserModule.Getters, UserModule.Mutations, UserModule.Actions> {
+interface Getters {
+    selectedUser: UserProfile;
+    selectedGameProfile: GameProfileAndTexture;
+    avaiableGameProfiles: (GameProfileAndTexture & { userId: string; authService: string; profileService: string; account: string; })[];
+
+    /**
+     * Does user logined? This include the case that user logins as offline mode.
+     */
+    logined: boolean;
+    /**
+     * If current mode is offline mode
+     */
+    offline: boolean;
+    /**
+     * Is the auth service & profile service are the same
+     */
+    isServiceCompatible: boolean;
+
+    authServices: string[]; // TODO: remove
+    profileServices: string[]; // TODO: remove
+
+    authService: Auth.Yggdrasil.API;
+    profileService: ProfileService.API;
 }
+interface Mutations {
+    userSnapshot: UserConfig;
+
+    invalidateAuth: (state: State) => void;
+    updateGameProfile: { userId: string; profile: GameProfileAndTexture };
+    updateUserProfile: Auth;
+    addUserProfile: UserProfile;
+    setUserProfile: { userId: string; profileId: string };
+    removeUserProfile: string;
+
+    authService: { name: string, api: Auth.Yggdrasil.API };
+    profileService: { name: string, api: ProfileService.API };
+    removeService: string;
+
+    mojangInfo: MojangAccount;
+    userSecurity: boolean;
+    refreshingSecurity: boolean;
+    refreshingSkin: boolean;
+}
+
+
+interface Actions extends SaveLoadAction, InitAction {
+    login: (payload?: { account: string; password?: string, authService?: string, profileService?: string }) => void;
+    logout: () => void;
+    switchUserProfile: (profile: { userId: string; profileId: string }) => void;
+
+    refreshUser: () => void;
+    refreshInfo: () => void;
+    refreshSkin: () => void;
+
+    /**
+     * Check current ip location and determine wether we need to validate user identity by response challenge.
+     * 
+     * See `getChallenges` and `submitChallenges`
+     */
+    checkLocation: () => boolean;
+    /**
+     * Get all the user set challenges for security reasons.
+     */
+    getChallenges: () => MojangChallenge[];
+    submitChallenges: (responses: MojangChallengeResponse[]) => any;
+
+    uploadSkin: (payload: { data: string | Buffer, slim: boolean }) => void;
+    saveSkin: (payload: { skin: { data: string }, path: string }) => void;
+    parseSkin: (path: string) => string;
+
+}
+
+export type UserModule = ModuleOption<State, Getters, Mutations, Actions>;
 
 const mod: UserModule = {
     state: {

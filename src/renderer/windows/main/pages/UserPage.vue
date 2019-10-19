@@ -50,6 +50,7 @@
                               readonly 
                               color="primary"
                               dark 
+                              prepend-inner-icon="person"
                               append-icon="file_copy" 
                               :label="$t('user.name')" 
                               :value="name"
@@ -61,6 +62,7 @@
                               dark
                               append-icon="file_copy" 
                               color="primary" 
+                              prepend-inner-icon="vpn_key"
                               :label="$t('user.accessToken')" 
                               :value="accessToken"
                               @click:append="copyToClipBoard(accessToken)" />
@@ -69,6 +71,7 @@
                 <v-text-field hide-details 
                               readonly 
                               append-icon="add" 
+                              prepend-inner-icon="security"
                               :label="$t('user.authService')" 
                               :value="authService"
                               color="primary" 
@@ -78,6 +81,7 @@
                 <v-text-field hide-details 
                               readonly
                               color="primary" 
+                              prepend-inner-icon="assignment_ind"
                               append-icon="add" 
                               :label="$t('user.profileService')" 
                               :value="profileService"
@@ -85,8 +89,15 @@
               </v-flex>
 
               <v-flex xs1 style="padding-left: 5px;">
-                <v-select v-model="skinSlim" hide-details :label="$t('user.skinSlim')"
-                          :items="[{text:'Alex', value:true}, {text:'Steve', value:false}]" item-text="text" item-value="value" color="primary" dark />
+                <v-select v-model="skinSlim" 
+                          hide-details
+                          prepend-inner-icon="accessibility"
+                          :label="$t('user.skinSlim')"
+                          :items="[{text:'Alex', value:true}, {text:'Steve', value:false}]" 
+                          item-text="text" 
+                          item-value="value" 
+                          color="primary" 
+                          dark />
               </v-flex>
             </v-layout>
           </v-flex>
@@ -279,17 +290,15 @@ export default {
           }
         }
       },
-      saveSkin() {
-        showSaveDialog({
+      async saveSkin() {
+        const { filename, bookmark } = await showSaveDialog({
           title: t('user.skinSaveTitle'),
           defaultPath: `${name.value}.png`,
-          filters: [{ extensions: ['png'], name: 'PNG Images' }]
-        },
-          (filename, bookmark) => {
-            if (filename) {
-              saveSkin({ path: filename, skin: { data: data.skinUrl, slim: data.skinSlim } });
-            }
-          });
+          filters: [{ extensions: ['png'], name: 'PNG Images' }],
+        });
+        if (filename) {
+          saveSkin({ path: filename, skin: { data: data.skinUrl, slim: data.skinSlim } });
+        }
       },
       enterEditBtn() {
         data.hoverTextOnEdit = t('user.skinImportFile');

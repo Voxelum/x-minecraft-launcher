@@ -1,11 +1,10 @@
-import { Module, Context } from "..";
-
-type C = Context<{}, {}>;
+import { ModuleOption } from "../root";
 
 interface Actions {
-    doesAuthlibInjectionExisted(context: C): Promise<boolean>;
-    ensureAuthlibInjection(context: C): Promise<string>;
+    ensureAuthlibInjection: () => string;
+    doesAuthlibInjectionExisted: () => boolean;
 }
 
-export type AuthLibModule = Module<"authlib", {}, {}, {}, Actions>;
+export type AuthLibModule = ModuleOption<{}, {}, {}, Actions>;
+
 export default {};

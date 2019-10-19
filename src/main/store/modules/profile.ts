@@ -12,6 +12,7 @@ import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/serve
 import { v4 } from 'uuid';
 import { ZipFile } from 'yazl';
 import { gunzip } from 'zlib';
+import { Resource } from 'universal/store/modules/resource';
 
 async function loadWorld(save: string) {
     try {
@@ -480,10 +481,10 @@ const mod: ProfileModule = {
             }
         },
 
-        resolveProfileResources(context, id = context.state.id) {
+        async resolveProfileResources(context, id = context.state.id) {
             const profile = context.state.all[id];
 
-            const resources: { [domain: string]: import('universal/store/modules/resource').Resource<any>[] } = {};
+            const resources: { [domain: string]: Resource<any>[] } = {};
             for (const domain of Object.keys(profile.deployments)) {
                 const depl = profile.deployments[domain];
                 if (depl instanceof Array && depl.length !== 0) {

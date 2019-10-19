@@ -55,25 +55,14 @@ export function diff(target: any, option: any): boolean {
     return !Object.entries(target).every(([k, v]) => deepEquals(option[k], v));
 }
 
-/**
- * @param {any} object
- * @param {string} [message]
- */
 export function requireObject(object: any, message?: string) {
     if (typeof object !== 'object') throw new Error(message || 'Require a object!');
 }
-/**
- * @param {any} object
- * @param {string} [message]
- */
+
 export function requireString(object: any, message?: any) {
     if (typeof object !== 'string') throw new Error(message || `Require a string! But get ${typeof object}`);
 }
-/**
- * @param {any} object
- * @param {any} type
- * @param {any} message
- */
+
 export function requireType(object: any, type: any, message: any) {
     if (!(object instanceof type)) {
         throw new Error(message || `Require object ${object} be the type ${type}`);

@@ -1,14 +1,12 @@
-import { Context, Module } from "..";
+import { ModuleOption } from "../root";
 
-export type IOModule = Module<"io", {}, {}, {}, Actions>;
+export type IOModule = ModuleOption<{}, {}, {}, Actions>;
 
-type C = Context<{}, {}>;
 export interface Actions {
-    readFolder(context: C, folder: string): Promise<string[]>;
-    setPersistence(context: C, payload: { path: string, data: object, schema?: string }): Promise<void>;
-    getPersistence(context: C, payload: { path: string, schema?: string }): Promise<any>;
-
-    electronDownloadFile(context: C, payload: { url: string }): Promise<TaskHandle>
+    readFolder: (folder: string) => string[];
+    setPersistence: (payload: { path: string, data: object, schema?: string }) => void;
+    getPersistence: (payload: { path: string, schema?: string }) => any;
+    electronDownloadFile: (payload: { url: string }) => TaskHandle;
 }
 
 const mod: IOModule = {}

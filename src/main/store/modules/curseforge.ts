@@ -5,12 +5,12 @@ import { request, fs } from 'main/utils';
 import { join } from 'path';
 import querystring from 'querystring';
 import { finished } from 'stream';
-import base, { CurseForgeModule } from 'universal/store/modules/curseforge';
+import base, { CurseForgeModule, Modpack, DownloadFile, ProjectPreview } from 'universal/store/modules/curseforge';
 import { parse as parseUrl } from 'url';
 import { promisify } from 'util';
 
 
-function getHref(file: CurseForgeModule.DownloadFile) {
+function getHref(file: DownloadFile) {
     return `https://www.curseforge.com/minecraft/${file.projectType}/${file.projectPath}/download/${file.id}/file`;
 }
 const CURSEMETA_CACHE = 'https://cursemeta.dries007.net';
@@ -55,7 +55,7 @@ function convert(node: Node | null) {
     return text;
 }
 
-function processProjectListingRow(item: import('fast-html-parser').HTMLElement): CurseForgeModule.ProjectPreview {
+function processProjectListingRow(item: import('fast-html-parser').HTMLElement): ProjectPreview {
     item = item.removeWhitespace();
 
     const childs = item.childNodes.filter(notText);
@@ -142,7 +142,7 @@ const mod: CurseForgeModule = {
 
                 const others: Unzip.Entry[] = [];
 
-                const manifest: CurseForgeModule.Modpack = await ctx.execute('resolveEntries', async () => {
+                const manifest: Modpack = await ctx.execute('resolveEntries', async () => {
                     const manifestEntry = zipFile.entries['manifest.json'];
                     if (!manifestEntry) throw new Error(`Cannot import curseforge modpack ${path}, since it doesn't have manifest.json`);
                     const manifestBuf = await zipFile.readEntry(manifestEntry);

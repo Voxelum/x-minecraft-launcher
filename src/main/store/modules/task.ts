@@ -54,7 +54,7 @@ class TaskWatcher {
         }
     }
 
-    ensureListener(context: TaskModule.C) {
+    ensureListener(context: any) {
         if (this.listener === undefined) {
             this.forceUpdate = () => {
                 if (this.adds.length !== 0 || this.childs.length !== 0 || Object.keys(this.updates).length !== 0 || this.statuses.length !== 0) {

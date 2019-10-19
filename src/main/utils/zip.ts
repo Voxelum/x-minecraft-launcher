@@ -27,7 +27,7 @@ export async function includeAllToZip(root: string, real: string, zip: ZipFile) 
  * @param {string} dest
  */
 export function compressZipTo(zip: ZipFile, dest: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         zip.outputStream.pipe(createWriteStream(dest))
             .on('close', () => { resolve(); })
             .on('error', (e) => { reject(e); });

@@ -3,7 +3,9 @@ import { ForgeWebPage, Installer, LiteLoader, ResolvedLibrary, Version } from "@
 import lastestRelease from 'universal/utils/lasteRelease.json';
 import { fitin } from 'universal/utils/object';
 import Vue from 'vue';
-import { Context, Module } from "..";
+import { SaveLoadAction, InitAction } from "..";
+import { ModuleOption } from "../root";
+
 
 export type Status = 'remote' | 'local';
 
@@ -39,93 +41,90 @@ export interface LocalVersion {
 /**
  * The module handle the local/remote version related work 
  */
-export declare namespace VersionModule {
-    interface WebPage extends ForgeWebPage {
-        latest: number;
-        recommended: number;
-    }
+interface WebPage extends ForgeWebPage {
+    latest: number;
+    recommended: number;
+}
 
-    interface State {
-        local: LocalVersion[];
-        minecraft: Installer.VersionMetaList;
-        forge: { [mcversion: string]: ForgeWebPage };
-        liteloader: LiteLoader.VersionMetaList;
+interface State {
+    local: LocalVersion[];
+    minecraft: Installer.VersionMetaList;
+    forge: { [mcversion: string]: ForgeWebPage };
+    liteloader: LiteLoader.VersionMetaList;
 
-        refreshingMinecraft: boolean;
-        refreshingForge: boolean;
-        refreshingLiteloader: boolean;
-    }
+    refreshingMinecraft: boolean;
+    refreshingForge: boolean;
+    refreshingLiteloader: boolean;
+}
 
-    interface Getters {
-        /**
-         * Latest snapshot
-         */
-        minecraftSnapshot: Installer.VersionMeta | undefined,
-        /**
-         * Latest release
-         */
-        minecraftRelease: Installer.VersionMeta,
-        minecraftVersion: (mcversion: string) => Installer.VersionMeta | undefined,
-        minecraftStatuses: { [minecraftVersion: string]: Status };
+interface Getters {
+    /**
+     * Latest snapshot
+     */
+    minecraftSnapshot: Installer.VersionMeta | undefined,
+    /**
+     * Latest release
+     */
+    minecraftRelease: Installer.VersionMeta,
+    minecraftVersion: (mcversion: string) => Installer.VersionMeta | undefined,
+    minecraftStatuses: { [minecraftVersion: string]: Status };
 
-        /**
-         * Get the forge webpage info by a minecraft version
-         */
-        forgeVersionsOf: (mcversion: string) => ForgeWebPage | undefined;
-        forgeLatestOf: (mcversion: string) => ForgeWebPage.Version | undefined;
-        forgeRecommendedOf: (mcversion: string) => ForgeWebPage.Version | undefined;
-        forgeStatuses: { [forgeVersion: string]: Status };
+    /**
+     * Get the forge webpage info by a minecraft version
+     */
+    forgeVersionsOf: (mcversion: string) => ForgeWebPage | undefined;
+    forgeLatestOf: (mcversion: string) => ForgeWebPage.Version | undefined;
+    forgeRecommendedOf: (mcversion: string) => ForgeWebPage.Version | undefined;
+    forgeStatuses: { [forgeVersion: string]: Status };
 
-        liteloaderVersionsOf: (mcversion: string) => {
-            snapshot?: LiteLoader.VersionMeta;
-            release?: LiteLoader.VersionMeta;
-        }
-    }
-
-    interface Mutations {
-        refreshingMinecraft(state: State, refreshing: boolean): void;
-        refreshingForge(state: State, refreshing: boolean): void;
-        refreshingLiteloader(state: State, refreshing: boolean): void;
-
-        localVersions(state: State, local: LocalVersion[]): void;
-        minecraftMetadata(state: State, metadatas: Installer.VersionMetaList): void;
-        forgeMetadata(state: State, metadatas: ForgeWebPage): void;
-        liteloaderMetadata(state: State, metadatas: LiteLoader.VersionMetaList): void;
-    }
-
-    type C = Context<State, {}>;
-    interface Actions {
-        refresh(context: C): Promise<void>
-
-        refreshVersions(context: C): Promise<void>
-        /**
-         * Request minecraft version list and cache in to store and disk.
-         */
-        refreshMinecraft(context: C): Promise<void>
-        refreshForge(context: C, mcversion: string): Promise<void>
-        refreshLiteloader(context: C): Promise<void>
-
-        getForgeWebPage(context: C, mcversion: string): Promise<ForgeWebPage | undefined>
-
-        resolveVersion(context: C, version: Pick<LocalVersion, 'minecraft' | 'forge' | 'liteloader'>): Promise<string>
-
-        installLibraries(context: C, payload: { libraries: (Version.Library | ResolvedLibrary)[] }): Promise<TaskHandle>;
-        installAssets(context: C, version: string): Promise<TaskHandle>
-        installDependencies(context: C, version: string): Promise<TaskHandle>
-
-        installMinecraft(context: C, version: Installer.VersionMeta): Promise<TaskHandle>
-        installForge(context: C, version: ForgeInstaller.VersionMeta): Promise<TaskHandle>
-        installLiteloader(context: C, version: LiteLoader.VersionMeta): Promise<TaskHandle>
-
-        showVersionDirectory(context: C, version: string): Promise<void>;
-        showVersionsDirectory(context: C): Promise<void>;
-
-        deleteVersion(context: C, version: string): Promise<void>;
+    liteloaderVersionsOf: (mcversion: string) => {
+        snapshot?: LiteLoader.VersionMeta;
+        release?: LiteLoader.VersionMeta;
     }
 }
 
-export interface VersionModule extends Module<"version", VersionModule.State, VersionModule.Getters, VersionModule.Mutations, VersionModule.Actions> {
+interface Mutations {
+    refreshingMinecraft: boolean;
+    refreshingForge: boolean;
+    refreshingLiteloader: boolean;
+
+    localVersions: LocalVersion[];
+    minecraftMetadata: Installer.VersionMetaList;
+    forgeMetadata: ForgeWebPage;
+    liteloaderMetadata: LiteLoader.VersionMetaList;
 }
+
+
+interface Actions extends SaveLoadAction, InitAction {
+    refresh: () => void;
+
+    refreshVersions: () => void;
+    /**
+     * Request minecraft version list and cache in to store and disk.
+     */
+    refreshMinecraft: () => void;
+    refreshForge: (mcversion: string) => void;
+    refreshLiteloader: () => void;
+
+    getForgeWebPage: (mcversion: string) => ForgeWebPage | undefined;
+
+    resolveVersion: (version: Pick<LocalVersion, 'minecraft' | 'forge' | 'liteloader'>) => string;
+
+    installLibraries: (payload: { libraries: (Version.Library | ResolvedLibrary)[] }) => TaskHandle;
+    installAssets: (version: string) => TaskHandle;
+    installDependencies: (version: string) => TaskHandle;
+
+    installMinecraft: (version: Installer.VersionMeta) => TaskHandle;
+    installForge: (version: ForgeInstaller.VersionMeta) => TaskHandle;
+    installLiteloader: (version: LiteLoader.VersionMeta) => TaskHandle;
+
+    showVersionDirectory: (version: string) => void;
+    showVersionsDirectory: () => void;
+
+    deleteVersion: (version: string) => void;
+}
+
+export type VersionModule = ModuleOption<State, Getters, Mutations, Actions>;
 
 const mod: VersionModule = {
     state: {
@@ -176,7 +175,7 @@ const mod: VersionModule = {
             rootStates.version.local.forEach((ver) => {
                 if (ver.minecraft) localVersions[ver.minecraft] = true;
             });
-            const statusMap: { [key: string]: import('./version').Status } = {};
+            const statusMap: { [key: string]: Status } = {};
             for (const ver of state.minecraft.versions) {
                 statusMap[ver.id] = localVersions[ver.id] ? 'local' : 'remote';
             }
@@ -194,7 +193,7 @@ const mod: VersionModule = {
             return versions.versions.find(v => v.type === 'recommended');
         },
         forgeStatuses: (state, _, rootState) => {
-            const statusMap: { [key: string]: import('./version').Status } = {};
+            const statusMap: { [key: string]: Status } = {};
             const localForgeVersion: { [k: string]: boolean } = {};
             rootState.version.local.forEach((ver) => {
                 if (ver.forge) localForgeVersion[ver.forge] = true;

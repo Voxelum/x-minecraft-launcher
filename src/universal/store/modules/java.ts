@@ -1,35 +1,31 @@
 import Vue from 'vue';
-import { requireString, requireObject } from '../../utils/object';
-
-import { Module, Context } from "..";
+import { SaveLoadAction, InitAction } from '..';
+import { requireObject, requireString } from 'universal/utils/object';
+import { ModuleOption } from '../root';
 import { Java, JavaConfig } from './java.config';
 
-export { Java };
+interface State extends JavaConfig {
 
-export declare namespace JavaModule {
-    interface State extends JavaConfig {
-
-    }
-
-    interface Getters {
-        defaultJava: Java
-        missingJava: boolean
-    }
-    interface Mutations {
-        addJava(type: State, java: Java | Java[]): void
-        removeJava(type: State, java: Java): void
-        defaultJava(type: State, java: Java): void
-    }
-    type C = Context<State, Getters>
-    interface Actions {
-        installJava(context: C, fix?: boolean): Promise<TaskHandle>
-        refreshLocalJava(context: C): Promise<void>
-        redirectToJvmPage(context: C): Promise<void>
-        resolveJava(context: C, java: string): Promise<Java | undefined>
-    }
 }
 
-export type JavaModule = Module<"java", JavaModule.State, JavaModule.Getters, JavaModule.Mutations, JavaModule.Actions>;
+interface Getters {
+    defaultJava: Java
+    missingJava: boolean
+}
+interface Mutations {
+    addJava: (Java | Java[]);
+    removeJava: (Java);
+    defaultJava: (Java);
+}
+
+interface Actions extends SaveLoadAction, InitAction {
+    refreshLocalJava: () => void;
+    redirectToJvmPage: () => void;
+    installJava: (fix?: boolean) => TaskHandle;
+    resolveJava: (java: string) => Java | undefined;
+}
+
+export type JavaModule = ModuleOption<State, Getters, Mutations, Actions>;
 
 const mod: JavaModule = {
     state: {
@@ -86,5 +82,7 @@ const mod: JavaModule = {
         },
     },
 };
+
+export { Java };
 
 export default mod;

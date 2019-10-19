@@ -209,13 +209,14 @@ export default {
       data.logining = true;
       accountInput.value.blur();
       await context.root.$nextTick(); // wait a tick to make sure this.account updated.
+
       try {
-        await loginAccount({
-          account: data.account,
-          password: data.password,
-          authService: data.selectedAuthService,
-          profileService: data.selectedAuthService,
-        });
+        await loginAccount(
+          data.account,
+          data.password,
+          data.selectedAuthService,
+          data.selectedAuthService,
+        );
         closeDialog();
       } catch (e) {
         if (e.type === 'ForbiddenOperationException'

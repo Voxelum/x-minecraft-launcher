@@ -4,8 +4,7 @@ import getTray from './trayManager';
 import setupDownload from './downloadManager';
 
 import { CustomEvents } from './ipc';
-import { Repo, RootState } from '../universal/store';
-import { Store } from 'vuex';
+import { Store, RootState } from '../universal/store';
 
 export interface ClientInstance extends Hook {
     /**
@@ -25,7 +24,7 @@ export interface ClientContext {
     configDock(func: (dock: Dock) => void): this;
 }
 
-export type ClientBootstrap = (context: ClientContext, store: Repo) => Hook;
+export type ClientBootstrap = (context: ClientContext, store: Store) => Hook;
 
 const headless = process.env.HEADLESS || false;
 
@@ -85,7 +84,7 @@ function createWindow(name: string, option: BrowserViewConstructorOptions) {
     return ref;
 }
 
-function setupClient(client: ClientBootstrap, store: Store<RootState>) {
+function setupClient(client: ClientBootstrap, store: Store) {
     parking = true;
     const tray = getTray();
 
@@ -140,14 +139,14 @@ function setupClient(client: ClientBootstrap, store: Store<RootState>) {
     parking = false;
 }
 
-async function setup(store: Store<RootState>) {
+async function setup(store: Store) {
     if (!headless) {
         setupClient(await import('./material').then(c => c.default), store);
     }
 
-    ipcMain.on('online-status-changed', (_: any, s: any) => {
-        store.commit('online', s[0]);
-    });
+    // ipcMain.on('online-status-changed', (_: any, s: any) => {
+    //     store.commit('online', s[0]);
+    // });
 
     // guard = new BrowserWindow({
     //     focusable: false,
