@@ -234,7 +234,7 @@ export default createComponent({
     });
     return {
       ...toRefs(data),
-      locales: locales.map(l => ({ text: localeIndex[l], value: l })),
+      locales: locales.value.map(l => ({ text: localeIndex[l], value: l })),
       selectedLocale,
       allowPrerelease,
       autoInstallOnAppQuit,

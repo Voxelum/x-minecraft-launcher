@@ -1,6 +1,7 @@
 import { useStore } from "./useStore";
 import { Ref, onMounted, watch, computed, onUnmounted } from "@vue/composition-api";
 import { useProfileVersion } from "./useProfile";
+import { remote } from "electron";
 
 export function useVersions() {
     const { dispatch } = useStore();
@@ -23,10 +24,19 @@ export function useLocalVersions() {
     const selected = computed(() => localVersions.value.find(v => v.minecraft == minecraft.value
         && v.forge === forge.value && v.liteloader === liteloader.value));
 
+    function showVersionDirectory(version: string) {
+        remote.shell.openItem(`${state.root}/versions/${version}`);
+    }
+    function showVersionsDirectory() {
+        remote.shell.openItem(`${state.root}/versions`);
+    }
+
     return {
         ...useVersions(),
         localVersions,
         selected,
+        showVersionDirectory,
+        showVersionsDirectory,
     };
 }
 

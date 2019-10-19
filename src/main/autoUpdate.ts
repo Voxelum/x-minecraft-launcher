@@ -1,5 +1,5 @@
 import { autoUpdater } from 'electron-updater';
-import { ipcMain } from './ipc';
+import { ipcMain } from 'electron';
 
 if (process.env.NODE_ENV === 'development') {
     autoUpdater.setFeedURL({

@@ -1,6 +1,5 @@
 import { Task } from '@xmcl/minecraft-launcher-core';
 import { exec } from 'child_process';
-import { app, shell } from 'electron';
 import { fs, installJreFromMojang, platform, installJreFromSelfHost, gfw } from 'main/utils';
 import { EOL } from 'os';
 import { join } from 'path';
@@ -72,9 +71,6 @@ const mod: JavaModule = {
             });
             return context.dispatch('executeTask', task);
         },
-        async redirectToJvmPage() {
-            shell.openExternal('https://www.java.com/download/');
-        },
         /**
          * Test if this javapath exist and works
          */
@@ -118,12 +114,12 @@ const mod: JavaModule = {
         /**
          * scan local java locations and cache
          */
-        async refreshLocalJava({ state, dispatch, commit }) {
+        async refreshLocalJava({ state, dispatch, commit, rootState }) {
             commit('aquireProfile');
             try {
                 const unchecked = new Set<string>();
 
-                unchecked.add(join(app.getPath('userData'), 'jre', 'bin', JAVA_FILE));
+                unchecked.add(join(rootState.root, 'jre', 'bin', JAVA_FILE));
                 if (process.env.JAVA_HOME) unchecked.add(join(process.env.JAVA_HOME, 'bin', JAVA_FILE));
 
                 const which = () => new Promise<string>((resolve, reject) => {

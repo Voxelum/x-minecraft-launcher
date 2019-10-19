@@ -1,8 +1,6 @@
 import { ForgeInstaller, ForgeWebPage, Installer, LiteLoader, Util, Version, Net, ResolvedLibrary, JavaExecutor } from '@xmcl/minecraft-launcher-core';
 import { createHash } from 'crypto';
-import { shell } from 'electron';
 import { fs, getExpectVersion, requireString, gfw } from 'main/utils';
-import { join } from 'path';
 import base, { VersionModule } from 'universal/store/modules/version';
 
 const mod: VersionModule = {
@@ -381,13 +379,6 @@ const mod: VersionModule = {
                 }
             }
             context.commit('localVersions', versions);
-        },
-        async showVersionDirectory(context, version) {
-            requireString(version);
-            shell.openItem(context.rootGetters.path('versions', version));
-        },
-        async showVersionsDirectory(context) {
-            shell.openItem(context.rootGetters.path('versions'));
         },
         async deleteVersion(context, version) {
             if (await fs.exists(context.rootGetters.path('versions', version))) {

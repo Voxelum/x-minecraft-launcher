@@ -1,12 +1,10 @@
 import { Forge, LiteLoader, ResourcePack, Task } from '@xmcl/minecraft-launcher-core';
+import Unzip from '@xmcl/unzip';
 import { createHash, Hash } from 'crypto';
-import { net } from 'electron';
 import fileType from 'file-type';
 import { fs, requireString } from 'main/utils';
-import { extname, basename, join, resolve } from 'path';
-import base, { ResourceModule, Resource, Source } from 'universal/store/modules/resource';
-import url from 'url';
-import Unzip from '@xmcl/unzip';
+import { basename, extname, join, resolve } from 'path';
+import base, { Resource, ResourceModule, Source } from 'universal/store/modules/resource';
 
 async function hashFolder(folder: string, hasher: Hash) {
     const files = await fs.readdir(folder);
@@ -315,40 +313,17 @@ const mod: ResourceModule = {
 
                 ctx.update(0, 4, path);
 
-                const theURL = url.parse(path);
-                if (theURL.protocol === 'https:' || theURL.protocol === 'http:') {
-                    data = await new Promise((resolve, reject) => {
-                        const req = net.request({ url: path, redirect: 'manual' });
-                        const bufs: Buffer[] = [];
-                        req.on('response', (resp) => {
-                            resp.on('error', reject);
-                            resp.on('data', (chunk) => { bufs.push(chunk); });
-                            resp.on('end', () => { resolve(Buffer.concat(bufs)); });
-                        });
-                        req.on('redirect', (code, method, redirectUrl, header) => {
-                            name = basename(redirectUrl, '.zip');
-                            ext = extname(redirectUrl);
-                            req.followRedirect();
-                        });
+                name = basename(basename(path, '.zip'), '.jar');
+                const status = await fs.stat(path);
 
-                        req.on('error', reject);
-                        req.end();
-                    });
-
-                    hash = createHash('sha1').update(data).digest('hex');
+                if (status.isDirectory()) {
+                    isDir = true;
+                    ext = '';
+                    hash = (await hashFolder(path, createHash('sha1'))).digest('hex');
                 } else {
-                    name = basename(basename(path, '.zip'), '.jar');
-                    const status = await fs.stat(path);
-
-                    if (status.isDirectory()) {
-                        isDir = true;
-                        ext = '';
-                        hash = (await hashFolder(path, createHash('sha1'))).digest('hex');
-                    } else {
-                        data = await fs.readFile(path);
-                        ext = extname(path);
-                        hash = createHash('sha1').update(data).digest('hex');
-                    }
+                    data = await fs.readFile(path);
+                    ext = extname(path);
+                    hash = createHash('sha1').update(data).digest('hex');
                 }
 
                 const source = {

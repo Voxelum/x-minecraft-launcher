@@ -1,17 +1,10 @@
-import { net } from 'electron';
+import { fetchJson } from '@xmcl/net';
 
 export default {
     actions: {
-        fetchMojangNews() {
-            return new Promise((resolve, reject) => {
-                const req = net.request('https://launchermeta.mojang.com/mc/news.json');
-                req.on('response', (response) => {
-                    let str = '';
-                    response.on('data', (buf) => { str += buf.toString(); });
-                    response.on('end', () => { resolve(JSON.parse(str)); });
-                });
-                req.end();
-            });
+        async fetchMojangNews() {
+            const { body } = await fetchJson('https://launchermeta.mojang.com/mc/news.json');
+            return body;
         },
     },
 };

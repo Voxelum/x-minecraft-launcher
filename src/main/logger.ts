@@ -1,8 +1,7 @@
-import { app } from 'electron';
+import { app, ipcMain } from 'electron';
 import util from 'util';
 import fs from 'fs';
 import path from 'path';
-import { ipcMain } from './ipc';
 
 let firstRun = true;
 

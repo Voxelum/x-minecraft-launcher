@@ -1,10 +1,6 @@
-import { app, BrowserWindow, ipcMain, shell, BrowserWindowConstructorOptions, BrowserViewConstructorOptions, Tray, Dock } from 'electron';
-import ipc from './ipc';
+import { app, BrowserViewConstructorOptions, BrowserWindow, BrowserWindowConstructorOptions, Dock, ipcMain, IpcMain, shell, Tray } from 'electron';
+import { Store } from 'universal/store';
 import getTray from './trayManager';
-import setupDownload from './downloadManager';
-
-import { CustomEvents } from './ipc';
-import { Store, RootState } from '../universal/store';
 
 export interface ClientInstance extends Hook {
     /**
@@ -19,7 +15,7 @@ export interface Hook {
 }
 export interface ClientContext {
     createWindow(url: string, option: BrowserWindowConstructorOptions): BrowserWindow;
-    ipcMain: CustomEvents;
+    ipcMain: Pick<IpcMain, 'on'>;
     configTray(func: (tray: Tray) => void): this;
     configDock(func: (dock: Dock) => void): this;
 }
@@ -168,7 +164,7 @@ app.on('will-quit', () => {
     console.log('Quit');
 });
 
-ipc
+ipcMain
     .on('exit', () => { app.quit(); })
     .on('minecraft-start', () => { parking = true; })
     .on('minecraft-exit', () => { parking = false; })

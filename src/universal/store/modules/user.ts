@@ -84,7 +84,6 @@ interface Actions extends SaveLoadAction, InitAction {
     uploadSkin: (payload: { data: string | Buffer, slim: boolean }) => void;
     saveSkin: (payload: { skin: { data: string }, path: string }) => void;
     parseSkin: (path: string) => string;
-
 }
 
 export type UserModule = ModuleOption<State, Getters, Mutations, Actions>;

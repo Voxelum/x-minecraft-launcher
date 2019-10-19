@@ -179,7 +179,7 @@ export default {
             refresh();
             break;
           case 1:
-            await dispatch('redirectToJvmPage');
+            await remote.shell.openExternal('https://www.java.com/download/');
             break;
           case 2:
             data.status = 'resolving';

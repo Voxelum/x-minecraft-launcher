@@ -3,7 +3,7 @@ import { useStore } from "./useStore";
 
 export function useSettings() {
     const { state, commit, dispatch } = useStore();
-    const locales = computed(() => state.setting.locales);
+    const locales = computed(() => state.setting.locales || []);
     const selectedLocale = computed({
         get: () => locales.value.find(l => l === state.setting.locale) || 'en',
         set: v => commit('locale', v),

@@ -20,7 +20,6 @@ interface Mutations {
 
 interface Actions extends SaveLoadAction, InitAction {
     refreshLocalJava: () => void;
-    redirectToJvmPage: () => void;
     installJava: (fix?: boolean) => TaskHandle;
     resolveJava: (java: string) => Java | undefined;
 }

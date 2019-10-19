@@ -1,5 +1,4 @@
 import { Task } from '@xmcl/minecraft-launcher-core';
-import { app } from 'electron';
 import { autoUpdater, UpdaterSignal } from 'electron-updater';
 import { gfw } from 'main/utils';
 import locales from 'static/locales';
@@ -11,7 +10,7 @@ const mod: SettingModule = {
         async load(context) {
             const data = await context.dispatch('getPersistence', { path: 'setting.json', schema: 'SettingConfig' }) || {};
             context.commit('config', {
-                locale: data.locale || app.getLocale(),
+                locale: data.locale,
                 locales: Object.keys(locales),
                 autoInstallOnAppQuit: data.autoInstallOnAppQuit,
                 autoDownload: data.autoDownload,

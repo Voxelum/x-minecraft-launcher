@@ -75,7 +75,7 @@ export default createComponent({
       deletingVersion: false,
       deletingVersionId: '',
     });
-    const { localVersions, deleteVersion } = useLocalVersions();
+    const { localVersions, deleteVersion, showVersionsDirectory, showVersionDirectory } = useLocalVersions();
     const { version, edit } = useProfile();
     const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1));
 
@@ -87,10 +87,10 @@ export default createComponent({
       context.emit('input', v);
     }
     function browseVersoinsFolder() {
-      // this.$repo.dispatch('showVersionsDirectory');
+      showVersionsDirectory();
     }
-    function openVersionDir(event, v) {
-      // this.$repo.dispatch('showVersionDirectory', v.folder);
+    function openVersionDir(v) {
+      showVersionDirectory(v.folder);
     }
     function startDelete(event, v) {
       data.deletingVersion = true;

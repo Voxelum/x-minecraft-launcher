@@ -1,6 +1,5 @@
 import { Task } from '@xmcl/minecraft-launcher-core';
 import Ajv from 'ajv';
-import { app } from 'electron';
 import { fs } from 'main/utils';
 import { join } from 'path';
 import { createContext, runInContext } from 'vm';
@@ -64,11 +63,11 @@ const mod: IOModule = {
             win.webContents.downloadURL(payload.url);
             return new Promise((resolve, reject) => {
                 win.webContents.session.once('will-download', (event, item, contents) => {
-                    const savePath = join(app.getPath('userData'), 'temps', item.getFilename());
+                    const savePath = join(context.rootState.root, 'temps', item.getFilename());
                     if (!item.getSavePath()) item.setSavePath(savePath);
-                    const downloadTask = Task.create('download', context => new Promise((resolve, reject) => {
+                    const downloadTask = Task.create('download', ctx => new Promise((resolve, reject) => {
                         item.on('updated', (e) => {
-                            context.update(item.getReceivedBytes(), item.getTotalBytes(), item.getURL());
+                            ctx.update(item.getReceivedBytes(), item.getTotalBytes(), item.getURL());
                         });
                         item.on('done', ($event, state) => {
                             switch (state) {

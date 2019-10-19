@@ -118,9 +118,6 @@ interface Actions extends SaveLoadAction, InitAction {
     installForge: (version: ForgeInstaller.VersionMeta) => TaskHandle;
     installLiteloader: (version: LiteLoader.VersionMeta) => TaskHandle;
 
-    showVersionDirectory: (version: string) => void;
-    showVersionsDirectory: () => void;
-
     deleteVersion: (version: string) => void;
 }
 
