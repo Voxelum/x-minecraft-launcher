@@ -39,11 +39,6 @@ async function parseCurseforgeModpack(buf: Buffer) {
     throw new Error();
 }
 
-/**
- * 
- * @param {string} type 
- * @param {any} meta 
- */
 function getRegularName(type: string, meta: any) {
     let fmeta;
     switch (type) {

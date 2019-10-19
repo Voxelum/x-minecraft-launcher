@@ -1,17 +1,80 @@
 /* eslint-disable guard-for-in */
+import Task from '@xmcl/task';
 import { app, ipcMain, shell } from 'electron';
-import { join } from 'path';
 import { platform } from 'os';
+import { join } from 'path';
+import { BaseState } from 'universal/store';
+import { v4 } from 'uuid';
 import Vue from 'vue';
-import Vuex, { Store, StoreOptions } from 'vuex';
+import Vuex, { ActionContext, Module as VModule, Store, StoreOptions, DispatchOptions } from 'vuex';
 import modules from './modules';
 import plugins from './plugins';
-import { BaseState } from 'universal/store';
+import { child, update, add, status } from '../taskManager';
+import { TaskState } from 'universal/store/modules/task';
 
 Vue.use(Vuex);
 
 let isLoading = false;
 let store: Store<BaseState> | null = null;
+
+function wrapStoreActionAsTask(store: VModule<any, any>) {
+    if (!store.actions) return;
+    const newActions: Required<VModule<any, any>>['actions'] = {};
+    for (const [name, func] of Object.entries(store.actions)) {
+        newActions[name] = async function (context, payload) {
+            let parent: TaskState | undefined;
+            let realPayload;
+            if (payload && payload.__parent__) {
+                parent = payload.parent;
+                realPayload = payload.payload;
+            } else {
+                parent = undefined;
+                realPayload = payload;
+            }
+
+            const node: TaskState = {
+                _internalId: v4(),
+                time: new Date().toString(),
+                name,
+                total: -1,
+                progress: -1,
+                path: parent ? `${parent.path}.${name}` : name,
+                children: [],
+                error: null,
+                message: '',
+                status: 'running',
+            };
+
+            if (parent) {
+                child(node._internalId, node);
+            } else {
+                add(node._internalId, node);
+            }
+
+            const wrappedContext: ActionContext<any, any> & { update: Task.Context['update'] } = {
+                ...context,
+                update: function (progress, total, message) {
+                    update(node._internalId, { progress, total, message });
+                },
+                dispatch: async function (type: string, payload?: any, option?: DispatchOptions & { foreground?: boolean }) {
+                    const newPayload = { payload };
+                    Object.defineProperties(newPayload, { __parent__: { value: node } });
+                    return context.dispatch(type, newPayload);
+                },
+            };
+
+            try {
+                const reuslt = await (func as any)(wrappedContext, realPayload);
+                status(node._internalId, 'successed');
+                return reuslt;
+            } catch (e) {
+                status(node._internalId, 'failed');
+                throw e;
+            }
+        }
+    }
+    store.actions = newActions;
+}
 
 /**
  * Load the store from disk
@@ -26,6 +89,7 @@ async function load() {
         if (typeof template.state === 'object') {
             copy.state = JSON.parse(JSON.stringify(template.state));
         }
+        // wrapStoreActionAsTask(copy)
         if (copy.modules) {
             for (const key of Object.keys(copy.modules)) {
                 copy.modules[key] = deepCopyStoreTemplate(copy.modules[key]);
@@ -69,6 +133,8 @@ async function load() {
 
     const newStore = new Vuex.Store(template);
 
+    setupStore(newStore, root);
+
     isLoading = true;
 
     let startingTime = Date.now();
@@ -95,9 +161,6 @@ async function load() {
     }
     console.log(`Successfully init modules. Total Time is ${Date.now() - startingTime}ms.`);
 
-    newStore.commit('root', root);
-    newStore.commit('platform', platform());
-
     console.log('Done loading store!');
 
     // Force sync the root
@@ -106,6 +169,12 @@ async function load() {
 }
 
 ipcMain.on('reload', load);
+
+function setupStore(store: Store<BaseState>, root: string) {
+    store.commit('root', root);
+    store.commit('platform', platform());
+    store.commit('locale', app.getLocale());
+}
 
 export function commit(type: string, payload: any, option: any) {
     if (store === undefined) {
