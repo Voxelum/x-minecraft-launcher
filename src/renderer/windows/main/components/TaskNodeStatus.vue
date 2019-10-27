@@ -44,8 +44,10 @@ const component = createComponent({
           return props.hasChild ? 'done_all' : 'check';
         case 'cancelled':
           return 'stop';
-        default:
+        case 'failed':
           return 'error_outline';
+        default:
+          return 'device_unknown';
       }
     });
     const percentage = computed(() => props.progress / props.total * 100);
