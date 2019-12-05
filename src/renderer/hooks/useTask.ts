@@ -1,18 +1,19 @@
 import { useStore } from "./useStore";
 import { computed } from "@vue/composition-api";
 
-export function useTask(taskHandle: TaskHandle) {
-    const { state, dispatch } = useStore();
-    const taskState = state.task.tree[taskHandle];
+export function useTask(taskHandle: string | Promise<any>) {
+    const { state, services } = useStore();
+    const handle = typeof taskHandle === 'string' ? taskHandle : (taskHandle as any).__tasks__[0];
+    const taskState = state.task.tree[handle];
     const status = computed(() => taskState.status);
     const progress = computed(() => taskState.progress);
     const total = computed(() => taskState.total);
     const message = computed(() => taskState.message);
     function wait() {
-        return dispatch('waitTask', taskHandle);
+        // return dispatch('waitTask', taskHandle);
     }
     return {
-        id: taskState._internalId,
+        // id: taskState._internalId,
         name: taskState.name,
         time: taskState.time,
         progress,

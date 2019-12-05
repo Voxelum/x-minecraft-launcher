@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  pull_request:
+    type: [closed]
+    branches:
+      - master
+    
+jobs:
+  publish:
+    if: github.event.pull_request.merged && github.head_ref == 'prepare-release'
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        ref: ${{ github.sha	}}
+    - name: Use Node.js 12
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    - name: Install
+      run: |
+        npm ci
+      env:
+        CI: true 
+    - name: Build
+      run: |
+        npm run build
+        npm run release
+    

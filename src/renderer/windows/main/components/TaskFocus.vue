@@ -1,8 +1,7 @@
 <template>
   <v-container grid-list-xs fill-height>
     <v-layout row wrap justify-center align-center fill-height>
-      {{ value }}
-      <v-flex v-for="t in activeTasks" :key="t._internalId">
+      <v-flex v-for="t in tasks" :key="t.id">
         {{ $t(t.name) }}
         <v-progress-circular :indeterminate="t.progress === -1" :value="t.progress / t.total" />
       </v-flex>
@@ -10,25 +9,24 @@
   </v-container>
 </template>
 
-<script>
-export default {
+<script lang=ts>
+import { createComponent, computed } from '@vue/composition-api';
+import { useStore } from '@/hooks';
+
+export default createComponent({
   props: {
     value: {
-      type: String,
+      type: Promise,
       required: true,
     },
   },
-  computed: {
-    task() {
-      if (this.value === '') return undefined;
-      return this.$repo.state.task.tree[this.value];
-    },
-    activeTasks() {
-      if (!this.task) return [];
-      return this.task.tasks.filter(t => t.status === 'running');
-    },
+  setup(props) {
+    const promise: any = props.value;
+    const { state } = useStore();
+    const tasks = computed(() => state.task.tasks.filter(t => promise.__tasks__.indexOf(t.id) !== -1));
+    return { tasks };
   },
-};
+});
 </script>
 
 <style>

@@ -75,8 +75,8 @@
         </v-container>
       </v-flex>
     </v-layout>
-    <dialog-copy-save-from v-model="copyFrom" @import="importSave" />
-    <v-dialog v-model="copyingItem" width="500">
+    <dialog-copy-save-from v-model="copyFrom"/>
+    <v-dialog :value="copying !== ''" width="500">
       <v-card>
         <v-card-title
           class="headline"
@@ -88,7 +88,7 @@
           {{ $t('save.copy.description') }}
         </v-card-text>
 
-        <v-card-text v-if="copyingItem">
+        <v-card-text>
           <v-checkbox v-for="(p, index) of profiles" :key="index"
                       v-model="copyingDest[index]"
                       hide-details
@@ -116,7 +116,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="deletingItem" width="500">
+    <v-dialog :value="deleting !== ''" width="500">
       <v-card>
         <v-card-title
           class="headline"
@@ -152,110 +152,91 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
+import { createComponent, reactive, toRefs } from '@vue/composition-api';
 import unknown from 'renderer/assets/unknown_pack.png';
+import { useInstanceSaves, useNativeDialog, useI18n, useInstances } from '@/hooks';
 
-export default {
-  data() {
-    return {
+export default createComponent({
+  setup() {
+    const { saves, deleteSave, importSave, exportSave, copySave } = useInstanceSaves();
+    const { instances } = useInstances();
+    const { showSaveDialog, showOpenDialog } = useNativeDialog();
+    const { t } = useI18n();
+    const data = reactive({
       copyFrom: false,
 
-      copyingItem: false,
       copying: '',
-      copyingDest: [],
+      copyingDest: [] as string[],
 
-      deletingItem: false,
       deleting: '',
-
+    });
+    return {
+      saves,
+      ...toRefs(data),
       unknown,
-    };
-  },
-  computed: {
-    saves() { return this.$repo.state.profile.saves; },
-    profiles() {
-      return this.$repo.getters.profiles.filter(p => p.id !== this.$repo.state.profile.id);
-    },
-  },
-  mounted() {
-  },
-  methods: {
-    onDrop(event) {
-      const length = event.dataTransfer.files.length;
-      if (length > 0) {
-        for (let i = 0; i < length; ++i) {
-          const file = event.dataTransfer.files[i];
-          this.$repo.dispatch('importSave', file);
-        }
-      }
-    },
-    async load() {
-      await this.$repo.dispatch('loadProfileSaves');
-    },
-    doCopyFrom() {
-      this.copyFrom = true;
-    },
-    doImport() {
-      this.$electron.remote.dialog.showOpenDialog({
-        title: this.$t('save.importTitle'),
-        message: this.$t('save.importMessage'),
-        filters: [{ extensions: ['zip'], name: 'zip' }],
-      }, (filename, bookmark) => {
-        if (filename) {
-          for (const file of filename) {
-            this.$repo.dispatch('executeAction', { action: 'importSave', payload: file });
+      onDrop(event: DragEvent) {
+        const length = event.dataTransfer!.files.length;
+        if (length > 0) {
+          for (let i = 0; i < length; ++i) {
+            const file = event.dataTransfer!.files[i];
+            importSave(file.path);
           }
         }
-      });
-    },
-    importSave({ curseforge }) {
+      },
 
-    },
-    startCopy(path) {
-      this.copyingItem = true;
-      this.copying = path;
-      this.copyingDest = new Array(this.profiles.length);
-    },
-    doCopy() {
-      const dests = this.profiles.filter((p, index) => this.copyingDest[index]).map(p => p.id);
-      this.$repo.dispatch('copySave', { src: this.copying, dest: dests });
-    },
-    cancelCopy() {
-      this.copyingItem = false;
-      this.copying = '';
-    },
-    doDelete() {
-      this.$repo.dispatch('executeAction', { action: 'deleteSave', payload: this.deleting });
-      this.deletingItem = false;
-      this.deleting = '';
-    },
-    cancelDelete() {
-      this.deletingItem = false;
-      this.deleting = '';
-    },
-    startDelete(p) {
-      this.deletingItem = true;
-      this.deleting = p;
-    },
-    showDetail() {
+      startDelete(p: string) {
+        data.deleting = p;
+      },
+      doDelete() {
+        deleteSave(data.deleting);
+        data.deleting = '';
+      },
+      cancelDelete() { data.deleting = ''; },
 
-    },
-    doExport(path) {
-      this.$electron.remote.dialog.showSaveDialog({
-        title: this.$t('save.exportTitle'),
-        message: this.$t('save.exportMessage'),
-        filters: [{ extensions: ['zip'], name: 'zip' }],
-      }, (filename, bookmark) => {
-        if (filename) {
-          this.$repo.dispatch('exportSave', {
-            destination: filename,
-            zip: true,
-            path,
-          }).then();
+      startCopy(path: string) {
+        data.copying = path;
+        data.copyingDest = new Array(instances.length);
+      },
+      doCopy() {
+        const dests = instances
+          .filter((p, index) => data.copyingDest[index])
+          .map(p => p.id);
+        copySave({ src: data.copying, dest: dests });
+      },
+      cancelCopy() {
+        data.copying = '';
+      },
+
+      async doImport() {
+        const { filePaths } = await showOpenDialog({
+          title: t('save.importTitle'),
+          message: t('save.importMessage'),
+          filters: [{ extensions: ['zip'], name: 'zip' }],
+        });
+        if (filePaths) {
+          for (const file of filePaths) {
+            importSave(file);
+          }
         }
-      });
-    },
+      },
+      async doExport(path: string) {
+        const { filePath } = await showSaveDialog({
+          title: t('save.exportTitle'),
+          message: t('save.exportMessage'),
+          filters: [{ extensions: ['zip'], name: 'zip' }],
+        });
+        if (filePath) {
+          exportSave({ destination: filePath, zip: true, path });
+        }
+      },
+
+      doCopyFrom() {
+        data.copyFrom = true;
+      },
+    };
   },
-};
+});
 </script>
 
 <style>

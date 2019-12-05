@@ -35,20 +35,17 @@
   </v-card>
 </template>
 
-<script>
-import { useServerStatus, useStore } from '@/hooks';
-import { ref, onMounted } from '@vue/composition-api';
+<script lang=ts>
+import { useServerStatus } from '@/hooks';
+import { ref, onMounted, createComponent } from '@vue/composition-api';
 
-export default {
+export default createComponent({
   setup() {
     const status = useServerStatus();
     const loading = ref(false);
-    const { dispatch } = useStore();
     function refreshServer() {
       loading.value = true;
-      dispatch('refreshProfile').finally(() => {
-        loading.value = false;
-      });
+      status.refresh().finally(() => loading.value = false);
     }
     onMounted(() => {
       if (status.ping.value === -1) {
@@ -61,7 +58,7 @@ export default {
       refreshServer,
     };
   },
-};
+});
 </script>
 
 <style>

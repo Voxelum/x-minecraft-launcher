@@ -1,4 +1,5 @@
-import { Auth, GameProfile, ProfileService } from '@xmcl/minecraft-launcher-core';
+import { Auth, ProfileService } from '@xmcl/minecraft-launcher-core';
+import { GameProfile } from '@xmcl/profile-service';
 
 export interface GameProfileAndTexture extends GameProfile {
     textures: {

@@ -11,11 +11,8 @@ interface Mutations {
     launchStatus: Status;
     launchErrors: { type: string; content: any[] };
 }
-interface Actions {
-    launch: (profileId?: string) => boolean;
-}
 
-export type LauncherModule = ModuleOption<State, {}, Mutations, Actions>;
+export type LauncherModule = ModuleOption<State, {}, Mutations, {}>;
 
 const mod: LauncherModule = {
     state: {

@@ -32,11 +32,11 @@
 </template>
 
 <script>
+import { computed } from '@vue/composition-api';
 import resourcepack from '@/assets/curseforge_resourcepack.png';
 import mods from '@/assets/curseforge_mods.png';
 import modpack from '@/assets/curseforge_modpack.png';
 import worlds from '@/assets/curseforge_worlds.png';
-import { computed } from '@vue/composition-api';
 import { useNetworkStatus } from '@/hooks';
 
 export default {

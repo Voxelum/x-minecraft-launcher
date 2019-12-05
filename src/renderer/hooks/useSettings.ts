@@ -2,7 +2,7 @@ import { computed, watch } from "@vue/composition-api";
 import { useStore } from "./useStore";
 
 export function useSettings() {
-    const { state, commit, dispatch } = useStore();
+    const { state, commit, services } = useStore();
     const locales = computed(() => state.setting.locales || []);
     const selectedLocale = computed({
         get: () => locales.value.find(l => l === state.setting.locale) || 'en',
@@ -29,12 +29,9 @@ export function useSettings() {
     const downloadingUpdate = computed(() => state.setting.downloadingUpdate);
     const updateInfo = computed(() => state.setting.updateInfo || {});
 
-    function checkUpdate() {
-        dispatch('checkUpdate')
-    }
 
     return {
-        checkUpdate,
+        checkUpdate: services.SettingService.checkUpdate,
         locales,
         selectedLocale,
         allowPrerelease,
@@ -45,5 +42,22 @@ export function useSettings() {
         checkingUpdate,
         downloadingUpdate,
         updateInfo,
+    }
+}
+
+export function useUpdateInfo() {
+    const { state, commit, services } = useStore();
+    const checkingUpdate = computed(() => { return state.setting.checkingUpdate; });
+    const downloadingUpdate = computed(() => { return state.setting.downloadingUpdate; });
+    const updateInfo = computed(() => { return state.setting.updateInfo; });
+    const readyToUpdate = computed(() => { return state.setting.readyToUpdate; });
+    return {
+        checkingUpdate,
+        downloadingUpdate,
+        updateInfo,
+        readyToUpdate,
+        downloadUpdate: services.SettingService.downloadUpdate,
+        quitAndInstall: services.SettingService.quitAndInstall,
+        checkUpdate: services.SettingService.checkUpdate,
     }
 }

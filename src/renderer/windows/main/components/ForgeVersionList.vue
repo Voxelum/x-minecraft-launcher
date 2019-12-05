@@ -58,7 +58,7 @@
 
 <script>
 import { createComponent, reactive, ref, computed } from '@vue/composition-api';
-import { useForgeVersions } from '../../../hooks';
+import { useForgeVersions } from '@/hooks';
 
 export default createComponent({
   props: {

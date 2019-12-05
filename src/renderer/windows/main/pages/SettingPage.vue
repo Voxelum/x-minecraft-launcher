@@ -192,29 +192,18 @@
   </v-container>
 </template>
 
-<script>
-import { createComponent, reactive, ref, toRefs, computed, watch } from '@vue/composition-api';
-import localeIndex from 'static/locales/index.json';
-import { remote, ipcRenderer } from 'electron';
-import { useStore, useI18n, useParticle, useSettings } from '@/hooks';
+<script lang=ts>
+import { createComponent, reactive, ref, toRefs, computed, watch, Ref } from '@vue/composition-api';
+import { useStore, useI18n, useParticle, useSettings, useIpc, useNativeDialog, useShell } from '@/hooks';
 
 export default createComponent({
   setup() {
+    const ipcRenderer = useIpc();
+    const shell = useShell();
+    const dialog = useNativeDialog();
     const { showParticle, particleMode } = useParticle();
-    const { dispatch, state, commit } = useStore();
-    const {
-      locales,
-      selectedLocale,
-      allowPrerelease,
-      autoInstallOnAppQuit,
-      autoDownload,
-      useBmclAPI,
-      downloadingUpdate,
-      checkingUpdate,
-      updateInfo,
-      readyToUpdate,
-      checkUpdate,
-    } = useSettings();
+    const { state, commit } = useStore();
+    const settings = useSettings();
     const { l, t: tr } = useI18n();
     const data = reactive({
       rootLocation: state.root,
@@ -224,58 +213,50 @@ export default createComponent({
 
       reloadDialog: false,
       reloading: false,
-      reloadError: undefined,
+      reloadError: undefined as undefined | Error,
 
       viewingUpdateDetail: false,
-      particleModes: ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: tr(`setting.particleMode.${t}`) })),
     });
-    watch(selectedLocale, () => {
-      data.particleModes = ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: tr(`setting.particleMode.${t}`) }));
+
+    const particleModes: Ref<{ value: string; text: string }[]> =
+      ref(['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: tr(`setting.particleMode.${t}`) })));
+    watch(settings.selectedLocale, () => {
+      particleModes.value = ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: tr(`setting.particleMode.${t}`) }));
     });
     return {
       ...toRefs(data),
-      locales: locales.value.map(l => ({ text: localeIndex[l], value: l })),
-      selectedLocale,
-      allowPrerelease,
-      autoInstallOnAppQuit,
-      autoDownload,
-      useBmclAPI,
-      downloadingUpdate,
-      checkingUpdate,
-      updateInfo,
-      readyToUpdate,
+      ...settings,
+      locales: settings.locales.value.map(l => ({ text: l, value: l })),
       showParticle,
       particleMode,
-      checkUpdate,
-      localeIndex,
+      particleModes,
       viewUpdateDetail() {
         data.viewingUpdateDetail = true;
       },
       showRootDir() {
-        remote.shell.openItem(data.rootLocation);
+        shell.openItem(data.rootLocation);
       },
-      browseRootDir() {
-        remote.dialog.showOpenDialog({
+      async browseRootDir() {
+        const { filePaths } = await dialog.showOpenDialog({
           title: l`setting.selectRootDirectory`,
           defaultPath: data.rootLocation,
           properties: ['openDirectory', 'createDirectory'],
-        }, (paths, bookmarks) => {
-          if (paths && paths.length !== 0) {
-            data.rootLocation = paths[0];
-            data.reloadDialog = true;
-          }
         });
+        if (filePaths && filePaths.length !== 0) {
+          data.rootLocation = filePaths[0];
+          data.reloadDialog = true;
+        }
       },
       doCancelApplyRoot() {
         data.reloadDialog = false;
         data.rootLocation = state.root;
       },
-      doApplyRoot(defer) {
+      doApplyRoot(defer: string) {
         data.reloading = true;
         ipcRenderer.once('root', (error) => {
           data.reloading = false;
           if (error) {
-            data.reloadError = error;
+            // data.reloadError = error;
           } else {
             data.reloadDialog = false;
           }
@@ -284,10 +265,5 @@ export default createComponent({
       },
     };
   },
-  methods: {
-  },
 });
 </script>
-
-<style>
-</style>

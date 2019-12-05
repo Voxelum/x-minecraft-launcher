@@ -93,9 +93,10 @@
   </v-container>
 </template>
 
-<script>
+<script lang=ts>
 import unknownPack from 'renderer/assets/unknown_pack.png';
 import { createComponent, reactive, inject, ref, toRefs, computed, onMounted } from '@vue/composition-api';
+import { ResourcePackResource } from 'universal/store/modules/resource';
 import { useSelectionList, useProfileResourcePacks, useResource } from '@/hooks';
 
 export default createComponent({
@@ -103,7 +104,11 @@ export default createComponent({
     const filterText = inject('filter-text', ref(''));
     const { resourcePacks: packNames } = useProfileResourcePacks();
     const { resources, importResource, queryResource, removeResource } = useResource('resourcepacks');
-    const data = reactive({
+    const data: {
+      dragging: boolean;
+      isDeletingPack: boolean;
+      deletingPack: ResourcePackResource | null;
+    } = reactive({
       dragging: false,
       isDeletingPack: false,
       deletingPack: null,
@@ -112,14 +117,14 @@ export default createComponent({
       const packs = resources.value;
       const packnames = packNames.value;
 
-      const selectedNames = {};
+      const selectedNames: { [key: string]: boolean } = {};
       for (const name of packNames.value) {
         selectedNames[name] = true;
       }
 
-      const unselectedPacks = [];
+      const unselectedPacks: ResourcePackResource[] = [];
 
-      const nameToPack = {};
+      const nameToPack: { [key: string]: ResourcePackResource } = {};
       for (const pack of packs) {
         nameToPack[pack.name + pack.ext] = pack;
         nameToPack[pack.name] = pack;
@@ -131,24 +136,24 @@ export default createComponent({
 
       return [selectedPacks, unselectedPacks];
     });
-    function filterName(r) {
+    function filterName(r: ResourcePackResource) {
       if (!filterText.value) return true;
       return r.name.toLowerCase().indexOf(filterText.value.toLowerCase()) !== -1;
     }
-    async function dropFile(path) {
-      await importResource({ path, type: 'resourcepack' });
+    async function dropFile(file: File) {
+      await importResource({ path: file.path, type: 'resourcepack' });
     }
     async function confirmDeletingPack() {
       data.isDeletingPack = false;
+      removeResource(data.deletingPack!.hash);
       data.deletingPack = null;
-      removeResource(data.deletingPack.hash);
     }
-    function onDropDelete(e) {
-      const hash = e.dataTransfer.getData('Hash');
+    function onDropDelete(e: DragEvent) {
+      const hash = e.dataTransfer!.getData('Hash');
       const res = queryResource(hash);
       if (res) {
         data.isDeletingPack = true;
-        data.deletingPack = res;
+        data.deletingPack = res as ResourcePackResource;
       }
     }
     return {

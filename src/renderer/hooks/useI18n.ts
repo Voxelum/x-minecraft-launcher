@@ -1,10 +1,8 @@
-import VueI18n from 'vue-i18n';
-import { inject, InjectionKey } from '@vue/composition-api';
-
-export const I18N_SYMBOL: InjectionKey<VueI18n> = Symbol('VueI18n')
+import { inject } from '@vue/composition-api';
+import { I18N_KEY } from 'renderer/constant';
 
 export function useI18n() {
-    const i18n = inject(I18N_SYMBOL);
+    const i18n = inject(I18N_KEY);
     if (!i18n) throw new Error('Cannot find i18n. Maybe router not loaded?');
     return {
         t(key: string, values?: any[] | { [key: string]: any }): string { return i18n.t(key, values) as any; },

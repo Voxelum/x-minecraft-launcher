@@ -36,11 +36,10 @@
   </v-tooltip>
 </template>
 
-<script>
+<script lang=ts>
 import { isCompatible } from 'universal/utils/versions';
-import { createComponent, ref, onMounted, computed } from '@vue/composition-api';
-import { shell } from 'electron';
-import { useStore, useForgeModResource, useCompatible, useProfileVersionBase } from '@/hooks';
+import { createComponent, ref, onMounted, computed, Ref } from '@vue/composition-api';
+import { useStore, useForgeModResource, useCompatible, useInstanceVersionBase, useShell } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -58,28 +57,29 @@ export default createComponent({
     },
   },
   setup(props, context) {
-    const { icon, metadata, acceptedRange } = useForgeModResource(props.data);
-    const { minecraft } = useProfileVersionBase();
+    const shell = useShell();
+    const { icon, metadata, acceptedRange } = useForgeModResource(props.data as any);
+    const { minecraft } = useInstanceVersionBase();
     const { compatible } = useCompatible(acceptedRange, minecraft);
     const dragged = ref(false);
-    const iconImage = ref(null);
+    const iconImage: Ref<any> = ref(null);
 
-    function onDragStart(e) {
+    function onDragStart(e: DragEvent) {
       dragged.value = true;
-      e.dataTransfer.setDragImage(iconImage.value.$el, 0, 0);
-      e.dataTransfer.setData('Index', `${props.isSelected ? 'R' : 'L'}${props.index}`);
-      e.dataTransfer.setData('Hash', props.data.hash);
+      e.dataTransfer!.setDragImage(iconImage.value!.$el, 0, 0);
+      e.dataTransfer!.setData('Index', `${props.isSelected ? 'R' : 'L'}${props.index}`);
+      e.dataTransfer!.setData('Hash', props.data.hash);
       context.emit('dragstart', e);
     }
-    function onDragEnd(e) {
+    function onDragEnd(e: DragEvent) {
       dragged.value = false;
       context.emit('dragend', e);
     }
-    function tryOpen(e) {
-      if (props.data.url) {
-        shell.openExternal(props.data.url);
-      }
-    }
+    // function tryOpen(e) {
+    //   if (props.data.url) {
+    //     shell.openExternal(props.data.url);
+    //   }
+    // }
 
     return {
       dragged,

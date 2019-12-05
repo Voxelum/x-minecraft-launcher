@@ -1,7 +1,6 @@
 import { Auth, MojangAccount, MojangChallenge, MojangChallengeResponse, ProfileService } from '@xmcl/minecraft-launcher-core';
 import { fitin } from 'universal/utils/object';
 import Vue from 'vue';
-import { SaveLoadAction, InitAction } from '..';
 import { ModuleOption } from "../root";
 import { GameProfileAndTexture, UserConfig, UserProfile } from './user.config';
 
@@ -44,7 +43,7 @@ interface Mutations {
 
     invalidateAuth: (state: State) => void;
     updateGameProfile: { userId: string; profile: GameProfileAndTexture };
-    updateUserProfile: Auth;
+    updateUserProfile: Auth.Response;
     addUserProfile: UserProfile;
     setUserProfile: { userId: string; profileId: string };
     removeUserProfile: string;
@@ -59,34 +58,7 @@ interface Mutations {
     refreshingSkin: boolean;
 }
 
-
-interface Actions extends SaveLoadAction, InitAction {
-    login: (payload?: { account: string; password?: string, authService?: string, profileService?: string }) => void;
-    logout: () => void;
-    switchUserProfile: (profile: { userId: string; profileId: string }) => void;
-
-    refreshUser: () => void;
-    refreshInfo: () => void;
-    refreshSkin: () => void;
-
-    /**
-     * Check current ip location and determine wether we need to validate user identity by response challenge.
-     * 
-     * See `getChallenges` and `submitChallenges`
-     */
-    checkLocation: () => boolean;
-    /**
-     * Get all the user set challenges for security reasons.
-     */
-    getChallenges: () => MojangChallenge[];
-    submitChallenges: (responses: MojangChallengeResponse[]) => any;
-
-    uploadSkin: (payload: { data: string | Buffer, slim: boolean }) => void;
-    saveSkin: (payload: { skin: { data: string }, path: string }) => void;
-    parseSkin: (path: string) => string;
-}
-
-export type UserModule = ModuleOption<State, Getters, Mutations, Actions>;
+export type UserModule = ModuleOption<State, Getters, Mutations, {}>;
 
 const mod: UserModule = {
     state: {
@@ -189,9 +161,9 @@ const mod: UserModule = {
         updateUserProfile(state, userProfile) {
             const user = state.profiles[state.selectedUser];
             user.accessToken = userProfile.accessToken;
-            const missing = userProfile.profiles.filter(p => user.profiles.find(up => up.id !== p.id))
+            const missing = userProfile.availableProfiles.filter(p => user.profiles.find(up => up.id !== p.id))
                 .map(p => ({ ...p, textures: { SKIN: { url: '' } } }));
-            const remaining = user.profiles.filter(p => userProfile.profiles.find(ap => ap.id === p.id));
+            const remaining = user.profiles.filter(p => userProfile.availableProfiles.find(ap => ap.id === p.id));
             user.profiles = [...remaining, ...missing];
         },
         updateGameProfile(state, { profile, userId }) {

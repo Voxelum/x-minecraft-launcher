@@ -1,6 +1,7 @@
 import { promises, createWriteStream } from 'fs';
 import { join, relative } from 'path';
 import { ZipFile } from 'yazl';
+import { unpack, pack } from '7zip-min';
 
 /**
  * @param {string} root
@@ -32,4 +33,10 @@ export function compressZipTo(zip: ZipFile, dest: string) {
             .on('close', () => { resolve(); })
             .on('error', (e) => { reject(e); });
     });
+}
+
+export function unpack7z(pathToArchive: string, whereToUnpack: string) {
+    return new Promise<void>((resolve, reject) => {
+        unpack(pathToArchive, whereToUnpack, (e) => { if (e) reject(e); else resolve(); })
+    })
 }

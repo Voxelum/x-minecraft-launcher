@@ -10,7 +10,7 @@ interface NodeRequire extends NodeRequireFunction {
         };
 }
 
-type TaskHandle = string;
+// type TaskHandle = string;
 // From https://github.com/andnp/SimplyTyped/blob/master/src/types/objects.ts
 type DeepPartial<T> = Partial<{
     [k in keyof T]:

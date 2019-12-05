@@ -30,5 +30,6 @@
     "include": [
         "types/*",
         "src/**/*"
-    ]
+    ],
+    "exclude": ["node_modules"]
 }

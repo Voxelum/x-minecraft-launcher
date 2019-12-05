@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+// const TerserPlugin = require('terser-webpack-plugin');
 
 const { dependencies } = require('../package.json');
 
@@ -10,6 +11,7 @@ const mainConfig = {
     mode: process.env.NODE_ENV,
     entry: {
         main: path.join(__dirname, '../src/main/index.ts'),
+        // locale: path.join(__dirname, '../static/locales/index.js'),
     },
     externals: [
         ...Object.keys(dependencies || {}),
@@ -32,13 +34,31 @@ const mainConfig = {
         __dirname: process.env.NODE_ENV !== 'production',
         __filename: process.env.NODE_ENV !== 'production',
     },
+    optimization: {
+        minimizer: [],
+        // namedModules: true,
+        // minimizer: [
+        //     new TerserPlugin({
+        //         cache: true,
+        //         parallel: true,
+        //         sourceMap: true,
+        //         extractComments: true,
+        //         terserOptions: {
+        //             ecma: 6,
+        //             keep_classnames: true,
+        //         },
+        //     })],
+        // splitChunks: {
+        //     chunks: 'all'
+        // }
+    },
     output: {
         filename: '[name].js',
         libraryTarget: 'commonjs2',
         path: path.join(__dirname, '../dist/electron'),
     },
     plugins: [
-        new webpack.NoEmitOnErrorsPlugin(),
+        // new webpack.NoEmitOnErrorsPlugin(),
     ],
     resolve: {
         extensions: ['.js', '.ts', '.json', '.node'],

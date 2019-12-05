@@ -31,19 +31,19 @@
 
 <script lang=ts>
 import {
-  useI18n,
-  useAutoSaveLoad,
-  useNativeDialog,
-  useProfile,
-  useJava,
-} from '@/hooks';
-import {
   reactive,
   computed,
   createComponent,
   toRefs,
 } from '@vue/composition-api';
 import { Java } from 'universal/store/modules/java';
+import {
+  useI18n,
+  useAutoSaveLoad,
+  useNativeDialog,
+  useInstance,
+  useJava,
+} from '@/hooks';
 
 export default createComponent({
   setup() {
@@ -56,7 +56,7 @@ export default createComponent({
       vmOptions,
       mcOptions,
       java,
-    } = useProfile();
+    } = useInstance();
     const { all: javas, add } = useJava();
     useAutoSaveLoad(save, load);
 

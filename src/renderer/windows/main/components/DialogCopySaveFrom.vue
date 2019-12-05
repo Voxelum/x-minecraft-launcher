@@ -72,82 +72,83 @@
   </v-dialog>
 </template>
 
-<script>
-export default {
+<script lang=ts>
+import { createComponent, reactive, computed, toRefs, onMounted, watch } from "@vue/composition-api";
+import { useInstanceSaves, useInstance, useBusy, useResourceOperation, useResource } from "@/hooks";
+import { LevelDataFrame } from "@xmcl/world";
+
+export default createComponent({
   props: {
     value: {
       type: Boolean,
       default: false,
     },
   },
-  data() {
-    return {
-      loadingSaves: false,
-      loadedProfileSaves: [],
+  setup(props, context) {
+    const data = reactive({
+      loadedProfileSaves: [] as Array<{
+        profile: string;
+        path: string;
+        name: string;
+        icon: string;
+      }>,
 
-      profilesCopyFrom: [],
-      resourcesCopyFrom: [],
+      profilesCopyFrom: [] as boolean[],
+      resourcesCopyFrom: [] as boolean[],
 
       working: false,
 
       error: null,
-    };
-  },
-  computed: {
-    nothingSelected() {
-      return this.profilesCopyFrom.every(v => !v) && this.resourcesCopyFrom.every(v => !v);
-    },
-    storedSaves() {
-      return this.$repo.getters.saves;
-    },
-  },
-  watch: {
-    loadedProfileSaves() {
-      this.profilesCopyFrom = new Array(this.loadedProfileSaves.length);
-    },
-    storedSaves() {
-      this.resourcesCopyFrom = new Array(this.storedSaves.length);
-    },
-    value() {
-      if (this.value) {
-        this.loadingSaves = true;
-        this.$repo.dispatch('loadAllProfileSaves')
-          .then((r) => { this.loadedProfileSaves = r.filter(s => s !== undefined); })
-          .finally(() => { this.loadingSaves = false; });
-      }
-    },
-  },
-  methods: {
-    async startImport() {
-      this.working = true;
-      try {
-        const profilesSaves = this.loadedProfileSaves.filter((_, i) => this.profilesCopyFrom[i]);
-        const resourcesSaves = this.storedSaves.filter((_, i) => this.resourcesCopyFrom[i]);
+    });
 
-        if (resourcesSaves.length !== 0) {
-          await this.$repo.dispatch('deployResources', {
-            resourceUrls: resourcesSaves.map(r => r.hash),
-            profile: this.$repo.state.profile.id,
-          });
-        }
+    const { copySave, id, loadAllPreviews, importSave } = useInstanceSaves();
+    const { resources: storedSaves } = useResource('saves');
+    const nothingSelected = computed(() => data.profilesCopyFrom.every(v => !v) && data.resourcesCopyFrom.every(v => !v));
+    const loadingSaves = useBusy(loadAllPreviews);
 
-        if (profilesSaves.length !== 0) {
-          for (const s of profilesSaves) {
-            await this.$repo.dispatch('copySave', { src: s.profile, dest: this.$repo.state.profile.id });
+    onMounted(() => {
+      loadAllPreviews().then((all) => {
+        data.loadedProfileSaves = all;
+      });
+      watch(() => {
+        data.profilesCopyFrom = new Array(data.loadedProfileSaves.length);
+      });
+      watch(storedSaves, () => {
+        data.resourcesCopyFrom = new Array(storedSaves.value.length);
+      });
+    });
+    return {
+      ...toRefs(data),
+      loadingSaves,
+      storedSaves,
+      nothingSelected,
+      async startImport() {
+        data.working = true;
+        try {
+          const profilesSaves = data.loadedProfileSaves.filter((_, i) => data.profilesCopyFrom[i]);
+          const resourcesSaves = storedSaves.value.filter((_, i) => data.resourcesCopyFrom[i]);
+
+          if (resourcesSaves.length !== 0) {
+            await Promise.all(resourcesSaves.map(save => importSave(save.path)));
           }
-        }
 
-        this.$emit('input', false);
-      } catch (e) {
-        this.error = e;
-        console.error('Fail to copy saves');
-        console.error(e);
-      } finally {
-        this.working = false;
-      }
-    },
+          if (profilesSaves.length !== 0) {
+            for (const s of profilesSaves) {
+              await copySave({ src: s.profile, dest: [id.value] });
+            }
+          }
+          context.emit('input', false);
+        } catch (e) {
+          data.error = e;
+          console.error('Fail to copy saves');
+          console.error(e);
+        } finally {
+          data.working = false;
+        }
+      },
+    }
   },
-};
+});
 </script>
 
 <style>

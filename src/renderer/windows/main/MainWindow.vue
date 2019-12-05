@@ -1,72 +1,7 @@
 <template>
-  <v-container v-if="loading" color="primary" align-center justify-center style="position: absolute; width: 100%; height: 100%; background-color: #212121"/>
+  <v-container v-if="loading" color="primary" align-center justify-center style="position: absolute; width: 100%; height: 100%; background-color: #212121" />
   <v-layout v-else fill-height>
-    <v-navigation-drawer :value="true" :mini-variant="mini" stateless dark 
-                         style="border-radius: 2px 0 0 2px;"
-                         class="moveable"
-                         @mouseenter="onEnterBar"
-                         @mouseover="onHoverBar"
-                         @mouseleave="onLeaveBar">
-      <v-toolbar flat class="transparent">
-        <v-list class="pa-0 non-moveable">
-          <v-list-tile avatar @click="goBack">
-            <v-list-tile-avatar>
-              <v-icon dark>
-                arrow_back
-              </v-icon>
-            </v-list-tile-avatar>
-          </v-list-tile>
-        </v-list>
-      </v-toolbar>
-      <v-list class="non-moveable">
-        <v-divider dark style="display: block !important;" />
-        <v-list-tile :disabled="!logined" replace to="/">
-          <v-list-tile-action>
-            <v-icon>home</v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-list-tile :disabled="!logined" replace to="/profiles">
-          <v-list-tile-action>
-            <v-icon>apps</v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-list-tile :disabled="!logined" replace to="/user">
-          <v-list-tile-action>
-            <v-icon>person</v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-list-tile :disabled="!logined" replace to="/curseforge">
-          <v-list-tile-action style="padding-right: 2px;">
-            <v-icon :size="14">
-              $vuetify.icons.curseforge
-            </v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-spacer />
-      </v-list>
-      <v-list class="non-moveable" style="position: absolute; bottom: 0px;">
-        <v-list-tile v-ripple @click="showTaskDialog">
-          <v-list-tile-action>
-            <v-badge right :value="activeTasksCount !== 0">
-              <template v-slot:badge>
-                <span>{{ activeTasksCount }}</span>
-              </template>
-              <v-icon dark>
-                assignment
-              </v-icon>
-            </v-badge>
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-divider dark style="display: block !important;" />
-        <v-list-tile replace to="/setting">
-          <v-list-tile-action>
-            <v-icon dark>
-              settings
-            </v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
+    <side-bar />
     <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
       <v-card class="main-body" color="grey darken-4">
         <!-- <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;"> -->
@@ -85,57 +20,69 @@
   </v-layout>
 </template>
 
-<script>
+<script lang=ts>
 import '@/assets/common.css';
 import {
   onMounted,
-  onBeforeMount,
+  onUnmounted,
   reactive,
   toRefs,
-  computed,
   watch,
   createComponent,
-  InjectionKey,
-  ref,
-  provide,
 } from '@vue/composition-api';
-import { ipcRenderer } from 'electron';
 import {
   useDialog,
   useParticle,
   useStore,
-  useRouter,
-  useCurrentUserStatus,
   useBackgroundImage,
-  useTasks,
   provideDialog,
   provideNotifier,
+  useIpc,
+  useI18n,
+  useNotifier,
 } from '@/hooks';
 import dialogs from './dialog';
+import { IpcRendererEvent } from 'electron';
 
 export default createComponent({
   components: { dialogs },
-  setup(props, ctx) {
+  setup() {
     provideDialog();
     provideNotifier();
-  
+
+    const ipcRenderer = useIpc();
     const { particleMode, showParticle } = useParticle();
-    const { activeTasksCount } = useTasks();
-    const { logined } = useCurrentUserStatus();
+    const { t } = useI18n();
     const { showDialog } = useDialog('task');
     const { blur, backgroundImage } = useBackgroundImage();
-    const router = useRouter();
+    const { notify } = useNotifier();
+    const { state } = useStore();
 
     const data = reactive({
       loading: true,
-      localHistory: [],
-      timeTraveling: false,
-      taskDialog: false,
-      mini: true,
     });
-    
+
+    function onSuccessed(event: IpcRendererEvent, id: string) {
+      const task = state.task.tree[id];
+      if (task.background) return;
+      notify('success', t(task.path, task.arguments || {}));
+    }
+    function onFailed(event: IpcRendererEvent, id: string, error: any) {
+      const task = state.task.tree[id];
+      if (task.background) return;
+      notify('error', t(task.path, task.arguments || {}), error);
+    }
     onMounted(() => {
-      ipcRenderer.once('vuex-sync', () => {
+      ipcRenderer.addListener('task-successed', onSuccessed);
+      ipcRenderer.addListener('task-failed', onFailed);
+    });
+    onUnmounted(() => {
+      ipcRenderer.removeListener('task-successed', onSuccessed);
+      ipcRenderer.removeListener('task-failed', onFailed);
+    });
+
+    onMounted(() => {
+      ipcRenderer.once('synced', () => {
         data.loading = false;
       });
       watch(backgroundImage, () => {
@@ -150,51 +97,16 @@ export default createComponent({
         }
       });
     });
-    router.afterEach((to, from) => {
-      if (!data.timeTraveling) data.localHistory.push(from.fullPath);
-    });
-    function showTaskDialog() {
-      showDialog();
-    }
     function refreshImage() {
       const img = backgroundImage;
     }
-    function goBack() {
-      if (!logined.value && router.currentRoute.path === '/login') {
-        return;
-      }
-      data.timeTraveling = true;
-      const before = data.localHistory.pop();
-      if (before) {
-        router.replace(before);
-      }
-      data.timeTraveling = false;
-    }
-
-    let startHoverTime = -1;
 
     return {
       ...toRefs(data),
-      activeTasksCount,
-      showTaskDialog,
       blur,
-      goBack,
-      logined,
       backgroundImage,
       particleMode,
       showParticle,
-      onEnterBar() {
-        startHoverTime = Date.now();
-      },
-      onHoverBar() {
-        if (Date.now() - startHoverTime > 1000) {
-          data.mini = true;
-        }
-      },
-      onLeaveBar() {
-        startHoverTime = -1;
-        data.mini = false;
-      },
     };
   },
 });

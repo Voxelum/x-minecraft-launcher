@@ -136,11 +136,11 @@
   </v-dialog>
 </template>
 
-<script>
-import { reactive, computed, watch, toRefs, onMounted, onUnmounted, ref } from '@vue/composition-api';
+<script lang=ts>
+import { reactive, computed, watch, toRefs, onMounted, onUnmounted, ref, createComponent, Ref } from '@vue/composition-api';
 import { useCurrentUser, useDialogSelf, useI18n, useLogin } from '@/hooks';
 
-export default {
+export default createComponent({
   setup(props, context) {
     const { t } = useI18n();
     const { loginHistory, logined, account, authService, profileService, id } = useCurrentUser();
@@ -153,13 +153,13 @@ export default {
       removeAccount,
       switchAccount,
     } = useLogin();
-    const usernameRules = [v => !!v || t('user.requireUsername')];
+    const usernameRules = [(v: unknown) => !!v || t('user.requireUsername')];
     const emailRules = [
-      v => !!v || t('user.requireEmail'),
-      v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v)
+      (v: unknown) => !!v || t('user.requireEmail'),
+      (v: string) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v)
         || t('user.illegalEmail'),
     ];
-    const passwordRules = [v => !!v || t('user.requirePassword')];
+    const passwordRules = [(v: unknown) => !!v || t('user.requirePassword')];
     const data = reactive({
       userId: '',
       profileId: '',
@@ -174,24 +174,24 @@ export default {
       isFormValid: true,
 
       accountError: false,
-      accountErrors: [],
+      accountErrors: [] as string[],
 
       passwordError: false,
-      passwordErrors: [],
+      passwordErrors: [] as string[],
     });
-    const accountInput = ref(null);
-    const form = ref(null);
+    const accountInput: Ref<any> = ref(null);
+    const form: Ref<any> = ref(null);
     const accountRules = computed(() => (data.selectedAuthService === 'offline'
       ? usernameRules
       : emailRules));
 
     function reload() {
-      data.selectedUserProfile = id;
+      // data.selectedUserProfile = id.value;
       data.account = account.value;
       data.selectedAuthService = authService.value;
       data.selectedProfileService = profileService.value;
     }
-    function isUserSelected(profile) {
+    function isUserSelected(profile: { id: string; userId: string }) {
       return data.userId === profile.userId
         && data.profileId === profile.id;
     }
@@ -201,7 +201,7 @@ export default {
       data.passwordError = false;
       data.passwordErrors = [];
     }
-    function handleKey(e) {
+    function handleKey(e: KeyboardEvent) {
       resetError();
       if (e.key === 'Enter') { login(); }
     }
@@ -211,12 +211,12 @@ export default {
       await context.root.$nextTick(); // wait a tick to make sure this.account updated.
 
       try {
-        await loginAccount(
-          data.account,
-          data.password,
-          data.selectedAuthService,
-          data.selectedAuthService,
-        );
+        await loginAccount({
+          account: data.account,
+          password: data.password,
+          authService: data.selectedAuthService,
+          profileService: data.selectedAuthService,
+        });
         closeDialog();
       } catch (e) {
         if (e.type === 'ForbiddenOperationException'
@@ -234,9 +234,9 @@ export default {
       }
     }
 
-    let loginedHandle;
-    let shownHandle;
-    let authServiceHandle;
+    let loginedHandle = () => { };
+    let shownHandle = () => { };
+    let authServiceHandle = () => { };
     onMounted(() => {
       reload();
       if (!logined.value) {
@@ -255,11 +255,11 @@ export default {
           data.tabIndex = switchingUser.value ? 1 : 0;
         }
       });
-      authServiceHandle = watch(data.selectedAuthService, () => {
+      authServiceHandle = watch(() => {
         form.value.resetValidation();
         if (data.selectedAuthService !== data.selectedProfileService
           && data.selectedProfileService === '') {
-          if (profileServices.value.find(p => p.value === data.selectedAuthService)) {
+          if (profileServices.value.find(p => p === data.selectedAuthService)) {
             data.selectedProfileService = data.selectedAuthService;
           } else {
             data.selectedProfileService = 'mojang';
@@ -288,10 +288,10 @@ export default {
       accountInput,
       form,
       isUserSelected,
-      deleteGameProfile(profile) {
+      deleteGameProfile(profile: { id: string; userId: string }) {
         removeAccount(profile.userId);
       },
-      selectUserProfile(profile) {
+      selectUserProfile(profile: { id: string; userId: string }) {
         data.userId = profile.userId;
         data.profileId = profile.id;
       },
@@ -313,7 +313,7 @@ export default {
       },
     };
   },
-};
+});
 </script>
 
 <style>

@@ -162,40 +162,43 @@
   </v-container>
 </template>
 
-<script>
-import { useCurrentUser, useNotifier, useI18n, useActions, useCurrentUserSkin, useDialog, useNativeDialog } from '@/hooks';
+<script lang=ts>
 import { reactive, toRefs, onMounted, computed } from '@vue/composition-api';
-import { clipboard } from 'electron';
+import {
+  useCurrentUser,
+  useNotifier,
+  useI18n,
+  useCurrentUserSkin,
+  useDialog,
+  useNativeDialog,
+  useClipboard
+} from '@/hooks';
 
 export default {
   setup() {
     const { t } = useI18n();
+    const clipboard = useClipboard();
     const {
       security,
       offline,
-      selectedGameProfile,
       name,
       accessToken,
       authService,
       profileService,
+      refreshStatus: refreshAccount,
+      switchUserProfile,
+      logout
     } = useCurrentUser();
-    const { url, slim, refreshing: refreshingSkin } = useCurrentUserSkin();
+    const { url, slim, refreshing: refreshingSkin, refreshSkin, uploadSkin, saveSkin } = useCurrentUserSkin();
+
     const { showOpenDialog, showSaveDialog } = useNativeDialog();
     const { showDialog: showChallengeDialog } = useDialog('challenge');
-    const { showDialog, onDialogClosed: onSkinImportDialogClosed } = useDialog('skin-import');
+    const { showDialog: openUploadSkinDialog, onDialogClosed: onSkinImportDialogClosed } = useDialog('skin-import');
     const { showDialog: showLoginDialog } = useDialog('login');
     const { showDialog: showUserServiceDialog } = useDialog('user-service');
-    const { notify } = useNotifier();
 
-    const {
-      logout,
-      refreshInfo: refreshAccount,
-      refreshSkin,
-      parseSkin,
-      uploadSkin,
-      saveSkin,
-      switchUserProfile,
-    } = useActions('logout', 'refreshInfo', 'refreshSkin', 'parseSkin', 'uploadSkin', 'saveSkin', 'switchUserProfile');
+    const { notify, subscribe } = useNotifier();
+
     const data = reactive({
       fab: false,
 
@@ -210,7 +213,6 @@ export default {
       if (offline.value) return false;
       return data.skinUrl !== url.value || data.skinSlim !== slim.value;
     });
-
     const pending = computed(() => refreshingSkin.value || data.uploadingSkin || data.parsingSkin);
 
     function reset() {
@@ -221,23 +223,15 @@ export default {
     }
     async function loadSkin() {
       // await this.$nextTick();
-      showOpenDialog({ title: t('user.openSkinFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] }, (filename, bookmark) => {
-        if (filename && filename[0]) {
-          parseSkin(filename[0]).then((skin) => {
-            data.skinUrl = skin;
-          }, (e) => {
-            // this.$notify('error', this.$t('user.skinParseFailed', e));
-          });
-        }
-      });
+      const { filePaths } = await showOpenDialog({ title: t('user.openSkinFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] });
+      if (filePaths && filePaths[0]) {
+        data.skinUrl = `file://${filePaths[0]}`;
+      }
     }
     onSkinImportDialogClosed((s) => {
       data.skinUrl = s;
     });
-    function openUploadSkinDialog() {
-      showDialog();
-    }
-    function switchUser(profile) {
+    function switchUser(profile: { id: string; userId: string }) {
       switchUserProfile({
         profileId: profile.id,
         userId: profile.userId,
@@ -262,19 +256,15 @@ export default {
       refreshAccount,
       loadSkin,
       reset,
-      openUploadSkinDialog,
       switchUser,
 
+      openUploadSkinDialog,
       openUserServiceDialog: showUserServiceDialog,
       openChallengeDialog: showChallengeDialog,
       refreshSkin() {
-        refreshSkin().then(() => {
-          // this.$notify('info', this.$t('user.refreshSkinSuccess'));
-        }, (e) => {
-          // this.$notify('error', this.$t('user.refreshSkinFail', e));
-        }).finally(() => {
-          reset();
-        });
+        const promise = refreshSkin();
+        subscribe(promise, () => t('user.refreshSkinSuccess'), () => t('user.refreshSkinFail'));
+        promise.finally(() => { reset(); });
       },
       async uploadSkin() {
         if (offline.value) {
@@ -282,8 +272,7 @@ export default {
         } else {
           data.uploadingSkin = true;
           try {
-            await uploadSkin({ data: data.skinUrl, slim: data.skinSlim });
-            // this.$notify('error', this.$t('user.uploadSkinFail', e));
+            await uploadSkin({ url: data.skinUrl, slim: data.skinSlim });
             await refreshSkin();
           } finally {
             data.uploadingSkin = false;
@@ -291,13 +280,13 @@ export default {
         }
       },
       async saveSkin() {
-        const { filename, bookmark } = await showSaveDialog({
+        const { filePath, bookmark } = await showSaveDialog({
           title: t('user.skinSaveTitle'),
           defaultPath: `${name.value}.png`,
           filters: [{ extensions: ['png'], name: 'PNG Images' }],
         });
-        if (filename) {
-          saveSkin({ path: filename, skin: { data: data.skinUrl, slim: data.skinSlim } });
+        if (filePath) {
+          saveSkin({ path: filePath, url: data.skinUrl });
         }
       },
       enterEditBtn() {
@@ -312,18 +301,14 @@ export default {
       toggleSwitchUser() {
         showLoginDialog('login', true);
       },
-      onDropSkin(e) {
-        const length = e.dataTransfer.files.length;
+      onDropSkin(e: DragEvent) {
+        const length = e.dataTransfer!.files.length;
         if (length > 0) {
           console.log(`Detect drop import ${length} file(s).`);
-          for (let i = 0; i < length; ++i) {
-            parseSkin(e.dataTransfer.files[i].path).then((skin) => {
-              data.skinUrl = skin;
-            });
-          }
+          data.skinUrl = `file://${e.dataTransfer!.files[0].path}`;
         }
       },
-      copyToClipBoard(text) {
+      copyToClipBoard(text: string) {
         notify('success', t('copy.success'));
         clipboard.clear();
         clipboard.writeText(text);

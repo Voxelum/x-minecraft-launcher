@@ -160,8 +160,12 @@
   </v-container>
 </template>
 
-<script>
-export default {
+<script lang=ts>
+import { createComponent, reactive, computed, onMounted, toRefs, watch } from '@vue/composition-api';
+import { Project, Download, ProjectType } from 'main/service/CurseForgeService';
+import { useCurseforgeImport, useCurseforgeProject, useCurseforgeProjectFiles, useCurseforgeImages } from '@/hooks';
+
+export default createComponent({
   props: {
     type: {
       type: String,
@@ -170,126 +174,27 @@ export default {
     id: {
       type: String,
       required: true,
+      default: '',
     },
   },
-  data() {
-    return {
+  setup(props) {
+    const type = props.type as ProjectType;
+    const project = useCurseforgeProject(props.id, type);
+    const projectRefs = toRefs(project);
+    const projectFiles = useCurseforgeProjectFiles(props.id, type, projectRefs.projectId);
+    const projectImages = useCurseforgeImages(props.id, type);
+    const data = reactive({
       tab: 0,
       viewingImage: false,
       viewedImage: '',
+    });
+    const dataRefs = toRefs(data);
 
-      projectId: '',
-      name: '',
-      image: '',
-      createdDate: '',
-      lastUpdate: '',
-      totalDownload: '',
-      license: '',
-      description: '',
-      recentFiles: [],
-
-      page: 1,
-      pages: 1,
-      version: '',
-
-      versions: [],
-      files: [],
-      images: [],
-
-      refreshingProject: false,
-      refreshingFile: false,
-      refreshingImages: false,
-    };
-  },
-  computed: {
-    recentFilesStat() {
-      return this.recentFiles.map(file => this.$repo.getters.isFileInstalled(file));
-    },
-    fileStats() {
-      return this.files.map(file => this.$repo.getters.isFileInstalled(file));
-    },
-  },
-  watch: {
-    page() { this.refreshFile(); },
-    version() { this.refreshFile(); },
-    tab() {
-      switch (this.tab) {
-        case 1:
-          this.refreshFile();
-          break;
-        case 2:
-          this.refreshImages();
-          break;
-        default:
-      }
-    },
-  },
-  mounted() {
-    this.refresh();
-  },
-  methods: {
-    async refresh() {
-      this.refreshingProject = true;
-      try {
-        const { name, image, createdDate, updatedDate, totalDownload, license, description, projectId, files } = await this.$repo.dispatch('fetchCurseForgeProject', { path: this.id, project: this.type });
-        this.name = name;
-        this.image = image;
-        this.createdDate = createdDate;
-        this.lastUpdate = updatedDate;
-        this.totalDownload = totalDownload;
-        this.license = license;
-        this.description = description;
-        this.projectId = projectId;
-        this.recentFiles = files;
-
-        const imgs = this.$el.getElementsByTagName('img');
-        for (let i = 0; i < imgs.length; ++i) {
-          imgs.item(i).addEventListener('click', () => {
-            this.viewImage({ url: imgs.item(i).getAttribute('src') });
-          });
-        }
-      } finally {
-        this.refreshingProject = false;
-      }
-    },
-    async refreshFile() {
-      this.refreshingFile = true;
-      try {
-        const { versions, files, pages } = await this.$repo.dispatch('fetchCurseForgeProjectFiles', {
-          project: this.type,
-          path: this.id,
-          version: this.version,
-          page: this.page,
-        });
-        this.pages = pages;
-        this.versions = versions;
-        // this.files = [];
-        // await this.$nextTick();
-        // for (const file of files) {
-        //   this.files.push(file);
-        //   await this.$nextTick();
-        // }
-        this.files = files;
-      } finally {
-        this.refreshingFile = false;
-      }
-    },
-    async refreshImages() {
-      this.refreshingImages = true;
-      try {
-        const images = await this.$repo.dispatch('fetchCurseforgeProjectImages', {
-          type: this.type,
-          path: this.id,
-        });
-        this.images = images;
-      } finally {
-        this.refreshingImages = false;
-      }
-    },
-    async fetchFileChangelog() {
-      // todo: impl this
-    },
-    getColor(type) {
+    function viewImage(image: any) {
+      data.viewingImage = true;
+      data.viewedImage = image.url;
+    }
+    function getColor(type: string) {
       switch (type) {
         case 'release':
         case 'R': return 'primary';
@@ -300,46 +205,40 @@ export default {
         default:
           return '';
       }
-    },
-    computeDate(date) {
+    }
+    function computeDate(date: string) {
       const d = new Date(0);
       d.setUTCSeconds(Number.parseInt(date, 10));
       return d.toLocaleDateString();
-    },
-    /**
-     * @type {import('universal/store/modules/curseforge').CurseforgeModule.Download}
-     */
-    install(file) {
-      this.$repo.dispatch('downloadAndImportFile', {
-        id: file.id,
-        name: file.name,
-        href: file.href,
-        projectType: this.type,
-        projectPath: this.id,
-        projectId: this.projectId,
-      });
-    },
-    installPreview(file, index) {
-      if (this.recentFilesStat[index]) return;
-      if (this.isFileDownloading(file.href)) return;
-      this.$repo.dispatch('downloadAndImportFile', {
-        id: file.id,
-        name: file.name,
-        href: file.href,
-        projectType: this.type,
-        projectPath: this.id,
-        projectId: this.projectId,
-      });
-    },
-    isFileDownloading(file) {
-      return !!this.$repo.state.curseforge.downloading[file.href];
-    },
-    viewImage(image) {
-      this.viewingImage = true;
-      this.viewedImage = image.url;
-    },
+    }
+
+    watch(dataRefs.tab, () => {
+      switch (data.tab) {
+        case 1:
+          projectFiles.refreshFiles();
+          break;
+        case 2:
+          projectImages.refreshImages();
+          break;
+        default:
+      }
+    });
+    onMounted(() => {
+      project.refresh();
+    });
+    return {
+      getColor,
+      computeDate,
+      viewImage,
+      ...dataRefs,
+      ...projectRefs,
+      ...projectImages,
+    };
   },
-};
+  methods: {
+   
+  },
+});
 </script>
 
 <style>

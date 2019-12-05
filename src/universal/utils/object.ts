@@ -55,12 +55,24 @@ export function diff(target: any, option: any): boolean {
     return !Object.entries(target).every(([k, v]) => deepEquals(option[k], v));
 }
 
-export function requireObject(object: any, message?: string) {
+export function requireObject(object: unknown, message?: string): asserts object is object {
+    const t = typeof object;
     if (typeof object !== 'object') throw new Error(message || 'Require a object!');
 }
-
-export function requireString(object: any, message?: any) {
+export function requireString(object: unknown, message?: any): asserts object is string {
     if (typeof object !== 'string') throw new Error(message || `Require a string! But get ${typeof object}`);
+}
+export function requireBool(object: unknown, message?: any): asserts object is boolean {
+    if (typeof object !== 'boolean') throw new Error(message || `Require a boolean! But get ${typeof object}`);
+}
+export function requireNonnull(object: unknown, message?: any): asserts object {
+    if (typeof object !== 'undefined' && object !== null) throw new Error(message || `Require object existed!`);
+}
+type Structure = {
+    [key: string]: Structure | "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
+}
+export function requireStruct(object: any, structure: Structure, message?: any): asserts object is object {
+
 }
 
 export function requireType(object: any, type: any, message: any) {
@@ -68,7 +80,10 @@ export function requireType(object: any, type: any, message: any) {
         throw new Error(message || `Require object ${object} be the type ${type}`);
     }
 }
-export function isNullOrUndefine(object: any) {
+export function isNullOrUndefine(object: any): object is undefined {
+    return object === undefined || object === null;
+}
+export function notNull<T>(object: T | undefined | null): object is T {
     return object === undefined || object === null;
 }
 

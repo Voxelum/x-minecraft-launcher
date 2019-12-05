@@ -1,8 +1,6 @@
-
 import { ClientModule } from './modules/client';
 import { CurseForgeModule } from './modules/curseforge';
 import { DiagnoseModule } from './modules/diagnose';
-import { IOModule } from './modules/io';
 import { JavaModule } from './modules/java';
 import { LauncherModule } from './modules/launch';
 import { ProfileModule } from './modules/profile';
@@ -11,14 +9,12 @@ import { SettingModule } from './modules/setting';
 import { TaskModule } from './modules/task';
 import { UserModule } from './modules/user';
 import { VersionModule } from './modules/version';
-import { AuthLibModule } from './modules/authlib';
 
 declare module "./root" {
     interface ModuleMap {
         client: ClientModule;
         curseforge: CurseForgeModule;
         diagnose: DiagnoseModule;
-        io: IOModule;
         java: JavaModule;
         launch: LauncherModule;
         profile: ProfileModule;
@@ -27,26 +23,37 @@ declare module "./root" {
         task: TaskModule;
         user: UserModule;
         version: VersionModule;
-        authlib: AuthLibModule;
     }
+
+    type Semaphore = 'instance' | 'install' | 'refreshMinecraft' | 'refreshForge' | 'refreshLiteloader';
     interface BaseState {
         /**
          * launcher root data folder path
          */
-        root: string
-        online: boolean
-        platform: NodeJS.Platform
+        root: string;
+        online: boolean;
+        platform: NodeJS.Platform;
+        semaphore: {
+            [id: string]: number;
+        };
     }
     interface BaseGetters {
         /**
-         * @returns the path relate to the launcher root data folder
+         * @returns if the semaphore is 0
          */
-        path: (...args: string[]) => string
+        released: (semaphoreId: Semaphore) => boolean;
+
+        /**
+         * @returns true if the semaphore is not 0
+         */
+        busy: (semaphoreId: Semaphore | Semaphore[]) => boolean;
     }
     interface BaseMutations {
         root: string;
         online: boolean;
         platform: NodeJS.Platform;
+        aquire: Semaphore | Semaphore[];
+        release: Semaphore | Semaphore[];
     }
     interface BaseActions {
         quit: () => void;

@@ -98,20 +98,28 @@
   </v-container>
 </template>
 
-<script>
+<script lang=ts>
 import { createComponent, reactive, toRefs, computed, ref } from '@vue/composition-api';
 import { useProfileMods, useSelectionList, useResource } from '@/hooks';
+import { Resource, ForgeResource, LiteloaderResource } from 'universal/store/modules/resource';
 
 export default createComponent({
   setup() {
-    const data = reactive({
+    const data: {
+      filterInCompatible: boolean;
+      filterNonMatchedMinecraftVersion: boolean;
+      filterText: string;
+      filteringModId: string;
+      draggingMod: false;
+      isDeletingMod: boolean;
+      deletingMod: ForgeResource | LiteloaderResource | null;
+    } = reactive({
       filterInCompatible: true,
       filterNonMatchedMinecraftVersion: false,
       filterText: '',
       filteringModId: '',
 
       draggingMod: false,
-
       isDeletingMod: false,
       deletingMod: null,
     });
@@ -120,11 +128,10 @@ export default createComponent({
     const mods = computed(() => {
       const mods = resources.value;
       const selectedModUrls = items.value;
-      const selectedMods = selectedModUrls.map(s => queryResource(s)
-        || { id: s, missing: true, metadata: [{ name: 'missing' }] });
-      const selectedMask = {};
+      const selectedMods = selectedModUrls.map(s => queryResource(s));
+      const selectedMask: { [key: string]: boolean } = {};
       selectedMods.forEach((m) => {
-        if (!m.missing) {
+        if (!('missing' in m)) {
           selectedMask[m.hash] = true;
         }
       });
@@ -134,28 +141,28 @@ export default createComponent({
 
       return [selectedMods, unselectedMods];
     });
-    function filterMod(text, mod) {
+    function filterMod(text: string, mod: any) {
       if (!text) return true;
       return mod.name.toLowerCase().indexOf(text.toLowerCase()) !== -1;
     }
     function onConfirmDeleteMod() {
       data.isDeletingMod = false;
-      removeResource(data.deletingMod.hash);
+      removeResource(data.deletingMod!.hash);
       data.deletingMod = null;
     }
-    function onDropDelete(e) {
-      const hash = e.dataTransfer.getData('Hash');
+    function onDropDelete(e: DragEvent) {
+      const hash = e.dataTransfer!.getData('Hash');
       const res = queryResource(hash);
       if (res) {
         data.isDeletingMod = true;
-        data.deletingMod = res;
+        data.deletingMod = res as ForgeResource;
       }
     }
-    function filterByModId(modRes) {
+    function filterByModId(modRes: ForgeResource) {
       data.filteringModId = modRes.metadata[0].modid;
     }
-    function dropFile(path) {
-      importResource({ path }).catch((e) => { console.error(e); });
+    function dropFile(file: File) {
+      importResource({ path: file.path }).catch((e) => { console.error(e); });
     }
     return {
       ...toRefs(data),
@@ -164,11 +171,11 @@ export default createComponent({
         () => mods.value[1]
           .filter(data.filteringModId !== ''
             ? m => m.metadata[0].modid === data.filteringModId
-            : (m => filterMod(data.filterText, m))),
+            : m => filterMod(data.filterText, m)),
         () => mods.value[0]
           .filter(m => filterMod(data.filterText, m)),
         dropFile,
-        i => i.hash,
+        (i: Resource<any>) => i.hash,
       ),
       onDropDelete,
       filterByModId,
@@ -178,5 +185,3 @@ export default createComponent({
   },
 });
 </script>
-<style scoped=true>
-</style>

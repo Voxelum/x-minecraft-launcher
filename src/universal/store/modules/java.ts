@@ -1,11 +1,9 @@
 import Vue from 'vue';
-import { SaveLoadAction, InitAction } from '..';
 import { requireObject, requireString } from 'universal/utils/object';
 import { ModuleOption } from '../root';
 import { Java, JavaConfig } from './java.config';
 
 interface State extends JavaConfig {
-
 }
 
 interface Getters {
@@ -18,13 +16,7 @@ interface Mutations {
     defaultJava: (Java);
 }
 
-interface Actions extends SaveLoadAction, InitAction {
-    refreshLocalJava: () => void;
-    installJava: (fix?: boolean) => TaskHandle;
-    resolveJava: (java: string) => Java | undefined;
-}
-
-export type JavaModule = ModuleOption<State, Getters, Mutations, Actions>;
+export type JavaModule = ModuleOption<State, Getters, Mutations, {}>;
 
 const mod: JavaModule = {
     state: {
@@ -32,7 +24,7 @@ const mod: JavaModule = {
         default: 0,
     },
     getters: {
-        defaultJava: state => state.all[state.default],
+        defaultJava: state => state.all[state.default] || { path: '', version: '', majorVersion: 0 },
         missingJava: state => state.all.length === 0,
     },
     mutations: {

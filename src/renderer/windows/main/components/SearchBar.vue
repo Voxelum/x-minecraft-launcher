@@ -6,23 +6,23 @@
                   style="position: fixed; z-index: 2; right: 30px" 
                   solo
                   append-icon="filter_list" 
-                  @focus="focused=true" 
-                  @blur="focused=false"
-                  @keyup="handleKeyup" />
+                  @focus="focused = true" 
+                  @blur="focused = false"
+                  @keyup.esc="show = false" />
   </transition>
 </template>
 
-<script>
+<script lang=ts>
 import Vue from 'vue';
-import { createComponent, inject, ref, onMounted, onUnmounted } from '@vue/composition-api';
+import { createComponent, inject, ref, onMounted, onUnmounted, Ref } from '@vue/composition-api';
 
 export default createComponent({
   setup() {
     const show = inject('search-bar-shown', ref(false));
     const text = inject('search-text', ref(''));
     const focused = ref(false);
-    const self = ref(null);
-    function handleKeydown(e) {
+    const self: Ref<any> = ref(null);
+    function handleKeydown(e: KeyboardEvent) {
       if (e.code === 'KeyF' && (e.ctrlKey || e.metaKey)) {
         if (show.value && !focused.value) {
           Vue.nextTick(() => {
@@ -36,8 +36,8 @@ export default createComponent({
         }
       }
     }
-    function handleKeyup(e) {
-      if (e.code === 'Escape') {
+    function handleKeyup(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
         show.value = false;
       }
     }

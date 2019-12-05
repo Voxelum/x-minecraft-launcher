@@ -25,7 +25,7 @@ type InverseGetterRestriction<G extends GetterRestriction<any, any>> = { [key in
 export interface RootGetters extends BaseGetters, UnionToIntersection<InverseGetterRestriction<ModulesGetters>> { }
 
 type Commit<M extends MutationRestriction<any, any>> = { <T extends keyof M>(type: T, payload?: Parameters<M[T]>[1]): void; }
-export interface RootCommit extends Commit<UnionToIntersection<ModulesMutations>> { }
+export interface RootCommit extends Commit<UnionToIntersection<ModulesMutations>>, Commit<MutationRestriction<BaseMutations>> { }
 
 type DispatchFromDef<A extends ActionDefinitions> = { <T extends keyof A>(type: T, payload?: Parameters<A[T]>[0]): Promise<ReturnType<A[T]>>; }
 type Dispatch<A extends ActionRestriction<any, any, any>> = { <T extends keyof A>(type: T, payload?: Parameters<A[T]>[1]): ReturnType<A[T]>; }
@@ -57,7 +57,7 @@ export interface Store {
     state: RootState;
     getters: RootGetters;
     commit: RootCommit;
-    dispatch: RootDispatch;
+    // dispatch: RootDispatch;
 }
 export interface ModuleMap {
 }

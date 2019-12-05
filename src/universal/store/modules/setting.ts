@@ -1,5 +1,4 @@
 import { UpdateInfo } from "electron-updater";
-import { SaveLoadAction } from "..";
 import { ModuleOption } from "../root";
 import { ParticleMode, SettingConfig } from "./setting.config";
 
@@ -32,13 +31,8 @@ interface Mutations {
     particleMode: ParticleMode;
 }
 
-interface Actions extends SaveLoadAction {
-    downloadUpdate: () => string;
-    quitAndInstall: () => void;
-    checkUpdate: () => string;
-}
 
-export type SettingModule = ModuleOption<State, {}, Mutations, Actions>;
+export type SettingModule = ModuleOption<State, {}, Mutations, {}>;
 
 const mod: SettingModule = {
     state: {

@@ -79,14 +79,20 @@
   </v-dialog>
 </template>
 
-<script>
+<script lang=ts>
 import { reactive, toRefs, watch, set } from '@vue/composition-api';
-import { useStore, useDialogSelf } from '@/hooks';
-import { remote } from 'electron';
+import { useStore, useDialogSelf, useInstanceLogs } from '@/hooks';
 
 export default {
   setup() {
-    const { dispatch } = useStore();
+    const {
+      listLogs,
+      listCrashReports,
+      removeLog,
+      removeCrashReport,
+      getCrashReportContent,
+      getLogContent,
+    } = useInstanceLogs();
     const { isShown, closeDialog } = useDialogSelf('logs');
     const data = reactive({
       tab: 0,
@@ -94,14 +100,14 @@ export default {
       loadingContent: false,
       loadingList: false,
       showedFile: '',
-      files: [[], []],
+      files: [[] as string[], [] as string[]],
 
       contents: ['', ''],
     });
     watch(isShown, (s) => { if (s) { loadLogs(); } });
     function loadLogs() {
       data.loadingList = true;
-      dispatch('listLogs').then((l) => {
+      listLogs().then((l) => {
         data.files[0] = l;
       }).finally(() => {
         data.loadingList = false;
@@ -109,7 +115,7 @@ export default {
     }
     function loadCrashes() {
       data.loadingList = true;
-      dispatch('listCrashReports').then((l) => {
+      listCrashReports().then((l) => {
         data.files[1] = l;
       }).finally(() => {
         data.loadingList = false;
@@ -118,30 +124,30 @@ export default {
     return {
       isShown,
       ...toRefs(data),
-      removeFile(i) {
+      removeFile(i: string) {
         if (data.tab === 1) {
-          dispatch('removeCrashReport', i);
+          removeCrashReport(i);
           loadCrashes();
         } else {
-          dispatch('removeLog', i);
+          removeLog(i);
           loadLogs();
         }
       },
-      showFile(i) {
+      showFile(i: string) {
         const name = i;
         if (data.loadingContent) return;
         if (name !== data.showedFile) {
           data.loadingContent = true;
           data.showedFile = name;
           if (data.tab === 1) {
-            dispatch('getCrashReportContent', name)
+            getCrashReportContent(name)
               .then((c) => {
                 data.contents[1] = c;
               }).finally(() => {
                 data.loadingContent = false;
               });
           } else {
-            dispatch('getLogContent', name)
+            getLogContent(name)
               .then((c) => {
                 data.contents[0] = c;
               }).finally(() => {
@@ -150,8 +156,8 @@ export default {
           }
         }
       },
-      openFile(event, i) {
-        const name = i;
+      openFile(name: string) {
+        // TODO: impl
         // remote.shell.showItemInFolder()
       },
       goBack() {

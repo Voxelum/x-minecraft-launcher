@@ -1,0 +1,83 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "description": "The name of the resource",
+            "type": "string"
+        },
+        "path": {
+            "description": "The resource file path",
+            "type": "string"
+        },
+        "hash": {
+            "description": "The sha1 of the resource",
+            "type": "string"
+        },
+        "ext": {
+            "description": "The suggested ext of the resource",
+            "type": "string"
+        },
+        "type": {
+            "description": "The resource type. Can be `forge`, `liteloader`, `resourcepack`, and etc.",
+            "type": "string"
+        },
+        "domain": {
+            "description": "The domain of the resource. This decide where (which folder) the resource go",
+            "type": "string"
+        },
+        "metadata": {
+            "$ref": "#/definitions/T",
+            "description": "The resource specific metadata"
+        },
+        "source": {
+            "$ref": "#/definitions/Source",
+            "description": "Where the resource imported from?"
+        }
+    },
+    "required": [
+        "domain",
+        "ext",
+        "hash",
+        "metadata",
+        "name",
+        "path",
+        "source",
+        "type"
+    ],
+    "definitions": {
+        "T": {
+            "type": "object"
+        },
+        "Source": {
+            "type": "object",
+            "additionalProperties": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/Record<string,string>"
+                    },
+                    {
+                        "type": "string"
+                    }
+                ]
+            },
+            "properties": {
+                "path": {
+                    "type": "string"
+                },
+                "date": {
+                    "description": "The date of import",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "date",
+                "path"
+            ]
+        },
+        "Record<string,string>": {
+            "type": "object"
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false
+}

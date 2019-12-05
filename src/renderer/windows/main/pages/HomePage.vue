@@ -60,7 +60,7 @@
            :disabled="refreshingProfile || missingJava"
            @click="launch">
       {{ $t('launch.launch') }}
-      <v-icon v-if="launchStatus === 'ready' || launchStatus === 'error'" right> 
+      <v-icon v-if="launchStatus === 'ready'" right> 
         play_arrow
       </v-icon>
       <v-progress-circular v-else class="v-icon--right" indeterminate :size="20" :width="2" />
@@ -68,18 +68,18 @@
   </v-layout>
 </template>
 
-<script>
-import { reactive, computed, toRefs, watch, ref } from '@vue/composition-api';
-import { useStore, useDialog, useI18n, useLaunch, useNativeDialog, useProfile, useJava } from '@/hooks';
+<script lang=ts>
+import { reactive, computed, toRefs, watch, ref, createComponent } from '@vue/composition-api';
+import { useStore, useDialog, useI18n, useLaunch, useNativeDialog, useInstance, useJava } from '@/hooks';
 
-export default {
+export default createComponent({
   setup(props, context) {
     const { t } = useI18n();
     const { showSaveDialog } = useNativeDialog();
     const { showDialog: showLogDialog } = useDialog('logs');
     const { showDialog: showFeedbackDialog } = useDialog('feedback');
-    const { refreshing: refreshingProfile, name, isServer, exportTo } = useProfile();
-    const { launch, status: launchStatus, quit } = useLaunch();
+    const { refreshing: refreshingProfile, name, isServer, exportTo } = useInstance();
+    const { launch, status: launchStatus } = useLaunch();
     const { missing: missingJava } = useJava();
 
     return {
@@ -90,25 +90,24 @@ export default {
       launch,
       showLogDialog,
       showFeedbackDialog,
-      quit,
-      showExportDialog() {
+      quit: () => {},
+      async showExportDialog() {
         if (refreshingProfile.value) return;
-        showSaveDialog({
+        const { filePath, bookmark } = await showSaveDialog({
           title: t('profile.export.title'),
           filters: [{ name: 'zip', extensions: ['zip'] }],
           message: t('profile.export.message'),
           defaultPath: `${name.value}.zip`,
-        }, (filename, bookmark) => {
-          if (filename) {
-            exportTo({ dest: filename }).catch((e) => {
-              console.error(e);
-            });
-          }
         });
+        if (filePath) {
+          exportTo({ dest: filePath, type: 'full' }).catch((e) => {
+            console.error(e);
+          });
+        }
       },
     };
   },
-};
+});
 </script>
 
 <style>

@@ -1,10 +1,10 @@
 import unknownServer from '@/assets/unknown_server.png';
 import { computed, Ref, ref } from '@vue/composition-api';
-import { ServerStatusFrame } from '@xmcl/common';
+import { ServerStatusFrame } from '@xmcl/client';
 import { useStore } from './useStore';
 
 export function useServer(host: Ref<{ host: string; port: number; protocol?: number }>) {
-    const { dispatch } = useStore();
+    const { services } = useStore();
     const status = ref<ServerStatusFrame>({
         version: {
             name: '',
@@ -21,7 +21,7 @@ export function useServer(host: Ref<{ host: string; port: number; protocol?: num
     const pinging = ref(false);
     async function refresh() {
         pinging.value = true;
-        status.value = await dispatch('pingServer', {
+        status.value = await services.ServerStatusService.pingServer({
             host: host.value.host,
             port: host.value.port,
             protocol: host.value.protocol,
@@ -38,7 +38,7 @@ export function useServer(host: Ref<{ host: string; port: number; protocol?: num
 }
 
 export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
-    const { state, getters, dispatch } = useStore();
+    const { state, getters, services } = useStore();
 
     const using = ref || computed(() => state.profile.statuses[state.profile.id])
     const status: Ref<ServerStatusFrame> = computed(() => using.value || {
@@ -56,10 +56,6 @@ export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
     });
     const acceptingVersion = computed(() => '[' + getters.getAcceptMinecraftsByProtocol(status.value.version.protocol).join(', ') + ']');
 
-    async function refresh() {
-        await dispatch('refreshProfile');
-    }
-
     return {
         acceptingVersion,
         version: computed(() => status.value.version),
@@ -67,7 +63,7 @@ export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
         description: computed(() => status.value.description),
         favicon: computed(() => status.value.favicon || unknownServer),
         ping: computed(() => status.value.ping),
-        refresh,
+        refresh: services.InstanceService.refreshProfile,
     };
 }
 

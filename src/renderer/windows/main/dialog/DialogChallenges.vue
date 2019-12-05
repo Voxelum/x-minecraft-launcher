@@ -42,18 +42,18 @@
   </v-dialog>
 </template>
 
-<script>
+<script lang=ts>
 import { reactive, toRefs, onMounted, watch } from '@vue/composition-api';
 import { useDialogSelf, useCurrentUserStatus, useStore } from '@/hooks';
+import { MojangChallenge } from '@xmcl/mojang';
 
 export default {
   setup() {
     const { isShown, closeDialog, showDialog } = useDialogSelf('challenge');
-    const { offline, security, refreshingSecurity } = useCurrentUserStatus();
-    const { dispatch } = useStore();
+    const { offline, security, refreshingSecurity, getChallenges, checkLocation, submitChallenges } = useCurrentUserStatus();
     const data = reactive({
       submittingChallenges: false,
-      challenges: [],
+      challenges: [] as MojangChallenge[],
       challegesError: undefined,
     });
     function checkSecurity() {
@@ -61,10 +61,10 @@ export default {
       if (!security.value) {
         closeDialog();
       }
-      dispatch('checkLocation').then(() => {
+      checkLocation().then(() => {
         if (!security.value) {
           showDialog();
-          dispatch('getChallenges').then((c) => {
+          getChallenges().then((c) => {
             data.challenges = c;
           }, (e) => {
             data.challegesError = e;
@@ -79,17 +79,17 @@ export default {
         }
       });
     });
-    
+
     return {
+      ...toRefs(data),
       offline,
       security,
-      ...toRefs(data),
       refreshingSecurity,
       isShown,
       async doSumitAnswer() {
         data.submittingChallenges = true;
         // await this.$nextTick();
-        await dispatch('submitChallenges', JSON.parse(JSON.stringify(data.challenges.map(c => c.answer)))).then((resp) => {
+        await submitChallenges(JSON.parse(JSON.stringify(data.challenges.map(c => c.answer)))).then((resp) => {
         }).then(() => {
           if (security.value) {
             closeDialog();

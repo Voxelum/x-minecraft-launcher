@@ -14,20 +14,15 @@
   </div>  
 </template>
 
-<script>
-import { useServerStatus } from '@/hooks';
+<script lang=ts>
+import { useServerStatus, useBusy } from '@/hooks';
 import { ref, onMounted } from '@vue/composition-api';
 
 export default {
   setup() {
-    const { refresh, description, favicon, version, ping } = useServerStatus();
-    const loading = ref(false);
-    function refreshServer() {
-      loading.value = true;
-      refresh().finally(() => {
-        loading.value = false;
-      });
-    }
+    const { refresh: refreshServer, description, favicon, version, ping } = useServerStatus();
+    const loading = useBusy(refreshServer);
+    
     onMounted(() => {
       if (ping.value === -1) {
         refreshServer();

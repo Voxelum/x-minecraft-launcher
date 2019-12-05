@@ -1,20 +1,19 @@
-import { GameSetting, Server, World } from "@xmcl/minecraft-launcher-core";
+import { GameSetting, Server, LevelDataFrame } from "@xmcl/minecraft-launcher-core";
 import { getExpectVersion } from 'universal/utils/versions';
 import Vue from 'vue';
-import { SaveLoadAction, InitAction } from "..";
 import { ModuleOption } from "../root";
 import { Java } from "./java";
 import { ModpackProfileConfig, ProfileConfig, ServerProfileConfig } from './profile.config';
 import { Resource } from './resource';
 import { LocalVersion } from "./version";
 
-export type CreateProfileOption = Omit<ModpackProfileConfig, 'id'> & { type: 'modpack' }
-export type CreateServerProfileOption = Omit<ServerProfileConfig, 'id'> & { type: 'server' }
-export type CreateOption = DeepPartial<CreateProfileOption | CreateServerProfileOption>;
+export type CreateProfileOption = Omit<ModpackProfileConfig, 'id' | 'lastAccessDate' | 'creationDate'> & { type: 'modpack' }
+export type CreateServerProfileOption = Omit<ServerProfileConfig, 'id' | 'lastAccessDate' | 'creationDate'> & { type: 'server' }
+export type CreateOption = Omit<DeepPartial<ModpackProfileConfig & ServerProfileConfig>, 'id' | 'lastAccessDate' | 'creationDate' | 'type'> & { type: 'modpack' | 'server' };
 export type ServerOrModpack = ModpackProfileConfig | ServerProfileConfig;
-export type ServerAndModpack = ModpackProfileConfig & ServerProfileConfig;
+export type ServerAndModpack = ModpackProfileConfig & ServerProfileConfig & { type: 'modpack' | 'server' };
 
-export type Save = Pick<World, 'level' | 'path'>
+export type Save = { level: LevelDataFrame; path: string }
 
 const DEFAULT_PROFILE: ProfileConfig = createTemplate('', { majorVersion: 8, path: '', version: '' }, '', 'modpack', false);
 
@@ -98,84 +97,7 @@ interface Mutations {
     releaseProfile: (state: State) => void;
 }
 
-interface Actions extends SaveLoadAction, InitAction {
-    loadProfile: (id: string) => void;
-    loadProfileGameSettings: (id: string) => GameSetting.Frame;
-    loadProfileSeverData: (id: string) => Server.Info[];
-    loadProfileSaves: (id: string) => Pick<World, 'level' | 'path'>[];
-    loadAllProfileSaves: () => Pick<World, 'level' | 'path'>[];
-
-    /**
-     * Return the profile's screenshots urls.
-     */
-    listProfileScreenshots: (id: string) => string[];
-
-    /**
-     * Select active profile
-     * @param id the profile uuid
-     */
-    selectProfile: (id: string) => void;
-    /**
-     * Create a launch profile (either a modpack or a server).
-     * @param option The creation option
-     */
-    createProfile: (option: CreateOption) => string;
-    createAndSelectProfile: (option: CreateOption) => string;
-    editProfile: (payload: Partial<ServerAndModpack>) => void;
-    deleteProfile: (id: string) => void;
-
-    /**
-     * Export current profile as a modpack. Can be either curseforge or normal full Minecraft
-     * @param option Which profile is exporting (search by id), where to export (dest), include assets? 
-     */
-    exportProfile: (option: { id?: string, dest: string, type: 'full' | 'no-assets' | 'curseforge' }) => void;
-    /**
-     * Import external profile into the launcher. The profile can be a curseforge zip, or a normal Minecraft file/zip. 
-     * @param location The location of the profile try to import
-     */
-    importProfile: (location: string) => void;
-    /**
-     * Resolve all deployment resources of a profile into `Resource` object.
-     * @param id The profile uuid
-     */
-    resolveProfileResources: (id?: string) => { [domain: string]: Resource<any>[] };
-
-    /**
-     * Copy current profile `src` save to other profile. The `dest` is the array of profile id. 
-     */
-    copySave: (paylod: { src: string, dest: string[] }) => void;
-    /**
-     * Import external save from its absolute `path`.
-     */
-    importSave: (path: string) => void;
-
-    /**
-     * Delete current selected profile's save by providing the save's full path
-     */
-    deleteSave: (path: string) => void;
-
-    /**
-     * Export current profile save to any `destination`
-     */
-    exportSave: (payload: { path: string, destination: string, zip?: boolean }) => void;
-
-    pingServer: (payload: { host: string, port?: number, protocol?: number }) => Server.StatusFrame;
-    pingServers: () => (Server.Info & { status: Server.StatusFrame })[];
-    pingProfiles: () => void;
-    createProfileFromServer: (info: Server.Info & { status: Server.StatusFrame }) => string;
-
-    listLogs: () => string[];
-    removeLog: (name: string) => void;
-    getLogContent: (name: string) => string;
-
-    listCrashReports: () => string[];
-    removeCrashReport: (name: string) => void;
-    getCrashReportContent: (name: string) => string;
-
-    refreshProfile: () => void;
-}
-
-export type ProfileModule = ModuleOption<State, Getters, Mutations, Actions>;
+export type ProfileModule = ModuleOption<State, Getters, Mutations, {}>;
 
 export function createTemplate(id: string, java: Java, mcversion: string, type: 'modpack' | 'server', isCreatingNew: boolean): ServerOrModpack {
     const base: ProfileConfig = {
@@ -204,7 +126,7 @@ export function createTemplate(id: string, java: Java, mcversion: string, type: 
         deployments: {
             mods: [],
         },
-        image: null,
+        image: '',
         blur: 4,
 
         lastAccessDate: -1,

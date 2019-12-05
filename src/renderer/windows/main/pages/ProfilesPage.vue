@@ -124,45 +124,84 @@
   </v-container>
 </template>
 
-<script>
+<script lang=ts>
 import { reactive, toRefs, computed, onMounted } from '@vue/composition-api';
-import { useI18n, useNativeDialog, useDialog, useStore, useNotifier, useRouter } from '@/hooks';
+import {
+  useI18n,
+  useNativeDialog,
+  useDialog,
+  useStore,
+  useNotifier,
+  useRouter,
+  useInstances,
+  useResourceOperation,
+  useCurseforgeImport,
+} from '@/hooks';
+import { ProfileConfig } from 'universal/store/modules/profile.config';
 
 export default {
   setup() {
     const { t } = useI18n();
     const { showOpenDialog } = useNativeDialog();
-    const { dispatch, commit, getters } = useStore();
+    const { selectInstance, deleteInstance, pingProfiles, instances, importInstance } = useInstances();
+    const { importResource } = useResourceOperation();
+    const { importCurseforgeModpack } = useCurseforgeImport();
     const { notify } = useNotifier();
     const router = useRouter();
-    const data = reactive({
+    const data: {
+      filter: string;
+      wizard: boolean;
+      hoverTextOnCreate: string;
+      hoverTextOnImport: string;
+      creatingServer: boolean;
+      creatingTooltip: boolean;
+      isDeletingProfile: boolean;
+      deletingProfile: ProfileConfig | {};
+      dragging: boolean;
+      draggingProfile: ProfileConfig | {};
+      pinging: boolean;
+    } = reactive({
       filter: '',
       wizard: false,
       hoverTextOnCreate: t('profile.add'),
       hoverTextOnImport: t('profile.importZip'),
       creatingServer: false,
       creatingTooltip: false,
+
       isDeletingProfile: false,
       deletingProfile: {},
 
+      /**
+       * Is dragging a profile
+       */
       dragging: false,
-      draggingProfile: {},
+      draggingProfile: { },
 
       pinging: false,
     });
     const timesliceProfiles = computed(() => {
       const filter = data.filter.toLowerCase();
-      const profiles = getters.profiles.filter(profile => filter === ''
-        || (profile.author ? profile.author.toLowerCase().indexOf(filter) !== -1 : false)
-        || profile.name.toLowerCase().indexOf(filter) !== -1
-        || (profile.description ? profile.description.toLowerCase().indexOf(filter) !== -1 : false));
+      const filtered = instances.filter(
+        profile => filter === ''
+          || ('author' in profile
+            ? profile.author.toLowerCase().indexOf(filter) !== -1
+            : false)
+          || profile.name.toLowerCase().indexOf(filter) !== -1
+          || ('description' in profile
+            ? profile.description.toLowerCase().indexOf(filter) !== -1
+            : false),
+      );
 
       const today = Math.floor(Date.now() / 1000 / 60 / 60 / 24) * 1000 * 60 * 60 * 24;
-      const threeDays = (Math.floor(Date.now() / 1000 / 60 / 60 / 24) - 3) * 1000 * 60 * 60 * 24;
+      const threeDays = (Math.floor(Date.now() / 1000 / 60 / 60 / 24) - 3)
+        * 1000
+        * 60
+        * 60
+        * 24;
       const todayR = [];
       const threeR = [];
       const other = [];
-      for (const p of profiles) {
+      for (const p of filtered) {
         if (p.lastAccessDate > today) {
           todayR.push(p);
         } else if (p.lastAccessDate > threeDays) {
@@ -173,7 +212,7 @@ export default {
       }
       return [todayR, threeR, other];
     });
-    function startDelete(prof) {
+    function startDelete(prof: ProfileConfig) {
       data.isDeletingProfile = true;
       data.deletingProfile = prof;
     }
@@ -207,36 +246,38 @@ export default {
         data.wizard = true;
       },
       onDropDelete() {
-        startDelete(data.draggingProfile);
+        startDelete(data.draggingProfile as ProfileConfig);
       },
-      doImport(fromFolder, curseforge) {
-        const filters = fromFolder ? [] : [{ extensions: ['zip'], name: 'Zip' }];
-        const properties = fromFolder ? ['openDirectory'] : ['openFile'];
-        showOpenDialog({
-          title: t('profile.import.title'),
-          description: t('profile.import.description'),
-          filters,
-          properties,
-        }, (filenames, bookmarks) => {
-          console.log(filenames);
-          if (filenames && filenames.length > 0) {
-            for (const f of filenames) {
-              if (curseforge) {
-                dispatch('importResource', { path: f, type: 'curseforge-modpack', background: true })
-                  .then(task => dispatch('waitTask', task)
-                    .then(() => dispatch('importCurseforgeModpack', { path: f })));
-              } else {
-                dispatch('importProfile', f);
-              }
+      async doImport(fromFolder: boolean, curseforge: boolean) {
+        const filters = fromFolder
+          ? []
+          : [{ extensions: ['zip'], name: 'Zip' }];
+        const { filePaths, bookmarks } = await showOpenDialog({
+            title: t('profile.import.title'),
+            message: t('profile.import.description'),
+            filters,
+            properties: fromFolder ? ['openDirectory'] : ['openFile'],
+        });
+        if (filePaths && filePaths.length > 0) {
+          for (const f of filePaths) {
+            if (curseforge) {
+              await importResource({
+                path: f,
+                type: 'curseforge-modpack',
+                background: true,
+              });
+              await importCurseforgeModpack({ path: f })
+            } else {
+              await importInstance(f);
             }
           }
-        });
+        }
       },
       doDelete() {
-        if (data.deletingProfile) {
-          dispatch('deleteProfile', data.deletingProfile.id).finally(() => {
+        if ('id' in data.deletingProfile) {
+          deleteInstance(data.deletingProfile.id).finally(() => {
             data.isDeletingProfile = false;
-          });
+          });;
         } else {
           data.isDeletingProfile = false;
         }
@@ -245,16 +286,8 @@ export default {
         data.isDeletingProfile = false;
         data.deletingProfile = {};
       },
-      doCopy(id) {
-      },
-      onProfileMove(e) {
-        if (data.filter.length !== 0) {
-          return false;
-        }
-        return true;
-      },
-      selectProfile(id) {
-        commit('selectProfile', id);
+      selectProfile(id: string) {
+        selectInstance(id);
         router.replace('/');
       },
       enterAltCreate() {
@@ -267,7 +300,7 @@ export default {
           data.hoverTextOnCreate = t('profile.add');
         }, 100);
       },
-      enterImport(text) {
+      enterImport(text: string) {
         setTimeout(() => {
           data.hoverTextOnImport = text;
         }, 100);
@@ -280,11 +313,11 @@ export default {
       refresh() {
         if (data.pinging) return;
         data.pinging = true;
-        dispatch('pingProfiles').then(() => {
-          notify('success', t('profile.refreshServers'));
-        }, (e) => {
-          notify('error', t('profile.refreshServers'), e);
-        }).finally(() => {
+        pingProfiles().then(() => {
+            notify('success', t('profile.refreshServers'));
+          }, (e) => {
+            notify('error', t('profile.refreshServers'), e);
+          }).finally(() => {
           data.pinging = false;
         });
       },
@@ -293,9 +326,7 @@ export default {
       //   'orange', 'deep-orange', 'brown'],
     };
   },
-  methods: {
-    
-  },
+  methods: {},
 };
 </script>
 

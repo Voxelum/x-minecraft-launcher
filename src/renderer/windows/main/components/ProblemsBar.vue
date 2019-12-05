@@ -29,19 +29,20 @@
   </v-menu>
 </template>
 
-<script>
-import { useStore, useRouter } from '@/hooks';
+<script lang=ts>
 import { computed } from '@vue/composition-api';
+import { Problem } from 'universal/store/modules/diagnose';
+import { useStore, useRouter } from '@/hooks';
 
 export default {
   setup() {
-    const { getters, state, dispatch } = useStore();
+    const { getters, state, services } = useStore();
     const router = useRouter();
     const problems = computed(() => getters.problems);
     const problemsLevelColor = computed(() => (getters.problems.some(p => !p.optional) ? 'red' : 'warning'));
     const refreshing = computed(() => getters.refreshing);
 
-    async function handleManualFix(problem) {
+    async function handleManualFix(problem: Problem) {
       let handle;
       switch (problem.id) {
         case 'missingModsOnServer':
@@ -56,7 +57,7 @@ export default {
           break;
         case 'incompatibleJava':
           if (state.java.all.some(j => j.majorVersion === 8)) {
-            await dispatch('editProfile', { java: state.java.all.find(j => j.majorVersion === 8) });
+            await services.InstanceService.editInstance({ java: state.java.all.find(j => j.majorVersion === 8) });
             // TODO: notify user here the launcher switch java version
           } else {
             // data.javaWizardDialog = true;
@@ -67,13 +68,13 @@ export default {
     }
 
     function handleAutoFix() {
-      dispatch('fixProfile', problems.value);
+      services.DiagnoseService.fixProfile(problems.value);
     }
     return {
       problems,
       problemsLevelColor,
       refreshing,
-      fixProblem(problem) {
+      fixProblem(problem: Problem) {
         console.log(problem);
         if (!problem.autofix) {
           handleManualFix(problem);

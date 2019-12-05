@@ -1,4 +1,5 @@
 import { inject, InjectionKey, Ref, provide, ref } from "@vue/composition-api";
+import { requireNonnull } from "main/utils";
 
 export type Status = 'success' | 'info' | 'warning' | 'error';
 const STATUS_SYMBOL: InjectionKey<Ref<Status>> = Symbol('NotifierStatus');
@@ -24,18 +25,31 @@ export function useNotifier() {
     const cont = inject(CONTENT_SYMBOL);
     const error = inject(ERROR_SYMBOL);
     const show = inject(SHOW_SYMBOL);
-    if (!stat || !cont || !error || !show) throw new Error('Cannot init notifier hook!')
+    if (!stat || !cont || !error || !show) throw new Error('Cannot init notifier hook!');
+
+    const notify = (status: Status, content: string, e?: any) => {
+        stat.value = status;
+        cont.value = content;
+        show.value = true;
+        error.value = e;
+    }
 
     return {
         status: stat,
         content: cont,
         error,
         show,
-        notify(status: Status, content: string, e?: any) {
-            stat.value = status;
-            cont.value = content;
-            show.value = true;
-            error.value = e;
+        notify,
+        subscribe<T>(promise: Promise<T>, success?: (r: T) => string, failed?: (e: any) => string) {
+            promise.then((r) => {
+                if (success) {
+                    notify('success', success(r))
+                }
+            }, (e) => {
+                if (failed) {
+                    notify('error', failed(e), e);
+                }
+            });
         }
     };
 }

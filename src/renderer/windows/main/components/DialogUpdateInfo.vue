@@ -24,13 +24,13 @@
       <v-divider />
       <v-card-text style="overflow: auto;" v-html="updateInfo.releaseNotes" />
       <v-card-actions>
-        <v-btn v-if="!readyToUpdate" block color="primary" flat :loading="downloadingUpdate" :disabled="downloadingUpdate" @click="downloadThisUpdate">
+        <v-btn v-if="!readyToUpdate" block color="primary" flat :loading="downloadingUpdate" :disabled="downloadingUpdate" @click="downloadUpdate">
           <v-icon color="white" left>
             cloud_download
           </v-icon>
           {{ $t('setting.updateToThisVersion') }}
         </v-btn>
-        <v-btn v-else block color="primary" @click="installThisUpdate">
+        <v-btn v-else block color="primary" @click="quitAndInstall">
           <v-icon color="white" left>
             refresh
           </v-icon>
@@ -52,35 +52,23 @@
   </v-dialog>
 </template>
 
-<script>
-export default {
+<script lang=ts>
+import { createComponent } from "@vue/composition-api";
+import { useUpdateInfo } from "@/hooks";
+
+export default createComponent({
   props: {
     value: {
       type: Boolean,
       default: false,
     },
   },
-  computed: {
-    checkingUpdate() { return this.$repo.state.setting.checkingUpdate; },
-    downloadingUpdate() { return this.$repo.state.setting.downloadingUpdate; },
-    updateInfo() { return this.$repo.state.setting.updateInfo; },
-    readyToUpdate() { return this.$repo.state.setting.readyToUpdate; },
+  setup() {
+    return {
+      ...useUpdateInfo()
+    }
   },
-  methods: {
-    downloadThisUpdate() {
-      this.$repo.dispatch('downloadUpdate');
-      // this.$notify('info', this.$t('setting.startDownloadUpdate'));
-    },
-    installThisUpdate() {
-      this.$repo.dispatch('quitAndInstall');
-    },
-    checkUpdate() {
-      this.$repo.dispatch('checkUpdate').then((result) => {
-        console.log(result);
-      });
-    },
-  },
-};
+});
 </script>
 
 <style>

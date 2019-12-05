@@ -59,7 +59,7 @@
 
 <script>
 import { reactive, toRefs, computed, onMounted, watch } from '@vue/composition-api';
-import { useCurrentUser, useStore, useDialogSelf, useMutations } from '@/hooks';
+import { useStore, useDialogSelf, useMutations } from '@/hooks';
 
 export default {
   setup() {

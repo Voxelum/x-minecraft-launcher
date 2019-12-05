@@ -78,9 +78,9 @@ export interface ProfileConfig {
         [id: string]: string;
     };
 
-    resolution: { width: number, height: number, fullscreen: boolean };
-    minMemory?: number;
-    maxMemory?: number;
+    resolution: { width: number, height: number, fullscreen: boolean } | undefined;
+    minMemory: number | undefined;
+    maxMemory: number | undefined;
 
     /**
      * @default []

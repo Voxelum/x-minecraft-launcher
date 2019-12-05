@@ -31,11 +31,12 @@
   </v-dialog>
 </template>
 
-<script>
+<script lang=ts>
 import Vue from 'vue';
-import { useStore, useDialogSelf, useNotifier, useI18n } from '@/hooks';
+import { useStore, useDialogSelf, useI18n, useClipboard } from '@/hooks';
 import { reactive, computed, toRefs, onMounted, onUnmounted } from '@vue/composition-api';
-import { clipboard, ipcRenderer } from 'electron';
+import { IpcRendererEvent } from 'electron';
+import { TaskState } from 'universal/store/modules/task';
 
 export default {
   props: {
@@ -45,10 +46,10 @@ export default {
     },
   },
   setup() {
-    const { state, dispatch } = useStore();
+    const { state } = useStore();
+    const clipboard = useClipboard();
     const { showDialog, isShown } = useDialogSelf('task');
     const { t } = useI18n();
-    const { notify } = useNotifier();
 
     const data = reactive({
       tree: [],
@@ -58,39 +59,20 @@ export default {
     });
     const all = computed(() => state.task.tasks.filter(n => !n.background));
 
-    function onSuccessed(event, id) {
-      const task = state.task.tree[id];
-      if (task.background) return;
-      notify('success', t(task.path, task.arguments || {}));
-    }
-    function onFailed(event, id, error) {
-      const task = state.task.tree[id];
-      if (task.background) return;
-      notify('error', t(task.path, task.arguments || {}), error);
-    }
-    onMounted(() => {
-      ipcRenderer.addListener('task-successed', onSuccessed);
-      ipcRenderer.addListener('task-failed', onFailed);
-    });
-    onUnmounted(() => {
-      ipcRenderer.removeListener('task-successed', onSuccessed);
-      ipcRenderer.removeListener('task-failed', onFailed);
-    });
-    
     return {
       ...toRefs(data),
       all,
       isShown,
       close() { showDialog(''); },
-      showTaskContext(event, item) {
+      showTaskContext(/* event, item */) {
         // this.$menu([{ title: 'hello', onClick() { } }], event.clientX, event.clientY);
       },
-      onTaskClick(event, item) {
-        clipboard.writeText(item.message);
+      onTaskClick(event: MouseEvent, item: TaskState) {
+        clipboard.writeText(item.message || '');
       },
-      cancelTask(event, id) {
-        dispatch('cancelTask', id);
-      },
+      // cancelTask(event, id) {
+      //   dispatch('cancelTask', id);
+      // },
     };
   },
 };

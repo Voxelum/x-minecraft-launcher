@@ -25,7 +25,7 @@
           <v-layout row wrap>
             <v-flex d-flex xs12>
               <v-list style="background: transparent" two-line>
-                <v-list-tile v-for="(p, i) in profiles" :key="p.id" ripple @click="selectProfileTemplate(i)">
+                <v-list-tile v-for="(p, i) in profiles" :key="p.id" ripple @click="selectProfileTemplate(i, p)">
                   <v-list-tile-action>
                     <v-checkbox :value="template === (i)" readonly />
                   </v-list-tile-action>
@@ -52,7 +52,7 @@
                 <v-list-tile v-for="(p, i) in modpacks" 
                              :key="p.hash" 
                              ripple 
-                             @click="selectModpackTemplate(i)">
+                             @click="selectModpackTemplate(i, p)">
                   <v-list-tile-action>
                     <v-checkbox :value="template === (i - profiles.length)" readonly />
                   </v-list-tile-action>
@@ -223,11 +223,25 @@
   </v-stepper>
 </template>
 
-<script>
-import { reactive, toRefs, computed, onMounted, watch } from '@vue/composition-api';
-import { useI18n, useProfileCreation, useJava, useProfileVersionBase, useProfile, useCurrentUser, useForgeVersions, useRouter, useProfileTemplates, useCurseforgeImport, useTask, useStore, useMinecraftVersions } from '../../../hooks';
+<script lang=ts>
+import { reactive, toRefs, computed, onMounted, watch, createComponent, ref, Ref } from '@vue/composition-api';
+import {
+  useI18n,
+  useJava,
+  useCurrentUser,
+  useForgeVersions,
+  useRouter,
+  useProfileTemplates,
+  useCurseforgeImport,
+  useTask,
+  useStore,
+  useMinecraftVersions,
+  useInstanceCreation,
+} from '@/hooks';
+import { ServerOrModpack } from 'universal/store/modules/profile';
+import { CurseforgeModpackResource } from 'universal/store/modules/resource';
 
-export default {
+export default createComponent({
   props: {
     show: {
       type: Boolean,
@@ -236,12 +250,12 @@ export default {
   },
   setup(props, context) {
     const { t } = useI18n();
-    const { createAndSelectProfile } = useProfileCreation();
+    const { create, reset, use, ...creationData } = useInstanceCreation();
     const router = useRouter();
     const staticData = {
-      memoryRule: [v => Number.isInteger(v)],
+      memoryRule: [(v: any) => Number.isInteger(v)],
       nameRules: [
-        v => !!v || t('profile.requireName'),
+        (v: any) => !!v || t('profile.requireName'),
       ],
     };
     const data = reactive({
@@ -251,70 +265,43 @@ export default {
       step: 1,
       valid: false,
 
-      name: '',
-      mcversion: '',
-      forgeVersion: '',
-      javaLocation: undefined,
-      maxMemory: undefined,
-      minMemory: undefined,
-      author: '',
-      description: '',
-
       javaValid: true,
-
-      importTask: '',
     });
+    const importTask: Ref<Promise<void> | null> = ref(null);
     const { name } = useCurrentUser();
     const { all: javas, default: defaultJava } = useJava();
     const { release } = useMinecraftVersions();
     const { profiles, modpacks } = useProfileTemplates();
     const { importCurseforgeModpack } = useCurseforgeImport();
-    const { dispatch } = useStore();
     const fromModpack = computed(() => data.template >= profiles.value.length);
-    const template = computed(() => (!fromModpack.value ? profiles.value[data.template] : modpacks.value[data.template - profiles.value.length]));
     const ready = computed(() => data.valid && data.javaValid);
     function init() {
       data.step = 1;
-      data.name = '';
-      data.author = name.value;
-      data.description = '';
-      data.mcversion = release.value.id;
-      data.forgeVersion = '';
-
-      data.javaLocation = javas.value.find(j => j.path === defaultJava.value.path);
-      data.minMemory = undefined;
-      data.maxMemory = undefined;
+      reset();
     }
-    function selectProfileTemplate(i) {
-      if (data.template === i) {
+    function selectProfileTemplate(index: number, template: ServerOrModpack) {
+      if (data.template === index) {
         data.template = -1;
         data.step = 1;
         return;
       }
-      data.template = i;
-      const temp = template.value;
-      data.mcversion = temp.version.minecraft;
-      data.name = `${temp.name || `Minecraft: ${data.mcversion}`} +`;
-      data.forgeVersion = temp.version.forge;
-      if (temp.javaLocation) {
-        data.javaLocation = javas.value.find(j => j.path === temp.javaLocation.path);
-      }
-      data.description = temp.description;
-
+      data.template = index;
       data.step = 1;
+      use(template);
+      creationData.author.value = name.value;
     }
-    function selectModpackTemplate(i) {
-      i += profiles.length;
-      if (data.template === i) {
+    function selectModpackTemplate(index: number, template: CurseforgeModpackResource) {
+      index += profiles.value.length;
+      if (data.template === index) {
         data.template = -1;
         data.step = 1;
         return;
       }
-      data.template = i;
-      const temp = template.value;
-      data.name = temp.metadata.name;
-      data.mcversion = temp.metadata.minecraft.version;
-      data.author = temp.metadata.author;
+      data.template = index;
+      const metadata = template.metadata;
+      creationData.name.value = metadata.name;
+      creationData.version.value!.minecraft = metadata.minecraft.version;
+      creationData.author.value = metadata.author;
 
       data.step = 1;
     }
@@ -323,49 +310,27 @@ export default {
       context.emit('quit');
     }
     onMounted(() => {
-      watch(computed(() => props.show), () => {
-        init();
+      watch(computed(() => props.show), (v) => {
+        if (v) {
+          init();
+        }
       });
     });
     async function doCreate() {
       data.creating = true;
       try {
         if (data.template !== -1) {
-          const temp = template.value;
           if (fromModpack.value) {
             data.step = 3;
-            data.importTask = await importCurseforgeModpack({
+            importTask.value = importCurseforgeModpack({
               path: modpacks.value[data.template - profiles.value.length].path,
             });
-            await dispatch('waitTask', data.importTask);
+            await importTask.value;
           } else {
-            await createAndSelectProfile({
-              ...temp,
-              name: data.name,
-              author: data.author,
-              description: data.description,
-              mcversion: data.mcversion,
-              minMemory: data.minMemory,
-              maxMemory: data.maxMemory,
-              java: data.javaLocation,
-              forge: {
-                version: data.forgeVersion,
-              },
-            });
+            await create();
           }
         } else {
-          await createAndSelectProfile({
-            name: data.name,
-            author: data.author,
-            description: data.description,
-            mcversion: data.mcversion,
-            minMemory: data.minMemory,
-            maxMemory: data.maxMemory,
-            java: data.javaLocation,
-            forge: {
-              version: data.forgeVersion,
-            },
-          });
+          await create();
         }
         init();
         router.replace('/');
@@ -387,7 +352,7 @@ export default {
       modpacks,
     };
   },
-};
+});
 </script>
 
 <style>

@@ -1,6 +1,5 @@
 import { ForgeInstaller } from "@xmcl/minecraft-launcher-core";
 import { ResolvedLibrary, Version } from "@xmcl/version";
-import { SaveAction, InitAction } from "..";
 import { ModuleOption } from "../root";
 
 export interface Problem {
@@ -62,17 +61,7 @@ interface Mutations {
     endResolveProblems: Problem[];
 }
 
-interface Actions extends SaveAction, InitAction {
-    diagnoseVersion: () => void;
-    diagnoseMods: () => void;
-    diagnoseResourcePacks: () => void;
-    diagnoseJava: () => void;
-    diagnoseServer: () => void;
-    diagnoseUser: () => void;
-    fixProfile: (problems: Problem[]) => void;
-}
-
-export type DiagnoseModule = ModuleOption<State, Getters, Mutations, Actions>;
+export type DiagnoseModule = ModuleOption<State, Getters, Mutations, {}>;
 
 const mod: DiagnoseModule = {
     state: {

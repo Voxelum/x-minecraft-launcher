@@ -1,9 +1,17 @@
 {
+    "parser": "@typescript-eslint/parser",
     "root": true,
     "parserOptions": {
-        "parser": "babel-eslint",
-        "sourceType": "module"
+        "ecmaVersion": 2018,
+        "project": "tsconfig.json",
+        "sourceType": "module",
+        "tsconfigRootDir": ".",
+        "extraFileExtensions": [".vue"]
     },
+    "plugins": [
+        "vue",
+        "@typescript-eslint"
+    ],
     "globals": {
         "__static": true
     },
@@ -17,9 +25,6 @@
     "extends": [
         "airbnb-base",
         "plugin:vue/recommended"
-    ],
-    "plugins": [
-        "vue"
     ],
     "settings": {
         "import/resolver": {
@@ -85,6 +90,7 @@
         "vue/max-attributes-per-line": 0,
         "vue/html-closing-bracket-newline": 0,
         "no-continue": 0,
-        "import/no-named-as-default": 0
+        "import/no-named-as-default": 0,
+        "no-array-constructor": 0
     }
 }

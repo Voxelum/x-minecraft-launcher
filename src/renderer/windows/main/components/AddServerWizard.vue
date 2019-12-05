@@ -136,8 +136,8 @@
 </template>
 
 <script>
-import { useMinecraftVersions, useForgeVersions, useJava, useServerStatus, useI18n, useServer, useRouter, useProfileCreation } from '@/hooks';
 import { reactive, toRefs, ref, computed, onMounted, onUnmounted, watch } from '@vue/composition-api';
+import { useMinecraftVersions, useForgeVersions, useJava, useServerStatus, useI18n, useServer, useRouter, useProfileCreation } from '@/hooks';
 
 export default {
   props: {

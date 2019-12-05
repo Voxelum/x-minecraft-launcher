@@ -92,10 +92,9 @@
   </v-dialog>
 </template>
 
-<script>
+<script lang=ts>
 import { reactive, computed, toRefs, onMounted, onUnmounted, watch } from '@vue/composition-api';
-import { remote } from 'electron';
-import { useDialog, useDialogSelf, useI18n, useStore } from '@/hooks';
+import { useDialog, useDialogSelf, useI18n, useStore, useJava, useShell, useNativeDialog } from '@/hooks';
 
 export default {
   props: {
@@ -105,8 +104,12 @@ export default {
     },
   },
   setup() {
-    const { getters, state, dispatch } = useStore();
+    const shell = useShell();
+    const dialog = useNativeDialog();
+    const { getters, state } = useStore();
     const { t } = useI18n();
+    const { showDialog, isShown } = useDialogSelf('java-wizard');
+    const { add, refreshLocalJava, installDefault } = useJava();
     const data = reactive({
       step: 0,
 
@@ -127,12 +130,11 @@ export default {
         message: t('diagnosis.missingJava.selectJava.message'),
       }],
     });
-    const { showDialog, isShown } = useDialogSelf('java-wizard');
     const missing = computed(() => getters.missingJava);
     const reason = computed(() => (!missing.value ? t('java.incompatibleJava') : t('java.missing')));
     const hint = computed(() => (!missing.value ? t('java.incompatibleJavaHint') : t('java.missingHint')));
 
-    let unwatch;
+    let unwatch = () => { };
     onMounted(() => {
       updateValue();
       unwatch = watch(missing, updateValue);
@@ -146,13 +148,13 @@ export default {
     }
     function refresh() {
       data.status = 'resolving';
-      dispatch('refreshLocalJava').finally(() => {
+      refreshLocalJava().finally(() => {
         if (missing.value) {
           data.status = 'error';
           showDialog();
         } else {
-          data.reason = null;
-          data.hint = null;
+          // reason.value = '';
+          // hint.value = '';
         }
       });
     }
@@ -163,36 +165,25 @@ export default {
       hint,
       missing,
       refresh,
-      async fixProblem(index) {
+      async fixProblem(index: number) {
         data.step = index + 1;
         let handle;
         switch (index) {
           case 0:
-            handle = await dispatch('installJava', true);
+            await installDefault(true).catch(e => data.downloadError = e);
             showDialog('task');
-            data.items = state.task.tree[handle].tasks;
-            try {
-              await dispatch('waitTask', handle);
-            } catch (e) {
-              data.downloadError = e;
-            }
-            refresh();
             break;
           case 1:
-            await remote.shell.openExternal('https://www.java.com/download/');
+            await shell.openExternal('https://www.java.com/download/');
             break;
           case 2:
             data.status = 'resolving';
-            remote.dialog.showOpenDialog({
+            const { filePaths } = await dialog.showOpenDialog({
               title: t('java.browse'),
-            }, (filepaths, bookmarks) => {
-              filepaths.forEach((p) => {
-                dispatch('resolveJava', p)
-                  .then((r) => {
-                    if (!r) {
-                      data.status = 'error';
-                    }
-                  });
+            });
+            filePaths.forEach((p) => {
+              add(p).then((r) => {
+                if (!r) { data.status = 'error'; }
               });
             });
             break;

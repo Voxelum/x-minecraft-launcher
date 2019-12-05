@@ -1,7 +1,7 @@
-import { Forge, LiteLoader, ResourcePack, World } from "@xmcl/minecraft-launcher-core";
+import { Forge, LevelDataFrame, LiteLoader, ResourcePack } from "@xmcl/minecraft-launcher-core";
 import Vue from 'vue';
-import { InitAction, LoadAction } from '..';
 import { ModuleOption } from "../root";
+import { Modpack } from "main/service/CurseForgeService";
 
 interface State {
     refreshing: boolean;
@@ -14,99 +14,112 @@ interface State {
     }
 }
 
-interface Actions extends LoadAction, InitAction {
-    /**
-     * Rescan the local resources files' metadata. This will update the resource's metadata if the resource is modified.
-     */
-    refreshResources: () => void;
-    /**
-     * Deploy all the resource from `resourceUrls` into profile which uuid equals to `profile`.
-     * 
-     * The `mods` and `resourcepacks` will be deploied by linking the mods & resourcepacks files into the `mods` and `resourcepacks` directory of the profile.
-     * 
-     * The `saves` and `modpack` will be deploied by pasting the saves and modpack overrides into this profile directory.
-     */
-    deployResources: (payload: { resourceUrls: string[], profile: string }) => void[];
-    readForgeLogo: (id: string) => string;
-    /**
-     * Remove the resource from the disk. Both the resource metadata and the resource file will be removed. 
-     */
-    removeResource: (resource: string | AnyResource) => void;
+interface Getters {
+    domains: string[];
+    mods: (ForgeResource | LiteloaderResource)[];
+    resourcepacks: ResourcePackResource[];
+    saves: SaveResource[];
+    modpacks: CurseforgeModpackResource[];
 
-    /**
-     * Same to `refreshResources` except this only scan one resource.
-     */
-    refreshResource: (resource: string | AnyResource) => void;
+    getResource: (hash: string) => AnyResource | undefined;
 
-    /**
-     * Rename resource, this majorly affect resource pack's displayed file name.
-     */
-    renameResource: (option: { resource: string | AnyResource, name: string }) => void;
-    /**
-     * Import the resource into the launcher. 
-     */
-    importResource: (option: ImportOption) => TaskHandle;
-
-    /**
-     * Export the resources into target directory. This will simply copy the resource out.
-     */
-    exportResource: (option: { resources: (string | AnyResource)[], targetDirectory: string }) => void;
+    queryResource(payload: string
+        | { modid: string; version: string; }
+        | { fileId: number; }
+        | { fileId: number; projectId: number }
+        | { name: string; version: string; }): AnyResource;
 }
 
-export type ResourceModule = ModuleOption<State,
-    {
-        domains: string[];
-        mods: (ForgeResource | LiteloaderResource)[];
-        resourcepacks: ResourcePackResource[];
-        saves: SaveResource[];
-        modpacks: CurseforgeModpackResource[];
-
-        getResource: (hash: string) => AnyResource | undefined;
-
-        queryResource(payload: string
-            | { modid: string; version: string; }
-            | { fileId: number; }
-            | { fileId: number; projectId: number }
-            | { name: string; version: string; }): AnyResource | undefined;
-    },
-    {
-        resource: AnyResource;
-        resources: AnyResource[];
-        refreshingResource: boolean;
-        removeResource: AnyResource;
-    },
-    Actions>;
-
-export interface Source {
-    path: string;
-    date: string;
-    [key: string]: string | Record<string, string>;
+interface Mutations {
+    resource: AnyResource;
+    resources: AnyResource[];
+    refreshingResource: boolean;
+    removeResource: AnyResource;
 }
 
+export type ResourceModule = ModuleOption<State, Getters, Mutations, {}>;
+
+export type ImportTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save';
 export type ImportOption = {
+    /**
+     * The real file path of the resource
+     */
     path: string;
-    type?: string | 'forge' | 'liteloader' | 'curseforge-modpack' | 'save';
+    /**
+     * The hint for the import file type
+     */
+    type?: ImportTypeHint;
+    /**
+     * The extra info you want to provide to the source of the resource
+     */
     metadata?: any;
     background?: boolean;
 }
 
-export interface Resource<T> {
-    name: string;
+export interface Source {
     path: string;
+    /**
+     * The date of import
+     */
+    date: string;
+    [key: string]: string | Record<string, string>;
+}
+export interface Resource<T> {
+    /**
+     * The name of the resource
+     */
+    name: string;
+    /**
+     * The resource file path
+     */
+    path: string;
+    /**
+     * The sha1 of the resource
+     */
     hash: string;
+    /**
+     * The suggested ext of the resource
+     */
     ext: string;
+    /**
+     * The resource type. Can be `forge`, `liteloader`, `resourcepack`, and etc.
+     */
     type: string;
+    /**
+     * The domain of the resource. This decide where (which folder) the resource go 
+     */
     domain: string | 'mods' | 'resourcepacks' | 'modpacks' | 'saves';
+    /**
+     * The resource specific metadata
+     */
     metadata: T;
+    /**
+     * Where the resource imported from?
+     */
     source: Source;
 }
 
 export type AnyResource = Resource<any>;
-export type ForgeResource = Resource<Forge.MetaData[]> & { type: 'forge' };
+export type ForgeResource = Resource<Forge.ModMetaData[]> & { type: 'forge' };
 export type LiteloaderResource = Resource<LiteLoader.MetaData> & { type: 'liteloader' };
 export type ResourcePackResource = Resource<ResourcePack> & { type: 'resourcepack' };
-export type CurseforgeModpackResource = Resource<any> & { type: 'curseforge-modpack' };
-export type SaveResource = Resource<Pick<World, 'path' | 'level'>> & { type: 'save' };
+export type CurseforgeModpackResource = Resource<Modpack> & { type: 'curseforge-modpack' };
+export type SaveResource = Resource<LevelDataFrame> & { type: 'save' };
+export type UnknownResource = Resource<{}> & { type: 'unknown' };
+
+const UNKNOWN_RESOURCE: UnknownResource = {
+    metadata: {},
+    type: 'unknown',
+    domain: 'unknown',
+    hash: '',
+    ext: '',
+    path: '',
+    name: '',
+    source: {
+        path: '',
+        date: '',
+    },
+};
 
 const mod: ResourceModule = {
     state: {
@@ -130,7 +143,7 @@ const mod: ResourceModule = {
             }
             return undefined;
         },
-        queryResource: (state, getters) => (q) => {
+        queryResource: (state) => (q) => {
             let qObject = q;
             if (typeof qObject === 'string') {
                 const [host, ...res] = qObject.split('/');
@@ -145,7 +158,7 @@ const mod: ResourceModule = {
                         qObject = { name: res[0], version: res[1] };
                         break;
                     case 'file':
-                        return undefined;
+                        return UNKNOWN_RESOURCE;
                     case 'resource':
                         for (const domain of Object.values(state.domains)) {
                             if (domain[res[0]]) return domain[res[0]];
@@ -157,20 +170,20 @@ const mod: ResourceModule = {
                         }
                 }
             }
-            if (typeof qObject !== 'object') return undefined;
+            if (typeof qObject !== 'object') return UNKNOWN_RESOURCE;
             if ('modid' in qObject && 'version' in qObject) {
                 const { modid, version } = qObject;
                 return Object.values(state.domains.mods)
                     .filter(m => m.type === 'forge')
-                    // eslint-disable-next-line
-                    .find(m => m.metadata instanceof Array ? (m.metadata.some(me => me.modid === modid && me.version === version)) : false);
+                    .find(m => m.metadata instanceof Array ? (m.metadata.some(me => me.modid === modid && me.version === version)) : false) 
+                    || UNKNOWN_RESOURCE;
             }
             if ('name' in qObject && 'version' in qObject) {
                 const { name, version } = qObject;
                 return Object.values(state.domains.mods)
                     .filter(m => m.type === 'forge')
-                    // eslint-disable-next-line
-                    .find(m => 'version' in m.metadata ? (m.metadata.name === name && m.metadata.version === version) : false);
+                    .find(m => 'version' in m.metadata ? (m.metadata.name === name && m.metadata.version === version) : false)
+                    || UNKNOWN_RESOURCE;
             }
             if ('fileId' in qObject) {
                 const id = qObject.fileId
@@ -182,7 +195,7 @@ const mod: ResourceModule = {
                     if (found) return found;
                 }
             }
-            return undefined;
+            return UNKNOWN_RESOURCE;
         },
     },
     mutations: {

@@ -9,13 +9,13 @@ interface MissingMod {
     modid: string;
     version: string;
     status: ModStatus;
-    task: TaskHandle;
-    info?: Forge.MetaData & { projectId: string; fileId: string };
+    task: string;
+    info?: Forge.ModMetaData & { projectId: string; fileId: string };
 };
 
 export function useMissingMods(modList: Ref<{ modid: string; version: string }[]>) {
-    const { dispatch, getters } = useStore();
-    const items: Ref<MissingMod[]> = computed(() => (modList.value.map(i => ({ ...i, status: 'unknown', task: '' }))));
+    const { services, getters } = useStore();
+    const items: Ref<MissingMod[]> = computed(() => (modList.value.map(i => ({ ...i, status: 'unknown', task: '' })))) as any;
     const activated = computed(() => items.value.some(i => i.status === 'founded'));
     const downloading = computed(() => items.value.some(i => i.status === 'downloading'));
     const checking = ref(false);
@@ -36,7 +36,7 @@ export function useMissingMods(modList: Ref<{ modid: string; version: string }[]
         for (const m of unchecked) {
             m.status = 'loading';
             try {
-                m.info = await dispatch('fetchMetadataByModId', m);
+                m.info = await services.CurseForgeService.fetchMetadataByModId(m);
                 m.status = 'founded';
             } catch (e) {
                 m.status = 'not-found';
@@ -48,7 +48,7 @@ export function useMissingMods(modList: Ref<{ modid: string; version: string }[]
 
     async function downloadAllAvailable() {
         for (let m of items.value.filter(i => i.status === 'founded')) {
-            await dispatch('fetchMetadataByModId', m);
+            await services.CurseForgeService.fetchMetadataByModId(m);
         }
     }
 

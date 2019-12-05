@@ -4,16 +4,9 @@ import { useProfileVersion } from "./useProfile";
 import { remote } from "electron";
 
 export function useVersions() {
-    const { dispatch } = useStore();
-
-    /**
-     * Delete the local version with `id`
-     */
-    function deleteVersion(id: string) {
-        return dispatch('deleteVersion', id);
-    }
+    const { services } = useStore();
     return {
-        deleteVersion,
+        deleteVersion: services.VersionService.deleteVersion,
     }
 }
 
@@ -56,7 +49,7 @@ export function useMinecraftVersions() {
 }
 
 export function useForgeVersions(minecraftVersion: Ref<string>) {
-    const { dispatch, state, getters } = useStore();
+    const { state, getters, services } = useStore();
 
     const versions = computed(() => (state.version.forge[minecraftVersion.value] || { versions: [] }).versions);
     const refreshing = computed(() => state.version.refreshingForge);
@@ -68,7 +61,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     onMounted(() => {
         handle = watch(minecraftVersion, (v) => {
             if (versions.value.length === 0) {
-                dispatch('refreshForge', minecraftVersion.value)
+                services.VersionInstallService.refreshForge(minecraftVersion.value);
             }
         })
     })
@@ -77,7 +70,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     });
 
     function refresh() {
-        return dispatch('refreshForge', minecraftVersion.value);
+        return services.VersionInstallService.refreshForge(minecraftVersion.value);
     }
 
     return {

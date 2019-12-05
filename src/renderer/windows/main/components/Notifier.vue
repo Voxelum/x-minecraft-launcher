@@ -42,13 +42,12 @@
   </v-snackbar>
 </template>
 
-<script>
+<script lang=ts>
 import Vue from 'vue';
-import { reactive, toRefs, onMounted, onUnmounted } from '@vue/composition-api';
-import { ipcRenderer } from 'electron';
+import { reactive, toRefs, onMounted, onUnmounted, createComponent } from '@vue/composition-api';
 import { useStore, useI18n, useNotifier } from '@/hooks';
 
-export default {
+export default createComponent({
   setup() {
     const { state } = useStore();
     const { t } = useI18n();
@@ -77,7 +76,7 @@ export default {
       },
     };
   },
-};
+});
 </script>
 
 <style>

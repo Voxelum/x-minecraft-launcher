@@ -2,7 +2,7 @@ import { useStore } from "./useStore";
 import { computed } from "@vue/composition-api";
 
 export function useLaunch() {
-    const { state, dispatch } = useStore();
+    const { state, services } = useStore();
     const status = computed(() => { return state.launch.status; });
     const errorType = computed(() => { return state.launch.errorType; });
     const errors = computed(() => {
@@ -13,17 +13,10 @@ export function useLaunch() {
             return JSON.stringify(e);
         }).join('\n');
     });
-    function launch() {
-        return dispatch('launch');
-    }
-    function quit() {
-        return dispatch('quit');
-    }
     return {
         status,
         errorType,
         errors,
-        launch,
-        quit,
+        launch: services.LaunchService.launch,
     }
 }

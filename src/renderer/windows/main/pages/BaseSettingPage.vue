@@ -77,22 +77,40 @@
   </v-form>
 </template>
 
-<script>
+<script lang=ts>
 import { reactive, toRefs, computed } from '@vue/composition-api';
-import {
-  useProfile,
-  useStore,
-  useAutoSaveLoad,
-  useRouter,
-} from '@/hooks';
+import { useInstance, useStore, useAutoSaveLoad, useRouter } from '@/hooks';
 
 export default {
   setup() {
-    const { version, isServer, showLog, hideLauncher, name, author,
-      url, type, description, port, host, edit } = useProfile();
+    const {
+      version,
+      isServer,
+      showLog,
+      hideLauncher,
+      name,
+      author,
+      url,
+      type,
+      description,
+      port,
+      host,
+      edit,
+    } = useInstance();
     const router = useRouter();
-    const { dispatch } = useStore();
-    const data = reactive({
+    const data: {
+      active: number;
+      valid: boolean;
+      hideLauncher: boolean;
+      showLog: boolean;
+      type: string;
+      name: string;
+      host: string;
+      port: string;
+      author: string;
+      description: string;
+      url: string;
+    } = reactive({
       active: 0,
       valid: true,
       hideLauncher: false,
@@ -101,17 +119,13 @@ export default {
       name: '',
 
       host: '', // mc.hypixel.com
-      port: -1, // 25565
+      port: '', // 25565
 
       author: '',
       description: '',
       url: '',
     });
     useAutoSaveLoad(save, load);
-
-    dispatch('refreshForge').catch((e) => {
-      console.error(e);
-    });
 
     function save() {
       const payload = {
@@ -144,15 +158,8 @@ export default {
         data.author = author.value;
         data.description = description.value;
       } else {
-        data.port = port.value;
+        data.port = port.value.toString();
         data.host = host.value;
-      }
-    }
-    function onSelectForge(version) {
-      if (version) {
-        data.forgeVersion = version.version;
-      } else {
-        data.forgeVersion = '';
       }
     }
     function goVersionPage() {
@@ -162,7 +169,6 @@ export default {
       ...toRefs(data),
       isServer,
       version,
-      onSelectForge,
       goVersionPage,
     };
   },

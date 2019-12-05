@@ -16,8 +16,11 @@
         "**/.DS_Store": true,
         "**/node_modules": true
     },
+    "vetur.useWorkspaceDependencies": true,
     "vetur.format.defaultFormatter.js": "vscode-typescript",
+    "vetur.format.defaultFormatter.ts": "vscode-typescript",
     "vetur.validation.template": true,
+    "vetur.validation.script": true,
     "vetur.format.defaultFormatter.html": "none",
     "vetur.format.defaultFormatterOptions": {
         "vscode-typescript": {
@@ -33,5 +36,5 @@
             "wrap_line_length": 100
         }
     },
-    "vetur.useWorkspaceDependencies": true
+    "typescript.tsdk": "node_modules/typescript/lib"
 }

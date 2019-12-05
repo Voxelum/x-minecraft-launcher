@@ -1,19 +1,16 @@
 import unknownPack from '@/assets/unknown_pack.png';
 import { computed, onMounted, Ref, ref } from "@vue/composition-api";
-import { CurseforgeModpackResource, ForgeResource, ImportOption, LiteloaderResource, ResourcePackResource } from "universal/store/modules/resource";
+import { CurseforgeModpackResource, ForgeResource, ImportOption, LiteloaderResource, ResourcePackResource, SaveResource } from "universal/store/modules/resource";
 import { useStore } from "./useStore";
 
 export function useResourceOperation() {
-    const { getters, dispatch } = useStore();
+    const { getters, services } = useStore();
     return {
         queryResource: getters.queryResource,
         getResource: getters.getResource,
-        importResource(option: ImportOption) {
-            return dispatch('importResource', option);
-        },
-        removeResource(id: string) {
-            return dispatch('removeResource', id);
-        },
+        importResource: services.ResourceService.importResource,
+        removeResource: services.ResourceService.removeResource,
+        deployResources: services.ResourceService.deployResources,
     };
 }
 
@@ -28,6 +25,10 @@ export function useResource(domain: 'resourcepacks'): {
 export function useResource(domain: 'modpacks'): {
     resourcesTree: Ref<{ [hash: string]: CurseforgeModpackResource }>;
     resources: Ref<Array<CurseforgeModpackResource>>
+} & ReturnType<typeof useResourceOperation>;
+export function useResource(domain: 'saves'): {
+    resourcesTree: Ref<{ [hash: string]: SaveResource }>;
+    resources: Ref<Array<SaveResource>>
 } & ReturnType<typeof useResourceOperation>;
 export function useResource(domain: string) {
     const { state } = useStore();
@@ -59,16 +60,14 @@ export function useResourcePackResource(resource: ResourcePackResource) {
 }
 
 export function useCurseforgeImport() {
-    const { dispatch } = useStore();
+    const { services } = useStore();
     return {
-        importCurseforgeModpack(payload: { profile: string; path: string; }) {
-            return dispatch('importCurseforgeModpack', payload);
-        },
+        importCurseforgeModpack: services.CurseForgeService.importCurseforgeModpack,
     }
 }
 
 export function useForgeModResource(resource: ForgeResource) {
-    const { dispatch } = useStore();
+    const { services } = useStore();
     const metadata = computed(() => resource.metadata[0]);
     const icon = ref(unknownPack);
     const acceptedRange = computed(() => {
@@ -92,13 +91,14 @@ export function useForgeModResource(resource: ForgeResource) {
         if ('missing' in resource) {
             icon.value = unknownPack;
         } else {
-            dispatch('readForgeLogo', resource.hash).then((i) => {
-                if (typeof i === 'string' && i !== '') {
-                    icon.value = `data:image/png;base64, ${i}`;
-                } else {
-                    icon.value = unknownPack;
-                }
-            });
+            // TODO: impl this
+            // dispatch('readForgeLogo', resource.hash).then((i) => {
+            //     if (typeof i === 'string' && i !== '') {
+            //         icon.value = `data:image/png;base64, ${i}`;
+            //     } else {
+            //         icon.value = unknownPack;
+            //     }
+            // });
         }
     }
     return {

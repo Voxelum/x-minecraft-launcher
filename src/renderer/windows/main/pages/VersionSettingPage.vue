@@ -79,10 +79,10 @@
   </v-container>
 </template>
 
-<script>
-import { createComponent, reactive, computed, ref, onMounted, onUnmounted, toRefs, provide, watch } from '@vue/composition-api';
-import { useAutoSaveLoad, useProfile, useForgeVersions } from '@/hooks';
+<script lang=ts>
 import Vue from 'vue';
+import { createComponent, reactive, computed, ref, onMounted, onUnmounted, toRefs, provide, watch } from '@vue/composition-api';
+import { useAutoSaveLoad, useInstance, useForgeVersions } from '@/hooks';
 
 export default createComponent({
   setup() {
@@ -100,7 +100,7 @@ export default createComponent({
       liteloaderVersion: '',
     });
     const refs = toRefs(data);
-    const { edit, version } = useProfile();
+    const { edit, version } = useInstance();
     const localVersion = computed(() => ({ minecraft: data.mcversion, forge: data.forgeVersion, liteloader: data.liteloaderVersion }));
     const barColor = computed(() => {
       switch (data.active) {
@@ -125,13 +125,13 @@ export default createComponent({
       data.mcversion = minecraft;
       Vue.nextTick(() => {
         data.forgeVersion = forge;
-        data.liteloader = liteloader;
+        data.liteloaderVersion = liteloader;
       });
     }
 
     useAutoSaveLoad(save, load);
 
-    let handle;
+    let handle: () => void;
     onMounted(() => {
       handle = watch(refs.mcversion, () => {
         data.forgeVersion = '';
@@ -146,7 +146,7 @@ export default createComponent({
       ...refs,
       localVersion,
       filterText,
-      setLocalVersion(v) {
+      setLocalVersion(v: { minecraft: string; forge: string; liteloader: string }) {
         data.mcversion = v.minecraft;
         Vue.nextTick().then(() => {
           data.forgeVersion = v.forge;

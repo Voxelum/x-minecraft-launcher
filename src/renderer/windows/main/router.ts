@@ -1,7 +1,21 @@
-import Router from 'vue-router';
+import Router, { Route } from 'vue-router';
 import Vue from 'vue';
 import { remote } from 'electron';
 import MainWindow from './MainWindow.vue';
+import HomePage from './pages/HomePage.vue';
+import ProfilePage from './pages/ProfilesPage.vue';
+import SettingPage from './pages/SettingPage.vue';
+import UserPage from './pages/UserPage.vue';
+import SaveViewPage from './pages/SaveViewPage.vue';
+import BaseSettingPage from './pages/BaseSettingPage.vue';
+import AdvancedSettingPage from './pages/AdvancedSettingPage.vue';
+import ModSettingPage from './pages/ModSettingPage.vue';
+import GameSettingPage from './pages/GameSettingPage.vue';
+import ResourcePackSettingPage from './pages/ResourcePackSettingPage.vue';
+import VersionSettingPage from './pages/VersionSettingPage.vue';
+import CurseforgePage from './pages/CurseforgePage.vue';
+import CurseforgeViewPage from './pages/CurseforgeViewPage.vue';
+import CurseforgeProjectPage from './pages/CurseforgeProjectPage.vue';
 
 Vue.use(Router);
 
@@ -13,68 +27,68 @@ const router = new Router({
             children: [
                 {
                     path: '/',
-                    component: () => import('./pages/HomePage.vue'),
+                    component: HomePage,
                 },
                 {
                     path: '/profiles',
-                    component: () => import('./pages/ProfilesPage.vue'),
+                    component: ProfilePage,
                 },
                 {
                     path: '/setting',
-                    component: () => import('./pages/SettingPage.vue'),
+                    component: SettingPage,
                 },
                 {
                     path: '/user',
-                    component: () => import('./pages/UserPage.vue'),
+                    component: UserPage,
                 },
                 {
                     path: '/save',
-                    component: () => import('./pages/SaveViewPage.vue'),
+                    component: SaveViewPage,
                 },
                 {
                     path: '/base-setting',
-                    component: () => import('./pages/BaseSettingPage.vue'),
+                    component: BaseSettingPage,
                 },
                 {
                     path: '/advanced-setting',
-                    component: () => import('./pages/AdvancedSettingPage.vue'),
+                    component: AdvancedSettingPage,
                 },
                 {
                     path: '/mod-setting',
-                    component: () => import('./pages/ModSettingPage.vue'),
+                    component: ModSettingPage,
                 },
                 {
                     path: '/game-setting',
-                    component: () => import('./pages/GameSettingPage.vue'),
+                    component: GameSettingPage,
                 },
                 {
                     path: '/resource-pack-setting',
-                    component: () => import('./pages/ResourcePackSettingPage.vue'),
+                    component: ResourcePackSettingPage,
                 },
                 {
                     path: '/version-setting',
-                    component: () => import('./pages/VersionSettingPage.vue'),
+                    component: VersionSettingPage,
                 },
                 {
                     path: '/curseforge',
-                    component: () => import('./pages/CurseforgePage.vue'),
+                    component: CurseforgePage,
                 },
                 {
                     path: '/curseforge/:type',
-                    component: () => import('./pages/CurseforgeViewPage.vue'),
+                    component: CurseforgeViewPage,
                     props: true,
                 },
                 {
                     path: '/curseforge/:type/:id',
-                    component: () => import('./pages/CurseforgeProjectPage.vue'),
+                    component: CurseforgeProjectPage,
                     props: true,
                 },
             ],
         },
     ],
-});
+} as any);
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to: Route, from: Route, next) => {
     const full = to.fullPath.substring(1);
     if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {
         console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`);

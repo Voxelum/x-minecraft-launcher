@@ -155,7 +155,7 @@ function greeting() {
 }
 
 function init() {
-    greeting();
+    // greeting();
 
     Promise.all([startRenderer(), /*  startLog(), */ startMain()])
         .then(() => {

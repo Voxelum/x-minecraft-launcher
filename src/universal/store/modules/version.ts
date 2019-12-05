@@ -1,9 +1,7 @@
-import ForgeInstaller from "@xmcl/forge-installer";
-import { ForgeWebPage, Installer, LiteLoader, ResolvedLibrary, Version } from "@xmcl/minecraft-launcher-core";
+import { ForgeWebPage, Installer, LiteLoader } from "@xmcl/minecraft-launcher-core";
 import lastestRelease from 'universal/utils/lasteRelease.json';
 import { fitin } from 'universal/utils/object';
 import Vue from 'vue';
-import { SaveLoadAction, InitAction } from "..";
 import { ModuleOption } from "../root";
 
 
@@ -94,34 +92,7 @@ interface Mutations {
     liteloaderMetadata: LiteLoader.VersionMetaList;
 }
 
-
-interface Actions extends SaveLoadAction, InitAction {
-    refresh: () => void;
-
-    refreshVersions: () => void;
-    /**
-     * Request minecraft version list and cache in to store and disk.
-     */
-    refreshMinecraft: () => void;
-    refreshForge: (mcversion: string) => void;
-    refreshLiteloader: () => void;
-
-    getForgeWebPage: (mcversion: string) => ForgeWebPage | undefined;
-
-    resolveVersion: (version: Pick<LocalVersion, 'minecraft' | 'forge' | 'liteloader'>) => string;
-
-    installLibraries: (payload: { libraries: (Version.Library | ResolvedLibrary)[] }) => TaskHandle;
-    installAssets: (version: string) => TaskHandle;
-    installDependencies: (version: string) => TaskHandle;
-
-    installMinecraft: (version: Installer.VersionMeta) => TaskHandle;
-    installForge: (version: ForgeInstaller.VersionMeta) => TaskHandle;
-    installLiteloader: (version: LiteLoader.VersionMeta) => TaskHandle;
-
-    deleteVersion: (version: string) => void;
-}
-
-export type VersionModule = ModuleOption<State, Getters, Mutations, Actions>;
+export type VersionModule = ModuleOption<State, Getters, Mutations, {}>;
 
 const mod: VersionModule = {
     state: {

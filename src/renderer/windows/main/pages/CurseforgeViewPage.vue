@@ -5,7 +5,7 @@
         <span class="headline">{{ $tc(`curseforge.${type}.name`, 2) }}</span>
       </v-flex>
       <v-flex xs5>
-        <v-text-field v-model="keyword" append-icon="search" hide-details :label="$t('curseforge.search')" @keydown="onSearchKeyDown" />
+        <v-text-field v-model="keyword" append-icon="search" hide-details :label="$t('curseforge.search')" @keydown.enter="search()" />
       </v-flex>
       <v-flex v-if="searchMode" xs6>
         <v-btn color="grey darken-3" @click="searchMode = false">
@@ -103,85 +103,23 @@
 </template>
 
 <script>
+import { createComponent, reactive, toRefs, watch } from "@vue/composition-api";
+import { useCurseforgePreview } from "@/hooks";
 
-export default {
+export default createComponent({
   props: {
     type: {
       type: String,
       default: 'mc-mods',
     },
   },
-  data() {
+  setup(props) {
+    const preview = useCurseforgePreview(props.type);
     return {
-      page: 1,
-      pages: 0,
-      projects: [],
-      versions: [],
-      filters: [],
-      version: { text: '', value: '' },
-      filter: { text: '' },
-
-      loading: false,
-
-      keyword: '',
-      searchMode: false,
-    };
+      ...preview,
+    }
   },
-  watch: {
-    page() { this.refresh(); },
-    filter() { this.refresh(); },
-    version() { this.refresh(); },
-  },
-  mounted() {
-    this.refresh();
-  },
-  methods: {
-    onSearchKeyDown(e) {
-      if (e.key === 'Enter') {
-        this.search();
-      }
-    },
-    async search() {
-      if (this.loading) return;
-      if (this.keyword === '') return;
-      this.projects = [];
-      this.loading = true;
-      this.searchMode = true;
-      try {
-        const projects = await this.$repo.dispatch('searchCurseforgeProjects', {
-          type: this.type,
-          keyword: this.keyword,
-        });
-
-        this.projects = Object.freeze(projects);
-      } catch (e) {
-        this.searchMode = false;
-      } finally {
-        this.loading = false;
-      }
-    },
-    async refresh() {
-      this.projects = [];
-      this.loading = true;
-      try {
-        const result = await this.$repo.dispatch('fetchCurseForgeProjects', {
-          project: this.type,
-          page: this.page,
-          filter: this.filter.text,
-          version: this.version.text,
-        });
-        const { projects, versions, filters, pages } = result;
-
-        this.projects = Object.freeze(projects);
-        this.versions = versions;
-        this.filters = filters;
-        this.pages = pages;
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
-};
+});
 </script>
 
 <style>

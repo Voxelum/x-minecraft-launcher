@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
 
 // const BabiliWebpackPlugin = require('babili-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -80,6 +81,23 @@ const rendererConfig = {
                 },
             },
         ],
+    },
+    optimization: {
+        namedModules: true,
+        minimizer: [
+            new TerserPlugin({
+                cache: true,
+                parallel: true,
+                sourceMap: true,
+                extractComments: true,
+                terserOptions: {
+                    ecma: 6,
+                    keep_classnames: true,
+                },
+            })],
+        splitChunks: {
+            chunks: 'all'
+        }
     },
     node: {
         __dirname: process.env.NODE_ENV !== 'production',

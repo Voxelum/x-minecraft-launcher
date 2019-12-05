@@ -1,6 +1,5 @@
 import { isCompatible } from 'universal/utils/versions';
 import { ModuleOption } from '../root';
-import { LoadAction } from '..';
 
 export type ProtocolToVersion = {
     [protocol: string]: string[];
@@ -41,7 +40,7 @@ interface Mutations {
     protocolMapping: ClientProtocolMapping;
 }
 
-export type ClientModule = ModuleOption<State, Getters, Mutations, LoadAction>;
+export type ClientModule = ModuleOption<State, Getters, Mutations, {}>;
 
 const mod: ClientModule = {
     state: {

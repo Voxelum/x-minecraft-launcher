@@ -1,8 +1,8 @@
 import Vue, { ComponentOptions } from 'vue';
 import VueCompositionApi, { provide, createElement as h } from '@vue/composition-api';
-import { STORE_SYMBOL } from './hooks/useStore';
-import { ROUTER_SYMBOL } from './hooks/useRouter';
-import { I18N_SYMBOL } from './hooks/useI18n';
+import { STORE_KEY, ROUTER_KEY, I18N_KEY } from './constant';
+import provideElectron from './providers/provideElectron';
+import provideServiceProxy from './providers/provideServiceProxy';
 
 Vue.use(VueCompositionApi);
 
@@ -16,9 +16,11 @@ export default function app(option: ComponentOptions<Vue>) {
     const vue = new Vue({
         ...option,
         setup() {
-            provide(STORE_SYMBOL, option.store);
-            provide(ROUTER_SYMBOL, option.router);
-            provide(I18N_SYMBOL, option.i18n);
+            provideElectron();
+            provideServiceProxy();
+            provide(STORE_KEY, option.store);
+            provide(ROUTER_KEY, option.router);
+            provide(I18N_KEY, option.i18n);
             return () => h(App)
         },
     });

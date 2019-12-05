@@ -22,20 +22,20 @@
   </v-dialog>
 </template>
 
-<script>
+<script lang=ts>
 import { reactive, toRefs, onMounted, onUnmounted } from '@vue/composition-api';
-import { ipcRenderer } from 'electron';
-import { useDialogSelf, useStore } from '@/hooks';
+import { useDialogSelf, useStore, useIpc, useShell } from '@/hooks';
 
 export default {
   setup() {
     const { isShown, showDialog, closeDialog } = useDialogSelf('crash-report');
-    const { dispatch } = useStore(); 
+    const ipcRenderer = useIpc();
+    const shell = useShell();
     const data = reactive({
       content: '',
       location: '',
     });
-    function onMinecraftExit(event, status) {
+    function onMinecraftExit(event: any, status: any) {
       if (status.crashReport) {
         showDialog();
         data.content = status.crashReport;
@@ -53,10 +53,10 @@ export default {
       ...toRefs(data),
       closeDialog,
       openFile() {
-        dispatch('openItem', this.location);
+        shell.openItem(data.location);
       },
       openFolder() {
-        dispatch('showItemInFolder', this.location);
+        shell.showItemInFolder(data.location);
       },
     };
   },
