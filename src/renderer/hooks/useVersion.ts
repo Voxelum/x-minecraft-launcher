@@ -45,7 +45,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     const { state, getters, services } = useStore();
 
     const versions = computed(() => (state.version.forge[minecraftVersion.value] || { versions: [] }).versions);
-    const refreshing = computed(() => state.version.refreshingForge);
+    const refreshing = computed(() => getters.busy('refreshForge'));
     const statuses = computed(() => getters.forgeStatuses);
     const recommended = computed(() => getters.forgeRecommendedOf(minecraftVersion.value));
     const latest = computed(() => getters.forgeLatestOf(minecraftVersion.value));

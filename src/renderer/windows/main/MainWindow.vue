@@ -31,7 +31,6 @@ import {
   createComponent,
 } from '@vue/composition-api';
 import {
-  useDialog,
   useParticle,
   useStore,
   useBackgroundImage,
@@ -53,7 +52,6 @@ export default createComponent({
     const ipcRenderer = useIpc();
     const { particleMode, showParticle } = useParticle();
     const { t } = useI18n();
-    const { showDialog } = useDialog('task');
     const { blur, backgroundImage } = useBackgroundImage();
     const { notify } = useNotifier();
     const { state } = useStore();
@@ -71,6 +69,9 @@ export default createComponent({
       const task = state.task.tree[id];
       if (task.background) return;
       notify('error', t(task.path, task.arguments || {}), error);
+    }
+    function refreshImage() {
+      const img = backgroundImage;
     }
     onMounted(() => {
       ipcRenderer.addListener('task-successed', onSuccessed);
@@ -97,9 +98,7 @@ export default createComponent({
         }
       });
     });
-    function refreshImage() {
-      const img = backgroundImage;
-    }
+
 
     return {
       ...toRefs(data),

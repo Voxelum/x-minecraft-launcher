@@ -44,8 +44,8 @@
 
 <script lang=ts>
 import { reactive, toRefs, onMounted, watch } from '@vue/composition-api';
-import { useDialogSelf, useCurrentUserStatus, useStore } from '@/hooks';
-import { MojangChallenge } from '@xmcl/mojang';
+import { useDialogSelf, useCurrentUserStatus } from '@/hooks';
+import { MojangChallenge } from '@xmcl/minecraft-launcher-core';
 
 export default {
   setup() {

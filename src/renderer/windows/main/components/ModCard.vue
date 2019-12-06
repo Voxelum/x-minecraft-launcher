@@ -37,9 +37,8 @@
 </template>
 
 <script lang=ts>
-import { isCompatible } from 'universal/utils/versions';
-import { createComponent, ref, onMounted, computed, Ref } from '@vue/composition-api';
-import { useStore, useForgeModResource, useCompatible, useInstanceVersionBase, useShell } from '@/hooks';
+import { createComponent, ref, Ref } from '@vue/composition-api';
+import { useForgeModResource, useCompatible, useInstanceVersionBase, useShell } from '@/hooks';
 
 export default createComponent({
   props: {

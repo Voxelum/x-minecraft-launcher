@@ -1,4 +1,4 @@
-import { ForgeInstaller, ForgeWebPage, Installer, JavaExecutor, LiteLoader, Net, ResolvedLibrary, Task, Version } from '@xmcl/minecraft-launcher-core';
+import { ForgeInstaller, ForgeWebPage, Installer, JavaExecutor, LiteLoader, Net, ResolvedLibrary, Version } from '@xmcl/minecraft-launcher-core';
 import { getPersistence } from 'main/utils/persistence';
 import Service, { Inject, Singleton } from './Service';
 import VersionService from './VersionService';
@@ -133,7 +133,7 @@ export default class VersionInstallService extends Service {
         try {
             await task.wait();
         } catch (err) {
-
+            this.warn(err);
         } finally {
             this.local.refreshVersions();
         }
@@ -184,7 +184,6 @@ export default class VersionInstallService extends Service {
             const prof = this.state.profile.all[this.state.profile.id];
             if (!prof) {
                 this.log('The profile refreshing is not ready. Break forge versions list update.');
-                this.commit('refreshingForge', false);
                 return;
             }
             version = prof.version.minecraft;
@@ -225,7 +224,6 @@ export default class VersionInstallService extends Service {
 
     @Singleton()
     async refreshLiteloader() {
-        this.commit('refreshingLiteloader', true);
         const option = this.state.version.liteloader.timestamp === '' ? undefined : {
             fallback: this.state.version.liteloader,
         };

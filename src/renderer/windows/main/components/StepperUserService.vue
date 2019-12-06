@@ -116,7 +116,7 @@
 <script lang=ts>
 import Vue from 'vue';
 import { createComponent, reactive, toRefs, onMounted, watch } from '@vue/composition-api';
-import { useStore, useI18n } from '../../../hooks';
+import { useStore, useI18n } from '@/hooks';
 
 const HTTP_EXP = /(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
 export default createComponent({

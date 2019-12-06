@@ -24,7 +24,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, onMounted, onUnmounted } from '@vue/composition-api';
-import { useDialogSelf, useStore, useIpc, useShell } from '@/hooks';
+import { useDialogSelf, useIpc, useShell } from '@/hooks';
 
 export default {
   setup() {

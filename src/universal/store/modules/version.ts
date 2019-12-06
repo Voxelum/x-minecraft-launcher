@@ -49,10 +49,6 @@ interface State {
     minecraft: Installer.VersionMetaList;
     forge: { [mcversion: string]: ForgeWebPage };
     liteloader: LiteLoader.VersionMetaList;
-
-    refreshingMinecraft: boolean;
-    refreshingForge: boolean;
-    refreshingLiteloader: boolean;
 }
 
 interface Getters {
@@ -82,10 +78,6 @@ interface Getters {
 }
 
 interface Mutations {
-    refreshingMinecraft: boolean;
-    refreshingForge: boolean;
-    refreshingLiteloader: boolean;
-
     localVersions: LocalVersion[];
     minecraftMetadata: Installer.VersionMetaList;
     forgeMetadata: ForgeWebPage;
@@ -100,9 +92,6 @@ const mod: VersionModule = {
          * local versions
          */
         local: [],
-        refreshingMinecraft: false,
-        refreshingForge: false,
-        refreshingLiteloader: false,
         minecraft: {
             timestamp: '',
             latest: {
@@ -180,10 +169,6 @@ const mod: VersionModule = {
         liteloaderVersionsOf: state => version => state.liteloader.versions[version],
     },
     mutations: {
-        refreshingMinecraft(state, r) { state.refreshingMinecraft = r; },
-        refreshingForge(state, r) { state.refreshingForge = r; },
-        refreshingLiteloader(state, r) { state.refreshingLiteloader = r; },
-
         localVersions(state, local) {
             state.local = local;
         },
