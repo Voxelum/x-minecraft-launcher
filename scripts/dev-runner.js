@@ -1,10 +1,8 @@
-
-
 const chalk = require('chalk');
 const electron = require('electron');
 const path = require('path');
 const { say } = require('cfonts');
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 const webpack = require('webpack');
 // const express = require('express');
 // const webpackDevMiddleware = require('webpack-dev-middleware');
@@ -37,6 +35,10 @@ function logStats(proc, data) {
     log += `\n${chalk.yellow.bold(`┗ ${new Array(28 + 1).join('-')}`)}\n`;
 
     console.log(log);
+}
+
+function startVueDebug() {
+    exec('npx vue-devtools');
 }
 
 function startRenderer() {
@@ -157,6 +159,7 @@ function greeting() {
 function init() {
     // greeting();
 
+    startVueDebug();
     Promise.all([startRenderer(), /*  startLog(), */ startMain()])
         .then(() => {
             startElectron();

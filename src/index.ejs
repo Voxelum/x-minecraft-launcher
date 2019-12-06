@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <!-- Add `node_modules/` to global paths so `require` works properly in development -->
     <% if (htmlWebpackPlugin.options.nodeModules) { %>
+    <script src="http://localhost:8098"></script>
     <script>
         require('module').globalPaths
             .push('<%= htmlWebpackPlugin.options.nodeModules.replace(/\\/g, "\\\\") %>')
@@ -16,8 +17,10 @@
     <div id="app"></div>
     <% if (!process.browser) { %>
     <script>
-        if (process.env.NODE_ENV !== 'development') window.__static
-            = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
+        if (process.env.NODE_ENV !== 'development') {
+            window.__static
+                = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\');
+        }
     </script>
     <% } %>
 </body>

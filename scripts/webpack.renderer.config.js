@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 // const BabiliWebpackPlugin = require('babili-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -53,10 +54,16 @@ const rendererConfig = {
             },
             {
                 test: /\.ts$/,
-                use: {
-                    loader: 'ts-loader',
-                    options: { appendTsSuffixTo: [/\.vue$/] },
-                },
+                use: [
+                    'cache-loader',
+                    {
+                        loader: 'thread-loader',
+                    },
+                    {
+                        loader: 'ts-loader',
+                        options: { appendTsSuffixTo: [/\.vue$/], happyPackMode: true, transpileOnly: true },
+                    }
+                ],
                 exclude: /node_modules/,
                 include: [path.join(__dirname, '../src/renderer'), path.join(__dirname, '../src/universal')],
             },
@@ -82,28 +89,16 @@ const rendererConfig = {
             },
         ],
     },
-    optimization: {
-        namedModules: true,
-        minimizer: [
-            new TerserPlugin({
-                cache: true,
-                parallel: true,
-                sourceMap: true,
-                extractComments: true,
-                terserOptions: {
-                    ecma: 6,
-                    keep_classnames: true,
-                },
-            })],
-        splitChunks: {
-            chunks: 'all'
-        }
-    },
     node: {
         __dirname: process.env.NODE_ENV !== 'production',
         __filename: process.env.NODE_ENV !== 'production',
     },
     plugins: [
+        new ForkTsCheckerWebpackPlugin({
+            vue: true,
+            eslint: true,
+            tsconfig: path.resolve(__dirname, '../tsconfig.json'),
+        }),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({ filename: 'styles.css' }),
         new HtmlWebpackPlugin({

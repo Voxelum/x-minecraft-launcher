@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
-// const TerserPlugin = require('terser-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const { dependencies } = require('../package.json');
 
@@ -20,7 +21,19 @@ const mainConfig = {
         rules: [
             {
                 test: /\.ts$/,
-                use: 'ts-loader',
+                use: [
+                    'cache-loader',
+                    {
+                        loader: 'thread-loader',
+                    },
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            happyPackMode: true,
+                            transpileOnly: true,
+                        }
+                    }
+                ],
                 exclude: /node_modules/,
                 include: [path.join(__dirname, '../src/main'), path.join(__dirname, '../src/universal')],
             },
@@ -35,22 +48,18 @@ const mainConfig = {
         __filename: process.env.NODE_ENV !== 'production',
     },
     optimization: {
-        minimizer: [],
-        // namedModules: true,
-        // minimizer: [
-        //     new TerserPlugin({
-        //         cache: true,
-        //         parallel: true,
-        //         sourceMap: true,
-        //         extractComments: true,
-        //         terserOptions: {
-        //             ecma: 6,
-        //             keep_classnames: true,
-        //         },
-        //     })],
-        // splitChunks: {
-        //     chunks: 'all'
-        // }
+        minimizer: [
+            new TerserPlugin({
+                cache: true,
+                parallel: true,
+                sourceMap: true,
+                extractComments: true,
+                terserOptions: {
+                    ecma: 6,
+                    keep_classnames: true,
+                },
+            })
+        ],
     },
     output: {
         filename: '[name].js',
@@ -58,7 +67,11 @@ const mainConfig = {
         path: path.join(__dirname, '../dist/electron'),
     },
     plugins: [
-        // new webpack.NoEmitOnErrorsPlugin(),
+        new webpack.NoEmitOnErrorsPlugin(),
+        new ForkTsCheckerWebpackPlugin({
+            eslint: true,
+            tsconfig: path.resolve(__dirname, '../tsconfig.json'),
+        }),
     ],
     resolve: {
         extensions: ['.js', '.ts', '.json', '.node'],
