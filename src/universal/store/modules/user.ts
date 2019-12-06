@@ -1,7 +1,7 @@
 import { Auth, MojangAccount, MojangChallenge, MojangChallengeResponse, ProfileService } from '@xmcl/minecraft-launcher-core';
 import { fitin } from 'universal/utils/object';
 import Vue from 'vue';
-import { ModuleOption } from "../root";
+import { ModuleOption } from '../root';
 import { GameProfileAndTexture, UserConfig, UserProfile } from './user.config';
 
 interface State extends UserConfig {
@@ -17,7 +17,7 @@ interface State extends UserConfig {
 interface Getters {
     selectedUser: UserProfile;
     selectedGameProfile: GameProfileAndTexture;
-    avaiableGameProfiles: (GameProfileAndTexture & { userId: string; authService: string; profileService: string; account: string; })[];
+    avaiableGameProfiles: (GameProfileAndTexture & { userId: string; authService: string; profileService: string; account: string })[];
 
     /**
      * Does user logined? This include the case that user logins as offline mode.
@@ -48,8 +48,8 @@ interface Mutations {
     setUserProfile: { userId: string; profileId: string };
     removeUserProfile: string;
 
-    authService: { name: string, api: Auth.Yggdrasil.API };
-    profileService: { name: string, api: ProfileService.API };
+    authService: { name: string; api: Auth.Yggdrasil.API };
+    profileService: { name: string; api: ProfileService.API };
     removeService: string;
 
     mojangInfo: MojangAccount;

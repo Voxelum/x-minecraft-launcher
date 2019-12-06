@@ -10,12 +10,12 @@
                         :placeholder="`Minecraft ${version.minecraft}`" />
         </v-flex>
         <v-flex d-flex xs6>
-          <v-text-field outline hide-details dark readonly :value="$repo.getters.currentVersion.id"
+          <v-text-field outline hide-details dark readonly :value="version.minecraft"
                         :label="$t('profile.version')" @click="goVersionPage" @focus="goVersionPage" />
         </v-flex>
         <v-flex v-if="!isServer" d-flex xs6>
           <v-text-field v-model="author" outline hide-details dark :label="$t('profile.modpack.author')"
-                        :placeholder="$repo.getters.selectedGameProfile.name" required />
+                        :placeholder="username" required />
         </v-flex>
         <v-flex v-if="isServer" d-flex xs6>
           <v-text-field v-model="host" outline hide-details dark :label="$t('profile.server.host')" placeholder="www.whatever.com"
@@ -79,7 +79,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed } from '@vue/composition-api';
-import { useInstance, useStore, useAutoSaveLoad, useRouter } from '@/hooks';
+import { useInstance, useStore, useAutoSaveLoad, useRouter, useCurrentUser } from '@/hooks';
 
 export default {
   setup() {
@@ -98,6 +98,7 @@ export default {
       edit,
     } = useInstance();
     const router = useRouter();
+    const { name: username } = useCurrentUser();
     const data: {
       active: number;
       valid: boolean;
@@ -167,6 +168,7 @@ export default {
     }
     return {
       ...toRefs(data),
+      username,
       isServer,
       version,
       goVersionPage,

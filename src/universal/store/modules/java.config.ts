@@ -15,4 +15,3 @@ export interface JavaConfig {
      */
     default: number;
 }
-

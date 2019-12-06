@@ -1,5 +1,5 @@
-import { useStore } from "./useStore";
-import { computed } from "@vue/composition-api";
+import { computed } from '@vue/composition-api';
+import { useStore } from './useStore';
 
 export function useJava() {
     const { state, getters, services } = useStore();
@@ -14,5 +14,5 @@ export function useJava() {
         installDefault: services.JavaService.installJava,
         refreshLocalJava: services.JavaService.refreshLocalJava,
         missing,
-    }
+    };
 }

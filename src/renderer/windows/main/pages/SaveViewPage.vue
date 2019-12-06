@@ -75,7 +75,7 @@
         </v-container>
       </v-flex>
     </v-layout>
-    <dialog-copy-save-from v-model="copyFrom"/>
+    <dialog-copy-save-from v-model="copyFrom" />
     <v-dialog :value="copying !== ''" width="500">
       <v-card>
         <v-card-title
@@ -89,7 +89,7 @@
         </v-card-text>
 
         <v-card-text>
-          <v-checkbox v-for="(p, index) of profiles" :key="index"
+          <v-checkbox v-for="(p, index) of instances" :key="index"
                       v-model="copyingDest[index]"
                       hide-details
                       :label="p.name"
@@ -173,6 +173,7 @@ export default createComponent({
     });
     return {
       saves,
+      instances,
       ...toRefs(data),
       unknown,
       onDrop(event: DragEvent) {

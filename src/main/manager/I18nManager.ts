@@ -7,11 +7,13 @@ interface LocalNode {
     [key: string]: LocalNode | string;
 }
 
-const defaultContent: LocalNode = builtin['en'];
+const defaultContent: LocalNode = builtin.en;
 
 export default class I18nManager extends Manager {
     private localeCache: { [locale: string]: LocalNode } = builtin;
+
     private used!: LocalNode;
+
     private usedName!: string;
 
     async init() {

@@ -1,25 +1,34 @@
-import { Task, TaskHandle, TaskRuntime } from "@xmcl/minecraft-launcher-core";
-import { Store } from "vuex";
-import { Manager } from ".";
-import uuid = require("uuid");
-import { TaskState, TaskStatus } from "universal/store/modules/task";
+import { Task, TaskHandle, TaskRuntime } from '@xmcl/minecraft-launcher-core';
+import { Store } from 'vuex';
+import { TaskState, TaskStatus } from 'universal/store/modules/task';
+import { Manager } from '.';
 
-export interface TaskProgress { progress?: number, total?: number, message?: string, time?: string }
+import uuid = require('uuid');
+
+export interface TaskProgress { progress?: number; total?: number; message?: string; time?: string }
 
 export default class TaskManager extends Manager {
     private listener: NodeJS.Timeout | undefined;
-    private adds: { id: string, node: TaskState }[] = [];
-    private childs: { id: string, node: TaskState }[] = [];
+
+    private adds: { id: string; node: TaskState }[] = [];
+
+    private childs: { id: string; node: TaskState }[] = [];
+
     private updates: { [id: string]: TaskProgress } = {};
-    private statuses: { id: string, status: string }[] = []
+
+    private statuses: { id: string; status: string }[] = []
+
     private forceUpdate: () => void = () => { };
-    private factory: Task.StateFactory<TaskState> = (n) => ({
+
+    private factory: Task.StateFactory<TaskState> = n => ({
         ...n,
         id: Reflect.has(n, '__uuid__') ? Reflect.get(n, '__uuid__') : uuid.v4(),
         children: [],
         time: new Date().toString(),
     });
+
     private handles: { [id: string]: TaskHandle<any, any> } = {};
+
     readonly runtime: TaskRuntime<TaskState> = Task.createRuntime(this.factory) as any;
 
     constructor(private taskThreshold: number = 30) {
@@ -46,14 +55,14 @@ export default class TaskManager extends Manager {
             } else {
                 errorMessage = JSON.stringify(error, null, 4);
             }
-            this.update(node.id, { message: errorMessage })
+            this.update(node.id, { message: errorMessage });
         });
     }
 
     /**
      * Submit a task to run
      */
-    submit<T>(task: Task.Function<T> | Task.Object<T>, background: boolean = false): TaskHandle<T, TaskState> {
+    submit<T>(task: Task.Function<T> | Task.Object<T>, background = false): TaskHandle<T, TaskState> {
         const handle = this.runtime.submit(task);
         const id = uuid.v4();
         Object.defineProperty(task, '__uuid__', { value: id, writable: false, configurable: false, enumerable: false });
@@ -61,7 +70,7 @@ export default class TaskManager extends Manager {
             delete this.handles[id];
         });
         this.handles[id] = handle;
-        Object.defineProperty(handle, '__handle__', { value: id, writable: false, configurable: false })
+        Object.defineProperty(handle, '__handle__', { value: id, writable: false, configurable: false });
         return handle;
     }
 

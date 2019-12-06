@@ -70,9 +70,9 @@
     </v-card-actions>
   </v-card>
 </template>
-<script>
-import { createComponent, reactive, toRefs, computed, onMounted, watch } from '@vue/composition-api';
-import { useStore, useAction, useServerStatusForProfile } from '@/hooks';
+<script lang=ts>
+import { createComponent, reactive, toRefs, computed } from '@vue/composition-api';
+import { useServerStatusForProfile } from '@/hooks';
 
 export default createComponent({
   props: {

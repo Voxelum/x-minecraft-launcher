@@ -159,9 +159,9 @@ function greeting() {
 function init() {
     // greeting();
 
-    startVueDebug();
     Promise.all([startRenderer(), /*  startLog(), */ startMain()])
         .then(() => {
+            startVueDebug();
             startElectron();
         })
         .catch((err) => {

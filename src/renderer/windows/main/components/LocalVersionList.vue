@@ -44,8 +44,8 @@
   <v-container v-else fill-height>
     <v-layout align-center justify-center row fill-height>
       <v-flex shrink tag="h1" class="white--text">
-        <v-btn large>
-          <v-icon left @click="browseVersoinsFolder">
+        <v-btn large @click="browseVersoinsFolder">
+          <v-icon left>
             folder
           </v-icon>
           {{ $t('version.noLocalVersion') }}
@@ -55,9 +55,9 @@
   </v-container>
 </template>
 
-<script>
+<script lang=ts>
 import { createComponent, reactive, computed, toRefs } from '@vue/composition-api';
-import { useLocalVersions, useProfile } from '@/hooks';
+import { useLocalVersions, useInstance } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -67,7 +67,7 @@ export default createComponent({
     },
     value: {
       type: Object,
-      default: () => {},
+      default: () => { },
     },
   },
   setup(props, context) {
@@ -76,23 +76,23 @@ export default createComponent({
       deletingVersionId: '',
     });
     const { localVersions, deleteVersion, showVersionsDirectory, showVersionDirectory } = useLocalVersions();
-    const { version, edit } = useProfile();
+    const { version, edit } = useInstance();
     const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1));
 
-    function isSelected(v) {
+    function isSelected(v: { minecraft: string; forge: string; liteloader: string }) {
       if (!props.value) return false;
       return props.value.minecraft === v.minecraft && props.value.forge === v.forge && props.value.liteloader === v.liteloader;
     }
-    function selectVersion(v) {
+    function selectVersion(v: { minecraft: string; forge: string; liteloader: string }) {
       context.emit('input', v);
     }
     function browseVersoinsFolder() {
       showVersionsDirectory();
     }
-    function openVersionDir(v) {
+    function openVersionDir(v: { folder: string }) {
       showVersionDirectory(v.folder);
     }
-    function startDelete(event, v) {
+    function startDelete(event: MouseEvent, v: { folder: string }) {
       data.deletingVersion = true;
       data.deletingVersionId = v.folder;
     }

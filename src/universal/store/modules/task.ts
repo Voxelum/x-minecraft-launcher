@@ -1,6 +1,6 @@
 import { Task } from '@xmcl/minecraft-launcher-core';
 import Vue from 'vue';
-import { ModuleOption } from "../root";
+import { ModuleOption } from '../root';
 
 export type TaskStatus = 'successed' | 'failed' | 'ready' | 'running';
 
@@ -16,18 +16,18 @@ export interface TaskState extends Task.State {
 }
 
 interface State {
-    tree: { [uuid: string]: TaskState },
-    tasks: TaskState[],
-    maxLog: number,
+    tree: { [uuid: string]: TaskState };
+    tasks: TaskState[];
+    maxLog: number;
 }
 interface Mutations {
     pruneTasks: (state: State) => void;
-    hookTask: { id: string, task: TaskState };
+    hookTask: { id: string; task: TaskState };
     updateBatchTask: {
-        adds: { id: string, node: TaskState }[],
-        childs: { id: string, node: TaskState }[],
-        updates: { [id: string]: { progress?: number, total?: number, message?: string, time?: string } },
-        statuses: { id: string, status: string }[],
+        adds: { id: string; node: TaskState }[];
+        childs: { id: string; node: TaskState }[];
+        updates: { [id: string]: { progress?: number; total?: number; message?: string; time?: string } };
+        statuses: { id: string; status: string }[];
     };
 }
 

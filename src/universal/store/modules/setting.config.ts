@@ -1,8 +1,8 @@
 export enum ParticleMode {
-    PUSH = "push",
-    REMOVE = "remove",
-    REPULSE = "repulse",
-    BUBBLE = "bubble",
+    PUSH = 'push',
+    REMOVE = 'remove',
+    REPULSE = 'repulse',
+    BUBBLE = 'bubble',
 }
 
 export interface SettingConfig {

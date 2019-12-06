@@ -9,12 +9,14 @@ import VersionService from './VersionService';
 export default class DiagnoseService extends Service {
     @Inject('VersionService')
     private local!: VersionService;
+
     @Inject('VersionInstallService')
     private install!: VersionInstallService;
+
     @Inject('AuthLibService')
     private authLibService!: AuthLibService;
 
-    async save({ mutation, payload }: { mutation: string, payload: any }) {
+    async save({ mutation, payload }: { mutation: string; payload: any }) {
         // TODO: check if this works
         if (this.state.profile.refreshing || mutation === 'release' || mutation === 'aquire') return;
         if (mutation === 'selectProfile') {
@@ -54,6 +56,7 @@ export default class DiagnoseService extends Service {
             await this.diagnoseServer();
         }
     }
+
     async init() {
         // this.commit('aquire', 'instance');
         // try {
@@ -68,6 +71,7 @@ export default class DiagnoseService extends Service {
         //     this.commit('release', 'instance');
         // }
     }
+
     async diagnoseMods() {
         this.commit('aquire', 'instance');
         try {
@@ -109,8 +113,8 @@ export default class DiagnoseService extends Service {
         } finally {
             this.commit('release', 'instance');
         }
-
     }
+
     async diagnoseResourcePacks() {
         this.commit('aquire', 'instance');
         try {
@@ -141,8 +145,8 @@ export default class DiagnoseService extends Service {
         } finally {
             this.commit('release', 'refreshMinecraft');
         }
-
     }
+
     async diagnoseUser() {
         this.commit('aquire', 'instance');
         try {
@@ -162,8 +166,8 @@ export default class DiagnoseService extends Service {
         } finally {
             this.commit('release', 'instance');
         }
-
     }
+
     async diagnoseJava() {
         this.commit('aquire', 'instance');
         try {
@@ -200,8 +204,8 @@ export default class DiagnoseService extends Service {
         } finally {
             this.commit('release', 'instance');
         }
-
     }
+
     async diagnoseServer() {
         this.commit('aquire', 'instance');
         try {
@@ -221,6 +225,7 @@ export default class DiagnoseService extends Service {
             this.commit('release', 'instance');
         }
     }
+
     async diagnoseVersion() {
         this.commit('aquire', 'instance');
         try {
@@ -240,17 +245,17 @@ export default class DiagnoseService extends Service {
             const tree: Pick<ProblemReport,
                 'missingVersionJar' | 'missingAssetsIndex' | 'missingVersionJson' | 'missingForgeJar' | 'missingLibraries' |
                 'missingAssets' | 'missingVersion' | 'badForgeProcessedFiles' | 'badForge' | 'badForgeIncomplete'> = {
-                missingVersion: [],
-                missingVersionJar: [],
-                missingAssetsIndex: [],
-                missingVersionJson: [],
-                missingForgeJar: [],
-                missingLibraries: [],
-                missingAssets: [],
-                badForge: [],
-                badForgeIncomplete: [],
-                badForgeProcessedFiles: [],
-            };
+                    missingVersion: [],
+                    missingVersionJar: [],
+                    missingAssetsIndex: [],
+                    missingVersionJson: [],
+                    missingForgeJar: [],
+                    missingLibraries: [],
+                    missingAssets: [],
+                    badForge: [],
+                    badForgeIncomplete: [],
+                    badForgeProcessedFiles: [],
+                };
             const mcversion = versions.minecraft;
             if (!mcversion) {
                 tree.missingVersion.push({});
@@ -303,6 +308,7 @@ export default class DiagnoseService extends Service {
             this.commit('release', 'instance');
         }
     }
+
     async fixProfile(problems: readonly Problem[]) {
         const unfixed = problems.filter(p => p.autofix)
             .filter(p => !this.state.diagnose.registry[p.id].fixing);
@@ -385,10 +391,10 @@ export default class DiagnoseService extends Service {
                             this.state.root,
                             {
                                 java: JavaExecutor.createSimple(this.getters.defaultJava.path),
-                            }
+                            },
                         )(c);
                     }
-                }
+                };
                 await this.submit(installForge);
             }
 
@@ -444,5 +450,3 @@ export default class DiagnoseService extends Service {
         }
     }
 }
-
-

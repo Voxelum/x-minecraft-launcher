@@ -35,16 +35,16 @@
   </div>
 </template>
 
-<script>
+<script lang=ts>
 import {
-  useProfile,
+  useInstance,
   useServerStatus,
   useProfileVersion,
 } from '@/hooks';
 
 export default {
   setup() {
-    const { version, name, author, isServer } = useProfile();
+    const { version, name, author, isServer } = useInstance();
     const { folder } = useProfileVersion();
     const { players, ping, favicon } = useServerStatus();
     return {

@@ -1,4 +1,4 @@
-import { unpack } from "7zip-min";
+import { unpack } from '7zip-min';
 import { Net, Task } from '@xmcl/minecraft-launcher-core';
 import { vfs } from '@xmcl/util';
 import { basename, resolve } from 'path';
@@ -16,15 +16,14 @@ function resolveArch() {
 
 export function installJreFromMojangTask(root: string) {
     async function installJreFromMojang(context: Task.Context) {
-        const info: { [system: string]: { [arch: string]: { jre: { sha1: string; url: string; version: string } } } }
-            = await context.execute({ name: 'fetchInfo', run: () => Net.fetchJson('https://launchermeta.mojang.com/mc/launcher.json').then(r => r.body) });
+        const info: { [system: string]: { [arch: string]: { jre: { sha1: string; url: string; version: string } } } } = await context.execute({ name: 'fetchInfo', run: () => Net.fetchJson('https://launchermeta.mojang.com/mc/launcher.json').then(r => r.body) });
         const system = platform.name;
         const arch = resolveArch();
 
         if (system === 'unknown' || system === 'linux') {
-            return '';
+            return;
         }
-        const { sha1, url, version } = info[system][arch].jre;
+        const { sha1, url } = info[system][arch].jre;
         const filename = basename(url);
         const destination = resolve(root, 'temp', filename);
 
@@ -39,7 +38,7 @@ export function installJreFromMojangTask(root: string) {
                         algorithm: 'sha1',
                         hash: sha1,
                     },
-                })
+                }),
             });
         }
 
@@ -51,13 +50,13 @@ export function installJreFromMojangTask(root: string) {
                 await new Promise((resolve, reject) => {
                     unpack(destination, javaRoot, (e) => { if (e) reject(e); else resolve(); });
                 });
-            }
+            },
         });
         await context.execute({
             name: 'cleanup',
             run: async () => {
                 await fs.unlink(destination);
-            }
+            },
         });
     }
 
@@ -87,7 +86,7 @@ export function installJreFromSelfHostTask(root: string) {
             run: () => Net.downloadFileWork({
                 url,
                 destination: dest,
-            })
+            }),
         });
 
         const javaRoot = resolve(root, 'jre');
@@ -98,13 +97,13 @@ export function installJreFromSelfHostTask(root: string) {
                 await new Promise((resolve, reject) => {
                     unpack(dest, javaRoot, (e) => { if (e) reject(e); else resolve(); });
                 });
-            }
+            },
         });
         await context.execute({
             name: 'cleanup',
             run: async () => {
                 await fs.unlink(dest);
-            }
+            },
         });
     }
     return installJreFromSelfHost;

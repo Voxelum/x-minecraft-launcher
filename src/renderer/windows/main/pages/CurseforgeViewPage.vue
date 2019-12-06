@@ -102,9 +102,9 @@
   </v-container>
 </template>
 
-<script>
-import { createComponent, reactive, toRefs, watch } from "@vue/composition-api";
-import { useCurseforgePreview } from "@/hooks";
+<script lang=ts>
+import { createComponent, reactive, toRefs, watch } from '@vue/composition-api';
+import { useCurseforgePreview } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -114,10 +114,10 @@ export default createComponent({
     },
   },
   setup(props) {
-    const preview = useCurseforgePreview(props.type);
+    const preview = useCurseforgePreview(props.type as any);
     return {
       ...preview,
-    }
+    };
   },
 });
 </script>

@@ -1,10 +1,10 @@
 <template>
   <v-navigation-drawer :value="true" :mini-variant="mini" stateless dark 
-                        style="border-radius: 2px 0 0 2px;"
-                        class="moveable"
-                        @mouseenter="onEnterBar"
-                        @mouseover="onHoverBar"
-                        @mouseleave="onLeaveBar">
+                       style="border-radius: 2px 0 0 2px;"
+                       class="moveable"
+                       @mouseenter="onEnterBar"
+                       @mouseover="onHoverBar"
+                       @mouseleave="onLeaveBar">
     <v-toolbar flat class="transparent">
       <v-list class="pa-0 non-moveable">
         <v-list-tile avatar @click="goBack">

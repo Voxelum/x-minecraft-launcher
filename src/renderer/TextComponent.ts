@@ -20,6 +20,5 @@ export default createComponent({
             }
             return generate(hint);
         };
-    }
+    },
 });
-

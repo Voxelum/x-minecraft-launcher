@@ -1,5 +1,5 @@
-import { useStore } from "./useStore";
-import { computed } from "@vue/composition-api";
+import { computed } from '@vue/composition-api';
+import { useStore } from './useStore';
 
 export function useParticle() {
     const { state, commit } = useStore();
@@ -14,5 +14,5 @@ export function useParticle() {
     return {
         showParticle,
         particleMode,
-    }
+    };
 }

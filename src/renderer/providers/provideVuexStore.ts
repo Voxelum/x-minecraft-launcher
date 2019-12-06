@@ -2,7 +2,7 @@ import { ipcRenderer } from 'electron';
 import storeOption from 'universal/store';
 import Vuex, { MutationPayload } from 'vuex';
 
-export default function createStore(option: string[]) {
+export default function provideVuexStore(...option: string[]) {
     storeOption.modules = {
         ...storeOption.modules,
     };
@@ -30,7 +30,7 @@ export default function createStore(option: string[]) {
             mutations,
             length,
         }) => {
-            console.log(`sync ${length}`);
+            console.log(`Synced ${length} commits.`);
             mutations.forEach(localCommit);
             lastId = length;
             syncing = false;
@@ -63,7 +63,6 @@ export default function createStore(option: string[]) {
     });
     sync();
 
-    // localStore.dispatch = remoteCall.dispatch;
     localStore.commit = (type: string, payload: any) => {
         ipcRenderer.invoke('commit', type, payload);
     };

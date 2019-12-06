@@ -1,22 +1,14 @@
 import { VersionRange, ArtifactVersion } from 'maven-artifact-version';
 import { Resource } from 'universal/store/modules/resource';
+import { requireNonnull } from './object';
 
-/**
- * 
- * @param {string} range 
- * @param {string} version 
- */
 export function isCompatible(range: string, version: string) {
-    if (range === "[*]") return true;
-    return VersionRange.createFromVersionSpec(range)!.containsVersion(ArtifactVersion.of(version));
+    if (range === '[*]') return true;
+    const vRange = VersionRange.createFromVersionSpec(range);
+    requireNonnull(vRange);
+    return vRange.containsVersion(ArtifactVersion.of(version));
 }
 
-/**
- * 
- * @param {string} minecraft 
- * @param {string | undefined} forge 
- * @param {string | undefined} liteloader 
- */
 export function getExpectVersion(minecraft: string, forge?: string, liteloader?: string) {
     let expectedId = minecraft;
     if (typeof forge === 'string' && forge.length > 0) expectedId += `-forge${minecraft}-${forge}`;
@@ -24,9 +16,6 @@ export function getExpectVersion(minecraft: string, forge?: string, liteloader?:
     return expectedId;
 }
 
-/**
- * @param {import('universal/store/modules/resource').Resource<any>} modObject
- */
 export function getModIdentifier(modObject: Resource<any>) {
     if (modObject.type === 'forge' && modObject.metadata instanceof Array) {
         const meta = modObject.metadata[0];

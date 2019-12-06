@@ -1,5 +1,5 @@
-import { useStore } from "./useStore";
-import { computed } from "@vue/composition-api";
+import { computed } from '@vue/composition-api';
+import { useStore } from './useStore';
 
 export function useTask(taskHandle: string | Promise<any>) {
     const { state, services } = useStore();
@@ -21,7 +21,7 @@ export function useTask(taskHandle: string | Promise<any>) {
         message,
         status,
         wait,
-    }
+    };
 }
 
 export function useTasks() {
@@ -31,5 +31,5 @@ export function useTasks() {
     );
     return {
         activeTasksCount,
-    }
+    };
 }

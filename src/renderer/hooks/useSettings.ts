@@ -1,5 +1,5 @@
-import { computed, watch } from "@vue/composition-api";
-import { useStore } from "./useStore";
+import { computed, watch } from '@vue/composition-api';
+import { useStore } from './useStore';
 
 export function useSettings() {
     const { state, commit, services } = useStore();
@@ -42,15 +42,15 @@ export function useSettings() {
         checkingUpdate,
         downloadingUpdate,
         updateInfo,
-    }
+    };
 }
 
 export function useUpdateInfo() {
     const { state, commit, services } = useStore();
-    const checkingUpdate = computed(() => { return state.setting.checkingUpdate; });
-    const downloadingUpdate = computed(() => { return state.setting.downloadingUpdate; });
-    const updateInfo = computed(() => { return state.setting.updateInfo; });
-    const readyToUpdate = computed(() => { return state.setting.readyToUpdate; });
+    const checkingUpdate = computed(() => state.setting.checkingUpdate);
+    const downloadingUpdate = computed(() => state.setting.downloadingUpdate);
+    const updateInfo = computed(() => state.setting.updateInfo);
+    const readyToUpdate = computed(() => state.setting.readyToUpdate);
     return {
         checkingUpdate,
         downloadingUpdate,
@@ -59,5 +59,5 @@ export function useUpdateInfo() {
         downloadUpdate: services.SettingService.downloadUpdate,
         quitAndInstall: services.SettingService.quitAndInstall,
         checkUpdate: services.SettingService.checkUpdate,
-    }
+    };
 }

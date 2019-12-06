@@ -42,10 +42,16 @@
   </v-combobox>
 </template>
 
-<script>
+<script lang=ts>
 import Vue from 'vue';
+import { createComponent, reactive, toRefs } from '@vue/composition-api';
 
-export default {
+interface Item {
+  header?: string;
+  text: string;
+}
+
+export default createComponent({
   props: {
     createHint: {
       type: String,
@@ -64,42 +70,40 @@ export default {
       default: '',
     },
   },
-  data() {
-    return {
-      editing: null,
+  setup(props, context) {
+    const data = reactive({
+      editing: null as null | Item,
       index: -1,
       items: [
-        { header: this.hint },
-      ],
+        { header: props.hint },
+      ] as { header?: string; text: string }[],
       creating: null,
+    });
+    return {
+      ...toRefs(data),
+      byPassInput(val: string[]) {
+        context.emit('input', val.map((v) => {
+          if (typeof v === 'string') {
+            data.items.push({ text: v });
+          }
+          return v;
+        }));
+      },
+      edit(index: number, item: Item) {
+        if (!data.editing) {
+          data.editing = item;
+          data.index = index;
+        } else {
+          data.editing = null;
+          data.index = -1;
+        }
+      },
+      deleteItem(item: Item) {
+        Vue.delete(data.items, data.items.indexOf(item));
+      },
     };
   },
-  methods: {
-    byPassInput(val) {
-      this.$emit('input', val.map((v) => {
-        if (typeof v === 'string') {
-          this.items.push({ text: v });
-        } 
-        return v;
-      }));
-    },
-    edit(index, item) {
-      if (!this.editing) {
-        this.editing = item;
-        this.index = index;
-      } else {
-        this.editing = null;
-        this.index = -1;
-      }
-    },
-    deleteItem(item) {
-      Vue.delete(this.items, this.items.indexOf(item));
-    },
-    filter() {
-
-    },
-  },
-};
+});
 </script>
 
 <style>

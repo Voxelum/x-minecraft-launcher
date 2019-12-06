@@ -41,8 +41,8 @@ import {
   useI18n,
   useNotifier,
 } from '@/hooks';
-import dialogs from './dialog';
 import { IpcRendererEvent } from 'electron';
+import dialogs from './dialog';
 
 export default createComponent({
   components: { dialogs },

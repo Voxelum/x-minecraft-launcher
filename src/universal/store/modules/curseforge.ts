@@ -1,6 +1,6 @@
 import Vue from 'vue';
-import { ModuleOption } from "../root";
-import { Resource } from "./resource";
+import { ModuleOption } from '../root';
+import { Resource } from './resource';
 
 export type ProjectType = 'mc-mods' | 'texture-packs' | 'worlds' | 'modpacks';
 
@@ -19,7 +19,7 @@ export interface DownloadFile {
 
 
 interface State {
-    downloading: { [href: string]: { download: DownloadFile, taskId: string } };
+    downloading: { [href: string]: { download: DownloadFile; taskId: string } };
 }
 
 interface Getters {
@@ -28,7 +28,7 @@ interface Getters {
 }
 
 interface Mutations {
-    startDownloadCurseforgeFile: { download: DownloadFile, taskId: string };
+    startDownloadCurseforgeFile: { download: DownloadFile; taskId: string };
     endDownloadCurseforgeFile: DownloadFile;
 }
 
@@ -42,7 +42,7 @@ const mod: CurseForgeModule = {
         isFileInstalled: (state, _, rt, rg) => (file) => {
             /**
              */
-            const find = (m: { source: any; }) => {
+            const find = (m: { source: any }) => {
                 const source = m.source;
                 if ('curseforge' in source && typeof source.curseforge === 'object') {
                     const s = source.curseforge;
@@ -60,7 +60,7 @@ const mod: CurseForgeModule = {
         findFileInstalled: (state, _, rt, rg) => (file) => {
             /**
              */
-            const find = (m: { source: any; }) => {
+            const find = (m: { source: any }) => {
                 const source = m.source;
                 if ('curseforge' in source && typeof source.curseforge === 'object') {
                     const s = source.curseforge;

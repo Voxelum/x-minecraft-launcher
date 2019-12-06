@@ -1,9 +1,9 @@
-import { computed, onMounted, onUnmounted, ref, toRefs, watch, Ref, reactive } from "@vue/composition-api";
-import { Data } from "@vue/composition-api/dist/component";
-import { ServerAndModpack, ServerOrModpack, CreateOption, CreateProfileOption, CreateServerProfileOption } from "universal/store/modules/profile";
-import { getExpectVersion } from "universal/utils";
-import { useStore } from "./useStore";
-import { GameSetting } from "@xmcl/minecraft-launcher-core";
+import { computed, onMounted, onUnmounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
+import { Data } from '@vue/composition-api/dist/component';
+import { GameSetting } from '@xmcl/minecraft-launcher-core';
+import { CreateOption, ServerAndModpack, ServerOrModpack } from 'universal/store/modules/profile';
+import { getExpectVersion } from 'universal/utils';
+import { useStore } from './useStore';
 
 /**
  * Use the general info of the instance
@@ -17,7 +17,7 @@ export function useInstance() {
     const author = computed(() => profile.author || '');
 
     const isServer = computed(() => profile.type === 'server');
-    const refreshing = computed(() => state.semaphore['instance'] > 0);
+    const refreshing = computed(() => state.semaphore.instance > 0);
     const refs = toRefs(profile);
     const type: Ref<string> = refs.type as any;
 
@@ -45,8 +45,8 @@ export function useInstances() {
         selectInstance: services.InstanceService.selectInstance,
         deleteInstance: services.InstanceService.deleteInstance,
         pingProfiles: services.InstanceService.refreshAll,
-        importInstance: services.InstanceService.importProfile
-    }
+        importInstance: services.InstanceService.importProfile,
+    };
 }
 
 /**
@@ -73,6 +73,8 @@ export function useInstanceCreation() {
         icon: '',
         image: '',
         blur: 4,
+        host: '',
+        port: -1,
     });
     const refs = toRefs(data);
     const required: Required<typeof refs> = toRefs(data) as any;
@@ -82,7 +84,7 @@ export function useInstanceCreation() {
          * Commit this creation. It will create and select the instance.
          */
         create() {
-            services.InstanceService.createAndSelect({ ...data, type: 'modpack' })
+            return services.InstanceService.createAndSelect({ ...data, type: 'modpack' });
         },
         /**
          * Reset the change
@@ -132,8 +134,8 @@ export function useInstanceCreation() {
             data.icon = instance.icon;
             data.image = instance.image;
             data.blur = instance.blur;
-        }
-    }
+        },
+    };
 }
 
 export function useInstanceVersionBase() {
@@ -149,7 +151,7 @@ export function useProfileTemplates() {
     return {
         profiles: computed(() => getters.profiles),
         modpacks: computed(() => getters.modpacks),
-    }
+    };
 }
 
 /**
@@ -159,7 +161,7 @@ export function useProfileResourcePacks() {
     const { state, commit } = useStore();
     const resourcePacks: Ref<string[]> = computed({
         get: () => state.profile.settings.resourcePacks,
-        set: (p) => { commit('gamesettings', { resourcePacks: p }) }
+        set: (p) => { commit('gamesettings', { resourcePacks: p }); },
     }) as any;
     return {
         resourcePacks,
@@ -175,8 +177,8 @@ export function useProfileGameSetting() {
         },
         commitChange(settings: GameSetting.Frame) {
             commit('gamesettings', settings);
-        }
-    }
+        },
+    };
 }
 
 export function useProfileVersion() {
@@ -186,21 +188,20 @@ export function useProfileVersion() {
 
     const refVersion = toRefs(profile.version);
     const folder = ref('');
-    const id = computed(() => getExpectVersion(profile.version.minecraft,
+    const id = computed(() => getExpectVersion(
+        profile.version.minecraft,
         profile.version.forge,
-        profile.version.liteloader));
+        profile.version.liteloader,
+    ));
 
     let watcher = () => { };
-
-    services.VersionService.resolveVersion(profile.version)
-        .then((f) => { folder.value = f; }, console.error);
 
     onMounted(() => {
         watcher = watch(id, () => {
             services.VersionService.resolveVersion(profile.version)
-                .then((f) => { folder.value = f; }, console.error);
+                .then((f) => { folder.value = f; }, () => { folder.value = ''; });
         });
-    })
+    });
     onUnmounted(() => {
         watcher();
     });
@@ -226,7 +227,7 @@ export function useProfileMods() {
 
     return {
         mods,
-    }
+    };
 }
 export function useInstanceSaves() {
     const { state, services } = useStore();
@@ -239,7 +240,7 @@ export function useInstanceSaves() {
         copySave: services.InstanceService.copySave,
         refresh: services.InstanceService.loadProfileSaves,
         loadAllPreviews: services.InstanceService.loadAllProfileSaves,
-    }
+    };
 }
 export function useInstanceLogs() {
     const { state, services } = useStore();
@@ -251,5 +252,5 @@ export function useInstanceLogs() {
         listLogs: services.InstanceService.listLogs,
         removeCrashReport: services.InstanceService.removeCrashReport,
         removeLog: services.InstanceService.removeLog,
-    }
+    };
 }

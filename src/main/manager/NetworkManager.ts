@@ -1,11 +1,11 @@
-import Task from "@xmcl/task";
+import Task from '@xmcl/task';
 import { BrowserWindow, DownloadItem } from 'electron';
-import { fs } from "main/utils";
-import { basename, join } from "path";
-import { Store } from "vuex";
-import { Manager } from ".";
-import TaskManager from "./TaskManager";
+import { fs } from 'main/utils';
+import { basename, join } from 'path';
+import { Store } from 'vuex';
 import inGFW from 'in-gfw';
+import { Manager } from '.';
+import TaskManager from './TaskManager';
 
 function downloadItemTask(item: DownloadItem) {
     function downloadItem(context: Task.Context) {
@@ -26,17 +26,19 @@ function downloadItemTask(item: DownloadItem) {
                 }
             });
         });
-    };
-    downloadItem.parameters = { url: item.getURL(), file: item.getFilename() }
+    }
+    downloadItem.parameters = { url: item.getURL(), file: item.getFilename() };
     return downloadItem;
 }
 
 export default class NetworkManager extends Manager {
     private taskManager!: TaskManager;
+
     private guard!: BrowserWindow;
 
     private downloading: { [url: string]: { file: string; callback: (item: Promise<string>) => void } } = {};
-    private inGFW: boolean = false;
+
+    private inGFW = false;
 
     constructor(private tempRoot: string = 'temps') {
         super();
@@ -74,7 +76,7 @@ export default class NetworkManager extends Manager {
         return new Promise<string>((resolve, reject) => {
             this.downloading[payload.url] = {
                 file: payload.file,
-                callback(prom) { prom.then(resolve, reject); }
+                callback(prom) { prom.then(resolve, reject); },
             };
             win.webContents.downloadURL(payload.url);
         });
@@ -108,7 +110,7 @@ export default class NetworkManager extends Manager {
             focusable: false,
             webPreferences: {
                 javascript: false,
-                devTools: false
+                devTools: false,
             },
             width: 0,
             height: 0,

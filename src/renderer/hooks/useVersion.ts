@@ -1,35 +1,28 @@
-import { useStore } from "./useStore";
-import { Ref, onMounted, watch, computed, onUnmounted } from "@vue/composition-api";
-import { useProfileVersion } from "./useProfile";
-import { remote } from "electron";
+import { computed, onMounted, onUnmounted, Ref, watch } from '@vue/composition-api';
+import { notNull } from 'universal/utils';
+import { useProfileVersion } from './useProfile';
+import { useStore, useBusy } from './useStore';
 
 export function useVersions() {
     const { services } = useStore();
     return {
         deleteVersion: services.VersionService.deleteVersion,
-    }
+    };
 }
 
 export function useLocalVersions() {
-    const { state } = useStore();
+    const { state, services } = useStore();
     const localVersions = computed(() => state.version.local);
     const { minecraft, forge, liteloader } = useProfileVersion();
-    const selected = computed(() => localVersions.value.find(v => v.minecraft == minecraft.value
+    const selected = computed(() => localVersions.value.find(v => v.minecraft === minecraft.value
         && v.forge === forge.value && v.liteloader === liteloader.value));
-
-    function showVersionDirectory(version: string) {
-        remote.shell.openItem(`${state.root}/versions/${version}`);
-    }
-    function showVersionsDirectory() {
-        remote.shell.openItem(`${state.root}/versions`);
-    }
 
     return {
         ...useVersions(),
         localVersions,
         selected,
-        showVersionDirectory,
-        showVersionsDirectory,
+        showVersionDirectory: services.VersionService.showVersionDirectory,
+        showVersionsDirectory: services.VersionService.showVersionsDirectory,
     };
 }
 
@@ -59,12 +52,12 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
 
     let handle = () => { };
     onMounted(() => {
-        handle = watch(minecraftVersion, (v) => {
+        handle = watch(minecraftVersion, () => {
             if (versions.value.length === 0) {
                 services.VersionInstallService.refreshForge(minecraftVersion.value);
             }
-        })
-    })
+        });
+    });
     onUnmounted(() => {
         handle();
     });
@@ -80,5 +73,33 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
         statuses,
         recommended,
         latest,
+    };
+}
+
+export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
+    const { state, services } = useStore();
+
+    const versions = computed(() => Object.values(state.version.liteloader.versions[minecraftVersion.value] || {}).filter(notNull));
+    const refreshing = useBusy('refreshLiteloader');
+    let handle = () => { };
+    onMounted(() => {
+        handle = watch(minecraftVersion, () => {
+            if (!versions.value) {
+                services.VersionInstallService.refreshLiteloader();
+            }
+        });
+    });
+    onUnmounted(() => {
+        handle();
+    });
+
+    function refresh() {
+        return services.VersionInstallService.refreshLiteloader();
     }
+
+    return {
+        versions,
+        refresh,
+        refreshing,
+    };
 }

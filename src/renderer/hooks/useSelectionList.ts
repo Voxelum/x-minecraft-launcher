@@ -31,7 +31,7 @@ export function useSelectionList<T, R>(
 
     function doInsert(index: number, toIndex: number) {
         if (index === toIndex) return;
-        const copy = [...items.value]
+        const copy = [...items.value];
         const inserted = copy.splice(index, 1);
         copy.splice(toIndex, 0, ...inserted);
         items.value = copy;
@@ -100,5 +100,5 @@ export function useSelectionList<T, R>(
         onDragOver,
         onDropLeft,
         onDropRight,
-    }
+    };
 }

@@ -1,11 +1,11 @@
-import { GameSetting, Server, LevelDataFrame } from "@xmcl/minecraft-launcher-core";
+import { GameSetting, Server, LevelDataFrame } from '@xmcl/minecraft-launcher-core';
 import { getExpectVersion } from 'universal/utils/versions';
 import Vue from 'vue';
-import { ModuleOption } from "../root";
-import { Java } from "./java";
+import { ModuleOption } from '../root';
+import { Java } from './java';
 import { ModpackProfileConfig, ProfileConfig, ServerProfileConfig } from './profile.config';
 import { Resource } from './resource';
-import { LocalVersion } from "./version";
+import { LocalVersion } from './version';
 
 export type CreateProfileOption = Omit<ModpackProfileConfig, 'id' | 'lastAccessDate' | 'creationDate'> & { type: 'modpack' }
 export type CreateServerProfileOption = Omit<ServerProfileConfig, 'id' | 'lastAccessDate' | 'creationDate'> & { type: 'server' }
@@ -15,7 +15,6 @@ export type ServerAndModpack = ModpackProfileConfig & ServerProfileConfig & { ty
 
 export type Save = { level: LevelDataFrame; path: string }
 
-const DEFAULT_PROFILE: ProfileConfig = createTemplate('', { majorVersion: 8, path: '', version: '' }, '', 'modpack', false);
 
 interface State {
     /**
@@ -150,6 +149,8 @@ export function createTemplate(id: string, java: Java, mcversion: string, type: 
     return server;
 }
 
+const DEFAULT_PROFILE: ProfileConfig = createTemplate('', { majorVersion: 8, path: '', version: '' }, '', 'modpack', false);
+
 const mod: ProfileModule = {
     state: {
         all: {},
@@ -166,9 +167,9 @@ const mod: ProfileModule = {
     },
     getters: {
         profiles: state => Object.keys(state.all).map(k => state.all[k]),
-        serverProtocolVersion: state => 338,
+        serverProtocolVersion: () => 338,
         selectedProfile: state => state.all[state.id] || DEFAULT_PROFILE,
-        currentVersion: (state, getters, rootState) => {
+        currentVersion: (state, getters) => {
             const current = getters.selectedProfile;
             const minecraft = current.version.minecraft;
             const forge = current.version.forge;

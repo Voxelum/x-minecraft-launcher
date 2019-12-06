@@ -1,13 +1,8 @@
 import { promises, createWriteStream } from 'fs';
 import { join, relative } from 'path';
 import { ZipFile } from 'yazl';
-import { unpack, pack } from '7zip-min';
+import { unpack } from '7zip-min';
 
-/**
- * @param {string} root
- * @param {string} real
- * @param {ZipFile} zip
- */
 export async function includeAllToZip(root: string, real: string, zip: ZipFile) {
     const relativePath = relative(root, real);
     const stat = await promises.stat(real);
@@ -21,12 +16,6 @@ export async function includeAllToZip(root: string, real: string, zip: ZipFile) 
         zip.addFile(real, relativePath);
     }
 }
-
-
-/**
- * @param {ZipFile} zip
- * @param {string} dest
- */
 export function compressZipTo(zip: ZipFile, dest: string) {
     return new Promise<void>((resolve, reject) => {
         zip.outputStream.pipe(createWriteStream(dest))
@@ -34,9 +23,8 @@ export function compressZipTo(zip: ZipFile, dest: string) {
             .on('error', (e) => { reject(e); });
     });
 }
-
 export function unpack7z(pathToArchive: string, whereToUnpack: string) {
     return new Promise<void>((resolve, reject) => {
-        unpack(pathToArchive, whereToUnpack, (e) => { if (e) reject(e); else resolve(); })
-    })
+        unpack(pathToArchive, whereToUnpack, (e) => { if (e) reject(e); else resolve(); });
+    });
 }

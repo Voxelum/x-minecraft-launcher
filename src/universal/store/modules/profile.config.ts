@@ -28,7 +28,7 @@ export interface ProfileConfig {
          * The major version of selected java. If the version cannot be found, matching the java by this
          */
         majorVersion: number;
-    },
+    };
 
     /**
      * Either a modpack or server. The modpack is the common profile. It can export into a modpack 
@@ -78,7 +78,7 @@ export interface ProfileConfig {
         [id: string]: string;
     };
 
-    resolution: { width: number, height: number, fullscreen: boolean } | undefined;
+    resolution: { width: number; height: number; fullscreen: boolean } | undefined;
     minMemory: number | undefined;
     maxMemory: number | undefined;
 

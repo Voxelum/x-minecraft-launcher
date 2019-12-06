@@ -193,7 +193,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, ref, toRefs, computed, watch, Ref } from '@vue/composition-api';
+import { createComponent, reactive, ref, toRefs, watch, Ref } from '@vue/composition-api';
 import { useStore, useI18n, useParticle, useSettings, useIpc, useNativeDialog, useShell } from '@/hooks';
 
 export default createComponent({
@@ -202,7 +202,7 @@ export default createComponent({
     const shell = useShell();
     const dialog = useNativeDialog();
     const { showParticle, particleMode } = useParticle();
-    const { state, commit } = useStore();
+    const { state } = useStore();
     const settings = useSettings();
     const { l, t: tr } = useI18n();
     const data = reactive({
@@ -218,8 +218,7 @@ export default createComponent({
       viewingUpdateDetail: false,
     });
 
-    const particleModes: Ref<{ value: string; text: string }[]> =
-      ref(['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: tr(`setting.particleMode.${t}`) })));
+    const particleModes: Ref<{ value: string; text: string }[]> = ref(['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: tr(`setting.particleMode.${t}`) })));
     watch(settings.selectedLocale, () => {
       particleModes.value = ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: tr(`setting.particleMode.${t}`) }));
     });
@@ -251,7 +250,7 @@ export default createComponent({
         data.reloadDialog = false;
         data.rootLocation = state.root;
       },
-      doApplyRoot(defer: string) {
+      doApplyRoot() {
         data.reloading = true;
         ipcRenderer.once('root', (error) => {
           data.reloading = false;

@@ -1,8 +1,8 @@
-import { ForgeWebPage, Installer, LiteLoader } from "@xmcl/minecraft-launcher-core";
+import { ForgeWebPage, Installer, LiteLoader } from '@xmcl/minecraft-launcher-core';
 import lastestRelease from 'universal/utils/lasteRelease.json';
 import { fitin } from 'universal/utils/object';
 import Vue from 'vue';
-import { ModuleOption } from "../root";
+import { ModuleOption } from '../root';
 
 
 export type Status = 'remote' | 'local';
@@ -59,12 +59,12 @@ interface Getters {
     /**
      * Latest snapshot
      */
-    minecraftSnapshot: Installer.VersionMeta | undefined,
+    minecraftSnapshot: Installer.VersionMeta | undefined;
     /**
      * Latest release
      */
-    minecraftRelease: Installer.VersionMeta,
-    minecraftVersion: (mcversion: string) => Installer.VersionMeta | undefined,
+    minecraftRelease: Installer.VersionMeta;
+    minecraftVersion: (mcversion: string) => Installer.VersionMeta | undefined;
     minecraftStatuses: { [minecraftVersion: string]: Status };
 
     /**
@@ -78,7 +78,7 @@ interface Getters {
     liteloaderVersionsOf: (mcversion: string) => {
         snapshot?: LiteLoader.VersionMeta;
         release?: LiteLoader.VersionMeta;
-    }
+    };
 }
 
 interface Mutations {

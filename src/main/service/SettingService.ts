@@ -2,8 +2,8 @@ import { Task } from '@xmcl/minecraft-launcher-core';
 import { autoUpdater, UpdaterSignal } from 'electron-updater';
 import { gfw } from 'main/utils';
 import locales from 'static/locales';
-import Service from './Service';
 import { getPersistence, setPersistence } from 'main/utils/persistence';
+import Service from './Service';
 
 export default class SettingService extends Service {
     async load() {
@@ -22,6 +22,7 @@ export default class SettingService extends Service {
             // settings: data.settings,
         });
     }
+
     async save({ mutation }: { mutation: string }) {
         switch (mutation) {
             case 'locale':
@@ -45,7 +46,7 @@ export default class SettingService extends Service {
                         defaultBlur: this.state.setting.defaultBlur,
                         showParticle: this.state.setting.showParticle,
                         particleMode: this.state.setting.particleMode,
-                    }
+                    },
                 });
                 break;
             default:
@@ -128,5 +129,3 @@ export default class SettingService extends Service {
         return this.submit(downloadUpdate);
     }
 }
-
-

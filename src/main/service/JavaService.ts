@@ -12,6 +12,7 @@ import Service, { Inject } from './Service';
 export default class JavaService extends Service {
     @Inject('InstanceService')
     private profileService!: InstanceService;
+
     private static JAVA_FILE = platform.name === 'windows' ? 'javaw.exe' : 'java';
 
     async load() {
@@ -23,6 +24,7 @@ export default class JavaService extends Service {
             await this.refreshLocalJava();
         }
     }
+
     async init() {
         if (this.state.java.all.length === 0) {
             this.refreshLocalJava();
@@ -35,16 +37,18 @@ export default class JavaService extends Service {
                 .then((result) => { if (!result) { this.commit('removeJava', j); } })));
         }
     }
+
     async save({ mutation }: { mutation: string }) {
         switch (mutation) {
             case 'addJava':
             case 'removeJava':
             case 'defaultJava':
-                setPersistence({ path: this.getPath('java.json'), data: this.state.java })
+                setPersistence({ path: this.getPath('java.json'), data: this.state.java });
                 break;
             default:
         }
     }
+
     /**
      * Install a default jdk 8 to the a preserved location. It'll be installed under your launcher root location `jre` folder
      * @param fixing 
@@ -76,6 +80,7 @@ export default class JavaService extends Service {
         };
         return this.submit(installJre);
     }
+
     /**
      * Test if this javapath exist and works
      */
@@ -92,8 +97,8 @@ export default class JavaService extends Service {
             if (match === null) return undefined;
             return match[1];
         };
-        return new Promise((resolve, reject) => {
-            const proc = exec(`"${javaPath}" -version`, (err, sout, serr) => {
+        return new Promise((resolve) => {
+            exec(`"${javaPath}" -version`, (err, sout, serr) => {
                 const version = getJavaVersion(serr);
                 if (serr && version !== undefined) {
                     let majorVersion = Number.parseInt(version.split('.')[0], 10);
@@ -111,11 +116,12 @@ export default class JavaService extends Service {
                     resolve(undefined);
                 }
             });
-            proc.stderr?.on('data', (chunk) => {
-                // console.log(chunk.toString());
-            });
+            // proc.stderr?.on('data', (chunk) => {
+            // console.log(chunk.toString());
+            // });
         });
     }
+
     /**
      * scan local java locations and cache
      */
@@ -127,20 +133,20 @@ export default class JavaService extends Service {
             unchecked.add(join(this.state.root, 'jre', 'bin', JavaService.JAVA_FILE));
             if (process.env.JAVA_HOME) unchecked.add(join(process.env.JAVA_HOME, 'bin', JavaService.JAVA_FILE));
 
-            const which = () => new Promise<string>((resolve, reject) => {
-                exec('which java', (error, stdout, stderr) => {
+            const which = () => new Promise<string>((resolve) => {
+                exec('which java', (error, stdout) => {
                     resolve(stdout.replace('\n', ''));
                 });
             });
-            const where = () => new Promise<string[]>((resolve, reject) => {
-                exec('where java', (error, stdout, stderr) => {
+            const where = () => new Promise<string[]>((resolve) => {
+                exec('where java', (error, stdout) => {
                     resolve(stdout.split('\r\n'));
                 });
             });
 
             if (platform.name === 'windows') {
-                const out = await new Promise<string[]>((resolve, reject) => {
-                    exec('REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome', (error, stdout, stderr) => {
+                const out = await new Promise<string[]>((resolve) => {
+                    exec('REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome', (error, stdout) => {
                         if (!stdout) resolve([]);
                         resolve(stdout.split(EOL).map(item => item.replace(/[\r\n]/g, ''))
                             .filter(item => item != null && item !== undefined)
@@ -169,5 +175,3 @@ export default class JavaService extends Service {
         }
     }
 }
-
-

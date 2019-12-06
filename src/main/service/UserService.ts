@@ -1,7 +1,7 @@
-import { Auth, MojangChallengeResponse, MojangService, ProfileService, Net } from '@xmcl/minecraft-launcher-core';
-import { fs, requireObject, requireString, requireNonnull } from 'main/utils';
+import { Auth, MojangChallengeResponse, MojangService, Net, ProfileService } from '@xmcl/minecraft-launcher-core';
+import { fs, requireNonnull, requireObject, requireString } from 'main/utils';
 import { getPersistence, setPersistence } from 'main/utils/persistence';
-import { parse, UrlWithStringQuery } from 'url';
+import { parse } from 'url';
 import { v4 } from 'uuid';
 import Service from './Service';
 
@@ -23,6 +23,7 @@ export default class UserService extends Service {
             default:
         }
     }
+
     async load() {
         const data = await getPersistence({ path: this.getPath('user.json'), schema: 'UserConfig' });
 
@@ -73,9 +74,11 @@ export default class UserService extends Service {
             });
         }
     }
+
     async init() {
         this.refreshUser();
     }
+
     /**
      * Logout and clear current cache.
      */
@@ -117,6 +120,7 @@ export default class UserService extends Service {
             this.commit('refreshingSecurity', false);
         }
     }
+
     /**
      * Get all the user set challenges for security reasons.
      */
@@ -126,6 +130,7 @@ export default class UserService extends Service {
         if (user.profileService !== 'mojang') return [];
         return MojangService.getChallenges(user.accessToken);
     }
+
     async submitChallenges(responses: MojangChallengeResponse[]) {
         if (!this.getters.logined) throw new Error('Cannot submit challenge if not logined');
         const user = this.getters.selectedUser;
@@ -135,6 +140,7 @@ export default class UserService extends Service {
         this.commit('userSecurity', true);
         return result;
     }
+
     /**
      * Refresh current skin status
      */
@@ -176,6 +182,7 @@ export default class UserService extends Service {
             this.commit('refreshingSkin', false);
         }
     }
+
     /**
      * Refresh the user auth status
      */
@@ -186,7 +193,7 @@ export default class UserService extends Service {
             const validate = await Auth.Yggdrasil.validate({
                 accessToken: user.accessToken,
                 clientToken: this.state.user.clientToken,
-            }, this.getters.authService).catch(e => false);
+            }, this.getters.authService).catch(() => false);
 
             if (validate) {
                 this.checkLocation();
@@ -214,11 +221,12 @@ export default class UserService extends Service {
             }
         }
     }
+
     /**
      * Upload the skin to server
      * @param payload 
      */
-    async uploadSkin(payload: { url: string, slim: boolean }) {
+    async uploadSkin(payload: { url: string; slim: boolean }) {
         requireObject(payload);
         requireNonnull(payload.url);
 
@@ -228,7 +236,7 @@ export default class UserService extends Service {
         if (typeof payload.slim !== 'boolean') payload.slim = false;
         const { url, slim } = payload;
 
-        let parsedUrl = parse(url);
+        const parsedUrl = parse(url);
         let data: Buffer | undefined;
         let urlString = '';
         if (parsedUrl.protocol === 'file:') {
@@ -254,16 +262,18 @@ export default class UserService extends Service {
             throw e;
         });
     }
+
     /**
      * Save the skin to the disk
      */
-    async saveSkin(option: { url: string, path: string }) {
+    async saveSkin(option: { url: string; path: string }) {
         requireObject(option);
         requireString(option.url);
         requireString(option.path);
         const { path, url } = option;
         return fs.writeFile(path, await Net.downloadBuffer({ url }));
     }
+
     /**
      * Refresh the current user login status
      */
@@ -284,7 +294,7 @@ export default class UserService extends Service {
         /**
          * The game profile id of the user
          */
-        profileId: string
+        profileId: string;
     }) {
         requireObject(payload);
         requireString(payload.userId);
@@ -293,6 +303,7 @@ export default class UserService extends Service {
         this.commit('setUserProfile', payload);
         await this.refreshUser();
     }
+
     /**
      * Login the user by current login mode. Refresh the skin and account information.
      */
@@ -345,9 +356,9 @@ export default class UserService extends Service {
                     throw e;
                 });
 
-            if (authService !== selectedUserProfile.authService ||
-                profileService !== selectedUserProfile.profileService ||
-                (authService === 'offline' && account !== selectedUserProfile.account)) {
+            if (authService !== selectedUserProfile.authService
+                || profileService !== selectedUserProfile.profileService
+                || (authService === 'offline' && account !== selectedUserProfile.account)) {
                 this.commit('addUserProfile', {
                     account,
                     authService,
@@ -373,5 +384,3 @@ export default class UserService extends Service {
         }
     }
 }
-
-

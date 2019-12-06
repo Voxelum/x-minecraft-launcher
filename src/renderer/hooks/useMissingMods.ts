@@ -1,7 +1,7 @@
-import { computed, Ref, ref } from "@vue/composition-api";
-import { Forge } from "@xmcl/minecraft-launcher-core";
-import { useStore } from "./useStore";
+import { computed, Ref, ref } from '@vue/composition-api';
+import { Forge } from '@xmcl/minecraft-launcher-core';
 import Vue from 'vue';
+import { useStore } from './useStore';
 
 export type ModStatus = 'existed' | 'absent' | 'founded' | 'not-found' | 'loading' | 'downloading' | 'unknown';
 
@@ -11,7 +11,7 @@ interface MissingMod {
     status: ModStatus;
     task: string;
     info?: Forge.ModMetaData & { projectId: string; fileId: string };
-};
+}
 
 export function useMissingMods(modList: Ref<{ modid: string; version: string }[]>) {
     const { services, getters } = useStore();
@@ -47,7 +47,7 @@ export function useMissingMods(modList: Ref<{ modid: string; version: string }[]
     }
 
     async function downloadAllAvailable() {
-        for (let m of items.value.filter(i => i.status === 'founded')) {
+        for (const m of items.value.filter(i => i.status === 'founded')) {
             await services.CurseForgeService.fetchMetadataByModId(m);
         }
     }
@@ -58,5 +58,5 @@ export function useMissingMods(modList: Ref<{ modid: string; version: string }[]
         downloading,
         checking,
         checkAvailability,
-    }
+    };
 }

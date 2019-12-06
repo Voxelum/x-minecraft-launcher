@@ -1,9 +1,9 @@
 import { join } from 'path';
-import { LATEST_MC_RELEASE } from "universal/utils/constant";
-import InstanceService from "./InstanceService";
+import { LATEST_MC_RELEASE } from 'universal/utils/constant';
+import InstanceService from './InstanceService';
 
-const mockRoot = join(__dirname, "..", "..", "..", "mock");
-const tempRoot = join(__dirname, "..", "..", "..", "temp");
+const mockRoot = join(__dirname, '..', '..', '..', 'mock');
+const tempRoot = join(__dirname, '..', '..', '..', 'temp');
 
 describe('InstanceService', () => {
     const mocks = {
@@ -22,7 +22,7 @@ describe('InstanceService', () => {
 
         },
         getPath(...p: string[]) { return join(tempRoot, ...p); },
-    }
+    };
     describe('#createInstance', () => {
         test('should create a instance', async () => {
             const service = new InstanceService();
@@ -30,9 +30,9 @@ describe('InstanceService', () => {
             Object.entries({
                 ...mocks,
                 commit: (type: string, payload: any) => {
-                    expect(typeof type === "string").toBe(true);
+                    expect(typeof type === 'string').toBe(true);
                     config = payload;
-                }
+                },
             }).forEach(([k, v]) => Reflect.set(service, k, v));
             const id = await service.createInstance({ type: 'modpack' });
             expect(typeof id).toBe('string');
@@ -51,9 +51,9 @@ describe('InstanceService', () => {
             Object.entries({
                 ...mocks,
                 commit: (type: string, payload: any) => {
-                    expect(typeof type === "string").toBe(true);
+                    expect(typeof type === 'string').toBe(true);
                     config = payload;
-                }
+                },
             }).forEach(([k, v]) => Reflect.set(service, k, v));
             const id = await service.createInstance({
                 author: 'ooo',
@@ -66,7 +66,7 @@ describe('InstanceService', () => {
                     minecraft: '11',
                     forge: '22',
                     liteloader: '33',
-                    other: '44'
+                    other: '44',
                 },
                 deployments: { mods: ['abc'] },
             });
@@ -104,7 +104,7 @@ describe('InstanceService', () => {
             Object.entries({
                 ...mocks,
                 commit: cm,
-                state: { profile: { id: 'abc' } }
+                state: { profile: { id: 'abc' } },
             }).forEach(([k, v]) => Reflect.set(service, k, v));
             await service.selectInstance('abc');
             expect(cm).not.toBeCalled();
@@ -134,7 +134,7 @@ describe('InstanceService', () => {
                         all: {
                             cur: { id: 'cur' },
                             s: { id: 's' },
-                        }
+                        },
                     },
                 },
                 selectInstance: async (a: any) => select(a),
@@ -143,5 +143,5 @@ describe('InstanceService', () => {
             expect(select).toBeCalledWith('s');
             expect(cm).toBeCalledWith('removeProfile', 'cur');
         });
-    })
+    });
 });

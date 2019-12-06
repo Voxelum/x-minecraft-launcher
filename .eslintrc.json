@@ -95,6 +95,12 @@
         "no-continue": 0,
         "import/no-named-as-default": 0,
         "no-array-constructor": 0,
-        "@typescript-eslint/explicit-function-return-type": 0
+        "@typescript-eslint/explicit-function-return-type": 0,
+        "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/no-empty-interface": 0,
+        "import/prefer-default-export": 0,
+        "class-methods-use-this": 0,
+        "@typescript-eslint/no-empty-function": 0,
+        "@typescript-eslint/no-non-null-assertion": 0
     }
 }

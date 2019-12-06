@@ -7,7 +7,7 @@ import ResourceService from './ResourceService';
 import Service, { Inject } from './Service';
 import VersionService from './VersionService';
 
-function onerror(e: { message: string; type: string; }) {
+function onerror(e: { message: string; type: string }) {
     if (e.message.startsWith('Cannot find version ') || e.message.startsWith('No version file for ') || e.message.startsWith('No version jar for ')) {
         e.type = 'missing.version';
     } else if (e.message === 'Missing library') {
@@ -23,10 +23,13 @@ function onerror(e: { message: string; type: string; }) {
 export default class LauncheService extends Service {
     @Inject('DiagnoseService')
     private diagnoseService!: DiagnoseService;
+
     @Inject('VersionService')
     private versionService!: VersionService;
+
     @Inject('ResourceService')
     private resourceService!: ResourceService;
+
     @Inject('AuthLibService')
     private authLibService!: AuthLibService;
 
@@ -87,7 +90,7 @@ export default class LauncheService extends Service {
              * Build launch condition
              */
             const option: Launcher.Option = {
-                gameProfile: gameProfile,
+                gameProfile,
                 accessToken: user.accessToken,
                 properties: {},
                 gamePath: minecraftFolder.root,
@@ -205,5 +208,3 @@ export default class LauncheService extends Service {
         }
     }
 }
-
-

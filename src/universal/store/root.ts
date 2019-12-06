@@ -18,18 +18,18 @@ type ActionRestriction<A extends ActionDefinitions, S = {}, G = {}> = {
     [key in keyof A]: (context: { state: S; getters: G; commit: RootCommit; dispatch: RootDispatch; rootState: RootState; rootGetters: RootGetters }, payload: Parameters<A[key]>[0]) => Promise<ReturnType<A[key]>>;
 }
 
-type StateTree = { [K in keyof ModuleMap]: Required<ModuleMap[K]>["state"] };
+type StateTree = { [K in keyof ModuleMap]: Required<ModuleMap[K]>['state'] };
 export interface RootState extends StateTree, BaseState { }
 
 type InverseGetterRestriction<G extends GetterRestriction<any, any>> = { [key in keyof G]: ReturnType<G[key]>; }
 export interface RootGetters extends BaseGetters, UnionToIntersection<InverseGetterRestriction<ModulesGetters>> { }
 
-type Commit<M extends MutationRestriction<any, any>> = { <T extends keyof M>(type: T, payload?: Parameters<M[T]>[1]): void; }
+type Commit<M extends MutationRestriction<any, any>> = { <T extends keyof M>(type: T, payload?: Parameters<M[T]>[1]): void }
 export interface RootCommit extends Commit<UnionToIntersection<ModulesMutations>>, Commit<MutationRestriction<BaseMutations>> { }
 
-type DispatchFromDef<A extends ActionDefinitions> = { <T extends keyof A>(type: T, payload?: Parameters<A[T]>[0]): Promise<ReturnType<A[T]>>; }
-type Dispatch<A extends ActionRestriction<any, any, any>> = { <T extends keyof A>(type: T, payload?: Parameters<A[T]>[1]): ReturnType<A[T]>; }
-export interface RootDispatch extends DispatchFromDef<BaseActions>, Dispatch<UnionToIntersection<ModulesActions>> { };
+type DispatchFromDef<A extends ActionDefinitions> = { <T extends keyof A>(type: T, payload?: Parameters<A[T]>[0]): Promise<ReturnType<A[T]>> }
+type Dispatch<A extends ActionRestriction<any, any, any>> = { <T extends keyof A>(type: T, payload?: Parameters<A[T]>[1]): ReturnType<A[T]> }
+export interface RootDispatch extends DispatchFromDef<BaseActions>, Dispatch<UnionToIntersection<ModulesActions>> { }
 
 type ModUnion = Required<ModuleMap[keyof ModuleMap]>;
 type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;
@@ -61,4 +61,3 @@ export interface Store {
 }
 export interface ModuleMap {
 }
-

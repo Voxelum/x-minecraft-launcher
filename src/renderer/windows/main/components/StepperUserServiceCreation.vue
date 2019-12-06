@@ -19,7 +19,7 @@
         :hint="$t('user.service.baseUrlHint')"
         :rules="urlRules"
         @update:error="value => baseUrlError = value"
-        @keypress="onKeyPress"
+        @keypress.enter="onKeyPress"
       />
       <v-radio-group v-model="template">
         <v-radio
@@ -113,19 +113,33 @@
   </v-stepper>
 </template>
 
-<script>
+<script lang=ts>
+import Vue from 'vue';
+import { createComponent, reactive, toRefs, onMounted, watch } from '@vue/composition-api';
+import { useStore, useI18n } from '../../../hooks';
+
 const HTTP_EXP = /(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
-export default {
+export default createComponent({
   props: {
     modify: {
       type: String,
       default: '',
     },
   },
-  data() {
-    return {
+  setup(props, context) {
+    const { state, commit } = useStore();
+    const { t } = useI18n();
+    const urlRules = [
+      (value: string) => !!HTTP_EXP.test(value) || t('user.service.invalidUrl'),
+    ];
+    const nameRules = [
+      (value: string) => !!value || t('user.service.requireName'),
+      (value: string) => !state.user.authServices[value] || t('user.service.duplicatedName'),
+    ];
+    const authOrder = ['hostName', 'authenticate', 'refresh', 'validate', 'invalidate', 'signout'];
+    const data = reactive({
       name: '',
-      step: 0, 
+      step: 0,
       template: 0,
       baseUrl: '',
       baseUrlError: false,
@@ -134,7 +148,6 @@ export default {
       enableProfileService: true,
       enableAuthService: true,
 
-      authOrder: ['hostName', 'authenticate', 'refresh', 'validate', 'invalidate', 'signout'],
       newAuth: {
         hostName: '',
         authenticate: '',
@@ -143,116 +156,111 @@ export default {
         invalidate: '',
         signout: '',
       },
-      urlRules: [
-        value => !!HTTP_EXP.test(value) || this.$t('user.service.invalidUrl'),
-      ],
-      nameRules: [
-        value => !!value || this.$t('user.service.requireName'),
-        value => !this.$repo.state.user.authServices[value] || this.$t('user.service.duplicatedName'),
-      ],
+
       newProfileService: {
         profile: '',
         profileByName: '',
         texture: '',
       },
+    });
+    const dataRefs = toRefs(data);
+    let watcher = () => { };
+    onMounted(() => {
+      watcher = watch(dataRefs.step, () => {
+        if (data.step > 1) {
+          if (data.newAuth.hostName === ''
+            && data.newAuth.authenticate === ''
+            && data.newAuth.refresh === ''
+            && data.newAuth.validate === ''
+            && data.newAuth.invalidate === ''
+            && data.newAuth.signout === '') {
+            if (!data.baseUrl.startsWith('http://') && !data.baseUrl.startsWith('https://')) {
+              data.baseUrl = `http://${data.baseUrl}`;
+            }
+            if (data.template === 0) {
+              data.newAuth.hostName = `${data.baseUrl}`;
+            } else {
+              data.newAuth.hostName = `${data.baseUrl}/authserver`;
+            }
+            data.newAuth.authenticate = '/authenticate';
+            data.newAuth.refresh = '/refresh';
+            data.newAuth.validate = '/validate';
+            data.newAuth.invalidate = '/invalidate';
+            data.newAuth.signout = '/signout';
+          }
+
+          if (data.newProfileService.profile === ''
+            && data.newProfileService.profileByName === ''
+            && data.newProfileService.texture === '') {
+            if (data.template === 0) {
+              data.newProfileService.profile = `${data.baseUrl}/session/minecraft/profile/\${uuid}`;
+            } else {
+              data.newProfileService.profile = `${data.baseUrl}/sessionserver/session/minecraft/profile/\${uuid}`;
+            }
+            data.newProfileService.profileByName = `${data.baseUrl}/users/profiles/minecraft/\${name}`;
+            data.newProfileService.texture = `${data.baseUrl}/user/profile/\${uuid}/\${type}`;
+          }
+        }
+      });
+      if (props.modify !== '') {
+        const authSeriv = state.user.authServices[props.modify];
+        if (authSeriv) {
+          data.newAuth = { ...authSeriv };
+        }
+        const profSeriv = state.user.profileServices[props.modify];
+        if (profSeriv) {
+          data.newProfileService = { ...profSeriv };
+          delete (data.newProfileService as any).publicKey;
+        }
+        data.enableProfileService = !!profSeriv;
+        data.enableAuthService = !!authSeriv;
+
+        data.name = props.modify;
+
+        Vue.nextTick().then(() => {
+          data.step = 2;
+        });
+      } else {
+        data.enableProfileService = true;
+        data.enableAuthService = true;
+        data.newAuth = {
+          hostName: '',
+          authenticate: '',
+          refresh: '',
+          validate: '',
+          invalidate: '',
+          signout: '',
+        };
+        data.newProfileService = {
+          profile: '',
+          profileByName: '',
+          texture: '',
+        };
+        Vue.nextTick().then(() => {
+          data.step = 1;
+        });
+      }
+    });
+    return {
+      ...dataRefs,
+      authOrder,
+      urlRules,
+      nameRules,
+      finish() {
+        commit('authService', { name: data.name, api: data.newAuth });
+        commit('profileService', { name: data.name, api: data.newProfileService });
+
+        context.emit('cancel');
+      },
+      onKeyPress() {
+        if (!data.baseUrlError) {
+          data.step = 2;
+        }
+      },
     };
   },
-  watch: {
-    step() {
-      if (this.step > 1) {
-        if (this.newAuth.hostName === '' 
-        && this.newAuth.authenticate === ''
-        && this.newAuth.refresh === ''
-        && this.newAuth.validate === ''
-        && this.newAuth.invalidate === ''
-        && this.newAuth.signout === '') {
-          if (!this.baseUrl.startsWith('http://') && !this.baseUrl.startsWith('https://')) {
-            this.baseUrl = `http://${this.baseUrl}`;
-          }
-          if (this.template === 0) {
-            this.newAuth.hostName = `${this.baseUrl}`;
-          } else {
-            this.newAuth.hostName = `${this.baseUrl}/authserver`;
-          }
-          this.newAuth.authenticate = '/authenticate';
-          this.newAuth.refresh = '/refresh';
-          this.newAuth.validate = '/validate';
-          this.newAuth.invalidate = '/invalidate';
-          this.newAuth.signout = '/signout';
-        }
-
-        if (this.newProfileService.profile === '' 
-        && this.newProfileService.profileByName === ''
-        && this.newProfileService.texture === '') {
-          if (this.template === 0) {
-            this.newProfileService.profile = `${this.baseUrl}/session/minecraft/profile/\${uuid}`;
-          } else {
-            this.newProfileService.profile = `${this.baseUrl}/sessionserver/session/minecraft/profile/\${uuid}`;
-          }
-          this.newProfileService.profileByName = `${this.baseUrl}/users/profiles/minecraft/\${name}`;
-          this.newProfileService.texture = `${this.baseUrl}/user/profile/\${uuid}/\${type}`;
-        }
-      } 
-    },
-  },
-  mounted() {
-    if (this.modify !== '') {
-      const authSeriv = this.$repo.state.user.authServices[this.modify];
-      if (authSeriv) {
-        this.newAuth = { ...authSeriv };
-      }
-      const profSeriv = this.$repo.state.user.profileServices[this.modify];
-      if (profSeriv) {
-        this.newProfileService = { ...profSeriv };
-        delete this.newProfileService.publicKey;
-      }
-      this.enableProfileService = !!profSeriv;
-      this.enableAuthService = !!authSeriv;
-
-      this.name = this.modify;
-
-      this.$nextTick().then(() => {
-        this.step = 2;
-      });
-    } else {
-      this.enableProfileService = true;
-      this.enableAuthService = true;
-      this.newAuth = {
-        hostName: '',
-        authenticate: '',
-        refresh: '',
-        validate: '',
-        invalidate: '',
-        signout: '',
-      };
-      this.newProfileService = {
-        profile: '',
-        profileByName: '',
-        texture: '',
-      };
-      this.$nextTick().then(() => {
-        this.step = 1;
-      });
-    }
-  },
-  methods: {
-    finish() {
-      this.$repo.commit('authService', { name: this.name, api: this.newAuth });
-      this.$repo.commit('profileService', { name: this.name, api: this.newProfileService });
-
-      this.$emit('cancel');
-    },
-    onKeyPress(e) {
-      if (e.code === 'Enter') {
-        if (!this.baseUrlError) {
-          this.step = 2;
-        }
-      }
-    },
-  },
-};
+});
 </script>
 
 <style>
-
 </style>

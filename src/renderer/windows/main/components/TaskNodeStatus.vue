@@ -11,7 +11,7 @@
   </div>
 </template>
 
-<script>
+<script lang=ts>
 import { createComponent, computed } from '@vue/composition-api';
 
 const component = createComponent({

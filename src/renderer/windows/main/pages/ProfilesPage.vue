@@ -253,10 +253,10 @@ export default {
           ? []
           : [{ extensions: ['zip'], name: 'Zip' }];
         const { filePaths, bookmarks } = await showOpenDialog({
-            title: t('profile.import.title'),
-            message: t('profile.import.description'),
-            filters,
-            properties: fromFolder ? ['openDirectory'] : ['openFile'],
+          title: t('profile.import.title'),
+          message: t('profile.import.description'),
+          filters,
+          properties: fromFolder ? ['openDirectory'] : ['openFile'],
         });
         if (filePaths && filePaths.length > 0) {
           for (const f of filePaths) {
@@ -266,7 +266,7 @@ export default {
                 type: 'curseforge-modpack',
                 background: true,
               });
-              await importCurseforgeModpack({ path: f })
+              await importCurseforgeModpack({ path: f });
             } else {
               await importInstance(f);
             }
@@ -277,7 +277,7 @@ export default {
         if ('id' in data.deletingProfile) {
           deleteInstance(data.deletingProfile.id).finally(() => {
             data.isDeletingProfile = false;
-          });;
+          });
         } else {
           data.isDeletingProfile = false;
         }
@@ -314,10 +314,10 @@ export default {
         if (data.pinging) return;
         data.pinging = true;
         pingProfiles().then(() => {
-            notify('success', t('profile.refreshServers'));
-          }, (e) => {
-            notify('error', t('profile.refreshServers'), e);
-          }).finally(() => {
+          notify('success', t('profile.refreshServers'));
+        }, (e) => {
+          notify('error', t('profile.refreshServers'), e);
+        }).finally(() => {
           data.pinging = false;
         });
       },

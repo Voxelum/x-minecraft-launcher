@@ -56,9 +56,10 @@
   </v-container>
 </template>
 
-<script>
+<script lang=ts>
 import { createComponent, reactive, ref, computed } from '@vue/composition-api';
 import { useForgeVersions } from '@/hooks';
+import { ForgeInstaller, ForgeWebPage } from '@xmcl/minecraft-launcher-core';
 
 export default createComponent({
   props: {
@@ -90,10 +91,10 @@ export default createComponent({
   setup(props, context) {
     const mcversion = computed(() => props.minecraft);
     const { statuses, versions, refreshing, refresh } = useForgeVersions(mcversion);
-    function selectVersion(item) {
+    function selectVersion(item: ForgeWebPage.Version) {
       context.emit('input', item.version);
     }
-    function filterForge(version) {
+    function filterForge(version: ForgeWebPage.Version) {
       if (props.recommendedOnly && version.type !== 'recommended' && version.type !== 'latest') return false;
       if (props.showBuggy && version.type !== 'buggy') return true;
       return version.version.indexOf(props.filterText) !== -1;

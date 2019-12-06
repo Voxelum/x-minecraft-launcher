@@ -29,7 +29,8 @@
     },
     "include": [
         "types/*",
-        "src/**/*"
+        "src/**/*",
+        "static/**/*"
     ],
     "exclude": ["node_modules"]
 }

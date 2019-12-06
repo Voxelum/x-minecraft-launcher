@@ -1,8 +1,8 @@
 import { join } from 'path';
 import { fs } from 'main/utils';
-import Service from './Service';
 import { Server } from '@xmcl/minecraft-launcher-core';
-import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/server-status';
+import { createFailureServerStatus } from 'universal/utils/server-status';
+import Service from './Service';
 
 export default class ServerStatusService extends Service {
     async load() {
@@ -34,7 +34,8 @@ export default class ServerStatusService extends Service {
             });
         }
     }
-    async pingServer(payload: { host: string, port?: number, protocol?: number }) {
+
+    async pingServer(payload: { host: string; port?: number; protocol?: number }) {
         const { host, port = 25565, protocol } = payload;
         console.log(`Ping server ${host}:${port} with ${protocol}`);
         try {
@@ -52,6 +53,7 @@ export default class ServerStatusService extends Service {
             }
         }
     }
+
     async pingServers() {
         const version = this.getters.serverProtocolVersion;
         if (this.state.profile.serverInfos.length > 0) {
@@ -61,5 +63,3 @@ export default class ServerStatusService extends Service {
         return [];
     }
 }
-
-

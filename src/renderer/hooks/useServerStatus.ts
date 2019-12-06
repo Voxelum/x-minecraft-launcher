@@ -40,7 +40,7 @@ export function useServer(host: Ref<{ host: string; port: number; protocol?: num
 export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
     const { state, getters, services } = useStore();
 
-    const using = ref || computed(() => state.profile.statuses[state.profile.id])
+    const using = ref || computed(() => state.profile.statuses[state.profile.id]);
     const status: Ref<ServerStatusFrame> = computed(() => using.value || {
         version: {
             name: '',
@@ -54,7 +54,7 @@ export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
         favicon: '',
         ping: -1,
     });
-    const acceptingVersion = computed(() => '[' + getters.getAcceptMinecraftsByProtocol(status.value.version.protocol).join(', ') + ']');
+    const acceptingVersion = computed(() => `[${getters.getAcceptMinecraftsByProtocol(status.value.version.protocol).join(', ')}]`);
 
     return {
         acceptingVersion,

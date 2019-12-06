@@ -1,5 +1,5 @@
-import { Server } from "@xmcl/minecraft-launcher-core";
-import { ServerProfileConfig } from "universal/store/modules/profile.config";
+import { Server } from '@xmcl/minecraft-launcher-core';
+import { ServerProfileConfig } from 'universal/store/modules/profile.config';
 import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/server-status';
 import InstanceService from './InstanceService';
 
@@ -38,4 +38,3 @@ export async function createProfileFromServer(this: InstanceService, info: Serve
         port: info.port || 25565,
     });
 }
-

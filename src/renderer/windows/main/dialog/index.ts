@@ -29,6 +29,6 @@ const components = files.keys().map((key) => {
 
 export default createComponent({
     setup() {
-        return () => h('div', { staticStyle: { 'z-index': 10 } }, components.map((c) => h(c)));
-    }
+        return () => h('div', { staticStyle: { 'z-index': 10 } }, components.map(c => h(c)));
+    },
 });

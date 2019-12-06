@@ -1,4 +1,4 @@
-import createStore from '@/store';
+import createStore from '@/providers/provideVuexStore';
 import Vue from 'vue';
 import VueObserveVisibility from 'vue-observe-visibility';
 import VueParticles from 'vue-particles';
@@ -15,11 +15,11 @@ Vue.use(VueParticles);
 Vue.component('text-component', TextComponent as any);
 Vue.component('skin-view', SkinView);
 
-const store = createStore([]);
+const store = createStore();
 const _i18n = i18n(store);
 
 app({
-    router,
     store,
+    router,
     i18n: _i18n,
 });

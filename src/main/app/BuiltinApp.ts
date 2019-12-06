@@ -5,8 +5,11 @@ import { resolve } from 'path';
 
 export default class BuiltinApp extends LauncherApp {
     private mainRef: BrowserWindow | null = null;
+
     private loggerRef: BrowserWindow | null = null;
+
     private tray: Tray | null = null;
+
     private dock: Dock | null = null;
 
     createMainWindow() {
@@ -122,24 +125,27 @@ export default class BuiltinApp extends LauncherApp {
             } else {
                 this.loggerRef.focus();
             }
-        }
+        };
 
         this.dock?.setMenu(Menu.buildFromTemplate([{
             label: 'Show Log',
             type: 'normal',
             click,
-        },]));
+        }]));
     }
+
     onMinecraftStdOut = (content: string) => {
         if (this.loggerRef) {
             this.loggerRef.webContents.send('minecraft-stdout', content);
         }
     }
+
     onMinecraftStdErr = (content: string) => {
         if (this.loggerRef) {
             this.loggerRef.webContents.send('minecraft-stderr', content);
         }
     }
+
     onMinecraftExited = () => {
         const { hideLauncher } = this.store.getters.selectedProfile;
         if (hideLauncher) {

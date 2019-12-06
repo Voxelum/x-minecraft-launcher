@@ -19,7 +19,7 @@
   </v-menu>
 </template>
 
-<script>
+<script lang=ts>
 import { createComponent, inject, ref } from '@vue/composition-api';
 
 export default createComponent({

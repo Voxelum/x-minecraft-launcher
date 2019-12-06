@@ -1,6 +1,6 @@
-import { UpdateInfo } from "electron-updater";
-import { ModuleOption } from "../root";
-import { ParticleMode, SettingConfig } from "./setting.config";
+import { UpdateInfo } from 'electron-updater';
+import { ModuleOption } from '../root';
+import { ParticleMode, SettingConfig } from './setting.config';
 
 interface State extends SettingConfig {
     /**
@@ -97,4 +97,3 @@ const mod: SettingModule = {
 
 export default mod;
 export { ParticleMode };
-

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import util from 'util';
-import { Manager } from ".";
+import { Manager } from '.';
 
 export default class LogManager extends Manager {
     setup() {
@@ -14,6 +14,7 @@ export default class LogManager extends Manager {
             console.error(reason);
         });
     }
+
     rootReady(root: string) {
         const { log, error, warn } = console;
 
@@ -25,8 +26,8 @@ export default class LogManager extends Manager {
             }
         }
 
-        console.log(path.resolve(root, 'logs', 'main.log'));
-        const outstream = fs.createWriteStream(path.resolve(root, 'logs', 'main.log'), { encoding: 'utf-8', flags: 'w+' });
+        const mainLog = path.resolve(root, 'logs', 'main.log');
+        const outstream = fs.createWriteStream(mainLog, { encoding: 'utf-8', flags: 'w+' });
         console.log = (message: any, ...options: any[]) => {
             const raw = options.length !== 0 ? util.format(message, options) : util.format(message);
             const content = `[INFO] [${new Date().toUTCString()}]: ${raw}`;

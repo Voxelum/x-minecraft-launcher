@@ -1,4 +1,4 @@
-import Task, { TaskHandle } from '@xmcl/task';
+import { Task, TaskHandle } from '@xmcl/minecraft-launcher-core';
 import { Managers } from 'main/manager';
 import { RootCommit, RootGetters, RootState } from 'universal/store';
 
@@ -22,12 +22,12 @@ export function Singleton(...keys: string[]) {
     return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
         const method = descriptor.value;
         const sem: any = [propertyKey, ...keys];
-        const func = function (this: Service) {
-            if (this.getters.busy(sem)) return;
+        const func = function (this: Service, ...arges: any[]) {
+            if (this.getters.busy(sem)) return undefined;
             this.commit('aquire', sem);
             let isPromise = false;
             try {
-                const result = method.apply(this, arguments);
+                const result = method.apply(this, arges);
                 if (result instanceof Promise) {
                     isPromise = true;
                     result.finally(() => {
@@ -40,7 +40,7 @@ export function Singleton(...keys: string[]) {
                     this.commit('release', sem);
                 }
             }
-        }
+        };
         descriptor.value = func;
     };
 }
@@ -80,16 +80,24 @@ export default class Service {
     }
 
     protected state!: RootState;
+
     protected getters!: RootGetters;
+
     protected commit!: RootCommit;
+
     protected getPath!: (...args: string[]) => string;
+
     protected managers!: Managers;
 
-    async save(payload: { mutation: string, payload: any }): Promise<void> { }
+    async save(payload: { mutation: string; payload: any }): Promise<void> { }
+
     async load(): Promise<void> { }
+
     async init(): Promise<void> { }
 
     readonly log: typeof console.log = () => { };
+
     readonly error: typeof console.error = () => { };
+
     readonly warn: typeof console.warn = () => { };
 }

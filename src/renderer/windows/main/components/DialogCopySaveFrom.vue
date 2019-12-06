@@ -73,9 +73,9 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, computed, toRefs, onMounted, watch } from "@vue/composition-api";
-import { useInstanceSaves, useInstance, useBusy, useResourceOperation, useResource } from "@/hooks";
-import { LevelDataFrame } from "@xmcl/world";
+import { createComponent, reactive, computed, toRefs, onMounted, watch } from '@vue/composition-api';
+import { useInstanceSaves, useInstance, useBusy, useResourceOperation, useResource } from '@/hooks';
+import { LevelDataFrame } from '@xmcl/world';
 
 export default createComponent({
   props: {
@@ -146,7 +146,7 @@ export default createComponent({
           data.working = false;
         }
       },
-    }
+    };
   },
 });
 </script>

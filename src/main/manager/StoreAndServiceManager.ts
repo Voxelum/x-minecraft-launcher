@@ -1,32 +1,36 @@
-import { Task, TaskHandle } from "@xmcl/minecraft-launcher-core";
-import { App, ipcMain, webContents } from "electron";
-import AuthLibService from "main/service/AuthLibService";
-import CurseForgService from "main/service/CurseForgeService";
-import DiagnoseService from "main/service/DiagnoseService";
-import InstanceService from "main/service/InstanceService";
-import JavaService from "main/service/JavaService";
-import LauncheService from "main/service/LauncheService";
-import ResourceService from "main/service/ResourceService";
-import ServerStatusService from "main/service/ServerStatusService";
-import Service from "main/service/Service";
-import SettingService from "main/service/SettingService";
-import UserService from "main/service/UserService";
-import VersionInstallService from "main/service/VersionInstallService";
-import VersionService from "main/service/VersionService";
-import { platform } from "main/utils";
-import { join } from "path";
+import { Task, TaskHandle } from '@xmcl/minecraft-launcher-core';
+import { App, ipcMain, webContents } from 'electron';
+import AuthLibService from 'main/service/AuthLibService';
+import CurseForgService from 'main/service/CurseForgeService';
+import DiagnoseService from 'main/service/DiagnoseService';
+import InstanceService from 'main/service/InstanceService';
+import JavaService from 'main/service/JavaService';
+import LauncheService from 'main/service/LauncheService';
+import ResourceService from 'main/service/ResourceService';
+import ServerStatusService from 'main/service/ServerStatusService';
+import Service from 'main/service/Service';
+import SettingService from 'main/service/SettingService';
+import UserService from 'main/service/UserService';
+import VersionInstallService from 'main/service/VersionInstallService';
+import VersionService from 'main/service/VersionService';
+import { platform } from 'main/utils';
+import { join } from 'path';
 import modules from 'universal/store/modules';
-import Vue from "vue";
-import Vuex, { MutationPayload, Store, StoreOptions } from "vuex";
-import { Manager } from ".";
+import Vue from 'vue';
+import Vuex, { MutationPayload, Store, StoreOptions } from 'vuex';
+import { Manager } from '.';
 
 Vue.use(Vuex);
 
 export default class StoreAndServiceManager extends Manager {
     private services: Service[] = [];
+
     private serviceMap: { [name: string]: Service } = {};
+
     public store: Store<any> | null = null;
-    private usedSession: number = 0;
+
+    private usedSession = 0;
+
     private sessions: { [key: number]: () => Promise<void> } = {};
 
     constructor() {
@@ -56,12 +60,12 @@ export default class StoreAndServiceManager extends Manager {
     private setupService(root: string) {
         console.log(`Setup service ${root}`);
         const store = this.store!;
-        const services = this.services
+        const services = this.services;
         const servMap: { [name: string]: Service } = {};
         const getPath = (...paths: string[]) => join(root, ...paths);
         for (const serv of services) {
             const name = Object.getPrototypeOf(serv).constructor.name;
-            if (!name) throw new Error('Name of service is undefined')
+            if (!name) throw new Error('Name of service is undefined');
             servMap[name] = serv;
             const anySeriv = serv as any;
             anySeriv.managers = this.managers;
@@ -80,7 +84,7 @@ export default class StoreAndServiceManager extends Manager {
                 if (type in servMap) {
                     const success = Reflect.set(serv, field, servMap[type]);
                     if (!success) {
-                        throw new Error(`Cannot set service ${i} to ${Object.getPrototypeOf(serv)}`)
+                        throw new Error(`Cannot set service ${i} to ${Object.getPrototypeOf(serv)}`);
                     }
                 } else {
                     throw new Error(`Cannot find service named ${i}! Which is required by ${Object.getPrototypeOf(serv).constructor.name}`);
@@ -112,7 +116,7 @@ export default class StoreAndServiceManager extends Manager {
             },
             modules,
             getters: {
-                busy(state) { return (key: string) => state.semaphore[key] === 0; }
+                busy(state) { return (key: string) => state.semaphore[key] === 0; },
             },
             mutations: {
                 platform(state, p) { state.platform = p; },
@@ -121,8 +125,7 @@ export default class StoreAndServiceManager extends Manager {
                 aquire(state, res) {
                     const sem = res instanceof Array ? res : [res];
                     for (const s of sem) {
-                        if (s in state) { state.semaphore[s] += 1; }
-                        else { Vue.set(state.semaphore, s, 1); }
+                        if (s in state) { state.semaphore[s] += 1; } else { Vue.set(state.semaphore, s, 1); }
                     }
                 },
                 release(state, res) {
@@ -130,7 +133,7 @@ export default class StoreAndServiceManager extends Manager {
                     for (const s of sem) {
                         if (s in state) { state.semaphore[s] -= 1; }
                     }
-                }
+                },
             },
             strict: process.env.NODE_ENV !== 'production',
         };
@@ -142,11 +145,11 @@ export default class StoreAndServiceManager extends Manager {
         for (const s of this.services) {
             for (const key of Object.keys(s)) {
                 if (typeof (s as any)[key] === 'undefined') {
-                    console.log(`${Object.getPrototypeOf(s).constructor.name}$${key} is undefined!!!`)
+                    console.log(`${Object.getPrototypeOf(s).constructor.name}$${key} is undefined!!!`);
                 }
             }
         }
-        let startingTime = Date.now();
+        const startingTime = Date.now();
         try {
             await Promise.all(this.services.map(s => s.load()));
         } catch (e) {
@@ -156,12 +159,12 @@ export default class StoreAndServiceManager extends Manager {
 
         this.setupAutoSave();
 
-        console.log('StoreDone')
+        console.log('StoreDone');
     }
 
     async appReady(app: App) {
         // wait app ready since in the init stage, the module can access network & others
-        let startingTime = Date.now();
+        const startingTime = Date.now();
         try {
             await Promise.all(this.services.map(s => s.init()));
         } catch (e) {
@@ -180,7 +183,10 @@ export default class StoreAndServiceManager extends Manager {
             if (!this.sessions[id]) {
                 console.error(`Unknown session ${id}!`);
             }
-            return this.sessions[id]();
+            return this.sessions[id]().then(r => ({ result: r }), (e) => {
+                console.error(e);
+                return { error: e };
+            });
         });
         ipcMain.handle('service-call', (event, service: string, name: string, payload: any) => {
             const serv = this.serviceMap[service];
@@ -188,7 +194,7 @@ export default class StoreAndServiceManager extends Manager {
                 console.error(`Cannot execute service call ${name} from service ${serv}. The service not found.`);
             } else {
                 if (name in serv) {
-                    let tasks: TaskHandle<any, any>[] = [];
+                    const tasks: TaskHandle<any, any>[] = [];
                     const sessionId = this.usedSession++;
                     const taskManager = this.managers.TaskManager;
                     const submit = (task: Task<any>) => {
@@ -204,15 +210,14 @@ export default class StoreAndServiceManager extends Manager {
                         get(target, key) {
                             if (key === 'submit') { return submit; }
                             return Reflect.get(target, key);
-                        }
+                        },
                     });
 
                     this.sessions[sessionId] = () => servProxy[name](payload);
 
                     return sessionId;
-                } else {
-                    console.error(`Cannot execute service call ${name} from service ${serv}. The service doesn't have such method!`);
-                }
+                } 
+                console.error(`Cannot execute service call ${name} from service ${serv}. The service doesn't have such method!`);
             }
         });
     }
@@ -222,7 +227,7 @@ export default class StoreAndServiceManager extends Manager {
      */
     private setupAutoSave() {
         this.store!.subscribe((mutation) => {
-            this.services.map(s => s.save({ mutation: mutation.type, payload: mutation.payload }))
+            this.services.map(s => s.save({ mutation: mutation.type, payload: mutation.payload }));
         });
     }
 
@@ -240,8 +245,8 @@ export default class StoreAndServiceManager extends Manager {
             const mutations = mutationHistory.slice(currentId);
             return {
                 mutations,
-                length: mutationHistory.length
-            }
+                length: mutationHistory.length,
+            };
         });
         this.store!.subscribe((mutation, state) => {
             mutationHistory.push(mutation);

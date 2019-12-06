@@ -1,7 +1,7 @@
-import { Forge, LevelDataFrame, LiteLoader, ResourcePack } from "@xmcl/minecraft-launcher-core";
+import { Forge, LevelDataFrame, LiteLoader, ResourcePack } from '@xmcl/minecraft-launcher-core';
 import Vue from 'vue';
-import { ModuleOption } from "../root";
-import { Modpack } from "main/service/CurseForgeService";
+import { Modpack } from 'main/service/CurseForgeService';
+import { ModuleOption } from '../root';
 
 interface State {
     refreshing: boolean;
@@ -11,7 +11,7 @@ interface State {
         resourcepacks: { [hash: string]: ResourcePackResource };
         saves: { [hash: string]: SaveResource };
         modpacks: { [hash: string]: CurseforgeModpackResource };
-    }
+    };
 }
 
 interface Getters {
@@ -24,10 +24,10 @@ interface Getters {
     getResource: (hash: string) => AnyResource | undefined;
 
     queryResource(payload: string
-        | { modid: string; version: string; }
-        | { fileId: number; }
+        | { modid: string; version: string }
+        | { fileId: number }
         | { fileId: number; projectId: number }
-        | { name: string; version: string; }): AnyResource;
+        | { name: string; version: string }): AnyResource;
 }
 
 interface Mutations {
@@ -132,18 +132,18 @@ const mod: ResourceModule = {
         },
     },
     getters: {
-        domains: _ => ['mods', 'resourcepacks', 'modpacks', 'saves'],
+        domains: () => ['mods', 'resourcepacks', 'modpacks', 'saves'],
         mods: state => Object.values(state.domains.mods) || [],
         resourcepacks: state => Object.values(state.domains.resourcepacks) || [],
         saves: state => Object.values(state.domains.saves) || [],
         modpacks: state => Object.values(state.domains.modpacks) || [],
-        getResource: (state, getters) => (hash) => {
+        getResource: state => (hash) => {
             for (const value of [state.domains.mods, state.domains.resourcepacks, state.domains.modpacks, state.domains.saves]) {
                 if (value[hash]) return value[hash];
             }
             return undefined;
         },
-        queryResource: (state) => (q) => {
+        queryResource: state => (q) => {
             let qObject = q;
             if (typeof qObject === 'string') {
                 const [host, ...res] = qObject.split('/');
@@ -175,18 +175,18 @@ const mod: ResourceModule = {
                 const { modid, version } = qObject;
                 return Object.values(state.domains.mods)
                     .filter(m => m.type === 'forge')
-                    .find(m => m.metadata instanceof Array ? (m.metadata.some(me => me.modid === modid && me.version === version)) : false) 
+                    .find(m => (m.metadata instanceof Array ? (m.metadata.some(me => me.modid === modid && me.version === version)) : false)) 
                     || UNKNOWN_RESOURCE;
             }
             if ('name' in qObject && 'version' in qObject) {
                 const { name, version } = qObject;
                 return Object.values(state.domains.mods)
                     .filter(m => m.type === 'forge')
-                    .find(m => 'version' in m.metadata ? (m.metadata.name === name && m.metadata.version === version) : false)
+                    .find(m => ('version' in m.metadata ? (m.metadata.name === name && m.metadata.version === version) : false))
                     || UNKNOWN_RESOURCE;
             }
             if ('fileId' in qObject) {
-                const id = qObject.fileId
+                const id = qObject.fileId;
                 for (const domain of Object.values(state.domains)) {
                     const found = Object.values(domain)
                         .find(r => 'curseforge' in r.source

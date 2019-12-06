@@ -57,15 +57,20 @@
   </v-dialog>
 </template>
 
-<script>
+<script lang=ts>
 import { reactive, toRefs, computed, onMounted, watch } from '@vue/composition-api';
 import { useStore, useDialogSelf, useMutations } from '@/hooks';
 
+interface Service {
+  text: string;
+  value: string;
+  body: any;
+}
+
 export default {
   setup() {
-    const { state } = useStore();
+    const { state, commit } = useStore();
     const { isShown, closeDialog } = useDialogSelf('user-service');
-    const { removeService } = useMutations('removeService');
     const data = reactive({
       editingService: -1,
       addingService: false,
@@ -112,10 +117,10 @@ export default {
       services,
       isShown,
       closeDialog() { closeDialog(); },
-      remove(s) {
-        removeService(s.value);
+      remove(s: Service) {
+        commit('removeService', s.value);
       },
-      newOrEdit(s) {
+      newOrEdit(s: Service) {
         if (s) {
           data.initing = s.value;
         } else {

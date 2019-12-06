@@ -43,7 +43,7 @@ export async function loadProfileSaves(this: InstanceService, id: string = this.
             const nonNulls: {
                 path: string;
                 level: LevelDataFrame;
-            }[] = loaded.filter((s) => !!s.level) as any;
+            }[] = loaded.filter(s => !!s.level) as any;
             console.log(`Loaded ${nonNulls.length} saves.`);
             commit('profileSaves', nonNulls);
             return nonNulls;
@@ -65,7 +65,7 @@ export async function importSave(this: InstanceService, filePath: string) {
     requireString(filePath);
 
     const { getters, commit, state } = this;
-    async function hasLevel(dir: string) { return fs.exists(join(dir, "level.dat")); }
+    async function hasLevel(dir: string) { return fs.exists(join(dir, 'level.dat')); }
     async function findLevelDir(dir: string): Promise<string | undefined> {
         if (await hasLevel(dir)) return dir;
         for (const sub of await fs.readdir(dir)) {
@@ -87,7 +87,7 @@ export async function importSave(this: InstanceService, filePath: string) {
 
         const reader = await WorldReader.create(levelRoot);
         const level = await reader.getLevelData();
-        const fileName = filenamify(level.LevelName)
+        const fileName = filenamify(level.LevelName);
 
         let destDir = this.getPath('profiles', state.profile.id, 'saves', fileName);
         await fs.ensureFile(destDir);
@@ -106,7 +106,7 @@ export async function importSave(this: InstanceService, filePath: string) {
 /**
  * Copy current profile `src` save to other profile. The `dest` is the array of profile id. 
  */
-export async function copySave(this: InstanceService, { src, dest }: { src: string, dest: string[] }) {
+export async function copySave(this: InstanceService, { src, dest }: { src: string; dest: string[] }) {
     const id = this.state.profile.id;
     const path = src;
     const saveName = basename(path);
@@ -190,5 +190,3 @@ export async function exportSave(this: InstanceService, payload: {
         }
     }
 }
-
-

@@ -30,7 +30,7 @@ const mainConfig = {
                         loader: 'ts-loader',
                         options: {
                             happyPackMode: true,
-                            transpileOnly: true,
+                            // transpileOnly: true,
                         }
                     }
                 ],
@@ -68,10 +68,10 @@ const mainConfig = {
     },
     plugins: [
         new webpack.NoEmitOnErrorsPlugin(),
-        new ForkTsCheckerWebpackPlugin({
-            eslint: true,
-            tsconfig: path.resolve(__dirname, '../tsconfig.json'),
-        }),
+        // new ForkTsCheckerWebpackPlugin({
+        //     // eslint: true,
+        //     tsconfig: path.resolve(__dirname, '../tsconfig.json'),
+        // }),
     ],
     resolve: {
         extensions: ['.js', '.ts', '.json', '.node'],

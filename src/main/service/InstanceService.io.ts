@@ -11,7 +11,7 @@ import InstanceService from './InstanceService';
  * Export current profile as a modpack. Can be either curseforge or normal full Minecraft
  * @param option Which profile is exporting (search by id), where to export (dest), include assets? 
  */
-export async function exportProfile(this: InstanceService, { id, dest, type = 'full' }: { id?: string, dest: string, type: 'full' | 'no-assets' | 'curseforge' }) {
+export async function exportProfile(this: InstanceService, { id, dest, type = 'full' }: { id?: string; dest: string; type: 'full' | 'no-assets' | 'curseforge' }) {
     if (this.state.profile.refreshing) return;
     this.commit('aquireProfile');
     id = id || this.state.profile.id;
@@ -93,14 +93,13 @@ export async function importProfile(this: InstanceService, location: string) {
     }
 
     await fs.ensureDir(destFolderPath);
-    await fs.copy(srcFolderPath, destFolderPath, (path) => {
+    await fs.copy(srcFolderPath, destFolderPath, path => 
         // if (path.endsWith('/versions')) return false;
         // if (path.endsWith('/assets')) return false;
         // if (path.endsWith('/libraries')) return false;
         // if (path.endsWith('/resourcepacks')) return false;
         // if (path.endsWith('/mods')) return false;
-        return true;
-    });
+        true);
 
     await fs.copy(resolve(srcFolderPath, 'assets'), resolve(this.state.root, 'assets'));
     await fs.copy(resolve(srcFolderPath, 'libraries'), resolve(this.state.root, 'libraries'));
@@ -149,5 +148,3 @@ export async function importProfile(this: InstanceService, location: string) {
         await fs.remove(srcFolderPath);
     }
 }
-
-

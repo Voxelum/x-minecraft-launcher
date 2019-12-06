@@ -1,5 +1,5 @@
-import { inject, InjectionKey, Ref, provide, ref } from "@vue/composition-api";
-import { requireNonnull } from "main/utils";
+import { inject, InjectionKey, Ref, provide, ref } from '@vue/composition-api';
+import { requireNonnull } from 'main/utils';
 
 export type Status = 'success' | 'info' | 'warning' | 'error';
 const STATUS_SYMBOL: InjectionKey<Ref<Status>> = Symbol('NotifierStatus');
@@ -14,8 +14,8 @@ export function provideNotifier() {
     const show: Ref<boolean> = ref(false);
     provide(STATUS_SYMBOL, status);
     provide(CONTENT_SYMBOL, content);
-    provide(ERROR_SYMBOL, error)
-    provide(SHOW_SYMBOL, show)
+    provide(ERROR_SYMBOL, error);
+    provide(SHOW_SYMBOL, show);
 
     return { status, content, error, show };
 }
@@ -32,7 +32,7 @@ export function useNotifier() {
         cont.value = content;
         show.value = true;
         error.value = e;
-    }
+    };
 
     return {
         status: stat,
@@ -43,13 +43,13 @@ export function useNotifier() {
         subscribe<T>(promise: Promise<T>, success?: (r: T) => string, failed?: (e: any) => string) {
             promise.then((r) => {
                 if (success) {
-                    notify('success', success(r))
+                    notify('success', success(r));
                 }
             }, (e) => {
                 if (failed) {
                     notify('error', failed(e), e);
                 }
             });
-        }
+        },
     };
 }

@@ -1,5 +1,5 @@
-import { computed } from "@vue/composition-api";
-import { useStore } from "./useStore";
+import { computed } from '@vue/composition-api';
+import { useStore } from './useStore';
 
 export function useBackgroundImage() {
     const { state, getters } = useStore();
@@ -13,5 +13,5 @@ export function useBackgroundImage() {
     return {
         blur,
         backgroundImage,
-    }
+    };
 }

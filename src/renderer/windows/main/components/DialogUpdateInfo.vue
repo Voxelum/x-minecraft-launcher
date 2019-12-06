@@ -53,8 +53,8 @@
 </template>
 
 <script lang=ts>
-import { createComponent } from "@vue/composition-api";
-import { useUpdateInfo } from "@/hooks";
+import { createComponent } from '@vue/composition-api';
+import { useUpdateInfo } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -65,8 +65,8 @@ export default createComponent({
   },
   setup() {
     return {
-      ...useUpdateInfo()
-    }
+      ...useUpdateInfo(),
+    };
   },
 });
 </script>

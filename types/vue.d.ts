@@ -1,11 +1,10 @@
-declare module "*.vue" {
-    import Vue from 'vue';
+import Vue from 'vue';
+
+declare module '*.vue' {
     export default Vue;
 }
 
-declare module "vue/types/vue" {
-    import Vue from 'vue';
+declare module 'vue/types/vue' {
     interface Vue {
-        $notify(level: 'info' | 'success' | 'warning' | 'error', content: string): void;
     }
 }

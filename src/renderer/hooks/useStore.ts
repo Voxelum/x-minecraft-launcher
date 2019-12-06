@@ -19,12 +19,11 @@ export function useBusy(semaphore: string | Function) {
 
 export function useMutation<T extends keyof RootCommit>(key: T): (payload: Parameters<Required<RootCommit>[T]>[1]) => void {
     const { commit } = useStore();
-    return (payload) => commit(key, payload);
+    return payload => commit(key, payload);
 }
 
 export function useMutations<T extends keyof RootCommit>(...keys: T[]): { [K in T]: (payload: Parameters<Required<RootCommit>[K]>[1] | void) => void } {
     const result: any = {};
-    keys.forEach(k => { result[k] = useMutation(k) });
+    keys.forEach((k) => { result[k] = useMutation(k); });
     return result;
 }
-

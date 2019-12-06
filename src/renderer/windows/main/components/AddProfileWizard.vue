@@ -111,9 +111,9 @@
                               required />
               </v-flex>
               <v-flex d-flex xs4>
-                <version-menu @input="mcversion = $event">
+                <version-menu @input="version.minecraft = $event">
                   <template v-slot="{ on }">
-                    <v-text-field v-model="mcversion" 
+                    <v-text-field v-model="version.minecraft" 
                                   dark 
                                   append-icon="arrow" 
                                   persistent-hint
@@ -145,7 +145,7 @@
           </v-btn>
           <v-btn color="primary" 
                  :loading="creating" 
-                 :disabled="!valid || name === '' || mcversion === ''" 
+                 :disabled="!valid || name === '' || version.minecraft === ''" 
                  @click="doCreate">
             {{ $t('create') }}
           </v-btn>
@@ -156,7 +156,7 @@
           <v-container grid-list fill-height style="overflow: auto;">
             <v-layout row wrap>
               <v-flex d-flex xs6>
-                <v-select v-model="javaLocation" 
+                <v-select v-model="java.path" 
                           class="java-select" 
                           :item-text="java => `JRE${java.majorVersion}, ${java.path}`"
                           :item-value="v => v" 
@@ -185,9 +185,9 @@
                               required />
               </v-flex>
               <v-flex d-flex xs6>
-                <forge-version-menu :minecraft="mcversion" @input="forgeVersion = $event">
+                <forge-version-menu :minecraft="version.minecraft" @input="version.forge = $event">
                   <template v-slot="{ on }">
-                    <v-text-field v-model="forgeVersion" 
+                    <v-text-field v-model="version.forge" 
                                   dark 
                                   append-icon="arrow" 
                                   persistent-hint
@@ -210,7 +210,7 @@
           <v-spacer />
           <v-btn color="primary" 
                  :loading="creating" 
-                 :disabled="!valid || name === '' || mcversion === ''" 
+                 :disabled="!valid || name === '' || version.minecraft === ''" 
                  @click="doCreate">
             {{ $t('create') }}
           </v-btn>
@@ -342,6 +342,8 @@ export default createComponent({
     return {
       ...toRefs(data),
       ...staticData,
+      ...creationData,
+      importTask,
       quit,
       javas,
       selectProfileTemplate,

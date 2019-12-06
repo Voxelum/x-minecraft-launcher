@@ -25,10 +25,13 @@ function proxyOfTask(taskHandle: string): Pick<TaskHandle<any, any>, 'wait' | 'c
 async function startSession(sessionId: string, tasks: Array<any>) {
     const listener = (event: any, task: string) => {
         tasks.push(task);
-    }
+    };
     ipcRenderer.on(`session-${sessionId}`, listener);
-    const result = await ipcRenderer.invoke('session', sessionId);
+    const { result, error } = await ipcRenderer.invoke('session', sessionId);
     ipcRenderer.removeListener(`session-${sessionId}`, listener);
+    if (error) {
+        return Promise.reject(error);
+    }
     return result;
 }
 function proxyOfService(seriv: string) {
@@ -36,7 +39,7 @@ function proxyOfService(seriv: string) {
         get(_, key) {
             const func = function (payload: any) {
                 const tasks = reactive([]);
-                const promise = ipcRenderer.invoke('service-call', seriv, key as string, payload).then((r) => startSession(r, tasks));
+                const promise = ipcRenderer.invoke('service-call', seriv, key as string, payload).then(r => startSession(r, tasks));
                 Object.defineProperty(promise, '__tasks__', { value: tasks, enumerable: false, writable: false, configurable: false });
                 return promise;
             };
@@ -53,5 +56,4 @@ export default function provideServiceProxy() {
         },
     });
     provide(SERVICES_KEY, caller);
-;}
-
+}

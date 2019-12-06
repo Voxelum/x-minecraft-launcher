@@ -296,19 +296,17 @@ export default createComponent({
         data.profileId = profile.id;
       },
       async comfirmSwitchUser() {
-        if (switchingUser.value) {
-          console.log(`Select User profile ${data.userId} ${data.profileId}.`);
-          try {
-            await switchAccount({
-              userId: data.userId,
-              profileId: data.profileId,
-            });
-          } catch (e) {
-            console.error(`An error occured during select user profile ${data.userId} ${data.profileId}`);
-            console.error(e);
-          } finally {
-            if (logined.value) { closeDialog(); }
-          }
+        console.log(`Select User profile ${data.userId} ${data.profileId}.`);
+        try {
+          await switchAccount({
+            userId: data.userId,
+            profileId: data.profileId,
+          });
+        } catch (e) {
+          console.error(`An error occured during select user profile ${data.userId} ${data.profileId}`);
+          console.error(e);
+        } finally {
+          if (logined.value) { closeDialog(); }
         }
       },
     };

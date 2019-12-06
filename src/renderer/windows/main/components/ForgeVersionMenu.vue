@@ -31,10 +31,10 @@
   </v-menu>
 </template>
 
-<script>
-import { reactive, toRefs } from '@vue/composition-api';
+<script lang=ts>
+import { reactive, toRefs, createComponent } from '@vue/composition-api';
 
-export default {
+export default createComponent({
   props: {
     disabled: {
       type: Boolean,
@@ -52,7 +52,7 @@ export default {
       recommendedAndLatestOnly: true,
       filterText: '',
     });
-    function selectVersion(item) {
+    function selectVersion(item: any) {
       context.emit('input', item);
       data.opened = false;
     }
@@ -61,7 +61,7 @@ export default {
       selectVersion,
     };
   },
-};
+});
 </script>
 
 <style>

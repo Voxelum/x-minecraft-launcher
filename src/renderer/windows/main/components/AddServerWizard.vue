@@ -135,11 +135,11 @@
   </v-stepper>
 </template>
 
-<script>
-import { reactive, toRefs, ref, computed, onMounted, onUnmounted, watch } from '@vue/composition-api';
-import { useMinecraftVersions, useForgeVersions, useJava, useServerStatus, useI18n, useServer, useRouter, useProfileCreation } from '@/hooks';
+<script lang=ts>
+import { reactive, toRefs, ref, computed, onMounted, onUnmounted, watch, createComponent } from '@vue/composition-api';
+import { useMinecraftVersions, useForgeVersions, useJava, useServerStatus, useI18n, useServer, useRouter, useInstanceCreation } from '@/hooks';
 
-export default {
+export default createComponent({
   props: {
     show: {
       type: Boolean,
@@ -148,33 +148,23 @@ export default {
   },
   setup(props, context) {
     const { release, snapshot } = useMinecraftVersions();
-    const { versions: forgeVersions, recommended, latest } = useForgeVersions(release);
-    const { default: defaultJava, all: javas } = useJava();
-    const { createAndSelectProfile } = useProfileCreation();
+    const latestVersion = computed(() => release.value!.id);
+    const { create, reset, use, ...creationData } = useInstanceCreation();
+    const { versions: forgeVersions, recommended, latest } = useForgeVersions(latestVersion);
+    const { all: javas } = useJava();
     const { t } = useI18n();
     const router = useRouter();
 
     const staticData = {
-      memoryRule: [v => Number.isInteger(v)],
+      memoryRule: [(v: number) => Number.isInteger(v)],
       nameRules: [
-        v => !!v || t('profile.requireName'),
+        (v: string) => !!v || t('profile.requireName'),
       ],
     };
     const data = reactive({
       step: 1,
       valid: false,
       creating: false,
-
-      name: '',
-      host: '',
-      port: 25565,
-      protocol: undefined,
-
-      mcversion: '',
-      forgeVersion: '',
-      javaLocation: '',
-      maxMemory: 2048,
-      minMemory: 1024,
 
       filterVersion: false,
       javaValid: true,
@@ -190,35 +180,19 @@ export default {
       players,
       ping,
       pinging,
-    } = useServer(dataRef);
+    } = useServer(creationData);
 
     function init() {
       data.step = 1;
-      data.name = '';
-      data.mcversion = release.value.id;
-      data.forgeVersion = (recommended.value || latest.value || { version: '' }).version;
-      data.minMemory = 1024;
-      data.maxMemory = 2048;
-      data.javaLocation = javas.value.find(j => j.path === defaultJava.value.path);
+      reset();
     }
     function quit() {
       context.emit('quit');
     }
     async function doCreate() {
       try {
-        await createAndSelectProfile({
-          name: data.name,
-          mcversion: data.mcversion,
-          minMemory: data.minMemory,
-          maxMemory: data.maxMemory,
-          java: data.javaLocation,
-          type: 'server',
-          host: data.host,
-          port: data.port,
-          forge: {
-            version: data.forgeVersion,
-          },
-        });
+        data.creating = true;
+        await create();
         init();
         router.replace('/');
       } finally {
@@ -239,6 +213,7 @@ export default {
 
     return {
       ...toRefs(data),
+      ...creationData,
       ...staticData,
       favicon,
       acceptingVersion,
@@ -253,7 +228,7 @@ export default {
       pinging,
     };
   },
-};
+});
 </script>
 
 <style>

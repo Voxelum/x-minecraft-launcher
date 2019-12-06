@@ -41,18 +41,12 @@ const managers = {
 const manList: Manager[] = Object.values(managers);
 
 async function main() {
-    console.log(process.argv)
     console.log(process.cwd())
-    console.log(process.arch)
-
-    console.log('start');
-    manList.forEach(man => (man as any).managers = manList);
+    console.log(process.argv)
+    manList.forEach(man => (man as any).managers = managers);
     await Promise.all(manList.map(async m => await m.setup(managers)));
-    console.log('setup');
     await Promise.all(manList.map(m => m.rootReady(managers.RootManager.root)));
-    console.log('rootReady');
     await app.whenReady();
-    console.log('whenReady');
     await Promise.all(manList.map(m => m.appReady(app)));
     await Promise.all(manList.map(m => m.storeReady(managers.StoreAndServiceManager.store!)));
 }

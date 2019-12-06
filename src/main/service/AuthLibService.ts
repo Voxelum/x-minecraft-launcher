@@ -1,9 +1,9 @@
-import { Installer, MinecraftFolder, Net, Version } from "@xmcl/minecraft-launcher-core";
-import Task from "@xmcl/task";
-import { fs } from "main/utils";
+import { Installer, MinecraftFolder, Net, Version } from '@xmcl/minecraft-launcher-core';
+import Task from '@xmcl/task';
+import { fs } from 'main/utils';
+import { AUTHLIB_ORG_NAME } from 'universal/utils/constant';
 import Service, { Inject } from './Service';
-import DiagnoseService from "./DiagnoseService";
-import { AUTHLIB_ORG_NAME } from "universal/utils/constant";
+import DiagnoseService from './DiagnoseService';
 
 export default class AuthLibService extends Service {
     @Inject('DiagnoseService')
@@ -12,7 +12,7 @@ export default class AuthLibService extends Service {
     async doesAuthlibInjectionExisted(): Promise<boolean> {
         const jsonPath = this.getPath('authlib-injection.json');
         const mc = new MinecraftFolder(this.state.root);
-        let content = await fs.readFile(jsonPath).then((b) => JSON.parse(b.toString())).catch(_ => undefined);
+        const content = await fs.readFile(jsonPath).then(b => JSON.parse(b.toString())).catch(_ => undefined);
         if (!content) return false;
         const info = Version.getLibraryInfo(`${AUTHLIB_ORG_NAME}:${content.version}`);
         const libPath = mc.getLibraryByPath(info.path);
@@ -24,7 +24,7 @@ export default class AuthLibService extends Service {
             const jsonPath = this.getPath('authlib-injection.json');
             const mc = new MinecraftFolder(this.state.root);
 
-            let content = await fs.readFile(jsonPath).then((b) => JSON.parse(b.toString())).catch(_ => undefined);
+            const content = await fs.readFile(jsonPath).then(b => JSON.parse(b.toString())).catch(_ => undefined);
             if (!content) {
                 const { body, statusCode, statusMessage } = await Net.fetchJson('https://authlib-injector.yushi.moe/artifact/latest.json');
                 if (statusCode !== 200) throw new Error(statusMessage);
@@ -52,9 +52,9 @@ export default class AuthLibService extends Service {
                             size: -1,
                             path: info.path,
                             url: content.download_url,
-                        }
-                    }
-                }
+                        },
+                    },
+                };
                 await Installer.installLibrariesDirectTask(Version.resolveLibraries([authlib]), root)(ctx);
                 return mc.getLibraryByPath(info.path);
             }

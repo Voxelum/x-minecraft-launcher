@@ -45,5 +45,3 @@ export async function getCrashReportContent(this: InstanceService, name: string)
     }
     return buf.toString();
 }
-
-

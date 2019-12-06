@@ -28,7 +28,7 @@
   </v-dialog>
 </template>
 
-<script>
+<script lang=ts>
 import { useLaunch, useDialogSelf, useI18n } from '@/hooks';
 import { ref, onMounted, watch } from '@vue/composition-api';
 

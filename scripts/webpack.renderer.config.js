@@ -61,7 +61,7 @@ const rendererConfig = {
                     },
                     {
                         loader: 'ts-loader',
-                        options: { appendTsSuffixTo: [/\.vue$/], happyPackMode: true, transpileOnly: true },
+                        options: { appendTsSuffixTo: [/\.vue$/], happyPackMode: true },
                     }
                 ],
                 exclude: /node_modules/,
@@ -94,11 +94,11 @@ const rendererConfig = {
         __filename: process.env.NODE_ENV !== 'production',
     },
     plugins: [
-        new ForkTsCheckerWebpackPlugin({
-            vue: true,
-            eslint: true,
-            tsconfig: path.resolve(__dirname, '../tsconfig.json'),
-        }),
+        // new ForkTsCheckerWebpackPlugin({
+        //     vue: true,
+        //     // eslint: true,
+        //     tsconfig: path.resolve(__dirname, '../tsconfig.json'),
+        // }),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({ filename: 'styles.css' }),
         new HtmlWebpackPlugin({

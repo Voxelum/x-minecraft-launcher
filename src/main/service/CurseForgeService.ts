@@ -1,5 +1,5 @@
 import { Forge, got, Net, Task } from '@xmcl/minecraft-launcher-core';
-import { HTMLElement, Node, parse as parseHtml, TextNode } from 'fast-html-parser';
+import { HTMLElement, parse as parseHtml, NodeType } from 'fast-html-parser';
 import { fs, unpack7z } from 'main/utils';
 import { join } from 'path';
 import querystring from 'querystring';
@@ -76,11 +76,11 @@ export interface Project {
      * Image url
      */
     image: string;
-    members: { icon: string, name: string, type: string }[];
+    members: { icon: string; name: string; type: string }[];
     updatedDate: number;
     createdDate: number;
     totalDownload: string;
-    license: { url: string, name: string };
+    license: { url: string; name: string };
     files: {
         /**
          * number id of the file
@@ -148,11 +148,11 @@ function localDate(string: string) {
     return d.toLocaleDateString();
 }
 
-function notText(n: any) { return !(n instanceof TextNode); }
-function convert(node: Node | null) {
+function notText(n: HTMLElement) { return n.nodeType !== NodeType.TEXT_NODE; }
+function convert(node: HTMLElement | null) {
     if (node === null || !node) return '';
     let text = '';
-    if (node instanceof TextNode) {
+    if (node.nodeType === NodeType.TEXT_NODE) {
         text += node.rawText;
     } else if (node instanceof HTMLElement) {
         if (node.tagName !== null) {
@@ -172,7 +172,7 @@ function convert(node: Node | null) {
                 text += `<${node.tagName}${attrs}>`;
             }
         }
-        if (node.childNodes.length !== 0) for (const c of node.childNodes) text += convert(c);
+        if (node.childNodes.length !== 0) for (const c of node.childNodes) text += convert(c as HTMLElement);
         if (node.tagName !== null) text += `</${node.tagName}>`;
     } else throw new Error(`Unsupported type ${JSON.stringify(node)}`);
     return text;
@@ -222,6 +222,7 @@ function processProjectListingRow(item: HTMLElement): ProjectPreview {
 export default class CurseForgService extends Service {
     @Inject('InstanceService')
     private instanceService!: InstanceService;
+
     @Inject('ResourceService')
     private resourceService!: ResourceService;
 
@@ -231,8 +232,8 @@ export default class CurseForgService extends Service {
         return transformToObject(html);
     }
 
-    fetchCurseForgeProjects(payload: { page?: string, version?: string, filter?: string, project: ProjectType } = { project: 'mc-mods' }): Promise<{
-        projects: ProjectPreview[], pages: number, versions: Version[], filters: Filter[]
+    fetchCurseForgeProjects(payload: { page?: string; version?: string; filter?: string; project: ProjectType } = { project: 'mc-mods' }): Promise<{
+        projects: ProjectPreview[]; pages: number; versions: Version[]; filters: Filter[];
     }> {
         const { page, version, filter, project } = payload;
         if (typeof project !== 'string') throw new Error('Require project be [mc-mod], [resourcepack]');
@@ -270,10 +271,11 @@ export default class CurseForgService extends Service {
             };
         });
     }
+
     /**
      * Query the project detail from path.
      */
-    fetchCurseForgeProject({ path, project }: { path: string, project: ProjectType }): Promise<Project> {
+    fetchCurseForgeProject({ path, project }: { path: string; project: ProjectType }): Promise<Project> {
         if (!path || path == null) throw new Error('Curseforge path cannot be null');
         const url = `https://www.curseforge.com/minecraft/${project}/${path}`;
 
@@ -341,10 +343,11 @@ export default class CurseForgService extends Service {
             };
         });
     }
+
     /**
      * Query the project downloadable files.
      */
-    fetchCurseForgeProjectFiles(payload: { path: string, version?: string, page?: number, project: ProjectType | string }): Promise<Downloads> {
+    fetchCurseForgeProjectFiles(payload: { path: string; version?: string; page?: number; project: ProjectType | string }): Promise<Downloads> {
         if (!payload) throw new Error('Require fetch file with project type & project path');
         let { page, version } = payload;
         const { project, path } = payload;
@@ -386,7 +389,8 @@ export default class CurseForgService extends Service {
             return { pages: page, versions, files };
         });
     }
-    async fetchCurseforgeProjectImages({ path, type }: { path: string, type: string | ProjectType }): Promise<{ name: string, url: string, mini: string }[]> {
+
+    async fetchCurseforgeProjectImages({ path, type }: { path: string; type: string | ProjectType }): Promise<{ name: string; url: string; mini: string }[]> {
         const url = `https://www.curseforge.com/minecraft/${type}/${path}/screenshots`;
 
         console.log(`Fetch curseforge images from ${url}`);
@@ -401,20 +405,24 @@ export default class CurseForgService extends Service {
                 }));
         });
     }
+
     async fetchCurseForgeProjectLicense(url: string) {
         if (url == null || !url) throw new Error('URL cannot be null');
         const { body } = await got(`https://www.curseforge.com${url}`);
         return parseHtml(body).querySelector('.module').removeWhitespace().firstChild.rawText;
     }
-    async searchCurseforgeProjects({ keyword, type }: { keyword: string, type: string | ProjectType }): Promise<ProjectPreview[]> {
+
+    async searchCurseforgeProjects({ keyword, type }: { keyword: string; type: string | ProjectType }): Promise<ProjectPreview[]> {
         const url = `https://www.curseforge.com/minecraft/${type}/search?search=${keyword}`;
         return this.request(url, root => root.querySelectorAll('.project-listing-row').map(processProjectListingRow));
     }
+
     async fetchMetadataByModId({ modid, version }: { modid: string; version: string }): Promise<Forge.ModMetaData & { projectId: string; fileId: string }> {
         // http://voxelauncher.azurewebsites.net/api/v1/mods/file/{modid}/{version}
         const result = await Net.fetchJson(`http://voxelauncher.azurewebsites.net/api/v1/mods/file/${modid}/${version}`, { method: 'HEAD' });
         return result.body as any;
     }
+
     async downloadAndImportFile(payload: DownloadFile) {
         const href = payload.href || getHref(payload);
         const uObject = parseUrl(href);
@@ -462,7 +470,7 @@ export default class CurseForgService extends Service {
     /**
      * Import a curseforge modpack zip to the launche
      */
-    async importCurseforgeModpack({ profile, path }: { profile?: string, path: string }) {
+    async importCurseforgeModpack({ profile, path }: { profile?: string; path: string }) {
         const stat = await fs.stat(path);
         if (!stat.isFile()) throw new Error(`Cannot import curseforge modpack ${path}, since it's not a file!`);
         // const buf = await promises.readFile(path);
@@ -470,7 +478,7 @@ export default class CurseForgService extends Service {
         // if (!fType || fType.ext !== 'zip') throw new Error(`Cannot import curseforge modpack ${path}, since it's not a zip!`);
         console.log(`Import curseforge modpack by path ${path}`);
         const resourceService = this.resourceService;
-        const downloadTask = (pool: { url: string, dest: string, fileId: number }[], modList: string[]) => {
+        const downloadTask = (pool: { url: string; dest: string; fileId: number }[], modList: string[]) => {
             const install = async (context: Task.Context) => {
                 while (pool.length !== 0) {
                     const task = pool.pop()!;
@@ -500,7 +508,7 @@ export default class CurseForgService extends Service {
             return install;
         };
         const installCurseforgeModpack = async (ctx: Task.Context) => {
-            const dir = await fs.mkdtemp(this.getPath('temp', 'curseforge-'))
+            const dir = await fs.mkdtemp(this.getPath('temp', 'curseforge-'));
             const unpack = async () => unpack7z(path, dir);
             await ctx.execute(unpack);
 
@@ -508,7 +516,7 @@ export default class CurseForgService extends Service {
                 throw new Error(`Cannot import curseforge modpack ${path}, since it doesn't have manifest.json`);
             }
 
-            const manifest: Modpack = await fs.readFile(join(dir, 'manifest.json')).then((b) => JSON.parse(b.toString()));
+            const manifest: Modpack = await fs.readFile(join(dir, 'manifest.json')).then(b => JSON.parse(b.toString()));
             const modList: string[] = [];
 
             const shouldDownloaded = [];
@@ -538,8 +546,8 @@ export default class CurseForgService extends Service {
                 await Promise.all([
                     context.execute(downloadTask(pool, modList)),
                     context.execute(downloadTask(pool, modList)),
-                ])
-            }
+                ]);
+            };
             await ctx.execute(installMods);
 
             // create profile accordingly 
@@ -585,11 +593,9 @@ export default class CurseForgService extends Service {
                     // }
                     // await Promise.all(overrides.map(o => pipeTo(o)));
                 }
-            }
+            };
             await ctx.execute(createProfile);
         };
         await this.submit(installCurseforgeModpack).wait();
     }
 }
-
-

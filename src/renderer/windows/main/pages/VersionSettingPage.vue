@@ -70,7 +70,7 @@
           <v-tab-item style="height: 100%" @mousewheel.stop>
             <liteloader-version-list 
               :mcversion="mcversion" 
-              :filter-text="filterText" 
+              :filter-text="filterText"
               @value="liteloaderVersion = $event ? $event.version : ''" />
           </v-tab-item>
         </v-tabs-items>
@@ -82,7 +82,7 @@
 <script lang=ts>
 import Vue from 'vue';
 import { createComponent, reactive, computed, ref, onMounted, onUnmounted, toRefs, provide, watch } from '@vue/composition-api';
-import { useAutoSaveLoad, useInstance, useForgeVersions } from '@/hooks';
+import { useAutoSaveLoad, useInstance } from '@/hooks';
 
 export default createComponent({
   setup() {

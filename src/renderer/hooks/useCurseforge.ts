@@ -1,6 +1,6 @@
-import { useStore } from "./useStore";
-import { reactive, toRefs, ref, Ref, computed, watch, onMounted, onUnmounted } from "@vue/composition-api";
-import { Project, Download, Version, ProjectType, ProjectPreview, Filter } from "main/service/CurseForgeService";
+import { reactive, toRefs, ref, Ref, computed, watch, onMounted, onUnmounted } from '@vue/composition-api';
+import { Project, Download, Version, ProjectType, ProjectPreview, Filter } from 'main/service/CurseForgeService';
+import { useStore } from './useStore';
 
 /**
  * Hook to view the curseforge project images.
@@ -31,7 +31,7 @@ export function useCurseforgeImages(path: string, type: ProjectType) {
     return {
         ...toRefs(data),
         refreshImages,
-    }
+    };
 }
 
 /**
@@ -68,7 +68,7 @@ export function useCurseforgeProjectFiles(projectPath: string, type: ProjectType
             name: file.name,
             href: file.href,
             projectType: type as any,
-            projectPath: projectPath,
+            projectPath,
             projectId: projectId.value,
         });
     }
@@ -78,13 +78,12 @@ export function useCurseforgeProjectFiles(projectPath: string, type: ProjectType
     async function refreshFiles() {
         try {
             data.refreshingFile = true;
-            const { versions, files, pages }
-                = await services.CurseForgeService.fetchCurseForgeProjectFiles({
-                    project: type,
-                    path: projectPath,
-                    version: data.version.value,
-                    page: data.page,
-                });
+            const { versions, files, pages } = await services.CurseForgeService.fetchCurseForgeProjectFiles({
+                project: type,
+                path: projectPath,
+                version: data.version.value,
+                page: data.page,
+            });
             data.pages = pages;
             data.versions = versions;
             data.files = files;
@@ -92,12 +91,12 @@ export function useCurseforgeProjectFiles(projectPath: string, type: ProjectType
             data.refreshingFile = false;
         }
     }
-    watch([dataRefs.page, dataRefs.version], () => { refreshFiles() })
+    watch([dataRefs.page, dataRefs.version], () => { refreshFiles(); });
     return {
         ...dataRefs,
         install,
         refreshFiles,
-    }
+    };
 }
 /**
  * Hook to view the front page of the curseforge project.
@@ -127,8 +126,7 @@ export function useCurseforgeProject(projectPath: string, type: ProjectType) {
     async function refresh() {
         data.refreshingProject = true;
         try {
-            const { name, image, createdDate, updatedDate, totalDownload, license, description, id, files: fs } =
-                await services.CurseForgeService.fetchCurseForgeProject({ path: projectPath, project: type as any });
+            const { name, image, createdDate, updatedDate, totalDownload, license, description, id, files: fs } = await services.CurseForgeService.fetchCurseForgeProject({ path: projectPath, project: type as any });
             data.name = name;
             data.image = image;
             data.createdDate = createdDate;
@@ -150,7 +148,7 @@ export function useCurseforgeProject(projectPath: string, type: ProjectType) {
             name: file.name,
             href: file.href,
             projectType: type as any,
-            projectPath: projectPath,
+            projectPath,
             projectId: data.projectId,
         });
     }
@@ -160,7 +158,7 @@ export function useCurseforgeProject(projectPath: string, type: ProjectType) {
         recentFilesStat,
         refresh,
         installPreview,
-    }
+    };
 }
 
 /**
@@ -220,7 +218,7 @@ export function useCurseforgePreview(type: ProjectType) {
         data.searchMode = true;
         try {
             const projects = await services.CurseForgeService.searchCurseforgeProjects({
-                type: type,
+                type,
                 keyword: data.keyword,
             });
 
@@ -238,10 +236,10 @@ export function useCurseforgePreview(type: ProjectType) {
     });
     onUnmounted(() => {
         handle();
-    })
+    });
     return {
         ...refs,
         search,
         refresh,
-    }
+    };
 }

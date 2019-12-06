@@ -1,7 +1,7 @@
 import unknownPack from '@/assets/unknown_pack.png';
-import { computed, onMounted, Ref, ref } from "@vue/composition-api";
-import { CurseforgeModpackResource, ForgeResource, ImportOption, LiteloaderResource, ResourcePackResource, SaveResource } from "universal/store/modules/resource";
-import { useStore } from "./useStore";
+import { computed, onMounted, Ref, ref } from '@vue/composition-api';
+import { CurseforgeModpackResource, ForgeResource, ImportOption, LiteloaderResource, ResourcePackResource, SaveResource } from 'universal/store/modules/resource';
+import { useStore } from './useStore';
 
 export function useResourceOperation() {
     const { getters, services } = useStore();
@@ -16,24 +16,24 @@ export function useResourceOperation() {
 
 export function useResource(domain: 'mods'): {
     resourcesTree: Ref<{ [hash: string]: ForgeResource | LiteloaderResource }>;
-    resources: Ref<Array<ForgeResource | LiteloaderResource>>
+    resources: Ref<Array<ForgeResource | LiteloaderResource>>;
 } & ReturnType<typeof useResourceOperation>;
 export function useResource(domain: 'resourcepacks'): {
     resourcesTree: Ref<{ [hash: string]: ResourcePackResource }>;
-    resources: Ref<Array<ResourcePackResource>>
+    resources: Ref<Array<ResourcePackResource>>;
 } & ReturnType<typeof useResourceOperation>;
 export function useResource(domain: 'modpacks'): {
     resourcesTree: Ref<{ [hash: string]: CurseforgeModpackResource }>;
-    resources: Ref<Array<CurseforgeModpackResource>>
+    resources: Ref<Array<CurseforgeModpackResource>>;
 } & ReturnType<typeof useResourceOperation>;
 export function useResource(domain: 'saves'): {
     resourcesTree: Ref<{ [hash: string]: SaveResource }>;
-    resources: Ref<Array<SaveResource>>
+    resources: Ref<Array<SaveResource>>;
 } & ReturnType<typeof useResourceOperation>;
 export function useResource(domain: string) {
     const { state } = useStore();
     const resourcesTree = computed(() => state.resource.domains[domain]);
-    const resources = computed(() => Object.values(state.resource.domains[domain]))
+    const resources = computed(() => Object.values(state.resource.domains[domain]));
     return {
         ...useResourceOperation(),
         resourcesTree,
@@ -56,14 +56,14 @@ export function useResourcePackResource(resource: ResourcePackResource) {
         metadata,
         icon,
         acceptedRange,
-    }
+    };
 }
 
 export function useCurseforgeImport() {
     const { services } = useStore();
     return {
         importCurseforgeModpack: services.CurseForgeService.importCurseforgeModpack,
-    }
+    };
 }
 
 export function useForgeModResource(resource: ForgeResource) {
@@ -105,5 +105,5 @@ export function useForgeModResource(resource: ForgeResource) {
         icon,
         metadata,
         acceptedRange,
-    }
+    };
 }

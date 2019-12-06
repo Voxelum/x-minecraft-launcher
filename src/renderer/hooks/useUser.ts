@@ -1,11 +1,11 @@
-import { computed, toRefs } from "@vue/composition-api";
-import { Data } from "@vue/composition-api/dist/component";
-import { UserProfile } from "universal/store/modules/user.config";
-import { useStore } from "./useStore";
+import { computed, toRefs } from '@vue/composition-api';
+import { Data } from '@vue/composition-api/dist/component';
+import { UserProfile } from 'universal/store/modules/user.config';
+import { useStore } from './useStore';
 
 export function useLogin() {
     const { state, getters, commit, services } = useStore();
-    const authServices = computed(() => Object.keys(state.user.authServices));
+    const authServices = computed(() => ['offline', ...Object.keys(state.user.authServices)]);
     const profileServices = computed(() => Object.keys(state.user.profileServices));
     const avaiableGameProfiles = computed(() => getters.avaiableGameProfiles);
     /**
@@ -20,8 +20,8 @@ export function useLogin() {
         login: services.UserService.login,
         switchAccount: services.UserService.switchUserProfile,
         avaiableGameProfiles,
-        removeAccount: removeAccount,
-    }
+        removeAccount,
+    };
 }
 
 export function useCurrentUser() {
@@ -53,7 +53,7 @@ export function useCurrentUserStatus() {
     const offline = computed(() => getters.offline);
     const logined = computed(() => getters.logined);
     const isServiceCompatible = computed(() => getters.isServiceCompatible);
-    const security = computed(() => user.authServices === 'mojang' ? state.user.security : true);
+    const security = computed(() => (user.authServices === 'mojang' ? state.user.security : true));
     const refreshingSecurity = computed(() => state.user.refreshingSecurity);
     return {
         logined,
@@ -72,10 +72,9 @@ export function useCurrentUserSkin() {
     return {
         refreshing: computed(() => state.user.refreshingSkin),
         url: computed(() => getters.selectedGameProfile.textures.SKIN.url),
-        slim: computed(() => getters.selectedGameProfile.textures.SKIN.metadata ? getters.selectedGameProfile.textures.SKIN.metadata.model === 'slim' : false),
+        slim: computed(() => (getters.selectedGameProfile.textures.SKIN.metadata ? getters.selectedGameProfile.textures.SKIN.metadata.model === 'slim' : false)),
         refreshSkin: services.UserService.refreshSkin,
         uploadSkin: services.UserService.uploadSkin,
         saveSkin: services.UserService.saveSkin,
-    }
+    };
 }
-

@@ -30,7 +30,7 @@
   </v-menu>
 </template>
 
-<script>
+<script lang=ts>
 import { createComponent, reactive, toRefs, computed } from '@vue/composition-api';
 
 export default createComponent({

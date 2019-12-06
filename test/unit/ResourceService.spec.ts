@@ -1,10 +1,10 @@
-import ResourceService from "./ResourceService";
 import { join } from 'path';
-import { Task } from "@xmcl/minecraft-launcher-core";
-import { fs } from "main/utils";
+import { Task } from '@xmcl/minecraft-launcher-core';
+import { fs } from 'main/utils';
+import ResourceService from 'main/service/ResourceService';
 
-const mockRoot = join(__dirname, "..", "..", "..", "mock");
-const tempRoot = join(__dirname, "..", "..", "..", "temp");
+const mockRoot = join(__dirname, '..', '..', '..', 'mock');
+const tempRoot = join(__dirname, '..', '..', '..', 'temp');
 
 describe('ResourceService', () => {
     const taskRuntime = Task.createRuntime();
@@ -20,8 +20,8 @@ describe('ResourceService', () => {
         getPath(...p: string[]) { return join(tempRoot, ...p); },
         submit(task: Task<any>) {
             return taskRuntime.submit(task).wait();
-        }
-    }
+        },
+    };
     const forgeJar = join(tempRoot, 'mods', 'Sound Filters-1.8-0.8_for_1,8.jar');
     const forgeJson = join(tempRoot, 'mods', 'Sound Filters-1.8-0.8_for_1,8.json');
     const liteMod = join(tempRoot, 'mods', 'ArmorsHUDRevived-1.12.r2-1.2.0-143.litemod');
@@ -36,7 +36,7 @@ describe('ResourceService', () => {
             await fs.unlink(liteMod);
             await fs.unlink(liteJson);
         }
-    })
+    });
     describe('#importResource', () => {
         test('should import a forge mod resource', async () => {
             const service = new ResourceService();

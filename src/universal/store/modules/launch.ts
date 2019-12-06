@@ -1,4 +1,4 @@
-import { ModuleOption } from "../root";
+import { ModuleOption } from '../root';
 
 type Status = 'ready' | 'checkingProblems' | 'launching' | 'launched' | 'minecraftReady' | 'error';
 

@@ -33,7 +33,7 @@ interface Log {
   time?: string;
   raw: string;
   content?: string;
-  src?: string
+  src?: string;
 }
 
 export default createComponent({

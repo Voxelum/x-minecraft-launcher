@@ -3,10 +3,10 @@ import { GameProfile } from '@xmcl/profile-service';
 
 export interface GameProfileAndTexture extends GameProfile {
     textures: {
-        SKIN: GameProfile.Texture,
-        CAPE?: GameProfile.Texture,
-        ELYTRA?: GameProfile.Texture,
-    }
+        SKIN: GameProfile.Texture;
+        CAPE?: GameProfile.Texture;
+        ELYTRA?: GameProfile.Texture;
+    };
 }
 
 export interface UserProfile {
@@ -71,4 +71,3 @@ export interface UserConfig {
      */
     clientToken: string;
 }
-

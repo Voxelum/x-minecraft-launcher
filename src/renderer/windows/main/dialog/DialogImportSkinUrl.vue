@@ -27,7 +27,7 @@
   </v-dialog>
 </template>
 
-<script>
+<script lang=ts>
 import { useI18n, useDialogSelf } from '@/hooks';
 import { reactive, toRefs, createComponent } from '@vue/composition-api';
 
@@ -42,8 +42,8 @@ export default createComponent({
     + '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
     const { t } = useI18n();
     const skinUrlRules = [
-      v => !!v || t('user.skinUrlNotEmpty'),
-      v => !!URL_PATTERN.test(v) || t('user.skinUrlNotValid'),
+      (v: any) => !!v || t('user.skinUrlNotEmpty'),
+      (v: any) => !!URL_PATTERN.test(v) || t('user.skinUrlNotValid'),
     ];
     const data = reactive({
       skinUrlError: true,

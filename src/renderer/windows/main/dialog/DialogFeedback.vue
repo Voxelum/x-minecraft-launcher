@@ -38,7 +38,7 @@
   </v-dialog>
 </template>
 
-<script>
+<script lang=ts>
 import { reactive, toRefs } from '@vue/composition-api';
 import { useDialogSelf } from '@/hooks';
 

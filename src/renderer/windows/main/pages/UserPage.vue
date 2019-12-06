@@ -171,7 +171,7 @@ import {
   useCurrentUserSkin,
   useDialog,
   useNativeDialog,
-  useClipboard
+  useClipboard,
 } from '@/hooks';
 
 export default {
@@ -187,7 +187,7 @@ export default {
       profileService,
       refreshStatus: refreshAccount,
       switchUserProfile,
-      logout
+      logout,
     } = useCurrentUser();
     const { url, slim, refreshing: refreshingSkin, refreshSkin, uploadSkin, saveSkin } = useCurrentUserSkin();
 
@@ -280,7 +280,7 @@ export default {
         }
       },
       async saveSkin() {
-        const { filePath, bookmark } = await showSaveDialog({
+        const { filePath } = await showSaveDialog({
           title: t('user.skinSaveTitle'),
           defaultPath: `${name.value}.png`,
           filters: [{ extensions: ['png'], name: 'PNG Images' }],
@@ -302,10 +302,12 @@ export default {
         showLoginDialog('login', true);
       },
       onDropSkin(e: DragEvent) {
-        const length = e.dataTransfer!.files.length;
-        if (length > 0) {
-          console.log(`Detect drop import ${length} file(s).`);
-          data.skinUrl = `file://${e.dataTransfer!.files[0].path}`;
+        if (e.dataTransfer) {
+          const length = e.dataTransfer.files.length;
+          if (length > 0) {
+            console.log(`Detect drop import ${length} file(s).`);
+            data.skinUrl = `file://${e.dataTransfer!.files[0].path}`;
+          }
         }
       },
       copyToClipBoard(text: string) {

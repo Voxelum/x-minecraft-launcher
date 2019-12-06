@@ -1,8 +1,8 @@
-import { Manager } from ".";
-import { join, resolve } from "path";
-import { fs } from "main/utils";
-import { app } from "electron";
-import { existsSync, mkdirSync, readFileSync } from "fs";
+import { join, resolve } from 'path';
+import { fs } from 'main/utils';
+import { app } from 'electron';
+import { existsSync, mkdirSync, readFileSync } from 'fs';
+import { Manager } from '.';
 
 const appData = app.getPath('appData');
 const persistRoot = `${appData}/voxelauncher`;
@@ -20,13 +20,13 @@ export default class BootManager extends Manager {
         } catch (e) {
             root = join(appData, 'voxelauncher');
         }
-        this.setupRoot(root)
+        this.setupRoot(root);
         this.root = root;
     }
 
     private setupRoot(rt: string) {
         try {
-            app.setPath('userData', rt);
+            // app.setPath('userData', rt);
             if (!existsSync(rt)) {
                 mkdirSync(rt, { recursive: true });
             }
@@ -41,11 +41,12 @@ export default class BootManager extends Manager {
             app.exit(1);
         }
     }
+
     /**
      * Handle the root change request from cliean.
      * This will restart the launcher.
      */
-    async setRoot({ path: newRoot, migrate, clear }: { path: string, migrate: boolean, clear: boolean }) {
+    async setRoot({ path: newRoot, migrate, clear }: { path: string; migrate: boolean; clear: boolean }) {
         const oldRoot = app.getPath('userData');
         if (oldRoot === newRoot) {
             // event.sender.send('root');

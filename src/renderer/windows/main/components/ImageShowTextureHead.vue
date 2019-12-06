@@ -11,9 +11,9 @@
   </div>
 </template>
 
-<script>
+<script lang=ts>
 import steve from '@/assets/steve_skin.png';
-import { createComponent, reactive, ref, toRefs, computed } from '@vue/composition-api';
+import { createComponent, reactive, ref, toRefs, computed, Ref } from '@vue/composition-api';
 
 export default createComponent({
   props: {
@@ -32,16 +32,17 @@ export default createComponent({
       textureWidth: 0,
       textureHeight: 0,
     });
-    const image = ref(null);
+    const image: Ref<any> = ref(null);
+
+    const translateX = computed(() => -props.dimension / 8);
+    const translateY = computed(() => -props.dimension / 8);
+
     const style = computed(() => ({
       'transform-origin': '0 0',
       transform: `scale(8) translate(${translateX.value}px, ${translateY.value}px)`,
       'min-width': data.textureWidth,
       'min-height': data.textureHeight,
     }));
-
-    const translateX = computed(() => -props.dimension / 8);
-    const translateY = computed(() => -props.dimension / 8);
 
     function onload() {
       data.textureWidth = image.value.naturalWidth;

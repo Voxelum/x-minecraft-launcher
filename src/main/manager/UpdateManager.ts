@@ -1,7 +1,7 @@
-import { Manager } from ".";
-import { Store } from "vuex";
+import { Store } from 'vuex';
 import { autoUpdater } from 'electron-updater';
-import SettingService from "main/service/SettingService";
+import SettingService from 'main/service/SettingService';
+import { Manager } from '.';
 
 if (process.env.NODE_ENV === 'development') {
     autoUpdater.setFeedURL({

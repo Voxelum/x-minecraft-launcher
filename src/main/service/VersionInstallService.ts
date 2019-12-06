@@ -1,7 +1,7 @@
 import { ForgeInstaller, ForgeWebPage, Installer, JavaExecutor, LiteLoader, Net, ResolvedLibrary, Task, Version } from '@xmcl/minecraft-launcher-core';
-import { getPersistence } from "main/utils/persistence";
-import Service, { Inject, Singleton } from "./Service";
-import VersionService from "./VersionService";
+import { getPersistence } from 'main/utils/persistence';
+import Service, { Inject, Singleton } from './Service';
+import VersionService from './VersionService';
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -24,11 +24,13 @@ export default class VersionInstallService extends Service {
         }
         if (liteloader) this.commit('liteloaderMetadata', liteloader);
     }
+
     async init() {
         this.refreshMinecraft();
         this.refreshForge();
         this.refreshLiteloader();
     }
+
     async refresh() {
         await Promise.all([
             this.refreshMinecraft(),

@@ -3,12 +3,11 @@ import { requireObject, requireString } from 'universal/utils/object';
 import { ModuleOption } from '../root';
 import { Java, JavaConfig } from './java.config';
 
-interface State extends JavaConfig {
-}
+type State = JavaConfig
 
 interface Getters {
-    defaultJava: Java
-    missingJava: boolean
+    defaultJava: Java;
+    missingJava: boolean;
 }
 interface Mutations {
     addJava: (Java | Java[]);

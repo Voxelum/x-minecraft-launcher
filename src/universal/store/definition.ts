@@ -10,7 +10,7 @@ import { TaskModule } from './modules/task';
 import { UserModule } from './modules/user';
 import { VersionModule } from './modules/version';
 
-declare module "./root" {
+declare module './root' {
     interface ModuleMap {
         client: ClientModule;
         curseforge: CurseForgeModule;

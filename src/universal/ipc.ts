@@ -1,6 +1,6 @@
-import { MutationPayload } from "vuex";
+import { MutationPayload } from 'vuex';
 
-declare module "electron" {
+declare module 'electron' {
     interface IpcMain extends NodeJS.EventEmitter {
         on(channel: 'dispatch', listener: (event: Electron.IpcMainEvent, payload: { action: string; payload: any; option: any; id: number }) => void): this;
         on(channel: 'sync', listener: (event: Electron.IpcMainEvent, eventId: number) => void): this;
@@ -33,7 +33,7 @@ declare module "electron" {
          * Require main process to sync
          * @param id The current mutation id
          */
-        invoke(channel: 'sync', id: number): Promise<{ mutations: MutationPayload[], length: number }>;
+        invoke(channel: 'sync', id: number): Promise<{ mutations: MutationPayload[]; length: number }>;
         invoke(channel: 'commit', type: string, payload: any): Promise<void>;
 
         /**

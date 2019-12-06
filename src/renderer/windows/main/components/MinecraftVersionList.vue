@@ -26,9 +26,11 @@
   </v-list>
 </template>
 
-<script>
+<script lang=ts>
 import { createComponent, computed } from '@vue/composition-api';
 import { useMinecraftVersions, useCompatible, useIsCompatible } from '@/hooks';
+import { LocalVersion } from 'universal/store/modules/version';
+import { Installer } from '@xmcl/minecraft-launcher-core';
 
 export default createComponent({
   props: {
@@ -56,11 +58,11 @@ export default createComponent({
   setup(props, context) {
     const { versions, statuses } = useMinecraftVersions();
     const { isCompatible } = useIsCompatible();
-    function selectVersion(v) {
+    function selectVersion(v: LocalVersion) {
       context.emit('input', v.id);
     }
 
-    function filterMinecraft(v) {
+    function filterMinecraft(v: Installer.VersionMeta) {
       if (!props.showAlpha && v.type !== 'release') return false;
       if (!isCompatible(props.acceptingRange, v.id)) return false;
       return v.id.indexOf(props.filterText) !== -1;

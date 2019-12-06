@@ -23,8 +23,8 @@
         "pack": "npm run pack:main && npm run pack:renderer",
         "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config scripts/webpack.main.config.js",
         "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config scripts/webpack.renderer.config.js",
-        "lint": "eslint --ext .js,.vue src",
-        "lint:fix": "eslint --ext .js,.vue --fix src",
+        "lint": "eslint --ext .ts,.vue src",
+        "lint:fix": "eslint --ext .ts,.vue --fix src",
         "test": "mocha test/e2e",
         "release": "electron-builder",
         "version": "standard-version"
@@ -141,6 +141,7 @@
         "7zip-min": "^1.1.1",
         "@vue/composition-api": "^0.3.4",
         "@xmcl/minecraft-launcher-core": "^1.1.1",
+        "@xmcl/util": "^1.0.3",
         "@xmcl/unzip": "^1.0.3",
         "ajv": "^6.10.2",
         "electron-updater": "^4.0.6",

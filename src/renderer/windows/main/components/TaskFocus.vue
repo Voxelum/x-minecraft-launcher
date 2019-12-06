@@ -17,13 +17,11 @@ export default createComponent({
   props: {
     value: {
       type: Promise,
-      required: true,
     },
   },
   setup(props) {
-    const promise: any = props.value;
     const { state } = useStore();
-    const tasks = computed(() => state.task.tasks.filter(t => promise.__tasks__.indexOf(t.id) !== -1));
+    const tasks = computed(() => state.task.tasks.filter(t => (props.value as any)?.__tasks__.indexOf(t.id) !== -1));
     return { tasks };
   },
 });

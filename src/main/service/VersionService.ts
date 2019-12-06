@@ -2,6 +2,7 @@ import { Util, Version } from '@xmcl/minecraft-launcher-core';
 import { fs, getExpectVersion, requireString } from 'main/utils';
 import { readFolder, setPersistence } from 'main/utils/persistence';
 import { LocalVersion } from 'universal/store/modules/version';
+import { shell } from 'electron';
 import Service from './Service';
 
 /**
@@ -11,6 +12,7 @@ export default class VersionService extends Service {
     async load() {
         await this.refreshVersions();
     }
+
     async save({ mutation }: { mutation: string }) {
         switch (mutation) {
             case 'minecraftMetadata':
@@ -34,6 +36,7 @@ export default class VersionService extends Service {
             default:
         }
     }
+
     async refreshVersions() {
         /**
         * Read local folder
@@ -66,6 +69,7 @@ export default class VersionService extends Service {
         }
         this.commit('localVersions', versions);
     }
+
     async resolveVersion(targetVersion: Pick<LocalVersion, 'minecraft' | 'forge' | 'liteloader'>) {
         requireString(targetVersion.minecraft);
 
@@ -141,12 +145,19 @@ export default class VersionService extends Service {
 
         throw new Error('');
     }
+
     async deleteVersion(version: string) {
         if (await fs.exists(this.getPath('versions', version))) {
             await fs.remove(this.getPath('versions', version));
         }
         this.commit('localVersions', this.state.version.local.filter(v => v.folder !== version));
     }
+
+    async showVersionsDirectory() {
+        shell.openItem(this.getPath('versions'));
+    }
+
+    async showVersionDirectory(version: string) {
+        shell.openItem(this.getPath('versions', version));
+    }
 }
-
-

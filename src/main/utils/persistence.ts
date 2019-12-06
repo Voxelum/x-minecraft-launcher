@@ -11,7 +11,7 @@ export async function readFolder(path: string) {
     return fs.readdir(path);
 }
 
-export async function setPersistence({ path, data, schema }: { path: string, data: object, schema?: string }) {
+export async function setPersistence({ path, data, schema }: { path: string; data: object; schema?: string }) {
     const deepCopy = JSON.parse(JSON.stringify(data));
     if (schema) {
         const schemaObject = await fs.readFile(join(__static, 'persistence-schema', `${schema}.json`)).then(s => JSON.parse(s.toString()));
@@ -22,6 +22,7 @@ export async function setPersistence({ path, data, schema }: { path: string, dat
             throw new Error(`Cannot persistence the ${path} as input invalid!`);
         }
     }
+    await fs.ensureFile(path);
     return fs.writeFile(path, JSON.stringify(deepCopy, null, 4), { encoding: 'utf-8' });
 }
 
@@ -48,5 +49,6 @@ export async function getPersistence(option: { path: string; schema?: string }) 
             }
         }
     }
+    
     return object;
 }

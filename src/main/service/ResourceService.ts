@@ -27,13 +27,12 @@ function toResource(builder: ResourceBuilder): AnyResource {
 export function importResourceTask(path: string, type: ImportTypeHint | undefined, metadata: any) {
     async function importResource(this: ResourceService, context: Task.Context) {
         context.update(0, 4, path);
-        const root = this.state.root;
         const isDirectory = await fs.stat(path).then(stat => stat.isDirectory());
         if (isDirectory) throw new Error('Directory');
         const data: Buffer = await fs.readFile(path);
         const builder: Resource<any> = {
             name: '',
-            path: path,
+            path,
             hash: await Util.computeChecksum(path, 'sha1'),
             ext: extname(path),
             domain: '',
@@ -99,18 +98,21 @@ export interface ResourceRegistryEntry<T> {
 export default class ResourceService extends Service {
     @Inject('InstanceService')
     private instanceSerivce!: InstanceService;
+
     @Inject('CurseForgService')
     private curseforgeSerivce!: CurseForgService;
 
     private hashToFilePath: { [hash: string]: string } = {};
+
     private resourceRegistry: ResourceRegistryEntry<any>[] = [];
+
     private unknownEntry: ResourceRegistryEntry<unknown> = {
         type: 'unknown',
         domain: 'unknowns',
         ext: '*',
         parseIcon: () => Promise.resolve(undefined),
-        parseMetadata: (fs) => Promise.resolve({}),
-        getSuggestedName: (fs) => '',
+        parseMetadata: fs => Promise.resolve({}),
+        getSuggestedName: fs => '',
     };
 
     constructor() {
@@ -131,38 +133,38 @@ export default class ResourceService extends Service {
                     if (typeof meta.name === 'string' || typeof meta.modid === 'string') {
                         name += (meta.name || meta.modid);
                         if (typeof meta.mcversion === 'string') {
-                            name += '-' + meta.mcversion;
+                            name += `-${meta.mcversion}`;
                         }
                         if (typeof meta.version === 'string') {
-                            name += '-' + meta.version;
+                            name += `-${meta.version}`;
                         }
                     }
                 }
                 return name;
-            }
+            },
         });
         this.register({
             type: 'liteloader',
             domain: 'mods',
             ext: '.litemod',
-            parseIcon: async () => { return undefined; },
-            parseMetadata: (fs) => fs.readFile('litemod.json', 'utf-8').then(JSON.parse),
+            parseIcon: async () => undefined,
+            parseMetadata: fs => fs.readFile('litemod.json', 'utf-8').then(JSON.parse),
             getSuggestedName: (meta) => {
                 let name = '';
                 if (typeof meta.name === 'string') {
                     name += meta.name;
                 }
                 if (typeof meta.mcversion === 'string') {
-                    name += '-' + meta.mcversion;
+                    name += `-${meta.mcversion}`;
                 }
                 if (typeof meta.version === 'string') {
-                    name += '-' + meta.version;
+                    name += `-${meta.version}`;
                 }
                 if (typeof meta.revision === 'string' || typeof meta.revision === 'number') {
-                    name += '-' + meta.revision;
+                    name += `-${meta.revision}`;
                 }
                 return name;
-            }
+            },
         });
         this.register({
             type: 'fabric',
@@ -174,7 +176,7 @@ export default class ResourceService extends Service {
                 }
                 return Promise.resolve(undefined);
             },
-            parseMetadata: async (fs) => Fabric.readModMetaData(fs),
+            parseMetadata: async fs => Fabric.readModMetaData(fs),
             getSuggestedName: (meta) => {
                 let name = '';
                 if (typeof meta.name === 'string') {
@@ -183,7 +185,7 @@ export default class ResourceService extends Service {
                     name += meta.id;
                 }
                 if (typeof meta.version === 'string') {
-                    name += '-' + meta.version;
+                    name += `-${meta.version}`;
                 } else {
                     name += '-0.0.0';
                 }
@@ -195,24 +197,24 @@ export default class ResourceService extends Service {
             domain: 'resourcepacks',
             ext: '.zip',
             parseIcon: async (meta, fs) => fs.readFile('icon.png'),
-            parseMetadata: (fs) => fs.readFile('pack.mcmeta', 'utf-8').then(JSON.parse),
-            getSuggestedName: (meta) => '',
+            parseMetadata: fs => fs.readFile('pack.mcmeta', 'utf-8').then(JSON.parse),
+            getSuggestedName: () => '',
         });
         this.register({
             type: 'save',
             domain: 'saves',
             ext: '.zip',
             parseIcon: async (meta, fs) => fs.readFile('icon.png'),
-            parseMetadata: (fs) => new WorldReader(fs).getLevelData(),
-            getSuggestedName: (meta) => meta.LevelName,
+            parseMetadata: fs => new WorldReader(fs).getLevelData(),
+            getSuggestedName: meta => meta.LevelName,
         });
         this.register({
             type: 'curseforge-modpack',
             domain: 'modpacks',
             ext: '.zip',
             parseIcon: () => Promise.resolve(undefined),
-            parseMetadata: (fs) => fs.readFile('mainifest.json', 'utf-8').then(JSON.parse),
-            getSuggestedName: (fs) => '',
+            parseMetadata: fs => fs.readFile('mainifest.json', 'utf-8').then(JSON.parse),
+            getSuggestedName: () => '',
         });
     }
 
@@ -232,7 +234,7 @@ export default class ResourceService extends Service {
         const fs = await System.openFileSystem(data);
 
         const hint = typeHint || '';
-        if (hint === "*" || hint === '') {
+        if (hint === '*' || hint === '') {
             chains = this.resourceRegistry.filter(r => r.ext === builder.ext);
         } else {
             chains = this.resourceRegistry.filter(r => r.domain === hint || r.type === hint);
@@ -245,19 +247,17 @@ export default class ResourceService extends Service {
                 return {
                     ...reg,
                     metadata: meta,
-                }
+                };
             };
         }
 
         const wrapped = chains.map(wrapper);
 
-        let promise = wrapped.shift()!();
+        const promise = wrapped.shift()!();
         while (wrapped.length !== 0) {
             const next = wrapped.shift();
             if (next) {
-                promise.catch((e) => {
-                    return next();
-                })
+                promise.catch(() => next());
             }
         }
 
@@ -275,17 +275,17 @@ export default class ResourceService extends Service {
     }
 
     protected async commitResourceToDisk(builder: ResourceBuilder, data: Buffer) {
-        let normalizedName = filenamify(builder.name, { replacement: '-' });
+        const normalizedName = filenamify(builder.name, { replacement: '-' });
 
         let filePath = this.getPath(builder.domain, normalizedName + builder.ext);
-        let metadataPath = this.getPath(builder.domain, normalizedName + '.json');
-        let iconPath = this.getPath(builder.domain, normalizedName + '.png');
+        let metadataPath = this.getPath(builder.domain, `${normalizedName}.json`);
+        let iconPath = this.getPath(builder.domain, `${normalizedName}.png`);
 
         if (await fs.exists(filePath)) {
             const slice = builder.hash.slice(0, 6);
-            filePath = this.getPath(builder.domain, normalizedName + `.${slice}` + builder.ext);
-            metadataPath = this.getPath(builder.domain, normalizedName + `.${slice}` + '.json');
-            iconPath = this.getPath(builder.domain, normalizedName + `.${slice}` + '.png');
+            filePath = this.getPath(builder.domain, `${normalizedName}.${slice}${builder.ext}`);
+            metadataPath = this.getPath(builder.domain, `${normalizedName}.${slice}.json`);
+            iconPath = this.getPath(builder.domain, `${normalizedName}.${slice}.png`);
         }
 
         filePath = resolve(filePath);
@@ -314,7 +314,7 @@ export default class ResourceService extends Service {
                 .map(file => this.getPath('resources', file))
                 .map(file => fs.readFile(file).then(b => JSON.parse(b.toString())))));
         }
-        let resources: AnyResource[] = [];
+        const resources: AnyResource[] = [];
         await Promise.all(['mods', 'resourcepacks', 'saves', 'modpacks']
             .map(async (domain) => {
                 const path = this.getPath(domain);
@@ -387,18 +387,18 @@ export default class ResourceService extends Service {
         if (await fs.exists(resourceObject.path)) {
             await fs.unlink(resourceObject.path);
         }
-        if (await fs.exists(pure + '.json')) {
-            await fs.unlink(pure + '.json');
+        if (await fs.exists(`${pure}.json`)) {
+            await fs.unlink(`${pure}.json`);
         }
-        if (await fs.exists(pure + '.png')) {
-            await fs.unlink(pure + '.png');
+        if (await fs.exists(`${pure}.png`)) {
+            await fs.unlink(`${pure}.png`);
         }
     }
 
     /**
      * Rename resource, this majorly affect displayed name.
      */
-    async renameResource(option: { resource: string | AnyResource, name: string }) {
+    async renameResource(option: { resource: string | AnyResource; name: string }) {
         const resource = this.normalizeResource(option.resource);
         if (!resource) return;
         const builder = toBuilder(resource);
@@ -406,7 +406,7 @@ export default class ResourceService extends Service {
         const result = toResource(builder);
         const ext = extname(resource.path);
         const pure = resource.path.substring(0, resource.path.length - ext.length);
-        await fs.writeFile(pure + '.json', JSON.stringify(result));
+        await fs.writeFile(`${pure}.json`, JSON.stringify(result));
         this.commit('resource', result);
     }
 
@@ -417,7 +417,7 @@ export default class ResourceService extends Service {
      * 
      * The `saves` and `modpack` will be deploied by pasting the saves and modpack overrides into this profile directory.
      */
-    async deployResources(payload: { resourceUrls: string[], profile: string }) {
+    async deployResources(payload: { resourceUrls: string[]; profile: string }) {
         if (!payload) throw new Error('Require input a resource with minecraft location');
         const { resourceUrls: resources, profile } = payload;
         if (!resources) throw new Error('Resources cannot be undefined!');
@@ -473,7 +473,7 @@ export default class ResourceService extends Service {
     /**
      * Export the resources into target directory. This will simply copy the resource out.
      */
-    async exportResource(payload: { resources: (string | AnyResource)[], targetDirectory: string }) {
+    async exportResource(payload: { resources: (string | AnyResource)[]; targetDirectory: string }) {
         const { resources, targetDirectory } = payload;
 
         const promises = [];
@@ -489,5 +489,3 @@ export default class ResourceService extends Service {
         await Promise.all(promises);
     }
 }
-
-

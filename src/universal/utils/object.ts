@@ -1,7 +1,6 @@
 export function requireNumber(object: any, message: string) {
     if (typeof object !== 'number') throw new Error(message || 'Require a number!');
 }
-
 export function deepEquals(a: any, b: any): boolean {
     const ta = typeof a;
     const tb = typeof b;
@@ -18,7 +17,12 @@ export function deepEquals(a: any, b: any): boolean {
     }
     return a === b;
 }
-
+export function isNullOrUndefine(object: any): object is undefined {
+    return object === undefined || object === null;
+}
+export function notNull<T>(object: T | undefined | null): object is T {
+    return object === undefined || object === null;
+}
 export function willBaselineChange(baseline: any, option: any): boolean {
     if (isNullOrUndefine(option)) return false;
     for (const key of Object.keys(option)) {
@@ -42,9 +46,6 @@ export function willBaselineChange(baseline: any, option: any): boolean {
     }
     return false;
 }
-/**
- * 
- */
 export function diff(target: any, option: any): boolean {
     if (target === undefined && option === undefined) {
         return false;
@@ -54,9 +55,7 @@ export function diff(target: any, option: any): boolean {
     }
     return !Object.entries(target).every(([k, v]) => deepEquals(option[k], v));
 }
-
 export function requireObject(object: unknown, message?: string): asserts object is object {
-    const t = typeof object;
     if (typeof object !== 'object') throw new Error(message || 'Require a object!');
 }
 export function requireString(object: unknown, message?: any): asserts object is string {
@@ -66,31 +65,14 @@ export function requireBool(object: unknown, message?: any): asserts object is b
     if (typeof object !== 'boolean') throw new Error(message || `Require a boolean! But get ${typeof object}`);
 }
 export function requireNonnull(object: unknown, message?: any): asserts object {
-    if (typeof object !== 'undefined' && object !== null) throw new Error(message || `Require object existed!`);
+    if (typeof object === 'undefined' || object === null) throw new Error(message || 'Require object existed!');
 }
-type Structure = {
-    [key: string]: Structure | "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function";
-}
-export function requireStruct(object: any, structure: Structure, message?: any): asserts object is object {
-
-}
-
 export function requireType(object: any, type: any, message: any) {
     if (!(object instanceof type)) {
         throw new Error(message || `Require object ${object} be the type ${type}`);
     }
 }
-export function isNullOrUndefine(object: any): object is undefined {
-    return object === undefined || object === null;
-}
-export function notNull<T>(object: T | undefined | null): object is T {
-    return object === undefined || object === null;
-}
 
-/**
- * @param {any} state
- * @param {any} option
- */
 export function fitin(state: any, option: any) {
     if (isNullOrUndefine(option)) return;
     for (const key of Object.keys(option)) {

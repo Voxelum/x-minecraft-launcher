@@ -22,12 +22,15 @@ import Service, { Inject } from './Service';
 export default class InstanceService extends Service {
     @Inject('JavaService')
     private java!: JavaService;
+
     @Inject('ServerStatusService')
     readonly statusService!: ServerStatusService;
+
     @Inject('ResourceService')
     readonly resource!: ResourceService;
 
     protected saveWatcher!: FSWatcher;
+
     protected isSavesDirty = false;
 
     protected getPathUnder(...ps: string[]) {
@@ -52,6 +55,7 @@ export default class InstanceService extends Service {
             return {};
         }
     }
+
     async loadProfileSeverData(id: string = this.state.profile.id) {
         requireString(id);
 
@@ -61,7 +65,7 @@ export default class InstanceService extends Service {
             if (await fs.exists(serverPath)) {
                 const serverDat = await fs.readFile(serverPath);
                 const infos = await Server.readInfo(serverDat);
-                this.log(`Loaded server infos.`);
+                this.log('Loaded server infos.');
                 commit('serverInfos', infos);
                 return infos;
             }
@@ -72,6 +76,7 @@ export default class InstanceService extends Service {
         commit('serverInfos', []);
         return [];
     }
+
     async loadProfile(id: string) {
         requireString(id);
 
@@ -115,6 +120,7 @@ export default class InstanceService extends Service {
         fitin(profile, option);
         commit('addProfile', profile);
     }
+
     async init() {
         const { getters, commit } = this;
         const profiles = getters.profiles;
@@ -131,6 +137,7 @@ export default class InstanceService extends Service {
             }
         }
     }
+
     async load() {
         const { getters, state, commit } = this;
         const dirs = await readFolder(this.getPathUnder());
@@ -156,6 +163,7 @@ export default class InstanceService extends Service {
             }
         }
     }
+
     async save({ mutation, payload }: { mutation: string; payload: any }) {
         const current = this.getters.selectedProfile;
         switch (mutation) {
@@ -187,6 +195,7 @@ export default class InstanceService extends Service {
             default:
         }
     }
+
     /**
      * Return the profile's screenshots urls.
      */
@@ -198,6 +207,7 @@ export default class InstanceService extends Service {
         }
         return [];
     }
+
     /**
      * Create a instance (either a modpack or a server).
      * @param option The creation option
@@ -233,6 +243,7 @@ export default class InstanceService extends Service {
 
         return profile.id;
     }
+
     async createAndSelect(payload: CreateOption) {
         requireObject(payload);
 
@@ -240,6 +251,7 @@ export default class InstanceService extends Service {
         await this.selectInstance(id);
         return id;
     }
+
     /**
      * Select active instance
      * @param id the profile uuid
@@ -260,6 +272,7 @@ export default class InstanceService extends Service {
         await this.loadProfileSeverData(id);
         this.commit('selectProfile', id);
     }
+
     /**
      * Delete the instance from the disk
      * @param id The instance id
@@ -285,6 +298,7 @@ export default class InstanceService extends Service {
             await fs.remove(profileDir);
         }
     }
+
     /**
      * Edit the current profile.
      */
@@ -297,6 +311,7 @@ export default class InstanceService extends Service {
             this.commit('profile', profile);
         }
     }
+
     /**
      * If current instance is a server. It will refresh the server status
      */
@@ -312,22 +327,34 @@ export default class InstanceService extends Service {
     }
 
     readonly getCrashReportContent = logPartial.getCrashReportContent.bind(this);
+
     readonly getLogContent = logPartial.getLogContent.bind(this);
+
     readonly listCrashReports = logPartial.listCrashReports.bind(this);
+
     readonly listLogs = logPartial.listLogs.bind(this);
+
     readonly removeCrashReport = logPartial.removeCrashReport.bind(this);
+
     readonly removeLog = logPartial.removeLog.bind(this);
 
     readonly copySave = savePartial.copySave.bind(this);
+
     readonly importSave = savePartial.importSave.bind(this);
+
     readonly exportSave = savePartial.exportSave.bind(this);
+
     readonly deleteSave = savePartial.deleteSave.bind(this);
+
     readonly loadProfileSaves = savePartial.loadProfileSaves.bind(this);
+
     readonly loadAllProfileSaves = savePartial.loadAllProfileSaves.bind(this);
 
     readonly exportProfile = ioPartial.exportProfile.bind(this);
+
     readonly importProfile = ioPartial.importProfile.bind(this);
 
     readonly createProfileFromServer = serverPartial.createProfileFromServer;
+
     readonly refreshAll = serverPartial.refreshAll.bind(this);
 }

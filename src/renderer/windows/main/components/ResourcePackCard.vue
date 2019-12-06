@@ -33,9 +33,10 @@
   </v-tooltip>
 </template>
 
-<script>
-import { createComponent, reactive, ref, toRefs } from '@vue/composition-api';
-import { useResourcePackResource, useProfileVersionBase, useCompatible } from '@/hooks';
+<script lang=ts>
+import { createComponent, reactive, ref, toRefs, Ref } from '@vue/composition-api';
+import { useResourcePackResource, useInstanceVersionBase, useCompatible } from '@/hooks';
+import { ResourcePackResource } from 'universal/store/modules/resource';
 
 export default createComponent({
   props: {
@@ -56,18 +57,18 @@ export default createComponent({
     const data = reactive({
       dragged: false,
     });
-    const iconImage = ref(null);
-    const { metadata, icon, acceptedRange } = useResourcePackResource(props.data);
-    const { minecraft } = useProfileVersionBase();
+    const iconImage: Ref<any> = ref(null);
+    const { metadata, icon, acceptedRange } = useResourcePackResource(props.data as ResourcePackResource);
+    const { minecraft } = useInstanceVersionBase();
     const { compatible } = useCompatible(acceptedRange, minecraft);
-    function onDragStart(e) {
+    function onDragStart(e: DragEvent) {
       data.dragged = true;
       context.emit('dragstart', e);
-      e.dataTransfer.setDragImage(iconImage.value.$el, 0, 0);
-      e.dataTransfer.setData('Index', `${props.isSelected ? 'R' : 'L'}${props.index}`);
-      e.dataTransfer.setData('Hash', props.data.hash);
+      e.dataTransfer!.setDragImage(iconImage.value.$el, 0, 0);
+      e.dataTransfer!.setData('Index', `${props.isSelected ? 'R' : 'L'}${props.index}`);
+      e.dataTransfer!.setData('Hash', props.data.hash);
     }
-    function onDragEnd(e) {
+    function onDragEnd(e: DragEvent) {
       context.emit('dragend', e);
       data.dragged = false;
     }

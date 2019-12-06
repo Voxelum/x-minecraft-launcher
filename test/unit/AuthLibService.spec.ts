@@ -1,12 +1,12 @@
-import Service from "./Service";
-import AuthLibService from "./AuthLibService";
+import Service from 'main/service/Service';
+import AuthLibService from 'main/service/AuthLibService';
 
 function mockSerivce(service: Service) {
     // Reflect.set(service, )
 }
 
 describe.skip('AuthLibService', () => {
-    describe("#doesAuthlibInjectionExisted", () => {
+    describe('#doesAuthlibInjectionExisted', () => {
         test('should return false if not existed', async () => {
             const seriv = new AuthLibService();
             mockSerivce(seriv);

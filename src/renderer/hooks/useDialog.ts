@@ -1,4 +1,4 @@
-import { computed, inject, InjectionKey, onMounted, onUnmounted, Ref, watch, provide, ref } from "@vue/composition-api";
+import { computed, inject, InjectionKey, onMounted, onUnmounted, Ref, watch, provide, ref } from '@vue/composition-api';
 
 export type Dialogs = 'task' | 'java-wizard' | 'login' | 'skin-import' | 'user-service'
     | 'crash-report' | 'feedback' | 'launch-status' | 'download-missing-mods' | 'logs'
@@ -20,7 +20,7 @@ export function provideDialog() {
         dialogShowing,
         dialogOption,
         dialogResult,
-    }
+    };
 }
 
 export function useDialog(dialog: Dialogs = '') {
@@ -62,7 +62,7 @@ export function useDialog(dialog: Dialogs = '') {
     });
     onUnmounted(() => {
         watcherHandle();
-    })
+    });
     return {
         showDialog,
         dialogOption,
@@ -86,9 +86,7 @@ export function useDialogSelf(dialog: Dialogs) {
         onDialogClosed,
         isShown: computed({
             get: () => showingDialog.value === dialog,
-            set: (v: boolean) => { showingDialog.value = v ? dialog : '' }
+            set: (v: boolean) => { showingDialog.value = v ? dialog : ''; },
         }),
     };
 }
-
-

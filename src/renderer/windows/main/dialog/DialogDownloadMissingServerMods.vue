@@ -42,17 +42,17 @@
   </v-dialog>
 </template>
 
-<script>
+<script lang=ts>
 import { reactive, createComponent, computed, toRefs } from '@vue/composition-api';
 import { useDialogSelf } from '@/hooks';
 
 export default createComponent({
   setup(props) {
     const { isShown, dialogOption } = useDialogSelf('download-missing-mods');
-    const items = computed(() => (dialogOption.value ? dialogOption.value.map(i => ({ ...i, status: 'unknown', task: '' })) : []));
-    const canDownload = computed(() => items.value.some(i => i.status === 'founded'));
+    const items = computed(() => (dialogOption.value ? dialogOption.value.map((i: any) => ({ ...i, status: 'unknown', task: '' })) : []));
+    const canDownload = computed(() => items.value.some((i: { status: string }) => i.status === 'founded'));
 
-    async function checkAvailability(mod) {
+    async function checkAvailability(mod: { status: string }[]) {
       // await new Promise((resolve, reject) => {
       //   setTimeout(() => resolve(), 2000);
       // });
