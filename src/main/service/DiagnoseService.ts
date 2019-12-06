@@ -18,24 +18,24 @@ export default class DiagnoseService extends Service {
 
     async save({ mutation, payload }: { mutation: string; payload: any }) {
         // TODO: check if this works
-        if (this.state.profile.refreshing || mutation === 'release' || mutation === 'aquire') return;
+        if (this.getters.busy('diagnose') || mutation === 'release' || mutation === 'aquire') return;
         if (mutation === 'selectProfile') {
-            this.commit('aquire', 'instance');
+            this.commit('aquire', 'diagnose');
             await this.diagnoseVersion();
             await this.diagnoseJava();
             await this.diagnoseMods();
             await this.diagnoseResourcePacks();
             await this.diagnoseServer();
-            this.commit('release', 'instance');
+            this.commit('release', 'diagnose');
         } else if (mutation === 'profile') {
             if ('version' in payload) {
-                this.commit('aquire', 'instance');
+                this.commit('aquire', 'diagnose');
                 await this.diagnoseVersion();
                 await this.diagnoseJava();
                 await this.diagnoseMods();
                 await this.diagnoseResourcePacks();
                 await this.diagnoseServer();
-                this.commit('release', 'instance');
+                this.commit('release', 'diagnose');
                 return;
             }
 
@@ -58,22 +58,22 @@ export default class DiagnoseService extends Service {
     }
 
     async init() {
-        // this.commit('aquire', 'instance');
-        // try {
-        //     console.log('Init with a full diagnose');
-        //     await this.diagnoseVersion();
-        //     await this.diagnoseJava();
-        //     await this.diagnoseMods();
-        //     await this.diagnoseResourcePacks();
-        //     await this.diagnoseServer();
-        //     await this.diagnoseUser();
-        // } finally {
-        //     this.commit('release', 'instance');
-        // }
+        this.commit('aquire', 'diagnose');
+        try {
+            console.log('Init with a full diagnose');
+            await this.diagnoseVersion();
+            await this.diagnoseJava();
+            await this.diagnoseMods();
+            await this.diagnoseResourcePacks();
+            await this.diagnoseServer();
+            await this.diagnoseUser();
+        } finally {
+            this.commit('release', 'diagnose');
+        }
     }
 
     async diagnoseMods() {
-        this.commit('aquire', 'instance');
+        this.commit('aquire', 'diagnose');
         try {
             const id = this.state.profile.id;
             const { version } = this.state.profile.all[id];
@@ -111,12 +111,12 @@ export default class DiagnoseService extends Service {
             }
             this.commit('postProblems', tree);
         } finally {
-            this.commit('release', 'instance');
+            this.commit('release', 'diagnose');
         }
     }
 
     async diagnoseResourcePacks() {
-        this.commit('aquire', 'instance');
+        this.commit('aquire', 'diagnose');
         try {
             const id = this.state.profile.id;
             const { version } = this.state.profile.all[id];
@@ -148,7 +148,7 @@ export default class DiagnoseService extends Service {
     }
 
     async diagnoseUser() {
-        this.commit('aquire', 'instance');
+        this.commit('aquire', 'diagnose');
         try {
             const user = this.getters.selectedUser;
 
@@ -164,12 +164,12 @@ export default class DiagnoseService extends Service {
 
             this.commit('postProblems', tree);
         } finally {
-            this.commit('release', 'instance');
+            this.commit('release', 'diagnose');
         }
     }
 
     async diagnoseJava() {
-        this.commit('aquire', 'instance');
+        this.commit('aquire', 'diagnose');
         try {
             const id = this.state.profile.id;
             const profile = this.state.profile.all[id];
@@ -202,12 +202,12 @@ export default class DiagnoseService extends Service {
 
             this.commit('postProblems', tree);
         } finally {
-            this.commit('release', 'instance');
+            this.commit('release', 'diagnose');
         }
     }
 
     async diagnoseServer() {
-        this.commit('aquire', 'instance');
+        this.commit('aquire', 'diagnose');
         try {
             const stat = this.state.profile.statuses[this.state.profile.id];
 
@@ -222,12 +222,12 @@ export default class DiagnoseService extends Service {
 
             this.commit('postProblems', tree);
         } finally {
-            this.commit('release', 'instance');
+            this.commit('release', 'diagnose');
         }
     }
 
     async diagnoseVersion() {
-        this.commit('aquire', 'instance');
+        this.commit('aquire', 'diagnose');
         try {
             const id = this.state.profile.id;
             const selected = this.state.profile.all[id];
@@ -305,7 +305,7 @@ export default class DiagnoseService extends Service {
 
             this.commit('postProblems', tree);
         } finally {
-            this.commit('release', 'instance');
+            this.commit('release', 'diagnose');
         }
     }
 
@@ -318,7 +318,7 @@ export default class DiagnoseService extends Service {
         const recheck = {};
 
         this.commit('startResolveProblems', unfixed);
-        this.commit('aquire', 'instance');
+        this.commit('aquire', 'diagnose');
 
         const profile = this.getters.selectedProfile;
         const { version: versions } = profile;
@@ -326,7 +326,7 @@ export default class DiagnoseService extends Service {
 
         const mcversion = versions.minecraft;
         if (mcversion === '') {
-            this.commit('release', 'instance');
+            this.commit('release', 'diagnose');
             this.commit('endResolveProblems', unfixed);
             return;
         }
@@ -395,7 +395,7 @@ export default class DiagnoseService extends Service {
                         )(c);
                     }
                 };
-                await this.submit(installForge);
+                await this.submit(installForge).wait();
             }
 
             const missingForgeJar = unfixed.find(p => p.id === 'missingForgeJar');
@@ -443,8 +443,12 @@ export default class DiagnoseService extends Service {
             console.error(e);
         } finally {
             this.commit('endResolveProblems', unfixed);
-            this.commit('release', 'instance');
+            this.commit('release', 'diagnose');
             for (const action of Object.keys(recheck)) {
+                const self = this as any;
+                if (action in self) {
+                    self.action();
+                }
                 // await dispatch(action);
             }
         }

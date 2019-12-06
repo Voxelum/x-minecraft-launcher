@@ -22,7 +22,7 @@
 <script lang=ts>
 import { createComponent, reactive, toRefs } from '@vue/composition-api';
 import { useAutoSaveLoad, useProfileGameSetting } from '@/hooks';
-import { GameSetting } from '@xmcl/gamesetting';
+import { GameSetting } from '@xmcl/minecraft-launcher-core';
 
 export default createComponent({
   setup() {
@@ -63,7 +63,7 @@ export default createComponent({
       triggerGraphic(g: Graphic) {
         const index = g.options.indexOf(g.val as never);
         const nextIndex = (index + 1) % g.options.length;
-        data.graphics[name].val = g.options[nextIndex] as any;
+        g.val = g.options[nextIndex] as any;
       },
     };
   },

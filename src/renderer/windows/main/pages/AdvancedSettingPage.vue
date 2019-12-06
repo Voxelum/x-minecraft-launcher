@@ -32,7 +32,6 @@
 <script lang=ts>
 import {
   reactive,
-  computed,
   createComponent,
   toRefs,
 } from '@vue/composition-api';
@@ -58,7 +57,6 @@ export default createComponent({
       java,
     } = useInstance();
     const { all: javas, add } = useJava();
-    useAutoSaveLoad(save, load);
 
     const data: {
       vmOptions: Array<{ text: string }>;
@@ -101,11 +99,13 @@ export default createComponent({
         }
       }
     }
+    useAutoSaveLoad(save, load);
+
     return {
       ...toRefs(data),
       javas,
       async browseFile() {
-        const { filePaths, bookmarks } = await showOpenDialog({
+        const { filePaths } = await showOpenDialog({
           title: t('java.browser'),
         });
         filePaths.forEach(add);

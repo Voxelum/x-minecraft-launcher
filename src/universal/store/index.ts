@@ -3,7 +3,7 @@ import { RendererInterface } from 'electron';
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 import modules from './modules';
-import { BaseState, Store } from './root';
+import { BaseState } from './root';
 
 Vue.use(Vuex);
 
@@ -32,7 +32,7 @@ export default {
         },
     },
     getters: {
-        released(state) { return (key: string) => state.semaphore[key] === 0; },
+        busy(state) { return (key: string) => state.semaphore[key] > 0; },
     },
     modules,
     strict: process.env.NODE_ENV !== 'production',

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 interface NodeRequire extends NodeRequireFunction {
     resolve: RequireResolve;
     cache: any;
@@ -57,14 +59,10 @@ declare const __static: string;
 // }
 declare module '*.png' {
     const value: string;
-    // export default value;
+    export default value;
 }
 
 declare module 'vue-particles' {
     const module: import('vue').PluginObject<any>;
-    // export default module;
-}
-declare module 'locales' {
-    const locales: object;
-    export default locales;
+    export default module;
 }

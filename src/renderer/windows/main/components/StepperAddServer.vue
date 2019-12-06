@@ -180,7 +180,7 @@ export default createComponent({
       players,
       ping,
       pinging,
-    } = useServer(creationData);
+    } = useServer(creationData.host, creationData.port, ref(undefined));
 
     function init() {
       data.step = 1;

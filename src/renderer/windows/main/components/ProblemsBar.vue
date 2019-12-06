@@ -40,10 +40,9 @@ export default {
     const router = useRouter();
     const problems = computed(() => getters.problems);
     const problemsLevelColor = computed(() => (getters.problems.some(p => !p.optional) ? 'red' : 'warning'));
-    const refreshing = computed(() => getters.refreshing);
+    const refreshing = computed(() => getters.busy('diagnose'));
 
     async function handleManualFix(problem: Problem) {
-      let handle;
       switch (problem.id) {
         case 'missingModsOnServer':
           //   data.downloadMissingModsDialog = true;

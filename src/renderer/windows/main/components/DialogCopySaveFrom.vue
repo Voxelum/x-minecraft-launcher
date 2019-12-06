@@ -9,7 +9,7 @@
       </v-card-title>
       <v-card-text>
         {{ $t('save.copyFrom.description') }}
-      </v-card-text>
+      </v-card-text> 
 
       
       <v-alert :value="error !== null" type="error">
@@ -74,8 +74,7 @@
 
 <script lang=ts>
 import { createComponent, reactive, computed, toRefs, onMounted, watch } from '@vue/composition-api';
-import { useInstanceSaves, useInstance, useBusy, useResourceOperation, useResource } from '@/hooks';
-import { LevelDataFrame } from '@xmcl/world';
+import { useInstanceSaves, useBusy, useResource } from '@/hooks';
 
 export default createComponent({
   props: {

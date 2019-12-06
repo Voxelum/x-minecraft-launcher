@@ -16,7 +16,7 @@
           power
         </v-icon>
       </v-avatar>
-      Version: {{ folder }}
+      Version: {{ folder || version.minecraft }}
     </v-chip>
     <v-chip v-if="isServer" label class="pointer" small :selected="false" outline>
       <v-avatar>

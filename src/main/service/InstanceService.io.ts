@@ -12,8 +12,8 @@ import InstanceService from './InstanceService';
  * @param option Which profile is exporting (search by id), where to export (dest), include assets? 
  */
 export async function exportProfile(this: InstanceService, { id, dest, type = 'full' }: { id?: string; dest: string; type: 'full' | 'no-assets' | 'curseforge' }) {
-    if (this.state.profile.refreshing) return;
-    this.commit('aquireProfile');
+    if (this.getters.busy('instance')) return;
+    this.commit('aquire', 'instance');
     id = id || this.state.profile.id;
     try {
         const root = this.state.root;
@@ -71,7 +71,7 @@ export async function exportProfile(this: InstanceService, { id, dest, type = 'f
         file.end();
         await promise;
     } finally {
-        this.commit('releaseProfile');
+        this.commit('release', 'instance');
     }
 }
 /**
@@ -93,13 +93,14 @@ export async function importProfile(this: InstanceService, location: string) {
     }
 
     await fs.ensureDir(destFolderPath);
-    await fs.copy(srcFolderPath, destFolderPath, path => 
-        // if (path.endsWith('/versions')) return false;
-        // if (path.endsWith('/assets')) return false;
-        // if (path.endsWith('/libraries')) return false;
-        // if (path.endsWith('/resourcepacks')) return false;
-        // if (path.endsWith('/mods')) return false;
-        true);
+    await fs.copy(srcFolderPath, destFolderPath, (path) => {
+        if (path.endsWith('/versions')) return false;
+        if (path.endsWith('/assets')) return false;
+        if (path.endsWith('/libraries')) return false;
+        if (path.endsWith('/resourcepacks')) return false;
+        if (path.endsWith('/mods')) return false;
+        return true;
+    });
 
     await fs.copy(resolve(srcFolderPath, 'assets'), resolve(this.state.root, 'assets'));
     await fs.copy(resolve(srcFolderPath, 'libraries'), resolve(this.state.root, 'libraries'));

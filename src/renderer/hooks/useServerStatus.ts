@@ -1,41 +1,7 @@
 import unknownServer from '@/assets/unknown_server.png';
 import { computed, Ref, ref } from '@vue/composition-api';
-import { ServerStatusFrame } from '@xmcl/client';
+import { ServerStatusFrame } from '@xmcl/minecraft-launcher-core';
 import { useStore } from './useStore';
-
-export function useServer(host: Ref<{ host: string; port: number; protocol?: number }>) {
-    const { services } = useStore();
-    const status = ref<ServerStatusFrame>({
-        version: {
-            name: '',
-            protocol: 0,
-        },
-        players: {
-            max: 0,
-            online: 0,
-        },
-        description: '',
-        favicon: '',
-        ping: -1,
-    });
-    const pinging = ref(false);
-    async function refresh() {
-        pinging.value = true;
-        status.value = await services.ServerStatusService.pingServer({
-            host: host.value.host,
-            port: host.value.port,
-            protocol: host.value.protocol,
-        }).finally(() => {
-            pinging.value = false;
-        });
-    }
-
-    return {
-        pinging,
-        ...useServerStatus(status),
-        refresh,
-    };
-}
 
 export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
     const { state, getters, services } = useStore();
@@ -70,4 +36,42 @@ export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
 export function useServerStatusForProfile(id: string) {
     const { state } = useStore();
     return useServerStatus(computed(() => state.profile.statuses[id]));
+}
+
+export function useServer(host: Ref<string | undefined>, port: Ref<number | undefined>, protocol: Ref<number | undefined>) {
+    const { services } = useStore();
+    const status = ref<ServerStatusFrame>({
+        version: {
+            name: '',
+            protocol: 0,
+        },
+        players: {
+            max: 0,
+            online: 0,
+        },
+        description: '',
+        favicon: '',
+        ping: -1,
+    });
+    const pinging = ref(false);
+    /**
+     * Refresh the server status. If the server is empty, it will do nothing.
+     */
+    async function refresh() {
+        pinging.value = true;
+        if (!host.value) return;
+        status.value = await services.ServerStatusService.pingServer({
+            host: host.value,
+            port: port.value,
+            protocol: protocol.value,
+        }).finally(() => {
+            pinging.value = false;
+        });
+    }
+
+    return {
+        pinging,
+        ...useServerStatus(status),
+        refresh,
+    };
 }

@@ -99,7 +99,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, toRefs, computed, ref } from '@vue/composition-api';
+import { createComponent, reactive, toRefs, computed } from '@vue/composition-api';
 import { useProfileMods, useSelectionList, useResource } from '@/hooks';
 import { Resource, ForgeResource, LiteloaderResource } from 'universal/store/modules/resource';
 

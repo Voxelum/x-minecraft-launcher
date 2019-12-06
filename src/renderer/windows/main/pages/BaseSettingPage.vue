@@ -78,8 +78,8 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed } from '@vue/composition-api';
-import { useInstance, useStore, useAutoSaveLoad, useRouter, useCurrentUser } from '@/hooks';
+import { reactive, toRefs } from '@vue/composition-api';
+import { useInstance, useAutoSaveLoad, useRouter, useCurrentUser } from '@/hooks';
 
 export default {
   setup() {
@@ -126,7 +126,6 @@ export default {
       description: '',
       url: '',
     });
-    useAutoSaveLoad(save, load);
 
     function save() {
       const payload = {
@@ -163,6 +162,8 @@ export default {
         data.host = host.value;
       }
     }
+    useAutoSaveLoad(save, load);
+
     function goVersionPage() {
       router.replace('/version-setting');
     }

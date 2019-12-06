@@ -25,7 +25,7 @@ declare module './root' {
         version: VersionModule;
     }
 
-    type Semaphore = 'instance' | 'install' | 'refreshMinecraft' | 'refreshForge' | 'refreshLiteloader';
+    type Semaphore = 'instance' | 'install' | 'java' | 'diagnose' | 'refreshMinecraft' | 'refreshForge' | 'refreshLiteloader';
     interface BaseState {
         /**
          * launcher root data folder path

@@ -95,7 +95,7 @@
 
 <script lang=ts>
 import unknownPack from 'renderer/assets/unknown_pack.png';
-import { createComponent, reactive, inject, ref, toRefs, computed, onMounted } from '@vue/composition-api';
+import { createComponent, reactive, inject, ref, toRefs, computed } from '@vue/composition-api';
 import { ResourcePackResource } from 'universal/store/modules/resource';
 import { useSelectionList, useProfileResourcePacks, useResource } from '@/hooks';
 
@@ -118,7 +118,7 @@ export default createComponent({
       const packnames = packNames.value;
 
       const selectedNames: { [key: string]: boolean } = {};
-      for (const name of packNames.value) {
+      for (const name of packnames) {
         selectedNames[name] = true;
       }
 
@@ -130,7 +130,7 @@ export default createComponent({
         nameToPack[pack.name] = pack;
         if (!selectedNames[pack.name + pack.ext]) unselectedPacks.push(pack);
       }
-      const selectedPacks = packNames.value
+      const selectedPacks = packnames
         .map(name => nameToPack[name]
           || { name, ext: '', missing: true, metadata: { packName: name, description: 'Cannot find this pack', icon: unknownPack, format: -1 } });
 

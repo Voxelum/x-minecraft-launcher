@@ -229,13 +229,9 @@ import {
   useI18n,
   useJava,
   useCurrentUser,
-  useForgeVersions,
   useRouter,
   useProfileTemplates,
   useCurseforgeImport,
-  useTask,
-  useStore,
-  useMinecraftVersions,
   useInstanceCreation,
 } from '@/hooks';
 import { ServerOrModpack } from 'universal/store/modules/profile';
@@ -269,8 +265,7 @@ export default createComponent({
     });
     const importTask: Ref<Promise<void> | null> = ref(null);
     const { name } = useCurrentUser();
-    const { all: javas, default: defaultJava } = useJava();
-    const { release } = useMinecraftVersions();
+    const { all: javas } = useJava();
     const { profiles, modpacks } = useProfileTemplates();
     const { importCurseforgeModpack } = useCurseforgeImport();
     const fromModpack = computed(() => data.template >= profiles.value.length);

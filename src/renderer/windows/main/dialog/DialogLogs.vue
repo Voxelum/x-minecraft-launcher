@@ -81,7 +81,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, watch, set } from '@vue/composition-api';
-import { useStore, useDialogSelf, useInstanceLogs } from '@/hooks';
+import { useDialogSelf, useInstanceLogs } from '@/hooks';
 
 export default {
   setup() {
@@ -104,7 +104,6 @@ export default {
 
       contents: ['', ''],
     });
-    watch(isShown, (s) => { if (s) { loadLogs(); } });
     function loadLogs() {
       data.loadingList = true;
       listLogs().then((l) => {
@@ -113,6 +112,7 @@ export default {
         data.loadingList = false;
       });
     }
+    watch(isShown, (s) => { if (s) { loadLogs(); } });
     function loadCrashes() {
       data.loadingList = true;
       listCrashReports().then((l) => {

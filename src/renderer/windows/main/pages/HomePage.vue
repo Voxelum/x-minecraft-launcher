@@ -69,11 +69,11 @@
 </template>
 
 <script lang=ts>
-import { reactive, computed, toRefs, watch, ref, createComponent } from '@vue/composition-api';
-import { useStore, useDialog, useI18n, useLaunch, useNativeDialog, useInstance, useJava } from '@/hooks';
+import { createComponent } from '@vue/composition-api';
+import { useDialog, useI18n, useLaunch, useNativeDialog, useInstance, useJava } from '@/hooks';
 
 export default createComponent({
-  setup(props, context) {
+  setup() {
     const { t } = useI18n();
     const { showSaveDialog } = useNativeDialog();
     const { showDialog: showLogDialog } = useDialog('logs');
@@ -93,7 +93,7 @@ export default createComponent({
       quit: () => {},
       async showExportDialog() {
         if (refreshingProfile.value) return;
-        const { filePath, bookmark } = await showSaveDialog({
+        const { filePath } = await showSaveDialog({
           title: t('profile.export.title'),
           filters: [{ name: 'zip', extensions: ['zip'] }],
           message: t('profile.export.message'),

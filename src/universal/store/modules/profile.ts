@@ -41,10 +41,6 @@ interface State {
      */
     settings: GameSetting.Frame & { resourcePacks: Array<string> };
     /**
-     * The instance currently lock the profile
-     */
-    refreshing: number;
-    /**
      * The server statuses of all server profiles, modpack won't have this.
      */
     statuses: { [id: string]: Server.StatusFrame | undefined };
@@ -56,10 +52,6 @@ interface Getters {
     selectedProfile: ServerOrModpack;
     currentVersion: LocalVersion;
     deployingResources: { [domain: string]: Resource<any>[] };
-    /**
-     * If current launcher is refreshing the profile data
-     */
-    refreshing: boolean;
 }
 
 interface Mutations {
@@ -91,9 +83,6 @@ interface Mutations {
     serverStatus: Server.StatusFrame;
     profileSaves: Save[];
     profileStatus: { [id: string]: Server.StatusFrame };
-
-    aquireProfile: (state: State) => void;
-    releaseProfile: (state: State) => void;
 }
 
 export type ProfileModule = ModuleOption<State, Getters, Mutations, {}>;
@@ -162,7 +151,6 @@ const mod: ProfileModule = {
         serverInfos: [],
         saves: [],
 
-        refreshing: 0,
         statuses: {},
     },
     getters: {
@@ -183,7 +171,6 @@ const mod: ProfileModule = {
                 folder: getExpectVersion(minecraft, forge, liteloader),
             };
         },
-        refreshing(state) { return state.refreshing > 0; },
         deployingResources: (_, getters, rootState) => {
             const profile = getters.selectedProfile;
 
@@ -350,12 +337,6 @@ const mod: ProfileModule = {
         },
         profileSaves(state, saves) {
             state.saves = saves;
-        },
-        aquireProfile(state) {
-            state.refreshing++;
-        },
-        releaseProfile(state) {
-            state.refreshing--;
         },
     },
 };

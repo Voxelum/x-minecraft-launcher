@@ -13,7 +13,7 @@
     </v-toolbar>
     <v-card>
       <transition name="fade-transition" mode="out-in">
-        <stepper-user-service-creation v-if="addingService" :modify="initing" @cancel="addingService=false" />
+        <stepper-user-service v-if="addingService" :modify="initing" @cancel="addingService=false" />
         <v-card-text v-else style="padding-left: 50px; padding-right: 50px; padding-bottom: 25px;">
           <v-list two-line>
             <template v-for="(s) in services">
@@ -59,7 +59,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed, onMounted, watch } from '@vue/composition-api';
-import { useStore, useDialogSelf, useMutations } from '@/hooks';
+import { useStore, useDialogSelf } from '@/hooks';
 
 interface Service {
   text: string;

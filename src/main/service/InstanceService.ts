@@ -153,7 +153,7 @@ export default class InstanceService extends Service {
             return;
         }
 
-        const persis = await getPersistence({ path: this.getPathUnder('profiles.json'), schema: 'ProfilesConfig' });
+        const persis = await getPersistence({ path: this.getPath('profiles.json'), schema: 'ProfilesConfig' });
 
         if (persis) {
             if (persis.selectedProfile) {
@@ -161,6 +161,8 @@ export default class InstanceService extends Service {
             } else {
                 await this.selectInstance(Object.keys(state.profile.all)[0]);
             }
+        } else {
+            await this.selectInstance(Object.keys(state.profile.all)[0]);
         }
     }
 

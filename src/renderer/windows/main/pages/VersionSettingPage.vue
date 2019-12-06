@@ -81,7 +81,7 @@
 
 <script lang=ts>
 import Vue from 'vue';
-import { createComponent, reactive, computed, ref, onMounted, onUnmounted, toRefs, provide, watch } from '@vue/composition-api';
+import { createComponent, reactive, computed, ref, onMounted, onUnmounted, toRefs, watch } from '@vue/composition-api';
 import { useAutoSaveLoad, useInstance } from '@/hooks';
 
 export default createComponent({

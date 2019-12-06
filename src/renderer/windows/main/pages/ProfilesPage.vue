@@ -118,8 +118,8 @@
       </v-card>
     </v-dialog>
     <v-dialog v-model="wizard" persistent>
-      <add-profile-wizard v-if="!creatingServer" :show="wizard" @quit="wizard=false" />
-      <add-server-wizard v-else :show="wizard" @quit="wizard=false" />
+      <stepper-add-profile v-if="!creatingServer" :show="wizard" @quit="wizard=false" />
+      <stepper-add-server v-else :show="wizard" @quit="wizard=false" />
     </v-dialog>
   </v-container>
 </template>
@@ -129,8 +129,6 @@ import { reactive, toRefs, computed, onMounted } from '@vue/composition-api';
 import {
   useI18n,
   useNativeDialog,
-  useDialog,
-  useStore,
   useNotifier,
   useRouter,
   useInstances,
@@ -252,7 +250,7 @@ export default {
         const filters = fromFolder
           ? []
           : [{ extensions: ['zip'], name: 'Zip' }];
-        const { filePaths, bookmarks } = await showOpenDialog({
+        const { filePaths } = await showOpenDialog({
           title: t('profile.import.title'),
           message: t('profile.import.description'),
           filters,

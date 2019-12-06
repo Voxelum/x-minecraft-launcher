@@ -7,7 +7,7 @@ import { join } from 'path';
 import { Java, JavaConfig } from 'universal/store/modules/java.config';
 import { requireString } from 'universal/utils/object';
 import InstanceService from './InstanceService';
-import Service, { Inject } from './Service';
+import Service, { Inject, Singleton } from './Service';
 
 export default class JavaService extends Service {
     @Inject('InstanceService')
@@ -53,20 +53,18 @@ export default class JavaService extends Service {
      * Install a default jdk 8 to the a preserved location. It'll be installed under your launcher root location `jre` folder
      * @param fixing 
      */
+    @Singleton('java')
     async installJava(fixing: boolean) {
         const installJre = async (ctx: Task.Context) => {
-            this.commit('aquireProfile');
-
             const local = join(this.state.root, 'jre', 'bin', JavaService.JAVA_FILE);
             await this.resolveJava(local);
             for (const j of this.state.java.all) {
                 if (j.path === local) {
-                    this.commit('releaseProfile');
                     console.log(`Found exists installation at ${local}`);
                     return undefined;
                 }
             }
-            const endpoint = await gfw() ? installJreFromSelfHostTask(this.state.root) : installJreFromMojangTask(this.state.root);
+            const endpoint = this.managers.NetworkManager.isInGFW ? installJreFromSelfHostTask(this.state.root) : installJreFromMojangTask(this.state.root);
 
             await endpoint(ctx);
             const java = await this.resolveJava(local);
@@ -75,7 +73,6 @@ export default class JavaService extends Service {
                 await this.profileService.editInstance({ java });
             }
 
-            this.commit('releaseProfile');
             return java;
         };
         return this.submit(installJre);
@@ -125,53 +122,49 @@ export default class JavaService extends Service {
     /**
      * scan local java locations and cache
      */
+    @Singleton('java')
     async refreshLocalJava() {
-        this.commit('aquireProfile');
-        try {
-            const unchecked = new Set<string>();
+        const unchecked = new Set<string>();
 
-            unchecked.add(join(this.state.root, 'jre', 'bin', JavaService.JAVA_FILE));
-            if (process.env.JAVA_HOME) unchecked.add(join(process.env.JAVA_HOME, 'bin', JavaService.JAVA_FILE));
+        unchecked.add(join(this.state.root, 'jre', 'bin', JavaService.JAVA_FILE));
+        if (process.env.JAVA_HOME) unchecked.add(join(process.env.JAVA_HOME, 'bin', JavaService.JAVA_FILE));
 
-            const which = () => new Promise<string>((resolve) => {
-                exec('which java', (error, stdout) => {
-                    resolve(stdout.replace('\n', ''));
+        const which = () => new Promise<string>((resolve) => {
+            exec('which java', (error, stdout) => {
+                resolve(stdout.replace('\n', ''));
+            });
+        });
+        const where = () => new Promise<string[]>((resolve) => {
+            exec('where java', (error, stdout) => {
+                resolve(stdout.split('\r\n'));
+            });
+        });
+
+        if (platform.name === 'windows') {
+            const out = await new Promise<string[]>((resolve) => {
+                exec('REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome', (error, stdout) => {
+                    if (!stdout) resolve([]);
+                    resolve(stdout.split(EOL).map(item => item.replace(/[\r\n]/g, ''))
+                        .filter(item => item != null && item !== undefined)
+                        .filter(item => item[0] === ' ')
+                        .map(item => `${item.split('    ')[3]}\\bin\\javaw.exe`));
                 });
             });
-            const where = () => new Promise<string[]>((resolve) => {
-                exec('where java', (error, stdout) => {
-                    resolve(stdout.split('\r\n'));
-                });
-            });
-
-            if (platform.name === 'windows') {
-                const out = await new Promise<string[]>((resolve) => {
-                    exec('REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome', (error, stdout) => {
-                        if (!stdout) resolve([]);
-                        resolve(stdout.split(EOL).map(item => item.replace(/[\r\n]/g, ''))
-                            .filter(item => item != null && item !== undefined)
-                            .filter(item => item[0] === ' ')
-                            .map(item => `${item.split('    ')[3]}\\bin\\javaw.exe`));
-                    });
-                });
-                for (const o of [...out, ...await where()]) {
-                    unchecked.add(o);
-                }
-            } else if (platform.name === 'osx') {
-                unchecked.add('/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java');
-                unchecked.add(await which());
-            } else {
-                unchecked.add(await which());
+            for (const o of [...out, ...await where()]) {
+                unchecked.add(o);
             }
-
-            this.state.java.all.forEach(j => unchecked.add(j.path));
-
-            const checkingList = Array.from(unchecked).filter(jPath => typeof jPath === 'string').filter(p => p !== '');
-            console.log(`Checking these location for java ${JSON.stringify(checkingList)}.`);
-
-            await Promise.all(checkingList.map(jPath => this.resolveJava(jPath)));
-        } finally {
-            this.commit('releaseProfile');
+        } else if (platform.name === 'osx') {
+            unchecked.add('/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java');
+            unchecked.add(await which());
+        } else {
+            unchecked.add(await which());
         }
+
+        this.state.java.all.forEach(j => unchecked.add(j.path));
+
+        const checkingList = Array.from(unchecked).filter(jPath => typeof jPath === 'string').filter(p => p !== '');
+        console.log(`Checking these location for java ${JSON.stringify(checkingList)}.`);
+
+        await Promise.all(checkingList.map(jPath => this.resolveJava(jPath)));
     }
 }

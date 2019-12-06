@@ -103,7 +103,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, toRefs, watch } from '@vue/composition-api';
+import { createComponent } from '@vue/composition-api';
 import { useCurseforgePreview } from '@/hooks';
 
 export default createComponent({
