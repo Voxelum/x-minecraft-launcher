@@ -4,7 +4,7 @@ import { join } from 'path';
 import AuthLibService from './AuthLibService';
 import DiagnoseService from './DiagnoseService';
 import ResourceService from './ResourceService';
-import Service, { Inject } from './Service';
+import Service, { Inject, Singleton } from './Service';
 import VersionService from './VersionService';
 
 function onerror(e: { message: string; type: string }) {
@@ -20,7 +20,7 @@ function onerror(e: { message: string; type: string }) {
     return e;
 }
 
-export default class LauncheService extends Service {
+export default class LaunchService extends Service {
     @Inject('DiagnoseService')
     private diagnoseService!: DiagnoseService;
 
@@ -187,6 +187,7 @@ export default class LauncheService extends Service {
             });
             process.stdout?.on('data', (s) => {
                 const string = s.toString();
+                console.log(string);
                 if (string.indexOf('---- Minecraft Crash Report ----') !== -1) {
                     crashReport = string;
                 } else if (string.indexOf('Crash report saved to:') !== -1) {
@@ -199,9 +200,11 @@ export default class LauncheService extends Service {
                 eventBus.emit('minecraft-stdout', string);
             });
             process.stderr?.on('data', (s) => {
+                console.log(s.toString());
                 eventBus.emit('minecraft-stderr', s.toString());
             });
             process.unref();
+            return true;
         } catch (e) {
             this.commit('launchErrors', { type: 'general', content: [e] });
             return false;

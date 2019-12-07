@@ -22,7 +22,7 @@ function proxyOfTask(taskHandle: string): Pick<TaskHandle<any, any>, 'wait' | 'c
         // resume(): void;
     } as any;
 }
-async function startSession(sessionId: string, tasks: Array<any>) {
+async function startSession(sessionId: string | undefined, tasks: Array<any>) {
     const listener = (event: any, task: string) => {
         tasks.push(task);
     };
@@ -39,7 +39,12 @@ function proxyOfService(seriv: string) {
         get(_, key) {
             const func = function (payload: any) {
                 const tasks = reactive([]);
-                const promise = ipcRenderer.invoke('service-call', seriv, key as string, payload).then(r => startSession(r, tasks));
+                const promise = ipcRenderer.invoke('service-call', seriv, key as string, payload).then((r) => {
+                    if (!r) {
+                        throw new Error(`Cannot find service call named ${key as string} in ${seriv}`);
+                    }
+                    return startSession(r, tasks);
+                });
                 Object.defineProperty(promise, '__tasks__', { value: tasks, enumerable: false, writable: false, configurable: false });
                 return promise;
             };

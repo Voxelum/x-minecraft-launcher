@@ -336,9 +336,13 @@ export default class InstanceService extends Service {
 
     readonly listLogs = logPartial.listLogs.bind(this);
 
+    readonly showLog = logPartial.showLog.bind(this);
+
     readonly removeCrashReport = logPartial.removeCrashReport.bind(this);
 
     readonly removeLog = logPartial.removeLog.bind(this);
+
+    readonly showCrash = logPartial.showCrash.bind(this);
 
     readonly copySave = savePartial.copySave.bind(this);
 

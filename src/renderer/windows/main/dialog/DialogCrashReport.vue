@@ -23,12 +23,13 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, onMounted, onUnmounted } from '@vue/composition-api';
+import { reactive, toRefs, onMounted, onUnmounted, createComponent } from '@vue/composition-api';
+import Vue from 'vue';
 import { useDialogSelf, useIpc, useShell } from '@/hooks';
 
-export default {
+export default createComponent({
   setup() {
-    const { isShown, showDialog, closeDialog } = useDialogSelf('crash-report');
+    const { isShown, showDialog, closeDialog, showingDialog } = useDialogSelf('crash-report');
     const ipcRenderer = useIpc();
     const shell = useShell();
     const data = reactive({
@@ -37,9 +38,12 @@ export default {
     });
     function onMinecraftExit(event: any, status: any) {
       if (status.crashReport) {
-        showDialog();
-        data.content = status.crashReport;
-        data.location = status.crashReportLocation || '';
+        Vue.nextTick(() => {
+          showDialog();
+          data.content = status.crashReport;
+          data.location = status.crashReportLocation || '';
+          console.log(showingDialog.value);
+        });
       }
     }
     onUnmounted(() => {
@@ -60,11 +64,7 @@ export default {
       },
     };
   },
-  methods: {
-    
-   
-  },
-};
+});
 </script>
 
 <style>

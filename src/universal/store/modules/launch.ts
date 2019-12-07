@@ -1,6 +1,6 @@
 import { ModuleOption } from '../root';
 
-type Status = 'ready' | 'checkingProblems' | 'launching' | 'launched' | 'minecraftReady' | 'error';
+type Status = 'ready' | 'checkingProblems' | 'launching' | 'launched' | 'minecraftReady';
 
 interface State {
     status: Status;

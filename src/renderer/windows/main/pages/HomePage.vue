@@ -70,7 +70,7 @@
 
 <script lang=ts>
 import { createComponent } from '@vue/composition-api';
-import { useDialog, useI18n, useLaunch, useNativeDialog, useInstance, useJava } from '@/hooks';
+import { useDialog, useI18n, useLaunch, useNativeDialog, useInstance, useJava, useQuit } from '@/hooks';
 
 export default createComponent({
   setup() {
@@ -78,19 +78,27 @@ export default createComponent({
     const { showSaveDialog } = useNativeDialog();
     const { showDialog: showLogDialog } = useDialog('logs');
     const { showDialog: showFeedbackDialog } = useDialog('feedback');
+    const { showDialog: showLaunchStatusDialog } = useDialog('launch-status');
     const { refreshing: refreshingProfile, name, isServer, exportTo } = useInstance();
     const { launch, status: launchStatus } = useLaunch();
     const { missing: missingJava } = useJava();
+    const { quit } = useQuit();
 
     return {
       isServer,
       launchStatus,
       refreshingProfile,
       missingJava,
-      launch,
+      launch() {
+        if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching' || launchStatus.value === 'launched') {
+          showLaunchStatusDialog();
+        } else {
+          launch();
+        }
+      },
       showLogDialog,
       showFeedbackDialog,
-      quit: () => {},
+      quit,
       async showExportDialog() {
         if (refreshingProfile.value) return;
         const { filePath } = await showSaveDialog({

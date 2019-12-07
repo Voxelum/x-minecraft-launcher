@@ -1,4 +1,4 @@
-import Task from '@xmcl/task';
+import { Task } from '@xmcl/minecraft-launcher-core';
 import { BrowserWindow, DownloadItem } from 'electron';
 import { fs } from 'main/utils';
 import { basename, join } from 'path';
@@ -10,7 +10,7 @@ import TaskManager from './TaskManager';
 function downloadItemTask(item: DownloadItem) {
     function downloadItem(context: Task.Context) {
         return new Promise<string>((resolve, reject) => {
-            item.on('updated', (e) => {
+            item.on('updated', () => {
                 context.update(item.getReceivedBytes(), item.getTotalBytes(), item.getURL());
             });
             item.on('done', (event, state) => {

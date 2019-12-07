@@ -1,4 +1,4 @@
-import { App, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, shell } from 'electron';
+import { App, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, shell, app } from 'electron';
 import { EventEmitter } from 'events';
 import { Store } from 'vuex';
 import { Manager } from '.';
@@ -104,6 +104,14 @@ export default class AppManager extends Manager {
 
     readonly eventBus: LauncherAppEventBus = new EventEmitter();
 
+    async setup() {
+        const constructor = await import('../app/BuiltinApp').then(c => c.default);
+        const app = new constructor();
+        Reflect.set(app, 'eventBus', this.eventBus);
+        Reflect.set(app, 't', this.managers.I18nManager.t);
+        this.instance = app;
+    }
+
     async appReady(app: App) {
         app
             .on('window-all-closed', () => {
@@ -115,14 +123,12 @@ export default class AppManager extends Manager {
             .on('exit', () => { app.quit(); })
             .on('minecraft-start', () => { this.parking = true; })
             .on('minecraft-exit', () => { this.parking = false; });
+        this.instance!.appReady(app);
     }
 
     get isParking() { return this.parking; }
 
     async storeReady(store: Store<any>) {
-        const constructor = await import('../app/BuiltinApp').then(c => c.default);
-        const app = new constructor();
-        Reflect.set(app, 'eventBus', this.eventBus);
         this.parking = true;
         if (this.instance) {
             try {
@@ -132,8 +138,11 @@ export default class AppManager extends Manager {
                 console.error(e);
             }
         }
-        this.instance = app;
-        await app.start({ store });
+        await this.instance!.start({ store });
         this.parking = false;
     }
+
+    quit = app.quit
+
+    exit = app.exit;
 }

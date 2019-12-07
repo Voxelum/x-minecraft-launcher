@@ -28,6 +28,13 @@ export function useDialog(dialog: Dialogs = '') {
     const dialogOption: Ref<any> = inject(DIALOG_OPTION) as any;
     const dialogResult: Ref<any> = inject(DIALOG_RESULT) as any;
     if (!showingDialog || !dialogOption || !dialogResult) throw new Error('This should not happend');
+    function closeDialog(result?: any) {
+        if (showingDialog.value === dialog) {
+            showingDialog.value = '';
+            dialogOption.value = undefined;
+            dialogResult.value = result;
+        }
+    }
     function showDialog(newDialog: Dialogs = dialog, option?: any) {
         if (showingDialog.value !== '') {
             closeDialog(dialogResult.value);
@@ -36,11 +43,6 @@ export function useDialog(dialog: Dialogs = '') {
         }
         showingDialog.value = newDialog;
         dialogOption.value = option;
-    }
-    function closeDialog(result?: any) {
-        showingDialog.value = '';
-        dialogOption.value = undefined;
-        dialogResult.value = result;
     }
     const openListeners: Array<() => void> = [];
     const closeListeners: Array<(result: any) => void> = [];
@@ -53,6 +55,7 @@ export function useDialog(dialog: Dialogs = '') {
     let watcherHandle: () => void;
     onMounted(() => {
         watcherHandle = watch(showingDialog, (n, o) => {
+            console.log(`dialog ${o} -> ${n}`);
             if (n === dialog) {
                 openListeners.forEach(f => f());
             } else if (o === dialog) {

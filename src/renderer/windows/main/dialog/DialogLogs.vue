@@ -15,10 +15,10 @@
           align-with-title
         >
           <v-tabs-slider color="yellow" />
-          <v-tab :disabled="loadingList" @click="goLog">
+          <v-tab :key="0" :disabled="loadingList" @click="goLog">
             {{ $t('profile.logsCrashes.logs') }}
           </v-tab>
-          <v-tab :disabled="loadingList" @click="goCrash">
+          <v-tab :key="1" :disabled="loadingList" @click="goCrash">
             {{ $t('profile.logsCrashes.crashes') }}
           </v-tab>
         </v-tabs>
@@ -40,12 +40,12 @@
                     <v-list-tile-title>{{ i }}</v-list-tile-title>
                   </v-list-tile-content>
                   <v-list-tile-action>
-                    <v-btn icon color="white" flat @click.prevent="openFile(i)">
+                    <v-btn icon color="white" flat @click.prevent.stop="openFile(i)">
                       <v-icon>folder</v-icon>
                     </v-btn>
                   </v-list-tile-action>
                   <v-list-tile-action>
-                    <v-btn icon color="red" flat @click.prevent="removeFile(i)">
+                    <v-btn icon color="red" flat @click.prevent.stop="removeFile(i)">
                       <v-icon>delete</v-icon>
                     </v-btn>
                   </v-list-tile-action>
@@ -81,7 +81,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, watch, set } from '@vue/composition-api';
-import { useDialogSelf, useInstanceLogs } from '@/hooks';
+import { useDialogSelf, useInstanceLogs, useShell } from '@/hooks';
 
 export default {
   setup() {
@@ -92,10 +92,12 @@ export default {
       removeCrashReport,
       getCrashReportContent,
       getLogContent,
+      showLog,
+      showCrashReport,
     } = useInstanceLogs();
     const { isShown, closeDialog } = useDialogSelf('logs');
     const data = reactive({
-      tab: 0,
+      tab: null as any as number,
 
       loadingContent: false,
       loadingList: false,
@@ -112,7 +114,12 @@ export default {
         data.loadingList = false;
       });
     }
-    watch(isShown, (s) => { if (s) { loadLogs(); } });
+    watch(isShown, (s) => {
+      if (s) {
+        data.tab = 0;
+        loadLogs();
+      }
+    });
     function loadCrashes() {
       data.loadingList = true;
       listCrashReports().then((l) => {
@@ -157,8 +164,11 @@ export default {
         }
       },
       openFile(name: string) {
-        // TODO: impl
-        // remote.shell.showItemInFolder()
+        if (data.tab === 1) {
+          showCrashReport(name);
+        } else {
+          showLog(name);
+        }
       },
       goBack() {
         set(data.contents, data.tab, '');

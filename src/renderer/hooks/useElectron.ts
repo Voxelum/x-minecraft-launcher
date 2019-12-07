@@ -2,6 +2,7 @@ import { inject } from '@vue/composition-api';
 import { IPC_KEY, REMOTE_DIALOG_KEY, REMOTE_SHELL_KEY, ELECTRON_CLIPBOARD } from 'renderer/constant';
 import { requireNonnull } from 'universal/utils/object';
 import { Shell, IpcRenderer, Dialog, Clipboard } from 'electron';
+import { useStore } from './useStore';
 
 /**
  * Use electron native dialog
@@ -37,4 +38,12 @@ export function useClipboard(): Clipboard {
     const board = inject(ELECTRON_CLIPBOARD);
     requireNonnull(board);
     return board;
+}
+
+export function useQuit() {
+    const { services } = useStore();
+    return {
+        quit: services.BaseService.quit,
+        exit: services.BaseService.exit,
+    };
 }

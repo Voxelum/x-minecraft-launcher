@@ -118,7 +118,7 @@ const mod: UserModule = {
             .map(p => p.profiles.map(prof => ({ ...prof, userId: p.id, authService: p.authService, profileService: p.profileService, account: p.account })))
             .reduce((a, b) => [...a, ...b], []),
         selectedUser: state => state.profiles[state.selectedUser]
-            || { account: '', profileService: '', authService: 'offline', accessToken: '', profiles: [], properties: {} },
+            || { account: '', profileService: '', authService: 'none', accessToken: '', profiles: [], properties: {} },
         selectedGameProfile: (state, getters) => getters.selectedUser.profiles.find(p => p.id === state.selectedUserProfile)
             || { id: '', name: '', textures: { SKIN: { url: '' } } },
 

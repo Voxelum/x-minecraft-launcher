@@ -146,7 +146,7 @@ export default class BuiltinApp extends LauncherApp {
         }
     }
 
-    onMinecraftExited = () => {
+    onMinecraftExited = (status: any) => {
         const { hideLauncher } = this.store.getters.selectedProfile;
         if (hideLauncher) {
             if (this.mainRef) {
@@ -180,6 +180,7 @@ export default class BuiltinApp extends LauncherApp {
     }
 
     async start(context: LauncherAppContext): Promise<void> {
+        this.store = context.store;
         this.createMainWindow();
     }
 

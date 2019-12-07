@@ -1,11 +1,12 @@
 import { Task, TaskHandle } from '@xmcl/minecraft-launcher-core';
 import { App, ipcMain, webContents } from 'electron';
 import AuthLibService from 'main/service/AuthLibService';
+import BaseService from 'main/service/BaseService';
 import CurseForgService from 'main/service/CurseForgeService';
 import DiagnoseService from 'main/service/DiagnoseService';
 import InstanceService from 'main/service/InstanceService';
 import JavaService from 'main/service/JavaService';
-import LauncheService from 'main/service/LauncheService';
+import LaunchService from 'main/service/LaunchService';
 import ResourceService from 'main/service/ResourceService';
 import ServerStatusService from 'main/service/ServerStatusService';
 import Service from 'main/service/Service';
@@ -33,22 +34,6 @@ export default class StoreAndServiceManager extends Manager {
 
     private sessions: { [key: number]: () => Promise<void> } = {};
 
-    constructor() {
-        super();
-        this.addService(new AuthLibService());
-        this.addService(new CurseForgService());
-        this.addService(new DiagnoseService());
-        this.addService(new InstanceService());
-        this.addService(new JavaService());
-        this.addService(new LauncheService());
-        this.addService(new ServerStatusService());
-        this.addService(new ResourceService());
-        this.addService(new SettingService());
-        this.addService(new UserService());
-        this.addService(new VersionInstallService());
-        this.addService(new VersionService());
-    }
-
     addService(service: Service) {
         this.services.push(service);
     }
@@ -59,16 +44,36 @@ export default class StoreAndServiceManager extends Manager {
 
     private setupService(root: string) {
         console.log(`Setup service ${root}`);
+        const managers = this.managers;
+
+        Object.defineProperty(Service.prototype, 'managers', {
+            get() { return managers; },
+        });
+
+        this.addService(new AuthLibService());
+        this.addService(new CurseForgService());
+        this.addService(new DiagnoseService());
+        this.addService(new InstanceService());
+        this.addService(new JavaService());
+        this.addService(new LaunchService());
+        this.addService(new ServerStatusService());
+        this.addService(new ResourceService());
+        this.addService(new SettingService());
+        this.addService(new UserService());
+        this.addService(new VersionInstallService());
+        this.addService(new VersionService());
+        this.addService(new BaseService());
+
         const store = this.store!;
         const services = this.services;
         const servMap: { [name: string]: Service } = {};
         const getPath = (...paths: string[]) => join(root, ...paths);
+
         for (const serv of services) {
             const name = Object.getPrototypeOf(serv).constructor.name;
             if (!name) throw new Error('Name of service is undefined');
             servMap[name] = serv;
             const anySeriv = serv as any;
-            anySeriv.managers = this.managers;
             anySeriv.commit = store.commit;
             anySeriv.state = store.state;
             anySeriv.getters = store.getters;
@@ -95,7 +100,7 @@ export default class StoreAndServiceManager extends Manager {
 
     async rootReady(root: string) {
         ipcMain.removeAllListeners('vuex-sync');
-        function deepCopyStoreTemplate(template: typeof mod) {
+        function deepCopyStoreTemplate(template: StoreOptions<any>) {
             const copy = Object.assign({}, template);
             if (typeof template.state === 'object') {
                 copy.state = JSON.parse(JSON.stringify(template.state));
@@ -183,15 +188,25 @@ export default class StoreAndServiceManager extends Manager {
             if (!this.sessions[id]) {
                 console.error(`Unknown session ${id}!`);
             }
-            return this.sessions[id]().then(r => ({ result: r }), (e) => {
+            try {
+                const r = this.sessions[id]();
+                if (r instanceof Promise) {
+                    return r.then(r => ({ result: r }), (e) => {
+                        console.error(e);
+                        return { error: e };
+                    });
+                }
+                return { result: r };
+            } catch (e) {
                 console.error(e);
                 return { error: e };
-            });
+            }
         });
         ipcMain.handle('service-call', (event, service: string, name: string, payload: any) => {
             const serv = this.serviceMap[service];
             if (!serv) {
-                console.error(`Cannot execute service call ${name} from service ${serv}. The service not found.`);
+                console.error(`Cannot execute service call ${name} from service ${service}. The service not found.`);
+                console.log(this.serviceMap);
             } else {
                 if (name in serv) {
                     const tasks: TaskHandle<any, any>[] = [];
@@ -216,9 +231,10 @@ export default class StoreAndServiceManager extends Manager {
                     this.sessions[sessionId] = () => servProxy[name](payload);
 
                     return sessionId;
-                } 
+                }
                 console.error(`Cannot execute service call ${name} from service ${serv}. The service doesn't have such method!`);
             }
+            return undefined;
         });
     }
 
@@ -240,7 +256,7 @@ export default class StoreAndServiceManager extends Manager {
         ipcMain.handle('sync', (event, currentId) => {
             console.log(`sync on renderer: ${currentId}, main: ${mutationHistory.length}`);
             if (currentId === mutationHistory.length) {
-                return;
+                return undefined;
             }
             const mutations = mutationHistory.slice(currentId);
             return {

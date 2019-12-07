@@ -32,7 +32,6 @@
 </template>
 
 <script lang=ts>
-import { computed } from '@vue/composition-api';
 import resourcepack from '@/assets/curseforge_resourcepack.png';
 import mods from '@/assets/curseforge_mods.png';
 import modpack from '@/assets/curseforge_modpack.png';

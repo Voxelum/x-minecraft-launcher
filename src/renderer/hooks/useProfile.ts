@@ -199,7 +199,16 @@ export function useProfileVersion() {
     onMounted(() => {
         watcher = watch(id, () => {
             services.VersionService.resolveVersion(profile.version)
-                .then((f) => { folder.value = f; }, () => { folder.value = ''; });
+                .then((f) => {
+                    folder.value = f;
+                }, () => {
+                    folder.value = '';
+                    setTimeout(() => {
+                        services.VersionService.resolveVersion(profile.version).then((f) => {
+                            folder.value = f;
+                        });
+                    }, 1000);
+                });
         });
     });
     onUnmounted(() => {
@@ -252,5 +261,7 @@ export function useInstanceLogs() {
         listLogs: services.InstanceService.listLogs,
         removeCrashReport: services.InstanceService.removeCrashReport,
         removeLog: services.InstanceService.removeLog,
+        showLog: services.InstanceService.showLog,
+        showCrashReport: services.InstanceService.showCrash,
     };
 }

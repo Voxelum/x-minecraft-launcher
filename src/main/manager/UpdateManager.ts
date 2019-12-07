@@ -1,6 +1,6 @@
-import { Store } from 'vuex';
 import { autoUpdater } from 'electron-updater';
-import SettingService from 'main/service/SettingService';
+import BaseService from 'main/service/BaseService';
+import { Store } from 'vuex';
 import { Manager } from '.';
 
 if (process.env.NODE_ENV === 'development') {
@@ -30,6 +30,6 @@ export default class UpdateManager extends Manager {
         autoUpdater.autoDownload = store.state.setting.autoDownload;
         autoUpdater.allowPrerelease = store.state.setting.allowPrerelease;
 
-        this.managers.StoreAndServiceManager.getService(SettingService)!.checkUpdate();
+        this.managers.StoreAndServiceManager.getService(BaseService)!.checkUpdate();
     }
 }

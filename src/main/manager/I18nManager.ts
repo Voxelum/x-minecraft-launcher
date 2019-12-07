@@ -16,7 +16,15 @@ export default class I18nManager extends Manager {
 
     private usedName!: string;
 
+
     async init() {
+        this.t = (key: string, args?: object) => {
+            const queryPath = key.split('.');
+            const result = this.find(queryPath, this.used) || this.find(queryPath, defaultContent);
+            if (!result) return key;
+            const templateString = typeof result === 'object' ? result[''] as string : result;
+            return this.format(templateString, args);
+        };
         // const localesDir = join(__static, 'locales');
         // const locales = await fs.readdir(localesDir);
     }
@@ -31,6 +39,11 @@ export default class I18nManager extends Manager {
     }
 
     private find(queryPath: string[], node: LocalNode): string | LocalNode | undefined {
+        if (!node) {
+            console.error(`The node is null! Cannot query ${queryPath}`);
+            console.error(node);
+            return undefined;
+        }
         let content: LocalNode | string = node;
         for (const p of queryPath) {
             if (typeof content === 'string') return undefined;
@@ -41,13 +54,7 @@ export default class I18nManager extends Manager {
         return content;
     }
 
-    t(key: string, args?: object) {
-        const queryPath = key.split('.');
-        const result = this.find(queryPath, this.used) || this.find(queryPath, defaultContent);
-        if (!result) return key;
-        const templateString = typeof result === 'object' ? result[''] as string : result;
-        return this.format(templateString, args);
-    }
+    t(key: string, args?: object) { return ''; }
 
     getLocale(): LocalNode {
         return this.used;
