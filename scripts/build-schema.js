@@ -32,5 +32,5 @@ const symbols = generator.symbols.filter(s => s.name.endsWith('Config')
 for (const sym of symbols) {
     const def = TJS.generateSchema(program, sym.name, { required: true });
     def.additionalProperties = false;
-    fs.writeFileSync(resolve(__dirname, '..', 'static', 'persistence-schema', `${sym.name}.json`), JSON.stringify(def, null, 4));
+    fs.writeFileSync(resolve(__dirname, '..', 'src/main/utils/schema', `${sym.name}.json`), JSON.stringify(def, null, 4));
 }
