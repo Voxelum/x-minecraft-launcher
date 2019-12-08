@@ -1,10 +1,10 @@
 <template>
   <v-container grid-list-xs fill-height style="overflow: auto;">
     <v-layout row wrap align-start>
-      <v-flex tag="h1" class="white--text">
+      <v-flex tag="h1" class="white--text" style="z-index: 1">
         <span class="headline">{{ $tc('save.name', 2) }}</span>
       </v-flex>
-      <v-flex shrink>
+      <v-flex shrink style="z-index: 1">
         <v-btn flat @click="doCopyFrom">
           <v-icon left>
             input
@@ -12,7 +12,7 @@
           {{ $t('save.copyFrom.title') }}
         </v-btn>
       </v-flex>
-      <v-flex shrink>
+      <v-flex shrink style="z-index: 1">
         <v-btn flat @click="doImport">
           <v-icon left>
             move_to_inbox
@@ -197,10 +197,11 @@ export default createComponent({
 
       startCopy(path: string) {
         data.copying = path;
-        data.copyingDest = new Array(instances.length);
+        data.copyingDest = new Array(instances.value.length);
       },
       doCopy() {
         const dests = instances
+          .value
           .filter((p, index) => data.copyingDest[index])
           .map(p => p.id);
         copySave({ src: data.copying, dest: dests });

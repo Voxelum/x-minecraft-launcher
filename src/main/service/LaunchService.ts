@@ -4,7 +4,7 @@ import { join } from 'path';
 import AuthLibService from './AuthLibService';
 import DiagnoseService from './DiagnoseService';
 import ResourceService from './ResourceService';
-import Service, { Inject, Singleton } from './Service';
+import Service, { Inject } from './Service';
 import VersionService from './VersionService';
 
 function onerror(e: { message: string; type: string }) {
@@ -35,7 +35,7 @@ export default class LaunchService extends Service {
 
     async launch() {
         try {
-            if (this.state.launch.status !== 'ready' && this.state.launch.status !== 'error') {
+            if (this.state.launch.status !== 'ready') {
                 return false;
             }
 
@@ -187,7 +187,6 @@ export default class LaunchService extends Service {
             });
             process.stdout?.on('data', (s) => {
                 const string = s.toString();
-                console.log(string);
                 if (string.indexOf('---- Minecraft Crash Report ----') !== -1) {
                     crashReport = string;
                 } else if (string.indexOf('Crash report saved to:') !== -1) {
@@ -200,7 +199,6 @@ export default class LaunchService extends Service {
                 eventBus.emit('minecraft-stdout', string);
             });
             process.stderr?.on('data', (s) => {
-                console.log(s.toString());
                 eventBus.emit('minecraft-stderr', s.toString());
             });
             process.unref();

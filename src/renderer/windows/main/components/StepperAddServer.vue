@@ -57,9 +57,9 @@
                               required />
               </v-flex>
               <v-flex d-flex xs4>
-                <version-menu :accept-range="acceptingVersion" @input="mcversion = $event">
+                <version-menu :accept-range="acceptingVersion" @input="version.minecraft = $event">
                   <template v-slot="{ on }">
-                    <v-text-field v-model="mcversion" dark append-icon="arrow" persistent-hint
+                    <v-text-field v-model="version.minecraft" dark append-icon="arrow" persistent-hint
                                   :hint="$t('profile.server.versionHint')" :label="$t('minecraft.version')" :readonly="true" @click:append="on.keydown"
                                   v-on="on" />
                   </template>
@@ -86,7 +86,7 @@
           <v-btn flat @click="step = 2">
             {{ $t('next') }}
           </v-btn>
-          <v-btn :loading="creating" color="primary" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
+          <v-btn :loading="creating" color="primary" :disabled="!valid || name === '' || version.minecraft === ''" @click="doCreate">
             {{ $t('create') }}
           </v-btn>
         </v-layout>
@@ -96,7 +96,7 @@
           <v-container grid-list fill-height style="overflow: auto;">
             <v-layout row wrap>
               <v-flex d-flex xs6>
-                <v-select v-model="javaLocation" class="java-select" hide-details :item-text="java => `JRE${java.majorVersion}, ${java.path}`"
+                <v-select v-model="java.path" class="java-select" hide-details :item-text="java => `JRE${java.majorVersion}, ${java.path}`"
                           :item-value="v => v" prepend-inner-icon="add" :label="$t('java.location')" :items="javas"
                           required :menu-props="{ auto: true, overflowY: true }" />
               </v-flex>
@@ -109,9 +109,9 @@
                               required />
               </v-flex>
               <v-flex d-flex xs6>
-                <forge-version-menu :minecraft="mcversion" @input="forgeVersion = $event">
+                <forge-version-menu :minecraft="version.minecraft" @input="version.forge = $event">
                   <template v-slot="{ on }">
-                    <v-text-field v-model="forgeVersion" dark append-icon="arrow" persistent-hint
+                    <v-text-field v-model="version.forge" dark append-icon="arrow" persistent-hint
                                   :hint="$t('profile.versionHint')" :label="$t('forge.version')" :readonly="true" @click:append="on.keydown"
                                   v-on="on" />
                   </template>
@@ -126,7 +126,7 @@
             {{ $t('cancel') }}
           </v-btn>
           <v-spacer />
-          <v-btn :loading="creating" color="primary" :disabled="!valid || name === '' || mcversion === ''" @click="doCreate">
+          <v-btn :loading="creating" color="primary" :disabled="!valid || name === '' || version.minecraft === ''" @click="doCreate">
             {{ $t('create') }}
           </v-btn>
         </v-layout>

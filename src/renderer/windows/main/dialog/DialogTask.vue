@@ -11,7 +11,7 @@
       <v-card-text>
         {{ all.length === 0 ? $t('task.empty') : '' }}
         <v-treeview v-model="tree" hoverable transition :open="opened" :items="all" activatable
-                    item-key="_internalId" open-on-click item-children="tasks" item-text="localText">
+                    item-key="_internalId" open-on-click item-children="children" item-text="localText">
           <template v-slot:append="{ item, open }">
             <task-node-status :has-child="item.children.length !== 0" :status="item.status" :total="item.total" :progress="item.progress" :hovered="hovered[item._internalId]" />
           </template>
@@ -19,7 +19,9 @@
           <template v-slot:label="{ item, open }">
             <div style="padding: 5px 0px;" @click="onTaskClick($event, item)" @contextmenu="showTaskContext($event, item)" @mouseenter="hovered[item._internalId] = true" @mouseleave="hovered[item._internalId] = false">
               <span style="white-space: nowrap; overflow: hidden;  text-overflow: ellipsis; max-width: 250px;">{{ $t(item.path, item.arguments || {}) }}</span>
-              <span style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;">{{ item.time }}</span>
+              <div style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;">
+                {{ item.time }}
+              </div>
               <div style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;">
                 {{ item.message }}
               </div>
@@ -33,10 +35,10 @@
 
 <script lang=ts>
 import Vue from 'vue';
-import { useStore, useDialogSelf, useI18n, useClipboard } from '@/hooks';
 import { reactive, computed, toRefs, onMounted, onUnmounted } from '@vue/composition-api';
 import { IpcRendererEvent } from 'electron';
 import { TaskState } from 'universal/store/modules/task';
+import { useStore, useDialogSelf, useI18n, useClipboard } from '@/hooks';
 
 export default {
   props: {
@@ -88,5 +90,8 @@ export default {
   white-space: normal;
   line-break: normal;
   word-break: break-all;
+}
+.v-treeview > .v-treeview-node--leaf {
+  margin-left: 0px;
 }
 </style>

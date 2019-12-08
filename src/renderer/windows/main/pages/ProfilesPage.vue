@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-md text-xs-center style="padding-left: 30px; padding-right: 30px">
+  <v-container grid-list-md text-xs-center style="padding-left: 30px; padding-right: 30px; z-index: 1">
     <v-btn
       absolute
       fab
@@ -126,6 +126,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed, onMounted } from '@vue/composition-api';
+import { ProfileConfig } from 'universal/store/modules/profile.config';
 import {
   useI18n,
   useNativeDialog,
@@ -135,7 +136,6 @@ import {
   useResourceOperation,
   useCurseforgeImport,
 } from '@/hooks';
-import { ProfileConfig } from 'universal/store/modules/profile.config';
 
 export default {
   setup() {
@@ -173,13 +173,13 @@ export default {
        * Is dragging a profile
        */
       dragging: false,
-      draggingProfile: { },
+      draggingProfile: {},
 
       pinging: false,
     });
     const timesliceProfiles = computed(() => {
       const filter = data.filter.toLowerCase();
-      const filtered = instances.filter(
+      const filtered = instances.value.filter(
         profile => filter === ''
           || ('author' in profile
             ? profile.author.toLowerCase().indexOf(filter) !== -1
@@ -273,10 +273,16 @@ export default {
       },
       doDelete() {
         if ('id' in data.deletingProfile) {
-          deleteInstance(data.deletingProfile.id).finally(() => {
-            data.isDeletingProfile = false;
-          });
+          const id = data.deletingProfile.id;
+          deleteInstance(id)
+            .catch((e) => {
+              notify('error', `Fail to delete profile ${id}`);
+            })
+            .finally(() => {
+              data.isDeletingProfile = false;
+            });
         } else {
+          notify('error', 'Fail to delete profile');
           data.isDeletingProfile = false;
         }
       },

@@ -1,0 +1,203 @@
+{
+    "type": "object",
+    "properties": {
+        "type": {
+            "description": "Either a modpack or server. The modpack is the common profile. It can export into a modpack",
+            "type": "string",
+            "enum": [
+                "server"
+            ]
+        },
+        "host": {
+            "type": "string"
+        },
+        "port": {
+            "type": "number"
+        },
+        "id": {
+            "description": "The unique id (uuid) of the profile. The profile data will be stored into profiles/${id}/profile.json according to this.",
+            "default": "",
+            "type": "string"
+        },
+        "name": {
+            "description": "The display name of the profile. It will also be the modpack display name",
+            "default": "",
+            "type": "string"
+        },
+        "java": {
+            "description": "The java object containing the java info",
+            "default": null,
+            "type": "object",
+            "properties": {
+                "path": {
+                    "description": "The real path of the java paath",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "The actual version string of the java",
+                    "type": "string"
+                },
+                "majorVersion": {
+                    "description": "The major version of selected java. If the version cannot be found, matching the java by this",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "majorVersion",
+                "path",
+                "version"
+            ]
+        },
+        "showLog": {
+            "description": "Should show a logger window after Minecraft launched",
+            "default": false,
+            "type": "boolean"
+        },
+        "hideLauncher": {
+            "description": "Should launcher hide after Minecraft launched",
+            "default": true,
+            "type": "boolean"
+        },
+        "deployments": {
+            "description": "The external resource deployment of this profiles, like mods or resource packs",
+            "default": {},
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "properties": {
+                "mods": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "mods"
+            ]
+        },
+        "version": {
+            "description": "The version requirement of the profile.\n\nContaining the forge & liteloader & etc.",
+            "default": {
+                "minecraft": "",
+                "forge": "",
+                "liteloader": ""
+            },
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            },
+            "properties": {
+                "minecraft": {
+                    "default": "",
+                    "type": "string"
+                },
+                "forge": {
+                    "default": "",
+                    "type": "string"
+                },
+                "liteloader": {
+                    "default": "",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "forge",
+                "liteloader",
+                "minecraft"
+            ]
+        },
+        "resolution": {
+            "type": "object",
+            "properties": {
+                "width": {
+                    "type": "number"
+                },
+                "height": {
+                    "type": "number"
+                },
+                "fullscreen": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "fullscreen",
+                "height",
+                "width"
+            ]
+        },
+        "minMemory": {
+            "type": "number"
+        },
+        "maxMemory": {
+            "type": "number"
+        },
+        "vmOptions": {
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "mcOptions": {
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "url": {
+            "default": "",
+            "type": "string"
+        },
+        "icon": {
+            "default": "",
+            "type": "string"
+        },
+        "image": {
+            "default": null,
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "blur": {
+            "default": 0,
+            "type": "number"
+        },
+        "lastAccessDate": {
+            "default": 0,
+            "type": "number"
+        },
+        "creationDate": {
+            "default": 0,
+            "type": "number"
+        }
+    },
+    "required": [
+        "blur",
+        "creationDate",
+        "deployments",
+        "hideLauncher",
+        "host",
+        "icon",
+        "id",
+        "image",
+        "java",
+        "lastAccessDate",
+        "mcOptions",
+        "name",
+        "port",
+        "showLog",
+        "type",
+        "url",
+        "version",
+        "vmOptions"
+    ],
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false
+}

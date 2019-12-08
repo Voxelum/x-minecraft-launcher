@@ -1,11 +1,19 @@
 <template>
   <v-container fill-height :class="{ 'absoluted': absolute }">
     <v-layout align-center justify-center row fill-height>
-      <v-flex style="text-align:center; user-select: none;" class="headline">
+      <v-flex v-if="!button" style="text-align:center; user-select: none;" class="headline">
         <v-icon :style="{ 'font-size' : `${size}px` }" style="display: block">
           {{ icon }}
         </v-icon>
         {{ text }}
+      </v-flex>
+      <v-flex v-else style="text-align:center; user-select: none;" class="headline">
+        <v-btn>
+          <v-icon :style="{ 'font-size' : `${size}px` }" style="display: block">
+            {{ icon }}
+          </v-icon>
+          {{ text }}
+        </v-btn>
       </v-flex>
     </v-layout>
   </v-container>
@@ -30,11 +38,15 @@ export default {
       type: Number,
       default: 50,
     },
+    button: {
+      type: Boolean,
+      default: false,
+    },
   },
 };
 </script>
 
-<style scoped>
+<style>
 .absoluted {
   position: absolute;
   left: 0;

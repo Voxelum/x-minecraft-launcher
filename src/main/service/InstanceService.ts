@@ -2,6 +2,12 @@ import { GameSetting, Server } from '@xmcl/minecraft-launcher-core';
 import { FSWatcher, watch } from 'fs';
 import { fitin, fs, requireObject, requireString, willBaselineChange } from 'main/utils';
 import { getPersistence, readFolder, setPersistence } from 'main/utils/persistence';
+import ProfilesConfig from 'main/utils/schema/ProfilesConfig.json';
+import ProfileConfig from 'main/utils/schema/ProfileConfig.json';
+import ModpackProfileConfig from 'main/utils/schema/ModpackProfileConfig.json';
+import ServerProfileConfig from 'main/utils/schema/ServerProfileConfig.json';
+import ServerOrModpackConfigSchema from 'main/utils/schema/ServerOrModpackConfig.json';
+
 import { CreateOption, createTemplate, ServerAndModpack } from 'universal/store/modules/profile';
 import { ServerOrModpackConfig } from 'universal/store/modules/profile.config';
 import { LATEST_MC_RELEASE } from 'universal/utils/constant';
@@ -90,7 +96,7 @@ export default class InstanceService extends Service {
 
         let option: ServerOrModpackConfig;
         try {
-            option = await getPersistence({ path: this.getPathUnder(id, 'profile.json'), schema: 'ServerOrModpackConfig' });
+            option = await getPersistence({ path: this.getPathUnder(id, 'profile.json'), schema: ServerOrModpackConfigSchema });
         } catch (e) {
             this.warn(`Corrupted profile json ${id}`);
             return;
@@ -153,7 +159,7 @@ export default class InstanceService extends Service {
             return;
         }
 
-        const persis = await getPersistence({ path: this.getPath('profiles.json'), schema: 'ProfilesConfig' });
+        const persis = await getPersistence({ path: this.getPath('profiles.json'), schema: ProfilesConfig });
 
         if (persis) {
             if (persis.selectedProfile) {
@@ -173,7 +179,7 @@ export default class InstanceService extends Service {
                 await setPersistence({
                     path: this.getPath('profiles.json'),
                     data: { selectedProfile: payload },
-                    schema: 'ProfilesConfig',
+                    schema: ProfilesConfig,
                 });
                 break;
             case 'gamesettings':
@@ -184,14 +190,14 @@ export default class InstanceService extends Service {
                 await setPersistence({
                     path: this.getPathUnder(payload.id, 'profile.json'),
                     data: payload,
-                    schema: 'ProfileConfig',
+                    schema: ProfileConfig,
                 });
                 break;
             case 'profile':
                 await setPersistence({
                     path: this.getPathUnder(this.state.profile.id, 'profile.json'),
                     data: current,
-                    schema: current.type === 'modpack' ? 'ModpackProfileConfig' : 'ServerProfileConfig',
+                    schema: current.type === 'modpack' ? ModpackProfileConfig : ServerProfileConfig,
                 });
                 break;
             default:
@@ -220,7 +226,7 @@ export default class InstanceService extends Service {
         const latestRelease = this.getters.minecraftRelease;
         const profile = createTemplate(
             v4(),
-            this.getters.defaultJava,
+            { path: '', majorVersion: 0, version: '' },
             latestRelease.id,
             payload.type || 'modpack',
             true,
@@ -237,6 +243,10 @@ export default class InstanceService extends Service {
         Reflect.deleteProperty(profile, 'creationDate');
 
         fitin(profile, payload);
+
+        if (profile.java.path === '') {
+            profile.java = { ...this.getters.defaultJava };
+        }
 
         this.commit('addProfile', profile);
 
@@ -263,6 +273,9 @@ export default class InstanceService extends Service {
 
         if (id === this.state.profile.id) { return; }
 
+        console.log(`Try to select instance ${id}`);
+        const oldVersion = this.state.version;
+
         this.saveWatcher?.close();
         const saveDir = this.getPath('profiles', id, 'saves');
         if (await fs.exists(saveDir)) {
@@ -273,6 +286,9 @@ export default class InstanceService extends Service {
         await this.loadProfileGameSettings(id);
         await this.loadProfileSeverData(id);
         this.commit('selectProfile', id);
+
+        const newVersion = this.state.version;
+        // console.log(`Instance version ${}`)
     }
 
     /**

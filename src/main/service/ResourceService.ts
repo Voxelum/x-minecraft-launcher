@@ -3,9 +3,10 @@ import { createHash } from 'crypto';
 import filenamify from 'filenamify';
 import { fs, requireString } from 'main/utils';
 import { getPersistence } from 'main/utils/persistence';
+import ResourceConfig from 'main/utils/schema/ResourceConfig.json';
 import { basename, extname, join, resolve } from 'path';
 import { AnyResource, ImportOption, ImportTypeHint, Resource } from 'universal/store/modules/resource';
-import CurseForgService from './CurseForgeService';
+import CurseForgeService from './CurseForgeService';
 import InstanceService from './InstanceService';
 import Service, { Inject } from './Service';
 
@@ -99,8 +100,8 @@ export default class ResourceService extends Service {
     @Inject('InstanceService')
     private instanceSerivce!: InstanceService;
 
-    @Inject('CurseForgService')
-    private curseforgeSerivce!: CurseForgService;
+    @Inject('CurseForgeService')
+    private curseforgeSerivce!: CurseForgeService;
 
     private hashToFilePath: { [hash: string]: string } = {};
 
@@ -322,7 +323,7 @@ export default class ResourceService extends Service {
                 const files = await fs.readdir(path);
                 for (const file of files.filter(f => f.endsWith('.json'))) {
                     const filePath = join(path, file);
-                    const read = await getPersistence({ path: filePath, schema: 'ResourceConfig' });
+                    const read = await getPersistence({ path: filePath, schema: ResourceConfig });
                     if (read !== {}) {
                         resources.push(read);
                     }

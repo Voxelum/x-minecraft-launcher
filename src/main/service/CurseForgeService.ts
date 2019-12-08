@@ -1,5 +1,5 @@
 import { Forge, got, Net, Task } from '@xmcl/minecraft-launcher-core';
-import { HTMLElement, parse as parseHtml, NodeType } from 'fast-html-parser';
+import { HTMLElement, parse as parseHtml } from 'fast-html-parser';
 import { fs, unpack7z } from 'main/utils';
 import { join } from 'path';
 import querystring from 'querystring';
@@ -139,20 +139,16 @@ function getHref(file: DownloadFile) {
 }
 // test url https://cursemeta.dries007.net/238222/2739588 jei
 
-/**
- * @param {string} string 
- */
 function localDate(string: string) {
     const d = new Date(0);
     d.setUTCSeconds(Number.parseInt(string, 10));
     return d.toLocaleDateString();
 }
-
-function notText(n: HTMLElement) { return n.nodeType !== NodeType.TEXT_NODE; }
+function notText(n: HTMLElement) { return n.nodeType !== 3; }
 function convert(node: HTMLElement | null) {
     if (node === null || !node) return '';
     let text = '';
-    if (node.nodeType === NodeType.TEXT_NODE) {
+    if (node.nodeType === 3) {
         text += node.rawText;
     } else if (node instanceof HTMLElement) {
         if (node.tagName !== null) {
@@ -219,7 +215,7 @@ function processProjectListingRow(item: HTMLElement): ProjectPreview {
     };
 }
 
-export default class CurseForgService extends Service {
+export default class CurseForgeService extends Service {
     @Inject('InstanceService')
     private instanceService!: InstanceService;
 

@@ -4,6 +4,7 @@ import { readFolder, setPersistence } from 'main/utils/persistence';
 import { LocalVersion } from 'universal/store/modules/version';
 import { shell } from 'electron';
 import Service from './Service';
+import { remove } from 'fs-extra';
 
 /**
  * The local version serivce maintains the installed versions on disk
@@ -70,6 +71,10 @@ export default class VersionService extends Service {
         this.commit('localVersions', versions);
     }
 
+    /**
+     * Resolve a local existed version to its spec
+     * @param targetVersion 
+     */
     async resolveVersion(targetVersion: Pick<LocalVersion, 'minecraft' | 'forge' | 'liteloader'>) {
         requireString(targetVersion.minecraft);
 
@@ -147,17 +152,20 @@ export default class VersionService extends Service {
     }
 
     async deleteVersion(version: string) {
-        if (await fs.exists(this.getPath('versions', version))) {
-            await fs.remove(this.getPath('versions', version));
+        const path = this.getPath('versions', version);
+        if (await fs.exists(path)) {
+            await remove(path);
         }
         this.commit('localVersions', this.state.version.local.filter(v => v.folder !== version));
     }
 
     async showVersionsDirectory() {
-        shell.openItem(this.getPath('versions'));
+        const path = this.getPath('versions');
+        return shell.openItem(path);
     }
 
     async showVersionDirectory(version: string) {
-        shell.openItem(this.getPath('versions', version));
+        const path = this.getPath('versions', version);
+        return shell.openItem(path);
     }
 }

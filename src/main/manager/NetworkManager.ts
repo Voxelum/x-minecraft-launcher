@@ -36,11 +36,13 @@ export default class NetworkManager extends Manager {
 
     private guard!: BrowserWindow;
 
+    private jsguard!: BrowserWindow;
+
     private downloading: { [url: string]: { file: string; callback: (item: Promise<string>) => void } } = {};
 
     private inGFW = false;
 
-    constructor(private tempRoot: string = 'temps') {
+    constructor(private tempRoot: string = 'temp') {
         super();
     }
 
@@ -53,6 +55,7 @@ export default class NetworkManager extends Manager {
      */
     async updateGFW() {
         this.inGFW = await inGFW.net().catch(() => inGFW.os());
+        this.inGFW = false; // force not in gfw now
         return this.inGFW;
     }
 
@@ -94,14 +97,46 @@ export default class NetworkManager extends Manager {
         browser.loadURL(url, {
             httpReferrer: browser.webContents.getURL() || '',
         });
-        await new Promise((resolve, reject) => {
-            browser.webContents.once('did-finish-load', () => {
+        const success = await new Promise((resolve) => {
+            browser.webContents.once('did-navigate', (e, u, code) => {
+                if (code === 503) {
+                    resolve(false);
+                }
+            });
+            browser.webContents.once('dom-ready', () => {
                 browser.webContents.savePage(cachePath, 'HTMLOnly')
-                    .then(resolve, reject);
+                    .then(() => resolve(true), () => resolve(false));
             });
         });
-        const buffer = await fs.readFile(cachePath);
-        return buffer.toString();
+        if (success) {
+            const buffer = await fs.readFile(cachePath);
+            return buffer.toString();
+        }
+        return this.requestPageWithJS(url);
+    }
+
+    async requestPageWithJS(url: string) {
+        const root = this.tempRoot;
+        const browser = this.jsguard;
+        const cachePath = join(root, basename(new URL(url).pathname));
+        browser.loadURL(url, {
+            httpReferrer: browser.webContents.getURL() || '',
+        });
+        const { code, success } = await new Promise((resolve) => {
+            let scode = 0;
+            browser.webContents.once('did-navigate', (e, u, code) => {
+                scode = code;
+            });
+            browser.webContents.once('dom-ready', () => {
+                browser.webContents.savePage(cachePath, 'HTMLOnly')
+                    .then(() => resolve({ code: scode, success: true }), () => resolve({ code: scode, success: false }));
+            });
+        });
+        if (success) {
+            const buffer = await fs.readFile(cachePath);
+            return buffer.toString();
+        }
+        throw new Error(`Fail to fetch ${url}. Code: ${code}`);
     }
 
     storeReady(store: Store<any>) {
@@ -112,8 +147,14 @@ export default class NetworkManager extends Manager {
                 javascript: false,
                 devTools: false,
             },
-            width: 0,
-            height: 0,
+            show: false,
+        });
+        this.jsguard = new BrowserWindow({
+            focusable: false,
+            webPreferences: {
+                javascript: true,
+                devTools: false,
+            },
             show: false,
         });
         this.guard.setFocusable(false);

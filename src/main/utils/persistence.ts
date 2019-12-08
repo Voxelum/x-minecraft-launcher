@@ -11,10 +11,10 @@ export async function readFolder(path: string) {
     return fs.readdir(path);
 }
 
-export async function setPersistence({ path, data, schema }: { path: string; data: object; schema?: string }) {
+export async function setPersistence({ path, data, schema }: { path: string; data: object; schema?: object }) {
     const deepCopy = JSON.parse(JSON.stringify(data));
     if (schema) {
-        const schemaObject = await fs.readFile(join(__static, 'persistence-schema', `${schema}.json`)).then(s => JSON.parse(s.toString()));
+        const schemaObject = schema;
         const ajv = new Ajv({ useDefaults: true, removeAdditional: true });
         const validation = ajv.compile(schemaObject);
         const valid = validation(deepCopy);
@@ -26,13 +26,13 @@ export async function setPersistence({ path, data, schema }: { path: string; dat
     return fs.writeFile(path, JSON.stringify(deepCopy, null, 4), { encoding: 'utf-8' });
 }
 
-export async function getPersistence(option: { path: string; schema?: string }) {
+export async function getPersistence(option: { path: string; schema?: object }) {
     const { path, schema } = option;
     if (!existsSync(path)) return undefined;
     const originalString = await fs.readFile(path).then(b => b.toString(), () => '{}');
     const object = JSON.parse(originalString);
     if (object && schema) {
-        const schemaObject = await fs.readFile(join(__static, 'persistence-schema', `${schema}.json`)).then(s => JSON.parse(s.toString()));
+        const schemaObject = schema;
         const ajv = new Ajv({ useDefaults: true, removeAdditional: true });
         const validation = ajv.compile(schemaObject);
         const valid = validation(object);

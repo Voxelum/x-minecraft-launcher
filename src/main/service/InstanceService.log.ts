@@ -1,8 +1,8 @@
+import { shell } from 'electron';
 import { fs } from 'main/utils';
 import { readFolder } from 'main/utils/persistence';
 import { gunzip } from 'zlib';
 import InstanceService from './InstanceService';
-import { shell } from 'electron';
 
 export async function listLogs(this: InstanceService) {
     const files = await readFolder(this.getPathUnder(this.state.profile.id, 'logs'));

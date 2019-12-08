@@ -1,7 +1,7 @@
 <template>
-  <v-container v-if="refreshing" fill-height>
+  <v-container v-if="refreshing" fill-height class="absoluted">
     <v-layout align-center justify-center row fill-height>
-      <v-flex shrink>
+      <v-flex shrink style="text-align:center; user-select: none;">
         <v-progress-circular :size="100" color="white" indeterminate />
       </v-flex>
     </v-layout>
@@ -58,8 +58,8 @@
 
 <script lang=ts>
 import { createComponent, reactive, ref, computed } from '@vue/composition-api';
-import { useForgeVersions } from '@/hooks';
 import { ForgeInstaller, ForgeWebPage } from '@xmcl/minecraft-launcher-core';
+import { useForgeVersions } from '@/hooks';
 
 export default createComponent({
   props: {

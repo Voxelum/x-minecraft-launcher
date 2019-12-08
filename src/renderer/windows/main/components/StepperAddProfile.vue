@@ -1,15 +1,15 @@
 <template>
   <v-stepper v-model="step" dark>
     <v-stepper-header>
-      <v-stepper-step :rules="[() => valid]" :editable="importTask ===''" :complete="step > 0" step="0">
+      <v-stepper-step :rules="[() => valid]" :editable="notImporting" :complete="step > 0" step="0">
         {{ $t('profile.templateSetting') }}
       </v-stepper-step>
       <v-divider />
-      <v-stepper-step :rules="[() => valid]" :editable="importTask ===''" :complete="step > 1" step="1">
+      <v-stepper-step :rules="[() => valid]" :editable="notImporting" :complete="step > 1" step="1">
         {{ $t('profile.baseSetting') }}
       </v-stepper-step>
       <v-divider />
-      <v-stepper-step :editable="importTask ===''" :complete="step > 2" step="2">
+      <v-stepper-step :editable="notImporting" :complete="step > 2" step="2">
         {{ $t('profile.advancedSetting') }}
         <small>{{ $t('optional') }}</small>
       </v-stepper-step>
@@ -225,6 +225,8 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed, onMounted, watch, createComponent, ref, Ref } from '@vue/composition-api';
+import { CurseforgeModpackResource } from 'universal/store/modules/resource';
+import { ServerOrModpack } from 'universal/store/modules/profile';
 import {
   useI18n,
   useJava,
@@ -234,8 +236,6 @@ import {
   useCurseforgeImport,
   useInstanceCreation,
 } from '@/hooks';
-import { ServerOrModpack } from 'universal/store/modules/profile';
-import { CurseforgeModpackResource } from 'universal/store/modules/resource';
 
 export default createComponent({
   props: {
@@ -270,6 +270,7 @@ export default createComponent({
     const { importCurseforgeModpack } = useCurseforgeImport();
     const fromModpack = computed(() => data.template >= profiles.value.length);
     const ready = computed(() => data.valid && data.javaValid);
+    const notImporting = computed(() => importTask.value === null);
     function init() {
       data.step = 1;
       reset();
@@ -339,6 +340,7 @@ export default createComponent({
       ...staticData,
       ...creationData,
       importTask,
+      notImporting,
       quit,
       javas,
       selectProfileTemplate,

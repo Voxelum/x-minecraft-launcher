@@ -1,10 +1,11 @@
 import { getPersistence, setPersistence } from 'main/utils/persistence';
+import SettingConfig from 'main/utils/schema/SettingConfig.json';
 import locales from 'static/locales';
 import Service from './Service';
 
 export default class SettingService extends Service {
     async load() {
-        const data = await getPersistence({ path: this.getPath('setting.json'), schema: 'SettingConfig' }) || {};
+        const data = await getPersistence({ path: this.getPath('setting.json'), schema: SettingConfig }) || {};
         this.commit('config', {
             locale: data.locale,
             locales: Object.keys(locales),
@@ -44,6 +45,7 @@ export default class SettingService extends Service {
                         showParticle: this.state.setting.showParticle,
                         particleMode: this.state.setting.particleMode,
                     },
+                    schema: SettingConfig,
                 });
                 break;
             default:

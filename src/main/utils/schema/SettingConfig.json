@@ -1,0 +1,77 @@
+{
+    "type": "object",
+    "properties": {
+        "locale": {
+            "description": "The display language of the launcher",
+            "default": "en",
+            "type": "string"
+        },
+        "autoDownload": {
+            "description": "Should launcher auto download new update",
+            "default": false,
+            "type": "boolean"
+        },
+        "autoInstallOnAppQuit": {
+            "description": "Should launcher auto install new update after app quit",
+            "default": false,
+            "type": "boolean"
+        },
+        "allowPrerelease": {
+            "description": "Should launcher show the pre-release",
+            "default": false,
+            "type": "boolean"
+        },
+        "defaultBackgroundImage": {
+            "description": "The default background image url",
+            "default": null,
+            "type": [
+                "null",
+                "string"
+            ]
+        },
+        "defaultBlur": {
+            "description": "The default blur factor",
+            "default": 0,
+            "type": "number"
+        },
+        "useBmclAPI": {
+            "description": "Use bmcl API in China Mainland",
+            "default": true,
+            "type": "boolean"
+        },
+        "showParticle": {
+            "description": "Show particle on background",
+            "default": true,
+            "type": "boolean"
+        },
+        "particleMode": {
+            "$ref": "#/definitions/ParticleMode",
+            "description": "The particle click mode",
+            "default": "repulse"
+        }
+    },
+    "required": [
+        "allowPrerelease",
+        "autoDownload",
+        "autoInstallOnAppQuit",
+        "defaultBackgroundImage",
+        "defaultBlur",
+        "locale",
+        "particleMode",
+        "showParticle",
+        "useBmclAPI"
+    ],
+    "definitions": {
+        "ParticleMode": {
+            "enum": [
+                "bubble",
+                "push",
+                "remove",
+                "repulse"
+            ],
+            "type": "string"
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false
+}

@@ -4,6 +4,8 @@ import { GameSetting } from '@xmcl/minecraft-launcher-core';
 import { CreateOption, ServerAndModpack, ServerOrModpack } from 'universal/store/modules/profile';
 import { getExpectVersion } from 'universal/utils';
 import { useStore } from './useStore';
+import { useCurrentUser } from './useUser';
+import { useMinecraftVersions } from './useVersion';
 
 /**
  * Use the general info of the instance
@@ -41,7 +43,7 @@ export function useInstance() {
 export function useInstances() {
     const { getters, services } = useStore();
     return {
-        instances: getters.profiles,
+        instances: computed(() => getters.profiles),
         selectInstance: services.InstanceService.selectInstance,
         deleteInstance: services.InstanceService.deleteInstance,
         pingProfiles: services.InstanceService.refreshAll,
@@ -54,10 +56,12 @@ export function useInstances() {
  */
 export function useInstanceCreation() {
     const { services } = useStore();
+    const { name } = useCurrentUser();
+    const { release } = useMinecraftVersions();
     const data: CreateOption = reactive({
         type: 'modpack',
         name: '',
-        version: { forge: '', minecraft: '', liteloader: '' },
+        version: { forge: '', minecraft: release.value?.id, liteloader: '' },
         java: { path: '', version: '', majorVersion: 0 },
         showLog: false,
         hideLauncher: true,
@@ -65,7 +69,7 @@ export function useInstanceCreation() {
         mcOptions: [],
         maxMemory: undefined,
         minMemory: undefined,
-        author: '',
+        author: name.value,
         description: '',
         deployments: { mods: [] },
         resolution: undefined,
@@ -90,8 +94,8 @@ export function useInstanceCreation() {
          * Reset the change
          */
         reset() {
-            data.name = '';
-            data.version = { forge: '', minecraft: '', liteloader: '' };
+            data.name = 'Latest Game';
+            data.version = { forge: '', minecraft: release.value?.id, liteloader: '' };
             data.java = { path: '', version: '', majorVersion: 0 };
             data.showLog = false;
             data.hideLauncher = true;
@@ -99,7 +103,7 @@ export function useInstanceCreation() {
             data.mcOptions = [];
             data.maxMemory = undefined;
             data.minMemory = undefined;
-            data.author = '';
+            data.author = name.value;
             data.description = '';
             data.deployments = { mods: [] };
             data.resolution = undefined;

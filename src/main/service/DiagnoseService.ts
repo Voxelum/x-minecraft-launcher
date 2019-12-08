@@ -447,7 +447,7 @@ export default class DiagnoseService extends Service {
             for (const action of Object.keys(recheck)) {
                 const self = this as any;
                 if (action in self) {
-                    self.action();
+                    self[action]();
                 }
                 // await dispatch(action);
             }

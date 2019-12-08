@@ -80,5 +80,6 @@ export default class BaseService extends Service {
     }
 
     quit = this.managers.AppManager.quit;
+
     exit = this.managers.AppManager.exit;
 }

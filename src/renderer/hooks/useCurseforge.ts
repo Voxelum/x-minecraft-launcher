@@ -41,7 +41,7 @@ export function useCurseforgeImages(path: string, type: ProjectType) {
  * @param projectId The project id reference
  */
 export function useCurseforgeProjectFiles(projectPath: string, type: ProjectType, projectId: Ref<number>) {
-    const { services, getters } = useStore();
+    const { services } = useStore();
     const data: {
         files: Download[];
         versions: Version[];
@@ -239,6 +239,8 @@ export function useCurseforgePreview(type: ProjectType) {
     });
     return {
         ...refs,
+        filter: filterRef,
+        version: versionRef,
         search,
         refresh,
     };

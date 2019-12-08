@@ -1,7 +1,8 @@
 import { Task } from '@xmcl/minecraft-launcher-core';
 import { exec } from 'child_process';
-import { gfw, installJreFromMojangTask, installJreFromSelfHostTask, platform, fs } from 'main/utils';
+import { fs, installJreFromMojangTask, installJreFromSelfHostTask, platform } from 'main/utils';
 import { getPersistence, setPersistence } from 'main/utils/persistence';
+import JavaConfigSchema from 'main/utils/schema/JavaConfig.json';
 import { EOL } from 'os';
 import { join } from 'path';
 import { Java, JavaConfig } from 'universal/store/modules/java.config';
@@ -16,7 +17,7 @@ export default class JavaService extends Service {
     private static JAVA_FILE = platform.name === 'windows' ? 'javaw.exe' : 'java';
 
     async load() {
-        const loaded: JavaConfig = await getPersistence({ path: this.getPath('java.json'), schema: 'JavaConfig' });
+        const loaded: JavaConfig = await getPersistence({ path: this.getPath('java.json'), schema: JavaConfigSchema });
         if (loaded) {
             this.commit('addJava', loaded.all.filter(l => typeof l.path === 'string'));
         }
@@ -43,7 +44,7 @@ export default class JavaService extends Service {
             case 'addJava':
             case 'removeJava':
             case 'defaultJava':
-                setPersistence({ path: this.getPath('java.json'), data: this.state.java });
+                setPersistence({ path: this.getPath('java.json'), data: this.state.java, schema: JavaConfigSchema });
                 break;
             default:
         }

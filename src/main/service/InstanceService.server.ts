@@ -1,6 +1,5 @@
 import { Server } from '@xmcl/minecraft-launcher-core';
 import { ServerProfileConfig } from 'universal/store/modules/profile.config';
-import { createFailureServerStatus, PINGING_STATUS } from 'universal/utils/server-status';
 import InstanceService from './InstanceService';
 
 /**

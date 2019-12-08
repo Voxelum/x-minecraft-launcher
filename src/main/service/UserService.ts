@@ -1,6 +1,7 @@
 import { Auth, MojangChallengeResponse, MojangService, Net, ProfileService } from '@xmcl/minecraft-launcher-core';
 import { fs, requireNonnull, requireObject, requireString } from 'main/utils';
 import { getPersistence, setPersistence } from 'main/utils/persistence';
+import UserConfig from 'main/utils/schema/UserConfig.json';
 import { parse } from 'url';
 import { v4 } from 'uuid';
 import Service from './Service';
@@ -25,7 +26,7 @@ export default class UserService extends Service {
     }
 
     async load() {
-        const data = await getPersistence({ path: this.getPath('user.json'), schema: 'UserConfig' });
+        const data = await getPersistence({ path: this.getPath('user.json'), schema: UserConfig });
 
         if (typeof data === 'object') {
             const authService = typeof data.authServices === 'object' ? data.authServices : {};
@@ -345,7 +346,7 @@ export default class UserService extends Service {
                 ? Auth.offline(account)
                 : await Auth.Yggdrasil.login({
                     username: account,
-                    password: password!,
+                    password: password || '',
                     requestUser: true,
                     clientToken: this.state.user.clientToken,
                 }, usingAuthService).catch((e) => {
@@ -376,7 +377,6 @@ export default class UserService extends Service {
                 this.commit('updateUserProfile', result as any);
             }
             await this.refreshSkin().catch(_ => _);
-            await this.refreshStatus().catch(_ => _);
         } catch (e) {
             console.error('Error during login.');
             console.error(e);

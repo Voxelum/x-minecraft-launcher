@@ -2,7 +2,7 @@ import { Task, TaskHandle } from '@xmcl/minecraft-launcher-core';
 import { App, ipcMain, webContents } from 'electron';
 import AuthLibService from 'main/service/AuthLibService';
 import BaseService from 'main/service/BaseService';
-import CurseForgService from 'main/service/CurseForgeService';
+import CurseForgeService from 'main/service/CurseForgeService';
 import DiagnoseService from 'main/service/DiagnoseService';
 import InstanceService from 'main/service/InstanceService';
 import JavaService from 'main/service/JavaService';
@@ -51,7 +51,7 @@ export default class StoreAndServiceManager extends Manager {
         });
 
         this.addService(new AuthLibService());
-        this.addService(new CurseForgService());
+        this.addService(new CurseForgeService());
         this.addService(new DiagnoseService());
         this.addService(new InstanceService());
         this.addService(new JavaService());
@@ -206,7 +206,6 @@ export default class StoreAndServiceManager extends Manager {
             const serv = this.serviceMap[service];
             if (!serv) {
                 console.error(`Cannot execute service call ${name} from service ${service}. The service not found.`);
-                console.log(this.serviceMap);
             } else {
                 if (name in serv) {
                     const tasks: TaskHandle<any, any>[] = [];

@@ -163,7 +163,7 @@
 <script lang=ts>
 import { createComponent, reactive, computed, onMounted, toRefs, watch } from '@vue/composition-api';
 import { Project, Download, ProjectType } from 'main/service/CurseForgeService';
-import { useCurseforgeImport, useCurseforgeProject, useCurseforgeProjectFiles, useCurseforgeImages } from '@/hooks';
+import { useCurseforgeImport, useCurseforgeProject, useCurseforgeProjectFiles, useCurseforgeImages, useStore } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -183,6 +183,10 @@ export default createComponent({
     const projectRefs = toRefs(project);
     const projectFiles = useCurseforgeProjectFiles(props.id, type, projectRefs.projectId);
     const projectImages = useCurseforgeImages(props.id, type);
+
+    const { state, getters } = useStore();
+    const isFileDownloading = (file: { href: string }) => state.curseforge.downloading[file.href];
+    const fileStats = computed(() => projectFiles.files.value.map(file => getters.isFileInstalled(file)));
     const data = reactive({
       tab: 0,
       viewingImage: false,
@@ -233,10 +237,13 @@ export default createComponent({
       ...dataRefs,
       ...projectRefs,
       ...projectImages,
+      ...projectFiles,
+      fileStats,
+      isFileDownloading,
     };
   },
   methods: {
-   
+
   },
 });
 </script>

@@ -92,7 +92,7 @@ export default createComponent({
     function openVersionDir(v: { folder: string }) {
       showVersionDirectory(v.folder);
     }
-    function startDelete(event: MouseEvent, v: { folder: string }) {
+    function startDelete(v: { folder: string }) {
       data.deletingVersion = true;
       data.deletingVersionId = v.folder;
     }

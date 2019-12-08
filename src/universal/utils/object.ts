@@ -59,10 +59,10 @@ export function requireObject(object: unknown, message?: string): asserts object
     if (typeof object !== 'object') throw new Error(message || 'Require a object!');
 }
 export function requireString(object: unknown, message?: any): asserts object is string {
-    if (typeof object !== 'string') throw new Error(message || `Require a string! But get ${typeof object}`);
+    if (typeof object !== 'string') throw new Error(message || `Require a string! But get ${typeof object} ${JSON.stringify(object)}`);
 }
 export function requireBool(object: unknown, message?: any): asserts object is boolean {
-    if (typeof object !== 'boolean') throw new Error(message || `Require a boolean! But get ${typeof object}`);
+    if (typeof object !== 'boolean') throw new Error(message || `Require a boolean! But get ${typeof object} ${JSON.stringify(object)}`);
 }
 export function requireNonnull(object: unknown, message?: any): asserts object {
     if (typeof object === 'undefined' || object === null) throw new Error(message || 'Require object existed!');

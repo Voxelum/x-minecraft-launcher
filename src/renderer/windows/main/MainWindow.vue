@@ -5,7 +5,11 @@
     <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
       <v-card class="main-body" color="grey darken-4">
         <!-- <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;"> -->
-        <vue-particles v-if="showParticle" color="#dedede" style="position: absolute; width: 100%; height: 100%; z-index: 0; tabindex = -1;" :click-mode="particleMode" />
+        <vue-particles v-if="showParticle" 
+                       color="#dedede" 
+                       :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }"
+                       style="position: absolute; width: 100%; height: 100%; z-index: 0; tabindex = -1;" 
+                       :click-mode="particleMode" />
         <transition name="fade-transition" mode="out-in">
           <!-- <keep-alive> -->
           <router-view />
@@ -29,7 +33,9 @@ import {
   toRefs,
   watch,
   createComponent,
+  ref,
 } from '@vue/composition-api';
+import { IpcRendererEvent } from 'electron';
 import {
   useParticle,
   useStore,
@@ -39,8 +45,8 @@ import {
   useIpc,
   useI18n,
   useNotifier,
+  useRouter,
 } from '@/hooks';
-import { IpcRendererEvent } from 'electron';
 import dialogs from './dialog';
 
 export default createComponent({
@@ -55,6 +61,12 @@ export default createComponent({
     const { blur, backgroundImage } = useBackgroundImage();
     const { notify } = useNotifier();
     const { state } = useStore();
+    const router = useRouter();
+    const onHomePage = ref(router.currentRoute.path === '/');
+
+    router.afterEach((to) => {
+      onHomePage.value = to.path === '/';
+    });
 
     const data = reactive({
       loading: true,
@@ -106,6 +118,7 @@ export default createComponent({
       backgroundImage,
       particleMode,
       showParticle,
+      onHomePage,
     };
   },
 });

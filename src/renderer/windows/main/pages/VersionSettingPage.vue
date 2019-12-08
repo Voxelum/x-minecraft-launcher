@@ -11,7 +11,7 @@
             Minecraft:  {{ mcversion }}
           </v-chip>
           <v-expand-x-transition>
-            <v-chip v-show="forgeVersion !== ''" color="brown" label dark outline style="white-space: nowrap">
+            <v-chip v-show="forgeVersion !== ''" color="brown" label dark outline style="white-space: nowrap" close @input="clearForge">
               Forge:
               {{ forgeVersion }}
             </v-chip>
@@ -128,6 +128,9 @@ export default createComponent({
         data.liteloaderVersion = liteloader;
       });
     }
+    function clearForge() {
+      data.forgeVersion = '';
+    }
 
     useAutoSaveLoad(save, load);
 
@@ -154,6 +157,7 @@ export default createComponent({
         });
       },
       barColor,
+      clearForge,
     };
   },
 });
@@ -162,5 +166,10 @@ export default createComponent({
 <style scoped=true>
 .flex {
   padding: 6px 8px !important;
+}
+</style>
+<style>
+.v-window__container {
+  height: 100%;
 }
 </style>
