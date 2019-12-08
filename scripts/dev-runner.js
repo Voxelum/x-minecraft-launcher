@@ -12,6 +12,7 @@ const mainConfig = require('./webpack.main.config');
 const rendererConfig = require('./webpack.renderer.config');
 
 let electronProcess = null;
+let devtoolProcess = null;
 let manualRestart = false;
 let hotMiddleware;
 
@@ -38,7 +39,7 @@ function logStats(proc, data) {
 }
 
 function startVueDebug() {
-    exec('npx vue-devtools');
+    devtoolProcess = exec('npx vue-devtools');
 }
 
 function startRenderer() {
@@ -129,7 +130,10 @@ function startElectron() {
     });
 
     electronProcess.on('close', () => {
-        if (!manualRestart) process.exit();
+        if (!manualRestart) {
+            devtoolProcess.kill();
+            process.exit();
+        }
     });
 }
 
