@@ -1,23 +1,29 @@
-import builtin from 'static/locales';
+import en from 'main/utils/locales/en.json';
+import zh from 'main/utils/locales/zh-CN.json';
 import { fs } from 'main/utils';
 import { join } from 'path';
 import { Manager } from '.';
 
 interface LocalNode {
-    [key: string]: LocalNode | string;
+    [key: string]: string | LocalNode;
 }
 
-const defaultContent: LocalNode = builtin.en;
+const defaultContent: LocalNode = en;
 
+/**
+ * I18n manager on main process. Not shared with the window process i18n!
+ */
 export default class I18nManager extends Manager {
-    private localeCache: { [locale: string]: LocalNode } = builtin;
+    private localeCache: { [locale: string]: LocalNode } = { en, zh, 'zh-CN': zh };
 
-    private used!: LocalNode;
+    private used: LocalNode = en;
 
-    private usedName!: string;
+    private usedName = 'en';
 
+    readonly t: (key: string, args?: object) => string;
 
-    async init() {
+    constructor() {
+        super();
         this.t = (key: string, args?: object) => {
             const queryPath = key.split('.');
             const result = this.find(queryPath, this.used) || this.find(queryPath, defaultContent);
@@ -25,6 +31,9 @@ export default class I18nManager extends Manager {
             const templateString = typeof result === 'object' ? result[''] as string : result;
             return this.format(templateString, args);
         };
+    }
+
+    async init() {
         // const localesDir = join(__static, 'locales');
         // const locales = await fs.readdir(localesDir);
     }
@@ -54,7 +63,9 @@ export default class I18nManager extends Manager {
         return content;
     }
 
-    t(key: string, args?: object) { return ''; }
+    getLocaleName(): string {
+        return this.usedName;
+    }
 
     getLocale(): LocalNode {
         return this.used;
