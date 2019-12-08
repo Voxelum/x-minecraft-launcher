@@ -50,6 +50,19 @@
                     }
                 ]
             }
+        },
+        {
+            "files": [
+                "*.spec.ts"
+            ],
+            "globals": {
+                "__static": true,
+                "describe": true,
+                "expect": true,
+                "test": true,
+                "jest": true,
+                "beforeEach": true
+            }
         }
     ],
     "rules": {
