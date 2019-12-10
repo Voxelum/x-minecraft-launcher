@@ -6,9 +6,6 @@ import provideServiceProxy from './providers/provideServiceProxy';
 
 Vue.use(VueCompositionApi);
 
-if (!process.env.IS_WEB) {
-    // Vue.use(require('vue-electron'));
-}
 Vue.config.productionTip = false;
 
 export default function app(option: ComponentOptions<Vue>) {
