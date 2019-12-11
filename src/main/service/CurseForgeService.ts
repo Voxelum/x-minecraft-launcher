@@ -300,22 +300,31 @@ export default class CurseForgeService extends Service {
             const filesElems = root.querySelectorAll('.cf-recentfiles'); // <ul class="cf-recentfiles">
             const files = filesElems.map((e) => {
                 e = e.removeWhitespace();
-                const body = e.firstChild;
-                const type = body.firstChild.querySelector('span').attributes.title.toLocaleLowerCase();
-                const [nameElem, timeElem] = body.childNodes[1].removeWhitespace().childNodes;
-                const downloadElem = body.childNodes[2].querySelector('a');
-                const href = nameElem.attributes.href;
-                const id = Number.parseInt(href.substring(href.lastIndexOf('/') + 1), 10);
-                const name = nameElem.attributes['data-name'];
-                const date = Number.parseInt(timeElem.attributes['data-epoch'], 10);
-                return {
-                    id,
-                    type,
-                    name,
-                    date,
-                    href: downloadElem.attributes.href,
-                };
-            });
+                return e.childNodes.map((c) => {
+                    const type = c.firstChild.querySelector('span').attributes.title.toLocaleLowerCase();
+                    const body = c.childNodes[1];
+
+                    /*
+                    <div class="flex flex-col w-2/3">
+                        <a class="overflow-tip truncate j-tooltip" href="/minecraft/modpacks/rlcraft/files/2836137" data-action="'modpack-file-link'" data-id="285109" data-name="RLCraft 1.12.2 - Beta v2.8.1.zip">RLCraft 1.12.2 - Beta v2.8.1.zip</a>
+                        <abbr class="tip standard-date standard-datetime" title="12/2/2019 10:45 PM" data-epoch="1575355531" time-processed="true">Dec 3, 2019</abbr>
+                    </div>
+                    */
+                    const [nameElem, timeElem] = body.removeWhitespace().childNodes;
+                    const fileHref = nameElem.attributes.href;
+                    const id = Number.parseInt(fileHref.substring(fileHref.lastIndexOf('/') + 1), 10);
+                    const name = nameElem.attributes['data-name'];
+                    const date = Number.parseInt(timeElem.attributes['data-epoch'], 10);
+                    const downloadElem = c.childNodes[2].querySelector('a');
+                    return {
+                        id,
+                        type,
+                        name,
+                        date,
+                        href: downloadElem ? downloadElem.attributes.href : fileHref.replace('files', 'download'),
+                    };
+                });
+            }).reduce((a, b) => [...a, ...b]);
             const members = sides[0] // <div class="my-4">
                 .querySelectorAll('.mb-2').map(e => ({
                     icon: e.querySelector('img').attributes.src,
