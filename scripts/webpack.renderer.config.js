@@ -18,7 +18,18 @@ const { dependencies } = require('../package.json');
  * that provide pure *.vue files that need compiling
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/webpack-configurations.html#white-listing-externals
  */
-const whiteListedModules = ['vue', 'vuetify'];
+const whiteListedModules = [
+    'vue',
+    'vuetify',
+    '@vue/composition-api',
+    'vue-router',
+    'vue-i18n',
+    'vuex',
+    'maven-artifact-version',
+    '@xmcl/text-component',
+    'three',
+    'three-orbit-controls'
+];
 
 /**
  * @type {import('webpack').Configuration}
@@ -61,7 +72,10 @@ const rendererConfig = {
                     },
                     {
                         loader: 'ts-loader',
-                        options: { appendTsSuffixTo: [/\.vue$/], happyPackMode: true },
+                        options: {
+                            appendTsSuffixTo: [/\.vue$/], 
+                            happyPackMode: true
+                        },
                     }
                 ],
                 exclude: /node_modules/,
@@ -131,7 +145,7 @@ const rendererConfig = {
     ],
     output: {
         filename: '[name].js',
-        libraryTarget: 'commonjs2',
+        libraryTarget: 'var',
         path: path.join(__dirname, '../dist/electron'),
     },
     resolve: {
@@ -143,16 +157,14 @@ const rendererConfig = {
         },
         extensions: ['.ts', '.js', '.vue', '.json', '.css', '.node'],
     },
-    target: 'electron-renderer',
+    target: 'web',
 };
-
 
 /**
  * Adjust rendererConfig for development settings
  */
 if (process.env.NODE_ENV !== 'production') {
     rendererConfig.plugins.push(
-        new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
             __static: `"${path.join(__dirname, '../static').replace(/\\/g, '\\\\')}"`,
         }),

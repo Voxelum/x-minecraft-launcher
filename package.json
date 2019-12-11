@@ -25,7 +25,7 @@
         "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config scripts/webpack.renderer.config.js",
         "lint": "eslint --ext .ts,.vue src",
         "lint:fix": "eslint --ext .ts,.vue --fix src",
-        "test": "mocha test/e2e",
+        "test": "jest",
         "release": "electron-builder",
         "version": "standard-version"
     },
@@ -75,6 +75,10 @@
                 {
                     "target": "dmg"
                 }
+            ],
+            "files": [
+                "!node_modules/7zip-bin/linux/**",
+                "!node_modules/7zip-bin/win/**"
             ]
         },
         "win": {
@@ -101,6 +105,10 @@
                         "ia32"
                     ]
                 }
+            ],
+            "files": [
+                "!node_modules/7zip-bin/linux/**",
+                "!node_modules/7zip-bin/mac/**"
             ]
         },
         "linux": {
@@ -118,6 +126,10 @@
                 {
                     "target": "snap"
                 }
+            ],
+            "files": [
+                "!node_modules/7zip-bin/win/**",
+                "!node_modules/7zip-bin/mac/**"
             ]
         },
         "snap": {
@@ -141,18 +153,23 @@
         "7zip-min": "^1.1.1",
         "@vue/composition-api": "^0.3.4",
         "@xmcl/minecraft-launcher-core": "^1.1.1",
+        "@xmcl/text-component": "1.0.3",
+        "@xmcl/profile-service": "1.0.3",
         "@xmcl/util": "^1.0.3",
         "@xmcl/unzip": "^1.0.3",
         "ajv": "^6.10.2",
         "electron-updater": "^4.0.6",
         "fast-html-parser": "^1.0.1",
         "file-type": "^12.1.0",
+        "filenamify": "^4.1.0",
         "fs-extra": "^8.1.0",
         "got": "^9.6.0",
         "iconv-lite": "^0.4.18",
         "in-gfw": "^1.2.0",
         "maven-artifact-version": "0.0.1",
         "reflect-metadata": "^0.1.13",
+        "three": "^0.86.0",
+        "three-orbit-controls": "^82.1.0",
         "uuid": "^3.2.1",
         "vue": "^2.6.10",
         "vue-i18n": "^7.0.4",
@@ -177,9 +194,7 @@
         "@typescript-eslint/eslint-plugin": "^2.6.0",
         "@typescript-eslint/parser": "^2.6.0",
         "@vue/devtools": "^5.3.3",
-        "babel-eslint": "^10.0.1",
         "cache-loader": "^4.1.0",
-        "cfonts": "^1.1.3",
         "chalk": "^1.1.3",
         "copy-webpack-plugin": "^4.5.1",
         "cross-env": "^5.0.5",
@@ -198,21 +213,16 @@
         "eslint-plugin-import": "^2.14.0",
         "eslint-plugin-vue": "^5.2.2",
         "file-loader": "^1.1.11",
-        "filenamify": "^4.1.0",
         "fork-ts-checker-webpack-plugin": "^3.1.1",
         "html-webpack-plugin": "^3.2.0",
         "husky": "^2.4.1",
         "jest": "^24.9.0",
         "mini-css-extract-plugin": "^0.4.2",
-        "mocha": "^5.2.0",
         "multispinner": "^0.2.1",
-        "require-dir": "^1.2.0",
         "spectron": "^5.0.0",
         "standard-version": "^6.0.1",
         "style-loader": "^0.21.0",
         "thread-loader": "^2.1.3",
-        "three": "^0.86.0",
-        "three-orbit-controls": "^82.1.0",
         "ts-jest": "^24.2.0",
         "ts-loader": "^6.2.1",
         "typescript": "^3.7.2",
@@ -225,8 +235,7 @@
         "vue-template-compiler": "^2.6.10",
         "webpack": "^4.41.2",
         "webpack-cli": "^3.3.10",
-        "webpack-dev-server": "^3.9.0",
-        "webpack-hot-middleware": "^2.25.0"
+        "webpack-dev-server": "^3.9.0"
     },
     "jest": {
         "globals": {

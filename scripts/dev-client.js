@@ -1,4 +1,5 @@
-const hotClient = require('webpack-hot-middleware/client?noInfo=true&reload=true');
+// const hotClient = require('webpack-hot-middleware/client?noInfo=true&reload=true');
+const hotClient = require('webpack-hot-middleware/client');
 
 hotClient.subscribe((event) => {
     /**
@@ -7,6 +8,8 @@ hotClient.subscribe((event) => {
     // if (event.action === 'reload') {
     //     window.location.reload();
     // }
+
+    console.log(event);
 
     /**
 * Notify `mainWindow` when `main` process is compiling,
