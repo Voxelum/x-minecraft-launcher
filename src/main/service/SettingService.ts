@@ -1,6 +1,6 @@
 import { getPersistence, setPersistence } from 'main/utils/persistence';
 import SettingConfig from 'main/utils/schema/SettingConfig.json';
-import locales from 'static/locales';
+// import locales from 'main/utils/locales/';
 import Service from './Service';
 
 export default class SettingService extends Service {
@@ -8,7 +8,7 @@ export default class SettingService extends Service {
         const data = await getPersistence({ path: this.getPath('setting.json'), schema: SettingConfig }) || {};
         this.commit('config', {
             locale: data.locale,
-            locales: Object.keys(locales),
+            locales: ['en', 'zh-CN'],
             autoInstallOnAppQuit: data.autoInstallOnAppQuit,
             autoDownload: data.autoDownload,
             allowPrerelease: data.allowPrerelease,

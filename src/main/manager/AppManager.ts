@@ -1,6 +1,7 @@
 import { App, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, shell, app } from 'electron';
 import { EventEmitter } from 'events';
 import { Store } from 'vuex';
+import { join } from 'path';
 import { Manager } from '.';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -64,14 +65,20 @@ export abstract class LauncherApp {
     onMinecraftStdErr(content: string) { }
 
     createWindow(name: string, option: BrowserWindowConstructorOptions) {
-        const ops = { ...option };
+        const ops: BrowserWindowConstructorOptions = {
+            ...option,
+        };
         if (!ops.webPreferences) { ops.webPreferences = {}; }
         ops.webPreferences.webSecurity = !isDev; // disable security for loading local image
         ops.webPreferences.nodeIntegration = isDev; // enable node for webpack in dev
+        ops.webPreferences.preload = join(__static, 'preload.js');
         const ref = new BrowserWindow(ops);
         ipcMain.emit('browser-window-setup', ref, name);
         ref.loadURL(`${baseURL}${name}`);
         console.log(`Create window from ${`${baseURL}${name}`}`);
+        ref.on('ready-to-show', () => {
+            console.log(`Window ${name} is ready to show!`);
+        });
         ref.webContents.on('will-navigate', (event, url) => {
             if (isDev) {
                 if (!url.startsWith('http://localhost')) {
@@ -130,14 +137,14 @@ export default class AppManager extends Manager {
 
     async storeReady(store: Store<any>) {
         this.parking = true;
-        if (this.instance) {
-            try {
-                this.instance.dispose();
-            } catch (e) {
-                console.warn('An error occure during dispose.');
-                console.error(e);
-            }
-        }
+        // if (this.instance) {
+        //     try {
+        //         this.instance.dispose();
+        //     } catch (e) {
+        //         console.warn('An error occure during dispose.');
+        //         console.error(e);
+        //     }
+        // }
         await this.instance!.start({ store });
         this.parking = false;
     }

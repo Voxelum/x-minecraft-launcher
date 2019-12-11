@@ -1,4 +1,4 @@
-import { Auth, MojangAccount, MojangChallenge, MojangChallengeResponse, ProfileService } from '@xmcl/minecraft-launcher-core';
+import { Auth, MojangAccount, ProfileService } from '@xmcl/minecraft-launcher-core';
 import { fitin } from 'universal/utils/object';
 import Vue from 'vue';
 import { ModuleOption } from '../root';

@@ -1,27 +1,29 @@
 <template>
-  <v-container v-if="loading" color="primary" align-center justify-center style="position: absolute; width: 100%; height: 100%; background-color: #212121" />
-  <v-layout v-else fill-height>
-    <side-bar />
-    <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
-      <v-card class="main-body" color="grey darken-4">
-        <!-- <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;"> -->
-        <vue-particles v-if="showParticle" 
-                       color="#dedede" 
-                       :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }"
-                       style="position: absolute; width: 100%; height: 100%; z-index: 0; tabindex = -1;" 
-                       :click-mode="particleMode" />
-        <transition name="fade-transition" mode="out-in">
-          <!-- <keep-alive> -->
-          <router-view />
+  <v-app dark style="background: transparent;">
+    <v-container v-if="loading" color="primary" align-center justify-center style="position: absolute; width: 100%; height: 100%; background-color: #212121" />
+    <v-layout v-else fill-height>
+      <side-bar />
+      <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
+        <v-card class="main-body" color="grey darken-4">
+          <!-- <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;"> -->
+          <vue-particles v-if="showParticle" 
+                         color="#dedede" 
+                         :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }"
+                         style="position: absolute; width: 100%; height: 100%; z-index: 0; tabindex = -1;" 
+                         :click-mode="particleMode" />
+          <transition name="fade-transition" mode="out-in">
+            <!-- <keep-alive> -->
+            <router-view />
           <!-- </keep-alive> -->
-        </transition>
-      </v-card>
+          </transition>
+        </v-card>
+      </v-layout>
+      <context-menu />
+      <search-bar />
+      <notifier />
+      <dialogs />
     </v-layout>
-    <context-menu />
-    <search-bar />
-    <notifier />
-    <dialogs />
-  </v-layout>
+  </v-app>
 </template>
 
 <script lang=ts>

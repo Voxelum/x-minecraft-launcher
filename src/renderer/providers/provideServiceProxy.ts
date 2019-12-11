@@ -1,8 +1,7 @@
 import { TaskHandle } from '@xmcl/minecraft-launcher-core';
-import { ipcRenderer } from 'electron';
 import { reactive, provide } from '@vue/composition-api';
 import { BuiltinServices } from 'main/service';
-import { SERVICES_KEY } from 'renderer/constant';
+import { SERVICES_KEY, ipcRenderer } from 'renderer/constant';
 
 export function getTasks(promise: Promise<any>): string[] {
     return Reflect.get(promise, '__tasks__');
@@ -34,12 +33,13 @@ async function startSession(sessionId: string | undefined, tasks: Array<any>) {
     }
     return result;
 }
+
 function proxyOfService(seriv: string) {
     return new Proxy({} as any, {
         get(_, key) {
             const func = function (payload: any) {
                 const tasks = reactive([]);
-                const promise = ipcRenderer.invoke('service-call', seriv, key as string, payload).then((r) => {
+                const promise = ipcRenderer.invoke('service-call', seriv, key as string, payload).then((r: any) => {
                     if (!r) {
                         throw new Error(`Cannot find service call named ${key as string} in ${seriv}`);
                     }

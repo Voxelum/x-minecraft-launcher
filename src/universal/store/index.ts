@@ -1,5 +1,3 @@
-
-import { RendererInterface } from 'electron';
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 import modules from './modules';
@@ -21,13 +19,19 @@ export default {
         aquire(state, res) {
             const sem = res instanceof Array ? res : [res];
             for (const s of sem) {
-                if (s in state) { state.semaphore[s] += 1; } else { Vue.set(state.semaphore, s, 1); }
+                if (s in state.semaphore) {
+                    state.semaphore[s] += 1;
+                } else {
+                    Vue.set(state.semaphore, s, 1);
+                }
             }
         },
         release(state, res) {
             const sem = res instanceof Array ? res : [res];
             for (const s of sem) {
-                if (s in state) { state.semaphore[s] -= 1; }
+                if (s in state.semaphore) {
+                    state.semaphore[s] -= 1;
+                }
             }
         },
     },
@@ -37,12 +41,5 @@ export default {
     modules,
     strict: process.env.NODE_ENV !== 'production',
 } as StoreOptions<BaseState>;
-
-
-declare module 'vue/types/vue' {
-    interface Vue {
-        $electron: RendererInterface;
-    }
-}
 
 export * from './root';

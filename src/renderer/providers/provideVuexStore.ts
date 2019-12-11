@@ -1,6 +1,7 @@
-import { ipcRenderer } from 'electron';
-import storeOption from 'universal/store';
+import Vue from 'vue';
 import Vuex, { MutationPayload } from 'vuex';
+import storeOption from 'universal/store';
+import { ipcRenderer } from '../constant';
 
 export default function provideVuexStore(...option: string[]) {
     storeOption.modules = {
@@ -9,6 +10,16 @@ export default function provideVuexStore(...option: string[]) {
     storeOption.plugins = [
         ...(storeOption.plugins || []),
     ];
+    storeOption.mutations!.sync = (state, payload) => {
+        const keys = Object.keys(payload);
+        for (const k of keys) {
+            if (k in state) {
+                (state as any)[k] = payload[k];
+            } else {
+                Vue.set(state, k, payload[k]);
+            }
+        }
+    };
 
     const localStore: any = new Vuex.Store(storeOption);
     const _commit = localStore.commit;
@@ -26,12 +37,16 @@ export default function provideVuexStore(...option: string[]) {
 
     function sync() {
         syncing = true;
-        ipcRenderer.invoke('sync', lastId).then(({
-            mutations,
-            length,
-        }) => {
+
+        ipcRenderer.invoke('sync', lastId).then((syncInfo) => {
+            if (!syncInfo) return;
+            const {
+                state,
+                length,
+            } = syncInfo;
             console.log(`Synced ${length} commits.`);
-            mutations.forEach(localCommit);
+            _commit('sync', state);
+            // mutations.forEach(localCommit);
             lastId = length;
             syncing = false;
 
@@ -66,7 +81,6 @@ export default function provideVuexStore(...option: string[]) {
     localStore.commit = (type: string, payload: any) => {
         ipcRenderer.invoke('commit', type, payload);
     };
-    localStore.localCommit = localCommit;
 
     return localStore;
 }

@@ -14,9 +14,8 @@ import SettingService from 'main/service/SettingService';
 import UserService from 'main/service/UserService';
 import VersionInstallService from 'main/service/VersionInstallService';
 import VersionService from 'main/service/VersionService';
-import { platform } from 'main/utils';
 import { join } from 'path';
-import modules from 'universal/store/modules';
+import storeTemplate from 'universal/store';
 import Vue from 'vue';
 import Vuex, { MutationPayload, Store, StoreOptions } from 'vuex';
 import { Manager } from '.';
@@ -34,12 +33,28 @@ export default class StoreAndServiceManager extends Manager {
 
     private sessions: { [key: number]: () => Promise<void> } = {};
 
+    private checkPointId = 0;
+
+    private checkPoint: any;
+
+    private storeReadyCb = () => { };
+
+    private storeReadyPromise = new Promise((resolve) => {
+        this.storeReadyCb = resolve;
+    })
+
     addService(service: Service) {
         this.services.push(service);
     }
 
     getService<T extends typeof Service>(service: T): InstanceType<T> | undefined {
         return this.serviceMap[service.name] as any;
+    }
+
+    setup() {
+        ipcMain.handle('sync', (event, id) => {
+            return this.storeReadyPromise.then(() => this.sync(id));
+        });
     }
 
     private setupService(root: string) {
@@ -99,7 +114,6 @@ export default class StoreAndServiceManager extends Manager {
     }
 
     async rootReady(root: string) {
-        ipcMain.removeAllListeners('vuex-sync');
         function deepCopyStoreTemplate(template: StoreOptions<any>) {
             const copy = Object.assign({}, template);
             if (typeof template.state === 'object') {
@@ -112,36 +126,7 @@ export default class StoreAndServiceManager extends Manager {
             }
             return copy;
         }
-        const mod: StoreOptions<any> = {
-            state: {
-                root,
-                platform,
-                online: false,
-                semaphore: {},
-            },
-            modules,
-            getters: {
-                busy(state) { return (key: string) => state.semaphore[key] === 0; },
-            },
-            mutations: {
-                platform(state, p) { state.platform = p; },
-                online(state, o) { state.online = o; },
-                root(state, r) { state.root = r; },
-                aquire(state, res) {
-                    const sem = res instanceof Array ? res : [res];
-                    for (const s of sem) {
-                        if (s in state) { state.semaphore[s] += 1; } else { Vue.set(state.semaphore, s, 1); }
-                    }
-                },
-                release(state, res) {
-                    const sem = res instanceof Array ? res : [res];
-                    for (const s of sem) {
-                        if (s in state) { state.semaphore[s] -= 1; }
-                    }
-                },
-            },
-            strict: process.env.NODE_ENV !== 'production',
-        };
+        const mod = storeTemplate;
         const template = deepCopyStoreTemplate(mod); // deep copy the template so there is no strange reference
         this.store = new Store(template);
         this.setupService(root);
@@ -164,7 +149,7 @@ export default class StoreAndServiceManager extends Manager {
 
         this.setupAutoSave();
 
-        console.log('StoreDone');
+        this.storeReadyCb();
     }
 
     async appReady(app: App) {
@@ -246,28 +231,28 @@ export default class StoreAndServiceManager extends Manager {
         });
     }
 
+    private sync(currentId: number) {
+        const checkPointId = this.checkPointId;
+        console.log(`sync on renderer: ${currentId}, main: ${checkPointId}`);
+        if (currentId === checkPointId) {
+            return undefined;
+        }
+        return {
+            state: JSON.parse(JSON.stringify(this.checkPoint)),
+            length: checkPointId,
+        };
+    }
+
     /**
      * Auto sync will watch every mutation and send to each client,
      * and it will response for `sync` channel which will send the mutation histories to the client.
      */
     private setupAutoSync() {
-        const mutationHistory: MutationPayload[] = [];
-        ipcMain.handle('sync', (event, currentId) => {
-            console.log(`sync on renderer: ${currentId}, main: ${mutationHistory.length}`);
-            if (currentId === mutationHistory.length) {
-                return undefined;
-            }
-            const mutations = mutationHistory.slice(currentId);
-            return {
-                mutations,
-                length: mutationHistory.length,
-            };
-        });
         this.store!.subscribe((mutation, state) => {
-            mutationHistory.push(mutation);
-            const id = mutationHistory.length;
+            this.checkPoint = state;
+            this.checkPointId += 1; // record the total order
             webContents.getAllWebContents().forEach((w) => {
-                w.send('commit', mutation, id);
+                w.send('commit', mutation, this.checkPointId);
             });
         });
     }

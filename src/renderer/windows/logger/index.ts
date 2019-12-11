@@ -1,7 +1,5 @@
-import router from './router';
 import app from '@/loadApp';
+import Logger from './Logger.vue';
 import '@/useVuetify';
 
-app({
-    router,
-});
+app(Logger, {});

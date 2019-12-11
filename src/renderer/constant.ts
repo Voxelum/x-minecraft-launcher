@@ -1,5 +1,5 @@
 import { InjectionKey } from '@vue/composition-api';
-import { Dialog, IpcRenderer, Shell, Clipboard } from 'electron';
+import { Dialog, IpcRenderer, Shell, Clipboard, RendererInterface } from 'electron';
 import { Store } from 'universal/store';
 import { BuiltinServices } from 'main/service';
 import VueRouter from 'vue-router';
@@ -15,3 +15,9 @@ export const SERVICES_KEY: InjectionKey<BuiltinServices> = Symbol('SERVICES_KEY'
 export const I18N_KEY: InjectionKey<VueI18n> = Symbol('I18N_KEY');
 
 export const SEARCH_TEXT_KEY: InjectionKey<string> = Symbol('SEARCH_TEXT_KEY');
+
+export const electron: RendererInterface = (window as any).electron;
+export const ipcRenderer: IpcRenderer = electron.ipcRenderer;
+export const shell: Shell = electron.shell;
+export const dialog: Dialog = electron.dialog;
+export const clipboard: Clipboard = electron.clipboard;

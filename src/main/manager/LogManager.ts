@@ -1,3 +1,4 @@
+import { ipcMain } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import util from 'util';
@@ -9,7 +10,7 @@ export default class LogManager extends Manager {
             console.error('Uncaught Exception');
             console.error(err);
         });
-        process.on('unhandledRejection', (reason, promise) => {
+        process.on('unhandledRejection', (reason) => {
             console.error('Uncaught Rejection');
             console.error(reason);
         });
@@ -47,20 +48,17 @@ export default class LogManager extends Manager {
             outstream.write(`${content}\n`);
         };
 
-        // if (firstRun) {
-        //     const levels = ['INFO', 'WARN', 'ERROR'];
-        //     ipcMain.on('browser-window-setup', (window, name) => {
-        //         const loggerPath = path.resolve(root, 'logs', `renderer.${name}.log`);
-        //         console.log(`Setup renderer logger for window ${name} to ${loggerPath}.`);
-        //         const stream = fs.createWriteStream(loggerPath, { encoding: 'utf-8', flags: 'w+' });
-        //         window.webContents.on('console-message', (e, level, message, line, id) => {
-        //             stream.write(`[${levels[level]}] [${new Date().toUTCString()}] [${id}]: ${message}\n`);
-        //         });
-        //         window.once('close', () => {
-        //             stream.close();
-        //         });
-        //     });
-        //     firstRun = false;
-        // }
+        const levels = ['INFO', 'WARN', 'ERROR'];
+        ipcMain.on('browser-window-setup', (window, name) => {
+            const loggerPath = path.resolve(root, 'logs', `renderer.${name}.log`);
+            console.log(`Setup renderer logger for window ${name} to ${loggerPath}.`);
+            const stream = fs.createWriteStream(loggerPath, { encoding: 'utf-8', flags: 'w+' });
+            window.webContents.on('console-message', (e, level, message, line, id) => {
+                stream.write(`[${levels[level]}] [${new Date().toUTCString()}] [${id}]: ${message}\n`);
+            });
+            window.once('close', () => {
+                stream.close();
+            });
+        });
     }
 }

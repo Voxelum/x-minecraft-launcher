@@ -3,16 +3,7 @@ import { MutationPayload } from 'vuex';
 declare module 'electron' {
     interface IpcMain extends NodeJS.EventEmitter {
         on(channel: 'dispatch', listener: (event: Electron.IpcMainEvent, payload: { action: string; payload: any; option: any; id: number }) => void): this;
-        on(channel: 'sync', listener: (event: Electron.IpcMainEvent, eventId: number) => void): this;
-
-        on(channel: 'window-open', listener: (event: Electron.IpcMainEvent, windowId: string) => void): this;
-        on(channel: 'window-hide', listener: (event: Electron.IpcMainEvent, windowId: number) => void): this;
-        on(channel: 'window-close', listener: (event: Electron.IpcMainEvent) => void): this;
-
-        on(channle: 'renderer-setup', listener: (event: Electron.IpcMainEvent, id: string) => void): this;
-        on(channle: 'renderer-log', listener: (event: Electron.IpcMainEvent, text: string, ...args: string[]) => void): this;
-        on(channle: 'renderer-warn', listener: (event: Electron.IpcMainEvent, text: string, ...args: string[]) => void): this;
-        on(channle: 'renderer-error', listener: (event: Electron.IpcMainEvent, text: string, ...args: string[]) => void): this;
+        on(channel: 'browser-window-setup', listener: (win: Electron.BrowserWindow, name: string) => void): this;
     }
     interface IpcRenderer extends NodeJS.EventEmitter {
         /**
@@ -33,7 +24,7 @@ declare module 'electron' {
          * Require main process to sync
          * @param id The current mutation id
          */
-        invoke(channel: 'sync', id: number): Promise<{ mutations: MutationPayload[]; length: number }>;
+        invoke(channel: 'sync', id: number): Promise<{ state: any; length: number }>;
         invoke(channel: 'commit', type: string, payload: any): Promise<void>;
 
         /**

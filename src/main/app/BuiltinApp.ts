@@ -42,10 +42,10 @@ export default class BuiltinApp extends LauncherApp {
 
     private createMenu(app: Electron.App) {
         return Menu.buildFromTemplate([
-            { type: 'normal', label: this.t('launcher.checkUpdate') },
+            { type: 'normal', label: this.t('checkUpdate') },
             { type: 'separator' },
             {
-                label: this.t('launcher.showDiagnosis'),
+                label: this.t('showDiagnosis'),
                 type: 'normal',
                 click() {
                     const cpu = process.getCPUUsage();
@@ -57,16 +57,16 @@ export default class BuiltinApp extends LauncherApp {
                         dialog.showMessageBox({
                             type: 'info',
                             title: 'Diagnosis Info',
-                            message: `CPU: ${JSON.stringify(cpu)}\nMem: ${JSON.stringify(m)}\nSysMem: ${JSON.stringify(sysmem)}`,
+                            message: `Mode:${process.env.NODE_ENV}\nCPU: ${JSON.stringify(cpu)}\nMem: ${JSON.stringify(m)}\nSysMem: ${JSON.stringify(sysmem)}`,
                         });
                     });
                 },
             },
             { type: 'separator' },
             {
-                label: this.t('launcher.quit'),
+                label: this.t('quit'),
                 type: 'normal',
-                click(item, window, event) {
+                click() {
                     app.quit();
                 },
             },
@@ -95,12 +95,14 @@ export default class BuiltinApp extends LauncherApp {
         this.tray = tray;
         this.eventBus.on('locale-changed', () => {
             if (tray) {
-                tray.setToolTip(this.t('launcher.title'));
+                tray.setToolTip(this.t('title'));
                 tray.setContextMenu(this.createMenu(app));
             }
         });
-        this.dock = app.dock;
-        this.dock.setIcon(nativeImage.createFromPath(`${__static}/apple-touch-icon.png`));
+        if (app.dock) {
+            this.dock = app.dock;
+            this.dock.setIcon(nativeImage.createFromPath(`${__static}/apple-touch-icon.png`));
+        }
     }
 
     onMinecraftWindowReady = () => {
@@ -163,6 +165,7 @@ export default class BuiltinApp extends LauncherApp {
     }
 
     appReady(app: App) {
+        this.createMainWindow();
         this.setupTray(app);
         this.eventBus.on('task-successed', (id) => {
             if (this.mainRef) {
@@ -181,7 +184,7 @@ export default class BuiltinApp extends LauncherApp {
 
     async start(context: LauncherAppContext): Promise<void> {
         this.store = context.store;
-        this.createMainWindow();
+        this.mainRef!.show();
     }
 
     requestFocus(): void {

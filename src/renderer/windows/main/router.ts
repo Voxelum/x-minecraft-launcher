@@ -1,7 +1,6 @@
 import Router, { Route } from 'vue-router';
 import Vue from 'vue';
-import { remote } from 'electron';
-import MainWindow from './MainWindow.vue';
+import { shell } from 'renderer/constant';
 import HomePage from './pages/HomePage.vue';
 import ProfilePage from './pages/ProfilesPage.vue';
 import SettingPage from './pages/SettingPage.vue';
@@ -23,67 +22,61 @@ const router = new Router({
     routes: [
         {
             path: '/',
-            component: MainWindow,
-            children: [
-                {
-                    path: '/',
-                    component: HomePage,
-                },
-                {
-                    path: '/profiles',
-                    component: ProfilePage,
-                },
-                {
-                    path: '/setting',
-                    component: SettingPage,
-                },
-                {
-                    path: '/user',
-                    component: UserPage,
-                },
-                {
-                    path: '/save',
-                    component: SaveViewPage,
-                },
-                {
-                    path: '/base-setting',
-                    component: BaseSettingPage,
-                },
-                {
-                    path: '/advanced-setting',
-                    component: AdvancedSettingPage,
-                },
-                {
-                    path: '/mod-setting',
-                    component: ModSettingPage,
-                },
-                {
-                    path: '/game-setting',
-                    component: GameSettingPage,
-                },
-                {
-                    path: '/resource-pack-setting',
-                    component: ResourcePackSettingPage,
-                },
-                {
-                    path: '/version-setting',
-                    component: VersionSettingPage,
-                },
-                {
-                    path: '/curseforge',
-                    component: CurseforgePage,
-                },
-                {
-                    path: '/curseforge/:type',
-                    component: CurseforgeViewPage,
-                    props: true,
-                },
-                {
-                    path: '/curseforge/:type/:id',
-                    component: CurseforgeProjectPage,
-                    props: true,
-                },
-            ],
+            component: HomePage,
+        },
+        {
+            path: '/profiles',
+            component: ProfilePage,
+        },
+        {
+            path: '/setting',
+            component: SettingPage,
+        },
+        {
+            path: '/user',
+            component: UserPage,
+        },
+        {
+            path: '/save',
+            component: SaveViewPage,
+        },
+        {
+            path: '/base-setting',
+            component: BaseSettingPage,
+        },
+        {
+            path: '/advanced-setting',
+            component: AdvancedSettingPage,
+        },
+        {
+            path: '/mod-setting',
+            component: ModSettingPage,
+        },
+        {
+            path: '/game-setting',
+            component: GameSettingPage,
+        },
+        {
+            path: '/resource-pack-setting',
+            component: ResourcePackSettingPage,
+        },
+        {
+            path: '/version-setting',
+            component: VersionSettingPage,
+        },
+        {
+            path: '/curseforge',
+            component: CurseforgePage,
+        },
+        {
+            path: '/curseforge/:type',
+            component: CurseforgeViewPage,
+            props: true,
+        },
+        {
+            path: '/curseforge/:type/:id',
+            component: CurseforgeProjectPage,
+            props: true,
         },
     ],
 } as any);
@@ -95,10 +88,10 @@ router.beforeEach((to: Route, from: Route, next) => {
         next(false);
         if (full.startsWith('external')) {
             console.log(full.substring('external/'.length));
-            remote.shell.openExternal(full.substring('external/'.length));
+            shell.openExternal(full.substring('external/'.length));
         } else {
             console.log(full);
-            remote.shell.openExternal(full);
+            shell.openExternal(full);
         }
     } else {
         console.log(`Route ${from.fullPath} -> ${to.fullPath}`);

@@ -1,5 +1,4 @@
-import { ForgeInstaller } from '@xmcl/minecraft-launcher-core';
-import { ResolvedLibrary, Version } from '@xmcl/version';
+import { ResolvedLibrary, Version, ForgeInstaller } from '@xmcl/minecraft-launcher-core';
 import { ModuleOption } from '../root';
 
 export interface Problem {

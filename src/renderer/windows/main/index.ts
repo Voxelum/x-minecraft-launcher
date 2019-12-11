@@ -9,6 +9,7 @@ import '@/useVuetify';
 import './components';
 import i18n from './i18n';
 import router from './router';
+import MainWindow from './MainWindow.vue';
 
 Vue.use(VueObserveVisibility);
 Vue.use(VueParticles);
@@ -18,7 +19,7 @@ Vue.component('skin-view', SkinView);
 const store = createStore();
 const _i18n = i18n(store);
 
-app({
+app(MainWindow, {
     store,
     router,
     i18n: _i18n,

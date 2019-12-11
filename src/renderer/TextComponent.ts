@@ -1,4 +1,4 @@
-import { TextComponentFrame, TextComponent } from '@xmcl/minecraft-launcher-core';
+import { TextComponentFrame, TextComponent } from '@xmcl/text-component';
 import { createComponent, createElement } from '@vue/composition-api';
 import { useI18n } from './hooks';
 

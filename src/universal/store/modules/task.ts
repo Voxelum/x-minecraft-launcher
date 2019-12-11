@@ -1,10 +1,10 @@
-import { Task } from '@xmcl/minecraft-launcher-core';
+import { TaskNode } from '@xmcl/minecraft-launcher-core';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
 
 export type TaskStatus = 'successed' | 'failed' | 'ready' | 'running';
 
-export interface TaskState extends Task.State {
+export interface TaskState extends TaskNode {
     id: string;
     children: TaskState[];
     time?: string;

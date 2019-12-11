@@ -143,7 +143,7 @@ export default class DiagnoseService extends Service {
 
             this.commit('postProblems', tree);
         } finally {
-            this.commit('release', 'refreshMinecraft');
+            this.commit('release', 'diagnose');
         }
     }
 
