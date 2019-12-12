@@ -79,7 +79,7 @@ const router = new Router({
             props: true,
         },
     ],
-} as any);
+});
 
 router.beforeEach((to: Route, from: Route, next) => {
     const full = to.fullPath.substring(1);
