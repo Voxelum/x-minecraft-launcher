@@ -69,8 +69,8 @@ export function importResourceTask(path: string, type: ImportTypeHint | undefine
             // use parser to parse metadata
             context.update(2, 4, path);
             const parsing = () => this.resolveResource(builder, data || path, type);
-            console.log(`Import resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
             await context.execute(parsing);
+            console.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
 
             // write resource to disk
             context.update(3, 4, path);
@@ -254,11 +254,11 @@ export default class ResourceService extends Service {
 
         const wrapped = chains.map(wrapper);
 
-        const promise = wrapped.shift()!();
+        let promise = wrapped.shift()!();
         while (wrapped.length !== 0) {
             const next = wrapped.shift();
             if (next) {
-                promise.catch(() => next());
+                promise = promise.catch(() => next());
             }
         }
 
@@ -272,7 +272,7 @@ export default class ResourceService extends Service {
             builder.name = suggested;
         }
 
-        builder.icon = await parseIcon(metadata, fs);
+        builder.icon = await parseIcon(metadata, fs).catch(() => undefined);
     }
 
     protected async commitResourceToDisk(builder: ResourceBuilder, data: Buffer) {
@@ -284,9 +284,9 @@ export default class ResourceService extends Service {
 
         if (await fs.exists(filePath)) {
             const slice = builder.hash.slice(0, 6);
-            filePath = this.getPath(builder.domain, `${normalizedName}.${slice}${builder.ext}`);
-            metadataPath = this.getPath(builder.domain, `${normalizedName}.${slice}.json`);
-            iconPath = this.getPath(builder.domain, `${normalizedName}.${slice}.png`);
+            filePath = this.getPath(builder.domain, `${normalizedName}-${slice}${builder.ext}`);
+            metadataPath = this.getPath(builder.domain, `${normalizedName}-${slice}.json`);
+            iconPath = this.getPath(builder.domain, `${normalizedName}-${slice}.png`);
         }
 
         filePath = resolve(filePath);
@@ -295,7 +295,7 @@ export default class ResourceService extends Service {
 
         await fs.ensureFile(filePath);
         await fs.writeFile(filePath, data);
-        await fs.writeFile(metadataPath, JSON.stringify(toResource(builder)));
+        await fs.writeFile(metadataPath, JSON.stringify(toResource(builder), null, 4));
         if (builder.icon) {
             await fs.writeFile(iconPath, builder.icon);
         }
@@ -303,7 +303,14 @@ export default class ResourceService extends Service {
     }
 
     private async discardResourceOnDisk(resource: Readonly<AnyResource>) {
+        const baseName = basename(resource.path, resource.ext);
+        const filePath = resource.path;
+        const metadataPath = this.getPath(resource.domain, `${baseName}`);
+        const iconPath = this.getPath(resource.domain, `${baseName}.png`);
 
+        await fs.unlink(filePath).catch(() => { });
+        await fs.unlink(metadataPath).catch(() => { });
+        await fs.unlink(iconPath).catch(() => { });
     }
 
     async load() {
