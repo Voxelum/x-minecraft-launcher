@@ -112,8 +112,8 @@ export default class ResourceService extends Service {
         domain: 'unknowns',
         ext: '*',
         parseIcon: () => Promise.resolve(undefined),
-        parseMetadata: fs => Promise.resolve({}),
-        getSuggestedName: fs => '',
+        parseMetadata: () => Promise.resolve({}),
+        getSuggestedName: () => '',
     };
 
     constructor() {
