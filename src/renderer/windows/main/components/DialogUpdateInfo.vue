@@ -38,7 +38,8 @@
         </v-btn>
       </v-card-actions>
     </v-card>
-    <v-card v-else hover dark style="width: 100%" to="https://github.com/voxelum/VoxeLauncher/releases"
+    <v-card v-else hover dark style="width: 100%"
+            to="https://github.com/voxelum/VoxeLauncher/releases"
             replace>
       <v-container fill-height>
         <v-layout fill-height justify-space-around align-center>

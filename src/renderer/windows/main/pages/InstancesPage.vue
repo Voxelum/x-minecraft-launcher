@@ -76,21 +76,21 @@
       </v-flex>
       <v-flex v-for="profile in timesliceProfiles[0]" :key="profile.id" xs6
               @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <card-profile-preview :profile="profile" @click.stop="selectProfile(profile.id)" />
+        <instance-preview-card :profile="profile" @click.stop="selectProfile(profile.id)" />
       </v-flex>
       <v-flex v-if="timesliceProfiles[1].length !== 0" style="color: grey" xs12> 
         {{ $t('profile.threeDay') }}
       </v-flex>
       <v-flex v-for="profile in timesliceProfiles[1]" :key="profile.id" xs6
               @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <card-profile-preview :profile="profile" @click.stop="selectProfile(profile.id)" />
+        <instance-preview-card :profile="profile" @click.stop="selectProfile(profile.id)" />
       </v-flex>
       <v-flex v-if="timesliceProfiles[2].length !== 0" style="color: grey" xs12> 
         {{ $t('profile.older') }}
       </v-flex>
       <v-flex v-for="profile in timesliceProfiles[2]" :key="profile.id" xs6 
               @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <card-profile-preview :profile="profile" @click.stop="selectProfile(profile.id)" />
+        <instance-preview-card :profile="profile" @click.stop="selectProfile(profile.id)" />
       </v-flex>
     </v-layout>
     
@@ -126,7 +126,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed, onMounted } from '@vue/composition-api';
-import { ProfileConfig } from 'universal/store/modules/profile.config';
+import { InstanceConfig } from 'universal/store/modules/instance';
 import {
   useI18n,
   useNativeDialog,
@@ -154,9 +154,9 @@ export default {
       creatingServer: boolean;
       creatingTooltip: boolean;
       isDeletingProfile: boolean;
-      deletingProfile: ProfileConfig | {};
+      deletingProfile: InstanceConfig | {};
       dragging: boolean;
-      draggingProfile: ProfileConfig | {};
+      draggingProfile: InstanceConfig | {};
       pinging: boolean;
     } = reactive({
       filter: '',
@@ -181,11 +181,11 @@ export default {
       const filter = data.filter.toLowerCase();
       const filtered = instances.value.filter(
         profile => filter === ''
-          || ('author' in profile
+          || (profile.author
             ? profile.author.toLowerCase().indexOf(filter) !== -1
             : false)
           || profile.name.toLowerCase().indexOf(filter) !== -1
-          || ('description' in profile
+          || (profile.description
             ? profile.description.toLowerCase().indexOf(filter) !== -1
             : false),
       );
@@ -210,7 +210,7 @@ export default {
       }
       return [todayR, threeR, other];
     });
-    function startDelete(prof: ProfileConfig) {
+    function startDelete(prof: InstanceConfig) {
       data.isDeletingProfile = true;
       data.deletingProfile = prof;
     }
@@ -244,7 +244,7 @@ export default {
         data.wizard = true;
       },
       onDropDelete() {
-        startDelete(data.draggingProfile as ProfileConfig);
+        startDelete(data.draggingProfile as InstanceConfig);
       },
       async doImport(fromFolder: boolean, curseforge: boolean) {
         const filters = fromFolder

@@ -21,12 +21,12 @@
 
 <script lang=ts>
 import { createComponent, reactive, toRefs } from '@vue/composition-api';
-import { useAutoSaveLoad, useProfileGameSetting } from '@/hooks';
+import { useAutoSaveLoad, useInstanceGameSetting } from '@/hooks';
 import { GameSetting } from '@xmcl/minecraft-launcher-core';
 
 export default createComponent({
   setup() {
-    const settings = useProfileGameSetting();
+    const settings = useInstanceGameSetting();
     const data = reactive({
       graphics: [
         { name: 'fancyGraphics', options: [true, false], val: true },

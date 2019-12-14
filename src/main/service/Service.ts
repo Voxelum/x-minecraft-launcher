@@ -85,7 +85,20 @@ export default class Service {
 
     protected commit!: RootCommit;
 
+    /**
+     * Return the path under the storeage
+     */
     protected getPath!: (...args: string[]) => string;
+
+    /**
+     * Return the path under .minecraft folder
+     */
+    protected getMinecraftPath!: (...args: string[]) => string;
+
+    /**
+     * The path of .minecraft
+     */
+    protected minecraftPath!: string;
 
     protected managers!: Managers;
 

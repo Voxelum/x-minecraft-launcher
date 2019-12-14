@@ -39,13 +39,13 @@
 import {
   useInstance,
   useServerStatus,
-  useProfileVersion,
+  useInstanceVersion,
 } from '@/hooks';
 
 export default {
   setup() {
     const { version, name, author, isServer } = useInstance();
-    const { folder } = useProfileVersion();
+    const { folder } = useInstanceVersion();
     const { players, ping, favicon } = useServerStatus();
     return {
       version,

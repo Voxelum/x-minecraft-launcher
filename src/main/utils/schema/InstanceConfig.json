@@ -11,6 +11,14 @@
             "default": "",
             "type": "string"
         },
+        "author": {
+            "description": "The author of this instance",
+            "type": "string"
+        },
+        "description": {
+            "description": "The description of this instance",
+            "type": "string"
+        },
         "java": {
             "description": "The java object containing the java info",
             "default": null,
@@ -34,15 +42,6 @@
                 "path",
                 "version"
             ]
-        },
-        "type": {
-            "description": "Either a modpack or server. The modpack is the common profile. It can export into a modpack",
-            "default": "modpack",
-            "enum": [
-                "modpack",
-                "server"
-            ],
-            "type": "string"
         },
         "showLog": {
             "description": "Should show a logger window after Minecraft launched",
@@ -172,6 +171,21 @@
         "creationDate": {
             "default": 0,
             "type": "number"
+        },
+        "server": {
+            "description": "The option for instance to launch server directly",
+            "type": "object",
+            "properties": {
+                "host": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "host"
+            ]
         }
     },
     "required": [
@@ -187,7 +201,6 @@
         "mcOptions",
         "name",
         "showLog",
-        "type",
         "url",
         "version",
         "vmOptions"

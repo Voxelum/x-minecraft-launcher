@@ -1,7 +1,7 @@
 import { Forge, got, Net, Task } from '@xmcl/minecraft-launcher-core';
 import { HTMLElement, parse as parseHtml } from 'fast-html-parser';
 import { fs, unpack7z } from 'main/utils';
-import { join } from 'path';
+import { join, basename } from 'path';
 import querystring from 'querystring';
 import { CURSEMETA_CACHE } from 'universal/utils/constant';
 import { parse as parseUrl } from 'url';
@@ -130,7 +130,7 @@ export interface Modpack {
         fileID: number;
         required: boolean;
     }[];
-    override: string;
+    overrides: string;
 }
 
 
@@ -466,7 +466,7 @@ export default class CurseForgeService extends Service {
             }
         };
 
-        await this.submit(installCurseforgeFile);
+        await this.submit(installCurseforgeFile).wait();
         // const id = await this.taskService.executeTask(task);
         // this.commit('startDownloadCurseforgeFile', { download: payload, taskId: id });
         // return id;
@@ -483,7 +483,7 @@ export default class CurseForgeService extends Service {
         // if (!fType || fType.ext !== 'zip') throw new Error(`Cannot import curseforge modpack ${path}, since it's not a zip!`);
         console.log(`Import curseforge modpack by path ${path}`);
         const resourceService = this.resourceService;
-        const downloadTask = (pool: { url: string; dest: string; fileId: number }[], modList: string[]) => {
+        const installTask = (pool: { url: string; dest: string; fileId: number }[], modList: string[], resourcePackList: string[]) => {
             const install = async (context: Task.Context) => {
                 while (pool.length !== 0) {
                     const task = pool.pop()!;
@@ -493,19 +493,19 @@ export default class CurseForgeService extends Service {
                     // if we don't have the mod, we should download it
                     try {
                         await Net.downloadFileWork({ url, destination: dest })(context);
-                        const importTask = importResourceTask(dest, 'forge', {
-                            curseforge: {
-                                fileId,
-                            },
+                        const importTask = importResourceTask(dest, '*', {
+                            curseforge: { fileId },
                         }).bind(resourceService);
                         const resource = await importTask(context);
-                        if (resource && resource.domain === 'mods' && resource.metadata instanceof Array) {
+                        if (resource.domain === 'mods' && resource.metadata instanceof Array) {
                             modList.push(`resource/${resource.hash}`);
+                        } else if (resource.domain === 'resourcepacks') {
+                            resourcePackList.push(basename(resource.path));
                         } else {
-                            console.error(`Cannot resolve ${url} as a mod!`);
-                            console.error(JSON.stringify(resource.metadata));
+                            console.log(`Unknown don't really know how to use this resource! ${resource.name} ${resource.type} ${resource.domain}`);
                         }
                     } catch (e) {
+                        console.error(`Cannot import resource ${dest} from ${url} (${fileId})`);
                         console.error(e);
                     }
                 }
@@ -513,6 +513,7 @@ export default class CurseForgeService extends Service {
             return install;
         };
         const installCurseforgeModpack = async (ctx: Task.Context) => {
+            await fs.ensureDir(this.getPath('temp'));
             const dir = await fs.mkdtemp(this.getPath('temp', 'curseforge-'));
             const unpack = async () => unpack7z(path, dir);
             await ctx.execute(unpack);
@@ -523,6 +524,7 @@ export default class CurseForgeService extends Service {
 
             const manifest: Modpack = await fs.readFile(join(dir, 'manifest.json')).then(b => JSON.parse(b.toString()));
             const modList: string[] = [];
+            const resourcePackList: string[] = [];
 
             const shouldDownloaded = [];
             for (const f of manifest.files) {
@@ -549,8 +551,8 @@ export default class CurseForgeService extends Service {
 
             const installMods = async (context: Task.Context) => {
                 await Promise.all([
-                    context.execute(downloadTask(pool, modList)),
-                    context.execute(downloadTask(pool, modList)),
+                    context.execute(installTask(pool, modList, resourcePackList)),
+                    context.execute(installTask(pool, modList, resourcePackList)),
                 ]);
             };
             await ctx.execute(installMods);
@@ -562,7 +564,7 @@ export default class CurseForgeService extends Service {
                 if (profile) {
                     id = profile;
                     await this.instanceService.editInstance({
-                        version: {
+                        runtime: {
                             minecraft: manifest.minecraft.version,
                             forge: forgeId ? forgeId.id.substring(6) : '',
                             liteloader: '',
@@ -576,7 +578,7 @@ export default class CurseForgeService extends Service {
                         type: 'modpack',
                         name: manifest.name,
                         author: manifest.author,
-                        version: {
+                        runtime: {
                             minecraft: manifest.minecraft.version,
                             forge: forgeId ? forgeId.id.substring(6) : '',
                         },
@@ -588,18 +590,13 @@ export default class CurseForgeService extends Service {
                 const profileFolder = join(this.state.root, 'profiles', id);
 
                 // start handle override
-                await fs.copy(dir, profileFolder);
-
-                if (manifest.override) {
-                    // const overrides = others.filter(e => e.fileName.startsWith(manifest.override));
-                    // for (const o of overrides) {
-                    //     const dest = join(profileFolder, o.fileName.substring(manifest.override.length));
-                    //     await fs.ensureFile(dest);
-                    // }
-                    // await Promise.all(overrides.map(o => pipeTo(o)));
+                if (manifest.overrides) {
+                    await fs.copy(join(dir, manifest.overrides), profileFolder);
                 }
             };
             await ctx.execute(createProfile);
+
+            // await fs.remove(dir);
         };
         await this.submit(installCurseforgeModpack).wait();
     }

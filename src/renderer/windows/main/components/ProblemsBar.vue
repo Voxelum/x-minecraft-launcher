@@ -32,7 +32,7 @@
 <script lang=ts>
 import { computed } from '@vue/composition-api';
 import { Problem } from 'universal/store/modules/diagnose';
-import { useStore, useRouter } from '@/hooks';
+import { useStore, useRouter, useDialog, useNotifier, useI18n } from '@/hooks';
 
 export default {
   setup() {
@@ -41,11 +41,16 @@ export default {
     const problems = computed(() => getters.problems);
     const problemsLevelColor = computed(() => (getters.problems.some(p => !p.optional) ? 'red' : 'warning'));
     const refreshing = computed(() => getters.busy('diagnose'));
+    const { showDialog: showTaskDialog } = useDialog('task');
+    const { showDialog: showJavaDialog } = useDialog('java-wizard');
+    const { showDialog: showModDialog } = useDialog('download-missing-mods');
+    const { notify } = useNotifier();
+    const { t } = useI18n();
 
     async function handleManualFix(problem: Problem) {
       switch (problem.id) {
         case 'missingModsOnServer':
-          //   data.downloadMissingModsDialog = true;
+          showModDialog();
           break;
         case 'unknownMod':
         case 'incompatibleMod':
@@ -57,9 +62,9 @@ export default {
         case 'incompatibleJava':
           if (state.java.all.some(j => j.majorVersion === 8)) {
             await services.InstanceService.editInstance({ java: state.java.all.find(j => j.majorVersion === 8) });
-            // TODO: notify user here the launcher switch java version
+            notify('info', t('java.switchVersion'));
           } else {
-            // data.javaWizardDialog = true;
+            showJavaDialog();
           }
           break;
         default:
@@ -68,12 +73,14 @@ export default {
 
     function handleAutoFix() {
       services.DiagnoseService.fixProfile(problems.value);
+      showTaskDialog();
     }
     return {
       problems,
       problemsLevelColor,
       refreshing,
       fixProblem(problem: Problem) {
+        console.log('Try to fix problem:');
         console.log(problem);
         if (!problem.autofix) {
           handleManualFix(problem);

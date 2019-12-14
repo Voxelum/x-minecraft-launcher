@@ -1,6 +1,6 @@
 import { computed, onMounted, onUnmounted, Ref, watch } from '@vue/composition-api';
 import { notNull } from 'universal/utils';
-import { useProfileVersion } from './useProfile';
+import { useInstanceVersion } from './useInstance';
 import { useStore, useBusy } from './useStore';
 
 export function useVersions() {
@@ -13,7 +13,7 @@ export function useVersions() {
 export function useLocalVersions() {
     const { state, services } = useStore();
     const localVersions = computed(() => state.version.local);
-    const { minecraft, forge, liteloader } = useProfileVersion();
+    const { minecraft, forge, liteloader } = useInstanceVersion();
     const selected = computed(() => localVersions.value.find(v => v.minecraft === minecraft.value
         && v.forge === forge.value && v.liteloader === liteloader.value));
 

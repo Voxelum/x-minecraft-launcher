@@ -16,7 +16,7 @@
 
 <script lang=ts>
 import { useServerStatus, useBusy } from '@/hooks';
-import { ref, onMounted } from '@vue/composition-api';
+import { onMounted } from '@vue/composition-api';
 
 export default {
   setup() {

@@ -11,7 +11,6 @@ export interface GameProfileAndTexture extends GameProfile {
 
 export interface UserProfile {
     id: string;
-    type: string;
     /**
      * The account usually email
      */
@@ -41,33 +40,40 @@ export interface UserProfile {
 export interface UserConfig {
     /**
      * All saved user profiles
+     * @default {}
      */
     profiles: { [userId: string]: UserProfile };
+    /**
+     * @default ""
+     */
     selectedUser: string;
+    /**
+     * @default ""
+     */
     selectedUserProfile: string;
-
     /**
      * All loaded auth services api. Used for ygg auth
+     * @default {}
      */
     authServices: {
-        mojang: Auth.Yggdrasil.API;
         [name: string]: Auth.Yggdrasil.API;
     };
     /**
-     * All loaded profile services api. Used for 
+     * All loaded profile services api. Used for
+     * @default {}
      */
     profileServices: {
-        mojang: ProfileService.API;
         [name: string]: ProfileService.API;
     };
-
     /**
      * The login history of the user for a specific auth services
+     * @default []
      */
     loginHistory: string[];
 
     /**
      * The client token of current client. The launcher will generate one at first launch.
+     * @default ""
      */
     clientToken: string;
 }

@@ -44,7 +44,7 @@ export default class LaunchService extends Service {
             /**
              * current selected profile
              */
-            const profile = this.getters.selectedProfile;
+            const profile = this.getters.selectedInstance;
             const user = this.getters.selectedUser;
             const gameProfile = this.getters.selectedGameProfile;
             if (!profile) {
@@ -80,7 +80,7 @@ export default class LaunchService extends Service {
              * real version name
              */
             const version = await this.versionService.resolveVersion({
-                ...profile.version,
+                ...profile.runtime,
             });
 
             console.log(`Will launch with ${version} version.`);
@@ -110,8 +110,11 @@ export default class LaunchService extends Service {
             };
 
             console.log('Launching a server');
-            if (profile.type === 'server') {
-                option.server = { ip: profile.host, port: profile.port };
+            if ('server' in profile && profile.server?.host) {
+                option.server = {
+                    ip: profile.server?.host,
+                    port: profile.server?.port,
+                };
             }
 
             console.log('Deploy all resources...');
@@ -185,6 +188,7 @@ export default class LaunchService extends Service {
                 }
                 this.commit('launchStatus', 'ready');
             });
+            /* eslint-disable no-unused-expressions */
             process.stdout?.on('data', (s) => {
                 const string = s.toString();
                 if (string.indexOf('---- Minecraft Crash Report ----') !== -1) {

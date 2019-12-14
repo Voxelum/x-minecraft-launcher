@@ -23,7 +23,7 @@
           <v-icon>home</v-icon>
         </v-list-tile-action>
       </v-list-tile>
-      <v-list-tile :disabled="!logined" replace to="/profiles">
+      <v-list-tile :disabled="!logined" replace to="/instances">
         <v-list-tile-action>
           <v-icon>apps</v-icon>
         </v-list-tile-action>

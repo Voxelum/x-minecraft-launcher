@@ -1,15 +1,16 @@
 import { LevelDataFrame, WorldReader } from '@xmcl/minecraft-launcher-core';
 import { createHash } from 'crypto';
 import filenamify from 'filenamify';
+import { watch } from 'fs-extra';
 import { compressZipTo, fs, includeAllToZip, notNull, requireString, unpack7z } from 'main/utils';
 import { basename, join, resolve } from 'path';
 import { ZipFile } from 'yazl';
 import InstanceService from './InstanceService';
 
-export async function loadAllProfileSaves(this: InstanceService) {
+export async function loadAllInstancesSaves(this: InstanceService) {
     const all: Array<{ profile: string; path: string; name: string; icon: string }> = [];
-    for (const profile of this.getters.profiles) {
-        const saveRoot = this.getPath('profiles', profile.id, 'saves');
+    for (const profile of this.getters.instances) {
+        const saveRoot = this.getPathUnder(profile.id, 'saves');
         if (await fs.exists(saveRoot)) {
             const saves = await fs.readdir(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
             const loaded = await Promise.all(saves.map(s => resolve(saveRoot, s)));
@@ -23,15 +24,19 @@ export async function loadAllProfileSaves(this: InstanceService) {
     }
     return all;
 }
-
-export async function loadProfileSaves(this: InstanceService, id: string = this.state.profile.id) {
+export async function loadInstanceSaves(this: InstanceService, id: string = this.state.instance.id) {
     const { state, commit } = this;
     if (!this.isSavesDirty) {
-        return state.profile.saves;
+        return state.instance.saves;
     }
     this.isSavesDirty = false;
+
     try {
         const saveRoot = this.getPathUnder(id, 'saves');
+
+        if (!this.saveWatcher) {
+            this.saveWatcher = watch(saveRoot, () => { this.isSavesDirty = true; });
+        }
 
         if (await fs.exists(saveRoot)) {
             const saves = await fs.readdir(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
@@ -47,6 +52,8 @@ export async function loadProfileSaves(this: InstanceService, id: string = this.
             console.log(`Loaded ${nonNulls.length} saves.`);
             commit('profileSaves', nonNulls);
             return nonNulls;
+
+            
         }
     } catch (e) {
         if (!e.message.startsWith('ENOENT:')) {
@@ -57,14 +64,10 @@ export async function loadProfileSaves(this: InstanceService, id: string = this.
     commit('profileSaves', []);
     return [];
 }
-/**
- * Import a save from a `zip` or `folder`.
- * @param filePath 
- */
 export async function importSave(this: InstanceService, filePath: string) {
     requireString(filePath);
 
-    const { getters, commit, state } = this;
+    const { commit, state } = this;
     async function hasLevel(dir: string) { return fs.exists(join(dir, 'level.dat')); }
     async function findLevelDir(dir: string): Promise<string | undefined> {
         if (await hasLevel(dir)) return dir;
@@ -89,67 +92,57 @@ export async function importSave(this: InstanceService, filePath: string) {
         const level = await reader.getLevelData();
         const fileName = filenamify(level.LevelName);
 
-        let destDir = this.getPath('profiles', state.profile.id, 'saves', fileName);
+        let destDir = this.getPathUnder(state.instance.id, 'saves', fileName);
         await fs.ensureFile(destDir);
         while (await fs.exists(destDir)) {
             destDir += ' Copy';
         }
         await fs.copy(srcDir, destDir);
-        commit('profileSaves', [...state.profile.saves, { path: filePath, level }]);
-        await this.loadProfileSaves();
+        commit('profileSaves', [...state.instance.saves, { path: filePath, level }]);
+        await this.loadInstanceSaves();
     } catch (e) {
         console.error(`Cannot import save from ${filePath}`);
         console.error(e);
         throw e;
     }
 }
-/**
- * Copy current profile `src` save to other profile. The `dest` is the array of profile id. 
- */
 export async function copySave(this: InstanceService, { src, dest }: { src: string; dest: string[] }) {
-    const id = this.state.profile.id;
+    const id = this.state.instance.id;
     const path = src;
     const saveName = basename(path);
     if (!path || await fs.missing(path)) {
         console.log(`Cancel save copying of ${path}`);
         return;
     }
-    const expect = this.getPath('profiles', id, 'saves', saveName);
+    const expect = this.getPathUnder(id, 'saves', saveName);
     if (path === expect) { // confirm this save is a select profile's save
         await Promise.all(
-            dest.map(p => this.getPath('profiles', p, 'saves', saveName))
+            dest.map(p => this.getPathUnder(p, 'saves', saveName))
                 .map(p => fs.copy(expect, p)),
         );
     } else {
         console.error(`Cannot copy map ${path}, which is not in selected profile ${id}`);
     }
 }
-/**
- * Delete a save in current instance
- * @param name The name of the save
- */
 export async function deleteSave(this: InstanceService, name: string) {
     requireString(name);
 
     console.log(`Start remove save from ${name}`);
-    const id = this.state.profile.id;
+    const id = this.state.instance.id;
     const saveName = basename(name);
     if (!name || await fs.missing(name)) {
         console.log(`Cancel map removing of ${name}`);
         return;
     }
-    const expect = this.getPath('profiles', id, 'saves', saveName);
+    const expect = this.getPathUnder(id, 'saves', saveName);
     if (name === expect) { // confirm this save is a select profile's save
         await fs.remove(name);
-        process.nextTick(() => this.loadProfileSaves());
+        process.nextTick(() => this.loadInstanceSaves());
     } else {
         console.error(`Cannot remove map ${name}, which is not in selected profile ${id}`);
     }
     console.log(`Removed save from ${name}`);
 }
-/**
- * Export the save as a zip or a directory
- */
 export async function exportSave(this: InstanceService, payload: {
     /**
      * The save name under current profile

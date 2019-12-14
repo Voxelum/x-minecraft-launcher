@@ -1,4 +1,4 @@
-export interface ProfileConfig {
+export interface InstanceConfig {
     /**
      * The unique id (uuid) of the profile. The profile data will be stored into profiles/${id}/profile.json according to this.
      * @required
@@ -12,29 +12,14 @@ export interface ProfileConfig {
     name: string;
 
     /**
-     * The java object containing the java info
-     * @default null
+     * The author of this instance
      */
-    java: {
-        /**
-         * The real path of the java paath
-         */
-        path: string;
-        /**
-         * The actual version string of the java
-         */
-        version: string;
-        /**
-         * The major version of selected java. If the version cannot be found, matching the java by this
-         */
-        majorVersion: number;
-    };
+    author?: string;
 
     /**
-     * Either a modpack or server. The modpack is the common profile. It can export into a modpack 
-     * @default "modpack"
+     * The description of this instance
      */
-    type: 'modpack' | 'server';
+    description?: string;
 
     /**
      * Should show a logger window after Minecraft launched
@@ -52,17 +37,24 @@ export interface ProfileConfig {
      * @default {}
      */
     deployments: {
-        mods: string[];
-        [domain: string]: string[];
+        [domain: string]: { [key: string]: string };
     };
 
     /**
-     * The version requirement of the profile.
+    * The optional external resource deployment of this profiles, like mods or resource packs
+    * @default {}
+    */
+    optionalDeployments: {
+        [domain: string]: { [key: string]: string };
+    };
+
+    /**
+     * The runtime & version requirement of the profile.
      * 
      * Containing the forge & liteloader & etc.
      * @default { "minecraft": "", "forge": "", "liteloader": "" }
      */
-    version: {
+    runtime: {
         /**
          * @default ""
          */
@@ -75,6 +67,15 @@ export interface ProfileConfig {
          * @default ""
          */
         liteloader: string;
+        /**
+         * @default ""
+         */
+        fabric: string;
+
+        /**
+         * @default "8"
+         */
+        java: string;
         [id: string]: string;
     };
 
@@ -117,28 +118,50 @@ export interface ProfileConfig {
      * @default 0
      */
     creationDate: number;
-}
 
-export interface ServerProfileConfig extends ProfileConfig {
-    type: 'server';
-    host: string;
-    port: number;
-}
+    /**
+     * The option for instance to launch server directly
+     */
+    server?: {
+        host: string;
+        port?: number;
+    };
 
-export interface ModpackProfileConfig extends ProfileConfig {
-    type: 'modpack';
-    author: string;
-    description: string;
-}
-
-export interface ServerOrModpackConfig extends ProfileConfig {
-    type: 'server' | 'modpack';
-    author?: string;
-    description?: string;
-    host?: string;
-    port?: number;
+    licence?: string;
 }
 
 export interface ProfilesConfig {
     selectedProfile: string;
+}
+
+export interface InstanceLockConfig {
+    /**
+     * The path of the java
+     */
+    java: string;
+    /**
+     * The resources already deployed
+     */
+    deployed: {
+        [domain: string]: {
+            [name: string]: {
+                /**
+                 * If this is deployed by link, it will be a file path to the source
+                 */
+                src?: string;
+                /**
+                 * Deployed file name
+                 */
+                file: string;
+                /**
+                 * The sha256 of it
+                 */
+                integrity: string;
+            };
+        };
+    };
+}
+
+export interface Instance extends InstanceLockConfig {
+    config: InstanceConfig;
 }

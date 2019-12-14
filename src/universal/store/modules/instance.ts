@@ -3,24 +3,19 @@ import { getExpectVersion } from 'universal/utils/versions';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { Java } from './java';
-import { ModpackProfileConfig, ProfileConfig, ServerProfileConfig } from './profile.config';
+import { InstanceConfig, InstanceLockConfig } from './instance.config';
 import { Resource } from './resource';
 import { LocalVersion } from './version';
 
-export type CreateProfileOption = Omit<ModpackProfileConfig, 'id' | 'lastAccessDate' | 'creationDate'> & { type: 'modpack' }
-export type CreateServerProfileOption = Omit<ServerProfileConfig, 'id' | 'lastAccessDate' | 'creationDate'> & { type: 'server' }
-export type CreateOption = Omit<DeepPartial<ModpackProfileConfig & ServerProfileConfig>, 'id' | 'lastAccessDate' | 'creationDate' | 'type'> & { type: 'modpack' | 'server' };
-export type ServerOrModpack = ModpackProfileConfig | ServerProfileConfig;
-export type ServerAndModpack = ModpackProfileConfig & ServerProfileConfig & { type: 'modpack' | 'server' };
-
+export type CreateOption = DeepPartial<Omit<InstanceConfig, 'id' | 'lastAccessDate' | 'creationDate'>>;
 export type Save = { level: LevelDataFrame; path: string }
+export { InstanceConfig };
 
-
-interface State {
+interface State extends InstanceLockConfig {
     /**
      * All loaded launch profiles
      */
-    all: { [id: string]: ServerOrModpack };
+    all: { [id: string]: InstanceConfig };
 
     /**
      * Current selected id
@@ -47,15 +42,15 @@ interface State {
 }
 
 interface Getters {
-    profiles: ServerOrModpack[];
+    instances: InstanceConfig[];
     serverProtocolVersion: number;
-    selectedProfile: ServerOrModpack;
+    selectedInstance: InstanceConfig;
     currentVersion: LocalVersion;
     deployingResources: { [domain: string]: Resource<any>[] };
 }
 
 interface Mutations {
-    addProfile: ProfileConfig;
+    addProfile: InstanceConfig;
     removeProfile: string;
     selectProfile: string;
 
@@ -64,7 +59,7 @@ interface Mutations {
      * Don't use this directly. Use `editProfile` action
      * @param payload The modified data
      */
-    profile: DeepPartial<ServerAndModpack>;
+    profile: DeepPartial<InstanceConfig>;
 
     /**
      * Update server infos in server.dat
@@ -83,85 +78,79 @@ interface Mutations {
     serverStatus: Server.StatusFrame;
     profileSaves: Save[];
     profileStatus: { [id: string]: Server.StatusFrame };
+
+    lockFile: any;
 }
 
-export type ProfileModule = ModuleOption<State, Getters, Mutations, {}>;
+export type InstanceModule = ModuleOption<State, Getters, Mutations, {}>;
 
-export function createTemplate(id: string, java: Java, mcversion: string, type: 'modpack' | 'server', isCreatingNew: boolean): ServerOrModpack {
-    const base: ProfileConfig = {
+export function createTemplate(id: string, mcversion: string, isCreatingNew: boolean): InstanceConfig {
+    const base: InstanceConfig = {
         id,
         name: '',
 
         resolution: { width: 800, height: 400, fullscreen: false },
-        java,
         minMemory: undefined,
         maxMemory: undefined,
         vmOptions: [],
         mcOptions: [],
 
-        type,
         url: '',
         icon: '',
 
         showLog: false,
         hideLauncher: true,
 
-        version: {
+        runtime: {
             minecraft: mcversion,
             forge: '',
             liteloader: '',
+            java: '8',
+            fabric: '',
         },
         deployments: {
-            mods: [],
+            mods: {},
+        },
+        optionalDeployments: {
         },
         image: '',
         blur: 4,
 
+        author: '',
+        description: '',
+
         lastAccessDate: -1,
         creationDate: isCreatingNew ? Date.now() : -1,
     };
-    if (type === 'modpack') {
-        const modpack: ModpackProfileConfig = {
-            author: '',
-            description: '',
-            ...base,
-            type: 'modpack',
-        };
-        return modpack;
-    }
-    const server: ServerProfileConfig = {
-        host: '',
-        port: 0,
-        ...base,
-        type: 'server',
-    };
-    return server;
+    return base;
 }
 
-const DEFAULT_PROFILE: ProfileConfig = createTemplate('', { majorVersion: 8, path: '', version: '' }, '', 'modpack', false);
+const DEFAULT_PROFILE: InstanceConfig = createTemplate('', '', false);
 
-const mod: ProfileModule = {
+const mod: InstanceModule = {
     state: {
         all: {},
         id: '',
-
         settings: {
             resourcePacks: [],
         },
         serverInfos: [],
         saves: [],
 
+        java: '',
+        deployed: {},
+
         statuses: {},
     },
     getters: {
-        profiles: state => Object.keys(state.all).map(k => state.all[k]),
+        instances: state => Object.keys(state.all).map(k => state.all[k]),
         serverProtocolVersion: () => 338,
-        selectedProfile: state => state.all[state.id] || DEFAULT_PROFILE,
+        selectedInstance: state => state.all[state.id] || DEFAULT_PROFILE,
         currentVersion: (state, getters) => {
-            const current = getters.selectedProfile;
-            const minecraft = current.version.minecraft;
-            const forge = current.version.forge;
-            const liteloader = current.version.liteloader;
+            const current = getters.selectedInstance;
+            const minecraft = current.runtime.minecraft;
+            const forge = current.runtime.forge;
+            const liteloader = current.runtime.liteloader;
 
             return {
                 id: getExpectVersion(minecraft, forge, liteloader),
@@ -172,7 +161,7 @@ const mod: ProfileModule = {
             };
         },
         deployingResources: (_, getters, rootState) => {
-            const profile = getters.selectedProfile;
+            const profile = getters.selectedInstance;
 
             const resources: { [domain: string]: Resource<any>[] } = {};
             for (const domain of Object.keys(profile.deployments)) {
@@ -206,6 +195,10 @@ const mod: ProfileModule = {
             }
             state.all[state.id].lastAccessDate = Date.now();
         },
+        lockFile(state, lock) {
+            state.java = lock.java;
+            state.deployed = lock.deployed;
+        },
         profile(state, settings) {
             const prof = state.all[state.id];
 
@@ -216,28 +209,35 @@ const mod: ProfileModule = {
 
             prof.name = typeof settings.name === 'string' ? settings.name : prof.name;
 
-            if (prof.type === 'modpack') {
-                prof.author = settings.author || prof.author;
-                prof.description = settings.description || prof.description;
-            } else {
-                prof.host = settings.host || prof.host;
-                prof.port = settings.port || prof.port;
+            prof.author = settings.author || prof.author;
+            prof.description = settings.description || prof.description;
+
+            if (settings.server) {
+                if (prof.server) {
+                    prof.server.host = settings.server.host || prof.server.host;
+                    prof.server.port = settings.server.port || prof.server.port;
+                } else {
+                    prof.server = {
+                        host: settings.server.host,
+                        port: settings.server.port,
+                    };
+                }
             }
 
-            if (settings.version) {
-                const versions = settings.version;
-                if (prof.version.minecraft !== settings.version.minecraft && typeof versions.minecraft === 'string') {
+            if (settings.runtime) {
+                const versions = settings.runtime;
+                if (prof.runtime.minecraft !== settings.runtime.minecraft && typeof versions.minecraft === 'string') {
                     // if minecraft version changed, all other related versions are rest.
-                    prof.version.minecraft = versions.minecraft;
-                    for (const versionType of Object.keys(prof.version).filter(v => v !== 'minecraft')) {
-                        prof.version[versionType] = '';
+                    prof.runtime.minecraft = versions.minecraft;
+                    for (const versionType of Object.keys(prof.runtime).filter(v => v !== 'minecraft')) {
+                        prof.runtime[versionType] = '';
                     }
                 }
 
                 for (const versionType of Object.keys(versions).filter(v => v !== 'minecraft')) {
                     const ver = versions[versionType];
                     if (typeof ver === 'string') {
-                        prof.version[versionType] = ver;
+                        prof.runtime[versionType] = ver;
                     }
                 }
             }
@@ -256,11 +256,6 @@ const mod: ProfileModule = {
                 prof.mcOptions = Object.seal(settings.mcOptions);
             }
 
-            prof.java = settings.java || prof.java as any; // TODO: typecheck
-            if (prof.java && !prof.java.path) {
-                Reflect.deleteProperty(prof, 'java');
-            }
-
             prof.url = settings.url || prof.url;
             prof.icon = settings.icon || prof.icon;
 
@@ -268,8 +263,13 @@ const mod: ProfileModule = {
                 const deployments = settings.deployments;
                 for (const domain of Object.keys(deployments)) {
                     const resources = deployments[domain];
-                    if (resources instanceof Array && resources.every(r => typeof r === 'string')) {
-                        prof.deployments[domain] = resources;
+                    if (typeof resources === 'object') {
+                        for (const key of Object.keys(resources)) {
+                            const value = resources[key];
+                            if (value) {
+                                prof.deployments[domain][key] = value;
+                            }
+                        }
                     }
                 }
             }

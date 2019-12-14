@@ -181,12 +181,12 @@ export default class VersionInstallService extends Service {
         // TODO: change to handle the profile not ready
         let version = mcversion;
         if (!version) {
-            const prof = this.state.profile.all[this.state.profile.id];
+            const prof = this.state.instance.all[this.state.instance.id];
             if (!prof) {
                 this.log('The profile refreshing is not ready. Break forge versions list update.');
                 return;
             }
-            version = prof.version.minecraft;
+            version = prof.runtime.minecraft;
         }
 
         this.log(`Update forge version list under Minecraft ${version}`);

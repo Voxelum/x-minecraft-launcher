@@ -94,7 +94,7 @@
 
 <script lang=ts>
 import { reactive, computed, toRefs, onMounted, onUnmounted, watch } from '@vue/composition-api';
-import { useDialog, useDialogSelf, useI18n, useStore, useJava, useShell, useNativeDialog } from '@/hooks';
+import { useDialogSelf, useI18n, useStore, useJava, useShell, useNativeDialog } from '@/hooks';
 
 export default {
   props: {
@@ -106,7 +106,7 @@ export default {
   setup() {
     const shell = useShell();
     const dialog = useNativeDialog();
-    const { getters, state } = useStore();
+    const { getters } = useStore();
     const { t } = useI18n();
     const { showDialog, isShown } = useDialogSelf('java-wizard');
     const { add, refreshLocalJava, installDefault } = useJava();
@@ -134,15 +134,6 @@ export default {
     const reason = computed(() => (!missing.value ? t('java.incompatibleJava') : t('java.missing')));
     const hint = computed(() => (!missing.value ? t('java.incompatibleJavaHint') : t('java.missingHint')));
 
-    let unwatch = () => { };
-    onMounted(() => {
-      updateValue();
-      unwatch = watch(missing, updateValue);
-    });
-    onUnmounted(() => {
-      unwatch();
-    });
-
     function updateValue() {
       if (missing.value) { showDialog(); }
     }
@@ -158,6 +149,16 @@ export default {
         }
       });
     }
+
+    let unwatch = () => { };
+    onMounted(() => {
+      updateValue();
+      unwatch = watch(missing, updateValue);
+    });
+    onUnmounted(() => {
+      unwatch();
+    });
+
     return {
       ...toRefs(data),
       isShown,
@@ -167,27 +168,21 @@ export default {
       refresh,
       async fixProblem(index: number) {
         data.step = index + 1;
-        let handle;
-        switch (index) {
-          case 0:
-            await installDefault(true).catch(e => data.downloadError = e);
-            showDialog('task');
-            break;
-          case 1:
-            await shell.openExternal('https://www.java.com/download/');
-            break;
-          case 2:
-            data.status = 'resolving';
-            const { filePaths } = await dialog.showOpenDialog({
-              title: t('java.browse'),
+        if (index === 0) {
+          await installDefault(true).catch((e) => { data.downloadError = e; });
+          showDialog('task');
+        } else if (index === 1) {
+          await shell.openExternal('https://www.java.com/download/');
+        } else if (index === 2) {
+          data.status = 'resolving';
+          const { filePaths } = await dialog.showOpenDialog({
+            title: t('java.browse'),
+          });
+          filePaths.forEach((p) => {
+            add(p).then((r) => {
+              if (!r) { data.status = 'error'; }
             });
-            filePaths.forEach((p) => {
-              add(p).then((r) => {
-                if (!r) { data.status = 'error'; }
-              });
-            });
-            break;
-          default:
+          });
         }
       },
       back() {

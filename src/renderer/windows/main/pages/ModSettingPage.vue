@@ -100,7 +100,7 @@
 
 <script lang=ts>
 import { createComponent, reactive, toRefs, computed } from '@vue/composition-api';
-import { useProfileMods, useSelectionList, useResource } from '@/hooks';
+import { useInstanceMods, useSelectionList, useResource } from '@/hooks';
 import { Resource, ForgeResource, LiteloaderResource } from 'universal/store/modules/resource';
 
 export default createComponent({
@@ -123,7 +123,7 @@ export default createComponent({
       isDeletingMod: false,
       deletingMod: null,
     });
-    const { mods: items } = useProfileMods();
+    const { mods: items } = useInstanceMods();
     const { resources, queryResource, importResource, removeResource } = useResource('mods');
     const mods = computed(() => {
       const mods = resources.value;
