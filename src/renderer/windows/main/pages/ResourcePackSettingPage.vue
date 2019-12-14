@@ -97,12 +97,12 @@
 import unknownPack from 'renderer/assets/unknown_pack.png';
 import { createComponent, reactive, inject, ref, toRefs, computed } from '@vue/composition-api';
 import { ResourcePackResource } from 'universal/store/modules/resource';
-import { useSelectionList, useProfileResourcePacks, useResource } from '@/hooks';
+import { useSelectionList, useInstanceResourcePacks, useResource } from '@/hooks';
 
 export default createComponent({
   setup() {
     const filterText = inject('filter-text', ref(''));
-    const { resourcePacks: packNames } = useProfileResourcePacks();
+    const { resourcePacks: packNames } = useInstanceResourcePacks();
     const { resources, importResource, queryResource, removeResource } = useResource('resourcepacks');
     const data: {
       dragging: boolean;

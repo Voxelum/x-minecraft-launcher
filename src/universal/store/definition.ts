@@ -3,7 +3,7 @@ import { CurseForgeModule } from './modules/curseforge';
 import { DiagnoseModule } from './modules/diagnose';
 import { JavaModule } from './modules/java';
 import { LauncherModule } from './modules/launch';
-import { ProfileModule } from './modules/profile';
+import { InstanceModule } from './modules/instance';
 import { ResourceModule } from './modules/resource';
 import { SettingModule } from './modules/setting';
 import { TaskModule } from './modules/task';
@@ -17,7 +17,7 @@ declare module './root' {
         diagnose: DiagnoseModule;
         java: JavaModule;
         launch: LauncherModule;
-        profile: ProfileModule;
+        instance: InstanceModule;
         resource: ResourceModule;
         setting: SettingModule;
         task: TaskModule;

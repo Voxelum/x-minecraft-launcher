@@ -445,7 +445,7 @@ export default class ResourceService extends Service {
             if (res.domain === 'mods' || res.domain === 'resourcepacks') {
                 const dest = this.getPath('profiles', profile, res.domain, res.name + res.ext);
                 try {
-                    const stat = await fs.stat(dest);
+                    const stat = await fs.lstat(dest);
                     if (stat.isSymbolicLink()) {
                         await fs.unlink(dest);
                         promises.push(fs.symlink(res.path, dest));

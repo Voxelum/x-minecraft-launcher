@@ -564,7 +564,7 @@ export default class CurseForgeService extends Service {
                 if (profile) {
                     id = profile;
                     await this.instanceService.editInstance({
-                        version: {
+                        runtime: {
                             minecraft: manifest.minecraft.version,
                             forge: forgeId ? forgeId.id.substring(6) : '',
                             liteloader: '',
@@ -578,7 +578,7 @@ export default class CurseForgeService extends Service {
                         type: 'modpack',
                         name: manifest.name,
                         author: manifest.author,
-                        version: {
+                        runtime: {
                             minecraft: manifest.minecraft.version,
                             forge: forgeId ? forgeId.id.substring(6) : '',
                         },

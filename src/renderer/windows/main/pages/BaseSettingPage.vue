@@ -91,10 +91,8 @@ export default {
       name,
       author,
       url,
-      type,
       description,
-      port,
-      host,
+      server,
       edit,
     } = useInstance();
     const router = useRouter();
@@ -104,7 +102,6 @@ export default {
       valid: boolean;
       hideLauncher: boolean;
       showLog: boolean;
-      type: string;
       name: string;
       host: string;
       port: string;
@@ -116,7 +113,6 @@ export default {
       valid: true,
       hideLauncher: false,
       showLog: false,
-      type: '',
       name: '',
 
       host: '', // mc.hypixel.com
@@ -134,7 +130,7 @@ export default {
         url: data.url,
         showLog: data.showLog,
       };
-      if (data.type === 'modpack') {
+      if (!isServer.value) {
         edit({
           ...payload,
           author: data.author,
@@ -153,13 +149,11 @@ export default {
       data.hideLauncher = hideLauncher.value;
       data.url = url.value;
       data.showLog = showLog.value;
-      data.type = type.value;
-      if (type.value === 'modpack') {
-        data.author = author.value;
-        data.description = description.value;
-      } else {
-        data.port = port.value.toString();
-        data.host = host.value;
+      data.author = author.value;
+      data.description = description?.value || '';
+      if (server.value) {
+        data.host = server.value.host;
+        data.port = server.value.port?.toString() || '';
       }
     }
     useAutoSaveLoad(save, load);

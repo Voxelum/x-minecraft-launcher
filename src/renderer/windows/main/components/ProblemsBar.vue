@@ -41,15 +41,16 @@ export default {
     const problems = computed(() => getters.problems);
     const problemsLevelColor = computed(() => (getters.problems.some(p => !p.optional) ? 'red' : 'warning'));
     const refreshing = computed(() => getters.busy('diagnose'));
-    const { showDialog } = useDialog('task');
+    const { showDialog: showTaskDialog } = useDialog('task');
     const { showDialog: showJavaDialog } = useDialog('java-wizard');
+    const { showDialog: showModDialog } = useDialog('download-missing-mods');
     const { notify } = useNotifier();
     const { t } = useI18n();
 
     async function handleManualFix(problem: Problem) {
       switch (problem.id) {
         case 'missingModsOnServer':
-          //   data.downloadMissingModsDialog = true;
+          showModDialog();
           break;
         case 'unknownMod':
         case 'incompatibleMod':
@@ -62,7 +63,6 @@ export default {
           if (state.java.all.some(j => j.majorVersion === 8)) {
             await services.InstanceService.editInstance({ java: state.java.all.find(j => j.majorVersion === 8) });
             notify('info', t('java.switchVersion'));
-            // TODO: notify user here the launcher switch java version
           } else {
             showJavaDialog();
           }
@@ -73,13 +73,14 @@ export default {
 
     function handleAutoFix() {
       services.DiagnoseService.fixProfile(problems.value);
-      showDialog();
+      showTaskDialog();
     }
     return {
       problems,
       problemsLevelColor,
       refreshing,
       fixProblem(problem: Problem) {
+        console.log('Try to fix problem:');
         console.log(problem);
         if (!problem.autofix) {
           handleManualFix(problem);

@@ -34,11 +34,10 @@ describe('InstanceService', () => {
                     config = payload;
                 },
             }).forEach(([k, v]) => Reflect.set(service, k, v));
-            const id = await service.createInstance({ type: 'modpack' });
+            const id = await service.createInstance({});
             expect(typeof id).toBe('string');
             expect(config.id).toBe(id);
             expect(config.author).toBe('username');
-            expect(config.type).toBe('modpack');
             expect(config.java).toEqual(mocks.getters.defaultJava);
             expect(config.deployments).toBeTruthy();
             expect(config.version.minecraft).toEqual(LATEST_MC_RELEASE);
@@ -57,12 +56,11 @@ describe('InstanceService', () => {
             }).forEach(([k, v]) => Reflect.set(service, k, v));
             const id = await service.createInstance({
                 author: 'ooo',
-                type: 'modpack',
                 image: 'lll',
                 name: 'xxx',
                 blur: 1,
                 java: { path: 'x', version: 'y' },
-                version: {
+                runtime: {
                     minecraft: '11',
                     forge: '22',
                     liteloader: '33',
@@ -74,7 +72,6 @@ describe('InstanceService', () => {
             expect(config.name).toBe('xxx');
             expect(config.id).toBe(id);
             expect(config.author).toBe('ooo');
-            expect(config.type).toBe('modpack');
             expect(config.java).toEqual({ path: 'x', version: 'y', majorVersion: 0 });
             expect(config.deployments).toEqual({ mods: ['abc'] });
             expect(config.version).toEqual({
@@ -94,7 +91,7 @@ describe('InstanceService', () => {
                 ...mocks,
                 commit: cm,
             }).forEach(([k, v]) => Reflect.set(service, k, v));
-            const id = await service.createInstance({ type: 'modpack' });
+            const id = await service.createInstance({});
             await service.selectInstance(id);
             expect(cm).toBeCalledWith('selectProfile', id);
         });

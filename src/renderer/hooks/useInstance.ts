@@ -1,7 +1,6 @@
 import { computed, onMounted, onUnmounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
-import { Data } from '@vue/composition-api/dist/component';
 import { GameSetting } from '@xmcl/minecraft-launcher-core';
-import { CreateOption, ServerAndModpack, ServerOrModpack } from 'universal/store/modules/profile';
+import { CreateOption, InstanceConfig } from 'universal/store/modules/instance';
 import { getExpectVersion } from 'universal/utils';
 import { useStore } from './useStore';
 import { useCurrentUser } from './useUser';
@@ -12,26 +11,25 @@ import { useMinecraftVersions } from './useVersion';
  */
 export function useInstance() {
     const { getters, services, state } = useStore();
-    const profile: ServerAndModpack & Data & { type: string } = getters.selectedProfile as any;
+    const instance: InstanceConfig & { [key: string]: unknown } = getters.selectedInstance as any;
 
-    const maxMemory = computed(() => profile.maxMemory);
-    const minMemory = computed(() => profile.minMemory);
-    const author = computed(() => profile.author || '');
+    const maxMemory = computed(() => instance.maxMemory);
+    const minMemory = computed(() => instance.minMemory);
+    const author = computed(() => instance.author || '');
 
-    const isServer = computed(() => profile.type === 'server');
+    const server = computed(() => instance.server);
     const refreshing = computed(() => state.semaphore.instance > 0);
-    const refs = toRefs(profile);
-    const type: Ref<string> = refs.type as any;
+    const refs = toRefs(instance);
 
     return {
         ...refs,
-        type,
         author,
         maxMemory,
         minMemory,
-        isServer,
+        isServer: computed(() => instance.server !== undefined),
+        server,
         edit: services.InstanceService.editInstance,
-        exportTo: services.InstanceService.exportProfile,
+        exportTo: services.InstanceService.exportInstance,
         refresh: services.InstanceService.refreshProfile,
         refreshing,
     };
@@ -43,11 +41,11 @@ export function useInstance() {
 export function useInstances() {
     const { getters, services } = useStore();
     return {
-        instances: computed(() => getters.profiles),
+        instances: computed(() => getters.instances),
         selectInstance: services.InstanceService.selectInstance,
         deleteInstance: services.InstanceService.deleteInstance,
         pingProfiles: services.InstanceService.refreshAll,
-        importInstance: services.InstanceService.importProfile,
+        importInstance: services.InstanceService.importInstance,
     };
 }
 
@@ -61,7 +59,7 @@ export function useInstanceCreation() {
     const data: CreateOption = reactive({
         type: 'modpack',
         name: '',
-        version: { forge: '', minecraft: release.value?.id, liteloader: '' },
+        version: { forge: '', minecraft: release.value?.id || '', liteloader: '' },
         java: { path: '', version: '', majorVersion: 0 },
         showLog: false,
         hideLauncher: true,
@@ -88,14 +86,18 @@ export function useInstanceCreation() {
          * Commit this creation. It will create and select the instance.
          */
         create() {
-            return services.InstanceService.createAndSelect({ ...data, type: 'modpack' });
+            return services.InstanceService.createAndSelect(data);
         },
         /**
          * Reset the change
          */
         reset() {
             data.name = 'Latest Game';
-            data.version = { forge: '', minecraft: release.value?.id, liteloader: '' };
+            data.runtime = {
+                forge: '',
+                minecraft: release.value?.id || '',
+                liteloader: '',
+            };
             data.java = { path: '', version: '', majorVersion: 0 };
             data.showLog = false;
             data.hideLauncher = true;
@@ -116,10 +118,9 @@ export function useInstanceCreation() {
          * Use the same configuration as the input instance
          * @param instance The instance will be copied
          */
-        use(instance: ServerOrModpack) {
-            data.type = instance.type;
+        use(instance: InstanceConfig) {
             data.name = instance.name;
-            data.version = instance.version;
+            data.runtime = instance.runtime;
             data.java = instance.java;
             data.showLog = instance.showLog;
             data.hideLauncher = instance.hideLauncher;
@@ -127,33 +128,29 @@ export function useInstanceCreation() {
             data.mcOptions = instance.mcOptions;
             data.maxMemory = instance.maxMemory;
             data.minMemory = instance.minMemory;
-            if ('author' in instance) {
-                data.author = instance.author;
-                data.description = instance.description;
-            } else {
-                data.host = instance.host;
-                data.port = instance.port;
-            }
+            data.author = instance.author;
+            data.description = instance.description;
             data.url = instance.url;
             data.icon = instance.icon;
             data.image = instance.image;
             data.blur = instance.blur;
+            data.server = instance.server;
         },
     };
 }
 
 export function useInstanceVersionBase() {
     const { getters } = useStore();
-    const profile: ServerOrModpack & Data = getters.selectedProfile as any;
+    const profile: InstanceConfig = getters.selectedInstance;
     return {
-        ...toRefs(profile.version),
+        ...toRefs(profile.runtime),
     };
 }
 
 export function useProfileTemplates() {
     const { getters } = useStore();
     return {
-        profiles: computed(() => getters.profiles),
+        profiles: computed(() => getters.instances),
         modpacks: computed(() => getters.modpacks),
     };
 }
@@ -161,10 +158,10 @@ export function useProfileTemplates() {
 /**
  * The hook return a reactive resource pack array.
  */
-export function useProfileResourcePacks() {
+export function useInstanceResourcePacks() {
     const { state, commit } = useStore();
     const resourcePacks: Ref<string[]> = computed({
-        get: () => state.profile.settings.resourcePacks,
+        get: () => state.instance.settings.resourcePacks,
         set: (p) => { commit('gamesettings', { resourcePacks: p }); },
     }) as any;
     return {
@@ -172,10 +169,10 @@ export function useProfileResourcePacks() {
     };
 }
 
-export function useProfileGameSetting() {
+export function useInstanceGameSetting() {
     const { state, commit, services } = useStore();
     return {
-        ...toRefs(state.profile.settings),
+        ...toRefs(state.instance.settings),
         refresh() {
             return services.InstanceService.loadProfileGameSettings();
         },
@@ -185,30 +182,30 @@ export function useProfileGameSetting() {
     };
 }
 
-export function useProfileVersion() {
+export function useInstanceVersion() {
     const { getters, services } = useStore();
 
-    const profile: ServerOrModpack & Data = getters.selectedProfile as any;
+    const instance: InstanceConfig = getters.selectedInstance;
 
-    const refVersion = toRefs(profile.version);
+    const refVersion = toRefs(instance.runtime);
     const folder = ref('');
     const id = computed(() => getExpectVersion(
-        profile.version.minecraft,
-        profile.version.forge,
-        profile.version.liteloader,
+        instance.runtime.minecraft,
+        instance.runtime.forge,
+        instance.runtime.liteloader,
     ));
 
     let watcher = () => { };
 
     onMounted(() => {
         watcher = watch(id, () => {
-            services.VersionService.resolveVersion(profile.version)
+            services.VersionService.resolveVersion(instance.runtime)
                 .then((f) => {
                     folder.value = f;
                 }, () => {
                     folder.value = '';
                     setTimeout(() => {
-                        services.VersionService.resolveVersion(profile.version).then((f) => {
+                        services.VersionService.resolveVersion(instance.runtime).then((f) => {
                             folder.value = f;
                         });
                     }, 1000);
@@ -226,12 +223,12 @@ export function useProfileVersion() {
     };
 }
 
-export function useProfileMods() {
+export function useInstanceMods() {
     const { getters, services } = useStore();
 
     const mods: Ref<string[]> = computed({
         get() {
-            return getters.selectedProfile.deployments.mods || [];
+            return getters.selectedInstance.deployments.mods || [];
         },
         set(nv: string[]) {
             services.InstanceService.editInstance({ deployments: { mods: nv } });
@@ -245,20 +242,20 @@ export function useProfileMods() {
 export function useInstanceSaves() {
     const { state, services } = useStore();
     return {
-        id: computed(() => state.profile.id),
-        saves: computed(() => state.profile.saves),
+        id: computed(() => state.instance.id),
+        saves: computed(() => state.instance.saves),
         importSave: services.InstanceService.importSave,
         deleteSave: services.InstanceService.deleteSave,
         exportSave: services.InstanceService.exportSave,
         copySave: services.InstanceService.copySave,
-        refresh: services.InstanceService.loadProfileSaves,
-        loadAllPreviews: services.InstanceService.loadAllProfileSaves,
+        refresh: services.InstanceService.loadInstanceSaves,
+        loadAllPreviews: services.InstanceService.getAllInstancesSavePreview,
     };
 }
 export function useInstanceLogs() {
     const { state, services } = useStore();
     return {
-        id: computed(() => state.profile.id),
+        id: computed(() => state.instance.id),
         getCrashReportContent: services.InstanceService.getCrashReportContent,
         getLogContent: services.InstanceService.getLogContent,
         listCrashReports: services.InstanceService.listCrashReports,

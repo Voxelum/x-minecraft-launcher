@@ -2,7 +2,7 @@ import Router, { Route } from 'vue-router';
 import Vue from 'vue';
 import { shell } from 'renderer/constant';
 import HomePage from './pages/HomePage.vue';
-import ProfilePage from './pages/ProfilesPage.vue';
+import InstancesPage from './pages/InstancesPage.vue';
 import SettingPage from './pages/SettingPage.vue';
 import UserPage from './pages/UserPage.vue';
 import SaveViewPage from './pages/SaveViewPage.vue';
@@ -25,8 +25,8 @@ const router = new Router({
             component: HomePage,
         },
         {
-            path: '/profiles',
-            component: ProfilePage,
+            path: '/instances',
+            component: InstancesPage,
         },
         {
             path: '/setting',

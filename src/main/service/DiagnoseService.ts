@@ -75,8 +75,8 @@ export default class DiagnoseService extends Service {
     async diagnoseMods() {
         this.commit('aquire', 'diagnose');
         try {
-            const id = this.state.profile.id;
-            const { version } = this.state.profile.all[id];
+            const id = this.state.instance.id;
+            const { runtime: version } = this.state.instance.all[id];
             const { mods } = this.getters.deployingResources;
             if (!mods) return;
 
@@ -118,8 +118,8 @@ export default class DiagnoseService extends Service {
     async diagnoseResourcePacks() {
         this.commit('aquire', 'diagnose');
         try {
-            const id = this.state.profile.id;
-            const { version } = this.state.profile.all[id];
+            const id = this.state.instance.id;
+            const { runtime: version } = this.state.instance.all[id];
             const { resourcepacks } = this.getters.deployingResources;
             const mcversion = version.minecraft;
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
@@ -171,10 +171,10 @@ export default class DiagnoseService extends Service {
     async diagnoseJava() {
         this.commit('aquire', 'diagnose');
         try {
-            const id = this.state.profile.id;
-            const profile = this.state.profile.all[id];
+            const id = this.state.instance.id;
+            const profile = this.state.instance.all[id];
 
-            const mcversion = profile.version.minecraft;
+            const mcversion = profile.runtime.minecraft;
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
 
             let java = profile.java;
@@ -195,7 +195,7 @@ export default class DiagnoseService extends Service {
             if (java && java.majorVersion > 8) {
                 if (!resolvedMcVersion.minorVersion || resolvedMcVersion.minorVersion < 13) {
                     tree.incompatibleJava.push({ java: java.version, mcversion });
-                } else if (resolvedMcVersion.minorVersion >= 13 && profile.version.forge && java.majorVersion > 10) {
+                } else if (resolvedMcVersion.minorVersion >= 13 && profile.runtime.forge && java.majorVersion > 10) {
                     tree.incompatibleJava.push({ java: java.version, mcversion });
                 }
             }
@@ -209,7 +209,7 @@ export default class DiagnoseService extends Service {
     async diagnoseServer() {
         this.commit('aquire', 'diagnose');
         try {
-            const stat = this.state.profile.statuses[this.state.profile.id];
+            const stat = this.state.instance.statuses[this.state.instance.id];
 
             const tree: Pick<ProblemReport, 'missingModsOnServer'> = {
                 missingModsOnServer: [],
@@ -229,13 +229,13 @@ export default class DiagnoseService extends Service {
     async diagnoseVersion() {
         this.commit('aquire', 'diagnose');
         try {
-            const id = this.state.profile.id;
-            const selected = this.state.profile.all[id];
+            const id = this.state.instance.id;
+            const selected = this.state.instance.all[id];
             if (!selected) {
                 console.error(`No profile selected! ${id}`);
                 return;
             }
-            const { version: versions } = selected;
+            const { runtime: versions } = selected;
             const currentVersion = this.getters.currentVersion;
             const targetVersion = await this.local.resolveVersion(currentVersion)
                 .catch(() => currentVersion.id);
@@ -320,8 +320,8 @@ export default class DiagnoseService extends Service {
         this.commit('startResolveProblems', unfixed);
         this.commit('aquire', 'diagnose');
 
-        const profile = this.getters.selectedProfile;
-        const { version: versions } = profile;
+        const profile = this.getters.selectedInstance;
+        const { runtime: versions } = profile;
         const currentVersion = this.getters.currentVersion;
 
         const mcversion = versions.minecraft;
@@ -334,7 +334,7 @@ export default class DiagnoseService extends Service {
         try {
             if (unfixed.some(p => p.id === 'missingVersion')) {
                 Reflect.set(recheck, 'diagnoseVersion', true);
-                this.commit('profile', { version: { minecraft: this.getters.minecraftRelease.id } });
+                this.commit('profile', { runtime: { minecraft: this.getters.minecraftRelease.id } });
             }
 
             if (unfixed.some(p => p.id === 'missingVersionJar')) {

@@ -1,10 +1,77 @@
 import { Auth, MojangChallengeResponse, MojangService, Net, ProfileService } from '@xmcl/minecraft-launcher-core';
 import { fs, requireNonnull, requireObject, requireString } from 'main/utils';
 import { getPersistence, setPersistence } from 'main/utils/persistence';
-import UserConfig from 'main/utils/schema/UserConfig.json';
+import UserConfigSchema from 'main/utils/schema/UserConfig.json';
 import { parse } from 'url';
 import { v4 } from 'uuid';
 import Service from './Service';
+import { UserConfig } from 'universal/store/modules/user.config';
+
+interface LauncherProfile {
+    /**
+     * All the launcher profiles and their configurations.
+     */
+    profiles: {
+        [name: string]: {
+            name: string;
+            /**
+             * The profile type. 
+             * Types are custom (manually created by the user), 
+             * latest-release (uses the latest stable release), 
+             * and latest-snapshot (uses the latest build of Minecraft).
+             */
+            type: string;
+            gameDir: string;
+            javaDir: string;
+            javaArgs: string;
+            /**
+             * The version ID that the profile targets. Version IDs are determined in the version.json in every directory in ~/versions
+             */
+            lastVersionId: string;
+            /**
+             * An Base64-encoded image which represents the icon of the profile in the profiles menu.
+             */
+            icon: string;
+            created: string;
+            /**
+             * An ISO 8601 formatted date which represents the last time the profile was used.
+             */
+            lastUsed: string;
+        };
+    };
+    clientToken: string;
+    /**
+     * All the logged in accounts. 
+     * Every account in this key contains a UUID-hashed map (which is used to save the selected user) 
+     * which in turn includes the access token, e-mail, and a profile (which contains the account display name)
+     */
+    authenticationDatabase: {
+        [uuid: string]: {
+            accessToken: string;
+            username: string;
+            profiles: {
+                [uuid: string]: {
+                    displayName: string;
+                };
+            };
+            properties: object[];
+        };
+    };
+    settings: {};
+    /**
+     * Contains the UUID-hashed account and the UUID of the currently selected user
+     */
+    selectedUser: {
+        /**
+         * The UUID-hashed key of the currently selected account
+         */
+        account: string;
+        /**
+         * The UUID of the currently selected player
+         */
+        profile: string;
+    };
+}
 
 export default class UserService extends Service {
     async save({ mutation }: { mutation: string }) {
@@ -25,55 +92,66 @@ export default class UserService extends Service {
         }
     }
 
+    async getMinecraftAuthDb() {
+        const data: LauncherProfile = await fs.readFile(this.getMinecraftPath('launcher_profile.json')).then(b => JSON.parse(b.toString()), () => { });
+        return data;
+    }
+
     async load() {
-        const data = await getPersistence({ path: this.getPath('user.json'), schema: UserConfig });
-
+        const data: UserConfig = await getPersistence({ path: this.getPath('user.json'), schema: UserConfigSchema });
+        const result: UserConfig = {
+            authServices: {},
+            profileServices: {},
+            profiles: {},
+            selectedUser: '',
+            selectedUserProfile: '',
+            loginHistory: [],
+            clientToken: '',
+        };
+        const mcdb = await this.getMinecraftAuthDb();
         if (typeof data === 'object') {
-            const authService = typeof data.authServices === 'object' ? data.authServices : {};
-            authService.mojang = Auth.Yggdrasil.API_MOJANG;
-            data.authServices = authService;
+            result.authServices = data.authServices;
+            result.authServices.mojang = Auth.Yggdrasil.API_MOJANG;
 
-            const profileServices = typeof data.profileServices === 'object' ? data.profileServices : {};
-            profileServices.mojang = ProfileService.API_MOJANG;
-            data.profileServices = profileServices;
+            result.profileServices = data.profileServices;
+            result.profileServices.mojang = ProfileService.API_MOJANG;
 
-            delete data.info;
-            delete data.refreshingSecurity;
-            delete data.refreshingSkin;
-            delete data.security;
-
-            if (data.id) { // data fix
-                data.profiles = {
-                    [data.userId]: {
-                        id: data.userId,
-                        type: data.userType,
-                        account: '',
-                        profileService: data.profileService,
-                        authService: data.authService,
-                        properties: data.properties,
-                        profiles: [{ id: data.id, name: data.name }],
-                    },
-                };
-                data.selectedUser = data.userId;
-                data.selectedGameProfile = data.id;
+            if (data.clientToken) {
+                result.clientToken = data.clientToken;
+            } else {
+                result.clientToken = mcdb?.clientToken ?? v4().replace(/-/g, '');
             }
-            this.commit('userSnapshot', data);
+
+            result.loginHistory = data.loginHistory;
+            result.selectedUser = data.selectedUser;
+            result.profiles = data.profiles;
         } else {
-            console.log('Not found local user record, use default setting');
-            this.commit('userSnapshot', {
-                authServices: {
-                    mojang: Auth.Yggdrasil.API_MOJANG,
-                },
-                profileServices: {
-                    mojang: ProfileService.API_MOJANG,
-                },
-                clientToken: v4().replace(/-/g, ''),
-                profiles: {},
-                selectedUser: '',
-                selectedUserProfile: '',
-                loginHistory: [],
-            });
+            // import mojang authDB
+
+            result.clientToken = mcdb?.clientToken ?? v4().replace(/-/g, '');
+            result.authServices = { mojang: Auth.Yggdrasil.API_MOJANG };
+            result.profileServices = { mojang: ProfileService.API_MOJANG };
+
+            result.selectedUser = mcdb?.selectedUser.account;
+            result.selectedUserProfile = mcdb?.selectedUser.profile;
         }
+        if (mcdb?.clientToken === result.clientToken && mcdb.authenticationDatabase) {
+            const adb = mcdb.authenticationDatabase;
+            for (const userId of Object.keys(adb)) {
+                const user = adb[userId];
+                if (!result.profiles[userId]) {
+                    result.profiles[userId] = {
+                        id: userId,
+                        account: user.username,
+                        accessToken: user.accessToken,
+                        authService: 'mojang',
+                        profileService: 'mojang',
+                        profiles: Object.entries(user.profiles).map(([id, body]) => ({ id, name: body.displayName, textures: { SKIN: { url: '' } } })),
+                    };
+                }
+            }
+        }
+        this.commit('userSnapshot', data);
     }
 
     async init() {

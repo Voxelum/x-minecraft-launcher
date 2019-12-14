@@ -1,5 +1,5 @@
 import { Task, TaskHandle } from '@xmcl/minecraft-launcher-core';
-import { App, ipcMain, webContents } from 'electron';
+import { App, ipcMain, webContents, app } from 'electron';
 import AuthLibService from 'main/service/AuthLibService';
 import BaseService from 'main/service/BaseService';
 import CurseForgeService from 'main/service/CurseForgeService';
@@ -17,7 +17,7 @@ import VersionService from 'main/service/VersionService';
 import { join } from 'path';
 import storeTemplate from 'universal/store';
 import Vue from 'vue';
-import Vuex, { MutationPayload, Store, StoreOptions } from 'vuex';
+import Vuex, { Store, StoreOptions } from 'vuex';
 import { Manager } from '.';
 
 Vue.use(Vuex);
@@ -60,9 +60,18 @@ export default class StoreAndServiceManager extends Manager {
     private setupService(root: string) {
         console.log(`Setup service ${root}`);
         const managers = this.managers;
+        const store = this.store!;
+        const getPath = (...paths: string[]) => join(root, ...paths);
+        const mcPath = join(app.getPath('appData'), '.minecraft');
 
-        Object.defineProperty(Service.prototype, 'managers', {
-            get() { return managers; },
+        Object.defineProperties(Service.prototype, {
+            managers: { value: managers },
+            getPath: { value: getPath },
+            commit: { value: store.commit },
+            state: { value: store.state },
+            getters: { value: store.getters },
+            minecraftPath: { value: mcPath },
+            getMinecraftPath: { value: (...args: string[]) => join(mcPath, ...args) },
         });
 
         this.addService(new AuthLibService());
@@ -79,20 +88,12 @@ export default class StoreAndServiceManager extends Manager {
         this.addService(new VersionService());
         this.addService(new BaseService());
 
-        const store = this.store!;
         const services = this.services;
         const servMap: { [name: string]: Service } = {};
-        const getPath = (...paths: string[]) => join(root, ...paths);
-
         for (const serv of services) {
             const name = Object.getPrototypeOf(serv).constructor.name;
             if (!name) throw new Error('Name of service is undefined');
             servMap[name] = serv;
-            const anySeriv = serv as any;
-            anySeriv.commit = store.commit;
-            anySeriv.state = store.state;
-            anySeriv.getters = store.getters;
-            anySeriv.getPath = getPath;
         }
         this.serviceMap = servMap;
 

@@ -44,7 +44,7 @@
                  
                   <v-list-tile-action>
                     <v-list-tile-action-text>
-                      {{ $t(`profile.templateSetting.${p.type === 'modpack' ? 'profile': 'server'}`) }}
+                      {{ $t(`profile.templateSetting.${p.server ? 'server': 'profile'}`) }}
                     </v-list-tile-action-text>
                   </v-list-tile-action>
                 </v-list-tile>

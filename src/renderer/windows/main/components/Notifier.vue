@@ -43,14 +43,11 @@
 </template>
 
 <script lang=ts>
-import Vue from 'vue';
-import { reactive, toRefs, onMounted, onUnmounted, createComponent } from '@vue/composition-api';
-import { useStore, useI18n, useNotifier } from '@/hooks';
+import { reactive, toRefs, createComponent } from '@vue/composition-api';
+import { useNotifier } from '@/hooks';
 
 export default createComponent({
   setup() {
-    const { state } = useStore();
-    const { t } = useI18n();
     const data = reactive({
       errorDialog: false,
     });

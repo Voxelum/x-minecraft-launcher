@@ -1,17 +1,17 @@
 import { Server } from '@xmcl/minecraft-launcher-core';
-import { ServerProfileConfig } from 'universal/store/modules/profile.config';
+import { InstanceConfig } from 'universal/store/modules/instance.config';
 import InstanceService from './InstanceService';
 
 /**
  * Refresh all server status
  */
 export async function refreshAll(this: InstanceService) {
-    const all: ServerProfileConfig[] = Object.values(this.state.profile.all).filter(p => p.type === 'server') as any;
-    const results = await Promise.all(all.map(async p => ({ [p.id]: await Server.fetchStatusFrame(p) })));
+    const all: InstanceConfig[] = Object.values(this.state.instance.all).filter(p => !!p.server);
+    const results = await Promise.all(all.map(async p => ({ [p.id]: await Server.fetchStatusFrame(p.server!) })));
     this.commit('profileStatus', results.reduce(Object.assign, {}));
 }
 export async function createProfileFromServer(this: InstanceService, info: Server.Info & { status: Server.StatusFrame }) {
-    const options: Partial<ServerProfileConfig> = {};
+    const options: Partial<InstanceConfig> = {};
     options.name = info.name;
     if (info.status) {
         // if (typeof info.status.description === 'string') {
@@ -19,7 +19,7 @@ export async function createProfileFromServer(this: InstanceService, info: Serve
         // } else if (typeof info.status.description === 'object') {
         //     options.description = TextComponent.from(info.status.description).formatted;
         // }
-        options.version = {
+        options.runtime = {
             minecraft: this.state.client.protocolMapping.mcversion[info.status.version.protocol][0],
             forge: '',
             liteloader: '',
@@ -31,9 +31,10 @@ export async function createProfileFromServer(this: InstanceService, info: Serve
         }
     }
     return this.createInstance({
-        type: 'server',
         ...options,
-        host: info.host,
-        port: info.port || 25565,
+        server: {
+            host: info.host,
+            port: info.port || 25565,
+        },
     });
 }

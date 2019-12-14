@@ -7,14 +7,10 @@ import { v4 } from 'uuid';
 import { ZipFile } from 'yazl';
 import InstanceService from './InstanceService';
 
-/**
- * Export current profile as a modpack. Can be either curseforge or normal full Minecraft
- * @param option Which profile is exporting (search by id), where to export (dest), include assets? 
- */
-export async function exportProfile(this: InstanceService, { id, dest, type = 'full' }: { id?: string; dest: string; type: 'full' | 'no-assets' | 'curseforge' }) {
+export async function exportInstance(this: InstanceService, { id, dest, type = 'full' }: { id?: string; dest: string; type: 'full' | 'no-assets' | 'curseforge' }) {
     if (this.getters.busy('instance')) return;
     this.commit('aquire', 'instance');
-    id = id || this.state.profile.id;
+    id = id || this.state.instance.id;
     try {
         const root = this.state.root;
         const from = join(root, 'profiles', id);
@@ -28,7 +24,7 @@ export async function exportProfile(this: InstanceService, { id, dest, type = 'f
         await includeAllToZip(from, from, file);
 
         const { resourcepacks, mods } = this.getters.deployingResources;
-        const defaultMcversion = this.state.profile.all[id].version.minecraft;
+        const defaultMcversion = this.state.instance.all[id].runtime.minecraft;
 
         const carriedVersionPaths = [];
 
@@ -74,13 +70,9 @@ export async function exportProfile(this: InstanceService, { id, dest, type = 'f
         this.commit('release', 'instance');
     }
 }
-/**
- * Import external profile into the launcher. The profile can be a curseforge zip, or a normal Minecraft file/zip. 
- * @param location The location of the profile try to import
- */
-export async function importProfile(this: InstanceService, location: string) {
+export async function importInstance(this: InstanceService, location: string) {
     const id = v4();
-    const destFolderPath = this.getPath('profiles', id);
+    const destFolderPath = this.getPathUnder(id);
     const isDirectory = fs.stat(location).then(s => s.isDirectory());
 
     let srcFolderPath = location;
@@ -141,7 +133,7 @@ export async function importProfile(this: InstanceService, location: string) {
         }
     }
 
-    await fs.writeFile(this.getPath('profiles', id, 'profile.json'), JSON.stringify(profileTemplate, null, 4));
+    await fs.writeFile(this.getPathUnder(id, 'profile.json'), JSON.stringify(profileTemplate, null, 4));
 
     await this.loadProfile(id);
 

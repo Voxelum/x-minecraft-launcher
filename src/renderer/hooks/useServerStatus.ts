@@ -6,7 +6,7 @@ import { useStore } from './useStore';
 export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
     const { state, getters, services } = useStore();
 
-    const using = ref || computed(() => state.profile.statuses[state.profile.id]);
+    const using = ref || computed(() => state.instance.statuses[state.instance.id]);
     const status: Ref<ServerStatusFrame> = computed(() => using.value || {
         version: {
             name: '',
@@ -35,7 +35,7 @@ export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
 
 export function useServerStatusForProfile(id: string) {
     const { state } = useStore();
-    return useServerStatus(computed(() => state.profile.statuses[id]));
+    return useServerStatus(computed(() => state.instance.statuses[id]));
 }
 
 export function useServer(host: Ref<string | undefined>, port: Ref<number | undefined>, protocol: Ref<number | undefined>) {

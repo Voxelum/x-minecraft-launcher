@@ -10,7 +10,7 @@ export * from './useElectron';
 export * from './useNetworkStatus';
 export * from './useNotifier';
 export * from './useParticle';
-export * from './useProfile';
+export * from './useInstance';
 export * from './useResource';
 export * from './useRouter';
 export * from './useSaveLoad';
