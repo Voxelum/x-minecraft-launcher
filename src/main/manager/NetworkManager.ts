@@ -46,6 +46,10 @@ export default class NetworkManager extends Manager {
         super();
     }
 
+    async rootReady(root: string) {
+        this.tempRoot = join(root, 'temp');
+    }
+
     async appReady() {
         this.updateGFW();
     }
@@ -116,6 +120,7 @@ export default class NetworkManager extends Manager {
     }
 
     async requestPageWithJS(url: string) {
+        console.log(`Request with js ${url}`);
         const root = this.tempRoot;
         const browser = this.jsguard;
         const cachePath = join(root, basename(new URL(url).pathname));
@@ -140,7 +145,6 @@ export default class NetworkManager extends Manager {
     }
 
     storeReady(store: Store<any>) {
-        this.tempRoot = join(store.state.root, 'temps');
         this.guard = new BrowserWindow({
             focusable: false,
             webPreferences: {

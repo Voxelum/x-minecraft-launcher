@@ -63,7 +63,7 @@ export function useCurseforgeProjectFiles(projectPath: string, type: ProjectType
      * @param file The download file
      */
     function install(file: Download) {
-        services.CurseForgeService.downloadAndImportFile({
+        return services.CurseForgeService.downloadAndImportFile({
             id: file.id,
             name: file.name,
             href: file.href,
