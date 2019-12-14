@@ -257,6 +257,7 @@ export default {
           properties: fromFolder ? ['openDirectory'] : ['openFile'],
         });
         if (filePaths && filePaths.length > 0) {
+          notify('info', t('profile.import.start'));
           for (const f of filePaths) {
             if (curseforge) {
               await importResource({
@@ -269,6 +270,7 @@ export default {
               await importInstance(f);
             }
           }
+          notify('success', t('profile.import.success'));
         }
       },
       doDelete() {

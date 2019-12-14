@@ -92,30 +92,30 @@
                     <div style="font-weight: 500;">
                       {{ $t('curseforge.createdDate') }}
                     </div>
-                    <div style="color: grey">
+                    <div style="color: grey; padding-left: 5px">
                       {{ computeDate(createdDate) }}
                     </div>
 
                     <div style="font-weight: 500;">
                       {{ $t('curseforge.lastUpdate') }}
                     </div>
-                    <div style="color: grey">
+                    <div style="color: grey; padding-left: 5px">
                       {{ computeDate(lastUpdate) }}
                     </div>
-                  </v-card-title>
-                  <v-card-text>
                     <div style="font-weight: 500;">
                       {{ $t('curseforge.totalDownloads') }}
                     </div>
-                    <div style="color: grey">
+                    <span style="color: grey; padding-left: 5px">
                       {{ totalDownload }}
-                    </div>
+                    </span>
+                  </v-card-title>
+                  <v-card-text>
                     <div style="font-weight: 500;">
                       {{ $t('curseforge.license') }}
                     </div>
-                    <div style="color: grey">
-                      {{ license.name }}
-                    </div>
+                    <p style="color: grey;">
+                      {{ license.trim() }}
+                    </p>
                   </v-card-text>
                 </v-card>
               </v-flex>
@@ -163,7 +163,7 @@
 <script lang=ts>
 import { createComponent, reactive, computed, onMounted, toRefs, watch } from '@vue/composition-api';
 import { Project, Download, ProjectType } from 'main/service/CurseForgeService';
-import { useCurseforgeImport, useCurseforgeProject, useCurseforgeProjectFiles, useCurseforgeImages, useStore } from '@/hooks';
+import { useCurseforgeImport, useCurseforgeProject, useCurseforgeProjectFiles, useCurseforgeImages, useStore, useNotifier } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -183,6 +183,7 @@ export default createComponent({
     const projectRefs = toRefs(project);
     const projectFiles = useCurseforgeProjectFiles(props.id, type, projectRefs.projectId);
     const projectImages = useCurseforgeImages(props.id, type);
+    const { subscribe } = useNotifier();
 
     const { state, getters } = useStore();
     const isFileDownloading = (file: { href: string }) => state.curseforge.downloading[file.href];
@@ -240,6 +241,13 @@ export default createComponent({
       ...projectFiles,
       fileStats,
       isFileDownloading,
+      async install(download: any) {
+        const promise = projectFiles.install(download);
+        if (props.type === 'modpacks') {
+          subscribe(promise, () => 'Download Success! Please create the instance by this modpack in instances panel', () => 'Fail to download this modpack!');
+        }
+        return promise;
+      },
     };
   },
   methods: {

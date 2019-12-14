@@ -72,16 +72,16 @@
               <v-flex xs6>
                 <v-card-title>
                   <span style="font-weight: bold;"> {{ proj.name }} </span>  <span style="padding-left: 3px;"> by {{ proj.author }} </span>
-                  <div style="color: grey">
+                  <div style="color: grey; padding-left: 5px;">
                     {{ proj.count }}
-                    {{ new Date(Number.parseInt(proj.date, 10)).toLocaleString() }}
+                    {{ proj.date ? proj.date : '' }}
                   </div>
                 </v-card-title>
                 <v-card-text>
                   {{ proj.description }}
                 </v-card-text>
               </v-flex>
-              <v-flex xs4>
+              <v-flex xs4 style="padding-top: 10px;">
                 <v-chip v-for="cat of proj.categories" :key="cat.title">
                   <v-avatar>
                     <img :src="cat.icon" style="max-height:30px; max-width: 30px">
