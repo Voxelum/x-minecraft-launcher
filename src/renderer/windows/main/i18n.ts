@@ -9,7 +9,7 @@ export default function provideI18n(store: any) {
         locale: store.getters.locale,
         fallbackLocale: 'en',
         messages: locales,
-        missing: (locale, key, vm) => {
+        missing: () => {
             // handle translation missing
         },
         silentTranslationWarn: true,

@@ -9,7 +9,7 @@ export default createComponent({
         args: { type: Object, default: () => { Object.create(null); } },
         styled: { type: String, default: 'true' },
     },
-    setup(props, context) {
+    setup(props) {
         const { t } = useI18n();
         return () => {
             if (!props.source) return createElement('div');
