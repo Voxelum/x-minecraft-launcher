@@ -103,7 +103,7 @@ export default createComponent({
   setup() {
     const filterText = inject('filter-text', ref(''));
     const { resourcePacks: packNames } = useInstanceResourcePacks();
-    const { resources, importResource, queryResource, removeResource } = useResource('resourcepacks');
+    const { resources, importResource, getResource, removeResource } = useResource('resourcepacks');
     const data: {
       dragging: boolean;
       isDeletingPack: boolean;
@@ -150,7 +150,7 @@ export default createComponent({
     }
     function onDropDelete(e: DragEvent) {
       const hash = e.dataTransfer!.getData('Hash');
-      const res = queryResource(hash);
+      const res = getResource(hash);
       if (res) {
         data.isDeletingPack = true;
         data.deletingPack = res as ResourcePackResource;

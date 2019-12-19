@@ -1,10 +1,11 @@
 <template>
   <v-tooltip top>
     <template v-slot:activator="{ on }">
-      <v-card color="darken-1" 
+      <v-card ref="card"
+              color="darken-1" 
               flat hover draggable
               :class="{ incompatible: !compatible }" 
-              class="draggable-card mod-card white--text" 
+              class="mod-card white--text" 
               :style="{ transform: dragged ? 'scale(0.8)' : 'scale(1)' }"
               style="margin-top: 10px; padding: 0 10px; transition-duration: 0.2s;"
               v-on="on" 
@@ -37,8 +38,9 @@
 </template>
 
 <script lang=ts>
-import { createComponent, ref, Ref } from '@vue/composition-api';
-import { useForgeModResource, useCompatible, useInstanceVersionBase, useShell } from '@/hooks';
+import Vue from 'vue';
+import { createComponent, ref, Ref, computed } from '@vue/composition-api';
+import { useForgeModResource, useCompatible, useInstanceVersionBase, useShell, useDragTransferItem } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -56,18 +58,19 @@ export default createComponent({
     },
   },
   setup(props, context) {
-    const shell = useShell();
+    // const shell = useShell();
     const { icon, metadata, acceptedRange } = useForgeModResource(props.data as any);
     const { minecraft } = useInstanceVersionBase();
     const { compatible } = useCompatible(acceptedRange, minecraft);
     const dragged = ref(false);
-    const iconImage: Ref<any> = ref(null);
+    const iconImage: Ref<Vue | null> = ref(null);
+    const card: Ref<Vue | null> = ref(null);
+
+    useDragTransferItem(computed(() => card.value!.$el as HTMLElement), props.isSelected, props.data.hash, props.index);
 
     function onDragStart(e: DragEvent) {
       dragged.value = true;
       e.dataTransfer!.setDragImage(iconImage.value!.$el, 0, 0);
-      e.dataTransfer!.setData('Index', `${props.isSelected ? 'R' : 'L'}${props.index}`);
-      e.dataTransfer!.setData('Hash', props.data.hash);
       context.emit('dragstart', e);
     }
     function onDragEnd(e: DragEvent) {
@@ -81,6 +84,7 @@ export default createComponent({
     // }
 
     return {
+      card,
       dragged,
       icon,
       iconImage,

@@ -3,49 +3,39 @@
     "properties": {
         "profiles": {
             "description": "All saved user profiles",
+            "default": {},
             "type": "object",
             "additionalProperties": {
                 "$ref": "#/definitions/UserProfile"
             }
         },
         "selectedUser": {
+            "default": "",
             "type": "string"
         },
         "selectedUserProfile": {
+            "default": "",
             "type": "string"
         },
         "authServices": {
             "description": "All loaded auth services api. Used for ygg auth",
+            "default": {},
             "type": "object",
             "additionalProperties": {
                 "$ref": "#/definitions/Auth.Yggdrasil.API"
-            },
-            "properties": {
-                "mojang": {
-                    "$ref": "#/definitions/Auth.Yggdrasil.API"
-                }
-            },
-            "required": [
-                "mojang"
-            ]
+            }
         },
         "profileServices": {
             "description": "All loaded profile services api. Used for",
+            "default": {},
             "type": "object",
             "additionalProperties": {
                 "$ref": "#/definitions/ProfileService.API"
-            },
-            "properties": {
-                "mojang": {
-                    "$ref": "#/definitions/ProfileService.API"
-                }
-            },
-            "required": [
-                "mojang"
-            ]
+            }
         },
         "loginHistory": {
             "description": "The login history of the user for a specific auth services",
+            "default": [],
             "type": "array",
             "items": {
                 "type": "string"
@@ -53,6 +43,7 @@
         },
         "clientToken": {
             "description": "The client token of current client. The launcher will generate one at first launch.",
+            "default": "",
             "type": "string"
         }
     },
@@ -70,9 +61,6 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "string"
-                },
-                "type": {
                     "type": "string"
                 },
                 "account": {
@@ -105,8 +93,7 @@
                 "authService",
                 "id",
                 "profileService",
-                "profiles",
-                "type"
+                "profiles"
             ]
         },
         "GameProfileAndTexture": {

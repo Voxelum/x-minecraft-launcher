@@ -1,10 +1,12 @@
-import { Version } from '@xmcl/minecraft-launcher-core';
+import { Task, Version } from '@xmcl/minecraft-launcher-core';
 import { Unzip } from '@xmcl/unzip';
-import { compressZipTo, fs, includeAllToZip } from 'main/utils';
+import { compressZipTo, fs, includeAllToZip, unpack7z } from 'main/utils';
 import { tmpdir } from 'os';
 import { basename, join, resolve } from 'path';
+import { InstanceConfig } from 'universal/store/modules/instance';
 import { v4 } from 'uuid';
 import { ZipFile } from 'yazl';
+import { Modpack } from './CurseForgeService';
 import InstanceService from './InstanceService';
 
 export async function exportInstance(this: InstanceService, { id, dest, type = 'full' }: { id?: string; dest: string; type: 'full' | 'no-assets' | 'curseforge' }) {
@@ -13,7 +15,7 @@ export async function exportInstance(this: InstanceService, { id, dest, type = '
     id = id || this.state.instance.id;
     try {
         const root = this.state.root;
-        const from = join(root, 'profiles', id);
+        const from = this.getPathUnder(id);
         const file = new ZipFile();
         const promise = compressZipTo(file, dest);
 
@@ -23,7 +25,9 @@ export async function exportInstance(this: InstanceService, { id, dest, type = '
 
         await includeAllToZip(from, from, file);
 
-        const { resourcepacks, mods } = this.getters.deployingResources;
+        const deployed = this.state.instance.deployed;
+        const linked = deployed.filter(d => d.resolved === 'link');
+
         const defaultMcversion = this.state.instance.all[id].runtime.minecraft;
 
         const carriedVersionPaths = [];
@@ -40,7 +44,6 @@ export async function exportInstance(this: InstanceService, { id, dest, type = '
             }
         }
 
-
         for (const verPath of carriedVersionPaths) {
             const versionId = basename(verPath);
             const versionFiles = await fs.readdir(verPath);
@@ -56,12 +59,8 @@ export async function exportInstance(this: InstanceService, { id, dest, type = '
                 `libraries/${lib.download.path}`);
         }
 
-        for (const resourcepack of resourcepacks) {
-            file.addFile(resourcepack.path, `resourcepacks/${resourcepack.name}${resourcepack.ext}`);
-        }
-
-        for (const mod of mods) {
-            file.addFile(mod.path, `mods/${basename(mod.path)}`);
+        for (const linkedDeploy of linked) {
+            file.addFile(linkedDeploy.src!, linkedDeploy.file);
         }
 
         file.end();
@@ -103,7 +102,7 @@ export async function importInstance(this: InstanceService, location: string) {
     if (await fs.exists(modsDir)) {
         for (const file of await fs.readdir(modsDir)) {
             try {
-                const resource = await this.resource.importResource({ path: resolve(srcFolderPath, 'mods', file) });
+                const resource = await this.resource.importUnknownResource({ path: resolve(srcFolderPath, 'mods', file) });
                 if (resource) { mods.push(resource.hash); }
             } catch (e) {
                 console.error(`Cannot import mod at ${file}.`);
@@ -114,14 +113,14 @@ export async function importInstance(this: InstanceService, location: string) {
     const resourcepacksDir = resolve(srcFolderPath, 'resourcepacks');
     if (await fs.exists(resourcepacksDir)) {
         for (const file of await fs.readdir(resourcepacksDir)) {
-            await this.resource.importResource({ path: resolve(srcFolderPath, 'resourcepacks', file), type: 'resourcepack' });
+            await this.resource.importUnknownResource({ path: resolve(srcFolderPath, 'resourcepacks', file), type: 'resourcepack' });
         }
     }
 
     let profileTemplate: any = {}; // TODO: typecheck
 
     const proiflePath = resolve(srcFolderPath, 'profile.json');
-    const isExportFromUs = await fs.stat(proiflePath).then(s => s.isFile()).catch(_ => false);
+    const isExportFromUs = await fs.stat(proiflePath).then(s => s.isFile()).catch(() => false);
     if (isExportFromUs) {
         profileTemplate = await fs.readFile(proiflePath).then(buf => buf.toString()).then(JSON.parse, () => ({}));
         Reflect.deleteProperty(profileTemplate, 'java');
@@ -135,9 +134,76 @@ export async function importInstance(this: InstanceService, location: string) {
 
     await fs.writeFile(this.getPathUnder(id, 'profile.json'), JSON.stringify(profileTemplate, null, 4));
 
-    await this.loadProfile(id);
+    await this.loadInstance(id);
 
     if (!isDirectory) {
         await fs.remove(srcFolderPath);
     }
+}
+
+export async function importCurseforgeModpack(this: InstanceService, payload: { path: string; instanceId?: string }) {
+    const { path, instanceId } = payload;
+    const stat = await fs.stat(path);
+    if (!stat.isFile()) throw new Error(`Cannot import curseforge modpack ${path}, since it's not a file!`);
+    console.log(`Import curseforge modpack by path ${path}`);
+    const installCurseforgeModpack = async (ctx: Task.Context) => {
+        await fs.ensureDir(this.getPath('temp'));
+        const dir = await fs.mkdtemp(this.getPath('temp', 'curseforge-'));
+        const unpack = async () => unpack7z(path, dir);
+        await ctx.execute(unpack);
+
+        if (await fs.missing(join(dir, 'manifest.json'))) {
+            throw new Error(`Cannot import curseforge modpack ${path}, since it doesn't have manifest.json`);
+        }
+
+        const deployments: InstanceConfig['deployments'] = [];
+
+        const resolveFile = async () => {
+            const manifest: Modpack = await fs.readFile(join(dir, 'manifest.json')).then(b => JSON.parse(b.toString()));
+            for (const f of manifest.files) {
+                if (!f) continue;
+                const uri = `curseforge://id/${f.projectID}/${f.fileID}`;
+                deployments.push(uri);
+            }
+            return manifest;
+        };
+
+        const manifest: Modpack = await this.submit(resolveFile).wait();
+        // create profile accordingly 
+        const createProfile = async () => {
+            const forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'));
+            let id: string;
+            if (instanceId) {
+                id = instanceId;
+                await this.editInstance({
+                    id,
+                    runtime: {
+                        minecraft: manifest.minecraft.version,
+                        forge: forgeId ? forgeId.id.substring(6) : '',
+                        liteloader: '',
+                    },
+                    deployments,
+                });
+            } else {
+                id = await this.createAndSelect({
+                    name: manifest.name,
+                    author: manifest.author,
+                    runtime: {
+                        minecraft: manifest.minecraft.version,
+                        forge: forgeId ? forgeId.id.substring(6) : '',
+                        liteloader: '',
+                    },
+                    deployments,
+                });
+            }
+            const profileFolder = this.getPathUnder(id);
+            // start handle override
+            if (manifest.overrides) {
+                await fs.copy(join(dir, manifest.overrides), profileFolder);
+            }
+        };
+        await ctx.execute(createProfile);
+        await fs.remove(dir);
+    };
+    await this.submit(installCurseforgeModpack).wait();
 }

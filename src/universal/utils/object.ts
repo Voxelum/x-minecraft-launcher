@@ -1,6 +1,3 @@
-export function requireNumber(object: any, message: string) {
-    if (typeof object !== 'number') throw new Error(message || 'Require a number!');
-}
 export function deepEquals(a: any, b: any): boolean {
     const ta = typeof a;
     const tb = typeof b;
@@ -55,6 +52,9 @@ export function diff(target: any, option: any): boolean {
     }
     return !Object.entries(target).every(([k, v]) => deepEquals(option[k], v));
 }
+export function requireNumber(object: any, message: string) {
+    if (typeof object !== 'number') throw new Error(message || 'Require a number!');
+}
 export function requireObject(object: unknown, message?: string): asserts object is object {
     if (typeof object !== 'object') throw new Error(message || 'Require a object!');
 }
@@ -72,7 +72,6 @@ export function requireType(object: any, type: any, message: any) {
         throw new Error(message || `Require object ${object} be the type ${type}`);
     }
 }
-
 export function fitin(state: any, option: any) {
     if (isNullOrUndefine(option)) return;
     for (const key of Object.keys(option)) {
@@ -94,48 +93,4 @@ export function fitin(state: any, option: any) {
             }
         }
     }
-}
-
-/**
- * 
- * @param {any} a 
- */
-export function aArr(a: any) {
-    return a instanceof Array;
-}
-/**
- * @param {any} a
- */
-export function aStr(a: any) {
-    if (typeof a !== 'string') throw new Error('Require String');
-}
-
-/**
- * @param {any} a
- */
-export function aNum(a: any) {
-    if (typeof a !== 'number') throw new Error('Require Number');
-}
-
-/**
- * @param {any} a
- */
-export function aBool(a: any) {
-    if (typeof a !== 'boolean') throw new Error('Require Boolean');
-}
-
-/**
- * @param {any} a
- */
-export function aStrArr(a: any) {
-    if (!(a instanceof Array)) throw new Error('Require String Array');
-    for (const i of a) if (typeof i !== 'string') throw new Error('Require String Array');
-}
-
-/**
- * @param {any} a
- * @param {any} instance
- */
-export function aInstance(a: any, instance: any) {
-    if (!(a instanceof instance)) throw new Error(`Require ${instance}`);
 }

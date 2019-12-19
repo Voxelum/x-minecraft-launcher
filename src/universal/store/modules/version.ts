@@ -8,11 +8,11 @@ import { ModuleOption } from '../root';
 export type Status = 'remote' | 'local';
 
 /**
-     * An interface to reference a resolved version in 
-     * <minecraft folder>/versions/<version-id>/<version-id>.json
-     * 
-     * This is more lightweight than @xmcl/minecraft-launcher-core's Version by Version.parse.
-     */
+ * An interface to reference a resolved version in 
+ * <minecraft folder>/versions/<version-id>/<version-id>.json
+ * 
+ * This is more lightweight than @xmcl/minecraft-launcher-core's Version by Version.parse.
+ */
 export interface LocalVersion {
     /**
      * Minecraft version of this version. e.g. 1.7.10
@@ -45,9 +45,21 @@ interface WebPage extends ForgeWebPage {
 }
 
 interface State {
+    /**
+     * All the local versions installed in the disk
+     */
     local: LocalVersion[];
+    /**
+     * Minecraft version metadata list. Helps to download.
+     */
     minecraft: Installer.VersionMetaList;
+    /**
+     * Forge version metadata dictionary. Helps to download.
+     */
     forge: { [mcversion: string]: ForgeWebPage };
+    /**
+     * Liteloader version metadata list. Helps to download.
+     */
     liteloader: LiteLoader.VersionMetaList;
 }
 

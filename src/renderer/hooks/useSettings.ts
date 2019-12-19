@@ -1,4 +1,4 @@
-import { computed, watch } from '@vue/composition-api';
+import { computed } from '@vue/composition-api';
 import { useStore } from './useStore';
 
 export function useSettings() {
@@ -31,7 +31,7 @@ export function useSettings() {
 
 
     return {
-        checkUpdate: services.SettingService.checkUpdate,
+        checkUpdate: services.BaseService.checkUpdate,
         locales,
         selectedLocale,
         allowPrerelease,
@@ -56,8 +56,8 @@ export function useUpdateInfo() {
         downloadingUpdate,
         updateInfo,
         readyToUpdate,
-        downloadUpdate: services.SettingService.downloadUpdate,
-        quitAndInstall: services.SettingService.quitAndInstall,
-        checkUpdate: services.SettingService.checkUpdate,
+        downloadUpdate: services.BaseService.downloadUpdate,
+        quitAndInstall: services.BaseService.quitAndInstall,
+        checkUpdate: services.BaseService.checkUpdate,
     };
 }

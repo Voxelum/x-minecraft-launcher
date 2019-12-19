@@ -1,8 +1,7 @@
 
 import Ajv from 'ajv';
-import { fs } from 'main/utils';
 import { existsSync } from 'fs';
-import { join } from 'path';
+import { fs } from 'main/utils';
 import { createContext, runInContext } from 'vm';
 
 export async function readFolder(path: string) {
@@ -19,7 +18,13 @@ export async function setPersistence({ path, data, schema }: { path: string; dat
         const validation = ajv.compile(schemaObject);
         const valid = validation(deepCopy);
         if (!valid) {
-            throw new Error(`Cannot persistence the ${path} as input invalid!`);
+            const context = createContext({ object: deepCopy });
+            if (validation.errors) {
+                validation.errors.forEach(e => console.warn(e));
+                const cmd = validation.errors.map(e => `delete object${e.dataPath};`);
+                console.log(cmd.join('\n'));
+                runInContext(cmd.join('\n'), context);
+            }
         }
     }
     await fs.ensureFile(path);
@@ -49,6 +54,6 @@ export async function getPersistence(option: { path: string; schema?: object }) 
             }
         }
     }
-    
+
     return object;
 }

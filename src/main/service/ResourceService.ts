@@ -1,14 +1,14 @@
-import { Fabric, FileSystem, Forge, System, Task, Util, WorldReader } from '@xmcl/minecraft-launcher-core';
+import { Fabric, FileSystem, Forge, Net, System, Task, Util, WorldReader } from '@xmcl/minecraft-launcher-core';
 import { createHash } from 'crypto';
 import filenamify from 'filenamify';
-import { fs, requireString } from 'main/utils';
+import { cacheWithHash, fs, requireString } from 'main/utils';
 import { getPersistence } from 'main/utils/persistence';
-import ResourceConfig from 'main/utils/schema/ResourceConfig.json';
 import { basename, extname, join, resolve } from 'path';
-import { AnyResource, ImportOption, ImportTypeHint, Resource } from 'universal/store/modules/resource';
-import CurseForgeService from './CurseForgeService';
-import InstanceService from './InstanceService';
-import Service, { Inject } from './Service';
+import { AnyResource, ImportOption, ImportTypeHint, Resource, UNKNOWN_RESOURCE } from 'universal/store/modules/resource';
+import { ResourceSchema } from 'universal/store/modules/resource.schema';
+import { CURSEMETA_CACHE } from 'main/constant';
+import { parse as parseUrl, UrlWithStringQuery } from 'url';
+import Service from './Service';
 
 function sha1(data: Buffer) {
     return createHash('sha1').update(data).digest('hex');
@@ -25,68 +25,6 @@ function toResource(builder: ResourceBuilder): AnyResource {
     return res;
 }
 
-export function importResourceTask(path: string, type: ImportTypeHint | undefined, metadata: any) {
-    async function importResource(this: ResourceService, context: Task.Context) {
-        context.update(0, 4, path);
-        const isDirectory = await fs.stat(path).then(stat => stat.isDirectory());
-        if (isDirectory) throw new Error('Directory');
-        const data: Buffer = await fs.readFile(path);
-        const builder: Resource<any> = {
-            name: '',
-            path,
-            hash: await Util.computeChecksum(path, 'sha1'),
-            ext: extname(path),
-            domain: '',
-            type: '',
-            metadata: {},
-            source: {
-                path: '',
-                date: '',
-            },
-        };
-        builder.name = basename(path, builder.ext);
-        builder.source = {
-            name: builder.name,
-            path: resolve(path),
-            date: Date.now(),
-            ...metadata,
-        };
-
-        // check the resource existence
-        context.update(1, 4, path);
-        const checking = async () => {
-            // TODO: do a more strict check
-            const resource = this.getters.getResource(builder.hash);
-            if (resource) {
-                Object.assign(builder, resource, { source: builder.source });
-                return true;
-            }
-            return false;
-        };
-        const existed = await context.execute(checking);
-
-        if (!existed) {
-            // use parser to parse metadata
-            context.update(2, 4, path);
-            const parsing = () => this.resolveResource(builder, data || path, type);
-            await context.execute(parsing);
-            console.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
-
-            // write resource to disk
-            context.update(3, 4, path);
-            const storing = () => this.commitResourceToDisk(builder, data);
-            await context.execute(storing);
-
-            // done
-            context.update(4, 4, path);
-        }
-        const reuslt = toResource(builder);
-        this.commit('resource', reuslt);
-        return reuslt;
-    }
-    return importResource;
-}
-
 export interface ResourceRegistryEntry<T> {
     type: string;
     domain: string;
@@ -94,18 +32,188 @@ export interface ResourceRegistryEntry<T> {
     parseIcon: (metadata: T, data: FileSystem) => Promise<Uint8Array | undefined>;
     parseMetadata: (data: FileSystem) => Promise<T>;
     getSuggestedName: (metadata: T) => string;
+    /**
+     * Get ideal uri for this resource
+     */
+    getUri: (metadata: T, hash: string) => string;
+}
+
+export interface ResourceHost {
+    /**
+     * Query the resource by uri.
+     * Throw error if not found.
+     * @param uri The uri for the querying resource
+     */
+    query(uri: UrlWithStringQuery): Promise<{
+        /**
+         * The resource url
+         */
+        url: string;
+        source: { key: string; value: any };
+        type: string;
+    } | undefined>;
 }
 
 export default class ResourceService extends Service {
-    @Inject('InstanceService')
-    private instanceSerivce!: InstanceService;
-
-    @Inject('CurseForgeService')
-    private curseforgeSerivce!: CurseForgeService;
-
-    private hashToFilePath: { [hash: string]: string } = {};
-
     private resourceRegistry: ResourceRegistryEntry<any>[] = [];
+
+    private resourceHosts: ResourceHost[] = [];
+
+    /**
+     * Query local resource by url
+     */
+    queryResouceLocal(url: string) {
+        requireString(url);
+        const state = this.state.resource;
+        for (const d of Object.keys(state.domains)) {
+            const res = state.domains[d];
+            for (const v of Object.values(res)) {
+                const uris = v.source.uri;
+                if (uris.some(u => u === url)) {
+                    return v;
+                }
+            }
+        }
+        return UNKNOWN_RESOURCE;
+    }
+
+    /**
+     * resolve a uri to actual fetchable url, like https:// or file://
+     * @param uri The input uri
+     */
+    protected async resolveURI(uri: UrlWithStringQuery) {
+        if (uri.protocol === 'https:' || uri.protocol === 'file:' || uri.protocol === 'http:') {
+            return { url: uri.href, source: undefined, type: undefined };
+        }
+        for (const host of this.resourceHosts) {
+            const result = await host.query(uri);
+            if (result) return result;
+        }
+        return { url: undefined, source: undefined, type: undefined };
+    }
+
+    /**
+     * Import regular resource from uri.
+     * @param uri The spec uri format
+     */
+    protected importResourceTask(uri: string, extra: any) {
+        const importResource = async (context: Task.Context) => {
+            const parsed = parseUrl(uri);
+
+            const localResource = this.getters.queryResource(uri);
+            if (localResource) {
+                return localResource;
+            }
+            const { url: realUrl, source: expectedSource, type } = await this.resolveURI(parsed);
+            if (!realUrl) {
+                console.warn(`Cannot find the remote source of the resource ${uri}`);
+                return UNKNOWN_RESOURCE;
+            }
+
+            context.update(0, 4, uri);
+            const { buffer, urls: redirectUrls, hash } = await context.execute(cacheWithHash(realUrl));
+            const base = redirectUrls ? redirectUrls[redirectUrls.length - 1] : realUrl;
+            const ext = extname(base);
+            const builder: Resource<any> = {
+                name: basename(base, ext),
+                path: '',
+                hash,
+                ext,
+                domain: '',
+                type: type || '',
+                metadata: {},
+                source: {
+                    uri: [uri, realUrl, ...(redirectUrls || [])],
+                    date: Date.now(),
+                },
+            };
+            if (expectedSource) {
+                builder.source[expectedSource.key] = Object.assign({}, expectedSource.value, extra);
+            }
+
+            // use parser to parse metadata
+            context.update(1, 4, uri);
+
+            const parsing = () => this.resolveResource(builder, buffer, type);
+            await context.execute(parsing);
+            console.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
+
+            // write resource to disk
+            context.update(3, 4, uri);
+            const storing = () => this.commitResourceToDisk(builder, buffer);
+            await context.execute(storing);
+
+            // done
+            context.update(4, 4, uri);
+
+            const reuslt = toResource(builder);
+            this.commit('resource', reuslt);
+            return reuslt;
+        };
+        return importResource;
+    }
+
+    /**
+     * Import unknown resource task. Only used for importing unknown resource from file.
+     * @param path The file path
+     * @param type The guessing resource hint
+     */
+    importUnknownResourceTask(path: string, type: ImportTypeHint | undefined, metadata: any) {
+        const importResource = async (context: Task.Context) => {
+            context.update(0, 4, path);
+            const isDirectory = await fs.stat(path).then(stat => stat.isDirectory());
+            if (isDirectory) throw new Error(`Cannot import directory as resource! ${path}`);
+            const data: Buffer = await fs.readFile(path);
+            const builder: Resource<any> = {
+                name: '',
+                path,
+                hash: await Util.computeChecksum(path, 'sha1'),
+                ext: extname(path),
+                domain: '',
+                type: '',
+                metadata: {},
+                source: {
+                    uri: [`file://${resolve(path)}`],
+                    date: Date.now(),
+                    ...metadata,
+                },
+            };
+            builder.name = basename(path, builder.ext);
+
+            // check the resource existence
+            context.update(1, 4, path);
+            const checking = async () => {
+                // TODO: do a more strict check
+                const resource = this.getters.getResource(builder.hash);
+                if (resource) {
+                    Object.assign(builder, resource, { source: builder.source });
+                    return true;
+                }
+                return false;
+            };
+            const existed = await context.execute(checking);
+
+            if (!existed) {
+                // use parser to parse metadata
+                context.update(2, 4, path);
+                const parsing = () => this.resolveResource(builder, data, type);
+                await context.execute(parsing);
+                console.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
+
+                // write resource to disk
+                context.update(3, 4, path);
+                const storing = () => this.commitResourceToDisk(builder, data);
+                await context.execute(storing);
+
+                // done
+                context.update(4, 4, path);
+            }
+            const reuslt = toResource(builder);
+            this.commit('resource', reuslt);
+            return reuslt;
+        };
+        return importResource;
+    }
 
     private unknownEntry: ResourceRegistryEntry<unknown> = {
         type: 'unknown',
@@ -114,11 +222,12 @@ export default class ResourceService extends Service {
         parseIcon: () => Promise.resolve(undefined),
         parseMetadata: () => Promise.resolve({}),
         getSuggestedName: () => '',
+        getUri: () => '',
     };
 
     constructor() {
         super();
-        this.register({
+        this.registerResourceType({
             type: 'forge',
             domain: 'mods',
             ext: '.jar',
@@ -143,8 +252,9 @@ export default class ResourceService extends Service {
                 }
                 return name;
             },
+            getUri: meta => `forge://${meta[0].modid}/${meta[0].version}`,
         });
-        this.register({
+        this.registerResourceType({
             type: 'liteloader',
             domain: 'mods',
             ext: '.litemod',
@@ -166,8 +276,9 @@ export default class ResourceService extends Service {
                 }
                 return name;
             },
+            getUri: meta => `liteloader://${meta.name}/${meta.version}`,
         });
-        this.register({
+        this.registerResourceType({
             type: 'fabric',
             domain: 'mods',
             ext: '.jar',
@@ -192,30 +303,71 @@ export default class ResourceService extends Service {
                 }
                 return name;
             },
+            getUri: meta => `fabric://${meta.id}/${meta.version}`,
         });
-        this.register({
+        this.registerResourceType({
             type: 'resourcepack',
             domain: 'resourcepacks',
             ext: '.zip',
             parseIcon: async (meta, fs) => fs.readFile('icon.png'),
             parseMetadata: fs => fs.readFile('pack.mcmeta', 'utf-8').then(JSON.parse),
             getSuggestedName: () => '',
+            getUri: (_, hash) => `resourcepack://${hash}`,
         });
-        this.register({
+        this.registerResourceType({
             type: 'save',
             domain: 'saves',
             ext: '.zip',
             parseIcon: async (meta, fs) => fs.readFile('icon.png'),
             parseMetadata: fs => new WorldReader(fs).getLevelData(),
             getSuggestedName: meta => meta.LevelName,
+            getUri: (_, hash) => `save://${hash}`,
         });
-        this.register({
+        this.registerResourceType({
             type: 'curseforge-modpack',
             domain: 'modpacks',
             ext: '.zip',
             parseIcon: () => Promise.resolve(undefined),
             parseMetadata: fs => fs.readFile('mainifest.json', 'utf-8').then(JSON.parse),
             getSuggestedName: () => '',
+            getUri: (_, hash) => `modpack://${hash}`,
+        });
+
+        this.resourceHosts.push({
+            async query(uri) {
+                if (uri.protocol !== 'curseforge:') {
+                    return undefined;
+                }
+                if (uri.host === 'path') {
+                    const [projectType, projectPath, fileId] = uri.path!.split('/').slice(1);
+                    return {
+                        url: `https://www.curseforge.com/minecraft/${projectType}/${projectPath}/download/${fileId}/file`,
+                        type: '*',
+                        source: {
+                            key: 'curseforge',
+                            value: {
+                                projectType,
+                                projectPath,
+                            },
+                        },
+                    };
+                }
+                const [projectId, fileId] = uri.path!.split('/').slice(1);
+                const metadataUrl = `${CURSEMETA_CACHE}/${projectId}/${fileId}.json`;
+                const o = await Net.fetchJson(metadataUrl);
+                const url = o.body.DownloadURL;
+                return {
+                    url,
+                    type: '*',
+                    source: {
+                        key: 'curseforge',
+                        value: {
+                            projectId,
+                            fileId,
+                        },
+                    },
+                };
+            },
         });
     }
 
@@ -223,13 +375,19 @@ export default class ResourceService extends Service {
         return typeof resource === 'string' ? this.getters.getResource(resource) : resource;
     }
 
-    protected register(entry: ResourceRegistryEntry<any>) {
+    protected registerResourceType(entry: ResourceRegistryEntry<any>) {
         if (this.resourceRegistry.find(r => r.type === entry.type)) {
             throw new Error(`The entry type ${entry.type} existed!`);
         }
         this.resourceRegistry.push(entry);
     }
 
+    /**
+     * Resolve the resource metadata by its content
+     * @param builder The resource builder
+     * @param data The resource self
+     * @param typeHint The type hint
+     */
     protected async resolveResource(builder: ResourceBuilder, data: Buffer, typeHint?: ImportTypeHint): Promise<void> {
         let chains: Array<ResourceRegistryEntry<any>> = [];
         const fs = await System.openFileSystem(data);
@@ -262,7 +420,7 @@ export default class ResourceService extends Service {
             }
         }
 
-        const { domain, metadata, type, getSuggestedName, parseIcon } = await promise;
+        const { domain, metadata, type, getSuggestedName, parseIcon, getUri } = await promise;
         builder.domain = domain;
         builder.metadata = metadata;
         builder.type = type;
@@ -273,6 +431,11 @@ export default class ResourceService extends Service {
         }
 
         builder.icon = await parseIcon(metadata, fs).catch(() => undefined);
+        try {
+            builder.source.uri.push(getUri(metadata, builder.hash));
+        } catch {
+            console.warn(`Fail to inspect the uri for ${builder.name}[${builder.hash}]`);
+        }
     }
 
     protected async commitResourceToDisk(builder: ResourceBuilder, data: Buffer) {
@@ -330,10 +493,8 @@ export default class ResourceService extends Service {
                 const files = await fs.readdir(path);
                 for (const file of files.filter(f => f.endsWith('.json'))) {
                     const filePath = join(path, file);
-                    const read = await getPersistence({ path: filePath, schema: ResourceConfig });
-                    if (read !== {}) {
-                        resources.push(read);
-                    }
+                    const read: ResourceSchema<any> = await getPersistence({ path: filePath, schema: ResourceSchema });
+                    resources.push(read);
                 }
             }));
         this.commit('resources', resources);
@@ -355,7 +516,7 @@ export default class ResourceService extends Service {
         } catch (e) {
             console.error(e);
             await this.discardResourceOnDisk(resource);
-            this.commit('removeResource', resource);
+            this.commit('resourceRemove', resource);
         }
     }
 
@@ -378,7 +539,7 @@ export default class ResourceService extends Service {
         } catch (e) {
             console.error(e);
             await this.discardResourceOnDisk(resource);
-            this.commit('removeResource', resource);
+            this.commit('resourceRemove', resource);
         }
     }
 
@@ -389,7 +550,7 @@ export default class ResourceService extends Service {
     async removeResource(resource: string | AnyResource) {
         const resourceObject = this.normalizeResource(resource);
         if (!resourceObject) return;
-        this.commit('removeResource', resourceObject);
+        this.commit('resourceRemove', resourceObject);
         const ext = extname(resourceObject.path);
         const pure = resourceObject.path.substring(0, resourceObject.path.length - ext.length);
         if (await fs.exists(resourceObject.path)) {
@@ -419,63 +580,29 @@ export default class ResourceService extends Service {
     }
 
     /**
-     * Deploy all the resource from `resourceUrls` into profile which uuid equals to `profile`.
-     * 
-     * The `mods` and `resourcepacks` will be deploied by linking the mods & resourcepacks files into the `mods` and `resourcepacks` directory of the profile.
-     * 
-     * The `saves` and `modpack` will be deploied by pasting the saves and modpack overrides into this profile directory.
-     */
-    async deployResources(payload: { resourceUrls: string[]; profile: string }) {
-        if (!payload) throw new Error('Require input a resource with minecraft location');
-        const { resourceUrls: resources, profile } = payload;
-        if (!resources) throw new Error('Resources cannot be undefined!');
-        if (!profile) throw new Error('Profile id cannot be undefined!');
-
-        const promises = [];
-        for (const resource of resources) {
-            const res = this.normalizeResource(resource);
-            if (!res) {
-                promises.push(Promise.reject(new Error(`Cannot find the resource ${resource}`)));
-                continue;
-            }
-            if (typeof res !== 'object' || !res.hash || !res.type || !res.domain || !res.name) {
-                promises.push(Promise.reject(new Error(`The input resource object should be valid! ${JSON.stringify(resource, null, 4)}`)));
-                continue;
-            }
-            if (res.domain === 'mods' || res.domain === 'resourcepacks') {
-                const dest = this.getPath('profiles', profile, res.domain, res.name + res.ext);
-                try {
-                    const stat = await fs.lstat(dest);
-                    if (stat.isSymbolicLink()) {
-                        await fs.unlink(dest);
-                        promises.push(fs.symlink(res.path, dest));
-                    } else {
-                        console.error(`Cannot deploy resource ${res.hash} -> ${dest}, since the path is occupied.`);
-                    }
-                } catch (e) {
-                    promises.push(fs.symlink(res.path, dest));
-                }
-            } else if (res.domain === 'saves') { // TODO: consider how to implement this
-                // await this.instanceSerivce.importSave(res.path);
-            } else if (res.domain === 'modpacks') { // modpack will override the profile
-                // await this.curseforgeSerivce.importCurseforgeModpack({
-                //     profile,
-                //     path: res.path,
-                // });
-            }
-        }
-        await Promise.all(promises);
-    }
-
-    /**
      * Import the resource into the launcher.
      * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.
      */
-    async importResource({ path, type, metadata = {}, background = false }: ImportOption) {
+    async importUnknownResource({ path, type, metadata = {} }: ImportOption) {
         requireString(path);
-        const task = importResourceTask(path, type, metadata).bind(this);
+        const task = this.importUnknownResourceTask(path, type, metadata);
         const res = await this.submit(task).wait();
         return res;
+    }
+
+    /**
+     * Import resource from uri
+     */
+    async importResource(option: {
+        /**
+         * The expected uri
+         */
+        uri: string;
+        metadata: object;
+    }) {
+        const { uri, metadata = {} } = option;
+        requireString(uri);
+        return this.submit(this.importResourceTask(uri, metadata)).wait();
     }
 
     /**

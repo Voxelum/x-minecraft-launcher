@@ -1,9 +1,12 @@
+/* eslint-disable import/export  */
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 export interface Java {
     path: string;
     version: string;
     majorVersion: number;
 }
-export interface JavaConfig {
+export interface JavaSchema {
     /**
      * @default []
      */
@@ -15,3 +18,5 @@ export interface JavaConfig {
      */
     default: number;
 }
+
+export const JavaSchema: object = require('./JavaSchema.json');

@@ -5,6 +5,7 @@ dist/test/*
 build/*
 !build/icons
 !build/electron-publisher-custom.js
+!build/*.nsh
 coverage
 node_modules/
 npm-debug.log

@@ -1,0 +1,116 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "description": "The name of the resource",
+            "type": "string"
+        },
+        "path": {
+            "description": "The resource file path",
+            "type": "string"
+        },
+        "hash": {
+            "description": "The sha1 of the resource",
+            "type": "string"
+        },
+        "ext": {
+            "description": "The suggested ext of the resource",
+            "type": "string"
+        },
+        "type": {
+            "description": "The resource type. Can be `forge`, `liteloader`, `resourcepack`, and etc.",
+            "type": "string"
+        },
+        "domain": {
+            "description": "The domain of the resource. This decide where (which folder) the resource go",
+            "type": "string"
+        },
+        "metadata": {
+            "$ref": "#/definitions/T",
+            "description": "The resource specific metadata"
+        },
+        "source": {
+            "$ref": "#/definitions/Source",
+            "description": "Where the resource imported from?"
+        }
+    },
+    "required": [
+        "domain",
+        "ext",
+        "hash",
+        "metadata",
+        "name",
+        "path",
+        "source",
+        "type"
+    ],
+    "definitions": {
+        "T": {
+            "type": "object"
+        },
+        "Source": {
+            "type": "object",
+            "additionalProperties": {},
+            "properties": {
+                "uri": {
+                    "description": "The source uris.\n- For the forge mod, it will be the forge://<modid>/<version>\n- For the liteloader mod, it will be the liteloader://<name>/<version>\n- For the curseforge file, it will be the curseforge://<fileId>\n\nIf the source is remote resource, it might also contain the uri like https://host/paths",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "date": {
+                    "description": "The date of import",
+                    "type": "number"
+                },
+                "github": {
+                    "description": "The github info for this source. If this is imported from github release, it will present.",
+                    "type": "object",
+                    "properties": {
+                        "owner": {
+                            "type": "string"
+                        },
+                        "repo": {
+                            "type": "string"
+                        },
+                        "release": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "release",
+                        "repo"
+                    ]
+                },
+                "curseforge": {
+                    "description": "The curseforge info for this source. If this is imported from curseforge, it will present.",
+                    "type": "object",
+                    "properties": {
+                        "projectId": {
+                            "type": "number"
+                        },
+                        "fileId": {
+                            "type": "number"
+                        },
+                        "projectType": {
+                            "type": "string"
+                        },
+                        "projectPath": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "fileId"
+                    ]
+                }
+            },
+            "required": [
+                "date",
+                "uri"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false
+}

@@ -55,7 +55,7 @@ export default class ServerStatusService extends Service {
     }
 
     async pingServers() {
-        const version = this.getters.serverProtocolVersion;
+        const version = this.getters.instanceProtocolVersion;
         if (this.state.instance.serverInfos.length > 0) {
             const results = await Promise.all(this.state.instance.serverInfos.map(s => Server.fetchStatusFrame(s, { protocol: version })));
             return results.map((r, i) => ({ status: r, ...this.state.instance.serverInfos[i] }));

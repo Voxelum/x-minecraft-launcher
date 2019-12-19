@@ -1,11 +1,11 @@
 import { getPersistence, setPersistence } from 'main/utils/persistence';
-import SettingConfig from 'main/utils/schema/SettingConfig.json';
-// import locales from 'main/utils/locales/';
+import { MutationKeys } from 'universal/store';
+import { SettingSchema } from 'universal/store/modules/setting.schema';
 import Service from './Service';
 
 export default class SettingService extends Service {
     async load() {
-        const data = await getPersistence({ path: this.getPath('setting.json'), schema: SettingConfig }) || {};
+        const data: SettingSchema = await getPersistence({ path: this.getPath('setting.json'), schema: SettingSchema }) || {};
         this.commit('config', {
             locale: data.locale,
             locales: ['en', 'zh-CN'],
@@ -21,7 +21,7 @@ export default class SettingService extends Service {
         });
     }
 
-    async save({ mutation }: { mutation: string }) {
+    async save({ mutation }: { mutation: MutationKeys }) {
         switch (mutation) {
             case 'locale':
             case 'allowPrerelease':
@@ -45,7 +45,7 @@ export default class SettingService extends Service {
                         showParticle: this.state.setting.showParticle,
                         particleMode: this.state.setting.particleMode,
                     },
-                    schema: SettingConfig,
+                    schema: SettingSchema,
                 });
                 break;
             default:

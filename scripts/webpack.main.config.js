@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const { dependencies } = require('../package.json');
 
@@ -68,6 +69,11 @@ const mainConfig = {
     },
     plugins: [
         new webpack.NoEmitOnErrorsPlugin(),
+        new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            reportFilename: 'main.report.html',
+            openAnalyzer: false,
+        }),
         // new ForkTsCheckerWebpackPlugin({
         //     // eslint: true,
         //     tsconfig: path.resolve(__dirname, '../tsconfig.json'),

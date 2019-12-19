@@ -1,6 +1,6 @@
 import { Task, TaskHandle } from '@xmcl/minecraft-launcher-core';
 import { Managers } from 'main/manager';
-import { RootCommit, RootGetters, RootState } from 'universal/store';
+import { MutationKeys, RootCommit, RootGetters, RootState } from 'universal/store';
 
 export function Inject(type: string) {
     return function (target: any, propertyKey: string) {
@@ -102,7 +102,7 @@ export default class Service {
 
     protected managers!: Managers;
 
-    async save(payload: { mutation: string; payload: any }): Promise<void> { }
+    async save(payload: { mutation: MutationKeys; payload: any }): Promise<void> { }
 
     async load(): Promise<void> { }
 

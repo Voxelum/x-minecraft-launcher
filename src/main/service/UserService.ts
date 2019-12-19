@@ -1,11 +1,11 @@
 import { Auth, MojangChallengeResponse, MojangService, Net, ProfileService } from '@xmcl/minecraft-launcher-core';
 import { fs, requireNonnull, requireObject, requireString } from 'main/utils';
 import { getPersistence, setPersistence } from 'main/utils/persistence';
-import UserConfigSchema from 'main/utils/schema/UserConfig.json';
+import { MutationKeys } from 'universal/store';
+import { UserSchema, GameProfileAndTexture } from 'universal/store/modules/user.schema';
 import { parse } from 'url';
 import { v4 } from 'uuid';
-import Service from './Service';
-import { UserConfig } from 'universal/store/modules/user.config';
+import Service, { Singleton } from './Service';
 
 interface LauncherProfile {
     /**
@@ -74,18 +74,21 @@ interface LauncherProfile {
 }
 
 export default class UserService extends Service {
-    async save({ mutation }: { mutation: string }) {
+    async save({ mutation }: { mutation: MutationKeys }) {
         switch (mutation) {
-            case 'addUserProfile':
-            case 'setUserProfile':
-            case 'updateGameProfile':
-            case 'updateUserProfile':
+            case 'userProfileAdd':
+            case 'userProfileRemove':
+            case 'userProfileUpdate':
+            case 'userGameProfileSelect':
             case 'authService':
             case 'profileService':
-            case 'invalidateAuth':
+            case 'userInvalidate':
+            case 'authServiceRemove':
+            case 'profileServiceRemove':
                 await setPersistence({
                     path: this.getPath('user.json'),
-                    data: { ...this.state.user, cape: undefined, info: undefined, security: undefined, refreshingSecurity: undefined, refreshingSkin: undefined },
+                    data: { ...this.state.user },
+                    schema: UserSchema,
                 });
                 break;
             default:
@@ -98,14 +101,15 @@ export default class UserService extends Service {
     }
 
     async load() {
-        const data: UserConfig = await getPersistence({ path: this.getPath('user.json'), schema: UserConfigSchema });
-        const result: UserConfig = {
+        const data: UserSchema = await getPersistence({ path: this.getPath('user.json'), schema: UserSchema });
+        const result: UserSchema = {
             authServices: {},
             profileServices: {},
-            profiles: {},
-            selectedUser: '',
-            selectedUserProfile: '',
-            loginHistory: [],
+            users: {},
+            selectedUser: {
+                id: '',
+                profile: '',
+            },
             clientToken: '',
         };
         const mcdb = await this.getMinecraftAuthDb();
@@ -122,9 +126,8 @@ export default class UserService extends Service {
                 result.clientToken = mcdb?.clientToken ?? v4().replace(/-/g, '');
             }
 
-            result.loginHistory = data.loginHistory;
             result.selectedUser = data.selectedUser;
-            result.profiles = data.profiles;
+            result.users = data.users;
         } else {
             // import mojang authDB
 
@@ -132,21 +135,31 @@ export default class UserService extends Service {
             result.authServices = { mojang: Auth.Yggdrasil.API_MOJANG };
             result.profileServices = { mojang: ProfileService.API_MOJANG };
 
-            result.selectedUser = mcdb?.selectedUser.account;
-            result.selectedUserProfile = mcdb?.selectedUser.profile;
+            if (mcdb.selectedUser) {
+                result.selectedUser.id = mcdb.selectedUser.account;
+                result.selectedUser.profile = mcdb.selectedUser.profile;
+            }
         }
         if (mcdb?.clientToken === result.clientToken && mcdb.authenticationDatabase) {
             const adb = mcdb.authenticationDatabase;
             for (const userId of Object.keys(adb)) {
                 const user = adb[userId];
-                if (!result.profiles[userId]) {
-                    result.profiles[userId] = {
+                if (!result.users[userId]) {
+                    result.users[userId] = {
                         id: userId,
-                        account: user.username,
+                        username: user.username,
                         accessToken: user.accessToken,
                         authService: 'mojang',
                         profileService: 'mojang',
-                        profiles: Object.entries(user.profiles).map(([id, body]) => ({ id, name: body.displayName, textures: { SKIN: { url: '' } } })),
+                        profiles: Object.entries(user.profiles)
+                            .reduce((dict, [id, o]) => {
+                                dict[id] = {
+                                    id,
+                                    name: o.displayName,
+                                    textures: { SKIN: { url: '' } },
+                                };
+                                return dict;
+                            }, {} as { [key: string]: any }),
                     };
                 }
             }
@@ -162,8 +175,8 @@ export default class UserService extends Service {
      * Logout and clear current cache.
      */
     async logout() {
-        const user = this.getters.selectedUser;
-        if (this.getters.logined) {
+        const user = this.getters.user;
+        if (this.getters.accessTokenValid) {
             if (user.authService !== 'offline') {
                 await Auth.Yggdrasil.invalidate({
                     accessToken: user.accessToken,
@@ -171,7 +184,7 @@ export default class UserService extends Service {
                 }, this.getters.authService);
             }
         }
-        this.commit('invalidateAuth');
+        this.commit('userInvalidate');
     }
 
     /**
@@ -179,12 +192,11 @@ export default class UserService extends Service {
      * 
      * See `getChallenges` and `submitChallenges`
      */
+    @Singleton()
     async checkLocation() {
-        if (!this.getters.logined) return true;
-        const user = this.getters.selectedUser;
+        if (!this.getters.accessTokenValid) return true;
+        const user = this.getters.user;
         if (user.authService !== 'mojang') return true;
-        if (this.state.user.refreshingSecurity) return true;
-        this.commit('refreshingSecurity', true);
         try {
             const result = await MojangService.checkLocation(user.accessToken);
             this.commit('userSecurity', result);
@@ -195,8 +207,6 @@ export default class UserService extends Service {
                 return false;
             }
             throw e;
-        } finally {
-            this.commit('refreshingSecurity', false);
         }
     }
 
@@ -204,15 +214,15 @@ export default class UserService extends Service {
      * Get all the user set challenges for security reasons.
      */
     async getChallenges() {
-        if (!this.getters.logined) return [];
-        const user = this.getters.selectedUser;
+        if (!this.getters.accessTokenValid) return [];
+        const user = this.getters.user;
         if (user.profileService !== 'mojang') return [];
         return MojangService.getChallenges(user.accessToken);
     }
 
     async submitChallenges(responses: MojangChallengeResponse[]) {
-        if (!this.getters.logined) throw new Error('Cannot submit challenge if not logined');
-        const user = this.getters.selectedUser;
+        if (!this.getters.accessTokenValid) throw new Error('Cannot submit challenge if not logined');
+        const user = this.getters.user;
         if (user.authService !== 'mojang') throw new Error('Cannot sumit challenge if login mode is not mojang!');
         if (!(responses instanceof Array)) throw new Error('Expect responses Array!');
         const result = await MojangService.responseChallenges(user.accessToken, responses);
@@ -223,15 +233,16 @@ export default class UserService extends Service {
     /**
      * Refresh current skin status
      */
+    @Singleton()
     async refreshSkin() {
-        const user = this.getters.selectedUser;
-        const gameProfile = this.getters.selectedGameProfile;
+        const user = this.getters.user;
+        const gameProfile = this.getters.gameProfile;
+        // if no profile service, return
         if (user.profileService === '') return;
+        // if no game profile (maybe not logined), return
         if (gameProfile.name === '') return;
-        if (!this.getters.logined) return;
-        if (this.state.user.refreshingSkin) return;
-
-        this.commit('refreshingSkin', true);
+        // if user doesn't have a valid access token, return
+        if (!this.getters.accessTokenValid) return;
 
         const { id, name } = gameProfile;
 
@@ -240,25 +251,28 @@ export default class UserService extends Service {
             if (this.getters.isServiceCompatible) {
                 profile = await ProfileService.fetch(id, { api: this.getters.profileService });
             } else {
+                // use name to look up
                 profile = await ProfileService.lookup(name, { api: this.getters.profileService });
                 if (!profile) {
                     throw new Error(`Profile not found named ${name}!`);
                 }
                 profile = await ProfileService.fetch(profile.id, { api: this.getters.profileService });
             }
-            const textures = await ProfileService.getTextures(profile);
-            if (textures) {
-                const skin = textures.textures.SKIN;
-                if (skin) {
-                    this.commit('updateGameProfile', { userId: user.id, profile: { ...gameProfile, textures: { ...textures.textures, SKIN: skin } } });
-                }
+            const textures = ProfileService.getTextures(profile);
+            const skin = textures?.textures.SKIN;
+            if (skin) {
+                this.commit('gameProfile', {
+                    userId: user.id,
+                    profile: {
+                        ...gameProfile,
+                        textures: { ...(textures?.textures || {}), SKIN: skin },
+                    },
+                });
             }
         } catch (e) {
             console.warn(`Cannot refresh the skin data for user ${name}(${id}).`);
             console.warn(e);
             throw e;
-        } finally {
-            this.commit('refreshingSkin', false);
         }
     }
 
@@ -266,7 +280,7 @@ export default class UserService extends Service {
      * Refresh the user auth status
      */
     async refreshStatus() {
-        const user = this.getters.selectedUser;
+        const user = this.getters.user;
 
         if (!this.getters.offline) {
             const validate = await Auth.Yggdrasil.validate({
@@ -283,20 +297,24 @@ export default class UserService extends Service {
                     accessToken: user.accessToken,
                     clientToken: this.state.user.clientToken,
                 });
-                this.commit('updateUserProfile', result);
+                this.commit('userProfileUpdate', {
+                    id: result.user.id,
+                    accessToken: result.accessToken,
+                    profiles: result.availableProfiles,
+                });
                 this.checkLocation();
 
                 if (user.authService === 'mojang') {
                     try {
                         const info = await MojangService.getAccountInfo(user.accessToken);
-                        this.commit('mojangInfo', info);
+                        this.commit('userMojangInfo', info);
                     } catch (e) {
-                        console.warn(`Cannot refresh mojang info for user ${user.account}.`);
+                        console.warn(`Cannot refresh mojang info for user ${user.username}.`);
                         console.warn(e);
                     }
                 }
             } catch (e) {
-                this.commit('invalidateAuth');
+                this.commit('userInvalidate');
             }
         }
     }
@@ -309,8 +327,8 @@ export default class UserService extends Service {
         requireObject(payload);
         requireNonnull(payload.url);
 
-        const user = this.getters.selectedUser;
-        const gameProfile = this.getters.selectedGameProfile;
+        const user = this.getters.user;
+        const gameProfile = this.getters.gameProfile;
 
         if (typeof payload.slim !== 'boolean') payload.slim = false;
         const { url, slim } = payload;
@@ -357,7 +375,7 @@ export default class UserService extends Service {
      * Refresh the current user login status
      */
     async refreshUser() {
-        if (!this.getters.logined) return;
+        if (!this.getters.accessTokenValid) return;
         await this.refreshSkin().catch(_ => _);
         await this.refreshStatus().catch(_ => _);
     }
@@ -379,7 +397,7 @@ export default class UserService extends Service {
         requireString(payload.userId);
         requireString(payload.profileId);
 
-        this.commit('setUserProfile', payload);
+        this.commit('userGameProfileSelect', payload);
         await this.refreshUser();
     }
 
@@ -416,7 +434,7 @@ export default class UserService extends Service {
         } = payload;
 
 
-        const selectedUserProfile = this.getters.selectedUser;
+        const selectedUserProfile = this.getters.user;
         const usingAuthService = this.state.user.authServices[authService];
 
         try {
@@ -437,22 +455,25 @@ export default class UserService extends Service {
 
             if (authService !== selectedUserProfile.authService
                 || profileService !== selectedUserProfile.profileService
-                || (authService === 'offline' && account !== selectedUserProfile.account)) {
-                this.commit('addUserProfile', {
-                    account,
-                    authService,
-                    profileService,
+                || (authService === 'offline' && account !== selectedUserProfile.username)) {
+                this.commit('userProfileAdd', {
                     id: result.user.id,
-                    type: 'Mojang',
+                    username: account,
+                    profileService,
+                    authService,
                     accessToken: result.accessToken,
-                    profiles: result.availableProfiles.map(p => ({ ...p, textures: { SKIN: { url: '' } } })),
+                    profiles: result.availableProfiles,
                 });
-                this.commit('setUserProfile', {
+                this.commit('userGameProfileSelect', {
                     profileId: result.selectedProfile.id,
                     userId: result.user.id,
                 });
             } else {
-                this.commit('updateUserProfile', result as any);
+                this.commit('userProfileUpdate', {
+                    id: result.user.id,
+                    accessToken: result.accessToken,
+                    profiles: result.availableProfiles,
+                });
             }
             await this.refreshSkin().catch(_ => _);
         } catch (e) {

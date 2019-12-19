@@ -34,7 +34,7 @@
                             prepend-icon="vpn_key" 
                             :items="authServices" 
                             :item-value="t => t"
-                            :item-text="t => $te(`user.${t}.name`) ? $t(`user.${t}.name`) : t"
+                            :item-text="t => $te(`user.${t}.name`) ? $t(`user.${t}.name`) : $t(`user.${t}.name`)"
                             :label="$t('user.authMode')"
                             flat dark />
                 </v-flex>
@@ -56,7 +56,6 @@
                           required 
                           :label="$t(`user.${selectedAuthService === 'offline' ? 'offline' : 'mojang'}.account`)"
                           :rules="accountRules" 
-                          :items="loginHistory" 
                           :error="accountError" 
                           :error-messages="accountErrors"
                           @input="accountError=false" @keypress="resetError" />
@@ -143,7 +142,7 @@ import { useCurrentUser, useDialogSelf, useI18n, useLogin } from '@/hooks';
 export default createComponent({
   setup(props, context) {
     const { t } = useI18n();
-    const { loginHistory, logined, account, authService, profileService, id } = useCurrentUser();
+    const { logined, username, authService, profileService, id } = useCurrentUser();
     const { closeDialog, isShown, showDialog, dialogOption: switchingUser } = useDialogSelf('login');
     const {
       avaiableGameProfiles,
@@ -185,26 +184,6 @@ export default createComponent({
       ? usernameRules
       : emailRules));
 
-    function reload() {
-      // data.selectedUserProfile = id.value;
-      data.account = account.value;
-      data.selectedAuthService = authService.value;
-      data.selectedProfileService = profileService.value;
-    }
-    function isUserSelected(profile: { id: string; userId: string }) {
-      return data.userId === profile.userId
-        && data.profileId === profile.id;
-    }
-    function resetError() {
-      data.accountError = false;
-      data.accountErrors = [];
-      data.passwordError = false;
-      data.passwordErrors = [];
-    }
-    function handleKey(e: KeyboardEvent) {
-      resetError();
-      if (e.key === 'Enter') { login(); }
-    }
     async function login() {
       data.logining = true;
       accountInput.value.blur();
@@ -215,7 +194,7 @@ export default createComponent({
           account: data.account,
           password: data.password,
           authService: data.selectedAuthService,
-          profileService: data.selectedAuthService,
+          profileService: data.selectedProfileService,
         });
         closeDialog();
       } catch (e) {
@@ -233,6 +212,27 @@ export default createComponent({
         data.logining = false;
       }
     }
+    function reload() {
+      // data.selectedUserProfile = id.value;
+      data.account = username.value;
+      data.selectedAuthService = authService.value || 'mojang';
+      data.selectedProfileService = profileService.value || 'mojang';
+    }
+    function isUserSelected(profile: { id: string; userId: string }) {
+      return data.userId === profile.userId
+        && data.profileId === profile.id;
+    }
+    function resetError() {
+      data.accountError = false;
+      data.accountErrors = [];
+      data.passwordError = false;
+      data.passwordErrors = [];
+    }
+    function handleKey(e: KeyboardEvent) {
+      resetError();
+      if (e.key === 'Enter') { login(); }
+    }
+   
 
     let loginedHandle = () => { };
     let shownHandle = () => { };
@@ -283,7 +283,7 @@ export default createComponent({
       authServices,
       accountRules,
       passwordRules,
-      loginHistory,
+      // loginHistory,
       handleKey,
       accountInput,
       form,

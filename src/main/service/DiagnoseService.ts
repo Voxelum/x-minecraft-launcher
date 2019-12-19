@@ -5,6 +5,7 @@ import AuthLibService from './AuthLibService';
 import Service, { Inject } from './Service';
 import VersionInstallService from './VersionInstallService';
 import VersionService from './VersionService';
+import { MutationKeys } from 'universal/store';
 
 export default class DiagnoseService extends Service {
     @Inject('VersionService')
@@ -16,10 +17,10 @@ export default class DiagnoseService extends Service {
     @Inject('AuthLibService')
     private authLibService!: AuthLibService;
 
-    async save({ mutation, payload }: { mutation: string; payload: any }) {
+    async save({ mutation, payload }: { mutation: MutationKeys; payload: any }) {
         // TODO: check if this works
         if (this.getters.busy('diagnose') || mutation === 'release' || mutation === 'aquire') return;
-        if (mutation === 'selectProfile') {
+        if (mutation === 'instanceSelect') {
             this.commit('aquire', 'diagnose');
             await this.diagnoseVersion();
             await this.diagnoseJava();
@@ -27,7 +28,7 @@ export default class DiagnoseService extends Service {
             await this.diagnoseResourcePacks();
             await this.diagnoseServer();
             this.commit('release', 'diagnose');
-        } else if (mutation === 'profile') {
+        } else if (mutation === 'instance') {
             if ('version' in payload) {
                 this.commit('aquire', 'diagnose');
                 await this.diagnoseVersion();
@@ -50,9 +51,9 @@ export default class DiagnoseService extends Service {
                     await this.diagnoseResourcePacks();
                 }
             }
-        } else if (mutation === 'setUserProfile') {
+        } else if (mutation === 'userGameProfileSelect' || mutation === 'userProfileUpdate') {
             await this.diagnoseUser();
-        } else if (mutation === 'serverStatus') {
+        } else if (mutation === 'instanceStatus') {
             await this.diagnoseServer();
         }
     }
@@ -75,10 +76,9 @@ export default class DiagnoseService extends Service {
     async diagnoseMods() {
         this.commit('aquire', 'diagnose');
         try {
-            const id = this.state.instance.id;
-            const { runtime: version } = this.state.instance.all[id];
-            const { mods } = this.getters.deployingResources;
-            if (!mods) return;
+            const { runtime: version } = this.getters.instance;
+            const resources = this.getters.instanceResources;
+            if (!resources) return;
 
             const mcversion = version.minecraft;
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
@@ -88,7 +88,7 @@ export default class DiagnoseService extends Service {
                 unknownMod: [],
                 incompatibleMod: [],
             };
-            for (const mod of mods.filter(m => !!m && m.type === 'forge')) {
+            for (const mod of resources.filter(m => !!m && m.type === 'forge')) {
                 const metadatas: Forge.ModMetaData[] = mod.metadata;
                 for (const meta of metadatas) {
                     let acceptVersion = meta.acceptedMinecraftVersions;
@@ -109,7 +109,7 @@ export default class DiagnoseService extends Service {
                     }
                 }
             }
-            this.commit('postProblems', tree);
+            this.commit('problemsPost', tree);
         } finally {
             this.commit('release', 'diagnose');
         }
@@ -118,20 +118,19 @@ export default class DiagnoseService extends Service {
     async diagnoseResourcePacks() {
         this.commit('aquire', 'diagnose');
         try {
-            const id = this.state.instance.id;
-            const { runtime: version } = this.state.instance.all[id];
-            const { resourcepacks } = this.getters.deployingResources;
+            const { runtime: version } = this.getters.instance;
+            const resources = this.getters.instanceResources;
             const mcversion = version.minecraft;
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
 
-            if (!resourcepacks) return;
+            if (!resources) return;
 
             const tree: Pick<ProblemReport, 'incompatibleResourcePack'> = {
                 incompatibleResourcePack: [],
             };
 
             const packFormatMapping = this.state.client.packFormatMapping.mcversion;
-            for (const pack of resourcepacks) {
+            for (const pack of resources.filter(r => r.type === 'resourcepack')) {
                 if (pack.metadata.format in packFormatMapping) {
                     const acceptVersion = packFormatMapping[pack.metadata.format];
                     const range = VersionRange.createFromVersionSpec(acceptVersion);
@@ -141,7 +140,7 @@ export default class DiagnoseService extends Service {
                 }
             }
 
-            this.commit('postProblems', tree);
+            this.commit('problemsPost', tree);
         } finally {
             this.commit('release', 'diagnose');
         }
@@ -150,7 +149,7 @@ export default class DiagnoseService extends Service {
     async diagnoseUser() {
         this.commit('aquire', 'diagnose');
         try {
-            const user = this.getters.selectedUser;
+            const user = this.getters.user;
 
             const tree: Pick<ProblemReport, 'missingAuthlibInjector'> = {
                 missingAuthlibInjector: [],
@@ -162,7 +161,7 @@ export default class DiagnoseService extends Service {
                 }
             }
 
-            this.commit('postProblems', tree);
+            this.commit('problemsPost', tree);
         } finally {
             this.commit('release', 'diagnose');
         }
@@ -171,36 +170,26 @@ export default class DiagnoseService extends Service {
     async diagnoseJava() {
         this.commit('aquire', 'diagnose');
         try {
-            const id = this.state.instance.id;
-            const profile = this.state.instance.all[id];
+            const instance = this.getters.instance;
+            const resolvedJava = this.getters.instanceJava;
 
-            const mcversion = profile.runtime.minecraft;
+            const mcversion = instance.runtime.minecraft;
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
-
-            let java = profile.java;
-
-            if (!java || !java.path || !java.majorVersion || !java.version) {
-                console.log(`Fix java path ${JSON.stringify(java)}`);
-                this.commit('profile', {
-                    java: this.getters.defaultJava,
-                });
-            }
-
-            java = profile.java;
 
             const tree: Pick<ProblemReport, 'incompatibleJava'> = {
                 incompatibleJava: [],
             };
 
-            if (java && java.majorVersion > 8) {
+            // TODO: handle not existed java
+            if (resolvedJava && resolvedJava.majorVersion > 8) {
                 if (!resolvedMcVersion.minorVersion || resolvedMcVersion.minorVersion < 13) {
-                    tree.incompatibleJava.push({ java: java.version, mcversion });
-                } else if (resolvedMcVersion.minorVersion >= 13 && profile.runtime.forge && java.majorVersion > 10) {
-                    tree.incompatibleJava.push({ java: java.version, mcversion });
+                    tree.incompatibleJava.push({ java: resolvedJava.version, mcversion });
+                } else if (resolvedMcVersion.minorVersion >= 13 && instance.runtime.forge && resolvedJava.majorVersion > 10) {
+                    tree.incompatibleJava.push({ java: resolvedJava.version, mcversion });
                 }
             }
 
-            this.commit('postProblems', tree);
+            this.commit('problemsPost', tree);
         } finally {
             this.commit('release', 'diagnose');
         }
@@ -220,7 +209,7 @@ export default class DiagnoseService extends Service {
                 tree.missingModsOnServer.push(...info.modList);
             }
 
-            this.commit('postProblems', tree);
+            this.commit('problemsPost', tree);
         } finally {
             this.commit('release', 'diagnose');
         }
@@ -236,7 +225,7 @@ export default class DiagnoseService extends Service {
                 return;
             }
             const { runtime: versions } = selected;
-            const currentVersion = this.getters.currentVersion;
+            const currentVersion = this.getters.instanceVersion;
             const targetVersion = await this.local.resolveVersion(currentVersion)
                 .catch(() => currentVersion.id);
 
@@ -303,7 +292,7 @@ export default class DiagnoseService extends Service {
                 }
             }
 
-            this.commit('postProblems', tree);
+            this.commit('problemsPost', tree);
         } finally {
             this.commit('release', 'diagnose');
         }
@@ -317,24 +306,24 @@ export default class DiagnoseService extends Service {
 
         const recheck = {};
 
-        this.commit('startResolveProblems', unfixed);
+        this.commit('problemsStartResolve', unfixed);
         this.commit('aquire', 'diagnose');
 
-        const profile = this.getters.selectedInstance;
+        const profile = this.getters.instance;
         const { runtime: versions } = profile;
-        const currentVersion = this.getters.currentVersion;
+        const currentVersion = this.getters.instanceVersion;
 
         const mcversion = versions.minecraft;
         if (mcversion === '') {
             this.commit('release', 'diagnose');
-            this.commit('endResolveProblems', unfixed);
+            this.commit('problemsEndResolve', unfixed);
             return;
         }
 
         try {
             if (unfixed.some(p => p.id === 'missingVersion')) {
                 Reflect.set(recheck, 'diagnoseVersion', true);
-                this.commit('profile', { runtime: { minecraft: this.getters.minecraftRelease.id } });
+                this.commit('instance', { runtime: { minecraft: this.getters.minecraftRelease.id } });
             }
 
             if (unfixed.some(p => p.id === 'missingVersionJar')) {
@@ -442,7 +431,7 @@ export default class DiagnoseService extends Service {
         } catch (e) {
             console.error(e);
         } finally {
-            this.commit('endResolveProblems', unfixed);
+            this.commit('problemsEndResolve', unfixed);
             this.commit('release', 'diagnose');
             for (const action of Object.keys(recheck)) {
                 const self = this as any;

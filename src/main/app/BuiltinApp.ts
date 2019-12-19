@@ -1,7 +1,7 @@
 
-import { App, BrowserWindow, dialog, Menu, nativeImage, Tray, Dock } from 'electron';
-import { LauncherApp, LauncherAppContext } from 'main/manager/AppManager';
+import { App, BrowserWindow, dialog, Dock, Menu, nativeImage, Tray } from 'electron';
 import { resolve } from 'path';
+import { LauncherApp, LauncherAppContext } from 'main/manager/AppManager';
 
 export default class BuiltinApp extends LauncherApp {
     private mainRef: BrowserWindow | null = null;
@@ -129,11 +129,13 @@ export default class BuiltinApp extends LauncherApp {
             }
         };
 
-        this.dock?.setMenu(Menu.buildFromTemplate([{
-            label: 'Show Log',
-            type: 'normal',
-            click,
-        }]));
+        if (this.dock) {
+            this.dock.setMenu(Menu.buildFromTemplate([{
+                label: 'Show Log',
+                type: 'normal',
+                click,
+            }]));
+        }
     }
 
     onMinecraftStdOut = (content: string) => {

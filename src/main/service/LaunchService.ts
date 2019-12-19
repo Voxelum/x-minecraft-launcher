@@ -44,10 +44,10 @@ export default class LaunchService extends Service {
             /**
              * current selected profile
              */
-            const profile = this.getters.selectedInstance;
-            const user = this.getters.selectedUser;
-            const gameProfile = this.getters.selectedGameProfile;
-            if (!profile) {
+            const instance = this.getters.instance;
+            const user = this.getters.user;
+            const gameProfile = this.getters.gameProfile;
+            if (!instance) {
                 this.commit('launchErrors', { type: 'selectProfileEmpty', content: [] });
                 return false;
             }
@@ -73,19 +73,19 @@ export default class LaunchService extends Service {
 
             this.commit('launchStatus', 'launching');
 
-            const debug = profile.showLog;
-            const minecraftFolder = new Util.MinecraftFolder(join(this.state.root, 'profiles', profile.id));
+            const debug = instance.showLog;
+            const minecraftFolder = new Util.MinecraftFolder(join(this.state.root, 'profiles', instance.id));
 
             /**
              * real version name
              */
             const version = await this.versionService.resolveVersion({
-                ...profile.runtime,
+                ...instance.runtime,
             });
 
             console.log(`Will launch with ${version} version.`);
 
-            const java = profile.java || this.getters.defaultJava;
+            const javaPath = this.getters.instanceJava.path;
             /**
              * Build launch condition
              */
@@ -95,9 +95,9 @@ export default class LaunchService extends Service {
                 properties: {},
                 gamePath: minecraftFolder.root,
                 resourcePath: this.state.root,
-                javaPath: java.path,
-                minMemory: profile.minMemory,
-                maxMemory: profile.maxMemory,
+                javaPath,
+                minMemory: instance.minMemory,
+                maxMemory: instance.maxMemory,
                 version,
                 extraExecOption: {
                     detached: true,
@@ -110,49 +110,50 @@ export default class LaunchService extends Service {
             };
 
             console.log('Launching a server');
-            if ('server' in profile && profile.server?.host) {
+            if ('server' in instance && instance.server?.host) {
                 option.server = {
-                    ip: profile.server?.host,
-                    port: profile.server?.port,
+                    ip: instance.server?.host,
+                    port: instance.server?.port,
                 };
             }
 
-            console.log('Deploy all resources...');
-            for (const domain of Object.keys(profile.deployments)) {
-                try {
-                    console.log(`Deploying ${profile.deployments[domain].length} resources for ${domain}`);
-                    const dir = join(option.gamePath, domain);
-                    if (await fs.missing(dir)) {
-                        await fs.mkdir(dir);
-                    }
-                    const files = await fs.readdir(dir);
-                    for (const file of files) {
-                        const fp = join(dir, file);
-                        const isLink = await fs.stat(fp).then(s => s.isSymbolicLink());
-                        if (isLink) {
-                            await fs.unlink(fp);
-                        }
-                    }
-                    await this.resourceService.deployResources({
-                        resourceUrls: profile.deployments[domain],
-                        profile: profile.id,
-                    });
-                } catch (e) {
-                    console.error(`Cannot deploy ${domain}`);
-                    console.error(e);
-                }
-            }
+            // const deployResources = this.getters.instanceResources;
+            // console.log('Deploy all resources...');
+            // for (const domain of Object.keys(deployResources)) {
+            //     try {
+            //         console.log(`Deploying ${deployResources[domain].length} resources for ${domain}`);
+            //         const dir = join(option.gamePath, domain);
+            //         if (await fs.missing(dir)) {
+            //             await fs.mkdir(dir);
+            //         }
+            //         const files = await fs.readdir(dir);
+            //         for (const file of files) {
+            //             const fp = join(dir, file);
+            //             const isLink = await fs.stat(fp).then(s => s.isSymbolicLink());
+            //             if (isLink) {
+            //                 await fs.unlink(fp);
+            //             }
+            //         }
+            //         await this.resourceService.deployResources({
+            //             resourceUrls: deployResources[domain],
+            //             profile: instance.id,
+            //         });
+            //     } catch (e) {
+            //         console.error(`Cannot deploy ${domain}`);
+            //         console.error(e);
+            //     }
+            // }
 
-            try {
-                // we link the resource pack whatever 
-                await this.resourceService.deployResources({
-                    resourceUrls: this.getters.resourcepacks.map(r => r.hash),
-                    profile: profile.id,
-                });
-            } catch (e) {
-                console.error('Cannot deploy resource packs');
-                console.error(e);
-            }
+            // try {
+            //     // we link the resource pack whatever 
+            //     await this.resourceService.deployResources({
+            //         resourceUrls: this.getters.resourcepacks.map(r => r.hash),
+            //         profile: instance.id,
+            //     });
+            // } catch (e) {
+            //     console.error('Cannot deploy resource packs');
+            //     console.error(e);
+            // }
             console.log('Launching with these option...');
             console.log(JSON.stringify(option));
 

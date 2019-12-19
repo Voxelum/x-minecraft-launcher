@@ -1,4 +1,7 @@
-export interface InstanceConfig {
+/* eslint-disable import/export  */
+/* eslint-disable @typescript-eslint/no-var-requires */
+
+export interface InstanceSchema {
     /**
      * The unique id (uuid) of the profile. The profile data will be stored into profiles/${id}/profile.json according to this.
      * @required
@@ -33,23 +36,34 @@ export interface InstanceConfig {
     hideLauncher: boolean;
 
     /**
-     * The external resource deployment of this profiles, like mods or resource packs
+     * The external resource deployment of this instance, like mods or resource packs.
+     * 
+     * The domain is the directory it will deployed to. For example, `mods` will deploy to `.minecraft/mods` folder.
+     * 
+     * Each is a list of uri in specific format
+     * 
+     * - Curseforge file `curseforge://projectId/fileId` or `curseforge://fileId`
+     * - Forge mod: `forge://modid/version`
+     * - Liteloader mod: `liteloader://name/version`
+     * - Fabric mod: `fabric://name/version`
+     * - Local managed resource: `resource://hash`
+     * - Http: `https://abc.bcd.jar`
+     * - Github: `github://username/reponame/releaseName`
+     * 
      * @default {}
      */
     deployments: {
-        [domain: string]: { [key: string]: string };
+        [domain: string]: string[];
     };
 
     /**
     * The optional external resource deployment of this profiles, like mods or resource packs
-    * @default {}
+    * @default []
     */
-    optionalDeployments: {
-        [domain: string]: { [key: string]: string };
-    };
+    optionalDeployments: string[];
 
     /**
-     * The runtime & version requirement of the profile.
+     * The runtime version requirement of the profile.
      * 
      * Containing the forge & liteloader & etc.
      * @default { "minecraft": "", "forge": "", "liteloader": "" }
@@ -70,14 +84,16 @@ export interface InstanceConfig {
         /**
          * @default ""
          */
-        fabric: string;
+        fabric?: string;
 
-        /**
-         * @default "8"
-         */
-        java: string;
-        [id: string]: string;
+        [id: string]: string | undefined;
     };
+
+    /**
+     * The recommended java version for this instance
+    * @default "8"
+    */
+    java: string;
 
     resolution: { width: number; height: number; fullscreen: boolean } | undefined;
     minMemory: number | undefined;
@@ -130,38 +146,48 @@ export interface InstanceConfig {
     licence?: string;
 }
 
-export interface ProfilesConfig {
-    selectedProfile: string;
+export interface InstancesSchema {
+    selectedInstance: string;
 }
 
-export interface InstanceLockConfig {
+export interface DeployedInfo {
     /**
-     * The path of the java
+     * If this is deployed by link, it will be a file path to the source.
+     */
+    src?: string;
+    /**
+     * The id listed in instance deployment
+     */
+    url: string;
+    /**
+     * Deployed file relative path to the .minecraft folder
+     */
+    file: string;
+    /**
+     * The sha256 of the src
+     */
+    integrity: string;
+    /**
+     * The way to resolve it. If it's false, it doesn't resolved.
+     */
+    resolved: false | 'unpack' | 'link';
+}
+
+export interface InstanceLockSchema {
+    /**
+     * The used java path
      */
     java: string;
     /**
      * The resources already deployed
      */
-    deployed: {
-        [domain: string]: {
-            [name: string]: {
-                /**
-                 * If this is deployed by link, it will be a file path to the source
-                 */
-                src?: string;
-                /**
-                 * Deployed file name
-                 */
-                file: string;
-                /**
-                 * The sha256 of it
-                 */
-                integrity: string;
-            };
-        };
-    };
+    deployed: DeployedInfo[];
 }
 
-export interface Instance extends InstanceLockConfig {
-    config: InstanceConfig;
+export interface Instance extends InstanceLockSchema {
+    config: InstanceSchema;
 }
+
+export const InstanceSchema: object = require('./InstanceSchema.json');
+export const InstancesSchema: object = require('./InstancesSchema.json');
+export const InstanceLockSchema: object = require('./InstanceLockSchema.json');

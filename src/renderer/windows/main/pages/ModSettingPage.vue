@@ -1,15 +1,20 @@
 <template>
-  <v-container grid-list-xs fill-height style="overflow: auto;">
+  <v-container ref="container" grid-list-xs fill-height style="overflow: auto;">
     <v-layout row wrap fill-height>
       <v-flex tag="h1" style="margin-bottom: 10px; padding: 6px; 8px;" class="white--text" xs7>
         <span class="headline">{{ $tc('mod.name', 2) }}</span>
       </v-flex>
       <v-flex xs5>
-        <v-text-field v-model="filterText" color="primary" class="focus-solo" append-icon="filter_list"
-                      :label="$t('filter')" dark hide-details />
+        <v-text-field v-model="filterText" 
+                      color="primary" 
+                      class="focus-solo" 
+                      append-icon="filter_list"
+                      :label="$t('filter')" 
+                      dark 
+                      hide-details />
       </v-flex>
       <v-flex d-flex xs6 style="padding-right: 5px;">
-        <v-card dark class="card-list" @mousewheel="onMouseWheel">
+        <v-card dark class="card-list">
           <v-card-title>
             <span v-if="filteringModId === ''" class="text-sm-center" style="width: 100%; font-size: 16px;"> 
               {{ $t('mod.unselected') }}
@@ -19,36 +24,37 @@
             </v-chip>
           </v-card-title>
           <hint v-if="mods[1].length === 0" icon="save_alt" :text="$t('mod.hint')" :absolute="true" />
-          <div v-else class="list" @drop="onDropLeft" @dragover="onDragOver">
-            <mod-card v-for="(mod, index) in unselectedItems" 
-                      :key="mod.hash"
+          <div v-else ref="leftList" class="list">
+            <mod-card v-for="(item, index) in unselectedItems" 
+                      :key="item[0].hash"
                       v-observe-visibility="{
-                        callback: (v) => onItemVisibile(v, index, false),
+                        callback: (v) => onLeftSeen(v, index),
                         once: true,
                       }" 
-                      :data="mod" :index="index" 
-                      :hash="mod.hash"
+                      :data="item[0]" 
+                      :index="item[1]"
                       :is-selected="false"
                       @dragstart="draggingMod = true"
                       @dragend="draggingMod = false"
-                      @click="filterByModId(mod)" />
+                      @click="setFilteredModid(mod)" />
           </div>
         </v-card>
       </v-flex>
       <v-flex d-flex xs6 style="padding-left: 5px;">
-        <v-card dark class="card-list right" style="display: flex; flex-flow: column;" @drop="onDropRight" @dragover="onDragOver" @mousewheel="onMouseWheel">
+        <v-card dark class="card-list right" style="display: flex; flex-flow: column;">
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('mod.selected') }} </span> 
           </v-card-title>
           <hint v-if="mods[0].length === 0" icon="save_alt" :text="$t('mod.hint')" :absolute="true" />
           <div v-else ref="rightList" class="list">
-            <mod-card v-for="(mod, index) in selecetedItems" 
-                      :key="mod.hash" 
+            <mod-card v-for="(item, index) in selectedItems" 
+                      :key="item[0].hash" 
                       v-observe-visibility="{
-                        callback: (v) => onItemVisibile(v, index, true),
+                        callback: (v) => onRightSeen(v, index),
                         once: true,
                       }" 
-                      :data="mod" :index="index" :hash="mod.hash"
+                      :data="item[0]" 
+                      :index="index" 
                       :is-selected="true" />
           </div>
         </v-card>
@@ -64,7 +70,8 @@
         fab
         bottom
         color="red"
-        @dragover="onDragOver" @drop="onDropDelete"
+        @dragover.prevent 
+        @drop="onDropDelete"
       >
         <v-icon> delete </v-icon>
       </v-btn>
@@ -99,21 +106,15 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, toRefs, computed } from '@vue/composition-api';
-import { useInstanceMods, useSelectionList, useResource } from '@/hooks';
+import Vue from 'vue';
+import { createComponent, reactive, toRefs, computed, ref, Ref, onUnmounted } from '@vue/composition-api';
+import { useInstanceMods, useSelectionList, useResource, useDragTransferList, useProgressiveLoad, useResourceOperation, useDropImport } from '@/hooks';
 import { Resource, ForgeResource, LiteloaderResource } from 'universal/store/modules/resource';
+import { HTMLElement } from 'fast-html-parser';
 
 export default createComponent({
   setup() {
-    const data: {
-      filterInCompatible: boolean;
-      filterNonMatchedMinecraftVersion: boolean;
-      filterText: string;
-      filteringModId: string;
-      draggingMod: false;
-      isDeletingMod: boolean;
-      deletingMod: ForgeResource | LiteloaderResource | null;
-    } = reactive({
+    const data = reactive({
       filterInCompatible: true,
       filterNonMatchedMinecraftVersion: false,
       filterText: '',
@@ -121,66 +122,75 @@ export default createComponent({
 
       draggingMod: false,
       isDeletingMod: false,
-      deletingMod: null,
+      deletingMod: null as ForgeResource | LiteloaderResource | null,
     });
-    const { mods: items } = useInstanceMods();
-    const { resources, queryResource, importResource, removeResource } = useResource('mods');
-    const mods = computed(() => {
-      const mods = resources.value;
-      const selectedModUrls = items.value;
-      const selectedMods = selectedModUrls.map(s => queryResource(s));
-      const selectedMask: { [key: string]: boolean } = {};
-      selectedMods.forEach((m) => {
-        if (!('missing' in m)) {
-          selectedMask[m.hash] = true;
-        }
-      });
-      const unselectedMods = mods.filter(m => !selectedMask[m.hash]);
-      Object.freeze(selectedMods);
-      Object.freeze(unselectedMods);
+    const rightList: Ref<null | HTMLElement> = ref(null);
+    const leftList: Ref<null | HTMLElement> = ref(null);
+    const container: Ref<null | Vue> = ref(null);
+    const { usedModResources, unusedModResources, add, remove, commit } = useInstanceMods();
+    const { getResource, removeResource } = useResourceOperation();
 
-      return [selectedMods, unselectedMods];
-    });
-    function filterMod(text: string, mod: any) {
+    useDropImport(computed(() => container.value!.$el) as any, 'mods');
+
+    useDragTransferList(
+      leftList,
+      rightList,
+      () => { },
+      i => add(usedModResources.value[i]),
+      remove,
+    );
+    onUnmounted(commit);
+
+    function filterText(mod: any) {
+      const text = data.filterText;
       if (!text) return true;
       return mod.name.toLowerCase().indexOf(text.toLowerCase()) !== -1;
     }
+    function filterForgeMod(mod: any) {
+      if (data.filteringModId !== '') {
+        return mod.metadata[0] ? mod.metadata[0].modid === data.filteringModId : false;
+      }
+      return filterText(mod);
+    }
+
+    const { filter: filterLeft, onItemVisibile: onLeftSeen } = useProgressiveLoad();
+    const { filter: filterRight, onItemVisibile: onRightSeen } = useProgressiveLoad();
+
+    const unselectedItems = computed(() => unusedModResources.value
+      .filter(filterForgeMod)
+      .filter(filterLeft)
+      .map((r, i) => [r, i]));
+    const selectedItems = computed(() => usedModResources.value
+      .filter(filterText)
+      .filter(filterRight)
+      .map((r, i) => [r, i]));
+
     function onConfirmDeleteMod() {
       data.isDeletingMod = false;
       removeResource(data.deletingMod!.hash);
       data.deletingMod = null;
     }
     function onDropDelete(e: DragEvent) {
-      const hash = e.dataTransfer!.getData('Hash');
-      const res = queryResource(hash);
+      const hash = e.dataTransfer!.getData('id');
+      const res = getResource(hash);
       if (res) {
         data.isDeletingMod = true;
         data.deletingMod = res as ForgeResource;
       }
     }
-    function filterByModId(modRes: ForgeResource) {
+    function setFilteredModid(modRes: ForgeResource) {
+      if (!modRes.metadata[0]) return;
       data.filteringModId = modRes.metadata[0].modid;
-    }
-    function dropFile(file: File) {
-      importResource({ path: file.path }).catch((e) => { console.error(e); });
     }
     return {
       ...toRefs(data),
-      ...useSelectionList(
-        items,
-        () => mods.value[1]
-          .filter(data.filteringModId !== ''
-            ? m => m.metadata[0].modid === data.filteringModId
-            : m => filterMod(data.filterText, m)),
-        () => mods.value[0]
-          .filter(m => filterMod(data.filterText, m)),
-        dropFile,
-        (i: Resource<any>) => i.hash,
-      ),
+      onLeftSeen,
+      onRightSeen,
       onDropDelete,
-      filterByModId,
-      mods,
+      unselectedItems,
+      selectedItems,
       onConfirmDeleteMod,
+      setFilteredModid,
     };
   },
 });

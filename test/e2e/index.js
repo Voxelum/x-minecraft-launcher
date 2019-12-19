@@ -26,4 +26,4 @@ beforeEach(function () {
     return this.app.start();
 });
 
-require('require-dir')('./specs');
+// require('require-dir')('./specs');

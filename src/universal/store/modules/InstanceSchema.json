@@ -19,30 +19,6 @@
             "description": "The description of this instance",
             "type": "string"
         },
-        "java": {
-            "description": "The java object containing the java info",
-            "default": null,
-            "type": "object",
-            "properties": {
-                "path": {
-                    "description": "The real path of the java paath",
-                    "type": "string"
-                },
-                "version": {
-                    "description": "The actual version string of the java",
-                    "type": "string"
-                },
-                "majorVersion": {
-                    "description": "The major version of selected java. If the version cannot be found, matching the java by this",
-                    "type": "number"
-                }
-            },
-            "required": [
-                "majorVersion",
-                "path",
-                "version"
-            ]
-        },
         "showLog": {
             "description": "Should show a logger window after Minecraft launched",
             "default": false,
@@ -54,7 +30,7 @@
             "type": "boolean"
         },
         "deployments": {
-            "description": "The external resource deployment of this profiles, like mods or resource packs",
+            "description": "The external resource deployment of this instance, like mods or resource packs.\n\nThe domain is the directory it will deployed to. For example, `mods` will deploy to `.minecraft/mods` folder.\n\nEach is a list of uri in specific format\n\n- Curseforge file `curseforge://projectId/fileId` or `curseforge://fileId`\n- Forge mod: `forge://modid/version`\n- Liteloader mod: `liteloader://name/version`\n- Fabric mod: `fabric://name/version`\n- Local managed resource: `resource://hash`\n- Http: `https://abc.bcd.jar`\n- Github: `github://username/reponame/releaseName`",
             "default": {},
             "type": "object",
             "additionalProperties": {
@@ -62,21 +38,18 @@
                 "items": {
                     "type": "string"
                 }
-            },
-            "properties": {
-                "mods": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "mods"
-            ]
+            }
         },
-        "version": {
-            "description": "The version requirement of the profile.\n\nContaining the forge & liteloader & etc.",
+        "optionalDeployments": {
+            "description": "The optional external resource deployment of this profiles, like mods or resource packs",
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "runtime": {
+            "description": "The runtime version requirement of the profile.\n\nContaining the forge & liteloader & etc.",
             "default": {
                 "minecraft": "",
                 "forge": "",
@@ -98,6 +71,10 @@
                 "liteloader": {
                     "default": "",
                     "type": "string"
+                },
+                "fabric": {
+                    "default": "",
+                    "type": "string"
                 }
             },
             "required": [
@@ -105,6 +82,11 @@
                 "liteloader",
                 "minecraft"
             ]
+        },
+        "java": {
+            "description": "The recommended java version for this instance",
+            "default": "8",
+            "type": "string"
         },
         "resolution": {
             "type": "object",
@@ -186,6 +168,9 @@
             "required": [
                 "host"
             ]
+        },
+        "licence": {
+            "type": "string"
         }
     },
     "required": [
@@ -200,9 +185,10 @@
         "lastAccessDate",
         "mcOptions",
         "name",
+        "optionalDeployments",
+        "runtime",
         "showLog",
         "url",
-        "version",
         "vmOptions"
     ],
     "$schema": "http://json-schema.org/draft-07/schema#",

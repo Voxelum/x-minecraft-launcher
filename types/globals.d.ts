@@ -66,3 +66,7 @@ declare module 'vue-particles' {
     const module: import('vue').PluginObject<any>;
     export default module;
 }
+
+interface Data {
+    [key: string]: unknown;
+}

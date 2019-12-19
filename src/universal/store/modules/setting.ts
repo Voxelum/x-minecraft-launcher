@@ -1,8 +1,8 @@
 import { UpdateInfo } from 'electron-updater';
 import { ModuleOption } from '../root';
-import { ParticleMode, SettingConfig } from './setting.config';
+import { ParticleMode, SettingSchema } from './setting.schema';
 
-interface State extends SettingConfig {
+interface State extends SettingSchema {
     /**
      * All supported languages of the launcher
      */
@@ -14,7 +14,7 @@ interface State extends SettingConfig {
 }
 
 interface Mutations {
-    config: SettingConfig & { locales: string[] };
+    config: SettingSchema & { locales: string[] };
     locale: string;
     allowPrerelease: boolean;
     autoInstallOnAppQuit: boolean;

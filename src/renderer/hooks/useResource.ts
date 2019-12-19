@@ -1,42 +1,37 @@
 import unknownPack from '@/assets/unknown_pack.png';
 import { computed, onMounted, Ref, ref } from '@vue/composition-api';
-import { CurseforgeModpackResource, ForgeResource, ImportOption, LiteloaderResource, ResourcePackResource, SaveResource } from 'universal/store/modules/resource';
+import { CurseforgeModpackResource, ForgeResource, LiteloaderResource, ResourcePackResource, SaveResource } from 'universal/store/modules/resource';
 import { useStore } from './useStore';
 
 export function useResourceOperation() {
     const { getters, services } = useStore();
     return {
         queryResource: getters.queryResource,
-        getResource: getters.getResource,
-        importResource: services.ResourceService.importResource,
+        importResource: services.ResourceService.importUnknownResource,
         removeResource: services.ResourceService.removeResource,
         deployResources: services.ResourceService.deployResources,
+        getResource: getters.getResource,
     };
 }
 
+/* eslint-disable import/export */
 export function useResource(domain: 'mods'): {
-    resourcesTree: Ref<{ [hash: string]: ForgeResource | LiteloaderResource }>;
     resources: Ref<Array<ForgeResource | LiteloaderResource>>;
 } & ReturnType<typeof useResourceOperation>;
 export function useResource(domain: 'resourcepacks'): {
-    resourcesTree: Ref<{ [hash: string]: ResourcePackResource }>;
     resources: Ref<Array<ResourcePackResource>>;
 } & ReturnType<typeof useResourceOperation>;
 export function useResource(domain: 'modpacks'): {
-    resourcesTree: Ref<{ [hash: string]: CurseforgeModpackResource }>;
     resources: Ref<Array<CurseforgeModpackResource>>;
 } & ReturnType<typeof useResourceOperation>;
 export function useResource(domain: 'saves'): {
-    resourcesTree: Ref<{ [hash: string]: SaveResource }>;
     resources: Ref<Array<SaveResource>>;
 } & ReturnType<typeof useResourceOperation>;
 export function useResource(domain: string) {
     const { state } = useStore();
-    const resourcesTree = computed(() => state.resource.domains[domain]);
-    const resources = computed(() => Object.values(state.resource.domains[domain]));
+    const resources = computed(() => state.resource.domains[domain]);
     return {
         ...useResourceOperation(),
-        resourcesTree,
         resources,
     };
 }
@@ -83,10 +78,6 @@ export function useForgeModResource(resource: ForgeResource) {
         }
         return '[*]';
     });
-    onMounted(() => {
-        readLogo();
-    });
-
     function readLogo() {
         if ('missing' in resource) {
             icon.value = unknownPack;
@@ -101,6 +92,9 @@ export function useForgeModResource(resource: ForgeResource) {
             // });
         }
     }
+    onMounted(() => {
+        readLogo();
+    });
     return {
         icon,
         metadata,

@@ -57,8 +57,8 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, ref, computed } from '@vue/composition-api';
-import { ForgeInstaller, ForgeWebPage } from '@xmcl/minecraft-launcher-core';
+import { createComponent, computed } from '@vue/composition-api';
+import { ForgeWebPage } from '@xmcl/minecraft-launcher-core';
 import { useForgeVersions } from '@/hooks';
 
 export default createComponent({

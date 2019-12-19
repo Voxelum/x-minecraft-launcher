@@ -1,21 +1,30 @@
 import Vue from 'vue';
 import { requireObject, requireString } from 'universal/utils/object';
 import { ModuleOption } from '../root';
-import { Java, JavaConfig } from './java.config';
+import { Java, JavaSchema } from './java.schema';
 
-type State = JavaConfig
+type State = JavaSchema
 
 interface Getters {
     defaultJava: Java;
     missingJava: boolean;
 }
 interface Mutations {
-    addJava: (Java | Java[]);
-    removeJava: (Java);
-    defaultJava: (Java);
+    javaAdd: (Java | Java[]);
+    javaRemove: (Java);
+    javaSetDefault: (Java);
 }
 
 export type JavaModule = ModuleOption<State, Getters, Mutations, {}>;
+
+/**
+ * Return when there is no java
+ */
+export const DEFAULT_JAVA: Java = {
+    version: '',
+    majorVersion: 0,
+    path: 'java',
+};
 
 const mod: JavaModule = {
     state: {
@@ -23,11 +32,11 @@ const mod: JavaModule = {
         default: 0,
     },
     getters: {
-        defaultJava: state => state.all[state.default] || { path: '', version: '', majorVersion: 0 },
+        defaultJava: state => state.all[state.default] || DEFAULT_JAVA,
         missingJava: state => state.all.length === 0,
     },
     mutations: {
-        addJava(state, java) {
+        javaAdd(state, java) {
             if (java instanceof Array) {
                 for (const j of java) {
                     const existed = state.all.find(jp => jp.path === j.path);
@@ -49,7 +58,7 @@ const mod: JavaModule = {
             }
             if (state.default >= state.all.length) state.default = 0;
         },
-        removeJava(state, java) {
+        javaRemove(state, java) {
             requireObject(java);
             requireString(java.path);
             for (let i = 0; i < state.all.length; i++) {
@@ -61,7 +70,7 @@ const mod: JavaModule = {
                 }
             }
         },
-        defaultJava(state, def) {
+        javaSetDefault(state, def) {
             requireObject(def);
             requireString(def.path);
 

@@ -1,5 +1,5 @@
 import { Task, TaskHandle } from '@xmcl/minecraft-launcher-core';
-import { App, ipcMain, webContents, app } from 'electron';
+import { app, ipcMain, webContents } from 'electron';
 import AuthLibService from 'main/service/AuthLibService';
 import BaseService from 'main/service/BaseService';
 import CurseForgeService from 'main/service/CurseForgeService';
@@ -52,9 +52,7 @@ export default class StoreAndServiceManager extends Manager {
     }
 
     setup() {
-        ipcMain.handle('sync', (event, id) => {
-            return this.storeReadyPromise.then(() => this.sync(id));
-        });
+        ipcMain.handle('sync', (_, id) => this.storeReadyPromise.then(() => this.sync(id)));
     }
 
     private setupService(root: string) {
@@ -116,7 +114,7 @@ export default class StoreAndServiceManager extends Manager {
 
     async rootReady(root: string) {
         function deepCopyStoreTemplate(template: StoreOptions<any>) {
-            const copy = Object.assign({}, template);
+            const copy = { ...template };
             if (typeof template.state === 'object') {
                 copy.state = JSON.parse(JSON.stringify(template.state));
             }
@@ -153,7 +151,7 @@ export default class StoreAndServiceManager extends Manager {
         this.storeReadyCb();
     }
 
-    async appReady(app: App) {
+    async appReady() {
         // wait app ready since in the init stage, the module can access network & others
         const startingTime = Date.now();
         try {
@@ -162,7 +160,6 @@ export default class StoreAndServiceManager extends Manager {
             console.error(e);
         }
         console.log(`Successfully init modules. Total Time is ${Date.now() - startingTime}ms.`);
-
         this.setupReciever();
     }
 
@@ -228,7 +225,7 @@ export default class StoreAndServiceManager extends Manager {
      */
     private setupAutoSave() {
         this.store!.subscribe((mutation) => {
-            this.services.map(s => s.save({ mutation: mutation.type, payload: mutation.payload }));
+            this.services.map(s => s.save({ mutation: mutation.type as any, payload: mutation.payload }));
         });
     }
 

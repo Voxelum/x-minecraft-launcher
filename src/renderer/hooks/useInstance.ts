@@ -1,7 +1,9 @@
 import { computed, onMounted, onUnmounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
 import { GameSetting } from '@xmcl/minecraft-launcher-core';
 import { CreateOption, InstanceConfig } from 'universal/store/modules/instance';
+import { Resource } from 'universal/store/modules/resource';
 import { getExpectVersion } from 'universal/utils';
+import Vue from 'vue';
 import { useStore } from './useStore';
 import { useCurrentUser } from './useUser';
 import { useMinecraftVersions } from './useVersion';
@@ -11,7 +13,7 @@ import { useMinecraftVersions } from './useVersion';
  */
 export function useInstance() {
     const { getters, services, state } = useStore();
-    const instance: InstanceConfig & { [key: string]: unknown } = getters.selectedInstance as any;
+    const instance: InstanceConfig & { [key: string]: unknown } = getters.instance as any;
 
     const maxMemory = computed(() => instance.maxMemory);
     const minMemory = computed(() => instance.minMemory);
@@ -30,7 +32,7 @@ export function useInstance() {
         server,
         edit: services.InstanceService.editInstance,
         exportTo: services.InstanceService.exportInstance,
-        refresh: services.InstanceService.refreshProfile,
+        refresh: services.InstanceService.refreshInstance,
         refreshing,
     };
 }
@@ -44,7 +46,7 @@ export function useInstances() {
         instances: computed(() => getters.instances),
         selectInstance: services.InstanceService.selectInstance,
         deleteInstance: services.InstanceService.deleteInstance,
-        pingProfiles: services.InstanceService.refreshAll,
+        refreshInstances: services.InstanceService.refreshInstances,
         importInstance: services.InstanceService.importInstance,
     };
 }
@@ -57,10 +59,9 @@ export function useInstanceCreation() {
     const { name } = useCurrentUser();
     const { release } = useMinecraftVersions();
     const data: CreateOption = reactive({
-        type: 'modpack',
         name: '',
         version: { forge: '', minecraft: release.value?.id || '', liteloader: '' },
-        java: { path: '', version: '', majorVersion: 0 },
+        java: '',
         showLog: false,
         hideLauncher: true,
         vmOptions: [],
@@ -94,11 +95,11 @@ export function useInstanceCreation() {
         reset() {
             data.name = 'Latest Game';
             data.runtime = {
-                forge: '',
                 minecraft: release.value?.id || '',
+                forge: '',
                 liteloader: '',
             };
-            data.java = { path: '', version: '', majorVersion: 0 };
+            data.java = '';
             data.showLog = false;
             data.hideLauncher = true;
             data.vmOptions = [];
@@ -141,7 +142,7 @@ export function useInstanceCreation() {
 
 export function useInstanceVersionBase() {
     const { getters } = useStore();
-    const profile: InstanceConfig = getters.selectedInstance;
+    const profile: InstanceConfig = getters.instance;
     return {
         ...toRefs(profile.runtime),
     };
@@ -162,7 +163,7 @@ export function useInstanceResourcePacks() {
     const { state, commit } = useStore();
     const resourcePacks: Ref<string[]> = computed({
         get: () => state.instance.settings.resourcePacks,
-        set: (p) => { commit('gamesettings', { resourcePacks: p }); },
+        set: (p) => { commit('instanceGameSettings', { resourcePacks: p }); },
     }) as any;
     return {
         resourcePacks,
@@ -174,10 +175,10 @@ export function useInstanceGameSetting() {
     return {
         ...toRefs(state.instance.settings),
         refresh() {
-            return services.InstanceService.loadProfileGameSettings();
+            return services.InstanceService.loadInstanceGameSettings();
         },
         commitChange(settings: GameSetting.Frame) {
-            commit('gamesettings', settings);
+            commit('instanceGameSettings', settings);
         },
     };
 }
@@ -185,7 +186,7 @@ export function useInstanceGameSetting() {
 export function useInstanceVersion() {
     const { getters, services } = useStore();
 
-    const instance: InstanceConfig = getters.selectedInstance;
+    const instance: InstanceConfig = getters.instance;
 
     const refVersion = toRefs(instance.runtime);
     const folder = ref('');
@@ -223,20 +224,56 @@ export function useInstanceVersion() {
     };
 }
 
+/**
+ * Open read/write for current instance mods
+ */
 export function useInstanceMods() {
-    const { getters, services } = useStore();
+    const { state, getters, services } = useStore();
 
-    const mods: Ref<string[]> = computed({
-        get() {
-            return getters.selectedInstance.deployments.mods || [];
-        },
-        set(nv: string[]) {
-            services.InstanceService.editInstance({ deployments: { mods: nv } });
-        },
-    }) as any;
+    const allModResources = state.resource.domains.mods;
+    const data = reactive({
+        mods: [] as string[],
+    });
+    /**
+     * Unused mod resources
+     */
+    const unusedModResources = computed(() => allModResources.filter(r => r.source.uri.every(i => data.mods.indexOf(i) === -1)));
+    /**
+     * Used mod resources
+     */
+    const usedModResources = computed(() => data.mods.map(i => state.resource.directory[i]));
+
+    /**
+     * Add a new mod resource to the used list
+     */
+    function add(res: Resource<any>) {
+        data.mods.push(res.source.uri[0]);
+    }
+
+    /**
+     * Remove a mod resource from used list
+     */
+    function remove(index: number) {
+        Vue.delete(data.mods, index);
+    }
+
+    /**
+     * Commit the change for current mods setting
+     */
+    function commit() {
+        services.InstanceService.editInstance({ deployments: { mods: data.mods } });
+    }
+
+    onMounted(() => {
+        data.mods = [...getters.instance.deployments.mod];
+    });
 
     return {
-        mods,
+        unusedModResources,
+        usedModResources,
+        add,
+        remove,
+        commit,
     };
 }
 export function useInstanceSaves() {

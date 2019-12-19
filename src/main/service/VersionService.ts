@@ -1,10 +1,11 @@
 import { Util, Version } from '@xmcl/minecraft-launcher-core';
+import { shell } from 'electron';
+import { remove } from 'fs-extra';
 import { fs, getExpectVersion, requireString } from 'main/utils';
 import { readFolder, setPersistence } from 'main/utils/persistence';
+import { MutationKeys } from 'universal/store';
 import { LocalVersion } from 'universal/store/modules/version';
-import { shell } from 'electron';
 import Service from './Service';
-import { remove } from 'fs-extra';
 
 /**
  * The local version serivce maintains the installed versions on disk
@@ -14,7 +15,7 @@ export default class VersionService extends Service {
         await this.refreshVersions();
     }
 
-    async save({ mutation }: { mutation: string }) {
+    async save({ mutation }: { mutation: MutationKeys }) {
         switch (mutation) {
             case 'minecraftMetadata':
                 await setPersistence({
@@ -137,7 +138,7 @@ export default class VersionService extends Service {
             const root = new Util.MinecraftFolder(this.state.root);
             const targetId = getExpectVersion(targetVersion.minecraft, targetVersion.forge, targetVersion.liteloader);
 
-            const extended = await Version.extendsVersion(targetId,
+            const extended = Version.extendsVersion(targetId,
                 await Version.parse(root, forge.folder), await Version.parse(root, liteloader.folder));
 
             const targetJSON = root.getVersionJson(targetId);

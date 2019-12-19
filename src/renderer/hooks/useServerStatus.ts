@@ -29,7 +29,7 @@ export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
         description: computed(() => status.value.description),
         favicon: computed(() => status.value.favicon || unknownServer),
         ping: computed(() => status.value.ping),
-        refresh: services.InstanceService.refreshProfile,
+        refresh: services.InstanceService.refreshInstance,
     };
 }
 

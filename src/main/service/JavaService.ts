@@ -2,24 +2,20 @@ import { Task } from '@xmcl/minecraft-launcher-core';
 import { exec } from 'child_process';
 import { fs, installJreFromMojangTask, installJreFromSelfHostTask, platform } from 'main/utils';
 import { getPersistence, setPersistence } from 'main/utils/persistence';
-import JavaConfigSchema from 'main/utils/schema/JavaConfig.json';
 import { EOL } from 'os';
 import { join } from 'path';
-import { Java, JavaConfig } from 'universal/store/modules/java.config';
+import { MutationKeys } from 'universal/store';
+import { Java, JavaSchema } from 'universal/store/modules/java.schema';
 import { requireString } from 'universal/utils/object';
-import InstanceService from './InstanceService';
-import Service, { Inject, Singleton } from './Service';
+import Service, { Singleton } from './Service';
 
 export default class JavaService extends Service {
-    @Inject('InstanceService')
-    private profileService!: InstanceService;
-
     private static JAVA_FILE = platform.name === 'windows' ? 'javaw.exe' : 'java';
 
     async load() {
-        const loaded: JavaConfig = await getPersistence({ path: this.getPath('java.json'), schema: JavaConfigSchema });
+        const loaded: JavaSchema = await getPersistence({ path: this.getPath('java.json'), schema: JavaSchema });
         if (loaded) {
-            this.commit('addJava', loaded.all.filter(l => typeof l.path === 'string'));
+            this.commit('javaAdd', loaded.all.filter(l => typeof l.path === 'string'));
         }
         if (this.state.java.all.length === 0) {
             await this.refreshLocalJava();
@@ -35,16 +31,16 @@ export default class JavaService extends Service {
                 this.resolveJava(local);
             }
             Promise.all(this.state.java.all.map(j => this.resolveJava(j.path)
-                .then((result) => { if (!result) { this.commit('removeJava', j); } })));
+                .then((result) => { if (!result) { this.commit('javaRemove', j); } })));
         }
     }
 
-    async save({ mutation }: { mutation: string }) {
+    async save({ mutation }: { mutation: MutationKeys }) {
         switch (mutation) {
-            case 'addJava':
-            case 'removeJava':
-            case 'defaultJava':
-                setPersistence({ path: this.getPath('java.json'), data: this.state.java, schema: JavaConfigSchema });
+            case 'javaAdd':
+            case 'javaRemove':
+            case 'javaSetDefault':
+                setPersistence({ path: this.getPath('java.json'), data: this.state.java, schema: JavaSchema });
                 break;
             default:
         }
@@ -71,7 +67,8 @@ export default class JavaService extends Service {
             const java = await this.resolveJava(local);
 
             if (fixing) {
-                await this.profileService.editInstance({ java });
+                // TODO: 
+                // await this.profileService.editInstance({ java: java?.majorVersion.toString() });
             }
 
             return java;
@@ -108,7 +105,7 @@ export default class JavaService extends Service {
                         version,
                         majorVersion,
                     };
-                    this.commit('addJava', java);
+                    this.commit('javaAdd', java);
                     resolve(java);
                 } else {
                     resolve(undefined);

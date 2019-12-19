@@ -50,10 +50,8 @@ export async function loadInstanceSaves(this: InstanceService, id: string = this
                 level: LevelDataFrame;
             }[] = loaded.filter(s => !!s.level) as any;
             console.log(`Loaded ${nonNulls.length} saves.`);
-            commit('profileSaves', nonNulls);
+            commit('instanceSaves', nonNulls);
             return nonNulls;
-
-            
         }
     } catch (e) {
         if (!e.message.startsWith('ENOENT:')) {
@@ -61,7 +59,7 @@ export async function loadInstanceSaves(this: InstanceService, id: string = this
             console.warn(e);
         }
     }
-    commit('profileSaves', []);
+    commit('instanceSaves', []);
     return [];
 }
 export async function importSave(this: InstanceService, filePath: string) {
@@ -98,8 +96,9 @@ export async function importSave(this: InstanceService, filePath: string) {
             destDir += ' Copy';
         }
         await fs.copy(srcDir, destDir);
-        commit('profileSaves', [...state.instance.saves, { path: filePath, level }]);
+        commit('instanceSaves', [...state.instance.saves, { path: filePath, level }]);
         await this.loadInstanceSaves();
+        return destDir;
     } catch (e) {
         console.error(`Cannot import save from ${filePath}`);
         console.error(e);

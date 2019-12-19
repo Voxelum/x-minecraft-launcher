@@ -1,22 +1,21 @@
-import { GameSetting, Server, LevelDataFrame } from '@xmcl/minecraft-launcher-core';
+import { GameSetting, LevelDataFrame, Server } from '@xmcl/minecraft-launcher-core';
 import { getExpectVersion } from 'universal/utils/versions';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
-import { Java } from './java';
-import { InstanceConfig, InstanceLockConfig } from './instance.config';
+import { InstanceSchema, InstanceLockSchema, DeployedInfo } from './instance.schema';
+import { DEFAULT_JAVA, Java } from './java';
 import { Resource } from './resource';
 import { LocalVersion } from './version';
 
-export type CreateOption = DeepPartial<Omit<InstanceConfig, 'id' | 'lastAccessDate' | 'creationDate'>>;
+export type CreateOption = DeepPartial<Omit<InstanceSchema, 'id' | 'lastAccessDate' | 'creationDate'>>;
 export type Save = { level: LevelDataFrame; path: string }
-export { InstanceConfig };
+export { InstanceSchema as InstanceConfig };
 
-interface State extends InstanceLockConfig {
+interface State extends InstanceLockSchema {
     /**
-     * All loaded launch profiles
+     * All loaded launch instances
      */
-    all: { [id: string]: InstanceConfig };
-
+    all: { [id: string]: InstanceSchema };
     /**
      * Current selected id
      */
@@ -24,68 +23,94 @@ interface State extends InstanceLockConfig {
 
     // caches
     /**
-     * Loaded server dat info 
+     * Loaded server dat info
      */
     serverInfos: Server.Info[];
     /**
-     * The saves cache of current selected profile
+     * The saves cache of current selected instance
      */
     saves: Save[];
     /**
-     * The game setting of current selected profile
+     * The game setting of current selected instance
      */
     settings: GameSetting.Frame & { resourcePacks: Array<string> };
     /**
-     * The server statuses of all server profiles, modpack won't have this.
+     * The server statuses of all server instances, modpack won't have this.
      */
     statuses: { [id: string]: Server.StatusFrame | undefined };
 }
 
 interface Getters {
-    instances: InstanceConfig[];
-    serverProtocolVersion: number;
-    selectedInstance: InstanceConfig;
-    currentVersion: LocalVersion;
-    deployingResources: { [domain: string]: Resource<any>[] };
+    /**
+     * All selected instances.
+     */
+    instances: InstanceSchema[];
+    /**
+     * The selected instance config.
+     */
+    instance: InstanceSchema;
+    /**
+     * The selected instance mapped local version.
+     * If there is no local version matced, it will return a local version with folder equal to `"unknown"`.
+     */
+    instanceVersion: LocalVersion;
+    /**
+     * The selected instance mapped local java.
+     * If there is no matching java for current instance, it will return the `DEFAULT_JAVA`
+     * which contains the `majorVersion` equal to 0
+     */
+    instanceJava: Java;
+    /**
+     * The selected instance mapped resources to deploy.
+     */
+    instanceResources: Resource<any>[];
+    /**
+     * The selected instance mapped minecraft server protocol version.
+     * This is determined by the minecraft version of it.
+     */
+    instanceProtocolVersion: number;
 }
 
 interface Mutations {
-    addProfile: InstanceConfig;
-    removeProfile: string;
-    selectProfile: string;
+    instanceAdd: InstanceSchema;
+    instanceRemove: string;
+    instanceJava: string;
+    instanceDeployInfo: DeployedInfo[];
+    instanceSelect: string;
 
     /**
      * Edit the profile content. This commit will trigger save function to store the data to the disk.
      * Don't use this directly. Use `editProfile` action
      * @param payload The modified data
      */
-    profile: DeepPartial<InstanceConfig>;
+    instance: DeepPartial<InstanceSchema>;
 
     /**
      * Update server infos in server.dat
      * @param infos The new server infos
      */
-    serverInfos: Server.Info[];
+    instanceServerInfos: Server.Info[];
     /**
      * Update the game settings in options.txt
      * @param payload The new game settings.
      */
-    gamesettings: GameSetting.Frame;
+    instanceGameSettings: GameSetting.Frame;
 
     // non-persistence mutation below, just update cache, nothing saved
 
-    profileCache: { gamesettings?: GameSetting.Frame } | { serverInfos: Server.Info[] };
-    serverStatus: Server.StatusFrame;
-    profileSaves: Save[];
-    profileStatus: { [id: string]: Server.StatusFrame };
+    instanceStatus: Server.StatusFrame;
+    instanceCache: { gamesettings: GameSetting.Frame } | { serverInfos: Server.Info[] };
+    instanceSaves: Save[];
 
-    lockFile: any;
+    instancesStatus: { [id: string]: Server.StatusFrame };
+
+    instanceLockFile: any;
 }
 
 export type InstanceModule = ModuleOption<State, Getters, Mutations, {}>;
 
-export function createTemplate(id: string, mcversion: string, isCreatingNew: boolean): InstanceConfig {
-    const base: InstanceConfig = {
+export function createTemplate(id: string, mcversion: string, isCreatingNew: boolean): InstanceSchema {
+    const base: InstanceSchema = {
         id,
         name: '',
 
@@ -105,14 +130,13 @@ export function createTemplate(id: string, mcversion: string, isCreatingNew: boo
             minecraft: mcversion,
             forge: '',
             liteloader: '',
-            java: '8',
             fabric: '',
         },
+        java: '8',
         deployments: {
-            mods: {},
+            mods: [],
         },
-        optionalDeployments: {
-        },
+        optionalDeployments: [],
         image: '',
         blur: 4,
 
@@ -125,7 +149,7 @@ export function createTemplate(id: string, mcversion: string, isCreatingNew: boo
     return base;
 }
 
-const DEFAULT_PROFILE: InstanceConfig = createTemplate('', '', false);
+const DEFAULT_PROFILE: InstanceSchema = createTemplate('', '', false);
 
 const mod: InstanceModule = {
     state: {
@@ -138,45 +162,45 @@ const mod: InstanceModule = {
         saves: [],
 
         java: '',
-        deployed: {},
+        deployed: [],
 
         statuses: {},
     },
     getters: {
         instances: state => Object.keys(state.all).map(k => state.all[k]),
-        serverProtocolVersion: () => 338,
-        selectedInstance: state => state.all[state.id] || DEFAULT_PROFILE,
-        currentVersion: (state, getters) => {
-            const current = getters.selectedInstance;
-            const minecraft = current.runtime.minecraft;
-            const forge = current.runtime.forge;
-            const liteloader = current.runtime.liteloader;
+        instanceProtocolVersion: () => 338,
+        instance: state => state.all[state.id] || DEFAULT_PROFILE,
+        instanceVersion: (state, getters, rootState) => {
+            const current = getters.instance;
+            const runtimes = Object.keys(current.runtime);
 
-            return {
-                id: getExpectVersion(minecraft, forge, liteloader),
-                minecraft,
-                forge,
-                liteloader,
-                folder: getExpectVersion(minecraft, forge, liteloader),
+            const localVersion = rootState.version.local
+                .find(v => runtimes.every(r => (v as any)[r] === current.runtime[r]));
+
+            return localVersion || {
+                id: getExpectVersion(current.runtime.minecraft, current.runtime.forge, current.runtime.liteloader),
+                folder: 'unknown',
+                ...current.runtime,
             };
         },
-        deployingResources: (_, getters, rootState) => {
-            const profile = getters.selectedInstance;
-
-            const resources: { [domain: string]: Resource<any>[] } = {};
-            for (const domain of Object.keys(profile.deployments)) {
-                const depl = profile.deployments[domain];
-                if (depl instanceof Array && depl.length !== 0) {
-                    const domainResources = rootState.resource.domains[domain];
-                    resources[domain] = depl.map(h => domainResources[h]);
-                }
+        instanceJava: (state, getters, rootState) => {
+            const javaPath = state.java;
+            if (javaPath !== '') {
+                return rootState.java.all.find(j => j.path === javaPath) || {
+                    path: javaPath,
+                    version: '',
+                    majorVersion: 0,
+                };
             }
-
-            return resources;
+            const instance = getters.instance;
+            return rootState.java.all.find(j => j.majorVersion.toString() === instance.runtime.java
+                || j.version === instance.runtime.java) || DEFAULT_JAVA;
         },
+        instanceResources: (state, getters, rootState, rootGetters) => Object.values(getters.instance.deployments).reduce((a, b) => [...a, ...b])
+            .map(u => rootGetters.queryResource(u)),
     },
     mutations: {
-        addProfile(state, profile) {
+        instanceAdd(state, profile) {
             /**
              * Prevent the case that hot reload keep the vuex state
              */
@@ -184,10 +208,16 @@ const mod: InstanceModule = {
                 Vue.set(state.all, profile.id, profile);
             }
         },
-        removeProfile(state, id) {
+        instanceJava(state, jPath) {
+            state.java = jPath;
+        },
+        instanceDeployInfo(state, info) {
+            state.deployed = info;
+        },
+        instanceRemove(state, id) {
             Vue.delete(state.all, id);
         },
-        selectProfile(state, id) {
+        instanceSelect(state, id) {
             if (state.all[id]) {
                 state.id = id;
             } else if (state.id === '') {
@@ -195,12 +225,12 @@ const mod: InstanceModule = {
             }
             state.all[state.id].lastAccessDate = Date.now();
         },
-        lockFile(state, lock) {
+        instanceLockFile(state, lock) {
             state.java = lock.java;
             state.deployed = lock.deployed;
         },
-        profile(state, settings) {
-            const prof = state.all[state.id];
+        instance(state, settings) {
+            const prof = state.all[settings.id || state.id];
 
             if (!prof) {
                 console.error(`Cannot commit profile. Illegal State with missing profile ${state.id}`);
@@ -260,16 +290,10 @@ const mod: InstanceModule = {
             prof.icon = settings.icon || prof.icon;
 
             if (typeof settings.deployments === 'object') {
-                const deployments = settings.deployments;
-                for (const domain of Object.keys(deployments)) {
-                    const resources = deployments[domain];
-                    if (typeof resources === 'object') {
-                        for (const key of Object.keys(resources)) {
-                            const value = resources[key];
-                            if (value) {
-                                prof.deployments[domain][key] = value;
-                            }
-                        }
+                for (const key of Object.keys(settings.deployments)) {
+                    const dep = settings.deployments[key];
+                    if (dep) {
+                        prof.deployments[key] = dep;
                     }
                 }
             }
@@ -288,8 +312,7 @@ const mod: InstanceModule = {
                 prof.blur = settings.blur;
             }
         },
-
-        profileCache(state, cache) {
+        instanceCache(state, cache) {
             if ('gamesettings' in cache && cache.gamesettings) {
                 const settings = cache.gamesettings;
                 const container = state.settings;
@@ -307,8 +330,7 @@ const mod: InstanceModule = {
                 }
             }
         },
-
-        gamesettings(state, settings) {
+        instanceGameSettings(state, settings) {
             console.log(`GameSetting ${JSON.stringify(settings, null, 4)}`);
             const container = state.settings;
             if (settings.resourcePacks && settings.resourcePacks instanceof Array) {
@@ -324,18 +346,18 @@ const mod: InstanceModule = {
                 }
             }
         },
-        serverInfos(state, infos) {
+        instanceServerInfos(state, infos) {
             state.serverInfos = infos;
         },
-        serverStatus(state, status) {
+        instanceStatus(state, status) {
             Vue.set(state.statuses, state.id, status);
         },
-        profileStatus(state, statues) {
+        instancesStatus(state, statues) {
             for (const [key, value] of Object.entries(statues)) {
                 Vue.set(state.statuses, key, value);
             }
         },
-        profileSaves(state, saves) {
+        instanceSaves(state, saves) {
             state.saves = saves;
         },
     },

@@ -55,9 +55,9 @@ interface Getters {
 }
 
 interface Mutations {
-    postProblems: Partial<ProblemReport>;
-    startResolveProblems: Problem[];
-    endResolveProblems: Problem[];
+    problemsPost: Partial<ProblemReport>;
+    problemsStartResolve: Problem[];
+    problemsEndResolve: Problem[];
 }
 
 export type DiagnoseModule = ModuleOption<State, Getters, Mutations, {}>;
@@ -110,7 +110,7 @@ const mod: DiagnoseModule = {
         },
     },
     mutations: {
-        postProblems(state, problems) {
+        problemsPost(state, problems) {
             for (const [id, value] of Object.entries(problems)) {
                 if (value instanceof Array) {
                     if (!state.registry[id]) {
@@ -121,12 +121,12 @@ const mod: DiagnoseModule = {
                 }
             }
         },
-        startResolveProblems(state, problems) {
+        problemsStartResolve(state, problems) {
             problems.forEach((p) => {
                 state.registry[p.id].fixing = true;
             });
         },
-        endResolveProblems(state, problems) {
+        problemsEndResolve(state, problems) {
             problems.forEach((p) => {
                 state.registry[p.id].fixing = false;
             });

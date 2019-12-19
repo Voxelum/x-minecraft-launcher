@@ -1,5 +1,4 @@
 import { inject, InjectionKey, Ref, provide, ref } from '@vue/composition-api';
-import { requireNonnull } from 'main/utils';
 
 export type Status = 'success' | 'info' | 'warning' | 'error';
 const STATUS_SYMBOL: InjectionKey<Ref<Status>> = Symbol('NotifierStatus');

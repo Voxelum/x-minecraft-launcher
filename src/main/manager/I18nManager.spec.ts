@@ -1,6 +1,6 @@
-import I18nManager from "./I18nManager";
-import zh from "../utils/locales/zh-CN.json";
-import en from "../utils/locales/en.json";
+import I18nManager from './I18nManager';
+import zh from '../utils/locales/zh-CN.json';
+import en from '../utils/locales/en.json';
 
 describe('I18nManager', () => {
     describe('t', () => {

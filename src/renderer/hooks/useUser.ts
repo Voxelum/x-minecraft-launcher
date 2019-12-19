@@ -1,18 +1,17 @@
 import { computed, toRefs } from '@vue/composition-api';
-import { Data } from '@vue/composition-api/dist/component';
-import { UserProfile } from 'universal/store/modules/user.config';
-import { useStore } from './useStore';
+import { UserProfile } from 'universal/store/modules/user.schema';
+import { useStore, useBusy } from './useStore';
 
 export function useLogin() {
     const { state, getters, commit, services } = useStore();
     const authServices = computed(() => ['offline', ...Object.keys(state.user.authServices)]);
     const profileServices = computed(() => Object.keys(state.user.profileServices));
-    const avaiableGameProfiles = computed(() => getters.avaiableGameProfiles);
+    const avaiableGameProfiles = computed(() => getters.gameProfiles);
     /**
      * Remove a user account.
      */
     async function removeAccount(userId: string) {
-        commit('removeUserProfile', userId);
+        commit('userProfileRemove', userId);
     }
     return {
         authServices,
@@ -24,37 +23,14 @@ export function useLogin() {
     };
 }
 
-export function useCurrentUser() {
-    const { state, getters, services } = useStore();
-    const user: UserProfile & Data = getters.selectedUser as any;
-    const theAuthService = computed(() => getters.authService);
-    const theProfileService = computed(() => getters.profileService);
-    const loginHistory = computed(() => state.user.loginHistory);
-    const name = computed(() => getters.selectedGameProfile.name);
-    const profileId = computed(() => getters.selectedGameProfile.name);
-
-    return {
-        ...toRefs(user),
-        name,
-        profileId,
-        theAuthService,
-        theProfileService,
-        loginHistory,
-        ...useCurrentUserStatus(),
-        refreshStatus: services.UserService.refreshStatus,
-        switchUserProfile: services.UserService.switchUserProfile,
-        logout: services.UserService.logout,
-    };
-}
-
 export function useCurrentUserStatus() {
     const { state, getters, services } = useStore();
-    const user: UserProfile & Data = getters.selectedUser as any;
+    const user: UserProfile & Data = getters.user as any;
     const offline = computed(() => getters.offline);
-    const logined = computed(() => getters.logined);
+    const logined = computed(() => getters.accessTokenValid);
     const isServiceCompatible = computed(() => getters.isServiceCompatible);
-    const security = computed(() => (user.authServices === 'mojang' ? state.user.security : true));
-    const refreshingSecurity = computed(() => state.user.refreshingSecurity);
+    const security = computed(() => (user.authServices === 'mojang' ? state.user.mojangSecurity : true));
+    const refreshingSecurity = useBusy('checkLocation');
     return {
         logined,
         offline,
@@ -67,12 +43,33 @@ export function useCurrentUserStatus() {
     };
 }
 
-export function useCurrentUserSkin() {
-    const { getters, state, services } = useStore();
+export function useCurrentUser() {
+    const { state, getters, services } = useStore();
+    const user: UserProfile & Data = getters.user as any;
+    const theAuthService = computed(() => getters.authService);
+    const theProfileService = computed(() => getters.profileService);
+    const name = computed(() => getters.gameProfile.name);
+    const profileId = computed(() => getters.gameProfile.name);
+
     return {
-        refreshing: computed(() => state.user.refreshingSkin),
-        url: computed(() => getters.selectedGameProfile.textures.SKIN.url),
-        slim: computed(() => (getters.selectedGameProfile.textures.SKIN.metadata ? getters.selectedGameProfile.textures.SKIN.metadata.model === 'slim' : false)),
+        ...toRefs(user),
+        name,
+        profileId,
+        theAuthService,
+        theProfileService,
+        ...useCurrentUserStatus(),
+        refreshStatus: services.UserService.refreshStatus,
+        switchUserProfile: services.UserService.switchUserProfile,
+        logout: services.UserService.logout,
+    };
+}
+
+export function useCurrentUserSkin() {
+    const { getters, services } = useStore();
+    return {
+        refreshing: useBusy('refreshSkin'),
+        url: computed(() => getters.gameProfile.textures.SKIN.url),
+        slim: computed(() => (getters.gameProfile.textures.SKIN.metadata ? getters.gameProfile.textures.SKIN.metadata.model === 'slim' : false)),
         refreshSkin: services.UserService.refreshSkin,
         uploadSkin: services.UserService.uploadSkin,
         saveSkin: services.UserService.saveSkin,

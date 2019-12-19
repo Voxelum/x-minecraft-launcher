@@ -2,7 +2,7 @@ import { computed } from '@vue/composition-api';
 import { useStore } from './useStore';
 
 export function useTask(taskHandle: string | Promise<any>) {
-    const { state, services } = useStore();
+    const { state } = useStore();
     const handle = typeof taskHandle === 'string' ? taskHandle : (taskHandle as any).__tasks__[0];
     const taskState = state.task.tree[handle];
     const status = computed(() => taskState.status);
@@ -25,7 +25,7 @@ export function useTask(taskHandle: string | Promise<any>) {
 }
 
 export function useTasks() {
-    const { state, getters } = useStore();
+    const { state } = useStore();
     const activeTasksCount = computed(
         () => state.task.tasks.filter(t => t.status === 'running').length,
     );

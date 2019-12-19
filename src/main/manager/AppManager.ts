@@ -1,4 +1,4 @@
-import { App, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, shell, app } from 'electron';
+import { App, BrowserWindow, BrowserWindowConstructorOptions, protocol, ipcMain, shell, app } from 'electron';
 import { EventEmitter } from 'events';
 import { Store } from 'vuex';
 import { join } from 'path';
@@ -71,6 +71,7 @@ export abstract class LauncherApp {
         if (!ops.webPreferences) { ops.webPreferences = {}; }
         ops.webPreferences.webSecurity = !isDev; // disable security for loading local image
         ops.webPreferences.nodeIntegration = isDev; // enable node for webpack in dev
+        // ops.webPreferences.enableRemoteModule = true;
         ops.webPreferences.preload = join(__static, 'preload.js');
         const ref = new BrowserWindow(ops);
         ipcMain.emit('browser-window-setup', ref, name);
@@ -113,10 +114,27 @@ export default class AppManager extends Manager {
 
     async setup() {
         const constructor = await import('../app/BuiltinApp').then(c => c.default);
-        const app = new constructor();
-        Reflect.set(app, 'eventBus', this.eventBus);
-        Reflect.set(app, 't', this.managers.I18nManager.t);
-        this.instance = app;
+        const clientApp = new constructor();
+        Reflect.set(clientApp, 'eventBus', this.eventBus);
+        Reflect.set(clientApp, 't', this.managers.I18nManager.t);
+        this.instance = clientApp;
+
+        app.on('open-url', (event, url) => {
+            event.preventDefault();
+            const realUrl = url.substring('xmcl://'.length);
+            this.launchCustomApp(realUrl);
+        });
+        if (!app.isDefaultProtocolClient('xmcl')) {
+            app.setAsDefaultProtocolClient('xmcl');
+        }
+    }
+
+    async launchCustomApp(url: string) {
+        // TODO: impl the custom launcher design!
+        const custom = new BrowserWindow({
+
+        });
+        custom.loadURL(url);
     }
 
     async appReady(app: App) {

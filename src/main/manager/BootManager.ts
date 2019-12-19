@@ -49,14 +49,13 @@ export default class BootManager extends Manager {
     async setRoot({ path: newRoot, migrate, clear }: { path: string; migrate: boolean; clear: boolean }) {
         const oldRoot = app.getPath('userData');
         if (oldRoot === newRoot) {
-            // event.sender.send('root');
             return;
         }
 
         console.log(`Start to migrate root, ${oldRoot} -> ${newRoot}`);
 
         async function remove(file: string) {
-            const s = await fs.stat(file).catch((_) => { });
+            const s = await fs.stat(file).catch(() => { });
             if (!s) return;
             if (s.isDirectory()) {
                 const childs = await fs.readdir(file);

@@ -44,11 +44,11 @@ import {
 
 export default {
   setup() {
-    const { version, name, author, isServer } = useInstance();
+    const { runtime, name, author, isServer } = useInstance();
     const { folder } = useInstanceVersion();
     const { players, ping, favicon } = useServerStatus();
     return {
-      version,
+      version: runtime,
       name,
       author,
       isServer,

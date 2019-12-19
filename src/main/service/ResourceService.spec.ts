@@ -41,7 +41,7 @@ describe('ResourceService', () => {
         test('should import a forge mod resource', async () => {
             const service = new ResourceService();
             Object.entries(mocks).forEach(([k, v]) => Reflect.set(service, k, v));
-            await service.importResource({ path: join(mockRoot, 'mods', 'sample-mod.jar') });
+            await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.jar') });
             await expect(fs.exists(forgeJar))
                 .resolves.toBe(true);
             await expect(fs.exists(forgeJson))
@@ -50,7 +50,7 @@ describe('ResourceService', () => {
         test('should import a forge mod resource with forge hint', async () => {
             const service = new ResourceService();
             Object.entries(mocks).forEach(([k, v]) => Reflect.set(service, k, v));
-            await service.importResource({ path: join(mockRoot, 'mods', 'sample-mod.jar'), type: 'forge' });
+            await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.jar'), type: 'forge' });
             await expect(fs.exists(forgeJar))
                 .resolves.toBe(true);
             await expect(fs.exists(forgeJson))
@@ -59,7 +59,7 @@ describe('ResourceService', () => {
         test('should import a forge mod resource with mods hint', async () => {
             const service = new ResourceService();
             Object.entries(mocks).forEach(([k, v]) => Reflect.set(service, k, v));
-            await service.importResource({ path: join(mockRoot, 'mods', 'sample-mod.jar'), type: 'mods' });
+            await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.jar'), type: 'mods' });
             await expect(fs.exists(forgeJar))
                 .resolves.toBe(true);
             await expect(fs.exists(forgeJson))
@@ -68,7 +68,7 @@ describe('ResourceService', () => {
         test('should import a liteloader mod', async () => {
             const service = new ResourceService();
             Object.entries(mocks).forEach(([k, v]) => Reflect.set(service, k, v));
-            await service.importResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
+            await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
             await expect(fs.exists(liteMod)).resolves.toBe(true);
             await expect(fs.exists(liteJson)).resolves.toBe(true);
         });
@@ -81,7 +81,7 @@ describe('ResourceService', () => {
                 ...mocks,
                 commit: rm,
             }).forEach(([k, v]) => Reflect.set(service, k, v));
-            const resource = await service.importResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
+            const resource = await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
             await service.removeResource(resource);
             expect(rm).toHaveBeenCalledWith('removeResource', resource);
             await expect(fs.missing(liteMod)).resolves.toBe(true);
@@ -96,7 +96,7 @@ describe('ResourceService', () => {
                 ...mocks,
                 commit: fn,
             }).forEach(([k, v]) => Reflect.set(service, k, v));
-            const resource = await service.importResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
+            const resource = await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
             const after = { ...resource };
             after.name = 'abc';
             await service.renameResource({ resource, name: 'abc' });
@@ -113,7 +113,7 @@ describe('ResourceService', () => {
             Object.entries({
                 ...mocks,
             }).forEach(([k, v]) => Reflect.set(service, k, v));
-            const resource = await service.importResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
+            const resource = await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
             Object.entries({
                 ...mocks,
                 fn,
@@ -127,7 +127,7 @@ describe('ResourceService', () => {
             Object.entries({
                 ...mocks,
             }).forEach(([k, v]) => Reflect.set(service, k, v));
-            const resource = await service.importResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
+            const resource = await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
             const changed = { ...resource, hash: 'changed' };
             Object.entries({
                 ...mocks,

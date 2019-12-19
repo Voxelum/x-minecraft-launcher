@@ -1,14 +1,15 @@
-import { GameSetting, Server } from '@xmcl/minecraft-launcher-core';
+import { GameSetting, Server, ServerInfoFrame } from '@xmcl/minecraft-launcher-core';
 import { FSWatcher } from 'fs';
 import { fitin, fs, requireObject, requireString, willBaselineChange } from 'main/utils';
 import { getPersistence, readFolder, setPersistence } from 'main/utils/persistence';
-import InstanceConfigSchema from 'main/utils/schema/InstanceConfig.json';
-import ProfilesConfig from 'main/utils/schema/ProfilesConfig.json';
+import { MutationKeys } from 'universal/store';
 import { CreateOption, createTemplate } from 'universal/store/modules/instance';
-import { InstanceConfig, InstanceLockConfig } from 'universal/store/modules/instance.config';
-import { LATEST_MC_RELEASE } from 'universal/utils/constant';
+import { InstanceLockSchema, InstanceSchema, InstancesSchema } from 'universal/store/modules/instance.schema';
+import latestRelease from 'universal/utils/lasteRelease.json';
 import { PINGING_STATUS } from 'universal/utils/server-status';
 import { v4 } from 'uuid';
+import CurseForgeService from './CurseForgeService';
+import { deploy } from './InstanceService.deploy';
 import * as ioPartial from './InstanceService.io';
 import * as logPartial from './InstanceService.log';
 import * as savePartial from './InstanceService.save';
@@ -17,85 +18,87 @@ import JavaService from './JavaService';
 import ResourceService from './ResourceService';
 import ServerStatusService from './ServerStatusService';
 import Service, { Inject } from './Service';
-import { vfs } from '@xmcl/util';
+
+const INSTANCES_FOLDER = 'instances';
+const INSTANCE_JSON = 'instance.json';
+const INSTANCES_JSON = 'instances.json';
+const INSTANCE_LOCK_JSON = 'instance-lock.json';
 
 /**
  * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
  */
 export default class InstanceService extends Service {
-    @Inject('JavaService')
-    private java!: JavaService;
-
     @Inject('ServerStatusService')
-    readonly statusService!: ServerStatusService;
+    protected readonly statusService!: ServerStatusService;
 
     @Inject('ResourceService')
-    readonly resource!: ResourceService;
+    protected readonly resource!: ResourceService;
+
+    @Inject('CurseForgeService')
+    protected readonly curseforgeSerivce!: CurseForgeService;
 
     protected saveWatcher: FSWatcher | undefined;
 
     protected isSavesDirty = false;
 
     protected getPathUnder(...ps: string[]) {
-        return this.getPath('profiles', ...ps);
+        return this.getPath(INSTANCES_FOLDER, ...ps);
     }
 
-    async loadProfileGameSettings(id: string = this.state.instance.id) {
+    async loadInstanceGameSettings(id: string = this.state.instance.id) {
         requireString(id);
-
         const { commit } = this;
+
+        let result: ReturnType<typeof GameSetting.parse> = {};
         try {
             const opPath = this.getPathUnder(id, 'options.txt');
-            const option = await fs.readFile(opPath, 'utf-8').then(b => b.toString()).then(GameSetting.parse);
-            commit('profileCache', { gamesettings: option });
-            return option || {};
+            result = await fs.readFile(opPath, 'utf-8').then(b => b.toString()).then(GameSetting.parse);
         } catch (e) {
             if (!e.message.startsWith('ENOENT:')) {
                 this.warn(`An error ocurrs during parse game options of ${id}.`);
                 this.warn(e);
             }
-            commit('profileCache', { gamesettings: {} });
-            return {};
         }
+        commit('instanceCache', { gamesettings: result });
+        return result;
     }
 
-    async loadProfileSeverData(id: string = this.state.instance.id) {
+    async loadInstanceSeverData(id: string = this.state.instance.id) {
         requireString(id);
 
+        let infos: ServerInfoFrame[] = [];
         const { commit } = this;
         try {
             const serverPath = this.getPathUnder(id, 'servers.dat');
             if (await fs.exists(serverPath)) {
                 const serverDat = await fs.readFile(serverPath);
-                const infos = await Server.readInfo(serverDat);
+                infos = await Server.readInfo(serverDat);
                 this.log('Loaded server infos.');
-                commit('serverInfos', infos);
-                return infos;
             }
         } catch (e) {
             this.warn(`An error occured during loading server infos of ${id}`);
             this.error(e);
         }
-        commit('serverInfos', []);
-        return [];
+        commit('instanceServerInfos', infos);
+        return infos;
     }
 
     async loadInstanceLock(id: string) {
         requireString(id);
         const { commit } = this;
 
-        const jsonPath = this.getPathUnder(id, 'instance-lock.json');
+        const jsonPath = this.getPathUnder(id, INSTANCE_LOCK_JSON);
         if (await fs.missing(jsonPath)) {
             await fs.remove(this.getPathUnder(id));
-            this.warn(`Corrupted profile ${id}`);
+            this.warn(`Corrupted instance ${id}`);
             return;
         }
 
-        let option: InstanceLockConfig;
+        let option: InstanceLockSchema;
         try {
-            option = await getPersistence({ path: jsonPath });
+            option = await getPersistence({ path: jsonPath, schema: InstanceLockSchema });
         } catch (e) {
-            this.warn(`Corrupted profile json ${id}`);
+            this.warn(`Corrupted instance json ${id}`);
             return;
         }
 
@@ -106,66 +109,53 @@ export default class InstanceService extends Service {
         if (!lockFile.java) {
             const javaVersion = config.runtime.java;
             const local = this.state.java.all.find(j => j.majorVersion.toString() === javaVersion || j.version === javaVersion);
-            if (local) {
-                lockFile.java = local.path;
-            }
+            if (local) { lockFile.java = local.path; }
         }
 
-        for (const domainName of Object.keys(lockFile.deployed)) {
-            const domain = lockFile.deployed[domainName];
-            for (const name of Object.keys(domain)) {
-                const value = domain[name];
-                if (value.src) {
-                    this.getPathUnder();
-                    vfs.exists(value.src);
-                }
-            }
-        }
-
-        commit('lockFile', lockFile);
+        commit('instanceLockFile', lockFile);
     }
 
-    async loadProfile(id: string) {
+    async loadInstance(id: string) {
         requireString(id);
 
         const { commit, getters } = this;
 
-        const jsonPath = this.getPathUnder(id, 'profile.json');
+        const jsonPath = this.getPathUnder(id, INSTANCE_JSON);
         if (await fs.missing(jsonPath)) {
             await fs.remove(this.getPathUnder(id));
-            this.warn(`Corrupted profile ${id}`);
+            this.warn(`Corrupted instance ${id}`);
             return;
         }
 
-        let option: InstanceConfig;
+        let option: InstanceSchema;
         try {
-            option = await getPersistence({ path: jsonPath, schema: InstanceConfigSchema });
+            option = await getPersistence({ path: jsonPath, schema: InstanceSchema });
         } catch (e) {
-            this.warn(`Corrupted profile json ${id}`);
+            this.warn(`Corrupted instance json ${id}`);
             return;
         }
         if (!option) {
-            this.warn(`Corrupted profile ${id}`);
+            this.warn(`Corrupted instance ${id}`);
             return;
         }
 
-        const profile = createTemplate(
+        const instance = createTemplate(
             id,
-            LATEST_MC_RELEASE,
+            latestRelease.id,
             false,
         );
 
-        profile.author = profile.author || getters.selectedGameProfile?.name || '';
+        instance.author = instance.author || getters.gameProfile?.name || '';
 
-        fitin(profile, option);
-        commit('addProfile', profile);
+        fitin(instance, option);
+        commit('instanceAdd', instance);
     }
 
     async init() {
         const { getters } = this;
-        const profiles = getters.instances;
-        if (profiles.length === 0) {
-            this.log('Cannot find any profile, try to init one default modpack');
+        const instances = getters.instances;
+        if (instances.length === 0) {
+            this.log('Cannot find any instances, try to init one default modpack');
             await this.createAndSelect({});
         }
     }
@@ -179,17 +169,17 @@ export default class InstanceService extends Service {
         }
 
         const uuidExp = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}){1}/;
-        await Promise.all(dirs.filter(f => uuidExp.test(f)).map(id => this.loadProfile(id)));
+        await Promise.all(dirs.filter(f => uuidExp.test(f)).map(id => this.loadInstance(id)));
 
         if (Object.keys(state.instance.all).length === 0) {
             return;
         }
 
-        const persis = await getPersistence({ path: this.getPath('profiles.json'), schema: ProfilesConfig });
+        const instanceConfig: InstancesSchema = await getPersistence({ path: this.getPath(INSTANCES_JSON), schema: InstancesSchema });
 
-        if (persis) {
-            if (persis.selectedProfile) {
-                await this.selectInstance(persis.selectedProfile);
+        if (instanceConfig) {
+            if (instanceConfig.selectedInstance) {
+                await this.selectInstance(instanceConfig.selectedInstance);
             } else {
                 await this.selectInstance(Object.keys(state.instance.all)[0]);
             }
@@ -198,31 +188,33 @@ export default class InstanceService extends Service {
         }
     }
 
-    async save({ mutation, payload }: { mutation: string; payload: any }) {
+    async save({ mutation, payload }: { mutation: MutationKeys; payload: any }) {
         switch (mutation) {
-            case 'selectProfile':
+            case 'instanceSelect':
                 await setPersistence({
-                    path: this.getPath('profiles.json'),
+                    path: this.getPath(INSTANCES_JSON),
                     data: { selectedProfile: payload },
-                    schema: ProfilesConfig,
+                    schema: InstanceSchema,
                 });
                 break;
-            case 'gamesettings':
+            case 'instanceGameSettings':
                 await fs.writeFile(this.getPathUnder(this.state.instance.id, 'options.txt'),
                     GameSetting.stringify(this.state.instance.settings));
                 break;
-            case 'addProfile':
-            case 'profile':
+            case 'instanceAdd':
+            case 'instance':
                 await setPersistence({
-                    path: this.getPathUnder(payload.id, 'profile.json'),
+                    path: this.getPathUnder(payload.id, INSTANCE_JSON),
                     data: payload,
-                    schema: InstanceConfigSchema,
+                    schema: InstanceSchema,
                 });
                 break;
-            case 'lockFile':
+            case 'instanceJava':
+            case 'instanceDeployInfo':
                 await setPersistence({
-                    path: this.getPathUnder(payload.id, 'instance-lock.json'),
+                    path: this.getPathUnder(this.state.instance.id, INSTANCE_LOCK_JSON),
                     data: payload,
+                    schema: InstanceLockSchema,
                 });
                 break;
             default:
@@ -230,9 +222,9 @@ export default class InstanceService extends Service {
     }
 
     /**
-     * Return the profile's screenshots urls.
+     * Return the instance's screenshots urls.
      */
-    async listProfileScreenshots(id: string) {
+    async listInstanceScreenshots(id: string) {
         const sp = this.getPathUnder(id, 'screenshots');
         if (await fs.exists(sp)) {
             const files = await fs.readdir(sp);
@@ -249,28 +241,28 @@ export default class InstanceService extends Service {
         requireObject(payload);
 
         const latestRelease = this.getters.minecraftRelease;
-        const profile = createTemplate(
+        const instance = createTemplate(
             v4(),
             latestRelease.id,
             true,
         );
 
-        if (this.getters.selectedGameProfile) {
-            profile.author = this.getters.selectedGameProfile.name;
+        if (this.getters.gameProfile) {
+            instance.author = this.getters.gameProfile.name;
         } else {
-            profile.author = '';
+            instance.author = '';
         }
 
-        Reflect.deleteProperty(profile, 'creationDate');
+        Reflect.deleteProperty(instance, 'creationDate');
 
-        fitin(profile, payload);
+        fitin(instance, payload);
 
-        this.commit('addProfile', profile);
+        this.commit('instanceAdd', instance);
 
-        this.log('Created profile with option');
-        this.log(JSON.stringify(profile, null, 4));
+        this.log('Created instance with option');
+        this.log(JSON.stringify(instance, null, 4));
 
-        return profile.id;
+        return instance.id;
     }
 
     async createAndSelect(payload: CreateOption) {
@@ -283,7 +275,7 @@ export default class InstanceService extends Service {
 
     /**
      * Select active instance
-     * @param id the profile uuid
+     * @param id the instance uuid
      */
     async selectInstance(id: string) {
         requireString(id);
@@ -298,11 +290,11 @@ export default class InstanceService extends Service {
         this.isSavesDirty = true;
         await Promise.all([
             this.loadInstanceSaves(id),
-            this.loadProfileGameSettings(id),
-            this.loadProfileSeverData(id),
+            this.loadInstanceGameSettings(id),
+            this.loadInstanceSeverData(id),
             this.loadInstanceLock(id),
         ]);
-        this.commit('selectProfile', id);
+        this.commit('instanceSelect', id);
         // const newVersion = this.state.version;
         // console.log(`Instance version ${}`)
     }
@@ -314,51 +306,60 @@ export default class InstanceService extends Service {
     async deleteInstance(id = this.state.instance.id) {
         requireString(id);
 
-        // if the profile is selected now
+        // if the instance is selected now
         if (this.state.instance.id === id) {
             const restId = Object.keys(this.state.instance.all).filter(i => i !== id);
-            // if only one profile left
+            // if only one instance left
             if (restId.length === 0) {
                 // then create and select a new one
                 await this.createAndSelect({});
             } else {
-                // else select the first profile
+                // else select the first instance
                 await this.selectInstance(restId[0]);
             }
         }
-        this.commit('removeProfile', id);
-        const profileDir = this.getPathUnder(id);
-        if (await fs.exists(profileDir)) {
-            await fs.remove(profileDir);
+        this.commit('instanceRemove', id);
+        const instanceDir = this.getPathUnder(id);
+        if (await fs.exists(instanceDir)) {
+            await fs.remove(instanceDir);
         }
     }
 
     /**
-     * Edit the current profile.
+     * Edit the instance. If the `id` is not present
      */
-    async editInstance(profile: Partial<InstanceConfig>) {
-        requireObject(profile);
+    async editInstance(instance: Partial<InstanceSchema>) {
+        requireObject(instance);
 
-        const current = this.state.instance.all[this.state.instance.id];
-        if (willBaselineChange(profile, current)) {
-            this.log(`Modify Profle ${JSON.stringify(profile, null, 4)}`);
-            this.commit('profile', profile);
+        const current = this.state.instance.all[instance.id || this.state.instance.id];
+        if (willBaselineChange(instance, current)) {
+            this.log(`Modify Profle ${JSON.stringify(instance, null, 4)}`);
+            this.commit('instance', instance);
         }
     }
 
     /**
      * If current instance is a server. It will refresh the server status
      */
-    async refreshProfile() {
-        const prof = this.getters.selectedInstance;
+    async refreshInstance() {
+        const prof = this.getters.instance;
         if (prof.server) {
             const { host, port } = prof.server;
             this.log(`Ping server ${host}:${port}`);
-            this.commit('serverStatus', PINGING_STATUS);
+            this.commit('instanceStatus', PINGING_STATUS);
             const status = await this.statusService.pingServer({ host, port });
-            this.commit('serverStatus', status);
+            this.commit('instanceStatus', status);
         }
     }
+
+    /**
+     * Deploy all the resources in `deployments` into current instance.
+     * 
+     * The `mods` and `resourcepacks` will be deploied by linking the mods & resourcepacks files into the `mods` and `resourcepacks` directory of the instance.
+     * 
+     * The `saves` and `modpack` will be deploied by pasting the saves and modpack overrides into this instance directory.
+     */
+    readonly deploy = deploy.bind(this);
 
     readonly getCrashReportContent = logPartial.getCrashReportContent.bind(this);
 
@@ -377,7 +378,7 @@ export default class InstanceService extends Service {
     readonly showCrash = logPartial.showCrash.bind(this);
 
     /**
-     * Copy current profile `src` save to other profile. The `dest` is the array of profile id. 
+     * Copy current instance `src` save to other instance. The `dest` is the array of instance id. 
      */
     readonly copySave = savePartial.copySave.bind(this);
 
@@ -415,12 +416,24 @@ export default class InstanceService extends Service {
     readonly exportInstance = ioPartial.exportInstance.bind(this);
 
     /**
-     * Import external profile into the launcher. The profile can be a curseforge zip, or a normal Minecraft file/zip. 
-     * @param location The location of the profile try to import
+     * Import external instance into the launcher. The instance can be a curseforge zip, or a normal Minecraft file/zip. 
+     * @param location The location of the instance try to import
      */
     readonly importInstance = ioPartial.importInstance.bind(this);
 
-    readonly createProfileFromServer = serverPartial.createProfileFromServer;
+    /**
+     * Import the instance from curseforge modpack
+     */
+    readonly importInstanceFromCurseforgeModpack = ioPartial.importCurseforgeModpack.bind(this);
 
-    readonly refreshAll = serverPartial.refreshAll.bind(this);
+    /**
+     * Create a instance by server info and status.
+     * This will try to ping the server and apply the mod list if it's a forge server.
+     */
+    readonly createInstanceFromServer = serverPartial.createInstanceFromServer;
+
+    /**
+     * Refresh all instance server status if present
+     */
+    readonly refreshInstances = serverPartial.refreshAll.bind(this);
 }

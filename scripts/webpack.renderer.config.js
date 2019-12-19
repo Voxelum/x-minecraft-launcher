@@ -1,8 +1,8 @@
 const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
-const TerserPlugin = require('terser-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // const BabiliWebpackPlugin = require('babili-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -142,6 +142,11 @@ const rendererConfig = {
                 : false,
         }),
         new webpack.NoEmitOnErrorsPlugin(),
+        new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            reportFilename: 'renderer.report.html',
+            openAnalyzer: false,
+        }),
     ],
     output: {
         filename: '[name].js',

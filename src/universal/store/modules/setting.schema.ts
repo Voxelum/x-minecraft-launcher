@@ -1,3 +1,6 @@
+/* eslint-disable import/export  */
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 export enum ParticleMode {
     PUSH = 'push',
     REMOVE = 'remove',
@@ -5,7 +8,7 @@ export enum ParticleMode {
     BUBBLE = 'bubble',
 }
 
-export interface SettingConfig {
+export interface SettingSchema {
     /**
      * The display language of the launcher
      * @default "en"
@@ -55,3 +58,5 @@ export interface SettingConfig {
      */
     particleMode: ParticleMode;
 }
+
+export const SettingSchema: object = require('./SettingSchema.json');

@@ -1,6 +1,9 @@
+import { Task } from '@xmcl/minecraft-launcher-core';
+import { fs } from 'main/utils';
 import { join } from 'path';
-import { LATEST_MC_RELEASE } from 'universal/utils/constant';
+import release from 'universal/utils/lasteRelease.json';
 import InstanceService from './InstanceService';
+import ResourceService from './ResourceService';
 
 const mockRoot = join(__dirname, '..', '..', '..', 'mock');
 const tempRoot = join(__dirname, '..', '..', '..', 'temp');
@@ -40,7 +43,7 @@ describe('InstanceService', () => {
             expect(config.author).toBe('username');
             expect(config.java).toEqual(mocks.getters.defaultJava);
             expect(config.deployments).toBeTruthy();
-            expect(config.version.minecraft).toEqual(LATEST_MC_RELEASE);
+            expect(config.version.minecraft).toEqual(release.id);
             expect(config.blur).toEqual(4);
             expect(config.image).toEqual('');
         });
@@ -59,7 +62,7 @@ describe('InstanceService', () => {
                 image: 'lll',
                 name: 'xxx',
                 blur: 1,
-                java: { path: 'x', version: 'y' },
+                java: '8',
                 runtime: {
                     minecraft: '11',
                     forge: '22',
@@ -72,7 +75,7 @@ describe('InstanceService', () => {
             expect(config.name).toBe('xxx');
             expect(config.id).toBe(id);
             expect(config.author).toBe('ooo');
-            expect(config.java).toEqual({ path: 'x', version: 'y', majorVersion: 0 });
+            expect(config.java).toEqual('8');
             expect(config.deployments).toEqual({ mods: ['abc'] });
             expect(config.version).toEqual({
                 minecraft: '11',
@@ -139,6 +142,62 @@ describe('InstanceService', () => {
             await service.deleteInstance('cur');
             expect(select).toBeCalledWith('s');
             expect(cm).toBeCalledWith('removeProfile', 'cur');
+        });
+    });
+    describe('#importCurseforgeModpack', () => {
+        const runtime = Task.createRuntime();
+        const mocks = {
+            state: { root: tempRoot },
+            getters: {
+                queryResource() { return undefined; },
+                getResource() { return undefined; },
+            },
+            commit(t: any) { },
+            getPath(...p: string[]) { return join(tempRoot, ...p); },
+            instanceService: { editInstance() { } },
+            submit(t: any) { return runtime.submit(t); },
+        };
+        test('should be able to import a curseforge project from zip', async () => {
+            const seriv = new InstanceService();
+            const resSeriv = new ResourceService();
+            const commitFn = jest.fn();
+            const editFn = jest.fn();
+            mocks.commit = (type: any) => {
+                expect(type).toEqual('resource');
+                commitFn();
+            };
+            mocks.instanceService.editInstance = editFn;
+            Object.entries({
+                ...mocks,
+            }).forEach(([k, v]) => Reflect.set(resSeriv, k, v));
+            Object.entries({
+                ...mocks,
+                resourceService: resSeriv,
+            }).forEach(([k, v]) => Reflect.set(seriv, k, v));
+
+            await seriv.importInstanceFromCurseforgeModpack({ instanceId: 'a', path: join(mockRoot, 'modpack.zip') });
+            expect(commitFn).toBeCalledTimes(6);
+            expect(editFn).toBeCalledWith({
+                author: 'ramoddi',
+                name: 'Slightly Vanilla',
+                deployments: {
+                    mods: [
+                        'resource/e6c5df3da83d1c6bcd0d8e1299a803f27a358e57',
+                        'resource/d7f0f0e52c55ba0e80b6e6f4d2a4ca4d79309283',
+                        'resource/35c96f4a8dc20041f2a1637c83a83714b4b8d718',
+                        'resource/e52a918311bf72760156d1462ed93e4e8b97c00a',
+                    ],
+                },
+                version: {
+                    forge: '28.1.99',
+                    liteloader: '',
+                    minecraft: '1.14.4',
+                },
+            });
+            await expect(fs.exists(join(tempRoot, 'profiles', 'a', 'config', 'bwncr-common.toml')))
+                .resolves.toBeTruthy();
+            await expect(fs.exists(join(tempRoot, 'profiles', 'a', 'config', 'biomesoplenty', 'server.toml')))
+                .resolves.toBeTruthy();
         });
     });
 });
