@@ -11,13 +11,13 @@
       <v-card-text>
         {{ all.length === 0 ? $t('task.empty') : '' }}
         <v-treeview v-model="tree" hoverable transition :open="opened" :items="all" activatable
-                    item-key="_internalId" open-on-click item-children="children" item-text="localText">
+                    item-key="id" open-on-click item-children="children" item-text="localText">
           <template v-slot:append="{ item }">
-            <task-node-status :has-child="item.children.length !== 0" :status="item.status" :total="item.total" :progress="item.progress" :hovered="hovered[item._internalId]" />
+            <task-node-status :has-child="item.children.length !== 0" :status="item.status" :uuid="item.id" :hovered="hovered[item.id]" />
           </template>
 
           <template v-slot:label="{ item }">
-            <div style="padding: 5px 0px;" @click="onTaskClick($event, item)" @contextmenu="showTaskContext($event, item)" @mouseenter="hovered[item._internalId] = true" @mouseleave="hovered[item._internalId] = false">
+            <div style="padding: 5px 0px;" @click="onTaskClick($event, item)" @contextmenu="showTaskContext($event, item)" @mouseenter.prevent="hovered[item.id] = true" @mouseleave.prevent="hovered[item.id] = false">
               <span style="white-space: nowrap; overflow: hidden;  text-overflow: ellipsis; max-width: 250px;">{{ $t(item.path, item.arguments || {}) }}</span>
               <div style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;">
                 {{ item.time }}
@@ -34,11 +34,9 @@
 </template>
 
 <script lang=ts>
-import Vue from 'vue';
 import { reactive, computed, toRefs } from '@vue/composition-api';
-import { IpcRendererEvent } from 'electron';
 import { TaskState } from 'universal/store/modules/task';
-import { useStore, useDialogSelf, useI18n, useClipboard } from '@/hooks';
+import { useStore, useDialogSelf, useClipboard } from '@/hooks';
 
 export default {
   props: {

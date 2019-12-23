@@ -12,21 +12,14 @@
 </template>
 
 <script lang=ts>
-import { createComponent, computed, watch } from '@vue/composition-api';
+import { createComponent, computed } from '@vue/composition-api';
+import { useStore } from '@/hooks';
 
 const component = createComponent({
   props: {
     status: {
       type: String,
       default: '',
-    },
-    progress: {
-      type: Number,
-      default: -1,
-    },
-    total: {
-      type: Number,
-      default: -1,
     },
     hovered: {
       type: Boolean,
@@ -35,6 +28,9 @@ const component = createComponent({
     hasChild: {
       type: Boolean,
       default: false,
+    },
+    uuid: {
+      type: String,
     },
   },
   setup(props) {
@@ -50,12 +46,16 @@ const component = createComponent({
           return 'device_unknown';
       }
     });
-    const percentage = computed(() => props.progress / props.total * 100);
-    // watch(percentage, () => {
-    //   console.log(`PERCE CHANGED ${percentage.value}`);
-    // });
-    // props.status;
-    return { icon, percentage, enter() { }, leave() { } };
+    const { state } = useStore();
+    const total = computed(() => state.task.tree[props.uuid!].total!);
+    const percentage = computed(() => state.task.tree[props.uuid!].progress! / state.task.tree[props.uuid!].total! * 100);
+    return {
+      icon,
+      percentage,
+      total,
+      enter() { },
+      leave() { },
+    };
   },
 });
 
