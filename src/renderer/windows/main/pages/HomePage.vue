@@ -69,26 +69,46 @@
 </template>
 
 <script lang=ts>
-import { createComponent } from '@vue/composition-api';
-import { useDialog, useI18n, useLaunch, useNativeDialog, useInstance, useJava, useQuit } from '@/hooks';
+import { createComponent, watch } from '@vue/composition-api';
+import {
+  useDialog,
+  useI18n,
+  useLaunch,
+  useNativeDialog,
+  useInstance,
+  useJava,
+  useQuit,
+  useNotifier,
+} from '@/hooks';
 
 export default createComponent({
   setup() {
-    const { t } = useI18n();
+    const { $t } = useI18n();
     const { showSaveDialog } = useNativeDialog();
     const { showDialog: showLogDialog } = useDialog('logs');
     const { showDialog: showFeedbackDialog } = useDialog('feedback');
     const { showDialog: showLaunchStatusDialog } = useDialog('launch-status');
     const { refreshing: refreshingProfile, name, isServer, exportTo } = useInstance();
-    const { launch, status: launchStatus } = useLaunch();
+    const { launch, status: launchStatus, errors, errorType } = useLaunch();
+    const { notify, subscribe } = useNotifier();
     const { missing: missingJava } = useJava();
     const { quit } = useQuit();
+
+    watch([errors, errorType], () => {
+      if (errors.value.length !== 0 || errorType.value.length !== 0) {
+        console.log('Notify launch error');
+        notify('error', `[${errorType.value}] ${errors.value}`);
+      }
+    });
 
     return {
       isServer,
       launchStatus,
       refreshingProfile,
       missingJava,
+      showLogDialog,
+      showFeedbackDialog,
+      quit,
       launch() {
         if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching' || launchStatus.value === 'launched') {
           showLaunchStatusDialog();
@@ -96,21 +116,18 @@ export default createComponent({
           launch();
         }
       },
-      showLogDialog,
-      showFeedbackDialog,
-      quit,
       async showExportDialog() {
         if (refreshingProfile.value) return;
         const { filePath } = await showSaveDialog({
-          title: t('profile.export.title'),
+          title: $t('profile.export.title'),
           filters: [{ name: 'zip', extensions: ['zip'] }],
-          message: t('profile.export.message'),
+          message: $t('profile.export.message'),
           defaultPath: `${name.value}.zip`,
         });
         if (filePath) {
-          exportTo({ dest: filePath, type: 'full' }).catch((e) => {
-            console.error(e);
-          });
+          subscribe(exportTo({ dest: filePath, type: 'full' }),
+            () => $t('profile.export.title'),
+            () => $t('profile.export.title'));
         }
       },
     };

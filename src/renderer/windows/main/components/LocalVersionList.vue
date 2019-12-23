@@ -44,11 +44,17 @@
   <v-container v-else fill-height>
     <v-layout align-center justify-center row fill-height>
       <v-flex shrink tag="h1" class="white--text">
-        <v-btn large @click="browseVersoinsFolder">
+        <v-btn large color="primary" @click="browseVersoinsFolder">
           <v-icon left>
             folder
           </v-icon>
           {{ $t('version.noLocalVersion') }}
+        </v-btn>
+        <v-btn large color="primary" @click="refreshVersions">
+          <v-icon left>
+            refresh
+          </v-icon>
+          {{ $t('version.refresh') }}
         </v-btn>
       </v-flex>
     </v-layout>
@@ -57,7 +63,7 @@
 
 <script lang=ts>
 import { createComponent, reactive, computed, toRefs } from '@vue/composition-api';
-import { useLocalVersions, useInstance } from '@/hooks';
+import { useLocalVersions } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -75,8 +81,7 @@ export default createComponent({
       deletingVersion: false,
       deletingVersionId: '',
     });
-    const { localVersions, deleteVersion, showVersionsDirectory, showVersionDirectory } = useLocalVersions();
-    const { version, edit } = useInstance();
+    const { localVersions, deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions } = useLocalVersions();
     const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1));
 
     function isSelected(v: { minecraft: string; forge: string; liteloader: string }) {
@@ -115,6 +120,7 @@ export default createComponent({
       startDelete,
       openVersionDir,
       browseVersoinsFolder,
+      refreshVersions,
       selectVersion,
     };
   },

@@ -165,7 +165,7 @@
             {{ $t('cancel') }}
           </v-btn>
           <v-spacer />
-          <v-btn flat large @click="doApplyRoot(rootLocation, true)">
+          <v-btn flat large @click="doApplyRoot()">
             {{ $t('setting.apply') }}
           </v-btn>
         </v-card-actions>
@@ -204,7 +204,7 @@ export default createComponent({
     const { showParticle, particleMode } = useParticle();
     const { state } = useStore();
     const settings = useSettings();
-    const { l, t: tr } = useI18n();
+    const { $t, $tc } = useI18n();
     const data = reactive({
       rootLocation: state.root,
 
@@ -218,9 +218,9 @@ export default createComponent({
       viewingUpdateDetail: false,
     });
 
-    const particleModes: Ref<{ value: string; text: string }[]> = ref(['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: tr(`setting.particleMode.${t}`) })));
+    const particleModes: Ref<{ value: string; text: string }[]> = ref(['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) })));
     watch(settings.selectedLocale, () => {
-      particleModes.value = ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: tr(`setting.particleMode.${t}`) }));
+      particleModes.value = ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) }));
     });
     return {
       ...toRefs(data),
@@ -237,7 +237,7 @@ export default createComponent({
       },
       async browseRootDir() {
         const { filePaths } = await dialog.showOpenDialog({
-          title: l`setting.selectRootDirectory`,
+          title: $t('setting.selectRootDirectory'),
           defaultPath: data.rootLocation,
           properties: ['openDirectory', 'createDirectory'],
         });

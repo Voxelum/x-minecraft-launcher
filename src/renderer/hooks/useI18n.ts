@@ -5,9 +5,14 @@ export function useI18n() {
     const i18n = inject(I18N_KEY);
     if (!i18n) throw new Error('Cannot find i18n. Maybe router not loaded?');
     return {
-        t(key: string, values?: any[] | { [key: string]: any }): string { return i18n.t(key, values) as any; },
-        l(keys: TemplateStringsArray): string {
-            return i18n.t(keys[0], arguments) as string;
-        },
+        $tc(key: string, count: number): string { return i18n.tc(key, count); },
+        $t(key: string, values?: any[] | { [key: string]: any }): string { return i18n.t(key, values) as any; },
+    };
+}
+
+export function useI18nType() {
+    return {} as any as {
+        $tc(key: string, count: number): string;
+        $t(key: string, values?: any[] | { [key: string]: any }): string;
     };
 }

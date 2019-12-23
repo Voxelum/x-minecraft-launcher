@@ -70,6 +70,9 @@ export default class StoreAndServiceManager extends Manager {
             getters: { value: store.getters },
             minecraftPath: { value: mcPath },
             getMinecraftPath: { value: (...args: string[]) => join(mcPath, ...args) },
+            log: { value: console.log },
+            warn: { value: console.warn },
+            error: { value: console.error },
         });
 
         this.addService(new AuthLibService());
@@ -127,6 +130,7 @@ export default class StoreAndServiceManager extends Manager {
         }
         const mod = storeTemplate;
         const template = deepCopyStoreTemplate(mod); // deep copy the template so there is no strange reference
+        template.state.root = root;
         this.store = new Store(template);
         this.setupService(root);
         this.setupAutoSync();
@@ -138,10 +142,12 @@ export default class StoreAndServiceManager extends Manager {
                 }
             }
         }
+
         const startingTime = Date.now();
         try {
             await Promise.all(this.services.map(s => s.load()));
         } catch (e) {
+            console.warn('Error during survice load:');
             console.error(e);
         }
         console.log(`Successfully load modules. Total Time is ${Date.now() - startingTime}ms.`);
@@ -157,6 +163,7 @@ export default class StoreAndServiceManager extends Manager {
         try {
             await Promise.all(this.services.map(s => s.init()));
         } catch (e) {
+            console.error('Error during service init:');
             console.error(e);
         }
         console.log(`Successfully init modules. Total Time is ${Date.now() - startingTime}ms.`);
@@ -175,7 +182,8 @@ export default class StoreAndServiceManager extends Manager {
                 const r = this.sessions[id]();
                 if (r instanceof Promise) {
                     return r.then(r => ({ result: r }), (e) => {
-                        console.error(e);
+                        console.warn(`Error during service call session ${id}:`);
+                        console.warn(e);
                         return { error: e };
                     });
                 }

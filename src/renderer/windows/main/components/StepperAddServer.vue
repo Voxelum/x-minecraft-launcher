@@ -137,7 +137,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, ref, computed, onMounted, onUnmounted, watch, createComponent } from '@vue/composition-api';
-import { useMinecraftVersions, useForgeVersions, useJava, useServerStatus, useI18n, useServer, useRouter, useInstanceCreation } from '@/hooks';
+import { useMinecraftVersions, useForgeVersions, useJava, useI18n, useServer, useRouter, useInstanceCreation } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -152,13 +152,13 @@ export default createComponent({
     const { create, reset, use, ...creationData } = useInstanceCreation();
     const { versions: forgeVersions, recommended, latest } = useForgeVersions(latestVersion);
     const { all: javas } = useJava();
-    const { t } = useI18n();
+    const { $t } = useI18n();
     const router = useRouter();
 
     const staticData = {
       memoryRule: [(v: number) => Number.isInteger(v)],
       nameRules: [
-        (v: string) => !!v || t('profile.requireName'),
+        (v: string) => !!v || $t('profile.requireName'),
       ],
     };
     const data = reactive({
@@ -180,7 +180,7 @@ export default createComponent({
       players,
       ping,
       pinging,
-    } = useServer(creationData.host, creationData.port, ref(undefined));
+    } = useServer(creationData.server, ref(undefined));
 
     function init() {
       data.step = 1;
@@ -212,7 +212,7 @@ export default createComponent({
     });
 
     return {
-      ...toRefs(data),
+      ...dataRef,
       ...creationData,
       ...staticData,
       favicon,

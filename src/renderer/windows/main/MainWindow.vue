@@ -59,7 +59,7 @@ export default createComponent({
 
     const ipcRenderer = useIpc();
     const { particleMode, showParticle } = useParticle();
-    const { t } = useI18n();
+    const { $t } = useI18n();
     const { blur, backgroundImage } = useBackgroundImage();
     const { notify } = useNotifier();
     const { state } = useStore();
@@ -77,12 +77,13 @@ export default createComponent({
     function onSuccessed(event: IpcRendererEvent, id: string) {
       const task = state.task.tree[id];
       if (task.background) return;
-      notify('success', t(task.path, task.arguments || {}));
+      notify('success', $t(task.path, task.arguments || {}));
     }
     function onFailed(event: IpcRendererEvent, id: string, error: any) {
       const task = state.task.tree[id];
       if (task.background) return;
-      notify('error', t(task.path, task.arguments || {}), error);
+      console.log(`Recieve fail task ${id}`);
+      notify('error', $t(task.path, task.arguments || {}), error);
     }
     function refreshImage() {
       const img = backgroundImage;

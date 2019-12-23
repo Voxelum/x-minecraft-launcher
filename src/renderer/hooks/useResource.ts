@@ -1,6 +1,7 @@
-import unknownPack from '@/assets/unknown_pack.png';
-import { computed, onMounted, Ref, ref } from '@vue/composition-api';
+import { computed, Ref, ref } from '@vue/composition-api';
 import { CurseforgeModpackResource, ForgeResource, LiteloaderResource, ResourcePackResource, SaveResource } from 'universal/store/modules/resource';
+import { requireTrue } from 'universal/utils';
+import unknownPack from '@/assets/unknown_pack.png';
 import { useStore } from './useStore';
 
 export function useResourceOperation() {
@@ -9,7 +10,6 @@ export function useResourceOperation() {
         queryResource: getters.queryResource,
         importResource: services.ResourceService.importUnknownResource,
         removeResource: services.ResourceService.removeResource,
-        deployResources: services.ResourceService.deployResources,
         getResource: getters.getResource,
     };
 }
@@ -57,13 +57,13 @@ export function useResourcePackResource(resource: ResourcePackResource) {
 export function useCurseforgeImport() {
     const { services } = useStore();
     return {
-        importCurseforgeModpack: services.CurseForgeService.importCurseforgeModpack,
+        importCurseforgeModpack: services.InstanceService.importInstanceFromCurseforgeModpack,
     };
 }
 
 export function useForgeModResource(resource: ForgeResource) {
-    const { services } = useStore();
-    const metadata = computed(() => resource.metadata[0]);
+    requireTrue(resource.type === 'forge');
+    const metadata = computed(() => (resource.metadata || [])[0] || {});
     const icon = ref(unknownPack);
     const acceptedRange = computed(() => {
         if (metadata.value.acceptedMinecraftVersions) {
@@ -76,28 +76,13 @@ export function useForgeModResource(resource: ForgeResource) {
             }
             return `[${mcversion}]`;
         }
-        return '[*]';
+        return 'unknown';
     });
-    function readLogo() {
-        if ('missing' in resource) {
-            icon.value = unknownPack;
-        } else {
-            // TODO: impl this
-            // dispatch('readForgeLogo', resource.hash).then((i) => {
-            //     if (typeof i === 'string' && i !== '') {
-            //         icon.value = `data:image/png;base64, ${i}`;
-            //     } else {
-            //         icon.value = unknownPack;
-            //     }
-            // });
-        }
-    }
-    onMounted(() => {
-        readLogo();
-    });
+    const acceptLoaderRange = computed(() => (metadata.value as any).loaderVersion as string || 'unknown');
     return {
         icon,
         metadata,
         acceptedRange,
+        acceptLoaderRange,
     };
 }

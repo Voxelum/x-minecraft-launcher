@@ -15,6 +15,7 @@ export async function exportInstance(this: InstanceService, { id, dest, type = '
     id = id || this.state.instance.id;
     try {
         const root = this.state.root;
+        const instanceObject = this.state.instance.all[id];
         const from = this.getPathUnder(id);
         const file = new ZipFile();
         const promise = compressZipTo(file, dest);
@@ -25,11 +26,7 @@ export async function exportInstance(this: InstanceService, { id, dest, type = '
 
         await includeAllToZip(from, from, file);
 
-        const deployed = this.state.instance.deployed;
-        const linked = deployed.filter(d => d.resolved === 'link');
-
         const defaultMcversion = this.state.instance.all[id].runtime.minecraft;
-
         const carriedVersionPaths = [];
 
         const versionInst = await Version.parse(root, defaultMcversion);
@@ -59,8 +56,17 @@ export async function exportInstance(this: InstanceService, { id, dest, type = '
                 `libraries/${lib.download.path}`);
         }
 
-        for (const linkedDeploy of linked) {
-            file.addFile(linkedDeploy.src!, linkedDeploy.file);
+        if (instanceObject.deployments.mods) {
+            for (const r of instanceObject.deployments.mods.map(u => this.getters.getResource(u))
+                .filter(r => r.type !== 'unknown')) {
+                file.addFile(r.path, `mods/${r.name}${r.ext}`);
+            }
+        }
+        if (instanceObject.deployments.resourcepacks) {
+            for (const r of instanceObject.deployments.resourcepacks.map(u => this.getters.getResource(u))
+                .filter(r => r.type !== 'unknown')) {
+                file.addFile(r.path, `resourcepacks/${r.name}${r.ext}`);
+            }
         }
 
         file.end();
@@ -117,22 +123,21 @@ export async function importInstance(this: InstanceService, location: string) {
         }
     }
 
-    let profileTemplate: any = {}; // TODO: typecheck
+    let instanceTemplate: any = {}; // TODO: typecheck
 
-    const proiflePath = resolve(srcFolderPath, 'profile.json');
+    const proiflePath = resolve(srcFolderPath, 'instance.json');
     const isExportFromUs = await fs.stat(proiflePath).then(s => s.isFile()).catch(() => false);
     if (isExportFromUs) {
-        profileTemplate = await fs.readFile(proiflePath).then(buf => buf.toString()).then(JSON.parse, () => ({}));
-        Reflect.deleteProperty(profileTemplate, 'java');
+        instanceTemplate = await fs.readFile(proiflePath).then(buf => buf.toString()).then(JSON.parse, () => ({}));
 
-        if (!profileTemplate.deployments) {
-            profileTemplate.deployments = {
+        if (!instanceTemplate.deployments) {
+            instanceTemplate.deployments = {
                 mods,
             };
         }
     }
 
-    await fs.writeFile(this.getPathUnder(id, 'profile.json'), JSON.stringify(profileTemplate, null, 4));
+    await fs.writeFile(this.getPathUnder(id, 'instance.json'), JSON.stringify(instanceTemplate, null, 4));
 
     await this.loadInstance(id);
 
@@ -156,14 +161,16 @@ export async function importCurseforgeModpack(this: InstanceService, payload: { 
             throw new Error(`Cannot import curseforge modpack ${path}, since it doesn't have manifest.json`);
         }
 
-        const deployments: InstanceConfig['deployments'] = [];
+        const deployments: InstanceConfig['deployments'] = {
+            mods: [],
+        };
 
         const resolveFile = async () => {
             const manifest: Modpack = await fs.readFile(join(dir, 'manifest.json')).then(b => JSON.parse(b.toString()));
             for (const f of manifest.files) {
                 if (!f) continue;
                 const uri = `curseforge://id/${f.projectID}/${f.fileID}`;
-                deployments.push(uri);
+                deployments.mods.push(uri);
             }
             return manifest;
         };

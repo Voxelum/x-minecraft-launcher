@@ -12,8 +12,8 @@
 </template>
 
 <script lang=ts>
-import steve from '@/assets/steve_skin.png';
 import { createComponent, reactive, ref, toRefs, computed, Ref } from '@vue/composition-api';
+import steve from '@/assets/steve_skin.png';
 
 export default createComponent({
   props: {

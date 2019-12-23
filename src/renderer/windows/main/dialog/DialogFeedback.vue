@@ -39,22 +39,22 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs } from '@vue/composition-api';
+import { reactive, toRefs, createComponent } from '@vue/composition-api';
 import { useDialogSelf } from '@/hooks';
 
-export default {
+export default createComponent({
   setup() {
     const data = reactive({
       hovered: {},
     });
-    const { closeDialog, isShown } = useDialogSelf('feedback'); 
+    const { closeDialog, isShown } = useDialogSelf('feedback');
     return {
       ...toRefs(data),
       closeDialog,
       isShown,
     };
   },
-};
+});
 </script>
 
 <style>

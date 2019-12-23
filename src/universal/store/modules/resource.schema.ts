@@ -1,3 +1,5 @@
+import Schema from '../Schema';
+
 /* eslint-disable import/export  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
@@ -33,10 +35,17 @@ export interface Source {
         projectPath?: string;
     };
 
+    /**
+     * Import from local disk
+     */
+    file?: {
+        path: string;
+    };
+
     [extraInfo: string]: any;
 }
 
-export interface ResourceSchema<T> {
+export interface ResourceSchema<T = object | object[]> {
     /**
      * The name of the resource
      */
@@ -71,4 +80,4 @@ export interface ResourceSchema<T> {
     source: Source;
 }
 
-export const ResourceSchema: object = require('./ResourceSchema.json');
+export const ResourceSchema: Schema<ResourceSchema<any>> = require('./ResourceSchema.json');

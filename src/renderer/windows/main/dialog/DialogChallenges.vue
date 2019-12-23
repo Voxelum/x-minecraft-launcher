@@ -14,10 +14,10 @@
           <v-flex v-else xs1>
             <v-text-field v-for="(c, index) in challenges" :key="c.question.id" hide-details
                           :label="c.question.question" color="primary"
-                          dark style="margin-bottom: 10px;" @input="challenges[index].answer.answer=$event;challegesError=undefined" />
+                          dark style="margin-bottom: 10px;" @input="challenges[index].answer.id = $event; challegesError=undefined" />
           </v-flex>
           <v-alert :value="challegesError" type="error" transition="scale-transition">
-            {{ (challegesError||{}).errorMessage }}
+            {{ challegesError ? challegesError.errorMessage : '' }}
           </v-alert>
           <v-flex d-flex grow />
           <v-flex d-flex shrink>
@@ -43,18 +43,18 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, onMounted, watch } from '@vue/composition-api';
-import { useDialogSelf, useCurrentUserStatus } from '@/hooks';
 import { MojangChallenge } from '@xmcl/minecraft-launcher-core';
+import { reactive, toRefs, onMounted, watch, createComponent } from '@vue/composition-api';
+import { useDialogSelf, useCurrentUserStatus, useI18n } from '@/hooks';
 
-export default {
+export default createComponent({
   setup() {
     const { isShown, closeDialog, showDialog } = useDialogSelf('challenge');
     const { offline, security, refreshingSecurity, getChallenges, checkLocation, submitChallenges } = useCurrentUserStatus();
     const data = reactive({
       submittingChallenges: false,
       challenges: [] as MojangChallenge[],
-      challegesError: undefined,
+      challegesError: undefined as (undefined | { errorMessage: string }),
     });
     function checkSecurity() {
       if (offline.value) return;
@@ -102,7 +102,7 @@ export default {
       },
     };
   },
-};
+});
 </script>
 
 <style>

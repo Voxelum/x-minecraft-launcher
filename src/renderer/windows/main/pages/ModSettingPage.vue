@@ -1,5 +1,5 @@
 <template>
-  <v-container ref="container" grid-list-xs fill-height style="overflow: auto;">
+  <v-container grid-list-xs fill-height style="overflow: auto;" @dragend="draggingMod = false">
     <v-layout row wrap fill-height>
       <v-flex tag="h1" style="margin-bottom: 10px; padding: 6px; 8px;" class="white--text" xs7>
         <span class="headline">{{ $tc('mod.name', 2) }}</span>
@@ -14,7 +14,7 @@
                       hide-details />
       </v-flex>
       <v-flex d-flex xs6 style="padding-right: 5px;">
-        <v-card dark class="card-list">
+        <v-card ref="leftList" dark class="card-list" @dragover.prevent>
           <v-card-title>
             <span v-if="filteringModId === ''" class="text-sm-center" style="width: 100%; font-size: 16px;"> 
               {{ $t('mod.unselected') }}
@@ -23,8 +23,8 @@
               modid = {{ filteringModId }}
             </v-chip>
           </v-card-title>
-          <hint v-if="mods[1].length === 0" icon="save_alt" :text="$t('mod.hint')" :absolute="true" />
-          <div v-else ref="leftList" class="list">
+          <hint v-if="unselectedItems.length === 0" icon="save_alt" :text="$t('mod.hint')" :absolute="true" />
+          <div v-else class="list">
             <mod-card v-for="(item, index) in unselectedItems" 
                       :key="item[0].hash"
                       v-observe-visibility="{
@@ -36,17 +36,17 @@
                       :is-selected="false"
                       @dragstart="draggingMod = true"
                       @dragend="draggingMod = false"
-                      @click="setFilteredModid(mod)" />
+                      @click="setFilteredModid(item[0])" />
           </div>
         </v-card>
       </v-flex>
-      <v-flex d-flex xs6 style="padding-left: 5px;">
-        <v-card dark class="card-list right" style="display: flex; flex-flow: column;">
+      <v-flex d-flex xs6 style="padding-left: 5px;" @drop="draggingMod=false">
+        <v-card ref="rightList" dark class="card-list right">
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('mod.selected') }} </span> 
           </v-card-title>
-          <hint v-if="mods[0].length === 0" icon="save_alt" :text="$t('mod.hint')" :absolute="true" />
-          <div v-else ref="rightList" class="list">
+          <hint v-if="selectedItems.length === 0" icon="save_alt" :text="$t('mod.hint')" :absolute="true" />
+          <div v-else class="list">
             <mod-card v-for="(item, index) in selectedItems" 
                       :key="item[0].hash" 
                       v-observe-visibility="{
@@ -108,9 +108,14 @@
 <script lang=ts>
 import Vue from 'vue';
 import { createComponent, reactive, toRefs, computed, ref, Ref, onUnmounted } from '@vue/composition-api';
-import { useInstanceMods, useSelectionList, useResource, useDragTransferList, useProgressiveLoad, useResourceOperation, useDropImport } from '@/hooks';
-import { Resource, ForgeResource, LiteloaderResource } from 'universal/store/modules/resource';
-import { HTMLElement } from 'fast-html-parser';
+import { ForgeResource, LiteloaderResource } from '@universal/store/modules/resource';
+import {
+  useInstanceMods,
+  useDragTransferList,
+  useProgressiveLoad,
+  useResourceOperation,
+  useDropImport,
+} from '@/hooks';
 
 export default createComponent({
   setup() {
@@ -124,19 +129,19 @@ export default createComponent({
       isDeletingMod: false,
       deletingMod: null as ForgeResource | LiteloaderResource | null,
     });
-    const rightList: Ref<null | HTMLElement> = ref(null);
-    const leftList: Ref<null | HTMLElement> = ref(null);
-    const container: Ref<null | Vue> = ref(null);
+    const rightList: Ref<null | Vue> = ref(null);
+    const leftList: Ref<null | Vue> = ref(null);
     const { usedModResources, unusedModResources, add, remove, commit } = useInstanceMods();
     const { getResource, removeResource } = useResourceOperation();
 
-    useDropImport(computed(() => container.value!.$el) as any, 'mods');
+    useDropImport(computed(() => leftList.value?.$el) as any, 'mods');
+    useDropImport(computed(() => rightList.value?.$el) as any, 'mods');
 
     useDragTransferList(
-      leftList,
-      rightList,
+      computed(() => leftList.value?.$el) as any,
+      computed(() => rightList.value?.$el) as any,
       () => { },
-      i => add(usedModResources.value[i]),
+      i => add(unusedModResources.value[i]),
       remove,
     );
     onUnmounted(commit);
@@ -157,13 +162,13 @@ export default createComponent({
     const { filter: filterRight, onItemVisibile: onRightSeen } = useProgressiveLoad();
 
     const unselectedItems = computed(() => unusedModResources.value
-      .filter(filterForgeMod)
-      .filter(filterLeft)
-      .map((r, i) => [r, i]));
+      .map((r, i) => [r, i] as const)
+      .filter((a) => filterForgeMod(a[0]))
+      .filter(filterLeft));
     const selectedItems = computed(() => usedModResources.value
-      .filter(filterText)
-      .filter(filterRight)
-      .map((r, i) => [r, i]));
+      .map((r, i) => [r, i] as const)
+      .filter((a) => filterText(a[0]))
+      .filter(filterRight));
 
     function onConfirmDeleteMod() {
       data.isDeletingMod = false;
@@ -173,7 +178,7 @@ export default createComponent({
     function onDropDelete(e: DragEvent) {
       const hash = e.dataTransfer!.getData('id');
       const res = getResource(hash);
-      if (res) {
+      if (res.type !== 'unknown') {
         data.isDeletingMod = true;
         data.deletingMod = res as ForgeResource;
       }
@@ -184,6 +189,8 @@ export default createComponent({
     }
     return {
       ...toRefs(data),
+      rightList,
+      leftList,
       onLeftSeen,
       onRightSeen,
       onDropDelete,
@@ -195,3 +202,10 @@ export default createComponent({
   },
 });
 </script>
+
+<style>
+.card-list.right {
+  display: flex;
+  flex-flow: column;
+}
+</style>

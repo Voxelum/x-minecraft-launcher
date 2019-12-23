@@ -9,7 +9,7 @@
         </v-chip>
       </v-list-tile>
     </template>
-    <template v-slot:selection="{ item, parent, selected, index }">
+    <template v-slot:selection="{ item, parent, selected }">
       <v-chip v-if="item === Object(item)" :selected="selected" label outline small style="margin: 10px 5px;">
         <span class="pr-2">
           {{ item.text }}

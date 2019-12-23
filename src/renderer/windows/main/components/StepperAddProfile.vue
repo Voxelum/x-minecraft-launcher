@@ -31,14 +31,14 @@
                   </v-list-tile-action>
                   <v-list-tile-content>
                     <v-list-tile-title>
-                      {{ p.name || `Minecraft: ${p.version.minecraft}` }}
+                      {{ p.name || `Minecraft: ${p.runtime.minecraft}` }}
                     </v-list-tile-title>
                     <v-list-tile-sub-title>
                       Minecraft: 
-                      {{ p.version.minecraft }},
+                      {{ p.runtime.minecraft }},
 
                       Forge:
-                      {{ p.version.forge || 'None' }} {{ p.version.liteloader }}
+                      {{ p.runtime.forge || 'None' }} {{ p.runtime.liteloader }}
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
                  
@@ -111,9 +111,9 @@
                               required />
               </v-flex>
               <v-flex d-flex xs4>
-                <version-menu @input="version.minecraft = $event">
+                <version-menu @input="runtime.minecraft = $event">
                   <template v-slot="{ on }">
-                    <v-text-field v-model="version.minecraft" 
+                    <v-text-field v-model="runtime.minecraft" 
                                   dark 
                                   append-icon="arrow" 
                                   persistent-hint
@@ -145,7 +145,7 @@
           </v-btn>
           <v-btn color="primary" 
                  :loading="creating" 
-                 :disabled="!valid || name === '' || version.minecraft === ''" 
+                 :disabled="!valid || name === '' || runtime.minecraft === ''" 
                  @click="doCreate">
             {{ $t('create') }}
           </v-btn>
@@ -185,9 +185,9 @@
                               required />
               </v-flex>
               <v-flex d-flex xs6>
-                <forge-version-menu :minecraft="version.minecraft" @input="version.forge = $event">
+                <forge-version-menu :minecraft="runtime.minecraft" @input="runtime.forge = $event">
                   <template v-slot="{ on }">
-                    <v-text-field v-model="version.forge" 
+                    <v-text-field v-model="runtime.forge" 
                                   dark 
                                   append-icon="arrow" 
                                   persistent-hint
@@ -210,7 +210,7 @@
           <v-spacer />
           <v-btn color="primary" 
                  :loading="creating" 
-                 :disabled="!valid || name === '' || version.minecraft === ''" 
+                 :disabled="!valid || name === '' || runtime.minecraft === ''" 
                  @click="doCreate">
             {{ $t('create') }}
           </v-btn>
@@ -226,7 +226,7 @@
 <script lang=ts>
 import { reactive, toRefs, computed, onMounted, watch, createComponent, ref, Ref } from '@vue/composition-api';
 import { CurseforgeModpackResource } from 'universal/store/modules/resource';
-import { ServerOrModpack } from 'universal/store/modules/profile';
+import { InstanceSchema } from 'universal/store/modules/instance.schema';
 import {
   useI18n,
   useJava,
@@ -245,13 +245,13 @@ export default createComponent({
     },
   },
   setup(props, context) {
-    const { t } = useI18n();
+    const { $t } = useI18n();
     const { create, reset, use, ...creationData } = useInstanceCreation();
     const router = useRouter();
     const staticData = {
       memoryRule: [(v: any) => Number.isInteger(v)],
       nameRules: [
-        (v: any) => !!v || t('profile.requireName'),
+        (v: any) => !!v || $t('profile.requireName'),
       ],
     };
     const data = reactive({
@@ -275,7 +275,7 @@ export default createComponent({
       data.step = 1;
       reset();
     }
-    function selectProfileTemplate(index: number, template: ServerOrModpack) {
+    function selectProfileTemplate(index: number, template: InstanceSchema) {
       if (data.template === index) {
         data.template = -1;
         data.step = 1;
@@ -296,7 +296,7 @@ export default createComponent({
       data.template = index;
       const metadata = template.metadata;
       creationData.name.value = metadata.name;
-      creationData.version.value!.minecraft = metadata.minecraft.version;
+      creationData.runtime.value!.minecraft = metadata.minecraft.version;
       creationData.author.value = metadata.author;
 
       data.step = 1;

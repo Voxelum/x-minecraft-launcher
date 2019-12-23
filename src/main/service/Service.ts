@@ -108,9 +108,9 @@ export default class Service {
 
     async init(): Promise<void> { }
 
-    readonly log: typeof console.log = () => { };
+    readonly log!: typeof console.log;
 
-    readonly error: typeof console.error = () => { };
+    readonly error!: typeof console.error;
 
-    readonly warn: typeof console.warn = () => { };
+    readonly warn!: typeof console.warn;
 }

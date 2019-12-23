@@ -1,3 +1,5 @@
+import Schema from '../Schema';
+
 /* eslint-disable import/export  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
@@ -59,4 +61,4 @@ export interface SettingSchema {
     particleMode: ParticleMode;
 }
 
-export const SettingSchema: object = require('./SettingSchema.json');
+export const SettingSchema: Schema<SettingSchema> = require('./SettingSchema.json');

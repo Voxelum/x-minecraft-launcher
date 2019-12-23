@@ -15,8 +15,8 @@
 </template>
 
 <script lang=ts>
-import { useServerStatus, useBusy } from '@/hooks';
 import { onMounted } from '@vue/composition-api';
+import { useServerStatus, useBusy } from '@/hooks';
 
 export default {
   setup() {

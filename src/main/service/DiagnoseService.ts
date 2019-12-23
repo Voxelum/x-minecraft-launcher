@@ -1,11 +1,11 @@
 import { Forge, ForgeInstaller, ForgeWebPage, Installer, JavaExecutor, MinecraftFolder, ResolvedLibrary, Task } from '@xmcl/minecraft-launcher-core';
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
-import { Problem, ProblemReport } from 'universal/store/modules/diagnose';
+import { MutationKeys } from 'universal/store';
+import { Issue, ProblemReport } from 'universal/store/modules/diagnose';
 import AuthLibService from './AuthLibService';
-import Service, { Inject } from './Service';
+import Service, { Inject, Singleton } from './Service';
 import VersionInstallService from './VersionInstallService';
 import VersionService from './VersionService';
-import { MutationKeys } from 'universal/store';
 
 export default class DiagnoseService extends Service {
     @Inject('VersionService')
@@ -29,7 +29,7 @@ export default class DiagnoseService extends Service {
             await this.diagnoseServer();
             this.commit('release', 'diagnose');
         } else if (mutation === 'instance') {
-            if ('version' in payload) {
+            if ('runtime' in payload) {
                 this.commit('aquire', 'diagnose');
                 await this.diagnoseVersion();
                 await this.diagnoseJava();
@@ -109,7 +109,7 @@ export default class DiagnoseService extends Service {
                     }
                 }
             }
-            this.commit('problemsPost', tree);
+            this.commit('issuesPost', tree);
         } finally {
             this.commit('release', 'diagnose');
         }
@@ -140,7 +140,7 @@ export default class DiagnoseService extends Service {
                 }
             }
 
-            this.commit('problemsPost', tree);
+            this.commit('issuesPost', tree);
         } finally {
             this.commit('release', 'diagnose');
         }
@@ -161,7 +161,7 @@ export default class DiagnoseService extends Service {
                 }
             }
 
-            this.commit('problemsPost', tree);
+            this.commit('issuesPost', tree);
         } finally {
             this.commit('release', 'diagnose');
         }
@@ -189,7 +189,7 @@ export default class DiagnoseService extends Service {
                 }
             }
 
-            this.commit('problemsPost', tree);
+            this.commit('issuesPost', tree);
         } finally {
             this.commit('release', 'diagnose');
         }
@@ -209,7 +209,7 @@ export default class DiagnoseService extends Service {
                 tree.missingModsOnServer.push(...info.modList);
             }
 
-            this.commit('problemsPost', tree);
+            this.commit('issuesPost', tree);
         } finally {
             this.commit('release', 'diagnose');
         }
@@ -292,13 +292,15 @@ export default class DiagnoseService extends Service {
                 }
             }
 
-            this.commit('problemsPost', tree);
+            this.commit('issuesPost', tree);
         } finally {
             this.commit('release', 'diagnose');
         }
     }
 
-    async fixProfile(problems: readonly Problem[]) {
+    @Singleton('diagnose')
+    async fix(problems: readonly Issue[]) {
+        console.log('fix');
         const unfixed = problems.filter(p => p.autofix)
             .filter(p => !this.state.diagnose.registry[p.id].fixing);
 
@@ -306,8 +308,8 @@ export default class DiagnoseService extends Service {
 
         const recheck = {};
 
-        this.commit('problemsStartResolve', unfixed);
-        this.commit('aquire', 'diagnose');
+        this.commit('issuesStartResolve', unfixed);
+        // this.commit('aquire', 'diagnose');
 
         const profile = this.getters.instance;
         const { runtime: versions } = profile;
@@ -315,8 +317,8 @@ export default class DiagnoseService extends Service {
 
         const mcversion = versions.minecraft;
         if (mcversion === '') {
-            this.commit('release', 'diagnose');
-            this.commit('problemsEndResolve', unfixed);
+            // this.commit('release', 'diagnose');
+            this.commit('issuesEndResolve', unfixed);
             return;
         }
 
@@ -431,8 +433,8 @@ export default class DiagnoseService extends Service {
         } catch (e) {
             console.error(e);
         } finally {
-            this.commit('problemsEndResolve', unfixed);
-            this.commit('release', 'diagnose');
+            this.commit('issuesEndResolve', unfixed);
+            // this.commit('release', 'diagnose');
             for (const action of Object.keys(recheck)) {
                 const self = this as any;
                 if (action in self) {

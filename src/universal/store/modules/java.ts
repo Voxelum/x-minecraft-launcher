@@ -23,7 +23,7 @@ export type JavaModule = ModuleOption<State, Getters, Mutations, {}>;
 export const DEFAULT_JAVA: Java = {
     version: '',
     majorVersion: 0,
-    path: 'java',
+    path: '',
 };
 
 const mod: JavaModule = {

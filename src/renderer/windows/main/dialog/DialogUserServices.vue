@@ -118,7 +118,8 @@ export default {
       isShown,
       closeDialog() { closeDialog(); },
       remove(s: Service) {
-        commit('removeService', s.value);
+        commit('authServiceRemove', s.value);
+        commit('profileServiceRemove', s.value);
       },
       newOrEdit(s: Service) {
         if (s) {

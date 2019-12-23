@@ -25,11 +25,11 @@
 <script lang=ts>
 import { reactive, toRefs, onMounted, onUnmounted, createComponent } from '@vue/composition-api';
 import Vue from 'vue';
-import { useDialogSelf, useIpc, useShell } from '@/hooks';
+import { useDialogSelf, useIpc, useShell, useI18n } from '@/hooks';
 
 export default createComponent({
   setup() {
-    const { isShown, showDialog, closeDialog, showingDialog } = useDialogSelf('crash-report');
+    const { isShown, showDialog, closeDialog } = useDialogSelf('crash-report');
     const ipcRenderer = useIpc();
     const shell = useShell();
     const data = reactive({
@@ -42,7 +42,6 @@ export default createComponent({
           showDialog();
           data.content = status.crashReport;
           data.location = status.crashReportLocation || '';
-          console.log(showingDialog.value);
         });
       }
     }

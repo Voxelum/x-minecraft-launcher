@@ -21,6 +21,7 @@ export function useLocalVersions() {
         ...useVersions(),
         localVersions,
         selected,
+        refreshVersions: services.VersionService.refreshVersions,
         showVersionDirectory: services.VersionService.showVersionDirectory,
         showVersionsDirectory: services.VersionService.showVersionsDirectory,
     };

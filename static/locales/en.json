@@ -1,802 +1,816 @@
 {
-    "$schema": "../locale.schema.json",
-    "actionforbidden": "Action Forbidden",
-    "add": "Add",
-    "advanced": "Advanced",
-    "author": "Author",
-    "buttonSettings": {
-        "drop": "Drop Items",
-        "jump": "Jump",
-        "moveBackward": "Move Backward",
-        "moveForward": "Move Forward",
-        "moveLeft": "Move Left",
-        "moveRight": "Move Right",
-        "open": "Open or close bag",
-        "shortcut1": "Shortcut 1",
-        "shortcut2": "Shortcut 2",
-        "shortcut3": "Shortcut 3",
-        "shortcut4": "Shortcut 4",
-        "shortcut5": "Shortcut 5",
-        "shortcut6": "Shortcut 6",
-        "shortcut7": "Shortcut 7",
-        "shortcut8": "Shortcut 8",
-        "shortcut9": "Shortcut 9",
-        "stealth": "Stealth",
-        "talk": "Talk",
-        "view": "View players"
+  "$schema": "../locale.schema.json",
+  "actionforbidden": "Action Forbidden",
+  "add": "Add",
+  "advanced": "Advanced",
+  "author": "Author",
+  "back": "Back",
+  "buttonSettings": {
+    "drop": "Drop Items",
+    "jump": "Jump",
+    "moveBackward": "Move Backward",
+    "moveForward": "Move Forward",
+    "moveLeft": "Move Left",
+    "moveRight": "Move Right",
+    "open": "Open or close bag",
+    "shortcut1": "Shortcut 1",
+    "shortcut2": "Shortcut 2",
+    "shortcut3": "Shortcut 3",
+    "shortcut4": "Shortcut 4",
+    "shortcut5": "Shortcut 5",
+    "shortcut6": "Shortcut 6",
+    "shortcut7": "Shortcut 7",
+    "shortcut8": "Shortcut 8",
+    "shortcut9": "Shortcut 9",
+    "stealth": "Stealth",
+    "talk": "Talk",
+    "view": "View players"
+  },
+  "cancel": "Cancel",
+  "checkUpdate": "Check Update",
+  "copy": {
+    "success": "Copy to clipboard"
+  },
+  "create": "Create",
+  "criticalGraphics": "Critical Graphics",
+  "curseforge": {
+    "createdDate": "Created Date",
+    "description": "CurseForge is now the largest repository for modded Minecraft featuring thousands of mods, texture packs and worlds.",
+    "gameversion": "Game Version",
+    "install": "Install",
+    "installed": "Installed",
+    "lastUpdate": "Last Update Date",
+    "license": "License",
+    "mc-mods": {
+      "description": "View and download mods packs from Curseforge",
+      "name": "Mods"
     },
-    "cancel": "Cancel",
-    "checkUpdate": "Check Update",
-    "create": "Create",
-    "criticalGraphics": "Critical Graphics",
-    "curseforge": {
-        "createdDate": "Created Date",
-        "description": "CurseForge is now the largest repository for modded Minecraft featuring thousands of mods, texture packs and worlds.",
-        "gameversion": "Game Version",
-        "install": "Install",
-        "installed": "Installed",
-        "lastUpdate": "Last Update Date",
-        "license": "License",
-        "mc-mods": {
-            "description": "View and download mods packs from Curseforge",
-            "name": "Mods"
-        },
-        "meta": "One of the best community for modder.",
-        "modpacks": {
-            "description": "View and download modpacks from Curseforge",
-            "name": "Modpacks"
-        },
-        "name": "Curseforge",
-        "project": {
-            "description": "Description",
-            "files": "Files",
-            "images": "Images"
-        },
-        "recentFiles": "Recent Files",
-        "search": "Search",
-        "sortby": "Sort By",
-        "texture-packs": {
-            "description": "View and download worlds from Curseforge",
-            "name": "Resource Packs"
-        },
-        "totalDownloads": "Total Downloads",
-        "worlds": {
-            "description": "View and download mods from Curseforge",
-            "name": "Worlds"
-        }
+    "meta": "One of the best community for modder.",
+    "modpacks": {
+      "description": "View and download modpacks from Curseforge",
+      "name": "Modpacks"
     },
-    "delete": {
-        "no": "No",
-        "yes": "Delete"
+    "name": "Curseforge",
+    "project": {
+      "description": "Description",
+      "files": "Files",
+      "images": "Images"
     },
-    "deleteSave": "Delete Save",
-    "description": "Description",
-    "detail": "Detail",
-    "diagnosis": {
-        "badForge": {
-            "": "Bad Forge Installation {minecraft}-{forge}",
-            "message": "Maybe you should reinstall this version of forge"
-        },
-        "badForgeProcessedFiles": {
-            "": "Bad Forge Post Processor State {jar}",
-            "message": "Click to reprocess the files"
-        },
-        "fix": "Fix the Problems",
-        "incompatibleJava": {
-            "": "Current Minecraft {mcversion} doesn't support selected Java version {java}!",
-            "message": "You can ask Launcher to download it for you."
-        },
-        "incompatibleMod": {
-            "": "{name} mod is incompatible for current {actual} version. Accept {accepted}.",
-            "message": "Either the mod actually can run in this version, or you should remove it from list"
-        },
-        "incompatibleResourcePack": {
-            "": "The resource pack {name} is incompatible for {actual} version. Accept {accepted}.",
-            "message": "Either the resource pack can fitin in this version, or you should remove it from list"
-        },
-        "missingAssets": {
-            "": "Missing %{count} assets.",
-            "message": "Launcher will install assets for you"
-        },
-        "missingAssetsIndex": {
-            "": "Missing assets index file of {version}.",
-            "message": "Launcher will download assets index for you"
-        },
-        "missingAuthlibInjector": {
-            "": "Missing authlib-injector",
-            "message": "The authlib-injector is required to use third party auth server!"
-        },
-        "missingForgeJar": {
-            "": "Missing forge {forge} jar for Minecraft {minecraft}",
-            "message": "Click to install forge"
-        },
-        "missingJava": {
-            "": "Please select a Java for this profile!",
-            "autoDownload": {
-                "": "Automatically Download",
-                "message": "Launcher will download and install Java from Mojang's source for you."
-            },
-            "manualDownload": {
-                "": "Manually Download",
-                "message": "Launcher will redirect you to the Orecale JRE download page."
-            },
-            "message": "Click to resolve this problem",
-            "selectJava": {
-                "": "Select Java in your computer",
-                "message": "Maybe the launcher doesn't found your Java. You can tell the launcher where it is."
-            }
-        },
-        "missingLibraries": {
-            "": "Missing {name} Library | Missing {name} Library | Missing {count} Libraries | Missing {count} Libraries",
-            "message": "Launcher will install libraries for you"
-        },
-        "missingVersion": "Please select a Minecraft version for this profile!",
-        "missingVersionJar": {
-            "": "Missing version %{version} jar.",
-            "message": "Click to install this version"
-        },
-        "missingVersionJson": {
-            "": "Missing version %{version} json.",
-            "message": "Click to install this version"
-        },
-        "problem": "1 Problem | %{count} Problems",
-        "unknownMod": {
-            "": "Cannot detect Mod {name}'s Minecraft Version",
-            "message": "Please be careful if it causes crash"
-        }
+    "recentFiles": "Recent Files",
+    "search": "Search",
+    "sortby": "Sort By",
+    "texture-packs": {
+      "description": "View and download worlds from Curseforge",
+      "name": "Resource Packs"
     },
-    "download": "Download",
-    "downloadUpdate": "Downloading Update",
-    "edit": "Edit",
-    "error": {
-        "empty": "No error yet",
-        "installJava": "Cannot found any JRE. Please install at least one!",
-        "internetNotConnected": "Please check your Internet connection!",
-        "missingJava": "Please select a Java for this profile!",
-        "missingMinecraft": "Please select a Minecraft version for this profile!",
-        "missingName": "Please name this profile!",
-        "name": "Error | Errors"
+    "totalDownloads": "Total Downloads",
+    "worlds": {
+      "description": "View and download mods from Curseforge",
+      "name": "Worlds"
+    }
+  },
+  "curseforge.quitSearch": "Quit Search",
+  "delete": {
+    "no": "No",
+    "yes": "Delete"
+  },
+  "deleteSave": "Delete Save",
+  "description": "Description",
+  "detail": "Detail",
+  "diagnosis": {
+    "badForge": {
+      "": "Bad Forge Installation {minecraft}-{forge}",
+      "message": "Maybe you should reinstall this version of forge"
     },
-    "feedback": {
-        "": "Feedback",
-        "description": "I found a Bug or I want to make a suggestion",
-        "github": "Github Issue",
-        "githubDescription": "Open an Github Issue to tell your thought",
-        "githubOpenIssue": "Github",
-        "qq": "QQ Group",
-        "qqDescription": "Enter the feedback QQ group and direct talk with authors. Group Number: {number}",
-        "qqEnterGroup": "Join"
+    "badForgeProcessedFiles": {
+      "": "Bad Forge Post Processor State {jar}",
+      "message": "Click to reprocess the files"
     },
-    "filter": "Filter",
-    "finish": "Finish",
-    "forge": {
-        "common": "Common",
-        "config": {
-            "hint": "Please at least launch the game with this mod once, so that we can detect its config file!"
-        },
-        "disable": "Disable Forge",
-        "disabled": "Disabled",
-        "enabled": "Enable Forge",
-        "install": "Install",
-        "latest": "Latest",
-        "name": "Forge",
-        "noVersion": "Forge doesn't have any release for Minecraft {version}",
-        "non": "No Forge",
-        "recommended": "Recommended",
-        "recommendedAndLatestOnly": "Recommened and Latest Only",
-        "showBuggy": "Show Buggy",
-        "version": "Forge Version"
+    "fix": "Fix the Problems",
+    "incompatibleJava": {
+      "": "Current Minecraft {mcversion} doesn't support selected Java version {java}!",
+      "message": "You can ask Launcher to download it for you."
     },
-    "gamesetting": {
-        "anaglyph3d": {
-            "false": "Disabled",
-            "name": "3D Effect",
-            "true": "Enabled"
-        },
-        "ao": {
-            "0": "Off",
-            "1": "Minimum",
-            "2": "Maximum",
-            "name": "Smooth Lighting"
-        },
-        "cheat": "Cheating",
-        "difficulty": {
-            "easy": "Easy",
-            "hard": "Hard",
-            "non": "Unknown difficulty",
-            "normal": "Normal",
-            "peaseful": "Peaseful"
-        },
-        "enableVsync": {
-            "false": "Disabled",
-            "name": "Vsync",
-            "true": "Enabled"
-        },
-        "entityShadows": {
-            "false": "Disabled",
-            "name": "Entity Shadows",
-            "true": "Enabled"
-        },
-        "fancyGraphics": {
-            "false": "Fast",
-            "name": "Graphic",
-            "true": "Fancy"
-        },
-        "fboEnable": {
-            "false": "Disabled",
-            "name": "Use FBO",
-            "true": "Enabled"
-        },
-        "gametype": {
-            "0": "Survival Mode",
-            "1": "Creative Mode",
-            "2": "Adventure Mode",
-            "3": "Spectator Mode",
-            "adventure": "Adventure Mode",
-            "creative": "Creative Mode",
-            "non": "Non mode",
-            "spectator": "Spectator Mode",
-            "survival": "Survival Mode"
-        },
-        "hardcore": "Hardcore mode",
-        "mipmapLevels": {
-            "0": "0",
-            "1": "1",
-            "2": "2",
-            "3": "3",
-            "4": "4",
-            "name": "Mipmap"
-        },
-        "name": "Game Setting | Game Settings",
-        "particles": {
-            "0": "Maximum",
-            "1": "Decreased",
-            "2": "Minimum",
-            "name": "Particle"
-        },
-        "renderClouds": {
-            "false": "Off",
-            "fast": "Fast",
-            "name": "Clouds",
-            "true": "Fancy"
-        },
-        "useVbo": {
-            "false": "Disabled",
-            "name": "Use VBO",
-            "true": "Enabled"
-        }
+    "incompatibleMod": {
+      "": "{name} mod is incompatible for current {actual} version. Accept {accepted}.",
+      "message": "Either the mod actually can run in this version, or you should remove it from list"
     },
-    "hello": "Hello world",
-    "help": "Help",
-    "home": "Home",
-    "hotkeyChanges": "Hotkey Changes",
-    "importResource": {
-        "": "Import Resource",
-        "checking": "Checking Local File",
-        "parsing": "Parsing Resource",
-        "storing": "Storing Resource"
+    "incompatibleResourcePack": {
+      "": "The resource pack {name} is incompatible for {actual} version. Accept {accepted}.",
+      "message": "Either the resource pack can fitin in this version, or you should remove it from list"
     },
-    "importSave": "Import Save",
+    "missingAssets": {
+      "": "Missing %{count} assets.",
+      "message": "Launcher will install assets for you"
+    },
+    "missingAssetsIndex": {
+      "": "Missing assets index file of {version}.",
+      "message": "Launcher will download assets index for you"
+    },
+    "missingAuthlibInjector": {
+      "": "Missing authlib-injector",
+      "message": "The authlib-injector is required to use third party auth server!"
+    },
+    "missingForgeJar": {
+      "": "Missing forge {forge} jar for Minecraft {minecraft}",
+      "message": "Click to install forge"
+    },
+    "missingJava": {
+      "": "Please select a Java for this profile!",
+      "autoDownload": {
+        "": "Automatically Download",
+        "message": "Launcher will download and install Java from Mojang's source for you."
+      },
+      "manualDownload": {
+        "": "Manually Download",
+        "message": "Launcher will redirect you to the Orecale JRE download page."
+      },
+      "message": "Click to resolve this problem",
+      "selectJava": {
+        "": "Select Java in your computer",
+        "message": "Maybe the launcher doesn't found your Java. You can tell the launcher where it is."
+      }
+    },
+    "missingLibraries": {
+      "": "Missing {name} Library | Missing {name} Library | Missing {count} Libraries | Missing {count} Libraries",
+      "message": "Launcher will install libraries for you"
+    },
+    "missingVersion": "Please select a Minecraft version for this profile!",
+    "missingVersionJar": {
+      "": "Missing version %{version} jar.",
+      "message": "Click to install this version"
+    },
+    "missingVersionJson": {
+      "": "Missing version %{version} json.",
+      "message": "Click to install this version"
+    },
+    "problem": "1 Problem | %{count} Problems",
+    "unknownMod": {
+      "": "Cannot detect Mod {name}'s Minecraft Version",
+      "message": "Please be careful if it causes crash"
+    }
+  },
+  "download": "Download",
+  "downloadUpdate": "Downloading Update",
+  "edit": "Edit",
+  "error": {
+    "empty": "No error yet",
+    "installJava": "Cannot found any JRE. Please install at least one!",
+    "internetNotConnected": "Please check your Internet connection!",
+    "missingJava": "Please select a Java for this profile!",
+    "missingMinecraft": "Please select a Minecraft version for this profile!",
+    "missingName": "Please name this profile!",
+    "name": "Error | Errors"
+  },
+  "feedback": {
+    "": "Feedback",
+    "description": "I found a Bug or I want to make a suggestion",
+    "github": "Github Issue",
+    "githubDescription": "Open an Github Issue to tell your thought",
+    "githubOpenIssue": "Github",
+    "qq": "QQ Group",
+    "qqDescription": "Enter the feedback QQ group and direct talk with authors. Group Number: {number}",
+    "qqEnterGroup": "Join"
+  },
+  "filter": "Filter",
+  "finish": "Finish",
+  "forge": {
+    "common": "Common",
+    "config": {
+      "hint": "Please at least launch the game with this mod once, so that we can detect its config file!"
+    },
+    "disable": "Disable Forge",
+    "disabled": "Disabled",
+    "enabled": "Enable Forge",
+    "install": "Install",
+    "latest": "Latest",
+    "name": "Forge",
+    "noVersion": "Forge doesn't have any release for Minecraft {version}",
+    "non": "No Forge",
+    "recommended": "Recommended",
+    "recommendedAndLatestOnly": "Recommened and Latest Only",
+    "showBuggy": "Show Buggy",
+    "version": "Forge Version"
+  },
+  "gamesetting": {
+    "anaglyph3d": {
+      "false": "Disabled",
+      "name": "3D Effect",
+      "true": "Enabled"
+    },
+    "ao": {
+      "0": "Off",
+      "1": "Minimum",
+      "2": "Maximum",
+      "name": "Smooth Lighting"
+    },
+    "cheat": "Cheating",
+    "difficulty": {
+      "easy": "Easy",
+      "hard": "Hard",
+      "non": "Unknown difficulty",
+      "normal": "Normal",
+      "peaseful": "Peaseful"
+    },
+    "enableVsync": {
+      "false": "Disabled",
+      "name": "Vsync",
+      "true": "Enabled"
+    },
+    "entityShadows": {
+      "false": "Disabled",
+      "name": "Entity Shadows",
+      "true": "Enabled"
+    },
+    "fancyGraphics": {
+      "false": "Fast",
+      "name": "Graphic",
+      "true": "Fancy"
+    },
+    "fboEnable": {
+      "false": "Disabled",
+      "name": "Use FBO",
+      "true": "Enabled"
+    },
+    "gametype": {
+      "0": "Survival Mode",
+      "1": "Creative Mode",
+      "2": "Adventure Mode",
+      "3": "Spectator Mode",
+      "adventure": "Adventure Mode",
+      "creative": "Creative Mode",
+      "non": "Non mode",
+      "spectator": "Spectator Mode",
+      "survival": "Survival Mode"
+    },
+    "hardcore": "Hardcore mode",
+    "mipmapLevels": {
+      "0": "0",
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "name": "Mipmap"
+    },
+    "name": "Game Setting | Game Settings",
+    "particles": {
+      "0": "Maximum",
+      "1": "Decreased",
+      "2": "Minimum",
+      "name": "Particle"
+    },
+    "renderClouds": {
+      "false": "Off",
+      "fast": "Fast",
+      "name": "Clouds",
+      "true": "Fancy"
+    },
+    "useVbo": {
+      "false": "Disabled",
+      "name": "Use VBO",
+      "true": "Enabled"
+    }
+  },
+  "hello": "Hello world",
+  "help": "Help",
+  "home": "Home",
+  "hotkeyChanges": "Hotkey Changes",
+  "importResource": {
+    "": "Import Resource",
+    "checking": "Checking Local File",
+    "parsing": "Parsing Resource",
+    "storing": "Storing Resource"
+  },
+  "importSave": "Import Save",
+  "installAssets": {
+    "": "Install Asset Files",
+    "assets": "Install Asset {hash}",
+    "assetsJson": "Check Assets Index File"
+  },
+  "installAuthlibInjector": "Install authlib-injector",
+  "installCurseforgeFile": "Install Curseforge File",
+  "installCurseforgeModpack": {
+    "": "Install Curseforge Modpack",
+    "createProfile": "Create Profile",
+    "installMods": "Install Mods",
+    "resolveEntries": "Resolve Entries"
+  },
+  "installDependencies": {
+    "": "Install {version}'s Dependencies",
     "installAssets": {
-        "": "Install Asset Files",
-        "assets": "Install Asset {hash}",
-        "assetsJson": "Check Assets Index File"
-    },
-    "installAuthlibInjector": "Install authlib-injector",
-    "installCurseforgeFile": "Install Curseforge File",
-    "installCurseforgeModpack": {
-        "": "Install Curseforge Modpack",
-        "createProfile": "Create Profile",
-        "installMods": "Install Mods",
-        "resolveEntries": "Resolve Entries"
-    },
-    "installDependencies": {
-        "": "Install {version}'s Dependencies",
-        "installAssets": {
-            "": "Install Asset Files",
-            "assets": "Install Asset {hash}",
-            "assetsJson": "Check Assets Index File"
-        },
-        "installLibraries": {
-            "": "Install Libraries",
-            "library": "Install Library"
-        }
-    },
-    "installForge": {
-        "": "Install Forge",
-        "downloadInstaller": "Download Installer",
-        "downloadJar": "Download Forge Jar",
-        "downloadLibraries": {
-            "": "Download Libraries",
-            "library": "Install Library {lib}"
-        },
-        "installForgeJar": "Install Forge Jar",
-        "installForgeJson": "Install Forge JSON file",
-        "postProcessing": "Post Processing"
-    },
-    "installJre": {
-        "": "Install Java Runtime Library",
-        "cleanup": "Clean up installation package",
-        "decompress": "Decompress JRE files to folder",
-        "download": "Download compressed JRE file",
-        "fetchInfo": "Fetch JRE Info from Mojang"
+      "": "Install Asset Files",
+      "assets": "Install Asset {hash}",
+      "assetsJson": "Check Assets Index File"
     },
     "installLibraries": {
-        "": "Install Libraries",
-        "library": "Install Library"
-    },
-    "installVersion": {
-        "": "Install Minecraft Client {version}",
-        "jar": "Install Version Jar",
-        "json": "Install Version Json"
-    },
-    "intro": {
-        "struct": {
-            "assets": "Same with vanllia. The assets folder cache the game assets",
-            "config": "The global Launcher config",
-            "forge-versions": "The global cache of Forge version metadata",
-            "java": "The global cache of found java",
-            "jre": "Cache the launcher downloaded JRE (JVM 8)",
-            "libraries": "Same with vanllia.",
-            "lite-versions": "The global cache of Liteloader version metadata",
-            "logs": "Containing Launcher logs but not Minecraft game logs",
-            "mclogs": "The normal Minecraft game logs",
-            "modJar": "The mod jar file",
-            "modLite": "The mod lite loader file",
-            "mods": "The normal mods folder, but managed by resource module in Launcher",
-            "options": "The normal Minecraft game settings",
-            "profile": "The JSON store launch profile config",
-            "profileFolder": "The folder contains a specific launch profile. The name is the uuid",
-            "profiles": "The folder contains each launch profile",
-            "resourceJson": "The resource metadata matching one mod or resourcepack",
-            "resourcepack": "The normal resource pack zip",
-            "resourcepacks": "The normal resourcepacks folder, but managed by resource module in Launcher",
-            "resources": "The folder contains the managed mods/resourcepacks metadata",
-            "root": "The root the your minecraft data folder",
-            "temp": "The temp folder (for download) the Launcher have",
-            "user": "The user auth info cache",
-            "version": "The global cache of Minecraft version metadata",
-            "versions": "Same with vanllia. Save multiple versions' JSON & JAR"
-        }
-    },
-    "java": {
-        "browse": "Browse Java executable",
-        "errorDownload": "Auto-download & install failed. Please check your network condition. You can try another way.",
-        "incompatibleJava": "Incompatible Java",
-        "incompatibleJavaHint": "Not supported Java version",
-        "location": "Java Location",
-        "maxMemory": "Max Memory",
-        "minMemory": "Min Memory",
-        "autoAlloc": "Auto Allocated",
-        "missing": "Missing Java",
-        "missingHint": "The Launcher cannot detect any java in your computer. You can:",
-        "noJavaInPath": "Still cannot find the java in PATH enviroment variable. You can try another way.",
-        "noLegalJava": "Cannot detect legal java for this location. Please try again.",
-        "noMemory": "Do not limit memory usage",
-        "refreshAfter": "Please Refresh After you install the java."
-    },
-    "launch": {
-        "checkingProblems": "Checking Problems",
-        "crash": "Game Crashed!!",
-        "failed": {
-            "general": "General Launch Failed",
-            "generalText": "If you enconter this several times, please contact author!",
-            "illegalAuth": "Illegal User Auth!",
-            "illegalAuthText": "Illegal user auth state! Please login or switch account to revalidate your account!",
-            "selectProfileEmpty": "Empty Profile",
-            "selectProfileEmptyText": "This is too bad. Please retry or consider recreate your launch profile. If you still encounter this, please contact author!",
-            "unresolvableProblems": "Unresolvable Problems",
-            "unresolvableProblemsText": "Existed some problems cannot be resolved. If you cannot handle this, please contact author for help!"
-        },
-        "hideLauncher": "Hide the launcher after launch",
-        "launch": "Launch",
-        "launching": "Launching...",
-        "launchingSlow": "Still launching... Starting graphic engine can be slow...",
-        "openCrashReport": "Open Crash Report",
-        "openCrashReportFolder": "Open Crash Report Folder",
-        "showLog": "Show Minecraft Log"
-    },
-    "launcher": {
-        "checkUpdate": "Check Update",
-        "quit": "Quit Launcher",
-        "showDiagnosis": "Show Diagnosis",
-        "title": "Minecraft Launcher"
-    },
-    "launchsetting": {
-        "jvm": "JVM Arguments",
-        "mc": "Minecraft Arguments",
-        "name": "Launch Settings"
-    },
-    "liteloader": {
-        "name": "LiteLoader"
-    },
-    "log": {
-        "error": "Error",
-        "info": "Info",
-        "success": "Success",
-        "warning": "Warning"
-    },
-    "market": "Market",
-    "minecraft": {
-        "name": "Minecraft",
-        "settings": "Minecraft Settings",
-        "showAlpha": "Show Snapshot",
-        "version": "Minecraft Version"
-    },
-    "mod": {
-        "backToAllMods": "Back to All Mods",
-        "compatible": "Available on {version}",
-        "deletion": "Deleting {mod} mod",
-        "deletionHint": "You will lose this mod & its metadata forever. Are you sure you want to delete it?",
-        "export": "Export Mod",
-        "hint": "Drop mod's .jar/.litemod here to import.",
-        "import": "Import Mod",
-        "incompatible": "Incompatible Mod. Accept {accept}. Current: {actual}",
-        "missing": {
-            "absent": "",
-            "checkAvailabilities": "",
-            "downloadAll": "",
-            "downloadDescription": "",
-            "downloadTitle": "Download Missing Mods",
-            "downloading": "",
-            "existed": "",
-            "loading": "",
-            "unknown": ""
-        },
-        "name": "Mod | Mods",
-        "selected": "Selected Mods",
-        "unselected": "Unselected Mods"
-    },
-    "name": "Name",
-    "no": "No",
-    "ok": "Ok",
-    "popular": "Porpularity",
-    "profile": {
-        "add": "Add Local Game",
-        "addServer": "Add Server",
-        "advancedSetting": "Advanced Settings",
-        "authorHint": "The author of this game integration",
-        "baseSetting": "Base Settings",
-        "copy": "Duplicate",
-        "delete": "Delete Profile",
-        "deleteHint": "The profile {name}({id}) data will be moved from the disk forever. You sure to do this?",
-        "descriptionHint": "Breifly describe the game",
-        "export": {
-            "exportingMessage": "Exporting Modpack...",
-            "message": "Export this profile as a Modpack",
-            "title": "Export Profile"
-        },
-        "forceLocalVersion": "Launch by Selected Local Version",
-        "forgeSetting": "Forge Settings",
-        "importCurseforge": "Import from Curseforge Modpack",
-        "importFolder": "Import from Folder",
-        "importZip": "Import from Zip",
-        "launchingDetail": "Launch Detail",
-        "localVersion": "Local Version",
-        "localVersionEmpty": "Generated By Launcher",
-        "localVersionHint": "Select Local Version will overwrite the minecraft version setting",
-        "logsCrashes": {
-            "crashes": "Crash Reports",
-            "logs": "Logs",
-            "title": "Logs or Crash Reports"
-        },
-        "mcOptions": "Minecraft Options",
-        "mcOptionsCreateHint": "Enter to create a Minecraft ption",
-        "mcOptionsHint": "Select or create Minecraft options",
-        "modpack": {
-            "add": "Add Modpack",
-            "author": "Author Name",
-            "create": "Create a New Modpack",
-            "delete": {
-                "description": "This will delete all the data about this modpack. Are you sure to do this?",
-                "name": "Delete the modpack"
-            },
-            "description": "Description",
-            "edit": "Edit Modpack Info",
-            "error": {
-                "requirename": "Name is required! Please come up a modpack name!"
-            },
-            "export": "Export as Modpack",
-            "name": "Modpack | Modpacks",
-            "profile": "Profile Name"
-        },
-        "name": "Profile Name",
-        "nameHint": "The name used to identify the game",
-        "noLocalVersion": "No Local Version",
-        "older": "Older",
-        "refreshServers": "Refresh Servers",
-        "requireName": "The name is required",
-        "select": "Select",
-        "server": {
-            "": "Server | Servers",
-            "acceptingMinecraftVersion": "Accepting Minecraft Version",
-            "add": "Add Server",
-            "create": "Create A New Server",
-            "delete": {
-                "description": "This will delete all the local data about this server. Are you sure to do this?",
-                "name": "Delete the server"
-            },
-            "edit": "Edit Server Info",
-            "error": {
-                "wrongVersion": "The current selected version doesn't really match the server protocol! This might cause game connection errors."
-            },
-            "expectedVersions": "Supported Versions",
-            "filterVersion": "Filter server responded Minecraft version",
-            "host": "Host",
-            "hostHint": "The host (with port) of the server",
-            "ipAddress": "IP Address",
-            "motd": "Server MOTD",
-            "name": "Name Of the Server",
-            "ping": "Ping",
-            "pinging": "Pinging...",
-            "pings": "Pings",
-            "players": "Players",
-            "port": "Port",
-            "recommendedMinecraftVersion": "Minecraft Version",
-            "status": {
-                "nohost": "§4Cannot find host!",
-                "ping": "Ping...",
-                "refurse": "§4Server refused!",
-                "timeout": "§4Connect server timeout!"
-            },
-            "unknown": "Unknown Server",
-            "unknownDescription": "Unknown Server. Please Refresh",
-            "versionHint": "The Minecraft Version To Ping"
-        },
-        "setting": "Settings",
-        "templateSetting": {
-            "": "Template Setting",
-            "importing": "Template Importing",
-            "modpack": "This is a modpack configuration",
-            "profile": "This is a existed profile configuration",
-            "server": "This is a existed server configuration"
-        },
-        "threeDay": "In Three Days",
-        "today": "Today",
-        "url": "URL",
-        "version": "Selected Version",
-        "versionHint": "The Minecraft version of this game",
-        "versionSetting": "Version Setting",
-        "vmOptions": "JVM Options",
-        "vmOptionsCreateHint": "Enter to create the JVM option",
-        "vmOptionsHint": "Create or select JVM options"
-    },
-    "refresh": {
-        "hint": "Refresh user data, and server status."
-    },
-    "refreshResource": "Refresh Resources",
-    "remove": "Remove",
-    "resolution": {
-        "fullscreen": "Fullscreen",
-        "height": "Height",
-        "width": "Width"
-    },
-    "resourcepack": {
-        "available": "Avaliable",
-        "compatible": "Compatible format {format} with {version}",
-        "delete": {
-            "content": "This will remove the resource pack file from disk, and we cannot redo it. Are you sure to do this?",
-            "title": "Delete the resource pack"
-        },
-        "deletion": "Deleting {pack}",
-        "deletionHint": "You will lose the data and metadata of this resource pack. You are sure to do this?",
-        "export": "Export Resource Pack",
-        "hint": "Drop Resource Pack's folder/zip here to import.",
-        "import": "Import Resource Pack",
-        "incompatible": "Incompatible Resource Pack format({format}). Fitin {accept}. Current {actual}.",
-        "name": "Resource Pack | Resource Packs",
-        "selected": "Selected Resource Packs",
-        "unselected": "Unselected Resource Packs"
-    },
-    "save": {
-        "copy": {
-            "": "Copy Save",
-            "cancel": "Cancel Copy",
-            "confirm": "Start Copy",
-            "description": "Please select destination profile(s) you want the save to go.",
-            "title": "Copy Save to Other Profile"
-        },
-        "copyFrom": {
-            "cancel": "Cancel",
-            "confirm": "Start Copy",
-            "description": "You can deploy save to this profile from other profile, or from managed resources (curseforge)",
-            "from": "From {src}",
-            "fromProfile": "From Profiles",
-            "fromResource": "From Resources",
-            "title": "Import Save from Managed Source"
-        },
-        "deleteCancel": "Cancel",
-        "deleteConfirm": "Comfirm to delete",
-        "deleteHint": "This operation cannot be revert. You will lose this save data forever. Are you sure to delete this save?",
-        "deleteTitle": "Delete the Save",
-        "detail": "More Info",
-        "export": "Export Save",
-        "hint": "Drag save zip here to Import",
-        "import": "Import Save",
-        "name": "Save | Saves"
-    },
-    "setting": {
-        "allowPrerelease": "Download Prerelease",
-        "allowPrereleaseDescription": "Prerelease might be instable",
-        "appearance": "Appearance",
-        "apply": "Apply Setting",
-        "autoDownload": "Auto Download",
-        "autoDownloadDescription": "Auto Download Update if it's Avaiable",
-        "autoInstallOnAppQuit": "Autoinstall",
-        "autoInstallOnAppQuitDescription": "Autoinstall the Update on App Quit",
-        "browseRoot": "Browse",
-        "checkUpdate": "Check Update",
-        "cleanOldData": "Clear Data",
-        "cleanOldDataHint": "Remove all old files including Maps, Resource Packs, and etc",
-        "copyOldToNew": "Migrate Data",
-        "copyOldToNewHint": "Before clearing data, copy all old data to new place",
-        "general": "General",
-        "installAndQuit": "Restart to Install",
-        "language": "Language",
-        "languageDescription": "The display language",
-        "latestVersion": "Latest Version",
-        "location": "Store Location",
-        "name": "Global Setting | Global Settings",
-        "noUpdateAvailable": "No Update Available",
-        "particleMode": {
-            "": "Particle Mode",
-            "bubble": "Bubble",
-            "push": "Push",
-            "remove": "Remove",
-            "repulse": "Repulse"
-        },
-        "particleModeDescription": "Select the particle click behavior",
-        "resolution": "Default Resolution",
-        "setRootCause": "You will loose all your data (Maps, Resource Packs, Mods) if you don't check \"Migrate data\" option below.",
-        "setRootDescription": "This will change the root data folder of this launcher and minecraft.",
-        "setRootTitle": "Set to a new storage location",
-        "showParticle": "Show Particles",
-        "showParticleDescription": "Show particles in background (May impact performance)",
-        "showRoot": "Show",
-        "theme": "Theme",
-        "update": "Update",
-        "updateToThisVersion": "Download and Install",
-        "useBmclAPI": "Use BMCL API",
-        "useBmclAPIDescription": "Use BMCLAPI to download Minecraft when you are in China Mainland. (This won't affect if you're not in China mainland)",
-        "viewUpdate": "View Update Detail",
-        "waitReload": "Migrating data. Please don't close the Launcher or you will lose your data."
-    },
-    "skin": {
-        "change": "Change Skin",
-        "export": "Export Skin",
-        "importLocal": "Import Local Skin",
-        "loadURL": "Load URL Skin",
-        "reset": "Reset Skin",
-        "upload": "Upload Skin",
-        "urlHint": "Place your skin url here"
-    },
-    "summery": "Summery",
-    "task": {
-        "cancelled": "Cancelled",
-        "empty": "No Running Tasks",
-        "failed": "Failed",
-        "history": "Task History",
-        "manager": "Task Manager",
-        "name": "Task | Tasks",
-        "running": "Running Tasks",
-        "successed": "Successed"
-    },
-    "user": {
-        "accessToken": "Access Token",
-        "account": {
-            "add": "Add Account",
-            "switch": "Switch Account"
-        },
-        "authMode": "Auth Service",
-        "authService": "Authorize Service",
-        "birth": "Registered Birthday",
-        "challenges": "Anwser questions below to verify your identity",
-        "email": "Email Address",
-        "forgetChallenges": "I have forgot these questions and I want to change them",
-        "forgetPassword": "Forget Password?",
-        "id": "User Id",
-        "illegalEmail": "E-mail must be valid",
-        "info": "User Information",
-        "insecureClient": "The Client is insecure! Please validate your identity to upload skin!",
-        "invalidCredentials": "Invalid credentials. Invalid username or password.",
-        "login": "Login",
-        "logout": "Logout",
-        "mojang": {
-            "account": "Email Adress",
-            "name": "Mojang",
-            "password": "Password"
-        },
-        "name": "Username",
-        "offline": {
-            "account": "Username",
-            "name": "Offline",
-            "password": "No Password"
-        },
-        "profile": "Profile",
-        "profileMode": "Profile Service",
-        "profileService": {
-            "": "Profile Service",
-            "description": "The service provides your skin info."
-        },
-        "refreshAccount": "Refresh Account",
-        "refreshSkin": "Refresh Skin",
-        "refreshSkinFail": "Refresh Skin Failed",
-        "refreshSkinSuccess": "Refresh Skin Succcess",
-        "requireEmail": "E-mail is required",
-        "requirePassword": "Password is required",
-        "requireUsername": "Username is required",
-        "service": {
-            "add": "Add More Service",
-            "authLibInjector": "Follow the auth-lib injector suggestion",
-            "authServiceDetail": "Configure Auth Service",
-            "authenticateHint": "Response for normal login request",
-            "baseUrl": "The Base URL",
-            "baseUrlHint": "The base URL of your custom service",
-            "duplicatedName": "There is an existed service named this",
-            "hostName": "Root of Auth Server URL",
-            "hostNameHint": "The base URL of your auth server",
-            "invalidUrl": "Invalid URL",
-            "invalidateHint": "Make current token invalid when user logout",
-            "name": "The identifier of this service",
-            "normal": "Follow the normal step",
-            "profile": "Fetch Profile API",
-            "profileByName": "Query Profile API",
-            "profileByNameHint": "Fetch Profile by User Name",
-            "profileHint": "Fetch Profile by User UUID",
-            "profileServiceDetail": "Configure Profile Service",
-            "refreshHint": "Used to refresh your token",
-            "requireName": "The name cannot be empty",
-            "signoutHint": "",
-            "texture": "Upload Texture API",
-            "textureHint": "Upload Texture by User ID and Access Token",
-            "title": "User Services",
-            "typeOfService": "Choose the Service Type",
-            "validateHint": "Used to check if user's token still valid"
-        },
-        "signup": "Sign up",
-        "signupDescription": "New to us?",
-        "skinImport": "Import Skin",
-        "skinImportFile": "Open from File",
-        "skinImportLink": "Open from Link",
-        "skinPlaceUrlHere": "Place Skin URL here to import",
-        "skinSave": "Save Skin",
-        "skinSaveTitle": "Save Skin To Disk",
-        "skinSlim": "Skin Type",
-        "skinUrlNotEmpty": "Skin URL cannot be empty",
-        "skinUrlNotValid": "Skin URL is Invalid",
-        "submitChallenges": "Submit Answers"
-    },
-    "version": {
-        "all": "All versions",
-        "date": "Updated Date",
-        "deleteDescription": "This operation will delete the local version json & jar. You have to redownload it if you want to use it again.",
-        "deleteTitle": "Delete Local Version",
-        "id": "Version ID",
-        "latest": "Latest",
-        "local": "This version is in the disk",
-        "locals": "Local Versions",
-        "missing": "Missing {type} Version {version}",
-        "name": "Version | Versions",
-        "noForge": "There is no Forge for this Minecraft version",
-        "noLiteloader": "There is no Liteloader for this Minecraft version",
-        "noLocalVersion": "No Version Installed",
-        "noMinecraft": "Cannot get minecraft remote version list. Please check your Internet connection!",
-        "pending": "Downloading...",
-        "prepare": "Preparing Files",
-        "recommended": "Recommended",
-        "release": "Release",
-        "releaseDate": "Release Date",
-        "remote": "Download this version",
-        "requiredownload": "Missing {type} Version {version}. Please download the version to play.",
-        "selectHint": "Please select a version so that we can show the version",
-        "selectVersion": "Please select a version!",
-        "selectversionWarn": "Cannot launch without selecting a version",
-        "showSnapshot": "Show Snapshot",
-        "snapshot": "Snapshot",
-        "status": "Status",
-        "unknown": "Unknown Version"
-    },
-    "copy": {
-        "success": "Copy to clipboard"
+      "": "Install Libraries",
+      "library": "Install Library"
     }
+  },
+  "installForge": {
+    "": "Install Forge",
+    "downloadInstaller": "Download Installer",
+    "downloadJar": "Download Forge Jar",
+    "downloadLibraries": {
+      "": "Download Libraries",
+      "library": "Install Library {lib}"
+    },
+    "installForgeJar": "Install Forge Jar",
+    "installForgeJson": "Install Forge JSON file",
+    "postProcessing": "Post Processing"
+  },
+  "installJre": {
+    "": "Install Java Runtime Library",
+    "cleanup": "Clean up installation package",
+    "decompress": "Decompress JRE files to folder",
+    "download": "Download compressed JRE file",
+    "fetchInfo": "Fetch JRE Info from Mojang"
+  },
+  "installLibraries": {
+    "": "Install Libraries",
+    "library": "Install Library"
+  },
+  "installVersion": {
+    "": "Install Minecraft Client {version}",
+    "jar": "Install Version Jar",
+    "json": "Install Version Json"
+  },
+  "intro": {
+    "struct": {
+      "assets": "Same with vanllia. The assets folder cache the game assets",
+      "config": "The global Launcher config",
+      "forge-versions": "The global cache of Forge version metadata",
+      "java": "The global cache of found java",
+      "jre": "Cache the launcher downloaded JRE (JVM 8)",
+      "libraries": "Same with vanllia.",
+      "lite-versions": "The global cache of Liteloader version metadata",
+      "logs": "Containing Launcher logs but not Minecraft game logs",
+      "mclogs": "The normal Minecraft game logs",
+      "modJar": "The mod jar file",
+      "modLite": "The mod lite loader file",
+      "mods": "The normal mods folder, but managed by resource module in Launcher",
+      "options": "The normal Minecraft game settings",
+      "profile": "The JSON store launch profile config",
+      "profileFolder": "The folder contains a specific launch profile. The name is the uuid",
+      "profiles": "The folder contains each launch profile",
+      "resourceJson": "The resource metadata matching one mod or resourcepack",
+      "resourcepack": "The normal resource pack zip",
+      "resourcepacks": "The normal resourcepacks folder, but managed by resource module in Launcher",
+      "resources": "The folder contains the managed mods/resourcepacks metadata",
+      "root": "The root the your minecraft data folder",
+      "temp": "The temp folder (for download) the Launcher have",
+      "user": "The user auth info cache",
+      "version": "The global cache of Minecraft version metadata",
+      "versions": "Same with vanllia. Save multiple versions' JSON & JAR"
+    }
+  },
+  "java": {
+    "autoAlloc": "Auto Allocated",
+    "browse": "Browse Java executable",
+    "browser": "Import Java From File",
+    "errorDownload": "Auto-download & install failed. Please check your network condition. You can try another way.",
+    "incompatibleJava": "Incompatible Java",
+    "incompatibleJavaHint": "Not supported Java version",
+    "location": "Java Location",
+    "maxMemory": "Max Memory",
+    "minMemory": "Min Memory",
+    "missing": "Missing Java",
+    "missingHint": "The Launcher cannot detect any java in your computer. You can:",
+    "noJavaInPath": "Still cannot find the java in PATH enviroment variable. You can try another way.",
+    "noLegalJava": "Cannot detect legal java for this location. Please try again.",
+    "noMemory": "Do not limit memory usage",
+    "refreshAfter": "Please Refresh After you install the java.",
+    "switchVersion": "Java Version Changed"
+  },
+  "java.locationPlaceHolder": "Use system default java",
+  "launch": {
+    "checkingProblems": "Checking Problems",
+    "crash": "Game Crashed!!",
+    "failed": {
+      "general": "General Launch Failed",
+      "generalText": "If you enconter this several times, please contact author!",
+      "illegalAuth": "Illegal User Auth!",
+      "illegalAuthText": "Illegal user auth state! Please login or switch account to revalidate your account!",
+      "selectProfileEmpty": "Empty Profile",
+      "selectProfileEmptyText": "This is too bad. Please retry or consider recreate your launch profile. If you still encounter this, please contact author!",
+      "unresolvableProblems": "Unresolvable Problems",
+      "unresolvableProblemsText": "Existed some problems cannot be resolved. If you cannot handle this, please contact author for help!"
+    },
+    "hideLauncher": "Hide the launcher after launch",
+    "launch": "Launch",
+    "launching": "Launching...",
+    "launchingSlow": "Still launching... Starting graphic engine can be slow...",
+    "openCrashReport": "Open Crash Report",
+    "openCrashReportFolder": "Open Crash Report Folder",
+    "showLog": "Show Minecraft Log"
+  },
+  "launcher": {
+    "checkUpdate": "Check Update",
+    "quit": "Quit Launcher",
+    "showDiagnosis": "Show Diagnosis",
+    "title": "Minecraft Launcher"
+  },
+  "launchsetting": {
+    "jvm": "JVM Arguments",
+    "mc": "Minecraft Arguments",
+    "name": "Launch Settings"
+  },
+  "liteloader": {
+    "name": "LiteLoader"
+  },
+  "log": {
+    "error": "Error",
+    "info": "Info",
+    "success": "Success",
+    "warning": "Warning"
+  },
+  "market": "Market",
+  "minecraft": {
+    "name": "Minecraft",
+    "settings": "Minecraft Settings",
+    "showAlpha": "Show Snapshot",
+    "version": "Minecraft Version"
+  },
+  "mod": {
+    "backToAllMods": "Back to All Mods",
+    "compatible": "Available on {version}",
+    "deletion": "Deleting {mod} mod",
+    "deletionHint": "You will lose this mod & its metadata forever. Are you sure you want to delete it?",
+    "export": "Export Mod",
+    "hint": "Drop mod's .jar/.litemod here to import.",
+    "import": "Import Mod",
+    "incompatible": "Incompatible Mod. Accept {accept}. Current: {actual}",
+    "missing": {
+      "absent": "",
+      "checkAvailabilities": "",
+      "downloadAll": "",
+      "downloadDescription": "",
+      "downloadTitle": "Download Missing Mods",
+      "downloading": "",
+      "existed": "",
+      "loading": "",
+      "unknown": ""
+    },
+    "name": "Mod | Mods",
+    "nocompatible": "Unknown Compatibility",
+    "selected": "Selected Mods",
+    "unselected": "Unselected Mods"
+  },
+  "name": "Name",
+  "next": "Next",
+  "no": "No",
+  "ok": "Ok",
+  "popular": "Porpularity",
+  "profile": {
+    "add": "Add Local Game",
+    "addServer": "Add Server",
+    "advancedSetting": "Advanced Settings",
+    "authorHint": "The author of this game integration",
+    "baseSetting": "Base Settings",
+    "copy": "Duplicate",
+    "delete": "Delete Profile",
+    "deleteHint": "The profile {name}({id}) data will be moved from the disk forever. You sure to do this?",
+    "descriptionHint": "Breifly describe the game",
+    "export": {
+      "exportingMessage": "Exporting Modpack...",
+      "message": "Export this profile as a Modpack",
+      "title": "Export Profile"
+    },
+    "forceLocalVersion": "Launch by Selected Local Version",
+    "forgeSetting": "Forge Settings",
+    "import": {
+      "description": "Import Minecraft to Launcher",
+      "start": "Import Started",
+      "title": "Import Instance"
+    },
+    "importCurseforge": "Import from Curseforge Modpack",
+    "importFolder": "Import from Folder",
+    "importZip": "Import from Zip",
+    "launchingDetail": "Launch Detail",
+    "localVersion": "Local Version",
+    "localVersionEmpty": "Generated By Launcher",
+    "localVersionHint": "Select Local Version will overwrite the minecraft version setting",
+    "logsCrashes": {
+      "crashes": "Crash Reports",
+      "logs": "Logs",
+      "title": "Logs or Crash Reports"
+    },
+    "mcOptions": "Minecraft Options",
+    "mcOptionsCreateHint": "Enter to create a Minecraft ption",
+    "mcOptionsHint": "Select or create Minecraft options",
+    "modpack": {
+      "add": "Add Modpack",
+      "author": "Author Name",
+      "create": "Create a New Modpack",
+      "delete": {
+        "description": "This will delete all the data about this modpack. Are you sure to do this?",
+        "name": "Delete the modpack"
+      },
+      "description": "Description",
+      "edit": "Edit Modpack Info",
+      "error": {
+        "requirename": "Name is required! Please come up a modpack name!"
+      },
+      "export": "Export as Modpack",
+      "name": "Modpack | Modpacks",
+      "profile": "Profile Name"
+    },
+    "name": "Profile Name",
+    "nameHint": "The name used to identify the game",
+    "noLocalVersion": "No Local Version",
+    "older": "Older",
+    "refreshServers": "Refresh Servers",
+    "requireName": "The name is required",
+    "select": "Select",
+    "server": {
+      "": "Server | Servers",
+      "acceptingMinecraftVersion": "Accepting Minecraft Version",
+      "add": "Add Server",
+      "create": "Create A New Server",
+      "delete": {
+        "description": "This will delete all the local data about this server. Are you sure to do this?",
+        "name": "Delete the server"
+      },
+      "edit": "Edit Server Info",
+      "error": {
+        "wrongVersion": "The current selected version doesn't really match the server protocol! This might cause game connection errors."
+      },
+      "expectedVersions": "Supported Versions",
+      "filterVersion": "Filter server responded Minecraft version",
+      "host": "Host",
+      "hostHint": "The host (with port) of the server",
+      "ipAddress": "IP Address",
+      "motd": "Server MOTD",
+      "name": "Name Of the Server",
+      "ping": "Ping",
+      "pinging": "Pinging...",
+      "pings": "Pings",
+      "players": "Players",
+      "port": "Port",
+      "recommendedMinecraftVersion": "Minecraft Version",
+      "status": {
+        "nohost": "§4Cannot find host!",
+        "ping": "Ping...",
+        "refurse": "§4Server refused!",
+        "timeout": "§4Connect server timeout!"
+      },
+      "unknown": "Unknown Server",
+      "unknownDescription": "Unknown Server. Please Refresh",
+      "versionHint": "The Minecraft Version To Ping"
+    },
+    "setting": "Settings",
+    "templateSetting": {
+      "": "Template Setting",
+      "importing": "Template Importing",
+      "modpack": "This is a modpack configuration",
+      "profile": "This is a existed profile configuration",
+      "server": "This is a existed server configuration"
+    },
+    "threeDay": "In Three Days",
+    "today": "Today",
+    "url": "URL",
+    "version": "Selected Version",
+    "versionHint": "The Minecraft version of this game",
+    "versionSetting": "Version Setting",
+    "vmOptions": "JVM Options",
+    "vmOptionsCreateHint": "Enter to create the JVM option",
+    "vmOptionsHint": "Create or select JVM options"
+  },
+  "refresh": {
+    "hint": "Refresh user data, and server status."
+  },
+  "refreshResource": "Refresh Resources",
+  "remove": "Remove",
+  "resolution": {
+    "fullscreen": "Fullscreen",
+    "height": "Height",
+    "width": "Width"
+  },
+  "resourcepack": {
+    "available": "Avaliable",
+    "compatible": "Compatible format {format} with {version}",
+    "delete": {
+      "content": "This will remove the resource pack file from disk, and we cannot redo it. Are you sure to do this?",
+      "title": "Delete the resource pack"
+    },
+    "deletion": "Deleting {pack}",
+    "deletionHint": "You will lose the data and metadata of this resource pack. You are sure to do this?",
+    "export": "Export Resource Pack",
+    "hint": "Drop Resource Pack's folder/zip here to import.",
+    "import": "Import Resource Pack",
+    "incompatible": "Incompatible Resource Pack format({format}). Fitin {accept}. Current {actual}.",
+    "name": "Resource Pack | Resource Packs",
+    "selected": "Selected Resource Packs",
+    "unselected": "Unselected Resource Packs"
+  },
+  "save": {
+    "copy": {
+      "": "Copy Save",
+      "cancel": "Cancel Copy",
+      "confirm": "Start Copy",
+      "description": "Please select destination profile(s) you want the save to go.",
+      "title": "Copy Save to Other Profile"
+    },
+    "copyFrom": {
+      "cancel": "Cancel",
+      "confirm": "Start Copy",
+      "description": "You can deploy save to this profile from other profile, or from managed resources (curseforge)",
+      "from": "From {src}",
+      "fromProfile": "From Profiles",
+      "fromResource": "From Resources",
+      "title": "Import Save from Managed Source"
+    },
+    "deleteCancel": "Cancel",
+    "deleteConfirm": "Comfirm to delete",
+    "deleteHint": "This operation cannot be revert. You will lose this save data forever. Are you sure to delete this save?",
+    "deleteTitle": "Delete the Save",
+    "detail": "More Info",
+    "export": "Export Save",
+    "hint": "Drag save zip here to Import",
+    "import": "Import Save",
+    "name": "Save | Saves"
+  },
+  "setting": {
+    "allowPrerelease": "Download Prerelease",
+    "allowPrereleaseDescription": "Prerelease might be instable",
+    "appearance": "Appearance",
+    "apply": "Apply Setting",
+    "autoDownload": "Auto Download",
+    "autoDownloadDescription": "Auto Download Update if it's Avaiable",
+    "autoInstallOnAppQuit": "Autoinstall",
+    "autoInstallOnAppQuitDescription": "Autoinstall the Update on App Quit",
+    "browseRoot": "Browse",
+    "checkUpdate": "Check Update",
+    "cleanOldData": "Clear Data",
+    "cleanOldDataHint": "Remove all old files including Maps, Resource Packs, and etc",
+    "copyOldToNew": "Migrate Data",
+    "copyOldToNewHint": "Before clearing data, copy all old data to new place",
+    "general": "General",
+    "installAndQuit": "Restart to Install",
+    "language": "Language",
+    "languageDescription": "The display language",
+    "latestVersion": "Latest Version",
+    "location": "Store Location",
+    "name": "Global Setting | Global Settings",
+    "noUpdateAvailable": "No Update Available",
+    "particleMode": {
+      "": "Particle Mode",
+      "bubble": "Bubble",
+      "push": "Push",
+      "remove": "Remove",
+      "repulse": "Repulse"
+    },
+    "particleModeDescription": "Select the particle click behavior",
+    "resolution": "Default Resolution",
+    "setRootCause": "You will loose all your data (Maps, Resource Packs, Mods) if you don't check \"Migrate data\" option below.",
+    "setRootDescription": "This will change the root data folder of this launcher and minecraft.",
+    "setRootTitle": "Set to a new storage location",
+    "showParticle": "Show Particles",
+    "showParticleDescription": "Show particles in background (May impact performance)",
+    "showRoot": "Show",
+    "theme": "Theme",
+    "update": "Update",
+    "updateToThisVersion": "Download and Install",
+    "useBmclAPI": "Use BMCL API",
+    "useBmclAPIDescription": "Use BMCLAPI to download Minecraft when you are in China Mainland. (This won't affect if you're not in China mainland)",
+    "viewUpdate": "View Update Detail",
+    "waitReload": "Migrating data. Please don't close the Launcher or you will lose your data."
+  },
+  "skin": {
+    "change": "Change Skin",
+    "export": "Export Skin",
+    "importLocal": "Import Local Skin",
+    "loadURL": "Load URL Skin",
+    "reset": "Reset Skin",
+    "upload": "Upload Skin",
+    "urlHint": "Place your skin url here"
+  },
+  "summery": "Summery",
+  "task": {
+    "cancelled": "Cancelled",
+    "empty": "No Running Tasks",
+    "failed": "Failed",
+    "history": "Task History",
+    "manager": "Task Manager",
+    "name": "Task | Tasks",
+    "running": "Running Tasks",
+    "successed": "Successed"
+  },
+  "user": {
+    "accessToken": "Access Token",
+    "account": {
+      "add": "Add Account",
+      "switch": "Switch Account"
+    },
+    "authMode": "Auth Service",
+    "authService": "Authorize Service",
+    "birth": "Registered Birthday",
+    "challenges": "Anwser questions below to verify your identity",
+    "email": "Email Address",
+    "forgetChallenges": "I have forgot these questions and I want to change them",
+    "forgetPassword": "Forget Password?",
+    "id": "User Id",
+    "illegalEmail": "E-mail must be valid",
+    "info": "User Information",
+    "insecureClient": "The Client is insecure! Please validate your identity to upload skin!",
+    "invalidCredentials": "Invalid credentials. Invalid username or password.",
+    "login": "Login",
+    "logout": "Logout",
+    "mojang": {
+      "account": "Email Adress",
+      "name": "Mojang",
+      "password": "Password"
+    },
+    "name": "Username",
+    "offline": {
+      "account": "Username",
+      "name": "Offline",
+      "password": "No Password"
+    },
+    "profile": "Profile",
+    "profileMode": "Profile Service",
+    "profileService": {
+      "": "Profile Service",
+      "description": "The service provides your skin info."
+    },
+    "refreshAccount": "Refresh Account",
+    "refreshSkin": "Refresh Skin",
+    "refreshSkinFail": "Refresh Skin Failed",
+    "refreshSkinSuccess": "Refresh Skin Succcess",
+    "requireEmail": "E-mail is required",
+    "requirePassword": "Password is required",
+    "requireUsername": "Username is required",
+    "service": {
+      "add": "Add More Service",
+      "authLibInjector": "Follow the auth-lib injector suggestion",
+      "authServiceDetail": "Configure Auth Service",
+      "authenticateHint": "Response for normal login request",
+      "baseUrl": "The Base URL",
+      "baseUrlHint": "The base URL of your custom service",
+      "duplicatedName": "There is an existed service named this",
+      "hostName": "Root of Auth Server URL",
+      "hostNameHint": "The base URL of your auth server",
+      "invalidUrl": "Invalid URL",
+      "invalidateHint": "Make current token invalid when user logout",
+      "name": "The identifier of this service",
+      "normal": "Follow the normal step",
+      "profile": "Fetch Profile API",
+      "profileByName": "Query Profile API",
+      "profileByNameHint": "Fetch Profile by User Name",
+      "profileHint": "Fetch Profile by User UUID",
+      "profileServiceDetail": "Configure Profile Service",
+      "refreshHint": "Used to refresh your token",
+      "requireName": "The name cannot be empty",
+      "signoutHint": "",
+      "texture": "Upload Texture API",
+      "textureHint": "Upload Texture by User ID and Access Token",
+      "title": "User Services",
+      "typeOfService": "Choose the Service Type",
+      "validateHint": "Used to check if user's token still valid"
+    },
+    "signup": "Sign up",
+    "signupDescription": "New to us?",
+    "skinImport": "Import Skin",
+    "skinImportFile": "Open from File",
+    "skinImportLink": "Open from Link",
+    "skinPlaceUrlHere": "Place Skin URL here to import",
+    "skinSave": "Save Skin",
+    "skinSaveTitle": "Save Skin To Disk",
+    "skinSlim": "Skin Type",
+    "skinUrlNotEmpty": "Skin URL cannot be empty",
+    "skinUrlNotValid": "Skin URL is Invalid",
+    "submitChallenges": "Submit Answers"
+  },
+  "version": {
+    "all": "All versions",
+    "date": "Updated Date",
+    "deleteDescription": "This operation will delete the local version json & jar. You have to redownload it if you want to use it again.",
+    "deleteTitle": "Delete Local Version",
+    "id": "Version ID",
+    "latest": "Latest",
+    "local": "This version is in the disk",
+    "locals": "Local Versions",
+    "missing": "Missing {type} Version {version}",
+    "name": "Version | Versions",
+    "noForge": "There is no Forge for this Minecraft version",
+    "noLiteloader": "There is no Liteloader for this Minecraft version",
+    "noLocalVersion": "No Version Installed",
+    "noMinecraft": "Cannot get minecraft remote version list. Please check your Internet connection!",
+    "pending": "Downloading...",
+    "prepare": "Preparing Files",
+    "recommended": "Recommended",
+    "refresh": "Refresh Versions",
+    "release": "Release",
+    "releaseDate": "Release Date",
+    "remote": "Download this version",
+    "requiredownload": "Missing {type} Version {version}. Please download the version to play.",
+    "selectHint": "Please select a version so that we can show the version",
+    "selectVersion": "Please select a version!",
+    "selectversionWarn": "Cannot launch without selecting a version",
+    "showSnapshot": "Show Snapshot",
+    "snapshot": "Snapshot",
+    "status": "Status",
+    "unknown": "Unknown Version"
+  },
+  "yes": "Yes"
 }

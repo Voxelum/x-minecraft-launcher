@@ -31,7 +31,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, toRefs, computed } from '@vue/composition-api';
+import { createComponent, reactive, toRefs } from '@vue/composition-api';
 
 export default createComponent({
   props: {
@@ -50,12 +50,13 @@ export default createComponent({
       showAlpha: false,
       filterText: '',
     });
-    function selectVersion(item) {
+    function selectVersion(item: {id: string}) {
       context.emit('input', item.id);
       data.opened = false;
     }
     return {
       ...toRefs(data),
+       
       selectVersion,
     };
   },

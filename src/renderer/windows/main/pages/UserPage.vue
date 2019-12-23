@@ -2,7 +2,8 @@
   <v-container fluid grid-list-md fill-height>
     <v-tooltip :close-delay="0" left>
       <template v-slot:activator="{ on }">
-        <v-speed-dial v-if="security" v-model="fab"
+        <v-speed-dial v-if="security" 
+                      v-model="fab"
                       style="position:absolute; z-index: 2; bottom: 80px; right: 100px;" direction="top" :open-on-hover="true">
           <template v-slot:activator>
             <v-btn v-model="fab" color="secondary" :disabled="pending" fab @click="loadSkin" v-on="on" @mouseenter="enterEditBtn">
@@ -163,7 +164,7 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, onMounted, computed } from '@vue/composition-api';
+import { reactive, toRefs, onMounted, computed, createComponent } from '@vue/composition-api';
 import {
   useCurrentUser,
   useNotifier,
@@ -174,9 +175,9 @@ import {
   useClipboard,
 } from '@/hooks';
 
-export default {
+export default createComponent({
   setup() {
-    const { t } = useI18n();
+    const { $t } = useI18n();
     const clipboard = useClipboard();
     const {
       security,
@@ -223,7 +224,7 @@ export default {
     }
     async function loadSkin() {
       // await this.$nextTick();
-      const { filePaths } = await showOpenDialog({ title: t('user.openSkinFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] });
+      const { filePaths } = await showOpenDialog({ title: $t('user.openSkinFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] });
       if (filePaths && filePaths[0]) {
         data.skinUrl = `file://${filePaths[0]}`;
       }
@@ -263,7 +264,7 @@ export default {
       openChallengeDialog: showChallengeDialog,
       refreshSkin() {
         const promise = refreshSkin();
-        subscribe(promise, () => t('user.refreshSkinSuccess'), () => t('user.refreshSkinFail'));
+        subscribe(promise, () => $t('user.refreshSkinSuccess'), () => $t('user.refreshSkinFail'));
         promise.finally(() => { reset(); });
       },
       async uploadSkin() {
@@ -281,7 +282,7 @@ export default {
       },
       async saveSkin() {
         const { filePath } = await showSaveDialog({
-          title: t('user.skinSaveTitle'),
+          title: $t('user.skinSaveTitle'),
           defaultPath: `${name.value}.png`,
           filters: [{ extensions: ['png'], name: 'PNG Images' }],
         });
@@ -290,13 +291,13 @@ export default {
         }
       },
       enterEditBtn() {
-        data.hoverTextOnEdit = t('user.skinImportFile');
+        data.hoverTextOnEdit = $t('user.skinImportFile');
       },
       enterLinkBtn() {
-        data.hoverTextOnEdit = t('user.skinImportLink');
+        data.hoverTextOnEdit = $t('user.skinImportLink');
       },
       enterSaveBtn() {
-        data.hoverTextOnEdit = t('user.skinSave');
+        data.hoverTextOnEdit = $t('user.skinSave');
       },
       toggleSwitchUser() {
         showLoginDialog('login', true);
@@ -311,13 +312,13 @@ export default {
         }
       },
       copyToClipBoard(text: string) {
-        notify('success', t('copy.success'));
+        notify('success', $t('copy.success'));
         clipboard.clear();
         clipboard.writeText(text);
       },
     };
   },
-};
+});
 </script>
 
 <style>

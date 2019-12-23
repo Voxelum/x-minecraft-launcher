@@ -1,4 +1,5 @@
-import { computed } from '@vue/composition-api';
+import { computed, Ref } from '@vue/composition-api';
+import { UpdateInfo } from 'electron-updater';
 import { useStore } from './useStore';
 
 export function useSettings() {
@@ -27,7 +28,7 @@ export function useSettings() {
     const readyToUpdate = computed(() => state.setting.readyToUpdate);
     const checkingUpdate = computed(() => state.setting.checkingUpdate);
     const downloadingUpdate = computed(() => state.setting.downloadingUpdate);
-    const updateInfo = computed(() => state.setting.updateInfo || {});
+    const updateInfo: Ref<UpdateInfo> = computed(() => state.setting.updateInfo || {}) as any;
 
 
     return {
@@ -46,7 +47,7 @@ export function useSettings() {
 }
 
 export function useUpdateInfo() {
-    const { state, commit, services } = useStore();
+    const { state, services } = useStore();
     const checkingUpdate = computed(() => state.setting.checkingUpdate);
     const downloadingUpdate = computed(() => state.setting.downloadingUpdate);
     const updateInfo = computed(() => state.setting.updateInfo);

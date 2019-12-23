@@ -33,6 +33,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, createComponent } from '@vue/composition-api';
+import { useI18n } from '@/hooks';
 
 export default createComponent({
   props: {

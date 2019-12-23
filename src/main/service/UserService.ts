@@ -2,7 +2,7 @@ import { Auth, MojangChallengeResponse, MojangService, Net, ProfileService } fro
 import { fs, requireNonnull, requireObject, requireString } from 'main/utils';
 import { getPersistence, setPersistence } from 'main/utils/persistence';
 import { MutationKeys } from 'universal/store';
-import { UserSchema, GameProfileAndTexture } from 'universal/store/modules/user.schema';
+import { UserSchema } from 'universal/store/modules/user.schema';
 import { parse } from 'url';
 import { v4 } from 'uuid';
 import Service, { Singleton } from './Service';
@@ -101,7 +101,7 @@ export default class UserService extends Service {
     }
 
     async load() {
-        const data: UserSchema = await getPersistence({ path: this.getPath('user.json'), schema: UserSchema });
+        const data = await getPersistence({ path: this.getPath('user.json'), schema: UserSchema });
         const result: UserSchema = {
             authServices: {},
             profileServices: {},

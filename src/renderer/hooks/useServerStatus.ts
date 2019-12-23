@@ -1,6 +1,6 @@
-import unknownServer from '@/assets/unknown_server.png';
 import { computed, Ref, ref } from '@vue/composition-api';
 import { ServerStatusFrame } from '@xmcl/minecraft-launcher-core';
+import unknownServer from '@/assets/unknown_server.png';
 import { useStore } from './useStore';
 
 export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
@@ -38,7 +38,7 @@ export function useServerStatusForProfile(id: string) {
     return useServerStatus(computed(() => state.instance.statuses[id]));
 }
 
-export function useServer(host: Ref<string | undefined>, port: Ref<number | undefined>, protocol: Ref<number | undefined>) {
+export function useServer(serverRef: Ref<{ host: string; port?: number }>, protocol: Ref<number | undefined>) {
     const { services } = useStore();
     const status = ref<ServerStatusFrame>({
         version: {
@@ -59,10 +59,11 @@ export function useServer(host: Ref<string | undefined>, port: Ref<number | unde
      */
     async function refresh() {
         pinging.value = true;
-        if (!host.value) return;
+        const server = serverRef.value;
+        if (!server.host) return;
         status.value = await services.ServerStatusService.pingServer({
-            host: host.value,
-            port: port.value,
+            host: server.host,
+            port: server.port,
             protocol: protocol.value,
         }).finally(() => {
             pinging.value = false;

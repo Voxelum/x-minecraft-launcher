@@ -72,6 +72,11 @@ export function requireType(object: any, type: any, message: any) {
         throw new Error(message || `Require object ${object} be the type ${type}`);
     }
 }
+export function requireTrue(object: unknown, message?: any): asserts object {
+    if (!object) {
+        throw new Error(message || `Require object ${object} be the truthy`);
+    }
+}
 export function fitin(state: any, option: any) {
     if (isNullOrUndefine(option)) return;
     for (const key of Object.keys(option)) {

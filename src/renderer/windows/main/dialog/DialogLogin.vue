@@ -141,7 +141,7 @@ import { useCurrentUser, useDialogSelf, useI18n, useLogin } from '@/hooks';
 
 export default createComponent({
   setup(props, context) {
-    const { t } = useI18n();
+    const { $t } = useI18n();
     const { logined, username, authService, profileService, id } = useCurrentUser();
     const { closeDialog, isShown, showDialog, dialogOption: switchingUser } = useDialogSelf('login');
     const {
@@ -152,13 +152,13 @@ export default createComponent({
       removeAccount,
       switchAccount,
     } = useLogin();
-    const usernameRules = [(v: unknown) => !!v || t('user.requireUsername')];
+    const usernameRules = [(v: unknown) => !!v || $t('user.requireUsername')];
     const emailRules = [
-      (v: unknown) => !!v || t('user.requireEmail'),
+      (v: unknown) => !!v || $t('user.requireEmail'),
       (v: string) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v)
-        || t('user.illegalEmail'),
+        || $t('user.illegalEmail'),
     ];
-    const passwordRules = [(v: unknown) => !!v || t('user.requirePassword')];
+    const passwordRules = [(v: unknown) => !!v || $t('user.requirePassword')];
     const data = reactive({
       userId: '',
       profileId: '',
@@ -201,7 +201,7 @@ export default createComponent({
         if (e.type === 'ForbiddenOperationException'
           && e.message === 'Invalid credentials. Invalid username or password.'
         ) {
-          const msg = t('user.invalidCredentials');
+          const msg = $t('user.invalidCredentials');
           data.accountError = true;
           data.accountErrors = [msg];
           data.passwordError = true;
@@ -232,7 +232,7 @@ export default createComponent({
       resetError();
       if (e.key === 'Enter') { login(); }
     }
-   
+
 
     let loginedHandle = () => { };
     let shownHandle = () => { };

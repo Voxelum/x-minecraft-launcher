@@ -93,10 +93,10 @@
 </template>
 
 <script lang=ts>
-import { reactive, computed, toRefs, onMounted, onUnmounted, watch } from '@vue/composition-api';
+import { reactive, computed, toRefs, onMounted, onUnmounted, watch, createComponent } from '@vue/composition-api';
 import { useDialogSelf, useI18n, useStore, useJava, useShell, useNativeDialog } from '@/hooks';
 
-export default {
+export default createComponent({
   props: {
     value: {
       type: Boolean,
@@ -107,7 +107,7 @@ export default {
     const shell = useShell();
     const dialog = useNativeDialog();
     const { getters } = useStore();
-    const { t } = useI18n();
+    const { $t } = useI18n();
     const { showDialog, isShown } = useDialogSelf('java-wizard');
     const { add, refreshLocalJava, installDefault } = useJava();
     const data = reactive({
@@ -120,19 +120,19 @@ export default {
 
       options: [{
         autofix: true,
-        title: t('diagnosis.missingJava.autoDownload'),
-        message: t('diagnosis.missingJava.autoDownload.message'),
+        title: $t('diagnosis.missingJava.autoDownload'),
+        message: $t('diagnosis.missingJava.autoDownload.message'),
       }, {
-        title: t('diagnosis.missingJava.manualDownload'),
-        message: t('diagnosis.missingJava.manualDownload.message'),
+        title: $t('diagnosis.missingJava.manualDownload'),
+        message: $t('diagnosis.missingJava.manualDownload.message'),
       }, {
-        title: t('diagnosis.missingJava.selectJava'),
-        message: t('diagnosis.missingJava.selectJava.message'),
+        title: $t('diagnosis.missingJava.selectJava'),
+        message: $t('diagnosis.missingJava.selectJava.message'),
       }],
     });
     const missing = computed(() => getters.missingJava);
-    const reason = computed(() => (!missing.value ? t('java.incompatibleJava') : t('java.missing')));
-    const hint = computed(() => (!missing.value ? t('java.incompatibleJavaHint') : t('java.missingHint')));
+    const reason = computed(() => (!missing.value ? $t('java.incompatibleJava') : $t('java.missing')));
+    const hint = computed(() => (!missing.value ? $t('java.incompatibleJavaHint') : $t('java.missingHint')));
 
     function updateValue() {
       if (missing.value) { showDialog(); }
@@ -176,7 +176,7 @@ export default {
         } else if (index === 2) {
           data.status = 'resolving';
           const { filePaths } = await dialog.showOpenDialog({
-            title: t('java.browse'),
+            title: $t('java.browse'),
           });
           filePaths.forEach((p) => {
             add(p).then((r) => {
@@ -191,7 +191,7 @@ export default {
       },
     };
   },
-};
+});
 </script>
 
 <style scoped=true>

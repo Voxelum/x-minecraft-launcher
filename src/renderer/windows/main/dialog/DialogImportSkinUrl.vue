@@ -28,11 +28,11 @@
 </template>
 
 <script lang=ts>
-import { useI18n, useDialogSelf } from '@/hooks';
 import { reactive, toRefs, createComponent } from '@vue/composition-api';
+import { useI18n, useDialogSelf } from '@/hooks';
 
 export default createComponent({
-  setup(props, context) {
+  setup() {
     // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
     const URL_PATTERN = new RegExp('^(https?:\\/\\/)?' // protocol
     + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' // domain name
@@ -40,10 +40,10 @@ export default createComponent({
     + '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' // port and path
     + '(\\?[;&a-z\\d%_.~+=-]*)?' // query string
     + '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-    const { t } = useI18n();
+    const { $t } = useI18n();
     const skinUrlRules = [
-      (v: any) => !!v || t('user.skinUrlNotEmpty'),
-      (v: any) => !!URL_PATTERN.test(v) || t('user.skinUrlNotValid'),
+      (v: any) => !!v || $t('user.skinUrlNotEmpty'),
+      (v: any) => !!URL_PATTERN.test(v) || $t('user.skinUrlNotValid'),
     ];
     const data = reactive({
       skinUrlError: true,

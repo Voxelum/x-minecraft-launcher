@@ -78,13 +78,13 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs } from '@vue/composition-api';
+import { reactive, toRefs, createComponent } from '@vue/composition-api';
 import { useInstance, useAutoSaveLoad, useRouter, useCurrentUser } from '@/hooks';
 
-export default {
+export default createComponent({
   setup() {
     const {
-      version,
+      runtime,
       isServer,
       showLog,
       hideLauncher,
@@ -139,8 +139,10 @@ export default {
       } else {
         edit({
           ...payload,
-          host: data.host,
-          port: Number.parseInt(data.port, 10),
+          server: {
+            host: data.host,
+            port: Number.parseInt(data.port, 10),
+          },
         });
       }
     }
@@ -163,13 +165,14 @@ export default {
     }
     return {
       ...toRefs(data),
+       
       username,
       isServer,
-      version,
+      version: runtime,
       goVersionPage,
     };
   },
-};
+});
 </script>
 
 <style scoped=true>

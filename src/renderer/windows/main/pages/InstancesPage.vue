@@ -46,14 +46,14 @@
           <template v-slot:activator="{ on }">
             <v-speed-dial open-on-hover style="z-index: 1" direction="bottom" transition="slide-y-reverse-transition">
               <template v-slot:activator>
-                <v-btn flat fab dark small style="margin-left: 5px; margin-top: 5px;" @click="doImport(false)"
+                <v-btn flat fab dark small style="margin-left: 5px; margin-top: 5px;" @click="doImport(false, false)"
                        v-on="on">
                   <v-icon dark style="font-size: 28px">
                     save_alt
                   </v-icon>
                 </v-btn>
               </template>
-              <v-btn style="z-index: 20;" fab small v-on="on" @click="doImport(true)" @mouseenter="enterImport($t('profile.importFolder'))"
+              <v-btn style="z-index: 20;" fab small v-on="on" @click="doImport(true, false)" @mouseenter="enterImport($t('profile.importFolder'))"
                      @mouseleave="leaveImport">
                 <v-icon>folder</v-icon>
               </v-btn>
@@ -112,7 +112,7 @@
           <v-btn flat color="red" @click="doDelete">
             <v-icon left>
               delete
-            </v-icon> {{ $t('delete.yes') }}
+            </v-icon> {{ $t('yes') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -125,7 +125,7 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, onMounted } from '@vue/composition-api';
+import { reactive, toRefs, computed, onMounted, createComponent, Ref } from '@vue/composition-api';
 import { InstanceConfig } from 'universal/store/modules/instance';
 import {
   useI18n,
@@ -137,47 +137,35 @@ import {
   useCurseforgeImport,
 } from '@/hooks';
 
-export default {
+export default createComponent({
   setup() {
-    const { t } = useI18n();
+    const { $t } = useI18n();
     const { showOpenDialog } = useNativeDialog();
-    const { selectInstance, deleteInstance, pingProfiles, instances, importInstance } = useInstances();
+    const { selectInstance, deleteInstance, refreshInstances: pingProfiles, instances, importInstance } = useInstances();
     const { importResource } = useResourceOperation();
     const { importCurseforgeModpack } = useCurseforgeImport();
     const { notify } = useNotifier();
     const router = useRouter();
-    const data: {
-      filter: string;
-      wizard: boolean;
-      hoverTextOnCreate: string;
-      hoverTextOnImport: string;
-      creatingServer: boolean;
-      creatingTooltip: boolean;
-      isDeletingProfile: boolean;
-      deletingProfile: InstanceConfig | {};
-      dragging: boolean;
-      draggingProfile: InstanceConfig | {};
-      pinging: boolean;
-    } = reactive({
+    const data = reactive({
       filter: '',
       wizard: false,
-      hoverTextOnCreate: t('profile.add'),
-      hoverTextOnImport: t('profile.importZip'),
+      hoverTextOnCreate: $t('profile.add'),
+      hoverTextOnImport: $t('profile.importZip'),
       creatingServer: false,
       creatingTooltip: false,
 
       isDeletingProfile: false,
-      deletingProfile: {},
+      deletingProfile: { name: '', id: '' } as InstanceConfig | { name: string; id: string },
 
       /**
        * Is dragging a profile
        */
       dragging: false,
-      draggingProfile: {},
+      draggingProfile: {} as InstanceConfig | {},
 
       pinging: false,
     });
-    const timesliceProfiles = computed(() => {
+    const timesliceProfiles: Ref<InstanceConfig[][]> = computed(() => {
       const filter = data.filter.toLowerCase();
       const filtered = instances.value.filter(
         profile => filter === ''
@@ -209,7 +197,7 @@ export default {
         }
       }
       return [todayR, threeR, other];
-    });
+    }) as any;
     function startDelete(prof: InstanceConfig) {
       data.isDeletingProfile = true;
       data.deletingProfile = prof;
@@ -251,13 +239,13 @@ export default {
           ? []
           : [{ extensions: ['zip'], name: 'Zip' }];
         const { filePaths } = await showOpenDialog({
-          title: t('profile.import.title'),
-          message: t('profile.import.description'),
+          title: $t('profile.import.title'),
+          message: $t('profile.import.description'),
           filters,
           properties: fromFolder ? ['openDirectory'] : ['openFile'],
         });
         if (filePaths && filePaths.length > 0) {
-          notify('info', t('profile.import.start'));
+          notify('info', $t('profile.import.start'));
           for (const f of filePaths) {
             if (curseforge) {
               await importResource({
@@ -270,14 +258,14 @@ export default {
               await importInstance(f);
             }
           }
-          notify('success', t('profile.import.success'));
+          notify('success', $t('profile.import.title'));
         }
       },
       doDelete() {
         if ('id' in data.deletingProfile) {
           const id = data.deletingProfile.id;
           deleteInstance(id)
-            .catch((e) => {
+            .catch(() => {
               notify('error', `Fail to delete profile ${id}`);
             })
             .finally(() => {
@@ -290,7 +278,7 @@ export default {
       },
       cancelDelete() {
         data.isDeletingProfile = false;
-        data.deletingProfile = {};
+        data.deletingProfile = { name: '', id: '' };
       },
       selectProfile(id: string) {
         selectInstance(id);
@@ -298,12 +286,12 @@ export default {
       },
       enterAltCreate() {
         setTimeout(() => {
-          data.hoverTextOnCreate = t('profile.addServer');
+          data.hoverTextOnCreate = $t('profile.addServer');
         }, 100);
       },
       leaveAltCreate() {
         setTimeout(() => {
-          data.hoverTextOnCreate = t('profile.add');
+          data.hoverTextOnCreate = $t('profile.add');
         }, 100);
       },
       enterImport(text: string) {
@@ -313,16 +301,16 @@ export default {
       },
       leaveImport() {
         setTimeout(() => {
-          data.hoverTextOnImport = t('profile.importZip');
+          data.hoverTextOnImport = $t('profile.importZip');
         }, 100);
       },
       refresh() {
         if (data.pinging) return;
         data.pinging = true;
         pingProfiles().then(() => {
-          notify('success', t('profile.refreshServers'));
+          notify('success', $t('profile.refreshServers'));
         }, (e) => {
-          notify('error', t('profile.refreshServers'), e);
+          notify('error', $t('profile.refreshServers'), e);
         }).finally(() => {
           data.pinging = false;
         });
@@ -333,7 +321,7 @@ export default {
     };
   },
   methods: {},
-};
+});
 </script>
 
 <style>

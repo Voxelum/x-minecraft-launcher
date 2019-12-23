@@ -1,779 +1,795 @@
 {
-    "$schema": "../locale.schema.json",
-    "actionforbidden": "创建失败",
-    "add": "添加",
-    "advanced": "高级",
-    "author": "作者",
-    "back": "返回",
-    "buttonSettings": {
-        "drop": "丢弃",
-        "jump": "跳",
-        "moveBackward": "向后",
-        "moveForward": "向前",
-        "moveLeft": "向左",
-        "moveRight": "向右",
-        "open": "打开关闭背包",
-        "shortcut1": "快捷键 1",
-        "shortcut2": "快捷键 2",
-        "shortcut3": "快捷键 3",
-        "shortcut4": "快捷键 4",
-        "shortcut5": "快捷键 5",
-        "shortcut6": "快捷键 6",
-        "shortcut7": "快捷键 7",
-        "shortcut8": "快捷键 8",
-        "shortcut9": "快捷键 9",
-        "stealth": "潜行",
-        "talk": "讲话",
-        "view": "观察玩家"
+  "$schema": "../locale.schema.json",
+  "actionforbidden": "创建失败",
+  "add": "添加",
+  "advanced": "高级",
+  "author": "作者",
+  "back": "返回",
+  "buttonSettings": {
+    "drop": "丢弃",
+    "jump": "跳",
+    "moveBackward": "向后",
+    "moveForward": "向前",
+    "moveLeft": "向左",
+    "moveRight": "向右",
+    "open": "打开关闭背包",
+    "shortcut1": "快捷键 1",
+    "shortcut2": "快捷键 2",
+    "shortcut3": "快捷键 3",
+    "shortcut4": "快捷键 4",
+    "shortcut5": "快捷键 5",
+    "shortcut6": "快捷键 6",
+    "shortcut7": "快捷键 7",
+    "shortcut8": "快捷键 8",
+    "shortcut9": "快捷键 9",
+    "stealth": "潜行",
+    "talk": "讲话",
+    "view": "观察玩家"
+  },
+  "cancel": "取消",
+  "checkUpdate": "检查更新",
+  "copy": {
+    "success": "复制到剪贴板"
+  },
+  "create": "创建",
+  "criticalGraphics": "图像设置",
+  "curseforge": {
+    "createdDate": "创建日期",
+    "gameversion": "游戏版本",
+    "install": "安装",
+    "installed": "已安装",
+    "lastUpdate": "上次更新日期",
+    "license": "版权许可",
+    "mc-mods": {
+      "description": "从 Curseforge 上安装 Mods",
+      "name": "Mods"
     },
-    "cancel": "取消",
-    "checkUpdate": "检查更新",
-    "create": "创建",
-    "criticalGraphics": "图像设置",
-    "curseforge": {
-        "createdDate": "创建日期",
-        "gameversion": "游戏版本",
-        "install": "安装",
-        "installed": "已安装",
-        "lastUpdate": "上次更新日期",
-        "license": "版权许可",
-        "mc-mods": {
-            "description": "从 Curseforge 上安装 Mods",
-            "name": "Mods"
-        },
-        "modpacks": {
-            "description": "从 Curseforge 上安装整合包",
-            "name": "整合包"
-        },
-        "name": "浏览 Curseforge",
-        "project": {
-            "description": "简介",
-            "files": "文件",
-            "images": "图片"
-        },
-        "recentFiles": "近期文件",
-        "search": "搜索",
-        "sortby": "排序依据",
-        "texture-packs": {
-            "description": "从 Curseforge 上安装资源包",
-            "name": "资源包"
-        },
-        "totalDownloads": "总下载量",
-        "worlds": {
-            "description": "从 Curseforge 上安装世界存档",
-            "name": "世界存档"
-        }
+    "modpacks": {
+      "description": "从 Curseforge 上安装整合包",
+      "name": "整合包"
     },
-    "delete": {
-        "no": "取消",
-        "yes": "删除"
+    "name": "浏览 Curseforge",
+    "project": {
+      "description": "简介",
+      "files": "文件",
+      "images": "图片"
     },
-    "deleteSave": "删除存档",
-    "description": "简介",
-    "detail": "细节",
-    "diagnosis": {
-        "badForge": {
-            "": "Forge 安装可能失败 {minecraft}-{forge}",
-            "message": "也许你应该尝试重新安装此版本 Forge"
-        },
-        "badForgeProcessedFiles": {
-            "": "Forge 需要生成文件才能启动 {jar}",
-            "message": "点击来让 Forge 完成安装"
-        },
-        "fix": "问题修复",
-        "incompatibleJava": {
-            "": "Minecraft {mcversion} 不支持 Java {java}!",
-            "message": "你可以选择自己让启动器帮你下载，或者自己下载"
-        },
-        "incompatibleMod": {
-            "": "{name} 不兼容当前 Minecraft {actual}。其可用版本为 {accepted}",
-            "message": "该模组也有可能能在当前Minecraft下运行，若不成功请将 Mod 移出 Mod 列表"
-        },
-        "incompatibleResourcePack": {
-            "": "资源包 {name} 不兼容 Minecraft {actual}. 请使用 Minecraft {accepted}",
-            "message": "该资源包也可能在此版本下正常工作，若不成功请将其移出资源包列表"
-        },
-        "missingAssets": {
-            "": "缺少%{count}个游戏资源",
-            "message": "启动器将自动下载并安装游戏文件"
-        },
-        "missingAssetsIndex": {
-            "": "%{version}缺少游戏资源目录",
-            "message": "启动器将自动下载并安装游戏资源目录"
-        },
-        "missingAuthlibInjector": {
-            "": "需要安装 authlib-injector",
-            "message": "必须安装 authlib-injector, 第三方验证服务配置才能生效！"
-        },
-        "missingForgeJar": {
-            "": "缺少对应 Minecraft {minecraft} 版本的 Forge {forge} 依赖文件",
-            "message": "启动器将自动安装Forge文件"
-        },
-        "missingJava": {
-            "": "没有分配Java",
-            "autoDownload": {
-                "": "自动下载",
-                "message": "启动器将从Mojang源下载并安装Java"
-            },
-            "manualDownload": {
-                "": "手动下载",
-                "message": "启动器将把你转到Oracle官方JRE下载网站"
-            },
-            "message": "Click to resolve this problem",
-            "selectJava": {
-                "": "手工选择Java的位置",
-                "message": "也许只是启动器没找到你电脑里的Java,你可以手工选择一下"
-            }
-        },
-        "missingLibraries": {
-            "": "缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少{count}个库文件 | 缺少{count}个库文件",
-            "message": "启动器将自动下载并安装库文件"
-        },
-        "missingVersion": "请选择一个Minecraft版本！",
-        "missingVersionJar": {
-            "": "%{version}版本JAR文件缺失",
-            "message": "启动器将自动下载JAR文件"
-        },
-        "missingVersionJson": {
-            "": "%{version}版本JSON文件缺失",
-            "message": "启动器将自动下载JSON文件"
-        },
-        "problem": "1个问题待修复 | %{count}个问题待修复",
-        "unknownMod": {
-            "": "无法解析 {name} Mod 兼容的 Minecraft 版本",
-            "message": "请务必小心使用"
-        }
+    "recentFiles": "近期文件",
+    "search": "搜索",
+    "sortby": "排序依据",
+    "texture-packs": {
+      "description": "从 Curseforge 上安装资源包",
+      "name": "资源包"
     },
-    "downloadUpdate": "下载更新",
-    "edit": "编辑",
-    "feedback": {
-        "": "反馈",
-        "description": "我找到了一个BUG/我想反馈",
-        "github": "Github Issue",
-        "githubDescription": "通过 Github Issue 来反应你的想法",
-        "githubOpenIssue": "Github",
-        "qq": "QQ 群",
-        "qqDescription": "加入反馈群直接和作者聊聊吧，群号 {number}",
-        "qqEnterGroup": "加群"
+    "totalDownloads": "总下载量",
+    "worlds": {
+      "description": "从 Curseforge 上安装世界存档",
+      "name": "世界存档"
+    }
+  },
+  "curseforge.quitSearch": "退出搜索",
+  "delete": {
+    "no": "取消",
+    "yes": "删除"
+  },
+  "deleteSave": "删除存档",
+  "description": "简介",
+  "detail": "细节",
+  "diagnosis": {
+    "badForge": {
+      "": "Forge 安装可能失败 {minecraft}-{forge}",
+      "message": "也许你应该尝试重新安装此版本 Forge"
     },
-    "filter": "检索",
-    "finish": "完成",
-    "forge": {
-        "common": "所有",
-        "config": {
-            "hint": "请始用该mod进入游戏，以便自动检测配置文件"
-        },
-        "disable": "不使用Forge",
-        "disabled": "未启用",
-        "enabled": "启用Forge",
-        "install": "安装",
-        "latest": "最新版",
-        "name": "Forge",
-        "noVersion": "Forge 不支持 Minecraft {version}",
-        "non": "没有选择Forge",
-        "recommended": "稳定版",
-        "recommendedAndLatestOnly": "只显示最新版和稳定版",
-        "showBuggy": "显示Buggy版",
-        "version": "Forge"
+    "badForgeProcessedFiles": {
+      "": "Forge 需要生成文件才能启动 {jar}",
+      "message": "点击来让 Forge 完成安装"
     },
-    "gamesetting": {
-        "anaglyph3d": {
-            "false": "关闭",
-            "name": "3D效果",
-            "true": "启用"
-        },
-        "ao": {
-            "0": "关",
-            "1": "最少",
-            "2": "最多",
-            "name": "平滑光照"
-        },
-        "cheat": "作弊模式",
-        "difficulty": {
-            "easy": "简单",
-            "hard": "困难",
-            "non": "未知难度",
-            "normal": "正常",
-            "peaseful": "和平"
-        },
-        "enableVsync": {
-            "false": "关闭",
-            "name": "垂直同步",
-            "true": "开启"
-        },
-        "entityShadows": {
-            "false": "关闭",
-            "name": "实体阴影",
-            "true": "开启"
-        },
-        "fancyGraphics": {
-            "false": "快速",
-            "name": "图像质量",
-            "true": "最高"
-        },
-        "fboEnable": {
-            "false": "关闭",
-            "name": "使用FBO",
-            "true": "启用"
-        },
-        "gametype": {
-            "0": "生存模式",
-            "1": "创造模式",
-            "2": "冒险模式",
-            "3": "观察者模式",
-            "adventure": "冒险模式",
-            "creative": "创造模式",
-            "non": "未知模式",
-            "spectator": "观察者模式",
-            "survival": "生存模式"
-        },
-        "hardcore": "极限模式",
-        "mipmapLevels": {
-            "0": "0",
-            "1": "1",
-            "2": "2",
-            "3": "3",
-            "4": "4",
-            "name": "Mipmap等级"
-        },
-        "name": "游戏设置",
-        "particles": {
-            "0": "最多",
-            "1": "较少",
-            "2": "最少",
-            "name": "粒子"
-        },
-        "renderClouds": {
-            "false": "关闭",
-            "fast": "快速",
-            "name": "云",
-            "true": "最佳"
-        },
-        "useVbo": {
-            "false": "关闭",
-            "name": "使用VBO",
-            "true": "启用"
-        }
+    "fix": "问题修复",
+    "incompatibleJava": {
+      "": "Minecraft {mcversion} 不支持 Java {java}!",
+      "message": "你可以选择自己让启动器帮你下载，或者自己下载"
     },
-    "hello": "你好世界",
-    "help": "帮助",
-    "home": "主页",
-    "hotkeyChanges": "按键设置",
-    "importResource": {
-        "": "导入资源",
-        "checking": "检查本地文件",
-        "parsing": "解析资源",
-        "storing": "存储资源"
+    "incompatibleMod": {
+      "": "{name} 不兼容当前 Minecraft {actual}。其可用版本为 {accepted}",
+      "message": "该模组也有可能能在当前Minecraft下运行，若不成功请将 Mod 移出 Mod 列表"
     },
-    "importSave": "导入存档",
+    "incompatibleResourcePack": {
+      "": "资源包 {name} 不兼容 Minecraft {actual}. 请使用 Minecraft {accepted}",
+      "message": "该资源包也可能在此版本下正常工作，若不成功请将其移出资源包列表"
+    },
+    "missingAssets": {
+      "": "缺少%{count}个游戏资源",
+      "message": "启动器将自动下载并安装游戏文件"
+    },
+    "missingAssetsIndex": {
+      "": "%{version}缺少游戏资源目录",
+      "message": "启动器将自动下载并安装游戏资源目录"
+    },
+    "missingAuthlibInjector": {
+      "": "需要安装 authlib-injector",
+      "message": "必须安装 authlib-injector, 第三方验证服务配置才能生效！"
+    },
+    "missingForgeJar": {
+      "": "缺少对应 Minecraft {minecraft} 版本的 Forge {forge} 依赖文件",
+      "message": "启动器将自动安装Forge文件"
+    },
+    "missingJava": {
+      "": "没有分配Java",
+      "autoDownload": {
+        "": "自动下载",
+        "message": "启动器将从Mojang源下载并安装Java"
+      },
+      "manualDownload": {
+        "": "手动下载",
+        "message": "启动器将把你转到Oracle官方JRE下载网站"
+      },
+      "message": "Click to resolve this problem",
+      "selectJava": {
+        "": "手工选择Java的位置",
+        "message": "也许只是启动器没找到你电脑里的Java,你可以手工选择一下"
+      }
+    },
+    "missingLibraries": {
+      "": "缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少{count}个库文件 | 缺少{count}个库文件",
+      "message": "启动器将自动下载并安装库文件"
+    },
+    "missingVersion": "请选择一个Minecraft版本！",
+    "missingVersionJar": {
+      "": "%{version}版本JAR文件缺失",
+      "message": "启动器将自动下载JAR文件"
+    },
+    "missingVersionJson": {
+      "": "%{version}版本JSON文件缺失",
+      "message": "启动器将自动下载JSON文件"
+    },
+    "problem": "1个问题待修复 | %{count}个问题待修复",
+    "unknownMod": {
+      "": "无法解析 {name} Mod 兼容的 Minecraft 版本",
+      "message": "请务必小心使用"
+    }
+  },
+  "downloadUpdate": "下载更新",
+  "edit": "编辑",
+  "feedback": {
+    "": "反馈",
+    "description": "我找到了一个BUG/我想反馈",
+    "github": "Github Issue",
+    "githubDescription": "通过 Github Issue 来反应你的想法",
+    "githubOpenIssue": "Github",
+    "qq": "QQ 群",
+    "qqDescription": "加入反馈群直接和作者聊聊吧，群号 {number}",
+    "qqEnterGroup": "加群"
+  },
+  "filter": "检索",
+  "finish": "完成",
+  "forge": {
+    "common": "所有",
+    "config": {
+      "hint": "请始用该mod进入游戏，以便自动检测配置文件"
+    },
+    "disable": "不使用Forge",
+    "disabled": "未启用",
+    "enabled": "启用Forge",
+    "install": "安装",
+    "latest": "最新版",
+    "name": "Forge",
+    "noVersion": "Forge 不支持 Minecraft {version}",
+    "non": "没有选择Forge",
+    "recommended": "稳定版",
+    "recommendedAndLatestOnly": "只显示最新版和稳定版",
+    "showBuggy": "显示Buggy版",
+    "version": "Forge"
+  },
+  "gamesetting": {
+    "anaglyph3d": {
+      "false": "关闭",
+      "name": "3D效果",
+      "true": "启用"
+    },
+    "ao": {
+      "0": "关",
+      "1": "最少",
+      "2": "最多",
+      "name": "平滑光照"
+    },
+    "cheat": "作弊模式",
+    "difficulty": {
+      "easy": "简单",
+      "hard": "困难",
+      "non": "未知难度",
+      "normal": "正常",
+      "peaseful": "和平"
+    },
+    "enableVsync": {
+      "false": "关闭",
+      "name": "垂直同步",
+      "true": "开启"
+    },
+    "entityShadows": {
+      "false": "关闭",
+      "name": "实体阴影",
+      "true": "开启"
+    },
+    "fancyGraphics": {
+      "false": "快速",
+      "name": "图像质量",
+      "true": "最高"
+    },
+    "fboEnable": {
+      "false": "关闭",
+      "name": "使用FBO",
+      "true": "启用"
+    },
+    "gametype": {
+      "0": "生存模式",
+      "1": "创造模式",
+      "2": "冒险模式",
+      "3": "观察者模式",
+      "adventure": "冒险模式",
+      "creative": "创造模式",
+      "non": "未知模式",
+      "spectator": "观察者模式",
+      "survival": "生存模式"
+    },
+    "hardcore": "极限模式",
+    "mipmapLevels": {
+      "0": "0",
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "name": "Mipmap等级"
+    },
+    "name": "游戏设置",
+    "particles": {
+      "0": "最多",
+      "1": "较少",
+      "2": "最少",
+      "name": "粒子"
+    },
+    "renderClouds": {
+      "false": "关闭",
+      "fast": "快速",
+      "name": "云",
+      "true": "最佳"
+    },
+    "useVbo": {
+      "false": "关闭",
+      "name": "使用VBO",
+      "true": "启用"
+    }
+  },
+  "hello": "你好世界",
+  "help": "帮助",
+  "home": "主页",
+  "hotkeyChanges": "按键设置",
+  "importResource": {
+    "": "导入资源",
+    "checking": "检查本地文件",
+    "parsing": "解析资源",
+    "storing": "存储资源"
+  },
+  "importSave": "导入存档",
+  "installAssets": {
+    "": "下载游戏资源文件",
+    "assets": "下载资源文件%{hash}",
+    "assetsJson": "下载资源文件目录"
+  },
+  "installAuthlibInjector": "安装 authlib-injector",
+  "installCurseforgeFile": "安装 Curseforge 文件",
+  "installCurseforgeModpack": {
+    "": "安装 Curseforge 整合包",
+    "createProfile": "创建对应配置",
+    "installMods": "安装 Mods",
+    "resolveEntries": "解析整合包"
+  },
+  "installDependencies": {
+    "": "检查%{version}的依赖",
     "installAssets": {
-        "": "下载游戏资源文件",
-        "assets": "下载资源文件%{hash}",
-        "assetsJson": "下载资源文件目录"
-    },
-    "installAuthlibInjector": "安装 authlib-injector",
-    "installCurseforgeFile": "安装 Curseforge 文件",
-    "installCurseforgeModpack": {
-        "": "安装 Curseforge 整合包",
-        "createProfile": "创建对应配置",
-        "installMods": "安装 Mods",
-        "resolveEntries": "解析整合包"
-    },
-    "installDependencies": {
-        "": "检查%{version}的依赖",
-        "installAssets": {
-            "": "下载游戏资源文件",
-            "assets": "下载资源文件%{hash}",
-            "assetsJson": "下载资源文件目录"
-        },
-        "installLibraries": {
-            "": "下载依赖运行库",
-            "library": "检查库文件"
-        }
-    },
-    "installForge": {
-        "": "安装 Forge",
-        "downloadInstaller": "下载 Forge 安装器",
-        "downloadJar": "下载 Forge Jar 文件",
-        "downloadLibraries": {
-            "": "安装依赖库",
-            "library": "检查库"
-        },
-        "installForgeJar": "安装 Forge Jar 文件",
-        "installForgeJson": "安装 Forge Json 文件",
-        "postProcessing": "处理 Minecraft Jar 文件"
-    },
-    "installJre": {
-        "": "安装Java运行库",
-        "cleanup": "清理安装文件",
-        "decompress": "解压缩JRE文件到本地",
-        "download": "下载压缩的JRE文件",
-        "fetchInfo": "从Mojang那获取JRE信息"
+      "": "下载游戏资源文件",
+      "assets": "下载资源文件%{hash}",
+      "assetsJson": "下载资源文件目录"
     },
     "installLibraries": {
-        "": "安装依赖运行库",
-        "library": "检查库文件"
+      "": "下载依赖运行库",
+      "library": "检查库文件"
+    }
+  },
+  "installForge": {
+    "": "安装 Forge",
+    "downloadInstaller": "下载 Forge 安装器",
+    "downloadJar": "下载 Forge Jar 文件",
+    "downloadLibraries": {
+      "": "安装依赖库",
+      "library": "检查库"
     },
-    "installVersion": {
-        "": "安装%{version}的游戏本体",
-        "jar": "安装游戏JAR文件",
-        "json": "安装游戏JSON文件"
+    "installForgeJar": "安装 Forge Jar 文件",
+    "installForgeJson": "安装 Forge Json 文件",
+    "postProcessing": "处理 Minecraft Jar 文件"
+  },
+  "installJre": {
+    "": "安装Java运行库",
+    "cleanup": "清理安装文件",
+    "decompress": "解压缩JRE文件到本地",
+    "download": "下载压缩的JRE文件",
+    "fetchInfo": "从Mojang那获取JRE信息"
+  },
+  "installLibraries": {
+    "": "安装依赖运行库",
+    "library": "检查库文件"
+  },
+  "installVersion": {
+    "": "安装%{version}的游戏本体",
+    "jar": "安装游戏JAR文件",
+    "json": "安装游戏JSON文件"
+  },
+  "intro": {
+    "struct": {
+      "assets": "和原版一样，保存游戏贴图/声音等",
+      "config": "启动器全局配置文件",
+      "forge-versions": "Forge 版本信息缓存",
+      "java": "已发现 Java 的位置版本等信息",
+      "jre": "缓存启动器下载的 JRE",
+      "libraries": "和原版一样",
+      "lite-versions": "Liteloader 版本信息缓存",
+      "logs": "保存启动器的日志文件",
+      "mclogs": "此启动配置下的 Minecraft 的游戏日志",
+      "modJar": "一个正常的 Mod Jar 文件",
+      "modLite": "一个正常的 Liteloader Mod 文件",
+      "mods": "一个正常的 Mods 文件夹，但是里面的文件被启动器的 resource 模块管理着",
+      "options": "常规的 Minecraft 游戏设置文件",
+      "profile": "储存启动配置的具体 JSON 文件",
+      "profileFolder": "某一个具体的启动配置文件夹，名称是其 UUID",
+      "profiles": "保存负责版本分离的启动配置",
+      "resourceJson": "某一个 Mod 或资源包的元数据",
+      "resourcepack": "一个正常的资源包压缩文件",
+      "resourcepacks": "一个正常的资源包文件夹，但是里面的文件被启动器的 resource 模块管理着",
+      "resources": "保存已发现的 Mods/资源包的元数据",
+      "root": "Minecraft 的数据目录",
+      "temp": "启动器临时文件夹，一般用来放下载文件",
+      "user": "用户验证信息缓存",
+      "version": "Minecraft 版本信息缓存",
+      "versions": "和原版一样，保存各个版本的 JAR 和 JSON"
+    }
+  },
+  "java": {
+    "autoAlloc": "自动分配",
+    "browse": "浏览java可执行文件",
+    "browser": "从文件导入 Java",
+    "errorDownload": "自动下载Java失败，请检查你的网络连接。当然你也可以点击返回尝试别的方法。",
+    "incompatibleJava": "不兼容的 Java",
+    "incompatibleJavaHint": "当前 Java 版本无法运已选择的 Minecraft 版本",
+    "location": "Java 路径",
+    "maxMemory": "最大内存",
+    "minMemory": "最小内存",
+    "missing": "没有找到Java",
+    "missingHint": "启动器在你的电脑上没有找到任何Java。你可以尝试：",
+    "noJavaInPath": "还是无法在PATH中找到java可执行文件。你可以尝试其他方法。",
+    "noLegalJava": "启动器认为这个Java可执行文件是无效的。请尝试其他的方法。",
+    "noMemory": "不设置内存限制",
+    "refreshAfter": "请在安装后刷新。",
+    "switchVersion": "已切换 Java 版本"
+  },
+  "java.locationPlaceHolder": "使用系统已经安装的 Java",
+  "launch": {
+    "checkingProblems": "检测问题中",
+    "crash": "游戏崩溃了!!",
+    "failed": {
+      "general": "启动失败",
+      "generalText": "如果你反复出现同样的问题，请联系作者!",
+      "illegalAuth": "用户数据为空",
+      "illegalAuthText": "无效的用户数据！请尝试重新登陆或切换账号",
+      "selectProfileEmpty": "启动配置为空",
+      "selectProfileEmptyText": "很奇怪，你可以尝试重新创建当前的启动配置。如果你老遇到这个问题请联系作者!",
+      "unresolvableProblems": "无法处理某些启动问题",
+      "unresolvableProblemsText": "启动器无法自动处理一些启动前置需求。你可以尝试在主页让启动器自动修复。如果你反复遇到此问题，请联系作者"
     },
-    "intro": {
-        "struct": {
-            "assets": "和原版一样，保存游戏贴图/声音等",
-            "config": "启动器全局配置文件",
-            "forge-versions": "Forge 版本信息缓存",
-            "java": "已发现 Java 的位置版本等信息",
-            "jre": "缓存启动器下载的 JRE",
-            "libraries": "和原版一样",
-            "lite-versions": "Liteloader 版本信息缓存",
-            "logs": "保存启动器的日志文件",
-            "mclogs": "此启动配置下的 Minecraft 的游戏日志",
-            "modJar": "一个正常的 Mod Jar 文件",
-            "modLite": "一个正常的 Liteloader Mod 文件",
-            "mods": "一个正常的 Mods 文件夹，但是里面的文件被启动器的 resource 模块管理着",
-            "options": "常规的 Minecraft 游戏设置文件",
-            "profile": "储存启动配置的具体 JSON 文件",
-            "profileFolder": "某一个具体的启动配置文件夹，名称是其 UUID",
-            "profiles": "保存负责版本分离的启动配置",
-            "resourceJson": "某一个 Mod 或资源包的元数据",
-            "resourcepack": "一个正常的资源包压缩文件",
-            "resourcepacks": "一个正常的资源包文件夹，但是里面的文件被启动器的 resource 模块管理着",
-            "resources": "保存已发现的 Mods/资源包的元数据",
-            "root": "Minecraft 的数据目录",
-            "temp": "启动器临时文件夹，一般用来放下载文件",
-            "user": "用户验证信息缓存",
-            "version": "Minecraft 版本信息缓存",
-            "versions": "和原版一样，保存各个版本的 JAR 和 JSON"
-        }
+    "hideLauncher": "Minecraft启动后隐藏启动器",
+    "launch": "启动",
+    "launching": "启动中...",
+    "launchingSlow": "还在启动…Minecraft图形界面启动的会比较慢呢~",
+    "openCrashReport": "打开崩溃日志",
+    "openCrashReportFolder": "打开崩溃日志文件夹",
+    "showLog": "Minecraft启动后显示日志"
+  },
+  "launch.hideLauncher": "Minecraft 启动后隐藏启动器",
+  "launch.showLog": "Minecraft 启动后显示日志",
+  "launcher": {
+    "checkUpdate": "检查更新",
+    "quit": "关闭启动器",
+    "showDiagnosis": "显示Debug信息",
+    "title": "Minecraft 启动器"
+  },
+  "launchsetting": {
+    "jvm": "JVM 参数",
+    "mc": "Minecraft 参数",
+    "name": "启动配置"
+  },
+  "liteloader": {
+    "name": "Liteloader"
+  },
+  "log": {
+    "error": "错误",
+    "info": "信息",
+    "success": "成功",
+    "warning": "警告"
+  },
+  "market": "市场",
+  "minecraft": {
+    "name": "Minecraft",
+    "settings": "Minecraft设置",
+    "showAlpha": "显示快照版",
+    "version": "Minecraft 版本"
+  },
+  "mod": {
+    "backToAllMods": "返回所有 Mods",
+    "compatible": "可用于 {version} 版",
+    "deletion": "删除 {mod} Mod",
+    "deletionHint": "你将失去这个 Mod 的文件和信息。你确定吗？",
+    "export": "导出 Mod",
+    "hint": "将Mod的jar文件拖入此处来导入",
+    "import": "导入 Mod",
+    "incompatible": "不兼容Minecraft {actual} 的Mod。需要Minecraft {accept}。",
+    "missing": {
+      "absent": "",
+      "checkAvailabilities": "",
+      "downloadAll": "",
+      "downloadDescription": "",
+      "downloadTitle": "服务器缺失一些 Mod",
+      "downloading": "",
+      "existed": "已存在",
+      "loading": "",
+      "unknown": ""
     },
-    "java": {
-        "browse": "浏览java可执行文件",
-        "errorDownload": "自动下载Java失败，请检查你的网络连接。当然你也可以点击返回尝试别的方法。",
-        "incompatibleJava": "不兼容的 Java",
-        "incompatibleJavaHint": "当前 Java 版本无法运已选择的 Minecraft 版本",
-        "location": "Java 路径",
-        "maxMemory": "最大内存",
-        "minMemory": "最小内存",
-        "missing": "没有找到Java",
-        "autoAlloc": "自动分配",
-        "missingHint": "启动器在你的电脑上没有找到任何Java。你可以尝试：",
-        "noJavaInPath": "还是无法在PATH中找到java可执行文件。你可以尝试其他方法。",
-        "noLegalJava": "启动器认为这个Java可执行文件是无效的。请尝试其他的方法。",
-        "noMemory": "不设置内存限制",
-        "refreshAfter": "请在安装后刷新。"
+    "name": "Mod | Mods",
+    "nocompatible": "无法解析 Minecraft 兼容性",
+    "selected": "已选 Mods",
+    "unselected": "未选 Mods"
+  },
+  "name": "名称",
+  "next": "下一项",
+  "no": "否",
+  "nodescription": "暂时没有简介",
+  "ok": "好的",
+  "optional": "可选的",
+  "popular": "热度",
+  "profile": {
+    "add": "添加本地游戏",
+    "addServer": "添加服务器",
+    "advancedSetting": "高级设置",
+    "authorHint": "这个游戏/整合包的制作人",
+    "baseSetting": "基础设置",
+    "copy": "复制",
+    "delete": "删除游戏",
+    "deleteHint": "游戏 {name}({id}) 的数据将完全被移除。你确定继续此操作吗？",
+    "descriptionHint": "简单描述这个游戏/整合包的内容",
+    "export": {
+      "exportingMessage": "正在导出...",
+      "message": "导出为整合包",
+      "title": "游戏导出"
     },
-    "launch": {
-        "checkingProblems": "检测问题中",
-        "crash": "游戏崩溃了!!",
-        "failed": {
-            "general": "启动失败",
-            "generalText": "如果你反复出现同样的问题，请联系作者!",
-            "illegalAuth": "用户数据为空",
-            "illegalAuthText": "无效的用户数据！请尝试重新登陆或切换账号",
-            "selectProfileEmpty": "启动配置为空",
-            "selectProfileEmptyText": "很奇怪，你可以尝试重新创建当前的启动配置。如果你老遇到这个问题请联系作者!",
-            "unresolvableProblems": "无法处理某些启动问题",
-            "unresolvableProblemsText": "启动器无法自动处理一些启动前置需求。你可以尝试在主页让启动器自动修复。如果你反复遇到此问题，请联系作者"
-        },
-        "hideLauncher": "Minecraft启动后隐藏启动器",
-        "launch": "启动",
-        "launching": "启动中...",
-        "launchingSlow": "还在启动…Minecraft图形界面启动的会比较慢呢~",
-        "openCrashReport": "打开崩溃日志",
-        "openCrashReportFolder": "打开崩溃日志文件夹",
-        "showLog": "Minecraft启动后显示日志"
+    "forceLocalVersion": "启动指定本地版本",
+    "forgeSetting": "Forge设置",
+    "import": {
+      "description": "导入 Minecraft 到启动器",
+      "start": "开始导入",
+      "title": "导入游戏"
     },
-    "launcher": {
-        "checkUpdate": "检查更新",
-        "quit": "关闭启动器",
-        "showDiagnosis": "显示Debug信息",
-        "title": "Minecraft 启动器"
+    "importCurseforge": "从 Curseforge 模组包导入",
+    "importFolder": "从文件夹导入",
+    "importZip": "从压缩包导入",
+    "launchingDetail": "启动配置",
+    "localVersion": "本地版本",
+    "localVersionEmpty": "自动生成",
+    "localVersionHint": "选择本地版本会覆盖Minecraft版本的设置",
+    "logsCrashes": {
+      "crashes": "崩溃报告",
+      "logs": "日志",
+      "title": "日志或崩溃报告"
     },
-    "launchsetting": {
-        "jvm": "JVM 参数",
-        "mc": "Minecraft 参数",
-        "name": "启动配置"
-    },
-    "liteloader": {
-        "name": "Liteloader"
-    },
-    "log": {
-        "error": "错误",
-        "info": "信息",
-        "success": "成功",
-        "warning": "警告"
-    },
-    "market": "市场",
-    "minecraft": {
-        "name": "Minecraft",
-        "settings": "Minecraft设置",
-        "showAlpha": "显示快照版",
-        "version": "Minecraft 版本"
-    },
-    "mod": {
-        "backToAllMods": "返回所有 Mods",
-        "compatible": "可用于 {version} 版",
-        "deletion": "删除 {mod} Mod",
-        "deletionHint": "你将失去这个 Mod 的文件和信息。你确定吗？",
-        "export": "导出 Mod",
-        "hint": "将Mod的jar文件拖入此处来导入",
-        "import": "导入 Mod",
-        "incompatible": "不兼容Minecraft {actual} 的Mod。需要Minecraft {accept}。",
-        "missing": {
-            "absent": "",
-            "checkAvailabilities": "",
-            "downloadAll": "",
-            "downloadDescription": "",
-            "downloadTitle": "服务器缺失一些 Mod",
-            "downloading": "",
-            "existed": "已存在",
-            "loading": "",
-            "unknown": ""
-        },
-        "name": "Mod | Mods",
-        "selected": "已选 Mods",
-        "unselected": "未选 Mods"
+    "mcOptions": "Minecraft 启动选项",
+    "mcOptionsCreateHint": "回车创建 Minecraft 启动参数",
+    "mcOptionsHint": "创建或选择 Minecraft 启动参数",
+    "modpack": {
+      "add": "添加Mod包",
+      "author": "整合包作者",
+      "create": "创建新Mod包",
+      "delete": {
+        "description": "将删除Mod包里所有数据，继续执行吗",
+        "name": "删除Mod包"
+      },
+      "description": "整合包简介",
+      "edit": "编辑Mod包信息",
+      "error": {
+        "requirename": "名称不能为空！请随便编一个名字"
+      },
+      "export": "导出整合包",
+      "name": "Mod包",
+      "profile": "文件名"
     },
     "name": "名称",
-    "next": "下一项",
-    "no": "否",
-    "nodescription": "暂时没有简介",
-    "ok": "好的",
-    "optional": "可选的",
-    "popular": "热度",
-    "profile": {
-        "add": "添加本地游戏",
-        "addServer": "添加服务器",
-        "advancedSetting": "高级设置",
-        "authorHint": "这个游戏/整合包的制作人",
-        "baseSetting": "基础设置",
-        "copy": "复制",
-        "delete": "删除游戏",
-        "deleteHint": "游戏 {name}({id}) 的数据将完全被移除。你确定继续此操作吗？",
-        "descriptionHint": "简单描述这个游戏/整合包的内容",
-        "export": {
-            "exportingMessage": "正在导出...",
-            "message": "导出为整合包",
-            "title": "导出"
-        },
-        "forceLocalVersion": "启动指定本地版本",
-        "forgeSetting": "Forge设置",
-        "importCurseforge": "从 Curseforge 模组包导入",
-        "importFolder": "从文件夹导入",
-        "importZip": "从压缩包导入",
-        "launchingDetail": "启动配置",
-        "localVersion": "本地版本",
-        "localVersionEmpty": "自动生成",
-        "localVersionHint": "选择本地版本会覆盖Minecraft版本的设置",
-        "logsCrashes": {
-            "crashes": "崩溃报告",
-            "logs": "日志",
-            "title": "日志或崩溃报告"
-        },
-        "mcOptions": "Minecraft 启动选项",
-        "mcOptionsCreateHint": "回车创建 Minecraft 启动参数",
-        "mcOptionsHint": "创建或选择 Minecraft 启动参数",
-        "modpack": {
-            "add": "添加Mod包",
-            "author": "整合包作者",
-            "create": "创建新Mod包",
-            "delete": {
-                "description": "将删除Mod包里所有数据，继续执行吗",
-                "name": "删除Mod包"
-            },
-            "description": "整合包简介",
-            "edit": "编辑Mod包信息",
-            "error": {
-                "requirename": "名称不能为空！请随便编一个名字"
-            },
-            "export": "导出整合包",
-            "name": "Mod包",
-            "profile": "文件名"
-        },
-        "name": "名称",
-        "nameHint": "名称便于以后识别",
-        "noLocalVersion": "没有本地版本",
-        "older": "三天前",
-        "refreshServers": "刷新服务器",
-        "requireName": "必须填写名称",
-        "select": "选择",
-        "server": {
-            "": "服务器 | 服务器",
-            "acceptingMinecraftVersion": "接受 Minecraft 版本",
-            "add": "添加服务器",
-            "create": "创建一个新的服务器",
-            "delete": {
-                "description": "此操作将删除所有本地关于此服务器的信息。你确定继续吗？",
-                "name": "删除服务器"
-            },
-            "edit": "编辑",
-            "error": {
-                "requirehost": "缺少主机IP地址",
-                "requirename": "缺少服务器名",
-                "wrongVersion": "当前版本与服务器协议不匹配，可能导致连接错误"
-            },
-            "expectedVersions": "已支持的版本",
-            "filterVersion": "过滤服务器相应的 Minecraft 版本",
-            "host": "服务器地址",
-            "hostHint": "服务器的ip地址（和端口号）",
-            "ipAddress": "IP地址",
-            "motd": "服务器 MOTD",
-            "name": "服务器名",
-            "ping": "Ping 服务器",
-            "pinging": "连接服务器中...",
-            "pings": "延迟",
-            "players": "玩家",
-            "port": "端口",
-            "recommendedMinecraftVersion": "Minecraft 版本",
-            "status": {
-                "nohost": "找不到服务器!",
-                "ping": "延迟",
-                "refurse": "服务器断开了连接!",
-                "timeout": "服务器响应超时!"
-            },
-            "unknown": "未知服务器",
-            "unknownDescription": "未知服务器，请刷新。",
-            "versionHint": "Ping 使用的 Minecraft 版本"
-        },
-        "setting": "游戏设置",
-        "templateSetting": {
-            "": "模板设置",
-            "importing": "模板导入",
-            "modpack": "这是一个整合包配置",
-            "profile": "这是一个已有的启动配置",
-            "server": "这是一个已有的服务器启动配置"
-        },
-        "threeDay": "三天内",
-        "today": "今天",
-        "url": "URL",
-        "version": "游戏版本",
-        "versionHint": "这个游戏使用的Minecraft版本",
-        "versionSetting": "客户端配置",
-        "vmOptions": "JVM 启动选项",
-        "vmOptionsCreateHint": "回车创建 JVM 启动选项",
-        "vmOptionsHint": "创建或者选择 JVM 启动选项"
+    "nameHint": "名称便于以后识别",
+    "noLocalVersion": "没有本地版本",
+    "older": "三天前",
+    "refreshServers": "刷新服务器",
+    "requireName": "必须填写名称",
+    "select": "选择",
+    "server": {
+      "": "服务器 | 服务器",
+      "acceptingMinecraftVersion": "接受 Minecraft 版本",
+      "add": "添加服务器",
+      "create": "创建一个新的服务器",
+      "delete": {
+        "description": "此操作将删除所有本地关于此服务器的信息。你确定继续吗？",
+        "name": "删除服务器"
+      },
+      "edit": "编辑",
+      "error": {
+        "requirehost": "缺少主机IP地址",
+        "requirename": "缺少服务器名",
+        "wrongVersion": "当前版本与服务器协议不匹配，可能导致连接错误"
+      },
+      "expectedVersions": "已支持的版本",
+      "filterVersion": "过滤服务器相应的 Minecraft 版本",
+      "host": "服务器地址",
+      "hostHint": "服务器的ip地址（和端口号）",
+      "ipAddress": "IP地址",
+      "motd": "服务器 MOTD",
+      "name": "服务器名",
+      "ping": "Ping 服务器",
+      "pinging": "连接服务器中...",
+      "pings": "延迟",
+      "players": "玩家",
+      "port": "端口",
+      "recommendedMinecraftVersion": "Minecraft 版本",
+      "status": {
+        "nohost": "找不到服务器!",
+        "ping": "延迟",
+        "refurse": "服务器断开了连接!",
+        "timeout": "服务器响应超时!"
+      },
+      "unknown": "未知服务器",
+      "unknownDescription": "未知服务器，请刷新。",
+      "versionHint": "Ping 使用的 Minecraft 版本"
     },
-    "refreshResource": "刷新资源",
-    "remove": "移除",
-    "resolution": {
-        "fullscreen": "全屏",
-        "height": "高",
-        "width": "宽"
+    "setting": "游戏设置",
+    "templateSetting": {
+      "": "模板设置",
+      "importing": "模板导入",
+      "modpack": "这是一个整合包配置",
+      "profile": "这是一个已有的启动配置",
+      "server": "这是一个已有的服务器启动配置"
     },
-    "resourcepack": {
-        "available": "可用的资源包",
-        "compatible": "当前格式({format})可用于当前版本 {version}",
-        "delete": {
-            "content": "将从磁盘中删除资源包，该操作不可逆，确定继续执行吗",
-            "title": "删除资源包"
-        },
-        "deletion": "移除 {pack}",
-        "deletionHint": "你将永远失去该资源包的数据以及相关信息，你进行此操作吗？",
-        "export": "导出资源包",
-        "hint": "将资源包zip或文件夹拖入此处导入",
-        "import": "导入资源包",
-        "incompatible": "不兼容的资源包格式({format})。适用范围 {accept}。当前版本 {actual}。",
-        "name": "资源包 | 资源包",
-        "selected": "已选资源包",
-        "unselected": "未选资源包"
+    "threeDay": "三天内",
+    "today": "今天",
+    "url": "URL",
+    "version": "游戏版本",
+    "versionHint": "这个游戏使用的Minecraft版本",
+    "versionSetting": "客户端配置",
+    "vmOptions": "JVM 启动选项",
+    "vmOptionsCreateHint": "回车创建 JVM 启动选项",
+    "vmOptionsHint": "创建或者选择 JVM 启动选项"
+  },
+  "profile.modpack.author": "作者",
+  "profile.modpack.description": "简介",
+  "refreshResource": "刷新资源",
+  "remove": "移除",
+  "resolution": {
+    "fullscreen": "全屏",
+    "height": "高",
+    "width": "宽"
+  },
+  "resourcepack": {
+    "available": "可用的资源包",
+    "compatible": "当前格式({format})可用于当前版本 {version}",
+    "delete": {
+      "content": "将从磁盘中删除资源包，该操作不可逆，确定继续执行吗",
+      "title": "删除资源包"
     },
-    "save": {
-        "copy": {
-            "": "复制存档",
-            "cancel": "取消复制",
-            "confirm": "开始复制",
-            "description": "请勾选你想让存档复制到的启动配置（目标启动配置）",
-            "title": "复制存档到其他启动配置"
-        },
-        "copyFrom": {
-            "cancel": "取消",
-            "confirm": "开始导入",
-            "description": "你可以从其他启动配置中导入存档，或者从已有资源中导入 (如从 curseforge 下载的地图)",
-            "from": "来自 {src}",
-            "fromProfile": "来自其他启动配置",
-            "fromResource": "来自已导入资源",
-            "title": "从已有资源导入存档"
-        },
-        "deleteCancel": "取消",
-        "deleteConfirm": "确认删除",
-        "deleteHint": "该操作不可逆，你将永远失去这个存档的记录，你确定要刪除此存档吗？",
-        "deleteTitle": "删除该存档",
-        "detail": "显示更多信息",
-        "export": "导出地图",
-        "hint": "将地图zip或文件夹拖入此处来导入",
-        "import": "从文件导入",
-        "name": "地图存档 | 地图存档"
-    },
-    "setting": {
-        "allowPrerelease": "是否下载抢先版",
-        "allowPrereleaseDescription": "抢先版可能不是那么稳定",
-        "appearance": "外观",
-        "apply": "开始迁移",
-        "autoDownload": "自动下载",
-        "autoDownloadDescription": "自动下载最新的版本",
-        "autoInstallOnAppQuit": "自动安装",
-        "autoInstallOnAppQuitDescription": "每次 App 退出后自动安装更新",
-        "browseRoot": "更改",
-        "checkUpdate": "检查更新",
-        "cleanOldData": "清除旧数据",
-        "cleanOldDataHint": "移除所有以前的Minecraft数据，包括资源包、地图存档等",
-        "copyOldToNew": "迁移数据",
-        "copyOldToNewHint": "在移除旧数据之前，将所有旧数据复制到新的位置",
-        "general": "基本设置",
-        "installAndQuit": "重启并安装更新",
-        "language": "语言",
-        "languageDescription": "当前显示的语言",
-        "latestVersion": "最新版本",
-        "location": "数据存储位置",
-        "name": "设置",
-        "noUpdateAvailable": "目前没有可用更新",
-        "particleMode": {
-            "": "粒子特效",
-            "bubble": "旗袍",
-            "push": "增加",
-            "remove": "移除",
-            "repulse": "击退"
-        },
-        "particleModeDescription": "选择当你点击粒子时的特效",
-        "resolution": "Minecraft默认窗口大小",
-        "setRootCause": "如果你不勾选下面的“迁移数据”选项，你将会失去现在的所有数据（包括地图存档，资源包等）。",
-        "setRootDescription": "这将改变启动器识别的Minecraft根目录。",
-        "setRootTitle": "迁移启动器到新的位置",
-        "showParticle": "显示粒子",
-        "showParticleDescription": "是否在背景显示粒子效果 (这会影响性能，觉得卡可以关了)",
-        "showRoot": "浏览",
-        "theme": "外观主题",
-        "update": "升级设置",
-        "updateToThisVersion": "下载并安装",
-        "useBmclAPI": "使用 BMCL API",
-        "useBmclAPIDescription": "当你在大陆时，优先使用 BMCLAPI 来下载 Minecraft",
-        "viewUpdate": "详细信息",
-        "waitReload": "迁移数据中。请勿在此时关闭启动器，否则你将可能失去一部分数据。"
-    },
-    "summery": "简介",
-    "task": {
-        "cancelled": "已取消",
-        "empty": "目前没有运行中的任务",
-        "failed": "失败",
-        "history": "已完成任务",
-        "manager": "任务管理器",
-        "name": "任务 | 任务",
-        "running": "活跃任务",
-        "successed": "成功"
-    },
-    "user": {
-        "accessToken": "访问令牌",
-        "account": {
-            "add": "添加账号",
-            "switch": "切换账号"
-        },
-        "authMode": "验证服务",
-        "authService": "验证服务器",
-        "birth": "登记的生日",
-        "challenges": "请回答下列问题来验证你的身份",
-        "email": "邮箱",
-        "forgetChallenges": "我忘记了这些问题的答案，我想重新设置它们 ",
-        "forgetPassword": "忘记密码?",
-        "id": "用户 Id",
-        "illegalEmail": "当前Email格式不合法",
-        "info": "用户信息",
-        "insecureClient": "Minecraft 服务器无法验证您的身份，请回答密保问题!",
-        "invalidCredentials": "无法验证. 用户名或密码错误.",
-        "login": "登陆",
-        "logout": "登出",
-        "mojang": {
-            "account": "邮箱地址",
-            "name": "Mojang",
-            "password": "密码"
-        },
-        "name": "用户名",
-        "offline": {
-            "account": "用户名",
-            "name": "离线模式",
-            "password": "无需密码"
-        },
-        "profile": "个人信息",
-        "profileMode": "皮肤服务",
-        "profileService": "皮肤服务器",
-        "refreshAccount": "刷新账号",
-        "refreshSkin": "刷新皮肤",
-        "refreshSkinFail": "刷新皮肤失败",
-        "refreshSkinSuccess": "刷新皮肤成功",
-        "requireEmail": "必须要Email才能登陆",
-        "requirePassword": "请输入密码",
-        "requireUsername": "用户名不能为空",
-        "service": {
-            "add": "添加更多验证或玩家信息服务器",
-            "authLibInjector": "按照 authlib-injector 推荐流程创建",
-            "authServiceDetail": "配置验证服务器",
-            "authenticateHint": "用来相应玩家登录请求",
-            "baseUrl": "基础 URL",
-            "baseUrlHint": "第三方服务器的根 URL",
-            "duplicatedName": "此名字与已有的服务重名",
-            "hostName": "验证服务器 URL",
-            "hostNameHint": "第三方验证服务器的根 URL 地址",
-            "invalidUrl": "请输入有效的 URL",
-            "invalidateHint": "登出时作废玩家凭证",
-            "name": "服务器名称",
-            "normal": "按照正常流程创建",
-            "profile": "玩家信息 API",
-            "profileByName": "查询玩家信息 API",
-            "profileByNameHint": "通过玩家名字来获取玩家信息",
-            "profileHint": "通过用户 UUID 来获得玩家信息",
-            "profileServiceDetail": "配置玩家信息服务器",
-            "refreshHint": "用来刷新玩家登录凭证",
-            "requireName": "服务器名不能为空",
-            "signoutHint": "用于登出玩家",
-            "texture": "皮肤上传 API",
-            "textureHint": "通过玩家 ID 和凭证来上传皮肤",
-            "title": "配置验证或玩家信息服务器",
-            "typeOfService": "选择配置类型",
-            "validateHint": "用来检验玩家凭证有效性"
-        },
-        "signup": "注册",
-        "signupDescription": "没有账号?",
-        "skinImport": "导入皮肤",
-        "skinImportFile": "从文件导入",
-        "skinImportLink": "从链接导入",
-        "skinPlaceUrlHere": "填写待导入皮肤URL",
-        "skinSave": "保存当前皮肤",
-        "skinSaveTitle": "保存皮肤到本地",
-        "skinSlim": "皮肤类型",
-        "skinUrlNotEmpty": "皮肤URL不能为空",
-        "skinUrlNotValid": "请输入有效的皮肤URL",
-        "submitChallenges": "提交答案"
-    },
-    "version": {
-        "all": "所有版本",
-        "date": "更新日期",
-        "deleteDescription": "这将删除本地版本游戏",
-        "deleteTitle": "删除本地版本",
-        "id": "版本号",
-        "latest": "最新版",
-        "local": "这个版本已被下载",
-        "locals": "本地版本",
-        "missing": "缺少{version}版本的游戏文件 ",
-        "name": "版本 | 版本",
-        "noForge": "Forge不支持此版本",
-        "noLocalVersion": "本地沒有安裝任何版本",
-        "noMinecraft": "无法获取Minecraft版本列表，请检查你的网络",
-        "pending": "下载中...",
-        "prepare": "准备中",
-        "recommended": "稳定版",
-        "release": "稳定版",
-        "releaseDate": "发行日期",
-        "remote": "下载这个版本",
-        "requiredownload": "缺少{version}版本的游戏文件. 请下载并重试.",
-        "selectVersion": "请选择一个版本",
-        "selectversionWarn": "缺少版本无法启动",
-        "showSnapshot": "显示快照版",
-        "snapshot": "快照",
-        "status": "状态",
-        "unknown": "未知的版本"
-    },
+    "deletion": "移除 {pack}",
+    "deletionHint": "你将永远失去该资源包的数据以及相关信息，你进行此操作吗？",
+    "export": "导出资源包",
+    "hint": "将资源包zip或文件夹拖入此处导入",
+    "import": "导入资源包",
+    "incompatible": "不兼容的资源包格式({format})。适用范围 {accept}。当前版本 {actual}。",
+    "name": "资源包 | 资源包",
+    "selected": "已选资源包",
+    "unselected": "未选资源包"
+  },
+  "save": {
     "copy": {
-        "success": "复制到剪贴板"
-    }
+      "": "复制存档",
+      "cancel": "取消复制",
+      "confirm": "开始复制",
+      "description": "请勾选你想让存档复制到的启动配置（目标启动配置）",
+      "title": "复制存档到其他启动配置"
+    },
+    "copyFrom": {
+      "cancel": "取消",
+      "confirm": "开始导入",
+      "description": "你可以从其他启动配置中导入存档，或者从已有资源中导入 (如从 curseforge 下载的地图)",
+      "from": "来自 {src}",
+      "fromProfile": "来自其他启动配置",
+      "fromResource": "来自已导入资源",
+      "title": "从已有资源导入存档"
+    },
+    "deleteCancel": "取消",
+    "deleteConfirm": "确认删除",
+    "deleteHint": "该操作不可逆，你将永远失去这个存档的记录，你确定要刪除此存档吗？",
+    "deleteTitle": "删除该存档",
+    "detail": "显示更多信息",
+    "export": "导出地图",
+    "hint": "将地图zip或文件夹拖入此处来导入",
+    "import": "从文件导入",
+    "name": "地图存档 | 地图存档"
+  },
+  "setting": {
+    "allowPrerelease": "是否下载抢先版",
+    "allowPrereleaseDescription": "抢先版可能不是那么稳定",
+    "appearance": "外观",
+    "apply": "开始迁移",
+    "autoDownload": "自动下载",
+    "autoDownloadDescription": "自动下载最新的版本",
+    "autoInstallOnAppQuit": "自动安装",
+    "autoInstallOnAppQuitDescription": "每次 App 退出后自动安装更新",
+    "browseRoot": "更改",
+    "checkUpdate": "检查更新",
+    "cleanOldData": "清除旧数据",
+    "cleanOldDataHint": "移除所有以前的Minecraft数据，包括资源包、地图存档等",
+    "copyOldToNew": "迁移数据",
+    "copyOldToNewHint": "在移除旧数据之前，将所有旧数据复制到新的位置",
+    "general": "基本设置",
+    "installAndQuit": "重启并安装更新",
+    "language": "语言",
+    "languageDescription": "当前显示的语言",
+    "latestVersion": "最新版本",
+    "location": "数据存储位置",
+    "name": "设置",
+    "noUpdateAvailable": "目前没有可用更新",
+    "particleMode": {
+      "": "粒子特效",
+      "bubble": "旗袍",
+      "push": "增加",
+      "remove": "移除",
+      "repulse": "击退"
+    },
+    "particleModeDescription": "选择当你点击粒子时的特效",
+    "resolution": "Minecraft默认窗口大小",
+    "setRootCause": "如果你不勾选下面的“迁移数据”选项，你将会失去现在的所有数据（包括地图存档，资源包等）。",
+    "setRootDescription": "这将改变启动器识别的Minecraft根目录。",
+    "setRootTitle": "迁移启动器到新的位置",
+    "showParticle": "显示粒子",
+    "showParticleDescription": "是否在背景显示粒子效果 (这会影响性能，觉得卡可以关了)",
+    "showRoot": "浏览",
+    "theme": "外观主题",
+    "update": "升级设置",
+    "updateToThisVersion": "下载并安装",
+    "useBmclAPI": "使用 BMCL API",
+    "useBmclAPIDescription": "当你在大陆时，优先使用 BMCLAPI 来下载 Minecraft",
+    "viewUpdate": "详细信息",
+    "waitReload": "迁移数据中。请勿在此时关闭启动器，否则你将可能失去一部分数据。"
+  },
+  "summery": "简介",
+  "task": {
+    "cancelled": "已取消",
+    "empty": "目前没有运行中的任务",
+    "failed": "失败",
+    "history": "已完成任务",
+    "manager": "任务管理器",
+    "name": "任务 | 任务",
+    "running": "活跃任务",
+    "successed": "成功"
+  },
+  "user": {
+    "accessToken": "访问令牌",
+    "account": {
+      "add": "添加账号",
+      "switch": "切换账号"
+    },
+    "authMode": "验证服务",
+    "authService": "验证服务器",
+    "birth": "登记的生日",
+    "challenges": "请回答下列问题来验证你的身份",
+    "email": "邮箱",
+    "forgetChallenges": "我忘记了这些问题的答案，我想重新设置它们 ",
+    "forgetPassword": "忘记密码?",
+    "id": "用户 Id",
+    "illegalEmail": "当前Email格式不合法",
+    "info": "用户信息",
+    "insecureClient": "Minecraft 服务器无法验证您的身份，请回答密保问题!",
+    "invalidCredentials": "无法验证. 用户名或密码错误.",
+    "login": "登陆",
+    "logout": "登出",
+    "mojang": {
+      "account": "邮箱地址",
+      "name": "Mojang",
+      "password": "密码"
+    },
+    "name": "用户名",
+    "offline": {
+      "account": "用户名",
+      "name": "离线模式",
+      "password": "无需密码"
+    },
+    "profile": "个人信息",
+    "profileMode": "皮肤服务",
+    "profileService": "皮肤服务器",
+    "refreshAccount": "刷新账号",
+    "refreshSkin": "刷新皮肤",
+    "refreshSkinFail": "刷新皮肤失败",
+    "refreshSkinSuccess": "刷新皮肤成功",
+    "requireEmail": "必须要Email才能登陆",
+    "requirePassword": "请输入密码",
+    "requireUsername": "用户名不能为空",
+    "service": {
+      "add": "添加更多验证或玩家信息服务器",
+      "authLibInjector": "按照 authlib-injector 推荐流程创建",
+      "authServiceDetail": "配置验证服务器",
+      "authenticateHint": "用来相应玩家登录请求",
+      "baseUrl": "基础 URL",
+      "baseUrlHint": "第三方服务器的根 URL",
+      "duplicatedName": "此名字与已有的服务重名",
+      "hostName": "验证服务器 URL",
+      "hostNameHint": "第三方验证服务器的根 URL 地址",
+      "invalidUrl": "请输入有效的 URL",
+      "invalidateHint": "登出时作废玩家凭证",
+      "name": "服务器名称",
+      "normal": "按照正常流程创建",
+      "profile": "玩家信息 API",
+      "profileByName": "查询玩家信息 API",
+      "profileByNameHint": "通过玩家名字来获取玩家信息",
+      "profileHint": "通过用户 UUID 来获得玩家信息",
+      "profileServiceDetail": "配置玩家信息服务器",
+      "refreshHint": "用来刷新玩家登录凭证",
+      "requireName": "服务器名不能为空",
+      "signoutHint": "用于登出玩家",
+      "texture": "皮肤上传 API",
+      "textureHint": "通过玩家 ID 和凭证来上传皮肤",
+      "title": "配置验证或玩家信息服务器",
+      "typeOfService": "选择配置类型",
+      "validateHint": "用来检验玩家凭证有效性"
+    },
+    "signup": "注册",
+    "signupDescription": "没有账号?",
+    "skinImport": "导入皮肤",
+    "skinImportFile": "从文件导入",
+    "skinImportLink": "从链接导入",
+    "skinPlaceUrlHere": "填写待导入皮肤URL",
+    "skinSave": "保存当前皮肤",
+    "skinSaveTitle": "保存皮肤到本地",
+    "skinSlim": "皮肤类型",
+    "skinUrlNotEmpty": "皮肤URL不能为空",
+    "skinUrlNotValid": "请输入有效的皮肤URL",
+    "submitChallenges": "提交答案"
+  },
+  "version": {
+    "all": "所有版本",
+    "date": "更新日期",
+    "deleteDescription": "这将删除本地版本游戏",
+    "deleteTitle": "删除本地版本",
+    "id": "版本号",
+    "latest": "最新版",
+    "local": "这个版本已被下载",
+    "locals": "本地版本",
+    "missing": "缺少{version}版本的游戏文件 ",
+    "name": "版本 | 版本",
+    "noForge": "Forge不支持此版本",
+    "noLocalVersion": "本地沒有安裝任何版本",
+    "noMinecraft": "无法获取Minecraft版本列表，请检查你的网络",
+    "pending": "下载中...",
+    "prepare": "准备中",
+    "recommended": "稳定版",
+    "refresh": "刷新本地版本",
+    "release": "稳定版",
+    "releaseDate": "发行日期",
+    "remote": "下载这个版本",
+    "requiredownload": "缺少{version}版本的游戏文件. 请下载并重试.",
+    "selectVersion": "请选择一个版本",
+    "selectversionWarn": "缺少版本无法启动",
+    "showSnapshot": "显示快照版",
+    "snapshot": "快照",
+    "status": "状态",
+    "unknown": "未知的版本"
+  },
+  "yes": "是"
 }

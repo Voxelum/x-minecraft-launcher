@@ -1,14 +1,14 @@
+import { provide } from '@vue/composition-api';
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
-import locales from 'static/locales';
+import { I18N_KEY } from '../constant';
 
-Vue.use(VueI18n);
-
-export default function provideI18n(store: any) {
+export default function provideVueI18n(locale: string, messages: VueI18n.LocaleMessages) {
+    Vue.use(VueI18n);
     const i18n: any = new VueI18n({
-        locale: store.getters.locale,
+        locale,
         fallbackLocale: 'en',
-        messages: locales,
+        messages,
         missing: () => {
             // handle translation missing
         },
@@ -37,9 +37,7 @@ export default function provideI18n(store: any) {
             choice].concat(args));
         return result;
     };
-    store.watch((state: any) => state.setting.locale, (val: any, oldVal: any) => {
-        i18n.locale = val;
-        console.log(`language changed ${oldVal} => ${val}`);
-    });
-    return i18n;
+    // provide(I18N_KEY, i18n);
+
+    return i18n as VueI18n;
 }

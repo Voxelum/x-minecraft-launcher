@@ -3,6 +3,7 @@ import Ajv from 'ajv';
 import { existsSync } from 'fs';
 import { fs } from 'main/utils';
 import { createContext, runInContext } from 'vm';
+import Schema from 'universal/store/Schema';
 
 export async function readFolder(path: string) {
     if (!path) throw new Error('Path must not be undefined!');
@@ -10,7 +11,7 @@ export async function readFolder(path: string) {
     return fs.readdir(path);
 }
 
-export async function setPersistence({ path, data, schema }: { path: string; data: object; schema?: object }) {
+export async function setPersistence<T>({ path, data, schema }: { path: string; data: T; schema?: Schema<T> }) {
     const deepCopy = JSON.parse(JSON.stringify(data));
     if (schema) {
         const schemaObject = schema;
@@ -28,12 +29,12 @@ export async function setPersistence({ path, data, schema }: { path: string; dat
         }
     }
     await fs.ensureFile(path);
-    return fs.writeFile(path, JSON.stringify(deepCopy, null, 4), { encoding: 'utf-8' });
+    await fs.writeFile(path, JSON.stringify(deepCopy, null, 4), { encoding: 'utf-8' });
+    console.log(`Set ${path}`);
 }
 
-export async function getPersistence(option: { path: string; schema?: object }) {
+export async function getPersistence<T>(option: { path: string; schema?: Schema<T> }): Promise<T> {
     const { path, schema } = option;
-    if (!existsSync(path)) return undefined;
     const originalString = await fs.readFile(path).then(b => b.toString(), () => '{}');
     const object = JSON.parse(originalString);
     if (object && schema) {

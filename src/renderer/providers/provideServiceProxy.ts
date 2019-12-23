@@ -61,4 +61,5 @@ export default function provideServiceProxy() {
         },
     });
     provide(SERVICES_KEY, caller);
+    return caller;
 }

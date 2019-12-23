@@ -1,5 +1,7 @@
 import { ForgeInstaller, ForgeWebPage, Installer, JavaExecutor, LiteLoader, Net, ResolvedLibrary, Version } from '@xmcl/minecraft-launcher-core';
-import { getPersistence } from 'main/utils/persistence';
+import { getPersistence, setPersistence } from 'main/utils/persistence';
+import { MutationKeys } from 'universal/store';
+import { VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema } from 'universal/store/modules/version.schema';
 import Service, { Inject, Singleton } from './Service';
 import VersionService from './VersionService';
 
@@ -12,17 +14,44 @@ export default class VersionInstallService extends Service {
 
     async load() {
         const [mc, forge, liteloader] = await Promise.all([
-            getPersistence({ path: this.getPath('version.json') }),
-            getPersistence({ path: this.getPath('forge-versions.json') }),
-            getPersistence({ path: this.getPath('lite-versions.json') }),
+            getPersistence({ path: this.getPath('minecraft-versions.json'), schema: VersionMinecraftSchema }),
+            getPersistence({ path: this.getPath('forge-versions.json'), schema: VersionForgeSchema }),
+            getPersistence({ path: this.getPath('lite-versions.json'), schema: VersionLiteloaderSchema }),
         ]);
-        if (mc) this.commit('minecraftMetadata', mc);
-        if (forge) {
-            for (const value of Object.values(forge)) {
-                this.commit('forgeMetadata', value as any);
+        if (typeof mc === 'object') this.commit('minecraftMetadata', mc);
+        if (typeof forge === 'object') {
+            for (const value of Object.values(forge!)) {
+                this.commit('forgeMetadata', value);
             }
         }
         if (liteloader) this.commit('liteloaderMetadata', liteloader);
+    }
+
+    async save({ mutation }: { mutation: MutationKeys }) {
+        switch (mutation) {
+            case 'minecraftMetadata':
+                await setPersistence({
+                    path: this.getPath('minecraft-versions.json'),
+                    data: this.state.version.minecraft,
+                    schema: VersionMinecraftSchema,
+                });
+                break;
+            case 'forgeMetadata':
+                await setPersistence({
+                    path: this.getPath('forge-versions.json'),
+                    data: this.state.version.forge,
+                    schema: VersionForgeSchema,
+                });
+                break;
+            case 'liteloaderMetadata':
+                await setPersistence({
+                    path: this.getPath('lite-versions.json'),
+                    data: this.state.version.liteloader,
+                    schema: VersionLiteloaderSchema,
+                });
+                break;
+            default:
+        }
     }
 
     async init() {

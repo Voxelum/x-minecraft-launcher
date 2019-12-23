@@ -1,9 +1,9 @@
-import { computed, onUnmounted, Ref, ref, watch } from '@vue/composition-api';
+import { computed, onUnmounted, Ref, ref, watch, onMounted } from '@vue/composition-api';
 import Vue from 'vue';
 import { useResourceOperation } from './useResource';
 
 export function useDragging() {
-    
+
 }
 
 export function useProgressiveLoad() {
@@ -27,7 +27,7 @@ export function useProgressiveLoad() {
  * Let a drop on the element import to resource
  */
 export function useDropImport(
-    elem: Ref<HTMLElement>,
+    elem: Ref<HTMLElement | null>,
     importHint?: string,
 ) {
     const { importResource } = useResourceOperation();
@@ -43,11 +43,12 @@ export function useDropImport(
         }
     }
     const handle = watch(elem, (n, o) => {
+        console.log(n);
         if (o) {
             o.removeEventListener('drop', onDrop);
         }
         if (n) {
-            n.removeEventListener('drop', onDrop);
+            n.addEventListener('drop', onDrop);
         }
     });
     onUnmounted(() => {
@@ -70,7 +71,7 @@ export function useDragTransferItem(elem: Ref<HTMLElement>, right: boolean, id: 
         if (n) {
             elem.value.classList.add('draggable-card');
             elem.value.setAttribute('draggable-index', index.toString());
-            n.removeEventListener('dragstart', onDragStart);
+            n.addEventListener('dragstart', onDragStart);
         }
     });
     onUnmounted(() => {
@@ -90,6 +91,7 @@ export function useDragTransferList(
 ) {
     function handleDrop(event: DragEvent, left: boolean) {
         event.preventDefault();
+        console.log('Drop from sele list');
         if (!event.dataTransfer) return;
         const indexText = event.dataTransfer.getData('index');
         if (indexText) {

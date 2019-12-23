@@ -2,6 +2,7 @@ import { join } from 'path';
 import { Task } from '@xmcl/minecraft-launcher-core';
 import { fs } from 'main/utils';
 import ResourceService from 'main/service/ResourceService';
+import { UNKNOWN_RESOURCE } from 'universal/store/modules/resource';
 
 const mockRoot = join(__dirname, '..', '..', '..', 'mock');
 const tempRoot = join(__dirname, '..', '..', '..', 'temp');
@@ -15,7 +16,7 @@ describe('ResourceService', () => {
             root: tempRoot,
         },
         getters: {
-            getResource() { return undefined; },
+            getResource() { return UNKNOWN_RESOURCE; },
         },
         getPath(...p: string[]) { return join(tempRoot, ...p); },
         submit(task: Task<any>) {
@@ -41,36 +42,47 @@ describe('ResourceService', () => {
         test('should import a forge mod resource', async () => {
             const service = new ResourceService();
             Object.entries(mocks).forEach(([k, v]) => Reflect.set(service, k, v));
-            await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.jar') });
+            const srcPath = join(mockRoot, 'mods', 'sample-mod.jar');
+            const r = await service.importUnknownResource({ path: srcPath });
+            expect(r.path).toEqual(forgeJar);
+            expect(r.source.file!.path).toEqual(srcPath);
             await expect(fs.exists(forgeJar))
                 .resolves.toBe(true);
             await expect(fs.exists(forgeJson))
                 .resolves.toBe(true);
+            const o = await fs.readFile(forgeJson).then(b => JSON.parse(b.toString()));
+            expect(o).toEqual(r);
         });
         test('should import a forge mod resource with forge hint', async () => {
             const service = new ResourceService();
             Object.entries(mocks).forEach(([k, v]) => Reflect.set(service, k, v));
-            await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.jar'), type: 'forge' });
+            const r = await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.jar'), type: 'forge' });
             await expect(fs.exists(forgeJar))
                 .resolves.toBe(true);
             await expect(fs.exists(forgeJson))
                 .resolves.toBe(true);
+            const o = await fs.readFile(forgeJson).then(b => JSON.parse(b.toString()));
+            expect(o).toEqual(r);
         });
         test('should import a forge mod resource with mods hint', async () => {
             const service = new ResourceService();
             Object.entries(mocks).forEach(([k, v]) => Reflect.set(service, k, v));
-            await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.jar'), type: 'mods' });
+            const r = await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.jar'), type: 'mods' });
             await expect(fs.exists(forgeJar))
                 .resolves.toBe(true);
             await expect(fs.exists(forgeJson))
                 .resolves.toBe(true);
+            const o = await fs.readFile(forgeJson).then(b => JSON.parse(b.toString()));
+            expect(o).toEqual(r);
         });
         test('should import a liteloader mod', async () => {
             const service = new ResourceService();
             Object.entries(mocks).forEach(([k, v]) => Reflect.set(service, k, v));
-            await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
+            const r = await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
             await expect(fs.exists(liteMod)).resolves.toBe(true);
             await expect(fs.exists(liteJson)).resolves.toBe(true);
+            const o = await fs.readFile(liteJson).then(b => JSON.parse(b.toString()));
+            expect(o).toEqual(r);
         });
     });
     describe('#removeResource', () => {
@@ -83,7 +95,7 @@ describe('ResourceService', () => {
             }).forEach(([k, v]) => Reflect.set(service, k, v));
             const resource = await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
             await service.removeResource(resource);
-            expect(rm).toHaveBeenCalledWith('removeResource', resource);
+            expect(rm).toHaveBeenCalledWith('resourceRemove', resource);
             await expect(fs.missing(liteMod)).resolves.toBe(true);
             await expect(fs.missing(liteJson)).resolves.toBe(true);
         });

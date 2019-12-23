@@ -20,9 +20,9 @@
 </template>
 
 <script lang=ts>
+import { GameSetting } from '@xmcl/minecraft-launcher-core';
 import { createComponent, reactive, toRefs } from '@vue/composition-api';
 import { useAutoSaveLoad, useInstanceGameSetting } from '@/hooks';
-import { GameSetting } from '@xmcl/minecraft-launcher-core';
 
 export default createComponent({
   setup() {
@@ -60,6 +60,7 @@ export default createComponent({
     useAutoSaveLoad(save, load);
     return {
       ...toRefs(data),
+       
       triggerGraphic(g: Graphic) {
         const index = g.options.indexOf(g.val as never);
         const nextIndex = (index + 1) % g.options.length;

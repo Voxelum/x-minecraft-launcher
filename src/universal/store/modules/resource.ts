@@ -109,11 +109,12 @@ const mod: ResourceModule = {
             resourcepacks: [],
             saves: [],
             modpacks: [],
+            unknown: [],
         },
         directory: {},
     },
     getters: {
-        domains: () => ['mods', 'resourcepacks', 'modpacks', 'saves'],
+        domains: () => ['mods', 'resourcepacks', 'modpacks', 'saves', 'unknown'],
         mods: state => state.domains.mods,
         resourcepacks: state => state.domains.resourcepacks,
         saves: state => state.domains.saves,
@@ -164,7 +165,11 @@ const mod: ResourceModule = {
         resourceRemove(state, resource) {
             if (resource.domain in state.domains) {
                 const domain = state.domains[resource.domain];
-                Vue.delete(domain, domain.indexOf(resource) || domain.findIndex(r => r.hash === resource.hash));
+                const index = domain.findIndex(r => r.hash === resource.hash);
+                if (index === -1) {
+                    console.warn(`Cannot find resouce ${resource.name}[${resource.hash}] in domain!`);
+                }
+                Vue.delete(domain, index);
                 Vue.delete(state.directory, resource.hash);
                 for (const u of resource.source.uri) {
                     Vue.delete(state.directory, u);

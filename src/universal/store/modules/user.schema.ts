@@ -1,5 +1,6 @@
 import { Auth, ProfileService } from '@xmcl/minecraft-launcher-core';
 import { GameProfile } from '@xmcl/profile-service';
+import Schema from '../Schema';
 
 /* eslint-disable import/export  */
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -84,4 +85,4 @@ export interface UserSchema {
     clientToken: string;
 }
 
-export const UserSchema: object = require('./UserSchema.json'); 
+export const UserSchema: Schema<UserSchema> = require('./UserSchema.json'); 

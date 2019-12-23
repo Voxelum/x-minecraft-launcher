@@ -104,7 +104,9 @@
 
 <script lang=ts>
 import { createComponent } from '@vue/composition-api';
-import { useCurseforgePreview } from '@/hooks';
+import { 
+  useCurseforgePreview,
+} from '@/hooks';
 
 export default createComponent({
   props: {
@@ -117,6 +119,7 @@ export default createComponent({
     const preview = useCurseforgePreview(props.type as any);
     return {
       ...preview,
+       
     };
   },
 });

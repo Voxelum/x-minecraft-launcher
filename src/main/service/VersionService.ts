@@ -2,8 +2,7 @@ import { Util, Version } from '@xmcl/minecraft-launcher-core';
 import { shell } from 'electron';
 import { remove } from 'fs-extra';
 import { fs, getExpectVersion, requireString } from 'main/utils';
-import { readFolder, setPersistence } from 'main/utils/persistence';
-import { MutationKeys } from 'universal/store';
+import { readFolder } from 'main/utils/persistence';
 import { LocalVersion } from 'universal/store/modules/version';
 import Service from './Service';
 
@@ -13,30 +12,6 @@ import Service from './Service';
 export default class VersionService extends Service {
     async load() {
         await this.refreshVersions();
-    }
-
-    async save({ mutation }: { mutation: MutationKeys }) {
-        switch (mutation) {
-            case 'minecraftMetadata':
-                await setPersistence({
-                    path: this.getPath('version.json'),
-                    data: this.state.version.minecraft,
-                });
-                break;
-            case 'forgeMetadata':
-                await setPersistence({
-                    path: this.getPath('forge-versions.json'),
-                    data: this.state.version.forge,
-                });
-                break;
-            case 'liteloaderMetadata':
-                await setPersistence({
-                    path: this.getPath('lite-versions.json'),
-                    data: this.state.version.liteloader,
-                });
-                break;
-            default:
-        }
     }
 
     async refreshVersions() {

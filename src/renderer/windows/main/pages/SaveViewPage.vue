@@ -155,14 +155,19 @@
 <script lang="ts">
 import { createComponent, reactive, toRefs } from '@vue/composition-api';
 import unknown from 'renderer/assets/unknown_pack.png';
-import { useInstanceSaves, useNativeDialog, useI18n, useInstances } from '@/hooks';
+import {
+  useInstanceSaves,
+  useNativeDialog,
+  useI18n,
+  useInstances,
+} from '@/hooks';
 
 export default createComponent({
   setup() {
     const { saves, deleteSave, importSave, exportSave, copySave } = useInstanceSaves();
     const { instances } = useInstances();
     const { showSaveDialog, showOpenDialog } = useNativeDialog();
-    const { t } = useI18n();
+    const { $t } = useI18n();
     const data = reactive({
       copyFrom: false,
 
@@ -175,6 +180,7 @@ export default createComponent({
       saves,
       instances,
       ...toRefs(data),
+
       unknown,
       onDrop(event: DragEvent) {
         const length = event.dataTransfer!.files.length;
@@ -194,7 +200,6 @@ export default createComponent({
         data.deleting = '';
       },
       cancelDelete() { data.deleting = ''; },
-
       startCopy(path: string) {
         data.copying = path;
         data.copyingDest = new Array(instances.value.length);
@@ -212,20 +217,18 @@ export default createComponent({
 
       async doImport() {
         const { filePaths } = await showOpenDialog({
-          title: t('save.importTitle'),
-          message: t('save.importMessage'),
+          title: $t('save.importTitle'),
+          message: $t('save.importMessage'),
           filters: [{ extensions: ['zip'], name: 'zip' }],
         });
-        if (filePaths) {
-          for (const file of filePaths) {
-            importSave(file);
-          }
+        for (const file of filePaths) {
+          importSave(file);
         }
       },
       async doExport(path: string) {
         const { filePath } = await showSaveDialog({
-          title: t('save.exportTitle'),
-          message: t('save.exportMessage'),
+          title: $t('save.exportTitle'),
+          message: $t('save.exportMessage'),
           filters: [{ extensions: ['zip'], name: 'zip' }],
         });
         if (filePath) {

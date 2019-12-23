@@ -13,6 +13,9 @@
             "universal/*": [
                 "src/universal/*"
             ],
+            "@universal/*": [
+                "src/universal/*"
+            ],
             "static/*": [
                 "static/*"
             ],
@@ -23,6 +26,7 @@
                 "src/renderer/*"
             ],
             "@/*": [
+                "src/universal/*",
                 "src/renderer/*"
             ]
         }

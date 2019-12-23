@@ -1,11 +1,10 @@
 import { Launcher, Util } from '@xmcl/minecraft-launcher-core';
-import { fs } from 'main/utils';
 import { join } from 'path';
 import AuthLibService from './AuthLibService';
 import DiagnoseService from './DiagnoseService';
-import ResourceService from './ResourceService';
 import Service, { Inject } from './Service';
 import VersionService from './VersionService';
+import InstanceService from './InstanceService';
 
 function onerror(e: { message: string; type: string }) {
     if (e.message.startsWith('Cannot find version ') || e.message.startsWith('No version file for ') || e.message.startsWith('No version jar for ')) {
@@ -27,11 +26,11 @@ export default class LaunchService extends Service {
     @Inject('VersionService')
     private versionService!: VersionService;
 
-    @Inject('ResourceService')
-    private resourceService!: ResourceService;
-
     @Inject('AuthLibService')
     private authLibService!: AuthLibService;
+
+    @Inject('InstanceService')
+    private instanceService!: InstanceService;
 
     async launch() {
         try {
@@ -56,14 +55,14 @@ export default class LaunchService extends Service {
                 return false;
             }
 
-            for (let problems = this.getters.problems.filter(p => p.autofix), i = 0;
+            for (let problems = this.getters.issues.filter(p => p.autofix), i = 0;
                 problems.length !== 0 && i < 1;
-                problems = this.getters.problems.filter(p => p.autofix), i += 1) {
-                await this.diagnoseService.fixProfile(this.getters.problems.filter(p => !p.optional && p.autofix));
+                problems = this.getters.issues.filter(p => p.autofix), i += 1) {
+                await this.diagnoseService.fix(this.getters.issues.filter(p => !p.optional && p.autofix));
             }
 
-            if (this.getters.problems.some(p => !p.optional)) {
-                this.commit('launchErrors', { type: 'unresolvableProblems', content: this.getters.problems.filter(p => !p.optional) });
+            if (this.getters.issues.some(p => !p.optional)) {
+                this.commit('launchErrors', { type: 'unresolvableProblems', content: this.getters.issues.filter(p => !p.optional) });
                 return false;
             }
 
@@ -74,7 +73,7 @@ export default class LaunchService extends Service {
             this.commit('launchStatus', 'launching');
 
             const debug = instance.showLog;
-            const minecraftFolder = new Util.MinecraftFolder(join(this.state.root, 'profiles', instance.id));
+            const minecraftFolder = new Util.MinecraftFolder(join(this.state.root, 'instances', instance.id));
 
             /**
              * real version name
@@ -85,7 +84,7 @@ export default class LaunchService extends Service {
 
             console.log(`Will launch with ${version} version.`);
 
-            const javaPath = this.getters.instanceJava.path;
+            const javaPath = this.getters.instanceJava.path || this.getters.defaultJava.path;
             /**
              * Build launch condition
              */
@@ -101,7 +100,8 @@ export default class LaunchService extends Service {
                 version,
                 extraExecOption: {
                     detached: true,
-                    cwd: minecraftFolder.root,
+                    cwd: undefined,
+                    env: undefined,
                 },
                 yggdrasilAgent: user.authService !== 'mojang' && user.authService !== 'offline' ? {
                     jar: await this.authLibService.ensureAuthlibInjection(),
@@ -109,53 +109,18 @@ export default class LaunchService extends Service {
                 } : undefined,
             };
 
-            console.log('Launching a server');
             if ('server' in instance && instance.server?.host) {
+                console.log('Launching a server');
                 option.server = {
                     ip: instance.server?.host,
                     port: instance.server?.port,
                 };
             }
 
-            // const deployResources = this.getters.instanceResources;
-            // console.log('Deploy all resources...');
-            // for (const domain of Object.keys(deployResources)) {
-            //     try {
-            //         console.log(`Deploying ${deployResources[domain].length} resources for ${domain}`);
-            //         const dir = join(option.gamePath, domain);
-            //         if (await fs.missing(dir)) {
-            //             await fs.mkdir(dir);
-            //         }
-            //         const files = await fs.readdir(dir);
-            //         for (const file of files) {
-            //             const fp = join(dir, file);
-            //             const isLink = await fs.stat(fp).then(s => s.isSymbolicLink());
-            //             if (isLink) {
-            //                 await fs.unlink(fp);
-            //             }
-            //         }
-            //         await this.resourceService.deployResources({
-            //             resourceUrls: deployResources[domain],
-            //             profile: instance.id,
-            //         });
-            //     } catch (e) {
-            //         console.error(`Cannot deploy ${domain}`);
-            //         console.error(e);
-            //     }
-            // }
+            this.instanceService.deploy(true);
 
-            // try {
-            //     // we link the resource pack whatever 
-            //     await this.resourceService.deployResources({
-            //         resourceUrls: this.getters.resourcepacks.map(r => r.hash),
-            //         profile: instance.id,
-            //     });
-            // } catch (e) {
-            //     console.error('Cannot deploy resource packs');
-            //     console.error(e);
-            // }
             console.log('Launching with these option...');
-            console.log(JSON.stringify(option));
+            console.log(JSON.stringify(option, null, 2));
 
             // Launch
             const process = await Launcher.launch(option);
@@ -166,7 +131,9 @@ export default class LaunchService extends Service {
             const eventBus = this.managers.AppManager.eventBus;
             eventBus.emit('minecraft-start', debug);
             process.on('error', (err) => {
-                console.log(err);
+                console.error(err);
+                this.commit('launchErrors', { type: 'general', content: [err] });
+                this.commit('launchStatus', 'ready');
             });
             process.on('exit', (code, signal) => {
                 console.log(`exit: ${code}, signal: ${signal}`);
@@ -204,12 +171,14 @@ export default class LaunchService extends Service {
                 eventBus.emit('minecraft-stdout', string);
             });
             process.stderr?.on('data', (s) => {
+                console.warn(s.toString());
                 eventBus.emit('minecraft-stderr', s.toString());
             });
             process.unref();
             return true;
         } catch (e) {
             this.commit('launchErrors', { type: 'general', content: [e] });
+            this.commit('launchStatus', 'ready');
             return false;
         }
     }

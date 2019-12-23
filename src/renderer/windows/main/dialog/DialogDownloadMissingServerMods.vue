@@ -43,11 +43,11 @@
 </template>
 
 <script lang=ts>
-import { reactive, createComponent, computed, toRefs } from '@vue/composition-api';
+import { createComponent, computed } from '@vue/composition-api';
 import { useDialogSelf } from '@/hooks';
 
 export default createComponent({
-  setup(props) {
+  setup() {
     const { isShown, dialogOption } = useDialogSelf('download-missing-mods');
     const items = computed(() => (dialogOption.value ? dialogOption.value.map((i: any) => ({ ...i, status: 'unknown', task: '' })) : []));
     const canDownload = computed(() => items.value.some((i: { status: string }) => i.status === 'founded'));

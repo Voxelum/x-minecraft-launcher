@@ -32,16 +32,18 @@
 </template>
 
 <script lang=ts>
+import { createComponent } from '@vue/composition-api';
 import resourcepack from '@/assets/curseforge_resourcepack.png';
 import mods from '@/assets/curseforge_mods.png';
 import modpack from '@/assets/curseforge_modpack.png';
 import worlds from '@/assets/curseforge_worlds.png';
 import { useNetworkStatus } from '@/hooks';
 
-export default {
+export default createComponent({
   setup() {
     const { online } = useNetworkStatus();
     return {
+       
       targets: ['mc-mods', 'texture-packs', 'worlds', 'modpacks'],
       online,
       images: {
@@ -52,7 +54,7 @@ export default {
       },
     };
   },
-};
+});
 </script>
 
 <style scoped=true>

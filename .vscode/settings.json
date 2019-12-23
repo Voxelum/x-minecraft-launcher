@@ -19,8 +19,10 @@
     "vetur.useWorkspaceDependencies": true,
     "vetur.format.defaultFormatter.js": "vscode-typescript",
     "vetur.format.defaultFormatter.ts": "vscode-typescript",
+    "vetur.format.enable": true,
     "vetur.validation.template": true,
     "vetur.validation.script": true,
+    "vetur.experimental.templateInterpolationService": false,
     "vetur.format.defaultFormatter.html": "none",
     "vetur.format.defaultFormatterOptions": {
         "vscode-typescript": {
@@ -36,5 +38,10 @@
             "wrap_line_length": 100
         }
     },
-    "typescript.tsdk": "node_modules/typescript/lib"
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "i18n-ally.localesPaths": [
+        "static/locales"
+    ],
+    "i18n-ally.keystyle": "nested",
+    "i18n-ally.sortKeys": true
 }

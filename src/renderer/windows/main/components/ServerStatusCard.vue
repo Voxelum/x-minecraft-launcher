@@ -36,8 +36,8 @@
 </template>
 
 <script lang=ts>
-import { useServerStatus } from '@/hooks';
 import { ref, onMounted, createComponent } from '@vue/composition-api';
+import { useServerStatus } from '@/hooks';
 
 export default createComponent({
   setup() {

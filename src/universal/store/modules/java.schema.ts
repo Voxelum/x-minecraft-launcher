@@ -1,3 +1,5 @@
+import Schema from '../Schema';
+
 /* eslint-disable import/export  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
@@ -19,4 +21,4 @@ export interface JavaSchema {
     default: number;
 }
 
-export const JavaSchema: object = require('./JavaSchema.json');
+export const JavaSchema: Schema<JavaSchema> = require('./JavaSchema.json');

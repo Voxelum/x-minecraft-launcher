@@ -1,3 +1,5 @@
+import Schema from '../Schema';
+
 /* eslint-disable import/export  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
@@ -188,6 +190,6 @@ export interface Instance extends InstanceLockSchema {
     config: InstanceSchema;
 }
 
-export const InstanceSchema: object = require('./InstanceSchema.json');
-export const InstancesSchema: object = require('./InstancesSchema.json');
-export const InstanceLockSchema: object = require('./InstanceLockSchema.json');
+export const InstanceSchema: Schema<InstanceSchema> = require('./InstanceSchema.json');
+export const InstancesSchema: Schema<InstancesSchema> = require('./InstancesSchema.json');
+export const InstanceLockSchema: Schema<InstanceLockSchema> = require('./InstanceLockSchema.json');

@@ -5,24 +5,49 @@
         <span class="headline">{{ $t('profile.launchingDetail') }}</span>
       </v-flex>
       <v-flex d-flex xs12>
-        <v-select v-model="java" hide-details outline :item-text="getJavaText"
-                  :item-value="getJavaValue" prepend-inner-icon="add" :label="$t('java.location')" :items="javas" required
-                  :menu-props="{ auto: true, overflowY: true }" @click:prepend-inner="browseFile" />
+        <v-select v-model="java" 
+                  hide-details 
+                  outline 
+                  required
+                  prepend-inner-icon="add" 
+                  :item-text="getJavaText"
+                  :item-value="getJavaValue" 
+                  :label="$t('java.location')"
+                  :placeholder="$t('java.locationPlaceHolder')"
+                  :items="javas" 
+                  :menu-props="{ auto: true, overflowY: true }" 
+                  @click:prepend-inner="browseFile" />
       </v-flex>
       <v-flex d-flex xs6>
-        <v-text-field v-model="minMemory" hide-details outline type="number" :label="$t('java.minMemory')"
-                      required clearable :placeholder="$t('java.noMemory')" />
+        <v-text-field v-model="minMemory" 
+                      hide-details 
+                      outline 
+                      type="number" 
+                      required 
+                      clearable 
+                      :label="$t('java.minMemory')"
+                      :placeholder="$t('java.noMemory')" />
       </v-flex>
       <v-flex d-flex xs6>
-        <v-text-field v-model="maxMemory" hide-details outline type="number" :label="$t('java.maxMemory')" 
-                      required clearable :placeholder="$t('java.noMemory')" />
+        <v-text-field v-model="maxMemory" 
+                      hide-details 
+                      outline 
+                      type="number" 
+                      required 
+                      clearable 
+                      :label="$t('java.maxMemory')" 
+                      :placeholder="$t('java.noMemory')" />
       </v-flex>
       <v-flex d-flex xs12>
-        <args-combobox v-model="vmOptions" :label="$t('profile.vmOptions')" :create-hint="$t('profile.vmOptionsCreateHint')"
+        <args-combobox v-model="vmOptions" 
+                       :label="$t('profile.vmOptions')" 
+                       :create-hint="$t('profile.vmOptionsCreateHint')"
                        :hint="$t('profile.vmOptionsHint')" />
       </v-flex>
       <v-flex d-flex xs12>
-        <args-combobox v-model="mcOptions" :label="$t('profile.mcOptions')" :create-hint="$t('profile.mcOptionsCreateHint')"
+        <args-combobox v-model="mcOptions" 
+                       :label="$t('profile.mcOptions')" 
+                       :create-hint="$t('profile.mcOptionsCreateHint')"
                        :hint="$t('profile.mcOptionsHint')" />
       </v-flex>
     </v-layout>
@@ -46,7 +71,7 @@ import {
 
 export default createComponent({
   setup() {
-    const { t } = useI18n();
+    const { $t } = useI18n();
     const { showOpenDialog } = useNativeDialog();
     const {
       edit,
@@ -55,22 +80,16 @@ export default createComponent({
       vmOptions,
       mcOptions,
       java,
+      javaPath,
+      setJavaPath,
     } = useInstance();
     const { all: javas, add } = useJava();
 
-    const data: {
-      vmOptions: Array<{ text: string }>;
-      mcOptions: Array<{ text: string }>;
-      maxMemory?: number;
-      minMemory?: number;
-      memoryRange: number[];
-      memoryRule: Function[];
-      java: Java;
-    } = reactive({
-      vmOptions: [],
-      mcOptions: [],
-      maxMemory: undefined,
-      minMemory: undefined,
+    const data = reactive({
+      vmOptions: [] as { text: string }[],
+      mcOptions: [] as { text: string }[],
+      maxMemory: undefined as number | undefined,
+      minMemory: undefined as number | undefined,
       memoryRange: [256, 10240],
       memoryRule: [(v: any) => Number.isInteger(v)],
 
@@ -83,20 +102,21 @@ export default createComponent({
         maxMemory: data.maxMemory,
         vmOptions: data.vmOptions.map(o => o.text),
         mcOptions: data.mcOptions.map(o => o.text),
-        java: data.java,
+        java: data.java.version.toString(),
       });
+      setJavaPath(data.java.path);
     }
     function load() {
       data.maxMemory = maxMemory.value;
       data.minMemory = minMemory.value;
       data.vmOptions = vmOptions.value.map(a => ({ text: a }));
       data.mcOptions = mcOptions.value.map(a => ({ text: a }));
-
-      if (java.value) {
-        const found = javas.value.find(j => j.path === java.value.path);
-        if (found) {
-          data.java = found;
-        }
+      if (javaPath.value) {
+        const found = javas.value.find(j => j.path === javaPath.value);
+        if (found) { data.java = found; }
+      } else if (java.value) {
+        const found = javas.value.find(j => j.version === java.value || j.majorVersion.toString() === java.value);
+        if (found) { data.java = found; }
       }
     }
     useAutoSaveLoad(save, load);
@@ -106,7 +126,7 @@ export default createComponent({
       javas,
       async browseFile() {
         const { filePaths } = await showOpenDialog({
-          title: t('java.browser'),
+          title: $t('java.browser'),
         });
         filePaths.forEach(add);
       },

@@ -128,13 +128,13 @@ export default createComponent({
   },
   setup(props, context) {
     const { state, commit } = useStore();
-    const { t } = useI18n();
+    const { $t } = useI18n();
     const urlRules = [
-      (value: string) => !!HTTP_EXP.test(value) || t('user.service.invalidUrl'),
+      (value: string) => !!HTTP_EXP.test(value) || $t('user.service.invalidUrl'),
     ];
     const nameRules = [
-      (value: string) => !!value || t('user.service.requireName'),
-      (value: string) => !state.user.authServices[value] || t('user.service.duplicatedName'),
+      (value: string) => !!value || $t('user.service.requireName'),
+      (value: string) => !state.user.authServices[value] || $t('user.service.duplicatedName'),
     ];
     const authOrder = ['hostName', 'authenticate', 'refresh', 'validate', 'invalidate', 'signout'];
     const data = reactive({

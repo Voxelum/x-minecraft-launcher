@@ -80,10 +80,10 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, watch, set } from '@vue/composition-api';
-import { useDialogSelf, useInstanceLogs, useShell } from '@/hooks';
+import { reactive, toRefs, watch, set, createComponent } from '@vue/composition-api';
+import { useDialogSelf, useInstanceLogs } from '@/hooks';
 
-export default {
+export default createComponent({
   setup() {
     const {
       listLogs,
@@ -186,7 +186,7 @@ export default {
       },
     };
   },
-};
+});
 </script>
 
 <style>

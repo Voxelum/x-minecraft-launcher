@@ -128,7 +128,7 @@ export default class ResourceService extends Service {
                 },
             };
             if (expectedSource) {
-                builder.source[expectedSource.key] = Object.assign({}, expectedSource.value, extra);
+                builder.source[expectedSource.key] = { ...expectedSource.value, ...extra };
             }
 
             // use parser to parse metadata
@@ -173,19 +173,20 @@ export default class ResourceService extends Service {
                 type: '',
                 metadata: {},
                 source: {
-                    uri: [`file://${resolve(path)}`],
+                    uri: [],
+                    file: { path },
                     date: Date.now(),
                     ...metadata,
                 },
             };
             builder.name = basename(path, builder.ext);
 
+
             // check the resource existence
             context.update(1, 4, path);
             const checking = async () => {
-                // TODO: do a more strict check
                 const resource = this.getters.getResource(builder.hash);
-                if (resource) {
+                if (resource !== UNKNOWN_RESOURCE) {
                     Object.assign(builder, resource, { source: builder.source });
                     return true;
                 }
@@ -455,6 +456,7 @@ export default class ResourceService extends Service {
         filePath = resolve(filePath);
         metadataPath = resolve(metadataPath);
         iconPath = resolve(iconPath);
+        builder.path = filePath;
 
         await fs.ensureFile(filePath);
         await fs.writeFile(filePath, data);
@@ -462,7 +464,6 @@ export default class ResourceService extends Service {
         if (builder.icon) {
             await fs.writeFile(iconPath, builder.icon);
         }
-        builder.path = filePath;
     }
 
     private async discardResourceOnDisk(resource: Readonly<AnyResource>) {
@@ -506,7 +507,7 @@ export default class ResourceService extends Service {
      */
     async refreshResource(res: string | AnyResource) {
         const resource = this.normalizeResource(res);
-        if (!resource) return;
+        if (resource === UNKNOWN_RESOURCE) return;
         try {
             const builder = toBuilder(resource);
             const data = await fs.readFile(resource.path);
@@ -525,7 +526,7 @@ export default class ResourceService extends Service {
      */
     async touchResource(res: string | AnyResource) {
         const resource = this.normalizeResource(res);
-        if (!resource) return;
+        if (resource === UNKNOWN_RESOURCE) return;
 
         try {
             const builder = toBuilder(resource);
@@ -549,7 +550,7 @@ export default class ResourceService extends Service {
      */
     async removeResource(resource: string | AnyResource) {
         const resourceObject = this.normalizeResource(resource);
-        if (!resourceObject) return;
+        if (resourceObject === UNKNOWN_RESOURCE) return;
         this.commit('resourceRemove', resourceObject);
         const ext = extname(resourceObject.path);
         const pure = resourceObject.path.substring(0, resourceObject.path.length - ext.length);

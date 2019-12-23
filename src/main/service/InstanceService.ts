@@ -28,6 +28,9 @@ const INSTANCE_LOCK_JSON = 'instance-lock.json';
  * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
  */
 export default class InstanceService extends Service {
+    @Inject('JavaService')
+    protected readonly javaService!: JavaService;
+
     @Inject('ServerStatusService')
     protected readonly statusService!: ServerStatusService;
 
@@ -45,7 +48,8 @@ export default class InstanceService extends Service {
         return this.getPath(INSTANCES_FOLDER, ...ps);
     }
 
-    async loadInstanceGameSettings(id: string = this.state.instance.id) {
+    async loadInstanceGameSettings(id?: string) {
+        id = id || this.state.instance.id;
         requireString(id);
         const { commit } = this;
 
@@ -88,17 +92,10 @@ export default class InstanceService extends Service {
         const { commit } = this;
 
         const jsonPath = this.getPathUnder(id, INSTANCE_LOCK_JSON);
-        if (await fs.missing(jsonPath)) {
-            await fs.remove(this.getPathUnder(id));
-            this.warn(`Corrupted instance ${id}`);
-            return;
-        }
-
         let option: InstanceLockSchema;
         try {
             option = await getPersistence({ path: jsonPath, schema: InstanceLockSchema });
         } catch (e) {
-            this.warn(`Corrupted instance json ${id}`);
             return;
         }
 
@@ -193,8 +190,8 @@ export default class InstanceService extends Service {
             case 'instanceSelect':
                 await setPersistence({
                     path: this.getPath(INSTANCES_JSON),
-                    data: { selectedProfile: payload },
-                    schema: InstanceSchema,
+                    data: { selectedInstance: payload },
+                    schema: InstancesSchema,
                 });
                 break;
             case 'instanceGameSettings':
@@ -202,10 +199,16 @@ export default class InstanceService extends Service {
                     GameSetting.stringify(this.state.instance.settings));
                 break;
             case 'instanceAdd':
-            case 'instance':
                 await setPersistence({
                     path: this.getPathUnder(payload.id, INSTANCE_JSON),
                     data: payload,
+                    schema: InstanceSchema,
+                });
+                break;
+            case 'instance':
+                await setPersistence({
+                    path: this.getPathUnder(this.state.instance.id, INSTANCE_JSON),
+                    data: this.state.instance.all[this.state.instance.id],
                     schema: InstanceSchema,
                 });
                 break;
@@ -213,7 +216,7 @@ export default class InstanceService extends Service {
             case 'instanceDeployInfo':
                 await setPersistence({
                     path: this.getPathUnder(this.state.instance.id, INSTANCE_LOCK_JSON),
-                    data: payload,
+                    data: { java: this.state.instance.java, deployed: this.state.instance.deployed },
                     schema: InstanceLockSchema,
                 });
                 break;
@@ -349,6 +352,14 @@ export default class InstanceService extends Service {
             this.commit('instanceStatus', PINGING_STATUS);
             const status = await this.statusService.pingServer({ host, port });
             this.commit('instanceStatus', status);
+        }
+    }
+
+    async setJavaPath(path: string) {
+        const resolved = await this.javaService.resolveJava(path);
+        if (resolved) {
+            this.commit('instanceJava', path);
+            this.editInstance({ java: resolved.majorVersion.toString() });
         }
     }
 

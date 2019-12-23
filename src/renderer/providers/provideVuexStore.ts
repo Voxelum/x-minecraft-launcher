@@ -1,12 +1,24 @@
-import Vue from 'vue';
-import Vuex, { MutationPayload } from 'vuex';
+import { provide } from '@vue/composition-api';
 import storeOption from 'universal/store';
-import { ipcRenderer } from '../constant';
+import Vue from 'vue';
+import Vuex, { Store, MutationPayload } from 'vuex';
+import { ipcRenderer, STORE_KEY } from '../constant';
 
-export default function provideVuexStore(...option: string[]) {
+/**
+ * provide vuex store for certain modules.
+ * @param modules The accept module. If this's empty, it will load all modules
+ */
+export default function provideVuexStore(...modules: string[]) {
     storeOption.modules = {
         ...storeOption.modules,
     };
+    if (modules.length !== 0) {
+        for (const m of Object.keys(storeOption.modules)) {
+            if (modules.indexOf(m) === -1) {
+                delete storeOption.modules[m];
+            }
+        }
+    }
     storeOption.plugins = [
         ...(storeOption.plugins || []),
     ];
@@ -82,5 +94,7 @@ export default function provideVuexStore(...option: string[]) {
         ipcRenderer.invoke('commit', type, payload);
     };
 
-    return localStore;
+    provide(STORE_KEY, localStore);
+
+    return localStore as Store<any>;
 }

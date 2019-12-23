@@ -164,10 +164,10 @@
     "dependencies": {
         "7zip-min": "^1.1.1",
         "@vue/composition-api": "^0.3.4",
-        "@xmcl/minecraft-launcher-core": "^1.1.1",
+        "@xmcl/minecraft-launcher-core": "^1.3.0",
         "@xmcl/text-component": "1.0.3",
         "@xmcl/profile-service": "1.0.3",
-        "@xmcl/util": "^1.0.3",
+        "@xmcl/util": "^1.0.4",
         "@xmcl/unzip": "^1.0.3",
         "ajv": "^6.10.2",
         "electron-updater": "^4.0.6",

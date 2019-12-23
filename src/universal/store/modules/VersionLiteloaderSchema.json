@@ -1,0 +1,122 @@
+{
+    "type": "object",
+    "properties": {
+        "timestamp": {
+            "default": "",
+            "type": "string"
+        },
+        "meta": {
+            "default": {},
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "authors": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "updated": {
+                    "type": "string"
+                },
+                "updatedTime": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "authors",
+                "description",
+                "updated",
+                "updatedTime",
+                "url"
+            ]
+        },
+        "versions": {
+            "default": {},
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "snapshot": {
+                        "$ref": "#/definitions/LiteloaderVersionMeta"
+                    },
+                    "release": {
+                        "$ref": "#/definitions/LiteloaderVersionMeta"
+                    }
+                }
+            }
+        }
+    },
+    "required": [
+        "meta",
+        "timestamp",
+        "versions"
+    ],
+    "definitions": {
+        "LiteloaderVersionMeta": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "file": {
+                    "type": "string"
+                },
+                "mcversion": {
+                    "type": "string"
+                },
+                "type": {
+                    "enum": [
+                        "RELEASE",
+                        "SNAPSHOT"
+                    ],
+                    "type": "string"
+                },
+                "md5": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "libraries": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "url": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name"
+                        ]
+                    }
+                },
+                "tweakClass": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "file",
+                "libraries",
+                "mcversion",
+                "md5",
+                "timestamp",
+                "tweakClass",
+                "type",
+                "url",
+                "version"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false
+}

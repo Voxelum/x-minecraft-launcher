@@ -35,7 +35,7 @@ import { useLaunch, useDialogSelf, useI18n } from '@/hooks';
 export default {
   setup() {
     const progressText = ref('');
-    const { t } = useI18n();
+    const { $t } = useI18n();
     const { errorType, errors, status } = useLaunch();
     const { isShown, showDialog, closeDialog } = useDialogSelf('launch-status');
     onMounted(() => {
@@ -46,18 +46,15 @@ export default {
             break;
           case 'checkingProblems':
             showDialog();
-            progressText.value = t('launch.checkingProblems');
+            progressText.value = $t('launch.checkingProblems');
             break;
           case 'launching':
             showDialog();
-            progressText.value = t('launch.launching');
-            setTimeout(() => { progressText.value = t('launch.launchingSlow'); }, 4000);
+            progressText.value = $t('launch.launching');
+            setTimeout(() => { progressText.value = $t('launch.launchingSlow'); }, 4000);
             break;
           case 'minecraftReady':
             closeDialog();
-            break;
-          case 'error':
-            showDialog();
             break;
           default:
         }

@@ -26,8 +26,25 @@
             "type": "string"
         },
         "metadata": {
-            "$ref": "#/definitions/T",
-            "description": "The resource specific metadata"
+            "description": "The resource specific metadata",
+            "anyOf": [
+                {
+                    "type": "object",
+                    "properties": {},
+                    "additionalProperties": true
+                },
+                {
+                    "$ref": "#/definitions/T"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": true
+                    }
+                }
+            ]
         },
         "source": {
             "$ref": "#/definitions/Source",
@@ -102,6 +119,18 @@
                     },
                     "required": [
                         "fileId"
+                    ]
+                },
+                "file": {
+                    "description": "Import from local disk",
+                    "type": "object",
+                    "properties": {
+                        "path": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "path"
                     ]
                 }
             },

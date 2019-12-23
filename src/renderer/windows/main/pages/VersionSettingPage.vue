@@ -82,7 +82,7 @@
 <script lang=ts>
 import Vue from 'vue';
 import { createComponent, reactive, computed, ref, onMounted, onUnmounted, toRefs, watch } from '@vue/composition-api';
-import { useAutoSaveLoad, useInstance } from '@/hooks';
+import { useAutoSaveLoad, useInstance, useI18n } from '@/hooks';
 
 export default createComponent({
   setup() {
@@ -100,7 +100,7 @@ export default createComponent({
       liteloaderVersion: '',
     });
     const refs = toRefs(data);
-    const { edit, version } = useInstance();
+    const { edit, runtime } = useInstance();
     const localVersion = computed(() => ({ minecraft: data.mcversion, forge: data.forgeVersion, liteloader: data.liteloaderVersion }));
     const barColor = computed(() => {
       switch (data.active) {
@@ -113,7 +113,7 @@ export default createComponent({
     });
     function save() {
       edit({
-        version: {
+        runtime: {
           minecraft: data.mcversion,
           forge: data.forgeVersion,
           liteloader: data.liteloaderVersion,
@@ -121,7 +121,7 @@ export default createComponent({
       });
     }
     async function load() {
-      const { forge, minecraft, liteloader } = version.value;
+      const { forge, minecraft, liteloader } = runtime.value;
       data.mcversion = minecraft;
       Vue.nextTick(() => {
         data.forgeVersion = forge;
@@ -147,6 +147,7 @@ export default createComponent({
 
     return {
       ...refs,
+       
       localVersion,
       filterText,
       setLocalVersion(v: { minecraft: string; forge: string; liteloader: string }) {

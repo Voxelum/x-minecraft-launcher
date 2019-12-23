@@ -59,7 +59,7 @@
 <script lang=ts>
 import { createComponent, computed } from '@vue/composition-api';
 import { ForgeWebPage } from '@xmcl/minecraft-launcher-core';
-import { useForgeVersions } from '@/hooks';
+import { useForgeVersions, useI18n } from '@/hooks';
 
 export default createComponent({
   props: {

@@ -28,9 +28,9 @@
 
 <script lang=ts>
 import { createComponent, computed } from '@vue/composition-api';
-import { useMinecraftVersions, useCompatible, useIsCompatible } from '@/hooks';
 import { LocalVersion } from 'universal/store/modules/version';
 import { Installer } from '@xmcl/minecraft-launcher-core';
+import { useMinecraftVersions, useIsCompatible } from '@/hooks';
 
 export default createComponent({
   props: {

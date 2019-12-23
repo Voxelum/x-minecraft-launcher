@@ -22,6 +22,10 @@ export function useInstance() {
     const server = computed(() => instance.server);
     const refreshing = computed(() => state.semaphore.instance > 0);
     const refs = toRefs(instance);
+    const javaPath = computed(() => state.instance.java);
+    function setJavaPath(path: string) {
+        services.InstanceService.setJavaPath(path);
+    }
 
     return {
         ...refs,
@@ -34,6 +38,8 @@ export function useInstance() {
         exportTo: services.InstanceService.exportInstance,
         refresh: services.InstanceService.refreshInstance,
         refreshing,
+        javaPath,
+        setJavaPath,
     };
 }
 
@@ -60,7 +66,7 @@ export function useInstanceCreation() {
     const { release } = useMinecraftVersions();
     const data: CreateOption = reactive({
         name: '',
-        version: { forge: '', minecraft: release.value?.id || '', liteloader: '' },
+        runtime: { forge: '', minecraft: release.value?.id || '', liteloader: '' },
         java: '',
         showLog: false,
         hideLauncher: true,
@@ -79,10 +85,15 @@ export function useInstanceCreation() {
         host: '',
         port: -1,
     });
+    const serverRef: Ref<Required<CreateOption>['server']> = ref({
+        host: '',
+        port: undefined,
+    });
     const refs = toRefs(data);
     const required: Required<typeof refs> = toRefs(data) as any;
     return {
         ...required,
+        server: serverRef,
         /**
          * Commit this creation. It will create and select the instance.
          */
@@ -160,13 +171,60 @@ export function useProfileTemplates() {
  * The hook return a reactive resource pack array.
  */
 export function useInstanceResourcePacks() {
-    const { state, commit } = useStore();
-    const resourcePacks: Ref<string[]> = computed({
-        get: () => state.instance.settings.resourcePacks,
-        set: (p) => { commit('instanceGameSettings', { resourcePacks: p }); },
-    }) as any;
+    const { state, getters, services, commit: cm } = useStore();
+
+    const data = reactive({
+        packs: [] as string[],
+    });
+    /**
+     * Unused resources
+     */
+    const unusedPackResources = computed(() => state.resource.domains.resourcepacks
+        .filter(r => r.source.uri.every(i => data.packs.indexOf(i) === -1)));
+    /**
+     * Used resources
+     */
+    const usedPackResources = computed(() => data.packs.map(i => state.resource.directory[i]));
+
+    /**
+     * Add a new resource to the used list
+     */
+    function add(res: Resource<any>) {
+        data.packs.push(res.source.uri[0]);
+    }
+
+    /**
+     * Remove a resource from used list
+     */
+    function remove(index: number) {
+        Vue.delete(data.packs, index);
+    }
+
+    function swap(from: number, to: number) {
+        const last = data.packs[to];
+        data.packs[to] = last;
+        data.packs[from] = last;
+    }
+
+    /**
+     * Commit the change for current mods setting
+     */
+    function commit() {
+        cm('instanceGameSettings', { resourcePacks: usedPackResources.value.map(r => r.name + r.ext) });
+        services.InstanceService.editInstance({ deployments: { resourcepacks: data.packs } });
+    }
+
+    onMounted(() => {
+        data.packs = [...getters.instance.deployments.resourcepacks];
+    });
+
     return {
-        resourcePacks,
+        unusedPackResources,
+        usedPackResources,
+        add,
+        remove,
+        commit,
+        swap,
     };
 }
 
@@ -230,14 +288,14 @@ export function useInstanceVersion() {
 export function useInstanceMods() {
     const { state, getters, services } = useStore();
 
-    const allModResources = state.resource.domains.mods;
     const data = reactive({
         mods: [] as string[],
     });
     /**
      * Unused mod resources
      */
-    const unusedModResources = computed(() => allModResources.filter(r => r.source.uri.every(i => data.mods.indexOf(i) === -1)));
+    const unusedModResources = computed(() => state.resource.domains.mods
+        .filter(r => r.source.uri.every(i => data.mods.indexOf(i) === -1)));
     /**
      * Used mod resources
      */
@@ -265,7 +323,7 @@ export function useInstanceMods() {
     }
 
     onMounted(() => {
-        data.mods = [...getters.instance.deployments.mod];
+        data.mods = [...getters.instance.deployments.mods];
     });
 
     return {

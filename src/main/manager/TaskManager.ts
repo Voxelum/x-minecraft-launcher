@@ -37,6 +37,7 @@ export default class TaskManager extends Manager {
             this.update(node.id, progress);
         });
         this.runtime.on('execute', (node, parent) => {
+            console.log(`${node.path} exec`);
             if (parent) {
                 this.child(parent.id, node);
             } else {
@@ -45,9 +46,11 @@ export default class TaskManager extends Manager {
             this.status(node.id, 'running');
         });
         this.runtime.on('finish', (_, node) => {
+            console.log(`${node.path} finish`);
             this.status(node.id, 'successed');
         });
         this.runtime.on('fail', (error, node) => {
+            console.log(`${node.path} fail`);
             this.status(node.id, 'failed');
             let errorMessage;
             if (error instanceof Error) {

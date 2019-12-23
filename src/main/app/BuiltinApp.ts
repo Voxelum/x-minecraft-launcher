@@ -109,13 +109,13 @@ export default class BuiltinApp extends LauncherApp {
         const { getters } = this.store;
         if (this.mainRef && this.mainRef.isVisible()) {
             this.mainRef.webContents.send('minecraft-window-ready');
-            const { hideLauncher } = getters.selectedProfile;
+            const { hideLauncher } = getters.instance;
             if (hideLauncher) {
                 this.mainRef.hide();
             }
         }
 
-        if (this.loggerRef === undefined && getters.selectedProfile.showLog) {
+        if (this.loggerRef === undefined && getters.instance.showLog) {
             this.createLoggerWindow();
         }
 
@@ -151,7 +151,7 @@ export default class BuiltinApp extends LauncherApp {
     }
 
     onMinecraftExited = (status: any) => {
-        const { hideLauncher } = this.store.getters.selectedProfile;
+        const { hideLauncher } = this.store.getters.instance;
         if (hideLauncher) {
             if (this.mainRef) {
                 this.mainRef.show();

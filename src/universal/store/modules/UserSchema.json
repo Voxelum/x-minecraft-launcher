@@ -1,8 +1,8 @@
 {
     "type": "object",
     "properties": {
-        "profiles": {
-            "description": "All saved user profiles",
+        "users": {
+            "description": "All saved user account through mutliple services",
             "default": {},
             "type": "object",
             "additionalProperties": {
@@ -10,12 +10,28 @@
             }
         },
         "selectedUser": {
-            "default": "",
-            "type": "string"
-        },
-        "selectedUserProfile": {
-            "default": "",
-            "type": "string"
+            "description": "Contains the UUID-hashed account and the UUID of the currently selected user",
+            "default": {
+                "account": "",
+                "profile": ""
+            },
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "The UUID-hashed key of the currently selected user",
+                    "default": "",
+                    "type": "string"
+                },
+                "profile": {
+                    "description": "The UUID of the currently selected player",
+                    "default": "",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "profile"
+            ]
         },
         "authServices": {
             "description": "All loaded auth services api. Used for ygg auth",
@@ -33,14 +49,6 @@
                 "$ref": "#/definitions/ProfileService.API"
             }
         },
-        "loginHistory": {
-            "description": "The login history of the user for a specific auth services",
-            "default": [],
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
-        },
         "clientToken": {
             "description": "The client token of current client. The launcher will generate one at first launch.",
             "default": "",
@@ -50,11 +58,9 @@
     "required": [
         "authServices",
         "clientToken",
-        "loginHistory",
         "profileServices",
-        "profiles",
         "selectedUser",
-        "selectedUserProfile"
+        "users"
     ],
     "definitions": {
         "UserProfile": {
@@ -63,8 +69,8 @@
                 "id": {
                     "type": "string"
                 },
-                "account": {
-                    "description": "The account usually email",
+                "username": {
+                    "description": "The username usually email",
                     "type": "string"
                 },
                 "profileService": {
@@ -80,20 +86,20 @@
                     "type": "string"
                 },
                 "profiles": {
-                    "description": "all avaiable profiles",
-                    "type": "array",
-                    "items": {
+                    "description": "All avaiable pgame rofiles",
+                    "type": "object",
+                    "additionalProperties": {
                         "$ref": "#/definitions/GameProfileAndTexture"
                     }
                 }
             },
             "required": [
                 "accessToken",
-                "account",
                 "authService",
                 "id",
                 "profileService",
-                "profiles"
+                "profiles",
+                "username"
             ]
         },
         "GameProfileAndTexture": {

@@ -12,7 +12,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, computed } from '@vue/composition-api';
+import { createComponent, computed, watch } from '@vue/composition-api';
 
 const component = createComponent({
   props: {
@@ -51,6 +51,9 @@ const component = createComponent({
       }
     });
     const percentage = computed(() => props.progress / props.total * 100);
+    // watch(percentage, () => {
+    //   console.log(`PERCE CHANGED ${percentage.value}`);
+    // });
     // props.status;
     return { icon, percentage, enter() { }, leave() { } };
   },

@@ -162,8 +162,14 @@
 
 <script lang=ts>
 import { createComponent, reactive, computed, onMounted, toRefs, watch } from '@vue/composition-api';
-import { Project, Download, ProjectType } from 'main/service/CurseForgeService';
-import { useCurseforgeImport, useCurseforgeProject, useCurseforgeProjectFiles, useCurseforgeImages, useStore, useNotifier } from '@/hooks';
+import { ProjectType } from 'main/service/CurseForgeService';
+import { 
+  useCurseforgeProject, 
+  useCurseforgeProjectFiles, 
+  useCurseforgeImages, 
+  useStore, 
+  useNotifier,
+} from '@/hooks';
 
 export default createComponent({
   props: {
@@ -211,9 +217,9 @@ export default createComponent({
           return '';
       }
     }
-    function computeDate(date: string) {
+    function computeDate(date: string | number) {
       const d = new Date(0);
-      d.setUTCSeconds(Number.parseInt(date, 10));
+      d.setUTCSeconds(typeof date === 'string' ? Number.parseInt(date, 10) : date);
       return d.toLocaleDateString();
     }
 
@@ -235,6 +241,7 @@ export default createComponent({
       getColor,
       computeDate,
       viewImage,
+       
       ...dataRefs,
       ...projectRefs,
       ...projectImages,

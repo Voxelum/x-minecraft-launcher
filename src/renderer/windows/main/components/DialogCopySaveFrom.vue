@@ -74,7 +74,11 @@
 
 <script lang=ts>
 import { createComponent, reactive, computed, toRefs, onMounted, watch } from '@vue/composition-api';
-import { useInstanceSaves, useBusy, useResource } from '@/hooks';
+import { 
+  useInstanceSaves,
+ useBusy, 
+ useResource,
+  useI18n } from '@/hooks';
 
 export default createComponent({
   props: {

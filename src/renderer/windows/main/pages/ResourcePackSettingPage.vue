@@ -9,42 +9,44 @@
                       :label="$t('filter')" dark hide-details />
       </v-flex>
       <v-flex d-flex xs6 style="padding-right: 5px">
-        <v-card dark class="card-list" @drop="onDropLeft" @dragover="onDragOver" @mousewheel="onMouseWheel">
+        <v-card ref="leftList" dark class="card-list">
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.unselected') }} </span> 
           </v-card-title>
           <hint v-if="unselectedItems.length === 0" icon="save_alt" :text="$t('resourcepack.hint')" :absolute="true" />
           <div v-else class="list">
-            <resource-pack-card v-for="(pack, index) in unselectedItems"
-                                :key="pack.hash" 
+            <resource-pack-card v-for="(item, index) in unselectedItems"
+                                :key="item[0].hash" 
                                 v-observe-visibility="{
                                   callback: (v) => onItemVisibile(v, index, true),
                                   once: true,
                                 }" 
-                                :data="pack" 
+                                :data="item[0]" 
                                 :is-selected="false" 
-                                :index="index" 
-                                @dragstart="dragging = true" 
-                                @dragend="dragging = false" />
+                                :index="item[1]" 
+                                @dragstart="dragging = true"
+                                @dragend="dragging = false" 
+                                @mouseup="draggingMod = false"
+            />
           </div>
         </v-card>
       </v-flex>
       <v-flex d-flex xs6 style="padding-left: 5px">
-        <v-card dark class="card-list right" @drop="onDropRight" @dragover="onDragOver" @mousewheel="onMouseWheel">
+        <v-card ref="rightList" dark class="card-list right">
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.selected') }} </span> 
           </v-card-title>
           <hint v-if="selecetedItems.length === 0" icon="save_alt" :text="$t('resourcepack.hint')" :absolute="true" />
           <div v-else ref="rightList" class="list">
-            <resource-pack-card v-for="(pack, index) in selecetedItems" 
-                                :key="`${pack.hash}${index}`"
+            <resource-pack-card v-for="(item, index) in selecetedItems" 
+                                :key="item[0].hash"
                                 v-observe-visibility="{
                                   callback: (v) => onItemVisibile(v, index, true),
                                   once: true,
                                 }" 
-                                :data="pack" 
+                                :data="item[0]" 
                                 :is-selected="true" 
-                                :index="index" />
+                                :index="item[1]" />
           </div>
         </v-card>
       </v-flex>
@@ -94,76 +96,73 @@
 </template>
 
 <script lang=ts>
-import unknownPack from 'renderer/assets/unknown_pack.png';
-import { createComponent, reactive, inject, ref, toRefs, computed } from '@vue/composition-api';
-import { ResourcePackResource } from 'universal/store/modules/resource';
-import { useSelectionList, useInstanceResourcePacks, useResource } from '@/hooks';
+import { createComponent, reactive, inject, ref, toRefs, computed, Ref, onUnmounted } from '@vue/composition-api';
+import { ResourcePackResource, Resource } from 'universal/store/modules/resource';
+import { 
+  useInstanceResourcePacks,
+  useResourceOperation,
+  useDragTransferList,
+  useDropImport,
+} from '@/hooks';
 
 export default createComponent({
   setup() {
     const filterText = inject('filter-text', ref(''));
-    const { resourcePacks: packNames } = useInstanceResourcePacks();
-    const { resources, importResource, getResource, removeResource } = useResource('resourcepacks');
-    const data: {
-      dragging: boolean;
-      isDeletingPack: boolean;
-      deletingPack: ResourcePackResource | null;
-    } = reactive({
+    const rightList: Ref<null | Vue> = ref(null);
+    const leftList: Ref<null | Vue> = ref(null);
+    const { usedPackResources, unusedPackResources, add, remove, commit, swap } = useInstanceResourcePacks();
+    const { getResource, removeResource } = useResourceOperation();
+    const data = reactive({
       dragging: false,
       isDeletingPack: false,
-      deletingPack: null,
+      deletingPack: null as ResourcePackResource | null,
     });
-    const resourcePacks = computed(() => {
-      const packs = resources.value;
-      const packnames = packNames.value;
+    const leftListElem = computed(() => leftList.value?.$el) as any;
+    const rightListElem = computed(() => rightList.value?.$el) as any;
+    useDragTransferList(
+      leftListElem,
+      rightListElem,
+      swap,
+      (index) => { add(unusedPackResources.value[index]); },
+      remove,
+    );
+    useDropImport(leftListElem, 'resourcepacks');
+    useDropImport(rightListElem, 'resourcepacks');
 
-      const selectedNames: { [key: string]: boolean } = {};
-      for (const name of packnames) {
-        selectedNames[name] = true;
-      }
+    onUnmounted(commit);
 
-      const unselectedPacks: ResourcePackResource[] = [];
-
-      const nameToPack: { [key: string]: ResourcePackResource } = {};
-      for (const pack of packs) {
-        nameToPack[pack.name + pack.ext] = pack;
-        nameToPack[pack.name] = pack;
-        if (!selectedNames[pack.name + pack.ext]) unselectedPacks.push(pack);
-      }
-      const selectedPacks = packnames
-        .map(name => nameToPack[name]
-          || { name, ext: '', missing: true, metadata: { packName: name, description: 'Cannot find this pack', icon: unknownPack, format: -1 } });
-
-      return [selectedPacks, unselectedPacks];
-    });
-    function filterName(r: ResourcePackResource) {
+    function filterName(r: Resource<any>) {
       if (!filterText.value) return true;
       return r.name.toLowerCase().indexOf(filterText.value.toLowerCase()) !== -1;
     }
-    async function dropFile(file: File) {
-      await importResource({ path: file.path, type: 'resourcepack' });
-    }
+
+    const unselectedItems = computed(() => unusedPackResources.value
+      .map((r, i) => [r, i] as const)
+      .filter((a) => filterName(a[0])));
+    const selectedItems = computed(() => usedPackResources.value
+      .map((r, i) => [r, i] as const)
+      .filter((a) => filterName(a[0])));
+
     async function confirmDeletingPack() {
       data.isDeletingPack = false;
       removeResource(data.deletingPack!.hash);
       data.deletingPack = null;
     }
     function onDropDelete(e: DragEvent) {
-      const hash = e.dataTransfer!.getData('Hash');
+      const hash = e.dataTransfer!.getData('id');
       const res = getResource(hash);
-      if (res) {
+      if (res.type !== 'unknown') {
         data.isDeletingPack = true;
         data.deletingPack = res as ResourcePackResource;
       }
     }
     return {
       ...toRefs(data),
+      unselectedItems,
+      selectedItems,
+      leftList,
+      rightList,
       filterText,
-      ...useSelectionList(packNames,
-        () => resourcePacks.value[1].filter(filterName),
-        () => resourcePacks.value[0].filter(filterName),
-        dropFile,
-        r => r.name + r.ext),
       confirmDeletingPack,
       onDropDelete,
     };

@@ -4,7 +4,7 @@
       <v-card ref="card"
               color="darken-1" 
               flat hover draggable
-              :class="{ incompatible: !compatible }" 
+              :class="{ incompatible: !compatible, unknown: compatible === 'unknown' }" 
               class="mod-card white--text" 
               :style="{ transform: dragged ? 'scale(0.8)' : 'scale(1)' }"
               style="margin-top: 10px; padding: 0 10px; transition-duration: 0.2s;"
@@ -14,7 +14,8 @@
               @dragend="onDragEnd"
               @mouseup="dragged=false"
               @mouseleave="dragged=false"
-              @click="$emit('click', $event)">
+              @contextmenu="tryOpen"
+              @click="$emit('click', $event);">
         <v-layout justify-center align-center fill-height>
           <v-flex v-if="icon" xs4 style="padding: 0 10px 0 0;" fill-height>
             <v-img ref="iconImage" :src="icon" style="height: 100%" contain />
@@ -22,17 +23,29 @@
           <v-flex xs8 style="padding: 10px 0;">
             <h3>
               {{ metadata.name || data.name }}
-              {{ metadata.version }}
+              <!-- {{ metadata.version }} -->
             </h3>
-            <span style="color: #bdbdbd">
+            <v-chip small outline label style="margin-left: 1px;"> 
+              {{ metadata.version }} 
+            </v-chip>
+            <div style="color: #bdbdbd">
               {{ metadata.description }}
-            </span>
+            </div>
+            <div v-if="compatible === 'unknown' && data.source && data.source.file" 
+                 style="font-style: italic; text-decoration: underline">
+              @{{ basename(data.source.file.path) }}
+            </div>
           </v-flex>
         </v-layout>
       </v-card>
     </template>
-    {{ compatible ? $t('mod.compatible', { version: mcversion }) : $t('mod.incompatible', { accept: acceptedRange, actual:
-      mcversion }) }}
+    {{ 
+      compatible === 'unknown'
+        ? $t('mod.nocompatible', { version: mcversion })
+        : compatible 
+          ? $t('mod.compatible', { version: mcversion }) 
+          : $t('mod.incompatible', { accept: acceptedRange, actual: mcversion }) 
+    }}
     <v-divider />
   </v-tooltip>
 </template>
@@ -40,7 +53,7 @@
 <script lang=ts>
 import Vue from 'vue';
 import { createComponent, ref, Ref, computed } from '@vue/composition-api';
-import { useForgeModResource, useCompatible, useInstanceVersionBase, useShell, useDragTransferItem } from '@/hooks';
+import { useForgeModResource, useInstanceVersionBase, useShell, useDragTransferItem, useCompatibleWithLoader } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -58,15 +71,15 @@ export default createComponent({
     },
   },
   setup(props, context) {
-    // const shell = useShell();
-    const { icon, metadata, acceptedRange } = useForgeModResource(props.data as any);
+    const shell = useShell();
+    const { icon, metadata, acceptedRange, acceptLoaderRange } = useForgeModResource(props.data as any);
     const { minecraft } = useInstanceVersionBase();
-    const { compatible } = useCompatible(acceptedRange, minecraft);
+    const { compatible } = useCompatibleWithLoader(acceptedRange, acceptLoaderRange, minecraft);
     const dragged = ref(false);
     const iconImage: Ref<Vue | null> = ref(null);
     const card: Ref<Vue | null> = ref(null);
 
-    useDragTransferItem(computed(() => card.value!.$el as HTMLElement), props.isSelected, props.data.hash, props.index);
+    useDragTransferItem(computed(() => card.value?.$el as HTMLElement), props.isSelected, props.data.hash, props.index);
 
     function onDragStart(e: DragEvent) {
       dragged.value = true;
@@ -77,11 +90,14 @@ export default createComponent({
       dragged.value = false;
       context.emit('dragend', e);
     }
-    // function tryOpen(e) {
-    //   if (props.data.url) {
-    //     shell.openExternal(props.data.url);
-    //   }
-    // }
+    function tryOpen() {
+      if (props.data.url) {
+        shell.openExternal(props.data.url);
+      }
+    }
+    function basename(s: string) {
+      return s.substring(s.lastIndexOf('/') + 1).substring(s.lastIndexOf('\\') + 1);
+    }
 
     return {
       card,
@@ -94,6 +110,8 @@ export default createComponent({
       onDragEnd,
       onDragStart,
       mcversion: minecraft,
+      tryOpen,
+      basename,
     };
   },
 });
@@ -105,6 +123,9 @@ export default createComponent({
 }
 .draggable-card:hover {
   background-color: #388e3c;
+}
+.unknown:hover {
+  background-color: #c24f11b6;
 }
 
 .title {

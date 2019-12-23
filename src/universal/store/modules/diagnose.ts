@@ -1,7 +1,7 @@
 import { ResolvedLibrary, Version, ForgeInstaller } from '@xmcl/minecraft-launcher-core';
 import { ModuleOption } from '../root';
 
-export interface Problem {
+export interface Issue {
     id: string;
     arguments?: { [key: string]: any };
     autofix?: boolean;
@@ -51,13 +51,13 @@ interface Getters {
     /**
      * The problems of current launcher state
      */
-    problems: Problem[];
+    issues: Issue[];
 }
 
 interface Mutations {
-    problemsPost: Partial<ProblemReport>;
-    problemsStartResolve: Problem[];
-    problemsEndResolve: Problem[];
+    issuesPost: Partial<ProblemReport>;
+    issuesStartResolve: Issue[];
+    issuesEndResolve: Issue[];
 }
 
 export type DiagnoseModule = ModuleOption<State, Getters, Mutations, {}>;
@@ -84,20 +84,20 @@ const mod: DiagnoseModule = {
         },
     },
     getters: {
-        problems(state) {
-            const problems: Problem[] = [];
+        issues(state) {
+            const issues: Issue[] = [];
 
             for (const [id, reg] of Object.entries(state.registry)) {
                 if (reg.actived.length === 0) continue;
                 if (id === 'missingLibraries' && reg.actived.length >= 3) {
-                    problems.push({
+                    issues.push({
                         id,
                         arguments: { count: reg.actived.length, libraries: reg.actived },
                         autofix: reg.autofix,
                         optional: reg.optional,
                     });
                 } else {
-                    problems.push(...reg.actived.map(a => ({
+                    issues.push(...reg.actived.map(a => ({
                         id,
                         arguments: a,
                         autofix: reg.autofix,
@@ -106,12 +106,12 @@ const mod: DiagnoseModule = {
                 }
             }
 
-            return problems;
+            return issues;
         },
     },
     mutations: {
-        problemsPost(state, problems) {
-            for (const [id, value] of Object.entries(problems)) {
+        issuesPost(state, issues) {
+            for (const [id, value] of Object.entries(issues)) {
                 if (value instanceof Array) {
                     if (!state.registry[id]) {
                         console.error(`This should not happen! Missing problem registry ${id}.`);
@@ -121,13 +121,13 @@ const mod: DiagnoseModule = {
                 }
             }
         },
-        problemsStartResolve(state, problems) {
-            problems.forEach((p) => {
+        issuesStartResolve(state, issues) {
+            issues.forEach((p) => {
                 state.registry[p.id].fixing = true;
             });
         },
-        problemsEndResolve(state, problems) {
-            problems.forEach((p) => {
+        issuesEndResolve(state, issues) {
+            issues.forEach((p) => {
                 state.registry[p.id].fixing = false;
             });
         },

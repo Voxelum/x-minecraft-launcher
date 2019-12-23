@@ -15,7 +15,7 @@
               {{ profile.server ? 'storage' : 'layers' }}
             </v-icon>
             <span class="headline">
-              {{ profile.name || `Minecraft ${profile.version.minecraft}` }}
+              {{ profile.name || `Minecraft ${profile.runtime.minecraft}` }}
             </span>
           </v-flex>
           <v-flex v-if="profile.server" xs12 align-end flexbox>
@@ -38,7 +38,7 @@
             <v-avatar>
               <v-icon>power</v-icon>
             </v-avatar>
-            {{ profile.version.minecraft }}
+            {{ profile.runtime.minecraft }}
           </v-chip>
           <v-chip v-if="profile.server" small label :selected="false" @click.stop>
             <v-avatar>
