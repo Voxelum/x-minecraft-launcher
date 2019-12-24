@@ -41,3 +41,7 @@ export function createFailureServerStatus(description: string) {
         ping: -1,
     });
 }
+export function getHostAndPortFromIp(ip: string) {
+    const [host, port] = ip.split(':');
+    return { host, port: port ? Number.parseInt(port, 10) : 25565 };
+}

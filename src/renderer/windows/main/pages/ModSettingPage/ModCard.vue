@@ -53,7 +53,7 @@
 <script lang=ts>
 import Vue from 'vue';
 import { createComponent, ref, Ref, computed } from '@vue/composition-api';
-import { useForgeModResource, useInstanceVersionBase, useShell, useDragTransferItem, useCompatibleWithLoader } from '@/hooks';
+import { useForgeModResource, useInstanceVersionBase, useDragTransferItem, useCompatibleWithLoader, useBaseService } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -71,10 +71,10 @@ export default createComponent({
     },
   },
   setup(props, context) {
-    const shell = useShell();
     const { icon, metadata, acceptedRange, acceptLoaderRange } = useForgeModResource(props.data as any);
     const { minecraft } = useInstanceVersionBase();
     const { compatible } = useCompatibleWithLoader(acceptedRange, acceptLoaderRange, minecraft);
+    const { openInBrowser } = useBaseService();
     const dragged = ref(false);
     const iconImage: Ref<Vue | null> = ref(null);
     const card: Ref<Vue | null> = ref(null);
@@ -91,8 +91,8 @@ export default createComponent({
       context.emit('dragend', e);
     }
     function tryOpen() {
-      if (props.data.url) {
-        shell.openExternal(props.data.url);
+      if (typeof props.data.url === 'string') {
+        openInBrowser(props.data.url);
       }
     }
     function basename(s: string) {

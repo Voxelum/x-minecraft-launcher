@@ -52,8 +52,7 @@ export function useNotifier() {
                 }
             }, (e) => {
                 if (failed) {
-                    console.log('subscribe failed');
-                    notify('error', failed(e), e);
+                    notify('error', failed(e), '', e);
                 }
             });
         },

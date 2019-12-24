@@ -1,19 +1,61 @@
-import { Task } from '@xmcl/minecraft-launcher-core';
-import { autoUpdater, UpdaterSignal } from 'electron-updater';
+import { copyPassively, exists } from '@xmcl/core/fs';
+import { Task } from '@xmcl/task';
+import { join } from 'path';
 import Service from './Service';
 
 export default class BaseService extends Service {
+    async init() {
+        this.scanLocalMinecraft();
+    }
+
+    async scanLocalMinecraft() {
+        const mcPath = this.getMinecraftPath();
+        if (await exists(mcPath)) {
+            if (this.state.version.local.length === 0) {
+                this.log('Try to migrate the version from .minecraft');
+                await copyPassively(join(mcPath, 'libraries'), join(this.state.root, 'libraries'));
+                await copyPassively(join(mcPath, 'assets'), join(this.state.root, 'assets'));
+                await copyPassively(join(mcPath, 'versions'), join(this.state.root, 'versions'));
+            }
+        }
+    }
+
+    saveSites() {
+
+    }
+
+    getTrustedSites = this.managers.AppManager.getTrustedSites.bind(this.managers.AppManager);
+
+    /**
+     * Try to open a url in default browser. It will popup a message dialog to let user know.
+     * If user does not trust the url, it won't open the site.
+     * @param url The pending url
+     */
+    openInBrowser = this.managers.AppManager.openInBrowser.bind(this.managers.AppManager);
+
+    /**
+     * A electron provided function to show item in direcotry
+     * @param path The path to the file item
+     */
+    showItemInDirectory = this.managers.AppManager.showItemInFolder;
+
+    /**
+     * A safe method that only open directory. If the `path` is a file, it won't execute it.
+     * @param path The directory path.
+     */
+    openDirectory = this.managers.AppManager.openDirectory;
+
     async quitAndInstall() {
         if (this.state.setting.readyToUpdate) {
-            autoUpdater.quitAndInstall();
+            this.managers.UpdateManager.quitAndInstall();
         }
     }
 
     async checkUpdate() {
         this.commit('checkingUpdate', true);
-        const checkUpdate = async () => {
+        const checkUpdate = Task.create('checkUpdate', async () => {
             try {
-                const info = await autoUpdater.checkForUpdates();
+                const info = await this.managers.UpdateManager.checkForUpdates();
                 this.commit('updateInfo', info.updateInfo);
                 return info;
             } catch {
@@ -21,63 +63,14 @@ export default class BaseService extends Service {
             } finally {
                 this.commit('checkingUpdate', false);
             }
-        };
+        });
         return this.submit(checkUpdate);
     }
 
-    async downloadUpdate() {
-        function download(ctx: Task.Context) {
-            return new Promise((resolve, reject) => {
-                autoUpdater.downloadUpdate().catch(reject);
-                const signal = new UpdaterSignal(autoUpdater);
-                signal.updateDownloaded((info) => {
-                    resolve(info);
-                });
-                signal.progress((info) => {
-                    ctx.update(info.transferred, info.total);
-                });
-                signal.updateCancelled((info) => {
-                    reject(info);
-                });
-                autoUpdater.on('error', (err) => {
-                    reject(err);
-                });
-            });
-        }
-        const downloadUpdate = async (ctx: Task.Context) => {
-            if (!this.state.setting.autoDownload) {
-                this.commit('downloadingUpdate', true);
-                const swapDownloadSrc = this.managers.NetworkManager.isInGFW;
-                let oldFeedUrl = '';
-                if (swapDownloadSrc) {
-                    oldFeedUrl = autoUpdater.getFeedURL() || '';
-                    autoUpdater.setFeedURL('https://voxelauncher.blob.core.windows.net/releases');
-                    await autoUpdater.checkForUpdates();
-                }
-                try {
-                    let promise = download(ctx);
-                    if (swapDownloadSrc) {
-                        promise = promise.catch(async (e) => {
-                            console.warn('Cannot download update from azure source. Switch to github source!');
-                            console.warn(e);
-                            autoUpdater.setFeedURL(oldFeedUrl);
-                            await autoUpdater.checkForUpdates();
-                            return download(ctx);
-                        });
-                    }
-                    await promise;
-                    this.commit('readyToUpdate', true);
-                } catch (e) {
-                    this.commit('readyToUpdate', false);
-                } finally {
-                    this.commit('downloadingUpdate', false);
-                }
-            } else {
-                throw 'cancelled';
-            }
-        };
-        return this.submit(downloadUpdate);
-    }
+    /**
+     * Download the update if there is avaiable update
+     */
+    downloadUpdate = this.managers.UpdateManager.downloadUpdate.bind(this.managers.AppManager);
 
     quit = this.managers.AppManager.quit;
 

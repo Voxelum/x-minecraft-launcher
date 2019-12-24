@@ -77,12 +77,12 @@ import {
   useDialog,
   useRouter,
   useCurrentUserStatus,
-  useTasks,
+  useTaskCount,
 } from '@/hooks';
 
 export default createComponent({
   setup() {
-    const { activeTasksCount } = useTasks();
+    const { activeTasksCount } = useTaskCount();
     const { logined } = useCurrentUserStatus();
     const { showDialog } = useDialog('task');
     const router = useRouter();

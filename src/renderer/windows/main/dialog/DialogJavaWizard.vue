@@ -94,7 +94,7 @@
 
 <script lang=ts>
 import { reactive, computed, toRefs, onMounted, onUnmounted, watch, createComponent } from '@vue/composition-api';
-import { useDialogSelf, useI18n, useStore, useJava, useShell, useNativeDialog } from '@/hooks';
+import { useDialogSelf, useI18n, useStore, useJava, useNativeDialog } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -104,12 +104,11 @@ export default createComponent({
     },
   },
   setup() {
-    const shell = useShell();
     const dialog = useNativeDialog();
     const { getters } = useStore();
     const { $t } = useI18n();
     const { showDialog, isShown } = useDialogSelf('java-wizard');
-    const { add, refreshLocalJava, installDefault } = useJava();
+    const { add, refreshLocalJava, installDefault, openJavaSite } = useJava();
     const data = reactive({
       step: 0,
 
@@ -172,7 +171,7 @@ export default createComponent({
           await installDefault(true).catch((e) => { data.downloadError = e; });
           showDialog('task');
         } else if (index === 1) {
-          await shell.openExternal('https://www.java.com/download/');
+          await openJavaSite();
         } else if (index === 2) {
           data.status = 'resolving';
           const { filePaths } = await dialog.showOpenDialog({

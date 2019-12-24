@@ -384,6 +384,11 @@
   },
   "java.locationPlaceHolder": "Use system default java",
   "launch": {
+    "blocked": {
+      "description": "There are still some unresolveable issues existed. They might impact the launch workflow, but you can still let Minecraft have a try.",
+      "ignore": "Force Launch",
+      "title": "Launch Blocked by Issues"
+    },
     "checkingProblems": "Checking Problems",
     "crash": "Game Crashed!!",
     "failed": {
@@ -400,7 +405,6 @@
     "launch": "Launch",
     "launching": "Launching...",
     "launchingSlow": "Still launching... Starting graphic engine can be slow...",
-    "openCrashReport": "Open Crash Report",
     "openCrashReportFolder": "Open Crash Report Folder",
     "showLog": "Show Minecraft Log"
   },
@@ -459,7 +463,7 @@
   "name": "Name",
   "next": "Next",
   "no": "No",
-  "ok": "Ok",
+  "ok": "OK",
   "popular": "Porpularity",
   "profile": {
     "add": "Add Local Game",
@@ -690,6 +694,7 @@
     "cancelled": "Cancelled",
     "empty": "No Running Tasks",
     "failed": "Failed",
+    "failedDescription": "A task failed with following stacktrace",
     "history": "Task History",
     "manager": "Task Manager",
     "name": "Task | Tasks",

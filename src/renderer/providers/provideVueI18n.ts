@@ -1,7 +1,5 @@
-import { provide } from '@vue/composition-api';
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
-import { I18N_KEY } from '../constant';
 
 export default function provideVueI18n(locale: string, messages: VueI18n.LocaleMessages) {
     Vue.use(VueI18n);

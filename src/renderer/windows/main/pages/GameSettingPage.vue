@@ -20,7 +20,7 @@
 </template>
 
 <script lang=ts>
-import { GameSetting } from '@xmcl/minecraft-launcher-core';
+import { Frame } from '@xmcl/gamesetting';
 import { createComponent, reactive, toRefs } from '@vue/composition-api';
 import { useAutoSaveLoad, useInstanceGameSetting } from '@/hooks';
 
@@ -51,9 +51,9 @@ export default createComponent({
       }
     }
     function save() {
-      const result: GameSetting.Frame = {};
+      const result: Frame = {};
       for (const setting of data.graphics) {
-        result[setting.name as keyof GameSetting.Frame] = setting.val as any;
+        result[setting.name as keyof Frame] = setting.val as any;
       }
       settings.commitChange(result);
     }

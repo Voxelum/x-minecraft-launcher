@@ -44,12 +44,18 @@ export function useCurrentUserStatus() {
 }
 
 export function useCurrentUser() {
-    const { state, getters, services } = useStore();
+    const { getters, services } = useStore();
     const user: UserProfile & Data = getters.user as any;
     const theAuthService = computed(() => getters.authService);
     const theProfileService = computed(() => getters.profileService);
+    /**
+     * selected profile name
+     */
     const name = computed(() => getters.gameProfile.name);
-    const profileId = computed(() => getters.gameProfile.name);
+    /**
+     * selected profile id
+     */
+    const profileId = computed(() => getters.gameProfile.id);
 
     return {
         ...toRefs(user),

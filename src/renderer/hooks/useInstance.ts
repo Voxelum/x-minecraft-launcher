@@ -1,5 +1,5 @@
-import { computed, onMounted, onUnmounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
-import { GameSetting } from '@xmcl/minecraft-launcher-core';
+import { computed, onMounted, reactive, ref, Ref, toRefs } from '@vue/composition-api';
+import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { CreateOption, InstanceConfig } from 'universal/store/modules/instance';
 import { Resource } from 'universal/store/modules/resource';
 import { getExpectVersion } from 'universal/utils';
@@ -21,24 +21,29 @@ export function useInstance() {
 
     const server = computed(() => instance.server);
     const refreshing = computed(() => state.semaphore.instance > 0);
-    const refs = toRefs(instance);
     const javaPath = computed(() => state.instance.java);
+
     function setJavaPath(path: string) {
         services.InstanceService.setJavaPath(path);
     }
 
+    const refs = toRefs(instance);
     return {
         ...refs,
         author,
+        /**
+         * min memory
+         */
         maxMemory,
         minMemory,
         isServer: computed(() => instance.server !== undefined),
+        javaPath,
         server,
+        refreshing,
+
         edit: services.InstanceService.editInstance,
         exportTo: services.InstanceService.exportInstance,
-        refresh: services.InstanceService.refreshInstance,
-        refreshing,
-        javaPath,
+        refresh: services.InstanceService.refreshServerStatus,
         setJavaPath,
     };
 }
@@ -50,7 +55,7 @@ export function useInstances() {
     const { getters, services } = useStore();
     return {
         instances: computed(() => getters.instances),
-        selectInstance: services.InstanceService.selectInstance,
+        selectInstance: services.InstanceService.mountInstance,
         deleteInstance: services.InstanceService.deleteInstance,
         refreshInstances: services.InstanceService.refreshInstances,
         importInstance: services.InstanceService.importInstance,
@@ -235,45 +240,27 @@ export function useInstanceGameSetting() {
         refresh() {
             return services.InstanceService.loadInstanceGameSettings();
         },
-        commitChange(settings: GameSetting.Frame) {
+        commitChange(settings: GameSetting) {
             commit('instanceGameSettings', settings);
         },
     };
 }
 
+/**
+ * Use references of all the version info of this instance
+ */
 export function useInstanceVersion() {
-    const { getters, services } = useStore();
+    const { getters } = useStore();
 
     const instance: InstanceConfig = getters.instance;
 
     const refVersion = toRefs(instance.runtime);
-    const folder = ref('');
+    const folder = computed(() => getters.instanceVersion.folder);
     const id = computed(() => getExpectVersion(
         instance.runtime.minecraft,
         instance.runtime.forge,
         instance.runtime.liteloader,
     ));
-
-    let watcher = () => { };
-
-    onMounted(() => {
-        watcher = watch(id, () => {
-            services.VersionService.resolveVersion(instance.runtime)
-                .then((f) => {
-                    folder.value = f;
-                }, () => {
-                    folder.value = '';
-                    setTimeout(() => {
-                        services.VersionService.resolveVersion(instance.runtime).then((f) => {
-                            folder.value = f;
-                        });
-                    }, 1000);
-                });
-        });
-    });
-    onUnmounted(() => {
-        watcher();
-    });
 
     return {
         ...refVersion,
@@ -337,7 +324,7 @@ export function useInstanceMods() {
 export function useInstanceSaves() {
     const { state, services } = useStore();
     return {
-        id: computed(() => state.instance.id),
+        id: computed(() => state.instance.path),
         saves: computed(() => state.instance.saves),
         importSave: services.InstanceService.importSave,
         deleteSave: services.InstanceService.deleteSave,
@@ -350,7 +337,7 @@ export function useInstanceSaves() {
 export function useInstanceLogs() {
     const { state, services } = useStore();
     return {
-        id: computed(() => state.instance.id),
+        id: computed(() => state.instance.path),
         getCrashReportContent: services.InstanceService.getCrashReportContent,
         getLogContent: services.InstanceService.getLogContent,
         listCrashReports: services.InstanceService.listCrashReports,

@@ -63,4 +63,3 @@ export interface ModuleMap {
 }
 
 export type MutationKeys = keyof UnionToIntersection<ModulesMutations> | keyof BaseMutations;
-

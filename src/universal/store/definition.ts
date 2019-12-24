@@ -6,7 +6,6 @@ import { LauncherModule } from './modules/launch';
 import { InstanceModule } from './modules/instance';
 import { ResourceModule } from './modules/resource';
 import { SettingModule } from './modules/setting';
-import { TaskModule } from './modules/task';
 import { UserModule } from './modules/user';
 import { VersionModule } from './modules/version';
 
@@ -20,7 +19,6 @@ declare module './root' {
         instance: InstanceModule;
         resource: ResourceModule;
         setting: SettingModule;
-        task: TaskModule;
         user: UserModule;
         version: VersionModule;
     }

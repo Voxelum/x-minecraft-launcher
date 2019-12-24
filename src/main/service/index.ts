@@ -7,7 +7,7 @@ import ResourceService from 'main/service/ResourceService';
 import ServerStatusService from 'main/service/ServerStatusService';
 import SettingService from 'main/service/SettingService';
 import UserService from 'main/service/UserService';
-import VersionInstallService from 'main/service/VersionInstallService';
+import InstallService from 'main/service/InstallService';
 import VersionService from 'main/service/VersionService';
 import BaseService from './BaseService';
 
@@ -16,10 +16,18 @@ export interface BuiltinServices {
     SettingService: SettingService;
     InstanceService: InstanceService;
     DiagnoseService: DiagnoseService;
+    /**
+     * A stateless service to request curseforge website.
+     * The launcher backend will cache the curseforge data neither in memory or in disk.  
+     */
     CurseForgeService: CurseForgeService;
+    /**
+     * Resource service to manage the mod, resource pack, saves, modpack resources.
+     * It maintain a preview for resources in memory
+     */
     ResourceService: ResourceService;
     VersionService: VersionService;
-    VersionInstallService: VersionInstallService;
+    InstallService: InstallService;
     UserService: UserService;
     JavaService: JavaService;
     LaunchService: LaunchService;

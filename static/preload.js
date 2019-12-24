@@ -1,10 +1,9 @@
-const { dialog, shell } = require('electron').remote
-const { clipboard, ipcRenderer } = require('electron')
+const { dialog } = require('electron').remote;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { clipboard, ipcRenderer } = require('electron');
 
 window.electron = {
-    shell,
     dialog,
     clipboard,
     ipcRenderer,
-}
-
+};

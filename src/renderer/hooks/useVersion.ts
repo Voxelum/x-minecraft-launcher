@@ -55,7 +55,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     onMounted(() => {
         handle = watch(minecraftVersion, () => {
             if (versions.value.length === 0) {
-                services.VersionInstallService.refreshForge(minecraftVersion.value);
+                services.InstallService.refreshForge({ mcversion: minecraftVersion.value });
             }
         });
     });
@@ -64,7 +64,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     });
 
     function refresh() {
-        return services.VersionInstallService.refreshForge(minecraftVersion.value);
+        return services.InstallService.refreshForge({ mcversion: minecraftVersion.value });
     }
 
     return {
@@ -86,7 +86,7 @@ export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
     onMounted(() => {
         handle = watch(minecraftVersion, () => {
             if (!versions.value) {
-                services.VersionInstallService.refreshLiteloader();
+                services.InstallService.refreshLiteloader();
             }
         });
     });
@@ -95,7 +95,7 @@ export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
     });
 
     function refresh() {
-        return services.VersionInstallService.refreshLiteloader();
+        return services.InstallService.refreshLiteloader();
     }
 
     return {

@@ -2,7 +2,7 @@ import { computed, inject, InjectionKey, onMounted, onUnmounted, Ref, watch, pro
 
 export type Dialogs = 'task' | 'java-wizard' | 'login' | 'skin-import' | 'user-service'
     | 'crash-report' | 'feedback' | 'launch-status' | 'download-missing-mods' | 'logs'
-    | 'challenge'
+    | 'challenge' | 'detail' | 'launch-blocked'
     | '';
 export const DIALOG_SHOWING: InjectionKey<Ref<Dialogs>> = Symbol('ShowingDialog');
 export const DIALOG_OPTION: InjectionKey<Ref<any>> = Symbol('DialogOption');
@@ -23,6 +23,9 @@ export function provideDialog() {
     };
 }
 
+/**
+ * Use a shared dialog between pages
+ */
 export function useDialog(dialog: Dialogs = '') {
     const showingDialog: Ref<Dialogs> = inject(DIALOG_SHOWING) as any;
     const dialogOption: Ref<any> = inject(DIALOG_OPTION) as any;
@@ -55,7 +58,6 @@ export function useDialog(dialog: Dialogs = '') {
     let watcherHandle: () => void;
     onMounted(() => {
         watcherHandle = watch(showingDialog, (n, o) => {
-            console.log(`dialog ${o} -> ${n}`);
             if (n === dialog) {
                 openListeners.forEach(f => f());
             } else if (o === dialog) {

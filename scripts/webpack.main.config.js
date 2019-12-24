@@ -12,8 +12,7 @@ const { dependencies } = require('../package.json');
 const mainConfig = {
     mode: process.env.NODE_ENV,
     entry: {
-        main: path.join(__dirname, '../src/main/index.ts'),
-        // locale: path.join(__dirname, '../static/locales/index.js'),
+        main: path.join(__dirname, '../src/main/main.ts'),
     },
     externals: [
         ...Object.keys(dependencies || {}),

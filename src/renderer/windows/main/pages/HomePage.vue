@@ -65,11 +65,15 @@
       </v-icon>
       <v-progress-circular v-else class="v-icon--right" indeterminate :size="20" :width="2" />
     </v-btn>
+    <dialog-launch-status />
+    <dialog-launch-blocked />
+    <dialog-logs />
   </v-layout>
 </template>
 
 <script lang=ts>
 import { createComponent, watch } from '@vue/composition-api';
+import { LaunchException } from 'universal/utils';
 import {
   useDialog,
   useI18n,
@@ -80,14 +84,29 @@ import {
   useQuit,
   useNotifier,
 } from '@/hooks';
+import DialogLaunchStatus from './HomePage/DialogLaunchStatus.vue';
+import DialogLaunchBlocked from './HomePage/DialogLaunchBlocked.vue';
+import DialogLogs from './HomePage/DialogLogs.vue';
+import HomeHeader from './HomePage/HomeHeader.vue';
+import ProblemsBar from './HomePage/ProblemsBar.vue';
+import ServerStatusBar from './HomePage/ServerStatusBar.vue';
 
 export default createComponent({
+  components: {
+    DialogLaunchStatus,
+    DialogLogs,
+    ProblemsBar,
+    HomeHeader,
+    ServerStatusBar,
+    DialogLaunchBlocked,
+  },
   setup() {
     const { $t } = useI18n();
     const { showSaveDialog } = useNativeDialog();
     const { showDialog: showLogDialog } = useDialog('logs');
     const { showDialog: showFeedbackDialog } = useDialog('feedback');
     const { showDialog: showLaunchStatusDialog } = useDialog('launch-status');
+    const { showDialog: showLaunchBlockedDialog } = useDialog('launch-blocked');
     const { refreshing: refreshingProfile, name, isServer, exportTo } = useInstance();
     const { launch, status: launchStatus, errors, errorType } = useLaunch();
     const { notify, subscribe } = useNotifier();
@@ -96,7 +115,6 @@ export default createComponent({
 
     watch([errors, errorType], () => {
       if (errors.value.length !== 0 || errorType.value.length !== 0) {
-        console.log('Notify launch error');
         notify('error', `[${errorType.value}] ${errors.value}`);
       }
     });
@@ -113,7 +131,11 @@ export default createComponent({
         if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching' || launchStatus.value === 'launched') {
           showLaunchStatusDialog();
         } else {
-          launch();
+          launch().catch((e: LaunchException) => {
+            if (e.type === 'launchBlockedIssues') {
+              showLaunchBlockedDialog();
+            } else if (e.type === 'launchGeneralException') { }
+          });
         }
       },
       async showExportDialog() {

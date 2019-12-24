@@ -2,5 +2,12 @@
     "quit": "退出",
     "showDiagnosis": "显示 Debug 信息",
     "checkUpdate": "检查更新",
-    "title": "Voxelauncher"
+    "title": "Voxelauncher",
+    "openUrl": {
+        "cancel": "取消",
+        "message": "启动器想打开 {url}。你是否同意此操作？",
+        "title": "在浏览器中打开",
+        "trust": "信任此网站，下次不再显示",
+        "yes": "允许"
+    }
 }

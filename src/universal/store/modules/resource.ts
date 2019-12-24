@@ -1,4 +1,6 @@
-import { Forge, LevelDataFrame, LiteLoader, ResourcePack } from '@xmcl/minecraft-launcher-core';
+import { ResourcePack } from '@xmcl/resourcepack';
+import { LevelDataFrame } from '@xmcl/world';
+import { Forge, LiteLoader } from '@xmcl/mod-parser';
 import { Modpack } from 'main/service/CurseForgeService';
 import { requireString } from 'universal/utils';
 import Vue from 'vue';
@@ -6,7 +8,6 @@ import { ModuleOption } from '../root';
 import { ResourceSchema } from './resource.schema';
 
 interface State {
-    refreshing: boolean;
     domains: {
         [domain: string]: Resource<any>[];
         mods: Array<ForgeResource | LiteloaderResource>;
@@ -25,23 +26,6 @@ interface Getters {
      * All the deployable domains
      */
     domains: string[];
-    /**
-     * All the mods resources
-     */
-    mods: (ForgeResource | LiteloaderResource)[];
-    /**
-     * All the resource packs resource
-     */
-    resourcepacks: ResourcePackResource[];
-    /**
-     * All the saves resources
-     */
-    saves: SaveResource[];
-    /**
-     * All the curseforge modpack resources
-     */
-    modpacks: CurseforgeModpackResource[];
-
     /**
      * Get the resource by resource hash
      */
@@ -78,7 +62,7 @@ export type ImportOption = {
     background?: boolean;
 }
 
-export type Resource<T> = ResourceSchema<T>;
+export type Resource<T> = ResourceSchema & { metadata: T };
 export type AnyResource = Resource<any>;
 export type ForgeResource = Resource<Forge.ModMetaData[]> & { type: 'forge' };
 export type LiteloaderResource = Resource<LiteLoader.MetaData> & { type: 'liteloader' };
@@ -103,7 +87,6 @@ export const UNKNOWN_RESOURCE: UnknownResource = {
 
 const mod: ResourceModule = {
     state: {
-        refreshing: false,
         domains: {
             mods: [],
             resourcepacks: [],
@@ -115,10 +98,6 @@ const mod: ResourceModule = {
     },
     getters: {
         domains: () => ['mods', 'resourcepacks', 'modpacks', 'saves', 'unknown'],
-        mods: state => state.domains.mods,
-        resourcepacks: state => state.domains.resourcepacks,
-        saves: state => state.domains.saves,
-        modpacks: state => state.domains.modpacks,
         getResource: state => hash => state.directory[hash] || UNKNOWN_RESOURCE,
         queryResource: state => (url) => {
             requireString(url);
@@ -154,7 +133,7 @@ const mod: ResourceModule = {
                     const domain = state.domains[res.domain];
                     domain.push(Object.freeze(res));
                     state.directory[res.hash] = res;
-                    for (const u of res.source.uri) {
+                    for (const u of res.source.uri || []) {
                         state.directory[u] = res;
                     }
                 } else {

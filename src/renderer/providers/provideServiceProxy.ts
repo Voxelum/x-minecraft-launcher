@@ -1,4 +1,4 @@
-import { TaskHandle } from '@xmcl/minecraft-launcher-core';
+import { TaskHandle } from '@xmcl/task';
 import { reactive, provide } from '@vue/composition-api';
 import { BuiltinServices } from 'main/service';
 import { SERVICES_KEY, ipcRenderer } from 'renderer/constant';
@@ -21,7 +21,7 @@ function proxyOfTask(taskHandle: string): Pick<TaskHandle<any, any>, 'wait' | 'c
         // resume(): void;
     } as any;
 }
-async function startSession(sessionId: string | undefined, tasks: Array<any>) {
+async function startSession(sessionId: number | undefined, tasks: Array<any>) {
     const listener = (event: any, task: string) => {
         tasks.push(task);
     };
@@ -38,9 +38,10 @@ function proxyOfService(seriv: string) {
     return new Proxy({} as any, {
         get(_, key) {
             const func = function (payload: any) {
+                console.log(`func of ${seriv}.${key.toString()}`);
                 const tasks = reactive([]);
                 const promise = ipcRenderer.invoke('service-call', seriv, key as string, payload).then((r: any) => {
-                    if (!r) {
+                    if (typeof r !== 'number') {
                         throw new Error(`Cannot find service call named ${key as string} in ${seriv}`);
                     }
                     return startSession(r, tasks);

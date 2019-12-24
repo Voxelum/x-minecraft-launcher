@@ -1,6 +1,6 @@
 import { join } from 'path';
-import { Task } from '@xmcl/minecraft-launcher-core';
-import { fs } from 'main/utils';
+import { Task } from '@xmcl/task';
+import fs from '@xmcl/core/fs';
 import ResourceService from 'main/service/ResourceService';
 import { UNKNOWN_RESOURCE } from 'universal/store/modules/resource';
 

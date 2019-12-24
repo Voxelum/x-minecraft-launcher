@@ -1,4 +1,6 @@
-import { computed } from '@vue/composition-api';
+import { computed, inject } from '@vue/composition-api';
+import { TASKS_KEY } from 'renderer/constant';
+import { requireNonnull } from 'universal/utils/object';
 import { useStore } from './useStore';
 
 export function useTask(taskHandle: string | Promise<any>) {
@@ -13,7 +15,6 @@ export function useTask(taskHandle: string | Promise<any>) {
         // return dispatch('waitTask', taskHandle);
     }
     return {
-        // id: taskState._internalId,
         name: taskState.name,
         time: taskState.time,
         progress,
@@ -24,12 +25,19 @@ export function useTask(taskHandle: string | Promise<any>) {
     };
 }
 
-export function useTasks() {
-    const { state } = useStore();
+export function useTaskCount() {
+    const tasks = inject(TASKS_KEY);
+    requireNonnull(tasks);
     const activeTasksCount = computed(
-        () => state.task.tasks.filter(t => t.status === 'running').length,
+        () => tasks.value.filter(t => t.status === 'running').length,
     );
     return {
         activeTasksCount,
     };
+}
+
+export function useTasks() {
+    const tasks = inject(TASKS_KEY);
+    requireNonnull(tasks);
+    return tasks;
 }

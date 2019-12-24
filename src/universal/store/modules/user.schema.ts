@@ -1,5 +1,4 @@
-import { Auth, ProfileService } from '@xmcl/minecraft-launcher-core';
-import { GameProfile } from '@xmcl/profile-service';
+import { YggdrasilAuthAPI, ProfileServiceAPI, GameProfile } from '@xmcl/user';
 import Schema from '../Schema';
 
 /* eslint-disable import/export  */
@@ -14,6 +13,9 @@ export interface GameProfileAndTexture extends GameProfile {
 }
 
 export interface UserProfile {
+    /**
+     * user id
+     */
     id: string;
     /**
      * The username usually email
@@ -69,14 +71,14 @@ export interface UserSchema {
      * @default {}
      */
     authServices: {
-        [name: string]: Auth.Yggdrasil.API;
+        [name: string]: YggdrasilAuthAPI;
     };
     /**
      * All loaded profile services api. Used for
      * @default {}
      */
     profileServices: {
-        [name: string]: ProfileService.API;
+        [name: string]: ProfileServiceAPI;
     };
     /**
      * The client token of current client. The launcher will generate one at first launch.

@@ -38,7 +38,7 @@
             "default": {},
             "type": "object",
             "additionalProperties": {
-                "$ref": "#/definitions/Auth.Yggdrasil.API"
+                "$ref": "#/definitions/YggdrasilAuthAPI"
             }
         },
         "profileServices": {
@@ -46,7 +46,7 @@
             "default": {},
             "type": "object",
             "additionalProperties": {
-                "$ref": "#/definitions/ProfileService.API"
+                "$ref": "#/definitions/ProfileServiceAPI"
             }
         },
         "clientToken": {
@@ -67,6 +67,7 @@
             "type": "object",
             "properties": {
                 "id": {
+                    "description": "user id",
                     "type": "string"
                 },
                 "username": {
@@ -125,9 +126,11 @@
                     ]
                 },
                 "id": {
+                    "description": "game profile unique id",
                     "type": "string"
                 },
                 "name": {
+                    "description": "This is in game displayed name",
                     "type": "string"
                 },
                 "properties": {
@@ -135,6 +138,27 @@
                     "additionalProperties": {
                         "type": "string"
                     }
+                },
+                "userId": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "number"
+                },
+                "legacyProfile": {
+                    "type": "boolean"
+                },
+                "suspended": {
+                    "type": "boolean"
+                },
+                "paid": {
+                    "type": "boolean"
+                },
+                "migrated": {
+                    "type": "boolean"
+                },
+                "legacy": {
+                    "type": "boolean"
                 }
             },
             "required": [
@@ -168,7 +192,7 @@
                 "url"
             ]
         },
-        "Auth.Yggdrasil.API": {
+        "YggdrasilAuthAPI": {
             "type": "object",
             "properties": {
                 "hostName": {
@@ -205,7 +229,7 @@
                 "validate"
             ]
         },
-        "ProfileService.API": {
+        "ProfileServiceAPI": {
             "type": "object",
             "properties": {
                 "publicKey": {

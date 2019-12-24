@@ -1,13 +1,13 @@
 import { computed, Ref, ref } from '@vue/composition-api';
-import { ServerStatusFrame } from '@xmcl/minecraft-launcher-core';
+import { Status } from '@xmcl/client';
 import unknownServer from '@/assets/unknown_server.png';
 import { useStore } from './useStore';
 
-export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
+export function useServerStatus(ref?: Ref<Status | undefined>) {
     const { state, getters, services } = useStore();
 
-    const using = ref || computed(() => state.instance.statuses[state.instance.id]);
-    const status: Ref<ServerStatusFrame> = computed(() => using.value || {
+    const using = ref || computed(() => state.instance.statuses[state.instance.path]);
+    const status: Ref<Status> = computed(() => using.value || {
         version: {
             name: '',
             protocol: 0,
@@ -29,7 +29,7 @@ export function useServerStatus(ref?: Ref<ServerStatusFrame | undefined>) {
         description: computed(() => status.value.description),
         favicon: computed(() => status.value.favicon || unknownServer),
         ping: computed(() => status.value.ping),
-        refresh: services.InstanceService.refreshInstance,
+        refresh: services.InstanceService.refreshServerStatus,
     };
 }
 
@@ -40,7 +40,7 @@ export function useServerStatusForProfile(id: string) {
 
 export function useServer(serverRef: Ref<{ host: string; port?: number }>, protocol: Ref<number | undefined>) {
     const { services } = useStore();
-    const status = ref<ServerStatusFrame>({
+    const status = ref<Status>({
         version: {
             name: '',
             protocol: 0,

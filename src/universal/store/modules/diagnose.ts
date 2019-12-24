@@ -1,5 +1,7 @@
-import { ResolvedLibrary, Version, ForgeInstaller } from '@xmcl/minecraft-launcher-core';
+import { ResolvedLibrary, Version } from '@xmcl/core';
+import { Diagnosis } from '@xmcl/installer';
 import { ModuleOption } from '../root';
+import { LocalVersion } from './version';
 
 export interface Issue {
     id: string;
@@ -8,7 +10,7 @@ export interface Issue {
     optional?: boolean;
 }
 
-export type ProblemReport = {
+export type IssueReport = {
     [K in keyof State['registry']]: State['registry'][K]['actived']
 }
 
@@ -22,21 +24,29 @@ export interface Registry<A, AF = true, OP = false> {
 interface State {
     registry: {
         missingVersion: Registry<{}>;
-        missingVersionJar: Registry<{ version: string }>;
-        missingAssetsIndex: Registry<{ version: string }>;
-        missingVersionJson: Registry<{ version: string }>;
+        missingVersionJar: Registry<{ version: string } & LocalVersion>;
+        missingVersionJson: Registry<{ version: string } & LocalVersion>;
         missingForgeJar: Registry<{ minecraft: string; forge: string }>;
         missingLibraries: Registry<ResolvedLibrary>;
-        missingAssets: Registry<{ count: number }>;
+        missingAssetsIndex: Registry<{ version: string }>;
+        missingAssets: Registry<{ version: string; count: number }>;
+
+        corruptedVersionJar: Registry<{ version: string } & LocalVersion>;
+        corruptedVersionJson: Registry<{ version: string } & LocalVersion>;
+        corruptedForgeJar: Registry<{ minecraft: string; forge: string }>;
+        corruptedLibraries: Registry<ResolvedLibrary>;
+        corruptedAssetsIndex: Registry<{ version: string }>;
+        corruptedAssets: Registry<{ version: string; count: number }>;
+
         unknownMod: Registry<{ name: string; actual: string }, false, true>;
         incompatibleMod: Registry<{ name: string; actual: string; accepted: string }, false, true>;
         incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string }, false, true>;
-        incompatibleJava: Registry<{ java: string; mcversion: string }, false, false>;
+        incompatibleJava: Registry<{ java: string; mcversion: string }, false, true>;
         missingAuthlibInjector: Registry<{}>;
         missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
         badForge: Registry<{ forge: string; minecraft: string }>;
         badForgeIncomplete: Registry<{ count: number; libraries: Version.NormalLibrary[] }>;
-        badForgeProcessedFiles: Registry<ForgeInstaller.Diagnosis['badProcessedFiles'][number], true, true>;
+        badForgeProcessedFiles: Registry<Diagnosis.ForgeReport['unprocessed'][number], true, true>;
 
         [id: string]: {
             fixing: boolean;
@@ -52,10 +62,11 @@ interface Getters {
      * The problems of current launcher state
      */
     issues: Issue[];
+    isIssueActive: (id: keyof State['registry']) => boolean;
 }
 
 interface Mutations {
-    issuesPost: Partial<ProblemReport>;
+    issuesPost: Partial<IssueReport>;
     issuesStartResolve: Issue[];
     issuesEndResolve: Issue[];
 }
@@ -72,11 +83,19 @@ const mod: DiagnoseModule = {
             missingForgeJar: { fixing: false, autofix: true, optional: false, actived: [] },
             missingLibraries: { fixing: false, autofix: true, optional: false, actived: [] },
             missingAssets: { fixing: false, autofix: true, optional: false, actived: [] },
+
+            corruptedVersionJar: { fixing: false, autofix: true, optional: false, actived: [] },
+            corruptedAssetsIndex: { fixing: false, autofix: true, optional: false, actived: [] },
+            corruptedVersionJson: { fixing: false, autofix: true, optional: false, actived: [] },
+            corruptedForgeJar: { fixing: false, autofix: true, optional: false, actived: [] },
+            corruptedLibraries: { fixing: false, autofix: true, optional: false, actived: [] },
+            corruptedAssets: { fixing: false, autofix: true, optional: false, actived: [] },
+
             unknownMod: { fixing: false, autofix: false, optional: true, actived: [] },
             incompatibleMod: { fixing: false, autofix: false, optional: true, actived: [] },
             incompatibleResourcePack: { fixing: false, autofix: false, optional: true, actived: [] },
             missingAuthlibInjector: { fixing: false, autofix: true, optional: false, actived: [] },
-            incompatibleJava: { fixing: false, autofix: false, optional: false, actived: [] },
+            incompatibleJava: { fixing: false, autofix: false, optional: true, actived: [] },
             missingModsOnServer: { fixing: false, autofix: false, optional: false, actived: [] },
             badForge: { fixing: false, autofix: true, optional: false, actived: [] },
             badForgeIncomplete: { fixing: false, autofix: true, optional: false, actived: [] },
@@ -108,6 +127,7 @@ const mod: DiagnoseModule = {
 
             return issues;
         },
+        isIssueActive: (state) => (key) => (key in state.registry ? state.registry[key].actived.length !== 0 : false),
     },
     mutations: {
         issuesPost(state, issues) {

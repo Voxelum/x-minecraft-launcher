@@ -1,18 +1,20 @@
-import { Fabric, FileSystem, Forge, Net, System, Task, Util, WorldReader } from '@xmcl/minecraft-launcher-core';
+import { Fabric, Forge, LiteLoader } from '@xmcl/mod-parser';
+import { FileSystem, System } from '@xmcl/system';
+import { Task } from '@xmcl/task';
+import { WorldReader } from '@xmcl/world';
 import { createHash } from 'crypto';
 import filenamify from 'filenamify';
-import { cacheWithHash, fs, requireString } from 'main/utils';
+import { ensureFile, readFile, unlink, writeFile } from 'fs-extra';
+import { CURSEMETA_CACHE } from 'main/constant';
+import { cacheWithHash, checksum, copyPassively, exists, isDirectory, readdirEnsured, requireString } from 'main/utils';
 import { getPersistence } from 'main/utils/persistence';
 import { basename, extname, join, resolve } from 'path';
 import { AnyResource, ImportOption, ImportTypeHint, Resource, UNKNOWN_RESOURCE } from 'universal/store/modules/resource';
 import { ResourceSchema } from 'universal/store/modules/resource.schema';
-import { CURSEMETA_CACHE } from 'main/constant';
 import { parse as parseUrl, UrlWithStringQuery } from 'url';
+import got from 'got';
 import Service from './Service';
 
-function sha1(data: Buffer) {
-    return createHash('sha1').update(data).digest('hex');
-}
 interface ResourceBuilder extends AnyResource {
     icon?: Uint8Array;
 }
@@ -23,6 +25,9 @@ function toResource(builder: ResourceBuilder): AnyResource {
     const res = { ...builder };
     delete res.icon;
     return res;
+}
+function sha1(data: Buffer) {
+    return createHash('sha1').update(data).digest('hex');
 }
 
 export interface ResourceRegistryEntry<T> {
@@ -94,10 +99,15 @@ export default class ResourceService extends Service {
 
     /**
      * Import regular resource from uri.
+     * 
+     * - forge mod: forge://<modid>/<version>
+     * - liteloader mod: liteloader://<name>/<version>
+     * - curseforge file: curseforge://<projectId>/<fileId>
+     * 
      * @param uri The spec uri format
      */
     protected importResourceTask(uri: string, extra: any) {
-        const importResource = async (context: Task.Context) => {
+        const importResource = Task.create('importResource', async (context: Task.Context) => {
             const parsed = parseUrl(uri);
 
             const localResource = this.getters.queryResource(uri);
@@ -134,13 +144,13 @@ export default class ResourceService extends Service {
             // use parser to parse metadata
             context.update(1, 4, uri);
 
-            const parsing = () => this.resolveResource(builder, buffer, type);
+            const parsing = Task.create('parsing', () => this.resolveResource(builder, buffer, type));
             await context.execute(parsing);
             console.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
 
             // write resource to disk
             context.update(3, 4, uri);
-            const storing = () => this.commitResourceToDisk(builder, buffer);
+            const storing = Task.create('storing', () => this.commitResourceToDisk(builder, buffer));
             await context.execute(storing);
 
             // done
@@ -149,7 +159,7 @@ export default class ResourceService extends Service {
             const reuslt = toResource(builder);
             this.commit('resource', reuslt);
             return reuslt;
-        };
+        });
         return importResource;
     }
 
@@ -161,13 +171,12 @@ export default class ResourceService extends Service {
     importUnknownResourceTask(path: string, type: ImportTypeHint | undefined, metadata: any) {
         const importResource = async (context: Task.Context) => {
             context.update(0, 4, path);
-            const isDirectory = await fs.stat(path).then(stat => stat.isDirectory());
-            if (isDirectory) throw new Error(`Cannot import directory as resource! ${path}`);
-            const data: Buffer = await fs.readFile(path);
+            if (await isDirectory(path)) throw new Error(`Cannot import directory as resource! ${path}`);
+            const data: Buffer = await readFile(path);
             const builder: Resource<any> = {
                 name: '',
                 path,
-                hash: await Util.computeChecksum(path, 'sha1'),
+                hash: await checksum(path, 'sha1'),
                 ext: extname(path),
                 domain: '',
                 type: '',
@@ -184,26 +193,26 @@ export default class ResourceService extends Service {
 
             // check the resource existence
             context.update(1, 4, path);
-            const checking = async () => {
+            const checking = Task.create('checking', async () => {
                 const resource = this.getters.getResource(builder.hash);
                 if (resource !== UNKNOWN_RESOURCE) {
                     Object.assign(builder, resource, { source: builder.source });
                     return true;
                 }
                 return false;
-            };
+            });
             const existed = await context.execute(checking);
 
             if (!existed) {
                 // use parser to parse metadata
                 context.update(2, 4, path);
-                const parsing = () => this.resolveResource(builder, data, type);
+                const parsing = Task.create('parsing', () => this.resolveResource(builder, data, type));
                 await context.execute(parsing);
                 console.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
 
                 // write resource to disk
                 context.update(3, 4, path);
-                const storing = () => this.commitResourceToDisk(builder, data);
+                const storing = Task.create('storing', () => this.commitResourceToDisk(builder, data));
                 await context.execute(storing);
 
                 // done
@@ -213,7 +222,7 @@ export default class ResourceService extends Service {
             this.commit('resource', reuslt);
             return reuslt;
         };
-        return importResource;
+        return Task.create('importResource', importResource);
     }
 
     private unknownEntry: ResourceRegistryEntry<unknown> = {
@@ -260,7 +269,7 @@ export default class ResourceService extends Service {
             domain: 'mods',
             ext: '.litemod',
             parseIcon: async () => undefined,
-            parseMetadata: fs => fs.readFile('litemod.json', 'utf-8').then(JSON.parse),
+            parseMetadata: fs => LiteLoader.readModMetaData(fs),
             getSuggestedName: (meta) => {
                 let name = '';
                 if (typeof meta.name === 'string') {
@@ -355,7 +364,7 @@ export default class ResourceService extends Service {
                 }
                 const [projectId, fileId] = uri.path!.split('/').slice(1);
                 const metadataUrl = `${CURSEMETA_CACHE}/${projectId}/${fileId}.json`;
-                const o = await Net.fetchJson(metadataUrl);
+                const o: any = await got(metadataUrl).json();
                 const url = o.body.DownloadURL;
                 return {
                     url,
@@ -446,7 +455,7 @@ export default class ResourceService extends Service {
         let metadataPath = this.getPath(builder.domain, `${normalizedName}.json`);
         let iconPath = this.getPath(builder.domain, `${normalizedName}.png`);
 
-        if (await fs.exists(filePath)) {
+        if (await exists(filePath)) {
             const slice = builder.hash.slice(0, 6);
             filePath = this.getPath(builder.domain, `${normalizedName}-${slice}${builder.ext}`);
             metadataPath = this.getPath(builder.domain, `${normalizedName}-${slice}.json`);
@@ -458,11 +467,11 @@ export default class ResourceService extends Service {
         iconPath = resolve(iconPath);
         builder.path = filePath;
 
-        await fs.ensureFile(filePath);
-        await fs.writeFile(filePath, data);
-        await fs.writeFile(metadataPath, JSON.stringify(toResource(builder), null, 4));
+        await ensureFile(filePath);
+        await writeFile(filePath, data);
+        await writeFile(metadataPath, JSON.stringify(toResource(builder), null, 4));
         if (builder.icon) {
-            await fs.writeFile(iconPath, builder.icon);
+            await writeFile(iconPath, builder.icon);
         }
     }
 
@@ -472,29 +481,28 @@ export default class ResourceService extends Service {
         const metadataPath = this.getPath(resource.domain, `${baseName}`);
         const iconPath = this.getPath(resource.domain, `${baseName}.png`);
 
-        await fs.unlink(filePath).catch(() => { });
-        await fs.unlink(metadataPath).catch(() => { });
-        await fs.unlink(iconPath).catch(() => { });
+        await unlink(filePath).catch(() => { });
+        await unlink(metadataPath).catch(() => { });
+        await unlink(iconPath).catch(() => { });
     }
 
     async load() {
-        if (await fs.exists(this.getPath('resources'))) {
+        if (await exists(this.getPath('resources'))) {
             // legacy
-            const resources = await fs.readdir(this.getPath('resources'));
+            const resources = await readdirEnsured(this.getPath('resources'));
             this.commit('resources', await Promise.all(resources
                 .filter(file => !file.startsWith('.'))
                 .map(file => this.getPath('resources', file))
-                .map(file => fs.readFile(file).then(b => JSON.parse(b.toString())))));
+                .map(file => getPersistence({ path: file, schema: ResourceSchema }))));
         }
         const resources: AnyResource[] = [];
         await Promise.all(['mods', 'resourcepacks', 'saves', 'modpacks']
             .map(async (domain) => {
                 const path = this.getPath(domain);
-                await fs.ensureDir(path);
-                const files = await fs.readdir(path);
+                const files = await readdirEnsured(path);
                 for (const file of files.filter(f => f.endsWith('.json'))) {
                     const filePath = join(path, file);
-                    const read: ResourceSchema<any> = await getPersistence({ path: filePath, schema: ResourceSchema });
+                    const read: ResourceSchema = await getPersistence({ path: filePath, schema: ResourceSchema });
                     resources.push(read);
                 }
             }));
@@ -510,7 +518,7 @@ export default class ResourceService extends Service {
         if (resource === UNKNOWN_RESOURCE) return;
         try {
             const builder = toBuilder(resource);
-            const data = await fs.readFile(resource.path);
+            const data = await readFile(resource.path);
             await this.resolveResource(builder, data, resource.type);
             await this.commitResourceToDisk(builder, data);
             this.commit('resource', toResource(builder));
@@ -530,7 +538,7 @@ export default class ResourceService extends Service {
 
         try {
             const builder = toBuilder(resource);
-            const data = await fs.readFile(resource.path);
+            const data = await readFile(resource.path);
             builder.hash = sha1(data);
             if (builder.hash !== resource.hash) {
                 await this.discardResourceOnDisk(resource);
@@ -554,14 +562,14 @@ export default class ResourceService extends Service {
         this.commit('resourceRemove', resourceObject);
         const ext = extname(resourceObject.path);
         const pure = resourceObject.path.substring(0, resourceObject.path.length - ext.length);
-        if (await fs.exists(resourceObject.path)) {
-            await fs.unlink(resourceObject.path);
+        if (await exists(resourceObject.path)) {
+            await unlink(resourceObject.path);
         }
-        if (await fs.exists(`${pure}.json`)) {
-            await fs.unlink(`${pure}.json`);
+        if (await exists(`${pure}.json`)) {
+            await unlink(`${pure}.json`);
         }
-        if (await fs.exists(`${pure}.png`)) {
-            await fs.unlink(`${pure}.png`);
+        if (await exists(`${pure}.png`)) {
+            await unlink(`${pure}.png`);
         }
     }
 
@@ -576,7 +584,7 @@ export default class ResourceService extends Service {
         const result = toResource(builder);
         const ext = extname(resource.path);
         const pure = resource.path.substring(0, resource.path.length - ext.length);
-        await fs.writeFile(`${pure}.json`, JSON.stringify(result));
+        await writeFile(`${pure}.json`, JSON.stringify(result));
         this.commit('resource', result);
     }
 
@@ -620,7 +628,7 @@ export default class ResourceService extends Service {
 
             if (!res) throw new Error(`Cannot find the resource ${resource}`);
 
-            promises.push(fs.copy(res.path, join(targetDirectory, res.name + res.ext)));
+            promises.push(copyPassively(res.path, join(targetDirectory, res.name + res.ext)));
         }
         await Promise.all(promises);
     }

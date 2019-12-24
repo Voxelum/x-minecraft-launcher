@@ -1,6 +1,19 @@
 {
     "type": "object",
     "properties": {
+        "roots": {
+            "description": "The root paths of all the minecraft",
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "primaryRoot": {
+            "description": "The primary installation root",
+            "default": "",
+            "type": "string"
+        },
         "locale": {
             "description": "The display language of the launcher",
             "default": "en",
@@ -58,6 +71,8 @@
         "defaultBlur",
         "locale",
         "particleMode",
+        "primaryRoot",
+        "roots",
         "showParticle",
         "useBmclAPI"
     ],

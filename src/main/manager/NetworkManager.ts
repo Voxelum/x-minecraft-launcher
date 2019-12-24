@@ -1,34 +1,30 @@
-import { Task } from '@xmcl/minecraft-launcher-core';
+import { Task } from '@xmcl/task';
 import { BrowserWindow, DownloadItem } from 'electron';
-import { fs } from 'main/utils';
+import { readFile } from 'fs-extra';
+import inGFW from 'in-gfw';
 import { basename, join } from 'path';
 import { Store } from 'vuex';
-import inGFW from 'in-gfw';
 import { Manager } from '.';
 import TaskManager from './TaskManager';
 
 function downloadItemTask(item: DownloadItem) {
-    function downloadItem(context: Task.Context) {
-        return new Promise<string>((resolve, reject) => {
-            item.on('updated', () => {
-                context.update(item.getReceivedBytes(), item.getTotalBytes(), item.getURL());
-            });
-            item.on('done', (event, state) => {
-                switch (state) {
-                    case 'completed':
-                        resolve(item.getSavePath());
-                        break;
-                    case 'cancelled':
-                    case 'interrupted':
-                    default:
-                        reject(new Error(state));
-                        break;
-                }
-            });
+    return Task.create('downloadItem', (context: Task.Context) => new Promise<string>((resolve, reject) => {
+        item.on('updated', () => {
+            context.update(item.getReceivedBytes(), item.getTotalBytes(), item.getURL());
         });
-    }
-    downloadItem.parameters = { url: item.getURL(), file: item.getFilename() };
-    return downloadItem;
+        item.on('done', (event, state) => {
+            switch (state) {
+                case 'completed':
+                    resolve(item.getSavePath());
+                    break;
+                case 'cancelled':
+                case 'interrupted':
+                default:
+                    reject(new Error(state));
+                    break;
+            }
+        });
+    }), { url: item.getURL(), file: item.getFilename() });
 }
 
 export default class NetworkManager extends Manager {
@@ -36,7 +32,9 @@ export default class NetworkManager extends Manager {
 
     private guard!: BrowserWindow;
 
-    private jsguard!: BrowserWindow;
+    private jsguard: BrowserWindow | undefined;
+
+    private jsguardClearHandle: NodeJS.Timeout | undefined;
 
     private downloading: { [url: string]: { file: string; callback: (item: Promise<string>) => void } } = {};
 
@@ -113,7 +111,7 @@ export default class NetworkManager extends Manager {
             });
         });
         if (success) {
-            const buffer = await fs.readFile(cachePath);
+            const buffer = await readFile(cachePath);
             return buffer.toString();
         }
         return this.requestPageWithJS(url);
@@ -122,7 +120,8 @@ export default class NetworkManager extends Manager {
     async requestPageWithJS(url: string) {
         console.log(`Request with js ${url}`);
         const root = this.tempRoot;
-        const browser = this.jsguard;
+        this.ensureJSGuard();
+        const browser = this.jsguard!;
         const cachePath = join(root, basename(new URL(url).pathname));
         browser.loadURL(url, {
             httpReferrer: browser.webContents.getURL() || '',
@@ -138,10 +137,30 @@ export default class NetworkManager extends Manager {
             });
         });
         if (success) {
-            const buffer = await fs.readFile(cachePath);
+            const buffer = await readFile(cachePath);
             return buffer.toString();
         }
         throw new Error(`Fail to fetch ${url}. Code: ${code}`);
+    }
+
+    private ensureJSGuard() {
+        if (!this.jsguard) {
+            this.jsguard = new BrowserWindow({
+                focusable: false,
+                webPreferences: {
+                    javascript: true,
+                    devTools: false,
+                },
+                show: false,
+            });
+        }
+        if (this.jsguardClearHandle) {
+            clearTimeout(this.jsguardClearHandle);
+        }
+        this.jsguardClearHandle = setTimeout(() => {
+            this.jsguard!.close();
+            this.jsguard = undefined;
+        }, 10000);
     }
 
     storeReady(store: Store<any>) {
@@ -153,18 +172,10 @@ export default class NetworkManager extends Manager {
             },
             show: false,
         });
-        this.jsguard = new BrowserWindow({
-            focusable: false,
-            webPreferences: {
-                javascript: true,
-                devTools: false,
-            },
-            show: false,
-        });
         this.guard.setFocusable(false);
         this.guard.webContents.session.once('will-download', (event, item, contents) => {
             const handle = this.downloading[item.getURL()];
-            const savePath = join(store.state.root, 'temps', handle.file || item.getFilename());
+            const savePath = join(this.tempRoot, handle.file || item.getFilename());
             if (!item.getSavePath()) item.setSavePath(savePath);
             const downloadTask = downloadItemTask(item);
             const taskHandle = this.taskManager.submit(downloadTask);

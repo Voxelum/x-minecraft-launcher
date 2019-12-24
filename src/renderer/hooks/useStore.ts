@@ -17,6 +17,15 @@ export function useBusy(semaphore: string | Function) {
     return computed(() => state.semaphore[key] > 0);
 }
 
+export function useBaseService() {
+    const { services } = useStore();
+    return {
+        showItemInDirectory: services.BaseService.showItemInDirectory,
+        openInBrowser: services.BaseService.openInBrowser,
+        openDirectory: services.BaseService.openDirectory,
+    };
+}
+
 export function useMutation<T extends keyof RootCommit>(key: T): (payload: Parameters<Required<RootCommit>[T]>[1]) => void {
     const { commit } = useStore();
     return payload => commit(key, payload);

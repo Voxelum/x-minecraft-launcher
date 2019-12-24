@@ -1,5 +1,5 @@
 import { computed, Ref, ref } from '@vue/composition-api';
-import { Forge } from '@xmcl/minecraft-launcher-core';
+import { Forge } from '@xmcl/mod-parser';
 import Vue from 'vue';
 import { useStore } from './useStore';
 

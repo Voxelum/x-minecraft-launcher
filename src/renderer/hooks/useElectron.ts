@@ -1,7 +1,7 @@
 import { inject } from '@vue/composition-api';
-import { IPC_KEY, REMOTE_DIALOG_KEY, REMOTE_SHELL_KEY, ELECTRON_CLIPBOARD } from 'renderer/constant';
+import { Clipboard, Dialog, IpcRenderer } from 'electron';
+import { ELECTRON_CLIPBOARD, IPC_KEY, REMOTE_DIALOG_KEY } from 'renderer/constant';
 import { requireNonnull } from 'universal/utils/object';
-import { Shell, IpcRenderer, Dialog, Clipboard } from 'electron';
 import { useStore } from './useStore';
 
 /**
@@ -11,15 +11,6 @@ export function useNativeDialog(): Dialog {
     const dialog = inject(REMOTE_DIALOG_KEY);
     requireNonnull(dialog);
     return dialog;
-}
-
-/**
- * Use electron shell
- */
-export function useShell(): Shell {
-    const shell = inject(REMOTE_SHELL_KEY);
-    requireNonnull(shell);
-    return shell;
 }
 
 /**

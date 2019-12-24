@@ -11,9 +11,8 @@
 
 Beta: Cover the basic features related to mods.
 
-1. Manage mods resources and launch with selected mods. 
-2. Be able to install Liteloader/Fabric on corresponding Minecraft version.
-3. Be able to detect mod version with Forge/Fabric version and Minecraft Version (detect mod compatibility).
+1. Be able to install Liteloader/Fabric on corresponding Minecraft version.
+2. Be able to detect mod version with Forge/Fabric version and Minecraft Version (detect mod compatibility).
 
 Want to know exact features we have? See [Feature Design vs Implemenatation](#Feature-Design-vs-Implemenatation)
 
@@ -26,9 +25,9 @@ This project is using [nodejs](https://nodejs.org/) + [electron](https://electro
 ### File structure:
 
 - main => main process, the guard process. Store most of the states of launcher. It contains three main part and loaded in following order:
-    1. config.js => config boot loader, this will load first
-    2. store => directory that contains server store template 
-    3. windowsManager.js => the basic manager for windows
+    1. app => App controller
+    2. managers => The manager tend to be load
+    3. services => The services exposed to the renderer process
 - renderer => renderer process, store the single state tree and display UI
 - universal => some universal things across the main/renderer
     - store => the definition of store
@@ -59,40 +58,7 @@ This project is designed to easy to dev... hopefully.
 
 ### Getting Started
 
-*The installation might be the most hard part.*
-
-The development environment require 3 things:
-
-1. [Nodejs](https://nodejs.org/) version >= 10
-2. python 2.7
-3. msbuild (Sindows) , clang (MacOs), gcc (linux desktop)
-
-#### Windows Env Tip
-
-If you have neither python 2.7 nor msbuild, you should try
-[windows-build-tools](https://github.com/felixrieseberg/windows-build-tools). It really simplify the verbose installation process. You can just run `npm install --global windows-build-tools` and wait it done.
-
-*Notice that the visual studio installation process is really slow. Some time the process will FREEZE. You can terminate the installation process and run the installation command again.*
-
-#### Mac Env Tip
-
-Python 2.7 should be built in. You should install XCode in addition. 
-
-#### Linux Env Tip
-
-Never tried. I don't have a linux desktop machine.
-
-#### 解决中国国内安装依赖（如electron）太慢的办法
-
-打开你的 git bash，在`npm i`前面加上`registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/"`。使用国内阿里提供的npm以及electron的镜像。
-
-最终输入的command也就是
-
-```bash
-registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/" npm i
-```
-
-### General Process
+After you clone the project
 
 ``` bash
 # optional on Windows to install build tools
@@ -111,21 +77,21 @@ npm run build
 npm test
 ```
 
-### Let Typescript Intellisense to help you
+#### 解决中国国内安装依赖（如electron）太慢的办法
+
+打开你的 git bash，在`npm i`前面加上`registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/"`。使用国内阿里提供的npm以及electron的镜像。
+
+最终输入的command也就是
+
+```bash
+registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/" npm i
+```
+
+### Found something wrong in launcher core
 
 The launcher core is in [seperated project](https://github.com/voxelum/minecraft-launcher-core-node) written in typescript. 
 
-At the same time, the launcher core logic is guard by typescript.
-
-For example, you will get intellisense during you write the vuex module:
-
-![image](/misc/typehint0.png)
-
-Also, the vscode will hint you in .vue files:
-
-![](/misc/typehint1.png)
-
-*The image is a little bit outdate since we are using composition api now.*
+Please open issue there if you identify any issue related to it.
 
 #### Recommended way to interact with Vuex
 
@@ -134,15 +100,7 @@ Also, the vscode will hint you in .vue files:
 - Import your hook by `import { yourHook } from '@/hooks'` in your vue file
 - Use hook in vue file without directly access of vuex
 
-#### Legacy way to use Vuex
-
-You may already notice that, in .vue file, it uses `$repo` but not `$store` property to access vuex store. This is just a redirect. `$repo` is just another reference of `$store`. It's necessary to let the type system accept my type definitoin.
-
-Each vuex module has a corresponding definitoin file. If you want to add a state/getter/mutation/action to a module, you should firstly add the definition of that state/getter/mutation/action in the definition file.
-
-The project overwrite the some vue/vuex definition. You can check [this file](/src/universal/store/index.ts) to see the implemantion detail.
-
-### A better Dev experience with VSCode debugger 
+### Dev with VSCode debugger 
 
 The project includes vscode debugger configs. You can add breakpoint on line and debug. Currently, VSCode debugger method only supports debug on main process. 
 
@@ -235,3 +193,4 @@ Here we list the features & corresponding files to implement the features.
 ---
 
 This project was generated with [electron-vue](https://github.com/SimulatedGREG/electron-vue) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about the original structure can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).
+

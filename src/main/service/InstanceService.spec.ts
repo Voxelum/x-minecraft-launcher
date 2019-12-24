@@ -1,5 +1,5 @@
-import { Task } from '@xmcl/minecraft-launcher-core';
-import { fs } from 'main/utils';
+import { Task } from '@xmcl/task';
+import { existsSync } from 'fs';
 import { join } from 'path';
 import release from 'universal/utils/lasteRelease.json';
 import InstanceService from './InstanceService';
@@ -95,7 +95,7 @@ describe('InstanceService', () => {
                 commit: cm,
             }).forEach(([k, v]) => Reflect.set(service, k, v));
             const id = await service.createInstance({});
-            await service.selectInstance(id);
+            await service.mountInstance(id);
             expect(cm).toBeCalledWith('selectProfile', id);
         });
         test('should not select the instance if the id is the same', async () => {
@@ -106,7 +106,7 @@ describe('InstanceService', () => {
                 commit: cm,
                 state: { profile: { id: 'abc' } },
             }).forEach(([k, v]) => Reflect.set(service, k, v));
-            await service.selectInstance('abc');
+            await service.mountInstance('abc');
             expect(cm).not.toBeCalled();
         });
     });
@@ -194,10 +194,8 @@ describe('InstanceService', () => {
                     minecraft: '1.14.4',
                 },
             });
-            await expect(fs.exists(join(tempRoot, 'profiles', 'a', 'config', 'bwncr-common.toml')))
-                .resolves.toBeTruthy();
-            await expect(fs.exists(join(tempRoot, 'profiles', 'a', 'config', 'biomesoplenty', 'server.toml')))
-                .resolves.toBeTruthy();
+            expect(existsSync(join(tempRoot, 'profiles', 'a', 'config', 'bwncr-common.toml'))).toBeTruthy();
+            expect(existsSync(join(tempRoot, 'profiles', 'a', 'config', 'biomesoplenty', 'server.toml'))).toBeTruthy();
         });
     });
 });

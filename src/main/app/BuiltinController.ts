@@ -1,19 +1,64 @@
 
 import { App, BrowserWindow, dialog, Dock, Menu, nativeImage, Tray } from 'electron';
+import { EventEmitter } from 'events';
+import { createI18n } from 'main/utils/i18n';
 import { resolve } from 'path';
-import { LauncherApp, LauncherAppContext } from 'main/manager/AppManager';
+import en from '../utils/locales/en.json';
+import zh from '../utils/locales/zh-CN.json';
+import { LauncherAppController } from './LauncherAppController';
 
-export default class BuiltinApp extends LauncherApp {
-    private mainRef: BrowserWindow | null = null;
+export function focusOnClick(getWindow: () => BrowserWindow | undefined) {
+    return () => {
+        const window = getWindow();
+        if (window && !window.isFocused()) {
+            window.focus();
+        }
+    };
+}
 
-    private loggerRef: BrowserWindow | null = null;
+export function toggleVisibilityOnDoubleClick(getWindow: () => BrowserWindow | undefined) {
+    return () => {
+        const window = getWindow();
+        if (window) {
+            if (window.isVisible()) window.hide();
+            else window.show();
+        }
+    };
+}
 
-    private tray: Tray | null = null;
+export function forwardEvent(event: string, eventEmitter: EventEmitter, getBrowser: () => (BrowserWindow | undefined)) {
+    eventEmitter.on(event, (...args: any[]) => {
+        // eslint-disable-next-line no-unused-expressions
+        getBrowser()?.webContents.send(event, ...args);
+    });
+}
 
-    private dock: Dock | null = null;
+
+const isDev = process.env.NODE_ENV === 'development';
+const baseURL = isDev
+    ? 'http://localhost:9080/'
+    : `file://${__dirname}/`;
+
+
+export default class BuiltinController extends LauncherAppController {
+    private mainRef: BrowserWindow | undefined = undefined;
+
+    private loggerRef: BrowserWindow | undefined = undefined;
+
+    private tray: Tray | undefined = undefined;
+
+    private dock: Dock | undefined = undefined;
+
+    private i18n = createI18n({ en, zh }, 'en');
+
+    private primary: BrowserWindow | undefined;
+
+    constructor() {
+        super();
+    }
 
     createMainWindow() {
-        this.mainRef = this.createWindow('main.html', {
+        this.mainRef = this.newWindow('main', `${baseURL}main.html`, {
             title: 'VoxeLauncher',
             width: 800,
             height: 580,
@@ -28,7 +73,7 @@ export default class BuiltinApp extends LauncherApp {
     }
 
     createLoggerWindow() {
-        this.loggerRef = this.createWindow('logger.html', {
+        this.loggerRef = this.newWindow('logger', `${baseURL}logger.html`, {
             title: 'VoxeLauncher',
             width: 770,
             height: 580,
@@ -40,12 +85,27 @@ export default class BuiltinApp extends LauncherApp {
         });
     }
 
-    private createMenu(app: Electron.App) {
+    setup(): void { }
+
+    async requestOpenExternalUrl(url: string) {
+        const { t: $t } = this.i18n;
+        const result = await dialog.showMessageBox(BrowserWindow.getAllWindows()[0], {
+            type: 'question',
+            title: $t('openUrl.title', { url }),
+            message: $t('openUrl.message', { url }),
+            checkboxLabel: $t('openUrl.trust'),
+            buttons: [$t('openUrl.cancel'), $t('openUrl.yes')],
+        });
+        return result.response === 1;
+    }
+
+    private createMenu(app: App) {
+        const { t: $t } = this.i18n;
         return Menu.buildFromTemplate([
-            { type: 'normal', label: this.t('checkUpdate') },
+            { type: 'normal', label: $t('checkUpdate') },
             { type: 'separator' },
             {
-                label: this.t('showDiagnosis'),
+                label: $t('showDiagnosis'),
                 type: 'normal',
                 click() {
                     const cpu = process.getCPUUsage();
@@ -57,14 +117,14 @@ export default class BuiltinApp extends LauncherApp {
                         dialog.showMessageBox({
                             type: 'info',
                             title: 'Diagnosis Info',
-                            message: `Mode:${process.env.NODE_ENV}\nCPU: ${JSON.stringify(cpu)}\nMem: ${JSON.stringify(m)}\nSysMem: ${JSON.stringify(sysmem)}`,
+                            message: `Mode: ${process.env.NODE_ENV}\nCPU: ${JSON.stringify(cpu)}\nMem: ${JSON.stringify(m)}\nSysMem: ${JSON.stringify(sysmem)}`,
                         });
                     });
                 },
             },
             { type: 'separator' },
             {
-                label: this.t('quit'),
+                label: $t('quit'),
                 type: 'normal',
                 click() {
                     app.quit();
@@ -77,25 +137,15 @@ export default class BuiltinApp extends LauncherApp {
         const img = nativeImage.createFromPath(`${__static}/favicon@2x.png`);
         const tray = new Tray(img);
         tray.setContextMenu(this.createMenu(app));
-        tray.on('click', () => {
-            if (this.loggerRef && !this.loggerRef.isFocused()) {
-                this.loggerRef.focus();
-            } else if (this.mainRef && !this.mainRef.isFocused()) {
-                this.mainRef.focus();
-            }
-        }).on('double-click', () => {
-            if (this.loggerRef) {
-                if (this.loggerRef.isVisible()) this.loggerRef.hide();
-                else this.loggerRef.show();
-            } else if (this.mainRef) {
-                if (this.mainRef.isVisible()) this.mainRef.hide();
-                else this.mainRef.show();
-            }
-        });
+
+        const { t: $t } = this.i18n;
+
+        tray.on('click', focusOnClick(() => this.primary))
+            .on('double-click', toggleVisibilityOnDoubleClick(() => this.primary));
         this.tray = tray;
-        this.eventBus.on('locale-changed', () => {
+        this.app.on('locale-changed', () => {
             if (tray) {
-                tray.setToolTip(this.t('title'));
+                tray.setToolTip($t('title'));
                 tray.setContextMenu(this.createMenu(app));
             }
         });
@@ -105,7 +155,7 @@ export default class BuiltinApp extends LauncherApp {
         }
     }
 
-    onMinecraftWindowReady = () => {
+    onMinecraftWindowReady() {
         const { getters } = this.store;
         if (this.mainRef && this.mainRef.isVisible()) {
             this.mainRef.webContents.send('minecraft-window-ready');
@@ -138,19 +188,7 @@ export default class BuiltinApp extends LauncherApp {
         }
     }
 
-    onMinecraftStdOut = (content: string) => {
-        if (this.loggerRef) {
-            this.loggerRef.webContents.send('minecraft-stdout', content);
-        }
-    }
-
-    onMinecraftStdErr = (content: string) => {
-        if (this.loggerRef) {
-            this.loggerRef.webContents.send('minecraft-stderr', content);
-        }
-    }
-
-    onMinecraftExited = (status: any) => {
+    onMinecraftExited(status: any) {
         const { hideLauncher } = this.store.getters.instance;
         if (hideLauncher) {
             if (this.mainRef) {
@@ -162,49 +200,25 @@ export default class BuiltinApp extends LauncherApp {
         }
         if (this.loggerRef) {
             this.loggerRef.close();
-            this.loggerRef = null;
+            this.loggerRef = undefined;
         }
     }
 
     appReady(app: App) {
         this.createMainWindow();
         this.setupTray(app);
-        this.eventBus.on('task-successed', (id) => {
-            if (this.mainRef) {
-                this.mainRef.webContents.send('task-successed', id);
-            }
-        }).on('task-failed', (id, error) => {
-            if (this.mainRef) {
-                this.mainRef.webContents.send('task-failed', id, error);
-            }
-        })
-            .on('minecraft-window-ready', this.onMinecraftWindowReady)
-            .on('minecraft-stdout', this.onMinecraftStdOut)
-            .on('minecraft-stderr', this.onMinecraftStdErr)
-            .on('minecraft-exit', this.onMinecraftExited);
+
+        forwardEvent('task-successed', app, () => this.loggerRef);
+        forwardEvent('task-failed', app, () => this.loggerRef);
+        forwardEvent('minecraft-stdout', app, () => this.loggerRef);
+        forwardEvent('minecraft-stderr', app, () => this.loggerRef);
+
+        this.app
+            .on('minecraft-window-ready', this.onMinecraftWindowReady.bind(this))
+            .on('minecraft-exit', this.onMinecraftExited.bind(this));
     }
 
-    async start(context: LauncherAppContext): Promise<void> {
-        this.store = context.store;
+    async dataReady(): Promise<void> {
         this.mainRef!.show();
-    }
-
-    requestFocus(): void {
-        if (this.mainRef) {
-            this.mainRef.focus();
-        } else if (this.loggerRef) {
-            this.loggerRef.focus();
-        }
-    }
-
-    dispose(): void {
-        if (this.mainRef) {
-            this.mainRef.close();
-            this.mainRef = null;
-        }
-        if (this.loggerRef) {
-            this.loggerRef.close();
-            this.loggerRef = null;
-        }
     }
 }

@@ -1,10 +1,12 @@
-import { Launcher, Util } from '@xmcl/minecraft-launcher-core';
+import { launch, MinecraftFolder, LaunchOption } from '@xmcl/core';
+import { makeException } from 'main/utils';
+import { ChildProcess } from 'child_process';
 import { join } from 'path';
 import AuthLibService from './AuthLibService';
 import DiagnoseService from './DiagnoseService';
+import InstanceService from './InstanceService';
 import Service, { Inject } from './Service';
 import VersionService from './VersionService';
-import InstanceService from './InstanceService';
 
 function onerror(e: { message: string; type: string }) {
     if (e.message.startsWith('Cannot find version ') || e.message.startsWith('No version file for ') || e.message.startsWith('No version jar for ')) {
@@ -32,7 +34,14 @@ export default class LaunchService extends Service {
     @Inject('InstanceService')
     private instanceService!: InstanceService;
 
-    async launch() {
+    private launchedProcess: ChildProcess | undefined;
+    
+    /**
+     * Launch the current selected instance. This will return a boolean promise indeicate whether launch is success.
+     * @param force 
+     * @returns Does this launch request success?
+     */
+    async launch(force?: boolean) {
         try {
             if (this.state.launch.status !== 'ready') {
                 return false;
@@ -46,13 +55,8 @@ export default class LaunchService extends Service {
             const instance = this.getters.instance;
             const user = this.getters.user;
             const gameProfile = this.getters.gameProfile;
-            if (!instance) {
-                this.commit('launchErrors', { type: 'selectProfileEmpty', content: [] });
-                return false;
-            }
             if (user.accessToken === '' || gameProfile.name === '' || gameProfile.id === '') {
-                this.commit('launchErrors', { type: 'illegalAuth', content: [] });
-                return false;
+                throw makeException({ type: 'launchIllegalAuth' });
             }
 
             for (let problems = this.getters.issues.filter(p => p.autofix), i = 0;
@@ -61,9 +65,8 @@ export default class LaunchService extends Service {
                 await this.diagnoseService.fix(this.getters.issues.filter(p => !p.optional && p.autofix));
             }
 
-            if (this.getters.issues.some(p => !p.optional)) {
-                this.commit('launchErrors', { type: 'unresolvableProblems', content: this.getters.issues.filter(p => !p.optional) });
-                return false;
+            if (!force && this.getters.issues.some(p => !p.optional)) {
+                throw makeException({ type: 'launchBlockedIssues', issues: this.getters.issues.filter(p => !p.optional) });
             }
 
             if (this.state.launch.status === 'ready') { // check if we have cancel (set to ready) this launch
@@ -72,8 +75,8 @@ export default class LaunchService extends Service {
 
             this.commit('launchStatus', 'launching');
 
-            const debug = instance.showLog;
-            const minecraftFolder = new Util.MinecraftFolder(join(this.state.root, 'instances', instance.id));
+            const showLog = instance.showLog;
+            const minecraftFolder = new MinecraftFolder(join(this.state.root, 'instances', instance.path));
 
             /**
              * real version name
@@ -88,7 +91,7 @@ export default class LaunchService extends Service {
             /**
              * Build launch condition
              */
-            const option: Launcher.Option = {
+            const option: LaunchOption = {
                 gameProfile,
                 accessToken: user.accessToken,
                 properties: {},
@@ -100,8 +103,7 @@ export default class LaunchService extends Service {
                 version,
                 extraExecOption: {
                     detached: true,
-                    cwd: undefined,
-                    env: undefined,
+                    cwd: minecraftFolder.root,
                 },
                 yggdrasilAgent: user.authService !== 'mojang' && user.authService !== 'offline' ? {
                     jar: await this.authLibService.ensureAuthlibInjection(),
@@ -123,20 +125,21 @@ export default class LaunchService extends Service {
             console.log(JSON.stringify(option, null, 2));
 
             // Launch
-            const process = await Launcher.launch(option);
+            const process = await launch(option);
+            this.launchedProcess = process;
             this.commit('launchStatus', 'launched');
             let crashReport = '';
             let crashReportLocation = '';
             let waitForReady = true;
-            const eventBus = this.managers.AppManager.eventBus;
-            eventBus.emit('minecraft-start', debug);
+            const eventBus = this.managers.AppManager.app;
+            eventBus.emit('minecraft-start', showLog);
             process.on('error', (err) => {
-                console.error(err);
-                this.commit('launchErrors', { type: 'general', content: [err] });
+                this.pushException({ type: 'launchGeneralException', error: err });
                 this.commit('launchStatus', 'ready');
             });
+
             process.on('exit', (code, signal) => {
-                console.log(`exit: ${code}, signal: ${signal}`);
+                console.log(`Minecraft exit: ${code}, signal: ${signal}`);
                 if (signal === 'SIGKILL') {
                     eventBus.emit('minecraft-killed');
                 }
@@ -155,6 +158,7 @@ export default class LaunchService extends Service {
                     eventBus.emit('minecraft-exit', { code, signal });
                 }
                 this.commit('launchStatus', 'ready');
+                this.launchedProcess = undefined;
             });
             /* eslint-disable no-unused-expressions */
             process.stdout?.on('data', (s) => {
@@ -177,9 +181,8 @@ export default class LaunchService extends Service {
             process.unref();
             return true;
         } catch (e) {
-            this.commit('launchErrors', { type: 'general', content: [e] });
             this.commit('launchStatus', 'ready');
-            return false;
+            throw makeException({ type: 'launchGeneralException', error: e });
         }
     }
 }

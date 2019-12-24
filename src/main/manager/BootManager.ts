@@ -1,7 +1,8 @@
-import { join, resolve } from 'path';
-import { fs } from 'main/utils';
 import { app } from 'electron';
-import { existsSync, mkdirSync, readFileSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
+import { copy, ensureFile, readdir, readJson, rmdir, unlink, writeFile } from 'fs-extra';
+import { isDirectory } from 'main/utils';
+import { join, resolve } from 'path';
 import { Manager } from '.';
 
 const appData = app.getPath('appData');
@@ -11,30 +12,27 @@ const cfgFile = `${appData}/voxelauncher/launcher.json`;
 export default class BootManager extends Manager {
     public root!: string;
 
+    public remainingWindows: string[] = [];
+
     async setup() {
         let root;
         try {
-            const buf = readFileSync(cfgFile);
-            const cfg = JSON.parse(buf.toString());
+            const cfg = await readJson(cfgFile);
             root = cfg.path || join(appData, 'voxelauncher');
+            this.remainingWindows = cfg.windows || ['builtin://main'];
         } catch (e) {
             root = join(appData, 'voxelauncher');
+            this.remainingWindows = ['builtin://main'];
         }
-        this.setupRoot(root);
+        await this.persistRoot(root);
         this.root = root;
     }
 
-    private setupRoot(rt: string) {
+    private async persistRoot(root: string) {
         try {
-            // app.setPath('userData', rt);
-            if (!existsSync(rt)) {
-                mkdirSync(rt, { recursive: true });
-            }
-            if (!existsSync(persistRoot)) {
-                mkdirSync(persistRoot, { recursive: true });
-            }
-            console.log(`Setup root ${rt}`);
-            fs.writeFile(cfgFile, JSON.stringify({ path: rt }));
+            console.log(`Setup root ${root}`);
+            await ensureFile(cfgFile);
+            writeFile(cfgFile, JSON.stringify({ path: root }));
         } catch (e) {
             console.error('An error occured during setup root');
             console.error(e);
@@ -47,7 +45,7 @@ export default class BootManager extends Manager {
      * This will restart the launcher.
      */
     async setRoot({ path: newRoot, migrate, clear }: { path: string; migrate: boolean; clear: boolean }) {
-        const oldRoot = app.getPath('userData');
+        const oldRoot = this.root;
         if (oldRoot === newRoot) {
             return;
         }
@@ -55,16 +53,14 @@ export default class BootManager extends Manager {
         console.log(`Start to migrate root, ${oldRoot} -> ${newRoot}`);
 
         async function remove(file: string) {
-            const s = await fs.stat(file).catch(() => { });
-            if (!s) return;
-            if (s.isDirectory()) {
-                const childs = await fs.readdir(file);
+            if (await isDirectory(file)) {
+                const childs = await readdir(file);
                 await Promise.all(childs.map(p => resolve(file, p)).map(p => remove(p)));
                 if (file === persistRoot) return;
-                await fs.rmdir(file);
+                await rmdir(file);
             } else {
                 if (file === cfgFile) return;
-                await fs.unlink(file);
+                await unlink(file);
             }
         }
 
@@ -74,16 +70,16 @@ export default class BootManager extends Manager {
             }
 
             if (migrate) {
-                await fs.copy(oldRoot, newRoot);
+                await copy(oldRoot, newRoot);
             }
 
             if (clear) {
                 await remove(oldRoot);
             }
 
-            await fs.writeFile(cfgFile, JSON.stringify({ path: newRoot }));
+            await writeFile(cfgFile, JSON.stringify({ path: newRoot }));
 
-            app.setPath('userData', newRoot);
+            this.root = newRoot;
             app.relaunch();
             app.quit();
         } catch (e) {

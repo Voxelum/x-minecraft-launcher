@@ -5,7 +5,7 @@
       <side-bar />
       <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
         <v-card class="main-body" color="grey darken-4">
-          <!-- <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;"> -->
+          <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;">
           <vue-particles v-if="showParticle" 
                          color="#dedede" 
                          :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }"
@@ -49,6 +49,7 @@ import {
   useNotifier,
   useRouter,
 } from '@/hooks';
+import { provideTasks } from '@/providers/provideTasks'; 
 import dialogs from './dialog';
 
 export default createComponent({
@@ -56,6 +57,7 @@ export default createComponent({
   setup() {
     provideDialog();
     provideNotifier();
+    provideTasks();
 
     const ipcRenderer = useIpc();
     const { particleMode, showParticle } = useParticle();
@@ -83,7 +85,7 @@ export default createComponent({
       const task = state.task.tree[id];
       if (task.background) return;
       console.log(`Recieve fail task ${id}`);
-      notify('error', $t(task.path, task.arguments || {}), error);
+      notify('error', $t(task.path, task.arguments || {}), $t('task.failedDescription'), error);
     }
     function refreshImage() {
       const img = backgroundImage;

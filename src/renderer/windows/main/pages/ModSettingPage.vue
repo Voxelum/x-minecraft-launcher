@@ -116,8 +116,12 @@ import {
   useResourceOperation,
   useDropImport,
 } from '@/hooks';
+import ModCard from './ModSettingPage/ModCard.vue';
 
 export default createComponent({
+  components: {
+    ModCard,
+  },
   setup() {
     const data = reactive({
       filterInCompatible: true,

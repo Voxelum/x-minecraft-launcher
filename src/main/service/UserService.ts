@@ -1,5 +1,7 @@
-import { Auth, MojangChallengeResponse, MojangService, Net, ProfileService } from '@xmcl/minecraft-launcher-core';
-import { fs, requireNonnull, requireObject, requireString } from 'main/utils';
+import { downloader } from '@xmcl/installer/util';
+import { AUTH_API_MOJANG, checkLocation, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user';
+import { readFile, readJSON } from 'fs-extra';
+import { makeException, requireNonnull, requireObject, requireString } from 'main/utils';
 import { getPersistence, setPersistence } from 'main/utils/persistence';
 import { MutationKeys } from 'universal/store';
 import { UserSchema } from 'universal/store/modules/user.schema';
@@ -96,7 +98,7 @@ export default class UserService extends Service {
     }
 
     async getMinecraftAuthDb() {
-        const data: LauncherProfile = await fs.readFile(this.getMinecraftPath('launcher_profile.json')).then(b => JSON.parse(b.toString()), () => { });
+        const data: LauncherProfile = await readJSON(this.getMinecraftPath('launcher_profile.json')).catch(() => ({}));
         return data;
     }
 
@@ -115,10 +117,10 @@ export default class UserService extends Service {
         const mcdb = await this.getMinecraftAuthDb();
         if (typeof data === 'object') {
             result.authServices = data.authServices;
-            result.authServices.mojang = Auth.Yggdrasil.API_MOJANG;
+            result.authServices.mojang = AUTH_API_MOJANG;
 
             result.profileServices = data.profileServices;
-            result.profileServices.mojang = ProfileService.API_MOJANG;
+            result.profileServices.mojang = PROFILE_API_MOJANG;
 
             if (data.clientToken) {
                 result.clientToken = data.clientToken;
@@ -132,8 +134,8 @@ export default class UserService extends Service {
             // import mojang authDB
 
             result.clientToken = mcdb?.clientToken ?? v4().replace(/-/g, '');
-            result.authServices = { mojang: Auth.Yggdrasil.API_MOJANG };
-            result.profileServices = { mojang: ProfileService.API_MOJANG };
+            result.authServices = { mojang: AUTH_API_MOJANG };
+            result.profileServices = { mojang: PROFILE_API_MOJANG };
 
             if (mcdb.selectedUser) {
                 result.selectedUser.id = mcdb.selectedUser.account;
@@ -164,7 +166,7 @@ export default class UserService extends Service {
                 }
             }
         }
-        this.commit('userSnapshot', data);
+        this.commit('userSnapshot', result);
     }
 
     async init() {
@@ -178,7 +180,7 @@ export default class UserService extends Service {
         const user = this.getters.user;
         if (this.getters.accessTokenValid) {
             if (user.authService !== 'offline') {
-                await Auth.Yggdrasil.invalidate({
+                await invalidate({
                     accessToken: user.accessToken,
                     clientToken: this.state.user.clientToken,
                 }, this.getters.authService);
@@ -198,7 +200,7 @@ export default class UserService extends Service {
         const user = this.getters.user;
         if (user.authService !== 'mojang') return true;
         try {
-            const result = await MojangService.checkLocation(user.accessToken);
+            const result = await checkLocation(user.accessToken);
             this.commit('userSecurity', result);
             return result;
         } catch (e) {
@@ -217,7 +219,7 @@ export default class UserService extends Service {
         if (!this.getters.accessTokenValid) return [];
         const user = this.getters.user;
         if (user.profileService !== 'mojang') return [];
-        return MojangService.getChallenges(user.accessToken);
+        return getChallenges(user.accessToken);
     }
 
     async submitChallenges(responses: MojangChallengeResponse[]) {
@@ -225,7 +227,7 @@ export default class UserService extends Service {
         const user = this.getters.user;
         if (user.authService !== 'mojang') throw new Error('Cannot sumit challenge if login mode is not mojang!');
         if (!(responses instanceof Array)) throw new Error('Expect responses Array!');
-        const result = await MojangService.responseChallenges(user.accessToken, responses);
+        const result = await responseChallenges(user.accessToken, responses);
         this.commit('userSecurity', true);
         return result;
     }
@@ -249,16 +251,16 @@ export default class UserService extends Service {
         try {
             let profile;
             if (this.getters.isServiceCompatible) {
-                profile = await ProfileService.fetch(id, { api: this.getters.profileService });
+                profile = await lookup(id, { api: this.getters.profileService });
             } else {
                 // use name to look up
-                profile = await ProfileService.lookup(name, { api: this.getters.profileService });
+                profile = await lookupByName(name, { api: this.getters.profileService });
                 if (!profile) {
                     throw new Error(`Profile not found named ${name}!`);
                 }
-                profile = await ProfileService.fetch(profile.id, { api: this.getters.profileService });
+                profile = await lookup(profile.id, { api: this.getters.profileService });
             }
-            const textures = ProfileService.getTextures(profile);
+            const textures = getTextures(profile);
             const skin = textures?.textures.SKIN;
             if (skin) {
                 this.commit('gameProfile', {
@@ -283,35 +285,44 @@ export default class UserService extends Service {
         const user = this.getters.user;
 
         if (!this.getters.offline) {
-            const validate = await Auth.Yggdrasil.validate({
+            const valid = await validate({
                 accessToken: user.accessToken,
                 clientToken: this.state.user.clientToken,
-            }, this.getters.authService).catch(() => false);
+            }, this.getters.authService).catch((e) => {
+                console.error(e);
+                return false;
+            });
 
-            if (validate) {
+            console.log(user.accessToken);
+            console.log(this.state.user.clientToken);
+
+            console.log(`Refresh user access token: ${valid ? 'valid' : 'invalid'}`);
+
+            if (valid) {
                 this.checkLocation();
                 return;
             }
             try {
-                const result = await Auth.Yggdrasil.refresh({
+                const result = await refresh({
                     accessToken: user.accessToken,
                     clientToken: this.state.user.clientToken,
                 });
                 this.commit('userProfileUpdate', {
-                    id: result.user.id,
+                    id: user.id,
                     accessToken: result.accessToken,
-                    profiles: result.availableProfiles,
+                    // profiles: result.availableProfiles,
+                    profiles: [],
                 });
                 this.checkLocation();
 
                 if (user.authService === 'mojang') {
-                    try {
-                        const info = await MojangService.getAccountInfo(user.accessToken);
-                        this.commit('userMojangInfo', info);
-                    } catch (e) {
-                        console.warn(`Cannot refresh mojang info for user ${user.username}.`);
-                        console.warn(e);
-                    }
+                    // try {
+                    //     const info = await getAccountInfo(user.accessToken);
+                    //     this.commit('userMojangInfo', info);
+                    // } catch (e) {
+                    //     console.warn(`Cannot refresh mojang info for user ${user.username}.`);
+                    //     console.warn(e);
+                    // }
                 }
             } catch (e) {
                 this.commit('userInvalidate');
@@ -337,13 +348,13 @@ export default class UserService extends Service {
         let data: Buffer | undefined;
         let urlString = '';
         if (parsedUrl.protocol === 'file:') {
-            data = await fs.readFile(url);
+            data = await readFile(url);
         } else if (parsedUrl.protocol === 'https:' || parsedUrl.protocol === 'http:') {
             urlString = url;
         } else {
             throw new Error('Unknown url protocol! Require a file or http/https protocol!');
         }
-        return ProfileService.setTexture({
+        return setTexture({
             uuid: gameProfile.id,
             accessToken: user.accessToken,
             type: 'skin',
@@ -352,12 +363,9 @@ export default class UserService extends Service {
                     model: slim ? 'slim' : 'steve',
                 },
                 url: urlString,
+                data,
             },
-            data,
-        }, this.getters.profileService).catch((e) => {
-            console.error(e);
-            throw e;
-        });
+        }, this.getters.profileService);
     }
 
     /**
@@ -368,7 +376,7 @@ export default class UserService extends Service {
         requireString(option.url);
         requireString(option.path);
         const { path, url } = option;
-        return fs.writeFile(path, await Net.downloadBuffer({ url }));
+        await downloader.downloadFile({ url, destination: path });
     }
 
     /**
@@ -376,7 +384,7 @@ export default class UserService extends Service {
      */
     async refreshUser() {
         if (!this.getters.accessTokenValid) return;
-        await this.refreshSkin().catch(_ => _);
+        // await this.refreshSkin().catch(_ => _);
         await this.refreshStatus().catch(_ => _);
     }
 
@@ -396,6 +404,11 @@ export default class UserService extends Service {
         requireObject(payload);
         requireString(payload.userId);
         requireString(payload.profileId);
+
+        if (payload.profileId === this.state.user.selectedUser.profile
+            && payload.userId === this.state.user.selectedUser.id) {
+            return;
+        }
 
         this.commit('userGameProfileSelect', payload);
         await this.refreshUser();
@@ -437,49 +450,50 @@ export default class UserService extends Service {
         const selectedUserProfile = this.getters.user;
         const usingAuthService = this.state.user.authServices[authService];
 
-        try {
-            const result = authService === 'offline'
-                ? Auth.offline(account)
-                : await Auth.Yggdrasil.login({
-                    username: account,
-                    password: password || '',
-                    requestUser: true,
-                    clientToken: this.state.user.clientToken,
-                }, usingAuthService).catch((e) => {
-                    if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
-                        const err = { message: 'error.internetNotConnected' };
-                        throw err;
-                    }
-                    throw e;
-                });
+        const result = authService === 'offline'
+            ? offline(account)
+            : await login({
+                username: account,
+                password: password || '',
+                requestUser: true,
+                clientToken: this.state.user.clientToken,
+            }, usingAuthService).catch((e) => {
+                if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
+                    throw makeException({ type: 'loginInternetNotConnected', error: e });
+                } else if (e.type === 'ForbiddenOperationException'
+                    && e.message === 'Invalid credentials. Invalid username or password.') {
+                    throw makeException({ type: 'loginInvalidCredentials', error: e });
+                }
+                throw makeException({ type: 'loginGeneral', error: e });
+            });
 
-            if (authService !== selectedUserProfile.authService
-                || profileService !== selectedUserProfile.profileService
-                || (authService === 'offline' && account !== selectedUserProfile.username)) {
-                this.commit('userProfileAdd', {
-                    id: result.user.id,
-                    username: account,
-                    profileService,
-                    authService,
-                    accessToken: result.accessToken,
-                    profiles: result.availableProfiles,
-                });
-                this.commit('userGameProfileSelect', {
-                    profileId: result.selectedProfile.id,
-                    userId: result.user.id,
-                });
-            } else {
-                this.commit('userProfileUpdate', {
-                    id: result.user.id,
-                    accessToken: result.accessToken,
-                    profiles: result.availableProfiles,
-                });
-            }
-            await this.refreshSkin().catch(_ => _);
-        } catch (e) {
-            console.error('Error during login.');
-            console.error(e);
-            throw e;
+        if (authService !== selectedUserProfile.authService
+            || profileService !== selectedUserProfile.profileService
+            || (authService === 'offline' && account !== selectedUserProfile.username)) {
+            this.commit('userProfileAdd', {
+                id: result.user!.id || '',
+                username: account,
+                profileService,
+                authService,
+                accessToken: result.accessToken,
+                profiles: result.availableProfiles,
+            });
+            this.commit('userGameProfileSelect', {
+                profileId: result.selectedProfile.id,
+                userId: result.user!.id,
+            });
+        } else if (authService === 'offline' && account === selectedUserProfile.username) {
+            this.commit('userProfileUpdate', {
+                id: selectedUserProfile.id,
+                accessToken: result.accessToken,
+                profiles: result.availableProfiles,
+            });
+        } else {
+            this.commit('userProfileUpdate', {
+                id: result.user!.id,
+                accessToken: result.accessToken,
+                profiles: result.availableProfiles,
+            });
         }
     }
 }

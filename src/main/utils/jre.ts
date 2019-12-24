@@ -1,9 +1,11 @@
 import { unpack } from '7zip-min';
-import { Net, Task } from '@xmcl/minecraft-launcher-core';
-import { vfs } from '@xmcl/util';
+import { validateSha1 } from '@xmcl/core/fs';
+import { downloadFileIfAbsentTask, downloadFileTask } from '@xmcl/installer/util';
+import { Task } from '@xmcl/task';
+import { ensureDir, ensureFile, unlink } from 'fs-extra';
+import got from 'got';
 import { basename, resolve } from 'path';
 import { platform } from './index';
-import { fs } from './vfs';
 
 function resolveArch() {
     switch (platform.arch) {
@@ -16,7 +18,9 @@ function resolveArch() {
 
 export function installJreFromMojangTask(root: string) {
     async function installJreFromMojang(context: Task.Context) {
-        const info: { [system: string]: { [arch: string]: { jre: { sha1: string; url: string; version: string } } } } = await context.execute({ name: 'fetchInfo', run: () => Net.fetchJson('https://launchermeta.mojang.com/mc/launcher.json').then(r => r.body) });
+        const info: { [system: string]: { [arch: string]: { jre: { sha1: string; url: string; version: string } } } } = await context.execute(
+            Task.create('fetchInfo', () => got('https://launchermeta.mojang.com/mc/launcher.json').json()),
+        );
         const system = platform.name;
         const arch = resolveArch();
 
@@ -27,37 +31,25 @@ export function installJreFromMojangTask(root: string) {
         const filename = basename(url);
         const destination = resolve(root, 'temp', filename);
 
-        if (!await vfs.validateSha1(destination, sha1)) {
-            await fs.ensureFile(destination);
-            await context.execute({
-                name: 'download',
-                run: Net.downloadFileIfAbsentWork({
-                    url,
-                    destination,
-                    checksum: {
-                        algorithm: 'sha1',
-                        hash: sha1,
-                    },
-                }),
-            });
+        if (!await validateSha1(destination, sha1)) {
+            await ensureFile(destination);
+            await context.execute(Task.create('download', downloadFileIfAbsentTask({
+                url,
+                destination,
+                checksum: { algorithm: 'sha1', hash: sha1 },
+            })));
         }
 
         const javaRoot = resolve(root, 'jre');
-        await context.execute({
-            name: 'decompress',
-            run: async () => {
-                await fs.ensureDir(javaRoot);
-                await new Promise((resolve, reject) => {
-                    unpack(destination, javaRoot, (e) => { if (e) reject(e); else resolve(); });
-                });
-            },
-        });
-        await context.execute({
-            name: 'cleanup',
-            run: async () => {
-                await fs.unlink(destination);
-            },
-        });
+        await context.execute(Task.create('decompress', async () => {
+            await ensureDir(javaRoot);
+            await new Promise((resolve, reject) => {
+                unpack(destination, javaRoot, (e) => { if (e) reject(e); else resolve(); });
+            });
+        }));
+        await context.execute(Task.create('cleanup', async () => {
+            await unlink(destination);
+        }));
     }
 
     return installJreFromMojang;
@@ -80,31 +72,20 @@ export function installJreFromSelfHostTask(root: string) {
         const filename = 'jre.lzma';
         const dest = resolve(root, 'temp', filename);
 
-        await fs.ensureFile(dest);
-        await context.execute({
-            name: 'download',
-            run: () => Net.downloadFileWork({
-                url,
-                destination: dest,
-            }),
-        });
+        await ensureFile(dest);
+        await context.execute(Task.create('download', downloadFileTask({
+            url,
+            destination: dest,
+        })));
 
         const javaRoot = resolve(root, 'jre');
-        await context.execute({
-            name: 'decompress',
-            run: async () => {
-                await fs.ensureDir(javaRoot);
-                await new Promise((resolve, reject) => {
-                    unpack(dest, javaRoot, (e) => { if (e) reject(e); else resolve(); });
-                });
-            },
-        });
-        await context.execute({
-            name: 'cleanup',
-            run: async () => {
-                await fs.unlink(dest);
-            },
-        });
+        await context.execute(Task.create('decompress', async () => {
+            await ensureDir(javaRoot);
+            await new Promise((resolve, reject) => {
+                unpack(dest, javaRoot, (e) => { if (e) reject(e); else resolve(); });
+            });
+        }));
+        await context.execute(Task.create('cleanup', () => unlink(dest)));
     }
     return installJreFromSelfHost;
 }

@@ -372,6 +372,11 @@
   },
   "java.locationPlaceHolder": "使用系统已经安装的 Java",
   "launch": {
+    "blocked": {
+      "description": "启动器依然检测到几个未解决的问题，他们可能影响游戏的启动。但你依然可以让启动器尝试启动 Minecraft",
+      "ignore": "强行启动",
+      "title": "有几个待解决的问题"
+    },
     "checkingProblems": "检测问题中",
     "crash": "游戏崩溃了!!",
     "failed": {
@@ -388,7 +393,6 @@
     "launch": "启动",
     "launching": "启动中...",
     "launchingSlow": "还在启动…Minecraft图形界面启动的会比较慢呢~",
-    "openCrashReport": "打开崩溃日志",
     "openCrashReportFolder": "打开崩溃日志文件夹",
     "showLog": "Minecraft启动后显示日志"
   },
@@ -674,6 +678,7 @@
     "cancelled": "已取消",
     "empty": "目前没有运行中的任务",
     "failed": "失败",
+    "failedDescription": "任务执行失败，以下是它的调用栈",
     "history": "已完成任务",
     "manager": "任务管理器",
     "name": "任务 | 任务",

@@ -1,4 +1,7 @@
-import { GameSetting, LevelDataFrame, Server } from '@xmcl/minecraft-launcher-core';
+import { LevelDataFrame } from '@xmcl/world';
+import { Frame as GameSetting } from '@xmcl/gamesetting';
+import { ServerInfo } from '@xmcl/server-info';
+import { Status as ServerStatus } from '@xmcl/client';
 import { getExpectVersion } from 'universal/utils/versions';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
@@ -11,21 +14,29 @@ export type CreateOption = DeepPartial<Omit<InstanceSchema, 'id' | 'lastAccessDa
 export type Save = { level: LevelDataFrame; path: string }
 export { InstanceSchema as InstanceConfig };
 
+interface Instance extends InstanceSchema {
+    path: string;
+
+    /**
+     * The server status
+     */
+    serverStatus: ServerStatus | null;
+}
+
 interface State extends InstanceLockSchema {
     /**
      * All loaded launch instances
      */
-    all: { [id: string]: InstanceSchema };
+    all: { [path: string]: Instance };
     /**
-     * Current selected id
+     * Current selected path
      */
-    id: string;
+    path: string;
 
-    // caches
     /**
-     * Loaded server dat info
+     * Cache loaded server info in servers.dat
      */
-    serverInfos: Server.Info[];
+    serverInfos: ServerInfo[];
     /**
      * The saves cache of current selected instance
      */
@@ -33,22 +44,18 @@ interface State extends InstanceLockSchema {
     /**
      * The game setting of current selected instance
      */
-    settings: GameSetting.Frame & { resourcePacks: Array<string> };
-    /**
-     * The server statuses of all server instances, modpack won't have this.
-     */
-    statuses: { [id: string]: Server.StatusFrame | undefined };
+    settings: GameSetting & { resourcePacks: Array<string> };
 }
 
 interface Getters {
     /**
      * All selected instances.
      */
-    instances: InstanceSchema[];
+    instances: Instance[];
     /**
      * The selected instance config.
      */
-    instance: InstanceSchema;
+    instance: Instance;
     /**
      * The selected instance mapped local version.
      * If there is no local version matced, it will return a local version with folder equal to `"unknown"`.
@@ -72,7 +79,7 @@ interface Getters {
 }
 
 interface Mutations {
-    instanceAdd: InstanceSchema;
+    instanceAdd: InstanceSchema & { path: string };
     instanceRemove: string;
     instanceJava: string;
     instanceDeployInfo: DeployedInfo[];
@@ -83,35 +90,35 @@ interface Mutations {
      * Don't use this directly. Use `editProfile` action
      * @param payload The modified data
      */
-    instance: DeepPartial<InstanceSchema>;
+    instance: DeepPartial<InstanceSchema> & { path: string };
 
     /**
      * Update server infos in server.dat
      * @param infos The new server infos
      */
-    instanceServerInfos: Server.Info[];
+    instanceServerInfos: ServerInfo[];
     /**
      * Update the game settings in options.txt
      * @param payload The new game settings.
      */
-    instanceGameSettings: GameSetting.Frame;
+    instanceGameSettings: GameSetting;
 
     // non-persistence mutation below, just update cache, nothing saved
 
-    instanceStatus: Server.StatusFrame;
-    instanceCache: { gamesettings: GameSetting.Frame } | { serverInfos: Server.Info[] };
+    instanceStatus: ServerStatus;
+    instanceCache: { gamesettings: GameSetting } | { serverInfos: ServerInfo[] };
     instanceSaves: Save[];
 
-    instancesStatus: { [id: string]: Server.StatusFrame };
+    instancesStatus: { [path: string]: ServerStatus };
 
     instanceLockFile: any;
 }
 
 export type InstanceModule = ModuleOption<State, Getters, Mutations, {}>;
 
-export function createTemplate(id: string, mcversion: string, isCreatingNew: boolean): InstanceSchema {
-    const base: InstanceSchema = {
-        id,
+export function createTemplate(): Instance {
+    const base: Instance = {
+        path: '',
         name: '',
 
         resolution: { width: 800, height: 400, fullscreen: false },
@@ -127,10 +134,11 @@ export function createTemplate(id: string, mcversion: string, isCreatingNew: boo
         hideLauncher: true,
 
         runtime: {
-            minecraft: mcversion,
+            minecraft: '',
             forge: '',
             liteloader: '',
-            fabric: '',
+            'fabric-loader': '',
+            yarn: '',
         },
         java: '8',
         deployments: {
@@ -144,17 +152,19 @@ export function createTemplate(id: string, mcversion: string, isCreatingNew: boo
         description: '',
 
         lastAccessDate: -1,
-        creationDate: isCreatingNew ? Date.now() : -1,
+        creationDate: -1,
+        serverStatus: null,
     };
     return base;
 }
 
-const DEFAULT_PROFILE: InstanceSchema = createTemplate('', '', false);
+const DEFAULT_PROFILE: InstanceSchema = createTemplate();
 
 const mod: InstanceModule = {
     state: {
         all: {},
-        id: '',
+        path: '',
+
         settings: {
             resourcePacks: [],
         },
@@ -163,25 +173,23 @@ const mod: InstanceModule = {
 
         java: '',
         deployed: [],
-
-        statuses: {},
     },
     getters: {
         instances: state => Object.keys(state.all).map(k => state.all[k]),
         instanceProtocolVersion: () => 338,
-        instance: state => state.all[state.id] || DEFAULT_PROFILE,
+        instance: state => state.all[state.path] || DEFAULT_PROFILE,
         instanceVersion: (state, getters, rootState) => {
             const current = getters.instance;
             const runtimes = Object.keys(current.runtime);
 
             const localVersion = rootState.version.local
-                .find(v => runtimes.every(r => (v as any)[r] === current.runtime[r]));
+                .find(v => runtimes.every(r => ((v as any)[r] ? (v as any)[r] === current.runtime[r] : true)));
 
             return localVersion || {
                 id: getExpectVersion(current.runtime.minecraft, current.runtime.forge, current.runtime.liteloader),
                 folder: 'unknown',
                 ...current.runtime,
-            };
+            } as any;
         },
         instanceJava: (state, getters, rootState) => {
             const javaPath = state.java;
@@ -204,8 +212,8 @@ const mod: InstanceModule = {
             /**
              * Prevent the case that hot reload keep the vuex state
              */
-            if (!state.all[profile.id]) {
-                Vue.set(state.all, profile.id, profile);
+            if (!state.all[profile.path]) {
+                Vue.set(state.all, profile.path, profile);
             }
         },
         instanceJava(state, jPath) {
@@ -219,21 +227,21 @@ const mod: InstanceModule = {
         },
         instanceSelect(state, id) {
             if (state.all[id]) {
-                state.id = id;
-            } else if (state.id === '') {
-                state.id = Object.keys(state.all)[0];
+                state.path = id;
+            } else if (state.path === '') {
+                state.path = Object.keys(state.all)[0];
             }
-            state.all[state.id].lastAccessDate = Date.now();
+            state.all[state.path].lastAccessDate = Date.now();
         },
         instanceLockFile(state, lock) {
             state.java = lock.java;
             state.deployed = lock.deployed;
         },
         instance(state, settings) {
-            const prof = state.all[settings.id || state.id];
+            const prof = state.all[settings.path || state.path];
 
             if (!prof) {
-                console.error(`Cannot commit profile. Illegal State with missing profile ${state.id}`);
+                console.error(`Cannot commit profile. Illegal State with missing profile ${state.path}`);
                 return;
             }
 
@@ -331,12 +339,11 @@ const mod: InstanceModule = {
             }
         },
         instanceGameSettings(state, settings) {
-            console.log(`GameSetting ${JSON.stringify(settings, null, 4)}`);
-            const container = state.settings;
+            let container = state.settings;
             if (settings.resourcePacks && settings.resourcePacks instanceof Array) {
                 Vue.set(container, 'resourcePacks', [...settings.resourcePacks]);
             }
-            for (const [key, value] of Object.entries(settings)) {
+            for (let [key, value] of Object.entries(settings)) {
                 if (key in container) {
                     if (typeof value === typeof Reflect.get(container, key)) {
                         Vue.set(container, key, value);
@@ -349,16 +356,16 @@ const mod: InstanceModule = {
         instanceServerInfos(state, infos) {
             state.serverInfos = infos;
         },
-        instanceStatus(state, status) {
-            Vue.set(state.statuses, state.id, status);
-        },
-        instancesStatus(state, statues) {
-            for (const [key, value] of Object.entries(statues)) {
-                Vue.set(state.statuses, key, value);
-            }
-        },
         instanceSaves(state, saves) {
             state.saves = saves;
+        },
+        instanceStatus(state, status) {
+            state.all[state.path].serverStatus = status;
+        },
+        instancesStatus(state, statues) {
+            for (let [path, stat] of Object.entries(statues)) {
+                state.all[path].serverStatus = stat;
+            }
         },
     },
 };

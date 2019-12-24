@@ -3,13 +3,35 @@ import Schema from '../Schema';
 /* eslint-disable import/export  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-export interface InstanceSchema {
+export interface RuntimeVersions {
     /**
-     * The unique id (uuid) of the profile. The profile data will be stored into profiles/${id}/profile.json according to this.
-     * @required
+     * Minecraft version of this version. e.g. 1.7.10
      * @default ""
      */
-    id: string;
+    minecraft: string;
+    /**
+     * Forge version of this version. e.g. 14.23.5.2838
+     * @default ""
+     */
+    forge: string;
+    /**
+     * @default ""
+     */
+    liteloader: string;
+    /**
+     * Fabric loader version, e.g. 0.7.2+build.175
+     * @default ""
+     */
+    'fabric-loader': string;
+    /**
+     * Fabric yarn version, e.g. 1.15.1+build.14
+     */
+    yarn: string;
+
+    [id: string]: string | undefined;
+}
+
+export interface InstanceSchema {
     /**
      * The display name of the profile. It will also be the modpack display name
      * @default ""
@@ -18,13 +40,15 @@ export interface InstanceSchema {
 
     /**
      * The author of this instance
+     * @default ""
      */
-    author?: string;
+    author: string;
 
     /**
      * The description of this instance
+     * @default ""
      */
-    description?: string;
+    description: string;
 
     /**
      * Should show a logger window after Minecraft launched
@@ -70,26 +94,7 @@ export interface InstanceSchema {
      * Containing the forge & liteloader & etc.
      * @default { "minecraft": "", "forge": "", "liteloader": "" }
      */
-    runtime: {
-        /**
-         * @default ""
-         */
-        minecraft: string;
-        /**
-         * @default ""
-         */
-        forge: string;
-        /**
-         * @default ""
-         */
-        liteloader: string;
-        /**
-         * @default ""
-         */
-        fabric?: string;
-
-        [id: string]: string | undefined;
-    };
+    runtime: RuntimeVersions;
 
     /**
      * The recommended java version for this instance
@@ -150,6 +155,11 @@ export interface InstanceSchema {
 
 export interface InstancesSchema {
     selectedInstance: string;
+    /**
+     * The extra imported instance path
+     * @default []
+     */
+    instances: string[];
 }
 
 export interface DeployedInfo {

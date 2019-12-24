@@ -1,3 +1,1 @@
-import { Util } from '@xmcl/minecraft-launcher-core';
-
-export const platform = Util.currentPlatform;
+export { currentPlatform } from '@xmcl/core';

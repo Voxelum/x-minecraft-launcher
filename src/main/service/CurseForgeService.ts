@@ -1,5 +1,7 @@
-import { Forge, got, Net } from '@xmcl/minecraft-launcher-core';
+// import { Forge, got, Net } from '@xmcl/task';
+import { Forge } from '@xmcl/mod-parser';
 import { HTMLElement, parse as parseHtml } from 'fast-html-parser';
+import got from 'got';
 import querystring from 'querystring';
 import InstanceService from './InstanceService';
 import ResourceService from './ResourceService';
@@ -134,13 +136,14 @@ function getHref(file: DownloadFile) {
     return `https://www.curseforge.com/minecraft/${file.projectType}/${file.projectPath}/download/${file.id}/file`;
 }
 // test url https://cursemeta.dries007.net/238222/2739588 jei
-
 function localDate(string: string) {
     const d = new Date(0);
     d.setUTCSeconds(Number.parseInt(string, 10));
     return d.toLocaleDateString();
 }
-function notText(n: HTMLElement) { return n.nodeType !== 3; }
+function notText(n: HTMLElement) {
+    return n.nodeType !== 3;
+}
 function convert(node: HTMLElement | null) {
     if (node === null || !node) return '';
     let text = '';
@@ -169,7 +172,6 @@ function convert(node: HTMLElement | null) {
     } else throw new Error(`Unsupported type ${JSON.stringify(node)}`);
     return text;
 }
-
 function processProjectListingRow(item: HTMLElement): ProjectPreview {
     item = item.removeWhitespace();
 
@@ -409,7 +411,7 @@ export default class CurseForgeService extends Service {
 
     async fetchCurseForgeProjectLicense(url: string) {
         if (url == null || !url) throw new Error('URL cannot be null');
-        const { body } = await got(`https://www.curseforge.com${url}`);
+        const body = await got(`https://www.curseforge.com${url}`).text();
         return parseHtml(body).querySelector('.module').removeWhitespace().firstChild.rawText;
     }
 
@@ -418,10 +420,10 @@ export default class CurseForgeService extends Service {
         return this.request(url, root => root.querySelectorAll('.project-listing-row').map(processProjectListingRow));
     }
 
-    async fetchMetadataByModId({ modid, version }: { modid: string; version: string }): Promise<Forge.ModMetaData & { projectId: string; fileId: string }> {
+    async fetchMetadataByModId({ modid, version }: { modid: string; version: string }) {
         // http://voxelauncher.azurewebsites.net/api/v1/mods/file/{modid}/{version}
-        const result = await Net.fetchJson(`http://voxelauncher.azurewebsites.net/api/v1/mods/file/${modid}/${version}`, { method: 'HEAD' });
-        return result.body as any;
+        const result = await got(`http://voxelauncher.azurewebsites.net/api/v1/mods/file/${modid}/${version}`, { method: 'HEAD' }).json();
+        return result as Forge.ModMetaData & { projectId: string; fileId: string };
     }
 
     async downloadAndImportFile(payload: DownloadFile) {

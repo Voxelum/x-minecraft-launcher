@@ -1,23 +1,21 @@
-import { GameSetting, Server, ServerInfoFrame } from '@xmcl/minecraft-launcher-core';
-import { FSWatcher } from 'fs';
-import { fitin, fs, requireObject, requireString, willBaselineChange } from 'main/utils';
-import { getPersistence, readFolder, setPersistence } from 'main/utils/persistence';
-import { MutationKeys } from 'universal/store';
+import { queryStatus, Status } from '@xmcl/client';
+import { parse, stringify } from '@xmcl/gamesetting';
+import { readInfo, ServerInfo } from '@xmcl/server-info';
+import { readdir, readFile, remove, writeFile } from 'fs-extra';
+import { exists, FileStateWatcher, missing, readdirEnsured, requireObject, requireString, shouldPatch } from 'main/utils';
+import { getPersistence, setPersistence } from 'main/utils/persistence';
+import { join, resolve } from 'path';
 import { CreateOption, createTemplate } from 'universal/store/modules/instance';
 import { InstanceLockSchema, InstanceSchema, InstancesSchema } from 'universal/store/modules/instance.schema';
 import latestRelease from 'universal/utils/lasteRelease.json';
-import { PINGING_STATUS } from 'universal/utils/server-status';
-import { v4 } from 'uuid';
+import { getHostAndPortFromIp, PINGING_STATUS } from 'universal/utils/server-status';
+import v4 from 'uuid/v4';
 import CurseForgeService from './CurseForgeService';
-import { deploy } from './InstanceService.deploy';
-import * as ioPartial from './InstanceService.io';
-import * as logPartial from './InstanceService.log';
-import * as savePartial from './InstanceService.save';
-import * as serverPartial from './InstanceService.server';
+import InstanceSavesService from './InstanceSavesService';
 import JavaService from './JavaService';
 import ResourceService from './ResourceService';
 import ServerStatusService from './ServerStatusService';
-import Service, { Inject } from './Service';
+import Service, { Inject, MutationTrigger, Singleton } from './Service';
 
 const INSTANCES_FOLDER = 'instances';
 const INSTANCE_JSON = 'instance.json';
@@ -27,7 +25,7 @@ const INSTANCE_LOCK_JSON = 'instance-lock.json';
 /**
  * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
  */
-export default class InstanceService extends Service {
+export class InstanceService extends Service {
     @Inject('JavaService')
     protected readonly javaService!: JavaService;
 
@@ -35,63 +33,63 @@ export default class InstanceService extends Service {
     protected readonly statusService!: ServerStatusService;
 
     @Inject('ResourceService')
-    protected readonly resource!: ResourceService;
+    protected readonly resourceService!: ResourceService;
 
     @Inject('CurseForgeService')
     protected readonly curseforgeSerivce!: CurseForgeService;
 
-    protected saveWatcher: FSWatcher | undefined;
+    @Inject('InstanceSavesService')
+    protected readonly saveService: InstanceSavesService | undefined;
 
-    protected isSavesDirty = false;
+    protected saveDirtyWatcher = new FileStateWatcher(false, () => true);
 
     protected getPathUnder(...ps: string[]) {
-        return this.getPath(INSTANCES_FOLDER, ...ps);
+        return this.getGameAssetsPath(INSTANCES_FOLDER, ...ps);
     }
 
-    async loadInstanceGameSettings(id?: string) {
-        id = id || this.state.instance.id;
-        requireString(id);
-        const { commit } = this;
+    @Singleton()
+    async loadInstanceGameSettings(path: string) {
+        requireString(path);
 
-        let result: ReturnType<typeof GameSetting.parse> = {};
+        let { commit } = this;
+
         try {
-            const opPath = this.getPathUnder(id, 'options.txt');
-            result = await fs.readFile(opPath, 'utf-8').then(b => b.toString()).then(GameSetting.parse);
+            let optionsPath = join(path, 'options.txt');
+            let result = await readFile(optionsPath, 'utf-8').then(b => b.toString()).then(parse);
+            commit('instanceCache', { gamesettings: result });
         } catch (e) {
             if (!e.message.startsWith('ENOENT:')) {
-                this.warn(`An error ocurrs during parse game options of ${id}.`);
+                this.warn(`An error ocurrs during parse game options of ${path}.`);
                 this.warn(e);
             }
         }
-        commit('instanceCache', { gamesettings: result });
-        return result;
     }
 
-    async loadInstanceSeverData(id: string = this.state.instance.id) {
-        requireString(id);
+    @Singleton()
+    async loadInstanceSeverData(path: string) {
+        requireString(path);
 
-        let infos: ServerInfoFrame[] = [];
-        const { commit } = this;
+        let { commit } = this;
         try {
-            const serverPath = this.getPathUnder(id, 'servers.dat');
-            if (await fs.exists(serverPath)) {
-                const serverDat = await fs.readFile(serverPath);
-                infos = await Server.readInfo(serverDat);
+            let serversPath = join(path, 'servers.dat');
+            if (await exists(serversPath)) {
+                let serverDat = await readFile(serversPath);
+                let infos = await readInfo(serverDat);
                 this.log('Loaded server infos.');
+                commit('instanceServerInfos', infos);
             }
         } catch (e) {
-            this.warn(`An error occured during loading server infos of ${id}`);
+            this.warn(`An error occured during loading server infos of ${path}`);
             this.error(e);
         }
-        commit('instanceServerInfos', infos);
-        return infos;
     }
 
-    async loadInstanceLock(id: string) {
-        requireString(id);
-        const { commit } = this;
+    @Singleton()
+    async loadInstanceLock(path: string) {
+        requireString(path);
+        let { commit } = this;
 
-        const jsonPath = this.getPathUnder(id, INSTANCE_LOCK_JSON);
+        let jsonPath = join(path, INSTANCE_LOCK_JSON);
         let option: InstanceLockSchema;
         try {
             option = await getPersistence({ path: jsonPath, schema: InstanceLockSchema });
@@ -99,28 +97,28 @@ export default class InstanceService extends Service {
             return;
         }
 
-        const lockFile = {
+        let lockFile = {
             ...option,
         };
-        const config = this.state.instance.all[id];
-        if (!lockFile.java) {
-            const javaVersion = config.runtime.java;
-            const local = this.state.java.all.find(j => j.majorVersion.toString() === javaVersion || j.version === javaVersion);
-            if (local) { lockFile.java = local.path; }
-        }
+
+        // const config = this.state.instance.all[path];
+        // if (!lockFile.java) {
+        //     const javaVersion = config.runtime.java;
+        //     const local = this.state.java.all.find(j => j.majorVersion.toString() === javaVersion || j.version === javaVersion);
+        //     if (local) { lockFile.java = local.path; }
+        // }
 
         commit('instanceLockFile', lockFile);
     }
 
-    async loadInstance(id: string) {
-        requireString(id);
+    async loadInstance(path: string) {
+        requireString(path);
 
-        const { commit, getters } = this;
+        let { commit, getters } = this;
 
-        const jsonPath = this.getPathUnder(id, INSTANCE_JSON);
-        if (await fs.missing(jsonPath)) {
-            await fs.remove(this.getPathUnder(id));
-            this.warn(`Corrupted instance ${id}`);
+        let jsonPath = join(path, INSTANCE_JSON);
+        if (await missing(jsonPath)) {
+            this.warn(`Cannot load instance ${path}`);
             return;
         }
 
@@ -128,239 +126,304 @@ export default class InstanceService extends Service {
         try {
             option = await getPersistence({ path: jsonPath, schema: InstanceSchema });
         } catch (e) {
-            this.warn(`Corrupted instance json ${id}`);
-            return;
-        }
-        if (!option) {
-            this.warn(`Corrupted instance ${id}`);
+            this.warn(`Cannot load instance json ${path}`);
             return;
         }
 
-        const instance = createTemplate(
-            id,
-            latestRelease.id,
-            false,
-        );
+        let instance = createTemplate();
 
+        instance.path = path;
         instance.author = instance.author || getters.gameProfile?.name || '';
+        instance.runtime.minecraft = latestRelease.id;
 
         fitin(instance, option);
+
         commit('instanceAdd', instance);
+
+        this.log(`Added instance ${instance.path}`);
     }
 
     async init() {
-        const { getters } = this;
-        const instances = getters.instances;
+        let { getters } = this;
+        let instances = getters.instances;
         if (instances.length === 0) {
-            this.log('Cannot find any instances, try to init one default modpack');
+            this.log('Cannot find any instances, try to init one default modpack.');
             await this.createAndSelect({});
         }
     }
 
     async load() {
-        const { state } = this;
-        const dirs = await readFolder(this.getPathUnder());
+        const uuidExp = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}){1}/;
 
-        if (dirs.length === 0) {
+        let { state } = this;
+        let [managed, instanceConfig] = await Promise.all([
+            readdirEnsured(this.getPathUnder()),
+            getPersistence({ path: this.getPath(INSTANCES_JSON), schema: InstancesSchema }),
+        ]);
+        managed = managed.map(p => this.getPathUnder(p)).filter(f => uuidExp.test(f));
+
+        console.log(`Found ${managed.length} managed instances and ${instanceConfig.instances.length} external instances.`);
+
+        let all = [...managed, ...instanceConfig.instances];
+
+        if (all.length === 0) {
             return;
         }
 
-        const uuidExp = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}){1}/;
-        await Promise.all(dirs.filter(f => uuidExp.test(f)).map(id => this.loadInstance(id)));
+        await Promise.all(all.map(path => this.loadInstance(path)));
 
         if (Object.keys(state.instance.all).length === 0) {
             return;
         }
 
-        const instanceConfig: InstancesSchema = await getPersistence({ path: this.getPath(INSTANCES_JSON), schema: InstancesSchema });
-
-        if (instanceConfig) {
-            if (instanceConfig.selectedInstance) {
-                await this.selectInstance(instanceConfig.selectedInstance);
-            } else {
-                await this.selectInstance(Object.keys(state.instance.all)[0]);
-            }
+        if (all.indexOf(instanceConfig.selectedInstance) !== -1) {
+            await this.mountInstance(instanceConfig.selectedInstance);
         } else {
-            await this.selectInstance(Object.keys(state.instance.all)[0]);
+            await this.mountInstance(Object.keys(state.instance.all)[0]);
         }
     }
 
-    async save({ mutation, payload }: { mutation: MutationKeys; payload: any }) {
-        switch (mutation) {
-            case 'instanceSelect':
-                await setPersistence({
-                    path: this.getPath(INSTANCES_JSON),
-                    data: { selectedInstance: payload },
-                    schema: InstancesSchema,
-                });
-                break;
-            case 'instanceGameSettings':
-                await fs.writeFile(this.getPathUnder(this.state.instance.id, 'options.txt'),
-                    GameSetting.stringify(this.state.instance.settings));
-                break;
-            case 'instanceAdd':
-                await setPersistence({
-                    path: this.getPathUnder(payload.id, INSTANCE_JSON),
-                    data: payload,
-                    schema: InstanceSchema,
-                });
-                break;
-            case 'instance':
-                await setPersistence({
-                    path: this.getPathUnder(this.state.instance.id, INSTANCE_JSON),
-                    data: this.state.instance.all[this.state.instance.id],
-                    schema: InstanceSchema,
-                });
-                break;
-            case 'instanceJava':
-            case 'instanceDeployInfo':
-                await setPersistence({
-                    path: this.getPathUnder(this.state.instance.id, INSTANCE_LOCK_JSON),
-                    data: { java: this.state.instance.java, deployed: this.state.instance.deployed },
-                    schema: InstanceLockSchema,
-                });
-                break;
-            default:
-        }
+    @MutationTrigger('instanceAdd')
+    async saveNewInstance(payload: InstanceSchema & { path: string }) {
+        await setPersistence({
+            path: join(payload.path, INSTANCE_JSON),
+            data: payload,
+            schema: InstanceSchema,
+        });
+        this.log(`Saved new instance ${payload.path}`);
+    }
+
+    @MutationTrigger('instance')
+    async saveInstance() {
+        await setPersistence({
+            path: join(this.state.instance.path, INSTANCE_JSON),
+            data: this.state.instance.all[this.state.instance.path],
+            schema: InstanceSchema,
+        });
+        this.log(`Saved instance ${this.state.instance.path}`);
+    }
+
+    @MutationTrigger('instanceJava', 'instanceDeployInfo')
+    async saveInstanceLock() {
+        await setPersistence({
+            path: join(this.state.instance.path, INSTANCE_LOCK_JSON),
+            data: { java: this.state.instance.java, deployed: this.state.instance.deployed },
+            schema: InstanceLockSchema,
+        });
+        this.log(`Saved instance lock ${this.state.instance.path}`);
+    }
+
+    @MutationTrigger('instanceSelect')
+    async saveInstanceSelect(path: string) {
+        await setPersistence({
+            path: this.getPath(INSTANCES_JSON),
+            data: { selectedInstance: path, instances: [] },
+            schema: InstancesSchema,
+        });
+        this.log(`Saved instance selection ${path}`);
+    }
+
+    @MutationTrigger('instanceGameSettings')
+    async saveInstanceGameSetting() {
+        await writeFile(join(this.state.instance.path, 'options.txt'),
+            stringify(this.state.instance.settings));
+        this.log(`Saved instance gamesettings ${this.state.instance.path}`);
     }
 
     /**
      * Return the instance's screenshots urls.
+     * 
+     * If the provided path is not a instance, it will return empty array.
      */
-    async listInstanceScreenshots(id: string) {
-        const sp = this.getPathUnder(id, 'screenshots');
-        if (await fs.exists(sp)) {
-            const files = await fs.readdir(sp);
-            return files.map(f => `file://${sp}/${f}`);
+    async listInstanceScreenshots(path: string) {
+        let screenshots = join(path, 'screenshots');
+        try {
+            let files = await readdir(screenshots);
+            return files.map(f => `file://${screenshots}/${f}`);
+        } catch (e) {
+            return [];
         }
-        return [];
     }
 
     /**
-     * Create a instance (either a modpack or a server).
+     * Create a managed instance (either a modpack or a server) under the managed folder.
      * @param option The creation option
+     * @returns The instance path
      */
-    async createInstance(payload: CreateOption) {
+    async createInstance(payload: CreateOption): Promise<string> {
         requireObject(payload);
 
-        const latestRelease = this.getters.minecraftRelease;
-        const instance = createTemplate(
-            v4(),
-            latestRelease.id,
-            true,
-        );
-
-        if (this.getters.gameProfile) {
-            instance.author = this.getters.gameProfile.name;
-        } else {
-            instance.author = '';
-        }
-
-        Reflect.deleteProperty(instance, 'creationDate');
+        let instance = createTemplate();
 
         fitin(instance, payload);
+
+        instance.path = this.getPathUnder(v4());
+        instance.runtime.minecraft = this.getters.minecraftRelease.id;
+        instance.author = this.getters.gameProfile?.name ?? '';
+        instance.creationDate = Date.now();
+
+        instance.author = payload.author ?? instance.author;
+        instance.description = payload.description ?? instance.description;
+        instance.showLog = payload.showLog ?? instance.showLog;
 
         this.commit('instanceAdd', instance);
 
         this.log('Created instance with option');
         this.log(JSON.stringify(instance, null, 4));
 
-        return instance.id;
+        return instance.path;
     }
 
+    /**
+     * Create a managed instance in storage.
+     */
     async createAndSelect(payload: CreateOption) {
         requireObject(payload);
 
-        const id = await this.createInstance(payload);
-        await this.selectInstance(id);
-        return id;
+        let path = await this.createInstance(payload);
+        await this.mountInstance(path);
+        return path;
     }
 
     /**
-     * Select active instance
-     * @param id the instance uuid
+     * Mount the instance as the current active instance.
+     * @param path the instance path
      */
-    async selectInstance(id: string) {
-        requireString(id);
+    @Singleton()
+    async mountInstance(path: string) {
+        requireString(path);
 
-        if (id === this.state.instance.id) { return; }
+        if (path === this.state.instance.path) { return; }
 
-        console.log(`Try to select instance ${id}`);
+        let missed = await missing(path);
+        if (missed) {
+            this.log(`Cannot mount instance ${path}, either the directory not exist or the launcher has no permission.`);
+            return;
+        }
+
+        this.log(`Try to mount instance ${path}.`);
+
+        // not await this to improve the performance
 
         // eslint-disable-next-line no-unused-expressions
-        this.saveWatcher?.close();
-        this.saveWatcher = undefined;
-        this.isSavesDirty = true;
-        await Promise.all([
-            this.loadInstanceSaves(id),
-            this.loadInstanceGameSettings(id),
-            this.loadInstanceSeverData(id),
-            this.loadInstanceLock(id),
-        ]);
-        this.commit('instanceSelect', id);
-        // const newVersion = this.state.version;
-        // console.log(`Instance version ${}`)
+        this.saveService?.mountInstanceSaves(path);
+
+        this.loadInstanceGameSettings(path);
+        this.loadInstanceSeverData(path);
+
+        await this.loadInstanceLock(path);
+
+        this.commit('instanceSelect', path);
     }
 
     /**
-     * Delete the instance from the disk
-     * @param id The instance id
+     * Delete the managed instance from the disk
+     * @param path The instance path
      */
-    async deleteInstance(id = this.state.instance.id) {
-        requireString(id);
+    async deleteInstance(path = this.state.instance.path) {
+        requireString(path);
 
         // if the instance is selected now
-        if (this.state.instance.id === id) {
-            const restId = Object.keys(this.state.instance.all).filter(i => i !== id);
+        if (this.state.instance.path === path) {
+            let restPath = Object.keys(this.state.instance.all).filter(p => p !== path);
             // if only one instance left
-            if (restId.length === 0) {
+            if (restPath.length === 0) {
                 // then create and select a new one
                 await this.createAndSelect({});
             } else {
                 // else select the first instance
-                await this.selectInstance(restId[0]);
+                await this.mountInstance(restPath[0]);
             }
         }
-        this.commit('instanceRemove', id);
-        const instanceDir = this.getPathUnder(id);
-        if (await fs.exists(instanceDir)) {
-            await fs.remove(instanceDir);
+
+        this.commit('instanceRemove', path);
+
+        let managed = resolve(path).startsWith(resolve(this.getPathUnder()));
+        let instanceDirectory = this.getPathUnder(path);
+        if (managed && await exists(instanceDirectory)) {
+            await remove(instanceDirectory);
         }
     }
 
     /**
      * Edit the instance. If the `id` is not present
      */
-    async editInstance(instance: Partial<InstanceSchema>) {
-        requireObject(instance);
+    async editInstance(patch: Partial<InstanceSchema> & { path?: string }) {
+        requireObject(patch);
 
-        const current = this.state.instance.all[instance.id || this.state.instance.id];
-        if (willBaselineChange(instance, current)) {
-            this.log(`Modify Profle ${JSON.stringify(instance, null, 4)}`);
-            this.commit('instance', instance);
+        let targetPath = patch.path || this.state.instance.path;
+        let target = this.state.instance.all[targetPath];
+        if (shouldPatch(patch, target)) {
+            this.log(`Modify instance ${JSON.stringify(patch, null, 4)}.`);
+            this.commit('instance', { ...patch, path: targetPath });
         }
     }
+
+
 
     /**
-     * If current instance is a server. It will refresh the server status
+     * Set a real java path to the current instance
+     * @param path The real java executable path
      */
-    async refreshInstance() {
-        const prof = this.getters.instance;
-        if (prof.server) {
-            const { host, port } = prof.server;
-            this.log(`Ping server ${host}:${port}`);
-            this.commit('instanceStatus', PINGING_STATUS);
-            const status = await this.statusService.pingServer({ host, port });
-            this.commit('instanceStatus', status);
-        }
-    }
-
     async setJavaPath(path: string) {
-        const resolved = await this.javaService.resolveJava(path);
+        let resolved = await this.javaService.resolveJava(path);
         if (resolved) {
             this.commit('instanceJava', path);
             this.editInstance({ java: resolved.majorVersion.toString() });
         }
+    }
+
+    /**
+    * If current instance is a server. It will refresh the server status
+    */
+    async refreshServerStatus() {
+        let prof = this.getters.instance;
+        if (prof.server) {
+            let { host, port } = prof.server;
+            this.log(`Ping server ${host}:${port}`);
+            this.commit('instanceStatus', PINGING_STATUS);
+            let status = await this.statusService.pingServer({ host, port });
+            this.commit('instanceStatus', status);
+        }
+    }
+
+    /**
+     * Refresh all instance server status if present
+     */
+    async refreshServerStatusAll(this: InstanceService) {
+        let all = Object.values(this.state.instance.all).filter(p => !!p.server);
+        let results = await Promise.all(all.map(async p => ({ [p.path]: await queryStatus(p.server!) })));
+        this.commit('instancesStatus', results.reduce(Object.assign, {}));
+    }
+
+    /**
+     * Create a instance by server info and status.
+     * This will try to ping the server and apply the mod list if it's a forge server.
+     */
+    createInstanceFromServer(info: ServerInfo & { status: Status }) {
+        const options: Partial<InstanceSchema> = {};
+        options.name = info.name;
+        if (info.status) {
+            // if (typeof info.status.description === 'string') {
+            //     options.description = info.status.description;
+            // } else if (typeof info.status.description === 'object') {
+            //     options.description = TextComponent.from(info.status.description).formatted;
+            // }
+            options.runtime = {
+                minecraft: this.state.client.protocolMapping.mcversion[info.status.version.protocol][0],
+                forge: '',
+                liteloader: '',
+                'fabric-loader': '',
+                yarn: '',
+            };
+            if (info.status.modinfo && info.status.modinfo.type === 'FML') {
+                options.deployments = { mods: info.status.modinfo.modList.map(m => `forge:${m.modid}/${m.version}`) };
+            }
+        }
+        return this.createInstance({
+            ...options,
+            server: getHostAndPortFromIp(info.ip),
+        });
     }
 
     /**
@@ -370,81 +433,73 @@ export default class InstanceService extends Service {
      * 
      * The `saves` and `modpack` will be deploied by pasting the saves and modpack overrides into this instance directory.
      */
-    readonly deploy = deploy.bind(this);
-
-    readonly getCrashReportContent = logPartial.getCrashReportContent.bind(this);
-
-    readonly getLogContent = logPartial.getLogContent.bind(this);
-
-    readonly listCrashReports = logPartial.listCrashReports.bind(this);
-
-    readonly listLogs = logPartial.listLogs.bind(this);
-
-    readonly showLog = logPartial.showLog.bind(this);
-
-    readonly removeCrashReport = logPartial.removeCrashReport.bind(this);
-
-    readonly removeLog = logPartial.removeLog.bind(this);
-
-    readonly showCrash = logPartial.showCrash.bind(this);
-
-    /**
-     * Copy current instance `src` save to other instance. The `dest` is the array of instance id. 
-     */
-    readonly copySave = savePartial.copySave.bind(this);
-
-    /**
-     * Import a save from a `zip` or `folder`.
-     * @param filePath 
-     */
-    readonly importSave = savePartial.importSave.bind(this);
-
-    /**
-     * Export the save as a zip or a directory
-     */
-    readonly exportSave = savePartial.exportSave.bind(this);
-
-    /**
-     * Delete a save in current instance
-     * @param name The name of the save
-     */
-    readonly deleteSave = savePartial.deleteSave.bind(this);
-
-    /**
-     * Load the actual save data for current instance
-     */
-    readonly loadInstanceSaves = savePartial.loadInstanceSaves.bind(this);
-
-    /**
-     * Provide a list of preview for every instances' saves
-     */
-    readonly getAllInstancesSavePreview = savePartial.loadAllInstancesSaves.bind(this);
-
-    /**
-     * Export current instance as a modpack. Can be either curseforge or normal full Minecraft
-     * @param option Which instance is exporting (search by id), where to export (dest), include assets? 
-     */
-    readonly exportInstance = ioPartial.exportInstance.bind(this);
-
-    /**
-     * Import external instance into the launcher. The instance can be a curseforge zip, or a normal Minecraft file/zip. 
-     * @param location The location of the instance try to import
-     */
-    readonly importInstance = ioPartial.importInstance.bind(this);
-
-    /**
-     * Import the instance from curseforge modpack
-     */
-    readonly importInstanceFromCurseforgeModpack = ioPartial.importCurseforgeModpack.bind(this);
-
-    /**
-     * Create a instance by server info and status.
-     * This will try to ping the server and apply the mod list if it's a forge server.
-     */
-    readonly createInstanceFromServer = serverPartial.createInstanceFromServer;
-
-    /**
-     * Refresh all instance server status if present
-     */
-    readonly refreshInstances = serverPartial.refreshAll.bind(this);
+    async deploy(localOnly?: boolean): Promise<void> {
+        const instance = this.getters.instance;
+        const alreadyDeployed = this.state.instance.deployed;
+        const promises: Promise<DeployedInfo>[] = Object.values(instance.deployments).reduce((a, b) => [...a, ...b]).map(async (url) => {
+            const root = this.state.instance.path;
+            const alreadyDeployedInfo = alreadyDeployed.find(d => d.url);
+            if (alreadyDeployedInfo) {
+                if (alreadyDeployedInfo.resolved) {
+                    // if using link, validate link again
+                    if (alreadyDeployedInfo.resolved === 'link') {
+                        const destPath = join(root, alreadyDeployedInfo.file);
+                        const realPath = resolve(await readlink(destPath));
+                        if (realPath !== alreadyDeployedInfo.src!) {
+                            await symlink(alreadyDeployedInfo.src!, destPath);
+                        }
+                    }
+                    return alreadyDeployedInfo;
+                }
+            }
+            const result: DeployedInfo = {
+                url,
+                file: '',
+                integrity: '',
+                resolved: false,
+            };
+            let res = this.getters.queryResource(url);
+            if (res === UNKNOWN_RESOURCE && !localOnly) {
+                res = await this.resourceService.importResource({ uri: url, metadata: {} });
+                this.warn(`No local resource matched uri ${url}!`);
+            }
+            if (res !== UNKNOWN_RESOURCE) {
+                result.src = res.path;
+                result.integrity = res.hash;
+                if (res.domain === 'mods' || res.domain === 'resourcepacks') {
+                    const dest = join(this.state.instance.path, res.domain, res.name + res.ext);
+                    try {
+                        const stat = await lstat(dest);
+                        if (stat.isSymbolicLink()) {
+                            await unlink(dest);
+                            await symlink(res.path, dest);
+                        } else {
+                            this.pushException({ type: 'deployLinkResourceOccupied', resource: res });
+                            this.error(`Cannot deploy resource ${res.hash} -> ${dest}, since the path is occupied.`);
+                        }
+                    } catch (e) {
+                        await symlink(res.path, dest);
+                    }
+                    result.file = relative(root, dest);
+                    result.resolved = 'link';
+                } else if (res.domain === 'saves') {
+                    const dest = await this.importSave(res.path);
+                    result.file = relative(root, dest);
+                    result.resolved = 'unpack';
+                } else if (res.domain === 'modpacks') { // modpack will override the profile
+                    await this.importInstanceFromCurseforgeModpack({
+                        instanceId: this.state.instance.path,
+                        path: res.path,
+                    });
+                    result.file = '/';
+                    result.resolved = 'unpack';
+                }
+            }
+            return result;
+        });
+        const deployed = await Promise.all(promises);
+        this.commit('instanceDeployInfo', deployed);
+    }
 }
+
+export default InstanceService;

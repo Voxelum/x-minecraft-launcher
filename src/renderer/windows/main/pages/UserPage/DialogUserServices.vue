@@ -60,6 +60,7 @@
 <script lang=ts>
 import { reactive, toRefs, computed, onMounted, watch } from '@vue/composition-api';
 import { useStore, useDialogSelf } from '@/hooks';
+import StepperUserService from './StepperUserService.vue'; 
 
 interface Service {
   text: string;
@@ -68,6 +69,9 @@ interface Service {
 }
 
 export default {
+  components: {
+    StepperUserService,
+  },
   setup() {
     const { state, commit } = useStore();
     const { isShown, closeDialog } = useDialogSelf('user-service');

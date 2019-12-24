@@ -160,6 +160,9 @@
         </v-layout>
       </v-flex>
     </v-layout>
+    <dialog-import-skin-url />
+    <dialog-challenges />
+    <dialog-user-services />
   </v-container>
 </template>
 
@@ -174,8 +177,16 @@ import {
   useNativeDialog,
   useClipboard,
 } from '@/hooks';
+import DialogChallenges from './UserPage/DialogChallenges.vue';
+import DialogImportSkinUrl from './UserPage/DialogImportSkinUrl.vue';
+import DialogUserServices from './UserPage/DialogUserServices.vue';
 
 export default createComponent({
+  components: {
+    DialogChallenges,
+    DialogImportSkinUrl,
+    DialogUserServices,
+  },
   setup() {
     const { $t } = useI18n();
     const clipboard = useClipboard();
@@ -239,6 +250,7 @@ export default createComponent({
       });
     }
     onMounted(() => {
+      refreshSkin();
       reset();
     });
 

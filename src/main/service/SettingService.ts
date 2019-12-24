@@ -1,7 +1,6 @@
 import { getPersistence, setPersistence } from 'main/utils/persistence';
-import { MutationKeys } from 'universal/store';
 import { SettingSchema } from 'universal/store/modules/setting.schema';
-import Service from './Service';
+import Service, { MutationTrigger } from './Service';
 
 export default class SettingService extends Service {
     async load() {
@@ -21,34 +20,32 @@ export default class SettingService extends Service {
         });
     }
 
-    async save({ mutation }: { mutation: MutationKeys }) {
-        switch (mutation) {
-            case 'locale':
-            case 'allowPrerelease':
-            case 'autoInstallOnAppQuit':
-            case 'autoDownload':
-            case 'defaultBackgroundImage':
-            case 'defaultBlur':
-            case 'showParticle':
-            case 'particleMode':
-            case 'useBmclApi':
-                await setPersistence({
-                    path: this.getPath('setting.json'),
-                    data: {
-                        locale: this.state.setting.locale,
-                        autoInstallOnAppQuit: this.state.setting.autoInstallOnAppQuit,
-                        autoDownload: this.state.setting.autoDownload,
-                        allowPrerelease: this.state.setting.allowPrerelease,
-                        useBmclAPI: this.state.setting.useBmclAPI,
-                        defaultBackgroundImage: this.state.setting.defaultBackgroundImage,
-                        defaultBlur: this.state.setting.defaultBlur,
-                        showParticle: this.state.setting.showParticle,
-                        particleMode: this.state.setting.particleMode,
-                    },
-                    schema: SettingSchema,
-                });
-                break;
-            default:
-        }
+    @MutationTrigger(
+        'locale',
+        'allowPrerelease',
+        'autoInstallOnAppQuit',
+        'autoDownload',
+        'defaultBackgroundImage',
+        'defaultBlur',
+        'showParticle',
+        'particleMode',
+        'useBmclApi',
+    )
+    async onSettingMutation() {
+        await setPersistence({
+            path: this.getPath('setting.json'),
+            data: {
+                locale: this.state.setting.locale,
+                autoInstallOnAppQuit: this.state.setting.autoInstallOnAppQuit,
+                autoDownload: this.state.setting.autoDownload,
+                allowPrerelease: this.state.setting.allowPrerelease,
+                useBmclAPI: this.state.setting.useBmclAPI,
+                defaultBackgroundImage: this.state.setting.defaultBackgroundImage,
+                defaultBlur: this.state.setting.defaultBlur,
+                showParticle: this.state.setting.showParticle,
+                particleMode: this.state.setting.particleMode,
+            },
+            schema: SettingSchema,
+        });
     }
 }

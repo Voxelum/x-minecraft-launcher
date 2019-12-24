@@ -1,8 +1,9 @@
-import { ForgeWebPage, Installer, LiteLoader } from '@xmcl/minecraft-launcher-core';
+import { Installer, LiteLoaderInstaller, ForgeInstaller, FabricInstaller } from '@xmcl/installer';
 import lastestRelease from 'universal/utils/lasteRelease.json';
 import { fitin } from 'universal/utils/object';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
+import { RuntimeVersions } from './instance.schema';
 
 
 export type Status = 'remote' | 'local';
@@ -13,16 +14,7 @@ export type Status = 'remote' | 'local';
  * 
  * This is more lightweight than @xmcl/minecraft-launcher-core's Version by Version.parse.
  */
-export interface LocalVersion {
-    /**
-     * Minecraft version of this version. e.g. 1.7.10
-     */
-    minecraft: string;
-    /**
-     * Forge version of this version. e.g. 14.23.5.2838
-     */
-    forge: string;
-    liteloader: string;
+export interface LocalVersion extends RuntimeVersions {
     /**
      * The ideal id this version, which is computed by 
      * function universal/utils/versions.js#getExpectVersion
@@ -36,14 +28,6 @@ export interface LocalVersion {
     folder: string;
 }
 
-/**
- * The module handle the local/remote version related work 
- */
-interface WebPage extends ForgeWebPage {
-    latest: number;
-    recommended: number;
-}
-
 interface State {
     /**
      * All the local versions installed in the disk
@@ -52,48 +36,55 @@ interface State {
     /**
      * Minecraft version metadata list. Helps to download.
      */
-    minecraft: Installer.VersionMetaList;
+    minecraft: Installer.VersionList;
     /**
      * Forge version metadata dictionary. Helps to download.
      */
-    forge: { [mcversion: string]: ForgeWebPage };
+    forge: { [mcversion: string]: ForgeInstaller.VersionList };
+    /**
+     * Fabric version metadata dictionary. Helps to download.
+     */
+    fabric: { yarn: FabricInstaller.YarnVersionList; loader: FabricInstaller.LoaderVersionList };
     /**
      * Liteloader version metadata list. Helps to download.
      */
-    liteloader: LiteLoader.VersionMetaList;
+    liteloader: LiteLoaderInstaller.VersionList;
 }
 
 interface Getters {
     /**
      * Latest snapshot
      */
-    minecraftSnapshot: Installer.VersionMeta | undefined;
+    minecraftSnapshot: Installer.Version | undefined;
     /**
      * Latest release
      */
-    minecraftRelease: Installer.VersionMeta;
-    minecraftVersion: (mcversion: string) => Installer.VersionMeta | undefined;
+    minecraftRelease: Installer.Version;
+    minecraftVersion: (mcversion: string) => Installer.Version | undefined;
     minecraftStatuses: { [minecraftVersion: string]: Status };
 
     /**
      * Get the forge webpage info by a minecraft version
      */
-    forgeVersionsOf: (mcversion: string) => ForgeWebPage | undefined;
-    forgeLatestOf: (mcversion: string) => ForgeWebPage.Version | undefined;
-    forgeRecommendedOf: (mcversion: string) => ForgeWebPage.Version | undefined;
+    forgeVersionsOf: (mcversion: string) => ForgeInstaller.VersionList | undefined;
+    forgeLatestOf: (mcversion: string) => ForgeInstaller.Version | undefined;
+    forgeRecommendedOf: (mcversion: string) => ForgeInstaller.Version | undefined;
     forgeStatuses: { [forgeVersion: string]: Status };
 
     liteloaderVersionsOf: (mcversion: string) => {
-        snapshot?: LiteLoader.VersionMeta;
-        release?: LiteLoader.VersionMeta;
+        snapshot?: LiteLoaderInstaller.Version;
+        release?: LiteLoaderInstaller.Version;
     };
 }
 
 interface Mutations {
     localVersions: LocalVersion[];
-    minecraftMetadata: Installer.VersionMetaList;
-    forgeMetadata: ForgeWebPage;
-    liteloaderMetadata: LiteLoader.VersionMetaList;
+    localVersion: LocalVersion | { [runtime: string]: string };
+    localVersionRemove: string;
+    minecraftMetadata: Installer.VersionList;
+    forgeMetadata: ForgeInstaller.VersionList;
+    liteloaderMetadata: LiteLoaderInstaller.VersionList;
+    fabricMetadata: { yarn: FabricInstaller.YarnVersionList; loader: FabricInstaller.LoaderVersionList };
 }
 
 export type VersionModule = ModuleOption<State, Getters, Mutations, {}>;
@@ -125,6 +116,16 @@ const mod: VersionModule = {
                 updatedTime: 0,
             },
             versions: {},
+        },
+        fabric: {
+            yarn: {
+                timestamp: '',
+                versions: [],
+            },
+            loader: {
+                timestamp: '',
+                versions: [],
+            },
         },
     },
     getters: {
@@ -184,6 +185,20 @@ const mod: VersionModule = {
         localVersions(state, local) {
             state.local = local;
         },
+        localVersion(state, local) {
+            const found = state.local.find(l => l.folder === local.folder);
+            if (found) {
+                Object.assign(found, local);
+            } else {
+                state.local.push(local as any);
+            }
+        },
+        localVersionRemove(state, folder) {
+            const idx = state.local.findIndex(l => l.folder === folder);
+            if (idx !== -1) {
+                Vue.delete(state.local, idx);
+            }
+        },
         minecraftMetadata(state, metadata) {
             fitin(state.minecraft, metadata);
         },
@@ -193,6 +208,10 @@ const mod: VersionModule = {
         },
         liteloaderMetadata(state, metadata) {
             fitin(state.liteloader, metadata);
+        },
+        fabricMetadata(state, { yarn, loader }) {
+            state.fabric.yarn = yarn;
+            state.fabric.loader = loader;
         },
     },
 };

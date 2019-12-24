@@ -1,5 +1,6 @@
-import { Task, TaskHandle } from '@xmcl/minecraft-launcher-core';
+import { Task, TaskHandle } from '@xmcl/task';
 import { app, ipcMain, webContents } from 'electron';
+import { EventEmitter } from 'events';
 import AuthLibService from 'main/service/AuthLibService';
 import BaseService from 'main/service/BaseService';
 import CurseForgeService from 'main/service/CurseForgeService';
@@ -9,11 +10,12 @@ import JavaService from 'main/service/JavaService';
 import LaunchService from 'main/service/LaunchService';
 import ResourceService from 'main/service/ResourceService';
 import ServerStatusService from 'main/service/ServerStatusService';
-import Service from 'main/service/Service';
+import Service, { INJECTIONS_SYMBOL, MUTATION_LISTENERS_SYMBOL } from 'main/service/Service';
 import SettingService from 'main/service/SettingService';
 import UserService from 'main/service/UserService';
-import VersionInstallService from 'main/service/VersionInstallService';
+import InstallService from 'main/service/InstallService';
 import VersionService from 'main/service/VersionService';
+import { platform } from 'main/utils';
 import { join } from 'path';
 import storeTemplate from 'universal/store';
 import Vue from 'vue';
@@ -31,13 +33,15 @@ export default class StoreAndServiceManager extends Manager {
 
     private usedSession = 0;
 
-    private sessions: { [key: number]: () => Promise<void> } = {};
+    private sessions: { [key: number]: [() => Promise<void>, string] } = {};
 
     private checkPointId = 0;
 
     private checkPoint: any;
 
     private storeReadyCb = () => { };
+
+    private mutationEventBus = new EventEmitter();
 
     private storeReadyPromise = new Promise((resolve) => {
         this.storeReadyCb = resolve;
@@ -55,26 +59,7 @@ export default class StoreAndServiceManager extends Manager {
         ipcMain.handle('sync', (_, id) => this.storeReadyPromise.then(() => this.sync(id)));
     }
 
-    private setupService(root: string) {
-        console.log(`Setup service ${root}`);
-        const managers = this.managers;
-        const store = this.store!;
-        const getPath = (...paths: string[]) => join(root, ...paths);
-        const mcPath = join(app.getPath('appData'), '.minecraft');
-
-        Object.defineProperties(Service.prototype, {
-            managers: { value: managers },
-            getPath: { value: getPath },
-            commit: { value: store.commit },
-            state: { value: store.state },
-            getters: { value: store.getters },
-            minecraftPath: { value: mcPath },
-            getMinecraftPath: { value: (...args: string[]) => join(mcPath, ...args) },
-            log: { value: console.log },
-            warn: { value: console.warn },
-            error: { value: console.error },
-        });
-
+    private initServices() {
         this.addService(new AuthLibService());
         this.addService(new CurseForgeService());
         this.addService(new DiagnoseService());
@@ -85,9 +70,33 @@ export default class StoreAndServiceManager extends Manager {
         this.addService(new ResourceService());
         this.addService(new SettingService());
         this.addService(new UserService());
-        this.addService(new VersionInstallService());
+        this.addService(new InstallService());
         this.addService(new VersionService());
         this.addService(new BaseService());
+    }
+
+    private setupService(root: string) {
+        console.log(`Setup service ${root}`);
+        const userPath = app.getPath('userData');
+        const managers = this.managers;
+        const store = this.store!;
+        const mcPath = join(app.getPath('appData'), platform.name === 'osx' ? 'minecraft' : '.minecraft');
+
+        Object.defineProperties(Service.prototype, {
+            managers: { value: managers },
+            commit: { value: store.commit },
+            state: { value: store.state },
+            getters: { value: store.getters },
+            minecraftPath: { value: mcPath },
+            getPath: { value: (...args: string[]) => join(userPath, ...args) },
+            getMinecraftPath: { value: (...args: string[]) => join(mcPath, ...args) },
+            getGameAssetsPath: { value: (...args: string[]) => join(root, ...args) },
+            log: { value: this.managers.LogManager.log },
+            warn: { value: this.managers.LogManager.warn },
+            error: { value: this.managers.LogManager.error },
+        });
+
+        this.initServices();
 
         const services = this.services;
         const servMap: { [name: string]: Service } = {};
@@ -99,7 +108,7 @@ export default class StoreAndServiceManager extends Manager {
         this.serviceMap = servMap;
 
         for (const serv of services) {
-            const injects = Object.getPrototypeOf(serv).injections || [];
+            const injects = Object.getPrototypeOf(serv)[INJECTIONS_SYMBOL] || [];
             for (const i of injects) {
                 const { type, field } = i;
 
@@ -111,6 +120,11 @@ export default class StoreAndServiceManager extends Manager {
                 } else {
                     throw new Error(`Cannot find service named ${i}! Which is required by ${Object.getPrototypeOf(serv).constructor.name}`);
                 }
+            }
+
+            const mutationListeners = Object.getPrototypeOf(serv)[MUTATION_LISTENERS_SYMBOL] || [];
+            for (const lis of mutationListeners) {
+                this.mutationEventBus.addListener(lis.event, (payload) => lis.listener.apply(serv, [payload]));
             }
         }
     }
@@ -144,12 +158,11 @@ export default class StoreAndServiceManager extends Manager {
         }
 
         const startingTime = Date.now();
-        try {
-            await Promise.all(this.services.map(s => s.load()));
-        } catch (e) {
-            console.warn('Error during survice load:');
+        await Promise.all(this.services.map(s => s.load().catch((e) => {
+            console.error(`Error during load service: ${Object.getPrototypeOf(s).constructor.name}`);
             console.error(e);
-        }
+        })));
+
         console.log(`Successfully load modules. Total Time is ${Date.now() - startingTime}ms.`);
 
         this.setupAutoSave();
@@ -179,10 +192,10 @@ export default class StoreAndServiceManager extends Manager {
                 console.error(`Unknown session ${id}!`);
             }
             try {
-                const r = this.sessions[id]();
+                const r = this.sessions[id][0]();
                 if (r instanceof Promise) {
                     return r.then(r => ({ result: r }), (e) => {
-                        console.warn(`Error during service call session ${id}:`);
+                        console.warn(`Error during service call session ${id}(${this.sessions[id][1]}):`);
                         console.warn(e);
                         return { error: e };
                     });
@@ -218,7 +231,7 @@ export default class StoreAndServiceManager extends Manager {
                         },
                     });
 
-                    this.sessions[sessionId] = () => servProxy[name](payload);
+                    this.sessions[sessionId] = [() => servProxy[name](payload), `${service}.${name}`];
 
                     return sessionId;
                 }
@@ -233,13 +246,14 @@ export default class StoreAndServiceManager extends Manager {
      */
     private setupAutoSave() {
         this.store!.subscribe((mutation) => {
+            this.mutationEventBus.emit(mutation.type, mutation.payload);
             this.services.map(s => s.save({ mutation: mutation.type as any, payload: mutation.payload }));
         });
     }
 
     private sync(currentId: number) {
         const checkPointId = this.checkPointId;
-        console.log(`sync on renderer: ${currentId}, main: ${checkPointId}`);
+        console.log(`Sync from renderer: ${currentId}, main: ${checkPointId}.`);
         if (currentId === checkPointId) {
             return undefined;
         }

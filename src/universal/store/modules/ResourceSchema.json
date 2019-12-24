@@ -34,9 +34,6 @@
                     "additionalProperties": true
                 },
                 {
-                    "$ref": "#/definitions/T"
-                },
-                {
                     "type": "array",
                     "items": {
                         "type": "object",
@@ -62,15 +59,13 @@
         "type"
     ],
     "definitions": {
-        "T": {
-            "type": "object"
-        },
         "Source": {
             "type": "object",
             "additionalProperties": {},
             "properties": {
                 "uri": {
                     "description": "The source uris.\n- For the forge mod, it will be the forge://<modid>/<version>\n- For the liteloader mod, it will be the liteloader://<name>/<version>\n- For the curseforge file, it will be the curseforge://<fileId>\n\nIf the source is remote resource, it might also contain the uri like https://host/paths",
+                    "default": [],
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -78,6 +73,7 @@
                 },
                 "date": {
                     "description": "The date of import",
+                    "default": -1,
                     "type": "number"
                 },
                 "github": {

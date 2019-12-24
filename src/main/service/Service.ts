@@ -1,16 +1,41 @@
-import { Task, TaskHandle } from '@xmcl/minecraft-launcher-core';
+import { Task, TaskHandle } from '@xmcl/task';
 import { Managers } from 'main/manager';
 import { MutationKeys, RootCommit, RootGetters, RootState } from 'universal/store';
+import { Message } from 'universal/utils/message';
+import { Exception, Exceptions } from 'universal/utils/error';
+
+export const INJECTIONS_SYMBOL = Symbol('__injections__');
+export const MUTATION_LISTENERS_SYMBOL = Symbol('__listeners__');
 
 export function Inject(type: string) {
     return function (target: any, propertyKey: string) {
-        if (!Reflect.has(target, 'injections')) {
-            Reflect.set(target, 'injections', []);
+        if (!Reflect.has(target, INJECTIONS_SYMBOL)) {
+            Reflect.set(target, INJECTIONS_SYMBOL, []);
         }
         if (!type) {
             console.error(new Error(`Inject recieved type: ${type}!`));
         } else {
-            Reflect.get(target, 'injections').push({ type, field: propertyKey });
+            Reflect.get(target, INJECTIONS_SYMBOL).push({ type, field: propertyKey });
+        }
+    };
+}
+
+/**
+ * Fire on certain store mutation committed.
+ * @param keys The mutations name
+ */
+export function MutationTrigger(...keys: MutationKeys[]) {
+    return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
+        if (!Reflect.has(target, MUTATION_LISTENERS_SYMBOL)) {
+            Reflect.set(target, MUTATION_LISTENERS_SYMBOL, []);
+        }
+        if (!keys || keys.length === 0) {
+            console.error(new Error('Must listen at least one mutation!'));
+        } else {
+            Reflect.get(target, MUTATION_LISTENERS_SYMBOL).push(...keys.map(k => ({
+                event: k,
+                listener: descriptor.value,
+            })));
         }
     };
 }
@@ -45,6 +70,12 @@ export function Singleton(...keys: string[]) {
     };
 }
 
+export class ServiceException extends Error {
+    constructor(readonly exception: Exceptions, message?: string) {
+        super(message);
+    }
+}
+
 // /**
 //  * A service method decorator to make sure this service call should run in singleton -- no second call at the time. 
 //  */
@@ -67,7 +98,17 @@ export function Singleton(...keys: string[]) {
 // }
 
 
+/**
+ * The base class of a service.
+ * 
+ * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied 
+ */
 export default class Service {
+    /**
+     * all the managers
+     */
+    protected managers!: Managers;
+
     /**
      * Submit a task into the task manager. 
      * 
@@ -79,16 +120,30 @@ export default class Service {
         return this.managers.TaskManager.submit(task);
     }
 
+    /**
+     * The managed state
+     */
     protected state!: RootState;
 
+    /**
+     * The managed getter
+     */
     protected getters!: RootGetters;
 
+    /**
+     * The commit method
+     */
     protected commit!: RootCommit;
 
     /**
-     * Return the path under the storeage
+     * Return the path under the config root
      */
     protected getPath!: (...args: string[]) => string;
+
+    /**
+     * Return the path under game libraries/assets root
+     */
+    protected getGameAssetsPath!: (...args: string[]) => string;
 
     /**
      * Return the path under .minecraft folder
@@ -99,8 +154,6 @@ export default class Service {
      * The path of .minecraft
      */
     protected minecraftPath!: string;
-
-    protected managers!: Managers;
 
     async save(payload: { mutation: MutationKeys; payload: any }): Promise<void> { }
 
@@ -113,4 +166,18 @@ export default class Service {
     readonly error!: typeof console.error;
 
     readonly warn!: typeof console.warn;
+
+    protected precondition(issue: string) {
+        if (this.getters.isIssueActive(issue)) {
+            throw makeException({ type: 'issueBlocked', issues: [] });
+        }
+    }
+
+    protected pushMessage(m: Message) {
+
+    }
+
+    protected pushException(e: Exceptions) {
+
+    }
 }

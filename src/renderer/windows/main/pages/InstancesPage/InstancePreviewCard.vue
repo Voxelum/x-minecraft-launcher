@@ -28,7 +28,7 @@
     </v-img>
             
     <v-card-text v-if="description" class="font-weight-bold">
-      <text-component :source="description" />
+      <text-component :source="typeof description === 'object' ? description : {text: description}" />
     </v-card-text>
 
     <v-card-actions style="">

@@ -1,3 +1,5 @@
+import { isNullOrUndefine } from './asserts';
+
 export function deepEquals(a: any, b: any): boolean {
     const ta = typeof a;
     const tb = typeof b;
@@ -14,35 +16,6 @@ export function deepEquals(a: any, b: any): boolean {
     }
     return a === b;
 }
-export function isNullOrUndefine(object: any): object is undefined {
-    return object === undefined || object === null;
-}
-export function notNull<T>(object: T | undefined | null): object is T {
-    return object === undefined || object === null;
-}
-export function willBaselineChange(baseline: any, option: any): boolean {
-    if (isNullOrUndefine(option)) return false;
-    for (const key of Object.keys(option)) {
-        const stateValue = baseline[key];
-        const optionValue = option[key];
-
-        if (!isNullOrUndefine(optionValue)) {
-            if (typeof stateValue === 'object') {
-                if (stateValue instanceof Array && optionValue instanceof Array
-                    && stateValue.some((v, i) => v !== optionValue[i])) {
-                    return true;
-                }
-                if (typeof optionValue === 'object' && willBaselineChange(stateValue, optionValue)) {
-                    return true;
-                }
-            }
-            if (typeof stateValue === typeof optionValue && optionValue !== baseline[key]) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
 export function diff(target: any, option: any): boolean {
     if (target === undefined && option === undefined) {
         return false;
@@ -51,31 +24,6 @@ export function diff(target: any, option: any): boolean {
         return true;
     }
     return !Object.entries(target).every(([k, v]) => deepEquals(option[k], v));
-}
-export function requireNumber(object: any, message: string) {
-    if (typeof object !== 'number') throw new Error(message || 'Require a number!');
-}
-export function requireObject(object: unknown, message?: string): asserts object is object {
-    if (typeof object !== 'object') throw new Error(message || 'Require a object!');
-}
-export function requireString(object: unknown, message?: any): asserts object is string {
-    if (typeof object !== 'string') throw new Error(message || `Require a string! But get ${typeof object} ${JSON.stringify(object)}`);
-}
-export function requireBool(object: unknown, message?: any): asserts object is boolean {
-    if (typeof object !== 'boolean') throw new Error(message || `Require a boolean! But get ${typeof object} ${JSON.stringify(object)}`);
-}
-export function requireNonnull(object: unknown, message?: any): asserts object {
-    if (typeof object === 'undefined' || object === null) throw new Error(message || 'Require object existed!');
-}
-export function requireType(object: any, type: any, message: any) {
-    if (!(object instanceof type)) {
-        throw new Error(message || `Require object ${object} be the type ${type}`);
-    }
-}
-export function requireTrue(object: unknown, message?: any): asserts object {
-    if (!object) {
-        throw new Error(message || `Require object ${object} be the truthy`);
-    }
 }
 export function fitin(state: any, option: any) {
     if (isNullOrUndefine(option)) return;
@@ -98,4 +46,36 @@ export function fitin(state: any, option: any) {
             }
         }
     }
+}
+export function shouldPatch(original: any, patch: any): boolean {
+    if (isNullOrUndefine(patch)) return false;
+    for (const key of Object.keys(patch)) {
+        const oValue = original[key];
+        const pValue = patch[key];
+
+        if (isNullOrUndefine(pValue) && !isNullOrUndefine(oValue)) {
+            // this mean we try to set to undefined/null
+            return true;
+        }
+
+        if (typeof oValue === 'object') {
+            if (oValue instanceof Array && pValue instanceof Array // two array
+                && oValue.some((v, i) => v !== pValue[i])) { // exact same, no
+                return true;
+            }
+            if (shouldPatch(oValue, pValue)) {
+                return true;
+            }
+        } else if (pValue !== original[key]) {
+            return true;
+        }
+    }
+    return false;
+}
+export function mixins(derivedCtor: any, baseCtors: any[]) {
+    baseCtors.forEach(baseCtor => {
+        Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
+            Object.defineProperty(derivedCtor.prototype, name, Object.getOwnPropertyDescriptor(baseCtor.prototype, name)!);
+        });
+    });
 }

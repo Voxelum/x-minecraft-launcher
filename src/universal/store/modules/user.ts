@@ -1,5 +1,4 @@
-import { Auth, MojangAccount, ProfileService } from '@xmcl/minecraft-launcher-core';
-import { GameProfile } from '@xmcl/profile-service';
+import { YggdrasilAuthAPI, ProfileServiceAPI, GameProfile } from '@xmcl/user';
 import { fitin } from 'universal/utils/object';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
@@ -8,10 +7,10 @@ import { GameProfileAndTexture, UserProfile, UserSchema } from './user.schema';
 export type UserGameProfile = Omit<UserProfile, 'profiles'> & GameProfileAndTexture & { userId: string; id: string };
 
 interface State extends UserSchema {
-    /**
-     * The mojang user info
-     */
-    mojangInfo: MojangAccount | null;
+    // /**
+    //  * The mojang user info
+    //  */
+    // mojangInfo: MojangAccount | null;
     /**
      * If this is true, user can get the skin data from mojang, else user has to answer the challenge to continue.
      */
@@ -49,8 +48,8 @@ interface Getters {
     authServices: string[]; // TODO: remove
     profileServices: string[]; // TODO: remove
 
-    authService: Auth.Yggdrasil.API;
-    profileService: ProfileService.API;
+    authService: YggdrasilAuthAPI;
+    profileService: ProfileServiceAPI;
 }
 interface Mutations {
     userSnapshot: UserSchema;
@@ -64,12 +63,11 @@ interface Mutations {
 
     userGameProfileSelect: { userId: string; profileId: string };
 
-    authService: { name: string; api: Auth.Yggdrasil.API };
+    authService: { name: string; api: YggdrasilAuthAPI };
     authServiceRemove: string;
-    profileService: { name: string; api: ProfileService.API };
+    profileService: { name: string; api: ProfileServiceAPI };
     profileServiceRemove: string;
 
-    userMojangInfo: MojangAccount;
     userSecurity: boolean;
 }
 
@@ -85,8 +83,6 @@ const mod: UserModule = {
         },
 
         clientToken: '',
-
-        mojangInfo: null,
 
         // client data
         authServices: {
@@ -131,7 +127,7 @@ const mod: UserModule = {
                 .map((profile) => ({ ...profile, userId, authService: user.authService, profileService: user.profileService, username: user.username, accessToken: user.accessToken })))
             .reduce((a, b) => [...a, ...b], []),
         user: state => state.users[state.selectedUser.id]
-            || { username: '', profileService: '', authService: '', accessToken: '', profiles: [], properties: {} },
+            || { id: '', username: '', profileService: '', authService: '', accessToken: '', profiles: [], properties: {} },
         gameProfile: (state, getters) => getters.user.profiles[state.selectedUser.profile]
             || { id: '', name: '', textures: { SKIN: { url: '' } } },
 
@@ -158,9 +154,6 @@ const mod: UserModule = {
             if (snapshot.profileServices) {
                 state.profileServices = { ...state.profileServices, ...snapshot.profileServices };
             }
-        },
-        userMojangInfo(state, info) {
-            state.mojangInfo = { ...info };
         },
         userSecurity(state, sec) {
             state.mojangSecurity = sec;

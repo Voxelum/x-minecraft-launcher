@@ -1,4 +1,4 @@
-import { TextComponentFrame, TextComponent } from '@xmcl/text-component';
+import { TextComponent, render, RenderNode } from '@xmcl/text-component';
 import { createComponent, createElement } from '@vue/composition-api';
 import { useI18n } from './hooks';
 
@@ -13,10 +13,10 @@ export default createComponent({
         const { $t } = useI18n();
         return () => {
             if (!props.source) return createElement('div');
-            const src = props.source as TextComponentFrame;
-            const hint = TextComponent.render(TextComponent.from(src));
-            function generate(node: TextComponent.RenderNode): ReturnType<typeof createElement> {
-                return createElement('span', { attrs: { style: node.style } }, [$t(node.text), node.children.map(generate)]);
+            const src = props.source as TextComponent;
+            const hint = render(src);
+            function generate(node: RenderNode): ReturnType<typeof createElement> {
+                return createElement('span', { style: node.style }, [$t(node.component.text), node.children.map(generate)]);
             }
             return generate(hint);
         };

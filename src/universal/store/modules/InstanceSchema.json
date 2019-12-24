@@ -1,11 +1,6 @@
 {
     "type": "object",
     "properties": {
-        "id": {
-            "description": "The unique id (uuid) of the profile. The profile data will be stored into profiles/${id}/profile.json according to this.",
-            "default": "",
-            "type": "string"
-        },
         "name": {
             "description": "The display name of the profile. It will also be the modpack display name",
             "default": "",
@@ -13,10 +8,12 @@
         },
         "author": {
             "description": "The author of this instance",
+            "default": "",
             "type": "string"
         },
         "description": {
             "description": "The description of this instance",
+            "default": "",
             "type": "string"
         },
         "showLog": {
@@ -49,39 +46,13 @@
             }
         },
         "runtime": {
+            "$ref": "#/definitions/RuntimeVersions",
             "description": "The runtime version requirement of the profile.\n\nContaining the forge & liteloader & etc.",
             "default": {
                 "minecraft": "",
                 "forge": "",
                 "liteloader": ""
-            },
-            "type": "object",
-            "additionalProperties": {
-                "type": "string"
-            },
-            "properties": {
-                "minecraft": {
-                    "default": "",
-                    "type": "string"
-                },
-                "forge": {
-                    "default": "",
-                    "type": "string"
-                },
-                "liteloader": {
-                    "default": "",
-                    "type": "string"
-                },
-                "fabric": {
-                    "default": "",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "forge",
-                "liteloader",
-                "minecraft"
-            ]
+            }
         },
         "java": {
             "description": "The recommended java version for this instance",
@@ -174,12 +145,13 @@
         }
     },
     "required": [
+        "author",
         "blur",
         "creationDate",
         "deployments",
+        "description",
         "hideLauncher",
         "icon",
-        "id",
         "image",
         "java",
         "lastAccessDate",
@@ -191,6 +163,46 @@
         "url",
         "vmOptions"
     ],
+    "definitions": {
+        "RuntimeVersions": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            },
+            "properties": {
+                "minecraft": {
+                    "description": "Minecraft version of this version. e.g. 1.7.10",
+                    "default": "",
+                    "type": "string"
+                },
+                "forge": {
+                    "description": "Forge version of this version. e.g. 14.23.5.2838",
+                    "default": "",
+                    "type": "string"
+                },
+                "liteloader": {
+                    "default": "",
+                    "type": "string"
+                },
+                "fabric-loader": {
+                    "description": "Fabric loader version, e.g. 0.7.2+build.175",
+                    "default": "",
+                    "type": "string"
+                },
+                "yarn": {
+                    "description": "Fabric yarn version, e.g. 1.15.1+build.14",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "fabric-loader",
+                "forge",
+                "liteloader",
+                "minecraft",
+                "yarn"
+            ]
+        }
+    },
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false
 }

@@ -9,10 +9,3 @@ export function useI18n() {
         $t(key: string, values?: any[] | { [key: string]: any }): string { return i18n.t(key, values) as any; },
     };
 }
-
-export function useI18nType() {
-    return {} as any as {
-        $tc(key: string, count: number): string;
-        $t(key: string, values?: any[] | { [key: string]: any }): string;
-    };
-}

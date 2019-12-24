@@ -55,7 +55,7 @@
 
 <script lang=ts>
 import { createComponent } from '@vue/composition-api';
-import { useUpdateInfo, useI18n } from '@/hooks';
+import { useUpdateInfo } from '@/hooks';
 
 export default createComponent({
   props: {

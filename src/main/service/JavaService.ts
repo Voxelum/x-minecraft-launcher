@@ -1,37 +1,36 @@
-import { Task } from '@xmcl/minecraft-launcher-core';
+import { Task } from '@xmcl/task';
 import { exec } from 'child_process';
-import { fs, installJreFromMojangTask, installJreFromSelfHostTask, platform } from 'main/utils';
+import { installJreFromMojangTask, installJreFromSelfHostTask, platform, missing } from 'main/utils';
 import { getPersistence, setPersistence } from 'main/utils/persistence';
 import { EOL } from 'os';
 import { join } from 'path';
 import { MutationKeys } from 'universal/store';
 import { Java, JavaSchema } from 'universal/store/modules/java.schema';
-import { requireString } from 'universal/utils/object';
+import { requireString } from 'universal/utils/asserts';
 import Service, { Singleton } from './Service';
 
 export default class JavaService extends Service {
     private static JAVA_FILE = platform.name === 'windows' ? 'javaw.exe' : 'java';
 
     async load() {
-        const loaded: JavaSchema = await getPersistence({ path: this.getPath('java.json'), schema: JavaSchema });
-        if (loaded) {
-            this.commit('javaAdd', loaded.all.filter(l => typeof l.path === 'string'));
-        }
+        let loaded: JavaSchema = await getPersistence({ path: this.getPath('java.json'), schema: JavaSchema });
+        this.commit('javaAdd', loaded.all.filter(l => typeof l.path === 'string'));
         if (this.state.java.all.length === 0) {
             await this.refreshLocalJava();
         }
     }
 
     async init() {
-        if (this.state.java.all.length === 0) {
+        const { state } = this;
+        if (state.java.all.length === 0) {
             this.refreshLocalJava();
         } else {
-            const local = join(this.state.root, 'jre', 'bin', JavaService.JAVA_FILE);
-            if (!this.state.java.all.map(j => j.path).some(p => p === local)) {
+            let local = join(state.root, 'jre', 'bin', JavaService.JAVA_FILE);
+            if (!state.java.all.map(j => j.path).some(p => p === local)) {
                 this.resolveJava(local);
             }
-            Promise.all(this.state.java.all.map(j => this.resolveJava(j.path)
-                .then((result) => { if (!result) { this.commit('javaRemove', j); } })));
+            Promise.all(state.java.all
+                .map(j => this.resolveJava(j.path).then((result) => { if (!result) { this.commit('javaRemove', j); } })));
         }
     }
 
@@ -52,7 +51,7 @@ export default class JavaService extends Service {
      */
     @Singleton('java')
     async installJava(fixing: boolean) {
-        const installJre = async (ctx: Task.Context) => {
+        const installJre = Task.create('installJre', async (ctx: Task.Context) => {
             const local = join(this.state.root, 'jre', 'bin', JavaService.JAVA_FILE);
             await this.resolveJava(local);
             for (const j of this.state.java.all) {
@@ -72,7 +71,7 @@ export default class JavaService extends Service {
             }
 
             return java;
-        };
+        });
         return this.submit(installJre);
     }
 
@@ -81,8 +80,8 @@ export default class JavaService extends Service {
      */
     async resolveJava(javaPath: string): Promise<undefined | Java> {
         requireString(javaPath);
-        const exists = await fs.exists(javaPath);
-        if (!exists) return undefined;
+
+        if (await missing(javaPath)) return undefined;
 
         // const resolved = this.state.java.all.filter(java => java.path === javaPath)[0];
         // if (resolved) return resolved;
@@ -94,13 +93,13 @@ export default class JavaService extends Service {
         };
         return new Promise((resolve) => {
             exec(`"${javaPath}" -version`, (err, sout, serr) => {
-                const version = getJavaVersion(serr);
+                let version = getJavaVersion(serr);
                 if (serr && version !== undefined) {
                     let majorVersion = Number.parseInt(version.split('.')[0], 10);
                     if (majorVersion === 1) {
                         majorVersion = Number.parseInt(version.split('.')[1], 10);
                     }
-                    const java = {
+                    let java = {
                         path: javaPath,
                         version,
                         majorVersion,
@@ -122,11 +121,6 @@ export default class JavaService extends Service {
      */
     @Singleton('java')
     async refreshLocalJava() {
-        const unchecked = new Set<string>();
-
-        unchecked.add(join(this.state.root, 'jre', 'bin', JavaService.JAVA_FILE));
-        if (process.env.JAVA_HOME) unchecked.add(join(process.env.JAVA_HOME, 'bin', JavaService.JAVA_FILE));
-
         const which = () => new Promise<string>((resolve) => {
             exec('which java', (error, stdout) => {
                 resolve(stdout.replace('\n', ''));
@@ -138,6 +132,13 @@ export default class JavaService extends Service {
             });
         });
 
+        const { state } = this;
+
+        let unchecked = new Set<string>();
+        unchecked.add(join(state.root, 'jre', 'bin', JavaService.JAVA_FILE));
+        if (process.env.JAVA_HOME) {
+            unchecked.add(join(process.env.JAVA_HOME, 'bin', JavaService.JAVA_FILE));
+        }
         if (platform.name === 'windows') {
             const out = await new Promise<string[]>((resolve) => {
                 exec('REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome', (error, stdout) => {
@@ -157,12 +158,13 @@ export default class JavaService extends Service {
         } else {
             unchecked.add(await which());
         }
+        for (let java of state.java.all) {
+            unchecked.add(java.path);
+        }
 
-        this.state.java.all.forEach(j => unchecked.add(j.path));
+        let checklist = Array.from(unchecked).filter(jPath => typeof jPath === 'string').filter(p => p !== '');
 
-        const checkingList = Array.from(unchecked).filter(jPath => typeof jPath === 'string').filter(p => p !== '');
-        console.log(`Checking these location for java ${JSON.stringify(checkingList)}.`);
-
-        await Promise.all(checkingList.map(jPath => this.resolveJava(jPath)));
+        this.log(`Checking these location for java ${JSON.stringify(checklist)}.`);
+        await Promise.all(checklist.map(jPath => this.resolveJava(jPath)));
     }
 }

@@ -40,7 +40,8 @@
     },
     "typescript.tsdk": "node_modules/typescript/lib",
     "i18n-ally.localesPaths": [
-        "static/locales"
+        "static/locales",
+        "src/main/utils/locales"
     ],
     "i18n-ally.keystyle": "nested",
     "i18n-ally.sortKeys": true

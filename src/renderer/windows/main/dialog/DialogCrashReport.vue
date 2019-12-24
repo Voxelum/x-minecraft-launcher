@@ -7,9 +7,6 @@
         <v-btn flat @click="openFolder">
           {{ $t('launch.openCrashReportFolder') }}
         </v-btn>
-        <v-btn flat @click="openFile">
-          {{ $t('launch.openCrashReport') }}
-        </v-btn>
       </v-toolbar-items>
       <v-btn icon @click="closeDialog()">
         <v-icon>close</v-icon>
@@ -25,13 +22,13 @@
 <script lang=ts>
 import { reactive, toRefs, onMounted, onUnmounted, createComponent } from '@vue/composition-api';
 import Vue from 'vue';
-import { useDialogSelf, useIpc, useShell, useI18n } from '@/hooks';
+import { useDialogSelf, useIpc, useBaseService } from '@/hooks';
 
 export default createComponent({
   setup() {
     const { isShown, showDialog, closeDialog } = useDialogSelf('crash-report');
     const ipcRenderer = useIpc();
-    const shell = useShell();
+    const { showItemInDirectory } = useBaseService();
     const data = reactive({
       content: '',
       location: '',
@@ -55,11 +52,8 @@ export default createComponent({
       isShown,
       ...toRefs(data),
       closeDialog,
-      openFile() {
-        shell.openItem(data.location);
-      },
       openFolder() {
-        shell.showItemInFolder(data.location);
+        showItemInDirectory(data.location);
       },
     };
   },

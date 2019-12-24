@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import Schema from '../Schema';
 
 interface MinecraftVersion {
@@ -37,14 +38,14 @@ interface ForgeVersion {
     /**
      * The type of the forge release. The `common` means the normal release.
      */
-    type: "buggy" | "recommended" | "common" | "latest";
+    type: 'buggy' | 'recommended' | 'common' | 'latest';
 }
 interface LiteloaderVersionMeta {
     version: string;
     url: string;
     file: string;
     mcversion: string;
-    type: "RELEASE" | "SNAPSHOT";
+    type: 'RELEASE' | 'SNAPSHOT';
     md5: string;
     timestamp: string;
     libraries: Array<{

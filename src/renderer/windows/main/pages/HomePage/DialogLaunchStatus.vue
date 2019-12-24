@@ -1,19 +1,6 @@
 <template>
   <v-dialog v-model="isShown" :width="300" :persistent="status === 'launching'">
-    <v-card v-if="status === 'error'" color="error">
-      <v-card-title primary-title>
-        {{ $t(`launch.failed.${errorType}`) }}
-      </v-card-title>
-      <v-card-text>
-        {{ $t(`launch.failed.${errorType}Text`) }}
-        <v-text-field
-          readonly
-          textarea
-          :value="errors"
-        />
-      </v-card-text>
-    </v-card>
-    <v-card v-else dark>
+    <v-card dark>
       <v-container>
         <v-layout align-center justify-center column>
           <v-flex>
@@ -36,7 +23,7 @@ export default {
   setup() {
     const progressText = ref('');
     const { $t } = useI18n();
-    const { errorType, errors, status } = useLaunch();
+    const { status } = useLaunch();
     const { isShown, showDialog, closeDialog } = useDialogSelf('launch-status');
     onMounted(() => {
       watch(status, (s) => {
@@ -62,8 +49,6 @@ export default {
     });
     return {
       progressText,
-      errorType,
-      errors,
       status,
       isShown,
     };

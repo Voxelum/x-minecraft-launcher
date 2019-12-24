@@ -3,9 +3,18 @@
     "properties": {
         "selectedInstance": {
             "type": "string"
+        },
+        "instances": {
+            "description": "The extra imported instance path",
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
         }
     },
     "required": [
+        "instances",
         "selectedInstance"
     ],
     "$schema": "http://json-schema.org/draft-07/schema#",

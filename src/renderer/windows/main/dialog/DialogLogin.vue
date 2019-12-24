@@ -137,12 +137,13 @@
 
 <script lang=ts>
 import { reactive, computed, watch, toRefs, onMounted, onUnmounted, ref, createComponent, Ref } from '@vue/composition-api';
+import { LoginException } from 'universal/utils';
 import { useCurrentUser, useDialogSelf, useI18n, useLogin } from '@/hooks';
 
 export default createComponent({
   setup(props, context) {
     const { $t } = useI18n();
-    const { logined, username, authService, profileService, id } = useCurrentUser();
+    const { logined, username, authService, profileService, profileId, id } = useCurrentUser();
     const { closeDialog, isShown, showDialog, dialogOption: switchingUser } = useDialogSelf('login');
     const {
       avaiableGameProfiles,
@@ -198,16 +199,18 @@ export default createComponent({
         });
         closeDialog();
       } catch (e) {
-        if (e.type === 'ForbiddenOperationException'
-          && e.message === 'Invalid credentials. Invalid username or password.'
-        ) {
+        const err = e as LoginException;
+        if (err.type === 'loginInternetNotConnected') {
+          // TODO: handle this case
+        } else if (err.type === 'loginInvalidCredentials') {
           const msg = $t('user.invalidCredentials');
           data.accountError = true;
           data.accountErrors = [msg];
           data.passwordError = true;
           data.passwordErrors = [msg];
+        } else {
+          console.error(e);
         }
-        console.error(e);
       } finally {
         data.logining = false;
       }
@@ -217,6 +220,8 @@ export default createComponent({
       data.account = username.value;
       data.selectedAuthService = authService.value || 'mojang';
       data.selectedProfileService = profileService.value || 'mojang';
+      data.userId = id.value;
+      data.profileId = profileId.value;
     }
     function isUserSelected(profile: { id: string; userId: string }) {
       return data.userId === profile.userId
@@ -232,8 +237,6 @@ export default createComponent({
       resetError();
       if (e.key === 'Enter') { login(); }
     }
-
-
     let loginedHandle = () => { };
     let shownHandle = () => { };
     let authServiceHandle = () => { };
@@ -283,7 +286,6 @@ export default createComponent({
       authServices,
       accountRules,
       passwordRules,
-      // loginHistory,
       handleKey,
       accountInput,
       form,
@@ -306,6 +308,7 @@ export default createComponent({
           console.error(`An error occured during select user profile ${data.userId} ${data.profileId}`);
           console.error(e);
         } finally {
+          console.log(logined.value)
           if (logined.value) { closeDialog(); }
         }
       },

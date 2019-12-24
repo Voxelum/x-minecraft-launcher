@@ -17,7 +17,6 @@ export interface DownloadFile {
     projectId?: number;
 }
 
-
 interface State {
     downloading: { [href: string]: { download: DownloadFile; taskId: string } };
 }
@@ -39,7 +38,7 @@ const mod: CurseForgeModule = {
         downloading: {},
     },
     getters: {
-        isFileInstalled: (state, _, rt, rg) => (file) => {
+        isFileInstalled: (state, _, rt) => (file) => {
             /**
              */
             const find = (m: { source: any }) => {
@@ -50,14 +49,14 @@ const mod: CurseForgeModule = {
                 }
                 return false;
             };
-            if (rg.mods.find(find)) return true;
-            if (rg.resourcepacks.find(find)) return true;
-            if (rg.modpacks.find(find)) return true;
-            if (rg.saves.find(find)) return true;
+            if (rt.resource.domains.mods.find(find)) return true;
+            if (rt.resource.domains.resourcepacks.find(find)) return true;
+            if (rt.resource.domains.modpacks.find(find)) return true;
+            if (rt.resource.domains.saves.find(find)) return true;
 
             return false;
         },
-        findFileInstalled: (state, _, rt, rg) => (file) => {
+        findFileInstalled: (state, _, rt) => (file) => {
             /**
              */
             const find = (m: { source: any }) => {
@@ -70,10 +69,10 @@ const mod: CurseForgeModule = {
             };
             let result;
             /* eslint-disable no-cond-assign */
-            if (result = rg.mods.find(find)) return result;
-            if (result = rg.resourcepacks.find(find)) return result;
-            if (result = rg.modpacks.find(find)) return result;
-            if (result = rg.saves.find(find)) return result;
+            if (result = rt.resource.domains.mods.find(find)) return result;
+            if (result = rt.resource.domains.resourcepacks.find(find)) return result;
+            if (result = rt.resource.domains.modpacks.find(find)) return result;
+            if (result = rt.resource.domains.saves.find(find)) return result;
             /* eslint-enable no-cond-assign */
 
             return undefined;

@@ -1,9 +1,10 @@
-import got = require("got");
+import { Task } from '@xmcl/task';
 import { createHash } from 'crypto';
-import { Task, Util } from "@xmcl/minecraft-launcher-core";
+import got from 'got';
+import { waitStream } from '@xmcl/core/fs';
 
 export function cacheWithHash(url: string) {
-    const download = async (context: Task.Context) => {
+    const download = Task.create('download', async (context: Task.Context) => {
         const buffers: Buffer[] = [];
         const hasher = createHash('sha1');
         const urls: string[] = [];
@@ -28,13 +29,13 @@ export function cacheWithHash(url: string) {
                 urls.push(m.url);
             }
         });
-        await Util.waitStream(stream);
+        await waitStream(stream);
 
         return {
             buffer: Buffer.concat(buffers),
             hash: hasher.digest('hex'),
             urls,
-        }
-    };
+        };
+    });
     return download;
 }

@@ -1,6 +1,6 @@
-import { Task, TaskHandle, TaskRuntime } from '@xmcl/minecraft-launcher-core';
-import { Store } from 'vuex';
-import { TaskState, TaskStatus } from 'universal/store/modules/task';
+import { Task, TaskHandle, TaskRuntime } from '@xmcl/task';
+import { ipcMain, WebContents } from 'electron';
+import { TaskState, TaskStatus } from 'universal/task';
 import { Manager } from '.';
 
 import uuid = require('uuid');
@@ -8,7 +8,7 @@ import uuid = require('uuid');
 export interface TaskProgress { progress?: number; total?: number; message?: string; time?: string }
 
 export default class TaskManager extends Manager {
-    private listener: NodeJS.Timeout | undefined;
+    private heartbeat: NodeJS.Timeout | undefined;
 
     private adds: { id: string; node: TaskState }[] = [];
 
@@ -16,42 +16,60 @@ export default class TaskManager extends Manager {
 
     private updates: { [id: string]: TaskProgress } = {};
 
-    private statuses: { id: string; status: string }[] = []
+    private statuses: { id: string; status: string }[] = [];
 
-    private forceUpdate: () => void = () => { };
+    private deferred: Function[] = [];
 
     private factory: Task.StateFactory<TaskState> = n => ({
         ...n,
         id: Reflect.has(n, '__uuid__') ? Reflect.get(n, '__uuid__') : uuid.v4(),
         children: [],
         time: new Date().toString(),
+        progress: 0,
+        total: -1,
+        message: '',
     });
 
     private handles: { [id: string]: TaskHandle<any, any> } = {};
 
+    private listeners: WebContents[] = [];
+    
     readonly runtime: TaskRuntime<TaskState> = Task.createRuntime(this.factory) as any;
 
     constructor(private taskThreshold: number = 30) {
         super();
+
+        ipcMain.handle('task-state', (event) => {
+            this.listeners.push(event.sender);
+            return Object.values(this.handles).map(h => h.root);
+        });
+        ipcMain.handle('task-unlisten', (event) => {
+            this.listeners.splice(this.listeners.indexOf(event.sender), 1);
+        });
+
         this.runtime.on('update', (progress, node) => {
             this.update(node.id, progress);
+            node.progress = progress.progress || node.progress;
+            node.total = progress.total || node.total;
+            node.message = progress.message || node.message;
         });
         this.runtime.on('execute', (node, parent) => {
-            console.log(`${node.path} exec`);
             if (parent) {
-                this.child(parent.id, node);
+                this.child(parent, node);
+                this.deferred.push(() => parent.children.push(node));
             } else {
                 this.add(node.id, node);
             }
             this.status(node.id, 'running');
+            node.status = 'running';
         });
         this.runtime.on('finish', (_, node) => {
-            console.log(`${node.path} finish`);
             this.status(node.id, 'successed');
+            node.status = 'successed';
         });
         this.runtime.on('fail', (error, node) => {
-            console.log(`${node.path} fail`);
             this.status(node.id, 'failed');
+            node.status = 'failed';
             let errorMessage;
             if (error instanceof Error) {
                 errorMessage = error.toString();
@@ -65,7 +83,7 @@ export default class TaskManager extends Manager {
     /**
      * Submit a task to run
      */
-    submit<T>(task: Task.Function<T> | Task.Object<T>, background = false): TaskHandle<T, TaskState> {
+    submit<T>(task: Task<T>, background = false): TaskHandle<T, TaskState> {
         const handle = this.runtime.submit(task);
         const id = uuid.v4();
         Object.defineProperty(task, '__uuid__', { value: id, writable: false, configurable: false, enumerable: false });
@@ -85,7 +103,10 @@ export default class TaskManager extends Manager {
         return this.handles[id];
     }
 
-    add = (id: string, node: TaskState) => { };
+    add(id: string, node: TaskState) {
+        this.adds.push({ id, node });
+        this.checkBatchSize();
+    }
 
     update(uuid: string, update: TaskProgress) {
         const last = this.updates[uuid];
@@ -101,9 +122,9 @@ export default class TaskManager extends Manager {
         this.checkBatchSize();
     }
 
-    child(id: string, node: TaskState) {
+    child(parent: TaskState, node: TaskState) {
         this.childs.push({
-            id,
+            id: parent.id,
             node,
         });
         this.checkBatchSize();
@@ -114,31 +135,56 @@ export default class TaskManager extends Manager {
         this.checkBatchSize();
     }
 
-    checkBatchSize() {
-        if (this.adds.length + this.statuses.length + this.childs.length + Object.keys(this.updates).length > this.taskThreshold) {
-            this.forceUpdate();
-        }
-    }
-
-    storeReady(context: Store<any>) {
-        this.forceUpdate = () => {
-            if (this.adds.length !== 0 || this.childs.length !== 0 || Object.keys(this.updates).length !== 0 || this.statuses.length !== 0) {
-                context.commit('updateBatchTask', {
+    flush() {
+        if (this.adds.length !== 0 || this.childs.length !== 0 || Object.keys(this.updates).length !== 0 || this.statuses.length !== 0) {
+            this.listeners.forEach((listener) => {
+                listener.send('task-update', {
                     adds: this.adds,
                     childs: this.childs,
                     updates: this.updates,
                     statuses: this.statuses,
                 });
+            });
 
-                this.adds = [];
-                this.childs = [];
-                this.updates = {};
-                this.statuses = [];
+            while (this.deferred.length) {
+                this.deferred.pop()!();
             }
-        };
-        this.add = (id, node) => {
-            context.commit('hookTask', { id, task: node });
-        };
-        this.listener = setInterval(this.forceUpdate, 500);
+
+            this.adds = [];
+            this.childs = [];
+            this.updates = {};
+            this.statuses = [];
+        }
+    }
+
+    checkBatchSize() {
+        if (this.adds.length + this.statuses.length + this.childs.length + Object.keys(this.updates).length > this.taskThreshold) {
+            this.flush();
+        }
+    }
+
+    storeReady() {
+        this.heartbeat = setInterval(this.flush.bind(this), 500);
+        // this.submit(Task.create('test', (c) => {
+        //     c.execute(Task.create('a', (ctx) => {
+        //         let progress = 0;
+        //         setInterval(() => {
+        //             ctx.update(progress, 100, progress.toString());
+        //             progress += 10;
+        //             progress = progress > 100 ? 0 : progress;
+        //         }, 2000);
+        //         return new Promise(() => { });
+        //     }));
+        //     c.execute(Task.create('b', (ctx) => {
+        //         let progress = 0;
+        //         setInterval(() => {
+        //             ctx.update(progress, 100, progress.toString());
+        //             progress += 10;
+        //             progress = progress > 100 ? 0 : progress;
+        //         }, 1000);
+        //         return new Promise(() => { });
+        //     }));
+        //     return new Promise(() => { });
+        // }));
     }
 }

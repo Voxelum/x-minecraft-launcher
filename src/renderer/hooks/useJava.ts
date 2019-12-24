@@ -14,5 +14,6 @@ export function useJava() {
         installDefault: services.JavaService.installJava,
         refreshLocalJava: services.JavaService.refreshLocalJava,
         missing,
+        openJavaSite: () => services.BaseService.openInBrowser('https://www.java.com/download/'),
     };
 }

@@ -16,7 +16,7 @@
           power
         </v-icon>
       </v-avatar>
-      Version: {{ folder || version.minecraft }}
+      Version: {{ folder === 'unknown' ? id : folder }}
     </v-chip>
     <v-chip v-if="isServer" label class="pointer" small :selected="false" outline>
       <v-avatar>
@@ -45,13 +45,14 @@ import {
 export default {
   setup() {
     const { runtime, name, author, isServer } = useInstance();
-    const { folder } = useInstanceVersion();
+    const { id, folder } = useInstanceVersion();
     const { players, ping, favicon } = useServerStatus();
     return {
       version: runtime,
       name,
       author,
       isServer,
+      id,
       folder,
       ...(isServer.value ? {
         players,

@@ -74,23 +74,23 @@
       <v-flex v-if="timesliceProfiles[0].length !== 0" style="color: grey" xs12> 
         {{ $t('profile.today') }}
       </v-flex>
-      <v-flex v-for="profile in timesliceProfiles[0]" :key="profile.id" xs6
+      <v-flex v-for="profile in timesliceProfiles[0]" :key="profile.path" xs6
               @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <instance-preview-card :profile="profile" @click.stop="selectProfile(profile.id)" />
+        <instance-preview-card :profile="profile" @click.stop="selectInstance(profile.path)" />
       </v-flex>
       <v-flex v-if="timesliceProfiles[1].length !== 0" style="color: grey" xs12> 
         {{ $t('profile.threeDay') }}
       </v-flex>
-      <v-flex v-for="profile in timesliceProfiles[1]" :key="profile.id" xs6
+      <v-flex v-for="profile in timesliceProfiles[1]" :key="profile.path" xs6
               @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <instance-preview-card :profile="profile" @click.stop="selectProfile(profile.id)" />
+        <instance-preview-card :profile="profile" @click.stop="selectInstance(profile.path)" />
       </v-flex>
       <v-flex v-if="timesliceProfiles[2].length !== 0" style="color: grey" xs12> 
         {{ $t('profile.older') }}
       </v-flex>
-      <v-flex v-for="profile in timesliceProfiles[2]" :key="profile.id" xs6 
+      <v-flex v-for="profile in timesliceProfiles[2]" :key="profile.path" xs6 
               @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <instance-preview-card :profile="profile" @click.stop="selectProfile(profile.id)" />
+        <instance-preview-card :profile="profile" @click.stop="selectInstance(profile.path)" />
       </v-flex>
     </v-layout>
     
@@ -118,7 +118,7 @@
       </v-card>
     </v-dialog>
     <v-dialog v-model="wizard" persistent>
-      <stepper-add-profile v-if="!creatingServer" :show="wizard" @quit="wizard=false" />
+      <stepper-add-instance v-if="!creatingServer" :show="wizard" @quit="wizard=false" />
       <stepper-add-server v-else :show="wizard" @quit="wizard=false" />
     </v-dialog>
   </v-container>
@@ -136,8 +136,16 @@ import {
   useResourceOperation,
   useCurseforgeImport,
 } from '@/hooks';
+import InstancePreviewCard from './InstancesPage/InstancePreviewCard.vue';
+import StepperAddInstance from './InstancesPage/StepperAddInstance.vue';
+import StepperAddServer from './InstancesPage/StepperAddServer.vue';
 
 export default createComponent({
+  components: {
+    InstancePreviewCard,
+    StepperAddInstance,
+    StepperAddServer,
+  },
   setup() {
     const { $t } = useI18n();
     const { showOpenDialog } = useNativeDialog();
@@ -280,7 +288,7 @@ export default createComponent({
         data.isDeletingProfile = false;
         data.deletingProfile = { name: '', id: '' };
       },
-      selectProfile(id: string) {
+      selectInstance(id: string) {
         selectInstance(id);
         router.replace('/');
       },

@@ -36,6 +36,8 @@ export type SettingModule = ModuleOption<State, {}, Mutations, {}>;
 
 const mod: SettingModule = {
     state: {
+        roots: [],
+        primaryRoot: '',
         locale: '',
         locales: [],
         updateInfo: null,

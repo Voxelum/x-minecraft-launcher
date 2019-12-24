@@ -11,10 +11,12 @@ export interface Source {
      * - For the curseforge file, it will be the curseforge://<fileId>
      * 
      * If the source is remote resource, it might also contain the uri like https://host/paths
+     * @default []
      */
     uri: string[];
     /**
      * The date of import
+     * @default -1
      */
     date: number;
     /**
@@ -45,7 +47,7 @@ export interface Source {
     [extraInfo: string]: any;
 }
 
-export interface ResourceSchema<T = object | object[]> {
+export interface ResourceSchema {
     /**
      * The name of the resource
      */
@@ -73,11 +75,11 @@ export interface ResourceSchema<T = object | object[]> {
     /**
      * The resource specific metadata
      */
-    metadata: T;
+    metadata: object | object[];
     /**
      * Where the resource imported from?
      */
     source: Source;
 }
 
-export const ResourceSchema: Schema<ResourceSchema<any>> = require('./ResourceSchema.json');
+export const ResourceSchema: Schema<ResourceSchema> = require('./ResourceSchema.json');

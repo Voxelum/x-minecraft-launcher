@@ -98,14 +98,18 @@
 <script lang=ts>
 import { createComponent, reactive, inject, ref, toRefs, computed, Ref, onUnmounted } from '@vue/composition-api';
 import { ResourcePackResource, Resource } from 'universal/store/modules/resource';
-import { 
+import {
   useInstanceResourcePacks,
   useResourceOperation,
   useDragTransferList,
   useDropImport,
 } from '@/hooks';
+import ResourcePackCard from './ResourcePackSettingPage/ResourcePackCard.vue';
 
 export default createComponent({
+  components: {
+    ResourcePackCard,
+  },
   setup() {
     const filterText = inject('filter-text', ref(''));
     const rightList: Ref<null | Vue> = ref(null);
