@@ -1,8 +1,17 @@
+import { Managers } from '@main/manager';
+import { MutationKeys, RootCommit, RootGetters, RootState } from '@universal/store';
+import { Exception, Exceptions } from '@universal/util/exception';
 import { Task, TaskHandle } from '@xmcl/task';
-import { Managers } from 'main/manager';
-import { MutationKeys, RootCommit, RootGetters, RootState } from 'universal/store';
-import { Message } from 'universal/utils/message';
-import { Exception, Exceptions } from 'universal/utils/error';
+import NetworkManager from '@main/manager/NetworkManager';
+import AppManager from '@main/manager/AppManager';
+import StoreAndServiceManager from '@main/manager/StoreAndServiceManager';
+import TaskManager from '@main/manager/TaskManager';
+import UpdateManager from '@main/manager/UpdateManager';
+import LogManager from '@main/manager/LogManager';
+import { createContext, runInContext } from 'vm';
+import { readFile, ensureFile, writeFile } from 'fs-extra';
+import Ajv from 'ajv';
+import Schema from '@universal/store/Schema';
 
 export const INJECTIONS_SYMBOL = Symbol('__injections__');
 export const MUTATION_LISTENERS_SYMBOL = Symbol('__listeners__');
@@ -13,7 +22,7 @@ export function Inject(type: string) {
             Reflect.set(target, INJECTIONS_SYMBOL, []);
         }
         if (!type) {
-            console.error(new Error(`Inject recieved type: ${type}!`));
+            throw new Error(`Inject recieved type: ${type}!`);
         } else {
             Reflect.get(target, INJECTIONS_SYMBOL).push({ type, field: propertyKey });
         }
@@ -30,7 +39,7 @@ export function MutationTrigger(...keys: MutationKeys[]) {
             Reflect.set(target, MUTATION_LISTENERS_SYMBOL, []);
         }
         if (!keys || keys.length === 0) {
-            console.error(new Error('Must listen at least one mutation!'));
+            throw new Error('Must listen at least one mutation!');
         } else {
             Reflect.get(target, MUTATION_LISTENERS_SYMBOL).push(...keys.map(k => ({
                 event: k,
@@ -86,7 +95,7 @@ export class ServiceException extends Error {
 //         const func = function (this: Service) {
 //             if (this.getters.busy(sem)) {
 //                 new Promise((resolve) => {
-//                     this.managers.StoreAndServiceManager.store ?.watch((state) => {
+//                     this.StoreAndServiceManager.store ?.watch((state) => {
 //                         sem.map((s: string) => state.semaphore[s])
 //                             .every((i: number) => i === 0);
 //                     }, () => { resolve() });
@@ -103,11 +112,18 @@ export class ServiceException extends Error {
  * 
  * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied 
  */
-export default class Service {
-    /**
-     * all the managers
-     */
-    protected managers!: Managers;
+export default class Service implements Managers {
+    appManager!: AppManager;
+
+    networkManager!: NetworkManager;
+
+    storeAndServiceManager!: StoreAndServiceManager;
+
+    taskManager!: TaskManager;
+
+    updateManager!: UpdateManager;
+
+    logManager!: LogManager;
 
     /**
      * Submit a task into the task manager. 
@@ -117,7 +133,7 @@ export default class Service {
      * @param task 
      */
     protected submit<T>(task: Task<T>): TaskHandle<T, Task.State> {
-        return this.managers.TaskManager.submit(task);
+        return this.taskManager.submit(task);
     }
 
     /**
@@ -161,23 +177,68 @@ export default class Service {
 
     async init(): Promise<void> { }
 
-    readonly log!: typeof console.log;
+    protected readonly log!: typeof console.log;
 
-    readonly error!: typeof console.error;
+    protected readonly error!: typeof console.error;
 
-    readonly warn!: typeof console.warn;
+    protected readonly warn!: typeof console.warn;
 
     protected precondition(issue: string) {
         if (this.getters.isIssueActive(issue)) {
-            throw makeException({ type: 'issueBlocked', issues: [] });
+            throw new Exception({ type: 'issueBlocked', issues: [] });
         }
-    }
-
-    protected pushMessage(m: Message) {
-
     }
 
     protected pushException(e: Exceptions) {
 
+    }
+
+    async setPersistence<T>({ path, data, schema }: { path: string; data: T; schema?: Schema<T> }) {
+        const deepCopy = JSON.parse(JSON.stringify(data));
+        if (schema) {
+            const schemaObject = schema;
+            const ajv = new Ajv({ useDefaults: true, removeAdditional: true });
+            const validation = ajv.compile(schemaObject);
+            const valid = validation(deepCopy);
+            if (!valid) {
+                const context = createContext({ object: deepCopy });
+                if (validation.errors) {
+                    validation.errors.forEach(e => this.warn(e));
+                    const cmd = validation.errors.map(e => `delete object${e.dataPath};`);
+                    this.log(cmd.join('\n'));
+                    runInContext(cmd.join('\n'), context);
+                }
+            }
+        }
+        await ensureFile(path);
+        await writeFile(path, JSON.stringify(deepCopy, null, 4), { encoding: 'utf-8' });
+    }
+
+    async getPersistence<T>(option: { path: string; schema?: Schema<T> }): Promise<T> {
+        const { path, schema } = option;
+        const originalString = await readFile(path).then(b => b.toString(), () => '{}');
+        const object = JSON.parse(originalString);
+        if (object && schema) {
+            const schemaObject = schema;
+            const ajv = new Ajv({ useDefaults: true, removeAdditional: true });
+            const validation = ajv.compile(schemaObject);
+            const valid = validation(object);
+            if (!valid) {
+                // this.warn('Try to remove those invalid keys. This might cause problem.');
+                // this.warn(originalString);
+                const context = createContext({ object });
+                if (validation.errors) {
+                    // this.warn(`Found invalid config file on ${path}.`);
+                    // validation.errors.forEach(e => this.warn(e));
+                    const cmd = validation.errors.filter(e => e.dataPath).map(e => `delete object${e.dataPath};`);
+                    if (cmd.length !== 0) {
+                        // this.log(cmd.join('\n'));
+                        runInContext(cmd.join('\n'), context);
+                    }
+                }
+            }
+        }
+
+        return object;
     }
 }

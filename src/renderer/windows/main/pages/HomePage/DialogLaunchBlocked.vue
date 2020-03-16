@@ -11,10 +11,10 @@
             <v-list-tile :key="index" ripple>
               <v-list-tile-content>
                 <v-list-tile-title>
-                {{ $tc(`diagnosis.${item.id}`, item.arguments.count || 0, item.arguments) }}
+                  {{ $tc(`diagnosis.${item.id}`, item.arguments.count || 0, item.arguments) }}
                 </v-list-tile-title>
                 <v-list-tile-sub-title>
-                {{ $t(`diagnosis.${item.id}.message`, item.arguments || {}) }}
+                  {{ $t(`diagnosis.${item.id}.message`, item.arguments || {}) }}
                 </v-list-tile-sub-title>
               </v-list-tile-content>
               <!-- <v-list-tile-action>
@@ -25,9 +25,13 @@
         </v-list>
       </v-card-text>
       <v-card-actions>
-        <v-btn @click="closeDialog"> {{ $t('cancel') }} </v-btn>
-        <v-spacer></v-spacer>
-        <v-btn @click="launch(true)"> {{ $t('launch.blocked.ignore') }} </v-btn>
+        <v-btn @click="closeDialog">
+          {{ $t('cancel') }}
+        </v-btn>
+        <v-spacer />
+        <v-btn @click="launch(true)">
+          {{ $t('launch.blocked.ignore') }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

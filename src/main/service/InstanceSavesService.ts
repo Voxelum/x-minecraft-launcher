@@ -1,12 +1,12 @@
+import { copyPassively, exists, FileStateWatcher, isFile, missing, readdirIfPresent } from '@main/util/fs';
+import { compressZipTo, includeAllToZip, unpack7z } from '@main/util/zip';
+import { notNull, requireString } from '@universal/util/assert';
+import { Exception } from '@universal/util/exception';
 import { WorldReader } from '@xmcl/world';
 import { createHash } from 'crypto';
 import filenamify from 'filenamify';
 import { ensureDir, ensureFile, readdir, remove } from 'fs-extra';
-import { copyPassively, exists, FileStateWatcher, isFile, missing, readdirIfPresent } from 'main/utils';
-import { compressZipTo, includeAllToZip, unpack7z } from 'main/utils/zip';
 import { basename, join, resolve } from 'path';
-import { notNull, requireString } from 'universal/utils/asserts';
-import { assertOrThrow } from 'universal/utils/error';
 import { ZipFile } from 'yazl';
 import Service, { ServiceException } from './Service';
 
@@ -192,10 +192,10 @@ export default class InstanceSavesService extends Service {
             throw new ServiceException({ type: 'instanceCopySaveNotFound', src: srcSavePath, dest: destInstancePaths }, `Cancel save copying of ${saveName}`);
         }
         if (!this.state.instance.all[srcInstancePath]) {
-            throw new ServiceException({});
+            throw new Error(`Cannot find managed instance ${srcInstancePath}`);
         }
         if (destInstancePaths.some(p => !this.state.instance.all[p])) {
-            throw new ServiceException({});
+            throw new Error(`Cannot find managed instance ${srcInstancePath}`);
         }
 
         let destSavePaths = destInstancePaths.map(d => join(d, destSaveName));
@@ -224,7 +224,7 @@ export default class InstanceSavesService extends Service {
         let savePath = join(instancePath, saveName);
 
         if (await missing(savePath)) {
-            throw { type: 'instanceDeleteNoSave', saveName };
+            throw new Exception({ type: 'instanceDeleteNoSave', name: saveName });
         }
 
         await remove(savePath);
@@ -234,8 +234,6 @@ export default class InstanceSavesService extends Service {
      * Import a zip or folder save to the target instance.
      * 
      * If the instancePath is not presented in the options, it will use the current selected instancePath.
-     * 
-     * @param options 
      */
     async importSave(options: ImportSaveOptions) {
         /**
@@ -258,7 +256,7 @@ export default class InstanceSavesService extends Service {
         instancePath = instancePath ?? this.state.instance.path;
 
         if (!this.state.instance.all[instancePath]) {
-            throw new Error(); // TODO: decorate error
+            throw new Error(`Cannot find managed instance ${instancePath}`);
         }
 
         // normalize the save name
@@ -277,7 +275,9 @@ export default class InstanceSavesService extends Service {
 
         // validate the source
         let levelRoot = await findLevelDatRoot(sourceDir);
-        assertOrThrow(levelRoot, () => ({ type: 'instanceImportIllegalSave', path: source }));
+        if (!levelRoot) {
+            throw new Exception({ type: 'instanceImportIllegalSave', path: source });
+        }
 
         await copyPassively(sourceDir, destinationDir);
 
@@ -285,6 +285,7 @@ export default class InstanceSavesService extends Service {
             await remove(sourceDir);
         }
 
+        return destinationDir;
         // this.commit('instanceSaves', [...this.state.instance.saves, { path: destinationDir, level }]);
         // await this.loadInstanceSaves(this.state.instance.path);
     }
@@ -306,11 +307,11 @@ export default class InstanceSavesService extends Service {
         let source = join(instancePath, saveName);
 
         if (!this.state.instance.all[instancePath]) {
-            throw new Error(); // TODO: decorate error
+            throw new Error(`Cannot find managed instance ${instancePath}`);
         }
 
         if (await missing(instancePath)) {
-            throw new Error(); // TODO: decorate error
+            throw new Error(`Cannot find managed instance ${instancePath}`);
         }
 
         this.log(`Export save from ${instancePath}:${saveName} to ${destination}.`);

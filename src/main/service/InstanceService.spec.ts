@@ -1,7 +1,7 @@
+import release from '@universal/util/lasteRelease.json';
 import { Task } from '@xmcl/task';
 import { existsSync } from 'fs';
 import { join } from 'path';
-import release from 'universal/utils/lasteRelease.json';
 import InstanceService from './InstanceService';
 import ResourceService from './ResourceService';
 

@@ -1,5 +1,5 @@
-import { Ref, computed } from '@vue/composition-api';
-import { isCompatible } from 'universal/utils';
+import { isCompatible } from '@universal/util/version';
+import { computed, Ref } from '@vue/composition-api';
 import { useStore } from './useStore';
 
 export function useCompatible(acceptedRange: Ref<string>, version: Ref<string> = computed(() => useStore().getters.instance.runtime.minecraft)) {

@@ -1,6 +1,7 @@
-import { reactive, toRefs, ref, Ref, computed, watch, onMounted, onUnmounted } from '@vue/composition-api';
-import { Project, Download, Version, ProjectType, ProjectPreview, Filter } from 'main/service/CurseForgeService';
+import { Download, Filter, Project, ProjectPreview, ProjectType, Version } from '@main/service/CurseForgeService';
+import { computed, onMounted, onUnmounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
 import { useStore } from './useStore';
+import { useService } from './useService';
 
 /**
  * Hook to view the curseforge project images.
@@ -8,7 +9,7 @@ import { useStore } from './useStore';
  * @param type The project type
  */
 export function useCurseforgeImages(path: string, type: ProjectType) {
-    const { services } = useStore();
+    const { fetchCurseforgeProjectImages } = useService('CurseForgeService');
     const data: {
         images: { name: string; url: string; mini: string }[];
         refreshingImages: boolean;
@@ -19,7 +20,7 @@ export function useCurseforgeImages(path: string, type: ProjectType) {
     async function refreshImages() {
         data.refreshingImages = true;
         try {
-            const images = await services.CurseForgeService.fetchCurseforgeProjectImages({
+            const images = await fetchCurseforgeProjectImages({
                 type,
                 path,
             });
@@ -41,7 +42,7 @@ export function useCurseforgeImages(path: string, type: ProjectType) {
  * @param projectId The project id reference
  */
 export function useCurseforgeProjectFiles(projectPath: string, type: ProjectType, projectId: Ref<number>) {
-    const { services } = useStore();
+    const { downloadAndImportFile, fetchCurseForgeProjectFiles } = useService('CurseForgeService');
     const data: {
         files: Download[];
         versions: Version[];
@@ -63,7 +64,7 @@ export function useCurseforgeProjectFiles(projectPath: string, type: ProjectType
      * @param file The download file
      */
     function install(file: Download) {
-        return services.CurseForgeService.downloadAndImportFile({
+        return downloadAndImportFile({
             id: file.id,
             name: file.name,
             href: file.href,
@@ -78,7 +79,7 @@ export function useCurseforgeProjectFiles(projectPath: string, type: ProjectType
     async function refreshFiles() {
         try {
             data.refreshingFile = true;
-            const { versions, files, pages } = await services.CurseForgeService.fetchCurseForgeProjectFiles({
+            const { versions, files, pages } = await fetchCurseForgeProjectFiles({
                 project: type,
                 path: projectPath,
                 version: data.version.value,
@@ -104,7 +105,8 @@ export function useCurseforgeProjectFiles(projectPath: string, type: ProjectType
  * @param type The project type
  */
 export function useCurseforgeProject(projectPath: string, type: ProjectType) {
-    const { services, getters, state } = useStore();
+    const { downloadAndImportFile, fetchCurseForgeProject } = useService('CurseForgeService');
+    const { getters, state } = useStore();
     const recentFiles: Ref<Project['files']> = ref([]);
     const data = reactive({
         projectId: 0,
@@ -126,7 +128,7 @@ export function useCurseforgeProject(projectPath: string, type: ProjectType) {
     async function refresh() {
         data.refreshingProject = true;
         try {
-            const { name, image, createdDate, updatedDate, totalDownload, license, description, id, files: fs } = await services.CurseForgeService.fetchCurseForgeProject({ path: projectPath, project: type as any });
+            const { name, image, createdDate, updatedDate, totalDownload, license, description, id, files: fs } = await fetchCurseForgeProject({ path: projectPath, project: type as any });
             data.name = name;
             data.image = image;
             data.createdDate = createdDate;
@@ -143,7 +145,7 @@ export function useCurseforgeProject(projectPath: string, type: ProjectType) {
     function installPreview(file: Project['files'][number], index: number) {
         if (recentFilesStat.value[index]) return;
         if (state.curseforge.downloading[file.href]) return;
-        services.CurseForgeService.downloadAndImportFile({
+        downloadAndImportFile({
             id: file.id,
             name: file.name,
             href: file.href,
@@ -165,7 +167,7 @@ export function useCurseforgeProject(projectPath: string, type: ProjectType) {
  * Hook to returen the controller of curseforge preview page. Navigating the curseforge projects.
  */
 export function useCurseforgePreview(type: ProjectType) {
-    const { services } = useStore();
+    const { fetchCurseForgeProjects, searchCurseforgeProjects } = useService('CurseForgeService');
     const data: {
         projects: ProjectPreview[];
         page: number;
@@ -194,7 +196,7 @@ export function useCurseforgePreview(type: ProjectType) {
         data.projects = [];
         data.loading = true;
         try {
-            const result = await services.CurseForgeService.fetchCurseForgeProjects({
+            const result = await fetchCurseForgeProjects({
                 project: type,
                 page: data.page.toString(),
                 filter: filterRef.value.value,
@@ -217,7 +219,7 @@ export function useCurseforgePreview(type: ProjectType) {
         data.loading = true;
         data.searchMode = true;
         try {
-            const projects = await services.CurseForgeService.searchCurseforgeProjects({
+            const projects = await searchCurseforgeProjects({
                 type,
                 keyword: data.keyword,
             });

@@ -31,24 +31,24 @@ import UpdateManager from "./manager/UpdateManager";
 import LogManager from './manager/LogManager';
 
 const managers: Managers = {
-    AppManager: new AppManager(),
-    NetworkManager: new NetworkManager(),
-    StoreAndServiceManager: new StoreAndServiceManager(),
-    TaskManager: new TaskManager(),
-    UpdateManager: new UpdateManager(),
-    LogManager: new LogManager(),
+    appManager: new AppManager(),
+    networkManager: new NetworkManager(),
+    storeAndServiceManager: new StoreAndServiceManager(),
+    taskManager: new TaskManager(),
+    updateManager: new UpdateManager(),
+    logManager: new LogManager(),
 };
 const manList: Manager[] = Object.values(managers);
 
 async function main() {
-    console.log(process.cwd())
-    console.log(process.argv)
+    this.log(process.cwd())
+    this.log(process.argv)
     manList.forEach(man => (man as any).managers = managers);
     await Promise.all(manList.map(async m => await m.setup(managers)));
-    await Promise.all(manList.map(m => m.rootReady(managers.AppManager.root)));
+    await Promise.all(manList.map(m => m.rootReady(managers.appManager.root)));
     await app.whenReady();
     await Promise.all(manList.map(m => m.appReady(app)));
-    await Promise.all(manList.map(m => m.storeReady(managers.StoreAndServiceManager.store!)));
+    await Promise.all(manList.map(m => m.storeReady(managers.storeAndServiceManager.store!)));
 }
 
 main();

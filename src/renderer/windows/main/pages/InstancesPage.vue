@@ -126,7 +126,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed, onMounted, createComponent, Ref } from '@vue/composition-api';
-import { InstanceConfig } from 'universal/store/modules/instance';
+import { InstanceConfig } from '@universal/store/modules/instance';
 import {
   useI18n,
   useNativeDialog,

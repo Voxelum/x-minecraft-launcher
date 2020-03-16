@@ -162,7 +162,7 @@
 
 <script lang=ts>
 import { createComponent, reactive, computed, onMounted, toRefs, watch } from '@vue/composition-api';
-import { ProjectType } from 'main/service/CurseForgeService';
+import { ProjectType } from '@main/service/CurseForgeService';
 import { 
   useCurseforgeProject, 
   useCurseforgeProjectFiles, 

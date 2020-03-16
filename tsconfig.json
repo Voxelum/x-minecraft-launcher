@@ -10,20 +10,11 @@
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "paths": {
-            "universal/*": [
-                "src/universal/*"
-            ],
             "@universal/*": [
                 "src/universal/*"
             ],
-            "static/*": [
-                "static/*"
-            ],
-            "main/*": [
+            "@main/*": [
                 "src/main/*"
-            ],
-            "renderer/*": [
-                "src/renderer/*"
             ],
             "@/*": [
                 "src/universal/*",

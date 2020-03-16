@@ -1,6 +1,6 @@
 import { MutationPayload } from 'vuex';
 import { TaskState } from './task';
-import { Exception, Message } from './utils';
+import { Exception } from './util/exception';
 
 declare module 'electron' {
     interface App extends NodeJS.EventEmitter {
@@ -60,7 +60,7 @@ declare module 'electron' {
 
         on(channel: 'minecraft-exit', listener: (event: Electron.IpcRendererEvent, status: any) => void): this;
 
-        on(channel: 'message', listener: (event: Electron.IpcRendererEvent, message: Message) => void): this;
+        // on(channel: 'message', listener: (event: Electron.IpcRendererEvent, message: Message) => void): this;
 
         on(channel: 'exception', listener: (event: Electron.IpcRendererEvent, exception: Exception) => void): this;
 

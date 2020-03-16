@@ -97,7 +97,7 @@
 
 <script lang=ts>
 import { createComponent, reactive, inject, ref, toRefs, computed, Ref, onUnmounted } from '@vue/composition-api';
-import { ResourcePackResource, Resource } from 'universal/store/modules/resource';
+import { ResourcePackResource, Resource } from '@universal/store/modules/resource';
 import {
   useInstanceResourcePacks,
   useResourceOperation,

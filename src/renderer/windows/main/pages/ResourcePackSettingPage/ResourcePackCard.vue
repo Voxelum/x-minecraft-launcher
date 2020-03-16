@@ -35,7 +35,7 @@
 
 <script lang=ts>
 import { createComponent, reactive, ref, toRefs, Ref } from '@vue/composition-api';
-import { ResourcePackResource } from 'universal/store/modules/resource';
+import { ResourcePackResource } from '@universal/store/modules/resource';
 import { useResourcePackResource, useInstanceVersionBase, useCompatible } from '@/hooks';
 
 export default createComponent({

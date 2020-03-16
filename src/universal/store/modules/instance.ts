@@ -1,11 +1,11 @@
-import { LevelDataFrame } from '@xmcl/world';
+import { getExpectVersion } from '@universal/util/version';
+import { Status as ServerStatus } from '@xmcl/client';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { ServerInfo } from '@xmcl/server-info';
-import { Status as ServerStatus } from '@xmcl/client';
-import { getExpectVersion } from 'universal/utils/versions';
+import { LevelDataFrame } from '@xmcl/world';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
-import { InstanceSchema, InstanceLockSchema, DeployedInfo } from './instance.schema';
+import { DeployedInfo, InstanceLockSchema, InstanceSchema } from './instance.schema';
 import { DEFAULT_JAVA, Java } from './java';
 import { Resource } from './resource';
 import { LocalVersion } from './version';

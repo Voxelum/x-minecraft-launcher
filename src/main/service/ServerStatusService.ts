@@ -2,7 +2,7 @@ import { queryStatus } from '@xmcl/client';
 import { exists } from '@xmcl/core/fs';
 import { readFile, readJSON } from 'fs-extra';
 import { join } from 'path';
-import { createFailureServerStatus } from 'universal/utils/server-status';
+import { createFailureServerStatus } from '@universal/util/serverStatus';
 import Service from './Service';
 
 export default class ServerStatusService extends Service {
@@ -36,7 +36,7 @@ export default class ServerStatusService extends Service {
 
     async pingServer(payload: { host: string; port?: number; protocol?: number }) {
         const { host, port = 25565, protocol } = payload;
-        console.log(`Ping server ${host}:${port} with ${protocol}`);
+        this.log(`Ping server ${host}:${port} with ${protocol}`);
         try {
             return queryStatus({ host, port }, { protocol });
         } catch (e) {

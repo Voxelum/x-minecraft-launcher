@@ -9,8 +9,8 @@ export function createI18n(i18nMap: { [local: string]: LocalizationData }, defau
     let usingData: LocalizationData = defaultData;
     function find(queryPath: string[], node: LocalizationData): string | LocalizationData | undefined {
         if (!node) {
-            console.error(`The node is null! Cannot query ${queryPath}`);
-            console.error(node);
+            this.error(`The node is null! Cannot query ${queryPath}`);
+            this.error(node);
             return undefined;
         }
         let content: LocalizationData | string = node;

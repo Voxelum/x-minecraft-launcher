@@ -16,7 +16,7 @@ function resolveArch() {
     }
 }
 
-export function installJreFromMojangTask(root: string) {
+export function installJreFromMojangTask(root: string   ) {
     async function installJreFromMojang(context: Task.Context) {
         const info: { [system: string]: { [arch: string]: { jre: { sha1: string; url: string; version: string } } } } = await context.execute(
             Task.create('fetchInfo', () => got('https://launchermeta.mojang.com/mc/launcher.json').json()),
@@ -91,7 +91,7 @@ export function installJreFromSelfHostTask(root: string) {
 }
 
 // export async function installJreFromBMCLAPI(context: Task.Context) {
-//     console.log('Try auto Java from Bangbang source');
+//     this.log('Try auto Java from Bangbang source');
 //     const x64 = platform.arch === 'x64';
 //     function resolveJava() {
 //         switch (platform.name) {

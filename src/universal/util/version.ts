@@ -1,6 +1,6 @@
 import { VersionRange, ArtifactVersion } from 'maven-artifact-version';
-import { Resource } from 'universal/store/modules/resource';
-import { requireNonnull } from './object';
+import { Resource } from '@universal/store/modules/resource';
+import { requireNonnull } from './assert';
 
 export function isCompatible(range: string, version: string) {
     if (range === '[*]') return true;

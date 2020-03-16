@@ -1,4 +1,4 @@
-import { isNullOrUndefine } from './asserts';
+import { isNullOrUndefine } from './assert';
 
 export function deepEquals(a: any, b: any): boolean {
     const ta = typeof a;

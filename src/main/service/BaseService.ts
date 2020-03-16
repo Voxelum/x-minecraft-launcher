@@ -24,30 +24,30 @@ export default class BaseService extends Service {
 
     }
 
-    getTrustedSites = this.managers.AppManager.getTrustedSites.bind(this.managers.AppManager);
+    getTrustedSites = this.appManager.getTrustedSites.bind(this.appManager);
 
     /**
      * Try to open a url in default browser. It will popup a message dialog to let user know.
      * If user does not trust the url, it won't open the site.
      * @param url The pending url
      */
-    openInBrowser = this.managers.AppManager.openInBrowser.bind(this.managers.AppManager);
+    openInBrowser = this.appManager.openInBrowser.bind(this.appManager);
 
     /**
      * A electron provided function to show item in direcotry
      * @param path The path to the file item
      */
-    showItemInDirectory = this.managers.AppManager.showItemInFolder;
+    showItemInDirectory = this.appManager.showItemInFolder;
 
     /**
      * A safe method that only open directory. If the `path` is a file, it won't execute it.
      * @param path The directory path.
      */
-    openDirectory = this.managers.AppManager.openDirectory;
+    openDirectory = this.appManager.openDirectory;
 
     async quitAndInstall() {
         if (this.state.setting.readyToUpdate) {
-            this.managers.UpdateManager.quitAndInstall();
+            this.updateManager.quitAndInstall();
         }
     }
 
@@ -55,7 +55,7 @@ export default class BaseService extends Service {
         this.commit('checkingUpdate', true);
         const checkUpdate = Task.create('checkUpdate', async () => {
             try {
-                const info = await this.managers.UpdateManager.checkForUpdates();
+                const info = await this.updateManager.checkForUpdates();
                 this.commit('updateInfo', info.updateInfo);
                 return info;
             } catch {
@@ -70,9 +70,9 @@ export default class BaseService extends Service {
     /**
      * Download the update if there is avaiable update
      */
-    downloadUpdate = this.managers.UpdateManager.downloadUpdate.bind(this.managers.AppManager);
+    downloadUpdate = this.updateManager.downloadUpdate.bind(this.appManager);
 
-    quit = this.managers.AppManager.quit;
+    quit = this.appManager.quit;
 
-    exit = this.managers.AppManager.exit;
+    exit = this.appManager.exit;
 }

@@ -1,5 +1,5 @@
 import { YggdrasilAuthAPI, ProfileServiceAPI, GameProfile } from '@xmcl/user';
-import { fitin } from 'universal/utils/object';
+import { fitin } from '@universal/util/object';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { GameProfileAndTexture, UserProfile, UserSchema } from './user.schema';

@@ -1,7 +1,7 @@
 import { TaskHandle } from '@xmcl/task';
 import { reactive, provide } from '@vue/composition-api';
-import { BuiltinServices } from 'main/service';
-import { SERVICES_KEY, ipcRenderer } from 'renderer/constant';
+import { BuiltinServices } from '@main/service';
+import { SERVICES_KEY, ipcRenderer } from '@/constant';
 
 export function getTasks(promise: Promise<any>): string[] {
     return Reflect.get(promise, '__tasks__');

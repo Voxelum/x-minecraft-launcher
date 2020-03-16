@@ -1,5 +1,5 @@
 import { inject } from '@vue/composition-api';
-import { I18N_KEY } from 'renderer/constant';
+import { I18N_KEY } from '@/constant';
 
 export function useI18n() {
     const i18n = inject(I18N_KEY);

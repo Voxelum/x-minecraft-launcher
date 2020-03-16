@@ -1,6 +1,6 @@
 import { Installer, LiteLoaderInstaller, ForgeInstaller, FabricInstaller } from '@xmcl/installer';
-import lastestRelease from 'universal/utils/lasteRelease.json';
-import { fitin } from 'universal/utils/object';
+import lastestRelease from '@universal/util/lasteRelease.json';
+import { fitin } from '@universal/util/object';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { RuntimeVersions } from './instance.schema';

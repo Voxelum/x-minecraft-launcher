@@ -1,5 +1,5 @@
 import { onMounted, onUnmounted, provide, reactive, Ref, ref } from "@vue/composition-api";
-import { electron, TASKS_KEY, TASK_DICT_KEY } from 'renderer/constant';
+import { electron, TASKS_KEY, TASK_DICT_KEY } from '@/constant';
 import { TaskState } from "universal/task";
 
 export function provideTasks() {

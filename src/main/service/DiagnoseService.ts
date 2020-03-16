@@ -4,8 +4,8 @@ import { Status } from '@xmcl/installer/diagnose';
 import { Forge } from '@xmcl/mod-parser';
 import { Task } from '@xmcl/task';
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
-import { Issue, IssueReport } from 'universal/store/modules/diagnose';
-import { LocalVersion } from 'universal/store/modules/version';
+import { Issue, IssueReport } from '@universal/store/modules/diagnose';
+import { LocalVersion } from '@universal/store/modules/version';
 import AuthLibService from './AuthLibService';
 import InstallService from './InstallService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
@@ -113,7 +113,7 @@ export default class DiagnoseService extends Service {
                 const forgeVer = this.state.version.forge[minecraft]?.versions.find(v => v.version === forge);
                 if (!forgeVer) {
                     this.pushException({ type: 'fixVersionNoForgeVersionMetadata', minecraft, forge });
-                    console.error('Unexpected missing forge context for missingForgeJar problem');
+                    this.error('Unexpected missing forge context for missingForgeJar problem');
                 } else {
                     const forgeMeta = forgeVer;
                     await this.installService.installForge(forgeMeta);
@@ -192,7 +192,7 @@ export default class DiagnoseService extends Service {
     async init() {
         this.commit('aquire', 'diagnose');
         try {
-            console.log('Init with a full diagnose');
+            this.log('Init with a full diagnose');
             await this.diagnoseVersion();
             await this.diagnoseJava();
             await this.diagnoseMods();
@@ -358,7 +358,7 @@ export default class DiagnoseService extends Service {
             const id = this.state.instance.path;
             const selected = this.state.instance.all[id];
             if (!selected) {
-                console.error(`No profile selected! ${id}`);
+                this.error(`No profile selected! ${id}`);
                 return;
             }
             await this.versionService.refreshVersions();
@@ -393,10 +393,10 @@ export default class DiagnoseService extends Service {
 
             if (targetVersion === 'unknown') {
                 targetVersion = mcversion;
-                // console.log(`Skip diagnose for unknown version ${mcversion}`);
+                // this.log(`Skip diagnose for unknown version ${mcversion}`);
                 // return;
             }
-            console.log(`Diagnose for version ${targetVersion}`);
+            this.log(`Diagnose for version ${targetVersion}`);
 
             const location = this.state.root;
             const versionDiagnosis = await Diagnosis.diagnose(targetVersion, location);

@@ -1,16 +1,17 @@
+import { copyPassively, isDirectory, isFile, readdirIfPresent } from '@main/util/fs';
+import { compressZipTo, includeAllToZip } from '@main/util/zip';
+import { createTemplate, InstanceConfig } from '@universal/store/modules/instance';
+import { InstanceSchema } from '@universal/store/modules/instance.schema';
+import { requireObject, requireString } from '@universal/util/assert';
+import { Exception } from '@universal/util/exception';
 import { Version } from '@xmcl/core';
+import { CurseforgeInstaller } from '@xmcl/installer';
 import { Task } from '@xmcl/task';
 import Unzip from '@xmcl/unzip';
 import { createReadStream, mkdtemp, readdir, readJson, remove } from 'fs-extra';
-import { compressZipTo, copyPassively, ensureDir, includeAllToZip, isDirectory, isFile, missing, readdirIfPresent, unpack7z } from 'main/utils';
-import { getPersistence } from 'main/utils/persistence';
 import { tmpdir } from 'os';
 import { basename, join, resolve } from 'path';
-import { createTemplate, InstanceConfig } from 'universal/store/modules/instance';
-import { InstanceSchema } from 'universal/store/modules/instance.schema';
-import { requireObject, requireString } from 'universal/utils/asserts';
 import { ZipFile } from 'yazl';
-import { Modpack } from './CurseForgeService';
 import InstanceService from './InstanceService';
 import ResourceService from './ResourceService';
 import Service, { Inject, Singleton } from './Service';
@@ -28,6 +29,17 @@ export interface ExportInstanceOptions {
      * The export mod of this operation
      */
     mode: 'full' | 'no-assets' | 'curseforge';
+}
+
+export interface ImportCurseforgeModpackOptions {
+    /**
+     * The path of modpack
+     */
+    path: string;
+    /**
+     * The destination instance path. If this is empty, it will create a new instance.
+     */
+    instancePath?: string;
 }
 
 export class InstanceIOService extends Service {
@@ -138,7 +150,7 @@ export class InstanceIOService extends Service {
         let instanceConfigPath = resolve(srcDirectory, 'instance.json');
         let isExportFromUs = await isFile(instanceConfigPath);
         if (isExportFromUs) {
-            instanceTemplate = await getPersistence({ path: instanceConfigPath, schema: InstanceSchema });
+            instanceTemplate = await this.getPersistence({ path: instanceConfigPath, schema: InstanceSchema });
         } else {
             instanceTemplate = createTemplate();
             instanceTemplate.creationDate = Date.now();
@@ -192,73 +204,48 @@ export class InstanceIOService extends Service {
         if (!isDir) { await remove(srcDirectory); }
     }
 
-    async importCurseforgeModpack(payload: { path: string; instanceId?: string }) {
-        const { path, instanceId } = payload;
-        const isAFile = await isFile(path);
-        if (isAFile) throw new Error(`Cannot import curseforge modpack ${path}, since it's not a file!`);
-        console.log(`Import curseforge modpack by path ${path}`);
+    async importCurseforgeModpack(options: ImportCurseforgeModpackOptions) {
+        let { path, instancePath } = options;
+
+        if (await isFile(path)) {
+            throw new Exception({ type: 'requireCurseforgeModpackAFile', path }, `Cannot import curseforge modpack ${path}, since it's not a file!`);
+        }
+
+        this.log(`Import curseforge modpack by path ${path}`);
         const installCurseforgeModpack = Task.create('installCurseforgeModpack', async (ctx: Task.Context) => {
-            await ensureDir(this.getPath('temp'));
-            const dir = await mkdtemp(this.getPath('temp', 'curseforge-'));
-            const unpack = Task.create('unpack', async () => unpack7z(path, dir));
-            await ctx.execute(unpack);
+            let manifest = await ctx.execute(CurseforgeInstaller.readManifestTask(path)).catch(() => {
+                throw new Exception({ type: 'invalidCurseforgeModpack', path });
+            });
 
-            if (await missing(join(dir, 'manifest.json'))) {
-                throw new Error(`Cannot import curseforge modpack ${path}, since it doesn't have manifest.json`);
-            }
+            let forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'));
 
-            const deployments: InstanceConfig['deployments'] = {
-                mods: [],
+            let config: Partial<InstanceConfig> = {
+                deployments: {
+                    mods: manifest.files.map(f => `curseforge://id/${f.projectID}/${f.fileID}`),
+                },
+                runtime: {
+                    minecraft: manifest.minecraft.version,
+                    forge: forgeId ? forgeId.id.substring(6) : '',
+                    liteloader: '',
+                    'fabric-loader': '',
+                    yarn: '',
+                },
             };
 
-            const resolveFile = Task.create('resolveFile', async () => {
-                const manifest: Modpack = await readJson(join(dir, 'manifest.json'));
-                for (const f of manifest.files) {
-                    if (!f) continue;
-                    const uri = `curseforge://id/${f.projectID}/${f.fileID}`;
-                    deployments.mods.push(uri);
-                }
-                return manifest;
-            });
+            if (instancePath) {
+                await this.instanceService.editInstance({
+                    path: instancePath,
+                    ...config,
+                });
+            } else {
+                instancePath = await this.instanceService.createInstance({
+                    name: manifest.name,
+                    author: manifest.author,
+                    ...config,
+                });
+            }
 
-            const manifest: Modpack = await this.submit(resolveFile).wait();
-            // create profile accordingly 
-            const createProfile = Task.create('createProfile', async () => {
-                const forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'));
-                let id: string;
-                if (instanceId) {
-                    id = instanceId;
-                    await this.editInstance({
-                        path: id,
-                        runtime: {
-                            minecraft: manifest.minecraft.version,
-                            forge: forgeId ? forgeId.id.substring(6) : '',
-                            liteloader: '',
-                            'fabric-loader': '',
-                            yarn: '',
-                        },
-                        deployments,
-                    });
-                } else {
-                    id = await this.createAndSelect({
-                        name: manifest.name,
-                        author: manifest.author,
-                        runtime: {
-                            minecraft: manifest.minecraft.version,
-                            forge: forgeId ? forgeId.id.substring(6) : '',
-                            liteloader: '',
-                        },
-                        deployments,
-                    });
-                }
-                const profileFolder = this.getPathUnder(id);
-                // start handle override
-                if (manifest.overrides) {
-                    await copyPassively(join(dir, manifest.overrides), profileFolder);
-                }
-            });
-            await ctx.execute(createProfile);
-            await remove(dir);
+            await ctx.execute(CurseforgeInstaller.installCurseforgeModpackTask(path, instancePath, { manifest }));
         });
         await this.submit(installCurseforgeModpack).wait();
     }

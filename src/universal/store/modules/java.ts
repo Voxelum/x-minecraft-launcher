@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { requireObject, requireString } from 'universal/utils/object';
+import { requireObject, requireString } from '@universal/util/object';
 import { ModuleOption } from '../root';
 import { Java, JavaSchema } from './java.schema';
 

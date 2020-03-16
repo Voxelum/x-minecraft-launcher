@@ -41,7 +41,7 @@
 
 <script lang=ts>
 import { reactive, toRefs } from '@vue/composition-api';
-import { TaskState } from 'universal/task';
+import { TaskState } from '@universal/task';
 import { useDialogSelf, useClipboard, useTasks } from '@/hooks';
 
 export default {

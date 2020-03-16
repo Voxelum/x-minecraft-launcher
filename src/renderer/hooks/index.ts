@@ -22,3 +22,4 @@ export * from './useTask';
 export * from './useUser';
 export * from './useVersion';
 export * from './useIssues';
+export * from './useService';

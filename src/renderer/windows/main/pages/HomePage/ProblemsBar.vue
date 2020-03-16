@@ -31,7 +31,7 @@
 
 <script lang=ts>
 import { computed } from '@vue/composition-api';
-import { Issue } from 'universal/store/modules/diagnose';
+import { Issue } from '@universal/store/modules/diagnose';
 import { useStore, useRouter, useDialog, useNotifier, useI18n } from '@/hooks';
 
 export default {

@@ -1,78 +1,69 @@
 import { app } from 'electron';
-import fs from 'fs';
-import path from 'path';
-import util from 'util';
+import { createWriteStream, WriteStream, mkdirSync } from 'fs';
+import { resolve } from 'path';
+import { PassThrough, pipeline, Transform } from 'stream';
+import { format } from 'util';
 import { Manager } from '.';
 
+const DEV = process.env.NODE_ENV === 'development';
+
+function formatMsg(message: any, ...options: any[]) { return options.length !== 0 ? format(message, options) : format(message); }
 export default class LogManager extends Manager {
-    private logger: {
-        log: (message: any, ...options: any[]) => void;
-        warn: (message: any, ...options: any[]) => void;
-        error: (message: any, ...options: any[]) => void;
-    } = {} as any;
+    private loggerEntries = { log: new PassThrough(), warn: new PassThrough(), error: new PassThrough() };
+
+    private output = new PassThrough();
 
     private logRoot = '';
 
-    private openedStream: { [name: string]: fs.WriteStream } = {};
+    private openedStream: { [name: string]: WriteStream } = {};
 
-    setup() {
+    constructor() {
+        super();
+
+        function transform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`); } }); }
+        pipeline(this.loggerEntries.log, transform('INFO'), this.output);
+        pipeline(this.loggerEntries.warn, transform('WARN'), this.output);
+        pipeline(this.loggerEntries.error, transform('ERROR'), this.output);
+
         process.on('uncaughtException', (err) => {
-            console.error('Uncaught Exception');
-            console.error(err);
+            this.error('Uncaught Exception');
+            this.error(err);
         });
         process.on('unhandledRejection', (reason) => {
-            console.error('Uncaught Rejection');
-            console.error(reason);
+            this.error('Uncaught Rejection');
+            this.error(reason);
         });
-        const { log, error, warn } = console;
+        if (DEV) {
+            this.output.on('data', (b) => this.log(b.toString()));
+        }
+    }
 
-        const root = app.getPath('userData');
+    setup() {
+        let root = app.getPath('userData');
         try {
-            fs.mkdirSync(path.resolve(root, 'logs'));
+            mkdirSync(resolve(root, 'logs'));
         } catch (e) {
             if (e.code !== 'EEXIST') {
                 throw e;
             }
         }
 
-        this.logRoot = path.resolve(root, 'logs');
+        this.logRoot = resolve(root, 'logs');
 
-        const mainLog = path.resolve(root, 'logs', 'main.log');
-        const outstream = fs.createWriteStream(mainLog, { encoding: 'utf-8', flags: 'w+' });
-        this.logger.log = (message: any, ...options: any[]) => {
-            const raw = options.length !== 0 ? util.format(message, options) : util.format(message);
-            const content = `[INFO] [${new Date().toUTCString()}]: ${raw}`;
-            log(content);
-            outstream.write(`${content}\n`);
-        };
-        this.logger.warn = (message: any, ...options: any[]) => {
-            const raw = options.length !== 0 ? util.format(message, options) : util.format(message);
-            const content = `[WARN] [${new Date().toUTCString()}]: ${raw}`;
-            warn(content);
-            outstream.write(`${content}\n`);
-        };
-        this.logger.error = (message: any, ...options: any[]) => {
-            const raw = options.length !== 0 ? util.format(message, options) : util.format(message);
-            const content = `[ERROR] [${new Date().toUTCString()}]: ${raw}`;
-            error(content);
-            outstream.write(`${content}\n`);
-        };
-
-        console.log = this.logger.log;
-        console.warn = this.logger.warn;
-        console.error = this.logger.error;
+        let mainLog = resolve(root, 'logs', 'main.log');
+        this.output.pipe(createWriteStream(mainLog, { encoding: 'utf-8', flags: 'w+' }));
     }
 
-    readonly log = (message: any, ...options: any[]) => { this.logger.log(message, ...options); }
+    readonly log = (message: any, ...options: any[]) => { this.loggerEntries.log.write(formatMsg(message, options)); }
 
-    readonly warn = (message: any, ...options: any[]) => { this.logger.warn(message, ...options); }
+    readonly warn = (message: any, ...options: any[]) => { this.loggerEntries.warn.write(formatMsg(message, options)); }
 
-    readonly error = (message: any, ...options: any[]) => { this.logger.error(message, ...options); }
+    readonly error = (message: any, ...options: any[]) => { this.loggerEntries.error.write(formatMsg(message, options)); }
 
     openWindowLog(name: string) {
-        const loggerPath = path.resolve(this.logRoot, `renderer.${name}.log`);
-        console.log(`Setup renderer logger for window ${name} to ${loggerPath}.`);
-        const stream = fs.createWriteStream(loggerPath, { encoding: 'utf-8', flags: 'w+' });
+        const loggerPath = resolve(this.logRoot, `renderer.${name}.log`);
+        this.log(`Setup renderer logger for window ${name} to ${loggerPath}.`);
+        const stream = createWriteStream(loggerPath, { encoding: 'utf-8', flags: 'w+' });
         this.openedStream[name] = stream;
         return stream;
     }

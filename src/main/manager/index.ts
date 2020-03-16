@@ -18,12 +18,18 @@ export abstract class Manager {
 
     storeReady(store: Store<any>): Promise<void> | void { }
     /* eslint-enable */
+
+    log(m: any, ...args: any[]) { this.managers.logManager.log(m, ...args); }
+
+    warn(m: any, ...args: any[]) { this.managers.logManager.warn(m, ...args); }
+
+    error(m: any, ...args: any[]) { this.managers.logManager.error(m, ...args); }
 }
 export interface Managers {
-    AppManager: AppManager;
-    NetworkManager: NetworkManager;
-    StoreAndServiceManager: StoreAndServiceManager;
-    TaskManager: TaskManager;
-    UpdateManager: UpdateManager;
-    LogManager: LogManager;
+    appManager: AppManager;
+    networkManager: NetworkManager;
+    storeAndServiceManager: StoreAndServiceManager;
+    taskManager: TaskManager;
+    updateManager: UpdateManager;
+    logManager: LogManager;
 }

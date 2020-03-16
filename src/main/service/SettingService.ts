@@ -1,10 +1,10 @@
-import { getPersistence, setPersistence } from 'main/utils/persistence';
-import { SettingSchema } from 'universal/store/modules/setting.schema';
+import { this.getPersistence, this.setPersistence } from '@main/util/persistence';
+import { SettingSchema } from '@universal/store/modules/setting.schema';
 import Service, { MutationTrigger } from './Service';
 
 export default class SettingService extends Service {
     async load() {
-        const data: SettingSchema = await getPersistence({ path: this.getPath('setting.json'), schema: SettingSchema }) || {};
+        const data: SettingSchema = await this.getPersistence({ path: this.getPath('setting.json'), schema: SettingSchema }) || {};
         this.commit('config', {
             locale: data.locale,
             locales: ['en', 'zh-CN'],
@@ -32,7 +32,7 @@ export default class SettingService extends Service {
         'useBmclApi',
     )
     async onSettingMutation() {
-        await setPersistence({
+        await this.setPersistence({
             path: this.getPath('setting.json'),
             data: {
                 locale: this.state.setting.locale,

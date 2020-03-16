@@ -1,10 +1,9 @@
-import { downloader } from '@xmcl/installer/util';
+import { MutationKeys } from '@universal/store';
+import { UserSchema } from '@universal/store/modules/user.schema';
+import { requireNonnull, requireObject, requireString } from '@universal/util/assert';
+import { Exception } from '@universal/util/exception';
 import { AUTH_API_MOJANG, checkLocation, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user';
 import { readFile, readJSON } from 'fs-extra';
-import { makeException, requireNonnull, requireObject, requireString } from 'main/utils';
-import { getPersistence, setPersistence } from 'main/utils/persistence';
-import { MutationKeys } from 'universal/store';
-import { UserSchema } from 'universal/store/modules/user.schema';
 import { parse } from 'url';
 import { v4 } from 'uuid';
 import Service, { Singleton } from './Service';
@@ -87,7 +86,7 @@ export default class UserService extends Service {
             case 'userInvalidate':
             case 'authServiceRemove':
             case 'profileServiceRemove':
-                await setPersistence({
+                await this.setPersistence({
                     path: this.getPath('user.json'),
                     data: { ...this.state.user },
                     schema: UserSchema,
@@ -103,7 +102,7 @@ export default class UserService extends Service {
     }
 
     async load() {
-        const data = await getPersistence({ path: this.getPath('user.json'), schema: UserSchema });
+        const data = await this.getPersistence({ path: this.getPath('user.json'), schema: UserSchema });
         const result: UserSchema = {
             authServices: {},
             profileServices: {},
@@ -272,8 +271,8 @@ export default class UserService extends Service {
                 });
             }
         } catch (e) {
-            console.warn(`Cannot refresh the skin data for user ${name}(${id}).`);
-            console.warn(e);
+            this.warn(`Cannot refresh the skin data for user ${name}(${id}).`);
+            this.warn(e);
             throw e;
         }
     }
@@ -289,14 +288,14 @@ export default class UserService extends Service {
                 accessToken: user.accessToken,
                 clientToken: this.state.user.clientToken,
             }, this.getters.authService).catch((e) => {
-                console.error(e);
+                this.error(e);
                 return false;
             });
 
-            console.log(user.accessToken);
-            console.log(this.state.user.clientToken);
+            this.log(user.accessToken);
+            this.log(this.state.user.clientToken);
 
-            console.log(`Refresh user access token: ${valid ? 'valid' : 'invalid'}`);
+            this.log(`Refresh user access token: ${valid ? 'valid' : 'invalid'}`);
 
             if (valid) {
                 this.checkLocation();
@@ -320,8 +319,8 @@ export default class UserService extends Service {
                     //     const info = await getAccountInfo(user.accessToken);
                     //     this.commit('userMojangInfo', info);
                     // } catch (e) {
-                    //     console.warn(`Cannot refresh mojang info for user ${user.username}.`);
-                    //     console.warn(e);
+                    //     this.warn(`Cannot refresh mojang info for user ${user.username}.`);
+                    //     this.warn(e);
                     // }
                 }
             } catch (e) {
@@ -376,7 +375,7 @@ export default class UserService extends Service {
         requireString(option.url);
         requireString(option.path);
         const { path, url } = option;
-        await downloader.downloadFile({ url, destination: path });
+        await this.networkManager.downloadFile({ url, destination: path });
     }
 
     /**
@@ -459,12 +458,12 @@ export default class UserService extends Service {
                 clientToken: this.state.user.clientToken,
             }, usingAuthService).catch((e) => {
                 if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
-                    throw makeException({ type: 'loginInternetNotConnected', error: e });
+                    throw new Exception({ type: 'loginInternetNotConnected', error: e });
                 } else if (e.type === 'ForbiddenOperationException'
                     && e.message === 'Invalid credentials. Invalid username or password.') {
-                    throw makeException({ type: 'loginInvalidCredentials', error: e });
+                    throw new Exception({ type: 'loginInvalidCredentials', error: e });
                 }
-                throw makeException({ type: 'loginGeneral', error: e });
+                throw new Exception({ type: 'loginGeneral', error: e });
             });
 
         if (authService !== selectedUserProfile.authService

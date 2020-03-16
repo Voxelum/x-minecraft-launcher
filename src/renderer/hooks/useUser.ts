@@ -1,5 +1,5 @@
 import { computed, toRefs } from '@vue/composition-api';
-import { UserProfile } from 'universal/store/modules/user.schema';
+import { UserProfile } from '@universal/store/modules/user.schema';
 import { useStore, useBusy } from './useStore';
 
 export function useLogin() {

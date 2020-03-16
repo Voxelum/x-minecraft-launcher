@@ -1,8 +1,8 @@
 import { InjectionKey, Ref } from '@vue/composition-api';
 import { Clipboard, Dialog, IpcRenderer, RendererInterface } from 'electron';
-import { BuiltinServices } from 'main/service';
-import { Store } from 'universal/store';
-import { TaskState } from 'universal/task';
+import { BuiltinServices } from '@main/service';
+import { Store } from '@universal/store';
+import { TaskState } from '@universal/task';
 import VueI18n from 'vue-i18n';
 import VueRouter from 'vue-router';
 

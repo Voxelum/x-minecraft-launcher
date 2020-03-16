@@ -1,10 +1,10 @@
 
 import { App, BrowserWindow, dialog, Dock, Menu, nativeImage, Tray } from 'electron';
 import { EventEmitter } from 'events';
-import { createI18n } from 'main/utils/i18n';
+import { createI18n } from '@main/util/i18n';
 import { resolve } from 'path';
-import en from '../utils/locales/en.json';
-import zh from '../utils/locales/zh-CN.json';
+import en from '../util/locales/en.json';
+import zh from '../util/locales/zh-CN.json';
 import { LauncherAppController } from './LauncherAppController';
 
 export function focusOnClick(getWindow: () => BrowserWindow | undefined) {

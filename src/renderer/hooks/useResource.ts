@@ -1,6 +1,6 @@
 import { computed, Ref, ref } from '@vue/composition-api';
-import { CurseforgeModpackResource, ForgeResource, LiteloaderResource, ResourcePackResource, SaveResource } from 'universal/store/modules/resource';
-import { requireTrue } from 'universal/utils';
+import { CurseforgeModpackResource, ForgeResource, LiteloaderResource, ResourcePackResource, SaveResource } from '@universal/store/modules/resource';
+import { requireTrue } from '@universal/util';
 import unknownPack from '@/assets/unknown_pack.png';
 import { useStore } from './useStore';
 

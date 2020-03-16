@@ -1,8 +1,8 @@
+import { ELECTRON_CLIPBOARD, IPC_KEY, REMOTE_DIALOG_KEY } from '@/constant';
+import { requireNonnull } from '@universal/util/assert';
 import { inject } from '@vue/composition-api';
 import { Clipboard, Dialog, IpcRenderer } from 'electron';
-import { ELECTRON_CLIPBOARD, IPC_KEY, REMOTE_DIALOG_KEY } from 'renderer/constant';
-import { requireNonnull } from 'universal/utils/object';
-import { useStore } from './useStore';
+import { useServiceOnly } from './useService';
 
 /**
  * Use electron native dialog
@@ -32,9 +32,5 @@ export function useClipboard(): Clipboard {
 }
 
 export function useQuit() {
-    const { services } = useStore();
-    return {
-        quit: services.BaseService.quit,
-        exit: services.BaseService.exit,
-    };
+    return useServiceOnly('BaseService', 'quit', 'exit');
 }

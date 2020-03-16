@@ -1,9 +1,9 @@
-import { App, app, BrowserWindow, BrowserWindowConstructorOptions, dialog, Dock, ipcMain, Menu, NativeImage, nativeImage, shell, Tray, protocol } from 'electron';
-import { readFile, readJson, ensureFile, writeFile } from 'fs-extra';
-import got from 'got';
-import BuiltinController from 'main/app/BuiltinController';
-import { LauncherAppController } from 'main/app/LauncherAppController';
-import { isDirectory } from 'main/utils';
+import BuiltinController from '@main/app/BuiltinController';
+import { LauncherAppController } from '@main/app/LauncherAppController';
+import { isDirectory } from '@main/util/fs';
+import { currentPlatform } from '@xmcl/core';
+import { App, app, BrowserWindow, BrowserWindowConstructorOptions, Dock, ipcMain, Menu, NativeImage, nativeImage, shell, Tray } from 'electron';
+import { ensureFile, readFile, readJson, writeFile } from 'fs-extra';
 import { join } from 'path';
 import { ParsedUrlQuery } from 'querystring';
 import { parse as parseUrl } from 'url';
@@ -80,6 +80,7 @@ const cfgFile = `${appData}/voxelauncher/launcher.json`;
 
 export default class AppManager extends Manager {
     public app = app;
+
     /**
      * Game assets root
      */
@@ -101,15 +102,17 @@ export default class AppManager extends Manager {
 
     private async persistRoot(root: string) {
         try {
-            console.log(`Setup root ${root}`);
+            this.log(`Setup root ${root}`);
             await ensureFile(cfgFile);
             await writeFile(cfgFile, JSON.stringify({ path: root }));
         } catch (e) {
-            console.error('An error occured during setup root');
-            console.error(e);
+            this.error('An error occured during setup root');
+            this.error(e);
             app.exit(1);
         }
     }
+
+    get platform() { return currentPlatform; }
 
     async setup() {
         let root;
@@ -169,12 +172,12 @@ export default class AppManager extends Manager {
                 let icon: NativeImage | undefined;
                 if (typeof query.icon === 'string') {
                     // TODO: cache this
-                    icon = nativeImage.createFromBuffer(await got(query.icon).buffer());
+                    icon = nativeImage.createFromBuffer(await this.managers.networkManager.requst(query.icon).buffer());
                 }
                 this.newWindow(name, windowUrl as string, { ...queryToWindowOptions(query), icon });
             }
         } catch (e) {
-            console.error(e);
+            this.error(e);
         }
     }
 
@@ -198,7 +201,7 @@ export default class AppManager extends Manager {
         const ref = new BrowserWindow(normalizedOptions);
         this.setupBrowserLogger(ref, name);
 
-        console.log(`Create window from ${url}`);
+        this.log(`Create window from ${url}`);
 
         ref.loadURL(url);
         ref.webContents.on('will-navigate', (event, url) => {
@@ -209,7 +212,7 @@ export default class AppManager extends Manager {
                 shell.openExternal(url);
             }
         });
-        ref.on('ready-to-show', () => { console.log(`Window ${name} is ready to show!`); });
+        ref.on('ready-to-show', () => { this.log(`Window ${name} is ready to show!`); });
         ref.on('close', () => { delete this.windows[name]; });
 
         this.windows[name] = ref;
@@ -218,13 +221,13 @@ export default class AppManager extends Manager {
     }
 
     private setupBrowserLogger(ref: BrowserWindow, name: string) {
-        const stream = this.managers.LogManager.openWindowLog(name);
+        const stream = this.managers.logManager.openWindowLog(name);
         const levels = ['INFO', 'WARN', 'ERROR'];
         ref.webContents.on('console-message', (e, level, message, line, id) => {
             stream.write(`[${levels[level]}] [${new Date().toUTCString()}] [${id}]: ${message}\n`);
         });
         ref.once('close', () => {
-            this.managers.LogManager.closeWindowLog(name);
+            this.managers.logManager.closeWindowLog(name);
         });
     }
 

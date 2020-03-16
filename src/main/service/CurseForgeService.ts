@@ -1,7 +1,5 @@
-// import { Forge, got, Net } from '@xmcl/task';
 import { Forge } from '@xmcl/mod-parser';
 import { HTMLElement, parse as parseHtml } from 'fast-html-parser';
-import got from 'got';
 import querystring from 'querystring';
 import InstanceService from './InstanceService';
 import ResourceService from './ResourceService';
@@ -221,7 +219,7 @@ export default class CurseForgeService extends Service {
     private resourceService!: ResourceService;
 
     private async request<T>(url: string, transformToObject: (element: HTMLElement) => T) {
-        const body = await this.managers.NetworkManager.requestPage(url);
+        const body = await this.networkManager.requestPage(url);
         const html = parseHtml(body);
         return transformToObject(html);
     }
@@ -273,7 +271,7 @@ export default class CurseForgeService extends Service {
         if (!path || path == null) throw new Error('Curseforge path cannot be null');
         const url = `https://www.curseforge.com/minecraft/${project}/${path}`;
 
-        console.log(`Get curseforge project ${url}`);
+        this.log(`Get curseforge project ${url}`);
 
         return this.request(url, (root) => {
             const details = root.querySelector('.project-detail__content').removeWhitespace();
@@ -358,7 +356,7 @@ export default class CurseForgeService extends Service {
         version = version || '';
         page = page || 1;
         const url = `https://www.curseforge.com/minecraft/${project}/${path}/files/all?filter-game-version=${version}&page=${page}`;
-        console.log(`Get curseforge project file ${url}`);
+        this.log(`Get curseforge project file ${url}`);
         return this.request(url, (filespage) => {
             const pagesElement = filespage.querySelectorAll('.pagination-item');
             let page;
@@ -396,7 +394,7 @@ export default class CurseForgeService extends Service {
     async fetchCurseforgeProjectImages({ path, type }: { path: string; type: string | ProjectType }): Promise<{ name: string; url: string; mini: string }[]> {
         const url = `https://www.curseforge.com/minecraft/${type}/${path}/screenshots`;
 
-        console.log(`Fetch curseforge images from ${url}`);
+        this.log(`Fetch curseforge images from ${url}`);
 
         return this.request(url, (root) => {
             const page = root.querySelector('.project-screenshot-page');
@@ -411,7 +409,7 @@ export default class CurseForgeService extends Service {
 
     async fetchCurseForgeProjectLicense(url: string) {
         if (url == null || !url) throw new Error('URL cannot be null');
-        const body = await got(`https://www.curseforge.com${url}`).text();
+        const body = await this.networkManager.requst(`https://www.curseforge.com${url}`).text();
         return parseHtml(body).querySelector('.module').removeWhitespace().firstChild.rawText;
     }
 
@@ -422,7 +420,7 @@ export default class CurseForgeService extends Service {
 
     async fetchMetadataByModId({ modid, version }: { modid: string; version: string }) {
         // http://voxelauncher.azurewebsites.net/api/v1/mods/file/{modid}/{version}
-        const result = await got(`http://voxelauncher.azurewebsites.net/api/v1/mods/file/${modid}/${version}`, { method: 'HEAD' }).json();
+        const result = await this.networkManager.requst(`http://voxelauncher.azurewebsites.net/api/v1/mods/file/${modid}/${version}`, { method: 'HEAD' }).json();
         return result as Forge.ModMetaData & { projectId: string; fileId: string };
     }
 

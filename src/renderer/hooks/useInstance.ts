@@ -1,18 +1,19 @@
 import { computed, onMounted, reactive, ref, Ref, toRefs } from '@vue/composition-api';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
-import { CreateOption, InstanceConfig } from 'universal/store/modules/instance';
-import { Resource } from 'universal/store/modules/resource';
-import { getExpectVersion } from 'universal/utils';
+import { CreateOption, InstanceConfig } from '@universal/store/modules/instance';
+import { Resource } from '@universal/store/modules/resource';
+import { getExpectVersion } from '@universal/util/version';
 import Vue from 'vue';
 import { useStore } from './useStore';
 import { useCurrentUser } from './useUser';
 import { useMinecraftVersions } from './useVersion';
+import { useServiceOnly, useService } from './useService';
 
 /**
  * Use the general info of the instance
  */
 export function useInstance() {
-    const { getters, services, state } = useStore();
+    const { getters, state } = useStore();
     const instance: InstanceConfig & { [key: string]: unknown } = getters.instance as any;
 
     const maxMemory = computed(() => instance.maxMemory);
@@ -22,10 +23,6 @@ export function useInstance() {
     const server = computed(() => instance.server);
     const refreshing = computed(() => state.semaphore.instance > 0);
     const javaPath = computed(() => state.instance.java);
-
-    function setJavaPath(path: string) {
-        services.InstanceService.setJavaPath(path);
-    }
 
     const refs = toRefs(instance);
     return {
@@ -41,10 +38,8 @@ export function useInstance() {
         server,
         refreshing,
 
-        edit: services.InstanceService.editInstance,
-        exportTo: services.InstanceService.exportInstance,
-        refresh: services.InstanceService.refreshServerStatus,
-        setJavaPath,
+        ...useServiceOnly('InstanceService', 'editInstance', 'setJavaPath', 'refreshServerStatus'),
+        ...useServiceOnly('InstanceIOService', 'exportInstance'),
     };
 }
 
@@ -52,13 +47,12 @@ export function useInstance() {
  * Hook of a view of all instances & some deletion/selection functions
  */
 export function useInstances() {
-    const { getters, services } = useStore();
+    const { getters } = useStore();
     return {
         instances: computed(() => getters.instances),
-        selectInstance: services.InstanceService.mountInstance,
-        deleteInstance: services.InstanceService.deleteInstance,
-        refreshInstances: services.InstanceService.refreshInstances,
-        importInstance: services.InstanceService.importInstance,
+
+        ...useServiceOnly('InstanceService', 'mountInstance', 'deleteInstance', 'refreshServerStatusAll'),
+        ...useServiceOnly('InstanceIOService', 'importInstance'),
     };
 }
 
@@ -66,8 +60,8 @@ export function useInstances() {
  * Hook to create a general instance
  */
 export function useInstanceCreation() {
-    const { services } = useStore();
     const { name } = useCurrentUser();
+    const { createAndSelect } = useService('InstanceService');
     const { release } = useMinecraftVersions();
     const data: CreateOption = reactive({
         name: '',
@@ -103,7 +97,7 @@ export function useInstanceCreation() {
          * Commit this creation. It will create and select the instance.
          */
         create() {
-            return services.InstanceService.createAndSelect(data);
+            return createAndSelect(data);
         },
         /**
          * Reset the change
@@ -176,7 +170,8 @@ export function useProfileTemplates() {
  * The hook return a reactive resource pack array.
  */
 export function useInstanceResourcePacks() {
-    const { state, getters, services, commit: cm } = useStore();
+    const { state, getters, commit: cm } = useStore();
+    const { editInstance } = useService('InstanceService');
 
     const data = reactive({
         packs: [] as string[],
@@ -216,7 +211,7 @@ export function useInstanceResourcePacks() {
      */
     function commit() {
         cm('instanceGameSettings', { resourcePacks: usedPackResources.value.map(r => r.name + r.ext) });
-        services.InstanceService.editInstance({ deployments: { resourcepacks: data.packs } });
+        editInstance({ deployments: { resourcepacks: data.packs } });
     }
 
     onMounted(() => {
@@ -234,11 +229,12 @@ export function useInstanceResourcePacks() {
 }
 
 export function useInstanceGameSetting() {
-    const { state, commit, services } = useStore();
+    const { state, commit } = useStore();
+    const { loadInstanceGameSettings } = useService('InstanceGameSettingService');
     return {
         ...toRefs(state.instance.settings),
         refresh() {
-            return services.InstanceService.loadInstanceGameSettings();
+            return loadInstanceGameSettings(state.instance.path);
         },
         commitChange(settings: GameSetting) {
             commit('instanceGameSettings', settings);
@@ -273,7 +269,8 @@ export function useInstanceVersion() {
  * Open read/write for current instance mods
  */
 export function useInstanceMods() {
-    const { state, getters, services } = useStore();
+    const { state, getters } = useStore();
+    const { editInstance } = useService('InstanceService');
 
     const data = reactive({
         mods: [] as string[],
@@ -306,7 +303,7 @@ export function useInstanceMods() {
      * Commit the change for current mods setting
      */
     function commit() {
-        services.InstanceService.editInstance({ deployments: { mods: data.mods } });
+        editInstance({ deployments: { mods: data.mods } });
     }
 
     onMounted(() => {
@@ -322,29 +319,17 @@ export function useInstanceMods() {
     };
 }
 export function useInstanceSaves() {
-    const { state, services } = useStore();
+    const { state } = useStore();
     return {
         id: computed(() => state.instance.path),
         saves: computed(() => state.instance.saves),
-        importSave: services.InstanceService.importSave,
-        deleteSave: services.InstanceService.deleteSave,
-        exportSave: services.InstanceService.exportSave,
-        copySave: services.InstanceService.copySave,
-        refresh: services.InstanceService.loadInstanceSaves,
-        loadAllPreviews: services.InstanceService.getAllInstancesSavePreview,
+        ...useService('InstanceSavesService'),
     };
 }
 export function useInstanceLogs() {
-    const { state, services } = useStore();
+    const { state } = useStore();
     return {
         id: computed(() => state.instance.path),
-        getCrashReportContent: services.InstanceService.getCrashReportContent,
-        getLogContent: services.InstanceService.getLogContent,
-        listCrashReports: services.InstanceService.listCrashReports,
-        listLogs: services.InstanceService.listLogs,
-        removeCrashReport: services.InstanceService.removeCrashReport,
-        removeLog: services.InstanceService.removeLog,
-        showLog: services.InstanceService.showLog,
-        showCrashReport: services.InstanceService.showCrash,
+        ...useService('InstanceLogService'),
     };
 }

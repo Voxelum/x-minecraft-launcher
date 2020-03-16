@@ -1,5 +1,5 @@
 import { readFile, remove } from 'fs-extra';
-import { readdirIfPresent } from 'main/utils';
+import { readdirIfPresent } from '@main/util/fs';
 import { join } from 'path';
 import { gunzip } from 'zlib';
 import Service from './Service';
@@ -81,7 +81,7 @@ export default class InstanceLogService extends Service {
      */
     showLog(name: string) {
         const filePath = join(this.state.instance.path, 'logs', name);
-        this.managers.AppManager.showItemInFolder(filePath);
+        this.appManager.showItemInFolder(filePath);
     }
 
     /**
@@ -90,6 +90,6 @@ export default class InstanceLogService extends Service {
      */
     showCrash(name: string) {
         const filePath = join(this.state.instance.path, 'crash-reports', name);
-        this.managers.AppManager.showItemInFolder(filePath);
+        this.appManager.showItemInFolder(filePath);
     }
 }

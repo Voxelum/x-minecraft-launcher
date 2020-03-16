@@ -1,23 +1,22 @@
 import { Task, TaskHandle } from '@xmcl/task';
 import { app, ipcMain, webContents } from 'electron';
 import { EventEmitter } from 'events';
-import AuthLibService from 'main/service/AuthLibService';
-import BaseService from 'main/service/BaseService';
-import CurseForgeService from 'main/service/CurseForgeService';
-import DiagnoseService from 'main/service/DiagnoseService';
-import InstanceService from 'main/service/InstanceService';
-import JavaService from 'main/service/JavaService';
-import LaunchService from 'main/service/LaunchService';
-import ResourceService from 'main/service/ResourceService';
-import ServerStatusService from 'main/service/ServerStatusService';
-import Service, { INJECTIONS_SYMBOL, MUTATION_LISTENERS_SYMBOL } from 'main/service/Service';
-import SettingService from 'main/service/SettingService';
-import UserService from 'main/service/UserService';
-import InstallService from 'main/service/InstallService';
-import VersionService from 'main/service/VersionService';
-import { platform } from 'main/utils';
+import AuthLibService from '@main/service/AuthLibService';
+import BaseService from '@main/service/BaseService';
+import CurseForgeService from '@main/service/CurseForgeService';
+import DiagnoseService from '@main/service/DiagnoseService';
+import InstallService from '@main/service/InstallService';
+import InstanceService from '@main/service/InstanceService';
+import JavaService from '@main/service/JavaService';
+import LaunchService from '@main/service/LaunchService';
+import ResourceService from '@main/service/ResourceService';
+import ServerStatusService from '@main/service/ServerStatusService';
+import Service, { INJECTIONS_SYMBOL, MUTATION_LISTENERS_SYMBOL } from '@main/service/Service';
+import SettingService from '@main/service/SettingService';
+import UserService from '@main/service/UserService';
+import VersionService from '@main/service/VersionService';
 import { join } from 'path';
-import storeTemplate from 'universal/store';
+import storeTemplate from '@universal/store';
 import Vue from 'vue';
 import Vuex, { Store, StoreOptions } from 'vuex';
 import { Manager } from '.';
@@ -25,6 +24,8 @@ import { Manager } from '.';
 Vue.use(Vuex);
 
 export default class StoreAndServiceManager extends Manager {
+    private registeredServices: (new () => Service)[] = [];
+
     private services: Service[] = [];
 
     private serviceMap: { [name: string]: Service } = {};
@@ -47,10 +48,6 @@ export default class StoreAndServiceManager extends Manager {
         this.storeReadyCb = resolve;
     })
 
-    addService(service: Service) {
-        this.services.push(service);
-    }
-
     getService<T extends typeof Service>(service: T): InstanceType<T> | undefined {
         return this.serviceMap[service.name] as any;
     }
@@ -59,28 +56,31 @@ export default class StoreAndServiceManager extends Manager {
         ipcMain.handle('sync', (_, id) => this.storeReadyPromise.then(() => this.sync(id)));
     }
 
-    private initServices() {
-        this.addService(new AuthLibService());
-        this.addService(new CurseForgeService());
-        this.addService(new DiagnoseService());
-        this.addService(new InstanceService());
-        this.addService(new JavaService());
-        this.addService(new LaunchService());
-        this.addService(new ServerStatusService());
-        this.addService(new ResourceService());
-        this.addService(new SettingService());
-        this.addService(new UserService());
-        this.addService(new InstallService());
-        this.addService(new VersionService());
-        this.addService(new BaseService());
+    constructor() {
+        super();
+        this.registerService(AuthLibService);
+        this.registerService(CurseForgeService);
+        this.registerService(DiagnoseService);
+        this.registerService(InstanceService);
+        this.registerService(JavaService);
+        this.registerService(LaunchService);
+        this.registerService(ServerStatusService);
+        this.registerService(ResourceService);
+        this.registerService(SettingService);
+        this.registerService(UserService);
+        this.registerService(InstallService);
+        this.registerService(VersionService);
+        this.registerService(BaseService);
     }
 
+    protected registerService(s: new () => Service) { this.registeredServices.push(s); }
+
     private setupService(root: string) {
-        console.log(`Setup service ${root}`);
+        this.log(`Setup service ${root}`);
         const userPath = app.getPath('userData');
         const managers = this.managers;
         const store = this.store!;
-        const mcPath = join(app.getPath('appData'), platform.name === 'osx' ? 'minecraft' : '.minecraft');
+        const mcPath = join(app.getPath('appData'), this.managers.appManager.platform.name === 'osx' ? 'minecraft' : '.minecraft');
 
         Object.defineProperties(Service.prototype, {
             managers: { value: managers },
@@ -91,29 +91,36 @@ export default class StoreAndServiceManager extends Manager {
             getPath: { value: (...args: string[]) => join(userPath, ...args) },
             getMinecraftPath: { value: (...args: string[]) => join(mcPath, ...args) },
             getGameAssetsPath: { value: (...args: string[]) => join(root, ...args) },
-            log: { value: this.managers.LogManager.log },
-            warn: { value: this.managers.LogManager.warn },
-            error: { value: this.managers.LogManager.error },
         });
 
-        this.initServices();
+        for (let ser of this.registeredServices) {
+            const name = ser.name;
+            Object.defineProperties(ser.prototype, {
+                log: { value: (m: any, a: any[]) => this.managers.logManager.log(`[${name}] ${m}`, a) },
+                warn: { value: (m: any, a: any[]) => this.managers.logManager.warn(`[${name}] ${m}`, a) },
+                error: { value: (m: any, a: any[]) => this.managers.logManager.error(`[${name}] ${m}`, a) },
+            });
+        }
 
-        const services = this.services;
-        const servMap: { [name: string]: Service } = {};
-        for (const serv of services) {
-            const name = Object.getPrototypeOf(serv).constructor.name;
+        let services: Service[] = this.services;
+        for (let Ser of this.registeredServices) {
+            services.push(new Ser());
+        }
+
+        let servMap = this.serviceMap;
+        for (let serv of services) {
+            let name = Object.getPrototypeOf(serv).constructor.name;
             if (!name) throw new Error('Name of service is undefined');
             servMap[name] = serv;
         }
-        this.serviceMap = servMap;
 
-        for (const serv of services) {
-            const injects = Object.getPrototypeOf(serv)[INJECTIONS_SYMBOL] || [];
-            for (const i of injects) {
-                const { type, field } = i;
+        for (let serv of services) {
+            let injects = Object.getPrototypeOf(serv)[INJECTIONS_SYMBOL] || [];
+            for (let i of injects) {
+                let { type, field } = i;
 
                 if (type in servMap) {
-                    const success = Reflect.set(serv, field, servMap[type]);
+                    let success = Reflect.set(serv, field, servMap[type]);
                     if (!success) {
                         throw new Error(`Cannot set service ${i} to ${Object.getPrototypeOf(serv)}`);
                     }
@@ -122,8 +129,8 @@ export default class StoreAndServiceManager extends Manager {
                 }
             }
 
-            const mutationListeners = Object.getPrototypeOf(serv)[MUTATION_LISTENERS_SYMBOL] || [];
-            for (const lis of mutationListeners) {
+            let mutationListeners = Object.getPrototypeOf(serv)[MUTATION_LISTENERS_SYMBOL] || [];
+            for (let lis of mutationListeners) {
                 this.mutationEventBus.addListener(lis.event, (payload) => lis.listener.apply(serv, [payload]));
             }
         }
@@ -152,18 +159,18 @@ export default class StoreAndServiceManager extends Manager {
         for (const s of this.services) {
             for (const key of Object.keys(s)) {
                 if (typeof (s as any)[key] === 'undefined') {
-                    console.log(`${Object.getPrototypeOf(s).constructor.name}$${key} is undefined!!!`);
+                    this.log(`${Object.getPrototypeOf(s).constructor.name}$${key} is undefined!!!`);
                 }
             }
         }
 
         const startingTime = Date.now();
         await Promise.all(this.services.map(s => s.load().catch((e) => {
-            console.error(`Error during load service: ${Object.getPrototypeOf(s).constructor.name}`);
-            console.error(e);
+            this.error(`Error during load service: ${Object.getPrototypeOf(s).constructor.name}`);
+            this.error(e);
         })));
 
-        console.log(`Successfully load modules. Total Time is ${Date.now() - startingTime}ms.`);
+        this.log(`Successfully load modules. Total Time is ${Date.now() - startingTime}ms.`);
 
         this.setupAutoSave();
 
@@ -176,10 +183,10 @@ export default class StoreAndServiceManager extends Manager {
         try {
             await Promise.all(this.services.map(s => s.init()));
         } catch (e) {
-            console.error('Error during service init:');
-            console.error(e);
+            this.error('Error during service init:');
+            this.error(e);
         }
-        console.log(`Successfully init modules. Total Time is ${Date.now() - startingTime}ms.`);
+        this.log(`Successfully init modules. Total Time is ${Date.now() - startingTime}ms.`);
         this.setupReciever();
     }
 
@@ -189,32 +196,32 @@ export default class StoreAndServiceManager extends Manager {
         });
         ipcMain.handle('session', (event, id) => {
             if (!this.sessions[id]) {
-                console.error(`Unknown session ${id}!`);
+                this.error(`Unknown session ${id}!`);
             }
             try {
                 const r = this.sessions[id][0]();
                 if (r instanceof Promise) {
                     return r.then(r => ({ result: r }), (e) => {
-                        console.warn(`Error during service call session ${id}(${this.sessions[id][1]}):`);
-                        console.warn(e);
+                        this.warn(`Error during service call session ${id}(${this.sessions[id][1]}):`);
+                        this.warn(e);
                         return { error: e };
                     });
                 }
                 return { result: r };
             } catch (e) {
-                console.error(e);
+                this.error(e);
                 return { error: e };
             }
         });
         ipcMain.handle('service-call', (event, service: string, name: string, payload: any) => {
             const serv = this.serviceMap[service];
             if (!serv) {
-                console.error(`Cannot execute service call ${name} from service ${service}. The service not found.`);
+                this.error(`Cannot execute service call ${name} from service ${service}. The service not found.`);
             } else {
                 if (name in serv) {
                     const tasks: TaskHandle<any, any>[] = [];
                     const sessionId = this.usedSession++;
-                    const taskManager = this.managers.TaskManager;
+                    const taskManager = this.managers.taskManager;
                     const submit = (task: Task<any>) => {
                         const handle = taskManager.submit(task);
                         event.sender.send(`session-${sessionId}`, taskManager.getHandleId(handle));
@@ -235,7 +242,7 @@ export default class StoreAndServiceManager extends Manager {
 
                     return sessionId;
                 }
-                console.error(`Cannot execute service call ${name} from service ${serv}. The service doesn't have such method!`);
+                this.error(`Cannot execute service call ${name} from service ${serv}. The service doesn't have such method!`);
             }
             return undefined;
         });
@@ -253,7 +260,7 @@ export default class StoreAndServiceManager extends Manager {
 
     private sync(currentId: number) {
         const checkPointId = this.checkPointId;
-        console.log(`Sync from renderer: ${currentId}, main: ${checkPointId}.`);
+        this.log(`Sync from renderer: ${currentId}, main: ${checkPointId}.`);
         if (currentId === checkPointId) {
             return undefined;
         }

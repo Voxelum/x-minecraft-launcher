@@ -1,5 +1,5 @@
 import { provide } from '@vue/composition-api';
-import storeOption from 'universal/store';
+import storeOption from '@universal/store';
 import Vue from 'vue';
 import Vuex, { Store, MutationPayload } from 'vuex';
 import { ipcRenderer, STORE_KEY } from '../constant';

@@ -2,9 +2,8 @@ import { LibraryInfo, MinecraftFolder, Version } from '@xmcl/core';
 import { Installer } from '@xmcl/installer';
 import { Task } from '@xmcl/task';
 import { readJson } from 'fs-extra';
-import got from 'got';
-import { AUTHLIB_ORG_NAME } from 'main/constant';
-import { validateSha256 } from 'main/utils';
+import { AUTHLIB_ORG_NAME } from '@main/constant';
+import { validateSha256 } from '@main/util/fs';
 import DiagnoseService from './DiagnoseService';
 import Service, { Inject } from './Service';
 
@@ -48,7 +47,7 @@ export default class AuthLibService extends Service {
 
             const content = await readJson(jsonPath).catch(() => undefined);
             if (!content) {
-                const { body, statusCode, statusMessage } = await got('https://authlib-injector.yushi.moe/artifact/latest.json', { responseType: 'default' });
+                const { body, statusCode, statusMessage } = await this.networkManager.requst('https://authlib-injector.yushi.moe/artifact/latest.json', { responseType: 'default' });
                 if (statusCode !== 200) throw new Error(statusMessage);
                 const path = await download(body);
                 return path;

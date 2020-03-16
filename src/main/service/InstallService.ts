@@ -1,10 +1,8 @@
 import { ResolvedLibrary, Version } from '@xmcl/core';
 import { FabricInstaller, ForgeInstaller, Installer, LiteLoaderInstaller } from '@xmcl/installer';
 import Task from '@xmcl/task';
-import got from 'got';
-import { getPersistence, setPersistence } from 'main/utils/persistence';
-import { MutationKeys } from 'universal/store';
-import { VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema } from 'universal/store/modules/version.schema';
+import { MutationKeys } from '@universal/store';
+import { VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema } from '@universal/store/modules/version.schema';
 import Service, { Inject, Singleton } from './Service';
 import VersionService from './VersionService';
 
@@ -23,9 +21,9 @@ export default class InstallService extends Service {
 
     async load() {
         const [mc, forge, liteloader] = await Promise.all([
-            getPersistence({ path: this.getPath('minecraft-versions.json'), schema: VersionMinecraftSchema }),
-            getPersistence({ path: this.getPath('forge-versions.json'), schema: VersionForgeSchema }),
-            getPersistence({ path: this.getPath('lite-versions.json'), schema: VersionLiteloaderSchema }),
+            this.getPersistence({ path: this.getPath('minecraft-versions.json'), schema: VersionMinecraftSchema }),
+            this.getPersistence({ path: this.getPath('forge-versions.json'), schema: VersionForgeSchema }),
+            this.getPersistence({ path: this.getPath('lite-versions.json'), schema: VersionLiteloaderSchema }),
         ]);
         if (typeof mc === 'object') {
             this.commit('minecraftMetadata', mc);
@@ -43,21 +41,21 @@ export default class InstallService extends Service {
     async save({ mutation }: { mutation: MutationKeys }) {
         switch (mutation) {
             case 'minecraftMetadata':
-                await setPersistence({
+                await this.setPersistence({
                     path: this.getPath('minecraft-versions.json'),
                     data: this.state.version.minecraft,
                     schema: VersionMinecraftSchema,
                 });
                 break;
             case 'forgeMetadata':
-                await setPersistence({
+                await this.setPersistence({
                     path: this.getPath('forge-versions.json'),
                     data: this.state.version.forge,
                     schema: VersionForgeSchema,
                 });
                 break;
             case 'liteloaderMetadata':
-                await setPersistence({
+                await this.setPersistence({
                     path: this.getPath('lite-versions.json'),
                     data: this.state.version.liteloader,
                     schema: VersionLiteloaderSchema,
@@ -106,7 +104,7 @@ export default class InstallService extends Service {
         let option: Installer.AssetsOption = {
             assetsDownloadConcurrency: 16,
         };
-        if (this.managers.NetworkManager.isInGFW && this.state.setting.useBmclAPI) {
+        if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
             option = { assetsHost: 'http://bmclapi2.bangbang93.com/assets' };
         }
         const resolvedVersion = await Version.parse(location, version);
@@ -121,7 +119,7 @@ export default class InstallService extends Service {
         const id = meta.id;
 
         let option = {};
-        if (this.managers.NetworkManager.isInGFW && this.state.setting.useBmclAPI) {
+        if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
             option = { client: `https://bmclapi2.bangbang93.com/version/${meta.id}/client` };
         }
 
@@ -149,7 +147,7 @@ export default class InstallService extends Service {
             resolved = libraries as any; // TODO: typecheck
         }
         let option = {};
-        if (this.managers.NetworkManager.isInGFW && this.state.setting.useBmclAPI) {
+        if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
             option = { libraryHost: (lib: ResolvedLibrary) => `http://bmclapi.bangbang93.com/maven/${lib.path}` };
         }
 
@@ -201,10 +199,10 @@ export default class InstallService extends Service {
 
         const cur = this.state.version.forge[version];
         try {
-            if (this.managers.NetworkManager.isInGFW) {
+            if (this.networkManager.isInGFW) {
                 const headers = cur ? { 'If-Modified-Since': cur.timestamp } : {};
                 this.log('Using self host to fetch forge versions list');
-                const { body, statusCode } = await got(`https://xmcl.azurewebsites.net/api/v1/forge/versions/${version}`, {
+                const { body, statusCode } = await this.networkManager.requst(`https://xmcl.azurewebsites.net/api/v1/forge/versions/${version}`, {
                     headers,
                     responseType: 'json',
                 });
@@ -234,7 +232,7 @@ export default class InstallService extends Service {
      */
     @Singleton('install')
     async installForge(meta: ForgeInstaller.Version) {
-        let maven = this.managers.NetworkManager.isInGFW ? 'https://voxelauncher.azurewebsites.net/api/v1' : undefined;
+        let maven = this.networkManager.isInGFW ? 'https://voxelauncher.azurewebsites.net/api/v1' : undefined;
         let handle = this.submit(ForgeInstaller.installTask(meta, this.state.root, {
             mavenHost: maven,
             java: this.getters.defaultJava.path,
@@ -277,8 +275,8 @@ export default class InstallService extends Service {
             const handle = this.submit(Task.create('installFabric', () => FabricInstaller.install(versions.yarn, versions.loader, this.state.root)));
             await handle.wait();
         } catch (e) {
-            console.warn(`An error ocurred during install fabric yarn-${versions.yarn}, loader-${versions.loader}`);
-            console.warn(e);
+            this.warn(`An error ocurred during install fabric yarn-${versions.yarn}, loader-${versions.loader}`);
+            this.warn(e);
         }
     }
 

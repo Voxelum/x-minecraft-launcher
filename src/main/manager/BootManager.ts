@@ -1,7 +1,7 @@
 import { app } from 'electron';
 import { existsSync, mkdirSync } from 'fs';
 import { copy, ensureFile, readdir, readJson, rmdir, unlink, writeFile } from 'fs-extra';
-import { isDirectory } from 'main/utils';
+import { isDirectory } from '@main/util/fs';
 import { join, resolve } from 'path';
 import { Manager } from '.';
 
@@ -30,12 +30,12 @@ export default class BootManager extends Manager {
 
     private async persistRoot(root: string) {
         try {
-            console.log(`Setup root ${root}`);
+            this.log(`Setup root ${root}`);
             await ensureFile(cfgFile);
             writeFile(cfgFile, JSON.stringify({ path: root }));
         } catch (e) {
-            console.error('An error occured during setup root');
-            console.error(e);
+            this.error('An error occured during setup root');
+            this.error(e);
             app.exit(1);
         }
     }
@@ -50,7 +50,7 @@ export default class BootManager extends Manager {
             return;
         }
 
-        console.log(`Start to migrate root, ${oldRoot} -> ${newRoot}`);
+        this.log(`Start to migrate root, ${oldRoot} -> ${newRoot}`);
 
         async function remove(file: string) {
             if (await isDirectory(file)) {
@@ -83,8 +83,8 @@ export default class BootManager extends Manager {
             app.relaunch();
             app.quit();
         } catch (e) {
-            console.error(`Error occured during migrating, path: ${newRoot}, migrate: ${migrate}, clear: ${clear}.`);
-            console.error(e);
+            this.error(`Error occured during migrating, path: ${newRoot}, migrate: ${migrate}, clear: ${clear}.`);
+            this.error(e);
             // event.sender.send('root', e);
         }
     }

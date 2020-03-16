@@ -225,8 +225,8 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed, onMounted, watch, createComponent, ref, Ref } from '@vue/composition-api';
-import { CurseforgeModpackResource } from 'universal/store/modules/resource';
-import { InstanceSchema } from 'universal/store/modules/instance.schema';
+import { CurseforgeModpackResource } from '@universal/store/modules/resource';
+import { InstanceSchema } from '@universal/store/modules/instance.schema';
 import {
   useI18n,
   useJava,

@@ -1,6 +1,6 @@
 import { Task, TaskHandle, TaskRuntime } from '@xmcl/task';
 import { ipcMain, WebContents } from 'electron';
-import { TaskState, TaskStatus } from 'universal/task';
+import { TaskState, TaskStatus } from '@universal/task';
 import { Manager } from '.';
 
 import uuid = require('uuid');

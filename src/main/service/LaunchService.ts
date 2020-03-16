@@ -1,5 +1,5 @@
-import { launch, MinecraftFolder, LaunchOption } from '@xmcl/core';
-import { makeException } from 'main/utils';
+import { Exception } from '@universal/util/exception';
+import { launch, LaunchOption, MinecraftFolder } from '@xmcl/core';
 import { ChildProcess } from 'child_process';
 import { join } from 'path';
 import AuthLibService from './AuthLibService';
@@ -56,7 +56,7 @@ export default class LaunchService extends Service {
             const user = this.getters.user;
             const gameProfile = this.getters.gameProfile;
             if (user.accessToken === '' || gameProfile.name === '' || gameProfile.id === '') {
-                throw makeException({ type: 'launchIllegalAuth' });
+                throw new Exception({ type: 'launchIllegalAuth' });
             }
 
             for (let problems = this.getters.issues.filter(p => p.autofix), i = 0;
@@ -66,7 +66,7 @@ export default class LaunchService extends Service {
             }
 
             if (!force && this.getters.issues.some(p => !p.optional)) {
-                throw makeException({ type: 'launchBlockedIssues', issues: this.getters.issues.filter(p => !p.optional) });
+                throw new Exception({ type: 'launchBlockedIssues', issues: this.getters.issues.filter(p => !p.optional) });
             }
 
             if (this.state.launch.status === 'ready') { // check if we have cancel (set to ready) this launch
@@ -85,7 +85,7 @@ export default class LaunchService extends Service {
                 ...instance.runtime,
             });
 
-            console.log(`Will launch with ${version} version.`);
+            this.log(`Will launch with ${version} version.`);
 
             const javaPath = this.getters.instanceJava.path || this.getters.defaultJava.path;
             /**
@@ -112,7 +112,7 @@ export default class LaunchService extends Service {
             };
 
             if ('server' in instance && instance.server?.host) {
-                console.log('Launching a server');
+                this.log('Launching a server');
                 option.server = {
                     ip: instance.server?.host,
                     port: instance.server?.port,
@@ -121,8 +121,8 @@ export default class LaunchService extends Service {
 
             this.instanceService.deploy(true);
 
-            console.log('Launching with these option...');
-            console.log(JSON.stringify(option, null, 2));
+            this.log('Launching with these option...');
+            this.log(JSON.stringify(option, null, 2));
 
             // Launch
             const process = await launch(option);
@@ -131,7 +131,7 @@ export default class LaunchService extends Service {
             let crashReport = '';
             let crashReportLocation = '';
             let waitForReady = true;
-            const eventBus = this.managers.AppManager.app;
+            const eventBus = this.appManager.app;
             eventBus.emit('minecraft-start', showLog);
             process.on('error', (err) => {
                 this.pushException({ type: 'launchGeneralException', error: err });
@@ -139,7 +139,7 @@ export default class LaunchService extends Service {
             });
 
             process.on('exit', (code, signal) => {
-                console.log(`Minecraft exit: ${code}, signal: ${signal}`);
+                this.log(`Minecraft exit: ${code}, signal: ${signal}`);
                 if (signal === 'SIGKILL') {
                     eventBus.emit('minecraft-killed');
                 }
@@ -175,14 +175,14 @@ export default class LaunchService extends Service {
                 eventBus.emit('minecraft-stdout', string);
             });
             process.stderr?.on('data', (s) => {
-                console.warn(s.toString());
+                this.warn(s.toString());
                 eventBus.emit('minecraft-stderr', s.toString());
             });
             process.unref();
             return true;
         } catch (e) {
             this.commit('launchStatus', 'ready');
-            throw makeException({ type: 'launchGeneralException', error: e });
+            throw new Exception({ type: 'launchGeneralException', error: e });
         }
     }
 }

@@ -1,19 +1,18 @@
 import { Task } from '@xmcl/task';
 import { exec } from 'child_process';
-import { installJreFromMojangTask, installJreFromSelfHostTask, platform, missing } from 'main/utils';
-import { getPersistence, setPersistence } from 'main/utils/persistence';
+import { missing } from '@main/util/fs';
 import { EOL } from 'os';
 import { join } from 'path';
-import { MutationKeys } from 'universal/store';
-import { Java, JavaSchema } from 'universal/store/modules/java.schema';
-import { requireString } from 'universal/utils/asserts';
+import { MutationKeys } from '@universal/store';
+import { Java, JavaSchema } from '@universal/store/modules/java.schema';
+import { requireString } from '@universal/util/assert';
 import Service, { Singleton } from './Service';
 
 export default class JavaService extends Service {
-    private static JAVA_FILE = platform.name === 'windows' ? 'javaw.exe' : 'java';
+    private JAVA_FILE = this.appManager.platform.name === 'windows' ? 'javaw.exe' : 'java';
 
     async load() {
-        let loaded: JavaSchema = await getPersistence({ path: this.getPath('java.json'), schema: JavaSchema });
+        let loaded: JavaSchema = await this.getPersistence({ path: this.getPath('java.json'), schema: JavaSchema });
         this.commit('javaAdd', loaded.all.filter(l => typeof l.path === 'string'));
         if (this.state.java.all.length === 0) {
             await this.refreshLocalJava();
@@ -25,7 +24,7 @@ export default class JavaService extends Service {
         if (state.java.all.length === 0) {
             this.refreshLocalJava();
         } else {
-            let local = join(state.root, 'jre', 'bin', JavaService.JAVA_FILE);
+            let local = join(state.root, 'jre', 'bin', this.JAVA_FILE);
             if (!state.java.all.map(j => j.path).some(p => p === local)) {
                 this.resolveJava(local);
             }
@@ -39,7 +38,7 @@ export default class JavaService extends Service {
             case 'javaAdd':
             case 'javaRemove':
             case 'javaSetDefault':
-                setPersistence({ path: this.getPath('java.json'), data: this.state.java, schema: JavaSchema });
+                this.setPersistence({ path: this.getPath('java.json'), data: this.state.java, schema: JavaSchema });
                 break;
             default:
         }
@@ -52,15 +51,16 @@ export default class JavaService extends Service {
     @Singleton('java')
     async installJava(fixing: boolean) {
         const installJre = Task.create('installJre', async (ctx: Task.Context) => {
-            const local = join(this.state.root, 'jre', 'bin', JavaService.JAVA_FILE);
+            const local = join(this.state.root, 'jre', 'bin', this.JAVA_FILE);
             await this.resolveJava(local);
             for (const j of this.state.java.all) {
                 if (j.path === local) {
-                    console.log(`Found exists installation at ${local}`);
+                    this.log(`Found exists installation at ${local}`);
                     return undefined;
                 }
             }
-            const endpoint = this.managers.NetworkManager.isInGFW ? installJreFromSelfHostTask(this.state.root) : installJreFromMojangTask(this.state.root);
+            
+            const endpoint = this.networkManager.isInGFW ? installJreFromSelfHostTask(this.state.root) : installJreFromMojangTask(this.state.root);
 
             await endpoint(ctx);
             const java = await this.resolveJava(local);
@@ -111,7 +111,7 @@ export default class JavaService extends Service {
                 }
             });
             // proc.stderr?.on('data', (chunk) => {
-            // console.log(chunk.toString());
+            // this.log(chunk.toString());
             // });
         });
     }

@@ -1,3 +1,9 @@
+import { CURSEMETA_CACHE } from '@main/constant';
+import { cacheWithHash } from '@main/util/download';
+import { checksum, copyPassively, exists, isDirectory, readdirEnsured } from '@main/util/fs';
+import { AnyResource, ImportOption, ImportTypeHint, Resource, UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
+import { ResourceSchema } from '@universal/store/modules/resource.schema';
+import { requireString } from '@universal/util/assert';
 import { Fabric, Forge, LiteLoader } from '@xmcl/mod-parser';
 import { FileSystem, System } from '@xmcl/system';
 import { Task } from '@xmcl/task';
@@ -5,14 +11,8 @@ import { WorldReader } from '@xmcl/world';
 import { createHash } from 'crypto';
 import filenamify from 'filenamify';
 import { ensureFile, readFile, unlink, writeFile } from 'fs-extra';
-import { CURSEMETA_CACHE } from 'main/constant';
-import { cacheWithHash, checksum, copyPassively, exists, isDirectory, readdirEnsured, requireString } from 'main/utils';
-import { getPersistence } from 'main/utils/persistence';
 import { basename, extname, join, resolve } from 'path';
-import { AnyResource, ImportOption, ImportTypeHint, Resource, UNKNOWN_RESOURCE } from 'universal/store/modules/resource';
-import { ResourceSchema } from 'universal/store/modules/resource.schema';
 import { parse as parseUrl, UrlWithStringQuery } from 'url';
-import got from 'got';
 import Service from './Service';
 
 interface ResourceBuilder extends AnyResource {
@@ -116,7 +116,7 @@ export default class ResourceService extends Service {
             }
             const { url: realUrl, source: expectedSource, type } = await this.resolveURI(parsed);
             if (!realUrl) {
-                console.warn(`Cannot find the remote source of the resource ${uri}`);
+                this.warn(`Cannot find the remote source of the resource ${uri}`);
                 return UNKNOWN_RESOURCE;
             }
 
@@ -146,7 +146,7 @@ export default class ResourceService extends Service {
 
             const parsing = Task.create('parsing', () => this.resolveResource(builder, buffer, type));
             await context.execute(parsing);
-            console.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
+            this.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
 
             // write resource to disk
             context.update(3, 4, uri);
@@ -208,7 +208,7 @@ export default class ResourceService extends Service {
                 context.update(2, 4, path);
                 const parsing = Task.create('parsing', () => this.resolveResource(builder, data, type));
                 await context.execute(parsing);
-                console.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
+                this.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
 
                 // write resource to disk
                 context.update(3, 4, path);
@@ -343,6 +343,7 @@ export default class ResourceService extends Service {
             getUri: (_, hash) => `modpack://${hash}`,
         });
 
+        let networkManager = this.networkManager;
         this.resourceHosts.push({
             async query(uri) {
                 if (uri.protocol !== 'curseforge:') {
@@ -364,7 +365,7 @@ export default class ResourceService extends Service {
                 }
                 const [projectId, fileId] = uri.path!.split('/').slice(1);
                 const metadataUrl = `${CURSEMETA_CACHE}/${projectId}/${fileId}.json`;
-                const o: any = await got(metadataUrl).json();
+                const o: any = await networkManager.requst(metadataUrl).json();
                 const url = o.body.DownloadURL;
                 return {
                     url,
@@ -444,7 +445,7 @@ export default class ResourceService extends Service {
         try {
             builder.source.uri.push(getUri(metadata, builder.hash));
         } catch {
-            console.warn(`Fail to inspect the uri for ${builder.name}[${builder.hash}]`);
+            this.warn(`Fail to inspect the uri for ${builder.name}[${builder.hash}]`);
         }
     }
 
@@ -493,7 +494,7 @@ export default class ResourceService extends Service {
             this.commit('resources', await Promise.all(resources
                 .filter(file => !file.startsWith('.'))
                 .map(file => this.getPath('resources', file))
-                .map(file => getPersistence({ path: file, schema: ResourceSchema }))));
+                .map(file => this.getPersistence({ path: file, schema: ResourceSchema }))));
         }
         const resources: AnyResource[] = [];
         await Promise.all(['mods', 'resourcepacks', 'saves', 'modpacks']
@@ -502,7 +503,7 @@ export default class ResourceService extends Service {
                 const files = await readdirEnsured(path);
                 for (const file of files.filter(f => f.endsWith('.json'))) {
                     const filePath = join(path, file);
-                    const read: ResourceSchema = await getPersistence({ path: filePath, schema: ResourceSchema });
+                    const read: ResourceSchema = await this.getPersistence({ path: filePath, schema: ResourceSchema });
                     resources.push(read);
                 }
             }));
@@ -523,7 +524,7 @@ export default class ResourceService extends Service {
             await this.commitResourceToDisk(builder, data);
             this.commit('resource', toResource(builder));
         } catch (e) {
-            console.error(e);
+            this.error(e);
             await this.discardResourceOnDisk(resource);
             this.commit('resourceRemove', resource);
         }
@@ -546,7 +547,7 @@ export default class ResourceService extends Service {
                 this.commit('resource', toResource(builder));
             }
         } catch (e) {
-            console.error(e);
+            this.error(e);
             await this.discardResourceOnDisk(resource);
             this.commit('resourceRemove', resource);
         }

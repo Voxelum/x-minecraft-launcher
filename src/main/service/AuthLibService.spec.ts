@@ -1,5 +1,5 @@
-import Service from 'main/service/Service';
-import AuthLibService from 'main/service/AuthLibService';
+import Service from '@main/service/Service';
+import AuthLibService from '@main/service/AuthLibService';
 
 function mockSerivce(service: Service) {
     // Reflect.set(service, )

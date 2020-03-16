@@ -1,6 +1,8 @@
+import { DefaultDownloader, DownloadOption } from '@xmcl/installer';
 import { Task } from '@xmcl/task';
 import { BrowserWindow, DownloadItem } from 'electron';
 import { readFile } from 'fs-extra';
+import { Got } from 'got';
 import inGFW from 'in-gfw';
 import { basename, join } from 'path';
 import { Store } from 'vuex';
@@ -40,6 +42,12 @@ export default class NetworkManager extends Manager {
 
     private inGFW = false;
 
+    private downloader = new DefaultDownloader();
+
+    readonly requst: Got = ((...args: any[]) => {
+        return (this.downloader.requster as any)(...args);
+    }) as any;
+
     constructor(private tempRoot: string = 'temp') {
         super();
     }
@@ -56,8 +64,10 @@ export default class NetworkManager extends Manager {
      * Update the status of GFW
      */
     async updateGFW() {
-        this.inGFW = await inGFW.net().catch(() => inGFW.os());
-        this.inGFW = false; // force not in gfw now
+        this.inGFW = await Promise.race([
+            this.requst.head('https://npm.taobao.org').then(() => true, () => false),
+            this.requst.head('https://www.google.com').then(() => false, () => true),
+        ]);
         return this.inGFW;
     }
 
@@ -68,12 +78,16 @@ export default class NetworkManager extends Manager {
         return this.inGFW;
     }
 
+    async downloadFile(options: DownloadOption) {
+        return this.downloader.downloadFile(options);
+    }
+
     /**
      * Download file using chrome browser default downloader! 
      * @param payload The url and the relative path to the launcher root folder
      * @returns The full downloaed file path
      */
-    async downloadFile(payload: { url: string; file: string }) {
+    async downloadFileByBrowser(payload: { url: string; file: string }) {
         const win = this.guard;
         if (!win) {
             throw new Error('Downloader Not Ready');
@@ -118,7 +132,7 @@ export default class NetworkManager extends Manager {
     }
 
     async requestPageWithJS(url: string) {
-        console.log(`Request with js ${url}`);
+        this.log(`Request with js ${url}`);
         const root = this.tempRoot;
         this.ensureJSGuard();
         const browser = this.jsguard!;

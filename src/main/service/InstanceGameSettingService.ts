@@ -1,7 +1,7 @@
 import { GameSetting, parse } from '@xmcl/gamesetting';
 import { readFile } from 'fs-extra';
 import { join } from 'path';
-import { requireString } from 'universal/utils/asserts';
+import { requireString } from '@universal/util/assert';
 import Service, { Singleton } from './Service';
 
 

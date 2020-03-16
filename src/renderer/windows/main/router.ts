@@ -1,6 +1,6 @@
 import Router, { Route } from 'vue-router';
 import Vue from 'vue';
-import { shell } from 'renderer/constant';
+import { shell } from '@/constant';
 import HomePage from './pages/HomePage.vue';
 import InstancesPage from './pages/InstancesPage.vue';
 import SettingPage from './pages/SettingPage.vue';

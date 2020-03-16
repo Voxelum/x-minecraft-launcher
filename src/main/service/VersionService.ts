@@ -1,7 +1,7 @@
-import { Version, MinecraftFolder } from '@xmcl/core';
+import { FileStateWatcher, readdirEnsured } from '@main/util/fs';
+import { LocalVersion } from '@universal/store/modules/version';
+import { Version } from '@xmcl/core';
 import { remove } from 'fs-extra';
-import { getExpectVersion, requireString, FileStateWatcher, readdirEnsured } from 'main/utils';
-import { LocalVersion } from 'universal/store/modules/version';
 import Service from './Service';
 
 
@@ -92,86 +92,6 @@ export default class VersionService extends Service {
         this.commit('localVersions', versions);
     }
 
-    /**
-     * Resolve a local existed version to its spec
-     * @param targetVersion 
-     */
-    async resolveVersion(targetVersion: Pick<LocalVersion, 'minecraft' | 'forge' | 'liteloader'>) {
-        requireString(targetVersion.minecraft);
-
-        const localVersions = this.state.version.local;
-
-        if (!targetVersion.forge && !targetVersion.liteloader) {
-            const v = localVersions.find(v => v.minecraft === targetVersion.minecraft);
-            if (!v) {
-                const err = {
-                    type: 'MissingMinecraftVersion',
-                    version: targetVersion.minecraft,
-                };
-                throw err;
-            }
-            return targetVersion.minecraft;
-        }
-        if (targetVersion.forge && !targetVersion.liteloader) {
-            const forge = localVersions.find(v => v.forge === targetVersion.forge && !v.liteloader);
-            if (!forge) {
-                const err = {
-                    type: 'MissingForgeVersion',
-                    version: targetVersion.forge,
-                };
-                throw err;
-            }
-            return forge.folder;
-        }
-        if (targetVersion.liteloader && !targetVersion.forge) {
-            const liteloader = localVersions.find(v => v.liteloader === targetVersion.liteloader && !v.forge);
-            if (!liteloader) {
-                const err = {
-                    type: 'MissingLiteloaderVersion',
-                    version: targetVersion.liteloader,
-                };
-                throw err;
-            }
-            return liteloader.folder;
-        }
-        if (targetVersion.liteloader && targetVersion.forge) {
-            const v = localVersions.find((v => v.liteloader === targetVersion.liteloader && v.forge === targetVersion.forge));
-            if (v) { return v.folder; }
-            const forge = localVersions.find(v => v.forge === targetVersion.forge);
-            const liteloader = localVersions.find(v => v.liteloader === targetVersion.liteloader);
-
-            if (!forge) {
-                const err = {
-                    type: 'MissingForgeVersion',
-                    version: targetVersion.forge,
-                };
-                throw err;
-            }
-            if (!liteloader) {
-                const err = {
-                    type: 'MissingLiteloaderVersion',
-                    version: targetVersion.liteloader,
-                };
-                throw err;
-            }
-
-            const root = new MinecraftFolder(this.state.root);
-            const targetId = getExpectVersion(targetVersion.minecraft, targetVersion.forge, targetVersion.liteloader);
-
-            // const extended = Version.extendsVersion(targetId,
-            //     await Version.parse(root, forge.folder), await Version.parse(root, liteloader.folder));
-
-            // const targetJSON = root.getVersionJson(targetId);
-
-            // await fs.ensureFile(targetJSON);
-            // await fs.writeFile(targetJSON, JSON.stringify(extended, null, 4));
-
-            return targetId;
-        }
-
-        throw new Error('');
-    }
-
     async deleteVersion(version: string) {
         const path = this.getGameAssetsPath('versions', version);
         await remove(path);
@@ -180,11 +100,11 @@ export default class VersionService extends Service {
 
     async showVersionsDirectory() {
         const path = this.getGameAssetsPath('versions');
-        return this.managers.AppManager.openDirectory(path);
+        return this.appManager.openDirectory(path);
     }
 
     async showVersionDirectory(version: string) {
         const path = this.getGameAssetsPath('versions', version);
-        return this.managers.AppManager.openDirectory(path);
+        return this.appManager.openDirectory(path);
     }
 }

@@ -1,5 +1,5 @@
 import { App, NativeImage, Tray, Dock, Menu, BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
-import { LauncherAppContext } from 'main/manager/AppManager';
+import { LauncherAppContext } from '@main/manager/AppManager';
 import { Store } from 'vuex';
 
 export abstract class LauncherAppController {

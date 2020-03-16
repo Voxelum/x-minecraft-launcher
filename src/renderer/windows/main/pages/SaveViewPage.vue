@@ -154,7 +154,7 @@
 
 <script lang="ts">
 import { createComponent, reactive, toRefs } from '@vue/composition-api';
-import unknown from 'renderer/assets/unknown_pack.png';
+import unknown from '@/assets/unknown_pack.png';
 import {
   useInstanceSaves,
   useNativeDialog,

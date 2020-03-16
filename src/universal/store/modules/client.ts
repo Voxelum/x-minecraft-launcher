@@ -1,4 +1,4 @@
-import { isCompatible } from 'universal/utils/versions';
+import { isCompatible } from '@universal/util/version';
 import { ModuleOption } from '../root';
 
 export type ProtocolToVersion = {

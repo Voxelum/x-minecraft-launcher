@@ -1,6 +1,6 @@
 import { computed, inject } from '@vue/composition-api';
-import { TASKS_KEY } from 'renderer/constant';
-import { requireNonnull } from 'universal/utils/object';
+import { TASKS_KEY } from '@/constant';
+import { requireNonnull } from '@universal/util/assert';
 import { useStore } from './useStore';
 
 export function useTask(taskHandle: string | Promise<any>) {

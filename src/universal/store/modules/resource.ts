@@ -1,8 +1,8 @@
+import { Modpack } from '@main/service/CurseForgeService';
+import { requireString } from '@universal/util/assert';
+import { Forge, LiteLoader } from '@xmcl/mod-parser';
 import { ResourcePack } from '@xmcl/resourcepack';
 import { LevelDataFrame } from '@xmcl/world';
-import { Forge, LiteLoader } from '@xmcl/mod-parser';
-import { Modpack } from 'main/service/CurseForgeService';
-import { requireString } from 'universal/utils';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { ResourceSchema } from './resource.schema';

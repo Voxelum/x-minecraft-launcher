@@ -73,7 +73,7 @@
 
 <script lang=ts>
 import { createComponent, watch } from '@vue/composition-api';
-import { LaunchException } from 'universal/utils';
+import { LaunchException } from '@universal/utils';
 import {
   useDialog,
   useI18n,

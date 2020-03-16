@@ -1,6 +1,7 @@
 import { computed, Ref } from '@vue/composition-api';
 import { UpdateInfo } from 'electron-updater';
 import { useStore } from './useStore';
+import { useServiceOnly } from './useService';
 
 export function useSettings() {
     const { state, commit, services } = useStore();
@@ -47,7 +48,7 @@ export function useSettings() {
 }
 
 export function useUpdateInfo() {
-    const { state, services } = useStore();
+    const { state } = useStore();
     const checkingUpdate = computed(() => state.setting.checkingUpdate);
     const downloadingUpdate = computed(() => state.setting.downloadingUpdate);
     const updateInfo = computed(() => state.setting.updateInfo);
@@ -57,8 +58,6 @@ export function useUpdateInfo() {
         downloadingUpdate,
         updateInfo,
         readyToUpdate,
-        downloadUpdate: services.BaseService.downloadUpdate,
-        quitAndInstall: services.BaseService.quitAndInstall,
-        checkUpdate: services.BaseService.checkUpdate,
+        ...useServiceOnly('BaseService', 'downloadUpdate', 'quitAndInstall', 'checkUpdate'),
     };
 }

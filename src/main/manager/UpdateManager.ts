@@ -1,7 +1,7 @@
+import { GFW_RELEASE_FEED_URL } from '@main/constant';
+import BaseService from '@main/service/BaseService';
 import Task from '@xmcl/task';
 import { autoUpdater, UpdaterSignal } from 'electron-updater';
-import { GFW_RELEASE_FEED_URL } from 'main/constant';
-import BaseService from 'main/service/BaseService';
 import { Store } from 'vuex';
 import { Manager } from '.';
 
@@ -30,13 +30,13 @@ export default class UpdateManager extends Manager {
             autoUpdater.autoDownload = autoDownload;
         });
 
-        console.log(`Current core version is ${autoUpdater.currentVersion.raw}.`);
+        this.log(`Current core version is ${autoUpdater.currentVersion.raw}.`);
 
         autoUpdater.autoInstallOnAppQuit = store.state.setting.autoInstallOnAppQuit;
         autoUpdater.autoDownload = store.state.setting.autoDownload;
         autoUpdater.allowPrerelease = store.state.setting.allowPrerelease;
 
-        this.managers.StoreAndServiceManager.getService(BaseService)!.checkUpdate();
+        this.managers.storeAndServiceManager.getService(BaseService)!.checkUpdate();
     }
 
     async downloadUpdate() {
@@ -56,7 +56,7 @@ export default class UpdateManager extends Manager {
             if (!this.store.state.setting.autoDownload) {
                 this.store.commit('downloadingUpdate', true);
                 // should swap download src to china mainland
-                const swapDownloadSrc = this.managers.NetworkManager.isInGFW;
+                const swapDownloadSrc = this.managers.networkManager.isInGFW;
                 let oldFeedUrl = '';
                 if (swapDownloadSrc) {
                     oldFeedUrl = autoUpdater.getFeedURL() || '';
@@ -67,8 +67,8 @@ export default class UpdateManager extends Manager {
                     let promise = download(ctx);
                     if (swapDownloadSrc) {
                         promise = promise.catch(async (e) => {
-                            console.warn('Cannot download update from azure source. Switch to github source!');
-                            console.warn(e);
+                            this.warn('Cannot download update from azure source. Switch to github source!');
+                            this.warn(e);
                             autoUpdater.setFeedURL(oldFeedUrl);
                             await autoUpdater.checkForUpdates();
                             return download(ctx);
@@ -85,7 +85,7 @@ export default class UpdateManager extends Manager {
                 throw 'cancelled';
             }
         });
-        return this.managers.TaskManager.submit(downloadUpdate);
+        return this.managers.taskManager.submit(downloadUpdate);
     }
 
     quitAndInstall = autoUpdater.quitAndInstall;

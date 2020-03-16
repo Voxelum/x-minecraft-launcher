@@ -60,7 +60,7 @@ import {
   createComponent,
   toRefs,
 } from '@vue/composition-api';
-import { Java } from 'universal/store/modules/java';
+import { Java } from '@universal/store/modules/java';
 import {
   useI18n,
   useAutoSaveLoad,

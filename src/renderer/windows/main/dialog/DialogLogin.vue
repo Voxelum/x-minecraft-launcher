@@ -137,7 +137,7 @@
 
 <script lang=ts>
 import { reactive, computed, watch, toRefs, onMounted, onUnmounted, ref, createComponent, Ref } from '@vue/composition-api';
-import { LoginException } from 'universal/utils';
+import { LoginException } from '@universal/utils';
 import { useCurrentUser, useDialogSelf, useI18n, useLogin } from '@/hooks';
 
 export default createComponent({

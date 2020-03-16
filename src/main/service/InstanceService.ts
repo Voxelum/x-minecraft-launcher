@@ -1,16 +1,19 @@
+import { exists, missing, readdirEnsured } from '@main/util/fs';
+import { CreateOption, createTemplate } from '@universal/store/modules/instance';
+import { DeployedInfo, InstanceLockSchema, InstanceSchema, InstancesSchema } from '@universal/store/modules/instance.schema';
+import { UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
+import { requireObject, requireString } from '@universal/util/assert';
+import latestRelease from '@universal/util/lasteRelease.json';
+import { fitin, shouldPatch } from '@universal/util/object';
+import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/util/serverStatus';
 import { queryStatus, Status } from '@xmcl/client';
 import { parse, stringify } from '@xmcl/gamesetting';
 import { readInfo, ServerInfo } from '@xmcl/server-info';
-import { readdir, readFile, remove, writeFile } from 'fs-extra';
-import { exists, FileStateWatcher, missing, readdirEnsured, requireObject, requireString, shouldPatch } from 'main/utils';
-import { getPersistence, setPersistence } from 'main/utils/persistence';
-import { join, resolve } from 'path';
-import { CreateOption, createTemplate } from 'universal/store/modules/instance';
-import { InstanceLockSchema, InstanceSchema, InstancesSchema } from 'universal/store/modules/instance.schema';
-import latestRelease from 'universal/utils/lasteRelease.json';
-import { getHostAndPortFromIp, PINGING_STATUS } from 'universal/utils/server-status';
+import { lstat, readdir, readFile, readlink, remove, symlink, unlink, writeFile } from 'fs-extra';
+import { join, relative, resolve } from 'path';
 import v4 from 'uuid/v4';
 import CurseForgeService from './CurseForgeService';
+import { InstanceIOService } from './InstanceIOService';
 import InstanceSavesService from './InstanceSavesService';
 import JavaService from './JavaService';
 import ResourceService from './ResourceService';
@@ -39,9 +42,10 @@ export class InstanceService extends Service {
     protected readonly curseforgeSerivce!: CurseForgeService;
 
     @Inject('InstanceSavesService')
-    protected readonly saveService: InstanceSavesService | undefined;
+    protected readonly saveService!: InstanceSavesService;
 
-    protected saveDirtyWatcher = new FileStateWatcher(false, () => true);
+    @Inject('InstanceIOService')
+    protected readonly ioService!: InstanceIOService;
 
     protected getPathUnder(...ps: string[]) {
         return this.getGameAssetsPath(INSTANCES_FOLDER, ...ps);
@@ -92,7 +96,7 @@ export class InstanceService extends Service {
         let jsonPath = join(path, INSTANCE_LOCK_JSON);
         let option: InstanceLockSchema;
         try {
-            option = await getPersistence({ path: jsonPath, schema: InstanceLockSchema });
+            option = await this.getPersistence({ path: jsonPath, schema: InstanceLockSchema });
         } catch (e) {
             return;
         }
@@ -124,7 +128,7 @@ export class InstanceService extends Service {
 
         let option: InstanceSchema;
         try {
-            option = await getPersistence({ path: jsonPath, schema: InstanceSchema });
+            option = await this.getPersistence({ path: jsonPath, schema: InstanceSchema });
         } catch (e) {
             this.warn(`Cannot load instance json ${path}`);
             return;
@@ -158,11 +162,11 @@ export class InstanceService extends Service {
         let { state } = this;
         let [managed, instanceConfig] = await Promise.all([
             readdirEnsured(this.getPathUnder()),
-            getPersistence({ path: this.getPath(INSTANCES_JSON), schema: InstancesSchema }),
+            this.getPersistence({ path: this.getPath(INSTANCES_JSON), schema: InstancesSchema }),
         ]);
         managed = managed.map(p => this.getPathUnder(p)).filter(f => uuidExp.test(f));
 
-        console.log(`Found ${managed.length} managed instances and ${instanceConfig.instances.length} external instances.`);
+        this.log(`Found ${managed.length} managed instances and ${instanceConfig.instances.length} external instances.`);
 
         let all = [...managed, ...instanceConfig.instances];
 
@@ -185,7 +189,7 @@ export class InstanceService extends Service {
 
     @MutationTrigger('instanceAdd')
     async saveNewInstance(payload: InstanceSchema & { path: string }) {
-        await setPersistence({
+        await this.setPersistence({
             path: join(payload.path, INSTANCE_JSON),
             data: payload,
             schema: InstanceSchema,
@@ -195,7 +199,7 @@ export class InstanceService extends Service {
 
     @MutationTrigger('instance')
     async saveInstance() {
-        await setPersistence({
+        await this.setPersistence({
             path: join(this.state.instance.path, INSTANCE_JSON),
             data: this.state.instance.all[this.state.instance.path],
             schema: InstanceSchema,
@@ -205,7 +209,7 @@ export class InstanceService extends Service {
 
     @MutationTrigger('instanceJava', 'instanceDeployInfo')
     async saveInstanceLock() {
-        await setPersistence({
+        await this.setPersistence({
             path: join(this.state.instance.path, INSTANCE_LOCK_JSON),
             data: { java: this.state.instance.java, deployed: this.state.instance.deployed },
             schema: InstanceLockSchema,
@@ -215,7 +219,7 @@ export class InstanceService extends Service {
 
     @MutationTrigger('instanceSelect')
     async saveInstanceSelect(path: string) {
-        await setPersistence({
+        await this.setPersistence({
             path: this.getPath(INSTANCES_JSON),
             data: { selectedInstance: path, instances: [] },
             schema: InstancesSchema,
@@ -277,7 +281,7 @@ export class InstanceService extends Service {
     /**
      * Create a managed instance in storage.
      */
-    async createAndSelect(payload: CreateOption) {
+    async createAndSelect(payload: CreateOption): Promise<string> {
         requireObject(payload);
 
         let path = await this.createInstance(payload);
@@ -358,8 +362,6 @@ export class InstanceService extends Service {
             this.commit('instance', { ...patch, path: targetPath });
         }
     }
-
-
 
     /**
      * Set a real java path to the current instance
@@ -483,12 +485,12 @@ export class InstanceService extends Service {
                     result.file = relative(root, dest);
                     result.resolved = 'link';
                 } else if (res.domain === 'saves') {
-                    const dest = await this.importSave(res.path);
+                    const dest = await this.saveService.importSave({ source: res.path });
                     result.file = relative(root, dest);
                     result.resolved = 'unpack';
                 } else if (res.domain === 'modpacks') { // modpack will override the profile
-                    await this.importInstanceFromCurseforgeModpack({
-                        instanceId: this.state.instance.path,
+                    await this.ioService.importCurseforgeModpack({
+                        instancePath: this.state.instance.path,
                         path: res.path,
                     });
                     result.file = '/';

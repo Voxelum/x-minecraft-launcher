@@ -1,29 +1,24 @@
 import { computed, onMounted, onUnmounted, Ref, watch } from '@vue/composition-api';
-import { notNull } from 'universal/utils';
+import { notNull } from '@universal/util/assert';
 import { useInstanceVersion } from './useInstance';
 import { useStore, useBusy } from './useStore';
+import { useService } from './useService';
 
 export function useVersions() {
-    const { services } = useStore();
-    return {
-        deleteVersion: services.VersionService.deleteVersion,
-    };
+    return useService('VersionService');
 }
 
 export function useLocalVersions() {
-    const { state, services } = useStore();
+    const { state } = useStore();
     const localVersions = computed(() => state.version.local);
     const { minecraft, forge, liteloader } = useInstanceVersion();
     const selected = computed(() => localVersions.value.find(v => v.minecraft === minecraft.value
         && v.forge === forge.value && v.liteloader === liteloader.value));
 
     return {
-        ...useVersions(),
         localVersions,
         selected,
-        refreshVersions: services.VersionService.refreshVersions,
-        showVersionDirectory: services.VersionService.showVersionDirectory,
-        showVersionsDirectory: services.VersionService.showVersionsDirectory,
+        ...useVersions(),
     };
 }
 
@@ -43,8 +38,8 @@ export function useMinecraftVersions() {
 }
 
 export function useForgeVersions(minecraftVersion: Ref<string>) {
-    const { state, getters, services } = useStore();
-
+    const { state, getters } = useStore();
+    const { refreshForge } = useService('InstallService');
     const versions = computed(() => (state.version.forge[minecraftVersion.value] || { versions: [] }).versions);
     const refreshing = computed(() => getters.busy('refreshForge'));
     const statuses = computed(() => getters.forgeStatuses);
@@ -55,7 +50,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     onMounted(() => {
         handle = watch(minecraftVersion, () => {
             if (versions.value.length === 0) {
-                services.InstallService.refreshForge({ mcversion: minecraftVersion.value });
+                refreshForge({ mcversion: minecraftVersion.value });
             }
         });
     });
@@ -64,7 +59,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     });
 
     function refresh() {
-        return services.InstallService.refreshForge({ mcversion: minecraftVersion.value });
+        return refreshForge({ mcversion: minecraftVersion.value });
     }
 
     return {
@@ -78,7 +73,8 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
 }
 
 export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
-    const { state, services } = useStore();
+    const { state } = useStore();
+    const { refreshLiteloader } = useService('InstallService');
 
     const versions = computed(() => Object.values(state.version.liteloader.versions[minecraftVersion.value] || {}).filter(notNull));
     const refreshing = useBusy('refreshLiteloader');
@@ -86,7 +82,7 @@ export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
     onMounted(() => {
         handle = watch(minecraftVersion, () => {
             if (!versions.value) {
-                services.InstallService.refreshLiteloader();
+                refreshLiteloader();
             }
         });
     });
@@ -95,7 +91,7 @@ export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
     });
 
     function refresh() {
-        return services.InstallService.refreshLiteloader();
+        return refreshLiteloader();
     }
 
     return {
