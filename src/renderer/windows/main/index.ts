@@ -1,20 +1,20 @@
+import { I18N_KEY, ROUTER_KEY } from '@/constant';
+import locales from '@/assets/locales';
+import provideElectron from '@/providers/provideElectron';
+import provideServiceProxy from '@/providers/provideServiceProxy';
+import provideVueI18n from '@/providers/provideVueI18n';
+import provideVuexStore from '@/providers/provideVuexStore';
+import SkinView from '@/skin/SkinView.vue';
+import TextComponent from '@/TextComponent';
+import '@/useVuetify';
 import VueCompositionApi, { createElement as h, provide } from '@vue/composition-api';
 import Vue from 'vue';
 import VueObserveVisibility from 'vue-observe-visibility';
 import VueParticles from 'vue-particles';
-import locales from 'static/locales';
-
-import SkinView from '@/skin/SkinView.vue';
-import TextComponent from '@/TextComponent';
-import '@/useVuetify';
 import './components';
 import MainWindow from './MainWindow.vue';
 import router from './router';
-import provideElectron from '@/providers/provideElectron';
-import provideServiceProxy from '@/providers/provideServiceProxy';
-import provideVuexStore from '@/providers/provideVuexStore';
-import { ROUTER_KEY, I18N_KEY } from '@/constant';
-import provideVueI18n from '@/providers/provideVueI18n';
+
 
 Vue.config.productionTip = false;
 

@@ -3,7 +3,6 @@ import { Task } from '@xmcl/task';
 import { BrowserWindow, DownloadItem } from 'electron';
 import { readFile } from 'fs-extra';
 import { Got } from 'got';
-import inGFW from 'in-gfw';
 import { basename, join } from 'path';
 import { Store } from 'vuex';
 import { Manager } from '.';
@@ -44,9 +43,7 @@ export default class NetworkManager extends Manager {
 
     private downloader = new DefaultDownloader();
 
-    readonly requst: Got = ((...args: any[]) => {
-        return (this.downloader.requster as any)(...args);
-    }) as any;
+    readonly requst: Got = this.downloader.requster;
 
     constructor(private tempRoot: string = 'temp') {
         super();
@@ -65,9 +62,10 @@ export default class NetworkManager extends Manager {
      */
     async updateGFW() {
         this.inGFW = await Promise.race([
-            this.requst.head('https://npm.taobao.org').then(() => true, () => false),
-            this.requst.head('https://www.google.com').then(() => false, () => true),
+            this.requst.head('https://npm.taobao.org', { throwHttpErrors: false }).then(() => true, () => false),
+            this.requst.head('https://www.google.com', { throwHttpErrors: false }).then(() => false, () => true),
         ]);
+        this.log(this.inGFW ? 'Detected current in China mainland.' : 'Detected current NOT in China mainland.');
         return this.inGFW;
     }
 

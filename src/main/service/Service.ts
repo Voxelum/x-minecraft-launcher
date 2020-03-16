@@ -113,17 +113,17 @@ export class ServiceException extends Error {
  * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied 
  */
 export default class Service implements Managers {
-    appManager!: AppManager;
+    protected appManager!: AppManager;
 
-    networkManager!: NetworkManager;
+    protected networkManager!: NetworkManager;
 
-    storeAndServiceManager!: StoreAndServiceManager;
+    protected storeAndServiceManager!: StoreAndServiceManager;
 
-    taskManager!: TaskManager;
+    protected taskManager!: TaskManager;
 
-    updateManager!: UpdateManager;
+    protected updateManager!: UpdateManager;
 
-    logManager!: LogManager;
+    protected logManager!: LogManager;
 
     /**
      * Submit a task into the task manager. 
@@ -193,7 +193,7 @@ export default class Service implements Managers {
 
     }
 
-    async setPersistence<T>({ path, data, schema }: { path: string; data: T; schema?: Schema<T> }) {
+    protected async setPersistence<T>({ path, data, schema }: { path: string; data: T; schema?: Schema<T> }) {
         const deepCopy = JSON.parse(JSON.stringify(data));
         if (schema) {
             const schemaObject = schema;
@@ -214,7 +214,7 @@ export default class Service implements Managers {
         await writeFile(path, JSON.stringify(deepCopy, null, 4), { encoding: 'utf-8' });
     }
 
-    async getPersistence<T>(option: { path: string; schema?: Schema<T> }): Promise<T> {
+    protected async getPersistence<T>(option: { path: string; schema?: Schema<T> }): Promise<T> {
         const { path, schema } = option;
         const originalString = await readFile(path).then(b => b.toString(), () => '{}');
         const object = JSON.parse(originalString);

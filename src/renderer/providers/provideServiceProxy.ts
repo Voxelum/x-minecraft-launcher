@@ -34,22 +34,23 @@ async function startSession(sessionId: number | undefined, tasks: Array<any>) {
     return result;
 }
 
-function proxyOfService(seriv: string) {
+function proxyService(seriv: string) {
     return new Proxy({} as any, {
-        get(_, key) {
+        get(_, functionName) {
+            console.log(`GET ${seriv}.${functionName.toString()}`);
             const func = function (payload: any) {
-                console.log(`func of ${seriv}.${key.toString()}`);
+                console.log(`Invoke ${seriv}.${functionName.toString()}`);
                 const tasks = reactive([]);
-                const promise = ipcRenderer.invoke('service-call', seriv, key as string, payload).then((r: any) => {
+                const promise = ipcRenderer.invoke('service-call', seriv, functionName as string, payload).then((r: any) => {
                     if (typeof r !== 'number') {
-                        throw new Error(`Cannot find service call named ${key as string} in ${seriv}`);
+                        throw new Error(`Cannot find service call named ${functionName as string} in ${seriv}`);
                     }
                     return startSession(r, tasks);
                 });
                 Object.defineProperty(promise, '__tasks__', { value: tasks, enumerable: false, writable: false, configurable: false });
                 return promise;
             };
-            Object.defineProperty(func, 'name', { value: key, enumerable: false, writable: false, configurable: false });
+            Object.defineProperty(func, 'name', { value: functionName, enumerable: false, writable: false, configurable: false });
             return func;
         },
     });
@@ -57,9 +58,7 @@ function proxyOfService(seriv: string) {
 
 export default function provideServiceProxy() {
     const caller: BuiltinServices = new Proxy({} as any, {
-        get(_, key) {
-            return proxyOfService(key as string);
-        },
+        get(_, serviceName) { return proxyService(serviceName as string); },
     });
     provide(SERVICES_KEY, caller);
     return caller;

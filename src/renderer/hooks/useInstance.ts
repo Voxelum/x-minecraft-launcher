@@ -321,15 +321,15 @@ export function useInstanceMods() {
 export function useInstanceSaves() {
     const { state } = useStore();
     return {
-        id: computed(() => state.instance.path),
+        path: computed(() => state.instance.path),
         saves: computed(() => state.instance.saves),
-        ...useService('InstanceSavesService'),
+        ...useServiceOnly('InstanceSavesService', 'cloneSave', 'loadAllInstancesSaves', 'importSave'),
     };
 }
 export function useInstanceLogs() {
     const { state } = useStore();
     return {
-        id: computed(() => state.instance.path),
+        path: computed(() => state.instance.path),
         ...useService('InstanceLogService'),
     };
 }

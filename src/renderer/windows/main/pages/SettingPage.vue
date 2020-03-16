@@ -194,16 +194,17 @@
 
 <script lang=ts>
 import { createComponent, reactive, ref, toRefs, watch, Ref } from '@vue/composition-api';
-import { useStore, useI18n, useParticle, useSettings, useIpc, useNativeDialog } from '@/hooks';
+import { useStore, useI18n, useParticle, useSettings, useIpc, useNativeDialog, useService } from '@/hooks';
 
 export default createComponent({
   setup() {
     const ipcRenderer = useIpc();
     const dialog = useNativeDialog();
     const { showParticle, particleMode } = useParticle();
-    const { state, services } = useStore();
+    const { state } = useStore();
     const settings = useSettings();
     const { $t } = useI18n();
+    const { openDirectory } = useService('BaseService');
     const data = reactive({
       rootLocation: state.root,
 
@@ -232,7 +233,7 @@ export default createComponent({
         data.viewingUpdateDetail = true;
       },
       showRootDir() {
-        services.BaseService.openDirectory(data.rootLocation);
+        openDirectory(data.rootLocation);
       },
       async browseRootDir() {
         const { filePaths } = await dialog.showOpenDialog({

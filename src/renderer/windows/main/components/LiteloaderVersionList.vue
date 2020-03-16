@@ -47,7 +47,7 @@
 
 <script lang=ts>
 import { createComponent, computed } from '@vue/composition-api';
-import { LiteLoader } from '@xmcl/minecraft-launcher-core';
+import { Version } from '@xmcl/installer/liteloader';
 import { useInstanceVersionBase, useLiteloaderVersions } from '@/hooks';
 
 export default createComponent({
@@ -69,7 +69,7 @@ export default createComponent({
       versions,
       refresh,
       refreshing,
-      selectVersion(item: LiteLoader.VersionMeta) {
+      selectVersion(item: Version) {
         context.emit('value', item);
       },
     };

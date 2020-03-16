@@ -22,13 +22,13 @@
 <script lang=ts>
 import { reactive, toRefs, onMounted, onUnmounted, createComponent } from '@vue/composition-api';
 import Vue from 'vue';
-import { useDialogSelf, useIpc, useBaseService } from '@/hooks';
+import { useDialogSelf, useIpc, useService } from '@/hooks';
 
 export default createComponent({
   setup() {
     const { isShown, showDialog, closeDialog } = useDialogSelf('crash-report');
     const ipcRenderer = useIpc();
-    const { showItemInDirectory } = useBaseService();
+    const { showItemInDirectory } = useService('BaseService');
     const data = reactive({
       content: '',
       location: '',

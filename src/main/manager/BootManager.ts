@@ -15,17 +15,17 @@ export default class BootManager extends Manager {
     public remainingWindows: string[] = [];
 
     async setup() {
-        let root;
-        try {
-            const cfg = await readJson(cfgFile);
-            root = cfg.path || join(appData, 'voxelauncher');
-            this.remainingWindows = cfg.windows || ['builtin://main'];
-        } catch (e) {
-            root = join(appData, 'voxelauncher');
-            this.remainingWindows = ['builtin://main'];
-        }
-        await this.persistRoot(root);
-        this.root = root;
+        // let root;
+        // try {
+        //     const cfg = await readJson(cfgFile);
+        //     root = cfg.path || join(appData, 'voxelauncher');
+        //     this.remainingWindows = cfg.windows || ['builtin://main'];
+        // } catch (e) {
+        //     root = join(appData, 'voxelauncher');
+        //     this.remainingWindows = ['builtin://main'];
+        // }
+        // await this.persistRoot(root);
+        // this.root = root;
     }
 
     private async persistRoot(root: string) {

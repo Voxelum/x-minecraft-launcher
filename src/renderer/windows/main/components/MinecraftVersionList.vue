@@ -29,7 +29,7 @@
 <script lang=ts>
 import { createComponent, computed } from '@vue/composition-api';
 import { LocalVersion } from '@universal/store/modules/version';
-import { Installer } from '@xmcl/minecraft-launcher-core';
+import { Installer } from '@xmcl/installer';
 import { useMinecraftVersions, useIsCompatible } from '@/hooks';
 
 export default createComponent({
@@ -62,7 +62,7 @@ export default createComponent({
       context.emit('input', v.id);
     }
 
-    function filterMinecraft(v: Installer.VersionMeta) {
+    function filterMinecraft(v: Installer.Version) {
       if (!props.showAlpha && v.type !== 'release') return false;
       if (!isCompatible(props.acceptingRange, v.id)) return false;
       return v.id.indexOf(props.filterText) !== -1;

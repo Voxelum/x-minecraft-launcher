@@ -100,7 +100,7 @@ export default createComponent({
       liteloaderVersion: '',
     });
     const refs = toRefs(data);
-    const { edit, runtime } = useInstance();
+    const { editInstance: edit, runtime } = useInstance();
     const localVersion = computed(() => ({ minecraft: data.mcversion, forge: data.forgeVersion, liteloader: data.liteloaderVersion }));
     const barColor = computed(() => {
       switch (data.active) {
@@ -147,7 +147,7 @@ export default createComponent({
 
     return {
       ...refs,
-       
+
       localVersion,
       filterText,
       setLocalVersion(v: { minecraft: string; forge: string; liteloader: string }) {

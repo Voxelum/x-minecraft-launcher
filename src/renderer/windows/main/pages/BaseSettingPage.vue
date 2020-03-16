@@ -93,7 +93,7 @@ export default createComponent({
       url,
       description,
       server,
-      edit,
+      editInstance: edit,
     } = useInstance();
     const router = useRouter();
     const { name: username } = useCurrentUser();
@@ -165,7 +165,7 @@ export default createComponent({
     }
     return {
       ...toRefs(data),
-       
+
       username,
       isServer,
       version: runtime,

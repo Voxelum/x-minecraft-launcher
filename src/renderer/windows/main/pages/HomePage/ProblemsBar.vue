@@ -32,11 +32,13 @@
 <script lang=ts>
 import { computed } from '@vue/composition-api';
 import { Issue } from '@universal/store/modules/diagnose';
-import { useStore, useRouter, useDialog, useNotifier, useI18n } from '@/hooks';
+import { useStore, useRouter, useDialog, useNotifier, useI18n, useServices, useService } from '@/hooks';
 
 export default {
   setup() {
-    const { getters, state, services, commit } = useStore();
+    const { getters, state, commit } = useStore();
+    const { editInstance } = useService('InstanceService');
+    const { fix } = useService('DiagnoseService');
     const router = useRouter();
     const problems = computed(() => getters.issues);
     const problemsLevelColor = computed(() => (getters.issues.some(p => !p.optional) ? 'red' : 'warning'));
@@ -62,7 +64,7 @@ export default {
         case 'incompatibleJava':
           if (state.java.all.some(j => j.majorVersion === 8)) {
             commit('instanceJava', state.java.all.find(j => j.majorVersion === 8)!.path);
-            await services.InstanceService.editInstance({ java: '8' });
+            await editInstance({ java: '8' });
             notify('info', $t('java.switchVersion'));
           } else {
             showJavaDialog();
@@ -73,7 +75,7 @@ export default {
     }
 
     function handleAutoFix() {
-      services.DiagnoseService.fix(problems.value);
+      fix(problems.value as any);
       showTaskDialog();
     }
     return {

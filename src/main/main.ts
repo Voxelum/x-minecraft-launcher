@@ -41,8 +41,8 @@ const managers: Managers = {
 const manList: Manager[] = Object.values(managers);
 
 async function main() {
-    this.log(process.cwd())
-    this.log(process.argv)
+    managers.logManager.log(process.cwd());
+    managers.logManager.log(process.argv);
     manList.forEach(man => (man as any).managers = managers);
     await Promise.all(manList.map(async m => await m.setup(managers)));
     await Promise.all(manList.map(m => m.rootReady(managers.appManager.root)));

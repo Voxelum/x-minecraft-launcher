@@ -1,11 +1,12 @@
-import { Task, TaskHandle } from '@xmcl/task';
-import { app, ipcMain, webContents } from 'electron';
-import { EventEmitter } from 'events';
 import AuthLibService from '@main/service/AuthLibService';
 import BaseService from '@main/service/BaseService';
 import CurseForgeService from '@main/service/CurseForgeService';
 import DiagnoseService from '@main/service/DiagnoseService';
 import InstallService from '@main/service/InstallService';
+import InstanceGameSettingService from '@main/service/InstanceGameSettingService';
+import { InstanceIOService } from '@main/service/InstanceIOService';
+import InstanceLogService from '@main/service/InstanceLogService';
+import InstanceSavesService from '@main/service/InstanceSavesService';
 import InstanceService from '@main/service/InstanceService';
 import JavaService from '@main/service/JavaService';
 import LaunchService from '@main/service/LaunchService';
@@ -15,8 +16,11 @@ import Service, { INJECTIONS_SYMBOL, MUTATION_LISTENERS_SYMBOL } from '@main/ser
 import SettingService from '@main/service/SettingService';
 import UserService from '@main/service/UserService';
 import VersionService from '@main/service/VersionService';
-import { join } from 'path';
 import storeTemplate from '@universal/store';
+import { Task, TaskHandle } from '@xmcl/task';
+import { app, ipcMain, webContents } from 'electron';
+import { EventEmitter } from 'events';
+import { join } from 'path';
 import Vue from 'vue';
 import Vuex, { Store, StoreOptions } from 'vuex';
 import { Manager } from '.';
@@ -71,6 +75,11 @@ export default class StoreAndServiceManager extends Manager {
         this.registerService(InstallService);
         this.registerService(VersionService);
         this.registerService(BaseService);
+
+        this.registerService(InstanceGameSettingService);
+        this.registerService(InstanceSavesService);
+        this.registerService(InstanceLogService);
+        this.registerService(InstanceIOService);
     }
 
     protected registerService(s: new () => Service) { this.registeredServices.push(s); }
@@ -83,7 +92,6 @@ export default class StoreAndServiceManager extends Manager {
         const mcPath = join(app.getPath('appData'), this.managers.appManager.platform.name === 'osx' ? 'minecraft' : '.minecraft');
 
         Object.defineProperties(Service.prototype, {
-            managers: { value: managers },
             commit: { value: store.commit },
             state: { value: store.state },
             getters: { value: store.getters },
@@ -93,12 +101,14 @@ export default class StoreAndServiceManager extends Manager {
             getGameAssetsPath: { value: (...args: string[]) => join(root, ...args) },
         });
 
+        Object.assign(Service.prototype, managers);
+
         for (let ser of this.registeredServices) {
             const name = ser.name;
             Object.defineProperties(ser.prototype, {
-                log: { value: (m: any, a: any[]) => this.managers.logManager.log(`[${name}] ${m}`, a) },
-                warn: { value: (m: any, a: any[]) => this.managers.logManager.warn(`[${name}] ${m}`, a) },
-                error: { value: (m: any, a: any[]) => this.managers.logManager.error(`[${name}] ${m}`, a) },
+                log: { value: (m: any, ...a: any[]) => this.managers.logManager.log(`[${name}] ${m}`, ...a) },
+                warn: { value: (m: any, ...a: any[]) => this.managers.logManager.warn(`[${name}] ${m}`, ...a) },
+                error: { value: (m: any, ...a: any[]) => this.managers.logManager.error(`[${name}] ${m}`, ...a) },
             });
         }
 

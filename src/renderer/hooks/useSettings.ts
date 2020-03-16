@@ -4,7 +4,7 @@ import { useStore } from './useStore';
 import { useServiceOnly } from './useService';
 
 export function useSettings() {
-    const { state, commit, services } = useStore();
+    const { state, commit } = useStore();
     const locales = computed(() => state.setting.locales || []);
     const selectedLocale = computed({
         get: () => locales.value.find(l => l === state.setting.locale) || 'en',
@@ -33,7 +33,7 @@ export function useSettings() {
 
 
     return {
-        checkUpdate: services.BaseService.checkUpdate,
+        ...useServiceOnly('BaseService', 'checkUpdate'),
         locales,
         selectedLocale,
         allowPrerelease,

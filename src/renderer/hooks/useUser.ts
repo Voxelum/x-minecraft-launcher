@@ -1,9 +1,10 @@
-import { computed, toRefs } from '@vue/composition-api';
 import { UserProfile } from '@universal/store/modules/user.schema';
-import { useStore, useBusy } from './useStore';
+import { computed, toRefs } from '@vue/composition-api';
+import { useServiceOnly } from './useService';
+import { useBusy, useStore } from './useStore';
 
 export function useLogin() {
-    const { state, getters, commit, services } = useStore();
+    const { state, getters, commit } = useStore();
     const authServices = computed(() => ['offline', ...Object.keys(state.user.authServices)]);
     const profileServices = computed(() => Object.keys(state.user.profileServices));
     const avaiableGameProfiles = computed(() => getters.gameProfiles);
@@ -16,15 +17,14 @@ export function useLogin() {
     return {
         authServices,
         profileServices,
-        login: services.UserService.login,
-        switchAccount: services.UserService.switchUserProfile,
+        ...useServiceOnly('UserService', 'login', 'switchUserProfile'),
         avaiableGameProfiles,
         removeAccount,
     };
 }
 
 export function useCurrentUserStatus() {
-    const { state, getters, services } = useStore();
+    const { state, getters } = useStore();
     const user: UserProfile & Data = getters.user as any;
     const offline = computed(() => getters.offline);
     const logined = computed(() => getters.accessTokenValid);
@@ -37,14 +37,12 @@ export function useCurrentUserStatus() {
         isServiceCompatible,
         security,
         refreshingSecurity,
-        checkLocation: services.UserService.checkLocation,
-        getChallenges: services.UserService.getChallenges,
-        submitChallenges: services.UserService.submitChallenges,
+        ...useServiceOnly('UserService', 'checkLocation', 'getChallenges', 'submitChallenges'),
     };
 }
 
 export function useCurrentUser() {
-    const { getters, services } = useStore();
+    const { getters } = useStore();
     const user: UserProfile & Data = getters.user as any;
     const theAuthService = computed(() => getters.authService);
     const theProfileService = computed(() => getters.profileService);
@@ -64,20 +62,16 @@ export function useCurrentUser() {
         theAuthService,
         theProfileService,
         ...useCurrentUserStatus(),
-        refreshStatus: services.UserService.refreshStatus,
-        switchUserProfile: services.UserService.switchUserProfile,
-        logout: services.UserService.logout,
+        ...useServiceOnly('UserService', 'refreshStatus', 'switchUserProfile', 'logout'),
     };
 }
 
 export function useCurrentUserSkin() {
-    const { getters, services } = useStore();
+    const { getters } = useStore();
     return {
         refreshing: useBusy('refreshSkin'),
         url: computed(() => getters.gameProfile.textures.SKIN.url),
         slim: computed(() => (getters.gameProfile.textures.SKIN.metadata ? getters.gameProfile.textures.SKIN.metadata.model === 'slim' : false)),
-        refreshSkin: services.UserService.refreshSkin,
-        uploadSkin: services.UserService.uploadSkin,
-        saveSkin: services.UserService.saveSkin,
+        ...useServiceOnly('UserService', 'refreshSkin', 'uploadSkin', 'saveSkin'),
     };
 }

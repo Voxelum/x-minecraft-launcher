@@ -392,7 +392,7 @@ export class InstanceService extends Service {
     /**
      * Refresh all instance server status if present
      */
-    async refreshServerStatusAll(this: InstanceService) {
+    async refreshServerStatusAll() {
         let all = Object.values(this.state.instance.all).filter(p => !!p.server);
         let results = await Promise.all(all.map(async p => ({ [p.path]: await queryStatus(p.server!) })));
         this.commit('instancesStatus', results.reduce(Object.assign, {}));

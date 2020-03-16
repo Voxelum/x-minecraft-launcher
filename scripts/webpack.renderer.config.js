@@ -155,10 +155,9 @@ const rendererConfig = {
     },
     resolve: {
         alias: {
-            renderer: path.join(__dirname, '../src/renderer'),
+            '@renderer': path.join(__dirname, '../src/renderer'),
             '@': path.join(__dirname, '../src/renderer'),
-            static: path.join(__dirname, '../static'),
-            universal: path.join(__dirname, '../src/universal'),
+            '@universal': path.join(__dirname, '../src/universal'),
         },
         extensions: ['.ts', '.js', '.vue', '.json', '.css', '.node'],
     },

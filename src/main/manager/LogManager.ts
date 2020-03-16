@@ -7,7 +7,7 @@ import { Manager } from '.';
 
 const DEV = process.env.NODE_ENV === 'development';
 
-function formatMsg(message: any, ...options: any[]) { return options.length !== 0 ? format(message, options) : format(message); }
+function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, options) : format(message); }
 export default class LogManager extends Manager {
     private loggerEntries = { log: new PassThrough(), warn: new PassThrough(), error: new PassThrough() };
 
@@ -21,9 +21,9 @@ export default class LogManager extends Manager {
         super();
 
         function transform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`); } }); }
-        pipeline(this.loggerEntries.log, transform('INFO'), this.output);
-        pipeline(this.loggerEntries.warn, transform('WARN'), this.output);
-        pipeline(this.loggerEntries.error, transform('ERROR'), this.output);
+        pipeline(this.loggerEntries.log, transform('INFO'), this.output, () => { console.log('good'); });
+        pipeline(this.loggerEntries.warn, transform('WARN'), this.output, () => { });
+        pipeline(this.loggerEntries.error, transform('ERROR'), this.output, () => { });
 
         process.on('uncaughtException', (err) => {
             this.error('Uncaught Exception');
@@ -34,7 +34,7 @@ export default class LogManager extends Manager {
             this.error(reason);
         });
         if (DEV) {
-            this.output.on('data', (b) => this.log(b.toString()));
+            this.output.on('data', (b) => console.log(b.toString()));
         }
     }
 

@@ -149,8 +149,8 @@ export default createComponent({
   setup() {
     const { $t } = useI18n();
     const { showOpenDialog } = useNativeDialog();
-    const { selectInstance, deleteInstance, refreshInstances: pingProfiles, instances, importInstance } = useInstances();
-    const { importResource } = useResourceOperation();
+    const { mountInstance: selectInstance, deleteInstance, refreshServerStatusAll: pingProfiles, instances, importInstance } = useInstances();
+    const { importUnknownResource } = useResourceOperation();
     const { importCurseforgeModpack } = useCurseforgeImport();
     const { notify } = useNotifier();
     const router = useRouter();
@@ -163,7 +163,7 @@ export default createComponent({
       creatingTooltip: false,
 
       isDeletingProfile: false,
-      deletingProfile: { name: '', id: '' } as InstanceConfig | { name: string; id: string },
+      deletingProfile: { name: '', path: '' } as InstanceConfig | { name: string; path: string },
 
       /**
        * Is dragging a profile
@@ -256,7 +256,7 @@ export default createComponent({
           notify('info', $t('profile.import.start'));
           for (const f of filePaths) {
             if (curseforge) {
-              await importResource({
+              await importUnknownResource({
                 path: f,
                 type: 'curseforge-modpack',
                 background: true,
@@ -270,8 +270,8 @@ export default createComponent({
         }
       },
       doDelete() {
-        if ('id' in data.deletingProfile) {
-          const id = data.deletingProfile.id;
+        if ('path' in data.deletingProfile) {
+          const id = data.deletingProfile.path;
           deleteInstance(id)
             .catch(() => {
               notify('error', `Fail to delete profile ${id}`);
@@ -286,7 +286,7 @@ export default createComponent({
       },
       cancelDelete() {
         data.isDeletingProfile = false;
-        data.deletingProfile = { name: '', id: '' };
+        data.deletingProfile = { name: '', path: '' };
       },
       selectInstance(id: string) {
         selectInstance(id);

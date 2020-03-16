@@ -1,8 +1,9 @@
 import { computed } from '@vue/composition-api';
 import { useStore } from './useStore';
+import { useService, useServiceOnly } from './useService';
 
 export function useLaunch() {
-    const { state, services } = useStore();
+    const { state } = useStore();
     const status = computed(() => state.launch.status);
     const errorType = computed(() => state.launch.errorType);
     const errors = computed(() => state.launch.errors.map((e) => {
@@ -15,6 +16,6 @@ export function useLaunch() {
         status,
         errorType,
         errors,
-        launch: services.LaunchService.launch,
+        ...useServiceOnly('LaunchService', 'launch'),
     };
 }

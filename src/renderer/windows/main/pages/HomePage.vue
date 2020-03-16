@@ -73,7 +73,7 @@
 
 <script lang=ts>
 import { createComponent, watch } from '@vue/composition-api';
-import { LaunchException } from '@universal/utils';
+import { LaunchException } from '@universal/util/exception';
 import {
   useDialog,
   useI18n,
@@ -107,7 +107,7 @@ export default createComponent({
     const { showDialog: showFeedbackDialog } = useDialog('feedback');
     const { showDialog: showLaunchStatusDialog } = useDialog('launch-status');
     const { showDialog: showLaunchBlockedDialog } = useDialog('launch-blocked');
-    const { refreshing: refreshingProfile, name, isServer, exportTo } = useInstance();
+    const { refreshing: refreshingProfile, name, isServer, exportInstance: exportTo } = useInstance();
     const { launch, status: launchStatus, errors, errorType } = useLaunch();
     const { notify, subscribe } = useNotifier();
     const { missing: missingJava } = useJava();
@@ -147,7 +147,7 @@ export default createComponent({
           defaultPath: `${name.value}.zip`,
         });
         if (filePath) {
-          subscribe(exportTo({ dest: filePath, type: 'full' }),
+          subscribe(exportTo({ destinationPath: filePath, mode: 'full' }),
             () => $t('profile.export.title'),
             () => $t('profile.export.title'));
         }

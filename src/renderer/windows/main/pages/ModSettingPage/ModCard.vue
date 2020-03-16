@@ -53,7 +53,7 @@
 <script lang=ts>
 import Vue from 'vue';
 import { createComponent, ref, Ref, computed } from '@vue/composition-api';
-import { useForgeModResource, useInstanceVersionBase, useDragTransferItem, useCompatibleWithLoader, useBaseService } from '@/hooks';
+import { useForgeModResource, useInstanceVersionBase, useDragTransferItem, useCompatibleWithLoader, useService } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -74,7 +74,7 @@ export default createComponent({
     const { icon, metadata, acceptedRange, acceptLoaderRange } = useForgeModResource(props.data as any);
     const { minecraft } = useInstanceVersionBase();
     const { compatible } = useCompatibleWithLoader(acceptedRange, acceptLoaderRange, minecraft);
-    const { openInBrowser } = useBaseService();
+    const { openInBrowser } = useService('BaseService');
     const dragged = ref(false);
     const iconImage: Ref<Vue | null> = ref(null);
     const card: Ref<Vue | null> = ref(null);

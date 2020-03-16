@@ -20,7 +20,7 @@ interface Instance extends InstanceSchema {
     /**
      * The server status
      */
-    serverStatus: ServerStatus | null;
+    serverStatus: ServerStatus | undefined;
 }
 
 interface State extends InstanceLockSchema {
@@ -153,7 +153,7 @@ export function createTemplate(): Instance {
 
         lastAccessDate: -1,
         creationDate: -1,
-        serverStatus: null,
+        serverStatus: undefined,
     };
     return base;
 }

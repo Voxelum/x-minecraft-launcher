@@ -79,6 +79,7 @@ import {
   useBusy,
   useResource,
 } from '@/hooks';
+import { SaveMetadata } from '@main/service/InstanceSavesService';
 
 export default createComponent({
   props: {
@@ -89,12 +90,7 @@ export default createComponent({
   },
   setup(props, context) {
     const data = reactive({
-      loadedProfileSaves: [] as Array<{
-        profile: string;
-        path: string;
-        name: string;
-        icon: string;
-      }>,
+      loadedProfileSaves: [] as Array<SaveMetadata>,
 
       profilesCopyFrom: [] as boolean[],
       resourcesCopyFrom: [] as boolean[],
@@ -104,7 +100,7 @@ export default createComponent({
       error: null,
     });
 
-    const { copySave, id, loadAllPreviews, importSave } = useInstanceSaves();
+    const { cloneSave, path, loadAllInstancesSaves: loadAllPreviews, importSave } = useInstanceSaves();
     const { resources: storedSaves } = useResource('saves');
     const nothingSelected = computed(() => data.profilesCopyFrom.every(v => !v) && data.resourcesCopyFrom.every(v => !v));
     const loadingSaves = useBusy(loadAllPreviews);
@@ -132,12 +128,12 @@ export default createComponent({
           const resourcesSaves = storedSaves.value.filter((_, i) => data.resourcesCopyFrom[i]);
 
           if (resourcesSaves.length !== 0) {
-            await Promise.all(resourcesSaves.map(save => importSave(save.path)));
+            await Promise.all(resourcesSaves.map(save => importSave({ source: save.path })));
           }
 
           if (profilesSaves.length !== 0) {
             for (const s of profilesSaves) {
-              await copySave({ src: s.profile, dest: [id.value] });
+              await cloneSave({ saveName: s.name, destInstancePath: [path.value] });
             }
           }
           context.emit('input', false);

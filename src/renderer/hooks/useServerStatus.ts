@@ -2,11 +2,12 @@ import { computed, Ref, ref } from '@vue/composition-api';
 import { Status } from '@xmcl/client';
 import unknownServer from '@/assets/unknown_server.png';
 import { useStore } from './useStore';
+import { useService } from './useService';
 
 export function useServerStatus(ref?: Ref<Status | undefined>) {
-    const { state, getters, services } = useStore();
+    const { getters } = useStore();
 
-    const using = ref || computed(() => state.instance.statuses[state.instance.path]);
+    const using = ref || computed(() => getters.instance.serverStatus);
     const status: Ref<Status> = computed(() => using.value || {
         version: {
             name: '',
@@ -29,17 +30,17 @@ export function useServerStatus(ref?: Ref<Status | undefined>) {
         description: computed(() => status.value.description),
         favicon: computed(() => status.value.favicon || unknownServer),
         ping: computed(() => status.value.ping),
-        refresh: services.InstanceService.refreshServerStatus,
+        refresh: useService('InstanceService').refreshServerStatus,
     };
 }
 
 export function useServerStatusForProfile(id: string) {
     const { state } = useStore();
-    return useServerStatus(computed(() => state.instance.statuses[id]));
+    return useServerStatus(computed(() => state.instance.all[id].serverStatus));
 }
 
 export function useServer(serverRef: Ref<{ host: string; port?: number }>, protocol: Ref<number | undefined>) {
-    const { services } = useStore();
+    const { pingServer } = useService('ServerStatusService');
     const status = ref<Status>({
         version: {
             name: '',
@@ -61,7 +62,7 @@ export function useServer(serverRef: Ref<{ host: string; port?: number }>, proto
         pinging.value = true;
         const server = serverRef.value;
         if (!server.host) return;
-        status.value = await services.ServerStatusService.pingServer({
+        status.value = await pingServer({
             host: server.host,
             port: server.port,
             protocol: protocol.value,

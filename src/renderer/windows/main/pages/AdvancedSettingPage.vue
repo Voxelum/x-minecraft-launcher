@@ -74,7 +74,7 @@ export default createComponent({
     const { $t } = useI18n();
     const { showOpenDialog } = useNativeDialog();
     const {
-      edit,
+      editInstance: edit,
       maxMemory,
       minMemory,
       vmOptions,

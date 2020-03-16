@@ -43,7 +43,7 @@
 </template>
 
 <script lang=ts>
-import { MojangChallenge } from '@xmcl/minecraft-launcher-core';
+import { MojangChallenge } from '@xmcl/user/mojang';
 import { reactive, toRefs, onMounted, watch, createComponent } from '@vue/composition-api';
 import { useDialogSelf, useCurrentUserStatus, useI18n } from '@/hooks';
 

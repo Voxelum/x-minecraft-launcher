@@ -123,11 +123,10 @@ const mod: ResourceModule = {
                     state.directory[u] = res;
                 }
             } else {
-                console.error(`Cannot accept resource for unknown domain [${res.domain}]`);
+                throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`);
             }
         },
         resources: (state, all) => {
-            console.log(`Accept resource ${all.length}`);
             for (const res of all) {
                 if (res.domain in state.domains) {
                     const domain = state.domains[res.domain];
@@ -137,7 +136,7 @@ const mod: ResourceModule = {
                         state.directory[u] = res;
                     }
                 } else {
-                    console.error(`Cannot accept resource for unknown domain [${res.domain}]`);
+                    throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`);
                 }
             }
         },
@@ -146,7 +145,7 @@ const mod: ResourceModule = {
                 const domain = state.domains[resource.domain];
                 const index = domain.findIndex(r => r.hash === resource.hash);
                 if (index === -1) {
-                    console.warn(`Cannot find resouce ${resource.name}[${resource.hash}] in domain!`);
+                    throw new Error(`Cannot find resouce ${resource.name}[${resource.hash}] in domain!`);
                 }
                 Vue.delete(domain, index);
                 Vue.delete(state.directory, resource.hash);
@@ -154,7 +153,7 @@ const mod: ResourceModule = {
                     Vue.delete(state.directory, u);
                 }
             } else {
-                console.error(`Cannot remove resource for unknown domain [${resource.domain}]`);
+                throw new Error(`Cannot remove resource for unknown domain [${resource.domain}]`);
             }
         },
     },
