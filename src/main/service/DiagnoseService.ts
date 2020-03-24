@@ -1,15 +1,20 @@
-import { MinecraftFolder, ResolvedLibrary } from '@xmcl/core';
-import { Diagnosis, ForgeInstaller, Installer } from '@xmcl/installer';
-import { Status } from '@xmcl/installer/diagnose';
-import { Forge } from '@xmcl/mod-parser';
-import { Task } from '@xmcl/task';
-import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
 import { Issue, IssueReport } from '@universal/store/modules/diagnose';
 import { LocalVersion } from '@universal/store/modules/version';
+import { futils, MinecraftFolder, ResolvedLibrary } from '@xmcl/core';
+import { Diagnosis, Installer } from '@xmcl/installer';
+import { InstallProfile } from '@xmcl/installer/minecraft';
+import { Forge } from '@xmcl/mod-parser';
+import { readJSON } from 'fs-extra';
+import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
+import { basename, join, relative } from 'path';
 import AuthLibService from './AuthLibService';
 import InstallService from './InstallService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
 import VersionService from './VersionService';
+import JavaService from './JavaService';
+import InstanceService from './InstanceService';
+
+const { exists } = futils;
 
 export interface Fix {
     match(issues: Issue[]): boolean;
@@ -26,6 +31,12 @@ export default class DiagnoseService extends Service {
 
     @Inject('AuthLibService')
     private authLibService!: AuthLibService;
+
+    @Inject('JavaService')
+    private javaService!: JavaService;
+
+    @Inject('InstanceService')
+    private instanceService!: InstanceService;
 
     private fixes: Fix[] = [];
 
@@ -49,7 +60,7 @@ export default class DiagnoseService extends Service {
         this.registerMatchedFix(['missingVersion'],
             () => this.commit('instance', { runtime: { minecraft: this.getters.minecraftRelease.id }, path: this.state.instance.path }),
             'diagnoseVersion');
-        this.registerMatchedFix(['missingVersionJson', 'missingVersionJar'],
+        this.registerMatchedFix(['missingVersionJson', 'missingVersionJar', 'corruptedVersionJson', 'corruptedVersionJar'],
             async (issues) => {
                 const i = issues[0];
                 const { minecraft, forge } = i.arguments! as LocalVersion;
@@ -76,67 +87,50 @@ export default class DiagnoseService extends Service {
             },
             'diagnoseVersion');
 
-        this.registerMatchedFix(['badForgeProcessedFiles'],
-            async (issues) => {
-                const { folder } = this.getters.instanceVersion;
-                // const postProcessing = Task.create('postProcessing', async (cc: Task.Context) => {
-                //     const root = new MinecraftFolder(this.state.root);
-                //     const total = issues.length;
-                //     let i = 0;
-                //     cc.update(i, total);
-                //     for (const proc of issues) {
-                //         await ForgeInstaller.postProcess(root, proc.arguments as any, JavaExecutor.createSimple(this.getters.defaultJava.path));
-                //         cc.update(i += 1);
-                //     }
-                // });
-                // const installForge = Task.create('installForge', async (c: Task.Context) => {
-                //     try {
-                //         await c.execute(postProcessing);
-                //     } catch (e) {
-                //         await Installer.installByProfileTask(
-                //             folder,
-                //             this.state.root,
-                //             {
-                //                 java: JavaExecutor.createSimple(this.getters.defaultJava.path),
-                //             },
-                //         ).run(c);
-                //     }
-                // });
-                // await this.submit(installForge).wait();
-            },
-            'diagnoseVersion');
-
-        this.registerMatchedFix(['missingForgeJar'],
+        this.registerMatchedFix(['missingForge'],
             async (issues) => {
                 if (!issues[0].arguments) return;
-                const { minecraft, forge } = issues[0].arguments;
-                const forgeVer = this.state.version.forge[minecraft]?.versions.find(v => v.version === forge);
+                let { minecraft, forge } = issues[0].arguments;
+                let forgeVer = this.state.version.forge[minecraft]?.versions.find(v => v.version === forge);
                 if (!forgeVer) {
-                    this.pushException({ type: 'fixVersionNoForgeVersionMetadata', minecraft, forge });
-                    this.error('Unexpected missing forge context for missingForgeJar problem');
+                    await this.installService.installForge({ mcversion: minecraft, version: forge });
                 } else {
-                    const forgeMeta = forgeVer;
-                    await this.installService.installForge(forgeMeta);
+                    await this.installService.installForge(forgeVer);
                 }
             },
             'diagnoseVersion');
 
-        this.registerMatchedFix(['missingAssetsIndex', 'missingAssets'],
-            (issues) => this.installService.installAssets(issues[0].arguments!.version),
+
+        this.registerMatchedFix(['missingAssetsIndex', 'corruptedAssetsIndex'],
+            (issues) => this.installService.installAssetsAll(issues[0].arguments.version),
             'diagnoseVersion');
 
-        this.registerMatchedFix(['missingLibraries'],
+        this.registerMatchedFix(['missingAssets', 'corruptedAssets'],
+            (issues) => {
+                if (issues.length === 1 && issues[0].multi) {
+                    return this.installService.installAssets(issues[0].arguments.values);
+                }
+                return this.installService.installAssets(issues.map(i => i.arguments as any));
+            },
+            'diagnoseVersion');
+
+        this.registerMatchedFix(['missingLibraries', 'corruptedLibraries'],
             async (issues) => {
-                if (!issues[0].arguments) return;
-                if (issues[0].arguments.libraries instanceof Array) {
-                    await this.installService.installLibraries({ libraries: issues[0].arguments.libraries });
+                if (issues.length === 1 && issues[0].multi) {
+                    let libs: ResolvedLibrary[] = issues[0].arguments.values;
+                    await this.installService.installLibraries({ libraries: libs });
                 } else {
-                    const all = issues.filter(p => p.id === 'missingLibraries');
-                    await this.installService.installLibraries({ libraries: all.map(p => p.arguments as ResolvedLibrary) });
+                    await this.installService.installLibraries({ libraries: issues.map(p => p.arguments as ResolvedLibrary) });
                 }
             },
             'diagnoseVersion');
 
+        this.registerMatchedFix(['badInstall'],
+            async (issues) => {
+                let task = Installer.installByProfileTask(issues[0].arguments.installProfile, this.state.root, { java: this.getters.defaultJava.path });
+                await this.submit(task).wait();
+            },
+            'diagnoseVersion');
         this.registerMatchedFix(['missingAuthlibInjector'],
             () => this.authLibService.ensureAuthlibInjection(),
             'diagnoseServer');
@@ -318,9 +312,9 @@ export default class DiagnoseService extends Service {
             // TODO: handle not existed java
             if (resolvedJava && resolvedJava.majorVersion > 8) {
                 if (!resolvedMcVersion.minorVersion || resolvedMcVersion.minorVersion < 13) {
-                    tree.incompatibleJava.push({ java: resolvedJava.version, mcversion });
+                    tree.incompatibleJava.push({ java: resolvedJava.version, version: mcversion, type: 'Minecraft' });
                 } else if (resolvedMcVersion.minorVersion >= 13 && instance.runtime.forge && resolvedJava.majorVersion > 10) {
-                    tree.incompatibleJava.push({ java: resolvedJava.version, mcversion });
+                    tree.incompatibleJava.push({ java: resolvedJava.version, version: instance.runtime.forge, type: 'MinecraftForge' });
                 }
             }
 
@@ -328,6 +322,26 @@ export default class DiagnoseService extends Service {
         } finally {
             this.commit('release', 'diagnose');
         }
+    }
+
+    @Singleton()
+    async diagnoseFailure(log: string) {
+        const tree: Pick<IssueReport, 'badForge'> = {
+            badForge: [],
+        };
+
+        let lines = log.split('\n').map(l => l.trim()).filter(l => l.length !== 0);
+        for (let line of lines) {
+            let reg = line.match(/\[main\/FATAL\] \[net\.minecraftforge\.fml\.loading\.FMLCommonLaunchHandler\/CORE\]: Failed to find Minecraft resource version/);
+            if (reg) {
+                let path = reg[2];
+                let jarName = basename(path);
+                let [, minecraft, forge] = jarName.substring(0, jarName.length - '-client.jar'.length).split('-');
+                tree.badForge.push({ minecraft, forge });
+            }
+        }
+
+        this.commit('issuesPost', tree);
     }
 
     @Singleton()
@@ -355,113 +369,139 @@ export default class DiagnoseService extends Service {
     async diagnoseVersion() {
         this.commit('aquire', 'diagnose');
         try {
-            const id = this.state.instance.path;
-            const selected = this.state.instance.all[id];
+            let id = this.state.instance.path;
+            let selected = this.state.instance.all[id];
             if (!selected) {
                 this.error(`No profile selected! ${id}`);
                 return;
             }
             await this.versionService.refreshVersions();
-            const currentVersion = { ...this.getters.instanceVersion };
+            let currentVersion = { ...this.getters.instanceVersion };
             let targetVersion = currentVersion.folder;
-            const mcversion = currentVersion.minecraft;
+            let mcversion = currentVersion.minecraft;
+            let forge = currentVersion.forge;
 
-            type VersionReport = Pick<IssueReport, 'missingVersionJar' | 'missingAssetsIndex' | 'missingVersionJson' | 'missingForgeJar' | 'missingLibraries' | 'missingAssets' | 'missingVersion'
-                | 'corruptedVersionJar' | 'corruptedAssetsIndex' | 'corruptedVersionJson' | 'corruptedForgeJar' | 'corruptedLibraries' | 'corruptedAssets'
-                | 'badForgeProcessedFiles' | 'badForge' | 'badForgeIncomplete'>;
+            let mcLocation = MinecraftFolder.from(this.state.root);
 
-            const tree: VersionReport = {
+            type VersionReport = Pick<IssueReport,
+                'missingVersionJar' |
+                'missingAssetsIndex' |
+                'missingVersionJson' |
+                'missingLibraries' |
+                'missingAssets' |
+                'missingVersion' |
+
+                'corruptedVersionJar' |
+                'corruptedAssetsIndex' |
+                'corruptedVersionJson' |
+                'corruptedLibraries' |
+                'corruptedAssets' |
+
+                'badInstall' |
+
+                'missingForge' |
+                'missingLiteloader'>;
+
+            let tree: VersionReport = {
                 missingVersion: [],
                 missingVersionJar: [],
                 missingAssetsIndex: [],
                 missingVersionJson: [],
-                missingForgeJar: [],
                 missingLibraries: [],
                 missingAssets: [],
 
                 corruptedVersionJar: [],
                 corruptedAssetsIndex: [],
                 corruptedVersionJson: [],
-                corruptedForgeJar: [],
                 corruptedLibraries: [],
                 corruptedAssets: [],
 
-                badForge: [],
-                badForgeIncomplete: [],
-                badForgeProcessedFiles: [],
+                missingForge: [],
+                missingLiteloader: [],
+
+                badInstall: [],
             };
 
             if (targetVersion === 'unknown') {
-                targetVersion = mcversion;
-                // this.log(`Skip diagnose for unknown version ${mcversion}`);
-                // return;
-            }
-            this.log(`Diagnose for version ${targetVersion}`);
-
-            const location = this.state.root;
-            const versionDiagnosis = await Diagnosis.diagnose(targetVersion, location);
-
-            if (versionDiagnosis.versionJson.status === Status.Corrupted) {
-                tree.corruptedVersionJson.push({ version: versionDiagnosis.versionJson.value, ...currentVersion });
-            } else if (versionDiagnosis.versionJson.status === Status.Missing || versionDiagnosis.versionJson.status === Status.Unknown) {
-                tree.missingVersionJson.push({ version: versionDiagnosis.versionJson.value, ...currentVersion });
-            }
-
-            if (versionDiagnosis.versionJar === Status.Corrupted) {
-                tree.corruptedVersionJar.push({ version: mcversion, ...currentVersion });
-            } else if (versionDiagnosis.versionJar === Status.Missing) {
-                tree.missingVersionJar.push({ version: mcversion, ...currentVersion });
-            }
-
-            if (versionDiagnosis.assetsIndex === Status.Corrupted) {
-                tree.corruptedAssetsIndex.push({ version: mcversion });
-            } else if (versionDiagnosis.assetsIndex === Status.Missing) {
-                tree.missingAssetsIndex.push({ version: mcversion });
-            }
-
-            if (versionDiagnosis.libraries.length !== 0) {
-                const missingForge = versionDiagnosis.libraries.find(l => l.value.name.startsWith('net.minecraftforge:forge'));
-                if (missingForge) {
-                    const [minecraft, forge] = missingForge.value.name.substring('net.minecraftforge:forge:'.length).split('-');
-                    tree.missingForgeJar.push({ minecraft, forge });
+                if (currentVersion.forge) {
+                    let forge = this.state.version.local.find(v => v.forge === currentVersion.forge);
+                    if (!forge) {
+                        tree.missingForge.push({ forge: currentVersion.forge, minecraft: currentVersion.minecraft });
+                    }
                 }
 
-                tree.missingLibraries.push(...versionDiagnosis.libraries
-                    .filter(l => l.status === Status.Missing)
-                    .filter(l => !l.value.name.startsWith('net.minecraftforge:forge'))
-                    .map(l => l.value));
+                if (currentVersion.liteloader) {
+                    let liteloader = this.state.version.local.find(v => v.liteloader === currentVersion.liteloader);
+                    if (!liteloader) {
+                        tree.missingLiteloader.push({ liteloader: currentVersion.liteloader, minecraft: currentVersion.minecraft });
+                    }
+                }
+            } else {
+                this.log(`Diagnose for version ${targetVersion}`);
 
-                tree.corruptedLibraries.push(...versionDiagnosis.libraries
-                    .filter(l => l.status === Status.Corrupted)
-                    .filter(l => !l.value.name.startsWith('net.minecraftforge:forge'))
-                    .map(l => l.value));
-            }
-            if (versionDiagnosis.assets.length !== 0) {
-                const missing = versionDiagnosis.assets.filter(a => a.status === Status.Missing);
-                if (missing.length !== 0) {
-                    tree.missingAssets.push({ count: missing.length, version: targetVersion });
+                let location = this.state.root;
+                let gameReport = await Diagnosis.diagnose(targetVersion, location);
+
+                for (let issue of gameReport.issues) {
+                    if (issue.role === 'versionJson') {
+                        if (issue.type === 'corrupted') {
+                            tree.corruptedVersionJson.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file) });
+                        } else {
+                            tree.missingVersionJson.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file) });
+                        }
+                    } else if (issue.role === 'minecraftJar') {
+                        if (issue.type === 'corrupted') {
+                            tree.corruptedVersionJar.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file) });
+                        } else {
+                            tree.missingVersionJar.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file) });
+                        }
+                    } else if (issue.role === 'assetIndex') {
+                        if (issue.type === 'corrupted') {
+                            tree.corruptedAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file) });
+                        } else {
+                            tree.missingAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file) });
+                        }
+                    } else if (issue.role === 'asset') {
+                        if (issue.type === 'corrupted') {
+                            tree.corruptedAssets.push({ ...issue.asset, version: currentVersion.minecraft, hash: issue.asset.hash, file: relative(this.state.root, issue.file) });
+                        } else {
+                            tree.missingAssets.push({ ...issue.asset, version: currentVersion.minecraft, hash: issue.asset.hash, file: relative(this.state.root, issue.file) });
+                        }
+                    } else if (issue.role === 'library') {
+                        if (issue.type === 'corrupted') {
+                            tree.corruptedLibraries.push({ ...issue.library, file: relative(this.state.root, issue.file) });
+                        } else {
+                            tree.missingLibraries.push({ ...issue.library, file: relative(this.state.root, issue.file) });
+                        }
+                    }
                 }
-                const corrupted = versionDiagnosis.assets.filter(a => a.status === Status.Corrupted);
-                if (corrupted.length !== 0) {
-                    tree.missingAssets.push({ count: corrupted.length, version: targetVersion });
-                }
-            }
-            if (versionDiagnosis.forge) {
-                const forgeDiagnosis = versionDiagnosis.forge;
-                if (!forgeDiagnosis.badVersionJson) {
-                    if (forgeDiagnosis.badInstall) {
-                        tree.badForge.push({ forge: currentVersion.forge, minecraft: currentVersion.minecraft });
-                    } else if (forgeDiagnosis.libraries.length !== 0) {
-                        tree.badForgeIncomplete.push({
-                            count: forgeDiagnosis.libraries.length,
-                            libraries: forgeDiagnosis.libraries.map(l => l.value),
-                        });
-                    } else if (forgeDiagnosis.unprocessed.length !== 0) {
-                        tree.badForgeProcessedFiles.push(...forgeDiagnosis.unprocessed);
+
+                let root = mcLocation.getVersionRoot(targetVersion);
+                let installProfilePath = join(root, 'install_profile.json');
+                if (await exists(installProfilePath)) {
+                    let installProfile: InstallProfile = await readJSON(installProfilePath);
+                    let report = await Diagnosis.diagnoseInstall(installProfile, mcLocation.root);
+                    let missedInstallProfileLibs: IssueReport['missingLibraries'] = [];
+                    let corruptedInstallProfileLibs: IssueReport['corruptedLibraries'] = [];
+                    let badInstall = false;
+                    for (let issue of report.issues) {
+                        if (issue.role === 'processor') {
+                            badInstall = true;
+                        } else if (issue.role === 'library') {
+                            if (issue.type === 'corrupted') {
+                                corruptedInstallProfileLibs.push({ ...issue.library, file: relative(this.state.root, issue.file) });
+                            } else {
+                                missedInstallProfileLibs.push({ ...issue.library, file: relative(this.state.root, issue.file) });
+                            }
+                        }
+                    }
+                    if (badInstall) {
+                        tree.badInstall.push({ version: targetVersion, installProfile: report.installProfile, minecraft: mcversion });
+                        tree.corruptedLibraries.push(...corruptedInstallProfileLibs);
+                        tree.missingLibraries.push(...missedInstallProfileLibs);
                     }
                 }
             }
-
             this.commit('issuesPost', tree);
         } finally {
             this.commit('release', 'diagnose');
@@ -474,6 +514,8 @@ export default class DiagnoseService extends Service {
             .filter(p => !this.state.diagnose.registry[p.id].fixing);
 
         if (unfixed.length === 0) return;
+
+        this.log(`Start fixing ${issues.length} issues: ${JSON.stringify(issues.map(i => i.id))}`);
 
         const recheck = {};
 
@@ -492,5 +534,12 @@ export default class DiagnoseService extends Service {
         }
 
         this.commit('issuesEndResolve', unfixed);
+    }
+
+    async fixJavaIncompatible() {
+        let instancePath = this.state.instance.path;
+        await this.javaService.installJava();
+        await this.instanceService.editInstance({ instancePath, java: '8' });
+        await this.instanceService.setJavaPath(this.javaService.getInternalJavaLocation());
     }
 }

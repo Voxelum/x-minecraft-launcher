@@ -51,6 +51,15 @@ export default class VersionService extends Service {
         return version as any as LocalVersion;
     }
 
+
+    async resolveVersionId() {
+        let cur = this.getters.instanceVersion;
+        if (cur.folder === 'unknown') {
+            await this.refreshVersions(true);
+        }
+        return cur.folder;
+    }
+
     /**
      * Refresh a version in the version folder.
      * @param versionFolder The version folder name. It must existed under the `versions` folder.

@@ -28,14 +28,16 @@ export function diff(target: any, option: any): boolean {
 export function fitin(state: any, option: any) {
     if (isNullOrUndefine(option)) return;
     for (const key of Object.keys(option)) {
+        if (!(key in state)) {
+            continue;
+        }
         const stateValue = state[key];
         const optionValue = option[key];
 
         if (!isNullOrUndefine(optionValue)) {
             const expectType = typeof stateValue;
             if (expectType === 'object') {
-                if (stateValue instanceof Array
-                    && optionValue instanceof Array) {
+                if (stateValue instanceof Array && optionValue instanceof Array) {
                     state[key] = optionValue;
                 } else if (typeof optionValue === 'object') {
                     fitin(stateValue, optionValue);
@@ -50,24 +52,26 @@ export function fitin(state: any, option: any) {
 export function shouldPatch(original: any, patch: any): boolean {
     if (isNullOrUndefine(patch)) return false;
     for (const key of Object.keys(patch)) {
-        const oValue = original[key];
-        const pValue = patch[key];
+        if (key in original) {
+            const oValue = original[key];
+            const pValue = patch[key];
 
-        if (isNullOrUndefine(pValue) && !isNullOrUndefine(oValue)) {
-            // this mean we try to set to undefined/null
-            return true;
-        }
-
-        if (typeof oValue === 'object') {
-            if (oValue instanceof Array && pValue instanceof Array // two array
-                && oValue.some((v, i) => v !== pValue[i])) { // exact same, no
+            if (isNullOrUndefine(pValue) && !isNullOrUndefine(oValue)) {
+                // this mean we try to set to undefined/null
                 return true;
             }
-            if (shouldPatch(oValue, pValue)) {
+
+            if (typeof oValue === 'object') {
+                if (oValue instanceof Array && pValue instanceof Array // two array
+                    && oValue.some((v, i) => v !== pValue[i])) { // exact same, no
+                    return true;
+                }
+                if (shouldPatch(oValue, pValue)) {
+                    return true;
+                }
+            } else if (pValue !== original[key]) {
                 return true;
             }
-        } else if (pValue !== original[key]) {
-            return true;
         }
     }
     return false;

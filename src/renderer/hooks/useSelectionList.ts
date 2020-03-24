@@ -25,7 +25,7 @@ export function useDropImport(
     elem: Ref<HTMLElement | null>,
     importHint?: string,
 ) {
-    const { importResource } = useResourceOperation();
+    const { importUnknownResource } = useResourceOperation();
     function onDrop(event: DragEvent) {
         if (!event.dataTransfer) return;
         event.preventDefault();
@@ -33,7 +33,7 @@ export function useDropImport(
         if (length > 0) {
             console.log(`Detect drop import ${length} file(s).`);
             for (let i = 0; i < length; ++i) {
-                importResource({ path: event.dataTransfer.files[i].path, type: importHint });
+                importUnknownResource({ path: event.dataTransfer.files[i].path, type: importHint });
             }
         }
     }

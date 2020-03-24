@@ -1,8 +1,9 @@
-import { ResolvedLibrary, Version } from '@xmcl/core';
-import { FabricInstaller, ForgeInstaller, Installer, LiteLoaderInstaller } from '@xmcl/installer';
-import Task from '@xmcl/task';
 import { MutationKeys } from '@universal/store';
 import { VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema } from '@universal/store/modules/version.schema';
+import { ResolvedLibrary, Version, MinecraftFolder } from '@xmcl/core';
+import { FabricInstaller, ForgeInstaller, Installer, LiteLoaderInstaller } from '@xmcl/installer';
+import { installTask } from '@xmcl/installer/forge';
+import { Task } from '@xmcl/task';
 import Service, { Inject, Singleton } from './Service';
 import VersionService from './VersionService';
 
@@ -18,6 +19,8 @@ export default class InstallService extends Service {
     private refreshedFabric = false;
 
     private refreshedLiteloader = false;
+
+    private refreshedForge: Record<string, boolean> = {};
 
     async load() {
         const [mc, forge, liteloader] = await Promise.all([
@@ -76,12 +79,44 @@ export default class InstallService extends Service {
         ]);
     }
 
+    private async getForgesFromBMCL(mcversion: string) {
+        interface BMCLForge {
+            'branch': string; // '1.9';
+            'build': string; // 1766;
+            'mcversion': string; // '1.9';
+            'modified': string; // '2016-03-18T07:44:28.000Z';
+            'version': string; // '12.16.0.1766';
+            files: {
+                format: 'zip' | 'jar'; // zip
+                category: 'universal' | 'mdk' | 'installer';
+                hash: string;
+            }[];
+        }
+        let forges: BMCLForge[] = await this.networkManager.request.get(`https://bmclapi2.bangbang93.com/forge/minecraft/${mcversion}`).json();
+        function convert(v: BMCLForge): ForgeInstaller.Version {
+            let installer = v.files.find(f => f.category === 'installer')!;
+            let universal = v.files.find(f => f.category === 'universal')!;
+            return {
+                mcversion: v.mcversion,
+                version: v.version,
+                type: 'common',
+            } as any;
+        }
+        let result: ForgeInstaller.VersionList = {
+            mcversion,
+            timestamp: forges[0].modified,
+            versions: forges.map(convert),
+        };
+        return result;
+    }
+
     /**
      * Request minecraft version list and cache in to store and disk.
      */
     @Singleton()
     async refreshMinecraft(force = false) {
         if (!force && this.refreshedMinecraft) {
+            this.log('Skip to refresh Minecraft metadata. Use cache.');
             return;
         }
         this.refreshedMinecraft = true;
@@ -89,8 +124,10 @@ export default class InstallService extends Service {
         const oldMetadata = this.state.version.minecraft;
         const newMetadata = await Installer.getVersionList({ original: oldMetadata });
         if (oldMetadata !== newMetadata) {
-            this.log('Found new version meta list. Update it.');
+            this.log('Found new minecraft version metadata. Update it.');
             this.commit('minecraftMetadata', newMetadata);
+        } else {
+            this.log('Not found new Minecraft version metadata. Use cache.');
         }
     }
 
@@ -99,16 +136,32 @@ export default class InstallService extends Service {
      * @param version The local version id
      */
     @Singleton('install')
-    async installAssets(version: string) {
-        const location = this.state.root;
+    async installAssetsAll(version: string) {
         let option: Installer.AssetsOption = {
             assetsDownloadConcurrency: 16,
         };
         if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
-            option = { assetsHost: 'http://bmclapi2.bangbang93.com/assets' };
+            option.assetsHost = 'http://bmclapi2.bangbang93.com/assets';
         }
+        const location = this.state.root;
         const resolvedVersion = await Version.parse(location, version);
         await this.submit(Installer.installAssetsTask(resolvedVersion, option)).wait();
+    }
+
+    /**
+     * Install assets to the version
+     * @param version The local version id
+     */
+    @Singleton('install')
+    async installAssets(assets: { name: string; size: number; hash: string }[]) {
+        let option: Installer.AssetsOption = {
+            assetsDownloadConcurrency: 16,
+        };
+        if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
+            option.assetsHost = 'http://bmclapi2.bangbang93.com/assets';
+        }
+        const location = this.state.root;
+        await this.submit(Installer.installResolvedAssetsTask(assets, new MinecraftFolder(location), option)).wait();
     }
 
     /**
@@ -177,13 +230,15 @@ export default class InstallService extends Service {
     */
     @Singleton()
     async refreshForge(options: { force?: boolean; mcversion?: string } = {}) {
-        // TODO: change to handle the profile not ready
-        const { mcversion, force } = options;
+        let { mcversion, force } = options;
 
-        // if (!force && this.refreshedForge) {
-        //     return;
-        // }
-        // this.refreshedForge = true;
+        mcversion = mcversion || this.getters.instance.runtime.minecraft;
+
+        if (!force && this.refreshedForge[mcversion]) {
+            this.log(`Skip to refresh forge metadata from ${mcversion}. Use cache`);
+            return;
+        }
+        this.refreshedForge[mcversion] = true;
 
         let version = mcversion;
         if (!version) {
@@ -200,17 +255,20 @@ export default class InstallService extends Service {
         const cur = this.state.version.forge[version];
         try {
             if (this.networkManager.isInGFW) {
-                const headers = cur ? { 'If-Modified-Since': cur.timestamp } : {};
+                // const headers = cur ? { 'If-Modified-Since': cur.timestamp } : {};
                 this.log('Using self host to fetch forge versions list');
-                const { body, statusCode } = await this.networkManager.requst(`https://xmcl.azurewebsites.net/api/v1/forge/versions/${version}`, {
-                    headers,
-                    responseType: 'json',
-                });
+                let version = await this.getForgesFromBMCL(mcversion);
+                this.log('Found new forge versions list. Update it');
+                this.commit('forgeMetadata', version);
+                // const { body, statusCode } = await this.networkManager.request(`https://xmcl.azurewebsites.net/api/v1/forge/versions/${version}`, {
+                //     headers,
+                //     responseType: 'json',
+                // });
 
-                if (statusCode !== 304 && body) {
-                    this.log('Found new forge versions list. Update it');
-                    this.commit('forgeMetadata', body);
-                }
+                // if (statusCode !== 304 && body) {
+                //     this.log('Found new forge versions list. Update it');
+                //     this.commit('forgeMetadata', body as ForgeInstaller.VersionList);
+                // }
             } else {
                 this.log('Using direct query to fetch forge versions list');
                 const result = await ForgeInstaller.getVersionList({ mcversion: version, original: cur });
@@ -231,11 +289,12 @@ export default class InstallService extends Service {
      * Install forge by forge version metadata
      */
     @Singleton('install')
-    async installForge(meta: ForgeInstaller.Version) {
-        let maven = this.networkManager.isInGFW ? 'https://voxelauncher.azurewebsites.net/api/v1' : undefined;
+    async installForge(meta: Parameters<typeof installTask>[0]) {
+        let maven = this.networkManager.isInGFW ? ['https://xmcl.azurewebsites.net/api/v1/maven', 'https://bmclapi2.bangbang93.com/maven'] : [];
         let handle = this.submit(ForgeInstaller.installTask(meta, this.state.root, {
             mavenHost: maven,
             java: this.getters.defaultJava.path,
+            overwriteWhen: 'checksumNotMatchOrEmpty',
         }));
         let version: string | undefined;
         try {

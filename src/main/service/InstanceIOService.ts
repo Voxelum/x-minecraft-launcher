@@ -234,7 +234,7 @@ export class InstanceIOService extends Service {
 
             if (instancePath) {
                 await this.instanceService.editInstance({
-                    path: instancePath,
+                    instancePath,
                     ...config,
                 });
             } else {

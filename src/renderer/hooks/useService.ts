@@ -13,5 +13,10 @@ export function useService<N extends keyof BuiltinServices>(name: N): BuiltinSer
 }
 
 export function useServiceOnly<N extends keyof BuiltinServices, T extends keyof BuiltinServices[N]>(name: N, ...keys: T[]): Pick<BuiltinServices[N], T> {
-    return useServices()[name];
+    let seriv = useServices()[name];
+    let service: Pick<BuiltinServices[N], T> = {} as any;
+    for (let key of keys) {
+        service[key] = seriv[key];
+    }
+    return service;
 }

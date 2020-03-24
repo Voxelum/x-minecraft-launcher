@@ -9,7 +9,7 @@ interface MinecraftVersion {
     url: string;
 }
 interface ForgeDownload {
-    md5: string;
+    md5?: string;
     sha1: string;
     /**
      * The url path to concat with forge maven

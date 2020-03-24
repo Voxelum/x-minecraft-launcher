@@ -179,16 +179,21 @@ const mod: InstanceModule = {
         instanceProtocolVersion: () => 338,
         instance: state => state.all[state.path] || DEFAULT_PROFILE,
         instanceVersion: (state, getters, rootState) => {
-            const current = getters.instance;
+            const current = state.all[state.path] || DEFAULT_PROFILE;
             const runtimes = Object.keys(current.runtime);
 
             const localVersion = rootState.version.local
-                .find(v => runtimes.every(r => ((v as any)[r] ? (v as any)[r] === current.runtime[r] : true)));
+                .find(localVersion => runtimes.every(runtime => {
+                    if (runtime in localVersion) {
+                        return localVersion[runtime] === current.runtime[runtime];
+                    }
+                    return !!current.runtime[runtime];
+                }));
 
             return localVersion || {
+                ...current.runtime,
                 id: getExpectVersion(current.runtime.minecraft, current.runtime.forge, current.runtime.liteloader),
                 folder: 'unknown',
-                ...current.runtime,
             } as any;
         },
         instanceJava: (state, getters, rootState) => {
@@ -208,12 +213,15 @@ const mod: InstanceModule = {
             .map(u => rootGetters.queryResource(u)),
     },
     mutations: {
-        instanceAdd(state, profile) {
+        instanceAdd(state, instance) {
             /**
              * Prevent the case that hot reload keep the vuex state
              */
-            if (!state.all[profile.path]) {
-                Vue.set(state.all, profile.path, profile);
+            if (!state.all[instance.path]) {
+                if (!instance.deployments.resourcepacks) {
+                    instance.deployments.resourcepacks = [];
+                }
+                Vue.set(state.all, instance.path, instance);
             }
         },
         instanceJava(state, jPath) {
@@ -238,24 +246,24 @@ const mod: InstanceModule = {
             state.deployed = lock.deployed;
         },
         instance(state, settings) {
-            const prof = state.all[settings.path || state.path];
+            const inst = state.all[settings.path || state.path];
 
-            if (!prof) {
+            if (!inst) {
                 console.error(`Cannot commit profile. Illegal State with missing profile ${state.path}`);
                 return;
             }
 
-            prof.name = typeof settings.name === 'string' ? settings.name : prof.name;
+            inst.name = typeof settings.name === 'string' ? settings.name : inst.name;
 
-            prof.author = settings.author || prof.author;
-            prof.description = settings.description || prof.description;
+            inst.author = settings.author || inst.author;
+            inst.description = settings.description || inst.description;
 
             if (settings.server) {
-                if (prof.server) {
-                    prof.server.host = settings.server.host || prof.server.host;
-                    prof.server.port = settings.server.port || prof.server.port;
+                if (inst.server) {
+                    inst.server.host = settings.server.host || inst.server.host;
+                    inst.server.port = settings.server.port || inst.server.port;
                 } else {
-                    prof.server = {
+                    inst.server = {
                         host: settings.server.host,
                         port: settings.server.port,
                     };
@@ -264,60 +272,60 @@ const mod: InstanceModule = {
 
             if (settings.runtime) {
                 const versions = settings.runtime;
-                if (prof.runtime.minecraft !== settings.runtime.minecraft && typeof versions.minecraft === 'string') {
+                if (inst.runtime.minecraft !== settings.runtime.minecraft && typeof versions.minecraft === 'string') {
                     // if minecraft version changed, all other related versions are rest.
-                    prof.runtime.minecraft = versions.minecraft;
-                    for (const versionType of Object.keys(prof.runtime).filter(v => v !== 'minecraft')) {
-                        prof.runtime[versionType] = '';
+                    inst.runtime.minecraft = versions.minecraft;
+                    for (const versionType of Object.keys(inst.runtime).filter(v => v !== 'minecraft')) {
+                        inst.runtime[versionType] = '';
                     }
                 }
 
                 for (const versionType of Object.keys(versions).filter(v => v !== 'minecraft')) {
                     const ver = versions[versionType];
                     if (typeof ver === 'string') {
-                        prof.runtime[versionType] = ver;
+                        inst.runtime[versionType] = ver;
                     }
                 }
             }
 
             if ('minMemory' in settings && (typeof settings.minMemory === 'number' || typeof settings.minMemory === 'undefined')) {
-                prof.minMemory = settings.minMemory;
+                inst.minMemory = settings.minMemory;
             }
             if ('maxMemory' in settings && (typeof settings.maxMemory === 'number' || typeof settings.maxMemory === 'undefined')) {
-                prof.maxMemory = settings.maxMemory;
+                inst.maxMemory = settings.maxMemory;
             }
 
             if (settings.vmOptions instanceof Array && settings.vmOptions.every(r => typeof r === 'string')) {
-                prof.vmOptions = Object.seal(settings.vmOptions);
+                inst.vmOptions = Object.seal(settings.vmOptions);
             }
             if (settings.mcOptions instanceof Array && settings.mcOptions.every(r => typeof r === 'string')) {
-                prof.mcOptions = Object.seal(settings.mcOptions);
+                inst.mcOptions = Object.seal(settings.mcOptions);
             }
 
-            prof.url = settings.url || prof.url;
-            prof.icon = settings.icon || prof.icon;
+            inst.url = settings.url || inst.url;
+            inst.icon = settings.icon || inst.icon;
 
             if (typeof settings.deployments === 'object') {
                 for (const key of Object.keys(settings.deployments)) {
                     const dep = settings.deployments[key];
                     if (dep) {
-                        prof.deployments[key] = dep;
+                        inst.deployments[key] = dep;
                     }
                 }
             }
 
             if (typeof settings.showLog === 'boolean') {
-                prof.showLog = settings.showLog;
+                inst.showLog = settings.showLog;
             }
             if (typeof settings.hideLauncher === 'boolean') {
-                prof.hideLauncher = settings.hideLauncher;
+                inst.hideLauncher = settings.hideLauncher;
             }
 
             if (typeof settings.image === 'string') {
-                prof.image = settings.image;
+                inst.image = settings.image;
             }
             if (typeof settings.blur === 'number') {
-                prof.blur = settings.blur;
+                inst.blur = settings.blur;
             }
         },
         instanceCache(state, cache) {

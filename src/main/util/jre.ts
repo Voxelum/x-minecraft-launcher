@@ -1,137 +1,21 @@
-import { unpack } from '7zip-min';
-import { validateSha1 } from '@xmcl/core/fs';
-import { downloadFileIfAbsentTask, downloadFileTask } from '@xmcl/installer/util';
-import { Task } from '@xmcl/task';
-import { ensureDir, ensureFile, unlink } from 'fs-extra';
-import got from 'got';
-import { basename, resolve } from 'path';
-import { platform } from './index';
 
-function resolveArch() {
-    switch (platform.arch) {
-        case 'x86':
-        case 'x32': return '32';
-        case 'x64': return '64';
-        default: return '32';
+export function getTsingHuaMirror(system: 'linux' | 'mac' | 'windows', arch: '32' | '64'): string[] {
+    let url = `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/jre/x${arch}/${system}/`;
+    if (arch === '32') {
+        if (system === 'windows') {
+            return ['OpenJDK8U-jre_x86-32_windows_hotspot_8u242b08.zip',
+                'OpenJDK8U-jre_x86-32_windows_hotspot_8u242b08.zip.sha256.txt'].map(v => url + v);
+        }
+        throw new Error();
+    } else {
+        if (system === 'linux') {
+            return ['OpenJDK8U-jre_x64_linux_hotspot_8u242b08.tar.gz',
+                'OpenJDK8U-jre_x64_linux_hotspot_8u242b08.tar.gz.sha256.txt'].map(v => url + v);
+        } if (system === 'mac') {
+            return ['OpenJDK8U-jre_x64_mac_hotspot_8u242b08.tar.gz',
+                'OpenJDK8U-jre_x64_mac_hotspot_8u242b08.tar.gz.sha256.txt'].map(v => url + v);
+        }
+        return ['OpenJDK8U-jre_x64_windows_hotspot_8u242b08.zip',
+            'OpenJDK8U-jre_x64_windows_hotspot_8u242b08.zip.sha256.txt'].map(v => url + v);
     }
 }
-
-export function installJreFromMojangTask(root: string   ) {
-    async function installJreFromMojang(context: Task.Context) {
-        const info: { [system: string]: { [arch: string]: { jre: { sha1: string; url: string; version: string } } } } = await context.execute(
-            Task.create('fetchInfo', () => got('https://launchermeta.mojang.com/mc/launcher.json').json()),
-        );
-        const system = platform.name;
-        const arch = resolveArch();
-
-        if (system === 'unknown' || system === 'linux') {
-            return;
-        }
-        const { sha1, url } = info[system][arch].jre;
-        const filename = basename(url);
-        const destination = resolve(root, 'temp', filename);
-
-        if (!await validateSha1(destination, sha1)) {
-            await ensureFile(destination);
-            await context.execute(Task.create('download', downloadFileIfAbsentTask({
-                url,
-                destination,
-                checksum: { algorithm: 'sha1', hash: sha1 },
-            })));
-        }
-
-        const javaRoot = resolve(root, 'jre');
-        await context.execute(Task.create('decompress', async () => {
-            await ensureDir(javaRoot);
-            await new Promise((resolve, reject) => {
-                unpack(destination, javaRoot, (e) => { if (e) reject(e); else resolve(); });
-            });
-        }));
-        await context.execute(Task.create('cleanup', async () => {
-            await unlink(destination);
-        }));
-    }
-
-    return installJreFromMojang;
-}
-
-export function installJreFromSelfHostTask(root: string) {
-    async function installJreFromSelfHost(context: Task.Context) {
-        function resolveSystem() {
-            switch (platform.name) {
-                case 'windows': return 'win';
-                default: return platform.name;
-            }
-        }
-        const system = resolveSystem();
-        const arch = resolveArch();
-        if (system === 'unknown' || system === 'linux') {
-            return;
-        }
-        const url = `https://voxelauncher.azurewebsites.net/api/v1/jre/${system}/${arch}`;
-        const filename = 'jre.lzma';
-        const dest = resolve(root, 'temp', filename);
-
-        await ensureFile(dest);
-        await context.execute(Task.create('download', downloadFileTask({
-            url,
-            destination: dest,
-        })));
-
-        const javaRoot = resolve(root, 'jre');
-        await context.execute(Task.create('decompress', async () => {
-            await ensureDir(javaRoot);
-            await new Promise((resolve, reject) => {
-                unpack(dest, javaRoot, (e) => { if (e) reject(e); else resolve(); });
-            });
-        }));
-        await context.execute(Task.create('cleanup', () => unlink(dest)));
-    }
-    return installJreFromSelfHost;
-}
-
-// export async function installJreFromBMCLAPI(context: Task.Context) {
-//     this.log('Try auto Java from Bangbang source');
-//     const x64 = platform.arch === 'x64';
-//     function resolveJava() {
-//         switch (platform.name) {
-//             case 'osx': return 'jre_mac.dmg';
-//             case 'windows': return x64 ? 'jre_x64.exe' : 'jre_x86.exe';
-//             case 'linux': return x64 ? 'jre_x64.tar.gz' : 'jre_x86.tar.gz';
-//             default: return '';
-//         }
-//     }
-//     const filename = resolveJava();
-//     const root = app.getPath('userData');
-//     const javaRoot = resolve(root, 'jre');
-//     const destination = resolve(root, 'temp', filename);
-//     await context.execute('download', Net.downloadFileWork({
-//         url: `http://bmclapi2.bangbang93.com/java/${filename}`,
-//         destination,
-//     }));
-
-//     function exec_(cmd: string, option = {}) {
-//         return new Promise((resolve, reject) => {
-//             exec(cmd, option, (err, stdout, stderr) => {
-//                 if (err) { reject(err); } else {
-//                     resolve(stdout);
-//                 }
-//             });
-//         });
-//     }
-//     switch (platform.name) {
-//         case 'osx':
-//             await fs.copyFile(join(__static, 'mac-jre-installer.sh'), join(root, 'temp', 'mac-jre-installer.sh'));
-//             await fs.mkdir(join(root, 'jre'));
-//             await exec_(join(root, 'temp', 'mac-jre-installer.sh'), { cwd: root });
-//             break;
-//         case 'windows':
-//             await exec_([destination, `INSTALLDIR=${javaRoot}`, 'STATIC=1', 'INSTALL_SILENT=1', 'SPONSORS=0'].join(' '));
-//             break;
-//         case 'linux':
-//             await exec_(`tar xvzf ${destination} -C ${join(root, 'jre')}`, { cwd: root });
-//             break;
-//         default:
-//             break;
-//     }
-// }

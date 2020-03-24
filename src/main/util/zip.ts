@@ -28,3 +28,6 @@ export function unpack7z(pathToArchive: string, whereToUnpack: string) {
         unpack(pathToArchive, whereToUnpack, (e) => { if (e) reject(e); else resolve(); });
     });
 }
+export function unpackGarGz() {
+    
+}

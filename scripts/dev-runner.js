@@ -8,6 +8,9 @@ const mainConfig = require('./webpack.main.config');
 const rendererConfig = require('./webpack.renderer.config');
 
 let electronProcess = null;
+/**
+ * @type {import('child_process').ChildProcess}
+ */
 let devtoolProcess = null;
 let manualRestart = false;
 
@@ -35,6 +38,7 @@ function logStats(proc, data) {
 
 function startVueDebug() {
     devtoolProcess = exec('npx vue-devtools');
+    devtoolProcess.ref();
 }
 
 function startRenderer() {
@@ -114,7 +118,9 @@ function startElectron() {
 
     electronProcess.on('close', () => {
         if (!manualRestart) {
-            devtoolProcess.kill();
+            if (!devtoolProcess.killed) {
+                devtoolProcess.kill(0);
+            }
             process.exit();
         }
     });

@@ -8,6 +8,21 @@ import { RuntimeVersions } from './instance.schema';
 
 export type Status = 'remote' | 'local';
 
+export interface ForgeVersion {
+    /**
+     * The forge version string
+     */
+    version: string;
+    /**
+     * The target minecraft version
+     */
+    minecraft: string;
+    /**
+     * The type of this version
+     */
+    type: 'buggy' | 'recommended' | 'common' | 'latest';
+}
+
 /**
  * An interface to reference a resolved version in 
  * <minecraft folder>/versions/<version-id>/<version-id>.json

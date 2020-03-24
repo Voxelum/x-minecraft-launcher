@@ -1,4 +1,3 @@
-import { this.getPersistence, this.setPersistence } from '@main/util/persistence';
 import { SettingSchema } from '@universal/store/modules/setting.schema';
 import Service, { MutationTrigger } from './Service';
 

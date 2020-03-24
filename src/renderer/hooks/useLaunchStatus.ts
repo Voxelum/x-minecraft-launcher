@@ -2,6 +2,10 @@ import { computed } from '@vue/composition-api';
 import { useStore } from './useStore';
 import { useService, useServiceOnly } from './useService';
 
+export function useLaunchEvent() {
+
+}
+
 export function useLaunch() {
     const { state } = useStore();
     const status = computed(() => state.launch.status);

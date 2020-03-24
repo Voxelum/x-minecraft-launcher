@@ -62,13 +62,7 @@ export default {
           router.replace('/resource-pack-setting');
           break;
         case 'incompatibleJava':
-          if (state.java.all.some(j => j.majorVersion === 8)) {
-            commit('instanceJava', state.java.all.find(j => j.majorVersion === 8)!.path);
-            await editInstance({ java: '8' });
-            notify('info', $t('java.switchVersion'));
-          } else {
-            showJavaDialog();
-          }
+          showJavaDialog();
           break;
         default:
       }

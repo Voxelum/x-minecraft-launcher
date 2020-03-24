@@ -1,19 +1,29 @@
-import { Task } from '@xmcl/task';
-import { exec } from 'child_process';
 import { missing } from '@main/util/fs';
-import { EOL } from 'os';
-import { join } from 'path';
+import { getTsingHuaMirror } from '@main/util/jre';
+import { unpack7z } from '@main/util/zip';
 import { MutationKeys } from '@universal/store';
+import { JavaState } from '@universal/store/modules/java';
 import { Java, JavaSchema } from '@universal/store/modules/java.schema';
 import { requireString } from '@universal/util/assert';
+import { downloadFileTask, JavaInstaller } from '@xmcl/installer';
+import { task } from '@xmcl/task';
+import { extract } from '@xmcl/unzip';
+import { move, remove, unlink } from 'fs-extra';
+import { join } from 'path';
 import Service, { Singleton } from './Service';
 
 export default class JavaService extends Service {
-    private JAVA_FILE = this.appManager.platform.name === 'windows' ? 'javaw.exe' : 'java';
+    private javaFile = this.appManager.platform.name === 'windows' ? 'javaw.exe' : 'java';
+
+    getInternalJavaLocation() {
+        return join(this.state.root, 'jre', 'bin', this.javaFile);
+    }
 
     async load() {
         let loaded: JavaSchema = await this.getPersistence({ path: this.getPath('java.json'), schema: JavaSchema });
-        this.commit('javaAdd', loaded.all.filter(l => typeof l.path === 'string'));
+        let javas = loaded.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }));
+        this.commit('javaUpdate', javas);
+        this.log(`Loaded ${javas.length} java from cache.`);
         if (this.state.java.all.length === 0) {
             await this.refreshLocalJava();
         }
@@ -24,18 +34,16 @@ export default class JavaService extends Service {
         if (state.java.all.length === 0) {
             this.refreshLocalJava();
         } else {
-            let local = join(state.root, 'jre', 'bin', this.JAVA_FILE);
+            let local = this.getInternalJavaLocation();
             if (!state.java.all.map(j => j.path).some(p => p === local)) {
                 this.resolveJava(local);
             }
-            Promise.all(state.java.all
-                .map(j => this.resolveJava(j.path).then((result) => { if (!result) { this.commit('javaRemove', j); } })));
         }
     }
 
     async save({ mutation }: { mutation: MutationKeys }) {
         switch (mutation) {
-            case 'javaAdd':
+            case 'javaUpdate':
             case 'javaRemove':
             case 'javaSetDefault':
                 this.setPersistence({ path: this.getPath('java.json'), data: this.state.java, schema: JavaSchema });
@@ -46,33 +54,60 @@ export default class JavaService extends Service {
 
     /**
      * Install a default jdk 8 to the a preserved location. It'll be installed under your launcher root location `jre` folder
-     * @param fixing 
      */
     @Singleton('java')
-    async installJava(fixing: boolean) {
-        const installJre = Task.create('installJre', async (ctx: Task.Context) => {
-            const local = join(this.state.root, 'jre', 'bin', this.JAVA_FILE);
-            await this.resolveJava(local);
-            for (const j of this.state.java.all) {
-                if (j.path === local) {
-                    this.log(`Found exists installation at ${local}`);
-                    return undefined;
-                }
-            }
-            
-            const endpoint = this.networkManager.isInGFW ? installJreFromSelfHostTask(this.state.root) : installJreFromMojangTask(this.state.root);
+    async installJava() {
+        let task = this.networkManager.isInGFW ? this.installFromTsingHuaTask() : this.installFromMojangTask();
+        let handle = this.submit(task);
+        await handle.wait();
+        await this.resolveJava(this.getInternalJavaLocation());
+    }
 
-            await endpoint(ctx);
-            const java = await this.resolveJava(local);
-
-            if (fixing) {
-                // TODO: 
-                // await this.profileService.editInstance({ java: java?.majorVersion.toString() });
-            }
-
-            return java;
+    private installFromMojangTask() {
+        let dest = this.getInternalJavaLocation();
+        return JavaInstaller.installJreFromMojangTask({
+            destination: dest,
+            unpackLZMA: unpack7z,
+            ...this.networkManager.getDownloaderOption(),
         });
-        return this.submit(installJre);
+    }
+
+    private installFromTsingHuaTask() {
+        return task('installJre', async (c) => {
+            let system = this.appManager.platform.name === 'osx' ? 'mac' as const : this.appManager.platform.name;
+            let arch = this.appManager.platform.arch === 'x64' ? '64' as const : '32' as const;
+            let [url, sha256Url] = getTsingHuaMirror(system, arch);
+            let sha256 = await this.networkManager.request(sha256Url).text();
+            sha256 = sha256.split(' ')[0];
+            let dest = join(this.state.root, 'jre');
+            let tempZip = join(this.state.root, 'temp', 'java-temp');
+            await c.execute(task('download', downloadFileTask({
+                destination: tempZip,
+                url,
+                checksum: {
+                    algorithm: 'sha256',
+                    hash: sha256,
+                },
+            }, this.networkManager.getDownloaderOption())), 90);
+
+            await c.execute(task('decompress', async () => {
+                if (system === 'windows') {
+                    await extract(tempZip, dest, {
+                        entryHandler(_, e) {
+                            return e.fileName.substring('jdk8u242-b08-jre'.length);
+                        },
+                    });
+                } else {
+                    let tempTar = join(this.state.root, 'temp', 'java-temp.tar');
+                    await unpack7z(tempZip, tempTar);
+                    await unpack7z(tempTar, join(this.state.root, 'temp'));
+                    await move(join(this.state.root, 'temp', 'jdk8u242-b08-jre'), dest);
+                    await remove(join(this.state.root, 'temp', 'jdk8u242-b08-jre'));
+                    await unlink(tempTar);
+                }
+                await unlink(tempZip);
+            }), 10);
+        });
     }
 
     /**
@@ -80,40 +115,13 @@ export default class JavaService extends Service {
      */
     async resolveJava(javaPath: string): Promise<undefined | Java> {
         requireString(javaPath);
-
         if (await missing(javaPath)) return undefined;
 
-        // const resolved = this.state.java.all.filter(java => java.path === javaPath)[0];
-        // if (resolved) return resolved;
-
-        const getJavaVersion = (str: string) => {
-            const match = /(\d+\.\d+\.\d+)(_(\d+))?/.exec(str);
-            if (match === null) return undefined;
-            return match[1];
-        };
-        return new Promise((resolve) => {
-            exec(`"${javaPath}" -version`, (err, sout, serr) => {
-                let version = getJavaVersion(serr);
-                if (serr && version !== undefined) {
-                    let majorVersion = Number.parseInt(version.split('.')[0], 10);
-                    if (majorVersion === 1) {
-                        majorVersion = Number.parseInt(version.split('.')[1], 10);
-                    }
-                    let java = {
-                        path: javaPath,
-                        version,
-                        majorVersion,
-                    };
-                    this.commit('javaAdd', java);
-                    resolve(java);
-                } else {
-                    resolve(undefined);
-                }
-            });
-            // proc.stderr?.on('data', (chunk) => {
-            // this.log(chunk.toString());
-            // });
-        });
+        let java = await JavaInstaller.resolveJava(javaPath);
+        if (java) {
+            this.commit('javaUpdate', { ...java, valid: true });
+        }
+        return java;
     }
 
     /**
@@ -121,50 +129,28 @@ export default class JavaService extends Service {
      */
     @Singleton('java')
     async refreshLocalJava() {
-        const which = () => new Promise<string>((resolve) => {
-            exec('which java', (error, stdout) => {
-                resolve(stdout.replace('\n', ''));
-            });
-        });
-        const where = () => new Promise<string[]>((resolve) => {
-            exec('where java', (error, stdout) => {
-                resolve(stdout.split('\r\n'));
-            });
-        });
-
-        const { state } = this;
-
-        let unchecked = new Set<string>();
-        unchecked.add(join(state.root, 'jre', 'bin', JavaService.JAVA_FILE));
-        if (process.env.JAVA_HOME) {
-            unchecked.add(join(process.env.JAVA_HOME, 'bin', JavaService.JAVA_FILE));
-        }
-        if (platform.name === 'windows') {
-            const out = await new Promise<string[]>((resolve) => {
-                exec('REG QUERY HKEY_LOCAL_MACHINE\\Software\\JavaSoft\\ /s /v JavaHome', (error, stdout) => {
-                    if (!stdout) resolve([]);
-                    resolve(stdout.split(EOL).map(item => item.replace(/[\r\n]/g, ''))
-                        .filter(item => item != null && item !== undefined)
-                        .filter(item => item[0] === ' ')
-                        .map(item => `${item.split('    ')[3]}\\bin\\javaw.exe`));
-                });
-            });
-            for (const o of [...out, ...await where()]) {
-                unchecked.add(o);
-            }
-        } else if (platform.name === 'osx') {
-            unchecked.add('/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java');
-            unchecked.add(await which());
+        if (this.state.java.all.length === 0) {
+            this.log('No local cache found. Scan java through the disk.');
+            let javas = await JavaInstaller.scanLocalJava([]);
+            let infos = javas.map(j => ({ ...j, valid: true }));
+            this.log(`Found ${infos.length} java.`);
+            this.commit('javaUpdate', infos);
         } else {
-            unchecked.add(await which());
+            this.log(`Re-validate cached ${this.state.java.all.length} java locations.`);
+            let javas: JavaState[] = [];
+            for (let i = 0; i < this.state.java.all.length; ++i) {
+                let result = await JavaInstaller.resolveJava(this.state.java.all[i].path);
+                if (result) {
+                    javas.push({ ...result, valid: true });
+                } else {
+                    javas.push({ ...this.state.java.all[i], valid: false });
+                }
+            }
+            let invalided = javas.filter(j => !j.valid).length;
+            if (invalided !== 0) {
+                this.log(`Invalidate ${invalided} java!`);
+            }
+            this.commit('javaUpdate', javas);
         }
-        for (let java of state.java.all) {
-            unchecked.add(java.path);
-        }
-
-        let checklist = Array.from(unchecked).filter(jPath => typeof jPath === 'string').filter(p => p !== '');
-
-        this.log(`Checking these location for java ${JSON.stringify(checklist)}.`);
-        await Promise.all(checklist.map(jPath => this.resolveJava(jPath)));
     }
 }

@@ -37,7 +37,6 @@ async function startSession(sessionId: number | undefined, tasks: Array<any>) {
 function proxyService(seriv: string) {
     return new Proxy({} as any, {
         get(_, functionName) {
-            console.log(`GET ${seriv}.${functionName.toString()}`);
             const func = function (payload: any) {
                 console.log(`Invoke ${seriv}.${functionName.toString()}`);
                 const tasks = reactive([]);

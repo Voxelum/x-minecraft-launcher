@@ -78,6 +78,12 @@ const appData = app.getPath('appData');
 const persistRoot = `${appData}/voxelauncher`;
 const cfgFile = `${appData}/voxelauncher/launcher.json`;
 
+interface Platform {
+    name: 'osx' | 'linux' | 'windows';
+    version: string;
+    arch: 'x86' | 'x64' | string;
+}
+
 export default class AppManager extends Manager {
     public app = app;
 
@@ -112,7 +118,9 @@ export default class AppManager extends Manager {
         }
     }
 
-    get platform() { return currentPlatform; }
+    get platform(): Platform {
+        return currentPlatform as any;
+    }
 
     async setup() {
         let root;
@@ -172,7 +180,7 @@ export default class AppManager extends Manager {
                 let icon: NativeImage | undefined;
                 if (typeof query.icon === 'string') {
                     // TODO: cache this
-                    icon = nativeImage.createFromBuffer(await this.managers.networkManager.requst(query.icon).buffer());
+                    icon = nativeImage.createFromBuffer(await this.managers.networkManager.request(query.icon).buffer());
                 }
                 this.newWindow(name, windowUrl as string, { ...queryToWindowOptions(query), icon });
             }
@@ -249,7 +257,9 @@ export default class AppManager extends Manager {
 
     async storeReady(store: Store<any>) {
         this.parking = true;
+        Object.assign(LauncherAppController.prototype, { store });
         await this.controller!.dataReady(store);
+        this.log('App booted');
         this.parking = false;
     }
 

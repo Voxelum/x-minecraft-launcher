@@ -1,6 +1,7 @@
-import { onMounted, onUnmounted, provide, reactive, Ref, ref } from "@vue/composition-api";
 import { electron, TASKS_KEY, TASK_DICT_KEY } from '@/constant';
-import { TaskState } from "universal/task";
+import { TaskState } from '@universal/task';
+import { onMounted, onUnmounted, provide, reactive, Ref, ref } from '@vue/composition-api';
+import Vue from 'vue';
 
 export function provideTasks() {
     const ipc = electron.ipcRenderer;
@@ -20,6 +21,32 @@ export function provideTasks() {
         }
     }
 
+    let parentMap: Record<string, string> = {};
+    let deferredTaskMap: Record<string, Array<TaskState>> = {};
+    function enqueueToChildren(parentTask: TaskState, newTask: TaskState) {
+        parentMap[newTask.id] = parentTask.id;
+        let sameGroup = parentTask.children.filter(t => t.name === newTask.name)
+            .filter(t => t.status === 'ready' || t.status === 'running');
+        if (sameGroup.length > 6) {
+            deferredTaskMap[parentTask.id] = deferredTaskMap[parentTask.id] ?? [];
+            deferredTaskMap[parentTask.id].push(newTask);
+        } else {
+            parentTask.children.push(newTask);
+        }
+    }
+    function dequeIfRemaining(oldTask: TaskState) {
+        let parent = parentMap[oldTask.id];
+        if (parent) {
+            let deferrendTasks = deferredTaskMap[parent];
+            if (deferrendTasks && deferrendTasks.length > 0) {
+                let parentTask = idToNode[parent];
+                let oneDeferred = deferrendTasks.pop();
+                let index = parentTask.children.findIndex(t => t.id === oldTask.id);
+                Vue.set(parentTask.children, index, oneDeferred);
+            }
+        }
+    }
+
     const taskUpdateHanlder = (event: Electron.IpcRenderer, { childs, statuses, adds, updates }: {
         adds: { id: string; node: TaskState }[];
         childs: { id: string; node: TaskState }[];
@@ -28,17 +55,17 @@ export function provideTasks() {
     }) => {
         for (const add of adds) {
             const { id, node } = add;
-            const local = reactive({ ...node, tasks: [], errors: [] });
+            const local = reactive({ ...node });
             tasks.value.unshift(local);
             idToNode[id] = local;
         }
         for (const child of childs) {
             const { id, node } = child;
-            const local = reactive({ ...node, tasks: [], errors: [] });
+            const local = reactive({ ...node });
             if (!idToNode[id]) {
-                console.log(`Cannot add child ${node.id} for parent ${id}.`);
+                throw new Error(`Cannot add child ${node.id} for parent ${id}.`);
             } else {
-                idToNode[id].children.push(local);
+                enqueueToChildren(idToNode[id], local);
                 idToNode[node.id] = local;
             }
         }
@@ -60,6 +87,9 @@ export function provideTasks() {
             const task = idToNode[id];
             if (task) {
                 task.status = status as any;
+                if (task.status === 'successed') {
+                    dequeIfRemaining(task);
+                }
             } else {
                 console.log(`Cannot update status for task ${id}.`);
             }

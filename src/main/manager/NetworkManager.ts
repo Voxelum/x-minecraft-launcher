@@ -1,12 +1,11 @@
-import { DefaultDownloader, DownloadOption } from '@xmcl/installer';
+import { DefaultDownloader, DownloadOption, DownloaderOptions } from '@xmcl/installer';
 import { Task } from '@xmcl/task';
-import { BrowserWindow, DownloadItem } from 'electron';
+import { BrowserWindow, DownloadItem, session, Session } from 'electron';
 import { readFile } from 'fs-extra';
 import { Got } from 'got';
 import { basename, join } from 'path';
 import { Store } from 'vuex';
 import { Manager } from '.';
-import TaskManager from './TaskManager';
 
 function downloadItemTask(item: DownloadItem) {
     return Task.create('downloadItem', (context: Task.Context) => new Promise<string>((resolve, reject) => {
@@ -29,8 +28,6 @@ function downloadItemTask(item: DownloadItem) {
 }
 
 export default class NetworkManager extends Manager {
-    private taskManager!: TaskManager;
-
     private guard!: BrowserWindow;
 
     private jsguard: BrowserWindow | undefined;
@@ -43,10 +40,20 @@ export default class NetworkManager extends Manager {
 
     private downloader = new DefaultDownloader();
 
-    readonly requst: Got = this.downloader.requster;
+    readonly request: Got = this.downloader.requster;
+
+    private session: Session | undefined;
 
     constructor(private tempRoot: string = 'temp') {
         super();
+    }
+
+    getDownloaderOption() {
+        return {
+            downloader: this.downloader,
+            maxConcurrency: 16,
+            overwriteWhen: 'checksumNotMatchOrEmpty',
+        } as const;
     }
 
     async rootReady(root: string) {
@@ -62,8 +69,8 @@ export default class NetworkManager extends Manager {
      */
     async updateGFW() {
         this.inGFW = await Promise.race([
-            this.requst.head('https://npm.taobao.org', { throwHttpErrors: false }).then(() => true, () => false),
-            this.requst.head('https://www.google.com', { throwHttpErrors: false }).then(() => false, () => true),
+            this.request.head('https://npm.taobao.org', { throwHttpErrors: false }).then(() => true, () => false),
+            this.request.head('https://www.google.com', { throwHttpErrors: false }).then(() => false, () => true),
         ]);
         this.log(this.inGFW ? 'Detected current in China mainland.' : 'Detected current NOT in China mainland.');
         return this.inGFW;
@@ -155,11 +162,20 @@ export default class NetworkManager extends Manager {
         throw new Error(`Fail to fetch ${url}. Code: ${code}`);
     }
 
+    private ensureSession() {
+        if (!this.session) {
+            this.session = session.fromPartition('persist:interal');
+            this.session.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.69 Safari/537.36 Edg/81.0.416.34');
+        }
+        return this.session;
+    }
+
     private ensureJSGuard() {
         if (!this.jsguard) {
             this.jsguard = new BrowserWindow({
                 focusable: false,
                 webPreferences: {
+                    session: this.ensureSession(),
                     javascript: true,
                     devTools: false,
                 },
@@ -190,7 +206,7 @@ export default class NetworkManager extends Manager {
             const savePath = join(this.tempRoot, handle.file || item.getFilename());
             if (!item.getSavePath()) item.setSavePath(savePath);
             const downloadTask = downloadItemTask(item);
-            const taskHandle = this.taskManager.submit(downloadTask);
+            const taskHandle = this.managers.taskManager.submit(downloadTask);
             handle.callback(taskHandle.wait());
         });
     }

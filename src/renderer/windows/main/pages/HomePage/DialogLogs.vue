@@ -27,10 +27,10 @@
     <v-tabs-items v-model="tab">
       <template v-for="item in [0, 1]">
         <v-tab-item :key="item">
-          <div style="min-height: 450px; max-height: 450px; overflow: auto; background: #424242">
+          <div style="min-height: 420px; max-height: 420px; overflow: auto; background: #424242">
             <transition name="fade-transition" mode="out-in">
               <v-list v-if="contents[item] === ''" :key="0">
-                <v-list-tile v-for="i in files[item]" :key="i" v-ripple :disabled="loadingContent" avatar @click="showFile(i)">
+                <v-list-tile v-for="i in files" :key="i" v-ripple :disabled="loadingContent" avatar @click="showFile(i)">
                   <v-list-tile-avatar>
                     <v-icon>
                       clear_all
@@ -80,7 +80,7 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, watch, set, createComponent } from '@vue/composition-api';
+import { reactive, toRefs, watch, set, createComponent, computed } from '@vue/composition-api';
 import { useDialogSelf, useInstanceLogs } from '@/hooks';
 
 export default createComponent({
@@ -93,7 +93,7 @@ export default createComponent({
       getCrashReportContent,
       getLogContent,
       showLog,
-      showCrashReport,
+      showCrash: showCrashReport,
     } = useInstanceLogs();
     const { isShown, closeDialog } = useDialogSelf('logs');
     const data = reactive({
@@ -102,14 +102,17 @@ export default createComponent({
       loadingContent: false,
       loadingList: false,
       showedFile: '',
-      files: [[] as string[], [] as string[]],
+      logs: [] as string[],
+      crashs: [] as string[],
 
       contents: ['', ''],
     });
+    const files = computed(() => (data.tab === 0 ? data.logs : data.crashs));
     function loadLogs() {
+      console.log('loadLogs');
       data.loadingList = true;
       listLogs().then((l) => {
-        data.files[0] = l;
+        data.logs = l;
       }).finally(() => {
         data.loadingList = false;
       });
@@ -123,12 +126,13 @@ export default createComponent({
     function loadCrashes() {
       data.loadingList = true;
       listCrashReports().then((l) => {
-        data.files[1] = l;
+        data.crashs = l;
       }).finally(() => {
         data.loadingList = false;
       });
     }
     return {
+      files,
       isShown,
       ...toRefs(data),
       removeFile(i: string) {

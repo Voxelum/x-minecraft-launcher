@@ -229,15 +229,15 @@ export function useInstanceResourcePacks() {
 }
 
 export function useInstanceGameSetting() {
-    const { state, commit } = useStore();
-    const { loadInstanceGameSettings } = useService('InstanceGameSettingService');
+    const { state } = useStore();
+    const { loadInstanceGameSettings, edit } = useService('InstanceGameSettingService');
     return {
         ...toRefs(state.instance.settings),
         refresh() {
             return loadInstanceGameSettings(state.instance.path);
         },
         commitChange(settings: GameSetting) {
-            commit('instanceGameSettings', settings);
+            edit(settings);
         },
     };
 }
@@ -323,13 +323,13 @@ export function useInstanceSaves() {
     return {
         path: computed(() => state.instance.path),
         saves: computed(() => state.instance.saves),
-        ...useServiceOnly('InstanceSavesService', 'cloneSave', 'loadAllInstancesSaves', 'importSave'),
+        ...useServiceOnly('InstanceSavesService', 'cloneSave', 'deleteSave', 'exportSave', 'loadAllInstancesSaves', 'importSave'),
     };
 }
 export function useInstanceLogs() {
     const { state } = useStore();
     return {
         path: computed(() => state.instance.path),
-        ...useService('InstanceLogService'),
+        ...useServiceOnly('InstanceLogService', 'getCrashReportContent', 'getLogContent', 'listCrashReports', 'listLogs', 'removeCrashReport', 'removeLog', 'showCrash', 'showLog'),
     };
 }

@@ -81,7 +81,7 @@ class PlayerModel {
                 const model = template[pname];
                 const skinMesh = new THREE.Mesh(new THREE.CubeGeometry(model.w,
                     model.h, model.d),
-                pname === 'cape' ? this.capeMaterial : this.material);
+                    pname === 'cape' ? this.capeMaterial : this.material);
                 skinMesh.name = pname;
                 const box = new THREE.BoxHelper(skinMesh, 0xffffff);
                 box.name = `${pname}Box`;
@@ -101,7 +101,7 @@ class PlayerModel {
                 if (layer) {
                     const layerMesh = new THREE.Mesh(new THREE.CubeGeometry(layer.w,
                         layer.h, layer.d),
-                    this.materialTran);
+                        this.materialTran);
                     layerMesh.name = `${pname}Layer`;
                     this[layerMesh.name] = layerMesh;
                     skinMesh.add(layerMesh);
@@ -187,7 +187,7 @@ class PlayerModel {
             return this;
         }
         const img = new Image();
-        img.onload = () => { reload(img); };
+        img.onload = () => { console.log('ONLOAD!'); reload(img); };
         try {
             const url = new URL(skin);
             switch (url.protocol) {
@@ -202,6 +202,7 @@ class PlayerModel {
         } catch (e) {
             img.src = `data:image/png;base64, ${skin}`;
         }
+        setTimeout(() => reload(img), 100);
         console.log(`Load Skin ${img.src}`);
         return this;
     }

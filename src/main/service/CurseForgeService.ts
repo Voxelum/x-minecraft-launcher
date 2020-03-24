@@ -409,7 +409,7 @@ export default class CurseForgeService extends Service {
 
     async fetchCurseForgeProjectLicense(url: string) {
         if (url == null || !url) throw new Error('URL cannot be null');
-        const body = await this.networkManager.requst(`https://www.curseforge.com${url}`).text();
+        const body = await this.networkManager.request(`https://www.curseforge.com${url}`).text();
         return parseHtml(body).querySelector('.module').removeWhitespace().firstChild.rawText;
     }
 
@@ -420,7 +420,7 @@ export default class CurseForgeService extends Service {
 
     async fetchMetadataByModId({ modid, version }: { modid: string; version: string }) {
         // http://voxelauncher.azurewebsites.net/api/v1/mods/file/{modid}/{version}
-        const result = await this.networkManager.requst(`http://voxelauncher.azurewebsites.net/api/v1/mods/file/${modid}/${version}`, { method: 'HEAD' }).json();
+        const result = await this.networkManager.request(`http://voxelauncher.azurewebsites.net/api/v1/mods/file/${modid}/${version}`, { method: 'HEAD' }).json();
         return result as Forge.ModMetaData & { projectId: string; fileId: string };
     }
 

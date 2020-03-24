@@ -12,7 +12,6 @@ declare module 'electron' {
         on(channel: 'minecraft-exit', listener: (exitStatus?: { code?: string; signal?: string; crashReport?: string; crashReportLocation?: string }) => void): this;
         on(channel: 'minecraft-stdout', listener: (out: string) => void): this;
         on(channel: 'minecraft-stderr', listener: (err: string) => void): this;
-        on(channel: 'minecraft-crash-report', listener: (report: { crashReport: string; crashReportLocation: string }) => void): this;
 
         on(channel: 'reload', listener: () => void): this;
 
@@ -58,9 +57,11 @@ declare module 'electron' {
          */
         on(channel: 'commit', listener: (event: Electron.IpcRendererEvent, mutation: MutationPayload, id: number) => void): this;
 
-        on(channel: 'minecraft-exit', listener: (event: Electron.IpcRendererEvent, status: any) => void): this;
-
-        // on(channel: 'message', listener: (event: Electron.IpcRendererEvent, message: Message) => void): this;
+        on(channel: 'minecraft-window-ready', listener: (event: Electron.IpcRendererEvent) => void): this;
+        on(channel: 'minecraft-start', listener: (event: Electron.IpcRendererEvent) => void): this;
+        on(channel: 'minecraft-exit', listener: (event: Electron.IpcRendererEvent, exitStatus: { code?: number; signal?: string; crashReport?: string; crashReportLocation?: string }) => void): this;
+        on(channel: 'minecraft-stdout', listener: (event: Electron.IpcRendererEvent, out: string) => void): this;
+        on(channel: 'minecraft-stderr', listener: (event: Electron.IpcRendererEvent, err: string) => void): this;
 
         on(channel: 'exception', listener: (event: Electron.IpcRendererEvent, exception: Exception) => void): this;
 

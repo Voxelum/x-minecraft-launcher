@@ -65,6 +65,7 @@
               :recommended-only="recommendedAndLatestOnly"
               :filter-text="filterText"
               :minecraft="mcversion" 
+              @update:recommended-only="recommendedAndLatestOnly = $event"
             />
           </v-tab-item>
           <v-tab-item style="height: 100%" @mousewheel.stop>

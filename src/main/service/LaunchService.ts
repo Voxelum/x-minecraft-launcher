@@ -1,7 +1,6 @@
 import { Exception } from '@universal/util/exception';
-import { launch, LaunchOption, MinecraftFolder } from '@xmcl/core';
+import { createMinecraftProcessWatcher, launch, LaunchOption, MinecraftFolder } from '@xmcl/core';
 import { ChildProcess } from 'child_process';
-import { join } from 'path';
 import AuthLibService from './AuthLibService';
 import DiagnoseService from './DiagnoseService';
 import InstanceService from './InstanceService';
@@ -35,7 +34,7 @@ export default class LaunchService extends Service {
     private instanceService!: InstanceService;
 
     private launchedProcess: ChildProcess | undefined;
-    
+
     /**
      * Launch the current selected instance. This will return a boolean promise indeicate whether launch is success.
      * @param force 
@@ -76,14 +75,16 @@ export default class LaunchService extends Service {
             this.commit('launchStatus', 'launching');
 
             const showLog = instance.showLog;
-            const minecraftFolder = new MinecraftFolder(join(this.state.root, 'instances', instance.path));
+            const minecraftFolder = new MinecraftFolder(instance.path);
 
             /**
              * real version name
              */
-            const version = await this.versionService.resolveVersion({
-                ...instance.runtime,
-            });
+            let instanceVersion = this.getters.instanceVersion;
+            if (instanceVersion.folder === 'unknown') {
+                throw new Error(); // TODO: this is an exception
+            }
+            const version = instanceVersion.folder;
 
             this.log(`Will launch with ${version} version.`);
 
@@ -128,50 +129,31 @@ export default class LaunchService extends Service {
             const process = await launch(option);
             this.launchedProcess = process;
             this.commit('launchStatus', 'launched');
-            let crashReport = '';
-            let crashReportLocation = '';
-            let waitForReady = true;
+
             const eventBus = this.appManager.app;
+
             eventBus.emit('minecraft-start', showLog);
-            process.on('error', (err) => {
+            let watcher = createMinecraftProcessWatcher(process);
+
+            watcher.on('error', (err) => {
                 this.pushException({ type: 'launchGeneralException', error: err });
                 this.commit('launchStatus', 'ready');
-            });
-
-            process.on('exit', (code, signal) => {
+            }).on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation }) => {
                 this.log(`Minecraft exit: ${code}, signal: ${signal}`);
-                if (signal === 'SIGKILL') {
-                    eventBus.emit('minecraft-killed');
-                }
-                if (code !== 0 && (crashReport || crashReportLocation)) {
-                    eventBus.emit('minecraft-crash-report', {
-                        crashReport,
-                        crashReportLocation,
-                    });
-                    eventBus.emit('minecraft-exit', {
-                        code,
-                        signal,
-                        crashReport,
-                        crashReportLocation,
-                    });
-                } else {
-                    eventBus.emit('minecraft-exit', { code, signal });
-                }
+                eventBus.emit('minecraft-exit', {
+                    code,
+                    signal,
+                    crashReport,
+                    crashReportLocation,
+                });
                 this.commit('launchStatus', 'ready');
                 this.launchedProcess = undefined;
+            }).on('minecraft-window-ready', () => {
+                eventBus.emit('minecraft-window-ready');
             });
             /* eslint-disable no-unused-expressions */
             process.stdout?.on('data', (s) => {
                 const string = s.toString();
-                if (string.indexOf('---- Minecraft Crash Report ----') !== -1) {
-                    crashReport = string;
-                } else if (string.indexOf('Crash report saved to:') !== -1) {
-                    crashReportLocation = string.substring(string.indexOf('Crash report saved to:') + 'Crash report saved to: #@!@# '.length);
-                } else if (waitForReady && string.indexOf('Reloading ResourceManager') !== -1 || string.indexOf('LWJGL Version: ') !== -1) {
-                    waitForReady = false;
-                    eventBus.emit('minecraft-window-ready');
-                    this.commit('launchStatus', 'minecraftReady');
-                }
                 eventBus.emit('minecraft-stdout', string);
             });
             process.stderr?.on('data', (s) => {

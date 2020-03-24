@@ -86,7 +86,7 @@ export default class StoreAndServiceManager extends Manager {
 
     private setupService(root: string) {
         this.log(`Setup service ${root}`);
-        const userPath = app.getPath('userData');
+        const userPath = join(app.getPath('appData'), 'voxelauncher');
         const managers = this.managers;
         const store = this.store!;
         const mcPath = join(app.getPath('appData'), this.managers.appManager.platform.name === 'osx' ? 'minecraft' : '.minecraft');

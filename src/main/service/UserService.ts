@@ -74,7 +74,28 @@ interface LauncherProfile {
     };
 }
 
+export interface LoginOptions {
+    /**
+     * The user account. Can be email or other thing the auth service want.
+     */
+    account: string;
+    /**
+     * The password. Maybe empty string.
+     */
+    password?: string;
+    /**
+     * The auth service name, like mojang.
+     */
+    authService?: string;
+    /**
+     * The profile serivce name, like mojang
+     */
+    profileService?: string;
+}
+
 export default class UserService extends Service {
+    private refreshedSkin = false;
+
     async save({ mutation }: { mutation: MutationKeys }) {
         switch (mutation) {
             case 'userProfileAdd':
@@ -235,7 +256,7 @@ export default class UserService extends Service {
      * Refresh current skin status
      */
     @Singleton()
-    async refreshSkin() {
+    async refreshSkin(force = false) {
         const user = this.getters.user;
         const gameProfile = this.getters.gameProfile;
         // if no profile service, return
@@ -244,6 +265,10 @@ export default class UserService extends Service {
         if (gameProfile.name === '') return;
         // if user doesn't have a valid access token, return
         if (!this.getters.accessTokenValid) return;
+
+        if (this.refreshedSkin && !force) return;
+
+        this.refreshedSkin = false;
 
         const { id, name } = gameProfile;
 
@@ -273,7 +298,6 @@ export default class UserService extends Service {
         } catch (e) {
             this.warn(`Cannot refresh the skin data for user ${name}(${id}).`);
             this.warn(e);
-            throw e;
         }
     }
 
@@ -292,10 +316,7 @@ export default class UserService extends Service {
                 return false;
             });
 
-            this.log(user.accessToken);
-            this.log(this.state.user.clientToken);
-
-            this.log(`Refresh user access token: ${valid ? 'valid' : 'invalid'}`);
+            this.log(`Validate user access token: ${valid ? 'valid' : 'invalid'}`);
 
             if (valid) {
                 this.checkLocation();
@@ -306,6 +327,7 @@ export default class UserService extends Service {
                     accessToken: user.accessToken,
                     clientToken: this.state.user.clientToken,
                 });
+                this.log(`Refreshed user access token for user: ${user.id}`);
                 this.commit('userProfileUpdate', {
                     id: user.id,
                     accessToken: result.accessToken,
@@ -383,7 +405,6 @@ export default class UserService extends Service {
      */
     async refreshUser() {
         if (!this.getters.accessTokenValid) return;
-        // await this.refreshSkin().catch(_ => _);
         await this.refreshStatus().catch(_ => _);
     }
 
@@ -409,6 +430,8 @@ export default class UserService extends Service {
             return;
         }
 
+        this.refreshedSkin = false;
+
         this.commit('userGameProfileSelect', payload);
         await this.refreshUser();
     }
@@ -416,35 +439,16 @@ export default class UserService extends Service {
     /**
      * Login the user by current login mode. Refresh the skin and account information.
      */
-    async login(payload: {
-        /**
-         * The user account. Can be email or other thing the auth service want.
-         */
-        account: string;
-        /**
-         * The password. Maybe empty string.
-         */
-        password?: string;
-        /**
-         * The auth service name, like mojang.
-         */
-        authService?: string;
-        /**
-         * The profile serivce name, like mojang
-         */
-        profileService?: string;
-    }) {
-        if (!payload) throw new Error();
-        requireObject(payload);
-        requireString(payload.account);
+    async login(options: LoginOptions) {
+        requireObject(options);
+        requireString(options.account);
 
         const {
             account,
             password,
             authService = password ? 'mojang' : 'offline',
             profileService = 'mojang',
-        } = payload;
-
+        } = options;
 
         const selectedUserProfile = this.getters.user;
         const usingAuthService = this.state.user.authServices[authService];
@@ -466,6 +470,7 @@ export default class UserService extends Service {
                 throw new Exception({ type: 'loginGeneral', error: e });
             });
 
+        this.refreshedSkin = false;
         if (authService !== selectedUserProfile.authService
             || profileService !== selectedUserProfile.profileService
             || (authService === 'offline' && account !== selectedUserProfile.username)) {

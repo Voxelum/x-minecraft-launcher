@@ -78,17 +78,42 @@
   "description": "Description",
   "detail": "Detail",
   "diagnosis": {
-    "badForge": {
-      "": "Bad Forge Installation {minecraft}-{forge}",
-      "message": "Maybe you should reinstall this version of forge"
+    "badInstall": {
+      "": "Bad Installation on {version}",
+      "message": "Click to try to reinstall this version."
     },
-    "badForgeProcessedFiles": {
-      "": "Bad Forge Post Processor State {jar}",
-      "message": "Click to reprocess the files"
+    "corruptedAssets": {
+      "": "Corrupted asset {file}",
+      "message": "Launcher will install assets for you",
+      "multi": "Corrupted %{count} assets."
+    },
+    "corruptedAssetsIndex": {
+      "": "Corrupted assets index file of {version}.",
+      "message": "Launcher will download assets index for you"
+    },
+    "corruptedAuthlibInjector": {
+      "": "Corrupted authlib-injector",
+      "message": "The authlib-injector is required to use third party auth server!"
+    },
+    "corruptedForgeJar": {
+      "": "Corrupted forge {forge} jar for Minecraft {minecraft}",
+      "message": "Click to install forge"
+    },
+    "corruptedLibraries": {
+      "": "Corrupted library: {name} | Corrupted library: {name} | Corrupted {count} Libraries | Corrupted {count} Libraries",
+      "message": "Launcher will install libraries for you"
+    },
+    "corruptedVersionJar": {
+      "": "Corrupted version jar for Minecraft %{version}.",
+      "message": "Click to install this version"
+    },
+    "corruptedVersionJson": {
+      "": "Corrupted version %{version} json.",
+      "message": "Click to install this version"
     },
     "fix": "Fix the Problems",
     "incompatibleJava": {
-      "": "Current Minecraft {mcversion} doesn't support selected Java version {java}!",
+      "": "Current {type} {version} doesn't support selected Java version {java}!",
       "message": "You can ask Launcher to download it for you."
     },
     "incompatibleMod": {
@@ -111,6 +136,10 @@
       "": "Missing authlib-injector",
       "message": "The authlib-injector is required to use third party auth server!"
     },
+    "missingForge": {
+      "": "Please install Minecraft Forge to to launch",
+      "message": "Launcher will download and install Forge for you"
+    },
     "missingForgeJar": {
       "": "Missing forge {forge} jar for Minecraft {minecraft}",
       "message": "Click to install forge"
@@ -129,6 +158,11 @@
       "selectJava": {
         "": "Select Java in your computer",
         "message": "Maybe the launcher doesn't found your Java. You can tell the launcher where it is."
+      },
+      "switch": {
+        "": "Switch to Java 8",
+        "message": "Use existed Java 8 in you PC",
+        "disabled": "There is no Java 8 found in database now!"
       }
     },
     "missingLibraries": {
@@ -137,7 +171,7 @@
     },
     "missingVersion": "Please select a Minecraft version for this profile!",
     "missingVersionJar": {
-      "": "Missing version %{version} jar.",
+      "": "Missing version jar for Minecraft %{version}",
       "message": "Click to install this version"
     },
     "missingVersionJson": {
@@ -370,7 +404,7 @@
     "browser": "Import Java From File",
     "errorDownload": "Auto-download & install failed. Please check your network condition. You can try another way.",
     "incompatibleJava": "Incompatible Java",
-    "incompatibleJavaHint": "Not supported Java version",
+    "incompatibleJavaHint": "You can either use discovered Java 8 or download a new one!",
     "location": "Java Location",
     "maxMemory": "Max Memory",
     "minMemory": "Min Memory",
@@ -392,12 +426,14 @@
     "checkingProblems": "Checking Problems",
     "crash": "Game Crashed!!",
     "failed": {
+      "description": "There is no crash report. This this the latest log.",
       "general": "General Launch Failed",
       "generalText": "If you enconter this several times, please contact author!",
       "illegalAuth": "Illegal User Auth!",
       "illegalAuthText": "Illegal user auth state! Please login or switch account to revalidate your account!",
       "selectProfileEmpty": "Empty Profile",
       "selectProfileEmptyText": "This is too bad. Please retry or consider recreate your launch profile. If you still encounter this, please contact author!",
+      "title": "Game Exited with Abnormal Code",
       "unresolvableProblems": "Unresolvable Problems",
       "unresolvableProblemsText": "Existed some problems cannot be resolved. If you cannot handle this, please contact author for help!"
     },

@@ -365,7 +365,7 @@ export default class ResourceService extends Service {
                 }
                 const [projectId, fileId] = uri.path!.split('/').slice(1);
                 const metadataUrl = `${CURSEMETA_CACHE}/${projectId}/${fileId}.json`;
-                const o: any = await networkManager.requst(metadataUrl).json();
+                const o: any = await networkManager.request(metadataUrl).json();
                 const url = o.body.DownloadURL;
                 return {
                     url,

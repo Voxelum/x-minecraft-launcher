@@ -40,7 +40,7 @@
     },
     "typescript.tsdk": "node_modules/typescript/lib",
     "i18n-ally.localesPaths": [
-        "static/locales",
+        "src/renderer/assets/locales",
         "src/main/utils/locales"
     ],
     "i18n-ally.keystyle": "nested",

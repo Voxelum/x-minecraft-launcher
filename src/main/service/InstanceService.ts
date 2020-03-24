@@ -1,18 +1,18 @@
 import { exists, missing, readdirEnsured } from '@main/util/fs';
 import { CreateOption, createTemplate } from '@universal/store/modules/instance';
-import { DeployedInfo, InstanceLockSchema, InstanceSchema, InstancesSchema } from '@universal/store/modules/instance.schema';
+import { DeployedInfo, InstanceLockSchema, InstanceSchema, InstancesSchema, RuntimeVersions } from '@universal/store/modules/instance.schema';
 import { UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
 import { requireObject, requireString } from '@universal/util/assert';
 import latestRelease from '@universal/util/lasteRelease.json';
-import { fitin, shouldPatch } from '@universal/util/object';
+import { fitin } from '@universal/util/object';
 import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/util/serverStatus';
 import { queryStatus, Status } from '@xmcl/client';
-import { parse, stringify } from '@xmcl/gamesetting';
 import { readInfo, ServerInfo } from '@xmcl/server-info';
-import { lstat, readdir, readFile, readlink, remove, symlink, unlink, writeFile } from 'fs-extra';
+import { lstat, readdir, readFile, readlink, remove, symlink, unlink } from 'fs-extra';
 import { join, relative, resolve } from 'path';
 import v4 from 'uuid/v4';
 import CurseForgeService from './CurseForgeService';
+import InstanceGameSettingService from './InstanceGameSettingService';
 import { InstanceIOService } from './InstanceIOService';
 import InstanceSavesService from './InstanceSavesService';
 import JavaService from './JavaService';
@@ -24,6 +24,30 @@ const INSTANCES_FOLDER = 'instances';
 const INSTANCE_JSON = 'instance.json';
 const INSTANCES_JSON = 'instances.json';
 const INSTANCE_LOCK_JSON = 'instance-lock.json';
+
+export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'deployments' | 'runtime' | 'server'>> {
+    deployments?: {};
+
+    runtime?: Partial<RuntimeVersions>;
+
+    /**
+     * If this is undefined, it will disable the server of this instance
+     */
+    server?: {
+        /**
+         * The host of the server (ip)
+         */
+        host: string;
+        /**
+         * The port of the server
+         */
+        port?: number;
+    };
+    /**
+     * The target instance path. If this is absent, it will use the selected instance.
+     */
+    instancePath?: string;
+}
 
 /**
  * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
@@ -44,6 +68,9 @@ export class InstanceService extends Service {
     @Inject('InstanceSavesService')
     protected readonly saveService!: InstanceSavesService;
 
+    @Inject('InstanceGameSettingService')
+    protected readonly gameService!: InstanceGameSettingService;
+
     @Inject('InstanceIOService')
     protected readonly ioService!: InstanceIOService;
 
@@ -52,25 +79,7 @@ export class InstanceService extends Service {
     }
 
     @Singleton()
-    async loadInstanceGameSettings(path: string) {
-        requireString(path);
-
-        let { commit } = this;
-
-        try {
-            let optionsPath = join(path, 'options.txt');
-            let result = await readFile(optionsPath, 'utf-8').then(b => b.toString()).then(parse);
-            commit('instanceCache', { gamesettings: result });
-        } catch (e) {
-            if (!e.message.startsWith('ENOENT:')) {
-                this.warn(`An error ocurrs during parse game options of ${path}.`);
-                this.warn(e);
-            }
-        }
-    }
-
-    @Singleton()
-    async loadInstanceSeverData(path: string) {
+    async loadInstanceServerData(path: string) {
         requireString(path);
 
         let { commit } = this;
@@ -82,6 +91,7 @@ export class InstanceService extends Service {
                 this.log('Loaded server infos.');
                 commit('instanceServerInfos', infos);
             }
+            this.log('No server data found in instance.');
         } catch (e) {
             this.warn(`An error occured during loading server infos of ${path}`);
             this.error(e);
@@ -227,13 +237,6 @@ export class InstanceService extends Service {
         this.log(`Saved instance selection ${path}`);
     }
 
-    @MutationTrigger('instanceGameSettings')
-    async saveInstanceGameSetting() {
-        await writeFile(join(this.state.instance.path, 'options.txt'),
-            stringify(this.state.instance.settings));
-        this.log(`Saved instance gamesettings ${this.state.instance.path}`);
-    }
-
     /**
      * Return the instance's screenshots urls.
      * 
@@ -309,11 +312,9 @@ export class InstanceService extends Service {
 
         // not await this to improve the performance
 
-        // eslint-disable-next-line no-unused-expressions
-        this.saveService?.mountInstanceSaves(path);
-
-        this.loadInstanceGameSettings(path);
-        this.loadInstanceSeverData(path);
+        this.saveService.mountInstanceSaves(path);
+        this.gameService.loadInstanceGameSettings(path);
+        this.loadInstanceServerData(path);
 
         await this.loadInstanceLock(path);
 
@@ -343,7 +344,7 @@ export class InstanceService extends Service {
         this.commit('instanceRemove', path);
 
         let managed = resolve(path).startsWith(resolve(this.getPathUnder()));
-        let instanceDirectory = this.getPathUnder(path);
+        let instanceDirectory = path;
         if (managed && await exists(instanceDirectory)) {
             await remove(instanceDirectory);
         }
@@ -352,14 +353,70 @@ export class InstanceService extends Service {
     /**
      * Edit the instance. If the `id` is not present
      */
-    async editInstance(patch: Partial<InstanceSchema> & { path?: string }) {
-        requireObject(patch);
+    async editInstance(options: EditInstanceOptions) {
+        requireObject(options);
 
-        let targetPath = patch.path || this.state.instance.path;
-        let target = this.state.instance.all[targetPath];
-        if (shouldPatch(patch, target)) {
-            this.log(`Modify instance ${JSON.stringify(patch, null, 4)}.`);
-            this.commit('instance', { ...patch, path: targetPath });
+        let instancePath = options.instancePath || this.state.instance.path;
+        let state = this.state.instance.all[instancePath];
+
+        let ignored = { runtime: true, deployments: true, server: true, vmOptions: true, mcOptions: true };
+        let result: Record<string, any> = {};
+        for (let key of Object.keys(options)) {
+            if (key in ignored) {
+                continue;
+            }
+            if (key in state) {
+                if ((state as any)[key] !== (options as any)[key]) {
+                    result[key] = (options as any)[key];
+                }
+            }
+        }
+
+        if ('runtime' in options && options.runtime) {
+            let runtime = options.runtime;
+            let currentRuntime = state.runtime;
+            let resultRuntime: Partial<RuntimeVersions> = {};
+            for (let version of Object.keys(runtime)) {
+                if (version in currentRuntime) {
+                    if (currentRuntime[version] !== runtime[version]) {
+                        resultRuntime[version] = runtime[version];
+                    }
+                } else {
+                    resultRuntime[version] = runtime[version];
+                }
+            }
+            if (Object.keys(resultRuntime).length > 0) {
+                result.runtime = resultRuntime;
+            }
+        }
+
+        if ('server' in options) {
+            if (options.server) {
+                if (options.server.host !== state.server?.host || options.server.port !== state.server.port) {
+                    result.server = options.server;
+                }
+            } else if (state.server !== undefined) {
+                result.server = options.server;
+            }
+        }
+
+        if ('vmOptions' in options && options.vmOptions) {
+            let diff = options.vmOptions.some((e, i) => e !== state.vmOptions[i]);
+            if (diff) {
+                result.vmOptions = options.vmOptions;
+            }
+        }
+
+        if ('mcOptions' in options && options.mcOptions) {
+            let diff = options.mcOptions.some((e, i) => e !== state.mcOptions[i]);
+            if (diff) {
+                result.mcOptions = options.mcOptions;
+            }
+        }
+
+        if (Object.keys(result).length > 0) {
+            this.log(`Modify instance ${JSON.stringify(result, null, 4)}.`);
+            this.commit('instance', { ...result, path: instancePath });
         }
     }
 

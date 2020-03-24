@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import { reactive, onUnmounted, watch, toRefs, ref, onMounted } from '@vue/composition-api';
+import { reactive, onUnmounted, watch, toRefs, ref, onMounted, computed } from '@vue/composition-api';
 import Model from './skin-model';
 
 const THREE = require('three');
@@ -47,7 +47,7 @@ export default {
       default: null,
     },
   },
-  setup(props, context) {
+  setup(props) {
     const canvas = ref(null);
     const data = reactive({
       disposed: false,
@@ -66,7 +66,9 @@ export default {
       camera.lookAt(new THREE.Vector3(0, 0, 0));
 
       character.root.translateY(-0.5);
-      if (props.href) character.updateSkin(props.href, props.slim);
+      if (props.href) {
+        character.updateSkin(props.href, props.slim);
+      }
 
       controls.target = new THREE.Vector3(0, 0, 0);
       controls.enablePan = false;
@@ -91,7 +93,7 @@ export default {
         // renderer.render(scene, camera);
         // }
       });
-      watch([() => props.href, () => props.slim], () => {
+      watch([computed(() => props.href), computed(() => props.slim)], () => {
         character.updateSkin(props.href, props.slim);
       });
     });

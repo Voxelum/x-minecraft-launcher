@@ -1,11 +1,11 @@
 import { computed, onMounted, onUnmounted, Ref, watch } from '@vue/composition-api';
-import { notNull } from '@universal/util/assert';
+import { isNotNull } from '@universal/util/assert';
 import { useInstanceVersion } from './useInstance';
 import { useStore, useBusy } from './useStore';
-import { useService } from './useService';
+import { useService, useServiceOnly } from './useService';
 
 export function useVersions() {
-    return useService('VersionService');
+    return useServiceOnly('VersionService', 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory');
 }
 
 export function useLocalVersions() {
@@ -76,7 +76,7 @@ export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
     const { state } = useStore();
     const { refreshLiteloader } = useService('InstallService');
 
-    const versions = computed(() => Object.values(state.version.liteloader.versions[minecraftVersion.value] || {}).filter(notNull));
+    const versions = computed(() => Object.values(state.version.liteloader.versions[minecraftVersion.value] || {}).filter(isNotNull));
     const refreshing = useBusy('refreshLiteloader');
     let handle = () => { };
     onMounted(() => {

@@ -1,9 +1,11 @@
-import { GameSetting, parse } from '@xmcl/gamesetting';
-import { readFile } from 'fs-extra';
+import { parse, Frame, stringify } from '@xmcl/gamesetting';
+import { readFile, writeFile } from 'fs-extra';
 import { join } from 'path';
 import { requireString } from '@universal/util/assert';
-import Service, { Singleton } from './Service';
+import Service, { Singleton, MutationTrigger } from './Service';
 
+export interface EditGameSettingOptions extends Frame {
+}
 
 /**
  * The service for game setting
@@ -25,7 +27,29 @@ export default class InstanceGameSettingService extends Service {
         }
     }
 
-    edit(gameSetting: GameSetting) {
-        this.commit('instanceGameSettings', gameSetting);
+    
+    @MutationTrigger('instanceGameSettings')
+    async saveInstanceGameSetting() {
+        await writeFile(join(this.state.instance.path, 'options.txt'),
+            stringify(this.state.instance.settings));
+        this.log(`Saved instance gamesettings ${this.state.instance.path}`);
+    }
+
+    /**
+     * Edit the game setting of current instance
+     * @param gameSetting The game setting edit options
+     */
+    edit(gameSetting: EditGameSettingOptions) {
+        let current = this.state.instance.settings;
+        let result: Frame = {};
+        for (let key of Object.keys(gameSetting)) {
+            if (key in current && (current as any)[key] !== (gameSetting as any)[key]) {
+                (result as any)[key] = (gameSetting as any)[key];
+            }
+        }
+        if (Object.keys(result).length > 0) {
+            this.log(`Edit gamesetting: ${JSON.stringify(result, null, 4)}.`);
+            this.commit('instanceGameSettings', result);
+        }
     }
 }

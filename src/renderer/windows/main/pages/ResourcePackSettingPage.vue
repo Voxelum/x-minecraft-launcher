@@ -36,9 +36,9 @@
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.selected') }} </span> 
           </v-card-title>
-          <hint v-if="selecetedItems.length === 0" icon="save_alt" :text="$t('resourcepack.hint')" :absolute="true" />
+          <hint v-if="selectedItems.length === 0" icon="save_alt" :text="$t('resourcepack.hint')" :absolute="true" />
           <div v-else ref="rightList" class="list">
-            <resource-pack-card v-for="(item, index) in selecetedItems" 
+            <resource-pack-card v-for="(item, index) in selectedItems" 
                                 :key="item[0].hash"
                                 v-observe-visibility="{
                                   callback: (v) => onItemVisibile(v, index, true),

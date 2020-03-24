@@ -7,7 +7,7 @@
     </v-layout>
   </v-container>
   <v-list v-else-if="versions.length !== 0" dark style="overflow-y: scroll; scrollbar-width: 0; background-color: transparent;">
-    <v-list-tile ripple @click="selectVersion({ version: null })">
+    <v-list-tile ripple @click="selectVersion({ version: '' })">
       <v-list-tile-avatar>
         <v-icon> close </v-icon>
       </v-list-tile-avatar>
@@ -57,7 +57,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, computed } from '@vue/composition-api';
+import { createComponent, computed, onMounted, watch } from '@vue/composition-api';
 import { Version } from '@xmcl/installer/forge';
 import { useForgeVersions, useI18n } from '@/hooks';
 
@@ -100,6 +100,14 @@ export default createComponent({
       return version.version.indexOf(props.filterText) !== -1;
     }
     const filteredVersions = computed(() => versions.value.filter(filterForge));
+
+    watch(filteredVersions, () => {
+      if (filteredVersions.value.length === 0) {
+        console.log(`EMIT!`);
+        context.emit('update:recommended-only', false);
+      }
+    });
+
     return {
       iconMapping: {
         buggy: 'bug_report',

@@ -1,18 +1,28 @@
 import Vue from 'vue';
-import { requireObject, requireString } from '@universal/util/object';
+import { requireObject, requireString } from '@universal/util/assert';
 import { ModuleOption } from '../root';
-import { Java, JavaSchema } from './java.schema';
+import { Java } from './java.schema';
 
-type State = JavaSchema
+type State = {
+    all: JavaState[];
+    /**
+    * @TJS-type integer
+    * @minimum 0
+    * @default 0
+    */
+    default: number;
+};
+
+export type JavaState = Java & { valid: boolean };
 
 interface Getters {
-    defaultJava: Java;
+    defaultJava: JavaState;
     missingJava: boolean;
 }
 interface Mutations {
-    javaAdd: (Java | Java[]);
-    javaRemove: (Java);
-    javaSetDefault: (Java);
+    javaUpdate: (JavaState | JavaState[]);
+    javaRemove: (JavaState);
+    javaSetDefault: (JavaState);
 }
 
 export type JavaModule = ModuleOption<State, Getters, Mutations, {}>;
@@ -20,10 +30,11 @@ export type JavaModule = ModuleOption<State, Getters, Mutations, {}>;
 /**
  * Return when there is no java
  */
-export const DEFAULT_JAVA: Java = {
+export const DEFAULT_JAVA: JavaState = {
     version: '',
     majorVersion: 0,
     path: '',
+    valid: false,
 };
 
 const mod: JavaModule = {
@@ -36,13 +47,14 @@ const mod: JavaModule = {
         missingJava: state => state.all.length === 0,
     },
     mutations: {
-        javaAdd(state, java) {
+        javaUpdate(state, java) {
             if (java instanceof Array) {
                 for (const j of java) {
                     const existed = state.all.find(jp => jp.path === j.path);
                     if (existed) {
                         existed.majorVersion = j.majorVersion;
                         existed.version = j.version;
+                        existed.valid = j.valid;
                     } else {
                         state.all.push(j);
                     }
@@ -52,6 +64,7 @@ const mod: JavaModule = {
                 if (existed) {
                     existed.majorVersion = java.majorVersion;
                     existed.version = java.version;
+                    existed.valid = java.valid;
                 } else {
                     state.all.push(java);
                 }

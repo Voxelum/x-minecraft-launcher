@@ -33,7 +33,7 @@ export default class TaskManager extends Manager {
     private handles: { [id: string]: TaskHandle<any, any> } = {};
 
     private listeners: WebContents[] = [];
-    
+
     readonly runtime: TaskRuntime<TaskState> = Task.createRuntime(this.factory) as any;
 
     constructor(private taskThreshold: number = 30) {
@@ -55,8 +55,16 @@ export default class TaskManager extends Manager {
         });
         this.runtime.on('execute', (node, parent) => {
             if (parent) {
-                this.child(parent, node);
-                this.deferred.push(() => parent.children.push(node));
+                if ('node' in parent) {
+                    parent = (parent as any).node;
+                    this.child(parent!, node);
+                    parent!.children = parent!.children || [];
+                    this.deferred.push(() => parent!.children.push(node));
+                } else {
+                    this.child(parent, node);
+                    parent.children = parent.children || [];
+                    this.deferred.push(() => parent!.children.push(node));
+                }
             } else {
                 this.add(node.id, node);
             }
@@ -68,6 +76,8 @@ export default class TaskManager extends Manager {
             node.status = 'successed';
         });
         this.runtime.on('fail', (error, node) => {
+            this.log(`Error task ${node.path}(${node.id})`);
+            this.log(error);
             this.status(node.id, 'failed');
             node.status = 'failed';
             let errorMessage;
@@ -89,6 +99,9 @@ export default class TaskManager extends Manager {
         Object.defineProperty(task, '__uuid__', { value: id, writable: false, configurable: false, enumerable: false });
         handle.wait().finally(() => {
             delete this.handles[id];
+        }).catch((e) => {
+            this.error(`Task Failed ${task.name}`);
+            this.error(e);
         });
         this.handles[id] = handle;
         Object.defineProperty(handle, '__handle__', { value: id, writable: false, configurable: false });

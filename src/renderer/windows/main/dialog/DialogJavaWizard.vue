@@ -14,13 +14,13 @@
 
           <v-list style="width: 100%" class="grey darken-4" dark>
             <template v-for="(option, i) in options">
-              <v-list-tile :key="i" ripple @click="fixProblem(i)">
+              <v-list-tile :key="i" ripple :disabled="option.disabled" @click="fixProblem(i)">
                 <v-list-tile-content>
                   <v-list-tile-title>
                     {{ (i + 1) + '. ' + option.title }}
                   </v-list-tile-title>
                   <v-list-tile-sub-title>
-                    {{ option.message }}
+                    {{ option.disabled ? option['disabled-message'] : option.message }}
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
@@ -94,7 +94,7 @@
 
 <script lang=ts>
 import { reactive, computed, toRefs, onMounted, onUnmounted, watch, createComponent } from '@vue/composition-api';
-import { useDialogSelf, useI18n, useStore, useJava, useNativeDialog } from '@/hooks';
+import { useDialogSelf, useI18n, useStore, useJava, useNativeDialog, useServiceOnly, useInstance } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -105,10 +105,13 @@ export default createComponent({
   },
   setup() {
     const dialog = useNativeDialog();
-    const { getters } = useStore();
+    const { getters, state } = useStore();
     const { $t } = useI18n();
     const { showDialog, isShown } = useDialogSelf('java-wizard');
     const { add, refreshLocalJava, installDefault, openJavaSite } = useJava();
+    const { editInstance, setJavaPath } = useInstance();
+    const { fixJavaIncompatible } = useServiceOnly('DiagnoseService', 'fixJavaIncompatible');
+    const java8 = computed(() => state.java.all.find(j => j.majorVersion === 8 && j.valid));
     const data = reactive({
       step: 0,
 
@@ -119,14 +122,23 @@ export default createComponent({
 
       options: [{
         autofix: true,
+        title: $t('diagnosis.missingJava.switch'),
+        message: $t('diagnosis.missingJava.switch.message'),
+        'disabled-message': $t('diagnosis.missingJava.switch.disabled'),
+        disabled: java8.value === undefined,
+      }, {
+        autofix: true,
         title: $t('diagnosis.missingJava.autoDownload'),
         message: $t('diagnosis.missingJava.autoDownload.message'),
+        disabled: false,
       }, {
         title: $t('diagnosis.missingJava.manualDownload'),
         message: $t('diagnosis.missingJava.manualDownload.message'),
+        disabled: false,
       }, {
         title: $t('diagnosis.missingJava.selectJava'),
         message: $t('diagnosis.missingJava.selectJava.message'),
+        disabled: false,
       }],
     });
     const missing = computed(() => getters.missingJava);
@@ -168,11 +180,14 @@ export default createComponent({
       async fixProblem(index: number) {
         data.step = index + 1;
         if (index === 0) {
-          await installDefault(true).catch((e) => { data.downloadError = e; });
-          showDialog('task');
+          editInstance({ java: '8' });
+          setJavaPath(java8.value!.path);
         } else if (index === 1) {
-          await openJavaSite();
+          showDialog('task');
+          await fixJavaIncompatible();
         } else if (index === 2) {
+          await openJavaSite();
+        } else if (index === 3) {
           data.status = 'resolving';
           const { filePaths } = await dialog.showOpenDialog({
             title: $t('java.browse'),

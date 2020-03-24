@@ -47,7 +47,7 @@ export default class AuthLibService extends Service {
 
             const content = await readJson(jsonPath).catch(() => undefined);
             if (!content) {
-                const { body, statusCode, statusMessage } = await this.networkManager.requst('https://authlib-injector.yushi.moe/artifact/latest.json', { responseType: 'default' });
+                const { body, statusCode, statusMessage } = await this.networkManager.request('https://authlib-injector.yushi.moe/artifact/latest.json', { responseType: 'default' });
                 if (statusCode !== 200) throw new Error(statusMessage);
                 const path = await download(body);
                 return path;

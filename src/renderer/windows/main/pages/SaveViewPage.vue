@@ -49,7 +49,7 @@
                 </v-layout>
                 <v-divider light />
                 <v-card-actions>
-                  <v-btn color="red" flat @click="startDelete(s.path)"> 
+                  <v-btn color="red" flat @click="startDelete(s.name)"> 
                     <v-icon left>
                       delete
                     </v-icon>
@@ -62,7 +62,7 @@
               </v-icon>
               {{ $t('save.detail') }}
             </v-btn> -->
-                  <v-btn flat @click="doExport(s.path)">
+                  <v-btn flat @click="doExport(s.name)">
                     <v-icon left>
                       launch
                     </v-icon>
@@ -75,7 +75,7 @@
         </v-container>
       </v-flex>
     </v-layout>
-    <dialog-copy-save-from v-model="copyFrom" />
+    <!-- <dialog-copy-save-from v-model="copyFrom" /> -->
     <v-dialog :value="copying !== ''" width="500">
       <v-card>
         <v-card-title
@@ -164,7 +164,7 @@ import {
 
 export default createComponent({
   setup() {
-    const { saves, deleteSave, importSave, exportSave, copySave } = useInstanceSaves();
+    const { saves, deleteSave, importSave, exportSave, cloneSave: copySave } = useInstanceSaves();
     const { instances } = useInstances();
     const { showSaveDialog, showOpenDialog } = useNativeDialog();
     const { $t } = useI18n();
@@ -187,7 +187,7 @@ export default createComponent({
         if (length > 0) {
           for (let i = 0; i < length; ++i) {
             const file = event.dataTransfer!.files[i];
-            importSave(file.path);
+            importSave({ source: file.path });
           }
         }
       },
@@ -196,20 +196,23 @@ export default createComponent({
         data.deleting = p;
       },
       doDelete() {
-        deleteSave(data.deleting);
+        deleteSave({ saveName: data.deleting });
         data.deleting = '';
       },
-      cancelDelete() { data.deleting = ''; },
-      startCopy(path: string) {
-        data.copying = path;
+      cancelDelete() {
+        data.deleting = '';
+      },
+
+      startCopy(name: string) {
+        data.copying = name;
         data.copyingDest = new Array(instances.value.length);
       },
       doCopy() {
-        const dests = instances
+        let dests = instances
           .value
           .filter((p, index) => data.copyingDest[index])
-          .map(p => p.id);
-        copySave({ src: data.copying, dest: dests });
+          .map(p => p.path);
+        copySave({ saveName: data.copying, destInstancePath: dests });
       },
       cancelCopy() {
         data.copying = '';
@@ -222,17 +225,17 @@ export default createComponent({
           filters: [{ extensions: ['zip'], name: 'zip' }],
         });
         for (const file of filePaths) {
-          importSave(file);
+          importSave({ source: file });
         }
       },
-      async doExport(path: string) {
+      async doExport(name: string) {
         const { filePath } = await showSaveDialog({
           title: $t('save.exportTitle'),
           message: $t('save.exportMessage'),
           filters: [{ extensions: ['zip'], name: 'zip' }],
         });
         if (filePath) {
-          exportSave({ destination: filePath, zip: true, path });
+          exportSave({ destination: filePath, zip: true, saveName: name });
         }
       },
 

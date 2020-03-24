@@ -1,5 +1,6 @@
-import { readFile, remove } from 'fs-extra';
+import { decode, guessEncodingByBuffer, UTF8 } from '@main/util/encoding';
 import { readdirIfPresent } from '@main/util/fs';
+import { readFile, remove } from 'fs-extra';
 import { join } from 'path';
 import { gunzip } from 'zlib';
 import Service from './Service';
@@ -23,21 +24,23 @@ export default class InstanceLogService extends Service {
     }
 
     /**
-     * Get the log content. 
+     * Get the log content.
      * @param name The log file name
      */
     async getLogContent(name: string) {
-        const filePath = join(this.state.instance.path, 'logs', name);
-        const buf = await readFile(filePath);
+        let filePath = join(this.state.instance.path, 'logs', name);
+        let buf = await readFile(filePath);
         if (name.endsWith('.gz')) {
-            return new Promise<string>((resolve, reject) => {
+            buf = await new Promise<Buffer>((resolve, reject) => {
                 gunzip(buf, (e, r) => {
                     if (e) reject(e);
-                    else resolve(r.toString());
+                    else resolve(r);
                 });
             });
         }
-        return buf.toString();
+        let encoding = await guessEncodingByBuffer(buf);
+        let result = decode(buf, encoding || UTF8);
+        return result;
     }
 
     /**
@@ -62,17 +65,19 @@ export default class InstanceLogService extends Service {
      * @param name The name of crash report
      */
     async getCrashReportContent(name: string) {
-        const filePath = join(this.state.instance.path, 'crash-reports', name);
-        const buf = await readFile(filePath);
+        let filePath = join(this.state.instance.path, 'crash-reports', name);
+        let buf = await readFile(filePath);
         if (name.endsWith('.gz')) {
-            return new Promise<string>((resolve, reject) => {
+            buf = await new Promise<Buffer>((resolve, reject) => {
                 gunzip(buf, (e, r) => {
                     if (e) reject(e);
-                    else resolve(r.toString());
+                    else resolve(r);
                 });
             });
         }
-        return buf.toString();
+        let encoding = await guessEncodingByBuffer(buf);
+        let result = decode(buf, encoding || UTF8);
+        return result;
     }
 
     /**

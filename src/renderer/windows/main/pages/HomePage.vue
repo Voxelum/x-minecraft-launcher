@@ -68,6 +68,7 @@
     <dialog-launch-status />
     <dialog-launch-blocked />
     <dialog-logs />
+    <dialog-game-exit />
   </v-layout>
 </template>
 
@@ -84,6 +85,7 @@ import {
   useQuit,
   useNotifier,
 } from '@/hooks';
+import DialogGameExit from './HomePage/DialogGameExit.vue';
 import DialogLaunchStatus from './HomePage/DialogLaunchStatus.vue';
 import DialogLaunchBlocked from './HomePage/DialogLaunchBlocked.vue';
 import DialogLogs from './HomePage/DialogLogs.vue';
@@ -99,6 +101,7 @@ export default createComponent({
     HomeHeader,
     ServerStatusBar,
     DialogLaunchBlocked,
+    DialogGameExit,
   },
   setup() {
     const { $t } = useI18n();

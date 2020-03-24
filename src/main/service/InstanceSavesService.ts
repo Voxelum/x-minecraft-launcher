@@ -1,6 +1,6 @@
 import { copyPassively, exists, FileStateWatcher, isFile, missing, readdirIfPresent } from '@main/util/fs';
 import { compressZipTo, includeAllToZip, unpack7z } from '@main/util/zip';
-import { notNull, requireString } from '@universal/util/assert';
+import { isNotNull, requireString } from '@universal/util/assert';
 import { Exception } from '@universal/util/exception';
 import { WorldReader } from '@xmcl/world';
 import { createHash } from 'crypto';
@@ -154,11 +154,13 @@ export default class InstanceSavesService extends Service {
                     let level = await reader.getLevelData();
                     return { path, level };
                 } catch (e) {
+                    this.error(`Fail to load save ${path}`);
+                    this.error(e);
                     return undefined;
                 }
             }));
 
-            let result = loaded.filter(notNull);
+            let result = loaded.filter(isNotNull);
 
             this.log(`Found ${result.length} saves in instance ${path}.`);
             if (result.length !== 0) {
