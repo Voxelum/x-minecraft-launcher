@@ -1,5 +1,6 @@
 /* eslint-disable */
 
+
 interface NodeRequire extends NodeRequireFunction {
     resolve: RequireResolve;
     cache: any;
@@ -44,6 +45,12 @@ declare module 'universal/utils/packFormatMapping.json' {
     };
     const formatToRange: PackFormatToVersioRange;
     export = formatToRange;
+}
+
+declare module 'vue-virtual-scroll-list' {
+    import { Component } from 'vue';
+    const component: Component<any, any, any, { size: number; remain: numebr }>;
+    export = component;
 }
 
 declare namespace NodeJS {

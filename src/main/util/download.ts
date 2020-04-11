@@ -1,7 +1,10 @@
 import { Task } from '@xmcl/task';
 import { createHash } from 'crypto';
 import got from 'got';
-import { waitStream } from '@xmcl/core/fs';
+import { finished as fin } from 'stream';
+import { promisify } from 'util';
+
+const finished = promisify(fin);
 
 export function cacheWithHash(url: string) {
     const download = Task.create('download', async (context: Task.Context) => {
@@ -29,7 +32,7 @@ export function cacheWithHash(url: string) {
                 urls.push(m.url);
             }
         });
-        await waitStream(stream);
+        await finished(stream);
 
         return {
             buffer: Buffer.concat(buffers),

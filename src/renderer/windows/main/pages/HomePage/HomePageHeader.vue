@@ -16,7 +16,7 @@
           power
         </v-icon>
       </v-avatar>
-      Version: {{ folder === 'unknown' ? id : folder }}
+      Version: {{ folder === 'unknown' ? $t('version.notInstalled') : folder }}
     </v-chip>
     <v-chip v-if="isServer" label class="pointer" small :selected="false" outline>
       <v-avatar>

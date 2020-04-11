@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { createComponent, createElement as h, provide, ref } from '@vue/composition-api';
+import { createComponent, createElement as h } from '@vue/composition-api';
 
 const files = require.context('.', false, /\.vue$/);
 

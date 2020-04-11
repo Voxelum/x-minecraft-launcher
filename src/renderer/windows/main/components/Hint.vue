@@ -1,5 +1,5 @@
 <template>
-  <v-container fill-height :class="{ 'absoluted': absolute }">
+  <v-container :class="{ 'absoluted': absolute }">
     <v-layout align-center justify-center row fill-height>
       <v-flex v-if="!button" style="text-align:center; user-select: none;" class="headline">
         <v-icon :style="{ 'font-size' : `${size}px` }" style="display: block">

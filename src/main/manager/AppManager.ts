@@ -205,6 +205,7 @@ export default class AppManager extends Manager {
         normalizedOptions.webPreferences.nodeIntegration = isDev; // enable node for webpack in dev
         // ops.webPreferences.enableRemoteModule = true;
         normalizedOptions.webPreferences.preload = join(__static, 'preload.js');
+        // normalizedOptions.webPreferences.devTools = false;
 
         const ref = new BrowserWindow(normalizedOptions);
         this.setupBrowserLogger(ref, name);

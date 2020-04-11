@@ -13,7 +13,12 @@
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.unselected') }} </span> 
           </v-card-title>
-          <hint v-if="unselectedItems.length === 0" icon="save_alt" :text="$t('resourcepack.hint')" :absolute="true" />
+          <hint 
+            v-if="unselectedItems.length === 0" 
+            icon="save_alt" 
+            :text="$t('resourcepack.hint')" 
+            :absolute="true" 
+            style="height: 100%" />
           <div v-else class="list">
             <resource-pack-card v-for="(item, index) in unselectedItems"
                                 :key="item[0].hash" 
@@ -36,7 +41,12 @@
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.selected') }} </span> 
           </v-card-title>
-          <hint v-if="selectedItems.length === 0" icon="save_alt" :text="$t('resourcepack.hint')" :absolute="true" />
+          <hint 
+            v-if="selectedItems.length === 0" 
+            icon="save_alt" 
+            :text="$t('resourcepack.hint')" 
+            :absolute="true"
+            style="height: 100%" />
           <div v-else ref="rightList" class="list">
             <resource-pack-card v-for="(item, index) in selectedItems" 
                                 :key="item[0].hash"

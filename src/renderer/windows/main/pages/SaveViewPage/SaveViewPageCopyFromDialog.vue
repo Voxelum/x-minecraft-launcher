@@ -42,8 +42,8 @@
             <v-checkbox v-model="profilesCopyFrom[i]" />
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title> {{ s.level.LevelName }} </v-list-tile-title>
-            <v-list-tile-sub-title> {{ $t('save.copyFrom.from', {src: s.profile}) }} </v-list-tile-sub-title>
+            <v-list-tile-title> {{ s.name }} </v-list-tile-title>
+            <v-list-tile-sub-title> {{ $t('save.copyFrom.from', {src: s.instanceName}) }} </v-list-tile-sub-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -79,7 +79,7 @@ import {
   useBusy,
   useResource,
 } from '@/hooks';
-import { SaveMetadata } from '@main/service/InstanceSavesService';
+import { SaveMetadata } from '@universal/store/modules/instance';
 
 export default createComponent({
   props: {

@@ -22,7 +22,7 @@ export interface RuntimeVersions {
      * Fabric loader version, e.g. 0.7.2+build.175
      * @default ""
      */
-    'fabric-loader': string;
+    fabricLoader: string;
     /**
      * Fabric yarn version, e.g. 1.15.1+build.14
      */

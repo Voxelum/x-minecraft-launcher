@@ -1,21 +1,14 @@
 import { copyPassively, exists, FileStateWatcher, isFile, missing, readdirIfPresent } from '@main/util/fs';
 import { compressZipTo, includeAllToZip, unpack7z } from '@main/util/zip';
-import { isNotNull, requireString } from '@universal/util/assert';
+import { SaveMetadata } from '@universal/store/modules/instance';
+import { requireString } from '@universal/util/assert';
 import { Exception } from '@universal/util/exception';
-import { WorldReader } from '@xmcl/world';
 import { createHash } from 'crypto';
 import filenamify from 'filenamify';
 import { ensureDir, ensureFile, readdir, remove } from 'fs-extra';
 import { basename, join, resolve } from 'path';
 import { ZipFile } from 'yazl';
 import Service, { ServiceException } from './Service';
-
-export interface SaveMetadata {
-    path: string;
-    instanceName: string;
-    name: string;
-    icon: string;
-}
 
 export interface ExportSaveOptions {
     /**
@@ -93,6 +86,15 @@ export interface CloneSaveOptions {
     newSaveName?: string;
 }
 
+function getSaveMetadata(path: string, instanceName: string) {
+    return {
+        path,
+        instanceName,
+        name: basename(path),
+        icon: `file://${join(path, 'icon.png')}`,
+    };
+}
+
 
 /**
  * A 
@@ -111,12 +113,7 @@ export default class InstanceSavesService extends Service {
             let saves = await readdirIfPresent(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
             let metadatas = saves
                 .map(s => resolve(saveRoot, s))
-                .map((p) => ({
-                    path: p,
-                    instanceName: instance.name,
-                    name: basename(p),
-                    icon: `file://${join(p, 'icon.png')}`,
-                }));
+                .map((p) => getSaveMetadata(p, instance.name));
             all.push(...metadatas);
         }
         return all;
@@ -145,22 +142,10 @@ export default class InstanceSavesService extends Service {
         try {
             let savePaths = await readdir(savesDir);
 
-            savePaths = savePaths.filter((d) => !d.startsWith('.'))
-                .map((d) => join(savesDir, d));
-
-            let loaded = await Promise.all(savePaths.map(async (path) => {
-                try {
-                    let reader = await WorldReader.create(path);
-                    let level = await reader.getLevelData();
-                    return { path, level };
-                } catch (e) {
-                    this.error(`Fail to load save ${path}`);
-                    this.error(e);
-                    return undefined;
-                }
-            }));
-
-            let result = loaded.filter(isNotNull);
+            let result = savePaths
+                .filter((d) => !d.startsWith('.'))
+                .map((d) => join(savesDir, d))
+                .map((p) => getSaveMetadata(p, this.getters.instance.name));
 
             this.log(`Found ${result.length} saves in instance ${path}.`);
             if (result.length !== 0) {

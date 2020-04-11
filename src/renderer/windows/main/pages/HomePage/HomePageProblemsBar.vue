@@ -32,12 +32,11 @@
 <script lang=ts>
 import { computed } from '@vue/composition-api';
 import { Issue } from '@universal/store/modules/diagnose';
-import { useStore, useRouter, useDialog, useNotifier, useI18n, useServices, useService } from '@/hooks';
+import { useStore, useRouter, useDialog, useService } from '@/hooks';
 
 export default {
   setup() {
-    const { getters, state, commit } = useStore();
-    const { editInstance } = useService('InstanceService');
+    const { getters } = useStore();
     const { fix } = useService('DiagnoseService');
     const router = useRouter();
     const problems = computed(() => getters.issues);
@@ -46,8 +45,6 @@ export default {
     const { showDialog: showTaskDialog } = useDialog('task');
     const { showDialog: showJavaDialog } = useDialog('java-wizard');
     const { showDialog: showModDialog } = useDialog('download-missing-mods');
-    const { notify } = useNotifier();
-    const { $t } = useI18n();
 
     async function handleManualFix(problem: Issue) {
       switch (problem.id) {

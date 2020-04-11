@@ -1,8 +1,9 @@
-import { join } from 'path';
-import { Task } from '@xmcl/task';
-import fs from '@xmcl/core/fs';
 import ResourceService from '@main/service/ResourceService';
+import { exists, missing } from '@main/util/fs';
 import { UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
+import { Task } from '@xmcl/task';
+import fs from 'fs-extra';
+import { join } from 'path';
 
 const mockRoot = join(__dirname, '..', '..', '..', 'mock');
 const tempRoot = join(__dirname, '..', '..', '..', 'temp');
@@ -29,11 +30,11 @@ describe('ResourceService', () => {
     const liteJson = join(tempRoot, 'mods', 'ArmorsHUDRevived-1.12.r2-1.2.0-143.json');
     jest.setTimeout(10000000);
     beforeEach(async () => {
-        if (await fs.exists(forgeJar)) {
+        if (await exists(forgeJar)) {
             await fs.unlink(forgeJar);
             await fs.unlink(forgeJson);
         }
-        if (await fs.exists(liteMod)) {
+        if (await exists(liteMod)) {
             await fs.unlink(liteMod);
             await fs.unlink(liteJson);
         }
@@ -46,9 +47,9 @@ describe('ResourceService', () => {
             const r = await service.importUnknownResource({ path: srcPath });
             expect(r.path).toEqual(forgeJar);
             expect(r.source.file!.path).toEqual(srcPath);
-            await expect(fs.exists(forgeJar))
+            await expect(exists(forgeJar))
                 .resolves.toBe(true);
-            await expect(fs.exists(forgeJson))
+            await expect(exists(forgeJson))
                 .resolves.toBe(true);
             const o = await fs.readFile(forgeJson).then(b => JSON.parse(b.toString()));
             expect(o).toEqual(r);
@@ -57,9 +58,9 @@ describe('ResourceService', () => {
             const service = new ResourceService();
             Object.entries(mocks).forEach(([k, v]) => Reflect.set(service, k, v));
             const r = await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.jar'), type: 'forge' });
-            await expect(fs.exists(forgeJar))
+            await expect(exists(forgeJar))
                 .resolves.toBe(true);
-            await expect(fs.exists(forgeJson))
+            await expect(exists(forgeJson))
                 .resolves.toBe(true);
             const o = await fs.readFile(forgeJson).then(b => JSON.parse(b.toString()));
             expect(o).toEqual(r);
@@ -68,9 +69,9 @@ describe('ResourceService', () => {
             const service = new ResourceService();
             Object.entries(mocks).forEach(([k, v]) => Reflect.set(service, k, v));
             const r = await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.jar'), type: 'mods' });
-            await expect(fs.exists(forgeJar))
+            await expect(exists(forgeJar))
                 .resolves.toBe(true);
-            await expect(fs.exists(forgeJson))
+            await expect(exists(forgeJson))
                 .resolves.toBe(true);
             const o = await fs.readFile(forgeJson).then(b => JSON.parse(b.toString()));
             expect(o).toEqual(r);
@@ -79,8 +80,8 @@ describe('ResourceService', () => {
             const service = new ResourceService();
             Object.entries(mocks).forEach(([k, v]) => Reflect.set(service, k, v));
             const r = await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
-            await expect(fs.exists(liteMod)).resolves.toBe(true);
-            await expect(fs.exists(liteJson)).resolves.toBe(true);
+            await expect(exists(liteMod)).resolves.toBe(true);
+            await expect(exists(liteJson)).resolves.toBe(true);
             const o = await fs.readFile(liteJson).then(b => JSON.parse(b.toString()));
             expect(o).toEqual(r);
         });
@@ -96,8 +97,8 @@ describe('ResourceService', () => {
             const resource = await service.importUnknownResource({ path: join(mockRoot, 'mods', 'sample-mod.litemod') });
             await service.removeResource(resource);
             expect(rm).toHaveBeenCalledWith('resourceRemove', resource);
-            await expect(fs.missing(liteMod)).resolves.toBe(true);
-            await expect(fs.missing(liteJson)).resolves.toBe(true);
+            await expect(missing(liteMod)).resolves.toBe(true);
+            await expect(missing(liteJson)).resolves.toBe(true);
         });
     });
     describe('#renameResource', () => {

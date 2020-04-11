@@ -76,3 +76,9 @@ p {
     padding-left: 30px;
     padding-right: 30px;
 }
+
+.theme--dark.v-sheet {
+    background-color: rgba(66,66,66,0.8);
+    border-color: #424242;
+    color: #fff;
+}

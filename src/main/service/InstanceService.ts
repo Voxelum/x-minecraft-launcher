@@ -472,7 +472,7 @@ export class InstanceService extends Service {
                 minecraft: this.state.client.protocolMapping.mcversion[info.status.version.protocol][0],
                 forge: '',
                 liteloader: '',
-                'fabric-loader': '',
+                fabricLoader: '',
                 yarn: '',
             };
             if (info.status.modinfo && info.status.modinfo.type === 'FML') {

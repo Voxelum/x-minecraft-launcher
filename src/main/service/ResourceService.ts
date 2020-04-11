@@ -5,7 +5,7 @@ import { AnyResource, ImportOption, ImportTypeHint, Resource, UNKNOWN_RESOURCE }
 import { ResourceSchema } from '@universal/store/modules/resource.schema';
 import { requireString } from '@universal/util/assert';
 import { Fabric, Forge, LiteLoader } from '@xmcl/mod-parser';
-import { FileSystem, System } from '@xmcl/system';
+import { FileSystem, openFileSystem } from '@xmcl/system';
 import { Task } from '@xmcl/task';
 import { WorldReader } from '@xmcl/world';
 import { createHash } from 'crypto';
@@ -401,7 +401,7 @@ export default class ResourceService extends Service {
      */
     protected async resolveResource(builder: ResourceBuilder, data: Buffer, typeHint?: ImportTypeHint): Promise<void> {
         let chains: Array<ResourceRegistryEntry<any>> = [];
-        const fs = await System.openFileSystem(data);
+        const fs = await openFileSystem(data);
 
         const hint = typeHint || '';
         if (hint === '*' || hint === '') {

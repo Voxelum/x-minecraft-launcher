@@ -1,6 +1,6 @@
 import { GFW_RELEASE_FEED_URL } from '@main/constant';
 import BaseService from '@main/service/BaseService';
-import Task from '@xmcl/task';
+import { Task } from '@xmcl/task';
 import { autoUpdater, UpdaterSignal } from 'electron-updater';
 import { Store } from 'vuex';
 import { Manager } from '.';

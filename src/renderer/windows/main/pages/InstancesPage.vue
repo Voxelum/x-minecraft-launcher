@@ -22,7 +22,7 @@
                 <v-btn flat fab dark small style="margin-left: 5px; margin-top: 5px;" @click="createProfile"
                        v-on="on">
                   <transition name="scale-transition" mode="out-in">
-                    <v-icon v-if="!dragging" key="a" dark style="font-size: 28px; transition: all 0.2s ease;">
+                    <v-icon v-if="!draggingInstance.path" key="a" dark style="font-size: 28px; transition: all 0.2s ease;">
                       add
                     </v-icon>
                     <v-icon v-else key="b" color="red" style="font-size: 28px; transition: all 0.2s ease;"
@@ -71,62 +71,40 @@
     </v-layout>
     <v-flex d-flex xs12 style="height: 10px;" />
     <v-layout row wrap style="overflow: scroll; max-height: 88vh;" justify-start fill-height>
-      <v-flex v-if="timesliceProfiles[0].length !== 0" style="color: grey" xs12> 
+      <v-flex v-if="instancesByTime[0].length !== 0" style="color: grey" xs12> 
         {{ $t('profile.today') }}
       </v-flex>
-      <v-flex v-for="profile in timesliceProfiles[0]" :key="profile.path" xs6
-              @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <instance-preview-card :profile="profile" @click.stop="selectInstance(profile.path)" />
+      <v-flex v-for="instance in instancesByTime[0]" :key="instance.path" xs6
+              @dragstart="dragStart(instance)" @dragend="dragEnd">
+        <preview-card :profile="instance" @click.stop="selectInstance(instance.path)" />
       </v-flex>
-      <v-flex v-if="timesliceProfiles[1].length !== 0" style="color: grey" xs12> 
+      <v-flex v-if="instancesByTime[1].length !== 0" style="color: grey" xs12> 
         {{ $t('profile.threeDay') }}
       </v-flex>
-      <v-flex v-for="profile in timesliceProfiles[1]" :key="profile.path" xs6
-              @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <instance-preview-card :profile="profile" @click.stop="selectInstance(profile.path)" />
+      <v-flex v-for="instance in instancesByTime[1]" :key="instance.path" xs6
+              @dragstart="dragStart(instance)" @dragend="dragEnd">
+        <preview-card :profile="instance" @click.stop="selectInstance(instance.path)" />
       </v-flex>
-      <v-flex v-if="timesliceProfiles[2].length !== 0" style="color: grey" xs12> 
+      <v-flex v-if="instancesByTime[2].length !== 0" style="color: grey" xs12> 
         {{ $t('profile.older') }}
       </v-flex>
-      <v-flex v-for="profile in timesliceProfiles[2]" :key="profile.path" xs6 
-              @dragstart="dragging=true; draggingProfile=profile" @dragend="dragging=false; draggingProfile={}">
-        <instance-preview-card :profile="profile" @click.stop="selectInstance(profile.path)" />
+      <v-flex v-for="instance in instancesByTime[2]" :key="instance.path" xs6 
+              @dragstart="dragStart(instance)" @dragend="dragEnd">
+        <preview-card :profile="instance" @click.stop="selectInstance(instance.path)" />
       </v-flex>
     </v-layout>
     
-    <v-dialog v-model="isDeletingProfile" width="400">
-      <v-card>
-        <v-card-title>
-          <h2>
-            {{ $t('profile.delete') }}
-          </h2>
-        </v-card-title>
-        <v-card-text>
-          {{ $t('profile.deleteHint', { name: deletingProfile.name, id: deletingProfile.id }) }}
-        </v-card-text>
-        <v-card-actions>
-          <v-btn flat @click="cancelDelete">
-            {{ $t('cancel') }}
-          </v-btn>
-          <v-spacer />
-          <v-btn flat color="red" @click="doDelete">
-            <v-icon left>
-              delete
-            </v-icon> {{ $t('yes') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <delete-dialog :instance="deletingInstance" :confirm="doDelete" :cancel="cancelDelete" />
     <v-dialog v-model="wizard" persistent>
-      <stepper-add-instance v-if="!creatingServer" :show="wizard" @quit="wizard=false" />
-      <stepper-add-server v-else :show="wizard" @quit="wizard=false" />
+      <add-instance-stepper v-if="!creatingServer" :show="wizard" @quit="wizard=false" />
+      <add-server-stepper v-else :show="wizard" @quit="wizard=false" />
     </v-dialog>
   </v-container>
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, onMounted, createComponent, Ref } from '@vue/composition-api';
-import { InstanceConfig } from '@universal/store/modules/instance';
+import { reactive, toRefs, computed, onMounted, createComponent, Ref, ref } from '@vue/composition-api';
+import { Instance } from '@universal/store/modules/instance';
 import {
   useI18n,
   useNativeDialog,
@@ -135,197 +113,242 @@ import {
   useInstances,
   useResourceOperation,
   useCurseforgeImport,
+  useOperation,
+  Notify,
 } from '@/hooks';
-import InstancePreviewCard from './InstancesPage/InstancePreviewCard.vue';
-import StepperAddInstance from './InstancesPage/StepperAddInstance.vue';
-import StepperAddServer from './InstancesPage/StepperAddServer.vue';
+import PreviewCard from './InstancesPage/InstancesPagePreviewCard.vue';
+import AddInstanceStepper from './InstancesPage/InstancesPageAddInstanceStepper.vue';
+import AddServerStepper from './InstancesPage/InstancesPageAddServerStepper.vue';
+import DeleteDialog from './InstancesPage/InstancesPageDeleteDialog.vue';
+
+function useFilteredInstances(instances: Ref<readonly Instance[]>, filter: Ref<string>) {
+  return computed(() => {
+    const filterString = filter.value.toLowerCase();
+    return instances.value.filter(
+      profile => filterString === ''
+        || (profile.author
+          ? profile.author.toLowerCase().indexOf(filterString) !== -1
+          : false)
+        || profile.name.toLowerCase().indexOf(filterString) !== -1
+        || (profile.description
+          ? profile.description.toLowerCase().indexOf(filterString) !== -1
+          : false),
+    );
+  });
+}
+
+function useTimeslicedInstances(instances: Ref<readonly Instance[]>) {
+  const today = Math.floor(Date.now() / 1000 / 60 / 60 / 24) * 1000 * 60 * 60 * 24;
+  const threeDays = (Math.floor(Date.now() / 1000 / 60 / 60 / 24) - 3)
+    * 1000
+    * 60
+    * 60
+    * 24;
+  return computed(() => {
+    const todayR = [];
+    const threeR = [];
+    const other = [];
+    for (const p of instances.value) {
+      if (p.lastAccessDate > today) {
+        todayR.push(p);
+      } else if (p.lastAccessDate > threeDays) {
+        threeR.push(p);
+      } else {
+        other.push(p);
+      }
+    }
+    return [todayR, threeR, other];
+  });
+}
+
+function useHoverTexts() {
+  const { $t } = useI18n();
+  const data = reactive({
+    hoverTextOnCreate: $t('profile.add'),
+    hoverTextOnImport: $t('profile.importZip'),
+  });
+  return {
+    ...toRefs(data),
+    enterAltCreate() {
+      setTimeout(() => {
+        data.hoverTextOnCreate = $t('profile.addServer');
+      }, 100);
+    },
+    leaveAltCreate() {
+      setTimeout(() => {
+        data.hoverTextOnCreate = $t('profile.add');
+      }, 100);
+    },
+    enterImport(text: string) {
+      setTimeout(() => {
+        data.hoverTextOnImport = text;
+      }, 100);
+    },
+    leaveImport() {
+      setTimeout(() => {
+        data.hoverTextOnImport = $t('profile.importZip');
+      }, 100);
+    },
+  };
+}
+
+function useRefreshInstance(notify: Notify) {
+  const { $t } = useI18n();
+  const pinging = ref(false);
+  const { refreshServerStatusAll } = useInstances();
+  return {
+    pinging,
+    // options: {
+    //   animation: 200,
+    //   group: 'description',
+    //   disabled: false,
+    //   ghostClass: 'ghost',
+    // },
+    refresh() {
+      if (pinging.value) return;
+      pinging.value = true;
+      refreshServerStatusAll().then(() => {
+        notify('success', $t('profile.refreshServers'));
+      }, (e) => {
+        notify('error', $t('profile.refreshServers'), e);
+      }).finally(() => {
+        pinging.value = false;
+      });
+    },
+  };
+}
+
+function useInstanceCreation() {
+  const data = reactive({
+    wizard: false,
+    creatingServer: false,
+    creatingTooltip: false,
+  });
+  return {
+    ...toRefs(data),
+    createProfile() {
+      data.creatingTooltip = false;
+      data.creatingServer = false;
+      data.wizard = true;
+    },
+    createServer() {
+      data.creatingTooltip = false;
+      data.creatingServer = true;
+      data.wizard = true;
+    },
+  };
+}
+
+function useInstanceImport(notify: Notify) {
+  const { importInstance } = useInstances();
+  const { showOpenDialog } = useNativeDialog();
+  const { $t } = useI18n();
+  const { importUnknownResource } = useResourceOperation();
+  const { importCurseforgeModpack } = useCurseforgeImport();
+  return {
+    async doImport(fromFolder: boolean, curseforge: boolean) {
+      const filters = fromFolder
+        ? []
+        : [{ extensions: ['zip'], name: 'Zip' }];
+      const { filePaths } = await showOpenDialog({
+        title: $t('profile.import.title'),
+        message: $t('profile.import.description'),
+        filters,
+        properties: fromFolder ? ['openDirectory'] : ['openFile'],
+      });
+      if (filePaths && filePaths.length > 0) {
+        notify('info', $t('profile.import.start'));
+        for (const f of filePaths) {
+          if (curseforge) {
+            await importUnknownResource({
+              path: f,
+              type: 'curseforge-modpack',
+              background: true,
+            });
+            await importCurseforgeModpack({ path: f });
+          } else {
+            await importInstance(f);
+          }
+        }
+        notify('success', $t('profile.import.title'));
+      }
+    },
+  };
+}
+
+function useInstancesColor() {
+  onMounted(() => {
+    // const colors = [...this.colors];
+    // const count = colors.length;
+    // const newOrder = [];
+    // for (let i = 0; i < count; ++i) {
+    //   const choise = Math.random() * Math.floor(colors.length);
+    //   newOrder.push(colors.splice(choise, 1));
+    // }
+    // this.colors = newOrder;
+  });
+}
 
 export default createComponent({
   components: {
-    InstancePreviewCard,
-    StepperAddInstance,
-    StepperAddServer,
+    PreviewCard,
+    AddInstanceStepper,
+    AddServerStepper,
+    DeleteDialog,
   },
   setup() {
-    const { $t } = useI18n();
-    const { showOpenDialog } = useNativeDialog();
-    const { mountInstance: selectInstance, deleteInstance, refreshServerStatusAll: pingProfiles, instances, importInstance } = useInstances();
-    const { importUnknownResource } = useResourceOperation();
-    const { importCurseforgeModpack } = useCurseforgeImport();
+    const { mountInstance: selectInstance, deleteInstance, instances } = useInstances();
+
     const { notify } = useNotifier();
-    const router = useRouter();
-    const data = reactive({
-      filter: '',
-      wizard: false,
-      hoverTextOnCreate: $t('profile.add'),
-      hoverTextOnImport: $t('profile.importZip'),
-      creatingServer: false,
-      creatingTooltip: false,
+    const { replace } = useRouter();
 
-      isDeletingProfile: false,
-      deletingProfile: { name: '', path: '' } as InstanceConfig | { name: string; path: string },
-
-      /**
-       * Is dragging a profile
-       */
-      dragging: false,
-      draggingProfile: {} as InstanceConfig | {},
-
-      pinging: false,
-    });
-    const timesliceProfiles: Ref<InstanceConfig[][]> = computed(() => {
-      const filter = data.filter.toLowerCase();
-      const filtered = instances.value.filter(
-        profile => filter === ''
-          || (profile.author
-            ? profile.author.toLowerCase().indexOf(filter) !== -1
-            : false)
-          || profile.name.toLowerCase().indexOf(filter) !== -1
-          || (profile.description
-            ? profile.description.toLowerCase().indexOf(filter) !== -1
-            : false),
-      );
-
-      const today = Math.floor(Date.now() / 1000 / 60 / 60 / 24) * 1000 * 60 * 60 * 24;
-      const threeDays = (Math.floor(Date.now() / 1000 / 60 / 60 / 24) - 3)
-        * 1000
-        * 60
-        * 60
-        * 24;
-      const todayR = [];
-      const threeR = [];
-      const other = [];
-      for (const p of filtered) {
-        if (p.lastAccessDate > today) {
-          todayR.push(p);
-        } else if (p.lastAccessDate > threeDays) {
-          threeR.push(p);
-        } else {
-          other.push(p);
-        }
-      }
-      return [todayR, threeR, other];
-    }) as any;
-    function startDelete(prof: InstanceConfig) {
-      data.isDeletingProfile = true;
-      data.deletingProfile = prof;
-    }
-    onMounted(() => {
-      // const colors = [...this.colors];
-      // const count = colors.length;
-      // const newOrder = [];
-      // for (let i = 0; i < count; ++i) {
-      //   const choise = Math.random() * Math.floor(colors.length);
-      //   newOrder.push(colors.splice(choise, 1));
-      // }
-      // this.colors = newOrder;
-    });
-    return {
-      ...toRefs(data),
-      timesliceProfiles,
-      options: {
-        animation: 200,
-        group: 'description',
-        disabled: false,
-        ghostClass: 'ghost',
-      },
-      createProfile() {
-        data.creatingTooltip = false;
-        data.creatingServer = false;
-        data.wizard = true;
-      },
-      createServer() {
-        data.creatingTooltip = false;
-        data.creatingServer = true;
-        data.wizard = true;
-      },
-      onDropDelete() {
-        startDelete(data.draggingProfile as InstanceConfig);
-      },
-      async doImport(fromFolder: boolean, curseforge: boolean) {
-        const filters = fromFolder
-          ? []
-          : [{ extensions: ['zip'], name: 'Zip' }];
-        const { filePaths } = await showOpenDialog({
-          title: $t('profile.import.title'),
-          message: $t('profile.import.description'),
-          filters,
-          properties: fromFolder ? ['openDirectory'] : ['openFile'],
+    const defaultInstance = { path: '', name: '' };
+    const { cancel: cancelDelete, operate: doDelete, begin: startDelete, data: deletingInstance } = useOperation(defaultInstance, async (instance) => {
+      if (instance && 'path' in instance) {
+        await deleteInstance(instance.path).catch(() => {
+          notify('error', `Fail to delete profile ${instance.path}`);
         });
-        if (filePaths && filePaths.length > 0) {
-          notify('info', $t('profile.import.start'));
-          for (const f of filePaths) {
-            if (curseforge) {
-              await importUnknownResource({
-                path: f,
-                type: 'curseforge-modpack',
-                background: true,
-              });
-              await importCurseforgeModpack({ path: f });
-            } else {
-              await importInstance(f);
-            }
-          }
-          notify('success', $t('profile.import.title'));
-        }
-      },
-      doDelete() {
-        if ('path' in data.deletingProfile) {
-          const id = data.deletingProfile.path;
-          deleteInstance(id)
-            .catch(() => {
-              notify('error', `Fail to delete profile ${id}`);
-            })
-            .finally(() => {
-              data.isDeletingProfile = false;
-            });
-        } else {
-          notify('error', 'Fail to delete profile');
-          data.isDeletingProfile = false;
-        }
-      },
-      cancelDelete() {
-        data.isDeletingProfile = false;
-        data.deletingProfile = { name: '', path: '' };
-      },
+      } else {
+        notify('error', 'Fail to delete profile');
+      }
+    });
+    const { begin: dragStart, cancel: dragEnd, operate: drop, data: draggingInstance } = useOperation(defaultInstance, (inst) => {
+      startDelete(inst);
+    });
+
+    const filter = ref('');
+    const instancesByTime = useTimeslicedInstances(useFilteredInstances(instances, filter));
+
+    return {
+      // drag instance to delete
+      draggingInstance,
+      dragStart,
+      dragEnd,
+      onDropDelete: drop,
+
+      // delete instance
+      deletingInstance,
+      startDelete,
+      doDelete,
+      cancelDelete,
+
+      // instances display
+      instancesByTime,
+      filter,
+      ...useHoverTexts(),
+
+      // refresh instance operations
+      ...useRefreshInstance(notify),
+
+      // instance creation status
+      ...useInstanceCreation(),
+
+      ...useInstanceImport(notify),
+
       selectInstance(id: string) {
         selectInstance(id);
-        router.replace('/');
+        replace('/');
       },
-      enterAltCreate() {
-        setTimeout(() => {
-          data.hoverTextOnCreate = $t('profile.addServer');
-        }, 100);
-      },
-      leaveAltCreate() {
-        setTimeout(() => {
-          data.hoverTextOnCreate = $t('profile.add');
-        }, 100);
-      },
-      enterImport(text: string) {
-        setTimeout(() => {
-          data.hoverTextOnImport = text;
-        }, 100);
-      },
-      leaveImport() {
-        setTimeout(() => {
-          data.hoverTextOnImport = $t('profile.importZip');
-        }, 100);
-      },
-      refresh() {
-        if (data.pinging) return;
-        data.pinging = true;
-        pingProfiles().then(() => {
-          notify('success', $t('profile.refreshServers'));
-        }, (e) => {
-          notify('error', $t('profile.refreshServers'), e);
-        }).finally(() => {
-          data.pinging = false;
-        });
-      },
-      // colors: ['blue-grey', 'red', 'pink',
-      //   'purple', 'green', 'yellow', 'amber',
-      //   'orange', 'deep-orange', 'brown'],
     };
   },
   methods: {},

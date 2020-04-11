@@ -134,7 +134,7 @@
       </p> -->
     </v-layout>
 
-    <dialog-update-info v-model="viewingUpdateDetail" />
+    <update-info-dialog v-model="viewingUpdateDetail" />
     <v-dialog :value="reloadDialog" :persistent="!reloadError">
       <v-card v-if="!reloading" dark>
         <v-card-title>
@@ -184,7 +184,7 @@
         </v-card-text>
         <v-card-actions v-if="reloadError">
           <v-btn>
-            Ok
+            {{ $t('ok') }}
           </v-btn>
         </v-card-actions>
       </v-card>

@@ -51,6 +51,14 @@
             "protocol": "inspector",
             "port": 5858,
             "timeout": 20000
+        },
+        {
+            "name": "Electron: Renderer (attach)",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9222,
+            "webRoot": "${workspaceFolder}",
+            "timeout": 15000
         }
     ]
 }

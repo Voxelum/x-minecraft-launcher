@@ -161,8 +161,8 @@
       },
       "switch": {
         "": "Switch to Java 8",
-        "message": "Use existed Java 8 in you PC",
-        "disabled": "There is no Java 8 found in database now!"
+        "disabled": "There is no Java 8 found in database now!",
+        "message": "Use existed Java 8 in you PC"
       }
     },
     "missingLibraries": {
@@ -500,6 +500,7 @@
   "next": "Next",
   "no": "No",
   "ok": "OK",
+  "optional": "Optional",
   "popular": "Porpularity",
   "profile": {
     "add": "Add Local Game",
@@ -509,7 +510,7 @@
     "baseSetting": "Base Settings",
     "copy": "Duplicate",
     "delete": "Delete Profile",
-    "deleteHint": "The profile {name}({id}) data will be moved from the disk forever. You sure to do this?",
+    "deleteHint": "The instance {name}({id}) data will be moved from the disk forever. You sure to do this?",
     "descriptionHint": "Breifly describe the game",
     "export": {
       "exportingMessage": "Exporting Modpack...",
@@ -654,10 +655,10 @@
     "copyFrom": {
       "cancel": "Cancel",
       "confirm": "Start Copy",
-      "description": "You can deploy save to this profile from other profile, or from managed resources (curseforge)",
+      "description": "You can deploy save to this instance from other instances, or from managed resources (curseforge)",
       "from": "From {src}",
-      "fromProfile": "From Profiles",
-      "fromResource": "From Resources",
+      "fromProfile": "From Other Instances",
+      "fromResource": "From Managed Resources",
       "title": "Import Save from Managed Source"
     },
     "deleteCancel": "Cancel",
@@ -837,6 +838,7 @@
     "noLiteloader": "There is no Liteloader for this Minecraft version",
     "noLocalVersion": "No Version Installed",
     "noMinecraft": "Cannot get minecraft remote version list. Please check your Internet connection!",
+    "notInstalled": "Version is not installed",
     "pending": "Downloading...",
     "prepare": "Preparing Files",
     "recommended": "Recommended",

@@ -1,20 +1,20 @@
-import Router, { Route } from 'vue-router';
+import { serviceProxy } from '@/providers/provideServiceProxy';
 import Vue from 'vue';
-import { shell } from '@/constant';
+import Router, { Route } from 'vue-router';
+import AdvancedSettingPage from './pages/AdvancedSettingPage.vue';
+import BaseSettingPage from './pages/BaseSettingPage.vue';
+import CurseforgePage from './pages/CurseforgePage.vue';
+import CurseforgeProjectPage from './pages/CurseforgeProjectPage.vue';
+import CurseforgeViewPage from './pages/CurseforgeViewPage.vue';
+import GameSettingPage from './pages/GameSettingPage.vue';
 import HomePage from './pages/HomePage.vue';
 import InstancesPage from './pages/InstancesPage.vue';
+import ModSettingPage from './pages/ModSettingPage.vue';
+import ResourcePackSettingPage from './pages/ResourcePackSettingPage.vue';
+import SaveViewPage from './pages/SaveViewPage.vue';
 import SettingPage from './pages/SettingPage.vue';
 import UserPage from './pages/UserPage.vue';
-import SaveViewPage from './pages/SaveViewPage.vue';
-import BaseSettingPage from './pages/BaseSettingPage.vue';
-import AdvancedSettingPage from './pages/AdvancedSettingPage.vue';
-import ModSettingPage from './pages/ModSettingPage.vue';
-import GameSettingPage from './pages/GameSettingPage.vue';
-import ResourcePackSettingPage from './pages/ResourcePackSettingPage.vue';
 import VersionSettingPage from './pages/VersionSettingPage.vue';
-import CurseforgePage from './pages/CurseforgePage.vue';
-import CurseforgeViewPage from './pages/CurseforgeViewPage.vue';
-import CurseforgeProjectPage from './pages/CurseforgeProjectPage.vue';
 
 Vue.use(Router);
 
@@ -83,15 +83,16 @@ const router = new Router({
 
 router.beforeEach((to: Route, from: Route, next) => {
     const full = to.fullPath.substring(1);
+    const { openInBrowser } = serviceProxy.BaseService;
     if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {
         console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`);
         next(false);
         if (full.startsWith('external')) {
             console.log(full.substring('external/'.length));
-            shell.openExternal(full.substring('external/'.length));
+            openInBrowser(full.substring('external/'.length));
         } else {
             console.log(full);
-            shell.openExternal(full);
+            openInBrowser(full);
         }
     } else {
         console.log(`Route ${from.fullPath} -> ${to.fullPath}`);

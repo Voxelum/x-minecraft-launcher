@@ -3,8 +3,16 @@
     <v-icon v-if="status !== 'running'" style="margin-right: 5px" :color="status === 'successed'?'green':status === 'cancelled'?'white':'red'">
       {{ icon }}
     </v-icon>
-    <v-progress-circular v-else-if="!total || total === -1 || !hovered" style="margin-right: 7px" small :size="20" :value="percentage"
-                         :width="3" :indeterminate="!total || total === -1" color="white" class="mb-0" />
+    <v-progress-circular v-else-if="!total || total === -1 || !hovered" 
+                         style="margin-right: 7px" 
+                         class="mb-0" 
+                         color="white" 
+                         small 
+                         :size="20" 
+                         :value="percentage"
+                         :width="3" 
+                         :indeterminate="!total || total === -1" 
+    />
     <span v-else style="margin-right: 7px">
       {{ percentage.toFixed(2) }} %
     </span>
@@ -13,7 +21,6 @@
 
 <script lang=ts>
 import { createComponent, computed } from '@vue/composition-api';
-import { useStore } from '@/hooks';
 
 const component = createComponent({
   props: {
@@ -58,15 +65,10 @@ const component = createComponent({
           return 'device_unknown';
       }
     });
-    // const { state } = useStore();
-    // const total = computed(() => state.task.tree[props.uuid!].total!);
     const percentage = computed(() => props.progress! / props.total! * 100);
     return {
       icon,
       percentage,
-      // total,
-      enter() { },
-      leave() { },
     };
   },
 });

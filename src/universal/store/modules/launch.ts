@@ -1,14 +1,14 @@
 import { ModuleOption } from '../root';
 
-type Status = 'ready' | 'checkingProblems' | 'launching' | 'launched' | 'minecraftReady';
+export type LaunchStatus = 'ready' | 'checkingProblems' | 'launching' | 'launched' | 'minecraftReady';
 
 interface State {
-    status: Status;
+    status: LaunchStatus;
     errorType: string;
     errors: any[];
 }
 interface Mutations {
-    launchStatus: Status;
+    launchStatus: LaunchStatus;
     launchErrors: { type: string; content: any[] };
 }
 

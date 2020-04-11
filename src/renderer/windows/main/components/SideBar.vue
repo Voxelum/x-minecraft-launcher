@@ -43,6 +43,11 @@
       <v-spacer />
     </v-list>
     <v-list class="non-moveable" style="position: absolute; bottom: 0px;">
+      <!-- <v-list-tile>
+        <v-list-tile-action>
+          <v-progress-circular indeterminate :size="20" :width="3" />
+        </v-list-tile-action>
+      </v-list-tile> -->
       <v-list-tile v-ripple @click="showTaskDialog">
         <v-list-tile-action>
           <v-badge right :value="activeTasksCount !== 0">

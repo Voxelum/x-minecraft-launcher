@@ -55,10 +55,11 @@ function proxyService(seriv: string) {
     });
 }
 
+export const serviceProxy: BuiltinServices = new Proxy({} as any, {
+    get(_, serviceName) { return proxyService(serviceName as string); },
+});
+
 export default function provideServiceProxy() {
-    const caller: BuiltinServices = new Proxy({} as any, {
-        get(_, serviceName) { return proxyService(serviceName as string); },
-    });
-    provide(SERVICES_KEY, caller);
-    return caller;
+    provide(SERVICES_KEY, serviceProxy);
+    return serviceProxy;
 }

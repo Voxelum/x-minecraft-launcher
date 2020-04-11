@@ -91,7 +91,6 @@
                 }
             },
             "required": [
-                "md5",
                 "path",
                 "sha1"
             ]

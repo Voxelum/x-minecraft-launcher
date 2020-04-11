@@ -1,8 +1,6 @@
-import { getExpectVersion } from '@universal/util/version';
 import { Status as ServerStatus } from '@xmcl/client';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { ServerInfo } from '@xmcl/server-info';
-import { LevelDataFrame } from '@xmcl/world';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { DeployedInfo, InstanceLockSchema, InstanceSchema } from './instance.schema';
@@ -11,10 +9,15 @@ import { Resource } from './resource';
 import { LocalVersion } from './version';
 
 export type CreateOption = DeepPartial<Omit<InstanceSchema, 'id' | 'lastAccessDate' | 'creationDate'>>;
-export type Save = { level: LevelDataFrame; path: string }
+export interface SaveMetadata {
+    path: string;
+    instanceName: string;
+    name: string;
+    icon: string;
+}
 export { InstanceSchema as InstanceConfig };
 
-interface Instance extends InstanceSchema {
+export interface Instance extends InstanceSchema {
     path: string;
 
     /**
@@ -40,7 +43,7 @@ interface State extends InstanceLockSchema {
     /**
      * The saves cache of current selected instance
      */
-    saves: Save[];
+    saves: SaveMetadata[];
     /**
      * The game setting of current selected instance
      */
@@ -107,7 +110,7 @@ interface Mutations {
 
     instanceStatus: ServerStatus;
     instanceCache: { gamesettings: GameSetting } | { serverInfos: ServerInfo[] };
-    instanceSaves: Save[];
+    instanceSaves: SaveMetadata[];
 
     instancesStatus: { [path: string]: ServerStatus };
 
@@ -137,7 +140,7 @@ export function createTemplate(): Instance {
             minecraft: '',
             forge: '',
             liteloader: '',
-            'fabric-loader': '',
+            fabricLoader: '',
             yarn: '',
         },
         java: '8',
@@ -187,12 +190,11 @@ const mod: InstanceModule = {
                     if (runtime in localVersion) {
                         return localVersion[runtime] === current.runtime[runtime];
                     }
-                    return !!current.runtime[runtime];
+                    return !current.runtime[runtime];
                 }));
 
             return localVersion || {
                 ...current.runtime,
-                id: getExpectVersion(current.runtime.minecraft, current.runtime.forge, current.runtime.liteloader),
                 folder: 'unknown',
             } as any;
         },

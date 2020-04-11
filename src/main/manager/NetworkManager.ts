@@ -1,8 +1,7 @@
-import { DefaultDownloader, DownloadOption, DownloaderOptions } from '@xmcl/installer';
+import { DefaultDownloader, DownloadOption } from '@xmcl/installer';
 import { Task } from '@xmcl/task';
 import { BrowserWindow, DownloadItem, session, Session } from 'electron';
 import { readFile } from 'fs-extra';
-import { Got } from 'got';
 import { basename, join } from 'path';
 import { Store } from 'vuex';
 import { Manager } from '.';
@@ -40,7 +39,7 @@ export default class NetworkManager extends Manager {
 
     private downloader = new DefaultDownloader();
 
-    readonly request: Got = this.downloader.requster;
+    readonly request = this.downloader.requster.extend({ headers: { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.83 Safari/537.36 Edg/81.0.416.41' } });
 
     private session: Session | undefined;
 

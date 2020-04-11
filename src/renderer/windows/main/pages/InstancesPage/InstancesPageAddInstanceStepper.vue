@@ -111,7 +111,7 @@
                               required />
               </v-flex>
               <v-flex d-flex xs4>
-                <version-menu @input="runtime.minecraft = $event">
+                <minecraft-version-menu @input="runtime.minecraft = $event">
                   <template v-slot="{ on }">
                     <v-text-field v-model="runtime.minecraft" 
                                   dark 
@@ -123,7 +123,7 @@
                                   @click:append="on.keydown"
                                   v-on="on" />
                   </template>
-                </version-menu>
+                </minecraft-version-menu>
               </v-flex>
               <v-flex d-flex xs12>
                 <v-text-field v-model="description" 

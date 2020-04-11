@@ -1,8 +1,8 @@
+import { exists } from '@main/util/fs';
+import { createFailureServerStatus } from '@universal/util/serverStatus';
 import { queryStatus } from '@xmcl/client';
-import { exists } from '@xmcl/core/fs';
 import { readFile, readJSON } from 'fs-extra';
 import { join } from 'path';
-import { createFailureServerStatus } from '@universal/util/serverStatus';
 import Service from './Service';
 
 export default class ServerStatusService extends Service {

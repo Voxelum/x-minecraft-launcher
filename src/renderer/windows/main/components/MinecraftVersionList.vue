@@ -1,7 +1,8 @@
 <template>
-  <v-list dark style="overflow-y: scroll; scrollbar-width: 0; background-color: transparent;" @mousewheel.stop>
-    <template v-for="(item, index) in versions">
-      <v-list-tile :key="index" :class="{ grey: value === item.id, 'darken-1': value === item.id }" ripple @click="selectVersion(item)">
+  <v-list dark style="overflow-y: scroll; scrollbar-width: 0; background-color: transparent;">
+    <!-- <virtual-list :size="48" :remain="7">  -->
+    <template v-for="(item) in versions">
+      <v-list-tile :key="item.version" :class="{ grey: value === item.id, 'darken-1': value === item.id }" ripple @click="select(item)">
         <v-list-tile-avatar>
           <v-icon v-if="statuses[item.id] !== 'loading'">
             {{ statuses[item.id] === 'remote' ? 'cloud' : 'folder' }}
@@ -23,29 +24,17 @@
         </v-list-tile-action>
       </v-list-tile>
     </template>
+    <!-- </virtual-list> -->
   </v-list>
 </template>
 
 <script lang=ts>
-import { createComponent, computed } from '@vue/composition-api';
-import { LocalVersion } from '@universal/store/modules/version';
-import { Installer } from '@xmcl/installer';
-import { useMinecraftVersions, useIsCompatible } from '@/hooks';
+import { createComponent } from '@vue/composition-api';
+import VirtualList from 'vue-virtual-scroll-list';
 
 export default createComponent({
+  components: { VirtualList },
   props: {
-    showAlpha: {
-      type: Boolean,
-      default: () => false,
-    },
-    filterText: {
-      type: String,
-      default: () => '',
-    },
-    acceptingRange: {
-      type: String,
-      default: '[*]',
-    },
     showTime: {
       type: Boolean,
       default: true,
@@ -54,24 +43,9 @@ export default createComponent({
       type: String,
       default: () => '',
     },
-  },
-  setup(props, context) {
-    const { versions, statuses } = useMinecraftVersions();
-    const { isCompatible } = useIsCompatible();
-    function selectVersion(v: LocalVersion) {
-      context.emit('input', v.id);
-    }
-
-    function filterMinecraft(v: Installer.Version) {
-      if (!props.showAlpha && v.type !== 'release') return false;
-      if (!isCompatible(props.acceptingRange, v.id)) return false;
-      return v.id.indexOf(props.filterText) !== -1;
-    }
-    return {
-      versions: computed(() => versions.value.filter(filterMinecraft)),
-      statuses,
-      selectVersion,
-    };
+    statuses: Object,
+    versions: Array,
+    select: Function,
   },
 });
 </script>

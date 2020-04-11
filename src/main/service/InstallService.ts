@@ -1,7 +1,8 @@
 import { MutationKeys } from '@universal/store';
-import { VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema } from '@universal/store/modules/version.schema';
-import { ResolvedLibrary, Version, MinecraftFolder } from '@xmcl/core';
+import { VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema } from '@universal/store/modules/version.schema';
+import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core';
 import { FabricInstaller, ForgeInstaller, Installer, LiteLoaderInstaller } from '@xmcl/installer';
+import { LOADER_MAVEN_URL, YARN_MAVEN_URL } from '@xmcl/installer/fabric';
 import { installTask } from '@xmcl/installer/forge';
 import { Task } from '@xmcl/task';
 import Service, { Inject, Singleton } from './Service';
@@ -23,10 +24,11 @@ export default class InstallService extends Service {
     private refreshedForge: Record<string, boolean> = {};
 
     async load() {
-        const [mc, forge, liteloader] = await Promise.all([
+        const [mc, forge, liteloader, fabric] = await Promise.all([
             this.getPersistence({ path: this.getPath('minecraft-versions.json'), schema: VersionMinecraftSchema }),
             this.getPersistence({ path: this.getPath('forge-versions.json'), schema: VersionForgeSchema }),
             this.getPersistence({ path: this.getPath('lite-versions.json'), schema: VersionLiteloaderSchema }),
+            this.getPersistence({ path: this.getPath('fabric-versions.json'), schema: VersionFabricSchema }),
         ]);
         if (typeof mc === 'object') {
             this.commit('minecraftMetadata', mc);
@@ -38,6 +40,10 @@ export default class InstallService extends Service {
         }
         if (liteloader) {
             this.commit('liteloaderMetadata', liteloader);
+        }
+        if (fabric) {
+            this.commit('fabricLoaderMetadata', { versions: fabric.loaders, timestamp: fabric.loaderTimestamp });
+            this.commit('fabricYarnMetadata', { versions: fabric.yarns, timestamp: fabric.yarnTimestamp });
         }
     }
 
@@ -64,19 +70,19 @@ export default class InstallService extends Service {
                     schema: VersionLiteloaderSchema,
                 });
                 break;
+            case 'fabricLoaderMetadata':
+            case 'fabricYarnMetadata':
+                await this.setPersistence({
+                    path: this.getPath('fabric-versions.json'),
+                    data: this.state.version.fabric,
+                    schema: VersionFabricSchema,
+                });
+                break;
             default:
         }
     }
 
     async init() {
-    }
-
-    async refresh() {
-        await Promise.all([
-            this.refreshMinecraft(),
-            this.refreshForge(),
-            this.refreshLiteloader(),
-        ]);
     }
 
     private async getForgesFromBMCL(mcversion: string) {
@@ -119,7 +125,6 @@ export default class InstallService extends Service {
             this.log('Skip to refresh Minecraft metadata. Use cache.');
             return;
         }
-        this.refreshedMinecraft = true;
         this.log('Updating minecraft version metadata');
         const oldMetadata = this.state.version.minecraft;
         const newMetadata = await Installer.getVersionList({ original: oldMetadata });
@@ -129,6 +134,7 @@ export default class InstallService extends Service {
         } else {
             this.log('Not found new Minecraft version metadata. Use cache.');
         }
+        this.refreshedMinecraft = true;
     }
 
     /**
@@ -314,14 +320,32 @@ export default class InstallService extends Service {
     @Singleton()
     async refreshFabric(force = false) {
         if (!force && this.refreshedFabric) {
+            this.log('Skip to refresh fabric metadata. Use cache.');
             return;
         }
 
+        const getIfModified = async (url: string, timestamp: string) => {
+            let { statusCode, headers } = await this.networkManager.request.head(url, { headers: { 'if-modified-since': timestamp } });
+            return [statusCode === 200, headers['last-modified'] ?? timestamp] as const;
+        };
+
+        let [yarnModified, yarnDate] = await getIfModified(YARN_MAVEN_URL, this.state.version.fabric.yarnTimestamp);
+
+        if (yarnModified) {
+            let versions = await FabricInstaller.getYarnArtifactList();
+            this.commit('fabricYarnMetadata', { versions, timestamp: yarnDate });
+            this.log(`Refreshed fabric yarn metadata at ${yarnDate}.`);
+        }
+
+        let [loaderModified, loaderDate] = await getIfModified(LOADER_MAVEN_URL, this.state.version.fabric.loaderTimestamp);
+
+        if (loaderModified) {
+            let versions = await FabricInstaller.getLoaderArtifactList();
+            this.commit('fabricLoaderMetadata', { versions, timestamp: loaderDate });
+            this.log(`Refreshed fabric loader metadata at ${loaderDate}.`);
+        }
+
         this.refreshedFabric = true;
-        let originalVersionList = this.state.version.fabric;
-        let loaderList = await FabricInstaller.getLoaderVersionList({ original: originalVersionList.loader });
-        let yarnList = await FabricInstaller.getLoaderVersionList({ original: originalVersionList.yarn });
-        this.commit('fabricMetadata', { yarn: yarnList, loader: loaderList });
     }
 
     /**

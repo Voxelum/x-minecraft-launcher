@@ -1,8 +1,9 @@
-import { computed, onMounted, onUnmounted, Ref, watch } from '@vue/composition-api';
+import { Status } from '@universal/store/modules/version';
 import { isNotNull } from '@universal/util/assert';
+import { computed, onMounted, onUnmounted, Ref, watch } from '@vue/composition-api';
 import { useInstanceVersion } from './useInstance';
-import { useStore, useBusy } from './useStore';
 import { useService, useServiceOnly } from './useService';
+import { useBusy, useStore } from './useStore';
 
 export function useVersions() {
     return useServiceOnly('VersionService', 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory');
@@ -23,17 +24,55 @@ export function useLocalVersions() {
 }
 
 export function useMinecraftVersions() {
-    const { state, getters } = useStore();
+    const { state } = useStore();
+    const { refreshMinecraft } = useService('InstallService');
+    const isMinecraftRefreshing = useBusy('refreshMinecraft');
     const versions = computed(() => state.version.minecraft.versions);
     const release = computed(() => state.version.minecraft.versions.find(v => v.id === state.version.minecraft.latest.release));
     const snapshot = computed(() => state.version.minecraft.versions.find(v => v.id === state.version.minecraft.latest.snapshot));
-    const statuses = computed(() => getters.minecraftStatuses);
+    const statuses = computed(() => {
+        const localVersions: { [k: string]: boolean } = {};
+        state.version.local.forEach((ver) => {
+            if (ver.minecraft) localVersions[ver.minecraft] = true;
+        });
+        const statusMap: { [key: string]: Status } = {};
+        for (const ver of state.version.minecraft.versions) {
+            statusMap[ver.id] = localVersions[ver.id] ? 'local' : 'remote';
+        }
+        return statusMap;
+    });
+
+    onMounted(() => {
+        refreshMinecraft();
+    });
 
     return {
         versions,
+        isMinecraftRefreshing,
         release,
         snapshot,
         statuses,
+    };
+}
+
+export function useFabricVersions() {
+    const { state } = useStore();
+    const { refreshFabric } = useService('InstallService');
+    const loaderVersions = computed(() => state.version.fabric.loaders ?? []);
+    const yarnVersions = computed(() => state.version.fabric.yarns ?? []);
+
+    function refresh(force = false) {
+        return refreshFabric(force);
+    }
+
+    onMounted(() => {
+        refresh();
+    });
+
+    return {
+        loaderVersions,
+        yarnVersions,
+        refresh,
     };
 }
 
@@ -42,9 +81,25 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     const { refreshForge } = useService('InstallService');
     const versions = computed(() => (state.version.forge[minecraftVersion.value] || { versions: [] }).versions);
     const refreshing = computed(() => getters.busy('refreshForge'));
-    const statuses = computed(() => getters.forgeStatuses);
     const recommended = computed(() => getters.forgeRecommendedOf(minecraftVersion.value));
     const latest = computed(() => getters.forgeLatestOf(minecraftVersion.value));
+    const statuses = computed(() => {
+        const statusMap: { [key: string]: Status } = {};
+        const localForgeVersion: { [k: string]: boolean } = {};
+        state.version.local.forEach((ver) => {
+            if (ver.forge) localForgeVersion[ver.forge] = true;
+        });
+
+        Object.keys(state.version.forge).forEach((mcversion) => {
+            const container = state.version.forge[mcversion];
+            if (container.versions) {
+                container.versions.forEach((version) => {
+                    statusMap[version.version] = localForgeVersion[version.version] ? 'local' : 'remote';
+                });
+            }
+        });
+        return statusMap;
+    });
 
     let handle = () => { };
     onMounted(() => {

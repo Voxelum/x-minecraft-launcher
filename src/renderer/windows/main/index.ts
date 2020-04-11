@@ -37,7 +37,15 @@ const vue = new Vue({
             console.log(`Locale changed ${oldValue} -> ${newValue}`);
             i18n.locale = newValue;
         });
-        provide(ROUTER_KEY, router);
+        provide(ROUTER_KEY, new Proxy(router, {
+            get(target, key) {
+                const prop = Reflect.get(target, key);
+                if (prop instanceof Function) {
+                    return (prop as Function).bind(target);
+                }
+                return prop;
+            },
+        }));
         return () => h(MainWindow);
     },
 });

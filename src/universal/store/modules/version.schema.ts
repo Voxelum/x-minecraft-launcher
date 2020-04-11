@@ -121,6 +121,38 @@ export interface VersionLiteloaderSchema {
     };
 }
 
+interface FabricArtifactVersion {
+    gameVersion?: string;
+    separator?: string;
+    build?: number;
+    maven: string;
+    version: string;
+    stable: boolean;
+}
+
+export interface VersionFabricSchema {
+    /**
+     * @default ""
+     */
+    yarnTimestamp: string;
+
+    /**
+     * @default ""
+     */
+    loaderTimestamp: string;
+
+    /**
+     * @default []
+     */
+    yarns: FabricArtifactVersion[];
+
+    /**
+     * @default []
+     */
+    loaders: FabricArtifactVersion[];
+}
+
 export const VersionMinecraftSchema: Schema<VersionMinecraftSchema> = require('./VersionMinecraftSchema.json');
 export const VersionForgeSchema: Schema<VersionForgeSchema> = require('./VersionForgeSchema.json');
 export const VersionLiteloaderSchema: Schema<VersionLiteloaderSchema> = require('./VersionLiteloaderSchema.json');
+export const VersionFabricSchema: Schema<VersionFabricSchema> = require('./VersionFabricSchema.json');

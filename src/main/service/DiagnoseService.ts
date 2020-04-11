@@ -1,6 +1,7 @@
+import { exists } from '@main/util/fs';
 import { Issue, IssueReport } from '@universal/store/modules/diagnose';
 import { LocalVersion } from '@universal/store/modules/version';
-import { futils, MinecraftFolder, ResolvedLibrary } from '@xmcl/core';
+import { MinecraftFolder, ResolvedLibrary } from '@xmcl/core';
 import { Diagnosis, Installer } from '@xmcl/installer';
 import { InstallProfile } from '@xmcl/installer/minecraft';
 import { Forge } from '@xmcl/mod-parser';
@@ -9,12 +10,11 @@ import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
 import { basename, join, relative } from 'path';
 import AuthLibService from './AuthLibService';
 import InstallService from './InstallService';
+import InstanceService from './InstanceService';
+import JavaService from './JavaService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
 import VersionService from './VersionService';
-import JavaService from './JavaService';
-import InstanceService from './InstanceService';
 
-const { exists } = futils;
 
 export interface Fix {
     match(issues: Issue[]): boolean;

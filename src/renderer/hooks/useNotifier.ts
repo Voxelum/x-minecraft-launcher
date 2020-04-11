@@ -22,6 +22,8 @@ export function provideNotifier() {
     return { status, content, title, error, show };
 }
 
+export type Notify = (status: Status, title: string, content?: string, e?: any) => void;
+
 export function useNotifier() {
     const stat = inject(STATUS_SYMBOL);
     const cont = inject(CONTENT_SYMBOL);
@@ -30,7 +32,7 @@ export function useNotifier() {
     const show = inject(SHOW_SYMBOL);
     if (!stat || !cont || !error || !show || !tit) throw new Error('Cannot init notifier hook!');
 
-    const notify = (status: Status, title: string, content?: string, e?: any) => {
+    const notify: Notify = (status, title, content, e) => {
         stat.value = status;
         tit.value = title;
         cont.value = content || '';

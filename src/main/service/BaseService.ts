@@ -1,4 +1,4 @@
-import { copyPassively, exists } from '@xmcl/core/fs';
+import { copyPassively, exists } from '@main/util/fs';
 import { Task } from '@xmcl/task';
 import { join } from 'path';
 import Service from './Service';

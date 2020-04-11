@@ -1,9 +1,9 @@
 import { Installer, LiteLoaderInstaller, ForgeInstaller, FabricInstaller } from '@xmcl/installer';
 import lastestRelease from '@universal/util/lasteRelease.json';
-import { fitin } from '@universal/util/object';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { RuntimeVersions } from './instance.schema';
+import { VersionFabricSchema } from './version.schema';
 
 
 export type Status = 'remote' | 'local';
@@ -34,7 +34,7 @@ export interface LocalVersion extends RuntimeVersions {
      * The ideal id this version, which is computed by 
      * function universal/utils/versions.js#getExpectVersion
      */
-    id: string;
+    id?: string;
     /**
      * The real folder id of the version, which is the <verison-id> in
      * 
@@ -59,7 +59,7 @@ interface State {
     /**
      * Fabric version metadata dictionary. Helps to download.
      */
-    fabric: { yarn: FabricInstaller.YarnVersionList; loader: FabricInstaller.LoaderVersionList };
+    fabric: VersionFabricSchema;
     /**
      * Liteloader version metadata list. Helps to download.
      */
@@ -76,7 +76,6 @@ interface Getters {
      */
     minecraftRelease: Installer.Version;
     minecraftVersion: (mcversion: string) => Installer.Version | undefined;
-    minecraftStatuses: { [minecraftVersion: string]: Status };
 
     /**
      * Get the forge webpage info by a minecraft version
@@ -84,7 +83,6 @@ interface Getters {
     forgeVersionsOf: (mcversion: string) => ForgeInstaller.VersionList | undefined;
     forgeLatestOf: (mcversion: string) => ForgeInstaller.Version | undefined;
     forgeRecommendedOf: (mcversion: string) => ForgeInstaller.Version | undefined;
-    forgeStatuses: { [forgeVersion: string]: Status };
 
     liteloaderVersionsOf: (mcversion: string) => {
         snapshot?: LiteLoaderInstaller.Version;
@@ -99,7 +97,8 @@ interface Mutations {
     minecraftMetadata: Installer.VersionList;
     forgeMetadata: ForgeInstaller.VersionList;
     liteloaderMetadata: LiteLoaderInstaller.VersionList;
-    fabricMetadata: { yarn: FabricInstaller.YarnVersionList; loader: FabricInstaller.LoaderVersionList };
+    fabricYarnMetadata: { versions: FabricInstaller.FabricArtifactVersion[]; timestamp: string };
+    fabricLoaderMetadata: { versions: FabricInstaller.FabricArtifactVersion[]; timestamp: string };
 }
 
 export type VersionModule = ModuleOption<State, Getters, Mutations, {}>;
@@ -133,14 +132,10 @@ const mod: VersionModule = {
             versions: {},
         },
         fabric: {
-            yarn: {
-                timestamp: '',
-                versions: [],
-            },
-            loader: {
-                timestamp: '',
-                versions: [],
-            },
+            yarnTimestamp: '',
+            loaderTimestamp: '',
+            yarns: [],
+            loaders: [],
         },
     },
     getters: {
@@ -155,17 +150,6 @@ const mod: VersionModule = {
 
         minecraftVersion: state => version => state.minecraft.versions.find(v => v.id === version),
 
-        minecraftStatuses: (state, _, rootStates) => {
-            const localVersions: { [k: string]: boolean } = {};
-            rootStates.version.local.forEach((ver) => {
-                if (ver.minecraft) localVersions[ver.minecraft] = true;
-            });
-            const statusMap: { [key: string]: Status } = {};
-            for (const ver of state.minecraft.versions) {
-                statusMap[ver.id] = localVersions[ver.id] ? 'local' : 'remote';
-            }
-            return statusMap;
-        },
         forgeVersionsOf: state => version => (state.forge[version]),
         forgeLatestOf: state => (version) => {
             const versions = state.forge[version];
@@ -176,23 +160,6 @@ const mod: VersionModule = {
             const versions = state.forge[version];
             if (!versions) return undefined;
             return versions.versions.find(v => v.type === 'recommended');
-        },
-        forgeStatuses: (state, _, rootState) => {
-            const statusMap: { [key: string]: Status } = {};
-            const localForgeVersion: { [k: string]: boolean } = {};
-            rootState.version.local.forEach((ver) => {
-                if (ver.forge) localForgeVersion[ver.forge] = true;
-            });
-
-            Object.keys(state.forge).forEach((mcversion) => {
-                const container = state.forge[mcversion];
-                if (container.versions) {
-                    container.versions.forEach((version) => {
-                        statusMap[version.version] = localForgeVersion[version.version] ? 'local' : 'remote';
-                    });
-                }
-            });
-            return statusMap;
         },
         liteloaderVersionsOf: state => version => state.liteloader.versions[version],
     },
@@ -215,18 +182,22 @@ const mod: VersionModule = {
             }
         },
         minecraftMetadata(state, metadata) {
-            fitin(state.minecraft, metadata);
+            state.minecraft = Object.freeze(metadata);
         },
         forgeMetadata(state, metadata) {
             const { mcversion } = metadata;
-            Vue.set(state.forge, mcversion, metadata);
+            Vue.set(state.forge, mcversion, Object.freeze(metadata));
         },
         liteloaderMetadata(state, metadata) {
-            fitin(state.liteloader, metadata);
+            state.liteloader = Object.freeze(metadata);
         },
-        fabricMetadata(state, { yarn, loader }) {
-            state.fabric.yarn = yarn;
-            state.fabric.loader = loader;
+        fabricYarnMetadata(state, { versions, timestamp }) {
+            state.fabric.yarnTimestamp = timestamp;
+            state.fabric.yarns = Object.seal(versions);
+        },
+        fabricLoaderMetadata(state, { versions, timestamp }) {
+            state.fabric.loaderTimestamp = timestamp;
+            state.fabric.loaders = Object.seal(versions);
         },
     },
 };

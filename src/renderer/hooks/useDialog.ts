@@ -1,4 +1,5 @@
 import { computed, inject, InjectionKey, onMounted, onUnmounted, Ref, watch, provide, ref } from '@vue/composition-api';
+import { Component } from 'vue';
 
 export type Dialogs = 'task' | 'java-wizard' | 'login' | 'skin-import' | 'user-service'
     | 'crash-report' | 'feedback' | 'launch-status' | 'download-missing-mods' | 'logs'
@@ -93,5 +94,15 @@ export function useDialogSelf(dialog: Dialogs) {
             get: () => showingDialog.value === dialog,
             set: (v: boolean) => { showingDialog.value = v ? dialog : ''; },
         }),
+    };
+}
+
+export function useSingleDialog(isShown = ref(false)) {
+    const show = () => { isShown.value = true; };
+    const hide = () => { isShown.value = false; };
+    return {
+        isShown,
+        show,
+        hide,
     };
 }

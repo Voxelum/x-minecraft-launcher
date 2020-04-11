@@ -1,8 +1,13 @@
-import { checksum } from '@xmcl/core/fs';
-import { FSWatcher, readdir, watch, stat, ensureDir } from 'fs-extra';
+import { checksum } from '@xmcl/installer/util';
+import { FSWatcher, readdir, watch, stat, ensureDir, copyFile, access, constants } from 'fs-extra';
+import { resolve } from 'path';
 
-export * from '@xmcl/core/fs';
-
+export function missing(file: string) {
+    return access(file, constants.F_OK).then(() => false, () => true);
+}
+export function exists(file: string) {
+    return access(file, constants.F_OK).then(() => true, () => false);
+}
 export function isDirectory(file: string) {
     return stat(file).then((s) => s.isDirectory(), () => false);
 }
@@ -11,7 +16,6 @@ export function isFile(file: string) {
 }
 export async function readdirIfPresent(path: string) {
     if (!path) throw new Error('Path must not be undefined!');
-    await ensureDir(path);
     return readdir(path).catch((e) => {
         if (e.code === 'ENOENT') return [];
         throw e;
@@ -24,6 +28,19 @@ export async function readdirEnsured(path: string) {
 }
 export function validateSha256(path: string, sha256: string) {
     return checksum(path, 'sha256').then(s => s === sha256, () => false);
+}
+export { checksum };
+export async function copyPassively(src: string, dest: string, filter: (name: string) => boolean = () => true) {
+    const s = await stat(src).catch(() => { });
+    if (!s) { return; }
+    if (!filter(src)) { return; }
+    if (s.isDirectory()) {
+        await ensureDir(dest);
+        const childs = await readdir(src);
+        await Promise.all(childs.map((p) => copyPassively(resolve(src, p), resolve(dest, p))));
+    } else if (await missing(dest)) {
+        await copyFile(src, dest);
+    }
 }
 
 export class FileStateWatcher<T> {
