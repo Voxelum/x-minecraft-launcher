@@ -83,7 +83,6 @@ const mainConfig = {
         alias: {
             '@main': path.join(__dirname, '../src/main'),
             main: path.join(__dirname, '../src/main'),
-            vue$: 'vue/dist/vue.runtime.esm.js',
             universal: path.join(__dirname, '../src/universal'),
             '@universal': path.join(__dirname, '../src/universal'),
         },

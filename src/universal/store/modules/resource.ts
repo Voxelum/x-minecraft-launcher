@@ -71,7 +71,7 @@ export type CurseforgeModpackResource = Resource<Modpack> & { type: 'curseforge-
 export type SaveResource = Resource<LevelDataFrame> & { type: 'save' };
 export type UnknownResource = Resource<{}> & { type: 'unknown' };
 
-export const UNKNOWN_RESOURCE: UnknownResource = {
+export const UNKNOWN_RESOURCE: UnknownResource = Object.freeze({
     metadata: {},
     type: 'unknown',
     domain: 'unknown',
@@ -81,9 +81,9 @@ export const UNKNOWN_RESOURCE: UnknownResource = {
     name: '',
     source: {
         uri: [],
-        date: 0,
+        date: new Date('2000').toJSON(),
     },
-};
+});
 
 const mod: ResourceModule = {
     state: {

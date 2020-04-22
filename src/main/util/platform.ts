@@ -1,1 +1,3 @@
-export { currentPlatform } from '@xmcl/core';
+import { getPlatform } from '@xmcl/core';
+
+export const currentPlatform = getPlatform();

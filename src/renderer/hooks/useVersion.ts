@@ -79,10 +79,19 @@ export function useFabricVersions() {
 export function useForgeVersions(minecraftVersion: Ref<string>) {
     const { state, getters } = useStore();
     const { refreshForge } = useService('InstallService');
-    const versions = computed(() => (state.version.forge[minecraftVersion.value] || { versions: [] }).versions);
+    const versions = computed(() => state.version.forge.find(v => v.mcversion === minecraftVersion.value)?.versions ?? []);
     const refreshing = computed(() => getters.busy('refreshForge'));
-    const recommended = computed(() => getters.forgeRecommendedOf(minecraftVersion.value));
-    const latest = computed(() => getters.forgeLatestOf(minecraftVersion.value));
+
+    const recommended = computed(() => {
+        const vers = versions.value;
+        if (!vers) return undefined;
+        return vers.find(v => v.type === 'recommended');
+    });
+    const latest = computed(() => {
+        const vers = versions.value;
+        if (!vers) return undefined;
+        return vers.find(v => v.type === 'latest');
+    });
     const statuses = computed(() => {
         const statusMap: { [key: string]: Status } = {};
         const localForgeVersion: { [k: string]: boolean } = {};

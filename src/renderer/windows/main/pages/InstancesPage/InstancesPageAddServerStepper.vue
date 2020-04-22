@@ -199,16 +199,12 @@ export default createComponent({
         data.creating = false;
       }
     }
-    let handle = () => { };
     onMounted(() => {
-      handle = watch(computed(() => props.show), () => {
+      watch(computed(() => props.show), () => {
         if (props.show) {
           init();
         }
       });
-    });
-    onUnmounted(() => {
-      handle();
     });
 
     return {

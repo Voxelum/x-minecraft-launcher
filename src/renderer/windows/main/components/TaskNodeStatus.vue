@@ -1,5 +1,5 @@
 <template>
-  <div @mouseenter="enter" @mouseleave="leave">
+  <div>
     <v-icon v-if="status !== 'running'" style="margin-right: 5px" :color="status === 'successed'?'green':status === 'cancelled'?'white':'red'">
       {{ icon }}
     </v-icon>

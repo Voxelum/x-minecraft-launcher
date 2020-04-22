@@ -23,7 +23,7 @@
             <div class="version-tab">
               Forge
               <div class="subtitle">
-                {{ forgeVersion || 'unset' }}
+                {{ forgeVersion || $t('version.unset') }}
               </div>
             </div>
           </v-tab>
@@ -31,7 +31,7 @@
             <div class="version-tab">
               Fabric
               <div class="subtitle">
-                {{ fabricLoaderVersion || 'unset' }}
+                {{ fabricLoaderVersion || $t('version.unset') }}
               </div>
             </div>
           </v-tab>
@@ -156,7 +156,7 @@
 
 <script lang=ts>
 import Vue from 'vue';
-import { createComponent, reactive, computed, ref, onMounted, onUnmounted, toRefs, watch, Ref } from '@vue/composition-api';
+import { createComponent, reactive, computed, ref, onMounted, toRefs, watch, Ref } from '@vue/composition-api';
 import {
   useAutoSaveLoad,
   useInstance,
@@ -230,9 +230,6 @@ function compositeMinecraftVersion(filterText: Ref<string>) {
     return v.id.indexOf(filterText.value) !== -1;
   }
   const minecraftVersions = computed(() => versions.value.filter(filterMinecraft));
-  // setInterval(() => {
-  //   data.minecraftVersion += '1';
-  // }, 1000);
   return {
     ...toRefs(data),
     minecraftVersion,
@@ -261,6 +258,12 @@ function compositeFabricVersion(mcversion: Ref<string>, filterText: Ref<string>)
     data.fabricYarnVersion = '';
     data.fabricLoaderVersion = '';
   };
+
+  watch([mcversion, loaderVersions, yarnVersions], () => {
+    if (loaderVersions.value.every(v => !v.stable)) {
+      data.showStableOnly = false;
+    }
+  });
 
   const fabricLoaderVersions = computed(() => loaderVersions.value.filter((v) => {
     if (data.showStableOnly && !v.stable) {
@@ -327,18 +330,14 @@ export default createComponent({
       }
     });
 
-    let handle: () => void;
     onMounted(() => {
-      handle = watch(minecraftVersion, () => {
+      watch(minecraftVersion, () => {
         console.log(minecraftVersion.value);
         // forgeVersion.value = '';
         // fabricLoaderVersion.value = '';
         // fabricYarnVersion.value = '';
         // data.liteloaderVersion = '';
       });
-    });
-    onUnmounted(() => {
-      handle();
     });
     function save() {
       edit({

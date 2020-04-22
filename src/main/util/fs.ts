@@ -1,5 +1,5 @@
 import { checksum } from '@xmcl/installer/util';
-import { FSWatcher, readdir, watch, stat, ensureDir, copyFile, access, constants } from 'fs-extra';
+import { access, constants, copyFile, ensureDir, FSWatcher, readdir, stat, watch } from 'fs-extra';
 import { resolve } from 'path';
 
 export function missing(file: string) {

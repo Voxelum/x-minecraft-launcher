@@ -1,6 +1,5 @@
 import { Installer, LiteLoaderInstaller, ForgeInstaller, FabricInstaller } from '@xmcl/installer';
 import lastestRelease from '@universal/util/lasteRelease.json';
-import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { RuntimeVersions } from './instance.schema';
 import { VersionFabricSchema } from './version.schema';
@@ -55,7 +54,7 @@ interface State {
     /**
      * Forge version metadata dictionary. Helps to download.
      */
-    forge: { [mcversion: string]: ForgeInstaller.VersionList };
+    forge: ForgeInstaller.VersionList[];
     /**
      * Fabric version metadata dictionary. Helps to download.
      */
@@ -76,13 +75,6 @@ interface Getters {
      */
     minecraftRelease: Installer.Version;
     minecraftVersion: (mcversion: string) => Installer.Version | undefined;
-
-    /**
-     * Get the forge webpage info by a minecraft version
-     */
-    forgeVersionsOf: (mcversion: string) => ForgeInstaller.VersionList | undefined;
-    forgeLatestOf: (mcversion: string) => ForgeInstaller.Version | undefined;
-    forgeRecommendedOf: (mcversion: string) => ForgeInstaller.Version | undefined;
 
     liteloaderVersionsOf: (mcversion: string) => {
         snapshot?: LiteLoaderInstaller.Version;
@@ -117,9 +109,7 @@ const mod: VersionModule = {
             },
             versions: [],
         },
-        forge: {
-
-        },
+        forge: [],
         liteloader: {
             timestamp: '',
             meta: {
@@ -149,18 +139,6 @@ const mod: VersionModule = {
         minecraftRelease: state => state.minecraft.versions.find(v => v.id === state.minecraft.latest.release) || lastestRelease,
 
         minecraftVersion: state => version => state.minecraft.versions.find(v => v.id === version),
-
-        forgeVersionsOf: state => version => (state.forge[version]),
-        forgeLatestOf: state => (version) => {
-            const versions = state.forge[version];
-            if (!versions) return undefined;
-            return versions.versions.find(v => v.type === 'latest');
-        },
-        forgeRecommendedOf: state => (version) => {
-            const versions = state.forge[version];
-            if (!versions) return undefined;
-            return versions.versions.find(v => v.type === 'recommended');
-        },
         liteloaderVersionsOf: state => version => state.liteloader.versions[version],
     },
     mutations: {
@@ -176,17 +154,13 @@ const mod: VersionModule = {
             }
         },
         localVersionRemove(state, folder) {
-            const idx = state.local.findIndex(l => l.folder === folder);
-            if (idx !== -1) {
-                Vue.delete(state.local, idx);
-            }
+            state.local = state.local.filter((v => v.folder === folder));
         },
         minecraftMetadata(state, metadata) {
             state.minecraft = Object.freeze(metadata);
         },
         forgeMetadata(state, metadata) {
-            const { mcversion } = metadata;
-            Vue.set(state.forge, mcversion, Object.freeze(metadata));
+            state.forge.push(Object.freeze(metadata));
         },
         liteloaderMetadata(state, metadata) {
             state.liteloader = Object.freeze(metadata);

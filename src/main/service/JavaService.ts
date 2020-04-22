@@ -1,5 +1,5 @@
 import { missing } from '@main/util/fs';
-import { getTsingHuaMirror } from '@main/util/jre';
+import { getTsingHuaMirror } from '@main/util/jreTsingHuaMirror';
 import { unpack7z } from '@main/util/zip';
 import { MutationKeys } from '@universal/store';
 import { JavaState } from '@universal/store/modules/java';

@@ -196,15 +196,16 @@
         "@typescript-eslint/parser": "^2.22.0",
         "@vue/devtools": "^5.3.3",
         "@xmcl/client": "2.0.5",
-        "@xmcl/core": "2.1.2",
+        "@xmcl/core": "2.2.0",
+        "@xmcl/curseforge": "^0.1.1",
         "@xmcl/forge-site-parser": "2.0.4",
         "@xmcl/gamesetting": "2.0.1",
-        "@xmcl/installer": "2.6.6",
+        "@xmcl/installer": "2.7.3",
         "@xmcl/mod-parser": "2.0.6",
-        "@xmcl/model": "1.0.11",
+        "@xmcl/model": "1.0.12",
         "@xmcl/nbt": "2.0.3",
-        "@xmcl/resource-manager": "2.0.0",
-        "@xmcl/resourcepack": "1.0.11",
+        "@xmcl/resource-manager": "2.0.1",
+        "@xmcl/resourcepack": "1.0.12",
         "@xmcl/server-info": "2.0.3",
         "@xmcl/system": "2.0.0",
         "@xmcl/task": "2.1.5",
@@ -262,6 +263,10 @@
             "ts-jest": {
                 "tsConfig": "tsconfig.json"
             }
+        },
+        "moduleNameMapper": {
+            "^@universal(.*)$": "<rootDir>/src/universal$1",
+            "^@main(.*)$": "<rootDir>/src/main$1"
         },
         "moduleFileExtensions": [
             "ts",

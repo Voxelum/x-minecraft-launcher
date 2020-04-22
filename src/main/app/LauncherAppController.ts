@@ -1,6 +1,6 @@
-import { App, NativeImage, Tray, Dock, Menu, BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
 import { LauncherAppContext } from '@main/manager/AppManager';
-import { Store } from 'vuex';
+import { StaticStore } from '@main/util/staticStore';
+import { App, BrowserWindow, BrowserWindowConstructorOptions, Dock, Menu, NativeImage, Tray } from 'electron';
 
 export abstract class LauncherAppController {
     protected app!: App;
@@ -17,13 +17,13 @@ export abstract class LauncherAppController {
 
     protected getStaticFile!: (file: string) => string;
 
-    protected store!: Store<any>;
+    protected store!: StaticStore<any>;
 
     abstract setup(context: LauncherAppContext): void;
 
     abstract appReady(app: App): void;
 
-    abstract dataReady(store: Store<string>): Promise<void>;
+    abstract dataReady(store: StaticStore<string>): Promise<void>;
 
     abstract requestOpenExternalUrl(url: string): Promise<boolean>;
 }

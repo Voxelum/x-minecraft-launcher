@@ -150,6 +150,9 @@
   },
   "downloadUpdate": "下载更新",
   "edit": "编辑",
+  "fabric": {
+    "showStableOnly": "只显示稳定版"
+  },
   "feedback": {
     "": "反馈",
     "description": "我找到了一个BUG/我想反馈",
@@ -794,7 +797,8 @@
     "showSnapshot": "显示快照版",
     "snapshot": "快照",
     "status": "状态",
-    "unknown": "未知的版本"
+    "unknown": "未知的版本",
+    "unset": "未启用"
   },
   "yes": "是"
 }

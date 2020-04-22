@@ -23,6 +23,7 @@ export default {
                     state.semaphore[s] += 1;
                 } else {
                     Vue.set(state.semaphore, s, 1);
+                    state.semaphore[s] = 1;
                 }
             }
         },

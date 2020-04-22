@@ -17,15 +17,13 @@
                 "src/main/*"
             ],
             "@/*": [
-                "src/universal/*",
                 "src/renderer/*"
             ]
         }
     },
     "include": [
         "types/*",
-        "src/**/*",
-        "static/**/*"
+        "src/**/*"
     ],
     "exclude": ["node_modules"]
 }

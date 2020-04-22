@@ -107,21 +107,21 @@ export default class DiagnoseService extends Service {
 
         this.registerMatchedFix(['missingAssets', 'corruptedAssets'],
             (issues) => {
-                if (issues.length === 1 && issues[0].multi) {
-                    return this.installService.installAssets(issues[0].arguments.values);
-                }
-                return this.installService.installAssets(issues.map(i => i.arguments as any));
+                let assets = [
+                    ...issues.filter(i => i.multi).map(i => i.arguments.values).reduce((a, b) => [...a, ...b], []),
+                    ...issues.filter(i => !i.multi).map(i => i.arguments),
+                ];
+                return this.installService.installAssets(assets);
             },
             'diagnoseVersion');
 
         this.registerMatchedFix(['missingLibraries', 'corruptedLibraries'],
             async (issues) => {
-                if (issues.length === 1 && issues[0].multi) {
-                    let libs: ResolvedLibrary[] = issues[0].arguments.values;
-                    await this.installService.installLibraries({ libraries: libs });
-                } else {
-                    await this.installService.installLibraries({ libraries: issues.map(p => p.arguments as ResolvedLibrary) });
-                }
+                let libs = [
+                    ...issues.filter(i => i.multi).map(i => i.arguments.values).reduce((a, b) => [...a, ...b], []),
+                    ...issues.filter(i => !i.multi).map(i => i.arguments),
+                ];
+                return this.installService.installLibraries({ libraries: libs });
             },
             'diagnoseVersion');
 
@@ -149,6 +149,9 @@ export default class DiagnoseService extends Service {
 
     @MutationTrigger('instance')
     async onInstance(payload: any) {
+        if (payload.path !== this.state.instance.path) {
+            return;
+        }
         if ('runtime' in payload) {
             this.commit('aquire', 'diagnose');
             await this.diagnoseVersion();
@@ -423,6 +426,10 @@ export default class DiagnoseService extends Service {
             };
 
             if (targetVersion === 'unknown') {
+                if (currentVersion.minecraft) {
+                    tree.missingVersionJson.push({ version: currentVersion.minecraft, ...currentVersion });
+                }
+
                 if (currentVersion.forge) {
                     let forge = this.state.version.local.find(v => v.forge === currentVersion.forge);
                     if (!forge) {

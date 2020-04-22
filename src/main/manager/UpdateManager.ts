@@ -1,8 +1,8 @@
 import { GFW_RELEASE_FEED_URL } from '@main/constant';
 import BaseService from '@main/service/BaseService';
+import { StaticStore } from '@main/util/staticStore';
 import { Task } from '@xmcl/task';
 import { autoUpdater, UpdaterSignal } from 'electron-updater';
-import { Store } from 'vuex';
 import { Manager } from '.';
 
 if (process.env.NODE_ENV === 'development') {
@@ -15,19 +15,19 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 export default class UpdateManager extends Manager {
-    private store!: Store<any>;
+    private store!: StaticStore<any>;
 
-    storeReady(store: Store<any>) {
+    storeReady(store: StaticStore<any>) {
         this.store = store;
 
-        store.watch(state => state.setting.autoInstallOnAppQuit, (autoInstallOnAppQuit) => {
-            autoUpdater.autoInstallOnAppQuit = autoInstallOnAppQuit;
-        });
-        store.watch(state => state.setting.allowPrerelease, (allowPrerelease) => {
-            autoUpdater.allowPrerelease = allowPrerelease;
-        });
-        store.watch(state => state.setting.autoDownload, (autoDownload) => {
-            autoUpdater.autoDownload = autoDownload;
+        store.subscribe(({ type, payload }) => {
+            if (type === 'autoInstallOnAppQuit') {
+                autoUpdater.autoInstallOnAppQuit = payload;
+            } else if (type === 'allowPrerelease') {
+                autoUpdater.allowPrerelease = payload;
+            } else if (type === 'autoDownload') {
+                autoUpdater.autoDownload = payload;
+            }
         });
 
         this.log(`Current core version is ${autoUpdater.currentVersion.raw}.`);

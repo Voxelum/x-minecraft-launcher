@@ -16,9 +16,9 @@ export interface Source {
     uri: string[];
     /**
      * The date of import
-     * @default -1
+     * @default ""
      */
-    date: number;
+    date: string;
     /**
      * The github info for this source. If this is imported from github release, it will present.
      */
@@ -44,7 +44,7 @@ export interface Source {
         path: string;
     };
 
-    [extraInfo: string]: any;
+    [domain: string]: string[] | string | undefined | Record<string, string | number | undefined>;
 }
 
 export interface ResourceSchema {

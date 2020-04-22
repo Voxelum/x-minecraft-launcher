@@ -76,9 +76,9 @@ interface LauncherProfile {
 
 export interface LoginOptions {
     /**
-     * The user account. Can be email or other thing the auth service want.
+     * The user username. Can be email or other thing the auth service want.
      */
-    account: string;
+    username: string;
     /**
      * The password. Maybe empty string.
      */
@@ -118,13 +118,13 @@ export default class UserService extends Service {
     }
 
     async getMinecraftAuthDb() {
-        const data: LauncherProfile = await readJSON(this.getMinecraftPath('launcher_profile.json')).catch(() => ({}));
+        let data: LauncherProfile = await readJSON(this.getMinecraftPath('launcher_profile.json')).catch(() => ({}));
         return data;
     }
 
     async load() {
-        const data = await this.getPersistence({ path: this.getPath('user.json'), schema: UserSchema });
-        const result: UserSchema = {
+        let data = await this.getPersistence({ path: this.getPath('user.json'), schema: UserSchema });
+        let result: UserSchema = {
             authServices: {},
             profileServices: {},
             users: {},
@@ -134,7 +134,7 @@ export default class UserService extends Service {
             },
             clientToken: '',
         };
-        const mcdb = await this.getMinecraftAuthDb();
+        let mcdb = await this.getMinecraftAuthDb();
         if (typeof data === 'object') {
             result.authServices = data.authServices;
             result.authServices.mojang = AUTH_API_MOJANG;
@@ -163,9 +163,9 @@ export default class UserService extends Service {
             }
         }
         if (mcdb?.clientToken === result.clientToken && mcdb.authenticationDatabase) {
-            const adb = mcdb.authenticationDatabase;
-            for (const userId of Object.keys(adb)) {
-                const user = adb[userId];
+            let adb = mcdb.authenticationDatabase;
+            for (let userId of Object.keys(adb)) {
+                let user = adb[userId];
                 if (!result.users[userId]) {
                     result.users[userId] = {
                         id: userId,
@@ -197,7 +197,7 @@ export default class UserService extends Service {
      * Logout and clear current cache.
      */
     async logout() {
-        const user = this.getters.user;
+        let user = this.getters.user;
         if (this.getters.accessTokenValid) {
             if (user.authService !== 'offline') {
                 await invalidate({
@@ -217,10 +217,10 @@ export default class UserService extends Service {
     @Singleton()
     async checkLocation() {
         if (!this.getters.accessTokenValid) return true;
-        const user = this.getters.user;
+        let user = this.getters.user;
         if (user.authService !== 'mojang') return true;
         try {
-            const result = await checkLocation(user.accessToken);
+            let result = await checkLocation(user.accessToken);
             this.commit('userSecurity', result);
             return result;
         } catch (e) {
@@ -237,17 +237,17 @@ export default class UserService extends Service {
      */
     async getChallenges() {
         if (!this.getters.accessTokenValid) return [];
-        const user = this.getters.user;
+        let user = this.getters.user;
         if (user.profileService !== 'mojang') return [];
         return getChallenges(user.accessToken);
     }
 
     async submitChallenges(responses: MojangChallengeResponse[]) {
         if (!this.getters.accessTokenValid) throw new Error('Cannot submit challenge if not logined');
-        const user = this.getters.user;
+        let user = this.getters.user;
         if (user.authService !== 'mojang') throw new Error('Cannot sumit challenge if login mode is not mojang!');
         if (!(responses instanceof Array)) throw new Error('Expect responses Array!');
-        const result = await responseChallenges(user.accessToken, responses);
+        let result = await responseChallenges(user.accessToken, responses);
         this.commit('userSecurity', true);
         return result;
     }
@@ -257,8 +257,8 @@ export default class UserService extends Service {
      */
     @Singleton()
     async refreshSkin(force = false) {
-        const user = this.getters.user;
-        const gameProfile = this.getters.gameProfile;
+        let user = this.getters.user;
+        let gameProfile = this.getters.gameProfile;
         // if no profile service, return
         if (user.profileService === '') return;
         // if no game profile (maybe not logined), return
@@ -270,7 +270,7 @@ export default class UserService extends Service {
 
         this.refreshedSkin = false;
 
-        const { id, name } = gameProfile;
+        let { id, name } = gameProfile;
 
         try {
             let profile;
@@ -284,8 +284,8 @@ export default class UserService extends Service {
                 }
                 profile = await lookup(profile.id, { api: this.getters.profileService });
             }
-            const textures = getTextures(profile);
-            const skin = textures?.textures.SKIN;
+            let textures = getTextures(profile);
+            let skin = textures?.textures.SKIN;
             if (skin) {
                 this.commit('gameProfile', {
                     userId: user.id,
@@ -305,10 +305,10 @@ export default class UserService extends Service {
      * Refresh the user auth status
      */
     async refreshStatus() {
-        const user = this.getters.user;
+        let user = this.getters.user;
 
         if (!this.getters.offline) {
-            const valid = await validate({
+            let valid = await validate({
                 accessToken: user.accessToken,
                 clientToken: this.state.user.clientToken,
             }, this.getters.authService).catch((e) => {
@@ -323,7 +323,7 @@ export default class UserService extends Service {
                 return;
             }
             try {
-                const result = await refresh({
+                let result = await refresh({
                     accessToken: user.accessToken,
                     clientToken: this.state.user.clientToken,
                 });
@@ -338,7 +338,7 @@ export default class UserService extends Service {
 
                 if (user.authService === 'mojang') {
                     // try {
-                    //     const info = await getAccountInfo(user.accessToken);
+                    //     let info = await getAccountInfo(user.accessToken);
                     //     this.commit('userMojangInfo', info);
                     // } catch (e) {
                     //     this.warn(`Cannot refresh mojang info for user ${user.username}.`);
@@ -359,13 +359,13 @@ export default class UserService extends Service {
         requireObject(payload);
         requireNonnull(payload.url);
 
-        const user = this.getters.user;
-        const gameProfile = this.getters.gameProfile;
+        let user = this.getters.user;
+        let gameProfile = this.getters.gameProfile;
 
         if (typeof payload.slim !== 'boolean') payload.slim = false;
-        const { url, slim } = payload;
+        let { url, slim } = payload;
 
-        const parsedUrl = parse(url);
+        let parsedUrl = parse(url);
         let data: Buffer | undefined;
         let urlString = '';
         if (parsedUrl.protocol === 'file:') {
@@ -396,7 +396,7 @@ export default class UserService extends Service {
         requireObject(option);
         requireString(option.url);
         requireString(option.path);
-        const { path, url } = option;
+        let { path, url } = option;
         await this.networkManager.downloadFile({ url, destination: path });
     }
 
@@ -441,23 +441,28 @@ export default class UserService extends Service {
      */
     async login(options: LoginOptions) {
         requireObject(options);
-        requireString(options.account);
+        requireString(options.username);
 
-        const {
-            account,
+        let {
+            username,
             password,
             authService = password ? 'mojang' : 'offline',
             profileService = 'mojang',
         } = options;
 
-        const selectedUserProfile = this.getters.user;
-        const usingAuthService = this.state.user.authServices[authService];
+        let selectedUserProfile = this.getters.user;
+        let usingAuthService = this.state.user.authServices[authService];
+        password = password ?? '';
 
-        const result = authService === 'offline'
-            ? offline(account)
+        if (!usingAuthService) {
+            throw new Error();
+        }
+
+        let result = authService === 'offline'
+            ? offline(username)
             : await login({
-                username: account,
-                password: password || '',
+                username,
+                password,
                 requestUser: true,
                 clientToken: this.state.user.clientToken,
             }, usingAuthService).catch((e) => {
@@ -471,33 +476,27 @@ export default class UserService extends Service {
             });
 
         this.refreshedSkin = false;
-        if (authService !== selectedUserProfile.authService
-            || profileService !== selectedUserProfile.profileService
-            || (authService === 'offline' && account !== selectedUserProfile.username)) {
+
+        if (!this.state.user.users[result.user!.id]) {
             this.commit('userProfileAdd', {
                 id: result.user!.id || '',
-                username: account,
-                profileService,
-                authService,
                 accessToken: result.accessToken,
                 profiles: result.availableProfiles,
+
+                username,
+                profileService,
+                authService,
             });
-            this.commit('userGameProfileSelect', {
-                profileId: result.selectedProfile.id,
-                userId: result.user!.id,
-            });
-        } else if (authService === 'offline' && account === selectedUserProfile.username) {
+        } else {
             this.commit('userProfileUpdate', {
                 id: selectedUserProfile.id,
                 accessToken: result.accessToken,
                 profiles: result.availableProfiles,
             });
-        } else {
-            this.commit('userProfileUpdate', {
-                id: result.user!.id,
-                accessToken: result.accessToken,
-                profiles: result.availableProfiles,
-            });
         }
+        this.commit('userGameProfileSelect', {
+            profileId: result.selectedProfile.id,
+            userId: result.user!.id,
+        });
     }
 }

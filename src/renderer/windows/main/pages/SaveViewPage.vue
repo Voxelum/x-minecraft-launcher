@@ -1,33 +1,35 @@
 <template>
   <v-container grid-list-xs fill-height style="overflow: auto;">
-    <v-layout row wrap align-content-start justify-start>
-      <v-flex tag="h1" class="white--text" style="z-index: 1">
-        <span class="headline">{{ $tc('save.name', 2) }}</span>
-      </v-flex>
-      <v-flex shrink style="z-index: 1">
-        <v-btn flat @click="showCopyFromDialog">
-          <v-icon left>
-            input
-          </v-icon>
-          {{ $t('save.copyFrom.title') }}
-        </v-btn>
-      </v-flex>
-      <v-flex shrink style="z-index: 1">
-        <v-btn flat @click="doImport">
-          <v-icon left>
-            move_to_inbox
-          </v-icon>
-          {{ $t('save.import') }}
-        </v-btn>
-      </v-flex>
-      <v-flex xs12 @drop.prevent="onDrop" @dragover.prevent>
-        <hint v-if="saves.length === 0" :absolute="true" icon="map" :text="$t('save.hint')" />
+    <v-layout column>
+      <v-layout style="flex-grow: 0" align-content-start justify-start>
+        <v-flex tag="h1" class="white--text" style="z-index: 1">
+          <span class="headline">{{ $tc('save.name', 2) }}</span>
+        </v-flex>
+        <v-flex shrink style="z-index: 1">
+          <v-btn flat @click="showCopyFromDialog">
+            <v-icon left>
+              input
+            </v-icon>
+            {{ $t('save.copyFrom.title') }}
+          </v-btn>
+        </v-flex>
+        <v-flex shrink style="z-index: 1">
+          <v-btn flat @click="doImport">
+            <v-icon left>
+              move_to_inbox
+            </v-icon>
+            {{ $t('save.import') }}
+          </v-btn>
+        </v-flex>
+      </v-layout>
+      <v-layout style="flex-grow: 1" @drop.prevent="onDrop" @dragover.prevent>
+        <hint v-if="saves.length === 0" style="flex-grow: 1" icon="map" :text="$t('save.hint')" />
         <v-layout v-else wrap row>
           <v-flex v-for="(s, index) of saves" :key="index" xs6>
             <save-view-page-preview-card :value="s" :delete-save="startDelete" :export-save="doExport" />
           </v-flex>
         </v-layout>
-      </v-flex>
+      </v-layout>
     </v-layout>
     <save-view-page-copy-from-dialog v-model="isCopyFromDialogShown" />
     <save-view-page-copy-to-dialog :value="copying" :operate="doCopy" :cancel="cancelCopy" :instances="instances" />

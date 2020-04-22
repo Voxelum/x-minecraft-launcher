@@ -37,7 +37,7 @@ export function useDropImport(
             }
         }
     }
-    const handle = watch(elem, (n, o) => {
+    watch(elem, (n, o) => {
         console.log(n);
         if (o) {
             o.removeEventListener('drop', onDrop);
@@ -50,7 +50,6 @@ export function useDropImport(
         if (elem.value) {
             elem.value.removeEventListener('drop', onDrop);
         }
-        handle();
     });
 }
 
@@ -59,7 +58,7 @@ export function useDragTransferItem(elem: Ref<HTMLElement>, right: boolean, id: 
         e.dataTransfer!.setData('index', `${right ? 'R' : 'L'}${index}`);
         e.dataTransfer!.setData('id', id);
     }
-    const handle = watch(elem, (n, o) => {
+    watch(elem, (n, o) => {
         if (o) {
             o.removeEventListener('dragstart', onDragStart);
         }
@@ -73,7 +72,6 @@ export function useDragTransferItem(elem: Ref<HTMLElement>, right: boolean, id: 
         if (elem.value) {
             elem.value.removeEventListener('dragstart', onDragStart);
         }
-        handle();
     });
 }
 
@@ -125,7 +123,7 @@ export function useDragTransferList(
     function onDropLeft(event: DragEvent) { return handleDrop(event, true); }
     function onDropRight(event: DragEvent) { return handleDrop(event, false); }
 
-    const leftHandle = watch(left, (n, o) => {
+    watch(left, (n, o) => {
         if (o) {
             o.removeEventListener('drop', onDropLeft);
             o.removeEventListener('dragover', onDragOver);
@@ -137,7 +135,7 @@ export function useDragTransferList(
             n.addEventListener('wheel', onMouseWheel);
         }
     });
-    const rightHandle = watch(right, (n, o) => {
+    watch(right, (n, o) => {
         if (o) {
             o.removeEventListener('drop', onDropRight);
             o.removeEventListener('dragover', onDragOver);
@@ -148,9 +146,5 @@ export function useDragTransferList(
             n.addEventListener('dragover', onDragOver);
             n.addEventListener('wheel', onMouseWheel);
         }
-    });
-    onUnmounted(() => {
-        rightHandle();
-        leftHandle();
     });
 }

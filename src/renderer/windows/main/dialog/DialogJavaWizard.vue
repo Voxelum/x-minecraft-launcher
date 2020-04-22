@@ -161,13 +161,9 @@ export default createComponent({
       });
     }
 
-    let unwatch = () => { };
     onMounted(() => {
       updateValue();
-      unwatch = watch(missing, updateValue);
-    });
-    onUnmounted(() => {
-      unwatch();
+      watch(missing, updateValue);
     });
 
     return {

@@ -1,7 +1,7 @@
 <template>
   <v-list dark style="overflow-y: scroll; scrollbar-width: 0; background-color: transparent;">
-    <virtual-list :size="48" :remain="7"> 
-      <template v-for="(item) in versions">
+    <virtual-list ref="list" :size="48" :remain="7"> 
+      <template v-for="item in versions">
         <v-list-tile
           :key="item.version"
           :class="{ grey: version === item.version, 'darken-1': version === item.version }" 
@@ -39,8 +39,9 @@
 </template>
 
 <script lang=ts>
-import { createComponent } from '@vue/composition-api';
+import { createComponent, watch, ref, onMounted } from '@vue/composition-api';
 import { FabricInstaller } from '@xmcl/installer';
+import Vue from 'vue';
 import VirtualList from 'vue-virtual-scroll-list';
 
 type FabricArtifactVersion = FabricInstaller.FabricArtifactVersion;
@@ -58,6 +59,17 @@ export default createComponent<Props>({
     versions: Array,
     version: String,
     select: Function,
+  },
+  setup(props) {
+    let list = ref<any>(null);
+    onMounted(() => {
+      watch(() => props.versions, () => {
+        list.value!.reset();
+      });
+    });
+    return {
+      list,
+    };
   },
 });
 

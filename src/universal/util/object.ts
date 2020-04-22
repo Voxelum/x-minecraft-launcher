@@ -83,3 +83,6 @@ export function mixins(derivedCtor: any, baseCtors: any[]) {
         });
     });
 }
+export function toObjectReducer<T extends { [k in K]: string }, K extends string>(key: K) {
+    return (o: { [key: string]: T }, v: T) => { o[v[key]] = v; return o; };
+}

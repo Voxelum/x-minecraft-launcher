@@ -110,7 +110,7 @@ export default class InstallService extends Service {
         }
         let result: ForgeInstaller.VersionList = {
             mcversion,
-            timestamp: forges[0].modified,
+            timestamp: forges[0]?.modified,
             versions: forges.map(convert),
         };
         return result;
@@ -125,7 +125,7 @@ export default class InstallService extends Service {
             this.log('Skip to refresh Minecraft metadata. Use cache.');
             return;
         }
-        this.log('Updating minecraft version metadata');
+        this.log('Start to refresh minecraft version metadata.');
         const oldMetadata = this.state.version.minecraft;
         const newMetadata = await Installer.getVersionList({ original: oldMetadata });
         if (oldMetadata !== newMetadata) {
@@ -241,53 +241,41 @@ export default class InstallService extends Service {
         mcversion = mcversion || this.getters.instance.runtime.minecraft;
 
         if (!force && this.refreshedForge[mcversion]) {
-            this.log(`Skip to refresh forge metadata from ${mcversion}. Use cache`);
+            this.log(`Skip to refresh forge metadata from ${mcversion}. Use cache.`);
             return;
         }
         this.refreshedForge[mcversion] = true;
 
-        let version = mcversion;
-        if (!version) {
+        let minecraftVersion = mcversion;
+        if (!minecraftVersion) {
             const prof = this.state.instance.all[this.state.instance.path];
             if (!prof) {
-                this.log('The profile refreshing is not ready. Break forge versions list update.');
+                this.log('The instance refreshing is not ready. Break forge versions list update.');
                 return;
             }
-            version = prof.runtime.minecraft;
+            minecraftVersion = prof.runtime.minecraft;
         }
 
-        this.log(`Update forge version list under Minecraft ${version}`);
-
-        const cur = this.state.version.forge[version];
         try {
+            let currentForgeVersion = this.state.version.forge[minecraftVersion];
+            let newForgeVersion: ForgeInstaller.VersionList = currentForgeVersion;
             if (this.networkManager.isInGFW) {
-                // const headers = cur ? { 'If-Modified-Since': cur.timestamp } : {};
-                this.log('Using self host to fetch forge versions list');
-                let version = await this.getForgesFromBMCL(mcversion);
-                this.log('Found new forge versions list. Update it');
-                this.commit('forgeMetadata', version);
-                // const { body, statusCode } = await this.networkManager.request(`https://xmcl.azurewebsites.net/api/v1/forge/versions/${version}`, {
-                //     headers,
-                //     responseType: 'json',
-                // });
-
-                // if (statusCode !== 304 && body) {
-                //     this.log('Found new forge versions list. Update it');
-                //     this.commit('forgeMetadata', body as ForgeInstaller.VersionList);
-                // }
+                this.log(`Update forge version list (BMCL) for Minecraft ${minecraftVersion}`);
+                newForgeVersion = await this.getForgesFromBMCL(mcversion);
             } else {
-                this.log('Using direct query to fetch forge versions list');
-                const result = await ForgeInstaller.getVersionList({ mcversion: version, original: cur });
-                if (result !== cur) {
-                    this.log('Found new forge versions list. Update it');
-                    this.commit('forgeMetadata', result);
-                }
+                this.log(`Update forge version list (ForgeOfficial) for Minecraft ${minecraftVersion}`);
+                newForgeVersion = await ForgeInstaller.getVersionList({ mcversion: minecraftVersion, original: currentForgeVersion });
+            }
+
+            if (newForgeVersion !== currentForgeVersion) {
+                this.log('Found new forge versions list. Update it');
+                this.commit('forgeMetadata', newForgeVersion);
+            } else {
+                this.log('No new forge version metadata found. Skip.');
             }
         } catch (e) {
-            this.error(`Fail to fetch forge info of ${version}`);
+            this.error(`Fail to fetch forge info of ${minecraftVersion}`);
             this.error(e);
-        } finally {
-            this.log('Finish update forge versions list');
         }
     }
 
@@ -304,8 +292,10 @@ export default class InstallService extends Service {
         }));
         let version: string | undefined;
         try {
+            this.log(`Start to install forge ${meta.version} on ${meta.mcversion} using maven ${maven}`);
             version = await handle.wait();
             this.local.refreshVersions();
+            this.log(`Success to install forge ${meta.version} on ${meta.mcversion}`);
         } catch (err) {
             this.warn(`An error ocurred during download version ${handle}`);
             this.warn(err);
@@ -323,6 +313,8 @@ export default class InstallService extends Service {
             this.log('Skip to refresh fabric metadata. Use cache.');
             return;
         }
+
+        this.log('Start to refresh fabric metadata');
 
         const getIfModified = async (url: string, timestamp: string) => {
             let { statusCode, headers } = await this.networkManager.request.head(url, { headers: { 'if-modified-since': timestamp } });
@@ -355,8 +347,10 @@ export default class InstallService extends Service {
     @Singleton('install')
     async installFabric(versions: { yarn: string; loader: string }) {
         try {
+            this.log(`Start to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`);
             const handle = this.submit(Task.create('installFabric', () => FabricInstaller.install(versions.yarn, versions.loader, this.state.root)));
             await handle.wait();
+            this.log(`Success to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`);
         } catch (e) {
             this.warn(`An error ocurred during install fabric yarn-${versions.yarn}, loader-${versions.loader}`);
             this.warn(e);
@@ -369,8 +363,6 @@ export default class InstallService extends Service {
             return;
         }
 
-        this.refreshedLiteloader = true;
-
         const option = this.state.version.liteloader.timestamp === '' ? undefined : {
             original: this.state.version.liteloader,
         };
@@ -378,6 +370,8 @@ export default class InstallService extends Service {
         if (remoteList !== this.state.version.liteloader) {
             this.commit('liteloaderMetadata', remoteList);
         }
+
+        this.refreshedLiteloader = true;
     }
 
     @Singleton('install')

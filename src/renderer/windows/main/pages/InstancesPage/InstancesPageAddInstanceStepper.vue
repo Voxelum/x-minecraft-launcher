@@ -328,6 +328,9 @@ export default createComponent({
         } else {
           await create();
         }
+        await new Promise((resolve) => {
+          setTimeout(resolve, 1000);
+        });
         init();
         router.replace('/');
         data.template = -1;

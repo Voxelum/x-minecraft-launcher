@@ -41,7 +41,7 @@
     "typescript.tsdk": "node_modules/typescript/lib",
     "i18n-ally.localesPaths": [
         "src/renderer/assets/locales",
-        "src/main/utils/locales"
+        "src/main/util/locales"
     ],
     "i18n-ally.keystyle": "nested",
     "i18n-ally.sortKeys": true

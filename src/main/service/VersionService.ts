@@ -11,7 +11,9 @@ import Service from './Service';
 export default class VersionService extends Service {
     private runtimeDetectors: { [runtime: string]: (version: Version) => string } = {};
 
-    private versionsWatcher = new FileStateWatcher([] as string[], (state, _, f) => [...state, f]);
+    private versionsWatcher = new FileStateWatcher([] as string[], (state, _, f) => [...new Set([...state, f])]);
+
+    private versionLoaded = false;
 
     registerVersionProvider(runtime: string, parser: (version: Version) => string) {
         this.runtimeDetectors[runtime] = parser;
@@ -30,7 +32,7 @@ export default class VersionService extends Service {
     }
 
     async load() {
-        await this.refreshVersions(true);
+        await this.refreshVersions();
     }
 
     async init() {
@@ -82,23 +84,31 @@ export default class VersionService extends Service {
         let files: string[];
         if (force) {
             files = await readdirEnsured(this.getGameAssetsPath('versions'));
-        } else {
+        } else if (this.versionLoaded) {
             files = this.versionsWatcher.getStateAndReset();
+        } else {
+            files = await readdirEnsured(this.getGameAssetsPath('versions'));
         }
 
-        if (files.length === 0) return;
+        files = files.filter(f => !f.startsWith('.'));
 
-        const versions: LocalVersion[] = [];
-        for (const versionId of files.filter(f => !f.startsWith('.'))) {
+        let versions: LocalVersion[] = [];
+        for (let versionId of files) {
             try {
-                const version = await this.parseVersion(versionId);
-                versions.push(version);
+                versions.push(await this.parseVersion(versionId));
             } catch (e) {
                 this.warn(`An error occured during refresh local version ${versionId}`);
                 this.warn(e);
             }
         }
-        this.commit('localVersions', versions);
+
+        if (versions.length !== 0) {
+            this.commit('localVersions', versions);
+            this.log(`Found ${versions.length} local game versions.`);
+        } else {
+            this.log('No local game version found.');
+        }
+        this.versionLoaded = true;
     }
 
     async deleteVersion(version: string) {

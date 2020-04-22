@@ -227,7 +227,7 @@ export class InstanceIOService extends Service {
                     minecraft: manifest.minecraft.version,
                     forge: forgeId ? forgeId.id.substring(6) : '',
                     liteloader: '',
-                    'fabric-loader': '',
+                    fabricLoader: '',
                     yarn: '',
                 },
             };

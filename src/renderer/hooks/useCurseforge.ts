@@ -1,7 +1,8 @@
 import { Download, Filter, Project, ProjectPreview, ProjectType, Version } from '@main/service/CurseForgeService';
-import { computed, onMounted, onUnmounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
-import { useStore } from './useStore';
+import { computed, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
+import { File } from '@xmcl/curseforge';
 import { useService } from './useService';
+import { useStore } from './useStore';
 
 /**
  * Hook to view the curseforge project images.
@@ -101,20 +102,19 @@ export function useCurseforgeProjectFiles(projectPath: string, type: ProjectType
 }
 /**
  * Hook to view the front page of the curseforge project.
- * @param projectPath The project path
- * @param type The project type
+ * @param id The project id
  */
-export function useCurseforgeProject(projectPath: string, type: ProjectType) {
-    const { downloadAndImportFile, fetchCurseForgeProject } = useService('CurseForgeService');
+export function useCurseforgeProject(projectId: number) {
+    const { fetchProject } = useService('CurseForgeService');
     const { getters, state } = useStore();
-    const recentFiles: Ref<Project['files']> = ref([]);
+    const recentFiles: Ref<File[]> = ref([]);
     const data = reactive({
         projectId: 0,
         name: '',
         image: '',
-        createdDate: 0,
-        lastUpdate: 0,
-        totalDownload: '',
+        createdDate: '',
+        lastUpdate: '',
+        totalDownload: 0,
         license: '',
         description: '',
 
@@ -128,16 +128,16 @@ export function useCurseforgeProject(projectPath: string, type: ProjectType) {
     async function refresh() {
         data.refreshingProject = true;
         try {
-            const { name, image, createdDate, updatedDate, totalDownload, license, description, id, files: fs } = await fetchCurseForgeProject({ path: projectPath, project: type as any });
+            const { name, , dateCreated, dateModified, downloadCount, id, latestFiles } = await fetchProject(projectId);
             data.name = name;
             data.image = image;
-            data.createdDate = createdDate;
-            data.lastUpdate = updatedDate;
-            data.totalDownload = totalDownload;
+            data.createdDate = dateCreated;
+            data.lastUpdate = dateModified;
+            data.totalDownload = downloadCount;
             data.license = license.name;
             data.description = description;
             data.projectId = id;
-            recentFiles.value = fs;
+            recentFiles.value = latestFiles;
         } finally {
             data.refreshingProject = false;
         }
@@ -167,7 +167,7 @@ export function useCurseforgeProject(projectPath: string, type: ProjectType) {
  * Hook to returen the controller of curseforge preview page. Navigating the curseforge projects.
  */
 export function useCurseforgePreview(type: ProjectType) {
-    const { fetchCurseForgeProjects, searchCurseforgeProjects } = useService('CurseForgeService');
+    const { fetchFeaturedProjects, searchProjects } = useService('CurseForgeService');
     const data: {
         projects: ProjectPreview[];
         page: number;
@@ -196,9 +196,8 @@ export function useCurseforgePreview(type: ProjectType) {
         data.projects = [];
         data.loading = true;
         try {
-            const result = await fetchCurseForgeProjects({
-                project: type,
-                page: data.page.toString(),
+            const result = await fetchFeaturedProjects({
+                page: data.page,
                 filter: filterRef.value.value,
                 version: versionRef.value.value,
             });
@@ -231,14 +230,7 @@ export function useCurseforgePreview(type: ProjectType) {
             data.loading = false;
         }
     }
-    let handle = () => { };
-    onMounted(() => {
-        refresh();
-        handle = watch([refs.page, filterRef, versionRef], () => refresh());
-    });
-    onUnmounted(() => {
-        handle();
-    });
+    watch([refs.page, filterRef, versionRef], () => refresh());
     return {
         ...refs,
         filter: filterRef,

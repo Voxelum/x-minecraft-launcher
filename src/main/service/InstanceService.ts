@@ -8,9 +8,9 @@ import { fitin } from '@universal/util/object';
 import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/util/serverStatus';
 import { queryStatus, Status } from '@xmcl/client';
 import { readInfo, ServerInfo } from '@xmcl/server-info';
-import { lstat, readdir, readFile, readlink, remove, symlink, unlink } from 'fs-extra';
+import { lstat, readdir, readFile, readlink, remove, symlink, unlink, ensureDir } from 'fs-extra';
 import { join, relative, resolve } from 'path';
-import v4 from 'uuid/v4';
+import { v4 } from 'uuid';
 import CurseForgeService from './CurseForgeService';
 import InstanceGameSettingService from './InstanceGameSettingService';
 import { InstanceIOService } from './InstanceIOService';
@@ -273,6 +273,7 @@ export class InstanceService extends Service {
         instance.description = payload.description ?? instance.description;
         instance.showLog = payload.showLog ?? instance.showLog;
 
+        await ensureDir(instance.path);
         this.commit('instanceAdd', instance);
 
         this.log('Created instance with option');

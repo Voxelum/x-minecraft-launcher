@@ -164,9 +164,8 @@ export default createComponent({
       },
     });
     const dataRefs = toRefs(data);
-    let watcher = () => { };
     onMounted(() => {
-      watcher = watch(dataRefs.step, () => {
+      watch(dataRefs.step, () => {
         if (data.step > 1) {
           if (data.newAuth.hostName === ''
             && data.newAuth.authenticate === ''
@@ -240,9 +239,6 @@ export default createComponent({
           data.step = 1;
         });
       }
-    });
-    onUnmounted(() => {
-      watcher();
     });
     return {
       ...dataRefs,

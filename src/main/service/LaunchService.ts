@@ -5,14 +5,10 @@ import AuthLibService from './AuthLibService';
 import DiagnoseService from './DiagnoseService';
 import InstanceService from './InstanceService';
 import Service, { Inject } from './Service';
-import VersionService from './VersionService';
 
 export default class LaunchService extends Service {
     @Inject('DiagnoseService')
     private diagnoseService!: DiagnoseService;
-
-    @Inject('VersionService')
-    private versionService!: VersionService;
 
     @Inject('AuthLibService')
     private authLibService!: AuthLibService;
@@ -110,7 +106,7 @@ export default class LaunchService extends Service {
             this.instanceService.deploy(true);
 
             this.log('Launching with these option...');
-            this.log(JSON.stringify(option, null, 2));
+            this.log(JSON.stringify(option, (k, v) => (k === 'accessToken' ? '***' : v), 2));
 
             // Launch
             const process = await launch(option);

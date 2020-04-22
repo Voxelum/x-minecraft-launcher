@@ -237,28 +237,25 @@ export default createComponent({
       resetError();
       if (e.key === 'Enter') { login(); }
     }
-    let loginedHandle = () => { };
-    let shownHandle = () => { };
-    let authServiceHandle = () => { };
     onMounted(() => {
       reload();
       if (!logined.value) {
         showDialog();
       }
-      loginedHandle = watch(logined, (l) => {
+      watch(logined, (l) => {
         if (!l) {
           showDialog();
         } else {
           closeDialog();
         }
       });
-      shownHandle = watch(isShown, (s) => {
+      watch(isShown, (s) => {
         if (s) {
           reload();
           data.tabIndex = switchingUser.value ? 1 : 0;
         }
       });
-      authServiceHandle = watch(() => {
+      watch(() => {
         form.value.resetValidation();
         if (data.selectedAuthService !== data.selectedProfileService
           && data.selectedProfileService === '') {
@@ -269,11 +266,6 @@ export default createComponent({
           }
         }
       });
-    });
-    onUnmounted(() => {
-      loginedHandle();
-      shownHandle();
-      authServiceHandle();
     });
     return {
       ...toRefs(data),

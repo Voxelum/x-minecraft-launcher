@@ -110,14 +110,21 @@ export default class BuiltinController extends LauncherAppController {
                 click() {
                     const cpu = process.getCPUUsage();
                     const mem = process.getProcessMemoryInfo();
-                    const sysmem = process.getSystemMemoryInfo();
 
                     const p: Promise<Electron.ProcessMemoryInfo> = mem instanceof Promise ? mem : Promise.resolve(mem);
                     p.then((m) => {
+                        let cpuPercentage = (cpu.percentCPUUsage * 100).toFixed(2);
+                        let messages = [
+                            `Mode: ${process.env.NODE_ENV}`,
+                            `CPU: ${cpuPercentage}%`,
+                            `Private Memory: ${m.private}KB`,
+                            `Shared Memory: ${m.shared}KB`,
+                            `Physically Memory: ${m.residentSet}KB`,
+                        ];
                         dialog.showMessageBox({
                             type: 'info',
                             title: 'Diagnosis Info',
-                            message: `Mode: ${process.env.NODE_ENV}\nCPU: ${JSON.stringify(cpu)}\nMem: ${JSON.stringify(m)}\nSysMem: ${JSON.stringify(sysmem)}`,
+                            message: `${messages.join('\n')}`,
                         });
                     });
                 },

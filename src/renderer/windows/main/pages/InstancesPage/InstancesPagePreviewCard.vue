@@ -1,7 +1,11 @@
 <template>
   <v-card color="#grey darken-3" hover dark draggable 
           :style="{ 'transform': dragged ? 'scale(0.8)' : 'scale(1)' }"
-          @click="$emit('click', $event)" @mousedown="dragged=true" @dragstart="$emit('dragstart',$event);" @dragend="$emit('dragend', $event);dragged=false">
+          @click="$emit('click', $event)" 
+          @mousedown.left="dragged = true"
+          @dragstart="$emit('dragstart',$event);" 
+          @dragend="$emit('dragend', $event); dragged = false"
+  >
     <v-img
       :class="{ 'grey': true, 'darken-2': true }"
       class="white--text favicon"

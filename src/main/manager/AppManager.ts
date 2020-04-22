@@ -236,6 +236,7 @@ export default class AppManager extends Manager {
             stream.write(`[${levels[level]}] [${new Date().toUTCString()}] [${id}]: ${message}\n`);
         });
         ref.once('close', () => {
+            ref.webContents.removeAllListeners('console-message');
             this.managers.logManager.closeWindowLog(name);
         });
     }

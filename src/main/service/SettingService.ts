@@ -15,6 +15,8 @@ export default class SettingService extends Service {
             defaultBlur: data.defaultBlur,
             particleMode: data.particleMode,
             showParticle: data.showParticle,
+            roots: data.roots,
+            primaryRoot: data.primaryRoot,
             // settings: data.settings,
         });
     }
@@ -30,7 +32,7 @@ export default class SettingService extends Service {
         'particleMode',
         'useBmclApi',
     )
-    async onSettingMutation() {
+    private async onSettingMutation() {
         await this.setPersistence({
             path: this.getPath('setting.json'),
             data: {
@@ -43,6 +45,8 @@ export default class SettingService extends Service {
                 defaultBlur: this.state.setting.defaultBlur,
                 showParticle: this.state.setting.showParticle,
                 particleMode: this.state.setting.particleMode,
+                roots: this.state.setting.roots,
+                primaryRoot: this.state.setting.primaryRoot,
             },
             schema: SettingSchema,
         });

@@ -224,6 +224,7 @@ const mod: InstanceModule = {
                     instance.deployments.resourcepacks = [];
                 }
                 Vue.set(state.all, instance.path, instance);
+                state.all[instance.path] = { ...instance, serverStatus: undefined };
             }
         },
         instanceJava(state, jPath) {
@@ -234,6 +235,7 @@ const mod: InstanceModule = {
         },
         instanceRemove(state, id) {
             Vue.delete(state.all, id);
+            delete state.all[id];
         },
         instanceSelect(state, id) {
             if (state.all[id]) {
@@ -335,15 +337,16 @@ const mod: InstanceModule = {
                 const settings = cache.gamesettings;
                 const container = state.settings;
                 if (settings.resourcePacks && settings.resourcePacks instanceof Array) {
-                    Vue.set(container, 'resourcePacks', [...settings.resourcePacks]);
+                    container.resourcePacks = [...settings.resourcePacks];
                 }
-                for (const [key, value] of Object.entries(settings)) {
+                for (let [key, value] of Object.entries(settings)) {
                     if (key in container) {
                         if (typeof value === typeof Reflect.get(container, key)) {
-                            Vue.set(container, key, value);
+                            container[key] = value;
                         }
                     } else {
                         Vue.set(container, key, value);
+                        container[key] = value;
                     }
                 }
             }
@@ -351,15 +354,18 @@ const mod: InstanceModule = {
         instanceGameSettings(state, settings) {
             let container = state.settings;
             if (settings.resourcePacks && settings.resourcePacks instanceof Array) {
-                Vue.set(container, 'resourcePacks', [...settings.resourcePacks]);
+                container.resourcePacks = [...settings.resourcePacks];
             }
             for (let [key, value] of Object.entries(settings)) {
+                container[key] = value;
                 if (key in container) {
                     if (typeof value === typeof Reflect.get(container, key)) {
                         Vue.set(container, key, value);
+                        container[key] = value;
                     }
                 } else {
                     Vue.set(container, key, value);
+                    container[key] = value;
                 }
             }
         },

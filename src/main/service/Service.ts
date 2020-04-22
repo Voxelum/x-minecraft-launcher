@@ -113,17 +113,17 @@ export class ServiceException extends Error {
  * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied 
  */
 export default class Service implements Managers {
-    protected appManager!: AppManager;
+    appManager!: AppManager;
 
-    protected networkManager!: NetworkManager;
+    networkManager!: NetworkManager;
 
-    protected storeAndServiceManager!: StoreAndServiceManager;
+    storeAndServiceManager!: StoreAndServiceManager;
 
-    protected taskManager!: TaskManager;
+    taskManager!: TaskManager;
 
-    protected updateManager!: UpdateManager;
+    updateManager!: UpdateManager;
 
-    protected logManager!: LogManager;
+    logManager!: LogManager;
 
     /**
      * Submit a task into the task manager. 

@@ -16,16 +16,14 @@ import Service, { INJECTIONS_SYMBOL, MUTATION_LISTENERS_SYMBOL } from '@main/ser
 import SettingService from '@main/service/SettingService';
 import UserService from '@main/service/UserService';
 import VersionService from '@main/service/VersionService';
+import { StaticStore, createStaticStore } from '@main/util/staticStore';
 import storeTemplate from '@universal/store';
 import { Task, TaskHandle } from '@xmcl/task';
 import { app, ipcMain, webContents } from 'electron';
 import { EventEmitter } from 'events';
 import { join } from 'path';
-import Vue from 'vue';
-import Vuex, { Store, StoreOptions } from 'vuex';
 import { Manager } from '.';
 
-Vue.use(Vuex);
 
 export default class StoreAndServiceManager extends Manager {
     private registeredServices: (new () => Service)[] = [];
@@ -34,7 +32,7 @@ export default class StoreAndServiceManager extends Manager {
 
     private serviceMap: { [name: string]: Service } = {};
 
-    public store: Store<any> | null = null;
+    public store: StaticStore<any> | null = null;
 
     private usedSession = 0;
 
@@ -147,22 +145,9 @@ export default class StoreAndServiceManager extends Manager {
     }
 
     async rootReady(root: string) {
-        function deepCopyStoreTemplate(template: StoreOptions<any>) {
-            const copy = { ...template };
-            if (typeof template.state === 'object') {
-                copy.state = JSON.parse(JSON.stringify(template.state));
-            }
-            if (copy.modules) {
-                for (const key of Object.keys(copy.modules)) {
-                    copy.modules[key] = deepCopyStoreTemplate(copy.modules[key]);
-                }
-            }
-            return copy;
-        }
-        const mod = storeTemplate;
-        const template = deepCopyStoreTemplate(mod); // deep copy the template so there is no strange reference
-        template.state.root = root;
-        this.store = new Store(template);
+        this.store = createStaticStore(storeTemplate);
+        this.store.commit('root', root);
+        // this.store = new Store(template);
         this.setupService(root);
         this.setupAutoSync();
 

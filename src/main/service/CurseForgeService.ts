@@ -1,7 +1,5 @@
-import { Forge } from '@xmcl/mod-parser';
-import { HTMLElement, parse as parseHtml } from 'fast-html-parser';
-import querystring from 'querystring';
-import InstanceService from './InstanceService';
+import { File, getAddonDescription, getAddonFiles, getAddonInfo, getFeaturedAddons, GetFeaturedAddonOptions, searchAddons, SearchOptions, getCategories, Category, getCategoryTimestamp, AddonInfo, getAddonDatabaseTimestamp } from '@xmcl/curseforge';
+import { Agent } from 'https';
 import ResourceService from './ResourceService';
 import Service, { Inject } from './Service';
 
@@ -129,321 +127,83 @@ export interface Modpack {
     overrides: string;
 }
 
+export interface InstallFileOptions {
+    file: File;
 
-function getHref(file: DownloadFile) {
-    return `https://www.curseforge.com/minecraft/${file.projectType}/${file.projectPath}/download/${file.id}/file`;
-}
-// test url https://cursemeta.dries007.net/238222/2739588 jei
-function localDate(string: string) {
-    const d = new Date(0);
-    d.setUTCSeconds(Number.parseInt(string, 10));
-    return d.toLocaleDateString();
-}
-function notText(n: HTMLElement) {
-    return n.nodeType !== 3;
-}
-function convert(node: HTMLElement | null) {
-    if (node === null || !node) return '';
-    let text = '';
-    if (node.nodeType === 3) {
-        text += node.rawText;
-    } else if (node instanceof HTMLElement) {
-        if (node.tagName !== null) {
-            if (node.tagName === 'a') {
-                let attrs = node.rawAttrs === '' ? '' : ` ${node.rawAttrs}`;
-                if (node.attributes.href) {
-                    const href = node.attributes.href;
-                    const rLinkIdx = href.indexOf('remoteUrl=');
-                    const newHref = rLinkIdx !== -1
-                        ? `#/external/${href.substring(href.indexOf('remoteUrl=') + 'remoteUrl='.length)}`
-                        : `#/external/${href}`;
-                    attrs = querystring.unescape(querystring.unescape(attrs.replace(href, newHref)));
-                }
-                text += `<${node.tagName}${attrs}>`;
-            } else {
-                const attrs = node.rawAttrs === '' ? '' : ` ${node.rawAttrs}`;
-                text += `<${node.tagName}${attrs}>`;
-            }
-        }
-        if (node.childNodes.length !== 0) for (const c of node.childNodes) text += convert(c as HTMLElement);
-        if (node.tagName !== null) text += `</${node.tagName}>`;
-    } else throw new Error(`Unsupported type ${JSON.stringify(node)}`);
-    return text;
-}
-function processProjectListingRow(item: HTMLElement): ProjectPreview {
-    item = item.removeWhitespace();
-
-    const childs = item.childNodes.filter(notText);
-    const iconElem = item.querySelector('.project-avatar').querySelector('a');
-    const url = iconElem.attributes.href;
-    const imgTag = iconElem.querySelector('img');
-    const icon = imgTag ? imgTag.attributes.src : '';
-
-    const mainBody = childs[1].childNodes.filter(notText);
-    const categorysBody = childs[2].childNodes.filter(notText)[1];
-
-    const baseInfo = mainBody[0].childNodes.filter(notText);
-    const metaInfo = mainBody[1].childNodes.filter(notText);
-    const description = mainBody[2].text;
-
-    const title = baseInfo[0].querySelector('h3').rawText;
-    const author = baseInfo[2].rawText;
-    const count = metaInfo[0].rawText.replace(' Downloads', '');
-    const updatedDate = metaInfo[1].querySelector('abbr').attributes['data-epoch'];
-    const createdDate = metaInfo[2].querySelector('abbr').attributes['data-epoch'];
-
-    const categories = categorysBody.querySelectorAll('a').map(link => ({
-        href: link.attributes.href,
-        icon: link.querySelector('img').attributes.src,
-        title: link.querySelector('figure').attributes.title,
-    }));
-
-    return {
-        name: url.substring(url.lastIndexOf('/') + 1),
-        title,
-        author,
-        description,
-        createdDate,
-        updatedDate,
-        count,
-        categories,
-        icon,
-    };
+    type: 'modpack' | 'mod' | 'resourcepack' | 'save';
 }
 
 export default class CurseForgeService extends Service {
-    @Inject('InstanceService')
-    private instanceService!: InstanceService;
-
     @Inject('ResourceService')
     private resourceService!: ResourceService;
 
-    private async request<T>(url: string, transformToObject: (element: HTMLElement) => T) {
-        const body = await this.networkManager.requestPage(url);
-        const html = parseHtml(body);
-        return transformToObject(html);
-    }
+    private userAgent: Agent = new Agent({ keepAlive: true });
 
-    fetchCurseForgeProjects(payload: { page?: string; version?: string; filter?: string; project: ProjectType } = { project: 'mc-mods' }): Promise<{
-        projects: ProjectPreview[]; pages: number; versions: Version[]; filters: Filter[];
-    }> {
-        const { page, version, filter, project } = payload;
-        if (typeof project !== 'string') throw new Error('Require project be [mc-mod], [resourcepack]');
-        const sort = filter;
-        const endpoint = `https://www.curseforge.com/minecraft/${project}?${querystring.stringify({
-            page: page || '0',
-            'filter-sort': sort || 'popularity',
-            'filter-game-version': version || '',
-        })}`;
-        return this.request(endpoint, (root) => {
-            root = root.removeWhitespace();
-            const pages = root.querySelectorAll('.pagination-item')
-                .map(pageItem => pageItem.firstChild.rawText)
-                .filter(text => text.length < 5) // hardcode filter out the non page elem 
-                .map(text => Number.parseInt(text, 10))
-                .filter(n => Number.isInteger(n))
-                .reduce((a, b) => (a > b ? a : b));
-            const versions = root.querySelector('#filter-game-version').removeWhitespace()
-                .childNodes.map(ver => ({
-                    type: ver.attributes.class,
-                    text: ver.rawText,
-                    value: ver.attributes.value,
-                }));
-            const filters = root.querySelector('#filter-sort').removeWhitespace()
-                .childNodes.map(f => ({
-                    text: f.rawText,
-                    value: f.attributes.value,
-                }));
-            const all = root.querySelectorAll('.project-listing-row').map(processProjectListingRow);
-            return {
-                projects: all,
-                pages,
-                versions,
-                filters,
-            };
-        });
-    }
+    private projectTimestamp = '';
 
-    /**
-     * Query the project detail from path.
-     */
-    fetchCurseForgeProject({ path, project }: { path: string; project: ProjectType }): Promise<Project> {
-        if (!path || path == null) throw new Error('Curseforge path cannot be null');
-        const url = `https://www.curseforge.com/minecraft/${project}/${path}`;
+    private projectCache: Record<number, AddonInfo> = {};
 
-        this.log(`Get curseforge project ${url}`);
+    private projectDescriptionCache: Record<number, string> = {};
 
-        return this.request(url, (root) => {
-            const details = root.querySelector('.project-detail__content').removeWhitespace();
+    private projectFilesCache: Record<number, File[]> = {};
 
-            const header = root.querySelector('.game-header').querySelectorAll('.container')[1]
-                .childNodes.filter(notText)[0];
-            const image = header.querySelector('img').attributes.src;
-            const name = header.querySelector('.font-bold').text;
-            const updatedDate = Number.parseInt(header.querySelector('.standard-date').attributes['data-epoch'], 10);
+    private searchProjectCache: Record<string, AddonInfo[]> = {};
 
-            const sides = root.querySelectorAll('.my-4')[1].childNodes.filter(notText);
-            const sideInfoElems = sides[0] // <div class="my-4">
-                .childNodes.filter(notText)[0] // <div class="pb-4 border-b border-gray--100">
-                .childNodes.filter(notText)[1] // <div class="flex flex-col mb-3"> 
-                .childNodes.filter(notText);
-            const id = Number.parseInt(sideInfoElems[0].querySelectorAll('span')[1].rawText, 10);
-            const createdDate = Number.parseInt(sideInfoElems[1].querySelector('abbr').attributes['data-epoch'], 10);
-            const totalDownload = sideInfoElems[3].querySelectorAll('span')[1].rawText;
-            const licenseElem = sideInfoElems[4].querySelector('a');
-            const license = { url: licenseElem.attributes.href, name: licenseElem.rawText };
-
-            const filesElems = root.querySelectorAll('.cf-recentfiles'); // <ul class="cf-recentfiles">
-            const files = filesElems.map((e) => {
-                e = e.removeWhitespace();
-                return e.childNodes.map((c) => {
-                    const type = c.firstChild.querySelector('span').attributes.title.toLocaleLowerCase();
-                    const body = c.childNodes[1];
-
-                    /*
-                    <div class="flex flex-col w-2/3">
-                        <a class="overflow-tip truncate j-tooltip" href="/minecraft/modpacks/rlcraft/files/2836137" data-action="'modpack-file-link'" data-id="285109" data-name="RLCraft 1.12.2 - Beta v2.8.1.zip">RLCraft 1.12.2 - Beta v2.8.1.zip</a>
-                        <abbr class="tip standard-date standard-datetime" title="12/2/2019 10:45 PM" data-epoch="1575355531" time-processed="true">Dec 3, 2019</abbr>
-                    </div>
-                    */
-                    const [nameElem, timeElem] = body.removeWhitespace().childNodes;
-                    const fileHref = nameElem.attributes.href;
-                    const id = Number.parseInt(fileHref.substring(fileHref.lastIndexOf('/') + 1), 10);
-                    const name = nameElem.attributes['data-name'];
-                    const date = Number.parseInt(timeElem.attributes['data-epoch'], 10);
-                    const downloadElem = c.childNodes[2].querySelector('a');
-                    return {
-                        id,
-                        type,
-                        name,
-                        date,
-                        href: downloadElem ? downloadElem.attributes.href : fileHref.replace('files', 'download'),
-                    };
-                });
-            }).reduce((a, b) => [...a, ...b]);
-            const members = sides[0] // <div class="my-4">
-                .querySelectorAll('.mb-2').map(e => ({
-                    icon: e.querySelector('img').attributes.src,
-                    name: e.querySelector('span').rawText,
-                    type: e.querySelectorAll('p')[1].rawText,
-                }));
-
-            return {
-                id,
-                path,
-                type: project,
-                name,
-                image,
-                updatedDate,
-                createdDate,
-                totalDownload,
-                members,
-                license,
-                files,
-                description: convert(details),
-            };
-        });
-    }
-
-    /**
-     * Query the project downloadable files.
-     */
-    fetchCurseForgeProjectFiles(payload: { path: string; version?: string; page?: number; project: ProjectType | string }): Promise<Downloads> {
-        if (!payload) throw new Error('Require fetch file with project type & project path');
-        let { page, version } = payload;
-        const { project, path } = payload;
-        if (!path || path == null) throw new Error('Curseforge path cannot be null');
-        version = version || '';
-        page = page || 1;
-        const url = `https://www.curseforge.com/minecraft/${project}/${path}/files/all?filter-game-version=${version}&page=${page}`;
-        this.log(`Get curseforge project file ${url}`);
-        return this.request(url, (filespage) => {
-            const pagesElement = filespage.querySelectorAll('.pagination-item');
-            let page;
-            if (pagesElement.length === 0) {
-                page = 0;
-            } else {
-                page = pagesElement
-                    .map(pageItem => pageItem.firstChild.rawText)
-                    .map(text => Number.parseInt(text, 10))
-                    .filter(n => Number.isInteger(n))
-                    .reduce((a, b) => (a > b ? a : b));
-            }
-            const versions = filespage.querySelector('#filter-game-version').removeWhitespace()
-                .childNodes.map(ver => ({
-                    type: ver.attributes.class,
-                    text: ver.rawText,
-                    value: ver.attributes.value,
-                }));
-            const files = filespage.querySelector('.listing-project-file').querySelector('tbody').querySelectorAll('tr')
-                .map(i => i.removeWhitespace())
-                .map(i => ({
-                    id: Number.parseInt(i.childNodes[1].firstChild.attributes.href.substring(i.childNodes[1].firstChild.attributes.href.lastIndexOf('/') + 1), 10),
-                    type: i.firstChild.querySelector('span').text,
-                    name: i.childNodes[1].firstChild.rawText,
-                    size: i.childNodes[2].rawText,
-                    date: i.childNodes[3].firstChild.attributes['data-epoch'],
-                    version: i.childNodes[4].firstChild.removeWhitespace().firstChild.rawText,
-                    downloadCount: i.childNodes[5].rawText,
-                    href: i.childNodes[6].querySelector('a').attributes.href,
-                }));
-            return { pages: page, versions, files };
-        });
-    }
-
-    async fetchCurseforgeProjectImages({ path, type }: { path: string; type: string | ProjectType }): Promise<{ name: string; url: string; mini: string }[]> {
-        const url = `https://www.curseforge.com/minecraft/${type}/${path}/screenshots`;
-
-        this.log(`Fetch curseforge images from ${url}`);
-
-        return this.request(url, (root) => {
-            const page = root.querySelector('.project-screenshot-page');
-            return page.querySelectorAll('.justify-center')
-                .map(i => ({
-                    url: i.attributes['data-featherlight'],
-                    mini: i.querySelector('img').attributes.href,
-                    name: i.querySelector('img').attributes.title,
-                }));
-        });
-    }
-
-    async fetchCurseForgeProjectLicense(url: string) {
-        if (url == null || !url) throw new Error('URL cannot be null');
-        const body = await this.networkManager.request(`https://www.curseforge.com${url}`).text();
-        return parseHtml(body).querySelector('.module').removeWhitespace().firstChild.rawText;
-    }
-
-    async searchCurseforgeProjects({ keyword, type }: { keyword: string; type: string | ProjectType }): Promise<ProjectPreview[]> {
-        const url = `https://www.curseforge.com/minecraft/${type}/search?search=${keyword}`;
-        return this.request(url, root => root.querySelectorAll('.project-listing-row').map(processProjectListingRow));
-    }
-
-    async fetchMetadataByModId({ modid, version }: { modid: string; version: string }) {
-        // http://voxelauncher.azurewebsites.net/api/v1/mods/file/{modid}/{version}
-        const result = await this.networkManager.request(`http://voxelauncher.azurewebsites.net/api/v1/mods/file/${modid}/${version}`, { method: 'HEAD' }).json();
-        return result as Forge.ModMetaData & { projectId: string; fileId: string };
-    }
-
-    async downloadAndImportFile(payload: DownloadFile) {
-        const href = payload.href || getHref(payload);
-        this.commit('startDownloadCurseforgeFile', { download: payload, taskId: '' });
-
-        if (this.getters.isFileInstalled({ id: payload.id, href })) {
-            this.commit('endDownloadCurseforgeFile', payload);
-            return;
+    private async fetchOrGetFromCache<K extends string | number, V>(cache: Record<K, V>, key: K, query: () => Promise<V>) {
+        let timestamp = await getAddonDatabaseTimestamp({ userAgent: this.userAgent });
+        if (new Date(timestamp) > new Date(this.projectTimestamp)
+            || !cache[key]) {
+            let value = await query();
+            this.projectTimestamp = timestamp;
+            cache[key] = value;
+            return value;
         }
+        return cache[key];
+    }
+
+    async loadCategories() {
+        let timestamp = await getCategoryTimestamp({ userAgent: this.userAgent });
+        if (this.state.curseforge.categories.length === 0
+            || new Date(timestamp) > new Date(this.state.curseforge.categoriesTimestamp)) {
+            let cats = await getCategories({ userAgent: this.userAgent });
+            cats = cats.filter((c) => c.rootGameCategoryId === null);
+            this.commit('curseforgeCategories', { categories: cats, timestamp });
+        }
+    }
+
+    async fetchProject(projectId: number) {
+        return this.fetchOrGetFromCache(this.projectCache, projectId, () => getAddonInfo(projectId, { userAgent: this.userAgent }));
+    }
+
+    fetchProjectDescription(projectId: number) {
+        return this.fetchOrGetFromCache(this.projectDescriptionCache, projectId, () => getAddonDescription(projectId, { userAgent: this.userAgent }));
+    }
+
+    fetchProjectFiles(projectId: number) {
+        return this.fetchOrGetFromCache(this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.userAgent }));
+    }
+
+    searchProjects(searchOptions: SearchOptions) {
+        return this.fetchOrGetFromCache(this.searchProjectCache, JSON.stringify(searchOptions), () => searchAddons(searchOptions, { userAgent: this.userAgent }));
+    }
+
+    fetchFeaturedProjects(getOptions: GetFeaturedAddonOptions) {
+        return getFeaturedAddons(getOptions, { userAgent: this.userAgent });
+    }
+
+    async installFile({ file, type }: InstallFileOptions) {
+        let task = this.resourceService.importResourceTask(file.downloadUrl, {
+            curseforge: {
+                projectId: file.projectId,
+                fileId: file.id,
+            },
+        }, type);
+        let handle = this.taskManager.submit(task);
+        this.commit('curseforgeDownloadFileStart', { fileId: file.id, taskId: handle.root.id });
         try {
-            await this.resourceService.importResource({
-                uri: `curseforge://path/${payload.projectType}/${payload.projectPath}`,
-                metadata: {
-                    projectId: payload.projectId,
-                    fileId: payload.id,
-                    projectPath: payload.projectPath,
-                    projectType: payload.projectType,
-                },
-            });
+            await handle.wait();
         } finally {
-            this.commit('endDownloadCurseforgeFile', payload);
+            this.commit('curseforgeDownloadFileEnd', file.id);
         }
     }
 }

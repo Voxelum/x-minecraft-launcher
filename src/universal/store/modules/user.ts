@@ -1,5 +1,5 @@
 import { YggdrasilAuthAPI, ProfileServiceAPI, GameProfile } from '@xmcl/user';
-import { fitin } from '@universal/util/object';
+import { fitin, toObjectReducer } from '@universal/util/object';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { GameProfileAndTexture, UserProfile, UserSchema } from './user.schema';
@@ -73,6 +73,9 @@ interface Mutations {
 
 export type UserModule = ModuleOption<State, Getters, Mutations, {}>;
 
+export const EMPTY_USER = Object.freeze({ id: '', username: '', profileService: '', authService: '', accessToken: '', profiles: [], properties: {} });
+export const EMPTY_GAME_PROFILE = Object.freeze({ id: '', name: '', textures: { SKIN: { url: '' } } });
+
 const mod: UserModule = {
     state: {
         // user data
@@ -126,10 +129,8 @@ const mod: UserModule = {
             .map(([userId, user]) => Object.values(user.profiles)
                 .map((profile) => ({ ...profile, userId, authService: user.authService, profileService: user.profileService, username: user.username, accessToken: user.accessToken })))
             .reduce((a, b) => [...a, ...b], []),
-        user: state => state.users[state.selectedUser.id]
-            || { id: '', username: '', profileService: '', authService: '', accessToken: '', profiles: [], properties: {} },
-        gameProfile: (state, getters) => getters.user.profiles[state.selectedUser.profile]
-            || { id: '', name: '', textures: { SKIN: { url: '' } } },
+        user: state => state.users[state.selectedUser.id] || EMPTY_USER,
+        gameProfile: (state, getters) => getters.user.profiles[state.selectedUser.profile] || EMPTY_GAME_PROFILE,
 
         accessTokenValid: (_, getters) => getters.user.accessToken !== '',
         offline: (_, getters) => getters.user.authService === 'offline',
@@ -161,7 +162,9 @@ const mod: UserModule = {
         gameProfile(state, { profile, userId }) {
             const userProfile = state.users[userId];
             if (profile.id in userProfile.profiles) {
-                Vue.set(userProfile.profiles, profile.id, profile);
+                let instance = { textures: { SKIN: { url: '' } }, ...profile };
+                Vue.set(userProfile.profiles, profile.id, instance);
+                userProfile.profiles[profile.id] = instance;
             } else {
                 userProfile.profiles[profile.id] = {
                     textures: { SKIN: { url: '' } },
@@ -176,41 +179,32 @@ const mod: UserModule = {
         },
         authServiceRemove(state, name) {
             Vue.delete(state.authServices, name);
+            delete state.authServices[name];
         },
         profileServiceRemove(state, name) {
             Vue.delete(state.profileServices, name);
+            delete state.profileServices[name];
         },
         userProfileRemove(state, userId) {
-            if (state.users[userId]) {
-                if (state.selectedUser.id === userId) {
-                    state.selectedUser.id = '';
-                    state.selectedUser.profile = '';
-                }
-                Vue.delete(state.users, userId);
+            if (state.selectedUser.id === userId) {
+                state.selectedUser.id = '';
+                state.selectedUser.profile = '';
             }
+            Vue.delete(state.users, userId);
+            delete state.users[userId];
         },
         userProfileAdd(state, profile) {
-            if (!state.users[profile.id]) {
-                Vue.set(state.users, profile.id, {
-                    ...profile,
-                    profiles: profile.profiles.map(p => ({ ...p, textures: { SKIN: { url: '' } } }))
-                        .reduce((dict, o) => {
-                            dict[o.id] = o;
-                            return dict;
-                        }, {} as { [key: string]: GameProfileAndTexture }),
-                });
-            } else {
-                const user = state.users[profile.id];
-                user.accessToken = profile.accessToken;
-                user.profiles = profile.profiles.map(p => ({ ...p, textures: { SKIN: { url: '' } } }))
-                    .reduce((dict, o) => {
-                        dict[o.id] = o;
-                        return dict;
-                    }, {} as { [key: string]: GameProfileAndTexture });
-            }
+            let value = {
+                ...profile,
+                profiles: profile.profiles
+                    .map(p => ({ ...p, textures: { SKIN: { url: '' } } }))
+                    .reduce(toObjectReducer<GameProfileAndTexture, 'id'>('id'), {}),
+            };
+            state.users[profile.id] = value;
+            Vue.set(state.users, profile.id, value);
         },
         userProfileUpdate(state, profile) {
-            const user = state.users[profile.id];
+            let user = state.users[profile.id];
             user.accessToken = profile.accessToken;
             profile.profiles.forEach((p) => {
                 if (user.profiles[p.id]) {
@@ -234,6 +228,7 @@ const mod: UserModule = {
             if (name in state.authServices) {
                 state.authServices[name] = api;
             } else {
+                state.authServices[name] = api;
                 Vue.set(state.authServices, name, api);
             }
         },
@@ -241,6 +236,7 @@ const mod: UserModule = {
             if (name in state.profileServices) {
                 state.profileServices[name] = api;
             } else {
+                state.profileServices[name] = api;
                 Vue.set(state.profileServices, name, api);
             }
         },

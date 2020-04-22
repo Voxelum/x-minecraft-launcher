@@ -196,6 +196,9 @@
     "missingName": "Please name this profile!",
     "name": "Error | Errors"
   },
+  "fabric": {
+    "showStableOnly": "Show Stable Only"
+  },
   "feedback": {
     "": "Feedback",
     "description": "I found a Bug or I want to make a suggestion",
@@ -853,7 +856,8 @@
     "showSnapshot": "Show Snapshot",
     "snapshot": "Snapshot",
     "status": "Status",
-    "unknown": "Unknown Version"
+    "unknown": "Unknown Version",
+    "unset": "Unset"
   },
   "yes": "Yes"
 }

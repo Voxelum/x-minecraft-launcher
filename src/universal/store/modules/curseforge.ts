@@ -1,24 +1,14 @@
+import { Category } from '@xmcl/curseforge';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { Resource } from './resource';
 
 export type ProjectType = 'mc-mods' | 'texture-packs' | 'worlds' | 'modpacks';
 
-export interface DownloadFile {
-    /**
-     * The number id of the curseforge file 
-     */
-    id: number;
-    name: string;
-    href?: string;
-
-    projectType: ProjectType;
-    projectPath: string;
-    projectId?: number;
-}
-
 interface State {
-    downloading: { [href: string]: { download: DownloadFile; taskId: string } };
+    downloading: { fileId: number; taskId: string }[];
+    categories: Category[];
+    categoriesTimestamp: string;
 }
 
 interface Getters {
@@ -27,15 +17,19 @@ interface Getters {
 }
 
 interface Mutations {
-    startDownloadCurseforgeFile: { download: DownloadFile; taskId: string };
-    endDownloadCurseforgeFile: DownloadFile;
+    curseforgeDownloadFileStart: { fileId: number; taskId: string };
+    curseforgeDownloadFileEnd: number;
+
+    curseforgeCategories: { categories: Category[]; timestamp: string };
 }
 
 export type CurseForgeModule = ModuleOption<State, Getters, Mutations, {}>;
 
 const mod: CurseForgeModule = {
     state: {
-        downloading: {},
+        downloading: [],
+        categories: [],
+        categoriesTimestamp: '',
     },
     getters: {
         isFileInstalled: (state, _, rt) => (file) => {
@@ -79,11 +73,17 @@ const mod: CurseForgeModule = {
         },
     },
     mutations: {
-        startDownloadCurseforgeFile(state, p) {
-            Vue.set(state.downloading, p.download.id.toString(), p);
+        curseforgeDownloadFileStart(state, { fileId, taskId }) {
+            state.downloading.push({ fileId, taskId });
         },
-        endDownloadCurseforgeFile(state, p) {
-            Vue.delete(state.downloading, p.id.toString());
+        curseforgeDownloadFileEnd(state, fileId) {
+            let index = state.downloading.findIndex(f => f.fileId === fileId);
+            Vue.delete(state.downloading, index);
+            state.downloading.splice(index, 1);
+        },
+        curseforgeCategories(state, { categories, timestamp }) {
+            state.categories = categories;
+            state.categoriesTimestamp = timestamp;
         },
     },
 };

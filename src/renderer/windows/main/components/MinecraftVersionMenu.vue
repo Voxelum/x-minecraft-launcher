@@ -21,17 +21,19 @@
       </template>
     </v-text-field>
     <minecraft-version-list 
-      :show-time="false" 
-      :show-alpha="showAlpha"
-      :filter-text="filterText"
-      :accept-range="acceptRange"
       style="max-height: 180px; background-color: #424242"
-      @input="selectVersion" />
+      value=""
+      :show-time="false"
+      :statuses="{}"
+      :versions="versions"
+      :select="selectVersion" />
   </v-menu>
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, toRefs } from '@vue/composition-api';
+import { createComponent, reactive, toRefs, computed } from '@vue/composition-api';
+import { Version as MinecraftVersion } from '@xmcl/installer/minecraft';
+import { useMinecraftVersions } from '@/hooks';
 
 export default createComponent({
   props: {
@@ -50,18 +52,20 @@ export default createComponent({
       showAlpha: false,
       filterText: '',
     });
-    function selectVersion(item: {id: string}) {
+    const { versions, statuses, isMinecraftRefreshing } = useMinecraftVersions();
+    function filterMinecraft(v: MinecraftVersion) {
+      if (!data.showAlpha && v.type !== 'release') return false;
+      return v.id.indexOf(data.filterText) !== -1;
+    }
+    function selectVersion(item: { id: string }) {
       context.emit('input', item.id);
-      data.opened = false;
+      data.opened = false; 
     }
     return {
       ...toRefs(data),
-       
+      versions: computed(() => versions.value.filter(filterMinecraft)),
       selectVersion,
     };
-  },
-  methods: {
-
   },
 });
 </script>
