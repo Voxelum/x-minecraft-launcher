@@ -15,10 +15,10 @@
 </template>
 
 <script lang=ts>
-import { onMounted } from '@vue/composition-api';
+import { onMounted, createComponent } from '@vue/composition-api';
 import { useServerStatus, useBusy } from '@/hooks';
 
-export default {
+export default createComponent({
   setup() {
     const { refresh: refreshServer, description, favicon, version, ping } = useServerStatus();
     const loading = useBusy(refreshServer);
@@ -36,7 +36,7 @@ export default {
       refreshServer,
     };
   },
-};
+});
 </script>
 
 <style>

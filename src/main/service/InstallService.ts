@@ -224,13 +224,6 @@ export default class InstallService extends Service {
         }
     }
 
-    async getForgeWebPage(mcversion: string) {
-        if (!this.state.version.forge[mcversion]) {
-            this.refreshForge({ mcversion });
-        }
-        return this.state.version.forge[mcversion];
-    }
-
     /**
     * Refresh forge remote versions cache from forge websites 
     */
@@ -257,7 +250,7 @@ export default class InstallService extends Service {
         }
 
         try {
-            let currentForgeVersion = this.state.version.forge[minecraftVersion];
+            let currentForgeVersion = this.state.version.forge.find(f => f.mcversion === minecraftVersion)!;
             let newForgeVersion: ForgeInstaller.VersionList = currentForgeVersion;
             if (this.networkManager.isInGFW) {
                 this.log(`Update forge version list (BMCL) for Minecraft ${minecraftVersion}`);
@@ -284,7 +277,7 @@ export default class InstallService extends Service {
      */
     @Singleton('install')
     async installForge(meta: Parameters<typeof installTask>[0]) {
-        let maven = this.networkManager.isInGFW ? ['https://xmcl.azurewebsites.net/api/v1/maven', 'https://bmclapi2.bangbang93.com/maven'] : [];
+        let maven = this.networkManager.isInGFW ? ['https://bmclapi2.bangbang93.com/maven'] : [];
         let handle = this.submit(ForgeInstaller.installTask(meta, this.state.root, {
             mavenHost: maven,
             java: this.getters.defaultJava.path,

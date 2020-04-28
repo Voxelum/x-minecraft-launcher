@@ -16,6 +16,7 @@ export const I18N_KEY: InjectionKey<VueI18n> = Symbol('I18N_KEY');
 
 export const TASK_DICT_KEY: InjectionKey<{ [key: string]: TaskState }> = Symbol('TASK_DICT_KEY');
 export const TASKS_KEY: InjectionKey<Ref<TaskState[]>> = Symbol('TASKS_KEY');
+export const TASKS_OPS_KEY: InjectionKey<{ pause: (id: string) => void; resume: (id: string) => void; cancel: (id: string) => void }> = Symbol('TASK_OPS_KEY');
 
 export const SEARCH_TEXT_KEY: InjectionKey<string> = Symbol('SEARCH_TEXT_KEY');
 

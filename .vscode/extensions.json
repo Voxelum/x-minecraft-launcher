@@ -6,9 +6,8 @@
 		"eamodio.gitlens",
 		"dbaeumer.vscode-eslint",
 		"yzhang.markdown-all-in-one",
-		"eg2.vscode-npm-script",
-		"dbaeumer.vscode-eslint",
 		"octref.vetur",
+		"msjsdiag.debugger-for-chrome",
 		"antfu.i18n-ally"
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.

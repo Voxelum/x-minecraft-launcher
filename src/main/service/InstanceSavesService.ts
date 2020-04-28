@@ -1,7 +1,7 @@
 import { copyPassively, exists, FileStateWatcher, isFile, missing, readdirIfPresent } from '@main/util/fs';
 import { compressZipTo, includeAllToZip, unpack7z } from '@main/util/zip';
 import { SaveMetadata } from '@universal/store/modules/instance';
-import { requireString } from '@universal/util/assert';
+import { requireString, requireObject } from '@universal/util/assert';
 import { Exception } from '@universal/util/exception';
 import { createHash } from 'crypto';
 import filenamify from 'filenamify';
@@ -95,12 +95,11 @@ function getSaveMetadata(path: string, instanceName: string) {
     };
 }
 
-
 /**
  * A 
  */
 export default class InstanceSavesService extends Service {
-    protected saveDirtyWatcher = new FileStateWatcher(false, () => true);
+    protected watcher = new FileStateWatcher(false, () => true);
 
     /**
      * Load all registered instances' saves metadata
@@ -135,7 +134,7 @@ export default class InstanceSavesService extends Service {
         await ensureDir(savesDir);
 
         this.log(`Watch saves directory: ${savesDir}`);
-        if (!this.saveDirtyWatcher.watch(savesDir) && !this.saveDirtyWatcher.getStateAndReset()) {
+        if (!this.watcher.watch(savesDir) && !this.watcher.getStateAndReset()) {
             return;
         }
 
@@ -273,8 +272,6 @@ export default class InstanceSavesService extends Service {
         }
 
         return destinationDir;
-        // this.commit('instanceSaves', [...this.state.instance.saves, { path: destinationDir, level }]);
-        // await this.loadInstanceSaves(this.state.instance.path);
     }
 
     /**
@@ -285,11 +282,12 @@ export default class InstanceSavesService extends Service {
      * @param options 
      */
     async exportSave(options: ExportSaveOptions) {
-        let { instancePath, saveName, zip, destination } = options;
+        requireObject(options);
 
-        instancePath = instancePath ?? this.state.instance.path;
-        zip = zip ?? true;
+        let { instancePath = this.state.instance.path, saveName, zip = true, destination } = options;
 
+        requireString(saveName);
+        requireString(destination);
 
         let source = join(instancePath, saveName);
 
@@ -309,9 +307,9 @@ export default class InstanceSavesService extends Service {
             await copyPassively(source, destination);
         } else {
             // compress to zip
+            await ensureFile(destination);
             let zipFile = new ZipFile();
             let promise = compressZipTo(zipFile, destination);
-            await ensureFile(destination);
             await includeAllToZip(source, destination, zipFile);
             zipFile.end();
             await promise;

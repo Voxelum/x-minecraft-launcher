@@ -184,7 +184,7 @@
                     "default": "",
                     "type": "string"
                 },
-                "fabric-loader": {
+                "fabricLoader": {
                     "description": "Fabric loader version, e.g. 0.7.2+build.175",
                     "default": "",
                     "type": "string"
@@ -195,7 +195,7 @@
                 }
             },
             "required": [
-                "fabric-loader",
+                "fabricLoader",
                 "forge",
                 "liteloader",
                 "minecraft",

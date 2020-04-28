@@ -1,7 +1,7 @@
 import BuiltinController from '@main/app/BuiltinController';
 import { LauncherAppController } from '@main/app/LauncherAppController';
 import { isDirectory } from '@main/util/fs';
-import { currentPlatform } from '@xmcl/core';
+import { getPlatform } from '@xmcl/core';
 import { App, app, BrowserWindow, BrowserWindowConstructorOptions, Dock, ipcMain, Menu, NativeImage, nativeImage, shell, Tray } from 'electron';
 import { ensureFile, readFile, readJson, writeFile } from 'fs-extra';
 import { join } from 'path';
@@ -78,12 +78,6 @@ const appData = app.getPath('appData');
 const persistRoot = `${appData}/voxelauncher`;
 const cfgFile = `${appData}/voxelauncher/launcher.json`;
 
-interface Platform {
-    name: 'osx' | 'linux' | 'windows';
-    version: string;
-    arch: 'x86' | 'x64' | string;
-}
-
 export default class AppManager extends Manager {
     public app = app;
 
@@ -106,6 +100,8 @@ export default class AppManager extends Manager {
 
     private trustedSites: string[] = [];
 
+    readonly platform = getPlatform();
+
     private async persistRoot(root: string) {
         try {
             this.log(`Setup root ${root}`);
@@ -116,10 +112,6 @@ export default class AppManager extends Manager {
             this.error(e);
             app.exit(1);
         }
-    }
-
-    get platform(): Platform {
-        return currentPlatform as any;
     }
 
     async setup() {

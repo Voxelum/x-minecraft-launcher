@@ -2,11 +2,12 @@
     "type": "object",
     "properties": {
         "java": {
-            "description": "The used java path",
+            "description": "The instance assigned java path on disk.",
+            "default": "",
             "type": "string"
         },
         "deployed": {
-            "description": "The resources already deployed",
+            "default": "[]\nThe resources already deployed",
             "type": "array",
             "items": {
                 "$ref": "#/definitions/DeployedInfo"

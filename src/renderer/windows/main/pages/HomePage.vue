@@ -5,7 +5,7 @@
       close
     </v-icon>
     <v-icon v-ripple style="position: absolute; right: 44px; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
-            dark @click="showFeedbackDialog()">
+            dark @click="showFeedbackDialog">
       help_outline
     </v-icon>
 
@@ -67,6 +67,7 @@
     </v-btn>
     <log-dialog v-model="isLogDialogShown" :hide="hideLogDialog" />
     <game-exit-dialog />
+    <feedback-dialog />
   </v-layout>
 </template>
 
@@ -74,28 +75,27 @@
 import { createComponent, watch } from '@vue/composition-api';
 import { LaunchException } from '@universal/util/exception';
 import {
-  useDialog,
   useI18n,
   useLaunch,
   useNativeDialog,
   useInstance,
   useJava,
   useQuit,
-  useNotifier,
-  useSingleDialog,
 } from '@/hooks';
 import GameExitDialog from './HomePage/HomePageGameExitDialog.vue';
 import LaunchBlockedDialog from './HomePage/HomePageLaunchBlockedDialog.vue';
+import FeedbackDialog from './HomePage/HomePageFeedbackDialog.vue';
 import LogDialog from './HomePage/HomePageLogDialog.vue';
 import HomeHeader from './HomePage/HomePageHeader.vue';
 import ProblemsBar from './HomePage/HomePageProblemsBar.vue';
-import ServerStatusBar from './HomePage/ServerStatusBar.vue';
+import ServerStatusBar from './HomePage/HomePageServerStatusBar.vue';
+import { useDialog, useNotifier } from '../hooks';
 
 function compositeLaunch() {
   const { notify } = useNotifier();
   const { launch, status: launchStatus, errors, errorType } = useLaunch();
-  const { showingDialog: isLaunchStatusDialogShown, showDialog: showLaunchStatusDialog, closeDialog: hideLaunchStatusDialog } = useDialog('launch-status');
-  const { showDialog: showLaunchBlockedDialog } = useDialog('launch-blocked');
+  const { show: showLaunchStatusDialog, hide: hideLaunchStatusDialog } = useDialog('launch-status');
+  const { show: showLaunchBlockedDialog } = useDialog('launch-blocked');
 
   watch([errors, errorType], () => {
     if (errors.value.length !== 0 || errorType.value.length !== 0) {
@@ -105,7 +105,6 @@ function compositeLaunch() {
 
   return {
     launchStatus,
-    isLaunchStatusDialogShown,
     hideLaunchStatusDialog,
     launch() {
       if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching' || launchStatus.value === 'launched') {
@@ -131,12 +130,13 @@ export default createComponent({
     HomeHeader,
     ServerStatusBar,
     GameExitDialog,
+    FeedbackDialog,
   },
   setup() {
     const { $t } = useI18n();
     const { showSaveDialog } = useNativeDialog();
-    const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useSingleDialog();
-    const { showDialog: showFeedbackDialog } = useDialog('feedback');
+    const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log');
+    const { show: showFeedbackDialog } = useDialog('feedback');
     const { refreshing, name, isServer, exportInstance: exportTo } = useInstance();
     const { subscribe } = useNotifier();
     const { missing: missingJava } = useJava();

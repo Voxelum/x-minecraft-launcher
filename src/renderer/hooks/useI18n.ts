@@ -7,5 +7,6 @@ export function useI18n() {
     return {
         $tc(key: string, count: number): string { return i18n.tc(key, count); },
         $t(key: string, values?: any[] | { [key: string]: any }): string { return i18n.t(key, values) as any; },
+        $te(key: string): boolean { return i18n.te(key); },
     };
 }

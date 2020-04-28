@@ -111,10 +111,16 @@ export default class JavaService extends Service {
     }
 
     /**
-     * Test if this javapath exist and works
+     * Resolve java info. If the java is not known by launcher. It will cache it into the launcher java list.
      */
     async resolveJava(javaPath: string): Promise<undefined | Java> {
         requireString(javaPath);
+
+        let found = this.state.java.all.find(java => java.path === javaPath);
+        if (found) {
+            return found;
+        }
+
         if (await missing(javaPath)) return undefined;
 
         let java = await JavaInstaller.resolveJava(javaPath);

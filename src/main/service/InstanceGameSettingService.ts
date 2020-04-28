@@ -1,8 +1,9 @@
-import { parse, Frame, stringify } from '@xmcl/gamesetting';
+import { FileStateWatcher } from '@main/util/fs';
+import { requireString } from '@universal/util/assert';
+import { Frame, parse, stringify } from '@xmcl/gamesetting';
 import { readFile, writeFile } from 'fs-extra';
 import { join } from 'path';
-import { requireString } from '@universal/util/assert';
-import Service, { Singleton, MutationTrigger } from './Service';
+import Service, { MutationTrigger, Singleton } from './Service';
 
 export interface EditGameSettingOptions extends Frame {
 }
@@ -11,23 +12,30 @@ export interface EditGameSettingOptions extends Frame {
  * The service for game setting
  */
 export default class InstanceGameSettingService extends Service {
+    private watcher = new FileStateWatcher(false, () => true);
+
     @Singleton()
     async loadInstanceGameSettings(path: string) {
         requireString(path);
 
+        if (!this.watcher.watch(path) && !this.watcher.getStateAndReset()) {
+            return;
+        }
+
         try {
             let optionsPath = join(path, 'options.txt');
-            let result = await readFile(optionsPath, 'utf-8').then(b => b.toString()).then(parse);
+            let result = await readFile(optionsPath, 'utf-8').then(parse);
             this.commit('instanceCache', { gamesettings: result });
         } catch (e) {
             if (!e.message.startsWith('ENOENT:')) {
                 this.warn(`An error ocurrs during parse game options of ${path}.`);
                 this.warn(e);
             }
+            this.commit('instanceCache', { gamesettings: { resourcePacks: [] } });
         }
     }
 
-    
+
     @MutationTrigger('instanceGameSettings')
     async saveInstanceGameSetting() {
         await writeFile(join(this.state.instance.path, 'options.txt'),

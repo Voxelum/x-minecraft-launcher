@@ -7,7 +7,7 @@
     {{ title }}
     
     {{ $t(`log.${status}`) }}
-    <v-btn v-if="content" style="margin-right: -30px" flat @click="more">
+    <v-btn v-if="more" style="margin-right: -30px" flat @click="more">
       <v-icon>arrow_right</v-icon>
     </v-btn>
     <v-btn color="pink" flat @click="close">
@@ -18,21 +18,15 @@
 
 <script lang=ts>
 import { createComponent } from '@vue/composition-api';
-import { useNotifier, useDialog } from '@/hooks';
+import { useNotifier } from '../hooks';
 
 export default createComponent({
   setup() {
-    const { status, title, content, error, show } = useNotifier();
-    const { showDialog } = useDialog('detail');
-    function more() {
-      showDialog();
-    }
+    const { status, title, more, show } = useNotifier();
     return {
       close() { show.value = false; },
       status,
       title,
-      content,
-      error,
       show,
       more,
       icons: {

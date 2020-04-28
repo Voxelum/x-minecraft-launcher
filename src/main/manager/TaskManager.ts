@@ -3,8 +3,6 @@ import { ipcMain, WebContents } from 'electron';
 import { TaskState, TaskStatus } from '@universal/task';
 import { Manager } from '.';
 
-import uuid = require('uuid');
-
 export interface TaskProgress { progress?: number; total?: number; message?: string; time?: string }
 
 export default class TaskManager extends Manager {
@@ -20,9 +18,11 @@ export default class TaskManager extends Manager {
 
     private deferred: Function[] = [];
 
+    private order = 0;
+
     private factory: Task.StateFactory<TaskState> = n => ({
         ...n,
-        id: Reflect.has(n, '__uuid__') ? Reflect.get(n, '__uuid__') : uuid.v4(),
+        id: `task-${this.order++}`,
         children: [],
         time: new Date().toString(),
         progress: 0,
@@ -30,7 +30,11 @@ export default class TaskManager extends Manager {
         message: '',
     });
 
-    private handles: { [id: string]: TaskHandle<any, any> } = {};
+    private idToHandleRecord: Record<string, TaskHandle<any, any>> = {};
+
+    private idToChildsRecord: Record<string, string[]> = {};
+
+    private handles: TaskHandle<any, any>[] = [];
 
     private listeners: WebContents[] = [];
 
@@ -41,10 +45,28 @@ export default class TaskManager extends Manager {
 
         ipcMain.handle('task-state', (event) => {
             this.listeners.push(event.sender);
-            return Object.values(this.handles).map(h => h.root);
+            return this.handles.map(h => h.root);
         });
         ipcMain.handle('task-unlisten', (event) => {
             this.listeners.splice(this.listeners.indexOf(event.sender), 1);
+        });
+        ipcMain.handle('task-request', (event, { type, id }) => {
+            if (!this.idToHandleRecord[id]) {
+                this.warn(`Cannot ${type} a unknown task id ${id}`);
+                return;
+            }
+            switch (type) {
+                case 'pause':
+                    this.idToHandleRecord[id].pause();
+                    break;
+                case 'resume':
+                    this.idToHandleRecord[id].resume();
+                    break;
+                case 'cancel':
+                    this.idToHandleRecord[id].cancel();
+                    break;
+                default:
+            }
         });
 
         this.runtime.on('update', (progress, node) => {
@@ -55,6 +77,10 @@ export default class TaskManager extends Manager {
         });
         this.runtime.on('execute', (node, parent) => {
             if (parent) {
+                this.idToHandleRecord[node.id] = this.idToHandleRecord[parent.id];
+                let rootId = this.idToHandleRecord[node.id].root.id;
+                this.idToChildsRecord[rootId].push(node.id);
+
                 if ('node' in parent) {
                     parent = (parent as any).node;
                     this.child(parent!, node);
@@ -71,9 +97,25 @@ export default class TaskManager extends Manager {
             this.status(node.id, 'running');
             node.status = 'running';
         });
+        this.runtime.on('pause', (node) => {
+            this.status(node.id, 'paused');
+            node.status = 'paused';
+        });
+        (this.runtime as any).on('pasue', (node: any) => {
+            this.status(node.id, 'paused');
+            node.status = 'paused';
+        });
+        this.runtime.on('resume', (node) => {
+            this.status(node.id, 'running');
+            node.status = 'running';
+        });
         this.runtime.on('finish', (_, node) => {
             this.status(node.id, 'successed');
             node.status = 'successed';
+        });
+        this.runtime.on('cancel', (node) => {
+            this.status(node.id, 'cancelled');
+            node.status = 'cancelled';
         });
         this.runtime.on('fail', (error, node) => {
             this.log(`Error task ${node.path}(${node.id})`);
@@ -95,25 +137,32 @@ export default class TaskManager extends Manager {
      */
     submit<T>(task: Task<T>, background = false): TaskHandle<T, TaskState> {
         const handle = this.runtime.submit(task);
-        const id = uuid.v4();
-        Object.defineProperty(task, '__uuid__', { value: id, writable: false, configurable: false, enumerable: false });
+        const id = handle.root.id;
         handle.wait().finally(() => {
-            delete this.handles[id];
+            delete this.idToHandleRecord[id];
+            let children = this.idToChildsRecord[id];
+            delete this.idToChildsRecord[id];
+            for (let c of children) {
+                delete this.idToChildsRecord[c];
+            }
+
+            this.handles.splice(this.handles.findIndex((t) => t.root.id === id), 1);
         }).catch((e) => {
             this.error(`Task Failed ${task.name}`);
             this.error(e);
         });
-        this.handles[id] = handle;
-        Object.defineProperty(handle, '__handle__', { value: id, writable: false, configurable: false });
+        this.idToChildsRecord[id] = [];
+        this.idToHandleRecord[id] = handle;
+        this.handles.push(handle);
         return handle;
     }
 
     getHandleId(taskHandle: TaskHandle<any, any>): string | undefined {
-        return Reflect.get(taskHandle, '__handle__');
+        return taskHandle.root.id;
     }
 
     getHandle(id: string): TaskHandle<any, TaskState> {
-        return this.handles[id];
+        return this.idToHandleRecord[id];
     }
 
     add(id: string, node: TaskState) {
@@ -178,26 +227,34 @@ export default class TaskManager extends Manager {
 
     storeReady() {
         this.heartbeat = setInterval(this.flush.bind(this), 500);
-        // this.submit(Task.create('test', (c) => {
-        //     c.execute(Task.create('a', (ctx) => {
-        //         let progress = 0;
-        //         setInterval(() => {
-        //             ctx.update(progress, 100, progress.toString());
-        //             progress += 10;
-        //             progress = progress > 100 ? 0 : progress;
-        //         }, 2000);
-        //         return new Promise(() => { });
-        //     }));
-        //     c.execute(Task.create('b', (ctx) => {
-        //         let progress = 0;
-        //         setInterval(() => {
-        //             ctx.update(progress, 100, progress.toString());
-        //             progress += 10;
-        //             progress = progress > 100 ? 0 : progress;
-        //         }, 1000);
-        //         return new Promise(() => { });
-        //     }));
-        //     return new Promise(() => { });
-        // }));
+        this.submit(Task.create('test', (c) => {
+            c.execute(Task.create('a', (ctx) => {
+                let progress = 0;
+                let paused = false;
+                ctx.pausealbe(() => {
+                    paused = true;
+                }, () => {
+                    paused = false;
+                });
+                setInterval(() => {
+                    if (!paused) {
+                        ctx.update(progress, 100, progress.toString());
+                        progress += 10;
+                        progress = progress > 100 ? 0 : progress;
+                    }
+                }, 2000);
+                return new Promise(() => { });
+            }));
+            c.execute(Task.create('b', (ctx) => {
+                let progress = 0;
+                setInterval(() => {
+                    ctx.update(progress, 100, progress.toString());
+                    progress += 10;
+                    progress = progress > 100 ? 0 : progress;
+                }, 1000);
+                return new Promise(() => { });
+            }));
+            return new Promise(() => { });
+        }));
     }
 }

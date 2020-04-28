@@ -1,4 +1,4 @@
-import { electron, TASKS_KEY, TASK_DICT_KEY } from '@/constant';
+import { electron, TASKS_KEY, TASK_DICT_KEY, TASKS_OPS_KEY } from '@/constant';
 import { TaskState } from '@universal/task';
 import { onMounted, onUnmounted, provide, reactive, Ref, ref } from '@vue/composition-api';
 import Vue from 'vue';
@@ -8,9 +8,19 @@ export function provideTasks() {
 
     const idToNode: { [key: string]: TaskState } = {};
     const tasks: Ref<TaskState[]> = ref(reactive([]));
+    const pause = (id: string) => {
+        ipc.invoke('task-request', { type: 'pause', id });
+    };
+    const resume = (id: string) => {
+        ipc.invoke('task-request', { type: 'resume', id });
+    };
+    const cancel = (id: string) => {
+        ipc.invoke('task-request', { type: 'cancel', id });
+    };
 
     provide(TASK_DICT_KEY, idToNode);
     provide(TASKS_KEY, tasks);
+    provide(TASKS_OPS_KEY, { pause, resume, cancel });
 
     function collectAllTaskState(tasks: TaskState[]) {
         for (const t of tasks) {

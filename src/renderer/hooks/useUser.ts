@@ -1,27 +1,10 @@
 import { UserProfile } from '@universal/store/modules/user.schema';
-import { computed, toRefs } from '@vue/composition-api';
+import { computed, toRefs, Ref, reactive, onMounted } from '@vue/composition-api';
 import { useServiceOnly } from './useService';
 import { useBusy, useStore } from './useStore';
-
-export function useLogin() {
-    const { state, getters, commit } = useStore();
-    const authServices = computed(() => ['offline', ...Object.keys(state.user.authServices)]);
-    const profileServices = computed(() => Object.keys(state.user.profileServices));
-    const avaiableGameProfiles = computed(() => getters.gameProfiles);
-    /**
-     * Remove a user account.
-     */
-    async function removeAccount(userId: string) {
-        commit('userProfileRemove', userId);
-    }
-    return {
-        authServices,
-        profileServices,
-        ...useServiceOnly('UserService', 'login', 'switchUserProfile'),
-        avaiableGameProfiles,
-        removeAccount,
-    };
-}
+import { useI18n } from './useI18n';
+import { LoginException } from '@universal/util/exception';
+import { MojangChallenge, refresh } from '@xmcl/user';
 
 export function useCurrentUserStatus() {
     const { state, getters } = useStore();
@@ -68,10 +51,191 @@ export function useCurrentUser() {
 
 export function useCurrentUserSkin() {
     const { getters } = useStore();
+    const { refreshSkin, uploadSkin, saveSkin } = useServiceOnly('UserService', 'refreshSkin', 'uploadSkin', 'saveSkin');
+    const data = reactive({
+        url: '',
+        slim: false,
+        loading: false,
+    });
+    function reset() {
+        data.url = getters.gameProfile.textures.SKIN.url;
+        data.slim = getters.gameProfile.textures.SKIN.metadata ? getters.gameProfile.textures.SKIN.metadata.model === 'slim' : false;
+    }
+    const modified = computed(() => data.url !== getters.gameProfile.textures.SKIN.url
+        || data.slim !== (getters.gameProfile.textures.SKIN.metadata ? getters.gameProfile.textures.SKIN.metadata.model === 'slim' : false));
+    async function save() {
+        data.loading = true;
+        try {
+            await uploadSkin({ url: data.url, slim: data.slim });
+        } finally {
+            data.loading = false;
+        }
+    }
+    onMounted(() => {
+        refreshSkin();
+        reset();
+    });
     return {
+        ...toRefs(data),
         refreshing: useBusy('refreshSkin'),
-        url: computed(() => getters.gameProfile.textures.SKIN.url),
-        slim: computed(() => (getters.gameProfile.textures.SKIN.metadata ? getters.gameProfile.textures.SKIN.metadata.model === 'slim' : false)),
-        ...useServiceOnly('UserService', 'refreshSkin', 'uploadSkin', 'saveSkin'),
+        refresh: refreshSkin,
+        save,
+        reset,
+        modified,
+
+        exportTo: saveSkin,
     };
 }
+
+export function useLogin() {
+    const { state, getters, commit } = useStore();
+    const authServices = computed(() => ['offline', ...Object.keys(state.user.authServices)]);
+    const profileServices = computed(() => Object.keys(state.user.profileServices));
+    const profiles = computed(() => getters.gameProfiles);
+    const { logined, username, authService, profileService, profileId, id } = useCurrentUser();
+    const { login, switchUserProfile } = useServiceOnly('UserService', 'login', 'switchUserProfile');
+    function remove(userId: string) {
+        commit('userProfileRemove', userId);
+    }
+    const data = reactive({
+        logining: false,
+        username: '',
+        password: '',
+        authService: '',
+        profileService: '',
+
+        profile: '',
+        user: '',
+    });
+    function select() {
+        return switchUserProfile({ profileId: data.profile, userId: data.user });
+    }
+    async function _login() {
+        data.logining = true;
+        await login(data).finally(() => { data.logining = false; });
+    }
+    function reset() {
+        data.logining = false;
+        data.username = username.value;
+        data.password = '';
+        data.authService = authService.value ?? 'mojang';
+        data.profileService = profileService.value ?? 'mojang';
+
+        data.user = id.value;
+        data.profile = profileId.value;
+    }
+    return {
+        ...toRefs(data),
+        logined,
+        login: _login,
+        reset,
+        select,
+        remove,
+        profiles,
+
+        authServices,
+        profileServices,
+    };
+}
+
+export function useLoginValidation(isOffline: Ref<boolean>) {
+    const { $t } = useI18n();
+    const nameRules = [(v: unknown) => !!v || $t('user.requireUsername')];
+    const emailRules = [
+        (v: unknown) => !!v || $t('user.requireEmail'),
+        (v: string) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v)
+            || $t('user.illegalEmail'),
+    ];
+    const passwordRules = [(v: unknown) => !!v || $t('user.requirePassword')];
+    const usernameRules = computed(() => (isOffline.value
+        ? nameRules
+        : emailRules));
+    const data = reactive({
+        usernameErrors: [] as string[],
+        passwordErrors: [] as string[],
+    });
+    function reset() {
+        data.usernameErrors = [];
+        data.passwordErrors = [];
+    }
+    function handleError(e: any) {
+        const err = e as LoginException;
+        if (err.type === 'loginInternetNotConnected') {
+            // TODO: handle this case
+        } else if (err.type === 'loginInvalidCredentials') {
+            const msg = $t('user.invalidCredentials');
+            data.usernameErrors = [msg];
+            data.passwordErrors = [msg];
+        } else {
+            console.error(e);
+        }
+    }
+    return {
+        ...toRefs(data),
+        usernameRules,
+        passwordRules,
+        reset,
+        handleError,
+    };
+}
+
+export function useUserSecurity() {
+    interface MojangChallenge {
+        readonly answer: {
+            id: number;
+            answer: string;
+        };
+        readonly question: {
+            id: number;
+            question: string;
+        };
+    }
+
+    const { offline, security, refreshingSecurity, getChallenges, checkLocation, submitChallenges } = useCurrentUserStatus();
+    const data = reactive({
+        loading: false,
+        challenges: [] as MojangChallenge[],
+        error: undefined as any,
+    });
+    async function check() {
+        if (offline.value) return;
+        try {
+            data.loading = true;
+            let sec = await checkLocation();
+            if (sec) return;
+            try {
+                let challenges = await getChallenges();
+                data.challenges = challenges.map(c => ({ question: c.question, answer: { id: c.answer.id, answer: '' } }));
+            } catch (e) {
+                data.error = e;
+            }
+        } finally {
+            data.loading = false;
+        }
+    }
+    async function submit() {
+        data.loading = true;
+        try {
+            await submitChallenges(data.challenges.map(c => c.answer));
+        } catch (e) {
+            data.error = e;
+        } finally {
+            data.loading = false;
+        }
+    }
+    onMounted(() => {
+        check();
+    });
+    return {
+        ...toRefs(data),
+        refreshing: refreshingSecurity,
+        security,
+        check,
+        submit,
+    };
+}
+
+export function useUserSkin() {
+
+}
+

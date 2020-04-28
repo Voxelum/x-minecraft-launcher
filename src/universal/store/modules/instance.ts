@@ -4,7 +4,7 @@ import { ServerInfo } from '@xmcl/server-info';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { DeployedInfo, InstanceLockSchema, InstanceSchema } from './instance.schema';
-import { DEFAULT_JAVA, Java } from './java';
+import { EMPTY_JAVA, Java } from './java';
 import { Resource } from './resource';
 import { LocalVersion } from './version';
 
@@ -198,9 +198,9 @@ const mod: InstanceModule = {
                 folder: 'unknown',
             } as any;
         },
-        instanceJava: (state, getters, rootState) => {
+        instanceJava: (state, getters, rootState, rootGetter) => {
             const javaPath = state.java;
-            if (javaPath !== '') {
+            if (javaPath && javaPath !== '') {
                 return rootState.java.all.find(j => j.path === javaPath) || {
                     path: javaPath,
                     version: '',
@@ -209,7 +209,7 @@ const mod: InstanceModule = {
             }
             const instance = getters.instance;
             return rootState.java.all.find(j => j.majorVersion.toString() === instance.runtime.java
-                || j.version === instance.runtime.java) || DEFAULT_JAVA;
+                || j.version === instance.runtime.java) || rootGetter.defaultJava;
         },
         instanceResources: (state, getters, rootState, rootGetters) => Object.values(getters.instance.deployments).reduce((a, b) => [...a, ...b])
             .map(u => rootGetters.queryResource(u)),
@@ -334,21 +334,21 @@ const mod: InstanceModule = {
         },
         instanceCache(state, cache) {
             if ('gamesettings' in cache && cache.gamesettings) {
-                const settings = cache.gamesettings;
-                const container = state.settings;
-                if (settings.resourcePacks && settings.resourcePacks instanceof Array) {
-                    container.resourcePacks = [...settings.resourcePacks];
-                }
-                for (let [key, value] of Object.entries(settings)) {
-                    if (key in container) {
-                        if (typeof value === typeof Reflect.get(container, key)) {
-                            container[key] = value;
-                        }
-                    } else {
-                        Vue.set(container, key, value);
-                        container[key] = value;
-                    }
-                }
+                let settings = cache.gamesettings;
+                let resourcePacks = cache.gamesettings.resourcePacks || [];
+                state.settings.resourcePacks = [...resourcePacks];
+
+                state.settings.anaglyph3d = settings.anaglyph3d;
+                state.settings.ao = settings.ao;
+                state.settings.useVbo = settings.useVbo;
+                state.settings.enableVsync = settings.enableVsync;
+                state.settings.difficulty = settings.difficulty;
+                state.settings.entityShadows = settings.entityShadows;
+                state.settings.fboEnable = settings.fboEnable;
+                state.settings.fullscreen = settings.fullscreen;
+                state.settings.renderDistance = settings.renderDistance;
+            } else if ('serverInfos' in cache && cache.serverInfos instanceof Array) {
+                state.serverInfos = [...cache.serverInfos];
             }
         },
         instanceGameSettings(state, settings) {

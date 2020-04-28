@@ -1,7 +1,8 @@
-import { exists } from '@main/util/fs';
+import { exists, missing } from '@main/util/fs';
 import { Issue, IssueReport } from '@universal/store/modules/diagnose';
+import { EMPTY_JAVA } from '@universal/store/modules/java';
 import { LocalVersion } from '@universal/store/modules/version';
-import { MinecraftFolder, ResolvedLibrary } from '@xmcl/core';
+import { MinecraftFolder } from '@xmcl/core';
 import { Diagnosis, Installer } from '@xmcl/installer';
 import { InstallProfile } from '@xmcl/installer/minecraft';
 import { Forge } from '@xmcl/mod-parser';
@@ -60,6 +61,7 @@ export default class DiagnoseService extends Service {
         this.registerMatchedFix(['missingVersion'],
             () => this.commit('instance', { runtime: { minecraft: this.getters.minecraftRelease.id }, path: this.state.instance.path }),
             'diagnoseVersion');
+
         this.registerMatchedFix(['missingVersionJson', 'missingVersionJar', 'corruptedVersionJson', 'corruptedVersionJar'],
             async (issues) => {
                 const i = issues[0];
@@ -68,7 +70,7 @@ export default class DiagnoseService extends Service {
                 if (metadata) {
                     await this.installService.installMinecraft(metadata);
                     if (forge) {
-                        const found = this.state.version.forge[minecraft]
+                        const found = this.state.version.forge.find(f => f.mcversion === minecraft)
                             ?.versions.find(v => v.version === forge);
                         if (found) {
                             const forge = found;
@@ -100,7 +102,6 @@ export default class DiagnoseService extends Service {
             },
             'diagnoseVersion');
 
-
         this.registerMatchedFix(['missingAssetsIndex', 'corruptedAssetsIndex'],
             (issues) => this.installService.installAssetsAll(issues[0].arguments.version),
             'diagnoseVersion');
@@ -131,9 +132,14 @@ export default class DiagnoseService extends Service {
                 await this.submit(task).wait();
             },
             'diagnoseVersion');
+
         this.registerMatchedFix(['missingAuthlibInjector'],
             () => this.authLibService.ensureAuthlibInjection(),
             'diagnoseServer');
+
+        this.registerMatchedFix(['invalidJava'],
+            () => this.instanceService.setJavaPath(this.state.java.all[this.state.java.default].path),
+            'diagnoseJava');
     }
 
     @MutationTrigger('instanceSelect')
@@ -303,21 +309,30 @@ export default class DiagnoseService extends Service {
         this.commit('aquire', 'diagnose');
         try {
             const instance = this.getters.instance;
-            const resolvedJava = this.getters.instanceJava;
+            const instanceJava = this.getters.instanceJava;
 
             const mcversion = instance.runtime.minecraft;
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
 
-            const tree: Pick<IssueReport, 'incompatibleJava'> = {
+            const tree: Pick<IssueReport, 'incompatibleJava' | 'invalidJava' | 'missingJava'> = {
                 incompatibleJava: [],
+                missingJava: [],
+                invalidJava: [],
             };
 
-            // TODO: handle not existed java
-            if (resolvedJava && resolvedJava.majorVersion > 8) {
+            if (instanceJava === EMPTY_JAVA) {
+                tree.missingJava.push({});
+            } else if (await missing(instanceJava.path)) {
+                if (this.state.java.all.length === 0) {
+                    tree.missingJava.push({});
+                } else {
+                    tree.invalidJava.push({ java: instanceJava.path });
+                }
+            } else if (instanceJava.majorVersion > 8) {
                 if (!resolvedMcVersion.minorVersion || resolvedMcVersion.minorVersion < 13) {
-                    tree.incompatibleJava.push({ java: resolvedJava.version, version: mcversion, type: 'Minecraft' });
-                } else if (resolvedMcVersion.minorVersion >= 13 && instance.runtime.forge && resolvedJava.majorVersion > 10) {
-                    tree.incompatibleJava.push({ java: resolvedJava.version, version: instance.runtime.forge, type: 'MinecraftForge' });
+                    tree.incompatibleJava.push({ java: instanceJava.version, version: mcversion, type: 'Minecraft' });
+                } else if (resolvedMcVersion.minorVersion >= 13 && instance.runtime.forge && instanceJava.majorVersion > 10) {
+                    tree.incompatibleJava.push({ java: instanceJava.version, version: instance.runtime.forge, type: 'MinecraftForge' });
                 }
             }
 

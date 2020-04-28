@@ -1,34 +1,47 @@
 <template>
-  <div>
-    <v-icon v-if="status !== 'running'" style="margin-right: 5px" :color="status === 'successed'?'green':status === 'cancelled'?'white':'red'">
-      {{ icon }}
-    </v-icon>
-    <v-progress-circular v-else-if="!total || total === -1 || !hovered" 
-                         style="margin-right: 7px" 
-                         class="mb-0" 
-                         color="white" 
-                         small 
-                         :size="20" 
-                         :value="percentage"
-                         :width="3" 
-                         :indeterminate="!total || total === -1" 
+  <div @mouseenter="hover = true" @mouseleave="hover = false">
+    <v-icon
+      v-if="status !== 'running' || hover"
+      style="margin-right: 5px"
+      :color="color"
+      @click="onClick"
+    >{{ icon }}</v-icon>
+    <v-progress-circular
+      v-else-if="!total || total === -1 || !showNumber"
+      style="margin-right: 7px"
+      class="mb-0"
+      color="white"
+      small
+      :size="20"
+      :value="percentage"
+      :width="3"
+      :indeterminate="!total || total === -1"
     />
-    <span v-else style="margin-right: 7px">
-      {{ percentage.toFixed(2) }} %
-    </span>
+    <span v-else style="margin-right: 7px">{{ percentage.toFixed(2) }} %</span>
   </div>
 </template>
 
 <script lang=ts>
-import { createComponent, computed } from '@vue/composition-api';
+import { createComponent, computed, ref } from '@vue/composition-api';
+import { TaskStatus } from '@universal/task';
 
-const component = createComponent({
+export interface Props {
+  status: TaskStatus;
+  showNumber: boolean;
+  hasChild: boolean;
+  uuid: string;
+  progress: number;
+  total: number;
+  message: string;
+}
+
+const component = createComponent<Props>({
   props: {
     status: {
       type: String,
       default: '',
     },
-    hovered: {
+    showNumber: {
       type: Boolean,
       default: false,
     },
@@ -52,8 +65,28 @@ const component = createComponent({
       default: '',
     },
   },
-  setup(props) {
+  setup(props, context) {
+    const hover = ref(false);
+    const color = computed(() => {
+      switch (props.status) {
+        case 'successed':
+          return 'green';
+        case 'cancelled':
+        case 'running':
+        case 'paused':
+          return 'white';
+        case 'failed':
+          return 'red';
+        default:
+          return 'white';
+      }
+    });
     const icon = computed(() => {
+      if (hover.value) {
+        if (props.status === 'running') {
+          return 'pause';
+        }
+      }
       switch (props.status) {
         case 'successed':
           return props.hasChild ? 'done_all' : 'check';
@@ -61,14 +94,26 @@ const component = createComponent({
           return 'stop';
         case 'failed':
           return 'error_outline';
+        case 'paused':
+          return 'play_arrow';
         default:
           return 'device_unknown';
       }
     });
     const percentage = computed(() => props.progress! / props.total! * 100);
+    const onClick = () => {
+      if (props.status === 'running') {
+        context.emit('pause');
+      } else if (props.status === 'paused') {
+        context.emit('resume');
+      }
+    };
     return {
+      color,
+      hover,
       icon,
       percentage,
+      onClick,
     };
   },
 });

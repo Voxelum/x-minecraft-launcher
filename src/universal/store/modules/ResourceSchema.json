@@ -61,7 +61,22 @@
     "definitions": {
         "Source": {
             "type": "object",
-            "additionalProperties": {},
+            "additionalProperties": {
+                "anyOf": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "$ref": "#/definitions/Record<string,string|number|undefined>"
+                    },
+                    {
+                        "type": "string"
+                    }
+                ]
+            },
             "properties": {
                 "uri": {
                     "description": "The source uris.\n- For the forge mod, it will be the forge://<modid>/<version>\n- For the liteloader mod, it will be the liteloader://<name>/<version>\n- For the curseforge file, it will be the curseforge://<fileId>\n\nIf the source is remote resource, it might also contain the uri like https://host/paths",
@@ -73,8 +88,8 @@
                 },
                 "date": {
                     "description": "The date of import",
-                    "default": -1,
-                    "type": "number"
+                    "default": "",
+                    "type": "string"
                 },
                 "github": {
                     "description": "The github info for this source. If this is imported from github release, it will present.",
@@ -134,6 +149,9 @@
                 "date",
                 "uri"
             ]
+        },
+        "Record<string,string|number|undefined>": {
+            "type": "object"
         }
     },
     "$schema": "http://json-schema.org/draft-07/schema#",

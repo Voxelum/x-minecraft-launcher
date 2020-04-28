@@ -26,7 +26,7 @@ import { useAutoSaveLoad, useInstanceGameSetting } from '@/hooks';
 
 export default createComponent({
   setup() {
-    const settings = useInstanceGameSetting();
+    const { refreshing, refresh, settings, commit } = useInstanceGameSetting();
     const data = reactive({
       graphics: [
         { name: 'fancyGraphics', options: [true, false], val: true },
@@ -42,9 +42,9 @@ export default createComponent({
       ],
     });
     type Graphic = typeof data['graphics'][number];
-    
+
     async function load() {
-      settings.refresh();
+      refresh();
       const graphics = data.graphics;
       for (const setting of graphics) {
         setting.val = Reflect.get(settings, setting.name).value;
@@ -55,12 +55,12 @@ export default createComponent({
       for (const setting of data.graphics) {
         result[setting.name as keyof Frame] = setting.val as any;
       }
-      settings.commitChange(result);
+      commit(result);
     }
     useAutoSaveLoad(save, load);
     return {
       ...toRefs(data),
-       
+      refreshing,
       triggerGraphic(g: Graphic) {
         const index = g.options.indexOf(g.val as never);
         const nextIndex = (index + 1) % g.options.length;

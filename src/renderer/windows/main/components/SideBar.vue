@@ -1,17 +1,20 @@
 <template>
-  <v-navigation-drawer :value="true" :mini-variant="mini" stateless dark 
-                       style="border-radius: 2px 0 0 2px;"
-                       class="moveable"
-                       @mouseenter="onEnterBar"
-                       @mouseover="onHoverBar"
-                       @mouseleave="onLeaveBar">
+  <v-navigation-drawer
+    :value="true"
+    :mini-variant="mini"
+    stateless
+    dark
+    style="border-radius: 2px 0 0 2px;"
+    class="moveable"
+    @mouseenter="onEnterBar"
+    @mouseover="onHoverBar"
+    @mouseleave="onLeaveBar"
+  >
     <v-toolbar flat class="transparent">
       <v-list class="pa-0 non-moveable">
         <v-list-tile avatar @click="goBack">
           <v-list-tile-avatar>
-            <v-icon dark>
-              arrow_back
-            </v-icon>
+            <v-icon dark>arrow_back</v-icon>
           </v-list-tile-avatar>
         </v-list-tile>
       </v-list>
@@ -35,9 +38,7 @@
       </v-list-tile>
       <v-list-tile :disabled="!logined" replace to="/curseforge">
         <v-list-tile-action style="padding-right: 2px;">
-          <v-icon :size="14">
-            $vuetify.icons.curseforge
-          </v-icon>
+          <v-icon :size="14">$vuetify.icons.curseforge</v-icon>
         </v-list-tile-action>
       </v-list-tile>
       <v-spacer />
@@ -47,25 +48,21 @@
         <v-list-tile-action>
           <v-progress-circular indeterminate :size="20" :width="3" />
         </v-list-tile-action>
-      </v-list-tile> -->
+      </v-list-tile>-->
       <v-list-tile v-ripple @click="showTaskDialog">
         <v-list-tile-action>
           <v-badge right :value="activeTasksCount !== 0">
             <template v-slot:badge>
               <span>{{ activeTasksCount }}</span>
             </template>
-            <v-icon dark>
-              assignment
-            </v-icon>
+            <v-icon dark>assignment</v-icon>
           </v-badge>
         </v-list-tile-action>
       </v-list-tile>
       <v-divider dark style="display: block !important;" />
       <v-list-tile replace to="/setting">
         <v-list-tile-action>
-          <v-icon dark>
-            settings
-          </v-icon>
+          <v-icon dark>settings</v-icon>
         </v-list-tile-action>
       </v-list-tile>
     </v-list>
@@ -79,17 +76,17 @@ import {
   createComponent,
 } from '@vue/composition-api';
 import {
-  useDialog,
   useRouter,
   useCurrentUserStatus,
   useTaskCount,
 } from '@/hooks';
+import { useDialog } from '../hooks';
 
 export default createComponent({
   setup() {
     const { activeTasksCount } = useTaskCount();
     const { logined } = useCurrentUserStatus();
-    const { showDialog } = useDialog('task');
+    const { show } = useDialog('task');
     const router = useRouter();
 
     const localHistory: string[] = [];
@@ -104,9 +101,6 @@ export default createComponent({
     router.afterEach((to, from) => {
       if (!timeTraveling) localHistory.push(from.fullPath);
     });
-    function showTaskDialog() {
-      showDialog();
-    }
     function goBack() {
       if (!logined.value && router.currentRoute.path === '/login') {
         return;
@@ -122,7 +116,7 @@ export default createComponent({
     return {
       ...toRefs(data),
       activeTasksCount,
-      showTaskDialog,
+      showTaskDialog: show,
       goBack,
       logined,
       onEnterBar() {

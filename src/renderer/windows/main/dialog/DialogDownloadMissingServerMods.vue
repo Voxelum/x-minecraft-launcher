@@ -44,39 +44,39 @@
 
 <script lang=ts>
 import { createComponent, computed } from '@vue/composition-api';
-import { useDialogSelf } from '@/hooks';
+// import { useDialogSelf } from '@/hooks';
 
 export default createComponent({
   setup() {
-    const { isShown, dialogOption } = useDialogSelf('download-missing-mods');
-    const items = computed(() => (dialogOption.value ? dialogOption.value.map((i: any) => ({ ...i, status: 'unknown', task: '' })) : []));
-    const canDownload = computed(() => items.value.some((i: { status: string }) => i.status === 'founded'));
+    // const { isShown, dialogOption } = useDialogSelf('download-missing-mods');
+    // const items = computed(() => (dialogOption.value ? dialogOption.value.map((i: any) => ({ ...i, status: 'unknown', task: '' })) : []));
+    // const canDownload = computed(() => items.value.some((i: { status: string }) => i.status === 'founded'));
 
-    async function checkAvailability(mod: { status: string }[]) {
-      // await new Promise((resolve, reject) => {
-      //   setTimeout(() => resolve(), 2000);
-      // });
-      for (const m of mod) {
-        m.status = 'existed';
-      }
-    }
-    async function checkAvailabilities() {
-      const unchecked = [];
-      for (const i of dialogOption.value) {
-        if (i.status !== 'loading') {
-          i.status = 'loading';
-          unchecked.push(i);
-        }
-      }
-      await checkAvailability(unchecked);
-    }
-    return {
-      items,
-      checkAvailabilities,
-      canDownload,
-      icons: {},
-      isShown,
-    };
+    // async function checkAvailability(mod: { status: string }[]) {
+    //   // await new Promise((resolve, reject) => {
+    //   //   setTimeout(() => resolve(), 2000);
+    //   // });
+    //   for (const m of mod) {
+    //     m.status = 'existed';
+    //   }
+    // }
+    // async function checkAvailabilities() {
+    //   const unchecked = [];
+    //   for (const i of dialogOption.value) {
+    //     if (i.status !== 'loading') {
+    //       i.status = 'loading';
+    //       unchecked.push(i);
+    //     }
+    //   }
+    //   await checkAvailability(unchecked);
+    // }
+    // return {
+    //   items,
+    //   checkAvailabilities,
+    //   canDownload,
+    //   icons: {},
+    //   isShown,
+    // };
   },
 });
 </script>

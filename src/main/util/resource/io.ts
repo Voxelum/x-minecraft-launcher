@@ -10,11 +10,11 @@ import { ResourceBuilder, getResourceFromBuilder } from './index';
 export async function commitResourceOnDisk(builder: ResourceBuilder, data: Buffer, root: string) {
     let name = filenamify(builder.name, { replacement: '-' });
 
-    let slice = builder.hash.slice(6);
+    let slice = builder.hash.slice(0, 6);
 
-    let filePath = join(root, builder.domain, `${name}-${slice}${builder.ext}`);
-    let metadataPath = join(root, builder.domain, `${name}-${slice}.json`);
-    let iconPath = join(root, builder.domain, `${name}-${slice}.png`);
+    let filePath = join(root, builder.domain, `${name}.${slice}${builder.ext}`);
+    let metadataPath = join(root, builder.domain, `${name}.${slice}.json`);
+    let iconPath = join(root, builder.domain, `${name}.${slice}.png`);
 
     filePath = resolve(filePath);
     metadataPath = resolve(metadataPath);
@@ -34,10 +34,12 @@ export async function discardResourceOnDisk(resource: Readonly<AnyResource>, roo
     let baseName = basename(resource.path, resource.ext);
 
     let filePath = resource.path;
-    let metadataPath = join(root, resource.domain, `${baseName}`);
+    let metadataPath = join(root, resource.domain, `${baseName}.json`);
     let iconPath = join(root, resource.domain, `${baseName}.png`);
 
     await unlink(filePath);
     await unlink(metadataPath);
-    await unlink(iconPath).catch(() => { });
+    try {
+        await unlink(iconPath);
+    } catch { }
 }

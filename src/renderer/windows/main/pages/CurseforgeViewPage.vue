@@ -5,22 +5,24 @@
         <span class="headline">{{ $tc(`curseforge.${type}.name`, 2) }}</span>
       </v-flex>
       <v-flex xs5>
-        <v-text-field v-model="keyword" append-icon="search" hide-details :label="$t('curseforge.search')" @keydown.enter="search()" />
+        <v-text-field
+          v-model="keyword"
+          append-icon="search"
+          hide-details
+          :label="$t('curseforge.search')"
+          @keydown.enter="search()"
+        />
       </v-flex>
       <v-flex v-if="searchMode" xs6>
         <v-btn color="grey darken-3" @click="searchMode = false">
-          <v-icon left>
-            close
-          </v-icon>
+          <v-icon left>close</v-icon>
           {{ $t('curseforge.quitSearch') }}
         </v-btn>
       </v-flex>
       <v-flex v-if="!searchMode" xs6>
         <v-menu offset-y allow-overflow>
           <template v-slot:activator="{ on }">
-            <v-btn color="grey darken-3" v-on="on">
-              {{ $t('curseforge.sortby') }}: {{ filter.text }}
-            </v-btn>
+            <v-btn color="grey darken-3" v-on="on">{{ $t('curseforge.sortby') }}: {{ filter.text }}</v-btn>
           </template>
           <v-list>
             <v-list-tile v-for="(item, index) in filters" :key="index" @click="filter = item">
@@ -33,9 +35,10 @@
       <v-flex v-if="!searchMode" shrink>
         <v-menu offset-y allow-overflow>
           <template v-slot:activator="{ on }">
-            <v-btn color="grey darken-3" v-on="on">
-              {{ $t('curseforge.gameversion') }}: {{ version.text }}
-            </v-btn>
+            <v-btn
+              color="grey darken-3"
+              v-on="on"
+            >{{ $t('curseforge.gameversion') }}: {{ version.text }}</v-btn>
           </template>
           <v-list>
             <v-list-tile v-for="(item, index) in versions" :key="index" @click="version = item">
@@ -44,7 +47,7 @@
           </v-list>
         </v-menu>
       </v-flex>
-     
+
       <v-flex style="overflow: auto; max-height: 60vh; min-height: 60vh;" xs12>
         <v-container v-if="loading" fill-height>
           <v-layout justify-center align-center fill-height>
@@ -55,14 +58,9 @@
           <v-card v-ripple hover exact replace :to="`/curseforge/${type}/${proj.name}`">
             <v-layout fill-height align-center justify-center>
               <v-flex shrink>
-                <v-img :src="proj.icon" :width="64">
+                <v-img :src="proj.attachments[0].thumbnailUrl" :width="64">
                   <template v-slot:placeholder>
-                    <v-layout
-                      fill-height
-                      align-center
-                      justify-center
-                      ma-0
-                    >
+                    <v-layout fill-height align-center justify-center ma-0>
                       <v-progress-circular indeterminate color="grey lighten-5" />
                     </v-layout>
                   </template>
@@ -71,22 +69,21 @@
               <v-divider vertical style="padding-left: 10px;" inset />
               <v-flex xs6>
                 <v-card-title>
-                  <span style="font-weight: bold;"> {{ proj.name }} </span>  <span style="padding-left: 3px;"> by {{ proj.author }} </span>
+                  <span style="font-weight: bold;">{{ proj.name }}</span>
+                  <span style="padding-left: 3px;">by {{ proj.authors[0].name }}</span>
                   <div style="color: grey; padding-left: 5px;">
-                    {{ proj.count }}
-                    {{ proj.date ? proj.date : '' }}
+                    <!-- {{ proj.downloadCount }} -->
+                    {{ new Date(proj.dateModified || proj.dateCreated) }}
                   </div>
                 </v-card-title>
-                <v-card-text>
-                  {{ proj.description }}
-                </v-card-text>
+                <v-card-text>{{ proj.summary }}</v-card-text>
               </v-flex>
               <v-flex xs4 style="padding-top: 10px;">
-                <v-chip v-for="cat of proj.categories" :key="cat.title">
+                <v-chip v-for="cat of proj.categories" :key="cat.name">
                   <v-avatar>
-                    <img :src="cat.icon" style="max-height:30px; max-width: 30px">
+                    <img :src="cat.avatarUrl" style="max-height:30px; max-width: 30px" >
                   </v-avatar>
-                  {{ cat.title }}
+                  {{ cat.name }}
                 </v-chip>
               </v-flex>
             </v-layout>
@@ -104,7 +101,7 @@
 
 <script lang=ts>
 import { createComponent } from '@vue/composition-api';
-import { 
+import {
   useCurseforgePreview,
 } from '@/hooks';
 
@@ -119,7 +116,6 @@ export default createComponent({
     const preview = useCurseforgePreview(props.type as any);
     return {
       ...preview,
-       
     };
   },
 });

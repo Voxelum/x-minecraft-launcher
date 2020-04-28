@@ -109,7 +109,7 @@ export default createComponent({
       loadAllPreviews().then((all) => {
         data.loadedProfileSaves = all;
       });
-      watch(() => {
+      watch(() => data.loadedProfileSaves, () => {
         data.profilesCopyFrom = new Array(data.loadedProfileSaves.length);
       });
       watch(storedSaves, () => {

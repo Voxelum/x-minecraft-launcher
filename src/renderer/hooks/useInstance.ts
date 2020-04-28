@@ -4,7 +4,7 @@ import { CreateOption, InstanceConfig } from '@universal/store/modules/instance'
 import { Resource } from '@universal/store/modules/resource';
 import { getExpectVersion } from '@universal/util/version';
 import Vue from 'vue';
-import { useStore } from './useStore';
+import { useStore, useBusy } from './useStore';
 import { useCurrentUser } from './useUser';
 import { useMinecraftVersions } from './useVersion';
 import { useServiceOnly, useService } from './useService';
@@ -231,14 +231,36 @@ export function useInstanceResourcePacks() {
 export function useInstanceGameSetting() {
     const { state } = useStore();
     const { loadInstanceGameSettings, edit } = useService('InstanceGameSettingService');
+    const refresh = () => loadInstanceGameSettings(state.instance.path);
+    onMounted(() => {
+        refresh();
+    });
     return {
-        ...toRefs(state.instance.settings),
-        refresh() {
-            return loadInstanceGameSettings(state.instance.path);
-        },
-        commitChange(settings: GameSetting) {
+        settings: state.instance.settings,
+        refreshing: useBusy('loadInstanceGameSettings'),
+        refresh,
+        commit(settings: GameSetting) {
             edit(settings);
         },
+    };
+}
+
+export function useInstanceSaves() {
+    const { state } = useStore();
+    const { cloneSave, deleteSave, exportSave, loadAllInstancesSaves, importSave, mountInstanceSaves } = useService('InstanceSavesService');
+    const refresh = () => mountInstanceSaves(state.instance.path);
+    onMounted(() => {
+        refresh();
+    });
+    return {
+        refresh,
+        cloneSave,
+        deleteSave,
+        exportSave,
+        loadAllInstancesSaves,
+        importSave,
+        path: computed(() => state.instance.path),
+        saves: computed(() => state.instance.saves),
     };
 }
 
@@ -318,14 +340,7 @@ export function useInstanceMods() {
         commit,
     };
 }
-export function useInstanceSaves() {
-    const { state } = useStore();
-    return {
-        path: computed(() => state.instance.path),
-        saves: computed(() => state.instance.saves),
-        ...useServiceOnly('InstanceSavesService', 'cloneSave', 'deleteSave', 'exportSave', 'loadAllInstancesSaves', 'importSave'),
-    };
-}
+
 export function useInstanceLogs() {
     const { state } = useStore();
     return {

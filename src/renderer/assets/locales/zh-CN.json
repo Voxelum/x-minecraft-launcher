@@ -302,7 +302,7 @@
     "": "安装 Forge",
     "downloadInstaller": "下载 Forge 安装器",
     "downloadJar": "下载 Forge Jar 文件",
-    "downloadLibraries": {
+    "installLibraries": {
       "": "安装依赖库",
       "library": "检查库"
     },

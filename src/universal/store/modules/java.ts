@@ -30,7 +30,7 @@ export type JavaModule = ModuleOption<State, Getters, Mutations, {}>;
 /**
  * Return when there is no java
  */
-export const DEFAULT_JAVA: JavaState = {
+export const EMPTY_JAVA: JavaState = {
     version: '',
     majorVersion: 0,
     path: '',
@@ -43,7 +43,7 @@ const mod: JavaModule = {
         default: 0,
     },
     getters: {
-        defaultJava: state => state.all[state.default] || DEFAULT_JAVA,
+        defaultJava: state => state.all[state.default] || EMPTY_JAVA,
         missingJava: state => state.all.length === 0,
     },
     mutations: {

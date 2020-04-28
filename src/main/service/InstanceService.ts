@@ -115,12 +115,19 @@ export class InstanceService extends Service {
             ...option,
         };
 
-        // const config = this.state.instance.all[path];
-        // if (!lockFile.java) {
-        //     const javaVersion = config.runtime.java;
-        //     const local = this.state.java.all.find(j => j.majorVersion.toString() === javaVersion || j.version === javaVersion);
-        //     if (local) { lockFile.java = local.path; }
-        // }
+        const config = this.state.instance.all[path];
+        if (!lockFile.java) {
+            const javaVersion = config.java;
+            if (javaVersion) {
+                const local = this.state.java.all.find(j => j.majorVersion.toString() === javaVersion || j.version === javaVersion);
+                if (local) { lockFile.java = local.path; }
+            } else {
+                let j8 = this.state.java.all.find(j => j.majorVersion === 8);
+                if (j8) {
+                    lockFile.java = j8.path;
+                }
+            }
+        }
 
         commit('instanceLockFile', lockFile);
     }
@@ -312,10 +319,6 @@ export class InstanceService extends Service {
         this.log(`Try to mount instance ${path}.`);
 
         // not await this to improve the performance
-
-        this.saveService.mountInstanceSaves(path);
-        this.gameService.loadInstanceGameSettings(path);
-        this.loadInstanceServerData(path);
 
         await this.loadInstanceLock(path);
 

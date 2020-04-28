@@ -32,7 +32,8 @@
 <script lang=ts>
 import { computed } from '@vue/composition-api';
 import { Issue } from '@universal/store/modules/diagnose';
-import { useStore, useRouter, useDialog, useService } from '@/hooks';
+import { useStore, useRouter, useService } from '@/hooks';
+import { useDialog } from '../../hooks';
 
 export default {
   setup() {
@@ -42,9 +43,9 @@ export default {
     const problems = computed(() => getters.issues);
     const problemsLevelColor = computed(() => (getters.issues.some(p => !p.optional) ? 'red' : 'warning'));
     const refreshing = computed(() => getters.busy('diagnose'));
-    const { showDialog: showTaskDialog } = useDialog('task');
-    const { showDialog: showJavaDialog } = useDialog('java-wizard');
-    const { showDialog: showModDialog } = useDialog('download-missing-mods');
+    const { show: showTaskDialog } = useDialog('task');
+    const { show: showJavaDialog } = useDialog('java-wizard');
+    const { show: showModDialog } = useDialog('download-missing-mods');
 
     async function handleManualFix(problem: Issue) {
       switch (problem.id) {
@@ -74,8 +75,6 @@ export default {
       problemsLevelColor,
       refreshing,
       fixProblem(problem: Issue) {
-        console.log('Try to fix problem:');
-        console.log(problem);
         if (!problem.autofix) {
           handleManualFix(problem);
         } else {

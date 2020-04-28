@@ -187,10 +187,12 @@ export interface DeployedInfo {
 
 export interface InstanceLockSchema {
     /**
-     * The used java path
+     * The instance assigned java path on disk.
+     * @default ""
      */
     java: string;
     /**
+     * @default []
      * The resources already deployed
      */
     deployed: DeployedInfo[];

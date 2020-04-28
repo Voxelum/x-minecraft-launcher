@@ -1,14 +1,16 @@
 <template>
   <transition name="scale-transition">
-    <v-text-field v-show="show" 
-                  ref="self" 
-                  v-model="text" 
-                  style="position: fixed; z-index: 2; right: 30px" 
-                  solo
-                  append-icon="filter_list" 
-                  @focus="focused = true" 
-                  @blur="focused = false"
-                  @keyup.esc="show = false" />
+    <v-text-field
+      v-show="show"
+      ref="self"
+      v-model="text"
+      style="position: fixed; z-index: 2; right: 30px"
+      solo
+      append-icon="filter_list"
+      @focus="focused = true"
+      @blur="focused = false"
+      @keyup.esc="show = false"
+    />
   </transition>
 </template>
 

@@ -45,6 +45,7 @@ declare module 'electron' {
         invoke(channel: 'sync', id: number): Promise<{ state: any; length: number }>;
         invoke(channel: 'commit', type: string, payload: any): Promise<void>;
         invoke(channel: 'task-state'): Promise<TaskState[]>;
+        invoke(channel: 'task-request', option: { type: 'pause' | 'resume' | 'cancel'; id: string }): Promise<void>;
 
         /**
          * Notify renderer that the store is synced

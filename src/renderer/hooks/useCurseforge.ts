@@ -1,6 +1,6 @@
 import { Download, Filter, Project, ProjectPreview, ProjectType, Version } from '@main/service/CurseForgeService';
 import { computed, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
-import { File } from '@xmcl/curseforge';
+import { File, AddonInfo } from '@xmcl/curseforge';
 import { useService } from './useService';
 import { useStore } from './useStore';
 
@@ -167,18 +167,17 @@ export function useCurseforgeProject(projectId: number) {
  * Hook to returen the controller of curseforge preview page. Navigating the curseforge projects.
  */
 export function useCurseforgePreview(type: ProjectType) {
-    const { fetchFeaturedProjects, searchProjects } = useService('CurseForgeService');
+    const { searchProjects } = useService('CurseForgeService');
     const data: {
-        projects: ProjectPreview[];
+        projects: AddonInfo[];
         page: number;
         pages: number;
         loading: boolean;
-        searchMode: boolean;
         keyword: string;
         filters: Filter[];
         versions: Version[];
     } = reactive({
-        page: 1,
+        page: 0,
         pages: 0,
         projects: [],
         versions: [],
@@ -196,17 +195,17 @@ export function useCurseforgePreview(type: ProjectType) {
         data.projects = [];
         data.loading = true;
         try {
-            const result = await fetchFeaturedProjects({
-                page: data.page,
-                filter: filterRef.value.value,
-                version: versionRef.value.value,
+            const projects = await searchProjects({
+                pageSize: 5,
+                index: data.page,
             });
-            const { projects, versions, filters, pages } = result;
-
+            if (projects.length === 5) {
+                data.pages = data.page + 5;
+            }
             data.projects = Object.freeze(projects) as any;
-            data.versions = versions;
-            data.filters = filters;
-            data.pages = pages;
+            // data.versions = versions;
+            // data.filters = filters;
+            // data.pages = pages;
         } finally {
             data.loading = false;
         }
@@ -216,19 +215,19 @@ export function useCurseforgePreview(type: ProjectType) {
         if (data.keyword === '') return;
         data.projects = [];
         data.loading = true;
-        data.searchMode = true;
-        try {
-            const projects = await searchCurseforgeProjects({
-                type,
-                keyword: data.keyword,
-            });
+        // data.searchMode = true;
+        // try {
+        //     const projects = await searchCurseforgeProjects({
+        //         type,
+        //         keyword: data.keyword,
+        //     });
 
-            data.projects = Object.freeze(projects) as any;
-        } catch (e) {
-            data.searchMode = false;
-        } finally {
-            data.loading = false;
-        }
+        //     data.projects = Object.freeze(projects) as any;
+        // } catch (e) {
+        //     data.searchMode = false;
+        // } finally {
+        //     data.loading = false;
+        // }
     }
     watch([refs.page, filterRef, versionRef], () => refresh());
     return {

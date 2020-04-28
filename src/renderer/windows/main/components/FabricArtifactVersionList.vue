@@ -41,7 +41,6 @@
 <script lang=ts>
 import { createComponent, watch, ref, onMounted } from '@vue/composition-api';
 import { FabricInstaller } from '@xmcl/installer';
-import Vue from 'vue';
 import VirtualList from 'vue-virtual-scroll-list';
 
 type FabricArtifactVersion = FabricInstaller.FabricArtifactVersion;
@@ -64,7 +63,8 @@ export default createComponent<Props>({
     let list = ref<any>(null);
     onMounted(() => {
       watch(() => props.versions, () => {
-        list.value!.reset();
+        // console.log(list.value!);
+        // list.value!.reset();
       });
     });
     return {

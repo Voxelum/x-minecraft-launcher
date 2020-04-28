@@ -21,7 +21,9 @@
       <context-menu />
       <search-bar />
       <notifier />
-      <dialogs />
+      <login-dialog />
+      <task-dialog />
+      <launch-status-dialog />
     </v-layout>
   </v-app>
 </template>
@@ -42,18 +44,18 @@ import {
   useParticle,
   useStore,
   useBackgroundImage,
-  provideDialog,
-  provideNotifier,
   useIpc,
   useI18n,
-  useNotifier,
   useRouter,
 } from '@/hooks';
 import { provideTasks } from '@/providers/provideTasks'; 
-import dialogs from './dialog';
+import { provideDialog, provideNotifier, useNotifier, provideLoginDialog } from './hooks';
+import LoginDialog from './dialog/BaseLoginDialog.vue';
+import TaskDialog from './dialog/BaseTaskDialog.vue';
+import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue';
 
 export default createComponent({
-  components: { dialogs },
+  components: { LoginDialog, TaskDialog, LaunchStatusDialog },
   setup() {
     provideDialog();
     provideNotifier();
@@ -67,6 +69,7 @@ export default createComponent({
     const { state } = useStore();
     const router = useRouter();
     const onHomePage = ref(router.currentRoute.path === '/');
+    provideLoginDialog();
 
     router.afterEach((to) => {
       onHomePage.value = to.path === '/';
@@ -115,7 +118,6 @@ export default createComponent({
         }
       });
     });
-
 
     return {
       ...toRefs(data),

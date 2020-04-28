@@ -41,6 +41,8 @@ interface State {
         incompatibleMod: Registry<{ name: string; actual: string; accepted: string }, false, true>;
         incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string }, false, true>;
         incompatibleJava: Registry<{ java: string; type: string; version: string }, false, true>;
+        missingJava: Registry<{}>;
+        invalidJava: Registry<{ java: string }>;
 
         missingAuthlibInjector: Registry<{}>;
         missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
@@ -90,6 +92,9 @@ const mod: DiagnoseModule = {
             corruptedVersionJson: { fixing: false, autofix: true, optional: false, actived: [] },
             corruptedLibraries: { fixing: false, autofix: true, optional: false, actived: [] },
             corruptedAssets: { fixing: false, autofix: true, optional: false, actived: [] },
+
+            invalidJava: { fixing: false, autofix: true, optional: false, actived: [] },
+            missingJava: { fixing: false, autofix: true, optional: false, actived: [] },
 
             missingForge: { fixing: false, autofix: true, optional: false, actived: [] },
             missingLiteloader: { fixing: false, autofix: true, optional: false, actived: [] },

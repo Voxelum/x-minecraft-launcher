@@ -200,7 +200,7 @@ export default createComponent({
       }
     }
     onMounted(() => {
-      watch(computed(() => props.show), () => {
+      watch(() => props.show, () => {
         if (props.show) {
           init();
         }

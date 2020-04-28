@@ -2,29 +2,21 @@
   <v-dialog v-model="isShown" :persistent="missing" width="600">
     <v-card dark color="grey darken-4">
       <v-toolbar dark tabs color="grey darken-3">
-        <v-toolbar-title>
-          {{ reason }}
-        </v-toolbar-title>
+        <v-toolbar-title>{{ reason }}</v-toolbar-title>
       </v-toolbar>
       <v-window v-model="step">
         <v-window-item :value="0">
-          <v-card-text>
-            {{ hint }}
-          </v-card-text>
+          <v-card-text>{{ hint }}</v-card-text>
 
           <v-list style="width: 100%" class="grey darken-4" dark>
             <template v-for="(option, i) in options">
               <v-list-tile :key="i" ripple :disabled="option.disabled" @click="fixProblem(i)">
                 <v-list-tile-content>
-                  <v-list-tile-title>
-                    {{ (i + 1) + '. ' + option.title }}
-                  </v-list-tile-title>
-                  <v-list-tile-sub-title>
-                    {{ option.disabled ? option['disabled-message'] : option.message }}
-                  </v-list-tile-sub-title>
+                  <v-list-tile-title>{{ (i + 1) + '. ' + option.title }}</v-list-tile-title>
+                  <v-list-tile-sub-title>{{ option.disabled ? option['disabled-message'] : option.message }}</v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                  <v-icon> {{ option.autofix ? 'build' : 'arrow_right' }} </v-icon>
+                  <v-icon>{{ option.autofix ? 'build' : 'arrow_right' }}</v-icon>
                 </v-list-tile-action>
               </v-list-tile>
             </template>
@@ -34,37 +26,27 @@
         <v-window-item :value="1">
           <v-card-text v-if="downloadError">
             {{ $t('java.errorDownload') }}
-            <div>
-              {{ downloadError }}
-            </div>
+            <div>{{ downloadError }}</div>
           </v-card-text>
           <v-card-actions>
             <v-btn @click="back">
               {{ $t('back') }}
-              <v-icon right>
-                arrow_left
-              </v-icon>
+              <v-icon right>arrow_left</v-icon>
             </v-btn>
           </v-card-actions>
         </v-window-item>
 
         <v-window-item :value="2">
-          <v-card-text>
-            {{ status === 'none' ? $t('java.refreshAfter') : $t('java.noJavaInPath') }}
-          </v-card-text>
+          <v-card-text>{{ status === 'none' ? $t('java.refreshAfter') : $t('java.noJavaInPath') }}</v-card-text>
           <v-card-actions>
             <v-btn @click="back">
               {{ $t('back') }}
-              <v-icon right>
-                arrow_left
-              </v-icon>
+              <v-icon right>arrow_left</v-icon>
             </v-btn>
             <v-spacer />
             <v-btn :loading="status==='resolving'" @click="refresh">
               {{ $t('refresh') }}
-              <v-icon right>
-                refresh
-              </v-icon>
+              <v-icon right>refresh</v-icon>
             </v-btn>
           </v-card-actions>
         </v-window-item>
@@ -75,15 +57,11 @@
               <v-progress-circular :size="128" indeterminate />
             </v-layout>
           </v-container>
-          <v-card-text v-else-if="status === 'error'">
-            {{ $t('java.noLegalJava') }}
-          </v-card-text>
+          <v-card-text v-else-if="status === 'error'">{{ $t('java.noLegalJava') }}</v-card-text>
           <v-card-actions v-if="status === 'error'">
             <v-btn @click="back">
               {{ $t('back') }}
-              <v-icon right>
-                arrow_left
-              </v-icon>
+              <v-icon right>arrow_left</v-icon>
             </v-btn>
           </v-card-actions>
         </v-window-item>
@@ -94,7 +72,8 @@
 
 <script lang=ts>
 import { reactive, computed, toRefs, onMounted, onUnmounted, watch, createComponent } from '@vue/composition-api';
-import { useDialogSelf, useI18n, useStore, useJava, useNativeDialog, useServiceOnly, useInstance } from '@/hooks';
+import { useI18n, useStore, useJava, useNativeDialog, useServiceOnly, useInstance } from '@/hooks';
+import { useDialog } from '../hooks';
 
 export default createComponent({
   props: {
@@ -107,7 +86,7 @@ export default createComponent({
     const dialog = useNativeDialog();
     const { getters, state } = useStore();
     const { $t } = useI18n();
-    const { showDialog, isShown } = useDialogSelf('java-wizard');
+    const { show, isShown } = useDialog('java-wizard');
     const { add, refreshLocalJava, installDefault, openJavaSite } = useJava();
     const { editInstance, setJavaPath } = useInstance();
     const { fixJavaIncompatible } = useServiceOnly('DiagnoseService', 'fixJavaIncompatible');
@@ -146,14 +125,14 @@ export default createComponent({
     const hint = computed(() => (!missing.value ? $t('java.incompatibleJavaHint') : $t('java.missingHint')));
 
     function updateValue() {
-      if (missing.value) { showDialog(); }
+      if (missing.value) { show(); }
     }
     function refresh() {
       data.status = 'resolving';
       refreshLocalJava().finally(() => {
         if (missing.value) {
           data.status = 'error';
-          showDialog();
+          show();
         } else {
           // reason.value = '';
           // hint.value = '';
@@ -179,7 +158,7 @@ export default createComponent({
           editInstance({ java: '8' });
           setJavaPath(java8.value!.path);
         } else if (index === 1) {
-          showDialog('task');
+          // showDialog('task');
           await fixJavaIncompatible();
         } else if (index === 2) {
           await openJavaSite();

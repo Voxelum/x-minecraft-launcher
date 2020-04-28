@@ -22,8 +22,7 @@
     "vetur.format.enable": true,
     "vetur.validation.template": true,
     "vetur.validation.script": true,
-    "vetur.experimental.templateInterpolationService": false,
-    "vetur.format.defaultFormatter.html": "none",
+    "vetur.experimental.templateInterpolationService": true,
     "vetur.format.defaultFormatterOptions": {
         "vscode-typescript": {
             "indent_size": 4
@@ -44,5 +43,12 @@
         "src/main/util/locales"
     ],
     "i18n-ally.keystyle": "nested",
-    "i18n-ally.sortKeys": true
+    "i18n-ally.sortKeys": true,
+    "cSpell.words": [
+        "Minecraft",
+        "logined",
+        "logining",
+        "mojang",
+        "xmcl"
+    ]
 }

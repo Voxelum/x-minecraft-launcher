@@ -16,32 +16,33 @@
 </template>
 
 <script lang=ts>
-import { ref, onMounted, watch } from '@vue/composition-api';
-import { useLaunch, useDialogSelf, useI18n } from '@/hooks';
+import { ref, onMounted, watch, createComponent } from '@vue/composition-api';
+import { useLaunch, useI18n } from '@/hooks';
+import { useDialog } from '../hooks';
 
-export default {
+export default createComponent({
   setup() {
     const progressText = ref('');
     const { $t } = useI18n();
     const { status } = useLaunch();
-    const { isShown, showDialog, closeDialog } = useDialogSelf('launch-status');
+    const { isShown, show, hide } = useDialog('launch-status');
     onMounted(() => {
       watch(status, (s) => {
         switch (s) {
           case 'ready':
-            closeDialog();
+            hide();
             break;
           case 'checkingProblems':
-            showDialog();
+            show();
             progressText.value = $t('launch.checkingProblems');
             break;
           case 'launching':
-            showDialog();
+            show();
             progressText.value = $t('launch.launching');
             setTimeout(() => { progressText.value = $t('launch.launchingSlow'); }, 4000);
             break;
           case 'minecraftReady':
-            closeDialog();
+            hide();
             break;
           default:
         }
@@ -53,7 +54,7 @@ export default {
       isShown,
     };
   },
-};
+});
 </script>
 
 <style>

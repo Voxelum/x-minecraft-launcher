@@ -1,5 +1,4 @@
 {
-  "$schema": "../locale.schema.json",
   "actionforbidden": "Action Forbidden",
   "add": "Add",
   "advanced": "Advanced",
@@ -122,7 +121,11 @@
     },
     "incompatibleResourcePack": {
       "": "The resource pack {name} is incompatible for {actual} version. Accept {accepted}.",
-      "message": "Either the resource pack can fitin in this version, or you should remove it from list"
+      "message": "Either the resource pack can fit-in in this version, or you should remove it from list"
+    },
+    "invalidJava": {
+      "": "Invalid java location.",
+      "message": "Click to use another java to launch."
     },
     "missingAssets": {
       "": "Missing %{count} assets.",
@@ -225,7 +228,7 @@
     "noVersion": "Forge doesn't have any release for Minecraft {version}",
     "non": "No Forge",
     "recommended": "Recommended",
-    "recommendedAndLatestOnly": "Recommened and Latest Only",
+    "recommendedAndLatestOnly": "Recommended and Latest Only",
     "showBuggy": "Show Buggy",
     "version": "Forge Version"
   },
@@ -348,7 +351,7 @@
     "": "Install Forge",
     "downloadInstaller": "Download Installer",
     "downloadJar": "Download Forge Jar",
-    "downloadLibraries": {
+    "installLibraries": {
       "": "Download Libraries",
       "library": "Install Library {lib}"
     },
@@ -374,12 +377,12 @@
   },
   "intro": {
     "struct": {
-      "assets": "Same with vanllia. The assets folder cache the game assets",
+      "assets": "Same with vanilla. The assets folder cache the game assets",
       "config": "The global Launcher config",
       "forge-versions": "The global cache of Forge version metadata",
       "java": "The global cache of found java",
       "jre": "Cache the launcher downloaded JRE (JVM 8)",
-      "libraries": "Same with vanllia.",
+      "libraries": "Same with vanilla.",
       "lite-versions": "The global cache of Liteloader version metadata",
       "logs": "Containing Launcher logs but not Minecraft game logs",
       "mclogs": "The normal Minecraft game logs",
@@ -398,7 +401,7 @@
       "temp": "The temp folder (for download) the Launcher have",
       "user": "The user auth info cache",
       "version": "The global cache of Minecraft version metadata",
-      "versions": "Same with vanllia. Save multiple versions' JSON & JAR"
+      "versions": "Same with vanilla. Save multiple versions' JSON & JAR"
     }
   },
   "java": {
@@ -413,7 +416,7 @@
     "minMemory": "Min Memory",
     "missing": "Missing Java",
     "missingHint": "The Launcher cannot detect any java in your computer. You can:",
-    "noJavaInPath": "Still cannot find the java in PATH enviroment variable. You can try another way.",
+    "noJavaInPath": "Still cannot find the java in PATH environment variable. You can try another way.",
     "noLegalJava": "Cannot detect legal java for this location. Please try again.",
     "noMemory": "Do not limit memory usage",
     "refreshAfter": "Please Refresh After you install the java.",
@@ -431,7 +434,7 @@
     "failed": {
       "description": "There is no crash report. This this the latest log.",
       "general": "General Launch Failed",
-      "generalText": "If you enconter this several times, please contact author!",
+      "generalText": "If you encounter this several times, please contact author!",
       "illegalAuth": "Illegal User Auth!",
       "illegalAuthText": "Illegal user auth state! Please login or switch account to revalidate your account!",
       "selectProfileEmpty": "Empty Profile",
@@ -504,7 +507,7 @@
   "no": "No",
   "ok": "OK",
   "optional": "Optional",
-  "popular": "Porpularity",
+  "popular": "Popularity",
   "profile": {
     "add": "Add Local Game",
     "addServer": "Add Server",
@@ -514,7 +517,7 @@
     "copy": "Duplicate",
     "delete": "Delete Profile",
     "deleteHint": "The instance {name}({id}) data will be moved from the disk forever. You sure to do this?",
-    "descriptionHint": "Breifly describe the game",
+    "descriptionHint": "Briefly describe the game",
     "export": {
       "exportingMessage": "Exporting Modpack...",
       "message": "Export this profile as a Modpack",
@@ -540,7 +543,7 @@
       "title": "Logs or Crash Reports"
     },
     "mcOptions": "Minecraft Options",
-    "mcOptionsCreateHint": "Enter to create a Minecraft ption",
+    "mcOptionsCreateHint": "Enter to create a Minecraft option",
     "mcOptionsHint": "Select or create Minecraft options",
     "modpack": {
       "add": "Add Modpack",
@@ -631,7 +634,7 @@
     "width": "Width"
   },
   "resourcepack": {
-    "available": "Avaliable",
+    "available": "Available",
     "compatible": "Compatible format {format} with {version}",
     "delete": {
       "content": "This will remove the resource pack file from disk, and we cannot redo it. Are you sure to do this?",
@@ -750,7 +753,7 @@
     "authMode": "Auth Service",
     "authService": "Authorize Service",
     "birth": "Registered Birthday",
-    "challenges": "Anwser questions below to verify your identity",
+    "challenges": "Answer questions below to verify your identity",
     "email": "Email Address",
     "forgetChallenges": "I have forgot these questions and I want to change them",
     "forgetPassword": "Forget Password?",
@@ -762,7 +765,7 @@
     "login": "Login",
     "logout": "Logout",
     "mojang": {
-      "account": "Email Adress",
+      "account": "Email Address",
       "name": "Mojang",
       "password": "Password"
     },
@@ -781,7 +784,7 @@
     "refreshAccount": "Refresh Account",
     "refreshSkin": "Refresh Skin",
     "refreshSkinFail": "Refresh Skin Failed",
-    "refreshSkinSuccess": "Refresh Skin Succcess",
+    "refreshSkinSuccess": "Refresh Skin Success",
     "requireEmail": "E-mail is required",
     "requirePassword": "Password is required",
     "requireUsername": "Username is required",

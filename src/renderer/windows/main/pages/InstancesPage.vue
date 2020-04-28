@@ -108,14 +108,13 @@ import { Instance } from '@universal/store/modules/instance';
 import {
   useI18n,
   useNativeDialog,
-  useNotifier,
   useRouter,
   useInstances,
   useResourceOperation,
   useCurseforgeImport,
   useOperation,
-  Notify,
 } from '@/hooks';
+import { Notify, useNotifier } from '../hooks';
 import PreviewCard from './InstancesPage/InstancesPagePreviewCard.vue';
 import AddInstanceStepper from './InstancesPage/InstancesPageAddInstanceStepper.vue';
 import AddServerStepper from './InstancesPage/InstancesPageAddServerStepper.vue';
@@ -138,20 +137,18 @@ function useFilteredInstances(instances: Ref<readonly Instance[]>, filter: Ref<s
 }
 
 function useTimeslicedInstances(instances: Ref<readonly Instance[]>) {
-  const today = Math.floor(Date.now() / 1000 / 60 / 60 / 24) * 1000 * 60 * 60 * 24;
-  const threeDays = (Math.floor(Date.now() / 1000 / 60 / 60 / 24) - 3)
-    * 1000
-    * 60
-    * 60
-    * 24;
+  const now = Date.now();
+  const oneDay = 1000 * 60 * 60 * 24;
+  const threeDays = oneDay * 3;
   return computed(() => {
     const todayR = [];
     const threeR = [];
     const other = [];
     for (const p of instances.value) {
-      if (p.lastAccessDate > today) {
+      const diff = now - p.lastAccessDate;
+      if (diff <= oneDay) {
         todayR.push(p);
-      } else if (p.lastAccessDate > threeDays) {
+      } else if (diff <= threeDays) {
         threeR.push(p);
       } else {
         other.push(p);

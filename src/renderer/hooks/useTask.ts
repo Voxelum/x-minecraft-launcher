@@ -1,5 +1,5 @@
 import { computed, inject } from '@vue/composition-api';
-import { TASKS_KEY } from '@/constant';
+import { TASKS_KEY, TASKS_OPS_KEY } from '@/constant';
 import { requireNonnull } from '@universal/util/assert';
 import { useStore } from './useStore';
 
@@ -39,5 +39,8 @@ export function useTaskCount() {
 export function useTasks() {
     const tasks = inject(TASKS_KEY);
     requireNonnull(tasks);
-    return tasks;
+    const ops = inject(TASKS_OPS_KEY);
+    requireNonnull(ops);
+    const { pause, resume, cancel } = ops;
+    return { tasks, pause, resume, cancel };
 }
