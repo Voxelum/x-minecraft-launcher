@@ -52,10 +52,10 @@
 
 <script lang=ts>
 import Vue from 'vue';
-import { createComponent, ref, Ref, computed } from '@vue/composition-api';
+import { defineComponent, ref, Ref, computed } from '@vue/composition-api';
 import { useForgeModResource, useInstanceVersionBase, useDragTransferItem, useCompatibleWithLoader, useService } from '@/hooks';
 
-export default createComponent({
+export default defineComponent({
   props: {
     data: {
       required: true,

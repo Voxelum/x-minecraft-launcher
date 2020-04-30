@@ -32,10 +32,10 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, createComponent } from '@vue/composition-api';
+import { reactive, toRefs, defineComponent } from '@vue/composition-api';
 import { useIpc, useInstanceLogs, useService } from '@/hooks';
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const ipc = useIpc();
     const data = reactive({

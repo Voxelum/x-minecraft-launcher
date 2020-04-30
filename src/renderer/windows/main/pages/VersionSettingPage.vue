@@ -156,7 +156,7 @@
 
 <script lang=ts>
 import Vue from 'vue';
-import { createComponent, reactive, computed, ref, onMounted, toRefs, watch, Ref } from '@vue/composition-api';
+import { defineComponent, reactive, computed, ref, onMounted, toRefs, watch, Ref } from '@vue/composition-api';
 import {
   useAutoSaveLoad,
   useInstance,
@@ -297,7 +297,7 @@ function compositeFabricVersion(mcversion: Ref<string>, filterText: Ref<string>)
   };
 }
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const filterText = ref('');
     const data = reactive({

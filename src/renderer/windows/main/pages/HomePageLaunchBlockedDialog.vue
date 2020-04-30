@@ -28,11 +28,11 @@
 </template>
 
 <script lang=ts>
-import { computed, createComponent } from '@vue/composition-api';
+import { computed, defineComponent } from '@vue/composition-api';
 import { useLaunch, useIssues } from '@/hooks';
-import { useDialog } from '../../hooks';
+import { useDialog } from '../hooks';
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const { launch, status } = useLaunch();
     const { issues } = useIssues();

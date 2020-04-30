@@ -12,10 +12,10 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, ref, toRefs, computed, Ref } from '@vue/composition-api';
+import { defineComponent, reactive, ref, toRefs, computed, Ref } from '@vue/composition-api';
 import steve from '@/assets/steve_skin.png';
 
-export default createComponent({
+export default defineComponent({
   props: {
     src: {
       type: String,

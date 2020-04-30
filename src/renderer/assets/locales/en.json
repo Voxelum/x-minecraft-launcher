@@ -351,12 +351,12 @@
     "": "Install Forge",
     "downloadInstaller": "Download Installer",
     "downloadJar": "Download Forge Jar",
+    "installForgeJar": "Install Forge Jar",
+    "installForgeJson": "Install Forge JSON file",
     "installLibraries": {
       "": "Download Libraries",
       "library": "Install Library {lib}"
     },
-    "installForgeJar": "Install Forge Jar",
-    "installForgeJson": "Install Forge JSON file",
     "postProcessing": "Post Processing"
   },
   "installJre": {

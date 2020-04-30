@@ -1,8 +1,8 @@
 import { TextComponent, render, RenderNode } from '@xmcl/text-component';
-import { createComponent, createElement } from '@vue/composition-api';
+import { defineComponent, createElement } from '@vue/composition-api';
 import { useI18n } from './hooks';
 
-export default createComponent({
+export default defineComponent({
     props: {
         source: Object,
         localized: String,

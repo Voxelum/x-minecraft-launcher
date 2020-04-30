@@ -39,7 +39,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, watch, ref, onMounted } from '@vue/composition-api';
+import { defineComponent, watch, ref, onMounted } from '@vue/composition-api';
 import { FabricInstaller } from '@xmcl/installer';
 import VirtualList from 'vue-virtual-scroll-list';
 
@@ -51,7 +51,7 @@ export interface Props {
   version: string;
   select: (version: FabricArtifactVersion) => void;
 }
-export default createComponent<Props>({
+export default defineComponent<Props>({
   components: { VirtualList },
   props: {
     statuses: Object,

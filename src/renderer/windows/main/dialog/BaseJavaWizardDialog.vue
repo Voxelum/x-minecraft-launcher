@@ -71,11 +71,11 @@
 </template>
 
 <script lang=ts>
-import { reactive, computed, toRefs, onMounted, onUnmounted, watch, createComponent } from '@vue/composition-api';
+import { reactive, computed, toRefs, onMounted, onUnmounted, watch, defineComponent } from '@vue/composition-api';
 import { useI18n, useStore, useJava, useNativeDialog, useServiceOnly, useInstance } from '@/hooks';
 import { useDialog } from '../hooks';
 
-export default createComponent({
+export default defineComponent({
   props: {
     value: {
       type: Boolean,

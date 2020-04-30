@@ -62,7 +62,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, ref } from '@vue/composition-api';
+import { defineComponent, ref } from '@vue/composition-api';
 
 export interface Props {
   files: string[];
@@ -71,7 +71,7 @@ export interface Props {
   showFile(file: string): void;
 }
 
-export default createComponent<Props>({
+export default defineComponent<Props>({
   props: {
     files: Array,
     getFileContent: Function,

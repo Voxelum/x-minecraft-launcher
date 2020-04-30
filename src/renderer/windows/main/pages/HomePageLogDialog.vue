@@ -32,7 +32,7 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, watch, createComponent } from '@vue/composition-api';
+import { reactive, toRefs, watch, defineComponent } from '@vue/composition-api';
 import { useInstanceLogs } from '@/hooks';
 import TabItem from './HomePageLogDialogTab.vue';
 
@@ -41,7 +41,7 @@ export interface Props {
   hide: () => void;
 }
 
-export default createComponent<Props>({
+export default defineComponent<Props>({
   components: {
     TabItem,
   },

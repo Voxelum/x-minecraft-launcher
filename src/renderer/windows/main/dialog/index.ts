@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { createComponent, createElement as h } from '@vue/composition-api';
+import { defineComponent, createElement as h } from '@vue/composition-api';
 
 const files = require.context('.', false, /\.vue$/);
 
@@ -27,7 +27,7 @@ const components = files.keys().map((key) => {
     return comp;
 });
 
-export default createComponent({
+export default defineComponent({
     setup() {
         return () => h('div', { staticStyle: { 'z-index': 10 } }, components.map(c => h(c)));
     },

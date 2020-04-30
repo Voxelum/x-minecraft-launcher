@@ -13,41 +13,6 @@
           @keydown.enter="search()"
         />
       </v-flex>
-      <v-flex v-if="searchMode" xs6>
-        <v-btn color="grey darken-3" @click="searchMode = false">
-          <v-icon left>close</v-icon>
-          {{ $t('curseforge.quitSearch') }}
-        </v-btn>
-      </v-flex>
-      <v-flex v-if="!searchMode" xs6>
-        <v-menu offset-y allow-overflow>
-          <template v-slot:activator="{ on }">
-            <v-btn color="grey darken-3" v-on="on">{{ $t('curseforge.sortby') }}: {{ filter.text }}</v-btn>
-          </template>
-          <v-list>
-            <v-list-tile v-for="(item, index) in filters" :key="index" @click="filter = item">
-              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
-            </v-list-tile>
-          </v-list>
-        </v-menu>
-      </v-flex>
-      <v-spacer />
-      <v-flex v-if="!searchMode" shrink>
-        <v-menu offset-y allow-overflow>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              color="grey darken-3"
-              v-on="on"
-            >{{ $t('curseforge.gameversion') }}: {{ version.text }}</v-btn>
-          </template>
-          <v-list>
-            <v-list-tile v-for="(item, index) in versions" :key="index" @click="version = item">
-              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
-            </v-list-tile>
-          </v-list>
-        </v-menu>
-      </v-flex>
-
       <v-flex style="overflow: auto; max-height: 60vh; min-height: 60vh;" xs12>
         <v-container v-if="loading" fill-height>
           <v-layout justify-center align-center fill-height>
@@ -55,7 +20,7 @@
           </v-layout>
         </v-container>
         <v-flex v-for="proj in projects" :key="proj.name" d-flex xs12>
-          <v-card v-ripple hover exact replace :to="`/curseforge/${type}/${proj.name}`">
+          <v-card v-ripple hover exact replace :to="`/curseforge/${type}/${proj.id}`">
             <v-layout fill-height align-center justify-center>
               <v-flex shrink>
                 <v-img :src="proj.attachments[0].thumbnailUrl" :width="64">
@@ -73,7 +38,7 @@
                   <span style="padding-left: 3px;">by {{ proj.authors[0].name }}</span>
                   <div style="color: grey; padding-left: 5px;">
                     <!-- {{ proj.downloadCount }} -->
-                    {{ new Date(proj.dateModified || proj.dateCreated) }}
+                    {{ new Date(proj.dateModified || proj.dateCreated).toLocaleDateString() }}
                   </div>
                 </v-card-title>
                 <v-card-text>{{ proj.summary }}</v-card-text>
@@ -92,7 +57,7 @@
       </v-flex>
       <v-flex xs12 style="z-index: 2">
         <v-layout justify-center>
-          <v-pagination v-model="page" :disabled="searchMode" :length="pages" total-visible="8" />
+          <v-pagination v-model="page" :length="pages" total-visible="8" />
         </v-layout>
       </v-flex>
     </v-layout>
@@ -100,12 +65,10 @@
 </template>
 
 <script lang=ts>
-import { createComponent } from '@vue/composition-api';
-import {
-  useCurseforgePreview,
-} from '@/hooks';
+import { defineComponent } from '@vue/composition-api';
+import { useCurseforgeSearch, useCurseforgeCategories } from '@/hooks';
 
-export default createComponent({
+export default defineComponent({
   props: {
     type: {
       type: String,
@@ -113,7 +76,8 @@ export default createComponent({
     },
   },
   setup(props) {
-    const preview = useCurseforgePreview(props.type as any);
+    const { categories } = useCurseforgeCategories();
+    const preview = useCurseforgeSearch(categories.value.find((p) => p.slug === props.type)!.id);
     return {
       ...preview,
     };

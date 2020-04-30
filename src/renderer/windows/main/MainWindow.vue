@@ -36,7 +36,7 @@ import {
   reactive,
   toRefs,
   watch,
-  createComponent,
+  defineComponent,
   ref,
 } from '@vue/composition-api';
 import { IpcRendererEvent } from 'electron';
@@ -54,7 +54,7 @@ import LoginDialog from './dialog/BaseLoginDialog.vue';
 import TaskDialog from './dialog/BaseTaskDialog.vue';
 import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue';
 
-export default createComponent({
+export default defineComponent({
   components: { LoginDialog, TaskDialog, LaunchStatusDialog },
   setup() {
     provideDialog();

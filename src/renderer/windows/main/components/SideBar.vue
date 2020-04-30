@@ -73,7 +73,7 @@
 import {
   reactive,
   toRefs,
-  createComponent,
+  defineComponent,
 } from '@vue/composition-api';
 import {
   useRouter,
@@ -82,7 +82,7 @@ import {
 } from '@/hooks';
 import { useDialog } from '../hooks';
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const { activeTasksCount } = useTaskCount();
     const { logined } = useCurrentUserStatus();

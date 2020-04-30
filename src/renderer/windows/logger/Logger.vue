@@ -28,7 +28,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, toRefs } from '@vue/composition-api';
+import { defineComponent, reactive, toRefs } from '@vue/composition-api';
 import { useClipboard, useIpc } from '@/hooks';
 
 interface Log {
@@ -38,7 +38,7 @@ interface Log {
   src?: string;
 }
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const pattern = /^\[(.+)\] \[(.+)\]: (.+)/;
     const clipboard = useClipboard();

@@ -17,10 +17,10 @@
 </template>
 
 <script lang=ts>
-import { createComponent } from '@vue/composition-api';
+import { defineComponent } from '@vue/composition-api';
 import { useNotifier } from '../hooks';
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const { status, title, more, show } = useNotifier();
     return {

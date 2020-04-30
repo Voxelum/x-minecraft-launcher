@@ -39,10 +39,10 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, createComponent } from '@vue/composition-api';
-import { useDialog } from '../../hooks';
+import { reactive, toRefs, defineComponent } from '@vue/composition-api';
+import { useDialog } from '../hooks';
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const data = reactive({
       hovered: {},

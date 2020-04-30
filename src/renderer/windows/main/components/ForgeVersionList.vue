@@ -43,7 +43,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent } from '@vue/composition-api';
+import { defineComponent } from '@vue/composition-api';
 import { ForgeInstaller } from '@xmcl/installer';
 import VirtualList from 'vue-virtual-scroll-list';
 
@@ -56,7 +56,7 @@ export interface Props {
   select: (version: { version: string }) => void;
 }
 
-export default createComponent({
+export default defineComponent({
   components: { VirtualList },
   props: {
     value: Array,

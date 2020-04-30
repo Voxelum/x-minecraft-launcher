@@ -43,10 +43,10 @@
 </template>
 
 <script lang=ts>
-import { createComponent, computed } from '@vue/composition-api';
+import { defineComponent, computed } from '@vue/composition-api';
 // import { useDialogSelf } from '@/hooks';
 
-export default createComponent({
+export default defineComponent({
   setup() {
     // const { isShown, dialogOption } = useDialogSelf('download-missing-mods');
     // const items = computed(() => (dialogOption.value ? dialogOption.value.map((i: any) => ({ ...i, status: 'unknown', task: '' })) : []));

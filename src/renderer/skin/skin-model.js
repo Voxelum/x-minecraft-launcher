@@ -200,7 +200,7 @@ class PlayerModel {
                     throw new Error(`Unsupported protocol ${url.protocol}!`);
             }
         } catch (e) {
-            img.src = `data:image/png;base64, ${skin}`;
+            img.src = defaultSkin;
         }
         setTimeout(() => reload(img), 100);
         console.log(`Load Skin ${img.src}`);

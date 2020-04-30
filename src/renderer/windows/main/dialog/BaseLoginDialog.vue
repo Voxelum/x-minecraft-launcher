@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="isShown" width="500" :persistent="!isSwitchingUser">
+  <v-dialog v-model="isShown" width="500" :persistent="persistent">
     <v-card style="padding-bottom: 25px;">
       <v-flex text-xs-center pa-4 class="green">
         <v-icon style="font-size: 50px">person_pin</v-icon>
@@ -143,8 +143,8 @@
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                  <v-btn flat icon>
-                    <v-icon color="red" @click="remove(p)">delete</v-icon>
+                  <v-btn flat icon @click="remove(p.userId)">
+                    <v-icon color="red">delete</v-icon>
                   </v-btn>
                 </v-list-tile-action>
               </v-list-tile>
@@ -154,7 +154,7 @@
             <v-flex text-xs-center style="z-index: 1;">
               <v-btn
                 block
-                :disabled="profiles.length === 0 || user === ''"
+                :disabled="profiles.length === 0 || user === '' || profile === selectedProfile"
                 :loading="logining"
                 color="green"
                 round
@@ -172,11 +172,11 @@
 </template>
 
 <script lang=ts>
-import { reactive, computed, watch, toRefs, onMounted, ref, createComponent, Ref } from '@vue/composition-api';
+import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref } from '@vue/composition-api';
 import { useLogin, useLoginValidation } from '@/hooks';
 import { useLoginDialog } from '../hooks/index';
 
-export default createComponent({
+export default defineComponent({
   setup(props, context) {
     const { hide, isShown, show, isSwitchingUser } = useLoginDialog();
     const {
@@ -187,6 +187,8 @@ export default createComponent({
       password,
       authService,
       profileService,
+
+      selectedProfile,
 
       logined,
       logining,
@@ -208,6 +210,7 @@ export default createComponent({
       reset: resetError,
       handleError,
     } = useLoginValidation(isOffline);
+    const persistent = computed(() => !logined.value || !isSwitchingUser.value);
     const data = reactive({
       tabIndex: 0,
       isFormValid: true,
@@ -249,7 +252,7 @@ export default createComponent({
         reset();
         data.tabIndex = isSwitchingUser.value ? 1 : 0;
       });
-      watch(() => {
+      watch([authService, profileService], () => {
         form.value.resetValidation();
         if (authService.value !== profileService.value && profileService.value === '') {
           profileService.value = profileServices.value.find(p => p === authService.value) ?? 'mojang';
@@ -270,6 +273,8 @@ export default createComponent({
       authServices,
       isOffline,
 
+      selectedProfile,
+
       isShown,
 
       resetError,
@@ -283,6 +288,8 @@ export default createComponent({
       passwordRules,
       usernameErrors,
       passwordErrors,
+
+      persistent,
 
       accountInput,
       form,

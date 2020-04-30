@@ -1,104 +1,75 @@
-import { Download, Filter, Project, ProjectPreview, ProjectType, Version } from '@main/service/CurseForgeService';
-import { computed, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
-import { File, AddonInfo } from '@xmcl/curseforge';
+import { Filter, Project, ProjectType, Version } from '@main/service/CurseForgeService';
+import { computed, onMounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
+import { AddonInfo, File, Attachment, Category } from '@xmcl/curseforge';
 import { useService } from './useService';
 import { useStore } from './useStore';
 
-/**
- * Hook to view the curseforge project images.
- * @param path The project path 
- * @param type The project type
- */
-export function useCurseforgeImages(path: string, type: ProjectType) {
-    const { fetchCurseforgeProjectImages } = useService('CurseForgeService');
-    const data: {
-        images: { name: string; url: string; mini: string }[];
-        refreshingImages: boolean;
-    } = reactive({
-        images: [],
-        refreshingImages: false,
-    });
-    async function refreshImages() {
-        data.refreshingImages = true;
-        try {
-            const images = await fetchCurseforgeProjectImages({
-                type,
-                path,
-            });
-            data.images = images;
-        } finally {
-            data.refreshingImages = false;
-        }
-    }
-    return {
-        ...toRefs(data),
-        refreshImages,
-    };
-}
 
 /**
  * Hook to view the curseforge project downloadable files.
- * @param projectPath The project path
- * @param type The project type
- * @param projectId The project id reference
+ * @param projectId The project id
  */
-export function useCurseforgeProjectFiles(projectPath: string, type: ProjectType, projectId: Ref<number>) {
-    const { downloadAndImportFile, fetchCurseForgeProjectFiles } = useService('CurseForgeService');
-    const data: {
-        files: Download[];
-        versions: Version[];
-        version: Version;
-        page: number;
-        pages: number;
-        refreshingFile: boolean;
-    } = reactive({
-        files: [],
-        versions: [],
-        version: { type: '', text: '', value: '' } as any,
-        page: 0,
-        pages: 0,
-        refreshingFile: false,
+export function useCurseforgeProjectFiles(projectId: number) {
+    const { fetchProjectFiles } = useService('CurseForgeService');
+    const { getters } = useStore();
+    const data = reactive({
+        files: [] as readonly File[],
+        loading: false,
     });
-    const dataRefs = toRefs(data);
-    /**
-     * Install the downloadable file to the launcher 
-     * @param file The download file
-     */
-    function install(file: Download) {
-        return downloadAndImportFile({
-            id: file.id,
-            name: file.name,
-            href: file.href,
-            projectType: type as any,
-            projectPath,
-            projectId: projectId.value,
-        });
-    }
-    /**
-     * Refresh files on current page.
-     */
-    async function refreshFiles() {
+    const status = computed(() => data.files.map(file => getters.isFileInstalled({ id: file.id, href: file.downloadUrl })));
+    async function refresh() {
+        data.loading = true;
         try {
-            data.refreshingFile = true;
-            const { versions, files, pages } = await fetchCurseForgeProjectFiles({
-                project: type,
-                path: projectPath,
-                version: data.version.value,
-                page: data.page,
-            });
-            data.pages = pages;
-            data.versions = versions;
-            data.files = files;
+            let f = await fetchProjectFiles(projectId);
+            data.files = Object.freeze(f);
         } finally {
-            data.refreshingFile = false;
+            data.loading = false;
         }
     }
-    watch([dataRefs.page, dataRefs.version], () => { refreshFiles(); });
+    onMounted(() => {
+        refresh();
+    });
     return {
-        ...dataRefs,
-        install,
-        refreshFiles,
+        ...toRefs(data),
+        status,
+        refresh,
     };
+}
+
+export function useCurseforgeInstall() {
+    function getFileStatus(file: File): 'downloading' | 'downloaded' | 'remote' {
+        return 'remote';
+    }
+    async function install(file: File) {
+        // const promise = projectFiles.install(download);
+        // if (props.type === 'modpacks') {
+        //   subscribe(promise, () => 'Download Success! Please create the instance by this modpack in instances panel', () => 'Fail to download this modpack!');
+        // }
+        // return promise;
+    }
+
+    return { getFileStatus, install };
+}
+
+export function useCurseforgeProjectDescription(projectId: number) {
+    const { fetchProjectDescription } = useService('CurseForgeService');
+    const data = reactive({
+        description: '',
+        loading: false,
+    });
+    async function refresh() {
+        data.loading = true;
+        try {
+            let des = await fetchProjectDescription(projectId);
+            data.description = des;
+        } finally {
+            data.loading = false;
+        }
+    }
+    onMounted(() => {
+        refresh();
+    });
+    return { ...toRefs(data), refresh };
 }
 /**
  * Hook to view the front page of the curseforge project.
@@ -106,134 +77,102 @@ export function useCurseforgeProjectFiles(projectPath: string, type: ProjectType
  */
 export function useCurseforgeProject(projectId: number) {
     const { fetchProject } = useService('CurseForgeService');
-    const { getters, state } = useStore();
     const recentFiles: Ref<File[]> = ref([]);
     const data = reactive({
-        projectId: 0,
         name: '',
-        image: '',
         createdDate: '',
         lastUpdate: '',
         totalDownload: 0,
-        license: '',
-        description: '',
-
-        page: 1,
-        pages: 1,
-        version: '',
-
+        attachments: [] as Attachment[],
         refreshingProject: false,
     });
-    const recentFilesStat = computed(() => recentFiles.value.map(file => getters.isFileInstalled(file)));
     async function refresh() {
         data.refreshingProject = true;
         try {
-            const { name, , dateCreated, dateModified, downloadCount, id, latestFiles } = await fetchProject(projectId);
+            const proj = await fetchProject(projectId);
+            const { name, dateCreated, dateModified, downloadCount, latestFiles } = proj;
             data.name = name;
-            data.image = image;
             data.createdDate = dateCreated;
             data.lastUpdate = dateModified;
             data.totalDownload = downloadCount;
-            data.license = license.name;
-            data.description = description;
-            data.projectId = id;
+            data.attachments = proj.attachments;
             recentFiles.value = latestFiles;
         } finally {
             data.refreshingProject = false;
         }
     }
-    function installPreview(file: Project['files'][number], index: number) {
-        if (recentFilesStat.value[index]) return;
-        if (state.curseforge.downloading[file.href]) return;
-        downloadAndImportFile({
-            id: file.id,
-            name: file.name,
-            href: file.href,
-            projectType: type as any,
-            projectPath,
-            projectId: data.projectId,
-        });
-    }
+    onMounted(() => refresh());
     return {
         ...toRefs(data),
         recentFiles,
-        recentFilesStat,
         refresh,
-        installPreview,
     };
+}
+
+export function useCurseforgeCategories() {
+    const { loadCategories } = useService('CurseForgeService');
+    const { state, getters } = useStore();
+    const categories = computed(() => state.curseforge.categories);
+    const refreshing = computed(() => getters.busy('loadCategories'));
+    onMounted(() => {
+        loadCategories();
+    });
+    return { categories, refreshing };
 }
 
 /**
  * Hook to returen the controller of curseforge preview page. Navigating the curseforge projects.
  */
-export function useCurseforgePreview(type: ProjectType) {
+export function useCurseforgeSearch(sectionId: number) {
     const { searchProjects } = useService('CurseForgeService');
-    const data: {
-        projects: AddonInfo[];
-        page: number;
-        pages: number;
-        loading: boolean;
-        keyword: string;
-        filters: Filter[];
-        versions: Version[];
-    } = reactive({
+    const pageSize = 5;
+    const data = reactive({
         page: 0,
-        pages: 0,
-        projects: [],
-        versions: [],
-        filters: [],
+        pages: 5,
+
+        gameVersion: undefined as undefined | string,
+
+        sort: undefined as undefined | number,
+
+        projects: [] as AddonInfo[],
 
         loading: false,
 
-        keyword: '',
-        searchMode: false,
+        keyword: undefined as undefined | string,
     });
-    const filterRef: Ref<Filter> = ref({ text: '', value: '' });
-    const versionRef: Ref<Version> = ref({ text: '', value: '' });
+    const index = computed(() => data.page * pageSize);
+    const searchFilter = ref(undefined as undefined | string);
     const refs = toRefs(data);
     async function refresh() {
-        data.projects = [];
         data.loading = true;
         try {
             const projects = await searchProjects({
-                pageSize: 5,
-                index: data.page,
+                pageSize,
+                index: index.value,
+                sectionId,
+                sort: data.sort,
+                gameVersion: data.gameVersion,
+                searchFilter: searchFilter.value,
             });
-            if (projects.length === 5) {
-                data.pages = data.page + 5;
+            if (data.page > data.pages / 2) {
+                data.pages += 5;
             }
             data.projects = Object.freeze(projects) as any;
-            // data.versions = versions;
-            // data.filters = filters;
-            // data.pages = pages;
         } finally {
             data.loading = false;
         }
     }
     async function search() {
         if (data.loading) return;
-        if (data.keyword === '') return;
-        data.projects = [];
-        data.loading = true;
-        // data.searchMode = true;
-        // try {
-        //     const projects = await searchCurseforgeProjects({
-        //         type,
-        //         keyword: data.keyword,
-        //     });
-
-        //     data.projects = Object.freeze(projects) as any;
-        // } catch (e) {
-        //     data.searchMode = false;
-        // } finally {
-        //     data.loading = false;
-        // }
+        if (data.keyword === '') {
+            searchFilter.value = undefined;
+        } else {
+            searchFilter.value = data.keyword;
+        }
     }
-    watch([refs.page, filterRef, versionRef], () => refresh());
+    watch([index, refs.sort, refs.gameVersion, searchFilter], () => refresh());
     return {
         ...refs,
-        filter: filterRef,
-        version: versionRef,
         search,
         refresh,
     };

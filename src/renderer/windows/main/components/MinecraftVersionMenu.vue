@@ -50,11 +50,11 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, toRefs, computed } from '@vue/composition-api';
+import { defineComponent, reactive, toRefs, computed } from '@vue/composition-api';
 import { Version as MinecraftVersion } from '@xmcl/installer/minecraft';
 import { useMinecraftVersions } from '@/hooks';
 
-export default createComponent({
+export default defineComponent({
   props: {
     disabled: {
       type: Boolean,

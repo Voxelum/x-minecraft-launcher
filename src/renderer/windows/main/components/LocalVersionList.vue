@@ -62,10 +62,10 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, computed, toRefs } from '@vue/composition-api';
+import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api';
 import { useLocalVersions } from '@/hooks';
 
-export default createComponent({
+export default defineComponent({
   props: {
     filterText: {
       type: String,

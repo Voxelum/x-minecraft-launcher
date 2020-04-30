@@ -10,10 +10,10 @@
 </template>
 
 <script lang=ts>
-import { createComponent, computed } from '@vue/composition-api';
+import { defineComponent, computed } from '@vue/composition-api';
 import { useStore } from '@/hooks';
 
-export default createComponent({
+export default defineComponent({
   props: {
     value: {
       type: Promise,

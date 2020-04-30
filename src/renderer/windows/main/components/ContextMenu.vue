@@ -20,9 +20,9 @@
 </template>
 
 <script lang=ts>
-import { createComponent, inject, ref } from '@vue/composition-api';
+import { defineComponent, inject, ref } from '@vue/composition-api';
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const show = inject('context-menu', ref(false));
     const x = inject('context-menu-x', ref(0));

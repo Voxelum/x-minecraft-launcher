@@ -106,7 +106,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, inject, ref, toRefs, computed, Ref, onUnmounted } from '@vue/composition-api';
+import { defineComponent, reactive, inject, ref, toRefs, computed, Ref, onUnmounted } from '@vue/composition-api';
 import { ResourcePackResource, Resource } from '@universal/store/modules/resource';
 import {
   useInstanceResourcePacks,
@@ -114,9 +114,9 @@ import {
   useDragTransferList,
   useDropImport,
 } from '@/hooks';
-import ResourcePackCard from './ResourcePackSettingPage/ResourcePackCard.vue';
+import ResourcePackCard from './ResourcePackSettingPageCard.vue';
 
-export default createComponent({
+export default defineComponent({
   components: {
     ResourcePackCard,
   },

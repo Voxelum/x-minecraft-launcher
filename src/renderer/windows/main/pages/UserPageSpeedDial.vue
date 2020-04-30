@@ -50,7 +50,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, toRefs } from '@vue/composition-api';
+import { defineComponent, reactive, toRefs } from '@vue/composition-api';
 import { useI18n } from '@/hooks';
 
 interface Props {
@@ -61,7 +61,7 @@ interface Props {
   disabled: boolean;
 }
 
-export default createComponent<Props>({
+export default defineComponent<Props>({
   props: {
     load: Function,
     upload: Function,

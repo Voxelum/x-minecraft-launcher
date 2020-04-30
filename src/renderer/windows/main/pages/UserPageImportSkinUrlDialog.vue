@@ -26,7 +26,7 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, createComponent } from '@vue/composition-api';
+import { reactive, toRefs, defineComponent } from '@vue/composition-api';
 import { useI18n } from '@/hooks';
 
 // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
@@ -42,7 +42,7 @@ interface Props {
   update(url: string): void;
 }
 
-export default createComponent<Props>({
+export default defineComponent<Props>({
   props: {
     value: Boolean,
     update: Function,

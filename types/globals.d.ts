@@ -1,6 +1,5 @@
 /* eslint-disable */
 
-
 interface NodeRequire extends NodeRequireFunction {
     resolve: RequireResolve;
     cache: any;
@@ -13,7 +12,6 @@ interface NodeRequire extends NodeRequireFunction {
         };
 }
 
-// type TaskHandle = string;
 // From https://github.com/andnp/SimplyTyped/blob/master/src/types/objects.ts
 type DeepPartial<T> = Partial<{
     [k in keyof T]:
@@ -22,6 +20,7 @@ type DeepPartial<T> = Partial<{
     T[k] extends object ? DeepPartial<T[k]> :
     T[k];
 }>;
+
 declare module 'in-gfw' {
     namespace GFW {
         function net(): Promise<boolean>;
@@ -61,9 +60,6 @@ declare namespace NodeJS {
 
 declare const __static: string;
 
-// declare module 'long' {
-//     export = Long.default
-// }
 declare module '*.png' {
     const value: string;
     export default value;
@@ -76,4 +72,10 @@ declare module 'vue-particles' {
 
 interface Data {
     [key: string]: unknown;
+}
+
+declare module '*.vue' {
+    import Vue from 'vue';
+
+    export default Vue;
 }

@@ -297,7 +297,7 @@ export default class UserService extends Service {
             }
         } catch (e) {
             this.warn(`Cannot refresh the skin data for user ${name}(${id}).`);
-            this.warn(e);
+            this.warn(JSON.stringify(e));
         }
     }
 
@@ -454,8 +454,8 @@ export default class UserService extends Service {
         let usingAuthService = this.state.user.authServices[authService];
         password = password ?? '';
 
-        if (!usingAuthService) {
-            throw new Error();
+        if (authService !== 'offline' && !usingAuthService) {
+            throw new Error(`Cannot find auth service named ${authService}`);
         }
 
         let result = authService === 'offline'

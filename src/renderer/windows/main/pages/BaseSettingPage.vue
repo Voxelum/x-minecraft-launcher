@@ -78,10 +78,10 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, createComponent } from '@vue/composition-api';
+import { reactive, toRefs, defineComponent } from '@vue/composition-api';
 import { useInstance, useAutoSaveLoad, useRouter, useCurrentUser } from '@/hooks';
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const {
       runtime,

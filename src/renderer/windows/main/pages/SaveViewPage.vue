@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import { createComponent, computed, ref } from '@vue/composition-api';
+import { defineComponent, computed, ref } from '@vue/composition-api';
 import {
   useInstanceSaves,
   useNativeDialog,
@@ -47,12 +47,12 @@ import {
   useOperation,
   useDrop,
 } from '@/hooks';
-import SaveViewPageCopyFromDialog from './SaveViewPage/SaveViewPageCopyFromDialog.vue';
-import SaveViewPageCopyToDialog from './SaveViewPage/SaveViewPageCopyToDialog.vue';
-import SaveViewPageDeleteDialog from './SaveViewPage/SaveViewPageDeleteDialog.vue';
-import SaveViewPagePreviewCard from './SaveViewPage/SaveViewPagePreviewCard.vue';
+import SaveViewPageCopyFromDialog from './SaveViewPageCopyFromDialog.vue';
+import SaveViewPageCopyToDialog from './SaveViewPageCopyToDialog.vue';
+import SaveViewPageDeleteDialog from './SaveViewPageDeleteDialog.vue';
+import SaveViewPagePreviewCard from './SaveViewPagePreviewCard.vue';
 
-export default createComponent({
+export default defineComponent({
   components: {
     SaveViewPageDeleteDialog,
     SaveViewPageCopyToDialog,

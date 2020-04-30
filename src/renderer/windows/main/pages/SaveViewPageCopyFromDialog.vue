@@ -73,7 +73,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, computed, toRefs, onMounted, watch } from '@vue/composition-api';
+import { defineComponent, reactive, computed, toRefs, onMounted, watch } from '@vue/composition-api';
 import {
   useInstanceSaves,
   useBusy,
@@ -81,7 +81,7 @@ import {
 } from '@/hooks';
 import { SaveMetadata } from '@universal/store/modules/instance';
 
-export default createComponent({
+export default defineComponent({
   props: {
     value: {
       type: Boolean,

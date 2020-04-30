@@ -103,7 +103,7 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, onMounted, createComponent, Ref, ref } from '@vue/composition-api';
+import { reactive, toRefs, computed, onMounted, defineComponent, Ref, ref } from '@vue/composition-api';
 import { Instance } from '@universal/store/modules/instance';
 import {
   useI18n,
@@ -115,10 +115,10 @@ import {
   useOperation,
 } from '@/hooks';
 import { Notify, useNotifier } from '../hooks';
-import PreviewCard from './InstancesPage/InstancesPagePreviewCard.vue';
-import AddInstanceStepper from './InstancesPage/InstancesPageAddInstanceStepper.vue';
-import AddServerStepper from './InstancesPage/InstancesPageAddServerStepper.vue';
-import DeleteDialog from './InstancesPage/InstancesPageDeleteDialog.vue';
+import PreviewCard from './InstancesPagePreviewCard.vue';
+import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue';
+import AddServerStepper from './InstancesPageAddServerStepper.vue';
+import DeleteDialog from './InstancesPageDeleteDialog.vue';
 
 function useFilteredInstances(instances: Ref<readonly Instance[]>, filter: Ref<string>) {
   return computed(() => {
@@ -136,7 +136,7 @@ function useFilteredInstances(instances: Ref<readonly Instance[]>, filter: Ref<s
   });
 }
 
-function useTimeslicedInstances(instances: Ref<readonly Instance[]>) {
+function useTimeslicedInstances(instances: Ref<readonly Instance[]>): Ref<[Instance[], Instance[], Instance[]]> {
   const now = Date.now();
   const oneDay = 1000 * 60 * 60 * 24;
   const threeDays = oneDay * 3;
@@ -155,7 +155,7 @@ function useTimeslicedInstances(instances: Ref<readonly Instance[]>) {
       }
     }
     return [todayR, threeR, other];
-  });
+  }) as any;
 }
 
 function useHoverTexts() {
@@ -286,7 +286,7 @@ function useInstancesColor() {
   });
 }
 
-export default createComponent({
+export default defineComponent({
   components: {
     PreviewCard,
     AddInstanceStepper,

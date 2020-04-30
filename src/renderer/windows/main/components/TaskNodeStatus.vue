@@ -22,7 +22,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, computed, ref } from '@vue/composition-api';
+import { defineComponent, computed, ref } from '@vue/composition-api';
 import { TaskStatus } from '@universal/task';
 
 export interface Props {
@@ -35,7 +35,7 @@ export interface Props {
   message: string;
 }
 
-const component = createComponent<Props>({
+const component = defineComponent<Props>({
   props: {
     status: {
       type: String,

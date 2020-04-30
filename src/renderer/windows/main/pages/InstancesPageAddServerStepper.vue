@@ -136,10 +136,10 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, ref, computed, onMounted, onUnmounted, watch, createComponent } from '@vue/composition-api';
+import { reactive, toRefs, ref, computed, onMounted, watch, defineComponent } from '@vue/composition-api';
 import { useMinecraftVersions, useForgeVersions, useJava, useI18n, useServer, useRouter, useInstanceCreation } from '@/hooks';
 
-export default createComponent({
+export default defineComponent({
   props: {
     show: {
       type: Boolean,

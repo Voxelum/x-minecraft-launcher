@@ -16,9 +16,9 @@
 
 <script lang=ts>
 import Vue from 'vue';
-import { createComponent, inject, ref, onMounted, onUnmounted, Ref } from '@vue/composition-api';
+import { defineComponent, inject, ref, onMounted, onUnmounted, Ref } from '@vue/composition-api';
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const show = inject('search-bar-shown', ref(false));
     const text = inject('search-text', ref(''));

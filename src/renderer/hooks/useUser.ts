@@ -1,10 +1,10 @@
 import { UserProfile } from '@universal/store/modules/user.schema';
-import { computed, toRefs, Ref, reactive, onMounted } from '@vue/composition-api';
+import { LoginException } from '@universal/util/exception';
+import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api';
+import { useI18n } from './useI18n';
 import { useServiceOnly } from './useService';
 import { useBusy, useStore } from './useStore';
-import { useI18n } from './useI18n';
-import { LoginException } from '@universal/util/exception';
-import { MojangChallenge, refresh } from '@xmcl/user';
+import { EMPTY_GAME_PROFILE } from '@universal/store/modules/user';
 
 export function useCurrentUserStatus() {
     const { state, getters } = useStore();
@@ -50,19 +50,20 @@ export function useCurrentUser() {
 }
 
 export function useCurrentUserSkin() {
-    const { getters } = useStore();
+    const { state } = useStore();
     const { refreshSkin, uploadSkin, saveSkin } = useServiceOnly('UserService', 'refreshSkin', 'uploadSkin', 'saveSkin');
     const data = reactive({
         url: '',
         slim: false,
         loading: false,
     });
+    const gameProfile = computed(() => state.user.users[state.user.selectedUser.id]?.profiles[state.user.selectedUser.profile] || EMPTY_GAME_PROFILE);
     function reset() {
-        data.url = getters.gameProfile.textures.SKIN.url;
-        data.slim = getters.gameProfile.textures.SKIN.metadata ? getters.gameProfile.textures.SKIN.metadata.model === 'slim' : false;
+        data.url = gameProfile.value.textures.SKIN.url;
+        data.slim = gameProfile.value.textures.SKIN.metadata ? gameProfile.value.textures.SKIN.metadata.model === 'slim' : false;
     }
-    const modified = computed(() => data.url !== getters.gameProfile.textures.SKIN.url
-        || data.slim !== (getters.gameProfile.textures.SKIN.metadata ? getters.gameProfile.textures.SKIN.metadata.model === 'slim' : false));
+    const modified = computed(() => data.url !== gameProfile.value.textures.SKIN.url
+        || data.slim !== (gameProfile.value.textures.SKIN.metadata ? gameProfile.value.textures.SKIN.metadata.model === 'slim' : false));
     async function save() {
         data.loading = true;
         try {
@@ -72,6 +73,10 @@ export function useCurrentUserSkin() {
         }
     }
     onMounted(() => {
+        refreshSkin();
+        reset();
+    });
+    watch(gameProfile, () => {
         refreshSkin();
         reset();
     });
@@ -88,10 +93,16 @@ export function useCurrentUserSkin() {
 }
 
 export function useLogin() {
-    const { state, getters, commit } = useStore();
+    const { state, commit } = useStore();
     const authServices = computed(() => ['offline', ...Object.keys(state.user.authServices)]);
     const profileServices = computed(() => Object.keys(state.user.profileServices));
-    const profiles = computed(() => getters.gameProfiles);
+    const profiles = computed(() => Object.entries(state.user.users)
+        .map(([userId, user]) => Object.values(user.profiles)
+            .map((profile) => ({ ...profile, userId, authService: user.authService, profileService: user.profileService, username: user.username, accessToken: user.accessToken })))
+        .reduce((a, b) => [...a, ...b], []));
+    watch(profiles, () => {
+        console.log(`Profiles ${profiles.value}`);
+    });
     const { logined, username, authService, profileService, profileId, id } = useCurrentUser();
     const { login, switchUserProfile } = useServiceOnly('UserService', 'login', 'switchUserProfile');
     function remove(userId: string) {
@@ -132,6 +143,9 @@ export function useLogin() {
         select,
         remove,
         profiles,
+
+        selectedProfile: profileId,
+        selectedUser: id,
 
         authServices,
         profileServices,

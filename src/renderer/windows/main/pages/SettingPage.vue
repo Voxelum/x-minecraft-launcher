@@ -193,10 +193,10 @@
 </template>
 
 <script lang=ts>
-import { createComponent, reactive, ref, toRefs, watch, Ref } from '@vue/composition-api';
+import { defineComponent, reactive, ref, toRefs, watch, Ref } from '@vue/composition-api';
 import { useStore, useI18n, useParticle, useSettings, useIpc, useNativeDialog, useService } from '@/hooks';
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const ipcRenderer = useIpc();
     const dialog = useNativeDialog();

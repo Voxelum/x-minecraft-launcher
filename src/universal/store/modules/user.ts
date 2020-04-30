@@ -200,8 +200,8 @@ const mod: UserModule = {
                     .map(p => ({ ...p, textures: { SKIN: { url: '' } } }))
                     .reduce(toObjectReducer<GameProfileAndTexture, 'id'>('id'), {}),
             };
-            state.users[profile.id] = value;
             Vue.set(state.users, profile.id, value);
+            state.users[profile.id] = value;
         },
         userProfileUpdate(state, profile) {
             let user = state.users[profile.id];

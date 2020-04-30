@@ -32,9 +32,9 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, createComponent } from '@vue/composition-api';
+import { reactive, toRefs, defineComponent } from '@vue/composition-api';
 
-export default createComponent({
+export default defineComponent({
   props: {
     disabled: {
       type: Boolean,

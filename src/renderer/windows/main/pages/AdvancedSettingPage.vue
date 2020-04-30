@@ -57,7 +57,7 @@
 <script lang=ts>
 import {
   reactive,
-  createComponent,
+  defineComponent,
   toRefs,
 } from '@vue/composition-api';
 import { Java } from '@universal/store/modules/java';
@@ -69,7 +69,7 @@ import {
   useJava,
 } from '@/hooks';
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const { $t } = useI18n();
     const { showOpenDialog } = useNativeDialog();

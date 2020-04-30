@@ -1,7 +1,7 @@
 import { File, getAddonDescription, getAddonFiles, getAddonInfo, getFeaturedAddons, GetFeaturedAddonOptions, searchAddons, SearchOptions, getCategories, Category, getCategoryTimestamp, AddonInfo, getAddonDatabaseTimestamp } from '@xmcl/curseforge';
 import { Agent } from 'https';
 import ResourceService from './ResourceService';
-import Service, { Inject } from './Service';
+import Service, { Inject, Singleton } from './Service';
 
 export type ProjectType = 'mc-mods' | 'texture-packs' | 'worlds' | 'modpacks';
 
@@ -150,23 +150,24 @@ export default class CurseForgeService extends Service {
     private searchProjectCache: Record<string, AddonInfo[]> = {};
 
     private async fetchOrGetFromCache<K extends string | number, V>(cache: Record<K, V>, key: K, query: () => Promise<V>) {
-        let timestamp = await getAddonDatabaseTimestamp({ userAgent: this.userAgent });
-        if (new Date(timestamp) > new Date(this.projectTimestamp)
-            || !cache[key]) {
+        // let timestamp = await getAddonDatabaseTimestamp({ userAgent: this.userAgent });
+        if (!cache[key] /* || new Date(timestamp) > new Date(this.projectTimestamp) */) {
             let value = await query();
-            this.projectTimestamp = timestamp;
+            // this.projectTimestamp = timestamp;
             cache[key] = value;
+            // this.log(`Use catch ${}`)
             return value;
         }
         return cache[key];
     }
 
+    @Singleton()
     async loadCategories() {
         let timestamp = await getCategoryTimestamp({ userAgent: this.userAgent });
         if (this.state.curseforge.categories.length === 0
             || new Date(timestamp) > new Date(this.state.curseforge.categoriesTimestamp)) {
             let cats = await getCategories({ userAgent: this.userAgent });
-            cats = cats.filter((c) => c.rootGameCategoryId === null);
+            cats = cats.filter((c) => c.rootGameCategoryId === null && c.gameId === 432);
             this.commit('curseforgeCategories', { categories: cats, timestamp });
         }
     }
@@ -183,8 +184,12 @@ export default class CurseForgeService extends Service {
         return this.fetchOrGetFromCache(this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.userAgent }));
     }
 
-    searchProjects(searchOptions: SearchOptions) {
-        return this.fetchOrGetFromCache(this.searchProjectCache, JSON.stringify(searchOptions), () => searchAddons(searchOptions, { userAgent: this.userAgent }));
+    async searchProjects(searchOptions: SearchOptions) {
+        const addons = await this.fetchOrGetFromCache(this.searchProjectCache, JSON.stringify(searchOptions), () => searchAddons(searchOptions, { userAgent: this.userAgent }));
+        for (let addon of addons) {
+            this.projectCache[addon.id] = addon;
+        }
+        return addons;
     }
 
     fetchFeaturedProjects(getOptions: GetFeaturedAddonOptions) {

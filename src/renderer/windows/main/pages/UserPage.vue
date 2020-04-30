@@ -1,14 +1,21 @@
 <template>
   <v-container fluid grid-list-md fill-height>
-    <speed-dial :security="security" :disabled="pending" :upload="() => isImportSkinDialogShown = true" :save="exportSkin" :load="loadSkin" />
+    <speed-dial
+      :security="security"
+      :disabled="pending"
+      :upload="() => isImportSkinDialogShown = true"
+      :save="exportSkin"
+      :load="loadSkin"
+    />
 
     <v-fab-transition>
       <v-btn
         v-show="modified"
+        color="secondary"
         fab
         small
         absolute
-        style="bottom: 100px; right: 45px; z-index: 2;"
+        style="bottom: 100px; right: 55px; z-index: 2;"
         :disabled="pending"
         @click="reset"
       >
@@ -18,10 +25,11 @@
     <v-fab-transition>
       <v-btn
         v-show="modified"
+        color="secondary"
         fab
         small
         absolute
-        style="bottom: 100px; right: 157px; z-index: 2;"
+        style="bottom: 100px; right: 177px; z-index: 2;"
         :disabled="pending"
         @click="save"
       >
@@ -120,7 +128,7 @@
           <v-flex d-flex shrink>
             <v-layout wrap>
               <v-flex d-flex xs6>
-                <v-btn block :disabled="pending" color="secondary" @click="refresh()">
+                <v-btn block :disabled="pending" color="secondary" @click="refresh">
                   <v-icon left>refresh</v-icon>
                   {{ $t('user.refreshSkin') }}
                 </v-btn>
@@ -173,7 +181,7 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, createComponent } from '@vue/composition-api';
+import { reactive, toRefs, computed, defineComponent } from '@vue/composition-api';
 import {
   useCurrentUser,
   useI18n,
@@ -181,13 +189,13 @@ import {
   useNativeDialog,
   useClipboard,
 } from '@/hooks';
-import { useNotifier, useDialog } from '../hooks';
-import ChallengesDialog from './UserPage/UserPageChallengesDialog.vue';
-import ImportSkinUrlDialog from './UserPage/UserPageImportSkinUrlDialog.vue';
-import UserServicesDialog from './UserPage/UserPageUserServicesDialog.vue';
-import SpeedDial from './UserPage/UserPageSpeedDial.vue';
+import { useNotifier, useLoginDialog } from '../hooks';
+import ChallengesDialog from './UserPageChallengesDialog.vue';
+import ImportSkinUrlDialog from './UserPageImportSkinUrlDialog.vue';
+import UserServicesDialog from './UserPageUserServicesDialog.vue';
+import SpeedDial from './UserPageSpeedDial.vue';
 
-export default createComponent({
+export default defineComponent({
   components: {
     ChallengesDialog,
     UserServicesDialog,
@@ -209,6 +217,7 @@ export default createComponent({
     } = useCurrentUser();
     const { url, slim, refreshing, refresh, save, exportTo, loading, modified, reset } = useCurrentUserSkin();
     const { showOpenDialog, showSaveDialog } = useNativeDialog();
+    const { show: showLoginDialog, isSwitchingUser } = useLoginDialog();
     const { notify, watcher } = useNotifier();
     const pending = computed(() => refreshing.value || loading.value);
 
@@ -262,7 +271,7 @@ export default createComponent({
       modified,
       reset,
       updateSkinUrl,
-      refresh: watcher(refresh, () => $t('user.refreshSkinSuccess'), () => $t('user.refreshSkinFail')),
+      refresh: watcher(() => refresh(true), () => $t('user.refreshSkinSuccess'), () => $t('user.refreshSkinFail')),
       save: watcher(save, () => $t('user.skin.upload.success'), () => $t('user.skin.upload.fail')),
       loadSkin,
       exportSkin,
@@ -271,7 +280,8 @@ export default createComponent({
       pending,
 
       toggleSwitchUser() {
-        // showLoginDialog('login', true);
+        isSwitchingUser.value = true;
+        showLoginDialog();
       },
       copyToClipBoard(text: string) {
         notify('success', $t('copy.success'));

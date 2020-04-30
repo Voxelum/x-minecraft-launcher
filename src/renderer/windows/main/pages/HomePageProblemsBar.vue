@@ -30,12 +30,12 @@
 </template>
 
 <script lang=ts>
-import { computed } from '@vue/composition-api';
+import { computed, defineComponent } from '@vue/composition-api';
 import { Issue } from '@universal/store/modules/diagnose';
 import { useStore, useRouter, useService } from '@/hooks';
-import { useDialog } from '../../hooks';
+import { useDialog } from '../hooks';
 
-export default {
+export default defineComponent({
   setup() {
     const { getters } = useStore();
     const { fix } = useService('DiagnoseService');
@@ -83,7 +83,7 @@ export default {
       },
     };
   },
-};
+});
 </script>
 
 <style>

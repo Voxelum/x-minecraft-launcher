@@ -54,10 +54,10 @@
 </template>
 
 <script lang=ts>
-import { createComponent } from '@vue/composition-api';
+import { defineComponent } from '@vue/composition-api';
 import { useUpdateInfo } from '@/hooks';
 
-export default createComponent({
+export default defineComponent({
   props: {
     value: {
       type: Boolean,

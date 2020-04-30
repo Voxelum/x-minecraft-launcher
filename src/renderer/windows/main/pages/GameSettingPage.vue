@@ -21,10 +21,10 @@
 
 <script lang=ts>
 import { Frame } from '@xmcl/gamesetting';
-import { createComponent, reactive, toRefs } from '@vue/composition-api';
+import { defineComponent, reactive, toRefs } from '@vue/composition-api';
 import { useAutoSaveLoad, useInstanceGameSetting } from '@/hooks';
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const { refreshing, refresh, settings, commit } = useInstanceGameSetting();
     const data = reactive({

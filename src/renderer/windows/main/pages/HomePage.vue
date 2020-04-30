@@ -72,7 +72,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, watch } from '@vue/composition-api';
+import { defineComponent, watch } from '@vue/composition-api';
 import { LaunchException } from '@universal/util/exception';
 import {
   useI18n,
@@ -82,13 +82,13 @@ import {
   useJava,
   useQuit,
 } from '@/hooks';
-import GameExitDialog from './HomePage/HomePageGameExitDialog.vue';
-import LaunchBlockedDialog from './HomePage/HomePageLaunchBlockedDialog.vue';
-import FeedbackDialog from './HomePage/HomePageFeedbackDialog.vue';
-import LogDialog from './HomePage/HomePageLogDialog.vue';
-import HomeHeader from './HomePage/HomePageHeader.vue';
-import ProblemsBar from './HomePage/HomePageProblemsBar.vue';
-import ServerStatusBar from './HomePage/HomePageServerStatusBar.vue';
+import GameExitDialog from './HomePageGameExitDialog.vue';
+import LaunchBlockedDialog from './HomePageLaunchBlockedDialog.vue';
+import FeedbackDialog from './HomePageFeedbackDialog.vue';
+import LogDialog from './HomePageLogDialog.vue';
+import HomeHeader from './HomePageHeader.vue';
+import ProblemsBar from './HomePageProblemsBar.vue';
+import ServerStatusBar from './HomePageServerStatusBar.vue';
 import { useDialog, useNotifier } from '../hooks';
 
 function compositeLaunch() {
@@ -122,7 +122,7 @@ function compositeLaunch() {
   };
 }
 
-export default createComponent({
+export default defineComponent({
   components: {
     LaunchBlockedDialog,
     LogDialog,

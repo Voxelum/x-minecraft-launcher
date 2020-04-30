@@ -44,14 +44,14 @@
 
 <script lang=ts>
 import Vue from 'vue';
-import { createComponent, reactive, toRefs } from '@vue/composition-api';
+import { defineComponent, reactive, toRefs } from '@vue/composition-api';
 
 interface Item {
   header?: string;
   text: string;
 }
 
-export default createComponent({
+export default defineComponent({
   props: {
     createHint: {
       type: String,

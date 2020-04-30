@@ -1,16 +1,21 @@
 <template>
-  <canvas ref="canvas" :width="width" :height="height" @dragover="$emit('dragover', $event)"
-          @drop="$emit('drop', $event)" />
+  <canvas
+    ref="canvas"
+    :width="width"
+    :height="height"
+    @dragover="$emit('dragover', $event)"
+    @drop="$emit('drop', $event)"
+  />
 </template>
 
-<script>
-import { reactive, onUnmounted, watch, toRefs, ref, onMounted, computed } from '@vue/composition-api';
+<script lang=ts>
+import { reactive, onUnmounted, watch, toRefs, ref, onMounted, defineComponent } from '@vue/composition-api';
 import Model from './skin-model';
 
 const THREE = require('three');
 const OrbitControls = require('three-orbit-controls')(THREE);
 
-export default {
+export default defineComponent({
   props: {
     width: {
       type: Number,
@@ -93,7 +98,7 @@ export default {
         // renderer.render(scene, camera);
         // }
       });
-      watch([computed(() => props.href), computed(() => props.slim)], () => {
+      watch([() => props.href, () => props.slim], () => {
         character.updateSkin(props.href, props.slim);
       });
     });
@@ -103,5 +108,5 @@ export default {
       ...toRefs(data),
     };
   },
-};
+});
 </script>

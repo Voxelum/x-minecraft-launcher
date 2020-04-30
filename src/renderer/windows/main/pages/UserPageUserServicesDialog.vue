@@ -49,11 +49,11 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, onMounted, watch, createComponent } from '@vue/composition-api';
+import { reactive, toRefs, computed, onMounted, watch, defineComponent } from '@vue/composition-api';
 import { useStore } from '@/hooks';
 
-import StepperUserService from './StepperUserService.vue';
-import { useDialog } from '../../hooks';
+import StepperUserService from './UserPageUserServiceStepper.vue';
+import { useDialog } from '../hooks';
 
 interface Service {
   text: string;
@@ -61,7 +61,7 @@ interface Service {
   body: any;
 }
 
-export default createComponent({
+export default defineComponent({
   components: {
     StepperUserService,
   },

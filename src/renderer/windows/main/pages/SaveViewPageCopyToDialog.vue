@@ -42,7 +42,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent, ref } from '@vue/composition-api';
+import { defineComponent, ref } from '@vue/composition-api';
 
 export interface Props {
   cancel: () => void;
@@ -51,7 +51,7 @@ export interface Props {
   instances: string[];
 }
 
-export default createComponent<Props>({
+export default defineComponent<Props>({
   props: {
     cancel: {
       type: Function,

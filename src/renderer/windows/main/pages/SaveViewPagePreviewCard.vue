@@ -54,7 +54,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent } from '@vue/composition-api';
+import { defineComponent } from '@vue/composition-api';
 import { SaveMetadata } from '@universal/store/modules/instance';
 import unknown from '@/assets/unknown_pack.png';
 
@@ -64,7 +64,7 @@ export interface Props {
   value: SaveMetadata;
 }
 
-export default createComponent<Props>({
+export default defineComponent<Props>({
   props: {
     exportSave: {
       type: Function,

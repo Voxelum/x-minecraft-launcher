@@ -119,7 +119,7 @@
 
 <script lang=ts>
 import Vue from 'vue';
-import { createComponent, reactive, toRefs, computed, ref, Ref, onUnmounted } from '@vue/composition-api';
+import { defineComponent, reactive, toRefs, computed, ref, Ref, onUnmounted } from '@vue/composition-api';
 import { ForgeResource, LiteloaderResource } from '@universal/store/modules/resource';
 import {
   useInstanceMods,
@@ -128,9 +128,9 @@ import {
   useResourceOperation,
   useDropImport,
 } from '@/hooks';
-import ModCard from './ModSettingPage/ModCard.vue';
+import ModCard from './ModSettingPageCard.vue';
 
-export default createComponent({
+export default defineComponent({
   components: {
     ModCard,
   },

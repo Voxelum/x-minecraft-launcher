@@ -66,12 +66,12 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, createComponent } from '@vue/composition-api';
+import { reactive, toRefs, defineComponent } from '@vue/composition-api';
 import { TaskState } from '@universal/task';
 import { useClipboard, useTasks } from '@/hooks';
 import { useDialog } from '../hooks';
 
-export default createComponent({
+export default defineComponent({
   props: {
     value: {
       type: Boolean,

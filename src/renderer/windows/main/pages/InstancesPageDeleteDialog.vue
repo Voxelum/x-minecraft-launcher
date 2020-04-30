@@ -25,7 +25,7 @@
 </template>
 
 <script lang=ts>
-import { createComponent } from '@vue/composition-api';
+import { defineComponent } from '@vue/composition-api';
 
 export interface Props {
   instance?: { id: string; name: string };
@@ -33,7 +33,7 @@ export interface Props {
   cancel: () => void;
 }
 
-export default createComponent<Props>({
+export default defineComponent<Props>({
   props: {
     instance: Object,
     confirm: Function,

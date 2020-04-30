@@ -16,11 +16,11 @@
 </template>
 
 <script lang=ts>
-import { ref, onMounted, watch, createComponent } from '@vue/composition-api';
+import { ref, onMounted, watch, defineComponent } from '@vue/composition-api';
 import { useLaunch, useI18n } from '@/hooks';
 import { useDialog } from '../hooks';
 
-export default createComponent({
+export default defineComponent({
   setup() {
     const progressText = ref('');
     const { $t } = useI18n();

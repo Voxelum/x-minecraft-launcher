@@ -53,10 +53,10 @@
 </template>
 
 <script lang=ts>
-import { createComponent } from '@vue/composition-api';
+import { defineComponent } from '@vue/composition-api';
 import { useUserSecurity } from '@/hooks';
 
-export default createComponent<{ value: boolean }>({
+export default defineComponent<{ value: boolean }>({
   props: {
     value: Boolean,
   },
