@@ -1,5 +1,9 @@
 <template>
-  <v-container grid-list-md text-xs-center style="padding-left: 30px; padding-right: 30px; z-index: 1">
+  <v-container
+    grid-list-md
+    text-xs-center
+    style="padding-left: 30px; padding-right: 30px; z-index: 1"
+  >
     <v-btn
       absolute
       fab
@@ -12,28 +16,63 @@
     </v-btn>
     <v-layout row>
       <v-flex xs10>
-        <v-text-field v-model="filter" hide-details append-icon="filter_list" :label="$t('filter')" solo dark color="green darken-1" />
+        <v-text-field
+          ref="filterElem"
+          v-model="filter"
+          hide-details
+          append-icon="filter_list"
+          :label="$t('filter')"
+          solo
+          dark
+          color="green darken-1"
+        />
       </v-flex>
       <v-flex xs1>
         <v-tooltip v-model="creatingTooltip" :close-delay="0" left>
           <template v-slot:activator="{ on }">
-            <v-speed-dial open-on-hover style="z-index: 1" direction="bottom" transition="slide-y-reverse-transition">
+            <v-speed-dial
+              open-on-hover
+              style="z-index: 1"
+              direction="bottom"
+              transition="slide-y-reverse-transition"
+            >
               <template v-slot:activator>
-                <v-btn flat fab dark small style="margin-left: 5px; margin-top: 5px;" @click="createProfile"
-                       v-on="on">
+                <v-btn
+                  flat
+                  fab
+                  dark
+                  small
+                  style="margin-left: 5px; margin-top: 5px;"
+                  @click="createProfile"
+                  v-on="on"
+                >
                   <transition name="scale-transition" mode="out-in">
-                    <v-icon v-if="!draggingInstance.path" key="a" dark style="font-size: 28px; transition: all 0.2s ease;">
-                      add
-                    </v-icon>
-                    <v-icon v-else key="b" color="red" style="font-size: 28px; transition: all 0.2s ease;"
-                            @drop="onDropDelete" @dragover.prevent>
-                      delete
-                    </v-icon>
+                    <v-icon
+                      v-if="!draggingInstance.path"
+                      key="a"
+                      dark
+                      style="font-size: 28px; transition: all 0.2s ease;"
+                    >add</v-icon>
+                    <v-icon
+                      v-else
+                      key="b"
+                      color="red"
+                      style="font-size: 28px; transition: all 0.2s ease;"
+                      @drop="onDropDelete"
+                      @dragover.prevent
+                    >delete</v-icon>
                   </transition>
                 </v-btn>
               </template>
-              <v-btn style="z-index: 20;" fab small v-on="on" @mouseenter="enterAltCreate" @mouseleave="leaveAltCreate"
-                     @click="createServer">
+              <v-btn
+                style="z-index: 20;"
+                fab
+                small
+                v-on="on"
+                @mouseenter="enterAltCreate"
+                @mouseleave="leaveAltCreate"
+                @click="createServer"
+              >
                 <v-icon>storage</v-icon>
               </v-btn>
             </v-speed-dial>
@@ -44,24 +83,46 @@
       <v-flex xs1>
         <v-tooltip :close-delay="0" left>
           <template v-slot:activator="{ on }">
-            <v-speed-dial open-on-hover style="z-index: 1" direction="bottom" transition="slide-y-reverse-transition">
+            <v-speed-dial
+              open-on-hover
+              style="z-index: 1"
+              direction="bottom"
+              transition="slide-y-reverse-transition"
+            >
               <template v-slot:activator>
-                <v-btn flat fab dark small style="margin-left: 5px; margin-top: 5px;" @click="doImport(false, false)"
-                       v-on="on">
-                  <v-icon dark style="font-size: 28px">
-                    save_alt
-                  </v-icon>
+                <v-btn
+                  flat
+                  fab
+                  dark
+                  small
+                  style="margin-left: 5px; margin-top: 5px;"
+                  @click="doImport(false, false)"
+                  v-on="on"
+                >
+                  <v-icon dark style="font-size: 28px">save_alt</v-icon>
                 </v-btn>
               </template>
-              <v-btn style="z-index: 20;" fab small v-on="on" @click="doImport(true, false)" @mouseenter="enterImport($t('profile.importFolder'))"
-                     @mouseleave="leaveImport">
+              <v-btn
+                style="z-index: 20;"
+                fab
+                small
+                v-on="on"
+                @click="doImport(true, false)"
+                @mouseenter="enterImport($t('profile.importFolder'))"
+                @mouseleave="leaveImport"
+              >
                 <v-icon>folder</v-icon>
               </v-btn>
-              <v-btn style="z-index: 20;" fab small v-on="on" @mouseenter="enterImport($t('profile.importCurseforge'))"
-                     @mouseleave="leaveImport" @click="doImport(false, true)">
-                <v-icon :size="12" style="padding-right: 2px;">
-                  $vuetify.icons.curseforge
-                </v-icon>
+              <v-btn
+                style="z-index: 20;"
+                fab
+                small
+                v-on="on"
+                @mouseenter="enterImport($t('profile.importCurseforge'))"
+                @mouseleave="leaveImport"
+                @click="doImport(false, true)"
+              >
+                <v-icon :size="12" style="padding-right: 2px;">$vuetify.icons.curseforge</v-icon>
               </v-btn>
             </v-speed-dial>
           </template>
@@ -71,29 +132,50 @@
     </v-layout>
     <v-flex d-flex xs12 style="height: 10px;" />
     <v-layout row wrap style="overflow: scroll; max-height: 88vh;" justify-start fill-height>
-      <v-flex v-if="instancesByTime[0].length !== 0" style="color: grey" xs12> 
-        {{ $t('profile.today') }}
-      </v-flex>
-      <v-flex v-for="instance in instancesByTime[0]" :key="instance.path" xs6
-              @dragstart="dragStart(instance)" @dragend="dragEnd">
+      <v-flex
+        v-if="instancesByTime[0].length !== 0"
+        style="color: grey"
+        xs12
+      >{{ $t('profile.today') }}</v-flex>
+      <v-flex
+        v-for="instance in instancesByTime[0]"
+        :key="instance.path"
+        xs6
+        @dragstart="dragStart(instance)"
+        @dragend="dragEnd"
+      >
         <preview-card :profile="instance" @click.stop="selectInstance(instance.path)" />
       </v-flex>
-      <v-flex v-if="instancesByTime[1].length !== 0" style="color: grey" xs12> 
-        {{ $t('profile.threeDay') }}
-      </v-flex>
-      <v-flex v-for="instance in instancesByTime[1]" :key="instance.path" xs6
-              @dragstart="dragStart(instance)" @dragend="dragEnd">
+      <v-flex
+        v-if="instancesByTime[1].length !== 0"
+        style="color: grey"
+        xs12
+      >{{ $t('profile.threeDay') }}</v-flex>
+      <v-flex
+        v-for="instance in instancesByTime[1]"
+        :key="instance.path"
+        xs6
+        @dragstart="dragStart(instance)"
+        @dragend="dragEnd"
+      >
         <preview-card :profile="instance" @click.stop="selectInstance(instance.path)" />
       </v-flex>
-      <v-flex v-if="instancesByTime[2].length !== 0" style="color: grey" xs12> 
-        {{ $t('profile.older') }}
-      </v-flex>
-      <v-flex v-for="instance in instancesByTime[2]" :key="instance.path" xs6 
-              @dragstart="dragStart(instance)" @dragend="dragEnd">
+      <v-flex
+        v-if="instancesByTime[2].length !== 0"
+        style="color: grey"
+        xs12
+      >{{ $t('profile.older') }}</v-flex>
+      <v-flex
+        v-for="instance in instancesByTime[2]"
+        :key="instance.path"
+        xs6
+        @dragstart="dragStart(instance)"
+        @dragend="dragEnd"
+      >
         <preview-card :profile="instance" @click.stop="selectInstance(instance.path)" />
       </v-flex>
     </v-layout>
-    
+
     <delete-dialog :instance="deletingInstance" :confirm="doDelete" :cancel="cancelDelete" />
     <v-dialog v-model="wizard" persistent>
       <add-instance-stepper v-if="!creatingServer" :show="wizard" @quit="wizard=false" />
@@ -103,7 +185,7 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, onMounted, defineComponent, Ref, ref } from '@vue/composition-api';
+import { reactive, toRefs, computed, onMounted, defineComponent, Ref, ref, onUnmounted } from '@vue/composition-api';
 import { Instance } from '@universal/store/modules/instance';
 import {
   useI18n,
@@ -114,7 +196,7 @@ import {
   useCurseforgeImport,
   useOperation,
 } from '@/hooks';
-import { Notify, useNotifier } from '../hooks';
+import { Notify, useNotifier, useSearch, useSearchToggle } from '../hooks';
 import PreviewCard from './InstancesPagePreviewCard.vue';
 import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue';
 import AddServerStepper from './InstancesPageAddServerStepper.vue';
@@ -313,7 +395,25 @@ export default defineComponent({
       startDelete(inst);
     });
 
-    const filter = ref('');
+    const filterElem = ref(null) as Ref<any>;
+    const { text: filter } = useSearch();
+    const { toggle } = useSearchToggle();
+    function focusSearch(force?: boolean) {
+      if (force) {
+        filterElem.value.blur();
+      } else if (filterElem.value.isFocused) {
+        filterElem.value.blur();
+      } else {
+        filterElem.value.focus();
+      }
+    }
+    onMounted(() => {
+      toggle.value.unshift(focusSearch);
+    });
+    onUnmounted(() => {
+      toggle.value.shift();
+    });
+
     const instancesByTime = useTimeslicedInstances(useFilteredInstances(instances, filter));
 
     return {
@@ -346,6 +446,7 @@ export default defineComponent({
         selectInstance(id);
         replace('/');
       },
+      filterElem,
     };
   },
   methods: {},

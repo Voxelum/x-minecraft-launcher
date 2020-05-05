@@ -8,11 +8,7 @@ import { Task, task } from '@xmcl/task';
 import { createHash } from 'crypto';
 import { readFile, writeFile } from 'fs-extra';
 import { extname, join } from 'path';
-import { finished as fin } from 'stream';
-import { promisify } from 'util';
 import Service from './Service';
-
-const finished = promisify(fin);
 
 function sha1(data: Buffer) {
     return createHash('sha1').update(data).digest('hex');
@@ -260,14 +256,17 @@ export default class ResourceService extends Service {
     importResourceTask(uri: string, sourceInfo: DomainedSourceCollection = {}, typeHint?: string) {
         const importResource = task('importResource', async (context: Task.Context) => {
             let localResource = this.getters.queryResource(uri);
-            if (localResource) { return localResource; }
+            if (localResource !== UNKNOWN_RESOURCE) {
+                this.log(`Found existed resource for ${uri}. Return.`);
+                return localResource;
+            }
 
             let builder = createResourceBuilder(sourceInfo);
 
             let resolved = await decorateBuilderFromHost(builder, this.resourceHosts, uri, typeHint);
 
             if (!resolved) {
-                this.warn(`Cannot find the remote source of the resource ${uri}`);
+                this.warn(`Cannot find the remote source of the resource ${uri}. Return unknown resource.`);
                 return UNKNOWN_RESOURCE;
             }
 
@@ -295,15 +294,17 @@ export default class ResourceService extends Service {
                 stream.on('redirect', (m) => {
                     if (m.url) { urls.push(m.url); }
                 });
-
-                await finished(stream);
+                await new Promise((resolve, reject) => {
+                    stream.on('end', resolve);
+                    stream.on('error', reject);
+                });
 
                 return {
                     data: Buffer.concat(buffers),
                     hash: hasher.digest('hex'),
                     urls,
                 };
-            }));
+            }), 1);
 
             decorateBulderWithUrlsAndHash(builder, urls, hash);
 

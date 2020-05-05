@@ -200,7 +200,7 @@
         "@xmcl/curseforge": "^0.1.1",
         "@xmcl/forge-site-parser": "2.0.4",
         "@xmcl/gamesetting": "2.0.1",
-        "@xmcl/installer": "2.8.0",
+        "@xmcl/installer": "2.8.1",
         "@xmcl/mod-parser": "2.0.6",
         "@xmcl/model": "1.0.12",
         "@xmcl/nbt": "2.0.3",

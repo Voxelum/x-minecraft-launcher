@@ -1,5 +1,8 @@
 {
   "checkUpdate": "Check Update",
+  "fabric": {
+    "noVersion": "Cannot load the fabric version list for Minecraft {version}"
+  },
   "openUrl": {
     "cancel": "Cancel",
     "message": "The launcher want to open the {url} in your default browser. Do you allow this operation?",

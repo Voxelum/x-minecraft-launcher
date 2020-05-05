@@ -15,7 +15,7 @@
                 <project-description :project="projectId" />
               </v-tab-item>
               <v-tab-item>
-                <project-files :project="projectId" />
+                <project-files :project="projectId" :type="type" />
               </v-tab-item>
               <v-tab-item>
                 <v-card style="overflow: auto; max-width: 100%; max-height: 70vh; min-height: 70vh">
@@ -81,8 +81,8 @@
                             </v-list-tile-content>
                             <v-list-tile-action>
                               <v-icon
-                                v-if="getFileStatus(file) !== 'downloaded'"
-                              >{{ getFileStatus(file) === 'downloading' ? 'dns' : 'cloud_download' }}</v-icon>
+                                v-if="getFileStatus(file) !== 'downloading'"
+                              >{{ getFileStatus(file) === 'downloaded' ? 'dns' : 'cloud_download' }}</v-icon>
                               <v-progress-circular v-else indeterminate :size="24" :width="2" />
                             </v-list-tile-action>
                           </v-list-tile>
@@ -106,6 +106,7 @@
 
 <script lang=ts>
 import { defineComponent, reactive, toRefs, watch, computed } from '@vue/composition-api';
+import { File } from '@xmcl/curseforge';
 import {
   useCurseforgeProject,
   useCurseforgeInstall,
@@ -132,7 +133,7 @@ export default defineComponent({
   setup(props) {
     const projectId = computed(() => Number.parseInt(props.id, 10));
     const project = useCurseforgeProject(projectId.value);
-    const { install, getFileStatus } = useCurseforgeInstall();
+    const { install: installFile, getFileStatus } = useCurseforgeInstall(props.type as any);
     const { subscribe } = useNotifier();
 
     const data = reactive({
@@ -145,6 +146,10 @@ export default defineComponent({
     function viewImage(image: any) {
       data.viewingImage = true;
       data.viewedImage = image.url;
+    }
+    async function install(file: File) {
+      if (getFileStatus(file) === 'downloaded') return;
+      await installFile(file);
     }
     watch(dataRefs.tab, () => {
       switch (data.tab) {

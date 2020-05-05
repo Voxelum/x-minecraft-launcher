@@ -1,8 +1,9 @@
-import { Filter, Project, ProjectType, Version } from '@main/service/CurseForgeService';
+import { ProjectType } from '@main/service/CurseForgeService';
 import { computed, onMounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
-import { AddonInfo, File, Attachment, Category } from '@xmcl/curseforge';
+import { AddonInfo, Attachment, File } from '@xmcl/curseforge';
 import { useService } from './useService';
 import { useStore } from './useStore';
+import { useBusy } from './useSemaphore';
 
 
 /**
@@ -36,16 +37,19 @@ export function useCurseforgeProjectFiles(projectId: number) {
     };
 }
 
-export function useCurseforgeInstall() {
+export function useCurseforgeInstall(type: ProjectType) {
+    const { installFile } = useService('CurseForgeService');
+    const { state, getters } = useStore();
     function getFileStatus(file: File): 'downloading' | 'downloaded' | 'remote' {
-        return 'remote';
+        let res = getters.queryResource(file.downloadUrl);
+        if (res.type !== 'unknown') {
+            return 'downloaded';
+        }
+        let downloading = state.curseforge.downloading.find((f) => f.fileId === file.id);
+        return downloading ? 'downloading' : 'remote';
     }
     async function install(file: File) {
-        // const promise = projectFiles.install(download);
-        // if (props.type === 'modpacks') {
-        //   subscribe(promise, () => 'Download Success! Please create the instance by this modpack in instances panel', () => 'Fail to download this modpack!');
-        // }
-        // return promise;
+        return installFile({ file, type });
     }
 
     return { getFileStatus, install };
@@ -111,9 +115,9 @@ export function useCurseforgeProject(projectId: number) {
 
 export function useCurseforgeCategories() {
     const { loadCategories } = useService('CurseForgeService');
-    const { state, getters } = useStore();
+    const { state } = useStore();
     const categories = computed(() => state.curseforge.categories);
-    const refreshing = computed(() => getters.busy('loadCategories'));
+    const refreshing = useBusy('loadCategories');
     onMounted(() => {
         loadCategories();
     });

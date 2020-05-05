@@ -143,7 +143,7 @@ const mod: DiagnoseModule = {
                     if (!state.registry[id]) {
                         throw new Error(`This should not happen! Missing problem registry ${id}.`);
                     } else {
-                        state.registry[id].actived = value;
+                        state.registry[id].actived = Object.freeze(value) as any;
                     }
                 }
             }

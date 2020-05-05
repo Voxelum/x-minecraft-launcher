@@ -10,7 +10,7 @@
       <template v-for="(item) in value">
         <v-list-tile
           :key="item.version"
-          :class="{ grey: selected === item.version, 'darken-1': selected === item.version }" 
+          :class="{ grey: selected === item.version, 'darken-1' : selected === item.version }" 
           ripple 
           @click="select(item)">
           <v-list-tile-avatar>
@@ -56,7 +56,7 @@ export interface Props {
   select: (version: { version: string }) => void;
 }
 
-export default defineComponent({
+export default defineComponent<Props>({
   components: { VirtualList },
   props: {
     value: Array,

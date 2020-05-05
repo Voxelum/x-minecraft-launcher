@@ -196,7 +196,10 @@
 import { defineComponent, reactive, ref, toRefs, watch, Ref } from '@vue/composition-api';
 import { useStore, useI18n, useParticle, useSettings, useIpc, useNativeDialog, useService } from '@/hooks';
 
+import UpdateInfoDialog from './SettingPageUpdateInfoDialog.vue';
+
 export default defineComponent({
+  components: { UpdateInfoDialog },
   setup() {
     const ipcRenderer = useIpc();
     const dialog = useNativeDialog();

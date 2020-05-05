@@ -36,15 +36,6 @@ declare module './root' {
         };
     }
     interface BaseGetters {
-        /**
-         * @returns if the semaphore is 0
-         */
-        released: (semaphoreId: Semaphore) => boolean;
-
-        /**
-         * @returns true if the semaphore is not 0
-         */
-        busy: (semaphoreId: Semaphore | Semaphore[]) => boolean;
     }
     interface BaseMutations {
         root: string;

@@ -16,8 +16,9 @@ import Service, { INJECTIONS_SYMBOL, MUTATION_LISTENERS_SYMBOL } from '@main/ser
 import SettingService from '@main/service/SettingService';
 import UserService from '@main/service/UserService';
 import VersionService from '@main/service/VersionService';
-import { StaticStore, createStaticStore } from '@main/util/staticStore';
+import { createStaticStore, StaticStore } from '@main/util/staticStore';
 import storeTemplate from '@universal/store';
+import { aquire, isBusy, release } from '@universal/util/semaphore';
 import { Task, TaskHandle } from '@xmcl/task';
 import { app, ipcMain, webContents } from 'electron';
 import { EventEmitter } from 'events';
@@ -46,6 +47,8 @@ export default class StoreAndServiceManager extends Manager {
 
     private mutationEventBus = new EventEmitter();
 
+    private semaphore: Record<string, number> = {};
+
     private storeReadyPromise = new Promise((resolve) => {
         this.storeReadyCb = resolve;
     })
@@ -56,6 +59,20 @@ export default class StoreAndServiceManager extends Manager {
 
     setup() {
         ipcMain.handle('sync', (_, id) => this.storeReadyPromise.then(() => this.sync(id)));
+    }
+
+    aquire(res: string | string[]) {
+        aquire(this.semaphore, res);
+        this.managers.appManager.push('aquire', res);
+    }
+
+    release(res: string | string[]) {
+        release(this.semaphore, res);
+        this.managers.appManager.push('release', res);
+    }
+
+    isBusy(res: string) {
+        return isBusy(this.semaphore, res);
     }
 
     constructor() {
@@ -204,6 +221,7 @@ export default class StoreAndServiceManager extends Manager {
                 }
                 return { result: r };
             } catch (e) {
+                this.warn(`Error during service call session ${id}(${this.sessions[id][1]}):`);
                 this.error(e);
                 return { error: e };
             }

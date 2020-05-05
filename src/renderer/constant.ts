@@ -12,6 +12,7 @@ export const IPC_KEY: InjectionKey<IpcRenderer> = Symbol('IPC_KEY');
 export const STORE_KEY: InjectionKey<Store> = Symbol('STORE_KEY');
 export const ROUTER_KEY: InjectionKey<VueRouter> = Symbol('ROUTER_KEY');
 export const SERVICES_KEY: InjectionKey<BuiltinServices> = Symbol('SERVICES_KEY');
+export const SERVICES_SEMAPHORE_KEY: InjectionKey<Record<string, number>> = Symbol('SERVICES_SHEMAPHORE_KEY');
 export const I18N_KEY: InjectionKey<VueI18n> = Symbol('I18N_KEY');
 
 export const TASK_DICT_KEY: InjectionKey<{ [key: string]: TaskState }> = Symbol('TASK_DICT_KEY');

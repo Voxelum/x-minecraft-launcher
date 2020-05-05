@@ -1,9 +1,11 @@
 import { Status } from '@universal/store/modules/version';
 import { isNotNull } from '@universal/util/assert';
-import { computed, onMounted, onUnmounted, Ref, watch } from '@vue/composition-api';
+import { computed, onMounted, onUnmounted, reactive, Ref, toRefs, watch } from '@vue/composition-api';
+import { Version as MinecraftVersion } from '@xmcl/installer/minecraft';
 import { useInstanceVersion } from './useInstance';
 import { useService, useServiceOnly } from './useService';
-import { useBusy, useStore } from './useStore';
+import { useStore } from './useStore';
+import { useBusy } from './useSemaphore';
 
 export function useVersions() {
     return useServiceOnly('VersionService', 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory');
@@ -26,10 +28,11 @@ export function useLocalVersions() {
 export function useMinecraftVersions() {
     const { state } = useStore();
     const { refreshMinecraft } = useService('InstallService');
-    const isMinecraftRefreshing = useBusy('refreshMinecraft');
+    const refreshing = useBusy('refreshMinecraft');
     const versions = computed(() => state.version.minecraft.versions);
     const release = computed(() => state.version.minecraft.versions.find(v => v.id === state.version.minecraft.latest.release));
     const snapshot = computed(() => state.version.minecraft.versions.find(v => v.id === state.version.minecraft.latest.snapshot));
+
     const statuses = computed(() => {
         const localVersions: { [k: string]: boolean } = {};
         state.version.local.forEach((ver) => {
@@ -47,11 +50,30 @@ export function useMinecraftVersions() {
     });
 
     return {
+        statuses,
         versions,
-        isMinecraftRefreshing,
+        refreshing,
         release,
         snapshot,
-        statuses,
+        refresh: refreshMinecraft,
+    };
+}
+
+export function useMinecraftVersionFilter(filterText: Ref<string>) {
+    const data = reactive({
+        acceptingRange: '',
+        showAlpha: false,
+    });
+
+    function filter(v: MinecraftVersion) {
+        if (!data.showAlpha && v.type !== 'release') return false;
+        // if (!isCompatible(data.acceptingRange, v.id)) return false;
+        return v.id.indexOf(filterText.value) !== -1;
+    }
+
+    return {
+        ...toRefs(data),
+        filter,
     };
 }
 
@@ -77,10 +99,10 @@ export function useFabricVersions() {
 }
 
 export function useForgeVersions(minecraftVersion: Ref<string>) {
-    const { state, getters } = useStore();
+    const { state } = useStore();
     const { refreshForge } = useService('InstallService');
     const versions = computed(() => state.version.forge.find(v => v.mcversion === minecraftVersion.value)?.versions ?? []);
-    const refreshing = computed(() => getters.busy('refreshForge'));
+    const refreshing = useBusy('refreshForge');
 
     const recommended = computed(() => {
         const vers = versions.value;

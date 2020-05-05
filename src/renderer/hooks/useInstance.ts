@@ -1,10 +1,11 @@
-import { computed, onMounted, reactive, ref, Ref, toRefs } from '@vue/composition-api';
+import { computed, onMounted, reactive, ref, Ref, toRefs, onUnmounted } from '@vue/composition-api';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { CreateOption, InstanceConfig } from '@universal/store/modules/instance';
 import { Resource } from '@universal/store/modules/resource';
 import { getExpectVersion } from '@universal/util/version';
 import Vue from 'vue';
-import { useStore, useBusy } from './useStore';
+import { useStore } from './useStore';
+import { useBusy } from './useSemaphore';
 import { useCurrentUser } from './useUser';
 import { useMinecraftVersions } from './useVersion';
 import { useServiceOnly, useService } from './useService';
@@ -330,6 +331,10 @@ export function useInstanceMods() {
 
     onMounted(() => {
         data.mods = [...getters.instance.deployments.mods];
+    });
+
+    onUnmounted(() => {
+        commit();
     });
 
     return {

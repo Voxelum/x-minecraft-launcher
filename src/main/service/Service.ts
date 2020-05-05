@@ -57,21 +57,21 @@ export function Singleton(...keys: string[]) {
         const method = descriptor.value;
         const sem: any = [propertyKey, ...keys];
         const func = function (this: Service, ...arges: any[]) {
-            if (this.getters.busy(sem)) return undefined;
-            this.commit('aquire', sem);
+            if (this.isBusy(sem)) return undefined;
+            this.aquire(sem);
             let isPromise = false;
             try {
                 const result = method.apply(this, arges);
                 if (result instanceof Promise) {
                     isPromise = true;
                     result.finally(() => {
-                        this.commit('release', sem);
+                        this.release(sem);
                     });
                 }
                 return result;
             } finally {
                 if (!isPromise) {
-                    this.commit('release', sem);
+                    this.release(sem);
                 }
             }
         };
@@ -183,6 +183,18 @@ export default class Service implements Managers {
 
     protected readonly warn!: typeof console.warn;
 
+    protected isBusy(key: string) {
+        return this.storeAndServiceManager.isBusy(key);
+    }
+
+    protected aquire(key: string | string[]) {
+        this.storeAndServiceManager.aquire(key);
+    }
+
+    protected release(key: string | string[]) {
+        this.storeAndServiceManager.release(key);
+    }
+
     protected precondition(issue: string) {
         if (this.getters.isIssueActive(issue)) {
             throw new Exception({ type: 'issueBlocked', issues: [] });
@@ -203,8 +215,12 @@ export default class Service implements Managers {
             if (!valid) {
                 const context = createContext({ object: deepCopy });
                 if (validation.errors) {
-                    validation.errors.forEach(e => this.warn(e));
+                    let message = `Error to persist to the disk path "${path}" with datatype ${typeof data}:\n`;
+                    validation.errors.forEach(e => {
+                        message += `- ${e.keyword} error @[${e.dataPath}:${e.schemaPath}]: ${e.message}\n`;
+                    });
                     const cmd = validation.errors.map(e => `delete object${e.dataPath};`);
+                    this.log(message);
                     this.log(cmd.join('\n'));
                     runInContext(cmd.join('\n'), context);
                 }

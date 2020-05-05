@@ -8,12 +8,6 @@ export function useStore(): Store {
     return repo;
 }
 
-export function useBusy(semaphore: string | Function) {
-    const key = typeof semaphore === 'function' ? semaphore.name : semaphore;
-    const { state } = useStore();
-    return computed(() => state.semaphore[key] > 0);
-}
-
 export function useMutation<T extends keyof RootCommit>(key: T): (payload: Parameters<Required<RootCommit>[T]>[1]) => void {
     const { commit } = useStore();
     return payload => commit(key, payload);

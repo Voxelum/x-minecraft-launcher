@@ -1,10 +1,11 @@
+import { EMPTY_GAME_PROFILE } from '@universal/store/modules/user';
 import { UserProfile } from '@universal/store/modules/user.schema';
 import { LoginException } from '@universal/util/exception';
 import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api';
 import { useI18n } from './useI18n';
 import { useServiceOnly } from './useService';
-import { useBusy, useStore } from './useStore';
-import { EMPTY_GAME_PROFILE } from '@universal/store/modules/user';
+import { useStore } from './useStore';
+import { useBusy } from './useSemaphore';
 
 export function useCurrentUserStatus() {
     const { state, getters } = useStore();

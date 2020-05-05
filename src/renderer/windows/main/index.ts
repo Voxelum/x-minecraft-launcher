@@ -15,7 +15,6 @@ import './components';
 import MainWindow from './MainWindow.vue';
 import router from './router';
 
-
 Vue.config.productionTip = false;
 
 Vue.use(VueCompositionApi);

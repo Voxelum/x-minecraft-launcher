@@ -65,7 +65,7 @@ export default class DiagnoseService extends Service {
         this.registerMatchedFix(['missingVersionJson', 'missingVersionJar', 'corruptedVersionJson', 'corruptedVersionJar'],
             async (issues) => {
                 const i = issues[0];
-                const { minecraft, forge } = i.arguments! as LocalVersion;
+                const { minecraft, forge, fabricLoader, yarn } = i.arguments! as LocalVersion;
                 const metadata = this.state.version.minecraft.versions.find(v => v.id === minecraft);
                 if (metadata) {
                     await this.installService.installMinecraft(metadata);
@@ -81,6 +81,9 @@ export default class DiagnoseService extends Service {
                         } else {
                             this.pushException({ type: 'fixVersionNoForgeVersionMetadata', minecraft, forge });
                         }
+                    }
+                    if (fabricLoader && yarn) {
+                        await this.installService.installFabric({ yarn, loader: fabricLoader });
                     }
                     // TODO: check liteloader fabric
                 } else {
@@ -144,13 +147,15 @@ export default class DiagnoseService extends Service {
 
     @MutationTrigger('instanceSelect')
     async onInstanceSelect() {
-        this.commit('aquire', 'diagnose');
-        await this.diagnoseVersion();
-        await this.diagnoseJava();
-        await this.diagnoseMods();
-        await this.diagnoseResourcePacks();
-        await this.diagnoseServer();
-        this.commit('release', 'diagnose');
+        this.aquire('diagnose');
+        const report: Partial<IssueReport> = {};
+        await this.diagnoseVersion(report);
+        await this.diagnoseJava(report);
+        await this.diagnoseMods(report);
+        await this.diagnoseResourcePacks(report);
+        await this.diagnoseServer(report);
+        this.commit('issuesPost', report);
+        this.release('diagnose');
     }
 
     @MutationTrigger('instance')
@@ -158,58 +163,66 @@ export default class DiagnoseService extends Service {
         if (payload.path !== this.state.instance.path) {
             return;
         }
+        const report: Partial<IssueReport> = {};
         if ('runtime' in payload) {
-            this.commit('aquire', 'diagnose');
-            await this.diagnoseVersion();
-            await this.diagnoseJava();
-            await this.diagnoseMods();
-            await this.diagnoseResourcePacks();
-            await this.diagnoseServer();
-            this.commit('release', 'diagnose');
+            this.aquire('diagnose');
+            await this.diagnoseVersion(report);
+            await this.diagnoseJava(report);
+            await this.diagnoseMods(report);
+            await this.diagnoseResourcePacks(report);
+            await this.diagnoseServer(report);
+            this.release('diagnose');
+            this.commit('issuesPost', report);
             return;
         }
         if ('java' in payload) {
-            await this.diagnoseJava();
+            await this.diagnoseJava(report);
         }
         if ('deployments' in payload) {
             if ('mods' in payload.deployments) {
-                await this.diagnoseMods();
+                await this.diagnoseMods(report);
             }
             if ('resourcepacks' in payload.deployments) {
-                await this.diagnoseResourcePacks();
+                await this.diagnoseResourcePacks(report);
             }
         }
+        this.commit('issuesPost', report);
     }
 
     @MutationTrigger('userGameProfileSelect', 'userProfileUpdate')
     async onUserUpdate() {
-        await this.diagnoseUser();
+        const report: Partial<IssueReport> = {};
+        await this.diagnoseUser(report);
+        this.commit('issuesPost', report);
     }
 
     @MutationTrigger('instanceStatus')
     async onInstanceStatus() {
-        if (this.getters.busy('diagnose')) return;
-        await this.diagnoseServer();
+        const report: Partial<IssueReport> = {};
+        await this.diagnoseServer(report);
+        this.commit('issuesPost', report);
     }
 
     async init() {
-        this.commit('aquire', 'diagnose');
+        this.aquire('diagnose');
         try {
             this.log('Init with a full diagnose');
-            await this.diagnoseVersion();
-            await this.diagnoseJava();
-            await this.diagnoseMods();
-            await this.diagnoseResourcePacks();
-            await this.diagnoseServer();
-            await this.diagnoseUser();
+            const report: Partial<IssueReport> = {};
+            await this.diagnoseVersion(report);
+            await this.diagnoseJava(report);
+            await this.diagnoseMods(report);
+            await this.diagnoseResourcePacks(report);
+            await this.diagnoseServer(report);
+            await this.diagnoseUser(report);
+            this.commit('issuesPost', report);
         } finally {
-            this.commit('release', 'diagnose');
+            this.release('diagnose');
         }
     }
 
     @Singleton()
-    async diagnoseMods() {
-        this.commit('aquire', 'diagnose');
+    async diagnoseMods(report: Partial<IssueReport>) {
+        this.aquire('diagnose');
         try {
             const { runtime: version } = this.getters.instance;
             const resources = this.getters.instanceResources;
@@ -244,15 +257,15 @@ export default class DiagnoseService extends Service {
                     }
                 }
             }
-            this.commit('issuesPost', tree);
+            Object.assign(report, tree);
         } finally {
-            this.commit('release', 'diagnose');
+            this.release('diagnose');
         }
     }
 
     @Singleton()
-    async diagnoseResourcePacks() {
-        this.commit('aquire', 'diagnose');
+    async diagnoseResourcePacks(report: Partial<IssueReport>) {
+        this.aquire('diagnose');
         try {
             const { runtime: version } = this.getters.instance;
             const resources = this.getters.instanceResources;
@@ -276,15 +289,15 @@ export default class DiagnoseService extends Service {
                 }
             }
 
-            this.commit('issuesPost', tree);
+            Object.assign(report, tree);
         } finally {
-            this.commit('release', 'diagnose');
+            this.release('diagnose');
         }
     }
 
     @Singleton()
-    async diagnoseUser() {
-        this.commit('aquire', 'diagnose');
+    async diagnoseUser(report: Partial<IssueReport>) {
+        this.aquire('diagnose');
         try {
             const user = this.getters.user;
 
@@ -298,15 +311,15 @@ export default class DiagnoseService extends Service {
                 }
             }
 
-            this.commit('issuesPost', tree);
+            Object.assign(report, tree);
         } finally {
-            this.commit('release', 'diagnose');
+            this.release('diagnose');
         }
     }
 
     @Singleton()
-    async diagnoseJava() {
-        this.commit('aquire', 'diagnose');
+    async diagnoseJava(report: Partial<IssueReport>) {
+        this.aquire('diagnose');
         try {
             const instance = this.getters.instance;
             const instanceJava = this.getters.instanceJava;
@@ -336,9 +349,9 @@ export default class DiagnoseService extends Service {
                 }
             }
 
-            this.commit('issuesPost', tree);
+            Object.assign(report, tree);
         } finally {
-            this.commit('release', 'diagnose');
+            this.release('diagnose');
         }
     }
 
@@ -363,8 +376,8 @@ export default class DiagnoseService extends Service {
     }
 
     @Singleton()
-    async diagnoseServer() {
-        this.commit('aquire', 'diagnose');
+    async diagnoseServer(report: Partial<IssueReport>) {
+        this.aquire('diagnose');
         try {
             const stat = this.getters.instance.serverStatus;
 
@@ -377,15 +390,15 @@ export default class DiagnoseService extends Service {
                 tree.missingModsOnServer.push(...info.modList);
             }
 
-            this.commit('issuesPost', tree);
+            Object.assign(report, tree);
         } finally {
-            this.commit('release', 'diagnose');
+            this.release('diagnose');
         }
     }
 
     @Singleton()
-    async diagnoseVersion() {
-        this.commit('aquire', 'diagnose');
+    async diagnoseVersion(report: Partial<IssueReport>) {
+        this.aquire('diagnose');
         try {
             let id = this.state.instance.path;
             let selected = this.state.instance.all[id];
@@ -478,6 +491,7 @@ export default class DiagnoseService extends Service {
                             tree.missingVersionJar.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file) });
                         }
                     } else if (issue.role === 'assetIndex') {
+                        console.log(`R ${issue.receivedChecksum}, E ${issue.expectedChecksum}. ${issue.file}`);
                         if (issue.type === 'corrupted') {
                             tree.corruptedAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file) });
                         } else {
@@ -524,9 +538,9 @@ export default class DiagnoseService extends Service {
                     }
                 }
             }
-            this.commit('issuesPost', tree);
+            Object.assign(report, tree);
         } finally {
-            this.commit('release', 'diagnose');
+            this.release('diagnose');
         }
     }
 
@@ -550,10 +564,12 @@ export default class DiagnoseService extends Service {
             }
         }
 
+        const report: Partial<IssueReport> = {};
         const self = this as any;
         for (const action of Object.keys(recheck)) {
-            if (action in self) { self[action](); }
+            if (action in self) { self[action](report); }
         }
+        this.commit('issuesPost', report);
 
         this.commit('issuesEndResolve', unfixed);
     }

@@ -55,6 +55,7 @@
       "files": "Files",
       "images": "Images"
     },
+    "quitSearch": "Quit Search",
     "recentFiles": "Recent Files",
     "search": "Search",
     "sortby": "Sort By",
@@ -68,7 +69,6 @@
       "name": "Worlds"
     }
   },
-  "curseforge.quitSearch": "Quit Search",
   "delete": {
     "no": "No",
     "yes": "Delete"
@@ -200,6 +200,7 @@
     "name": "Error | Errors"
   },
   "fabric": {
+    "disable": "Disable Fabric",
     "showStableOnly": "Show Stable Only"
   },
   "feedback": {
@@ -317,7 +318,7 @@
   "hotkeyChanges": "Hotkey Changes",
   "importResource": {
     "": "Import Resource",
-    "checking": "Checking Local File",
+    "download": "Download Resource",
     "parsing": "Parsing Resource",
     "storing": "Storing Resource"
   },
@@ -473,6 +474,7 @@
   "market": "Market",
   "minecraft": {
     "name": "Minecraft",
+    "noVersion": "Cannot load Minecraft versions",
     "settings": "Minecraft Settings",
     "showAlpha": "Show Snapshot",
     "version": "Minecraft Version"

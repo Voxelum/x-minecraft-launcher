@@ -81,7 +81,7 @@ export interface VersionMinecraftSchema {
      */
     versions: MinecraftVersion[];
 }
-export interface VersionForgeSchema {
+export interface VersionForgeSchema extends Array<{
     /**
      * @default ""
      */
@@ -94,7 +94,7 @@ export interface VersionForgeSchema {
      * @default ""
      */
     mcversion: string;
-}
+}> { }
 export interface VersionLiteloaderSchema {
     /**
      * @default ""

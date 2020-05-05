@@ -66,11 +66,14 @@ declare module 'electron' {
 
         on(channel: 'exception', listener: (event: Electron.IpcRendererEvent, exception: Exception) => void): this;
 
-        on(channel: 'task-update', listener: (event: Electron.IpcRenderer, update: {
+        on(channel: 'task-update', listener: (event: Electron.IpcRendererEvent, update: {
             adds: { id: string; node: TaskState }[];
             childs: { id: string; node: TaskState }[];
             updates: { [id: string]: { progress?: number; total?: number; message?: string; time?: string } };
             statuses: { id: string; status: string }[];
         }) => void): this;
+
+        on(channel: 'aquire', listener: (event: Electron.IpcRendererEvent, semphores: string[] | string) => void): this;
+        on(channel: 'release', listener: (event: Electron.IpcRendererEvent, semphores: string[] | string) => void): this;
     }
 }

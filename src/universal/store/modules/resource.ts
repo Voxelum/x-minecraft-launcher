@@ -62,7 +62,7 @@ export type ImportOption = {
     background?: boolean;
 }
 
-export type Resource<T> = ResourceSchema & { metadata: T };
+export type Resource<T> = Omit<ResourceSchema, 'metadata'> & { metadata: T };
 export type AnyResource = Resource<any>;
 export type ForgeResource = Resource<Forge.ModMetaData[]> & { type: 'forge' };
 export type LiteloaderResource = Resource<LiteLoader.MetaData> & { type: 'liteloader' };

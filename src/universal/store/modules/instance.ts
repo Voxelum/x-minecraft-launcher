@@ -183,15 +183,11 @@ const mod: InstanceModule = {
         instance: state => state.all[state.path] || DEFAULT_PROFILE,
         instanceVersion: (state, getters, rootState) => {
             const current = state.all[state.path] || DEFAULT_PROFILE;
-            const runtimes = Object.keys(current.runtime);
+            const requirements = ['minecraft', 'forge', 'fabric-loader', 'yarn', 'liteloader']
+                .filter(k => current.runtime[k]);
 
-            const localVersion = rootState.version.local
-                .find(localVersion => runtimes.every(runtime => {
-                    if (runtime in localVersion) {
-                        return localVersion[runtime] === current.runtime[runtime];
-                    }
-                    return !current.runtime[runtime];
-                }));
+            const localVersion = rootState.version.local.find(loc => requirements
+                .every(name => loc[name] === current.runtime[name]));
 
             return localVersion || {
                 ...current.runtime,
@@ -312,7 +308,10 @@ const mod: InstanceModule = {
             if (typeof settings.deployments === 'object') {
                 for (const key of Object.keys(settings.deployments)) {
                     const dep = settings.deployments[key];
-                    if (dep) {
+                    if (!dep) continue;
+                    if (!inst.deployments[key]) {
+                        Vue.set(inst.deployments, key, dep);
+                    } else {
                         inst.deployments[key] = dep;
                     }
                 }

@@ -1,4 +1,5 @@
-import { File, getAddonDescription, getAddonFiles, getAddonInfo, getFeaturedAddons, GetFeaturedAddonOptions, searchAddons, SearchOptions, getCategories, Category, getCategoryTimestamp, AddonInfo, getAddonDatabaseTimestamp } from '@xmcl/curseforge';
+import { requireObject, requireString } from '@universal/util/assert';
+import { AddonInfo, File, getAddonDescription, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions, getAddonDatabaseTimestamp } from '@xmcl/curseforge';
 import { Agent } from 'https';
 import ResourceService from './ResourceService';
 import Service, { Inject, Singleton } from './Service';
@@ -130,7 +131,7 @@ export interface Modpack {
 export interface InstallFileOptions {
     file: File;
 
-    type: 'modpack' | 'mod' | 'resourcepack' | 'save';
+    type: ProjectType;
 }
 
 export default class CurseForgeService extends Service {
@@ -150,14 +151,15 @@ export default class CurseForgeService extends Service {
     private searchProjectCache: Record<string, AddonInfo[]> = {};
 
     private async fetchOrGetFromCache<K extends string | number, V>(cache: Record<K, V>, key: K, query: () => Promise<V>) {
-        // let timestamp = await getAddonDatabaseTimestamp({ userAgent: this.userAgent });
-        if (!cache[key] /* || new Date(timestamp) > new Date(this.projectTimestamp) */) {
+        let timestamp = await getAddonDatabaseTimestamp({ userAgent: this.userAgent });
+        if (!cache[key] || new Date(timestamp) > new Date(this.projectTimestamp)) {
             let value = await query();
-            // this.projectTimestamp = timestamp;
+            this.projectTimestamp = timestamp;
             cache[key] = value;
-            // this.log(`Use catch ${}`)
+            this.log(`Cache missed for "${key}"`);
             return value;
         }
+        this.log(`Cache hit for "${key}"`);
         return cache[key];
     }
 
@@ -173,18 +175,22 @@ export default class CurseForgeService extends Service {
     }
 
     async fetchProject(projectId: number) {
+        this.log(`Fetch project: ${projectId}`);
         return this.fetchOrGetFromCache(this.projectCache, projectId, () => getAddonInfo(projectId, { userAgent: this.userAgent }));
     }
 
     fetchProjectDescription(projectId: number) {
+        this.log(`Fetch project description: ${projectId}`);
         return this.fetchOrGetFromCache(this.projectDescriptionCache, projectId, () => getAddonDescription(projectId, { userAgent: this.userAgent }));
     }
 
     fetchProjectFiles(projectId: number) {
+        this.log(`Fetch project files: ${projectId}`);
         return this.fetchOrGetFromCache(this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.userAgent }));
     }
 
     async searchProjects(searchOptions: SearchOptions) {
+        this.log(`Search project: section=${searchOptions.sectionId}, category=${searchOptions.categoryId}, keyword=${searchOptions.searchFilter}`);
         const addons = await this.fetchOrGetFromCache(this.searchProjectCache, JSON.stringify(searchOptions), () => searchAddons(searchOptions, { userAgent: this.userAgent }));
         for (let addon of addons) {
             this.projectCache[addon.id] = addon;
@@ -197,12 +203,21 @@ export default class CurseForgeService extends Service {
     }
 
     async installFile({ file, type }: InstallFileOptions) {
+        requireString(type);
+        requireObject(file);
+        const typeHints: Record<ProjectType, string> = {
+            'mc-mods': 'mods',
+            'texture-packs': 'resourcepack',
+            worlds: 'save',
+            modpacks: 'curseforge-modpack',
+        };
+        this.log(`Install file ${file.displayName}(${file.downloadUrl}) in type ${type}`);
         let task = this.resourceService.importResourceTask(file.downloadUrl, {
             curseforge: {
                 projectId: file.projectId,
                 fileId: file.id,
             },
-        }, type);
+        }, typeHints[type]);
         let handle = this.taskManager.submit(task);
         this.commit('curseforgeDownloadFileStart', { fileId: file.id, taskId: handle.root.id });
         try {

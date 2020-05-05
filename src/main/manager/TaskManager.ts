@@ -227,34 +227,34 @@ export default class TaskManager extends Manager {
 
     storeReady() {
         this.heartbeat = setInterval(this.flush.bind(this), 500);
-        this.submit(Task.create('test', (c) => {
-            c.execute(Task.create('a', (ctx) => {
-                let progress = 0;
-                let paused = false;
-                ctx.pausealbe(() => {
-                    paused = true;
-                }, () => {
-                    paused = false;
-                });
-                setInterval(() => {
-                    if (!paused) {
-                        ctx.update(progress, 100, progress.toString());
-                        progress += 10;
-                        progress = progress > 100 ? 0 : progress;
-                    }
-                }, 2000);
-                return new Promise(() => { });
-            }));
-            c.execute(Task.create('b', (ctx) => {
-                let progress = 0;
-                setInterval(() => {
-                    ctx.update(progress, 100, progress.toString());
-                    progress += 10;
-                    progress = progress > 100 ? 0 : progress;
-                }, 1000);
-                return new Promise(() => { });
-            }));
-            return new Promise(() => { });
-        }));
+        // this.submit(Task.create('test', (c) => {
+        //     c.execute(Task.create('a', (ctx) => {
+        //         let progress = 0;
+        //         let paused = false;
+        //         ctx.pausealbe(() => {
+        //             paused = true;
+        //         }, () => {
+        //             paused = false;
+        //         });
+        //         setInterval(() => {
+        //             if (!paused) {
+        //                 ctx.update(progress, 100, progress.toString());
+        //                 progress += 10;
+        //                 progress = progress > 100 ? 0 : progress;
+        //             }
+        //         }, 2000);
+        //         return new Promise(() => { });
+        //     }));
+        //     c.execute(Task.create('b', (ctx) => {
+        //         let progress = 0;
+        //         setInterval(() => {
+        //             ctx.update(progress, 100, progress.toString());
+        //             progress += 10;
+        //             progress = progress > 100 ? 0 : progress;
+        //         }, 1000);
+        //         return new Promise(() => { });
+        //     }));
+        //     return new Promise(() => { });
+        // }));
     }
 }

@@ -4,7 +4,7 @@ import { DeployedInfo, InstanceLockSchema, InstanceSchema, InstancesSchema, Runt
 import { UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
 import { requireObject, requireString } from '@universal/util/assert';
 import latestRelease from '@universal/util/lasteRelease.json';
-import { fitin } from '@universal/util/object';
+import { fitin, isPrimitiveArrayEqual } from '@universal/util/object';
 import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/util/serverStatus';
 import { queryStatus, Status } from '@xmcl/client';
 import { readInfo, ServerInfo } from '@xmcl/server-info';
@@ -26,7 +26,7 @@ const INSTANCES_JSON = 'instances.json';
 const INSTANCE_LOCK_JSON = 'instance-lock.json';
 
 export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'deployments' | 'runtime' | 'server'>> {
-    deployments?: {};
+    deployments?: Record<string, string[]>;
 
     runtime?: Partial<RuntimeVersions>;
 
@@ -236,11 +236,15 @@ export class InstanceService extends Service {
 
     @MutationTrigger('instanceSelect')
     async saveInstanceSelect(path: string) {
-        await this.setPersistence({
+        await Promise.all([this.setPersistence({
             path: this.getPath(INSTANCES_JSON),
             data: { selectedInstance: path, instances: [] },
             schema: InstancesSchema,
-        });
+        }), this.setPersistence({
+            path: join(path, INSTANCE_JSON),
+            data: this.state.instance.all[path],
+            schema: InstanceSchema,
+        })]);
         this.log(`Saved instance selection ${path}`);
     }
 
@@ -372,6 +376,19 @@ export class InstanceService extends Service {
             if (key in state) {
                 if ((state as any)[key] !== (options as any)[key]) {
                     result[key] = (options as any)[key];
+                }
+            }
+        }
+
+        if ('deployments' in options && options.deployments) {
+            let deployments = options.deployments;
+            let current = state.deployments;
+            result.deployments = {};
+            for (let domain of Object.keys(deployments)) {
+                if (!current[domain]) {
+                    result.deployments[domain] = deployments[domain];
+                } else if (!isPrimitiveArrayEqual(current[domain], deployments[domain])) {
+                    result.deployments[domain] = deployments[domain];
                 }
             }
         }

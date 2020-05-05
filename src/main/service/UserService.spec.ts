@@ -12,7 +12,7 @@ describe('UserService', () => {
             state,
             getters: {
                 ...getters,
-                busy: () => false,
+                isBusy: () => false,
             },
             commit: (type: any, payload: any) => {
                 if (type === 'aquire' || type === 'release') return;

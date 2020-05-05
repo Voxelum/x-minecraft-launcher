@@ -38,6 +38,7 @@ import {
   watch,
   defineComponent,
   ref,
+  Ref,
 } from '@vue/composition-api';
 import { IpcRendererEvent } from 'electron';
 import {
@@ -49,7 +50,7 @@ import {
   useRouter,
 } from '@/hooks';
 import { provideTasks } from '@/providers/provideTasks'; 
-import { provideDialog, provideNotifier, useNotifier, provideLoginDialog } from './hooks';
+import { provideDialog, provideNotifier, useNotifier, provideLoginDialog, provideSearchToggle } from './hooks';
 import LoginDialog from './dialog/BaseLoginDialog.vue';
 import TaskDialog from './dialog/BaseTaskDialog.vue';
 import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue';
@@ -60,6 +61,8 @@ export default defineComponent({
     provideDialog();
     provideNotifier();
     provideTasks();
+
+    provideSearchToggle();
 
     const ipcRenderer = useIpc();
     const { particleMode, showParticle } = useParticle();
@@ -80,15 +83,15 @@ export default defineComponent({
     });
 
     function onSuccessed(event: IpcRendererEvent, id: string) {
-      const task = state.task.tree[id];
-      if (task.background) return;
-      notify('success', $t(task.path, task.arguments || {}));
+      // const task = state.task.tree[id];
+      // if (task.background) return;
+      // notify('success', $t(task.path, task.arguments || {}));
     }
     function onFailed(event: IpcRendererEvent, id: string, error: any) {
-      const task = state.task.tree[id];
-      if (task.background) return;
-      console.log(`Recieve fail task ${id}`);
-      notify('error', $t(task.path, task.arguments || {}), $t('task.failedDescription'), error);
+      // const task = state.task.tree[id];
+      // if (task.background) return;
+      // console.log(`Recieve fail task ${id}`);
+      // notify('error', $t(task.path, task.arguments || {}), $t('task.failedDescription'), error);
     }
     function refreshImage() {
       const img = backgroundImage;
@@ -121,6 +124,7 @@ export default defineComponent({
 
     return {
       ...toRefs(data),
+      // searchBar,
       blur,
       backgroundImage,
       particleMode,

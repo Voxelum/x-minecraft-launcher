@@ -1,7 +1,9 @@
 import { TaskHandle } from '@xmcl/task';
 import { reactive, provide } from '@vue/composition-api';
 import { BuiltinServices } from '@main/service';
-import { SERVICES_KEY, ipcRenderer } from '@/constant';
+import { SERVICES_KEY, ipcRenderer, SERVICES_SEMAPHORE_KEY } from '@/constant';
+import Vue from 'vue';
+import { release } from '@universal/util/semaphore';
 
 export function getTasks(promise: Promise<any>): string[] {
     return Reflect.get(promise, '__tasks__');
@@ -61,5 +63,21 @@ export const serviceProxy: BuiltinServices = new Proxy({} as any, {
 
 export default function provideServiceProxy() {
     provide(SERVICES_KEY, serviceProxy);
+    const semaphore: Record<string, number> = reactive({});
+    ipcRenderer.on('aquire', (e, res) => {
+        const sem = res instanceof Array ? res : [res];
+        for (const s of sem) {
+            if (s in semaphore) {
+                semaphore[s] += 1;
+            } else {
+                // semaphore[s] = 1;
+                Vue.set(semaphore, s, 1);
+            }
+        }
+    });
+    ipcRenderer.on('release', (e, res) => {
+        release(semaphore, res);
+    });
+    provide(SERVICES_SEMAPHORE_KEY, semaphore);
     return serviceProxy;
 }

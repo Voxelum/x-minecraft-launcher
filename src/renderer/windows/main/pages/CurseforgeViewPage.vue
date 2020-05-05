@@ -46,7 +46,7 @@
               <v-flex xs4 style="padding-top: 10px;">
                 <v-chip v-for="cat of proj.categories" :key="cat.name">
                   <v-avatar>
-                    <img :src="cat.avatarUrl" style="max-height:30px; max-width: 30px" >
+                    <img :src="cat.avatarUrl" style="max-height:30px; max-width: 30px">
                   </v-avatar>
                   {{ cat.name }}
                 </v-chip>

@@ -1,27 +1,33 @@
 {
     "type": "object",
-    "properties": {
-        "timestamp": {
-            "default": "",
-            "type": "string"
-        },
-        "versions": {
-            "default": [],
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/ForgeVersion"
-            }
-        },
-        "mcversion": {
-            "default": "",
-            "type": "string"
+    "additionalProperties": false,
+    "patternProperties": {
+        "^[0-9]+$": {
+            "type": "object",
+            "properties": {
+                "timestamp": {
+                    "default": "",
+                    "type": "string"
+                },
+                "versions": {
+                    "default": [],
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ForgeVersion"
+                    }
+                },
+                "mcversion": {
+                    "default": "",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "mcversion",
+                "timestamp",
+                "versions"
+            ]
         }
     },
-    "required": [
-        "mcversion",
-        "timestamp",
-        "versions"
-    ],
     "definitions": {
         "ForgeVersion": {
             "type": "object",
@@ -96,6 +102,5 @@
             ]
         }
     },
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "additionalProperties": false
+    "$schema": "http://json-schema.org/draft-07/schema#"
 }

@@ -16,6 +16,15 @@ export function deepEquals(a: any, b: any): boolean {
     }
     return a === b;
 }
+type Primitive = number | string;
+export function isPrimitiveArrayEqual(a: Primitive[], b: Primitive[]): boolean {
+    if (a instanceof Array && b instanceof Array) {
+        if (a.length !== b.length) return false;
+        return a.every((v, i) => v === b[i]);
+    }
+    return false;
+}
+
 export function diff(target: any, option: any): boolean {
     if (target === undefined && option === undefined) {
         return false;

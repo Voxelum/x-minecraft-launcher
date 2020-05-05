@@ -32,7 +32,7 @@
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api';
 import { Issue } from '@universal/store/modules/diagnose';
-import { useStore, useRouter, useService } from '@/hooks';
+import { useStore, useRouter, useService, useBusy } from '@/hooks';
 import { useDialog } from '../hooks';
 
 export default defineComponent({
@@ -42,7 +42,7 @@ export default defineComponent({
     const router = useRouter();
     const problems = computed(() => getters.issues);
     const problemsLevelColor = computed(() => (getters.issues.some(p => !p.optional) ? 'red' : 'warning'));
-    const refreshing = computed(() => getters.busy('diagnose'));
+    const refreshing = useBusy('diagnose');
     const { show: showTaskDialog } = useDialog('task');
     const { show: showJavaDialog } = useDialog('java-wizard');
     const { show: showModDialog } = useDialog('download-missing-mods');

@@ -5,69 +5,86 @@
         <span class="headline">{{ $tc('mod.name', 2) }}</span>
       </v-flex>
       <v-flex xs5>
-        <v-text-field v-model="filterText" 
-                      color="primary" 
-                      class="focus-solo" 
-                      append-icon="filter_list"
-                      :label="$t('filter')" 
-                      dark 
-                      hide-details />
+        <v-text-field
+          v-model="filterText"
+          color="primary"
+          class="focus-solo"
+          append-icon="filter_list"
+          :label="$t('filter')"
+          dark
+          hide-details
+        />
       </v-flex>
       <v-flex d-flex xs6 style="padding-right: 5px;">
         <v-card ref="leftList" dark class="card-list" @dragover.prevent>
           <v-card-title>
-            <span v-if="filteringModId === ''" class="text-sm-center" style="width: 100%; font-size: 16px;"> 
-              {{ $t('mod.unselected') }}
-            </span>
-            <v-chip v-else outline color="white" class="text-sm-center" close label @input="filteringModId = ''">
-              modid = {{ filteringModId }}
-            </v-chip>
+            <span
+              v-if="filteringModId === ''"
+              class="text-sm-center"
+              style="width: 100%; font-size: 16px;"
+            >{{ $t('mod.unselected') }}</span>
+            <v-chip
+              v-else
+              outline
+              color="white"
+              class="text-sm-center"
+              close
+              label
+              @input="filteringModId = ''"
+            >modid = {{ filteringModId }}</v-chip>
           </v-card-title>
-          <hint 
-            v-if="unselectedItems.length === 0" 
-            icon="save_alt" 
-            :text="$t('mod.hint')" 
+          <hint
+            v-if="unselectedItems.length === 0"
+            icon="save_alt"
+            :text="$t('mod.hint')"
             :absolute="true"
             style="height: 100%"
           />
           <div v-else class="list">
-            <mod-card v-for="(item, index) in unselectedItems" 
-                      :key="item[0].hash"
-                      v-observe-visibility="{
+            <mod-card
+              v-for="(item, index) in unselectedItems"
+              :key="item[0].hash"
+              v-observe-visibility="{
                         callback: (v) => onLeftSeen(v, index),
                         once: true,
-                      }" 
-                      :data="item[0]" 
-                      :index="item[1]"
-                      :is-selected="false"
-                      @dragstart="draggingMod = true"
-                      @dragend="draggingMod = false"
-                      @click="setFilteredModid(item[0])" />
+                      }"
+              :data="item[0]"
+              :index="item[1]"
+              :is-selected="false"
+              @dragstart="draggingMod = true"
+              @dragend="draggingMod = false"
+              @click="setFilteredModid(item[0])"
+            />
           </div>
         </v-card>
       </v-flex>
       <v-flex d-flex xs6 style="padding-left: 5px;" @drop="draggingMod=false">
         <v-card ref="rightList" dark class="card-list right">
           <v-card-title>
-            <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('mod.selected') }} </span> 
+            <span
+              class="text-sm-center"
+              style="width: 100%; font-size: 16px;"
+            >{{ $t('mod.selected') }}</span>
           </v-card-title>
-          <hint 
-            v-if="selectedItems.length === 0" 
-            icon="save_alt" 
-            :text="$t('mod.hint')" 
+          <hint
+            v-if="selectedItems.length === 0"
+            icon="save_alt"
+            :text="$t('mod.hint')"
             :absolute="true"
             style="height: 100%"
           />
           <div v-else class="list">
-            <mod-card v-for="(item, index) in selectedItems" 
-                      :key="item[0].hash" 
-                      v-observe-visibility="{
+            <mod-card
+              v-for="(item, index) in selectedItems"
+              :key="item[0].hash"
+              v-observe-visibility="{
                         callback: (v) => onRightSeen(v, index),
                         once: true,
-                      }" 
-                      :data="item[0]" 
-                      :index="index" 
-                      :is-selected="true" />
+                      }"
+              :data="item[0]"
+              :index="index"
+              :is-selected="true"
+            />
           </div>
         </v-card>
       </v-flex>
@@ -82,33 +99,29 @@
         fab
         bottom
         color="red"
-        @dragover.prevent 
+        @dragover.prevent
         @drop="onDropDelete"
       >
-        <v-icon> delete </v-icon>
+        <v-icon>delete</v-icon>
       </v-btn>
     </v-fab-transition>
     <v-dialog v-model="isDeletingMod" width="400" persistance>
       <v-card>
         <v-card-title primary-title>
           <div>
-            <h3 class="headline mb-0">
-              {{ $t('mod.deletion', { mod: deletingMod? deletingMod.name:'' }) }}
-            </h3>
-            <div> {{ $t('mod.deletionHint') }} </div>
+            <h3
+              class="headline mb-0"
+            >{{ $t('mod.deletion', { mod: deletingMod? deletingMod.name:'' }) }}</h3>
+            <div>{{ $t('mod.deletionHint') }}</div>
           </div>
         </v-card-title>
 
         <v-divider />
         <v-card-actions>
-          <v-btn flat @click="isDeletingMod = false; deletingMod = null">
-            {{ $t('no') }}
-          </v-btn>
+          <v-btn flat @click="isDeletingMod = false; deletingMod = null">{{ $t('no') }}</v-btn>
           <v-spacer />
           <v-btn flat color="red" @click="onConfirmDeleteMod">
-            <v-icon left>
-              delete
-            </v-icon>
+            <v-icon left>delete</v-icon>
             {{ $t('yes') }}
           </v-btn>
         </v-card-actions>
@@ -120,7 +133,7 @@
 <script lang=ts>
 import Vue from 'vue';
 import { defineComponent, reactive, toRefs, computed, ref, Ref, onUnmounted } from '@vue/composition-api';
-import { ForgeResource, LiteloaderResource } from '@universal/store/modules/resource';
+import { ForgeResource, LiteloaderResource, Resource } from '@universal/store/modules/resource';
 import {
   useInstanceMods,
   useDragTransferList,
@@ -129,6 +142,8 @@ import {
   useDropImport,
 } from '@/hooks';
 import ModCard from './ModSettingPageCard.vue';
+
+type ModResource = ForgeResource | LiteloaderResource;
 
 export default defineComponent({
   components: {
@@ -160,18 +175,32 @@ export default defineComponent({
       i => add(unusedModResources.value[i]),
       remove,
     );
-    onUnmounted(commit);
 
-    function filterText(mod: any) {
+    function filterText(mod: Resource<any>) {
       const text = data.filterText;
       if (!text) return true;
       return mod.name.toLowerCase().indexOf(text.toLowerCase()) !== -1;
     }
-    function filterForgeMod(mod: any) {
+    function filterForgeMod(mod: Resource<any>) {
       if (data.filteringModId !== '') {
-        return mod.metadata[0] ? mod.metadata[0].modid === data.filteringModId : false;
+        if (mod.type === 'forge') {
+          return mod.metadata[0] ? mod.metadata[0].modid === data.filteringModId : false;
+        }
       }
       return filterText(mod);
+    }
+    function dedup(mods: readonly [ModResource, number][], mod: readonly [ModResource, number]) {
+      let r = mod[0];
+
+      if (r.type === 'forge') {
+        let modid = r.metadata[0].modid;
+        if (data.filteringModId !== '') {
+          (mods as any).push(mod);
+        } else if (!mods.find(m => m[0].type === 'forge' && m[0].metadata[0].modid === modid)) {
+          (mods as any).push(mod);
+        }
+      }
+      return mods;
     }
 
     const { filter: filterLeft, onItemVisibile: onLeftSeen } = useProgressiveLoad();
@@ -180,7 +209,9 @@ export default defineComponent({
     const unselectedItems = computed(() => unusedModResources.value
       .map((r, i) => [r, i] as const)
       .filter((a) => filterForgeMod(a[0]))
+      .reduce(dedup, [])
       .filter(filterLeft));
+
     const selectedItems = computed(() => usedModResources.value
       .map((r, i) => [r, i] as const)
       .filter((a) => filterText(a[0]))

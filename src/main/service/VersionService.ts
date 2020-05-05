@@ -25,7 +25,7 @@ export default class VersionService extends Service {
             ?.name.split(':')[2]?.split('-')?.[1] || '');
         this.registerVersionProvider('liteloader', (v) => v.libraries.find(l => l.name.startsWith('com.mumfrey:liteloader:'))
             ?.name.split(':')[2] || '');
-        this.registerVersionProvider('fabric-loader', (v) => v.libraries.find(l => l.name.startsWith('net.fabricmc:fabric-loader:'))
+        this.registerVersionProvider('fabricLoader', (v) => v.libraries.find(l => l.name.startsWith('net.fabricmc:fabric-loader:'))
             ?.name.split(':')[2] || '');
         this.registerVersionProvider('yarn', (v) => v.libraries.find(l => l.name.startsWith('net.fabricmc:yarn:'))
             ?.name.split(':')[2] || '');
@@ -38,7 +38,7 @@ export default class VersionService extends Service {
     async init() {
         this.versionsWatcher.watch(this.getGameAssetsPath('versions'));
     }
-
+    
     protected async parseVersion(versionFolder: string): Promise<LocalVersion> {
         const resolved = await Version.parse(this.state.root, versionFolder);
         const minecraft = resolved.minecraftVersion;
@@ -82,9 +82,11 @@ export default class VersionService extends Service {
         * Read local folder
         */
         let files: string[];
+        let patch = false;
         if (force) {
             files = await readdirEnsured(this.getGameAssetsPath('versions'));
         } else if (this.versionLoaded) {
+            patch = true;
             files = this.versionsWatcher.getStateAndReset();
         } else {
             files = await readdirEnsured(this.getGameAssetsPath('versions'));
@@ -103,7 +105,13 @@ export default class VersionService extends Service {
         }
 
         if (versions.length !== 0) {
-            this.commit('localVersions', versions);
+            if (patch) {
+                for (let version of versions) {
+                    this.commit('localVersion', version);
+                }
+            } else {
+                this.commit('localVersions', versions);
+            }
             this.log(`Found ${versions.length} local game versions.`);
         } else {
             this.log('No local game version found.');

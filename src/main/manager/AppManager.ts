@@ -292,6 +292,12 @@ export default class AppManager extends Manager {
         return false;
     }
 
+    push(channel: string, payload: any) {
+        Object.values(this.windows).map(w => w.webContents).forEach(c => {
+            c.send(channel, payload);
+        });
+    }
+
     showItemInFolder = shell.showItemInFolder;
 
     quit = app.quit;

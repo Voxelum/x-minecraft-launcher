@@ -54,6 +54,7 @@
       "files": "文件",
       "images": "图片"
     },
+    "quitSearch": "退出搜索",
     "recentFiles": "近期文件",
     "search": "搜索",
     "sortby": "排序依据",
@@ -67,7 +68,6 @@
       "name": "世界存档"
     }
   },
-  "curseforge.quitSearch": "退出搜索",
   "delete": {
     "no": "取消",
     "yes": "删除"
@@ -101,9 +101,17 @@
       "": "缺少%{count}个游戏资源",
       "message": "启动器将自动下载并安装游戏文件"
     },
+    "corruptedAssets": {
+      "": "有%{count}个游戏资源可能损坏",
+      "message": "启动器将重新下载游戏文件"
+    },
     "missingAssetsIndex": {
       "": "%{version}缺少游戏资源目录",
       "message": "启动器将自动下载并安装游戏资源目录"
+    },
+    "corruptedAssetsIndex": {
+      "": "{version}游戏资源目录可能损坏.",
+      "message": "启动器将重新下载游戏资源目录"
     },
     "missingAuthlibInjector": {
       "": "需要安装 authlib-injector",
@@ -112,6 +120,18 @@
     "missingForgeJar": {
       "": "缺少对应 Minecraft {minecraft} 版本的 Forge {forge} 依赖文件",
       "message": "启动器将自动安装Forge文件"
+    },
+    "corruptedLibraries": {
+      "": "库文件损坏: {name} | 库文件损坏: {name} | {count} 个库文件损坏 | {count} 个库文件损坏",
+      "message": "启动器将重新下载损坏的文件"
+    },
+    "corruptedVersionJar": {
+      "": "Minecraft %{version} 游戏 Jar 文件损坏.",
+      "message": "启动器将重新下载损坏的文件"
+    },
+    "corruptedVersionJson": {
+      "": "Minecraft %{version} 版本 Json 文件损坏.",
+      "message": "启动器将重新下载损坏的文件"
     },
     "missingJava": {
       "": "没有分配Java",
@@ -151,6 +171,7 @@
   "downloadUpdate": "下载更新",
   "edit": "编辑",
   "fabric": {
+    "disable": "不启用 Fabric",
     "showStableOnly": "只显示稳定版"
   },
   "feedback": {
@@ -269,6 +290,7 @@
   "importResource": {
     "": "导入资源",
     "checking": "检查本地文件",
+    "download": "下载资源文件",
     "parsing": "解析资源",
     "storing": "存储资源"
   },
@@ -302,12 +324,12 @@
     "": "安装 Forge",
     "downloadInstaller": "下载 Forge 安装器",
     "downloadJar": "下载 Forge Jar 文件",
+    "installForgeJar": "安装 Forge Jar 文件",
+    "installForgeJson": "安装 Forge Json 文件",
     "installLibraries": {
       "": "安装依赖库",
       "library": "检查库"
     },
-    "installForgeJar": "安装 Forge Jar 文件",
-    "installForgeJson": "安装 Forge Json 文件",
     "postProcessing": "处理 Minecraft Jar 文件"
   },
   "installJre": {
@@ -424,6 +446,7 @@
   "market": "市场",
   "minecraft": {
     "name": "Minecraft",
+    "noVersion": "无法加载 Minecraft 版本列表",
     "settings": "Minecraft设置",
     "showAlpha": "显示快照版",
     "version": "Minecraft 版本"
@@ -572,7 +595,7 @@
     "url": "URL",
     "version": "游戏版本",
     "versionHint": "这个游戏使用的Minecraft版本",
-    "versionSetting": "客户端配置",
+    "versionSetting": "版本管理",
     "vmOptions": "JVM 启动选项",
     "vmOptionsCreateHint": "回车创建 JVM 启动选项",
     "vmOptionsHint": "创建或者选择 JVM 启动选项"

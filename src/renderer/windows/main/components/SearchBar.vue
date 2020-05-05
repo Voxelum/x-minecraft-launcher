@@ -4,7 +4,8 @@
       v-show="show"
       ref="self"
       v-model="text"
-      style="position: fixed; z-index: 2; right: 30px"
+      style="position: fixed; z-index: 2;"
+      :style="{ top: `${top}px`, right: `${right}px` }"
       solo
       append-icon="filter_list"
       @focus="focused = true"
@@ -17,46 +18,46 @@
 <script lang=ts>
 import Vue from 'vue';
 import { defineComponent, inject, ref, onMounted, onUnmounted, Ref } from '@vue/composition-api';
+import { useSearch, useSearchToggle } from '../hooks';
 
 export default defineComponent({
   setup() {
-    const show = inject('search-bar-shown', ref(false));
-    const text = inject('search-text', ref(''));
+    const show = ref(false);
+    const { text } = useSearch();
+    const { toggle } = useSearchToggle();
+    const top = inject('search-top', ref(30));
+    const right = inject('search-right', ref(30));
     const focused = ref(false);
     const self: Ref<any> = ref(null);
-    function handleKeydown(e: KeyboardEvent) {
-      if (e.code === 'KeyF' && (e.ctrlKey || e.metaKey)) {
-        if (show.value && !focused.value) {
-          Vue.nextTick(() => {
-            self.value.focus();
-          });
-        } else {
-          show.value = !show.value;
-          Vue.nextTick(() => {
-            self.value.focus();
-          });
-        }
-      }
-    }
-    function handleKeyup(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
+    function toggleBar(force?: boolean) {
+      if (force) {
         show.value = false;
+        return;
+      }
+      if (show.value && !focused.value) {
+        Vue.nextTick(() => {
+          self.value.focus();
+        });
+      } else {
+        show.value = !show.value;
+        Vue.nextTick(() => {
+          self.value.focus();
+        });
       }
     }
     onMounted(() => {
-      document.addEventListener('keyup', handleKeyup);
-      document.addEventListener('keydown', handleKeydown);
+      toggle.value.unshift(toggleBar);
     });
     onUnmounted(() => {
-      document.addEventListener('keyup', handleKeyup);
-      document.addEventListener('keydown', handleKeydown);
+      toggle.value.shift();
     });
     return {
       show,
       focused,
       self,
       text,
-      handleKeyup,
+      top,
+      right,
     };
   },
 });
