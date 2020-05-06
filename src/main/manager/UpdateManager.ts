@@ -36,7 +36,7 @@ export default class UpdateManager extends Manager {
         autoUpdater.autoDownload = store.state.setting.autoDownload;
         autoUpdater.allowPrerelease = store.state.setting.allowPrerelease;
 
-        this.managers.storeAndServiceManager.getService(BaseService)!.checkUpdate();
+        this.managers.serviceManager.getService(BaseService)!.checkUpdate();
     }
 
     async downloadUpdate() {

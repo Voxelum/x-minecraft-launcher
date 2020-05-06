@@ -1,11 +1,12 @@
+import { StaticStore } from '@main/util/staticStore';
 import { App } from 'electron';
-import { Store } from 'vuex';
 import AppManager from './AppManager';
+import LogManager from './LogManager';
 import NetworkManager from './NetworkManager';
-import StoreAndServiceManager from './StoreAndServiceManager';
+import ServiceManager from './ServiceManager';
+import StoreManager from './StoreManager';
 import TaskManager from './TaskManager';
 import UpdateManager from './UpdateManager';
-import LogManager from './LogManager';
 
 export abstract class Manager {
     protected managers!: Managers;
@@ -16,7 +17,7 @@ export abstract class Manager {
 
     appReady(app: App): Promise<void> | void { }
 
-    storeReady(store: Store<any>): Promise<void> | void { }
+    storeReady(store: StaticStore<any>): Promise<void> | void { }
     /* eslint-enable */
 
     log(m: any, ...args: any[]) { this.managers.logManager.log(m, ...args); }
@@ -28,8 +29,9 @@ export abstract class Manager {
 export interface Managers {
     appManager: AppManager;
     networkManager: NetworkManager;
-    storeAndServiceManager: StoreAndServiceManager;
+    serviceManager: ServiceManager;
     taskManager: TaskManager;
     updateManager: UpdateManager;
     logManager: LogManager;
+    storeManager: StoreManager;
 }

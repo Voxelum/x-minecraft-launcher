@@ -29,12 +29,9 @@ export function useInstance() {
     return {
         ...refs,
         author,
-        /**
-         * min memory
-         */
         maxMemory,
         minMemory,
-        isServer: computed(() => instance.server !== undefined),
+        isServer: computed(() => instance.server !== null),
         javaPath,
         server,
         refreshing,

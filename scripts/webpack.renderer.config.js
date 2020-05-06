@@ -146,6 +146,8 @@ const rendererConfig = {
         new BundleAnalyzerPlugin({
             analyzerMode: 'static',
             reportFilename: 'renderer.report.html',
+            generateStatsFile: true,
+            statsFilename: 'stat.renderer.json',
             openAnalyzer: false,
         }),
     ],

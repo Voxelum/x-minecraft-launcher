@@ -25,15 +25,17 @@ if (!app.isDefaultProtocolClient('xmcl')) {
 import { Manager, Managers } from './manager';
 import AppManager from "./manager/AppManager";
 import NetworkManager from "./manager/NetworkManager";
-import StoreAndServiceManager from "./manager/StoreAndServiceManager";
+import ServiceManager from "./manager/ServiceManager";
 import TaskManager from "./manager/TaskManager";
 import UpdateManager from "./manager/UpdateManager";
 import LogManager from './manager/LogManager';
+import StoreManager from './manager/StoreManager';
 
 const managers: Managers = {
     appManager: new AppManager(),
     networkManager: new NetworkManager(),
-    storeAndServiceManager: new StoreAndServiceManager(),
+    serviceManager: new ServiceManager(),
+    storeManager: new StoreManager(),
     taskManager: new TaskManager(),
     updateManager: new UpdateManager(),
     logManager: new LogManager(),
@@ -48,7 +50,7 @@ async function main() {
     await Promise.all(manList.map(m => m.rootReady(managers.appManager.root)));
     await app.whenReady();
     await Promise.all(manList.map(m => m.appReady(app)));
-    await Promise.all(manList.map(m => m.storeReady(managers.storeAndServiceManager.store!)));
+    await Promise.all(manList.map(m => m.storeReady(managers.storeManager.store)));
 }
 
 main();

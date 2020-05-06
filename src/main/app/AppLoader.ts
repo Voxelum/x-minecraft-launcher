@@ -1,6 +1,5 @@
 import { writeFile, readFile, createWriteStream } from 'fs-extra';
 import { join } from 'path';
-import { getRawIfUpdate } from '@xmcl/installer/util';
 import { Script } from 'vm';
 import got from 'got';
 import { net, Session } from 'electron';
@@ -19,7 +18,7 @@ import { LauncherAppController } from './LauncherAppController';
 // }
 
 export class AppLoader {
-    constructor(readonly name: string, readonly cacheRoot: string, private host: string) {
+    constructor(private host: string, private cacheRoot: string) {
     }
 
     async loadController() {
@@ -60,7 +59,6 @@ export class AppLoader {
 
     async ensureAssetFile(path: string) {
         let host = this.host;
-
 
         const cacheMetadata = join(this.cacheRoot, `${path}.cache`);
         const timestamp = await readFile(cacheMetadata).then((b) => b.toString(), () => '');

@@ -72,9 +72,9 @@ export default defineComponent({
   },
   setup(props) {
     const canvas = ref(null);
-    const data = reactive({
+    const data = {
       disposed: false,
-    });
+    };
     const { model } = useSkinModel(computed(() => props.href), computed(() => props.slim));
     onUnmounted(() => {
       data.disposed = true;
@@ -112,7 +112,6 @@ export default defineComponent({
 
     return {
       canvas,
-      ...toRefs(data),
     };
   },
 });

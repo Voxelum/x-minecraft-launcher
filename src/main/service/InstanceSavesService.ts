@@ -95,9 +95,6 @@ function getSaveMetadata(path: string, instanceName: string) {
     };
 }
 
-/**
- * A 
- */
 export default class InstanceSavesService extends Service {
     protected watcher = new FileStateWatcher(false, () => true);
 

@@ -102,10 +102,15 @@ export interface InstanceSchema {
     */
     java: string;
 
-    resolution: { width: number; height: number; fullscreen: boolean } | undefined;
-    minMemory: number | undefined;
-    maxMemory: number | undefined;
-
+    resolution: { width: number; height: number; fullscreen: boolean } | null;
+    /**
+     * @default 0
+     */
+    minMemory: number;
+    /**
+     * @default 0
+     */
+    maxMemory: number;
     /**
      * @default []
      */
@@ -125,9 +130,9 @@ export interface InstanceSchema {
     icon: string;
 
     /**
-     * @default null
+     * @default ""
      */
-    image: string | null;
+    image: string;
     /**
      * @default 0
      */
@@ -141,16 +146,14 @@ export interface InstanceSchema {
      * @default 0
      */
     creationDate: number;
-
     /**
      * The option for instance to launch server directly
+     * @default null
      */
-    server?: {
+    server: {
         host: string;
         port?: number;
-    };
-
-    licence?: string;
+    } | null;
 }
 
 export interface InstancesSchema {

@@ -20,8 +20,9 @@ import { MOUSE, TOUCH } from 'three/src/constants';
 //    Orbit - left mouse / touch: one-finger move
 //    Zoom - middle mouse, or mousewheel / touch: two-finger spread or squish
 //    Pan - right mouse, or left mouse + ctrl/meta/shiftKey, or arrow keys / touch: two-finger move
-class OrbitControls {
+class OrbitControls extends EventDispatcher {
     constructor(object, domElement) {
+        super();
         if (domElement === undefined) console.warn('THREE.OrbitControls: The second parameter "domElement" is now mandatory.');
         if (domElement === document) console.error('THREE.OrbitControls: "document" should not be used as the target "domElement". Please use "renderer.domElement" instead.');
         this.object = object;
@@ -651,9 +652,6 @@ class OrbitControls {
     }
 }
 
-OrbitControls.prototype = Object.create(EventDispatcher.prototype);
-OrbitControls.prototype.constructor = OrbitControls;
-
 
 // This set of controls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
@@ -662,17 +660,18 @@ OrbitControls.prototype.constructor = OrbitControls;
 //    Orbit - right mouse, or left mouse + ctrl/meta/shiftKey / touch: two-finger rotate
 //    Zoom - middle mouse, or mousewheel / touch: two-finger spread or squish
 //    Pan - left mouse, or arrow keys / touch: one-finger move
-class MapControls {
-    constructor(object, domElement) {
-        OrbitControls.call(this, object, domElement);
-        this.mouseButtons.LEFT = MOUSE.PAN;
-        this.mouseButtons.RIGHT = MOUSE.ROTATE;
-        this.touches.ONE = TOUCH.PAN;
-        this.touches.TWO = TOUCH.DOLLY_ROTATE;
-    }
-}
+// class MapControls extends EventDispatcher {
+//     constructor(object, domElement) {
+//         super();
+//         OrbitControls.call(this, object, domElement);
+//         this.mouseButtons.LEFT = MOUSE.PAN;
+//         this.mouseButtons.RIGHT = MOUSE.ROTATE;
+//         this.touches.ONE = TOUCH.PAN;
+//         this.touches.TWO = TOUCH.DOLLY_ROTATE;
+//     }
+// }
 
-MapControls.prototype = Object.create(EventDispatcher.prototype);
-MapControls.prototype.constructor = MapControls;
+// MapControls.prototype = Object.create(EventDispatcher.prototype);
+// MapControls.prototype.constructor = MapControls;
 
-export { OrbitControls, MapControls };
+export { OrbitControls };

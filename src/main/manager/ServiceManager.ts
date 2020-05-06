@@ -16,67 +16,37 @@ import Service, { INJECTIONS_SYMBOL, MUTATION_LISTENERS_SYMBOL } from '@main/ser
 import SettingService from '@main/service/SettingService';
 import UserService from '@main/service/UserService';
 import VersionService from '@main/service/VersionService';
-import { createStaticStore, StaticStore } from '@main/util/staticStore';
-import storeTemplate from '@universal/store';
+import { StaticStore } from '@main/util/staticStore';
 import { aquire, isBusy, release } from '@universal/util/semaphore';
 import { Task, TaskHandle } from '@xmcl/task';
-import { app, ipcMain, webContents } from 'electron';
+import { app, ipcMain } from 'electron';
 import { EventEmitter } from 'events';
 import { join } from 'path';
 import { Manager } from '.';
 
+// eslint-disable-next-line @typescript-eslint/type-annotation-spacing
+type Constructor<T> = new () => T;
 
-export default class StoreAndServiceManager extends Manager {
-    private registeredServices: (new () => Service)[] = [];
+export default class ServiceManager extends Manager {
+    private registeredServices: Constructor<Service>[] = [];
 
     private services: Service[] = [];
 
     private serviceMap: { [name: string]: Service } = {};
 
-    public store: StaticStore<any> | null = null;
-
     private usedSession = 0;
 
     private sessions: { [key: number]: [() => Promise<void>, string] } = {};
 
-    private checkPointId = 0;
-
-    private checkPoint: any;
-
-    private storeReadyCb = () => { };
-
     private mutationEventBus = new EventEmitter();
 
     private semaphore: Record<string, number> = {};
-
-    private storeReadyPromise = new Promise((resolve) => {
-        this.storeReadyCb = resolve;
-    })
 
     getService<T extends typeof Service>(service: T): InstanceType<T> | undefined {
         return this.serviceMap[service.name] as any;
     }
 
     setup() {
-        ipcMain.handle('sync', (_, id) => this.storeReadyPromise.then(() => this.sync(id)));
-    }
-
-    aquire(res: string | string[]) {
-        aquire(this.semaphore, res);
-        this.managers.appManager.push('aquire', res);
-    }
-
-    release(res: string | string[]) {
-        release(this.semaphore, res);
-        this.managers.appManager.push('release', res);
-    }
-
-    isBusy(res: string) {
-        return isBusy(this.semaphore, res);
-    }
-
-    constructor() {
-        super();
         this.registerService(AuthLibService);
         this.registerService(CurseForgeService);
         this.registerService(DiagnoseService);
@@ -97,13 +67,26 @@ export default class StoreAndServiceManager extends Manager {
         this.registerService(InstanceIOService);
     }
 
-    protected registerService(s: new () => Service) { this.registeredServices.push(s); }
+    aquire(res: string | string[]) {
+        aquire(this.semaphore, res);
+        this.managers.appManager.push('aquire', res);
+    }
 
-    private setupService(root: string) {
+    release(res: string | string[]) {
+        release(this.semaphore, res);
+        this.managers.appManager.push('release', res);
+    }
+
+    isBusy(res: string) {
+        return isBusy(this.semaphore, res);
+    }
+
+    protected registerService(s: Constructor<Service>) { this.registeredServices.push(s); }
+
+    private setupService(store: StaticStore<any>, root: string) {
         this.log(`Setup service ${root}`);
         const userPath = join(app.getPath('appData'), 'voxelauncher');
         const managers = this.managers;
-        const store = this.store!;
         const mcPath = join(app.getPath('appData'), this.managers.appManager.platform.name === 'osx' ? 'minecraft' : '.minecraft');
 
         Object.defineProperties(Service.prototype, {
@@ -162,11 +145,7 @@ export default class StoreAndServiceManager extends Manager {
     }
 
     async rootReady(root: string) {
-        this.store = createStaticStore(storeTemplate);
-        this.store.commit('root', root);
-        // this.store = new Store(template);
-        this.setupService(root);
-        this.setupAutoSync();
+        this.setupService(this.managers.storeManager.store!, root);
 
         for (const s of this.services) {
             for (const key of Object.keys(s)) {
@@ -186,7 +165,7 @@ export default class StoreAndServiceManager extends Manager {
 
         this.setupAutoSave();
 
-        this.storeReadyCb();
+        this.managers.storeManager.setLoadDone();
     }
 
     async appReady() {
@@ -199,13 +178,11 @@ export default class StoreAndServiceManager extends Manager {
             this.error(e);
         }
         this.log(`Successfully init modules. Total Time is ${Date.now() - startingTime}ms.`);
-        this.setupReciever();
+
+        this.setupSessionReciever();
     }
 
-    private setupReciever() {
-        ipcMain.handle('commit', (event, type, payload) => {
-            this.store!.commit(type, payload);
-        });
+    private setupSessionReciever() {
         ipcMain.handle('session', (event, id) => {
             if (!this.sessions[id]) {
                 this.error(`Unknown session ${id}!`);
@@ -265,35 +242,9 @@ export default class StoreAndServiceManager extends Manager {
      * Auto save to listen any incoming mutations and call the save function for each services 
      */
     private setupAutoSave() {
-        this.store!.subscribe((mutation) => {
+        this.managers.storeManager.store!.subscribe((mutation) => {
             this.mutationEventBus.emit(mutation.type, mutation.payload);
             this.services.map(s => s.save({ mutation: mutation.type as any, payload: mutation.payload }));
-        });
-    }
-
-    private sync(currentId: number) {
-        const checkPointId = this.checkPointId;
-        this.log(`Sync from renderer: ${currentId}, main: ${checkPointId}.`);
-        if (currentId === checkPointId) {
-            return undefined;
-        }
-        return {
-            state: JSON.parse(JSON.stringify(this.checkPoint)),
-            length: checkPointId,
-        };
-    }
-
-    /**
-     * Auto sync will watch every mutation and send to each client,
-     * and it will response for `sync` channel which will send the mutation histories to the client.
-     */
-    private setupAutoSync() {
-        this.store!.subscribe((mutation, state) => {
-            this.checkPoint = state;
-            this.checkPointId += 1; // record the total order
-            webContents.getAllWebContents().forEach((w) => {
-                w.send('commit', mutation, this.checkPointId);
-            });
         });
     }
 }

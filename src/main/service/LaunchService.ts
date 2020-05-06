@@ -82,8 +82,8 @@ export default class LaunchService extends Service {
                 gamePath: minecraftFolder.root,
                 resourcePath: this.state.root,
                 javaPath,
-                minMemory: instance.minMemory,
-                maxMemory: instance.maxMemory,
+                minMemory: instance.minMemory ? instance.minMemory : undefined,
+                maxMemory: instance.maxMemory ? instance.maxMemory : undefined,
                 version,
                 extraExecOption: {
                     detached: true,

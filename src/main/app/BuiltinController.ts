@@ -228,4 +228,8 @@ export default class BuiltinController extends LauncherAppController {
     async dataReady(): Promise<void> {
         this.mainRef!.show();
     }
+
+    updateProgress(progress: number) {
+        this.mainRef!.setProgressBar(progress, { mode: 'normal' });
+    }
 }

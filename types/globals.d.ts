@@ -30,14 +30,6 @@ declare module 'in-gfw' {
     export = GFW;
 }
 
-declare module 'static/protocol.json' {
-    type ProtocolToVersion = {
-        [protocol: string]: string[];
-    };
-    const protocolToVersion: ProtocolToVersion;
-    export = protocolToVersion;
-}
-
 declare module 'universal/utils/packFormatMapping.json' {
     type PackFormatToVersioRange = {
         [range: string]: string;
@@ -48,7 +40,7 @@ declare module 'universal/utils/packFormatMapping.json' {
 
 declare module 'vue-virtual-scroll-list' {
     import { Component } from 'vue';
-    const component: Component<any, any, any, { size: number; remain: numebr }>;
+    const component: Component<any, any, any, { size: number; remain: number }>;
     export = component;
 }
 
@@ -60,6 +52,7 @@ declare namespace NodeJS {
 
 declare const __static: string;
 
+// webpack import image to url
 declare module '*.png' {
     const value: string;
     export default value;

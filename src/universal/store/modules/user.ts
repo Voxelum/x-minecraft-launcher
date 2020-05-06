@@ -1,5 +1,5 @@
 import { YggdrasilAuthAPI, ProfileServiceAPI, GameProfile } from '@xmcl/user';
-import { fitin, toObjectReducer } from '@universal/util/object';
+import { toObjectReducer, assignShallow } from '@universal/util/object';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { GameProfileAndTexture, UserProfile, UserSchema } from './user.schema';
@@ -145,7 +145,9 @@ const mod: UserModule = {
     },
     mutations: {
         userSnapshot(state, snapshot) {
-            fitin(state, snapshot);
+            state.clientToken = snapshot.clientToken;
+            assignShallow(state.selectedUser, snapshot.selectedUser);
+
             if (typeof snapshot.users === 'object') {
                 state.users = snapshot.users;
             }

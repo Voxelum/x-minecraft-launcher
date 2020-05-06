@@ -33,12 +33,12 @@ export interface UserProfile {
     authService: string;
 
     /**
-     * The access token of the 
+     * The access token of the user
      */
     accessToken: string;
 
     /**
-     * All avaiable pgame rofiles
+     * All avaiable game profiles
      */
     profiles: { [uuid: string]: GameProfileAndTexture };
 }

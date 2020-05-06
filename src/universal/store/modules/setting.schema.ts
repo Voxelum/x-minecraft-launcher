@@ -43,9 +43,9 @@ export interface SettingSchema {
     allowPrerelease: boolean;
     /**
      * The default background image url
-     * @default null 
+     * @default ""
      */
-    defaultBackgroundImage: string | null;
+    defaultBackgroundImage: string;
     /**
      * The default blur factor
      * @default 0

@@ -4,7 +4,7 @@ import { Exception, Exceptions } from '@universal/util/exception';
 import { Task, TaskHandle } from '@xmcl/task';
 import NetworkManager from '@main/manager/NetworkManager';
 import AppManager from '@main/manager/AppManager';
-import StoreAndServiceManager from '@main/manager/StoreAndServiceManager';
+import ServiceManager from '@main/manager/ServiceManager';
 import TaskManager from '@main/manager/TaskManager';
 import UpdateManager from '@main/manager/UpdateManager';
 import LogManager from '@main/manager/LogManager';
@@ -12,6 +12,7 @@ import { createContext, runInContext } from 'vm';
 import { readFile, ensureFile, writeFile } from 'fs-extra';
 import Ajv from 'ajv';
 import Schema from '@universal/store/Schema';
+import StoreManager from '@main/manager/StoreManager';
 
 export const INJECTIONS_SYMBOL = Symbol('__injections__');
 export const MUTATION_LISTENERS_SYMBOL = Symbol('__listeners__');
@@ -117,13 +118,15 @@ export default class Service implements Managers {
 
     networkManager!: NetworkManager;
 
-    storeAndServiceManager!: StoreAndServiceManager;
+    serviceManager!: ServiceManager;
 
     taskManager!: TaskManager;
 
     updateManager!: UpdateManager;
 
     logManager!: LogManager;
+
+    storeManager!: StoreManager;
 
     /**
      * Submit a task into the task manager. 
@@ -184,15 +187,15 @@ export default class Service implements Managers {
     protected readonly warn!: typeof console.warn;
 
     protected isBusy(key: string) {
-        return this.storeAndServiceManager.isBusy(key);
+        return this.serviceManager.isBusy(key);
     }
 
     protected aquire(key: string | string[]) {
-        this.storeAndServiceManager.aquire(key);
+        this.serviceManager.aquire(key);
     }
 
     protected release(key: string | string[]) {
-        this.storeAndServiceManager.release(key);
+        this.serviceManager.release(key);
     }
 
     protected precondition(issue: string) {

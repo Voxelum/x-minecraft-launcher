@@ -4,7 +4,7 @@ import { DeployedInfo, InstanceLockSchema, InstanceSchema, InstancesSchema, Runt
 import { UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
 import { requireObject, requireString } from '@universal/util/assert';
 import latestRelease from '@universal/util/lasteRelease.json';
-import { fitin, isPrimitiveArrayEqual } from '@universal/util/object';
+import { isPrimitiveArrayEqual, assignShallow } from '@universal/util/object';
 import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/util/serverStatus';
 import { queryStatus, Status } from '@xmcl/client';
 import { readInfo, ServerInfo } from '@xmcl/server-info';
@@ -157,7 +157,18 @@ export class InstanceService extends Service {
         instance.author = instance.author || getters.gameProfile?.name || '';
         instance.runtime.minecraft = latestRelease.id;
 
-        fitin(instance, option);
+        assignShallow(instance, option);
+        if (option.runtime) {
+            assignShallow(instance.runtime, option.runtime);
+        }
+        if (option.resolution) {
+            if (instance.resolution) {
+                assignShallow(instance.resolution, option.resolution);
+            } else {
+                instance.resolution = option.resolution;
+            }
+        }
+        Object.assign(instance.deployments, option.deployments);
 
         commit('instanceAdd', instance);
 
@@ -273,7 +284,18 @@ export class InstanceService extends Service {
 
         let instance = createTemplate();
 
-        fitin(instance, payload);
+        assignShallow(instance, payload);
+        if (payload.runtime) {
+            assignShallow(instance.runtime, payload.runtime);
+        }
+        if (payload.resolution) {
+            if (instance.resolution) {
+                assignShallow(instance.resolution, payload.resolution);
+            } else {
+                instance.resolution = payload.resolution;
+            }
+        }
+        Object.assign(instance.deployments, payload.deployments);
 
         instance.path = this.getPathUnder(v4());
         instance.runtime.minecraft = this.getters.minecraftRelease.id;

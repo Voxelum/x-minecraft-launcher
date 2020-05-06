@@ -26,4 +26,6 @@ export abstract class LauncherAppController {
     abstract dataReady(store: StaticStore<string>): Promise<void>;
 
     abstract requestOpenExternalUrl(url: string): Promise<boolean>;
+
+    abstract updateProgress(progress: number): void;
 }

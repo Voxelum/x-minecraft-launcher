@@ -9,6 +9,7 @@ import { ParsedUrlQuery } from 'querystring';
 import { parse as parseUrl } from 'url';
 import { Store } from 'vuex';
 import { Manager } from '.';
+import { AppLoader } from '@main/app/AppLoader';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -78,7 +79,11 @@ const appData = app.getPath('appData');
 const persistRoot = `${appData}/voxelauncher`;
 const cfgFile = `${appData}/voxelauncher/launcher.json`;
 
-export default class AppManager extends Manager {
+export type ExtendsApp = Pick<typeof ipcMain, 'handle'>
+
+export interface AppManager extends ExtendsApp {
+}
+export class AppManager extends Manager {
     public app = app;
 
     /**
@@ -101,6 +106,11 @@ export default class AppManager extends Manager {
     private trustedSites: string[] = [];
 
     readonly platform = getPlatform();
+
+    constructor() {
+        super();
+        this.handle = ipcMain.handle;
+    }
 
     private async persistRoot(root: string) {
         try {
@@ -165,7 +175,9 @@ export default class AppManager extends Manager {
             const { host, query } = parseUrl(url, true);
             if (host === 'app') {
                 // TODO: implement app
-
+                const host = query.url as string;
+                let loader = new AppLoader(host, join(host));
+                let controller = await loader.loadController();
             } else if (host === 'window') {
                 const windowUrl = query.url;
                 const name = query.name as string || url;
@@ -179,6 +191,10 @@ export default class AppManager extends Manager {
         } catch (e) {
             this.error(e);
         }
+    }
+
+    updateProgress(progress: number) {
+        this.controller!.updateProgress(progress);
     }
 
     /**
@@ -292,9 +308,9 @@ export default class AppManager extends Manager {
         return false;
     }
 
-    push(channel: string, payload: any) {
+    push(channel: string, ...payload: any[]) {
         Object.values(this.windows).map(w => w.webContents).forEach(c => {
-            c.send(channel, payload);
+            c.send(channel, ...payload);
         });
     }
 
@@ -304,3 +320,5 @@ export default class AppManager extends Manager {
 
     exit = app.exit;
 }
+
+export default AppManager;

@@ -4,7 +4,7 @@ import { ServerInfo } from '@xmcl/server-info';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { DeployedInfo, InstanceLockSchema, InstanceSchema } from './instance.schema';
-import { EMPTY_JAVA, Java } from './java';
+import { Java } from './java';
 import { Resource } from './resource';
 import { LocalVersion } from './version';
 
@@ -125,8 +125,8 @@ export function createTemplate(): Instance {
         name: '',
 
         resolution: { width: 800, height: 400, fullscreen: false },
-        minMemory: undefined,
-        maxMemory: undefined,
+        minMemory: 0,
+        maxMemory: 0,
         vmOptions: [],
         mcOptions: [],
 
@@ -150,6 +150,7 @@ export function createTemplate(): Instance {
         optionalDeployments: [],
         image: '',
         blur: 4,
+        server: null,
 
         author: '',
         description: '',
@@ -288,10 +289,10 @@ const mod: InstanceModule = {
                 }
             }
 
-            if ('minMemory' in settings && (typeof settings.minMemory === 'number' || typeof settings.minMemory === 'undefined')) {
+            if ('minMemory' in settings && (typeof settings.minMemory === 'number')) {
                 inst.minMemory = settings.minMemory;
             }
-            if ('maxMemory' in settings && (typeof settings.maxMemory === 'number' || typeof settings.maxMemory === 'undefined')) {
+            if ('maxMemory' in settings && (typeof settings.maxMemory === 'number')) {
                 inst.maxMemory = settings.maxMemory;
             }
 

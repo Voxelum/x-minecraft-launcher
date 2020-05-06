@@ -75,11 +75,6 @@ interface Getters {
      */
     minecraftRelease: Installer.Version;
     minecraftVersion: (mcversion: string) => Installer.Version | undefined;
-
-    liteloaderVersionsOf: (mcversion: string) => {
-        snapshot?: LiteLoaderInstaller.Version;
-        release?: LiteLoaderInstaller.Version;
-    };
 }
 
 interface Mutations {
@@ -139,7 +134,6 @@ const mod: VersionModule = {
         minecraftRelease: state => state.minecraft.versions.find(v => v.id === state.minecraft.latest.release) || lastestRelease,
 
         minecraftVersion: state => version => state.minecraft.versions.find(v => v.id === version),
-        liteloaderVersionsOf: state => version => state.liteloader.versions[version],
     },
     mutations: {
         localVersions(state, local) {
