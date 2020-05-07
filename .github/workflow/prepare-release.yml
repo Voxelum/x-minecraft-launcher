@@ -27,16 +27,6 @@ jobs:
     - name: Build
       run: |
         npm run build
-    - name: Draft Release
-        id: create_release
-        uses: actions/create-release@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: true
-          prerelease: true
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v1.4.1
       env:
