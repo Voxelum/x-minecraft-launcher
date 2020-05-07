@@ -1,8 +1,8 @@
 name: Release
 
 on:
-  issue_comment:
-    types: [created, deleted, edited]
+  pull_request:
+    types: [assigned, opened, synchronize, reopened, edited]
   # pull_request:
   #   type: [closed]
   #   branches:
