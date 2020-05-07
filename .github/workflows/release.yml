@@ -26,7 +26,7 @@ jobs:
         npm ci
     - name: npm build
       run: |
-        npm build
+        npm run build
     - name: upload distribution
       uses: actions/upload-artifact@v2
       with:
