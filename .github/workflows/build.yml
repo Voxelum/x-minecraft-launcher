@@ -1,8 +1,6 @@
 name: Build
 
 on:
-  pull_request:
-    types: [assigned, opened, synchronize, reopened, edited]
   push:
     branches:
       - dev

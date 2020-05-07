@@ -134,8 +134,7 @@
         },
         "snap": {
             "publish": [
-                "github",
-                "custom"
+                "github"
             ]
         }
     },
