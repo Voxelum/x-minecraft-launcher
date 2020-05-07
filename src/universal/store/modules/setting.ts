@@ -1,45 +1,43 @@
-import { Module, Context } from "../store";
-import { UpdateInfo } from "electron-updater";
-import { SettingConfig } from "./setting.config";
+import { UpdateInfo } from 'electron-updater';
+import { ModuleOption } from '../root';
+import { ParticleMode, SettingSchema } from './setting.schema';
 
-export declare namespace SettingModule {
-    interface State extends SettingConfig {
-        /**
-         * All supported languages of the launcher
-         */
-        locales: string[];
-        updateInfo: UpdateInfo | null;
-        readyToUpdate: boolean;
-        checkingUpdate: boolean;
-        downloadingUpdate: boolean;
-    }
-
-    interface Mutations {
-        config(state: State, payload: SettingConfig & { locales: string[] }): void;
-        locale(state: State, locale: string): void;
-        allowPrerelease(state: State, allow: boolean): void;
-        autoInstallOnAppQuit(state: State, autoInstallOnAppQuit: boolean): void;
-        readyToUpdate(state: State, readyToUpdate: boolean): void;
-        autoDownload(state: State, autoDownload: boolean): void;
-        updateInfo(state: State, updateInfo: UpdateInfo): void;
-        downloadingUpdate(state: State, prog: boolean): void;
-        checkingUpdate(state: State, prog: boolean): void;
-        settings(state: State, settings: { [key: string]: number | string | boolean | object }): void;
-        defaultBackgroundImage(state: State, img: string | null): void;
-        defaultBlur(state: State, blur: number): void;
-        useBmclApi(state: State, use: boolean): void;
-    }
-    type C = Context<State, {}, Mutations, Actions>;
-    interface Actions {
-        downloadUpdate(context: C): Promise<string>;
-        quitAndInstall(context: C): Promise<void>;
-        checkUpdate(context: C): Promise<string>;
-    }
+interface State extends SettingSchema {
+    /**
+     * All supported languages of the launcher
+     */
+    locales: string[];
+    updateInfo: UpdateInfo | null;
+    readyToUpdate: boolean;
+    checkingUpdate: boolean;
+    downloadingUpdate: boolean;
 }
-export interface SettingModule extends Module<"setting", SettingModule.State, {}, SettingModule.Mutations, SettingModule.Actions> { }
+
+interface Mutations {
+    config: SettingSchema & { locales: string[] };
+    locale: string;
+    allowPrerelease: boolean;
+    autoInstallOnAppQuit: boolean;
+    readyToUpdate: boolean;
+    autoDownload: boolean;
+    updateInfo: UpdateInfo;
+    downloadingUpdate: boolean;
+    checkingUpdate: boolean;
+    settings: { [key: string]: number | string | boolean | object };
+    defaultBackgroundImage: string;
+    defaultBlur: number;
+    useBmclApi: boolean;
+    showParticle: boolean;
+    particleMode: ParticleMode;
+}
+
+
+export type SettingModule = ModuleOption<State, {}, Mutations, {}>;
 
 const mod: SettingModule = {
     state: {
+        roots: [],
+        primaryRoot: '',
         locale: '',
         locales: [],
         updateInfo: null,
@@ -49,9 +47,11 @@ const mod: SettingModule = {
         downloadingUpdate: false,
         checkingUpdate: false,
         autoDownload: false,
-        defaultBackgroundImage: null,
+        defaultBackgroundImage: '',
         defaultBlur: 0,
         useBmclAPI: true,
+        showParticle: false,
+        particleMode: ParticleMode.REPULSE,
     },
     mutations: {
         downloadingUpdate(state, d) { state.downloadingUpdate = !!d; },
@@ -79,6 +79,8 @@ const mod: SettingModule = {
             state.autoInstallOnAppQuit = config.autoDownload || false;
             state.allowPrerelease = config.allowPrerelease || false;
             state.useBmclAPI = typeof config.useBmclAPI === 'boolean' ? config.useBmclAPI : true;
+            state.showParticle = config.showParticle;
+            state.particleMode = config.particleMode;
         },
         settings(state, settings) {
             // Object.assign(state.settings, settings);
@@ -89,10 +91,11 @@ const mod: SettingModule = {
         defaultBlur(state, blur) {
             if (typeof blur === 'number') state.defaultBlur = blur;
         },
-        useBmclApi(state, use) {
-            state.useBmclAPI = use;
-        },
+        useBmclApi(state, use) { state.useBmclAPI = use; },
+        showParticle(state, v) { state.showParticle = v; },
+        particleMode(state, v) { state.particleMode = v; },
     },
 };
 
 export default mod;
+export { ParticleMode };

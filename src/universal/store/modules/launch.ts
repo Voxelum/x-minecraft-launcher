@@ -1,23 +1,18 @@
-import { Module, Context } from "../store";
+import { ModuleOption } from '../root';
 
-export type C = Context<State, {}, Mutations, Actions>;
-export interface Actions {
-    launch(context: C, profileId?: string): Promise<boolean>;
-}
+export type LaunchStatus = 'ready' | 'checkingProblems' | 'launching' | 'launched' | 'minecraftReady';
 
-type Status = 'ready' | 'checkingProblems' | 'launching' | 'launched' | 'minecraftReady' | 'error';
-export interface State {
-    status: Status;
+interface State {
+    status: LaunchStatus;
     errorType: string;
     errors: any[];
 }
-
-export interface Mutations {
-    launchStatus(state: State, status: Status): void;
-    launchErrors(state: State, error: { type: string; content: any[] }): void;
+interface Mutations {
+    launchStatus: LaunchStatus;
+    launchErrors: { type: string; content: any[] };
 }
 
-export type LauncherModule = Module<"launch", State, {}, Mutations, Actions>;
+export type LauncherModule = ModuleOption<State, {}, Mutations, {}>;
 
 const mod: LauncherModule = {
     state: {

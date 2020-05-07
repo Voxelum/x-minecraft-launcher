@@ -4,7 +4,6 @@ const path = require('path');
 
 const { dependencies } = require('../package.json');
 
-
 process.env.NODE_ENV = 'development';
 
 /**

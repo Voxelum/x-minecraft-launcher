@@ -2,12 +2,13 @@
 
 process.env.NODE_ENV = 'production';
 
-const { say } = require('cfonts');
 const chalk = require('chalk');
 const del = require('del');
 const { spawn } = require('child_process');
 const webpack = require('webpack');
 const Multispinner = require('multispinner');
+const { writeFileSync } = require('fs');
+const { join } = require('path');
 
 
 const mainConfig = require('./webpack.main.config');
@@ -22,14 +23,12 @@ if (process.env.BUILD_TARGET === 'clean') clean();
 else build();
 
 function clean() {
-    del.sync(['build/*', '!build/icons', '!build/icons/icon.*']);
+    del.sync(['build/*', '!build/icons', '!build/icons/icon.*', '!build/electron-publisher-customer.js']);
     console.log(`\n${doneLog}\n`);
     process.exit();
 }
 
 function build() {
-    greeting();
-
     del.sync(['dist/electron/*', '!.gitkeep']);
 
     const tasks = ['main', 'renderer'];
@@ -87,6 +86,12 @@ function pack(config) {
 
                 reject(err);
             } else {
+                writeFileSync(join(__dirname, '..', 'dist', `${config.target}-status.log`), stats.toString({
+                    version: true,
+                    children: true,
+                    chunks: true,
+                    chunkModules: true,
+                }));
                 resolve(stats.toString({
                     chunks: false,
                     colors: true,
@@ -94,22 +99,4 @@ function pack(config) {
             }
         });
     });
-}
-
-function greeting() {
-    const cols = process.stdout.columns;
-    let text = '';
-
-    if (cols > 85) text = 'lets-build';
-    else if (cols > 60) text = 'lets-|build';
-    else text = false;
-
-    if (text && !isCI) {
-        say(text, {
-            colors: ['yellow'],
-            font: 'simple3d',
-            space: false,
-        });
-    } else console.log(chalk.yellow.bold('\n  lets-build'));
-    console.log();
 }

@@ -1,0 +1,106 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "patternProperties": {
+        "^[0-9]+$": {
+            "type": "object",
+            "properties": {
+                "timestamp": {
+                    "default": "",
+                    "type": "string"
+                },
+                "versions": {
+                    "default": [],
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ForgeVersion"
+                    }
+                },
+                "mcversion": {
+                    "default": "",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "mcversion",
+                "timestamp",
+                "versions"
+            ]
+        }
+    },
+    "definitions": {
+        "ForgeVersion": {
+            "type": "object",
+            "properties": {
+                "mcversion": {
+                    "description": "The minecraft version",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "The forge version (without minecraft version)",
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "installer": {
+                    "$ref": "#/definitions/ForgeDownload"
+                },
+                "universal": {
+                    "$ref": "#/definitions/ForgeDownload"
+                },
+                "changelog": {
+                    "description": "The changelog info",
+                    "$ref": "#/definitions/ForgeDownload"
+                },
+                "mdk": {
+                    "$ref": "#/definitions/ForgeDownload"
+                },
+                "source": {
+                    "$ref": "#/definitions/ForgeDownload"
+                },
+                "launcher": {
+                    "$ref": "#/definitions/ForgeDownload"
+                },
+                "type": {
+                    "description": "The type of the forge release. The `common` means the normal release.",
+                    "enum": [
+                        "buggy",
+                        "common",
+                        "latest",
+                        "recommended"
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "date",
+                "installer",
+                "mcversion",
+                "type",
+                "universal",
+                "version"
+            ]
+        },
+        "ForgeDownload": {
+            "type": "object",
+            "properties": {
+                "md5": {
+                    "type": "string"
+                },
+                "sha1": {
+                    "type": "string"
+                },
+                "path": {
+                    "description": "The url path to concat with forge maven",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "path",
+                "sha1"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+}

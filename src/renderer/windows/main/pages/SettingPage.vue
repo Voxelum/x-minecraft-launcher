@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-md fluid style="z-index: 1">
+  <v-container grid-list-md fluid style="z-index: 2">
     <v-layout wrap style="padding: 6px; 8px; overflow: auto; max-height: 95vh" fill-height>
       <v-flex d-flex xs12 tag="h1" style="margin-bottom: 20px; " class="white--text">
         <span class="headline">{{ $tc('setting.name', 2) }}</span>
@@ -15,7 +15,11 @@
               </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-select v-model="selectedLang" style="max-width: 185px;" dark hide-details :items="langs" />
+              <v-select v-model="selectedLocale" 
+                        style="max-width: 185px;" 
+                        dark 
+                        hide-details 
+                        :items="locales" />
             </v-list-tile-action>
           </v-list-tile>
           <v-list-tile>
@@ -99,6 +103,25 @@
               <v-list-tile-sub-title> {{ $t('setting.allowPrereleaseDescription') }} </v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
+          <v-subheader>{{ $t('setting.appearance') }}</v-subheader>
+          <v-list-tile avatar>
+            <v-list-tile-action>
+              <v-checkbox v-model="showParticle" />
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title> {{ $t('setting.showParticle') }} </v-list-tile-title>
+              <v-list-tile-sub-title> {{ $t('setting.showParticleDescription') }} </v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile>
+            <v-list-tile-content>
+              <v-list-tile-title> {{ $t('setting.particleMode') }} </v-list-tile-title>
+              <v-list-tile-sub-title> {{ $t('setting.particleModeDescription') }} </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-select v-model="particleMode" :items="particleModes" />
+            </v-list-tile-action>
+          </v-list-tile>
         </v-list>
       </v-flex>
 
@@ -111,7 +134,7 @@
       </p> -->
     </v-layout>
 
-    <dialog-update-info v-model="viewingUpdateDetail" />
+    <update-info-dialog v-model="viewingUpdateDetail" />
     <v-dialog :value="reloadDialog" :persistent="!reloadError">
       <v-card v-if="!reloading" dark>
         <v-card-title>
@@ -142,7 +165,7 @@
             {{ $t('cancel') }}
           </v-btn>
           <v-spacer />
-          <v-btn flat large @click="doApplyRoot(rootLocation, true)">
+          <v-btn flat large @click="doApplyRoot()">
             {{ $t('setting.apply') }}
           </v-btn>
         </v-card-actions>
@@ -161,7 +184,7 @@
         </v-card-text>
         <v-card-actions v-if="reloadError">
           <v-btn>
-            Ok
+            {{ $t('ok') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -169,101 +192,80 @@
   </v-container>
 </template>
 
-<script>
-import langIndex from 'static/locales/index.json';
+<script lang=ts>
+import { defineComponent, reactive, ref, toRefs, watch, Ref } from '@vue/composition-api';
+import { useStore, useI18n, useParticle, useSettings, useIpc, useNativeDialog, useService } from '@/hooks';
 
-export default {
-  data() {
-    return {
-      rootLocation: this.$repo.state.root,
+import UpdateInfoDialog from './SettingPageUpdateInfoDialog.vue';
+
+export default defineComponent({
+  components: { UpdateInfoDialog },
+  setup() {
+    const ipcRenderer = useIpc();
+    const dialog = useNativeDialog();
+    const { showParticle, particleMode } = useParticle();
+    const { state } = useStore();
+    const settings = useSettings();
+    const { $t } = useI18n();
+    const { openDirectory } = useService('BaseService');
+    const data = reactive({
+      rootLocation: state.root,
 
       clearData: false,
       migrateData: false,
 
       reloadDialog: false,
       reloading: false,
-      reloadError: undefined,
+      reloadError: undefined as undefined | Error,
 
       viewingUpdateDetail: false,
+    });
+
+    const particleModes: Ref<{ value: string; text: string }[]> = ref(['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) })));
+    watch(settings.selectedLocale, () => {
+      particleModes.value = ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) }));
+    });
+    return {
+      ...toRefs(data),
+      ...settings,
+      locales: settings.locales.value.map(l => ({ text: l, value: l })),
+      showParticle,
+      particleMode,
+      particleModes,
+      viewUpdateDetail() {
+        data.viewingUpdateDetail = true;
+      },
+      showRootDir() {
+        openDirectory(data.rootLocation);
+      },
+      async browseRootDir() {
+        const { filePaths } = await dialog.showOpenDialog({
+          title: $t('setting.selectRootDirectory'),
+          defaultPath: data.rootLocation,
+          properties: ['openDirectory', 'createDirectory'],
+        });
+        if (filePaths && filePaths.length !== 0) {
+          data.rootLocation = filePaths[0];
+          data.reloadDialog = true;
+        }
+      },
+      doCancelApplyRoot() {
+        data.reloadDialog = false;
+        data.rootLocation = state.root;
+      },
+      doApplyRoot() {
+        data.reloading = true;
+        ipcRenderer.once('root', (error) => {
+          data.reloading = false;
+          if (error) {
+            // data.reloadError = error;
+          } else {
+            data.reloadDialog = false;
+          }
+        });
+        ipcRenderer.send('root', { path: data.rootLocation, migrate: data.migrateData, clear: data.clearData });
+      },
     };
   },
-  computed: {
-    selectedLang: {
-      get() {
-        return this.langs.find(l => l.value === this.$repo.state.setting.locale) || 'en';
-      },
-      set(v) { this.$repo.commit('locale', v); },
-    },
-    allowPrerelease: {
-      get() { return this.$repo.state.setting.allowPrerelease; },
-      set(v) { this.$repo.commit('allowPrerelease', v); },
-    },
-    autoInstallOnAppQuit: {
-      get() { return this.$repo.state.setting.autoInstallOnAppQuit; },
-      set(v) { this.$repo.commit('autoInstallOnAppQuit', v); },
-    },
-    autoDownload: {
-      get() { return this.$repo.state.setting.autoDownload; },
-      set(v) { this.$repo.commit('autoDownload', v); },
-    },
-    useBmclAPI: {
-      get() { return this.$repo.state.setting.useBmclAPI; },
-      set(v) { this.$repo.commit('useBmclApi', v); },
-    },
-    readyToUpdate() { return this.$repo.state.setting.readyToUpdate; },
-    downloadingUpdate() { return this.$repo.state.setting.downloadingUpdate; },
-    checkingUpdate() { return this.$repo.state.setting.checkingUpdate; },
-    updateInfo() { return this.$repo.state.setting.updateInfo || {}; },
-    langs() {
-      return this.$repo.state.setting.locales.map(l => ({
-        value: l,
-        text: langIndex[l],
-      })); 
-    },
-  },
-  methods: {
-    checkUpdate() {
-      this.$repo.dispatch('checkUpdate').then((result) => {
-        console.log(result);
-      });
-    },
-    viewUpdateDetail() {
-      this.viewingUpdateDetail = true;
-    },
-    showRootDir() {
-      this.$electron.remote.shell.openItem(this.rootLocation);
-    },
-    browseRootDir() {
-      this.$electron.remote.dialog.showOpenDialog({
-        title: this.$t('setting.selectRootDirectory'),
-        defaultPath: this.rootLocation,
-        properties: ['openDirectory', 'createDirectory'],
-      }, (paths, bookmarks) => {
-        if (paths && paths.length !== 0) {
-          this.rootLocation = paths[0];
-          this.reloadDialog = true;
-        }
-      });
-    },
-    doCancelApplyRoot() {
-      this.reloadDialog = false;
-      this.rootLocation = this.$repo.state.root;
-    },
-    doApplyRoot(defer) {
-      this.reloading = true;
-      this.$electron.ipcRenderer.once('root', (error) => {
-        this.reloading = false;
-        if (error) {
-          this.reloadError = error;
-        } else {
-          this.reloadDialog = false;
-        }
-      });
-      this.$electron.ipcRenderer.send('root', { path: this.rootLocation, migrate: this.migrateData, clear: this.clearData });
-    },
-  },
-};
+});
 </script>
-
-<style>
-</style>

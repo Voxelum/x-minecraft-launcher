@@ -1,34 +1,38 @@
 <template>
   <v-container fluid grid-list-md fill-height>
-    <v-tooltip :close-delay="0" left>
-      <template v-slot:activator="{ on }">
-        <v-speed-dial v-if="security" v-model="fab"
-                      style="position:absolute; z-index: 2; bottom: 80px; right: 85px;" direction="top" :open-on-hover="true">
-          <template v-slot:activator>
-            <v-btn v-model="fab" :disabled="pending" fab @click="doLoadSkin" v-on="on" @mouseenter="enterEditBtn">
-              <v-icon>edit</v-icon>
-            </v-btn>
-          </template>
-          <v-btn :disabled="pending" fab small v-on="on" @click="importUrlDialog=true" @mouseenter="enterLinkBtn">
-            <v-icon>link</v-icon>
-          </v-btn>
-          <v-btn :disabled="pending" fab small v-on="on" @click="doSaveSkin" @mouseenter="enterSaveBtn">
-            <v-icon>save</v-icon>
-          </v-btn>
-        </v-speed-dial>
-      </template>
-      {{ hoverTextOnEdit }}
-    </v-tooltip>
+    <speed-dial
+      :security="security"
+      :disabled="pending"
+      :upload="() => isImportSkinDialogShown = true"
+      :save="exportSkin"
+      :load="loadSkin"
+    />
 
     <v-fab-transition>
-      <v-btn v-show="modified" fab small absolute style="bottom: 100px; right: 45px; z-index: 2;"
-             :disabled="pending" @click="doReset">
+      <v-btn
+        v-show="modified"
+        color="secondary"
+        fab
+        small
+        absolute
+        style="bottom: 100px; right: 55px; z-index: 2;"
+        :disabled="pending"
+        @click="reset"
+      >
         <v-icon>clear</v-icon>
       </v-btn>
     </v-fab-transition>
     <v-fab-transition>
-      <v-btn v-show="modified" fab small absolute style="bottom: 100px; right: 157px; z-index: 2;"
-             :disabled="pending" @click="doUpload">
+      <v-btn
+        v-show="modified"
+        color="secondary"
+        fab
+        small
+        absolute
+        style="bottom: 100px; right: 177px; z-index: 2;"
+        :disabled="pending"
+        @click="save"
+      >
         <v-icon>check</v-icon>
       </v-btn>
     </v-fab-transition>
@@ -38,61 +42,100 @@
         <v-layout column fill-height>
           <v-flex d-flex grow>
             <v-layout column justify-start>
-              <v-flex tag="h1" class="white--text" xs1 style="margin-bottom: 10px; padding: 6px; 8px;">
+              <v-flex
+                tag="h1"
+                class="white--text"
+                xs1
+                style="margin-bottom: 10px; padding: 6px; 8px;"
+              >
                 <span class="headline">{{ $t('user.info') }}</span>
               </v-flex>
               <v-flex xs1 style="padding-left: 5px;">
-                <v-text-field hide-details :label="$t('user.name')" readonly :value="gameProfile.name" color="primary"
-                              dark append-icon="file_copy" @click:append="$copy(gameProfile.name)" />
+                <v-text-field
+                  hide-details
+                  readonly
+                  color="primary"
+                  dark
+                  prepend-inner-icon="person"
+                  append-icon="file_copy"
+                  :label="$t('user.name')"
+                  :value="name"
+                  @click:append="copyToClipBoard(name)"
+                />
               </v-flex>
               <v-flex xs1 style="padding-left: 5px;">
-                <v-text-field hide-details :label="$t('user.accessToken')" readonly :value="user.accessToken"
-                              color="primary" dark append-icon="file_copy" @click:append="$copy(user.accessToken)" />
+                <v-text-field
+                  hide-details
+                  readonly
+                  dark
+                  append-icon="file_copy"
+                  color="primary"
+                  prepend-inner-icon="vpn_key"
+                  :label="$t('user.accessToken')"
+                  :value="accessToken"
+                  @click:append="copyToClipBoard(accessToken)"
+                />
               </v-flex>
               <v-flex xs1 style="padding-left: 5px;">
-                <v-select hide-details :label="$t('user.authService')" 
-                          readonly 
-                          dark prepend-inner-icon="add" 
-                          :value="user.authService"
-                          :items="authServices" color="primary" 
-                          @click:prepend-inner="userServiceDialog=true" />
+                <v-text-field
+                  hide-details
+                  readonly
+                  append-icon="add"
+                  prepend-inner-icon="security"
+                  :label="$t('user.authService')"
+                  :value="authService"
+                  color="primary"
+                  @click:append="isUserServicesDialogShown = true"
+                />
               </v-flex>
               <v-flex xs1 style="padding-left: 5px;">
-                <v-select hide-details :label="$t('user.profileService')" 
-                          readonly
-                          :items="profileServices" :value="user.profileService"
-                          color="primary" dark prepend-inner-icon="add" 
-                          @click:prepend-inner="userServiceDialog=true" />
+                <v-text-field
+                  hide-details
+                  readonly
+                  color="primary"
+                  prepend-inner-icon="assignment_ind"
+                  append-icon="add"
+                  :label="$t('user.profileService')"
+                  :value="profileService"
+                  @click:append="isUserServicesDialogShown = true"
+                />
               </v-flex>
 
               <v-flex xs1 style="padding-left: 5px;">
-                <v-select v-model="skinSlim" hide-details :label="$t('user.skinSlim')"
-                          :items="[{text:'Alex', value:true}, {text:'Steve', value:false}]" item-text="text" item-value="value" color="primary" dark />
+                <v-select
+                  v-model="slim"
+                  hide-details
+                  prepend-inner-icon="accessibility"
+                  :label="$t('user.skinSlim')"
+                  :items="[{text:'Alex', value:true}, {text:'Steve', value:false}]"
+                  item-text="text"
+                  item-value="value"
+                  color="primary"
+                  dark
+                />
               </v-flex>
             </v-layout>
           </v-flex>
 
           <v-flex d-flex xs12>
-            <v-alert :value="!security" style="cursor: pointer;" @click="securityDialog = true">
-              {{ $t('user.insecureClient') }}
-            </v-alert>
+            <v-alert
+              :value="!security"
+              style="cursor: pointer;"
+              @click="isChallengesDialogShown = true"
+            >{{ $t('user.insecureClient') }}</v-alert>
           </v-flex>
 
           <v-flex d-flex shrink>
             <v-layout wrap>
               <v-flex d-flex xs6>
-                <v-btn block dark :disabled="pending" @click="refreshSkin">
-                  <v-icon left dark>
-                    refresh
-                  </v-icon>
+                <v-btn block :disabled="pending" color="secondary" @click="refresh">
+                  <v-icon left>refresh</v-icon>
                   {{ $t('user.refreshSkin') }}
                 </v-btn>
               </v-flex>
               <v-flex d-flex xs6>
-                <v-btn block dark :disabled="pending" @click="refreshAccount">
-                  <v-icon left dark>
-                    refresh
-                  </v-icon>
+                <v-btn block :disabled="pending" color="secondary" @click="refreshAccount">
+                  <v-icon left>refresh</v-icon>
                   {{ $t('user.refreshAccount') }}
                 </v-btn>
               </v-flex>
@@ -101,18 +144,14 @@
           <v-flex d-flex shrink>
             <v-layout wrap>
               <v-flex d-flex xs6>
-                <v-btn block @click="toggleSwitchUser">
-                  <v-icon left dark>
-                    compare_arrows
-                  </v-icon>
+                <v-btn block color="secondary" @click="toggleSwitchUser">
+                  <v-icon left dark>compare_arrows</v-icon>
                   {{ $t('user.account.switch') }}
                 </v-btn>
               </v-flex>
               <v-flex d-flex xs6>
-                <v-btn block dark :disabled="offline" color="red" @click="doLogout">
-                  <v-icon left dark>
-                    exit_to_app
-                  </v-icon>
+                <v-btn block dark :disabled="offline" color="red" @click="logout">
+                  <v-icon left dark>exit_to_app</v-icon>
                   {{ $t('user.logout') }}
                 </v-btn>
               </v-flex>
@@ -122,206 +161,136 @@
       </v-flex>
       <v-flex shrink>
         <v-layout justify-center align-center fill-height>
-          <v-flex style="z-index: 1;">
-            <skin-view :href="skinData" :slim="skinSlim" :rotate="false" @drop="onDropSkin" @dragover="onDragOver" />
+          <v-flex style="z-index: 1">
+            <skin-view
+              :href="url"
+              :slim="slim"
+              :rotate="false"
+              @drop.prevent="dropSkin"
+              @dragover.prevent
+            />
             <!-- <v-progress-circular v-if="pending" color="white" indeterminate :size="90" style="position: absolute; top: 30vh; right: 13vh;" /> -->
           </v-flex>
         </v-layout>
       </v-flex>
     </v-layout>
-
-    <dialog-user-services v-model="userServiceDialog" />
-    <dialog-challenges v-model="securityDialog" />
-    <v-dialog v-model="importUrlDialog" width="400">
-      <v-card dark>
-        <v-container fluid grid-list-md>
-          <v-layout row wrap>
-            <v-flex d-flex xs12>
-              <v-text-field v-model="skinUrl" validate-on-blur :rules="skinUrlFormat" :label="$t('user.skinPlaceUrlHere')"
-                            clearable @input="updateSkinUrl" />
-            </v-flex>
-            <v-flex d-flex xs12>
-              <v-btn :disabled="skinUrlError" @click="doLoadSkinFromUrl">
-                {{ $t('user.skinImport') }}
-              </v-btn>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-card>
-    </v-dialog>
+    <challenges-dialog v-model="isChallengesDialogShown" />
+    <import-skin-url-dialog v-model="isImportSkinDialogShown" :update="updateSkinUrl" />
+    <user-services-dialog v-model="isUserServicesDialogShown" />
   </v-container>
 </template>
 
-<script>
+<script lang=ts>
+import { reactive, toRefs, computed, defineComponent } from '@vue/composition-api';
+import {
+  useCurrentUser,
+  useI18n,
+  useCurrentUserSkin,
+  useNativeDialog,
+  useClipboard,
+} from '@/hooks';
+import { useNotifier, useLoginDialog } from '../hooks';
+import ChallengesDialog from './UserPageChallengesDialog.vue';
+import ImportSkinUrlDialog from './UserPageImportSkinUrlDialog.vue';
+import UserServicesDialog from './UserPageUserServicesDialog.vue';
+import SpeedDial from './UserPageSpeedDial.vue';
 
-// https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
-const URL_PATTERN = new RegExp('^(https?:\\/\\/)?' // protocol
-  + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' // domain name
-  + '((\\d{1,3}\\.){3}\\d{1,3}))' // OR ip (v4) address
-  + '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' // port and path
-  + '(\\?[;&a-z\\d%_.~+=-]*)?' // query string
-  + '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+export default defineComponent({
+  components: {
+    ChallengesDialog,
+    UserServicesDialog,
+    ImportSkinUrlDialog,
+    SpeedDial,
+  },
+  setup() {
+    const { $t } = useI18n();
+    const clipboard = useClipboard();
+    const {
+      security,
+      offline,
+      name,
+      accessToken,
+      authService,
+      profileService,
+      refreshStatus: refreshAccount,
+      logout,
+    } = useCurrentUser();
+    const { url, slim, refreshing, refresh, save, exportTo, loading, modified, reset } = useCurrentUserSkin();
+    const { showOpenDialog, showSaveDialog } = useNativeDialog();
+    const { show: showLoginDialog, isSwitchingUser } = useLoginDialog();
+    const { notify, watcher } = useNotifier();
+    const pending = computed(() => refreshing.value || loading.value);
 
-export default {
-  data() {
+    const data = reactive({
+      isImportSkinDialogShown: false,
+      isChallengesDialogShown: false,
+      isUserServicesDialogShown: false,
+    });
+
+    function updateSkinUrl(u: string) {
+      url.value = u;
+    }
+    async function loadSkin() {
+      const { filePaths } = await showOpenDialog({ title: $t('user.openSkinFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] });
+      if (filePaths && filePaths[0]) {
+        url.value = `file://${filePaths[0]}`;
+      }
+    }
+    async function exportSkin() {
+      const { filePath } = await showSaveDialog({
+        title: $t('user.skinSaveTitle'),
+        defaultPath: `${name.value}.png`,
+        filters: [{ extensions: ['png'], name: 'PNG Images' }],
+      });
+      if (filePath) {
+        exportTo({ path: filePath, url: url.value });
+      }
+    }
+    async function dropSkin(e: DragEvent) {
+      if (e.dataTransfer) {
+        const length = e.dataTransfer.files.length;
+        if (length > 0) {
+          url.value = `file://${e.dataTransfer!.files[0].path}`;
+        }
+      }
+    }
+
     return {
-      fab: false,
+      ...toRefs(data),
+      offline,
+      name,
+      security,
+      logout,
+      refreshAccount,
+      accessToken,
+      authService,
+      profileService,
 
-      hoverTextOnEdit: '',
-      skinUrlError: true,
-      skinUrlFormat: [
-        v => !!v || this.$t('user.skinUrlNotEmpty'),
-        v => !!URL_PATTERN.test(v) || this.$t('user.skinUrlNotValid'),
-      ],
-      skinUrl: '',
-      skinData: '',
-      skinSlim: false,
+      url,
+      slim,
+      modified,
+      reset,
+      updateSkinUrl,
+      refresh: watcher(() => refresh(true), () => $t('user.refreshSkinSuccess'), () => $t('user.refreshSkinFail')),
+      save: watcher(save, () => $t('user.skin.upload.success'), () => $t('user.skin.upload.fail')),
+      loadSkin,
+      exportSkin,
+      dropSkin,
 
-      securityDialog: false,
-      userServiceDialog: false,
-      importUrlDialog: false,
+      pending,
 
-      parsingSkin: false,
-      uploadingSkin: false,
+      toggleSwitchUser() {
+        isSwitchingUser.value = true;
+        showLoginDialog();
+      },
+      copyToClipBoard(text: string) {
+        notify('success', $t('copy.success'));
+        clipboard.clear();
+        clipboard.writeText(text);
+      },
     };
   },
-  computed: {
-    user() { return this.$repo.getters.selectedUser; },
-    gameProfile() { return this.$repo.getters.selectedGameProfile; },
-    gameProfiles() { return this.$repo.getters.avaiableGameProfiles; },
-
-    security() { return this.user.authServices === 'mojang' ? this.$repo.state.user.security : true; },
-    offline() { return this.$repo.getters.offline; },
-    refreshingSkin() { return this.$repo.state.user.refreshingSkin; },
-    pending() { return this.refreshingSkin || this.uploadingSkin || this.parsingSkin; },
-
-    authServices() { return this.$repo.getters.authServices; },
-    profileServices() { return this.$repo.getters.profileServices; },
-
-    modified() {
-      if (this.offline) return false;
-      const skin = this.gameProfile.textures.SKIN;
-      const skinSlim = skin.metadata ? skin.metadata.model === 'slim' : false;
-      return this.skinData !== skin.url || this.skinSlim !== skinSlim;
-    },
-  },
-  mounted() {
-    this.doReset();
-  },
-  methods: {
-    doLogout() {
-      return this.$repo.dispatch('logout');
-    },
-    refreshSkin() {
-      this.$repo.dispatch('refreshSkin').then(() => {
-        this.$notify('info', this.$t('user.refreshSkinSuccess'));
-      }, (e) => {
-        this.$notify('error', this.$t('user.refreshSkinFail', e));
-      }).finally(() => {
-        this.doReset();
-      });
-    },
-    refreshAccount() {
-      this.$repo.dispatch('refreshInfo');
-    },
-    onDragOver(e) {
-      e.preventDefault();
-      return false;
-    },
-    onDropSkin(e) {
-      e.preventDefault();
-
-      const length = e.dataTransfer.files.length;
-      if (length > 0) {
-        console.log(`Detect drop import ${length} file(s).`);
-        for (let i = 0; i < length; ++i) {
-          // TOOD: use resource module to manage skin
-          this.$repo.dispatch('parseSkin', e.dataTransfer.files[i].path).then((skin) => {
-            if (skin) {
-              this.skinData = skin;
-            }
-          });
-        }
-      }
-    },
-    doLoadSkinFromUrl() {
-      this.importUrlDialog = false;
-
-      this.parsingSkin = true;
-      this.$repo.dispatch('parseSkin', this.skinUrl).then((skin) => {
-        if (skin) { this.skinData = skin; }
-      }, (e) => {
-        this.$notify('error', this.$t('user.skinParseFailed', e));
-      }).finally(() => {
-        this.parsingSkin = false;
-      });
-    },
-    async doLoadSkin() {
-      await this.$nextTick();
-      this.$electron.remote.dialog.showOpenDialog({ title: this.$t('user.openSkinFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] }, (filename, bookmark) => {
-        if (filename && filename[0]) {
-          this.$repo.dispatch('parseSkin', filename[0]).then((skin) => {
-            if (skin) {
-              this.skinData = skin;
-            }
-          }, (e) => {
-            this.$notify('error', this.$t('user.skinParseFailed', e));
-          });
-        }
-      });
-    },
-    doReset() {
-      if (this.modified) {
-        const skin = this.gameProfile.textures.SKIN;
-        const skinUrl = skin.url;
-        const skinSlim = skin.metadata ? skin.metadata.model === 'slim' : false;
-
-        this.skinData = skinUrl;
-        this.skinSlim = skinSlim;
-      }
-    },
-    doUpload() {
-      if (this.offline) {
-        console.warn('Cannot update skin during offline mode');
-      } else {
-        this.uploadingSkin = true;
-        this.$repo.dispatch('uploadSkin', { data: this.skinData, slim: this.skinSlim }).then(() => this.refreshSkin(), (e) => {
-          this.$notify('error', this.$t('user.uploadSkinFail', e));
-        }).finally(() => {
-          this.uploadingSkin = false;
-        });
-      }
-    },
-    doSaveSkin() {
-      this.$electron.remote.dialog.showSaveDialog({ title: this.$t('user.skinSaveTitle'), defaultPath: `${this.user.name}.png`, filters: [{ extensions: ['png'], name: 'PNG Images' }] }, (filename, bookmark) => {
-        if (filename) {
-          this.$repo.dispatch('saveSkin', { path: filename, skin: { data: this.skinData, slim: this.skinSlim } });
-        }
-      });
-    },
-    enterEditBtn() {
-      this.hoverTextOnEdit = this.$t('user.skinImportFile');
-    },
-    enterLinkBtn() {
-      this.hoverTextOnEdit = this.$t('user.skinImportLink');
-    },
-    enterSaveBtn() {
-      this.hoverTextOnEdit = this.$t('user.skinSave');
-    },
-    updateSkinUrl(url) {
-      this.skinUrlError = this.skinUrlFormat.some(r => typeof r(url) === 'string');
-    },
-    switchUser(profile) {
-      this.$repo.dispatch('switchUserProfile', {
-        profileId: profile.id,
-        userId: profile.userId,
-      });
-    },
-    toggleSwitchUser() {
-      this.$electron.ipcRenderer.emit('login', true);
-    },
-  },
-};
+});
 </script>
 
 <style>

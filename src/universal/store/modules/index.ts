@@ -8,7 +8,7 @@ const modules: any = {};
 
 files.keys().forEach((key) => {
     if (key === './index.ts') return;
-    if (key.endsWith('.config.ts')) return;
+    if (key.endsWith('.schema.ts')) return;
 
     modules[key.replace(/(\.\/|\.ts)/g, '')] = files(key).default;
 });

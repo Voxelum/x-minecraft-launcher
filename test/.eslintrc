@@ -8,6 +8,7 @@
     "should": true,
     "__static": true
   },
+  "extends": "../.eslintrc.json",
   "rules": {
     "prefer-arrow-callback": "off"
   }

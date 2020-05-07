@@ -1,4 +1,6 @@
-
+p {
+    margin-bottom: 0px !important;
+}
 .moveable {
     -webkit-app-region: drag;
     user-select: none;
@@ -73,4 +75,7 @@
 .main-body .v-form .container {
     padding-left: 30px;
     padding-right: 30px;
+}
+
+.theme--dark.v-sheet {
 }

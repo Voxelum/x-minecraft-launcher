@@ -9,45 +9,54 @@
                       :label="$t('filter')" dark hide-details />
       </v-flex>
       <v-flex d-flex xs6 style="padding-right: 5px">
-        <v-card dark class="card-list" @drop="onDropLeft" @dragover="onDragOver" @mousewheel="onMouseWheel">
+        <v-card ref="leftList" dark class="card-list">
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.unselected') }} </span> 
           </v-card-title>
-          <p v-if="resourcePacks[1].length === 0" class="text-xs-center headline"
-             style="position: absolute; top: 120px; right: 0px; user-select: none;">
-            <v-icon style="font-size: 50px; display: block;">
-              save_alt
-            </v-icon>
-            {{ $t('resourcepack.hint') }}
-          </p>
-          <div class="list">
-            <resource-pack-card v-for="(pack, index) in unselectedPacks" :key="pack.hash" 
+          <hint 
+            v-if="unselectedItems.length === 0" 
+            icon="save_alt" 
+            :text="$t('resourcepack.hint')" 
+            :absolute="true" 
+            style="height: 100%" />
+          <div v-else class="list">
+            <resource-pack-card v-for="(item, index) in unselectedItems"
+                                :key="item[0].hash" 
                                 v-observe-visibility="{
-                                  callback: (v) => checkBuffer(v, index, true),
+                                  callback: (v) => onItemVisibile(v, index, true),
                                   once: true,
-                                }" :data="pack" :is-selected="false" :index="index" 
-                                @dragstart="dragging = true" @dragend="dragging = false" />
+                                }" 
+                                :data="item[0]" 
+                                :is-selected="false" 
+                                :index="item[1]" 
+                                @dragstart="dragging = true"
+                                @dragend="dragging = false" 
+                                @mouseup="draggingMod = false"
+            />
           </div>
         </v-card>
       </v-flex>
       <v-flex d-flex xs6 style="padding-left: 5px">
-        <v-card dark class="card-list right" @drop="onDropRight" @dragover="onDragOver" @mousewheel="onMouseWheel">
+        <v-card ref="rightList" dark class="card-list right">
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.selected') }} </span> 
           </v-card-title>
-          <p v-if="resourcePacks[0].length === 0" class="text-xs-center headline"
-             style="position: absolute; top: 120px; right: 0px; user-select: none;">
-            <v-icon style="font-size: 50px; display: block;">
-              save_alt
-            </v-icon>
-            {{ $t('resourcepack.hint') }}
-          </p>
-          <div class="list">
-            <resource-pack-card v-for="(pack, index) in selectedPacks" :key="`${pack.hash}${index}`"
+          <hint 
+            v-if="selectedItems.length === 0" 
+            icon="save_alt" 
+            :text="$t('resourcepack.hint')" 
+            :absolute="true"
+            style="height: 100%" />
+          <div v-else ref="rightList" class="list">
+            <resource-pack-card v-for="(item, index) in selectedItems" 
+                                :key="item[0].hash"
                                 v-observe-visibility="{
-                                  callback: (v) => checkBuffer(v, index, true),
+                                  callback: (v) => onItemVisibile(v, index, true),
                                   once: true,
-                                }" :data="pack" :is-selected="true" :index="index" />
+                                }" 
+                                :data="item[0]" 
+                                :is-selected="true" 
+                                :index="item[1]" />
           </div>
         </v-card>
       </v-flex>
@@ -96,100 +105,86 @@
   </v-container>
 </template>
 
-<script>
-import Vue from 'vue';
-import unknownPack from 'renderer/assets/unknown_pack.png';
-import SelectionList from '../mixin/SelectionList';
+<script lang=ts>
+import { defineComponent, reactive, inject, ref, toRefs, computed, Ref, onUnmounted } from '@vue/composition-api';
+import { ResourcePackResource, Resource } from '@universal/store/modules/resource';
+import {
+  useInstanceResourcePacks,
+  useResourceOperation,
+  useDragTransferList,
+  useDropImport,
+} from '@/hooks';
+import ResourcePackCard from './ResourcePackSettingPageCard.vue';
 
-export default {
-  mixins: [SelectionList],
-  data() {
-    return {
-      filterText: '',
+export default defineComponent({
+  components: {
+    ResourcePackCard,
+  },
+  setup() {
+    const filterText = inject('filter-text', ref(''));
+    const rightList: Ref<null | Vue> = ref(null);
+    const leftList: Ref<null | Vue> = ref(null);
+    const { usedPackResources, unusedPackResources, add, remove, commit, swap } = useInstanceResourcePacks();
+    const { getResource, removeResource } = useResourceOperation();
+    const data = reactive({
       dragging: false,
-
       isDeletingPack: false,
-      deletingPack: null,
+      deletingPack: null as ResourcePackResource | null,
+    });
+    const leftListElem = computed(() => leftList.value?.$el) as any;
+    const rightListElem = computed(() => rightList.value?.$el) as any;
+    useDragTransferList(
+      leftListElem,
+      rightListElem,
+      swap,
+      (index) => { add(unusedPackResources.value[index]); },
+      remove,
+    );
+    useDropImport(leftListElem, 'resourcepacks');
+    useDropImport(rightListElem, 'resourcepacks');
+
+    onUnmounted(commit);
+
+    function filterName(r: Resource<any>) {
+      if (!filterText.value) return true;
+      return r.name.toLowerCase().indexOf(filterText.value.toLowerCase()) !== -1;
+    }
+
+    const unselectedItems = computed(() => unusedPackResources.value
+      .map((r, i) => [r, i] as const)
+      .filter((a) => filterName(a[0])));
+    const selectedItems = computed(() => usedPackResources.value
+      .map((r, i) => [r, i] as const)
+      .filter((a) => filterName(a[0])));
+
+    async function confirmDeletingPack() {
+      data.isDeletingPack = false;
+      removeResource(data.deletingPack!.hash);
+      data.deletingPack = null;
+    }
+    function onDropDelete(e: DragEvent) {
+      const hash = e.dataTransfer!.getData('id');
+      const res = getResource(hash);
+      if (res.type !== 'unknown') {
+        data.isDeletingPack = true;
+        data.deletingPack = res as ResourcePackResource;
+      }
+    }
+    return {
+      ...toRefs(data),
+      unselectedItems,
+      selectedItems,
+      leftList,
+      rightList,
+      filterText,
+      confirmDeletingPack,
+      onDropDelete,
     };
   },
-  computed: {
-    selectedPacks() {
-      return this.resourcePacks[0].filter(m => this.filterName(m, this.filterText)).filter((_, i) => i < this.selectedBuffer);
-    },
-    unselectedPacks() {
-      return this.resourcePacks[1].filter(m => this.filterName(m, this.filterText)).filter((_, i) => i < this.unselectedBuffer);
-    },
-    resourcePacks() {
-      const packs = this.$repo.getters.resourcepacks;
-      const packnames = this.$repo.state.profile.settings.resourcePacks;
-
-      const selectedNames = {};
-      for (const name of packnames) {
-        selectedNames[name] = true;
-      }
-
-      const unselectedPacks = [];
-
-      const nameToPack = {};
-      for (const pack of packs) {
-        nameToPack[pack.name + pack.ext] = pack;
-        nameToPack[pack.name] = pack;
-        if (!selectedNames[pack.name + pack.ext]) unselectedPacks.push(pack);
-      }
-      const selectedPacks = packnames
-        .map(name => nameToPack[name]
-          || { name, ext: '', missing: true, metadata: { packName: name, description: 'Cannot find this pack', icon: unknownPack, format: -1 } });
-
-      return [selectedPacks, unselectedPacks];
-    },
-    unselectedItems() {
-      return this.unselectedPacks;
-    },
-    selecetedItems() {
-      return this.selectedPacks;
-    },
-    items: {
-      get() {
-        return this.$repo.state.profile.settings.resourcePacks;
-      },
-      set(v) {
-        this.$repo.commit('gamesettings', {
-          resourcePacks: v,
-        });
-      },
-    },
-  },
-  async mounted() {
-    await this.$repo.dispatch('loadProfileGameSettings');
-  },
-  methods: {
-    confirmDeletingPack() {
-      this.isDeletingPack = false;
-      this.$repo.dispatch('removeResource', this.deletingPack.hash);
-      this.deletingPack = null;
-    },
-    onDropDelete(e) {
-      const hash = e.dataTransfer.getData('Hash');
-      const res = this.$repo.getters.queryResource(hash);
-      if (res) {
-        this.isDeletingPack = true;
-        this.deletingPack = res;
-      }
-    },
-    mapItem(r) {
-      return r.name + r.ext;
-    },
-    dropFile(path) {
-      this.$repo.dispatch('importResource', { path, type: 'resourcepack' }).catch((e) => {
-        console.error(e);
-      });
-    },
-    filterName(r, str) {
-      if (!str) return true;
-      return r.name.toLowerCase().indexOf(str.toLowerCase()) !== -1;
-    },
-  },
-};
+  // async mounted() {
+  //   await this.$repo.dispatch('loadProfileGameSettings');
+  // },
+});
 </script>
 
 <style>

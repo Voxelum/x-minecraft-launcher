@@ -2,3 +2,4 @@ build/*.js
 config/*.js
 dist/electron/*.js
 node_modules/*.js
+scripts/*.js

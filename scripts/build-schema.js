@@ -1,4 +1,4 @@
-const { resolve, join } = require('path');
+const { resolve, join, basename } = require('path');
 const fs = require('fs');
 const TJS = require('typescript-json-schema');
 
@@ -16,20 +16,25 @@ const settings = {
  */
 const compilerOptions = {
     strictNullChecks: true,
+    esModuleInterop: true,
 };
 
 const dir = resolve(__dirname, '..', 'src/universal/store/modules');
-const files = fs.readdirSync(dir).filter(f => f.endsWith('.config.d.ts')).map(f => join(dir, f));
+const files = fs.readdirSync(dir).filter(f => f.endsWith('.schema.ts')).map(f => join(dir, f));
 console.log('Generate json schema from these definition files:');
-files.map(f => f.substring(0, f.length - 5).replace(/\\/g, '/')).forEach(f => console.log(f));
+files.map(f => f.substring(0, f.length - 3).replace(/\\/g, '/')).forEach(f => console.log(f));
 
 const program = TJS.getProgramFromFiles(files, compilerOptions);
 const generator = TJS.buildGenerator(program, settings);
-const symbols = generator.symbols.filter(s => s.name.endsWith('Config')
-    && files.some(f => s.fullyQualifiedName.indexOf(f.substring(0, f.length - 5).replace(/\\/g, '/')) !== -1));
+const symbols = generator.symbols.filter(s => s.name.endsWith('Schema')
+    && files.some(f => s.fullyQualifiedName.indexOf(f.substring(0, f.length - 6).replace(/\\/g, '/')) !== -1))
+    .map(s => [s, files.find(f => s.fullyQualifiedName.indexOf(f.substring(0, f.length - 6).replace(/\\/g, '/')) !== -1)]);
 
-for (const sym of symbols) {
+for (const [sym, file] of symbols) {
     const def = TJS.generateSchema(program, sym.name, { required: true });
     def.additionalProperties = false;
-    fs.writeFileSync(resolve(__dirname, '..', 'static', 'persistence-schema', `${sym.name}.json`), JSON.stringify(def, null, 4));
+    const dist = file.substring(0, file.length - basename(file).length) + sym.name + '.json'
+    console.log(dist)
+    fs.writeFileSync(dist, JSON.stringify(def, null, 4));
+    // fs.writeFileSync(resolve(__dirname, '..', 'src/main/utils/schema', `${sym.name}.json`), JSON.stringify(def, null, 4));
 }

@@ -16,12 +16,12 @@
         {{ files[item.file] }}
       </v-icon>
     </template>
-    <template v-slot:label="{ item, open }">
+    <template v-slot:label="{ item }">
       <span :class="{ diff: item.diff }">
         {{ item.name }} 
       </span>
     </template>
-    <template v-slot:append=" { item, open } ">
+    <template v-slot:append=" { item } ">
       <span style="padding-right: 10px;" :class="{ diff: item.diff }">
         {{ item.id ? $t(`intro.struct.${item.id}`) : '' }} 
       </span>
@@ -29,7 +29,7 @@
   </v-treeview>
 </template>
 
-<script>
+<script lang=ts>
 export default {
   props: {
     value: {

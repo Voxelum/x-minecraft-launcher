@@ -1,82 +1,81 @@
-import { Module, Context } from "../store";
-import { ResolvedLibrary, Version } from "@xmcl/version";
-import { ForgeInstaller } from "@xmcl/minecraft-launcher-core";
+import { ResolvedLibrary } from '@xmcl/core';
+import { InstallProfile } from '@xmcl/installer/minecraft';
+import { ModuleOption } from '../root';
+import { LocalVersion } from './version';
 
-export type Problem = DiagnoseModule.Problem;
-export declare namespace DiagnoseModule {
-    interface Problem {
-        id: string;
-        arguments?: { [key: string]: any };
-        autofix?: boolean;
-        optional?: boolean;
-    }
-
-    type ProblemReport = {
-        [K in keyof State['registry']]: State['registry'][K]['actived']
-    }
-
-    interface Registry<A, AF = true, OP = false> {
-        fixing: boolean;
-        autofix: AF;
-        optional: OP;
-        actived: A[];
-    }
-
-
-    interface State {
-        registry: {
-            missingVersion: Registry<{}>;
-            missingVersionJar: Registry<{ version: string }>;
-            missingAssetsIndex: Registry<{ version: string }>;
-            missingVersionJson: Registry<{ version: string }>;
-            missingForgeJar: Registry<{ minecraft: string; forge: string }>;
-            missingLibraries: Registry<ResolvedLibrary>;
-            missingAssets: Registry<{ count: number }>;
-            unknownMod: Registry<{ name: string; actual: string; }, false, true>;
-            incompatibleMod: Registry<{ name: string; actual: string; accepted: string; }, false, true>;
-            incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string; }, false, true>;
-            incompatibleJava: Registry<{ java: string; mcversion: string }, false, false>;
-            missingAuthlibInjector: Registry<{}>;
-            missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
-            badForge: Registry<{ forge: string; minecraft: string }>;
-            badForgeIncomplete: Registry<{ count: number; libraries: Version.NormalLibrary[] }>;
-            badForgeProcessedFiles: Registry<ForgeInstaller.Diagnosis["badProcessedFiles"][number], true, true>;
-
-
-            [id: string]: {
-                fixing: boolean;
-                autofix: boolean;
-                optional: boolean;
-                actived: { [key: string]: any }[];
-            };
-        };
-    }
-
-    interface Getters {
-        /**
-         * The problems of current launcher state
-         */
-        problems: Problem[];
-    }
-
-    interface Mutations {
-        postProblems(state: State, problems: Partial<ProblemReport>): void;
-        startResolveProblems(state: State, problems: Problem[]): void;
-        endResolveProblems(state: State, problems: Problem[]): void;
-    }
-    type C = Context<State, {}, Mutations, Actions>;
-    interface Actions {
-        diagnoseVersion(context: C): Promise<void>;
-        diagnoseMods(context: C): Promise<void>;
-        diagnoseResourcePacks(context: C): Promise<void>;
-        diagnoseJava(context: C): Promise<void>;
-        diagnoseServer(context: C): Promise<void>;
-        diagnoseUser(context: C): Promise<void>;
-
-        fixProfile(context: C, problems: Problem[]): Promise<void>
-    }
+export interface Issue {
+    id: string;
+    arguments: { [key: string]: any };
+    autofix?: boolean;
+    optional?: boolean;
+    multi: boolean;
 }
-export interface DiagnoseModule extends Module<"diagnose", DiagnoseModule.State, DiagnoseModule.Getters, DiagnoseModule.Mutations, DiagnoseModule.Actions> { }
+
+export type IssueReport = {
+    [K in keyof State['registry']]: State['registry'][K]['actived']
+}
+
+export interface Registry<A, AF = true, OP = false> {
+    fixing: boolean;
+    autofix: AF;
+    optional: OP;
+    actived: (A & { file?: string })[];
+}
+
+interface State {
+    registry: {
+        missingVersion: Registry<{}>;
+        missingVersionJar: Registry<{ version: string } & LocalVersion>;
+        missingVersionJson: Registry<{ version: string } & LocalVersion>;
+        missingLibraries: Registry<ResolvedLibrary>;
+        missingAssetsIndex: Registry<{ version: string }>;
+        missingAssets: Registry<{ version: string; hash: string; name: string; size: number }>;
+
+        corruptedVersionJar: Registry<{ version: string } & LocalVersion, true, true>;
+        corruptedVersionJson: Registry<{ version: string } & LocalVersion, true, true>;
+        corruptedLibraries: Registry<ResolvedLibrary, true, true>;
+        corruptedAssetsIndex: Registry<{ version: string }, true, true>;
+        corruptedAssets: Registry<{ version: string; hash: string; name: string; size: number }, true, true>;
+
+        unknownMod: Registry<{ name: string; actual: string }, false, true>;
+        incompatibleMod: Registry<{ name: string; actual: string; accepted: string }, false, true>;
+        incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string }, false, true>;
+        incompatibleJava: Registry<{ java: string; type: string; version: string }, false, true>;
+        missingJava: Registry<{}>;
+        invalidJava: Registry<{ java: string }>;
+
+        missingAuthlibInjector: Registry<{}>;
+        missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
+
+        missingForge: Registry<{ forge: string; minecraft: string }>;
+        missingLiteloader: Registry<{ liteloader: string; minecraft: string }>;
+
+        badInstall: Registry<{ minecraft: string; version: string; installProfile: InstallProfile }>;
+
+        [id: string]: {
+            fixing: boolean;
+            autofix: boolean;
+            optional: boolean;
+            actived: { [key: string]: any }[];
+        };
+    };
+}
+
+interface Getters {
+    /**
+     * The problems of current launcher state
+     */
+    issues: Issue[];
+    isIssueActive: (id: keyof State['registry']) => boolean;
+}
+
+interface Mutations {
+    issuesPost: Partial<IssueReport>;
+    issuesStartResolve: Issue[];
+    issuesEndResolve: Issue[];
+}
+
+export type DiagnoseModule = ModuleOption<State, Getters, Mutations, {}>;
 
 const mod: DiagnoseModule = {
     state: {
@@ -85,68 +84,77 @@ const mod: DiagnoseModule = {
             missingVersionJar: { fixing: false, autofix: true, optional: false, actived: [] },
             missingAssetsIndex: { fixing: false, autofix: true, optional: false, actived: [] },
             missingVersionJson: { fixing: false, autofix: true, optional: false, actived: [] },
-            missingForgeJar: { fixing: false, autofix: true, optional: false, actived: [] },
             missingLibraries: { fixing: false, autofix: true, optional: false, actived: [] },
             missingAssets: { fixing: false, autofix: true, optional: false, actived: [] },
+
+            corruptedVersionJar: { fixing: false, autofix: true, optional: true, actived: [] },
+            corruptedAssetsIndex: { fixing: false, autofix: true, optional: true, actived: [] },
+            corruptedVersionJson: { fixing: false, autofix: true, optional: true, actived: [] },
+            corruptedLibraries: { fixing: false, autofix: true, optional: true, actived: [] },
+            corruptedAssets: { fixing: false, autofix: true, optional: true, actived: [] },
+
+            invalidJava: { fixing: false, autofix: true, optional: false, actived: [] },
+            missingJava: { fixing: false, autofix: true, optional: false, actived: [] },
+
+            missingForge: { fixing: false, autofix: true, optional: false, actived: [] },
+            missingLiteloader: { fixing: false, autofix: true, optional: false, actived: [] },
             unknownMod: { fixing: false, autofix: false, optional: true, actived: [] },
             incompatibleMod: { fixing: false, autofix: false, optional: true, actived: [] },
             incompatibleResourcePack: { fixing: false, autofix: false, optional: true, actived: [] },
             missingAuthlibInjector: { fixing: false, autofix: true, optional: false, actived: [] },
-            incompatibleJava: { fixing: false, autofix: false, optional: false, actived: [] },
+            incompatibleJava: { fixing: false, autofix: false, optional: true, actived: [] },
             missingModsOnServer: { fixing: false, autofix: false, optional: false, actived: [] },
-            badForge: { fixing: false, autofix: true, optional: false, actived: [] },
-            badForgeIncomplete: { fixing: false, autofix: true, optional: false, actived: [] },
-            badForgeProcessedFiles: { fixing: false, autofix: true, optional: true, actived: [] },
+            badInstall: { fixing: false, autofix: true, optional: false, actived: [] },
         },
     },
     getters: {
-        problems(state) {
-            /**
-             * @type {import('./diagnose').DiagnoseModule.Problem[]}
-             */
-            const problems = [];
+        issues(state) {
+            const issues: Issue[] = [];
 
             for (const [id, reg] of Object.entries(state.registry)) {
                 if (reg.actived.length === 0) continue;
-                if (id === 'missingLibraries' && reg.actived.length >= 3) {
-                    problems.push({
+                if (reg.actived.length >= 4) {
+                    issues.push({
                         id,
-                        arguments: { count: reg.actived.length, libraries: reg.actived },
+                        arguments: { count: reg.actived.length, values: reg.actived },
                         autofix: reg.autofix,
                         optional: reg.optional,
+                        multi: true,
                     });
                 } else {
-                    problems.push(...reg.actived.map(a => ({
+                    issues.push(...reg.actived.map(a => ({
                         id,
                         arguments: a,
                         autofix: reg.autofix,
                         optional: reg.optional,
+                        multi: false,
                     })));
                 }
             }
 
-            return problems;
+            return issues;
         },
+        isIssueActive: (state) => (key) => (key in state.registry ? state.registry[key].actived.length !== 0 : false),
     },
     mutations: {
-        postProblems(state, problems) {
-            for (const [id, value] of Object.entries(problems)) {
+        issuesPost(state, issues) {
+            for (const [id, value] of Object.entries(issues)) {
                 if (value instanceof Array) {
                     if (!state.registry[id]) {
-                        console.error(`This should not happen! Missing problem registry ${id}.`);
+                        throw new Error(`This should not happen! Missing problem registry ${id}.`);
                     } else {
-                        state.registry[id].actived = value;
+                        state.registry[id].actived = Object.freeze(value) as any;
                     }
                 }
             }
         },
-        startResolveProblems(state, problems) {
-            problems.forEach((p) => {
+        issuesStartResolve(state, issues) {
+            issues.forEach((p) => {
                 state.registry[p.id].fixing = true;
             });
         },
-        endResolveProblems(state, problems) {
-            problems.forEach((p) => {
+        issuesEndResolve(state, issues) {
+            issues.forEach((p) => {
                 state.registry[p.id].fixing = false;
             });
         },

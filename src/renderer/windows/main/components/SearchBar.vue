@@ -1,50 +1,66 @@
 <template>
   <transition name="scale-transition">
-    <v-text-field v-show="show" ref="self" style="position: fixed; z-index: 2; right: 30px" solo append-icon="filter_list"
-                  @focus="focused=true" @blur="focused=false" @keyup="handleKeyUp"
-                  @input="$emit('input', $event)" />
+    <v-text-field
+      v-show="show"
+      ref="self"
+      v-model="text"
+      style="position: fixed; z-index: 2;"
+      :style="{ top: `${top}px`, right: `${right}px` }"
+      solo
+      append-icon="filter_list"
+      @focus="focused = true"
+      @blur="focused = false"
+      @keyup.esc="show = false"
+    />
   </transition>
 </template>
 
-<script>
-export default {
-  data() {
+<script lang=ts>
+import Vue from 'vue';
+import { defineComponent, inject, ref, onMounted, onUnmounted, Ref } from '@vue/composition-api';
+import { useSearch, useSearchToggle } from '../hooks';
+
+export default defineComponent({
+  setup() {
+    const show = ref(false);
+    const { text } = useSearch();
+    const { toggle } = useSearchToggle();
+    const top = inject('search-top', ref(30));
+    const right = inject('search-right', ref(30));
+    const focused = ref(false);
+    const self: Ref<any> = ref(null);
+    function toggleBar(force?: boolean) {
+      if (force) {
+        show.value = false;
+        return;
+      }
+      if (show.value && !focused.value) {
+        Vue.nextTick(() => {
+          self.value.focus();
+        });
+      } else {
+        show.value = !show.value;
+        Vue.nextTick(() => {
+          self.value.focus();
+        });
+      }
+    }
+    onMounted(() => {
+      toggle.value.unshift(toggleBar);
+    });
+    onUnmounted(() => {
+      toggle.value.shift();
+    });
     return {
-      show: false,
-      ctrlKey: '',
-      focused: false,
+      show,
+      focused,
+      self,
+      text,
+      top,
+      right,
     };
   },
-  mounted() {
-    document.addEventListener('keyup', this.handleKeyUp);
-    document.addEventListener('keydown', this.handleKeydown);
-  },
-  destroyed() {
-    document.addEventListener('keyup', this.handleKeyUp);
-    document.addEventListener('keydown', this.handleKeydown);
-  },
-  methods: {
-    handleKeydown(e) {
-      if (e.code === 'KeyF' && (e.ctrlKey || e.metaKey)) {
-        if (this.show && !this.focused) {
-          this.$nextTick().then(() => {
-            this.$refs.self.focus();
-          });
-        } else {
-          this.show = !this.show;
-          this.$nextTick().then(() => {
-            this.$refs.self.focus();
-          });
-        }
-      }
-    },
-    handleKeyUp(e) {
-      if (e.code === 'Escape') {
-        this.show = false;
-      }
-    },
-  },
-};
+});
 </script>
 
 <style>

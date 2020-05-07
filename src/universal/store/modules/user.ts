@@ -1,101 +1,91 @@
-import { Auth, MojangAccount, MojangChallenge, MojangChallengeResponse, ProfileService } from '@xmcl/minecraft-launcher-core';
-import { fitin } from 'universal/utils/object';
+import { YggdrasilAuthAPI, ProfileServiceAPI, GameProfile } from '@xmcl/user';
+import { toObjectReducer, assignShallow } from '@universal/util/object';
 import Vue from 'vue';
-import { Context, Module } from "../store";
-import { GameProfileAndTexture, UserConfig, UserProfile } from './user.config';
+import { ModuleOption } from '../root';
+import { GameProfileAndTexture, UserProfile, UserSchema } from './user.schema';
 
-export declare namespace UserModule {
-    interface State extends UserConfig {
-        refreshingSkin: boolean;
+export type UserGameProfile = Omit<UserProfile, 'profiles'> & GameProfileAndTexture & { userId: string; id: string };
 
-        /**
-         * The mojang user info
-         */
-        info: MojangAccount | null;
-
-        security: boolean;
-        refreshingSecurity: boolean;
-    }
-
-    interface Getters {
-        selectedUser: UserProfile;
-        selectedGameProfile: GameProfileAndTexture;
-        avaiableGameProfiles: (GameProfileAndTexture & { userId: string; authService: string; profileService: string; account: string; })[];
-
-        logined: boolean;
-        offline: boolean;
-        authServices: string[];
-        profileServices: string[];
-
-        isServiceCompatible: boolean;
-        authService: Auth.Yggdrasil.API;
-        profileService: ProfileService.API;
-    }
-    interface Mutations {
-        userSnapshot(state: State, snapshot: UserConfig): void;
-
-        invalidateAuth(state: State): void;
-        updateGameProfile(state: State, payload: { userId: string; profile: GameProfileAndTexture }): void;
-        updateUserProfile(state: State, auth: Auth): void;
-        addUserProfile(state: State, profile: UserProfile): void;
-        setUserProfile(state: State, profile: { userId: string; profileId: string }): void;
-        removeUserProfile(state: State, userId: string): void;
-
-        authService(state: State, service: { name: string, api: Auth.Yggdrasil.API }): void;
-        profileService(state: State, service: { name: string, api: ProfileService.API }): void;
-        removeService(state: State, name: string): void;
-
-        mojangInfo(state: State, info: MojangAccount): void;
-        userSecurity(state: State, security: boolean): void;
-        refreshingSecurity(state: State, refreshing: boolean): void;
-        refreshingSkin(state: State, refresh: boolean): void;
-    }
-
-    type C = Context<State, Getters, Mutations, Actions>;
-    interface Actions {
-        login(context: C, payload?: { account: string; password?: string, authService?: string, profileService?: string }): Promise<void>;
-        switchUserProfile(context: C, profile: { userId: string; profileId: string }): Promise<void>;
-        logout(context: C): Promise<void>;
-
-        refreshUser(context: C): Promise<void>;
-        refreshInfo(context: C): Promise<void>;
-        refreshSkin(context: C): Promise<void>;
-
-        /**
-         * Check current ip location and determine wether we need to validate user identity by response challenge.
-         * 
-         * See `getChallenges` and `submitChallenges`
-         */
-        checkLocation(context: C): Promise<boolean>;
-        /**
-         * Get all the user set challenges for security reasons.
-         */
-        getChallenges(context: C): Promise<MojangChallenge[]>;
-        submitChallenges(context: C, responses: MojangChallengeResponse[]): Promise<any>;
-
-        uploadSkin(context: C, payload: { data: string | Buffer, slim: boolean }): Promise<void>;
-        saveSkin(context: C, payload: { skin: { data: string }, path: string }): Promise<void>;
-        parseSkin(context: C, path: string): Promise<string | undefined>;
-
-        listAuthlibs(context: C): Promise<string[]>;
-        fetchAuthlibArtifacts(context: C): Promise<{ latest_build_number: number, artifacts: { build_number: number, version: string }[] }>;
-        ensureAuthlibInjection(context: C, version?: string): Promise<string>;
-    }
+interface State extends UserSchema {
+    // /**
+    //  * The mojang user info
+    //  */
+    // mojangInfo: MojangAccount | null;
+    /**
+     * If this is true, user can get the skin data from mojang, else user has to answer the challenge to continue.
+     */
+    mojangSecurity: boolean;
 }
 
-export interface UserModule extends Module<"user", UserModule.State, UserModule.Getters, UserModule.Mutations, UserModule.Actions> {
+interface Getters {
+    /**
+     * Current selected user profile
+     */
+    user: UserProfile;
+    /**
+     * Current selected user's game profile
+     */
+    gameProfile: GameProfileAndTexture;
+
+    /**
+     * All avaiable game profiles for user
+     */
+    gameProfiles: UserGameProfile[];
+
+    /**
+     * Does user access token existed or valid? Does user logined? This include the case that user logins as offline mode.
+     */
+    accessTokenValid: boolean;
+    /**
+     * If current mode is offline mode
+     */
+    offline: boolean;
+    /**
+     * Is the auth service & profile service are the same
+     */
+    isServiceCompatible: boolean;
+
+    authServices: string[]; // TODO: remove
+    profileServices: string[]; // TODO: remove
+
+    authService: YggdrasilAuthAPI;
+    profileService: ProfileServiceAPI;
 }
+interface Mutations {
+    userSnapshot: UserSchema;
+
+    userInvalidate: void;
+
+    gameProfile: { userId: string; profile: (GameProfileAndTexture | GameProfile) };
+    userProfileAdd: Omit<UserProfile, 'profiles'> & { id: string; profiles: (GameProfileAndTexture | GameProfile)[] };
+    userProfileUpdate: { id: string; accessToken: string; profiles: (GameProfileAndTexture | GameProfile)[] };
+    userProfileRemove: string;
+
+    userGameProfileSelect: { userId: string; profileId: string };
+
+    authService: { name: string; api: YggdrasilAuthAPI };
+    authServiceRemove: string;
+    profileService: { name: string; api: ProfileServiceAPI };
+    profileServiceRemove: string;
+
+    userSecurity: boolean;
+}
+
+export type UserModule = ModuleOption<State, Getters, Mutations, {}>;
+
+export const EMPTY_USER = Object.freeze({ id: '', username: '', profileService: '', authService: '', accessToken: '', profiles: [], properties: {} });
+export const EMPTY_GAME_PROFILE = Object.freeze({ id: '', name: '', textures: { SKIN: { url: '' } } });
 
 const mod: UserModule = {
     state: {
         // user data
-        profiles: {},
-        selectedUser: '',
-        selectedUserProfile: '',
+        users: {},
+        selectedUser: {
+            id: '',
+            profile: '',
+        },
 
         clientToken: '',
-
-        info: null,
 
         // client data
         authServices: {
@@ -132,38 +122,34 @@ const mod: UserModule = {
                 profileByName: 'https://api.mojang.com/users/profiles/minecraft/${name}',
             },
         },
-
-        loginHistory: [],
-
-        refreshingSecurity: false,
-        refreshingSkin: false,
-        security: false,
+        mojangSecurity: false,
     },
     getters: {
-        avaiableGameProfiles: state => Object.values(state.profiles)
-            .map(p => p.profiles.map(prof => ({ ...prof, userId: p.id, authService: p.authService, profileService: p.profileService, account: p.account })))
+        gameProfiles: state => Object.entries(state.users)
+            .map(([userId, user]) => Object.values(user.profiles)
+                .map((profile) => ({ ...profile, userId, authService: user.authService, profileService: user.profileService, username: user.username, accessToken: user.accessToken })))
             .reduce((a, b) => [...a, ...b], []),
-        selectedUser: state => state.profiles[state.selectedUser]
-            || { account: '', profileService: '', authService: 'offline', accessToken: '', profiles: [], properties: {} },
-        selectedGameProfile: (state, getters) => getters.selectedUser.profiles.find(p => p.id === state.selectedUserProfile)
-            || { id: '', name: '', textures: { SKIN: { url: '' } } },
+        user: state => state.users[state.selectedUser.id] || EMPTY_USER,
+        gameProfile: (state, getters) => getters.user.profiles[state.selectedUser.profile] || EMPTY_GAME_PROFILE,
 
-        logined: (_, getters) => getters.selectedUser.accessToken !== '',
-        offline: (_, getters) => getters.selectedUser.authService === 'offline',
+        accessTokenValid: (_, getters) => getters.user.accessToken !== '',
+        offline: (_, getters) => getters.user.authService === 'offline',
 
         authServices: state => ['offline', ...Object.keys(state.authServices)],
         profileServices: state => Object.keys(state.profileServices),
 
-        isServiceCompatible: (_, getters) => getters.selectedUser.authService === getters.selectedUser.profileService,
+        isServiceCompatible: (_, getters) => getters.user.authService === getters.user.profileService,
 
-        authService: (state, getters) => state.authServices[getters.selectedUser.authService],
-        profileService: (state, getters) => state.profileServices[getters.selectedUser.profileService],
+        authService: (state, getters) => state.authServices[getters.user.authService],
+        profileService: (state, getters) => state.profileServices[getters.user.profileService],
     },
     mutations: {
         userSnapshot(state, snapshot) {
-            fitin(state, snapshot);
-            if (typeof snapshot.profiles === 'object') {
-                state.profiles = snapshot.profiles;
+            state.clientToken = snapshot.clientToken;
+            assignShallow(state.selectedUser, snapshot.selectedUser);
+
+            if (typeof snapshot.users === 'object') {
+                state.users = snapshot.users;
             }
             if (snapshot.authServices) {
                 state.authServices = { ...state.authServices, ...snapshot.authServices };
@@ -172,72 +158,89 @@ const mod: UserModule = {
                 state.profileServices = { ...state.profileServices, ...snapshot.profileServices };
             }
         },
-        mojangInfo(state, info) {
-            state.info = { ...info };
-        },
-        refreshingSecurity(state, r) {
-            state.refreshingSecurity = r;
-        },
-        refreshingSkin(state, r) {
-            state.refreshingSkin = r;
-        },
         userSecurity(state, sec) {
-            state.security = sec;
+            state.mojangSecurity = sec;
         },
-        updateUserProfile(state, userProfile) {
-            const user = state.profiles[state.selectedUser];
-            user.accessToken = userProfile.accessToken;
-            const missing = userProfile.profiles.filter(p => user.profiles.find(up => up.id !== p.id))
-                .map(p => ({ ...p, textures: { SKIN: { url: '' } } }));
-            const remaining = user.profiles.filter(p => userProfile.profiles.find(ap => ap.id === p.id));
-            user.profiles = [...remaining, ...missing];
-        },
-        updateGameProfile(state, { profile, userId }) {
-            const userProfile = state.profiles[userId];
-            const index = userProfile.profiles.findIndex(p => p.id === profile.id);
-            if (index !== -1) {
-                Vue.set(userProfile.profiles, index, profile);
+        gameProfile(state, { profile, userId }) {
+            const userProfile = state.users[userId];
+            if (profile.id in userProfile.profiles) {
+                let instance = { textures: { SKIN: { url: '' } }, ...profile };
+                Vue.set(userProfile.profiles, profile.id, instance);
+                userProfile.profiles[profile.id] = instance;
             } else {
-                userProfile.profiles.push(profile);
+                userProfile.profiles[profile.id] = {
+                    textures: { SKIN: { url: '' } },
+                    ...profile,
+                };
             }
         },
-        invalidateAuth(state) {
-            if (state.profiles[state.selectedUser].authService !== 'offline') {
-                state.profiles[state.selectedUser].accessToken = '';
+        userInvalidate(state) {
+            if (state.users[state.selectedUser.id].authService !== 'offline') {
+                state.users[state.selectedUser.id].accessToken = '';
             }
         },
-        addUserProfile(state, user) {
-            if (!state.profiles[user.id]) {
-                // state.profiles[user.id] = user;
-                Vue.set(state.profiles, user.id, user);
-            }
-
-            if (user.account) {
-                state.loginHistory.push(user.account);
-            }
-        },
-        removeService(state, name) {
+        authServiceRemove(state, name) {
             Vue.delete(state.authServices, name);
+            delete state.authServices[name];
+        },
+        profileServiceRemove(state, name) {
             Vue.delete(state.profileServices, name);
+            delete state.profileServices[name];
         },
-        removeUserProfile(state, userId) {
-            if (state.profiles[userId]) {
-                if (state.selectedUser === userId) {
-                    state.selectedUser = '';
-                    state.selectedUserProfile = '';
-                }
-                Vue.delete(state.profiles, userId);
+        userProfileRemove(state, userId) {
+            if (state.selectedUser.id === userId) {
+                state.selectedUser.id = '';
+                state.selectedUser.profile = '';
             }
+            Vue.delete(state.users, userId);
+            delete state.users[userId];
         },
-        setUserProfile(state, { userId, profileId }) {
-            state.selectedUserProfile = profileId;
-            state.selectedUser = userId;
+        userProfileAdd(state, profile) {
+            let value = {
+                ...profile,
+                profiles: profile.profiles
+                    .map(p => ({ ...p, textures: { SKIN: { url: '' } } }))
+                    .reduce(toObjectReducer<GameProfileAndTexture, 'id'>('id'), {}),
+            };
+            Vue.set(state.users, profile.id, value);
+            state.users[profile.id] = value;
+        },
+        userProfileUpdate(state, profile) {
+            let user = state.users[profile.id];
+            user.accessToken = profile.accessToken;
+            profile.profiles.forEach((p) => {
+                if (user.profiles[p.id]) {
+                    user.profiles[p.id] = {
+                        ...user.profiles[p.id],
+                        ...p,
+                    };
+                } else {
+                    user.profiles[p.id] = {
+                        textures: { SKIN: { url: '' } },
+                        ...p,
+                    };
+                }
+            });
+        },
+        userGameProfileSelect(state, { userId, profileId }) {
+            state.selectedUser.id = userId;
+            state.selectedUser.profile = profileId;
         },
         authService(state, { name, api }) {
-            Vue.set(state.authServices, name, api);
+            if (name in state.authServices) {
+                state.authServices[name] = api;
+            } else {
+                state.authServices[name] = api;
+                Vue.set(state.authServices, name, api);
+            }
         },
         profileService(state, { name, api }) {
-            Vue.set(state.profileServices, name, api);
+            if (name in state.profileServices) {
+                state.profileServices[name] = api;
+            } else {
+                state.profileServices[name] = api;
+                Vue.set(state.profileServices, name, api);
+            }
         },
     },
 };

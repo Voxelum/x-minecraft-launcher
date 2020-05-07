@@ -1,7 +1,18 @@
-import router from './router';
-import start from '../../start';
-import '../../useVuetify';
+import '@/useVuetify';
+import VueCompositionApi, { createElement as h } from '@vue/composition-api';
+import Vue from 'vue';
+import provideElectron from '@/providers/provideElectron';
+import Logger from './Logger.vue';
 
-start({
-    router,
+Vue.config.productionTip = false;
+
+Vue.use(VueCompositionApi);
+
+const vue = new Vue({
+    setup() {
+        provideElectron();
+        return () => h(Logger);
+    },
 });
+
+vue.$mount('#app');

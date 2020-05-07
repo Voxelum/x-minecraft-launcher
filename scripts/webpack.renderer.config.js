@@ -1,6 +1,8 @@
 const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // const BabiliWebpackPlugin = require('babili-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -16,14 +18,26 @@ const { dependencies } = require('../package.json');
  * that provide pure *.vue files that need compiling
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/webpack-configurations.html#white-listing-externals
  */
-const whiteListedModules = ['vue', 'vuetify'];
+const whiteListedModules = [
+    'vue',
+    'vuetify',
+    '@vue/composition-api',
+    'vue-router',
+    'vue-i18n',
+    'vuex',
+    'maven-artifact-version',
+    '@xmcl/text-component',
+    'three',
+    'three-orbit-controls'
+];
 
 /**
  * @type {import('webpack').Configuration}
  */
 const rendererConfig = {
     mode: process.env.NODE_ENV,
-    devtool: '#cheap-module-eval-source-map',
+    devtool: 'source-map',
+    // devtool: '#cheap-module-eval-source-map',
     entry: {
         renderer: path.join(__dirname, '../src/renderer/windows/main/index.ts'),
         logger: path.join(__dirname, '../src/renderer/windows/logger/index.ts'),
@@ -38,12 +52,6 @@ const rendererConfig = {
                 use: ['vue-style-loader', 'css-loader'],
             },
             {
-                test: /\.ts$/,
-                use: 'ts-loader',
-                exclude: /node_modules/,
-                include: [path.join(__dirname, '../src/renderer'), path.join(__dirname, '../src/universal')],
-            },
-            {
                 test: /\.vue$/,
                 use: {
                     loader: 'vue-loader',
@@ -52,10 +60,27 @@ const rendererConfig = {
                         loaders: {
                             sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax=1',
                             scss: 'vue-style-loader!css-loader!sass-loader',
-                            typescript: 'ts-loader',
                         },
                     },
                 },
+            },
+            {
+                test: /\.ts$/,
+                use: [
+                    'cache-loader',
+                    {
+                        loader: 'thread-loader',
+                    },
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            appendTsSuffixTo: [/\.vue$/], 
+                            happyPackMode: true
+                        },
+                    }
+                ],
+                exclude: /node_modules/,
+                include: [path.join(__dirname, '../src/renderer'), path.join(__dirname, '../src/universal')],
             },
             {
                 test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -84,6 +109,11 @@ const rendererConfig = {
         __filename: process.env.NODE_ENV !== 'production',
     },
     plugins: [
+        // new ForkTsCheckerWebpackPlugin({
+        //     vue: true,
+        //     // eslint: true,
+        //     tsconfig: path.resolve(__dirname, '../tsconfig.json'),
+        // }),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({ filename: 'styles.css' }),
         new HtmlWebpackPlugin({
@@ -113,30 +143,35 @@ const rendererConfig = {
                 : false,
         }),
         new webpack.NoEmitOnErrorsPlugin(),
+        new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            reportFilename: 'renderer.report.html',
+            generateStatsFile: true,
+            statsFilename: 'stat.renderer.json',
+            openAnalyzer: false,
+        }),
     ],
     output: {
         filename: '[name].js',
-        libraryTarget: 'commonjs2',
+        libraryTarget: 'var',
         path: path.join(__dirname, '../dist/electron'),
     },
     resolve: {
         alias: {
-            renderer: path.join(__dirname, '../src/renderer'),
-            static: path.join(__dirname, '../static'),
-            universal: path.join(__dirname, '../src/universal'),
+            '@renderer': path.join(__dirname, '../src/renderer'),
+            '@': path.join(__dirname, '../src/renderer'),
+            '@universal': path.join(__dirname, '../src/universal'),
         },
         extensions: ['.ts', '.js', '.vue', '.json', '.css', '.node'],
     },
-    target: 'electron-renderer',
+    target: 'web',
 };
-
 
 /**
  * Adjust rendererConfig for development settings
  */
 if (process.env.NODE_ENV !== 'production') {
     rendererConfig.plugins.push(
-        new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
             __static: `"${path.join(__dirname, '../static').replace(/\\/g, '\\\\')}"`,
         }),

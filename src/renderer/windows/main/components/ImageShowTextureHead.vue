@@ -11,10 +11,11 @@
   </div>
 </template>
 
-<script>
-import steve from 'renderer/assets/steve_skin.png';
+<script lang=ts>
+import { defineComponent, reactive, ref, toRefs, computed, Ref } from '@vue/composition-api';
+import steve from '@/assets/steve_skin.png';
 
-export default {
+export default defineComponent({
   props: {
     src: {
       type: String,
@@ -25,38 +26,36 @@ export default {
       default: 64,
     },
   },
-  data() {
-    return {
+  setup(props) {
+    const data = reactive({
       steve,
       textureWidth: 0,
       textureHeight: 0,
+    });
+    const image: Ref<any> = ref(null);
+
+    const translateX = computed(() => -props.dimension / 8);
+    const translateY = computed(() => -props.dimension / 8);
+
+    const style = computed(() => ({
+      'transform-origin': '0 0',
+      transform: `scale(8) translate(${translateX.value}px, ${translateY.value}px)`,
+      'min-width': data.textureWidth,
+      'min-height': data.textureHeight,
+    }));
+
+    function onload() {
+      data.textureWidth = image.value.naturalWidth;
+      data.textureHeight = image.value.naturalHeight;
+    }
+    return {
+      ...toRefs(data),
+      style,
+      image,
+      onload,
     };
   },
-  computed: {
-    style() {
-      return {
-        'transform-origin': '0 0',
-        transform: `scale(8) translate(${this.translateX}px, ${this.translateY}px)`,
-        'min-width': this.textureWidth,
-        'min-height': this.textureHeight,
-      };
-    },
-    translateX() {
-      return -this.dimension / 8;
-    },
-    translateY() {
-      return -this.dimension / 8;
-    },
-  },
-  created() {
-  },
-  methods: {
-    onload() {
-      this.textureWidth = this.$refs.image.naturalWidth;
-      this.textureHeight = this.$refs.image.naturalHeight;
-    },
-  },
-};
+});
 </script>
 
 <style>

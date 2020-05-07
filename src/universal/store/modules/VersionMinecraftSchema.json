@@ -1,0 +1,76 @@
+{
+    "type": "object",
+    "properties": {
+        "timestamp": {
+            "default": "",
+            "type": "string"
+        },
+        "latest": {
+            "default": {
+                "snapshot": "",
+                "release": ""
+            },
+            "type": "object",
+            "properties": {
+                "snapshot": {
+                    "description": "Snapshot version id of the Minecraft",
+                    "default": "",
+                    "type": "string"
+                },
+                "release": {
+                    "description": "Release version id of the Minecraft, like 1.14.2",
+                    "default": "",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "release",
+                "snapshot"
+            ]
+        },
+        "versions": {
+            "description": "All the vesrsion list",
+            "default": [],
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/MinecraftVersion"
+            }
+        }
+    },
+    "required": [
+        "latest",
+        "timestamp",
+        "versions"
+    ],
+    "definitions": {
+        "MinecraftVersion": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "releaseTime": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "releaseTime",
+                "time",
+                "type",
+                "url"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false
+}

@@ -4,13 +4,13 @@
       <v-flex tag="h1" style="margin-bottom: 10px; padding: 6px; 8px;" class="white--text" xs12>
         <span class="headline">{{ $tc('gamesetting.name', 2) }}</span>
       </v-flex>
-      <v-flex v-for="name in Object.keys(graphics)" :key="name" d-flex xs6
-              @click="triggerGraphic(name)">
+      <v-flex v-for="g in graphics" :key="g.name" d-flex xs6
+              @click="triggerGraphic(g)">
         <v-btn dark outline>
-          {{ $t(`gamesetting.${name}.name`) + ' : ' }}
+          {{ $t(`gamesetting.${g.name}.name`) + ' : ' }}
           <transition name="scroll-y-transition" mode="out-in">
-            <span :key="graphics[name].value" style="padding-left: 5px">
-              {{ $t(`gamesetting.${name}.${graphics[name].value}`) }}
+            <span :key="g.val" style="padding-left: 5px">
+              {{ $t(`gamesetting.${g.name}.${g.val}`) }}
             </span>
           </transition>
         </v-btn>
@@ -19,51 +19,54 @@
   </v-container>
 </template>
 
-<script>
+<script lang=ts>
+import { Frame } from '@xmcl/gamesetting';
+import { defineComponent, reactive, toRefs } from '@vue/composition-api';
+import { useAutoSaveLoad, useInstanceGameSetting } from '@/hooks';
 
-export default {
-  data: () => ({
-    graphics: {
-      fancyGraphics: { options: [true, false], value: true },
-      renderClouds: { options: [true, 'fast', false], value: true },
-      ao: { options: [0, 1, 2], value: 2 },
-      entityShadows: { options: [true, false], value: true },
-      particles: { options: [0, 1, 2], value: 2 },
-      mipmapLevels: { options: [0, 1, 2, 3, 4], value: 2 },
-      useVbo: { options: [true, false], value: true },
-      fboEnable: { options: [true, false], value: true },
-      enableVsync: { options: [true, false], value: true },
-      anaglyph3d: { options: [true, false], value: false },
-    },
-  }),
-  mounted() { this.load(); },
-  destroyed() { this.save(); },
-  activated() { this.load(); },
-  deactivated() { this.save(); },
-  methods: {
-    async load() {
-      await this.$repo.dispatch('loadProfileGameSettings');
-      const graphics = this.graphics;
-      const settings = this.$repo.state.profile.settings;
-      for (const setting of Object.keys(graphics)) {
-        if (typeof settings[setting] !== 'undefined') {
-          graphics[setting].value = settings[setting];
-        }
+export default defineComponent({
+  setup() {
+    const { refreshing, refresh, settings, commit } = useInstanceGameSetting();
+    const data = reactive({
+      graphics: [
+        { name: 'fancyGraphics', options: [true, false], val: true },
+        { name: 'renderClouds', options: [true, 'fast', false], val: true },
+        { name: 'ao', options: [0, 1, 2], val: 2 },
+        { name: 'entityShadows', options: [true, false], val: true },
+        { name: 'particles', options: [0, 1, 2], val: 2 },
+        { name: 'mipmapLevels', options: [0, 1, 2, 3, 4], val: 2 },
+        { name: 'useVbo', options: [true, false], val: true },
+        { name: 'fboEnable', options: [true, false], val: true },
+        { name: 'enableVsync', options: [true, false], val: true },
+        { name: 'anaglyph3d', options: [true, false], val: false },
+      ],
+    });
+    type Graphic = typeof data['graphics'][number];
+
+    async function load() {
+      refresh();
+      const graphics = data.graphics;
+      for (const setting of graphics) {
+        setting.val = Reflect.get(settings, setting.name).value;
       }
-    },
-    save() {
-      const result = {};
-      for (const setting of Object.keys(this.graphics)) {
-        result[setting] = this.graphics[setting].value;
+    }
+    function save() {
+      const result: Frame = {};
+      for (const setting of data.graphics) {
+        result[setting.name as keyof Frame] = setting.val as any;
       }
-      this.$repo.commit('gamesettings', result);
-    },
-    triggerGraphic(name) {
-      const { value, options } = this.graphics[name];
-      const index = options.indexOf(value);
-      const nextIndex = (index + 1) % options.length;
-      this.graphics[name].value = options[nextIndex];
-    },
+      commit(result);
+    }
+    useAutoSaveLoad(save, load);
+    return {
+      ...toRefs(data),
+      refreshing,
+      triggerGraphic(g: Graphic) {
+        const index = g.options.indexOf(g.val as never);
+        const nextIndex = (index + 1) % g.options.length;
+        g.val = g.options[nextIndex] as any;
+      },
+    };
   },
-};
+});
 </script>

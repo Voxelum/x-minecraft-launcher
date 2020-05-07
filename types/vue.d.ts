@@ -1,11 +1,9 @@
-declare module "*.vue" {
-    import Vue from 'vue';
-    export default Vue;
+
+/* eslint-disable */
+
+
+import { ComponentInstance } from '@vue/composition-api/dist/component/component';
+
+declare module '@vue/composition-api' {
 }
 
-declare module "vue/types/vue" {
-    import Vue from 'vue';
-    interface Vue {
-        $notify(level: 'info' | 'success' | 'warning' | 'error', content: string): void;
-    }
-}

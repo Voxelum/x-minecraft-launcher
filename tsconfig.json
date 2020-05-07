@@ -10,16 +10,13 @@
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "paths": {
-            "universal/*": [
+            "@universal/*": [
                 "src/universal/*"
             ],
-            "static/*": [
-                "static/*"
-            ],
-            "main/*": [
+            "@main/*": [
                 "src/main/*"
             ],
-            "renderer/*": [
+            "@/*": [
                 "src/renderer/*"
             ]
         }
@@ -27,5 +24,6 @@
     "include": [
         "types/*",
         "src/**/*"
-    ]
+    ],
+    "exclude": ["node_modules"]
 }

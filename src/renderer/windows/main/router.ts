@@ -1,7 +1,20 @@
-import Router from 'vue-router';
+import { serviceProxy } from '@/providers/provideServiceProxy';
 import Vue from 'vue';
-import { remote } from 'electron';
-import MainWindow from './MainWindow.vue';
+import Router, { Route } from 'vue-router';
+import AdvancedSettingPage from './pages/AdvancedSettingPage.vue';
+import BaseSettingPage from './pages/BaseSettingPage.vue';
+import CurseforgePage from './pages/CurseforgePage.vue';
+import CurseforgeProjectPage from './pages/CurseforgeProjectPage.vue';
+import CurseforgeViewPage from './pages/CurseforgeViewPage.vue';
+import GameSettingPage from './pages/GameSettingPage.vue';
+import HomePage from './pages/HomePage.vue';
+import InstancesPage from './pages/InstancesPage.vue';
+import ModSettingPage from './pages/ModSettingPage.vue';
+import ResourcePackSettingPage from './pages/ResourcePackSettingPage.vue';
+import SaveViewPage from './pages/SaveViewPage.vue';
+import SettingPage from './pages/SettingPage.vue';
+import UserPage from './pages/UserPage.vue';
+import VersionSettingPage from './pages/VersionSettingPage.vue';
 
 Vue.use(Router);
 
@@ -9,86 +22,77 @@ const router = new Router({
     routes: [
         {
             path: '/',
-            component: MainWindow,
-            children: [
-                {
-                    path: '/',
-                    component: () => import('./pages/HomePage.vue'),
-                },
-                {
-                    path: '/profiles',
-                    component: () => import('./pages/ProfilesPage.vue'),
-                },
-                {
-                    path: '/setting',
-                    component: () => import('./pages/SettingPage.vue'),
-                },
-                {
-                    path: '/user',
-                    component: () => import('./pages/UserPage.vue'),
-                },
-                {
-                    path: '/save',
-                    component: () => import('./pages/SaveViewPage.vue'),
-                },
-                {
-                    path: '/server',
-                    component: () => import('./pages/ServerViewPage.vue'),
-                },
-                {
-                    path: '/base-setting',
-                    component: () => import('./pages/BaseSettingPage.vue'),
-                },
-                {
-                    path: '/advanced-setting',
-                    component: () => import('./pages/AdvancedSettingPage.vue'),
-                },
-                {
-                    path: '/mod-setting',
-                    component: () => import('./pages/ModSettingPage.vue'),
-                },
-                {
-                    path: '/game-setting',
-                    component: () => import('./pages/GameSettingPage.vue'),
-                },
-                {
-                    path: '/resource-pack-setting',
-                    component: () => import('./pages/ResourcePackSettingPage.vue'),
-                },
-                {
-                    path: '/version-setting',
-                    component: () => import('./pages/VersionSettingPage.vue'),
-                },
-                {
-                    path: '/curseforge',
-                    component: () => import('./pages/CurseforgePage.vue'),
-                },
-                {
-                    path: '/curseforge/:type',
-                    component: () => import('./pages/CurseforgeViewPage.vue'),
-                    props: true,
-                },
-                {
-                    path: '/curseforge/:type/:id',
-                    component: () => import('./pages/CurseforgeProjectPage.vue'),
-                    props: true,
-                },
-            ],
+            component: HomePage,
+        },
+        {
+            path: '/instances',
+            component: InstancesPage,
+        },
+        {
+            path: '/setting',
+            component: SettingPage,
+        },
+        {
+            path: '/user',
+            component: UserPage,
+        },
+        {
+            path: '/save',
+            component: SaveViewPage,
+        },
+        {
+            path: '/base-setting',
+            component: BaseSettingPage,
+        },
+        {
+            path: '/advanced-setting',
+            component: AdvancedSettingPage,
+        },
+        {
+            path: '/mod-setting',
+            component: ModSettingPage,
+        },
+        {
+            path: '/game-setting',
+            component: GameSettingPage,
+        },
+        {
+            path: '/resource-pack-setting',
+            component: ResourcePackSettingPage,
+        },
+        {
+            path: '/version-setting',
+            component: VersionSettingPage,
+        },
+        {
+            path: '/curseforge',
+            component: CurseforgePage,
+        },
+        {
+            path: '/curseforge/:type',
+            component: CurseforgeViewPage,
+            props: true,
+        },
+        {
+            path: '/curseforge/:type/:id',
+            component: CurseforgeProjectPage,
+            props: true,
         },
     ],
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to: Route, from: Route, next) => {
     const full = to.fullPath.substring(1);
+    const { openInBrowser } = serviceProxy.BaseService;
     if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {
         console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`);
         next(false);
         if (full.startsWith('external')) {
             console.log(full.substring('external/'.length));
-            remote.shell.openExternal(full.substring('external/'.length));
+            openInBrowser(full.substring('external/'.length));
         } else {
             console.log(full);
-            remote.shell.openExternal(full);
+            openInBrowser(full);
         }
     } else {
         console.log(`Route ${from.fullPath} -> ${to.fullPath}`);

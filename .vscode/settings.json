@@ -1,6 +1,6 @@
 {
     "eslint.validate": [
-        "javascript",
+        "typescript",
         {
             "language": "vue",
             "autoFix": true
@@ -16,9 +16,13 @@
         "**/.DS_Store": true,
         "**/node_modules": true
     },
+    "vetur.useWorkspaceDependencies": true,
     "vetur.format.defaultFormatter.js": "vscode-typescript",
+    "vetur.format.defaultFormatter.ts": "vscode-typescript",
+    "vetur.format.enable": true,
     "vetur.validation.template": true,
-    "vetur.format.defaultFormatter.html": "none",
+    "vetur.validation.script": true,
+    "vetur.experimental.templateInterpolationService": true,
     "vetur.format.defaultFormatterOptions": {
         "vscode-typescript": {
             "indent_size": 4
@@ -33,5 +37,18 @@
             "wrap_line_length": 100
         }
     },
-    "vetur.useWorkspaceDependencies": true
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "i18n-ally.localesPaths": [
+        "src/renderer/assets/locales",
+        "src/main/util/locales"
+    ],
+    "i18n-ally.keystyle": "nested",
+    "i18n-ally.sortKeys": true,
+    "cSpell.words": [
+        "Minecraft",
+        "logined",
+        "logining",
+        "mojang",
+        "xmcl"
+    ]
 }

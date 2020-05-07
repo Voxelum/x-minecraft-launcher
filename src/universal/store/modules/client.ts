@@ -1,51 +1,46 @@
-import { isCompatible } from 'universal/utils/versions';
-import { Module, Context } from "../store";
+import { isCompatible } from '@universal/util/version';
+import { ModuleOption } from '../root';
 
-export namespace ClientModule {
-    export type ProtocolToVersion = {
-        [protocol: string]: string[];
+export type ProtocolToVersion = {
+    [protocol: string]: string[];
+};
+export type PackFormatToVersioRange = {
+    [range: string]: string;
+};
+
+export type MinecraftVersion = string;
+
+export interface ResourcePackFormatMapping {
+    mcversion: {
+        [format: number]: string;
     };
-    export type PackFormatToVersioRange = {
-        [range: string]: string;
+}
+export interface ClientProtocolMapping {
+    protocol: {
+        [mcversion: string]: number;
     };
-
-    export type MinecraftVersion = string;
-
-    export interface ResourcePackFormatMapping {
-        mcversion: {
-            [format: number]: string;
-        };
-    }
-    export interface ClientProtocolMapping {
-        protocol: {
-            [mcversion: string]: number;
-        };
-        mcversion: {
-            [protocol: number]: MinecraftVersion[];
-        };
-    }
-
-    export interface State {
-        protocolMapping: ClientProtocolMapping;
-        packFormatMapping: ResourcePackFormatMapping;
-    }
-
-    export interface Getters {
-        getAcceptMinecraftRangeByFormat(format: number): string;
-        getAcceptMinecraftsByProtocol(protocol: number): string[];
-        isResourcePackCompatible(format: number, mcversion: string): boolean;
-    }
-
-    export interface Mutations {
-        packFormatMapping(state: State, mapping: ResourcePackFormatMapping): void;
-        protocolMapping(state: State, mapping: ClientProtocolMapping): void;
-    }
-    type C = Context<State, Getters, Mutations, Actions>;
-    export interface Actions {
-    }
+    mcversion: {
+        [protocol: number]: MinecraftVersion[];
+    };
 }
 
-export interface ClientModule extends Module<"client", ClientModule.State, ClientModule.Getters, ClientModule.Mutations, ClientModule.Actions> { }
+interface State {
+    protocolMapping: ClientProtocolMapping;
+    packFormatMapping: ResourcePackFormatMapping;
+}
+
+interface Getters {
+    getAcceptMinecraftRangeByFormat: (format: number) => string;
+    getAcceptMinecraftsByProtocol: (protocol: number) => string[];
+    isResourcePackCompatible: (format: number, mcversion: string) => boolean;
+}
+
+interface Mutations {
+    packFormatMapping: ResourcePackFormatMapping;
+    protocolMapping: ClientProtocolMapping;
+}
+
+export type ClientModule = ModuleOption<State, Getters, Mutations, {}>;
 
 const mod: ClientModule = {
     state: {

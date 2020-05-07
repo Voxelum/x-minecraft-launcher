@@ -1,0 +1,60 @@
+{
+    "type": "object",
+    "properties": {
+        "java": {
+            "description": "The instance assigned java path on disk.",
+            "default": "",
+            "type": "string"
+        },
+        "deployed": {
+            "default": "[]\nThe resources already deployed",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/DeployedInfo"
+            }
+        }
+    },
+    "required": [
+        "deployed",
+        "java"
+    ],
+    "definitions": {
+        "DeployedInfo": {
+            "type": "object",
+            "properties": {
+                "src": {
+                    "description": "If this is deployed by link, it will be a file path to the source.",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "The id listed in instance deployment",
+                    "type": "string"
+                },
+                "file": {
+                    "description": "Deployed file relative path to the .minecraft folder",
+                    "type": "string"
+                },
+                "integrity": {
+                    "description": "The sha256 of the src",
+                    "type": "string"
+                },
+                "resolved": {
+                    "description": "The way to resolve it. If it's false, it doesn't resolved.",
+                    "enum": [
+                        false,
+                        "link",
+                        "unpack"
+                    ]
+                }
+            },
+            "required": [
+                "file",
+                "integrity",
+                "resolved",
+                "url"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false
+}

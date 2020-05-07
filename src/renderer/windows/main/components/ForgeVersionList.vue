@@ -1,98 +1,79 @@
 <template>
-  <v-container v-if="refreshing" fill-height>
-    <v-layout align-center justify-center row fill-height>
-      <v-flex shrink>
-        <v-progress-circular :size="100" color="white" indeterminate />
-      </v-flex>
-    </v-layout>
-  </v-container>
-  <v-list v-else-if="versionList.length !== 0" dark style="overflow-y: scroll; scrollbar-width: 0;">
-    <v-list-tile ripple @click="selectVersion(null)">
+  <v-list dark style="overflow-y: scroll; scrollbar-width: 0; background-color: transparent;">
+    <v-list-tile ripple @click="select({ version: '' })">
       <v-list-tile-avatar>
         <v-icon> close </v-icon>
       </v-list-tile-avatar>
       {{ $t('forge.disable') }}
     </v-list-tile>
-    <template v-for="(item, index) in versions">
-      <v-list-tile :key="index" ripple @click="selectVersion(item)">
-        <v-list-tile-avatar>
-          <v-icon v-if="statuses[item.version] !== 'loading'">
-            {{ statuses[item.version] === 'remote' ? 'cloud' : 'folder' }}
-          </v-icon>
-          <v-progress-circular v-else :width="2" :size="24" indeterminate />
-        </v-list-tile-avatar>
+    <virtual-list :size="48" :remain="6"> 
+      <template v-for="(item) in value">
+        <v-list-tile
+          :key="item.version"
+          :class="{ grey: selected === item.version, 'darken-1' : selected === item.version }" 
+          ripple 
+          @click="select(item)">
+          <v-list-tile-avatar>
+            <v-icon v-if="status[item.version] !== 'loading'">
+              {{ status[item.version] === 'remote' ? 'cloud' : 'folder' }}
+            </v-icon>
+            <v-progress-circular v-else :width="2" :size="24" indeterminate />
+          </v-list-tile-avatar>
 
-        <v-list-tile-title>
-          {{ item.version }}
-        </v-list-tile-title>
-        <v-list-tile-sub-title>
+          <v-list-tile-title>
+            {{ item.version }}
+          </v-list-tile-title>
+          <!-- <v-list-tile-sub-title v-if="showTime">
           {{ item.date }}
-        </v-list-tile-sub-title>
+        </v-list-tile-sub-title> -->
 
-        <v-list-tile-action style="justify-content: flex-end;">
-          <v-chip v-if="item.type !== 'common'" label :color="item.type === 'recommended'?'green': ''">
-            {{ item.type }}
-          </v-chip>
+          <v-list-tile-action style="justify-content: flex-end;">
+            <v-chip 
+              v-if="item.type !== 'common'" 
+              label 
+              :color="item.type === 'recommended' ? 'green' : ''">
+              {{ item.type }}
+            </v-chip>
           <!-- <v-icon v-if="iconMapping[item.type]">{{iconMapping[item.type]}}</v-icon> -->
-        </v-list-tile-action>
-      </v-list-tile>
-    </template>
+          </v-list-tile-action>
+        </v-list-tile>
+      </template>
+    </virtual-list>
   </v-list>
-  <v-container v-else fill-height>
-    <v-layout align-center justify-center row fill-height>
-      <v-flex shrink tag="h3" class="white--text">
-        <v-btn outline large @click="$emit('refresh')">
-          <v-icon left>
-            refresh
-          </v-icon>
-          {{ $t('forge.noVersion', {version:mcversion}) }}
-        </v-btn>
-      </v-flex>
-    </v-layout>
-  </v-container>
 </template>
 
-<script>
-export default {
+<script lang=ts>
+import { defineComponent } from '@vue/composition-api';
+import { ForgeInstaller } from '@xmcl/installer';
+import VirtualList from 'vue-virtual-scroll-list';
+
+export type Status = 'loading' | 'folder' | 'cloud';
+
+export interface Props {
+  selected: string;
+  value: ForgeInstaller.Version[];
+  status: Status[];
+  select: (version: { version: string }) => void;
+}
+
+export default defineComponent<Props>({
+  components: { VirtualList },
   props: {
-    mcversion: {
-      type: String,
-      default: '',
-    },
-    refreshing: {
-      type: Boolean,
-      default: false,
-    },
-    versionList: {
-      type: Array,
-      default: () => [],
-    },
-    filter: {
-      type: Function,
-      default: () => true,
-    },
+    value: Array,
+    status: Object,
+    select: Function,
+    selected: String,
   },
-  data: () => ({
-    iconMapping: {
-      buggy: 'bug_report',
-      recommended: 'star',
-      latest: 'fiber_new',
-    },
-  }),
-  computed: {
-    statuses() {
-      return this.$repo.getters.forgeStatuses;
-    },
-    versions() {
-      return this.versionList.filter(this.filter);
-    },
+  setup() {
+    return {
+      iconMapping: {
+        buggy: 'bug_report',
+        recommended: 'star',
+        latest: 'fiber_new',
+      },
+    };
   },
-  methods: {
-    selectVersion(item) {
-      this.$emit('value', item);
-    },
-  },
-};
+});
 </script>
 
 <style>

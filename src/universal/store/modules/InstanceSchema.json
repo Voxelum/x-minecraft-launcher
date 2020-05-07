@@ -1,0 +1,223 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "description": "The display name of the profile. It will also be the modpack display name",
+            "default": "",
+            "type": "string"
+        },
+        "author": {
+            "description": "The author of this instance",
+            "default": "",
+            "type": "string"
+        },
+        "description": {
+            "description": "The description of this instance",
+            "default": "",
+            "type": "string"
+        },
+        "showLog": {
+            "description": "Should show a logger window after Minecraft launched",
+            "default": false,
+            "type": "boolean"
+        },
+        "hideLauncher": {
+            "description": "Should launcher hide after Minecraft launched",
+            "default": true,
+            "type": "boolean"
+        },
+        "deployments": {
+            "description": "The external resource deployment of this instance, like mods or resource packs.\n\nThe domain is the directory it will deployed to. For example, `mods` will deploy to `.minecraft/mods` folder.\n\nEach is a list of uri in specific format\n\n- Curseforge file `curseforge://projectId/fileId` or `curseforge://fileId`\n- Forge mod: `forge://modid/version`\n- Liteloader mod: `liteloader://name/version`\n- Fabric mod: `fabric://name/version`\n- Local managed resource: `resource://hash`\n- Http: `https://abc.bcd.jar`\n- Github: `github://username/reponame/releaseName`",
+            "default": {},
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        },
+        "optionalDeployments": {
+            "description": "The optional external resource deployment of this profiles, like mods or resource packs",
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "runtime": {
+            "$ref": "#/definitions/RuntimeVersions",
+            "description": "The runtime version requirement of the profile.\n\nContaining the forge & liteloader & etc.",
+            "default": {
+                "minecraft": "",
+                "forge": "",
+                "liteloader": ""
+            }
+        },
+        "java": {
+            "description": "The recommended java version for this instance",
+            "default": "8",
+            "type": "string"
+        },
+        "resolution": {
+            "anyOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "width": {
+                            "type": "number"
+                        },
+                        "height": {
+                            "type": "number"
+                        },
+                        "fullscreen": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "fullscreen",
+                        "height",
+                        "width"
+                    ]
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "minMemory": {
+            "default": 0,
+            "type": "number"
+        },
+        "maxMemory": {
+            "default": 0,
+            "type": "number"
+        },
+        "vmOptions": {
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "mcOptions": {
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "url": {
+            "default": "",
+            "type": "string"
+        },
+        "icon": {
+            "default": "",
+            "type": "string"
+        },
+        "image": {
+            "default": "",
+            "type": "string"
+        },
+        "blur": {
+            "default": 0,
+            "type": "number"
+        },
+        "lastAccessDate": {
+            "default": 0,
+            "type": "number"
+        },
+        "creationDate": {
+            "default": 0,
+            "type": "number"
+        },
+        "server": {
+            "description": "The option for instance to launch server directly",
+            "default": null,
+            "anyOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "host": {
+                            "type": "string"
+                        },
+                        "port": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "host"
+                    ]
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        }
+    },
+    "required": [
+        "author",
+        "blur",
+        "creationDate",
+        "deployments",
+        "description",
+        "hideLauncher",
+        "icon",
+        "image",
+        "java",
+        "lastAccessDate",
+        "maxMemory",
+        "mcOptions",
+        "minMemory",
+        "name",
+        "optionalDeployments",
+        "resolution",
+        "runtime",
+        "server",
+        "showLog",
+        "url",
+        "vmOptions"
+    ],
+    "definitions": {
+        "RuntimeVersions": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            },
+            "properties": {
+                "minecraft": {
+                    "description": "Minecraft version of this version. e.g. 1.7.10",
+                    "default": "",
+                    "type": "string"
+                },
+                "forge": {
+                    "description": "Forge version of this version. e.g. 14.23.5.2838",
+                    "default": "",
+                    "type": "string"
+                },
+                "liteloader": {
+                    "default": "",
+                    "type": "string"
+                },
+                "fabricLoader": {
+                    "description": "Fabric loader version, e.g. 0.7.2+build.175",
+                    "default": "",
+                    "type": "string"
+                },
+                "yarn": {
+                    "description": "Fabric yarn version, e.g. 1.15.1+build.14",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "fabricLoader",
+                "forge",
+                "liteloader",
+                "minecraft",
+                "yarn"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false
+}

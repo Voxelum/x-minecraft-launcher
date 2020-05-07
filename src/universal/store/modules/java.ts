@@ -1,35 +1,41 @@
 import Vue from 'vue';
-import { requireString, requireObject } from '../../utils/object';
+import { requireObject, requireString } from '@universal/util/assert';
+import { ModuleOption } from '../root';
+import { Java } from './java.schema';
 
-import { Module, Context, TaskHandle } from "../store";
-import { Java, JavaConfig } from './java.config';
+type State = {
+    all: JavaState[];
+    /**
+    * @TJS-type integer
+    * @minimum 0
+    * @default 0
+    */
+    default: number;
+};
 
-export { Java };
+export type JavaState = Java & { valid: boolean };
 
-export declare namespace JavaModule {
-    interface State extends JavaConfig {
-
-    }
-
-    interface Getters {
-        defaultJava: Java
-        missingJava: boolean
-    }
-    interface Mutations {
-        addJava(type: State, java: Java | Java[]): void
-        removeJava(type: State, java: Java): void
-        defaultJava(type: State, java: Java): void
-    }
-    type C = Context<State, Getters, Mutations, Actions>
-    interface Actions {
-        installJava(context: C, fix?: boolean): Promise<TaskHandle>
-        refreshLocalJava(context: C): Promise<void>
-        redirectToJvmPage(context: C): Promise<void>
-        resolveJava(context: C, java: string): Promise<Java | undefined>
-    }
+interface Getters {
+    defaultJava: JavaState;
+    missingJava: boolean;
+}
+interface Mutations {
+    javaUpdate: (JavaState | JavaState[]);
+    javaRemove: (JavaState);
+    javaSetDefault: (JavaState);
 }
 
-export type JavaModule = Module<"java", JavaModule.State, JavaModule.Getters, JavaModule.Mutations, JavaModule.Actions>;
+export type JavaModule = ModuleOption<State, Getters, Mutations, {}>;
+
+/**
+ * Return when there is no java
+ */
+export const EMPTY_JAVA: JavaState = {
+    version: '',
+    majorVersion: 0,
+    path: '',
+    valid: false,
+};
 
 const mod: JavaModule = {
     state: {
@@ -37,17 +43,18 @@ const mod: JavaModule = {
         default: 0,
     },
     getters: {
-        defaultJava: state => state.all[state.default],
+        defaultJava: state => state.all[state.default] || EMPTY_JAVA,
         missingJava: state => state.all.length === 0,
     },
     mutations: {
-        addJava(state, java) {
+        javaUpdate(state, java) {
             if (java instanceof Array) {
                 for (const j of java) {
                     const existed = state.all.find(jp => jp.path === j.path);
                     if (existed) {
                         existed.majorVersion = j.majorVersion;
                         existed.version = j.version;
+                        existed.valid = j.valid;
                     } else {
                         state.all.push(j);
                     }
@@ -57,13 +64,14 @@ const mod: JavaModule = {
                 if (existed) {
                     existed.majorVersion = java.majorVersion;
                     existed.version = java.version;
+                    existed.valid = java.valid;
                 } else {
                     state.all.push(java);
                 }
             }
             if (state.default >= state.all.length) state.default = 0;
         },
-        removeJava(state, java) {
+        javaRemove(state, java) {
             requireObject(java);
             requireString(java.path);
             for (let i = 0; i < state.all.length; i++) {
@@ -75,7 +83,7 @@ const mod: JavaModule = {
                 }
             }
         },
-        defaultJava(state, def) {
+        javaSetDefault(state, def) {
             requireObject(def);
             requireString(def.path);
 
@@ -86,5 +94,7 @@ const mod: JavaModule = {
         },
     },
 };
+
+export { Java };
 
 export default mod;

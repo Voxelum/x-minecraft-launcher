@@ -1,175 +1,138 @@
 <template>
-  <vue-particles v-if="loading" color="#dedede" style="position: absolute; width: 100%; height: 100%;" />
-  <v-layout v-else fill-height>
-    <v-navigation-drawer :value="true" mini-variant stateless dark 
-                         style="border-radius: 2px 0 0 2px;"
-                         class="moveable">
-      <v-toolbar flat class="transparent">
-        <v-list class="pa-0 non-moveable">
-          <v-list-tile avatar @click="goBack">
-            <v-list-tile-avatar>
-              <v-icon dark>
-                arrow_back
-              </v-icon>
-            </v-list-tile-avatar>
-          </v-list-tile>
-        </v-list>
-      </v-toolbar>
-      <v-list class="non-moveable">
-        <v-divider dark style="display: block !important;" />
-        <v-list-tile :disabled="!logined" replace to="/">
-          <v-list-tile-action>
-            <v-icon>home</v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-list-tile :disabled="!logined" replace to="/profiles">
-          <v-list-tile-action>
-            <v-icon>apps</v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-list-tile :disabled="!logined" replace to="/user">
-          <v-list-tile-action>
-            <v-icon>person</v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-list-tile :disabled="!logined" replace to="/curseforge">
-          <v-list-tile-action style="padding-right: 2px;">
-            <v-icon :size="14">
-              $vuetify.icons.curseforge
-            </v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-spacer />
-      </v-list>
-      <v-list class="non-moveable" style="position: absolute; bottom: 0px;">
-        <v-list-tile v-ripple @click="showTaskDialog">
-          <v-list-tile-action>
-            <v-badge right :value="activeTasksCount !== 0">
-              <template v-slot:badge>
-                <span>{{ activeTasksCount }}</span>
-              </template>
-              <v-icon dark>
-                assignment
-              </v-icon>
-            </v-badge>
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-divider dark style="display: block !important;" />
-        <v-list-tile replace to="/setting">
-          <v-list-tile-action>
-            <v-icon dark>
-              settings
-            </v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
-    <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
-      <v-card class="main-body" color="grey darken-4">
-        <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;">
-        <vue-particles v-else color="#dedede" style="position: absolute; width: 100%; height: 100%;" click-mode="repulse" />
-        <transition name="fade-transition" mode="out-in">
-          <!-- <keep-alive> -->
-          <router-view />
+  <v-app dark style="background: transparent;">
+    <v-container v-if="loading" color="primary" align-center justify-center style="position: absolute; width: 100%; height: 100%; background-color: #212121" />
+    <v-layout v-else fill-height>
+      <side-bar />
+      <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
+        <v-card class="main-body" color="grey darken-4">
+          <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;">
+          <vue-particles v-if="showParticle" 
+                         color="#dedede" 
+                         :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }"
+                         style="position: absolute; width: 100%; height: 100%; z-index: 0; tabindex = -1;" 
+                         :click-mode="particleMode" />
+          <transition name="fade-transition" mode="out-in">
+            <!-- <keep-alive> -->
+            <router-view />
           <!-- </keep-alive> -->
-        </transition>
-        <notifier />
-        <context-menu />
-        <dialog-login />
-        <dialog-task v-model="taskDialog" />
-      </v-card>
+          </transition>
+        </v-card>
+      </v-layout>
+      <context-menu />
+      <search-bar />
+      <notifier />
+      <login-dialog />
+      <task-dialog />
+      <launch-status-dialog />
     </v-layout>
-  </v-layout>
+  </v-app>
 </template>
 
-<script>
-import 'renderer/assets/common.css';
+<script lang=ts>
+import '@/assets/common.css';
 import {
   onMounted,
-  onBeforeMount,
+  onUnmounted,
   reactive,
   toRefs,
-  computed,
   watch,
-  createComponent,
+  defineComponent,
+  ref,
+  Ref,
 } from '@vue/composition-api';
-import { ipcRenderer } from 'electron';
-import { useStore, useRouter } from './index';
+import { IpcRendererEvent } from 'electron';
+import {
+  useParticle,
+  useStore,
+  useBackgroundImage,
+  useIpc,
+  useI18n,
+  useRouter,
+} from '@/hooks';
+import { provideTasks } from '@/providers/provideTasks'; 
+import { provideDialog, provideNotifier, useNotifier, provideLoginDialog, provideSearchToggle } from './hooks';
+import LoginDialog from './dialog/BaseLoginDialog.vue';
+import TaskDialog from './dialog/BaseTaskDialog.vue';
+import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue';
 
-export default {
-  setup(props, ctx) {
+export default defineComponent({
+  components: { LoginDialog, TaskDialog, LaunchStatusDialog },
+  setup() {
+    provideDialog();
+    provideNotifier();
+    provideTasks();
+
+    provideSearchToggle();
+
+    const ipcRenderer = useIpc();
+    const { particleMode, showParticle } = useParticle();
+    const { $t } = useI18n();
+    const { blur, backgroundImage } = useBackgroundImage();
+    const { notify } = useNotifier();
+    const { state } = useStore();
     const router = useRouter();
-    const store = useStore();
-    const template = {
+    const onHomePage = ref(router.currentRoute.path === '/');
+    provideLoginDialog();
+
+    router.afterEach((to) => {
+      onHomePage.value = to.path === '/';
+    });
+
+    const data = reactive({
       loading: true,
-      localHistory: [],
-      timeTraveling: false,
-      taskDialog: false,
-    };
-    const data = reactive(template);
-
-    const activeTasksCount = computed(
-      () => store.state.task.tasks.filter(t => t.status === 'running').length,
-    );
-    const blur = computed(
-      () => store.getters.selectedProfile.blur || store.state.setting.defaultBlur,
-    );
-    const backgroundImage = computed(
-      () => store.getters.selectedProfile.image
-        || store.state.setting.defaultBackgroundImage,
-    );
-    const logined = computed(() => store.getters.logined);
-
-    watch(backgroundImage, () => {
-      refreshImage();
     });
 
-    router.afterEach((to, from) => {
-      if (!data.timeTraveling) data.localHistory.push(from.fullPath);
-    });
-
-    onMounted(() => {
-      ipcRenderer.once('vuex-sync', () => {
-        data.loading = false;
-      });
-      ipcRenderer.on('task', showTaskDialog);
-    });
-
-    function showTaskDialog(show) {
-      if (typeof show === 'boolean') {
-        data.taskDialog = show;
-      } else {
-        data.taskDialog = true;
-      }
+    function onSuccessed(event: IpcRendererEvent, id: string) {
+      // const task = state.task.tree[id];
+      // if (task.background) return;
+      // notify('success', $t(task.path, task.arguments || {}));
     }
-
+    function onFailed(event: IpcRendererEvent, id: string, error: any) {
+      // const task = state.task.tree[id];
+      // if (task.background) return;
+      // console.log(`Recieve fail task ${id}`);
+      // notify('error', $t(task.path, task.arguments || {}), $t('task.failedDescription'), error);
+    }
     function refreshImage() {
       const img = backgroundImage;
     }
+    onMounted(() => {
+      ipcRenderer.addListener('task-successed', onSuccessed);
+      ipcRenderer.addListener('task-failed', onFailed);
+    });
+    onUnmounted(() => {
+      ipcRenderer.removeListener('task-successed', onSuccessed);
+      ipcRenderer.removeListener('task-failed', onFailed);
+    });
 
-    function goBack() {
-      if (!logined.value && router.currentRoute.path === '/login') {
-        return;
-      }
-      data.timeTraveling = true;
-      const before = data.localHistory.pop();
-      if (before) {
-        router.replace(before);
-      }
-      data.timeTraveling = false;
-    }
+    onMounted(() => {
+      ipcRenderer.once('synced', () => {
+        data.loading = false;
+      });
+      watch(backgroundImage, () => {
+        refreshImage();
+      });
+      watch(particleMode, () => {
+        if (showParticle.value) {
+          showParticle.value = false;
+          setImmediate(() => {
+            showParticle.value = true;
+          });
+        }
+      });
+    });
 
     return {
       ...toRefs(data),
-      activeTasksCount,
-      showTaskDialog,
+      // searchBar,
       blur,
-      goBack,
-      logined,
       backgroundImage,
+      particleMode,
+      showParticle,
+      onHomePage,
     };
   },
-};
+});
 </script>
 
 <style>

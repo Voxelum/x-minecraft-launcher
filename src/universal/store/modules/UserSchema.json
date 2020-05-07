@@ -1,0 +1,261 @@
+{
+    "type": "object",
+    "properties": {
+        "users": {
+            "description": "All saved user account through mutliple services",
+            "default": {},
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/UserProfile"
+            }
+        },
+        "selectedUser": {
+            "description": "Contains the UUID-hashed account and the UUID of the currently selected user",
+            "default": {
+                "account": "",
+                "profile": ""
+            },
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "The UUID-hashed key of the currently selected user",
+                    "default": "",
+                    "type": "string"
+                },
+                "profile": {
+                    "description": "The UUID of the currently selected player",
+                    "default": "",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "profile"
+            ]
+        },
+        "authServices": {
+            "description": "All loaded auth services api. Used for ygg auth",
+            "default": {},
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/YggdrasilAuthAPI"
+            }
+        },
+        "profileServices": {
+            "description": "All loaded profile services api. Used for",
+            "default": {},
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/ProfileServiceAPI"
+            }
+        },
+        "clientToken": {
+            "description": "The client token of current client. The launcher will generate one at first launch.",
+            "default": "",
+            "type": "string"
+        }
+    },
+    "required": [
+        "authServices",
+        "clientToken",
+        "profileServices",
+        "selectedUser",
+        "users"
+    ],
+    "definitions": {
+        "UserProfile": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "user id",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "The username usually email",
+                    "type": "string"
+                },
+                "profileService": {
+                    "description": "The used profile service id",
+                    "type": "string"
+                },
+                "authService": {
+                    "description": "The used auth service id",
+                    "type": "string"
+                },
+                "accessToken": {
+                    "description": "The access token of the user",
+                    "type": "string"
+                },
+                "profiles": {
+                    "description": "All avaiable game profiles",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/GameProfileAndTexture"
+                    }
+                }
+            },
+            "required": [
+                "accessToken",
+                "authService",
+                "id",
+                "profileService",
+                "profiles",
+                "username"
+            ]
+        },
+        "GameProfileAndTexture": {
+            "type": "object",
+            "properties": {
+                "textures": {
+                    "type": "object",
+                    "properties": {
+                        "SKIN": {
+                            "$ref": "#/definitions/GameProfile.Texture"
+                        },
+                        "CAPE": {
+                            "description": "The data structure that hold the texture",
+                            "$ref": "#/definitions/GameProfile.Texture"
+                        },
+                        "ELYTRA": {
+                            "description": "The data structure that hold the texture",
+                            "$ref": "#/definitions/GameProfile.Texture"
+                        }
+                    },
+                    "required": [
+                        "SKIN"
+                    ]
+                },
+                "id": {
+                    "description": "game profile unique id",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "This is in game displayed name",
+                    "type": "string"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "userId": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "number"
+                },
+                "legacyProfile": {
+                    "type": "boolean"
+                },
+                "suspended": {
+                    "type": "boolean"
+                },
+                "paid": {
+                    "type": "boolean"
+                },
+                "migrated": {
+                    "type": "boolean"
+                },
+                "legacy": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "id",
+                "name",
+                "textures"
+            ]
+        },
+        "GameProfile.Texture": {
+            "description": "The data structure that hold the texture",
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {},
+                    "properties": {
+                        "model": {
+                            "enum": [
+                                "slim",
+                                "steve"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "required": [
+                "url"
+            ]
+        },
+        "YggdrasilAuthAPI": {
+            "type": "object",
+            "properties": {
+                "hostName": {
+                    "description": "The host url, like https://xxx.xxx.com",
+                    "type": "string"
+                },
+                "authenticate": {
+                    "description": "Authenticate path, in the form of `/your-endpoint`.\nUse to login",
+                    "type": "string"
+                },
+                "refresh": {
+                    "description": "Use to refresh access token",
+                    "type": "string"
+                },
+                "validate": {
+                    "description": "Use to validate the user access token",
+                    "type": "string"
+                },
+                "invalidate": {
+                    "description": "Use to logout user (invalidate user access token)",
+                    "type": "string"
+                },
+                "signout": {
+                    "description": "Use to logout user (by username and password)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "authenticate",
+                "hostName",
+                "invalidate",
+                "refresh",
+                "signout",
+                "validate"
+            ]
+        },
+        "ProfileServiceAPI": {
+            "type": "object",
+            "properties": {
+                "publicKey": {
+                    "description": "The PEM public key",
+                    "type": "string"
+                },
+                "profile": {
+                    "description": "Full url to query profile by uuid. Place the uuid as `${uuid}` in this url",
+                    "type": "string"
+                },
+                "profileByName": {
+                    "description": "Full url to query profile by name. Place the name as `${name}` in this url",
+                    "type": "string"
+                },
+                "texture": {
+                    "description": "Full url to set texture by profile uuid and texture type. Place uuid as `${uuid}` and type as `${type}`",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "profile",
+                "profileByName",
+                "texture"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false
+}
