@@ -35,10 +35,7 @@ jobs:
 
   pack:
     needs: build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        platform: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: [ubuntu-latest, macos-latest, windows-latest]
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js 12
@@ -79,6 +76,3 @@ jobs:
         release_name: Release ${{ github.ref }}
         draft: false
         prerelease: true
-  
-  
-    
