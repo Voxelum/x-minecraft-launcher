@@ -83,11 +83,11 @@
                     "type": "string"
                 },
                 "accessToken": {
-                    "description": "The access token of the",
+                    "description": "The access token of the user",
                     "type": "string"
                 },
                 "profiles": {
-                    "description": "All avaiable pgame rofiles",
+                    "description": "All avaiable game profiles",
                     "type": "object",
                     "additionalProperties": {
                         "$ref": "#/definitions/GameProfileAndTexture"

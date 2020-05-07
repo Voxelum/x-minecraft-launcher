@@ -31,11 +31,11 @@ interface State {
         missingAssetsIndex: Registry<{ version: string }>;
         missingAssets: Registry<{ version: string; hash: string; name: string; size: number }>;
 
-        corruptedVersionJar: Registry<{ version: string } & LocalVersion>;
-        corruptedVersionJson: Registry<{ version: string } & LocalVersion>;
-        corruptedLibraries: Registry<ResolvedLibrary>;
-        corruptedAssetsIndex: Registry<{ version: string }>;
-        corruptedAssets: Registry<{ version: string; hash: string; name: string; size: number }>;
+        corruptedVersionJar: Registry<{ version: string } & LocalVersion, true, true>;
+        corruptedVersionJson: Registry<{ version: string } & LocalVersion, true, true>;
+        corruptedLibraries: Registry<ResolvedLibrary, true, true>;
+        corruptedAssetsIndex: Registry<{ version: string }, true, true>;
+        corruptedAssets: Registry<{ version: string; hash: string; name: string; size: number }, true, true>;
 
         unknownMod: Registry<{ name: string; actual: string }, false, true>;
         incompatibleMod: Registry<{ name: string; actual: string; accepted: string }, false, true>;
@@ -87,11 +87,11 @@ const mod: DiagnoseModule = {
             missingLibraries: { fixing: false, autofix: true, optional: false, actived: [] },
             missingAssets: { fixing: false, autofix: true, optional: false, actived: [] },
 
-            corruptedVersionJar: { fixing: false, autofix: true, optional: false, actived: [] },
-            corruptedAssetsIndex: { fixing: false, autofix: true, optional: false, actived: [] },
-            corruptedVersionJson: { fixing: false, autofix: true, optional: false, actived: [] },
-            corruptedLibraries: { fixing: false, autofix: true, optional: false, actived: [] },
-            corruptedAssets: { fixing: false, autofix: true, optional: false, actived: [] },
+            corruptedVersionJar: { fixing: false, autofix: true, optional: true, actived: [] },
+            corruptedAssetsIndex: { fixing: false, autofix: true, optional: true, actived: [] },
+            corruptedVersionJson: { fixing: false, autofix: true, optional: true, actived: [] },
+            corruptedLibraries: { fixing: false, autofix: true, optional: true, actived: [] },
+            corruptedAssets: { fixing: false, autofix: true, optional: true, actived: [] },
 
             invalidJava: { fixing: false, autofix: true, optional: false, actived: [] },
             missingJava: { fixing: false, autofix: true, optional: false, actived: [] },

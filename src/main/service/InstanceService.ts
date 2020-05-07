@@ -42,7 +42,7 @@ export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'deplo
          * The port of the server
          */
         port?: number;
-    };
+    } | null;
     /**
      * The target instance path. If this is absent, it will use the selected instance.
      */

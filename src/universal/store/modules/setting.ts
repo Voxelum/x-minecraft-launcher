@@ -24,7 +24,7 @@ interface Mutations {
     downloadingUpdate: boolean;
     checkingUpdate: boolean;
     settings: { [key: string]: number | string | boolean | object };
-    defaultBackgroundImage: string | null;
+    defaultBackgroundImage: string;
     defaultBlur: number;
     useBmclApi: boolean;
     showParticle: boolean;
@@ -47,7 +47,7 @@ const mod: SettingModule = {
         downloadingUpdate: false,
         checkingUpdate: false,
         autoDownload: false,
-        defaultBackgroundImage: null,
+        defaultBackgroundImage: '',
         defaultBlur: 0,
         useBmclAPI: true,
         showParticle: false,

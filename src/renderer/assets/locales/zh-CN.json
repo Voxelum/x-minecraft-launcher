@@ -98,11 +98,11 @@
       "message": "该资源包也可能在此版本下正常工作，若不成功请将其移出资源包列表"
     },
     "missingAssets": {
-      "": "缺少%{count}个游戏资源",
+      "": "Asset 文件缺失: {name} | Asset 文件缺失: {name} | 缺少%{count}个游戏资源",
       "message": "启动器将自动下载并安装游戏文件"
     },
     "corruptedAssets": {
-      "": "有%{count}个游戏资源可能损坏",
+      "": "Asset 文件损坏: {name} | Asset 文件损坏: {name} | 有 {count} 个游戏资源可能损坏",
       "message": "启动器将重新下载游戏文件"
     },
     "missingAssetsIndex": {

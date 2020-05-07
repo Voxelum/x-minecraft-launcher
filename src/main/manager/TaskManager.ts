@@ -36,6 +36,8 @@ export default class TaskManager extends Manager {
 
     private handles: TaskHandle<any, any>[] = [];
 
+    private active: TaskHandle<any, any> | undefined;
+
     private listeners: WebContents[] = [];
 
     readonly runtime: TaskRuntime<TaskState> = Task.createRuntime(this.factory) as any;
@@ -74,6 +76,10 @@ export default class TaskManager extends Manager {
             node.progress = progress.progress || node.progress;
             node.total = progress.total || node.total;
             node.message = progress.message || node.message;
+
+            if (node.id === this.active?.root.id && node.total && node.progress) {
+                this.managers.appManager.updateProgress(node.progress / node.total);
+            }
         });
         this.runtime.on('execute', (node, parent) => {
             if (parent) {
@@ -147,6 +153,9 @@ export default class TaskManager extends Manager {
             }
 
             this.handles.splice(this.handles.findIndex((t) => t.root.id === id), 1);
+            if (this.active === handle) {
+                this.active = this.handles[this.handles.length - 1];
+            }
         }).catch((e) => {
             this.error(`Task Failed ${task.name}`);
             this.error(e);
@@ -154,6 +163,7 @@ export default class TaskManager extends Manager {
         this.idToChildsRecord[id] = [];
         this.idToHandleRecord[id] = handle;
         this.handles.push(handle);
+        this.active = handle;
         return handle;
     }
 
@@ -244,7 +254,7 @@ export default class TaskManager extends Manager {
         //             }
         //         }, 2000);
         //         return new Promise(() => { });
-        //     }));
+        //     }), 100);
         //     c.execute(Task.create('b', (ctx) => {
         //         let progress = 0;
         //         setInterval(() => {

@@ -36,11 +36,8 @@
         },
         "defaultBackgroundImage": {
             "description": "The default background image url",
-            "default": null,
-            "type": [
-                "null",
-                "string"
-            ]
+            "default": "",
+            "type": "string"
         },
         "defaultBlur": {
             "description": "The default blur factor",

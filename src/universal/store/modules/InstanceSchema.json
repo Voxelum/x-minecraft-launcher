@@ -60,28 +60,37 @@
             "type": "string"
         },
         "resolution": {
-            "type": "object",
-            "properties": {
-                "width": {
-                    "type": "number"
+            "anyOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "width": {
+                            "type": "number"
+                        },
+                        "height": {
+                            "type": "number"
+                        },
+                        "fullscreen": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "fullscreen",
+                        "height",
+                        "width"
+                    ]
                 },
-                "height": {
-                    "type": "number"
-                },
-                "fullscreen": {
-                    "type": "boolean"
+                {
+                    "type": "null"
                 }
-            },
-            "required": [
-                "fullscreen",
-                "height",
-                "width"
             ]
         },
         "minMemory": {
+            "default": 0,
             "type": "number"
         },
         "maxMemory": {
+            "default": 0,
             "type": "number"
         },
         "vmOptions": {
@@ -107,11 +116,8 @@
             "type": "string"
         },
         "image": {
-            "default": null,
-            "type": [
-                "null",
-                "string"
-            ]
+            "default": "",
+            "type": "string"
         },
         "blur": {
             "default": 0,
@@ -127,21 +133,26 @@
         },
         "server": {
             "description": "The option for instance to launch server directly",
-            "type": "object",
-            "properties": {
-                "host": {
-                    "type": "string"
+            "default": null,
+            "anyOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "host": {
+                            "type": "string"
+                        },
+                        "port": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "host"
+                    ]
                 },
-                "port": {
-                    "type": "number"
+                {
+                    "type": "null"
                 }
-            },
-            "required": [
-                "host"
             ]
-        },
-        "licence": {
-            "type": "string"
         }
     },
     "required": [
@@ -155,10 +166,14 @@
         "image",
         "java",
         "lastAccessDate",
+        "maxMemory",
         "mcOptions",
+        "minMemory",
         "name",
         "optionalDeployments",
+        "resolution",
         "runtime",
+        "server",
         "showLog",
         "url",
         "vmOptions"

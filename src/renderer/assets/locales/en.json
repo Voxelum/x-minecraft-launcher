@@ -82,7 +82,7 @@
       "message": "Click to try to reinstall this version."
     },
     "corruptedAssets": {
-      "": "Corrupted asset {file}",
+      "": "Corrupted asset: {name} | Corrupted asset {name} | {count} assets corrupted",
       "message": "Launcher will install assets for you",
       "multi": "Corrupted %{count} assets."
     },
@@ -99,7 +99,7 @@
       "message": "Click to install forge"
     },
     "corruptedLibraries": {
-      "": "Corrupted library: {name} | Corrupted library: {name} | Corrupted {count} Libraries | Corrupted {count} Libraries",
+      "": "Corrupted library: {name} | Corrupted library: {name} | {count} libraries corrupted",
       "message": "Launcher will install libraries for you"
     },
     "corruptedVersionJar": {
@@ -128,7 +128,7 @@
       "message": "Click to use another java to launch."
     },
     "missingAssets": {
-      "": "Missing %{count} assets.",
+      "": "Missing asset: {name} | Missing asset: {name} | Missing %{count} assets.",
       "message": "Launcher will install assets for you"
     },
     "missingAssetsIndex": {

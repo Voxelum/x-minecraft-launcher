@@ -480,32 +480,31 @@ export default class DiagnoseService extends Service {
                 for (let issue of gameReport.issues) {
                     if (issue.role === 'versionJson') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedVersionJson.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file) });
+                            tree.corruptedVersionJson.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
                         } else {
                             tree.missingVersionJson.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file) });
                         }
                     } else if (issue.role === 'minecraftJar') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedVersionJar.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file) });
+                            tree.corruptedVersionJar.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
                         } else {
                             tree.missingVersionJar.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file) });
                         }
                     } else if (issue.role === 'assetIndex') {
-                        console.log(`R ${issue.receivedChecksum}, E ${issue.expectedChecksum}. ${issue.file}`);
                         if (issue.type === 'corrupted') {
-                            tree.corruptedAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file) });
+                            tree.corruptedAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
                         } else {
                             tree.missingAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file) });
                         }
                     } else if (issue.role === 'asset') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedAssets.push({ ...issue.asset, version: currentVersion.minecraft, hash: issue.asset.hash, file: relative(this.state.root, issue.file) });
+                            tree.corruptedAssets.push({ ...issue.asset, version: currentVersion.minecraft, hash: issue.asset.hash, file: relative(this.state.root, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
                         } else {
                             tree.missingAssets.push({ ...issue.asset, version: currentVersion.minecraft, hash: issue.asset.hash, file: relative(this.state.root, issue.file) });
                         }
                     } else if (issue.role === 'library') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedLibraries.push({ ...issue.library, file: relative(this.state.root, issue.file) });
+                            tree.corruptedLibraries.push({ ...issue.library, file: relative(this.state.root, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
                         } else {
                             tree.missingLibraries.push({ ...issue.library, file: relative(this.state.root, issue.file) });
                         }
