@@ -1,4 +1,4 @@
-name: Release Pre-Check
+name: Prepare Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  automation:
+  repare-release:
     runs-on: ubuntu-latest
 
     strategy:
