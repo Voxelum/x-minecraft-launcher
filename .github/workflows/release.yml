@@ -52,6 +52,9 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: distribution
+        path: /
+    - name: Display structure of downloaded files
+      run: ls -R
     - name: pack Electron
       run: |
         npx electron-builder --publish=never
