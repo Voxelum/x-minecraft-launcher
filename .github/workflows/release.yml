@@ -12,29 +12,7 @@ on:
   #     - master
     
 jobs:
-  build:
-    # if: github.event.pull_request.merged && github.head_ref == 'prepare-release'
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 12
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12
-    - name: npm install
-      run: |
-        npm ci
-    - name: npm build
-      run: |
-        npm run build
-    - name: upload distribution
-      uses: actions/upload-artifact@v2
-      with:
-        name: distribution
-        path: dist/
-
   pack:
-    needs: build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -48,14 +26,10 @@ jobs:
     - name: npm install
       run: |
         npm ci
-    - name: download artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: distribution
-        path: /
-    - name: Display structure of downloaded files
-      run: ls -R
-    - name: pack Electron
+    - name: npm build
+      run: |
+        npm run build
+    - name: pack
       run: |
         npx electron-builder --publish=never
     - name: upload build
