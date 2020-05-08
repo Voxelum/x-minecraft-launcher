@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches:
-      - dev
+      - master
 
 jobs:
   build:
@@ -17,24 +17,31 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 12
-    - name: npm install
+    - name: Get npm cache directory
+      id: npm-cache
+      run: |
+        echo "::set-output name=dir::$(npm config get cache)"
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.npm-cache.outputs.dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Install
       run: |
         npm ci
-    - name: npm build
+    - name: Build
       run: |
         npm run build
-    - name: pack
-      run: |
         npx electron-builder --publish=never
-    - name: upload build
+    - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
         name: build
         path: build/*.*
 
   release:
-    # if: ${{ startsWith(github.event.push.commits[0].message, 'chore(release): version ') }}
-    # if: github.event.pull_request.merged && github.head_ref == 'prepare-release' && github.event.pull_request.user.login == 'github-actions[bot]'
+    if: startsWith(github.event.commits[0].message, 'chore(release)')
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -43,13 +50,20 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 12
-    - name: npm install
+    - uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Install
       run: |
         npm ci
-    - name: download artifact
+    - name: Download Artifacts
       uses: actions/download-artifact@v2
       with:
         name: build
+        path: build
     - name: Prepare Release
       id: prepare_release
       uses: ./.github/actions/prepare-release
@@ -70,4 +84,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./build
+        asset_dir_path: ./build
