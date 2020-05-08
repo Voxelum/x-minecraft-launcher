@@ -21,12 +21,13 @@ const { dependencies } = require('../package.json');
 const whiteListedModules = [
     'vue',
     'vuetify',
-    '@vue/composition-api',
     'vue-router',
     'vue-i18n',
     'vuex',
     'maven-artifact-version',
+    '@vue/composition-api',
     '@xmcl/text-component',
+    '@xmcl/model',
     'three',
     'three-orbit-controls'
 ];
