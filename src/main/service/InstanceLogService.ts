@@ -1,8 +1,8 @@
 import { decode, guessEncodingByBuffer, UTF8 } from '@main/util/encoding';
 import { readdirIfPresent } from '@main/util/fs';
+import { gunzip } from '@main/util/zip';
 import { readFile, remove } from 'fs-extra';
-import { join, isAbsolute } from 'path';
-import { gunzip } from 'zlib';
+import { isAbsolute, join } from 'path';
 import Service from './Service';
 
 export default class InstanceLogService extends Service {
@@ -31,12 +31,7 @@ export default class InstanceLogService extends Service {
         let filePath = join(this.state.instance.path, 'logs', name);
         let buf = await readFile(filePath);
         if (name.endsWith('.gz')) {
-            buf = await new Promise<Buffer>((resolve, reject) => {
-                gunzip(buf, (e, r) => {
-                    if (e) reject(e);
-                    else resolve(r);
-                });
-            });
+            buf = await gunzip(buf);
         }
         let encoding = await guessEncodingByBuffer(buf);
         let result = decode(buf, encoding || UTF8);
@@ -73,12 +68,7 @@ export default class InstanceLogService extends Service {
         }
         let buf = await readFile(filePath.trim());
         if (name.endsWith('.gz')) {
-            buf = await new Promise<Buffer>((resolve, reject) => {
-                gunzip(buf, (e, r) => {
-                    if (e) reject(e);
-                    else resolve(r);
-                });
-            });
+            buf = await gunzip(buf);
         }
         let encoding = await guessEncodingByBuffer(buf);
         let result = decode(buf, encoding || UTF8);

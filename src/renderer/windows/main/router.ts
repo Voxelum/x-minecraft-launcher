@@ -68,7 +68,7 @@ const router = new Router({
         {
             path: '/curseforge/:type',
             component: CurseforgeViewPage,
-            props: true,
+            props: (route) => ({ search: route.query.search, type: route.path.split('/')[2] }),
         },
         {
             path: '/curseforge/:type/:id',

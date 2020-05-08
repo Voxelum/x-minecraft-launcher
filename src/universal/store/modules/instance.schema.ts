@@ -90,12 +90,6 @@ export interface InstanceSchema {
     };
 
     /**
-    * The optional external resource deployment of this profiles, like mods or resource packs
-    * @default []
-    */
-    optionalDeployments: string[];
-
-    /**
      * The runtime version requirement of the profile.
      * 
      * Containing the forge & liteloader & etc.
@@ -104,8 +98,8 @@ export interface InstanceSchema {
     runtime: RuntimeVersions;
 
     /**
-     * The recommended java version for this instance
-    * @default "8"
+     * The java path on the disk
+    * @default ""
     */
     java: string;
 
@@ -172,39 +166,9 @@ export interface InstancesSchema {
     instances: string[];
 }
 
-export interface DeployedInfo {
-    /**
-     * If this is deployed by link, it will be a file path to the source.
-     */
-    src?: string;
-    /**
-     * Deployed file relative path to the .minecraft folder
-     */
-    file: string;
-    url: string;
-    /**
-     * The way to resolve it. If it's false, it doesn't resolved.
-     */
-    resolved: false | 'unpack' | 'link';
-}
-
-export interface InstanceLockSchema {
-    /**
-     * The instance assigned java path on disk.
-     * @default ""
-     */
-    java: string;
-    /**
-     * @default []
-     * The resources already deployed
-     */
-    deployed: DeployedInfo[];
-}
-
-export interface Instance extends InstanceLockSchema {
+export interface Instance {
     config: InstanceSchema;
 }
 
 export const InstanceSchema: Schema<InstanceSchema> = require('./InstanceSchema.json');
 export const InstancesSchema: Schema<InstancesSchema> = require('./InstancesSchema.json');
-export const InstanceLockSchema: Schema<InstanceLockSchema> = require('./InstanceLockSchema.json');

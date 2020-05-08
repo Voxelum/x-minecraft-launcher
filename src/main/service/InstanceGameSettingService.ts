@@ -80,7 +80,7 @@ export default class InstanceGameSettingService extends Service {
             }
         }
         if (Object.keys(result).length > 0) {
-            this.log(`Edit gamesetting: ${JSON.stringify(result, null, 4)}.`);
+            this.log(`Edit gamesetting: ${JSON.stringify(result, null, 4)}`);
             this.commit('instanceGameSettings', result);
         }
     }

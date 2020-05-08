@@ -2,7 +2,7 @@ import { missing } from '@main/util/fs';
 import { getTsingHuaMirror } from '@main/util/jreTsingHuaMirror';
 import { unpack7z } from '@main/util/zip';
 import { MutationKeys } from '@universal/store';
-import { JavaState } from '@universal/store/modules/java';
+import { JavaRecord } from '@universal/store/modules/java';
 import { Java, JavaSchema } from '@universal/store/modules/java.schema';
 import { requireString } from '@universal/util/assert';
 import { downloadFileTask, JavaInstaller } from '@xmcl/installer';
@@ -52,7 +52,7 @@ export default class JavaService extends Service {
      * Install a default jdk 8 to the a preserved location. It'll be installed under your launcher root location `jre` folder
      */
     @Singleton('java')
-    async installJava() {
+    async installDefaultJava() {
         let task = this.networkManager.isInGFW ? this.installFromTsingHuaTask() : this.installFromMojangTask();
         let handle = this.submit(task);
         await handle.wait();
@@ -139,7 +139,7 @@ export default class JavaService extends Service {
             this.commit('javaUpdate', infos);
         } else {
             this.log(`Re-validate cached ${this.state.java.all.length} java locations.`);
-            let javas: JavaState[] = [];
+            let javas: JavaRecord[] = [];
             for (let i = 0; i < this.state.java.all.length; ++i) {
                 let result = await JavaInstaller.resolveJava(this.state.java.all[i].path);
                 if (result) {

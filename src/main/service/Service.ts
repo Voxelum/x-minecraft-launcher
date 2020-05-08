@@ -81,6 +81,40 @@ export function Singleton(...keys: string[]) {
     };
 }
 
+
+/**
+ * A service method decorator to make sure this service call should run in singleton -- no second call at the time. 
+ */
+export function DynamicSingleton(keySerializer: (this: Service, ...params: any[]) => string) {
+    return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
+        const method = descriptor.value;
+        const func = function (this: Service, ...arges: any[]) {
+            let sem = keySerializer.bind(this)(arges);
+            if (this.isBusy(sem)) return undefined;
+            this.aquire(sem);
+            let isPromise = false;
+            try {
+                const result = method.apply(this, arges);
+                if (result instanceof Promise) {
+                    isPromise = true;
+                    result.finally(() => {
+                        this.release(sem);
+                    });
+                }
+                return result;
+            } finally {
+                if (!isPromise) {
+                    this.release(sem);
+                }
+            }
+        };
+        descriptor.value = func;
+    };
+}
+
+export function Debounce() {
+}
+
 /**
  * A service method decorator to make sure this service call should run in singleton -- no second call at the time. 
  */
@@ -153,17 +187,17 @@ export default class Service implements Managers {
     /**
      * The managed state
      */
-    protected state!: RootState;
+    readonly state!: RootState;
 
     /**
      * The managed getter
      */
-    protected getters!: RootGetters;
+    readonly getters!: RootGetters;
 
     /**
      * The commit method
      */
-    protected commit!: RootCommit;
+    readonly commit!: RootCommit;
 
     /**
      * Return the path under the config root
@@ -201,10 +235,17 @@ export default class Service implements Managers {
         return this.serviceManager.isBusy(key);
     }
 
+    /**
+     * Aqure the resource
+     * @param key the resources key to aquire
+     */
     protected aquire(key: string | string[]) {
         this.serviceManager.aquire(key);
     }
 
+    /**
+     * Release a or many resource
+     */
     protected release(key: string | string[]) {
         this.serviceManager.release(key);
     }

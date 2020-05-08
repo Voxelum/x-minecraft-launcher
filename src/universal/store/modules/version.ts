@@ -5,7 +5,7 @@ import { RuntimeVersions } from './instance.schema';
 import { VersionFabricSchema } from './version.schema';
 
 
-export type Status = 'remote' | 'local';
+export type Status = 'remote' | 'local' | 'loading';
 
 export interface ForgeVersion {
     /**

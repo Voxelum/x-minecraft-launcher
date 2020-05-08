@@ -1,6 +1,7 @@
 import { FileSystem } from '@xmcl/system';
 import { UrlWithStringQuery } from 'url';
 import { Resource } from '@universal/util/resource';
+import { Source } from '@universal/store/modules/resource.schema';
 
 export * from './decorate';
 export * from './entry';
@@ -21,9 +22,7 @@ export interface ResourceRegistryEntry<T> {
     getUri: (metadata: T, hash: string) => string;
 }
 
-export interface DomainedSourceCollection {
-    [domain: string]: Record<string, string | number>;
-}
+export type SourceInfomation = Omit<Source, 'uri' | 'date'>;
 
 export interface ResourceHost {
     /**
@@ -36,7 +35,7 @@ export interface ResourceHost {
          * The resource url
          */
         url: string;
-        source: DomainedSourceCollection;
+        source: SourceInfomation;
         type: string;
     } | undefined>;
 }
@@ -58,7 +57,7 @@ export interface ResourceBuilder extends Resource {
 /**
  * Create a resource builder from source.
  */
-export function createResourceBuilder(source?: DomainedSourceCollection): ResourceBuilder {
+export function createResourceBuilder(source?: SourceInfomation): ResourceBuilder {
     source = source ?? {};
     return {
         name: '',
@@ -68,6 +67,9 @@ export function createResourceBuilder(source?: DomainedSourceCollection): Resour
         domain: '',
         type: '',
         metadata: {},
+        ino: 0,
+        tags: [],
+        size: 0,
         source: {
             uri: [],
             date: new Date().toJSON(),
@@ -84,4 +86,17 @@ export function getResourceFromBuilder(builder: ResourceBuilder): Resource {
 
 export function getBuilderFromResource(resource: Resource): ResourceBuilder {
     return { ...resource };
+}
+
+export function getCurseforgeUrl(project: number, file: number): string {
+    return `curseforge://id/${project}/${file}`;
+}
+
+export function getCurseforgeSourceInfo(project: number, file: number): SourceInfomation {
+    return {
+        curseforge: {
+            projectId: project,
+            fileId: file,
+        },
+    };
 }

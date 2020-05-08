@@ -5,8 +5,9 @@ import CurseForgeService from '@main/service/CurseForgeService';
 import DiagnoseService from '@main/service/DiagnoseService';
 import InstallService from '@main/service/InstallService';
 import InstanceGameSettingService from '@main/service/InstanceGameSettingService';
-import { InstanceIOService } from '@main/service/InstanceIOService';
+import InstanceIOService from '@main/service/InstanceIOService';
 import InstanceLogService from '@main/service/InstanceLogService';
+import InstanceResourceService from '@main/service/InstanceResourceService';
 import InstanceSavesService from '@main/service/InstanceSavesService';
 import InstanceService from '@main/service/InstanceService';
 import JavaService from '@main/service/JavaService';
@@ -75,6 +76,7 @@ export default class ServiceManager extends Manager {
         this.registerService(InstanceSavesService);
         this.registerService(InstanceLogService);
         this.registerService(InstanceIOService);
+        this.registerService(InstanceResourceService);
     }
 
     protected registerService(s: Constructor<Service>) { this.registeredServices.push(s); }

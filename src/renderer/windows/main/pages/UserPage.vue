@@ -1,296 +1,270 @@
 <template>
-  <v-container fluid grid-list-md fill-height>
-    <speed-dial
-      :security="security"
-      :disabled="pending"
-      :upload="() => isImportSkinDialogShown = true"
-      :save="exportSkin"
-      :load="loadSkin"
-    />
+  <v-container
+    fluid
+    grid-list-md
+    fill-height
+    style="flex-direction: column"
+  >
+    <v-toolbar
+      dark
+      flat
+      color="transparent"
+    >
+      <v-toolbar-title>{{ $tc('user.info', 2) }}</v-toolbar-title>
+      <v-spacer />
 
-    <v-fab-transition>
-      <v-btn
-        v-show="modified"
-        color="secondary"
-        fab
-        small
-        absolute
-        style="bottom: 100px; right: 55px; z-index: 2;"
-        :disabled="pending"
-        @click="reset"
-      >
-        <v-icon>clear</v-icon>
-      </v-btn>
-    </v-fab-transition>
-    <v-fab-transition>
-      <v-btn
-        v-show="modified"
-        color="secondary"
-        fab
-        small
-        absolute
-        style="bottom: 100px; right: 177px; z-index: 2;"
-        :disabled="pending"
-        @click="save"
-      >
-        <v-icon>check</v-icon>
-      </v-btn>
-    </v-fab-transition>
-
-    <v-layout row fill-height>
-      <v-flex grow>
-        <v-layout column fill-height>
-          <v-flex d-flex grow>
-            <v-layout column justify-start>
-              <v-flex
-                tag="h1"
-                class="white--text"
-                xs1
-                style="margin-bottom: 10px; padding: 6px; 8px;"
-              >
-                <span class="headline">{{ $t('user.info') }}</span>
-              </v-flex>
-              <v-flex xs1 style="padding-left: 5px;">
-                <v-text-field
-                  hide-details
-                  readonly
-                  color="primary"
-                  dark
-                  prepend-inner-icon="person"
-                  append-icon="file_copy"
-                  :label="$t('user.name')"
-                  :value="name"
-                  @click:append="copyToClipBoard(name)"
-                />
-              </v-flex>
-              <v-flex xs1 style="padding-left: 5px;">
-                <v-text-field
-                  hide-details
-                  readonly
-                  dark
-                  append-icon="file_copy"
-                  color="primary"
-                  prepend-inner-icon="vpn_key"
-                  :label="$t('user.accessToken')"
-                  :value="accessToken"
-                  @click:append="copyToClipBoard(accessToken)"
-                />
-              </v-flex>
-              <v-flex xs1 style="padding-left: 5px;">
-                <v-text-field
-                  hide-details
-                  readonly
-                  append-icon="add"
-                  prepend-inner-icon="security"
-                  :label="$t('user.authService')"
-                  :value="authService"
-                  color="primary"
-                  @click:append="showUserServiceDialog"
-                />
-              </v-flex>
-              <v-flex xs1 style="padding-left: 5px;">
-                <v-text-field
-                  hide-details
-                  readonly
-                  color="primary"
-                  prepend-inner-icon="assignment_ind"
-                  append-icon="add"
-                  :label="$t('user.profileService')"
-                  :value="profileService"
-                  @click:append="showUserServiceDialog"
-                />
-              </v-flex>
-
-              <v-flex xs1 style="padding-left: 5px;">
-                <v-select
-                  v-model="slim"
-                  hide-details
-                  prepend-inner-icon="accessibility"
-                  :label="$t('user.skinSlim')"
-                  :items="[{text:'Alex', value:true}, {text:'Steve', value:false}]"
-                  item-text="text"
-                  item-value="value"
-                  color="primary"
-                  dark
-                />
-              </v-flex>
-            </v-layout>
-          </v-flex>
-
-          <v-flex d-flex xs12>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            icon
+            large
+            v-on="on"
+            @click="isUserServicesDialogShown = true"
+          >
+            <v-icon>add_location</v-icon>
+          </v-btn>
+        </template>
+        {{ $t('user.service.add') }}
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            icon
+            large
+            v-on="on"
+            @click="refreshAccount"
+          >
+            <v-icon>refresh</v-icon>
+          </v-btn>
+        </template>
+        {{ $t('user.refreshAccount') }}
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            icon
+            large
+            v-on="on"
+            @click="showLoginDialog"
+          >
+            <v-icon>person_add</v-icon>
+          </v-btn>
+        </template>
+        {{ $t('user.account.add') }}
+      </v-tooltip>
+    </v-toolbar>
+    <v-layout
+      row
+      fill-height
+      style="width: 100%"
+    >
+      <v-flex xs9>
+        <v-layout
+          column
+          fill-height
+        >
+          <v-flex
+            v-if="!security"
+            d-flex
+            xs1
+          >
             <v-alert
               :value="!security"
               style="cursor: pointer;"
               @click="isChallengesDialogShown = true"
             >{{ $t('user.insecureClient') }}</v-alert>
           </v-flex>
+          <v-flex style="height: 100%; overflow: auto">
+            <user-list
+              :user-id="userId"
+              :profile-id="profileId"
+              :users="users"
+              :select="select"
+              @dragstart="dragged=true"
+              @dragend="dragged=false"
+            />
+          </v-flex>
 
-          <v-flex d-flex shrink>
-            <v-layout wrap>
-              <v-flex d-flex xs6>
-                <v-btn block :disabled="pending" color="secondary" @click="refresh">
-                  <v-icon left>refresh</v-icon>
-                  {{ $t('user.refreshSkin') }}
-                </v-btn>
-              </v-flex>
-              <v-flex d-flex xs6>
-                <v-btn block :disabled="pending" color="secondary" @click="refreshAccount">
-                  <v-icon left>refresh</v-icon>
-                  {{ $t('user.refreshAccount') }}
-                </v-btn>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-          <v-flex d-flex shrink>
-            <v-layout wrap>
-              <v-flex d-flex xs6>
-                <v-btn block color="secondary" @click="toggleSwitchUser">
-                  <v-icon left dark>compare_arrows</v-icon>
-                  {{ $t('user.account.switch') }}
-                </v-btn>
-              </v-flex>
-              <v-flex d-flex xs6>
-                <v-btn block dark :disabled="offline" color="red" @click="logout">
-                  <v-icon left dark>exit_to_app</v-icon>
-                  {{ $t('user.logout') }}
-                </v-btn>
-              </v-flex>
-            </v-layout>
-          </v-flex>
+          <game-profile-speed-dial
+            :visibled="userModified || dragged"
+            :deleting="dragged"
+            :loading="loading"
+            @click="confirmSelectGameProfile"
+            @dragover.prevent
+            @drop="beginRemoveProfile($event.dataTransfer.getData('id'))"
+          />
         </v-layout>
       </v-flex>
       <v-flex shrink>
-        <v-layout justify-center align-center fill-height>
-          <v-flex style="z-index: 1">
-            <skin-view
-              :href="url"
-              :slim="slim"
-              :rotate="false"
-              @drop.prevent="dropSkin"
-              @dragover.prevent
-            />
-            <!-- <v-progress-circular v-if="pending" color="white" indeterminate :size="90" style="position: absolute; top: 30vh; right: 13vh;" /> -->
-          </v-flex>
+        <v-layout
+          justify-center
+          align-center
+          fill-height
+        >
+          <page-skin-view
+            :user-id="userId"
+            :profile-id="profileId"
+            :name="name"
+          />
         </v-layout>
       </v-flex>
     </v-layout>
-    <challenges-dialog v-model="isChallengesDialogShown" />
-    <import-skin-url-dialog v-model="isImportSkinDialogShown" :update="updateSkinUrl" />
-    <user-services-dialog />
+    <v-dialog
+      v-model="isChallengesDialogShown"
+      width="500"
+    >
+      <challenges-form />
+    </v-dialog>
+    <v-dialog
+      v-model="isUserServicesDialogShown"
+      width="550"
+    >
+      <v-toolbar color="primary">
+        <h2>{{ $t('user.service.title') }}</h2>
+        <v-spacer />
+        <v-toolbar-items>
+          <v-btn
+            icon
+            flat
+            @click="isUserServicesDialogShown = false"
+          >
+            <v-icon>close</v-icon>
+          </v-btn>
+        </v-toolbar-items>
+      </v-toolbar>
+      <user-services-card />
+    </v-dialog>
+    <v-dialog
+      v-model="isDeleteDialogShown"
+      width="550"
+    >
+      <v-card>
+        <v-card-title
+          class="headline"
+          primary-title
+        >{{ $t('user.account.removeTitle') }}</v-card-title>
+
+        <v-card-text>
+          {{ $t('user.account.removeDescription') }}
+          <div style="color: grey">{{ $t('user.name') }}: {{ removingUserName }}</div>
+          <div style="color: grey">{{ $t('user.id') }}: {{ removingProfile }}</div>
+        </v-card-text>
+
+        <v-divider />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="red"
+            flat
+            @click="isDeleteDialogShown=false"
+          >{{ $t('user.account.removeCancel') }}</v-btn>
+          <v-btn
+            color="primary"
+            flat
+            @click="confirmRemoveProfile"
+          >{{ $t('user.account.removeConfirm') }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, defineComponent } from '@vue/composition-api';
+import { reactive, toRefs, computed, defineComponent, watch } from '@vue/composition-api';
 import {
   useCurrentUser,
-  useI18n,
-  useCurrentUserSkin,
-  useNativeDialog,
-  useClipboard,
+  useSwitchUser,
+  useUsers,
+  useOperation,
+  useUserSecurityStatus,
+  useGameProfile,
+  useProfileId,
+  useStore,
 } from '@/hooks';
-import { useNotifier, useLoginDialog, useDialog } from '../hooks';
-import ChallengesDialog from './UserPageChallengesDialog.vue';
-import ImportSkinUrlDialog from './UserPageImportSkinUrlDialog.vue';
-import UserServicesDialog from './UserPageUserServicesDialog.vue';
-import SpeedDial from './UserPageSpeedDial.vue';
+import { useLoginDialog, useDialog } from '../hooks';
+import ChallengesForm from './UserPageChallengesForm.vue';
+import PageSkinView from './UserPageSkinView.vue';
+import UserServicesCard from './UserPageUserServicesCard.vue';
+import SpeedDial from './UserPageSkinSpeedDial.vue';
+import GameProfileSpeedDial from './UserPageGameProfileSpeedDial.vue';
+import UserList from './UserPageUserList.vue';
 
 export default defineComponent({
   components: {
-    ChallengesDialog,
-    UserServicesDialog,
-    ImportSkinUrlDialog,
+    ChallengesForm,
+    UserServicesCard,
+    PageSkinView,
     SpeedDial,
+    GameProfileSpeedDial,
+    UserList,
   },
   setup() {
-    const { $t } = useI18n();
-    const clipboard = useClipboard();
-    const {
-      security,
-      offline,
-      name,
-      accessToken,
-      authService,
-      profileService,
-      refreshStatus: refreshAccount,
-      logout,
-    } = useCurrentUser();
-    const { url, slim, refreshing, refresh, save, exportTo, loading, modified, reset } = useCurrentUserSkin();
-    const { showOpenDialog, showSaveDialog } = useNativeDialog();
-    const { show: showLoginDialog, isSwitchingUser } = useLoginDialog();
-    const { notify, watcherTask } = useNotifier();
-    const pending = computed(() => refreshing.value || loading.value);
+    const { refreshStatus: refreshAccount } = useCurrentUser();
+    const { security } = useUserSecurityStatus();
+    const { show: showLoginDialog } = useLoginDialog();
     const { show: showUserServiceDialog } = useDialog('user-service');
 
+    const { users } = useUsers();
+    const { select, remove, modified, commit, userId, profileId } = useSwitchUser();
+    const { gameProfile } = useProfileId(userId, profileId);
+    const { name } = useGameProfile(gameProfile);
     const data = reactive({
-      isImportSkinDialogShown: false,
       isChallengesDialogShown: false,
       isUserServicesDialogShown: false,
+      isDeleteDialogShown: false,
+
+      selecting: false,
+      deleting: false,
+      dragged: false,
+    });
+    const loading = computed(() => data.selecting || data.deleting);
+    const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removingProfile, cancel: cancelRemoveProfile } = useOperation('', (v) => remove(v));
+
+    const { state } = useStore();
+    const removingUserName = computed(() => state.user.users[removingProfile.value]?.username ?? '');
+
+    function confirmSelectGameProfile() {
+      data.selecting = true;
+      commit().finally(() => { data.selecting = false; });
+    }
+
+    watch(removingProfile, (n) => {
+      if (n) {
+        data.isDeleteDialogShown = true;
+      }
     });
 
-    function updateSkinUrl(u: string) {
-      url.value = u;
-    }
-    async function loadSkin() {
-      const { filePaths } = await showOpenDialog({ title: $t('user.openSkinFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] });
-      if (filePaths && filePaths[0]) {
-        url.value = `file://${filePaths[0]}`;
+    watch(computed(() => data.isDeleteDialogShown), (s) => {
+      if (!s) {
+        removingProfile.value = '';
       }
-    }
-    async function exportSkin() {
-      const { filePath } = await showSaveDialog({
-        title: $t('user.skinSaveTitle'),
-        defaultPath: `${name.value}.png`,
-        filters: [{ extensions: ['png'], name: 'PNG Images' }],
-      });
-      if (filePath) {
-        exportTo({ path: filePath, url: url.value });
-      }
-    }
-    async function dropSkin(e: DragEvent) {
-      if (e.dataTransfer) {
-        const length = e.dataTransfer.files.length;
-        if (length > 0) {
-          url.value = `file://${e.dataTransfer!.files[0].path}`;
-        }
-      }
-    }
+    });
 
     return {
       ...toRefs(data),
-      offline,
-      name,
       security,
-      logout,
       refreshAccount,
-      accessToken,
-      authService,
-      profileService,
 
+      loading,
+
+      select,
+      confirmSelectGameProfile,
+
+      removingProfile,
+      beginRemoveProfile,
+      confirmRemoveProfile,
+
+      users,
+      userId,
+      profileId,
+      userModified: modified,
+      name,
+
+      removingUserName,
+      cancelRemoveProfile,
       showUserServiceDialog,
 
-      url,
-      slim,
-      modified,
-      reset,
-      updateSkinUrl,
-      refresh: watcherTask(() => refresh(true), $t('user.refreshSkin')),
-      save: watcherTask(save, $t('skin.upload')),
-      loadSkin,
-      exportSkin,
-      dropSkin,
-
-      pending,
-
-      toggleSwitchUser() {
-        isSwitchingUser.value = true;
-        showLoginDialog();
-      },
-      copyToClipBoard(text: string) {
-        notify('success', $t('copy.success'));
-        clipboard.clear();
-        clipboard.writeText(text);
-      },
+      showLoginDialog,
     };
   },
 });

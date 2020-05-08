@@ -36,6 +36,8 @@
     "createdDate": "创建日期",
     "gameversion": "游戏版本",
     "install": "安装",
+    "downloadOnly": "只下载",
+    "downloaded": "已下载",
     "installed": "已安装",
     "lastUpdate": "上次更新日期",
     "license": "版权许可",
@@ -115,6 +117,10 @@
     "incompatibleResourcePack": {
       "": "资源包 {name} 不兼容 Minecraft {actual}. 请使用 Minecraft {accepted}",
       "message": "该资源包也可能在此版本下正常工作，若不成功请将其移出资源包列表"
+    },
+    "invalidJava": {
+      "": "当前 Java 路径已经失效",
+      "message": "请选择一个有效的 Java 路径."
     },
     "missingAssets": {
       "": "Asset 文件缺失: {name} | Asset 文件缺失: {name} | 缺少%{count}个游戏资源",
@@ -314,9 +320,12 @@
   "installCurseforgeFile": "安装 Curseforge 文件",
   "installCurseforgeModpack": {
     "": "安装 Curseforge 整合包",
-    "createProfile": "创建对应配置",
-    "installMods": "安装 Mods",
-    "resolveEntries": "解析整合包"
+    "deploy": "部署",
+    "download": {
+      "": "下载",
+      "file": "下载文件"
+    },
+    "unpack": "解压缩"
   },
   "installDependencies": {
     "": "检查%{version}的依赖",
@@ -406,6 +415,7 @@
     "minMemory": "最小内存",
     "missing": "没有找到Java",
     "missingHint": "启动器在你的电脑上没有找到任何Java。你可以尝试：",
+    "modifyInstance": "更改 Java 路径",
     "noJavaInPath": "还是无法在PATH中找到java可执行文件。你可以尝试其他方法。",
     "noLegalJava": "启动器认为这个Java可执行文件是无效的。请尝试其他的方法。",
     "noMemory": "不设置内存限制",
@@ -439,7 +449,9 @@
     "launchingSlow": "还在启动…Minecraft图形界面启动的会比较慢呢~",
     "openCrashReportFolder": "打开崩溃日志文件夹",
     "openLogFolder": "打开日志文件夹",
-    "showLog": "Minecraft启动后显示日志"
+    "showLog": "Minecraft启动后显示日志",
+    "localhost": "本地服务器",
+    "game": "本地游戏"
   },
   "launch.hideLauncher": "Minecraft 启动后隐藏启动器",
   "launch.showLog": "Minecraft 启动后显示日志",
@@ -473,14 +485,20 @@
   },
   "mod": {
     "backToAllMods": "返回所有 Mods",
-    "compatible": "可用于 {version} 版",
-    "deletion": "删除 {mod} Mod",
+    "compatible": "可用于当前版本。",
+    "incompatible": "不兼容当前版本。",
+    "nocompatible": "无法解析兼容性。",
+    "acceptVersion": "需要 Minecraft {version} 和 Forge {loaderVersion}",
+    "deletion": "删除 Mod",
     "deletionHint": "你将失去这个 Mod 的文件和信息。你确定吗？",
     "export": "导出 Mod",
     "hideIncompatible": "隐藏不兼容 Mods",
     "hint": "将Mod的jar文件拖入此处来导入",
+    "showFile": "打开 Mod 所在位置 {file}",
+    "openLink": "打开 Mod 链接 {url}",
+    "searchOnCurseforge": "在 Curseforge 上搜索该 Mod",
+    "showInCurseforge": "在 Curseforge 上显示该 Mod",
     "import": "导入 Mod",
-    "incompatible": "不兼容Minecraft {actual} 的Mod。需要Minecraft {accept}。",
     "missing": {
       "absent": "",
       "checkAvailabilities": "",
@@ -493,7 +511,6 @@
       "unknown": ""
     },
     "name": "Mod | Mods",
-    "nocompatible": "无法解析 Minecraft 兼容性",
     "selected": "已选 Mods",
     "showIncompatible": "显示不兼容 Mods",
     "unselected": "未选 Mods"
@@ -647,6 +664,9 @@
     "import": "导入资源包",
     "incompatible": "不兼容的资源包格式({format})。适用范围 {accept}。当前版本 {actual}。",
     "name": "资源包 | 资源包",
+    "showFile": "在文件夹中显示 {file}",
+    "searchOnCurseforge": "在 Curseforge 中查找 {name}",
+    "showInCurseforge": "在 Curseforge 中显示 {name}",
     "selected": "已选资源包",
     "unselected": "未选资源包"
   },
@@ -702,7 +722,7 @@
     "noUpdateAvailable": "目前没有可用更新",
     "particleMode": {
       "": "粒子特效",
-      "bubble": "旗袍",
+      "bubble": "气泡",
       "push": "增加",
       "remove": "移除",
       "repulse": "击退"
@@ -740,7 +760,11 @@
     "accessToken": "访问令牌",
     "account": {
       "add": "添加账号",
-      "switch": "切换账号"
+      "switch": "切换账号",
+      "removeTitle": "移除账号",
+      "removeDescription": "这将抹去所有关于此账号的信息，您是否确定？",
+      "removeCancel": "取消",
+      "removeConfirm": "确定移除"
     },
     "authMode": "验证服务",
     "authService": "验证服务器",
@@ -751,7 +775,7 @@
     "forgetPassword": "忘记密码?",
     "id": "用户 Id",
     "illegalEmail": "当前Email格式不合法",
-    "info": "用户信息",
+    "info": "账户信息",
     "insecureClient": "Minecraft 服务器无法验证您的身份，请回答密保问题!",
     "invalidCredentials": "无法验证. 用户名或密码错误.",
     "login": "登陆",

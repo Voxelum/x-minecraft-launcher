@@ -1,67 +1,84 @@
 <template>
-  <v-card flat hover dark draggable class="white--text">
-    <v-img
-      :class="{ 'grey': true, 'darken-2': true }"
-      class="white--text favicon"
-      :src="value.icon"
-      :lazy-src="unknown"
-      style="max-height: 200px;"
+  <v-card
+    v-draggable-card
+    v-data-transfer:id="source.name"
+    v-data-transfer-image="icon"
+    hover
+    dark
+    draggable
+    class="white--text draggable-card"
+    style="margin-top: 10px; padding: 0 10px; transition-duration: 0.2s; margin-bottom: 20px"
+    @dragstart="$emit('dragstart', $event)"
+    @dragend="$emit('dragend', $event)"
+  >
+    <v-layout
+      justify-center
+      align-center
+      fill-height
     >
-      <v-container fill-height fluid>
-        <v-layout justfiy-center align-center row wrap>
-          <v-flex xs12 layout align-center>
-            <v-icon left>
-              map
-            </v-icon>
-            <h1 class="headline" style="font-size: 32px important;">
-              {{ value.name }}
-            </h1>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-img>
-    <!-- <v-layout>
-      <v-flex>
-        <v-card-title primary-title>
-          <div>
-          </div>
-        </v-card-title>
+      <v-flex
+        style="margin: 0; padding: 0"
+        xs3
+      >
+        <img
+          ref="icon"
+          v-fallback-img="unknownPack"
+          :src="source.icon"
+          style="min-height: 126px; max-height: 126px; max-width: 126px; min-width; 126px"
+          contain
+        />
+      </v-flex>
+      <v-flex style="padding: 10px 0; flex-grow: 1">
+        <h3>{{ source.name }}</h3>
+        <div style="color: grey">{{ new Date(source.lastPlayed) }}</div>
+        <v-chip
+          small
+          outline
+          label
+          color="amber"
+          style="margin-left: 1px;"
+        >{{ levelMode }}</v-chip>
+        <v-chip
+          v-if="source.cheat"
+          small
+          outline
+          color="orange darken-1"
+          label
+          style="margin-left: 1px;"
+        >{{ $t('gamesetting.cheat') }}</v-chip>
+        <v-chip
+          small
+          outline
+          label
+          color="lime"
+          style="margin-left: 1px;"
+        >{{ source.gameVersion }}</v-chip>
+        <!-- <div style="color: #bdbdbd; ">{{ source.description }}</div> -->
+      </v-flex>
+      <v-flex style="flex-grow: 0">
+        <v-btn
+          flat
+          icon
+          @click="exportSave(source.path)"
+        >
+          <v-icon>launch</v-icon>
+          <!-- {{ $t('save.export') }} -->
+        </v-btn>
       </v-flex>
     </v-layout>
-    <v-divider light /> -->
-    <v-card-actions>
-      <v-btn flat icon @click="exportSave(value.path)">
-        <v-icon>
-          launch
-        </v-icon>
-        <!-- {{ $t('save.export') }} -->
-      </v-btn>
-      <v-btn color="red" icon flat @click="deleteSave(value.name)"> 
-        <v-icon>
-          delete
-        </v-icon>
-        <!-- {{ $t('save.deleteTitle') }} -->
-      </v-btn>
-      <v-spacer />
-      <!-- <v-btn flat @click="showDetail">
-        <v-icon left>
-          info
-        </v-icon>
-        {{ $t('save.detail') }}
-      </v-btn> -->
-    </v-card-actions>
   </v-card>
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api';
-import { SaveMetadata } from '@universal/store/modules/instance';
-import unknown from '@/assets/unknown_pack.png';
+import { defineComponent, computed, ref } from '@vue/composition-api';
+import { InstanceSaveMetadata } from '@universal/store/modules/instance';
+import unknownPack from '@/assets/unknown_pack.png';
+import { useI18n } from '@/hooks';
 
 export interface Props {
   exportSave: (path: string) => void;
   deleteSave: (path: string) => void;
-  value: SaveMetadata;
+  source: InstanceSaveMetadata;
 }
 
 export default defineComponent<Props>({
@@ -72,11 +89,29 @@ export default defineComponent<Props>({
     deleteSave: {
       type: Function,
     },
-    value: {
+    source: {
       type: Object,
     },
   },
-  setup() { return { unknown }; },
+  setup(props) {
+    const { $t } = useI18n();
+    const levelMode = computed(() => {
+      switch (props.source.mode) {
+        case 0: return $t('gamesetting.gametype.survival');
+        case 1: return $t('gamesetting.gametype.creative');
+        case 2: return $t('gamesetting.gametype.adventure');
+        case 3: return $t('gamesetting.gametype.spectator');
+        case -1:
+        default:
+          return $t('gamesetting.gametype.non');
+      }
+    });
+    return {
+      unknownPack,
+      levelMode,
+      icon: ref(null),
+    };
+  },
 });
 </script>
 

@@ -34,7 +34,7 @@
             ]
         },
         "authServices": {
-            "description": "All loaded auth services api. Used for ygg auth",
+            "description": "All loaded auth services api. Used for yggdrisal auth",
             "default": {},
             "type": "object",
             "additionalProperties": {
@@ -92,6 +92,10 @@
                     "additionalProperties": {
                         "$ref": "#/definitions/GameProfileAndTexture"
                     }
+                },
+                "selectedProfile": {
+                    "description": "Selected profile uuid",
+                    "type": "string"
                 }
             },
             "required": [
@@ -100,6 +104,7 @@
                 "id",
                 "profileService",
                 "profiles",
+                "selectedProfile",
                 "username"
             ]
         },

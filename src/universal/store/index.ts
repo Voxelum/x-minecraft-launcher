@@ -5,6 +5,7 @@ import { BaseState } from './root';
 export default {
     state: {
         root: '',
+        launcherVersion: '',
         online: false,
         platform: 'win32',
         semaphore: {},
@@ -13,6 +14,7 @@ export default {
         online(state, o) { state.online = o; },
         root(state, r) { state.root = r; },
         platform(state, p) { state.platform = p; },
+        launcherVersion(state, s) { state.launcherVersion = s; },
     },
     getters: {
     },

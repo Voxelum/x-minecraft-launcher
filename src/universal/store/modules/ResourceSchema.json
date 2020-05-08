@@ -9,9 +9,17 @@
             "description": "The resource file path",
             "type": "string"
         },
+        "ino": {
+            "description": "The ino of the file on disk",
+            "type": "number"
+        },
         "hash": {
             "description": "The sha1 of the resource",
             "type": "string"
+        },
+        "size": {
+            "description": "The size of the resource",
+            "type": "number"
         },
         "ext": {
             "description": "The suggested ext of the resource",
@@ -21,12 +29,20 @@
             "description": "The resource type. Can be `forge`, `liteloader`, `resourcepack`, and etc.",
             "type": "string"
         },
+        "tags": {
+            "description": "The custom tag on this resource",
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
         "domain": {
             "description": "The domain of the resource. This decide where (which folder) the resource go",
             "type": "string"
         },
         "metadata": {
-            "description": "The resource specific metadata",
+            "description": "The resource specific metadata read from the file",
             "anyOf": [
                 {
                     "type": "object",
@@ -52,31 +68,18 @@
         "domain",
         "ext",
         "hash",
+        "ino",
         "metadata",
         "name",
         "path",
+        "size",
         "source",
+        "tags",
         "type"
     ],
     "definitions": {
         "Source": {
             "type": "object",
-            "additionalProperties": {
-                "anyOf": [
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "$ref": "#/definitions/Record<string,string|number|undefined>"
-                    },
-                    {
-                        "type": "string"
-                    }
-                ]
-            },
             "properties": {
                 "uri": {
                     "description": "The source uris.\n- For the forge mod, it will be the forge://<modid>/<version>\n- For the liteloader mod, it will be the liteloader://<name>/<version>\n- For the curseforge file, it will be the curseforge://<fileId>\n\nIf the source is remote resource, it might also contain the uri like https://host/paths",
@@ -113,36 +116,7 @@
                 },
                 "curseforge": {
                     "description": "The curseforge info for this source. If this is imported from curseforge, it will present.",
-                    "type": "object",
-                    "properties": {
-                        "projectId": {
-                            "type": "number"
-                        },
-                        "fileId": {
-                            "type": "number"
-                        },
-                        "projectType": {
-                            "type": "string"
-                        },
-                        "projectPath": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "fileId"
-                    ]
-                },
-                "file": {
-                    "description": "Import from local disk",
-                    "type": "object",
-                    "properties": {
-                        "path": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "path"
-                    ]
+                    "$ref": "#/definitions/CurseforgeSource"
                 }
             },
             "required": [
@@ -150,8 +124,22 @@
                 "uri"
             ]
         },
-        "Record<string,string|number|undefined>": {
-            "type": "object"
+        "CurseforgeSource": {
+            "type": "object",
+            "properties": {
+                "projectId": {
+                    "description": "The curseforge project id",
+                    "type": "number"
+                },
+                "fileId": {
+                    "description": "The file id",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "fileId",
+                "projectId"
+            ]
         }
     },
     "$schema": "http://json-schema.org/draft-07/schema#",

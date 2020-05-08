@@ -3,13 +3,6 @@ import Schema from '../Schema';
 /* eslint-disable import/export  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-export enum ParticleMode {
-    PUSH = 'push',
-    REMOVE = 'remove',
-    REPULSE = 'repulse',
-    BUBBLE = 'bubble',
-}
-
 export interface SettingSchema {
     /**
      * The root paths of all the minecraft
@@ -42,33 +35,10 @@ export interface SettingSchema {
      */
     allowPrerelease: boolean;
     /**
-     * The default background image url
-     * @default ""
-     */
-    defaultBackgroundImage: string;
-    /**
-     * The default blur factor
-     * @default 0
-     */
-    defaultBlur: number;
-
-    /**
      * Use bmcl API in China Mainland
      * @default true
      */
     useBmclAPI: boolean;
-
-    /**
-     * Show particle on background
-     * @default true
-     */
-    showParticle: boolean;
-
-    /**
-     * The particle click mode
-     * @default "repulse"
-     */
-    particleMode: ParticleMode;
 }
 
 export const SettingSchema: Schema<SettingSchema> = require('./SettingSchema.json');

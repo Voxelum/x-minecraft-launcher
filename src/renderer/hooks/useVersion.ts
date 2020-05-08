@@ -165,7 +165,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     });
 
     function refresh() {
-        return refreshForge({ mcversion: minecraftVersion.value });
+        return refreshForge({ mcversion: minecraftVersion.value, force: true });
     }
 
     return {

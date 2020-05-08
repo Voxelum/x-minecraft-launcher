@@ -1,14 +1,16 @@
-import { copyPassively, exists, FileStateWatcher, isFile, missing, readdirIfPresent, isDirectory } from '@main/util/fs';
-import { compressZipTo, includeAllToZip, unpack7z } from '@main/util/zip';
-import { SaveMetadata } from '@universal/store/modules/instance';
-import { requireString, requireObject } from '@universal/util/assert';
+import { copyPassively, exists, isDirectory, isFile, missing, readdirIfPresent } from '@main/util/fs';
+import { includeAllToZip, openCompressedStream, unpack7z } from '@main/util/zip';
+import { InstanceSave, InstanceSaveMetadata } from '@universal/store/modules/instance';
+import { requireObject, requireString } from '@universal/util/assert';
 import { Exception } from '@universal/util/exception';
+import { WorldReader } from '@xmcl/world';
 import { createHash } from 'crypto';
 import filenamify from 'filenamify';
-import { ensureDir, ensureFile, readdir, remove } from 'fs-extra';
+import { ensureDir, ensureFile, FSWatcher, readdir, remove } from 'fs-extra';
+import watch from 'node-watch';
 import { basename, join, resolve } from 'path';
 import { ZipFile } from 'yazl';
-import Service, { ServiceException } from './Service';
+import Service, { MutationTrigger, ServiceException, Singleton } from './Service';
 
 export interface ExportSaveOptions {
     /**
@@ -86,7 +88,7 @@ export interface CloneSaveOptions {
     newSaveName?: string;
 }
 
-function getSaveMetadata(path: string, instanceName: string) {
+function getSaveMetadata(path: string, instanceName: string): InstanceSave {
     return {
         path,
         instanceName,
@@ -95,14 +97,38 @@ function getSaveMetadata(path: string, instanceName: string) {
     };
 }
 
+async function loadSave(path: string, instanceName: string): Promise<InstanceSaveMetadata> {
+    const reader = await WorldReader.create(path);
+    const level = await reader.getLevelData();
+    return {
+        path,
+        instanceName,
+        mode: level.GameType,
+        name: basename(path),
+
+        levelName: level.LevelName,
+        icon: `file://${join(path, 'icon.png')}`,
+        gameVersion: level.Version.Name,
+        difficulty: level.Difficulty,
+        cheat: false,
+        lastPlayed: level.LastPlayed.toNumber(),
+    };
+}
+
 export default class InstanceSavesService extends Service {
-    protected watcher = new FileStateWatcher(false, () => true);
+    private watcher: FSWatcher | undefined;
+
+    private watching = '';
+
+    async init() {
+        this.mountInstanceSaves(this.state.instance.path);
+    }
 
     /**
      * Load all registered instances' saves metadata
      */
     async loadAllInstancesSaves() {
-        let all: Array<SaveMetadata> = [];
+        let all: Array<InstanceSave> = [];
 
         for (let instance of this.getters.instances) {
             let saveRoot = join(instance.path, 'saves');
@@ -115,10 +141,16 @@ export default class InstanceSavesService extends Service {
         return all;
     }
 
+    @MutationTrigger('instanceSelect')
+    protected onInstance(payload: string) {
+        this.mountInstanceSaves(payload);
+    }
+
     /**
      * Mount and load instances saves
      * @param path 
      */
+    @Singleton()
     async mountInstanceSaves(path: string) {
         requireString(path);
 
@@ -128,26 +160,44 @@ export default class InstanceSavesService extends Service {
 
         let savesDir = join(path, 'saves');
 
-        await ensureDir(savesDir);
-
-        this.log(`Watch saves directory: ${savesDir}`);
-        if (!this.watcher.watch(savesDir) && !this.watcher.getStateAndReset()) {
+        if (this.watching === savesDir) {
             return;
         }
 
+        if (this.watcher) {
+            this.watcher.close();
+        }
+
+        this.log(`Mount saves directory: ${savesDir}`);
+
+        await ensureDir(savesDir);
         try {
             let savePaths = await readdir(savesDir);
-
-            let result = savePaths
+            let saves = await Promise.all(savePaths
                 .filter((d) => !d.startsWith('.'))
                 .map((d) => join(savesDir, d))
-                .map((p) => getSaveMetadata(p, this.getters.instance.name));
+                .map((p) => loadSave(p, this.getters.instance.name)));
 
-            this.log(`Found ${result.length} saves in instance ${path}.`);
-            this.commit('instanceSaves', result);
+            this.log(`Found ${saves.length} saves in instance ${path}`);
+            this.commit('instanceSaves', saves);
         } catch (e) {
             throw new ServiceException({ type: 'fsError', ...e }, `An error ocurred during parsing the save of ${path}`);
         }
+
+        this.watching = savesDir;
+        this.watcher = watch(savesDir, (event, filename) => {
+            if (filename.startsWith('.')) return;
+            let filePath = join(savesDir, filename);
+            if (event === 'update') {
+                if (this.state.instance.saves.every((s) => s.path !== filename)) {
+                    loadSave(filePath, this.getters.instance.name).then((save) => {
+                        this.commit('instanceSaveAdd', save);
+                    });
+                }
+            } else if (this.state.instance.saves.some((s) => s.path === filename)) {
+                this.commit('instanceSaveRemove', filePath);
+            }
+        });
     }
 
     /**
@@ -305,7 +355,7 @@ export default class InstanceSavesService extends Service {
             // compress to zip
             await ensureFile(destination);
             let zipFile = new ZipFile();
-            let promise = compressZipTo(zipFile, destination);
+            let promise = openCompressedStream(zipFile, destination);
             await includeAllToZip(source, destination, zipFile);
             zipFile.end();
             await promise;

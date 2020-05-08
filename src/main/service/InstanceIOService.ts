@@ -1,8 +1,9 @@
 import { copyPassively, isDirectory, isFile, readdirIfPresent } from '@main/util/fs';
-import { compressZipTo, includeAllToZip } from '@main/util/zip';
+import { getCurseforgeUrl } from '@main/util/resource';
+import { openCompressedStreamTask } from '@main/util/zip';
 import { createTemplate, InstanceConfig } from '@universal/store/modules/instance';
 import { InstanceSchema } from '@universal/store/modules/instance.schema';
-import { requireObject, requireString } from '@universal/util/assert';
+import { isNonnull, requireObject, requireString } from '@universal/util/assert';
 import { Exception } from '@universal/util/exception';
 import { Version } from '@xmcl/core';
 import { CurseforgeInstaller } from '@xmcl/installer';
@@ -10,8 +11,8 @@ import { Task } from '@xmcl/task';
 import Unzip from '@xmcl/unzip';
 import { createReadStream, mkdtemp, readdir, readJson, remove } from 'fs-extra';
 import { tmpdir } from 'os';
-import { basename, join, resolve } from 'path';
-import { ZipFile } from 'yazl';
+import { basename, join, resolve, parse } from 'path';
+import InstanceResourceService from './InstanceResourceService';
 import InstanceService, { EditInstanceOptions } from './InstanceService';
 import ResourceService from './ResourceService';
 import Service, { Inject, Singleton } from './Service';
@@ -42,12 +43,15 @@ export interface ImportCurseforgeModpackOptions {
     instancePath?: string;
 }
 
-export class InstanceIOService extends Service {
+export default class InstanceIOService extends Service {
     @Inject('ResourceService')
     private resourceService!: ResourceService;
 
     @Inject('InstanceService')
     private instanceService!: InstanceService;
+
+    @Inject('InstanceResourceService')
+    private instanceResourceService!: InstanceResourceService;
 
     /**
      * Export current instance as a modpack. Can be either curseforge or normal full Minecraft
@@ -58,26 +62,23 @@ export class InstanceIOService extends Service {
         requireObject(options);
 
         let { src = this.state.instance.path, destinationPath: dest, mode = 'full' } = options;
-        // this.precondition('missingVersionJar');
-        // this.precondition('missingVersionJson');
-        // this.precondition('missingLibraries');
 
         if (this.state.instance.all[src]) {
+            this.warn(`Cannot export unmanaged instance ${src}`);
             return;
         }
 
         let root = this.state.root;
-        let instanceObject = this.state.instance.all[src];
+        // let instanceObject = this.state.instance.all[src];
 
         let from = src;
-        let zipFile = new ZipFile();
-        let promise = compressZipTo(zipFile, dest);
-
         if (mode === 'curseforge') {
             throw new Error('Not implemented!');
         }
 
-        await includeAllToZip(from, from, zipFile);
+        let { task, include, add, end } = openCompressedStreamTask(from);
+        let handle = this.submit(task);
+        await include(from, from);
 
         let defaultMcversion = this.state.instance.all[src].runtime.minecraft;
 
@@ -85,13 +86,11 @@ export class InstanceIOService extends Service {
         let verionsChain = parsedVersion.pathChain;
 
         if (mode === 'full') {
-            // this.precondition('missingAssetsIndex');
-            // this.precondition('missingAssets');
             let assetsJson = resolve(root, 'assets', 'indexes', `${parsedVersion.assets}.json`);
-            zipFile.addFile(assetsJson, `assets/indexes/${parsedVersion.assets}.json`);
+            add(assetsJson, `assets/indexes/${parsedVersion.assets}.json`);
             let objects = await readJson(assetsJson).then(manifest => manifest.objects);
             for (let hash of Object.keys(objects).map(k => objects[k].hash)) {
-                zipFile.addFile(resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`);
+                add(resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`);
             }
         }
 
@@ -99,32 +98,33 @@ export class InstanceIOService extends Service {
             let versionId = basename(versionPath);
             let versionFiles = await readdir(versionPath);
             for (let versionFile of versionFiles) {
-                if (!await isDirectory(join(versionPath, versionFile))) {
-                    zipFile.addFile(join(versionPath, versionFile), `versions/${versionId}/${versionFile}`);
-                }
+                add(join(versionPath, versionFile), `versions/${versionId}/${versionFile}`);
             }
         }
 
         for (let lib of parsedVersion.libraries) {
-            zipFile.addFile(resolve(root, 'libraries', lib.download.path),
+            add(resolve(root, 'libraries', lib.download.path),
                 `libraries/${lib.download.path}`);
         }
 
-        if (instanceObject.deployments.mods) {
-            for (let mod of instanceObject.deployments.mods.map(u => this.getters.getResource(u))
-                .filter(r => r.type !== 'unknown')) {
-                zipFile.addFile(mod.path, `mods/${mod.name}${mod.ext}`);
-            }
-        }
-        if (instanceObject.deployments.resourcepacks) {
-            for (let res of instanceObject.deployments.resourcepacks.map(u => this.getters.getResource(u))
-                .filter(r => r.type !== 'unknown')) {
-                zipFile.addFile(res.path, `resourcepacks/${res.name}${res.ext}`);
-            }
-        }
+        end();
 
-        zipFile.end();
-        await promise;
+        await handle.wait();
+    }
+
+    /**
+     * Link a existed instance on you disk.
+     * @param path 
+     */
+    async linkInstance(path: string) {
+        const { root } = parse(this.getPath());
+        const { root: destRoot } = parse(path);
+        if (destRoot !== root) {
+            // not on same disk, cannot hard link
+            this.commit('instanceAdd');
+        } else {
+
+        }
     }
 
     /**
@@ -183,7 +183,7 @@ export class InstanceIOService extends Service {
         let modsDir = resolve(srcDirectory, 'mods');
         for (let file of await readdirIfPresent(modsDir)) {
             try {
-                let resource = await this.resourceService.importUnknownResource({ path: resolve(srcDirectory, 'mods', file), type: 'mods' });
+                let resource = await this.resourceService.importResource({ path: resolve(srcDirectory, 'mods', file), type: 'mods' });
                 if (resource.type !== 'unknown') { mods.push(resource.hash); }
             } catch (e) {
                 this.pushException({ type: 'instanceImportIllegalResource', file });
@@ -194,7 +194,7 @@ export class InstanceIOService extends Service {
         let resourcepacksDir = resolve(srcDirectory, 'resourcepacks');
         for (let file of await readdirIfPresent(resourcepacksDir)) {
             try {
-                let resource = await this.resourceService.importUnknownResource({ path: resolve(srcDirectory, 'resourcepacks', file), type: 'resourcepack' });
+                let resource = await this.resourceService.importResource({ path: resolve(srcDirectory, 'resourcepacks', file), type: 'resourcepack' });
                 if (resource.type !== 'unknown') { resourcepacks.push(resource.hash); }
             } catch (e) {
                 this.pushException({ type: 'instanceImportIllegalResource', file });
@@ -207,7 +207,7 @@ export class InstanceIOService extends Service {
     async importCurseforgeModpack(options: ImportCurseforgeModpackOptions) {
         let { path, instancePath } = options;
 
-        if (await isFile(path)) {
+        if (!await isFile(path)) {
             throw new Exception({ type: 'requireCurseforgeModpackAFile', path }, `Cannot import curseforge modpack ${path}, since it's not a file!`);
         }
 
@@ -220,9 +220,6 @@ export class InstanceIOService extends Service {
             let forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'));
 
             let config: EditInstanceOptions = {
-                deployments: {
-                    mods: manifest.files.map(f => `curseforge://id/${f.projectID}/${f.fileID}`),
-                },
                 runtime: {
                     minecraft: manifest.minecraft.version,
                     forge: forgeId ? forgeId.id.substring(6) : '',
@@ -245,8 +242,42 @@ export class InstanceIOService extends Service {
                 });
             }
 
-            await ctx.execute(CurseforgeInstaller.installCurseforgeModpackTask(path, instancePath, { manifest }));
+            // filter out existed resources
+            manifest.files = manifest.files.filter((f) => {
+                let resource = this.resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID));
+                return !resource;
+            });
+
+            // deploy existed resources
+            let filesToDeploy = manifest.files.map((f) => this.resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID)))
+                .filter(isNonnull);
+            await this.instanceResourceService.deploy(filesToDeploy);
+
+            let files: Array<{ path: string; projectID: number; fileID: number; url: string }> = [];
+            let defaultQuery = CurseforgeInstaller.createDefaultCurseforgeQuery();
+            await CurseforgeInstaller.installCurseforgeModpackTask(path, instancePath, {
+                manifest,
+                async queryFileUrl(projectId: number, fileId: number) {
+                    let result = await defaultQuery(projectId, fileId);
+                    files.push({ path: '', projectID: projectId, fileID: fileId, url: result });
+                    return result;
+                },
+                filePathResolver(p, f, m, u) {
+                    let path = m.getMod(basename(u));
+                    files.find(fi => fi.fileID === f)!.path = path;
+                    return path;
+                },
+            }).run(ctx);
+
+            await this.resourceService.importResources(files.map((f) => ({
+                filePath: f.path,
+                url: [f.url, getCurseforgeUrl(f.projectID, f.fileID)],
+                source: {
+                    curseforge: { projectId: f.projectID, fileId: f.fileID },
+                },
+            })));
+            return instancePath;
         });
-        await this.submit(installCurseforgeModpack).wait();
+        return this.submit(installCurseforgeModpack).wait();
     }
 }

@@ -1,4 +1,5 @@
 
+import { acrylic } from '@main/util/acrylic';
 import { createI18n } from '@main/util/i18n';
 import { TaskNotification } from '@universal/util/notification';
 import { App, BrowserWindow, dialog, Dock, Menu, nativeImage, Notification, Tray } from 'electron';
@@ -68,9 +69,21 @@ export default class BuiltinController extends LauncherAppController {
             transparent: true,
             hasShadow: false,
             maximizable: false,
+            vibrancy: 'sidebar', // or popover
             icon: resolve(__static, 'apple-touch-icon.png'),
         });
-        this.mainRef!.show();
+        this.mainRef.show();
+
+        if (this.managers.appManager.platform.name === 'windows') {
+            setTimeout(() => {
+                this.managers.appManager.log(`[Acrylic] Set window transparent ${this.mainRef!.webContents.getOSProcessId()}`);
+                acrylic(this.mainRef!.webContents.getOSProcessId()).then((e) => {
+                    this.managers.appManager.log(`[Acrylic] ${e}`);
+                }, (e) => {
+                    this.managers.appManager.error(`[Acrylic] ${e}`);
+                });
+            }, 100);
+        }
     }
 
     createLoggerWindow() {
@@ -87,6 +100,7 @@ export default class BuiltinController extends LauncherAppController {
     }
 
     setup(): void {
+        this.app.allowRendererProcessReuse = true;
     }
 
     async requestOpenExternalUrl(url: string) {

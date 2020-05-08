@@ -3,8 +3,8 @@ import { createMinecraftProcessWatcher, launch, LaunchOption, MinecraftFolder } 
 import { ChildProcess } from 'child_process';
 import AuthLibService from './AuthLibService';
 import DiagnoseService from './DiagnoseService';
-import InstanceService from './InstanceService';
 import Service, { Inject } from './Service';
+import InstanceResourceService from './InstanceResourceService';
 
 export default class LaunchService extends Service {
     @Inject('DiagnoseService')
@@ -13,10 +13,10 @@ export default class LaunchService extends Service {
     @Inject('AuthLibService')
     private authLibService!: AuthLibService;
 
-    @Inject('InstanceService')
-    private instanceService!: InstanceService;
-
     private launchedProcess: ChildProcess | undefined;
+
+    @Inject('InstanceResourceService')
+    private instanceResourceService!: InstanceResourceService;
 
     /**
      * Launch the current selected instance. This will return a boolean promise indeicate whether launch is success.
@@ -72,6 +72,14 @@ export default class LaunchService extends Service {
             this.log(`Will launch with ${version} version.`);
 
             const javaPath = this.getters.instanceJava.path || this.getters.defaultJava.path;
+
+            const allPacks = this.state.resource.domains.resourcepacks;
+            const deploiedPacks = this.state.instance.resourcepacks;
+
+            const toBeDeploiedPacks = allPacks.filter(p => !deploiedPacks.find((r) => r.hash === p.hash));
+            this.log(`Deploying ${toBeDeploiedPacks.length} resource packs`);
+            await this.instanceResourceService.deploy(toBeDeploiedPacks);
+
             /**
              * Build launch condition
              */
@@ -103,8 +111,6 @@ export default class LaunchService extends Service {
                 };
             }
 
-            this.instanceService.deploy(true);
-
             this.log('Launching with these option...');
             this.log(JSON.stringify(option, (k, v) => (k === 'accessToken' ? '***' : v), 2));
 
@@ -123,11 +129,14 @@ export default class LaunchService extends Service {
                 this.commit('launchStatus', 'ready');
             }).on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation }) => {
                 this.log(`Minecraft exit: ${code}, signal: ${signal}`);
+                if (crashReportLocation) {
+                    crashReportLocation = crashReportLocation.substring(0, crashReportLocation.lastIndexOf('.txt') + 4);
+                }
                 eventBus.emit('minecraft-exit', {
                     code,
                     signal,
                     crashReport,
-                    crashReportLocation: crashReportLocation ? crashReportLocation.trim() : '',
+                    crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
                 });
                 this.commit('launchStatus', 'ready');
                 this.launchedProcess = undefined;

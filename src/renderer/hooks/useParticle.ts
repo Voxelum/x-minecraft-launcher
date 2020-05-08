@@ -1,16 +1,15 @@
-import { computed } from '@vue/composition-api';
-import { useStore } from './useStore';
+import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from './useCache';
+
+export enum ParticleMode {
+    PUSH = 'push',
+    REMOVE = 'remove',
+    REPULSE = 'repulse',
+    BUBBLE = 'bubble',
+}
 
 export function useParticle() {
-    const { state, commit } = useStore();
-    const showParticle = computed({
-        get: () => state.setting.showParticle,
-        set: v => commit('showParticle', v),
-    });
-    const particleMode = computed({
-        get: () => state.setting.particleMode,
-        set: v => commit('particleMode', v),
-    });
+    const particleMode = useLocalStorageCacheStringValue<ParticleMode>('particleMode', ParticleMode.REPULSE);
+    const showParticle = useLocalStorageCacheBool('showParticle', false);
     return {
         showParticle,
         particleMode,

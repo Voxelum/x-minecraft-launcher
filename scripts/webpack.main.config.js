@@ -101,14 +101,17 @@ if (process.env.NODE_ENV !== 'production') {
  * Adjust mainConfig for production settings
  */
 if (process.env.NODE_ENV === 'production') {
-    mainConfig.externals = mainConfig.externals.filter(v => !v.startsWith('@xmcl'));
+    // mainConfig.externals = mainConfig.externals.filter(v => !v.startsWith('@xmcl'));
+    mainConfig.externals = ['7z-bin'];
     mainConfig.plugins.push(
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': '"production"',
         }),
         new BundleAnalyzerPlugin({
             analyzerMode: 'static',
-            reportFilename: 'main.report.html',
+            generateStatsFile: true,
+            reportFilename: path.join(__dirname, '../dist/main.report.html'),
+            statsFilename: path.join(__dirname, '../dist/main.stat.json'),
             openAnalyzer: false,
         }),
     );

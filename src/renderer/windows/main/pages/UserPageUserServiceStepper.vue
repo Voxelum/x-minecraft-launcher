@@ -23,12 +23,12 @@
       />
       <v-radio-group v-model="template">
         <v-radio
-          :label="$t('user.service.normal')"
-          :value="0"
-        />
-        <v-radio
           :label="$t('user.service.authLibInjector')"
           :value="1"
+        />
+        <v-radio
+          :label="$t('user.service.normal')"
+          :value="0"
         />
       </v-radio-group>
       <v-layout row>
@@ -139,7 +139,7 @@ export default defineComponent({
     const data = reactive({
       name: '',
       step: 0,
-      template: 0,
+      template: 1,
       baseUrl: '',
       baseUrlError: false,
       nameError: false,

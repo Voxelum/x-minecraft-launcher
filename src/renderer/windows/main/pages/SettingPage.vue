@@ -15,7 +15,7 @@
               </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-select v-model="selectedLocale" 
+              <v-select v-model="selectedLocale"
                         style="max-width: 185px;" 
                         dark 
                         hide-details 
@@ -195,6 +195,7 @@
 <script lang=ts>
 import { defineComponent, reactive, ref, toRefs, watch, Ref } from '@vue/composition-api';
 import { useStore, useI18n, useParticle, useSettings, useIpc, useNativeDialog, useService } from '@/hooks';
+import localMapping from '@/assets/locales/index.json';
 
 import UpdateInfoDialog from './SettingPageUpdateInfoDialog.vue';
 
@@ -228,7 +229,7 @@ export default defineComponent({
     return {
       ...toRefs(data),
       ...settings,
-      locales: settings.locales.value.map(l => ({ text: l, value: l })),
+      locales: settings.locales.value.map(l => ({ text: localMapping[l] ?? l, value: l })),
       showParticle,
       particleMode,
       particleModes,

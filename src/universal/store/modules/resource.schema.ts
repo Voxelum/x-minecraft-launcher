@@ -3,6 +3,17 @@ import Schema from '../Schema';
 /* eslint-disable import/export  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
+export interface CurseforgeSource {
+    /**
+     * The curseforge project id
+     */
+    projectId: number;
+    /**
+     * The file id
+     */
+    fileId: number;
+}
+
 export interface Source {
     /**
      * The source uris.
@@ -30,21 +41,7 @@ export interface Source {
     /**
      * The curseforge info for this source. If this is imported from curseforge, it will present.
      */
-    curseforge?: {
-        projectId?: number;
-        fileId: number;
-        projectType?: string;
-        projectPath?: string;
-    };
-
-    /**
-     * Import from local disk
-     */
-    file?: {
-        path: string;
-    };
-
-    [domain: string]: string[] | string | undefined | Record<string, string | number | undefined>;
+    curseforge?: CurseforgeSource;
 }
 
 export interface ResourceSchema {
@@ -57,9 +54,17 @@ export interface ResourceSchema {
      */
     path: string;
     /**
+     * The ino of the file on disk
+     */
+    ino: number;
+    /**
      * The sha1 of the resource
      */
     hash: string;
+    /**
+     * The size of the resource
+     */
+    size: number;
     /**
      * The suggested ext of the resource
      */
@@ -69,11 +74,16 @@ export interface ResourceSchema {
      */
     type: string;
     /**
+     * The custom tag on this resource
+     * @default []
+     */
+    tags: string[];
+    /**
      * The domain of the resource. This decide where (which folder) the resource go 
      */
     domain: string | 'mods' | 'resourcepacks' | 'modpacks' | 'saves';
     /**
-     * The resource specific metadata
+     * The resource specific metadata read from the file
      */
     metadata: object | object[];
     /**

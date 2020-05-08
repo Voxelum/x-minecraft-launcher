@@ -1,7 +1,7 @@
 import { Resource } from '@universal/util/resource';
 import { Issue } from '@universal/store/modules/diagnose';
 
-export type Exceptions = CurseforgeModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException;
+export type Exceptions = UserNoProfilesException | CurseforgeModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException;
 
 export interface ExceptionBase {
     type: string;
@@ -91,6 +91,13 @@ export interface FixVersionException extends ExceptionBase {
     type: 'fixVersionNoVersionMetadata' | 'fixVersionNoForgeVersionMetadata';
     minecraft: string;
     forge?: string;
+}
+
+export interface UserNoProfilesException extends ExceptionBase {
+    type: 'userNoProfiles';
+    authService: string;
+    profileService: string;
+    username: string;
 }
 
 export function isFileNoFound(e: unknown) {

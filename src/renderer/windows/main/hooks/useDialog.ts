@@ -6,14 +6,13 @@ export type DialogNames = 'task' | 'java-wizard' | 'login' | 'detail' | ''
     | 'launch-status' | 'launch-blocked';
 
 export const DIALOG_SYMBOL: InjectionKey<Ref<DialogNames>> = Symbol('ShowingDialog');
+export const DIALOG_LOGIN_SWITCH_USER: InjectionKey<Ref<boolean>> = Symbol('SwitchingUser');
+export const DIALOG_JAVA_ISSUE: InjectionKey<Ref<'incompatible' | 'missing'>> = Symbol('JavaIssue');
 
 export function provideDialog() {
-    const dialogShowing = ref('');
-    provide(DIALOG_SYMBOL, dialogShowing);
-
-    return {
-        dialogShowing,
-    };
+    provide(DIALOG_SYMBOL, ref(''));
+    provide(DIALOG_LOGIN_SWITCH_USER, ref(false));
+    provide(DIALOG_JAVA_ISSUE, ref('missing'));
 }
 
 /**
@@ -54,12 +53,15 @@ export function useSingleDialog(isShown = ref(false)) {
     };
 }
 
-export function provideLoginDialog() {
-    provide('login-switch-user', ref(false));
+export function useLoginDialog() {
+    const isSwitchingUser = inject(DIALOG_LOGIN_SWITCH_USER);
+    if (!isSwitchingUser) throw new Error('This should not happen');
+    return { isSwitchingUser, ...useDialog('login') };
 }
 
-export function useLoginDialog() {
-    const isSwitchingUser: Ref<boolean> = inject('login-switch-user') as any;
-    if (!isSwitchingUser) throw new Error('This should not happened');
-    return { isSwitchingUser, ...useDialog('login') };
+
+export function useJavaWizardDialog() {
+    const javaIssue = inject(DIALOG_JAVA_ISSUE);
+    if (!javaIssue) throw new Error('This should not happen');
+    return { javaIssue, ...useDialog('java-wizard') };
 }

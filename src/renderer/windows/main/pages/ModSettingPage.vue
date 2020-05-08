@@ -1,12 +1,28 @@
 <template>
-  <v-container fill-height style="overflow: auto;" @dragend="draggingMod = false">
-    <v-layout row wrap fill-height>
-      <v-toolbar dark flat>
+  <v-container
+    fill-height
+    style="overflow: auto;"
+    @dragend="draggingMod = false"
+  >
+    <v-layout
+      column
+      fill-height
+      style="max-height: 100%;"
+    >
+      <v-toolbar
+        dark
+        flat
+        color="transparent"
+      >
         <v-toolbar-title>{{ $tc('mod.name', 2) }}</v-toolbar-title>
         <v-spacer />
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn icon v-on="on" @click="filterInCompatible = !filterInCompatible">
+            <v-btn
+              icon
+              v-on="on"
+              @click="filterInCompatible = !filterInCompatible"
+            >
               <v-icon>{{ filterInCompatible ? 'visibility' : 'visibility_off' }}</v-icon>
             </v-btn>
           </template>
@@ -14,152 +30,136 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn icon v-on="on" @click="toggle[0]()">
+            <v-btn
+              icon
+              v-on="on"
+              @click="toggle[0]()"
+            >
               <v-icon>search</v-icon>
             </v-btn>
           </template>
           {{ $t('filter') }}
         </v-tooltip>
       </v-toolbar>
-      <v-flex d-flex xs6 style="padding-right: 5px;">
-        <v-card ref="leftList" dark class="card-list" @dragover.prevent>
-          <v-card-title>
-            <span
-              v-if="filterModId === ''"
-              class="text-sm-center"
-              style="width: 100%; font-size: 16px;"
-            >{{ $t('mod.unselected') }}</span>
-            <v-chip
-              v-else
-              outline
-              color="white"
-              class="text-sm-center"
-              close
-              label
-              @input="filterModId = ''"
-            >modid = {{ filterModId }}</v-chip>
-          </v-card-title>
-          <hint
-            v-if="unselectedItems.length === 0"
-            icon="save_alt"
-            :text="$t('mod.hint')"
-            :absolute="true"
-            style="height: 100%"
-          />
-          <div v-else class="list">
+      <v-flex
+        d-flex
+        xs12
+        style="padding-right: 5px; display: flex; flex-direction: column;"
+      >
+        <hint
+          v-if="items.length === 0"
+          icon="save_alt"
+          :text="$t('mod.hint')"
+          :absolute="true"
+          style="height: 100%"
+        />
+        <v-list
+          v-else
+          class="list"
+          style="overflow-y: auto; background: transparent;"
+        >
+          <transition-group
+            name="transition-list"
+            tag="div"
+          >
             <mod-card
-              v-for="item in unselectedItems"
+              v-for="(item, index) in items"
               :key="item.url"
-              :mod="item"
-              :is-selected="false"
-              @dragstart="draggingMod = true"
-              @dragend="draggingMod = false"
-              @click="setFilteredModid(item)"
+              v-observe-visibility="(visible) => onVisible(visible, index)"
+              :source="item"
+              class="list-item"
             />
-          </div>
-        </v-card>
-      </v-flex>
-      <v-flex d-flex xs6 style="padding-left: 5px;" @drop="draggingMod=false">
-        <v-card ref="rightList" dark class="card-list right">
-          <v-card-title>
-            <span
-              class="text-sm-center"
-              style="width: 100%; font-size: 16px;"
-            >{{ $t('mod.selected') }}</span>
-          </v-card-title>
-          <hint
-            v-if="selectedItems.length === 0"
-            icon="save_alt"
-            :text="$t('mod.hint')"
-            :absolute="true"
-            style="height: 100%"
-          />
-          <div v-else class="list">
-            <mod-card
-              v-for="item in selectedItems"
-              :key="item.url"
-              :mod="item"
-              :is-selected="true"
-            />
-          </div>
-        </v-card>
+          </transition-group>
+        </v-list>
       </v-flex>
     </v-layout>
-    <delete-button :drop="onDropMod" :visible="draggingMod" />
-    <v-dialog :value="!!deletingMod" width="400" persistance>
+    <float-button
+      :deleting="draggingMod"
+      :visible="draggingMod || modified"
+      :loading="saving"
+      @drop="onDropMod"
+      @click="save"
+    />
+    <v-dialog
+      :value="!!deletingMod"
+      width="400"
+      persistance
+    >
       <delete-view
-        :confirm="() => removeModResource(true)"
-        :cancel="() => removeModResource(false)"
-        :name="deletingMod ? deletingMod.name : ''"
+        :confirm="confirmDelete"
+        :cancel="cancelDelete"
+        :name="deletingMod ? deletingMod.name + '-' + deletingMod.version : ''"
       />
     </v-dialog>
   </v-container>
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs, computed, ref, Ref, watch } from '@vue/composition-api';
+import VirtualList from 'vue-virtual-scroll-list';
+import { defineComponent, reactive, toRefs, computed, ref, Ref, provide, watch } from '@vue/composition-api';
 import { ForgeResource, LiteloaderResource } from '@universal/util/resource';
 import {
   useInstanceMods,
-  useDragTransferList,
   useResourceOperation,
   useInstanceVersionBase,
   useDropImport,
   useDropImportFile,
   ModItem,
+  useOperation,
 } from '@/hooks';
 import { isCompatible } from '@universal/util/version';
 import { useLocalStorageCacheBool } from '@/hooks/useCache';
 import { useSearchToggle, useSearch } from '../hooks';
 import ModCard from './ModSettingPageCard.vue';
 import DeleteView from './ModSettingPageDeleteView.vue';
-import DeleteButton from './ModSettingPageDeleteButton.vue';
+import FloatButton from './ModSettingPageFloatButton.vue';
 
 type ModResource = ForgeResource | LiteloaderResource;
+
+function useDragMod() {
+  const draggingMod = ref(false);
+  provide('DraggingMod', draggingMod);
+  return {
+    draggingMod,
+  };
+}
 
 export default defineComponent({
   components: {
     ModCard,
     DeleteView,
-    DeleteButton,
+    VirtualList,
+    FloatButton,
   },
   setup() {
     const data = reactive({
       filterInCompatible: useLocalStorageCacheBool('ModSettingPage.filterInCompatible', false),
       filterModId: '',
 
-      draggingMod: false,
-      deletingMod: null as ModItem | null,
+      saving: false,
+      visibleCount: 10,
     });
-    const rightList: Ref<null | Vue> = ref(null);
-    const leftList: Ref<null | Vue> = ref(null);
+    provide('HoveringMod', ref(''));
     const { minecraft } = useInstanceVersionBase();
-    const { mods, unusedMods } = useInstanceMods();
-    const { removeResource, importUnknownResource } = useResourceOperation();
+    const { enabled, disabled, commit } = useInstanceMods();
+    const { removeResource } = useResourceOperation();
     const { toggle } = useSearchToggle();
     const { text: filteredText } = useSearch();
+    const { begin: beginDelete, cancel: cancelDelete, operate: confirmDelete, data: deletingMod } = useOperation<ModItem | undefined>(undefined, (mod) => {
+      removeResource(mod!.hash);
+    });
 
-    useDropImport(computed(() => leftList.value?.$el as HTMLElement), 'mods');
-    useDropImportFile(computed(() => rightList.value?.$el as HTMLElement),
-      (file) => importUnknownResource({ path: file.path, type: 'mods' }));
+    const mods = computed(() => [
+      ...enabled.value,
+      ...disabled.value,
+    ]);
 
-    function add(mod: string) {
-      let found = unusedMods.value.find(m => m.url === mod);
-      if (found) {
-        mods.value.push(found);
-      }
-    }
-    function remove(mod: string) {
-      mods.value = mods.value.filter(m => m.url !== mod);
-    }
+    let modifiedList = ref([] as ModItem[]);
+    provide('Modified', modifiedList);
+    const modified = computed(() => modifiedList.value.length > 0);
 
-    useDragTransferList(
-      computed(() => leftList.value?.$el) as any,
-      computed(() => rightList.value?.$el) as any,
-      () => { },
-      add,
-      remove,
-    );
+
+    // useDropImport(computed(() => leftList.value?.$el as HTMLElement), 'mods');
 
     function filterText(mod: ModItem) {
       const text = filteredText.value;
@@ -168,74 +168,91 @@ export default defineComponent({
     }
     function isCompatibleMod(mod: ModItem) {
       if (data.filterInCompatible) {
-        return isCompatible(mod.acceptMinecraft, minecraft.value);
+        return isCompatible(mod.acceptVersion, minecraft.value);
       }
       return true;
     }
-    function isDuplicated(list: ModItem[], mod: ModItem) {
-      if (data.filterModId) {
-        if (mod.id === data.filterModId) {
-          list.push(mod);
-        }
-        return list;
-      }
-      if (!list.find(v => v.id === mod.id && v.type === mod.type)
-        && !mods.value.find(v => v.id === mod.id && v.type === mod.type)) {
+    function isDuplicated(list: ModItem[], mod: ModItem): ModItem[] {
+      // if (data.filterModId) {
+      //   if (mod.id === data.filterModId) {
+      //     list.push(mod);
+      //   }
+      //   return list;
+      // }
+      let existed = list.findIndex(v => v.id === mod.id && v.type === mod.type);
+      if (existed !== -1) {
+        list.splice(existed + 1, 0, mod);
+        mod.subsequence = true;
+      } else {
         list.push(mod);
+        mod.subsequence = false;
       }
       return list;
     }
+    const items = computed(() => mods.value
+      .filter(filterText)
+      .filter(isCompatibleMod)
+      .reduce(isDuplicated, [])
+      // .sort((a, b) => (a.enabled ? 1 : b.enabled ? 0 : 1))
+      .filter((m, i) => i < data.visibleCount));
 
+    function save() {
+      if (data.saving) return;
+      data.saving = true;
+      commit(modifiedList.value).finally(() => {
+        let handle = watch(modified, (n, o) => {
+          if (typeof o === 'undefined') return;
+          data.saving = false;
+          handle();
+        });
+      });
+    }
     // const { filter: filterLeft, onItemVisibile: onLeftSeen } = useProgressiveLoad();
     // const { filter: filterRight, onItemVisibile: onRightSeen } = useProgressiveLoad();
 
-    const unselectedItems = computed(() => unusedMods.value
-      .filter(filterText)
-      .filter(isCompatibleMod)
-      .reduce(isDuplicated, [] as ModItem[]));
+    // const unselectedItems = computed(() => unusedMods.value
+    //   .filter(filterText)
+    //   .filter(isCompatibleMod)
+    //   .reduce(isDuplicated, [] as ModItem[]));
 
-    const selectedItems = computed(() => mods.value
-      .filter(filterText));
-
-    function commitModRemove(confirm: boolean) {
-      if (confirm) {
-        if (data.deletingMod) {
-          if (data.deletingMod.resource) {
-            removeResource(data.deletingMod.resource);
-          }
-        }
-      }
-      data.deletingMod = null;
-    }
     function onDropMod(e: DragEvent) {
       const url = e.dataTransfer!.getData('id');
       const target = mods.value.find(m => m.url === url);
-      data.deletingMod = target ?? null;
+      deletingMod.value = target;
     }
-
     function setFilteredModid(mod: ModItem) {
       data.filterModId = mod.id;
     }
+    function onVisible(visible: boolean, index: number) {
+      if (!visible) return;
+      if (data.visibleCount < index + 20) {
+        data.visibleCount += 20;
+      }
+    }
+
     return {
       ...toRefs(data),
-      rightList,
-      leftList,
-      // onLeftSeen,
-      // onRightSeen,
-      unselectedItems,
-      selectedItems,
-      commitModRemove,
+      ...useDragMod(),
+
+      onVisible,
+
+      items,
+      beginDelete,
+      cancelDelete,
+      confirmDelete,
+      deletingMod,
+
       onDropMod,
       setFilteredModid,
       toggle,
+      ModCard,
+
+      save,
+      modified,
     };
   },
 });
 </script>
 
 <style>
-.card-list.right {
-  display: flex;
-  flex-flow: column;
-}
 </style>

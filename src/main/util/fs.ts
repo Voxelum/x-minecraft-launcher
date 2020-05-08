@@ -2,6 +2,7 @@ import { checksum } from '@xmcl/installer/util';
 import { access, constants, copyFile, ensureDir, FSWatcher, readdir, stat, watch, remove, unlink } from 'fs-extra';
 import { resolve, join } from 'path';
 import filenamify from 'filenamify';
+import { createHash } from 'crypto';
 
 export function missing(file: string) {
     return access(file, constants.F_OK).then(() => false, () => true);
@@ -15,7 +16,7 @@ export function isDirectory(file: string) {
 export function isFile(file: string) {
     return stat(file).then((s) => s.isFile(), () => false);
 }
-export async function readdirIfPresent(path: string) {
+export async function readdirIfPresent(path: string): Promise<string[]> {
     if (!path) throw new Error('Path must not be undefined!');
     return readdir(path).catch((e) => {
         if (e.code === 'ENOENT') return [];
@@ -85,4 +86,8 @@ export function getSuggestedFilename(name: string) {
     name = filenamify(name);
     name = name.replace('§', '');
     return name;
+}
+
+export function sha1(data: Buffer) {
+    return createHash('sha1').update(data).digest('hex');
 }

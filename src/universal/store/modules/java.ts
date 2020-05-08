@@ -4,18 +4,21 @@ import { ModuleOption } from '../root';
 import { Java } from './java.schema';
 
 type State = {
-    all: JavaState[];
+    all: JavaRecord[];
 };
 
-export type JavaState = Java & { valid: boolean };
+/**
+ * A record of a java path
+ */
+export type JavaRecord = Java & { valid: boolean };
 
 interface Getters {
-    defaultJava: JavaState;
+    defaultJava: JavaRecord;
     missingJava: boolean;
 }
 interface Mutations {
-    javaUpdate: (JavaState | JavaState[]);
-    javaRemove: (JavaState);
+    javaUpdate: (JavaRecord | JavaRecord[]);
+    javaRemove: (JavaRecord);
 }
 
 export type JavaModule = ModuleOption<State, Getters, Mutations, {}>;
@@ -23,7 +26,7 @@ export type JavaModule = ModuleOption<State, Getters, Mutations, {}>;
 /**
  * Return when there is no java
  */
-export const EMPTY_JAVA: JavaState = {
+export const EMPTY_JAVA: JavaRecord = {
     version: '',
     majorVersion: 0,
     path: '',

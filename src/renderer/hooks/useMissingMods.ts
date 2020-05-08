@@ -27,10 +27,10 @@ export function useMissingMods(modList: Ref<{ modid: string; version: string }[]
         checking.value = true;
 
         for (const m of items.value) {
-            const resource = getters.queryResource(`forge://${m.modid}:${m.version}`);
-            if (!resource) {
-                unchecked.push(m);
-            }
+            // const resource = getters.queryResource(`forge://${m.modid}:${m.version}`);
+            // if (!resource) {
+            //     unchecked.push(m);
+            // }
             await nextTick();
         }
 

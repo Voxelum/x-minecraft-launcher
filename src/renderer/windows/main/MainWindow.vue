@@ -1,23 +1,50 @@
 <template>
-  <v-app dark style="background: transparent;">
-    <v-container v-if="loading" color="primary" align-center justify-center style="position: absolute; width: 100%; height: 100%; background-color: #212121" />
-    <v-layout v-else fill-height>
+  <v-app
+    ref="app"
+    dark
+    style="background: transparent;"
+  >
+    <v-container
+      v-if="loading"
+      color="primary"
+      align-center
+      justify-center
+      class="loading-background"
+      style="position: absolute; width: 100%; height: 100%;"
+    />
+    <v-layout
+      v-else
+      fill-height
+    >
       <side-bar />
-      <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
+      <v-layout
+        style="padding: 0; background: transparent; max-height: 100vh;"
+        fill-height
+      >
         <div class="main-body v-sheet">
-        <!-- <v-card class="main-body" color="grey darken-4"> -->
-          <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;">
-          <vue-particles v-if="showParticle" 
-                         color="#dedede" 
-                         :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }"
-                         style="position: absolute; width: 100%; height: 100%; z-index: 0; tabindex = -1;" 
-                         :click-mode="particleMode" />
-          <transition name="fade-transition" mode="out-in">
+          <!-- <v-card class="main-body" color="grey darken-4"> -->
+          <img
+            v-if="backgroundImage"
+            :src="`file:///${backgroundImage}`"
+            :style="{ filter: `blur:${blur}px` }"
+            style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;"
+          />
+          <vue-particles
+            v-if="showParticle"
+            color="#dedede"
+            :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }"
+            style="position: absolute; width: 100%; height: 100%; z-index: 0; tabindex = -1;"
+            :click-mode="particleMode"
+          />
+          <transition
+            name="fade-transition"
+            mode="out-in"
+          >
             <!-- <keep-alive> -->
             <router-view />
-          <!-- </keep-alive> -->
+            <!-- </keep-alive> -->
           </transition>
-        <!-- </v-card> -->
+          <!-- </v-card> -->
         </div>
       </v-layout>
       <context-menu />
@@ -26,6 +53,7 @@
       <login-dialog />
       <task-dialog />
       <launch-status-dialog />
+      <java-wizard-dialog />
     </v-layout>
   </v-app>
 </template>
@@ -40,35 +68,41 @@ import {
   defineComponent,
   ref,
   provide,
+  Ref,
 } from '@vue/composition-api';
 import {
   useParticle,
   useBackgroundImage,
   useIpc,
   useRouter,
+  useStore,
 } from '@/hooks';
-import { provideTasks } from '@/providers/provideTaskProxy'; 
-import { provideDialog, provideNotifier, provideLoginDialog, provideSearchToggle, SEARCH_TEXT_SYMBOL } from './hooks';
+import { provideTasks } from '@/providers/provideTaskProxy';
+import { provideDialog, provideNotifier, provideLoginDialog, provideContextMenu, provideSearchToggle, SEARCH_TEXT_SYMBOL, provideAsyncRoute } from './hooks';
 import LoginDialog from './dialog/BaseLoginDialog.vue';
 import TaskDialog from './dialog/BaseTaskDialog.vue';
 import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue';
+import JavaWizardDialog from './dialog/BaseJavaWizardDialog.vue';
 
 export default defineComponent({
-  components: { LoginDialog, TaskDialog, LaunchStatusDialog },
+  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaWizardDialog },
   setup() {
     provideDialog();
     provideNotifier();
     provideTasks();
+    provideAsyncRoute();
 
     provide(SEARCH_TEXT_SYMBOL, ref(''));
     provideSearchToggle();
+    provideContextMenu();
 
     const ipcRenderer = useIpc();
     const { particleMode, showParticle } = useParticle();
     const { blur, backgroundImage } = useBackgroundImage();
+    const { state } = useStore();
     const router = useRouter();
     const onHomePage = ref(router.currentRoute.path === '/');
-    provideLoginDialog();
+    const app: Ref<Vue | null> = ref(null);
 
     router.afterEach((to) => {
       onHomePage.value = to.path === '/';
@@ -97,11 +131,13 @@ export default defineComponent({
           });
         }
       });
+      app.value!.$el.classList.add(state.platform);
     });
 
     return {
       ...toRefs(data),
       // searchBar,
+      app,
       blur,
       backgroundImage,
       particleMode,

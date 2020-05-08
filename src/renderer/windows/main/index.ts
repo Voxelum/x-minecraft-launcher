@@ -17,11 +17,11 @@ import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.css';
 import colors from 'vuetify/es5/util/colors';
 import Vuex from 'vuex';
+import './directives';
 import components from './components';
 import CurseforgeIcon from './components/CurseforgeIcon.vue';
 import MainWindow from './MainWindow.vue';
 import router from './router';
-
 
 function configApp(app: App) {
     app.config.productionTip = false;
@@ -35,7 +35,7 @@ function configApp(app: App) {
         },
         theme: {
             primary: colors.green,
-            // secondary: colors.green,
+            // secondary: colors.lime,
             accent: colors.green.accent3,
         },
     });

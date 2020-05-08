@@ -1,6 +1,10 @@
+import { getCurseforgeSourceInfo, UNKNOWN_RESOURCE } from '@main/util/resource';
+import { TaskState } from '@universal/task';
 import { requireObject, requireString } from '@universal/util/assert';
-import { AddonInfo, File, getAddonDescription, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions, getAddonDatabaseTimestamp } from '@xmcl/curseforge';
+import { AddonInfo, File, getAddonDatabaseTimestamp, getAddonDescription, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions } from '@xmcl/curseforge';
+import { task } from '@xmcl/task';
 import { Agent } from 'https';
+import { basename } from 'path';
 import ResourceService from './ResourceService';
 import Service, { Inject, Singleton } from './Service';
 
@@ -33,7 +37,7 @@ export interface Modpack {
 
 export interface InstallFileOptions {
     file: File;
-
+    projectId: number;
     type: ProjectType;
 }
 
@@ -105,7 +109,7 @@ export default class CurseForgeService extends Service {
         return getFeaturedAddons(getOptions, { userAgent: this.userAgent });
     }
 
-    async installFile({ file, type }: InstallFileOptions) {
+    async installFile({ file, type, projectId }: InstallFileOptions) {
         requireString(type);
         requireObject(file);
         const typeHints: Record<ProjectType, string> = {
@@ -115,18 +119,36 @@ export default class CurseForgeService extends Service {
             modpacks: 'curseforge-modpack',
         };
         this.log(`Install file ${file.displayName}(${file.downloadUrl}) in type ${type}`);
-        let task = this.resourceService.importResourceTask(file.downloadUrl, {
-            curseforge: {
-                projectId: file.projectId,
-                fileId: file.id,
-            },
-        }, typeHints[type]);
-        let handle = this.taskManager.submit(task);
-        this.commit('curseforgeDownloadFileStart', { fileId: file.id, taskId: handle.root.id });
+        let resource = this.resourceService.getResource({ url: [file.downloadUrl, `curseforge://${file.projectId}/${file.id}`] });
+        if (resource !== UNKNOWN_RESOURCE) {
+            return resource.path;
+        }
+        let destination = this.getPath('temp', basename(file.downloadUrl));
         try {
+            let handle = this.submit(task('importResource', async (c) => {
+                c.update(0, 100);
+
+                await c.execute(task('download', this.networkManager.downloadFileTask({
+                    url: file.downloadUrl,
+                    destination,
+                })), 80);
+
+                // TODO: add tag from addon info
+                // let addonInf = await this.fetchProject(projectId);
+                resource = await c.execute(task('parsing', () => this.resourceService.importResource({
+                    path: destination,
+                    url: [file.downloadUrl, `curseforge://${projectId}/${file.id}`],
+                    source: getCurseforgeSourceInfo(projectId, file.id),
+                    type: typeHints[type],
+                })), 20);
+            }));
+
+            this.commit('curseforgeDownloadFileStart', { fileId: file.id, taskId: (handle.root as TaskState).id });
             await handle.wait();
         } finally {
             this.commit('curseforgeDownloadFileEnd', file.id);
         }
+
+        return resource.path;
     }
 }

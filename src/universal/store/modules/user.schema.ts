@@ -41,6 +41,11 @@ export interface UserProfile {
      * All avaiable game profiles
      */
     profiles: { [uuid: string]: GameProfileAndTexture };
+
+    /**
+     * Selected profile uuid
+     */
+    selectedProfile: string;
 }
 
 export interface UserSchema {
@@ -67,7 +72,7 @@ export interface UserSchema {
         profile: string;
     };
     /**
-     * All loaded auth services api. Used for ygg auth
+     * All loaded auth services api. Used for yggdrisal auth
      * @default {}
      */
     authServices: {

@@ -1,10 +1,9 @@
-import { createWriteStream, WriteStream, mkdirSync } from 'fs';
+import { IS_DEV } from '@main/constant';
+import { createWriteStream, mkdirSync, WriteStream } from 'fs';
 import { resolve } from 'path';
 import { PassThrough, pipeline, Transform } from 'stream';
 import { format } from 'util';
 import { Manager } from '.';
-
-const DEV = process.env.NODE_ENV === 'development';
 
 function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, options) : format(message); }
 export default class LogManager extends Manager {
@@ -32,7 +31,7 @@ export default class LogManager extends Manager {
             this.error('Uncaught Rejection');
             this.error(reason);
         });
-        if (DEV) {
+        if (IS_DEV) {
             this.output.on('data', (b) => console.log(b.toString()));
         }
     }
@@ -45,7 +44,7 @@ export default class LogManager extends Manager {
 
     openWindowLog(name: string) {
         const loggerPath = resolve(this.logRoot, `renderer.${name}.log`);
-        this.log(`Setup renderer logger for window ${name} to ${loggerPath}.`);
+        this.log(`Setup renderer logger for window ${name} to ${loggerPath}`);
         const stream = createWriteStream(loggerPath, { encoding: 'utf-8', flags: 'w+' });
         this.openedStream[name] = stream;
         return stream;

@@ -1,39 +1,84 @@
 <template>
-  <v-container grid-list-xs fill-height style="overflow: auto;">
-    <v-layout column>
-      <v-layout style="flex-grow: 0" align-content-start justify-start>
-        <v-flex tag="h1" class="white--text" style="z-index: 1">
-          <span class="headline">{{ $tc('save.name', 2) }}</span>
-        </v-flex>
-        <v-flex shrink style="z-index: 1">
-          <v-btn flat @click="showCopyFromDialog">
-            <v-icon left>
-              input
-            </v-icon>
-            {{ $t('save.copyFrom.title') }}
-          </v-btn>
-        </v-flex>
-        <v-flex shrink style="z-index: 1">
-          <v-btn flat @click="doImport">
-            <v-icon left>
-              move_to_inbox
-            </v-icon>
-            {{ $t('save.import') }}
-          </v-btn>
-        </v-flex>
-      </v-layout>
-      <v-layout style="flex-grow: 1" @drop.prevent="onDrop" @dragover.prevent>
-        <hint v-if="saves.length === 0" style="flex-grow: 1" icon="map" :text="$t('save.hint')" />
-        <v-layout v-else wrap row>
-          <v-flex v-for="(s, index) of saves" :key="index" xs6>
-            <save-view-page-preview-card :value="s" :delete-save="startDelete" :export-save="doExport" />
-          </v-flex>
-        </v-layout>
-      </v-layout>
+  <v-container
+    grid-list-md
+    fill-height
+    style="overflow: auto;"
+  >
+    <v-layout
+      column
+      fill-height
+      style="max-height: 100%;"
+    >
+      <v-toolbar
+        dark
+        flat
+        color="transparent"
+      >
+        <v-toolbar-title>{{ $tc('save.name', 2) }}</v-toolbar-title>
+        <v-spacer />
+        <v-btn
+          flat
+          @click="showCopyFromDialog"
+        >
+          <v-icon left>input</v-icon>
+          {{ $t('save.copyFrom.title') }}
+        </v-btn>
+        <v-btn
+          flat
+          @click="doImport"
+        >
+          <v-icon left>move_to_inbox</v-icon>
+          {{ $t('save.import') }}
+        </v-btn>
+      </v-toolbar>
+      <v-flex
+        d-flex
+        xs12
+        style="padding-right: 5px;"
+      >
+        <v-list
+          class="list"
+          style="overflow-y: auto; background: transparent;"
+        >
+          <hint
+            v-if="saves.length === 0"
+            style="flex-grow: 1"
+            icon="map"
+            :text="$t('save.hint')"
+          />
+          <transition-group
+            tag="div"
+            name="transition-list"
+          >
+            <save-view-page-preview-card
+              v-for="(s, index) of saves"
+              :key="index"
+              :source="s"
+              :delete-save="startDelete"
+              :export-save="doExport"
+              @dragstart="dragging=true"
+              @dragend="dragging=false"
+            />
+          </transition-group>
+        </v-list>
+      </v-flex>
     </v-layout>
     <save-view-page-copy-from-dialog v-model="isCopyFromDialogShown" />
-    <save-view-page-copy-to-dialog :value="copying" :operate="doCopy" :cancel="cancelCopy" :instances="instances" />
-    <save-view-page-delete-dialog :value="deleting" :operate="doDelete" :cancel="cancelDelete" />
+    <save-view-page-copy-to-dialog
+      :value="copying"
+      :operate="doCopy"
+      :cancel="cancelCopy"
+      :instances="instances"
+    />
+    <save-view-page-delete-dialog
+      :value="deleting"
+      :operate="doDelete"
+      :cancel="cancelDelete"
+    />
+    <save-view-page-float-button
+      :visible="dragging"
+      @drop="deleting = $event.dataTransfer.getData('id')"
+    />
   </v-container>
 </template>
 
@@ -51,6 +96,7 @@ import SaveViewPageCopyFromDialog from './SaveViewPageCopyFromDialog.vue';
 import SaveViewPageCopyToDialog from './SaveViewPageCopyToDialog.vue';
 import SaveViewPageDeleteDialog from './SaveViewPageDeleteDialog.vue';
 import SaveViewPagePreviewCard from './SaveViewPagePreviewCard.vue';
+import SaveViewPageFloatButton from './SaveViewPageFloatButton.vue';
 
 export default defineComponent({
   components: {
@@ -58,6 +104,7 @@ export default defineComponent({
     SaveViewPageCopyToDialog,
     SaveViewPageCopyFromDialog,
     SaveViewPagePreviewCard,
+    SaveViewPageFloatButton,
   },
   setup() {
     const { saves, deleteSave, importSave, exportSave, cloneSave: copySave } = useInstanceSaves();
@@ -78,6 +125,7 @@ export default defineComponent({
     } = useOperation<string, string[]>('', (save, instances) => {
       copySave({ saveName: save, destInstancePath: instances });
     });
+    const dragging = ref(false);
     const { onDrop } = useDrop((file) => importSave({ source: file.path }));
     const isCopyFromDialogShown = ref(false);
     return {
@@ -99,6 +147,8 @@ export default defineComponent({
       doCopy,
       cancelCopy,
 
+      dragging,
+
       async doImport() {
         const { filePaths } = await showOpenDialog({
           title: $t('save.importTitle'),
@@ -114,12 +164,12 @@ export default defineComponent({
           title: $t('save.exportTitle'),
           message: $t('save.exportMessage'),
           filters: [{ extensions: ['zip'], name: 'zip' }],
+          defaultPath: `${name}.zip`,
         });
         if (filePath) {
           exportSave({ destination: filePath, zip: true, saveName: name });
         }
       },
-
     };
   },
 });

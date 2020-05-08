@@ -31,6 +31,7 @@ declare module './root' {
         root: string;
         online: boolean;
         platform: NodeJS.Platform;
+        launcherVersion: string;
         semaphore: {
             [id: string]: number;
         };
@@ -40,13 +41,9 @@ declare module './root' {
     interface BaseMutations {
         root: string;
         online: boolean;
+        launcherVersion: string;
         platform: NodeJS.Platform;
         aquire: Semaphore | Semaphore[];
         release: Semaphore | Semaphore[];
-    }
-    interface BaseActions {
-        quit: () => void;
-        showItemInFolder: (item: string) => void;
-        openItem: (item: string) => void;
     }
 }

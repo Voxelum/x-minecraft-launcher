@@ -28,11 +28,6 @@ interface Getters {
     gameProfile: GameProfileAndTexture;
 
     /**
-     * All avaiable game profiles for user
-     */
-    gameProfiles: UserGameProfile[];
-
-    /**
      * Does user access token existed or valid? Does user logined? This include the case that user logins as offline mode.
      */
     accessTokenValid: boolean;
@@ -58,7 +53,7 @@ interface Mutations {
 
     gameProfile: { userId: string; profile: (GameProfileAndTexture | GameProfile) };
     userProfileAdd: Omit<UserProfile, 'profiles'> & { id: string; profiles: (GameProfileAndTexture | GameProfile)[] };
-    userProfileUpdate: { id: string; accessToken: string; profiles: (GameProfileAndTexture | GameProfile)[] };
+    userProfileUpdate: { id: string; accessToken: string; profiles: (GameProfileAndTexture | GameProfile)[]; selectedProfile?: string };
     userProfileRemove: string;
 
     userGameProfileSelect: { userId: string; profileId: string };
@@ -125,10 +120,6 @@ const mod: UserModule = {
         mojangSecurity: false,
     },
     getters: {
-        gameProfiles: state => Object.entries(state.users)
-            .map(([userId, user]) => Object.values(user.profiles)
-                .map((profile) => ({ ...profile, userId, authService: user.authService, profileService: user.profileService, username: user.username, accessToken: user.accessToken })))
-            .reduce((a, b) => [...a, ...b], []),
         user: state => state.users[state.selectedUser.id] || EMPTY_USER,
         gameProfile: (state, getters) => getters.user.profiles[state.selectedUser.profile] || EMPTY_GAME_PROFILE,
 
@@ -206,6 +197,7 @@ const mod: UserModule = {
                 profiles: profile.profiles
                     .map(p => ({ ...p, textures: { SKIN: { url: '' } } }))
                     .reduce(toObjectReducer<GameProfileAndTexture, 'id'>('id'), {}),
+                selectedProfile: profile.selectedProfile,
             };
             state.users[profile.id] = value;
 
@@ -228,6 +220,9 @@ const mod: UserModule = {
                     };
                 }
             });
+            if (profile.selectedProfile !== undefined) {
+                user.selectedProfile = profile.selectedProfile;
+            }
         },
         userGameProfileSelect(state, { userId, profileId }) {
             state.selectedUser.id = userId;
