@@ -43,6 +43,9 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 12
+    - name: npm install
+      run: |
+        npm install @actions/core
     - name: download artifact
       uses: actions/download-artifact@v2
       with:
