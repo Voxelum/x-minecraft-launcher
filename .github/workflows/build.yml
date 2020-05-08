@@ -51,11 +51,11 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ prepare_release.tag }}
-        release_name: ${{ prepare_release.release }}
-        draft: ${{ prepare_release.draft }}
-        prerelease: ${{ prepare_release.prerelease }}
-        body: ${{ prepare_release.body }}
+        tag_name: ${{ steps.prepare_release.tag }}
+        release_name: ${{ steps.prepare_release.release }}
+        draft: ${{ steps.prepare_release.draft }}
+        prerelease: ${{ steps.prepare_release.prerelease }}
+        body: ${{ steps.prepare_release.body }}
     - name: Upload Assets to Release
       uses: ci010/upload-release-asset@master
       env:
