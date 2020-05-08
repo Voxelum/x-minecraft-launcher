@@ -4,11 +4,7 @@ on:
   push:
     branches:
       - dev
-  # pull_request:
-  #   type: [closed]
-  #   branches:
-  #     - master
-    
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -37,6 +33,8 @@ jobs:
         path: build/*.*
 
   release:
+    # if: {{ startsWith(github.event.push.commits[0].message, 'chore(release): version ') }}
+    # if: github.event.pull_request.merged && github.head_ref == 'prepare-release' && github.event.pull_request.user.login == 'github-actions[bot]'
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -44,13 +42,24 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: build
+    - name: Prepare Release
+      id: prepare_release
+      uses: ./.github/actions/prepare-release
     - name: Draft Release
       id: create_release
       uses: actions/create-release@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: true
+        tag_name: ${{ prepare_release.tag }}
+        release_name: ${{ prepare_release.release }}
+        draft: ${{ prepare_release.draft }}
+        prerelease: ${{ prepare_release.prerelease }}
+        body: ${{ prepare_release.body }}
+    - name: Upload Assets to Release
+        uses: ci010/upload-release-asset@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./build
