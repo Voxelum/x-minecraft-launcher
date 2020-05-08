@@ -1,5 +1,5 @@
-name: Prepare
-description: Prepare Pull Request for the current change
+name: Prepare Release
+description: Prepare Release for the current change
 outputs:
   body:
     description: The release body
