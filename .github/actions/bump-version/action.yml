@@ -1,0 +1,11 @@
+name: Prepare PR
+description: Prepare Pull Request for the current change
+outputs:
+  release:
+    description: Does this patch contains a release
+  version:
+    description: The new version
+runs:
+  using: 'node12'
+  main: index.js
+  

@@ -1,0 +1,87 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 12
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    - name: Get npm cache directory
+      id: npm-cache
+      run: |
+        echo "::set-output name=dir::$(npm config get cache)"
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.npm-cache.outputs.dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Install
+      run: |
+        npm ci
+    - name: Build
+      run: |
+        npm run build
+        npx electron-builder --publish=never
+    - name: Upload Build
+      uses: actions/upload-artifact@v2
+      with:
+        name: build
+        path: build/*.*
+
+  release:
+    if: startsWith(github.event.commits[0].message, 'chore(release)')
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 12
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    - uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Install
+      run: |
+        npm ci
+    - name: Download Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: build
+        path: build
+    - name: Prepare Release
+      id: prepare_release
+      uses: ./.github/actions/prepare-release
+    - name: Draft Release
+      id: create_release
+      uses: actions/create-release@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.prepare_release.outputs.tag }}
+        release_name: ${{ steps.prepare_release.outputs.release }}
+        draft: ${{ steps.prepare_release.outputs.draft }}
+        prerelease: ${{ steps.prepare_release.outputs.prerelease }}
+        body: ${{ steps.prepare_release.outputs.body }}
+    - name: Upload Assets to Release
+      uses: ci010/upload-release-asset@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_dir_path: ./build

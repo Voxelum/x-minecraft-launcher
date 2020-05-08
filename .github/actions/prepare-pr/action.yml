@@ -1,0 +1,13 @@
+name: Prepare PR
+description: Prepare Pull Request for the current change
+outputs:
+  body:
+    description: The pull request body
+  title:
+    description: The pull request title
+  message:
+    description: The pull request message
+runs:
+  using: 'node12'
+  main: index.js
+  

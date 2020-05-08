@@ -1,0 +1,17 @@
+name: Prepare Release
+description: Prepare Release for the current change
+outputs:
+  body:
+    description: The release body
+  draft:
+    description: The release is draft
+  prerelease:
+    description: The release is prerelease
+  tag:
+    description: The release tag
+  release:
+    description: The release name
+runs:
+  using: 'node12'
+  main: index.js
+  

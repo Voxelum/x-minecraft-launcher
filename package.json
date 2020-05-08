@@ -26,8 +26,7 @@
         "lint": "eslint --ext .ts,.vue src",
         "lint:fix": "eslint --ext .ts,.vue --fix src",
         "test": "jest",
-        "release": "electron-builder",
-        "version": "standard-version"
+        "release": "electron-builder"
     },
     "build": {
         "productName": "voxelauncher",
@@ -36,19 +35,15 @@
             "output": "build"
         },
         "nsis": {
-            "perMachine": true
+            "perMachine": true,
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true
         },
         "publish": [
             {
                 "provider": "github",
                 "owner": "voxelum",
                 "repo": "VoxeLauncher"
-            },
-            {
-                "provider": "custom",
-                "providerName": "azure",
-                "container": "releases",
-                "account": "voxelauncher"
             }
         ],
         "files": [
@@ -140,8 +135,7 @@
         },
         "snap": {
             "publish": [
-                "github",
-                "custom"
+                "github"
             ]
         }
     },
@@ -168,7 +162,6 @@
         "iconv-lite": "^0.5.1",
         "jschardet": "^2.1.1",
         "maven-artifact-version": "0.0.1",
-        "reflect-metadata": "^0.1.13",
         "three": "^0.115.0",
         "three-orbitcontrols": "^2.110.1",
         "uuid": "^7.0.3",
@@ -177,24 +170,7 @@
         "vue-router": "^3.1.6",
         "vuetify": "^1.5.24",
         "vuex": "^3.1.2",
-        "yazl": "^2.5.1"
-    },
-    "devDependencies": {
-        "@commitlint/cli": "^8.3.5",
-        "@commitlint/config-conventional": "^8.3.4",
-        "@types/7zip-min": "^1.1.0",
-        "@types/bytebuffer": "^5.0.40",
-        "@types/fast-html-parser": "^1.0.0",
-        "@types/filenamify": "^2.0.2",
-        "@types/fs-extra": "^8.1.0",
-        "@types/jest": "^24.9.1",
-        "@types/long": "^4.0.1",
-        "@types/node": "^12.12.29",
-        "@types/uuid": "^3.4.8",
-        "@types/yazl": "^2.4.2",
-        "@typescript-eslint/eslint-plugin": "^2.22.0",
-        "@typescript-eslint/parser": "^2.22.0",
-        "@vue/devtools": "^5.3.3",
+        "yazl": "^2.5.1",
         "@xmcl/client": "2.0.5",
         "@xmcl/core": "2.2.0",
         "@xmcl/curseforge": "^0.1.1",
@@ -212,9 +188,29 @@
         "@xmcl/text-component": "2.1.1",
         "@xmcl/unzip": "1.2.0",
         "@xmcl/user": "2.1.3",
-        "@xmcl/world": "1.1.1",
+        "@xmcl/world": "1.1.1"
+    },
+    "devDependencies": {
+        "@actions/core": "^1.2.4",
+        "@commitlint/cli": "^8.3.5",
+        "@commitlint/config-conventional": "^8.3.4",
+        "@types/7zip-min": "^1.1.0",
+        "@types/bytebuffer": "^5.0.40",
+        "@types/fast-html-parser": "^1.0.0",
+        "@types/filenamify": "^2.0.2",
+        "@types/fs-extra": "^8.1.0",
+        "@types/jest": "^24.9.1",
+        "@types/long": "^4.0.1",
+        "@types/node": "^12.12.29",
+        "@types/uuid": "^3.4.8",
+        "@types/yazl": "^2.4.2",
+        "@typescript-eslint/eslint-plugin": "^2.22.0",
+        "@typescript-eslint/parser": "^2.22.0",
+        "@vue/devtools": "^5.3.3",
         "cache-loader": "^4.1.0",
         "chalk": "^2.4.2",
+        "conventional-changelog": "^3.1.18",
+        "conventional-recommended-bump": "^6.0.5",
         "copy-webpack-plugin": "^4.6.0",
         "cross-env": "^5.2.1",
         "css-loader": "^3.4.2",
@@ -238,8 +234,8 @@
         "jest": "^24.9.0",
         "mini-css-extract-plugin": "^0.8.2",
         "multispinner": "^0.2.1",
+        "semver": "^7.3.2",
         "spectron": "^5.0.0",
-        "standard-version": "^6.0.1",
         "style-loader": "^0.21.0",
         "thread-loader": "^2.1.3",
         "ts-jest": "^24.3.0",
