@@ -33,7 +33,7 @@ jobs:
         path: build/*.*
 
   release:
-    # if: {{ startsWith(github.event.push.commits[0].message, 'chore(release): version ') }}
+    # if: ${{ startsWith(github.event.push.commits[0].message, 'chore(release): version ') }}
     # if: github.event.pull_request.merged && github.head_ref == 'prepare-release' && github.event.pull_request.user.login == 'github-actions[bot]'
     runs-on: ubuntu-latest
     needs: build
