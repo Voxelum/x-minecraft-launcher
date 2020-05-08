@@ -4,6 +4,12 @@ on:
   push:
     branches: 
       - master
+    paths:
+      - 'src/**/*.ts'
+      - '.github/*'
+      - 'build/**/*'
+      - 'static/**/*'
+      - 'script/*'
 
 jobs:
   repare-release:
@@ -32,12 +38,12 @@ jobs:
       uses: ./.github/actions/bump-version
 
     - name: Prepare Pull Reuqest
-      if: ${{ steps.version.release == 'true' }}
+      if: ${{ steps.version.outputs.release == 'true' }}
       id: pr
       uses: ./.github/actions/prepare-pr
 
     - name: Create Pull Request
-      if: ${{ steps.version.release == 'true' }}
+      if: ${{ steps.version.outputs.release == 'true' }}
       uses: peter-evans/create-pull-request@v1.4.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
