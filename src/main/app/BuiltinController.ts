@@ -215,8 +215,6 @@ export default class BuiltinController extends LauncherAppController {
         this.createMainWindow();
         this.setupTray(app);
 
-        forwardEvent('task-successed', app, () => this.loggerRef);
-        forwardEvent('task-failed', app, () => this.loggerRef);
         forwardEvent('minecraft-stdout', app, () => this.loggerRef);
         forwardEvent('minecraft-stderr', app, () => this.loggerRef);
 

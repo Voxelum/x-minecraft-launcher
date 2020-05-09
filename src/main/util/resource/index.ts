@@ -1,4 +1,4 @@
-import { AnyResource } from '@universal/store/modules/resource';
+import { Resource } from '@universal/store/modules/resource';
 import { FileSystem } from '@xmcl/system';
 import { UrlWithStringQuery } from 'url';
 
@@ -6,6 +6,7 @@ export * from './decorate';
 export * from './entry';
 export * from './io';
 export * from './parse';
+export * from './deploy';
 
 export interface ResourceRegistryEntry<T> {
     type: string;
@@ -50,7 +51,7 @@ export const UNKNOWN_ENTRY: ResourceRegistryEntry<unknown> = {
     getUri: () => '',
 };
 
-export interface ResourceBuilder extends AnyResource {
+export interface ResourceBuilder extends Resource {
     icon?: Uint8Array;
 }
 
@@ -75,12 +76,12 @@ export function createResourceBuilder(source?: DomainedSourceCollection): Resour
     };
 }
 
-export function getResourceFromBuilder(builder: ResourceBuilder): AnyResource {
+export function getResourceFromBuilder(builder: ResourceBuilder): Resource {
     const res = { ...builder };
     delete res.icon;
     return res;
 }
 
-export function getBuilderFromResource(resource: AnyResource): ResourceBuilder {
+export function getBuilderFromResource(resource: Resource): ResourceBuilder {
     return { ...resource };
 }

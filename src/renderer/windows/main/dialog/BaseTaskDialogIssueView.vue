@@ -41,7 +41,13 @@
               style="margin-left: 5px; max-width: 320px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
             >{{ item.location }}</span>
             <v-spacer />
-            <v-chip style="margin-left: 10px" outline small label color="orange">{{ item.items.length }}</v-chip>
+            <v-chip
+              style="margin-left: 10px"
+              outline
+              small
+              label
+              color="orange"
+            >{{ item.items.length }}</v-chip>
           </div>
           <div v-else style="padding: 5px 0px;">
             <div style="display: flex">
@@ -56,6 +62,12 @@
             <span v-if="item.arguments.file" class="tree-minor-label">{{item.arguments.file}}</span>
             <div v-if="item.expect" class="tree-minor-label">Expect: {{ item.expect }}</div>
             <div v-if="item.actual" class="tree-minor-label">Actual: {{ item.actual }}</div>
+            <span
+              class="tree-minor-label"
+              style="margin-left: 5px; max-width: 320px; display: inline-block; overflow: hidden;"
+            >
+              {{ $t(`diagnosis.${item.id}.message`, item.arguments || {}) }}
+            </span>
           </div>
         </template>
       </v-treeview>
@@ -137,6 +149,14 @@ function useIssuesTree() {
     }
     return { name: 'version', items, location: `${state.root}/versions`, $id: $id++ };
   });
+  const mods = computed(() => {
+    let items: IssueLeaf[] = [];
+    let incompatibleMod = state.diagnose.registry.incompatibleMod;
+    if (incompatibleMod.actived.length !== 0) {
+      items.push(...collect('incompatibleMod', incompatibleMod));
+    }
+    return { name: 'mod', items, location: `${state.root}/mods`, $id: $id++ };
+  });
 
   const items = computed(() => {
     let result: IssueType[] = [];
@@ -148,6 +168,9 @@ function useIssuesTree() {
     }
     if (libraries.value.items.length) {
       result.push(libraries.value);
+    }
+    if (mods.value.items.length) {
+      result.push(mods.value);
     }
     return result;
   });

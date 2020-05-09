@@ -118,10 +118,18 @@ export default class TaskManager extends Manager {
         this.runtime.on('finish', (_, node) => {
             this.status(node.id, 'successed');
             node.status = 'successed';
+
+            if (node.id === this.active?.root.id) {
+                this.managers.appManager.updateProgress(-1);
+            }
         });
         this.runtime.on('cancel', (node) => {
             this.status(node.id, 'cancelled');
             node.status = 'cancelled';
+
+            if (node.id === this.active?.root.id) {
+                this.managers.appManager.updateProgress(-1);
+            }
         });
         this.runtime.on('fail', (error, node) => {
             this.log(`Error task ${node.path}(${node.id})`);
@@ -135,6 +143,10 @@ export default class TaskManager extends Manager {
                 errorMessage = JSON.stringify(error, null, 4);
             }
             this.update(node.id, { message: errorMessage });
+
+            if (node.id === this.active?.root.id) {
+                this.managers.appManager.updateProgress(-1);
+            }
         });
     }
 

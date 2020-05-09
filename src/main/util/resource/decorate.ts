@@ -1,4 +1,5 @@
 import { basename, extname } from 'path';
+import { unescape } from 'querystring';
 import { parse } from 'url';
 import { DomainedSourceCollection, ResourceBuilder, ResourceHost, ResourceRegistryEntry } from '.';
 
@@ -51,7 +52,7 @@ export async function decorateBuilderFromHost(builder: ResourceBuilder, resource
  * @param hash The hash of the resource
  */
 export function decorateBulderWithUrlsAndHash(builder: ResourceBuilder, urls: string[], hash: string) {
-    let base = urls[urls.length - 1];
+    let base = unescape(urls[urls.length - 1]);
     let ext = extname(base);
     builder.name = basename(base, ext);
     builder.hash = hash;

@@ -48,7 +48,11 @@ interface State {
         missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
 
         missingForge: Registry<{ forge: string; minecraft: string }>;
+        missingFabric: Registry<{ fabric: string; minecraft: string }>;
         missingLiteloader: Registry<{ liteloader: string; minecraft: string }>;
+
+        requireForge: Registry<{}, false, true>;
+        requireFabric: Registry<{}, false, true>;
 
         badInstall: Registry<{ minecraft: string; version: string; installProfile: InstallProfile }>;
 
@@ -96,6 +100,8 @@ const mod: DiagnoseModule = {
             invalidJava: { fixing: false, autofix: true, optional: false, actived: [] },
             missingJava: { fixing: false, autofix: true, optional: false, actived: [] },
 
+            missingFabric: { fixing: false, autofix: true, optional: false, actived: [] },
+
             missingForge: { fixing: false, autofix: true, optional: false, actived: [] },
             missingLiteloader: { fixing: false, autofix: true, optional: false, actived: [] },
             unknownMod: { fixing: false, autofix: false, optional: true, actived: [] },
@@ -105,6 +111,9 @@ const mod: DiagnoseModule = {
             incompatibleJava: { fixing: false, autofix: false, optional: true, actived: [] },
             missingModsOnServer: { fixing: false, autofix: false, optional: false, actived: [] },
             badInstall: { fixing: false, autofix: true, optional: false, actived: [] },
+
+            requireFabric: { fixing: false, autofix: false, optional: true, actived: [] },
+            requireForge: { fixing: false, autofix: false, optional: true, actived: [] },
         },
     },
     getters: {

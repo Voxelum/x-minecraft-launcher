@@ -1,7 +1,7 @@
 import { CURSEMETA_CACHE } from '@main/constant';
 import { checksum, copyPassively, exists, isDirectory, readdirEnsured } from '@main/util/fs';
 import { commitResourceOnDisk, createResourceBuilder, decorateBuilderFromHost, decorateBuilderFromMetadata, decorateBuilderWithPathAndHash, decorateBulderWithUrlsAndHash, discardResourceOnDisk, getResourceFromBuilder, parseResource, ResourceHost, ResourceRegistryEntry, RESOURCE_ENTRY_FABRIC, RESOURCE_ENTRY_FORGE, RESOURCE_ENTRY_LITELOADER, RESOURCE_ENTRY_MODPACK, RESOURCE_ENTRY_RESOURCE_PACK, RESOURCE_ENTRY_SAVE, ResourceBuilder, getBuilderFromResource, DomainedSourceCollection } from '@main/util/resource';
-import { AnyResource, ImportOption, ImportTypeHint, Resource, UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
+import { ImportOption, ImportTypeHint, Resource, UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
 import { ResourceSchema } from '@universal/store/modules/resource.schema';
 import { requireString } from '@universal/util/assert';
 import { Task, task } from '@xmcl/task';
@@ -66,7 +66,7 @@ export default class ResourceService extends Service {
         });
     }
 
-    protected normalizeResource(resource: string | AnyResource) {
+    protected normalizeResource(resource: string | Resource) {
         return typeof resource === 'string' ? this.getters.getResource(resource) : resource;
     }
 
@@ -105,7 +105,7 @@ export default class ResourceService extends Service {
                 .map(file => this.getPath('resources', file))
                 .map(file => this.getPersistence({ path: file, schema: ResourceSchema }))));
         }
-        const resources: AnyResource[] = [];
+        const resources: Resource[] = [];
         await Promise.all(['mods', 'resourcepacks', 'saves', 'modpacks']
             .map(async (domain) => {
                 const path = this.getPath(domain);
@@ -123,7 +123,7 @@ export default class ResourceService extends Service {
      * Force refresh a resource
      * @param res 
      */
-    async refreshResource(res: string | AnyResource) {
+    async refreshResource(res: string | Resource) {
         let resource = this.normalizeResource(res);
         if (resource === UNKNOWN_RESOURCE) return;
         try {
@@ -146,7 +146,7 @@ export default class ResourceService extends Service {
     /**
      * Touch a resource. If it's checksum not matched, it will re-import this resource.
      */
-    async touchResource(res: string | AnyResource) {
+    async touchResource(res: string | Resource) {
         let resource = this.normalizeResource(res);
 
         if (resource === UNKNOWN_RESOURCE) return;
@@ -173,7 +173,7 @@ export default class ResourceService extends Service {
      * Remove a resource from the launcher
      * @param resource 
      */
-    async removeResource(resource: string | AnyResource) {
+    async removeResource(resource: string | Resource) {
         let resourceObject = this.normalizeResource(resource);
         if (resourceObject === UNKNOWN_RESOURCE) return;
 
@@ -184,7 +184,7 @@ export default class ResourceService extends Service {
     /**
      * Rename resource, this majorly affect displayed name.
      */
-    async renameResource(option: { resource: string | AnyResource; name: string }) {
+    async renameResource(option: { resource: string | Resource; name: string }) {
         const resource = this.normalizeResource(option.resource);
         if (!resource) return;
         const builder = getBuilderFromResource(resource);
@@ -225,7 +225,7 @@ export default class ResourceService extends Service {
     /**
      * Export the resources into target directory. This will simply copy the resource out.
      */
-    async exportResource(payload: { resources: (string | AnyResource)[]; targetDirectory: string }) {
+    async exportResource(payload: { resources: (string | Resource)[]; targetDirectory: string }) {
         const { resources, targetDirectory } = payload;
 
         const promises = [];
@@ -310,7 +310,7 @@ export default class ResourceService extends Service {
 
             // use parser to parse metadata
             await context.execute(task('parsing',
-                () => this.updateBuilderMetadata(builder, data)), 1);
+                () => this.updateBuilderMetadata(builder, data, typeHint)), 1);
 
             this.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
 

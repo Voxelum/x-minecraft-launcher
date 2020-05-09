@@ -38,6 +38,7 @@ import {
   watch,
   defineComponent,
   ref,
+  provide,
   Ref,
 } from '@vue/composition-api';
 import { IpcRendererEvent } from 'electron';
@@ -50,7 +51,7 @@ import {
   useRouter,
 } from '@/hooks';
 import { provideTasks } from '@/providers/provideTasks'; 
-import { provideDialog, provideNotifier, useNotifier, provideLoginDialog, provideSearchToggle } from './hooks';
+import { provideDialog, provideNotifier, useNotifier, provideLoginDialog, provideSearchToggle, SEARCH_TEXT_SYMBOL } from './hooks';
 import LoginDialog from './dialog/BaseLoginDialog.vue';
 import TaskDialog from './dialog/BaseTaskDialog.vue';
 import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue';
@@ -62,6 +63,7 @@ export default defineComponent({
     provideNotifier();
     provideTasks();
 
+    provide(SEARCH_TEXT_SYMBOL, ref(''));
     provideSearchToggle();
 
     const ipcRenderer = useIpc();

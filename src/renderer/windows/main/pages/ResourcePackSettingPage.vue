@@ -9,7 +9,7 @@
                       :label="$t('filter')" dark hide-details />
       </v-flex>
       <v-flex d-flex xs6 style="padding-right: 5px">
-        <v-card ref="leftList" dark class="card-list">
+        <v-card ref="leftList" dark class="card-list" @drop="dragging = false">
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.unselected') }} </span> 
           </v-card-title>
@@ -23,7 +23,7 @@
             <resource-pack-card v-for="(item, index) in unselectedItems"
                                 :key="item[0].hash" 
                                 v-observe-visibility="{
-                                  callback: (v) => onItemVisibile(v, index, true),
+                                  callback: (v) => onLeftSeen(v, index),
                                   once: true,
                                 }" 
                                 :data="item[0]" 
@@ -31,13 +31,13 @@
                                 :index="item[1]" 
                                 @dragstart="dragging = true"
                                 @dragend="dragging = false" 
-                                @mouseup="draggingMod = false"
+                                @mouseup="dragging = false"
             />
           </div>
         </v-card>
       </v-flex>
       <v-flex d-flex xs6 style="padding-left: 5px">
-        <v-card ref="rightList" dark class="card-list right">
+        <v-card ref="rightList" dark class="card-list right" @drop="dragging = false">
           <v-card-title>
             <span class="text-sm-center" style="width: 100%; font-size: 16px;"> {{ $t('resourcepack.selected') }} </span> 
           </v-card-title>
@@ -51,12 +51,15 @@
             <resource-pack-card v-for="(item, index) in selectedItems" 
                                 :key="item[0].hash"
                                 v-observe-visibility="{
-                                  callback: (v) => onItemVisibile(v, index, true),
+                                  callback: (v) => onRightSeen(v, index),
                                   once: true,
                                 }" 
                                 :data="item[0]" 
                                 :is-selected="true" 
-                                :index="item[1]" />
+                                :index="item[1]" 
+                                @dragstart="dragging = true"
+                                @dragend="dragging = false" 
+                                @mouseup="dragging = false" />
           </div>
         </v-card>
       </v-flex>
@@ -71,7 +74,8 @@
         fab
         bottom
         color="red"
-        @dragover="onDragOver" @drop="onDropDelete"
+        @dragover.prevent
+        @drop="onDropDelete"
       >
         <v-icon> delete </v-icon>
       </v-btn>
@@ -112,6 +116,7 @@ import {
   useInstanceResourcePacks,
   useResourceOperation,
   useDragTransferList,
+  useProgressiveLoad,
   useDropImport,
 } from '@/hooks';
 import ResourcePackCard from './ResourcePackSettingPageCard.vue';
@@ -131,8 +136,8 @@ export default defineComponent({
       isDeletingPack: false,
       deletingPack: null as ResourcePackResource | null,
     });
-    const leftListElem = computed(() => leftList.value?.$el) as any;
-    const rightListElem = computed(() => rightList.value?.$el) as any;
+    const leftListElem = computed(() => leftList.value?.$el) as Ref<HTMLElement>;
+    const rightListElem = computed(() => rightList.value?.$el) as Ref<HTMLElement>;
     useDragTransferList(
       leftListElem,
       rightListElem,
@@ -144,6 +149,9 @@ export default defineComponent({
     useDropImport(rightListElem, 'resourcepacks');
 
     onUnmounted(commit);
+    
+    const { filter: filterLeft, onItemVisibile: onLeftSeen } = useProgressiveLoad();
+    const { filter: filterRight, onItemVisibile: onRightSeen } = useProgressiveLoad();
 
     function filterName(r: Resource<any>) {
       if (!filterText.value) return true;
@@ -152,10 +160,12 @@ export default defineComponent({
 
     const unselectedItems = computed(() => unusedPackResources.value
       .map((r, i) => [r, i] as const)
-      .filter((a) => filterName(a[0])));
+      .filter((a) => filterName(a[0]))
+      .filter(filterLeft));
     const selectedItems = computed(() => usedPackResources.value
       .map((r, i) => [r, i] as const)
-      .filter((a) => filterName(a[0])));
+      .filter((a) => filterName(a[0]))
+      .filter(filterRight));
 
     async function confirmDeletingPack() {
       data.isDeletingPack = false;
@@ -163,7 +173,7 @@ export default defineComponent({
       data.deletingPack = null;
     }
     function onDropDelete(e: DragEvent) {
-      const hash = e.dataTransfer!.getData('id');
+      const hash = e.dataTransfer!.getData('hash');
       const res = getResource(hash);
       if (res.type !== 'unknown') {
         data.isDeletingPack = true;
@@ -179,6 +189,8 @@ export default defineComponent({
       filterText,
       confirmDeletingPack,
       onDropDelete,
+      onLeftSeen,
+      onRightSeen,
     };
   },
   // async mounted() {

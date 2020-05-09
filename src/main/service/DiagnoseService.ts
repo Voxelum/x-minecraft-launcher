@@ -232,13 +232,16 @@ export default class DiagnoseService extends Service {
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
             const pattern = /^\[.+\]$/;
 
-            const tree: Pick<IssueReport, 'unknownMod' | 'incompatibleMod'> = {
+            const tree: Pick<IssueReport, 'unknownMod' | 'incompatibleMod' | 'requireForge' | 'requireFabric'> = {
                 unknownMod: [],
                 incompatibleMod: [],
+                requireForge: [],
+                requireFabric: [],
             };
-            for (const mod of resources.filter(m => !!m && m.type === 'forge')) {
-                const metadatas: Forge.ModMetaData[] = mod.metadata;
-                for (const meta of metadatas) {
+            let forgeMods = resources.filter(m => !!m && m.type === 'forge');
+            for (let mod of forgeMods) {
+                let metadatas = mod.metadata as Forge.ModMetaData[];
+                for (let meta of metadatas) {
                     let acceptVersion = meta.acceptedMinecraftVersions;
                     if (!acceptVersion) {
                         if (!meta.mcversion) {
@@ -251,12 +254,25 @@ export default class DiagnoseService extends Service {
                         tree.unknownMod.push({ name: mod.name, actual: mcversion });
                         continue;
                     }
-                    const range = VersionRange.createFromVersionSpec(acceptVersion);
+                    let range = VersionRange.createFromVersionSpec(acceptVersion);
                     if (range && !range.containsVersion(resolvedMcVersion)) {
                         tree.incompatibleMod.push({ name: mod.name, accepted: acceptVersion, actual: mcversion });
                     }
                 }
             }
+            if (forgeMods.length > 0) {
+                if (!version.forge) {
+                    tree.requireForge.push({});
+                }
+            }
+
+            let fabricMods = resources.filter(m => m.type === 'fabric');
+            if (fabricMods.length > 0) {
+                if (!version.fabricLoader || !version.yarn) {
+                    tree.requireFabric.push({});
+                }
+            }
+
             Object.assign(report, tree);
         } finally {
             this.release('diagnose');

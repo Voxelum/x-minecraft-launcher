@@ -1,4 +1,5 @@
 import { Fabric, Forge, LiteLoader } from '@xmcl/mod-parser';
+import { readIcon, readPackMeta } from '@xmcl/resourcepack';
 import { WorldReader } from '@xmcl/world';
 import { ResourceRegistryEntry } from '.';
 
@@ -84,8 +85,8 @@ export const RESOURCE_ENTRY_RESOURCE_PACK: ResourceRegistryEntry<any> = ({
     type: 'resourcepack',
     domain: 'resourcepacks',
     ext: '.zip',
-    parseIcon: async (meta, fs) => fs.readFile('icon.png'),
-    parseMetadata: fs => fs.readFile('pack.mcmeta', 'utf-8').then(JSON.parse),
+    parseIcon: async (meta, fs) => readIcon(fs),
+    parseMetadata: fs => readPackMeta(fs),
     getSuggestedName: () => '',
     getUri: (_, hash) => `resourcepack://${hash}`,
 });

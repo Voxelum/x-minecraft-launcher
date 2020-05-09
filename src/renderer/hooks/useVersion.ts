@@ -1,5 +1,5 @@
 import { Status } from '@universal/store/modules/version';
-import { isNotNull } from '@universal/util/assert';
+import { isNonnull } from '@universal/util/assert';
 import { computed, onMounted, onUnmounted, reactive, Ref, toRefs, watch } from '@vue/composition-api';
 import { Version as MinecraftVersion } from '@xmcl/installer/minecraft';
 import { useInstanceVersion } from './useInstance';
@@ -162,7 +162,7 @@ export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
     const { state } = useStore();
     const { refreshLiteloader } = useService('InstallService');
 
-    const versions = computed(() => Object.values(state.version.liteloader.versions[minecraftVersion.value] || {}).filter(isNotNull));
+    const versions = computed(() => Object.values(state.version.liteloader.versions[minecraftVersion.value] || {}).filter(isNonnull));
     const refreshing = useBusy('refreshLiteloader');
     let handle = () => { };
     onMounted(() => {

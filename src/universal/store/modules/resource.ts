@@ -1,7 +1,7 @@
 import { Modpack } from '@main/service/CurseForgeService';
 import { requireString } from '@universal/util/assert';
-import { Forge, LiteLoader } from '@xmcl/mod-parser';
-import { ResourcePack } from '@xmcl/resourcepack';
+import { Forge, LiteLoader, Fabric } from '@xmcl/mod-parser';
+import { PackMeta } from '@xmcl/resourcepack';
 import { LevelDataFrame } from '@xmcl/world';
 import Vue from 'vue';
 import { ModuleOption } from '../root';
@@ -16,7 +16,7 @@ interface State {
         modpacks: CurseforgeModpackResource[];
     };
     directory: {
-        [hash: string]: AnyResource;
+        [hash: string]: Resource;
     };
 
 }
@@ -29,18 +29,18 @@ interface Getters {
     /**
      * Get the resource by resource hash
      */
-    getResource: (hash: string) => AnyResource;
+    getResource: (hash: string) => Resource;
     /**
      * Query local resource by uri
      * @param uri The uri
      */
-    queryResource(uri: string): AnyResource;
+    queryResource(uri: string): Resource;
 }
 
 interface Mutations {
-    resource: AnyResource;
-    resources: AnyResource[];
-    resourceRemove: AnyResource;
+    resource: Resource;
+    resources: Resource[];
+    resourceRemove: Resource;
 }
 
 
@@ -62,14 +62,14 @@ export type ImportOption = {
     background?: boolean;
 }
 
-export type Resource<T> = Omit<ResourceSchema, 'metadata'> & { metadata: T };
-export type AnyResource = Resource<any>;
+export type Resource<T = unknown> = Omit<ResourceSchema, 'metadata'> & { metadata: T };
 export type ForgeResource = Resource<Forge.ModMetaData[]> & { type: 'forge' };
+export type FabricResource = Resource<Fabric.ModMetadata> & { type: 'fabric' };
 export type LiteloaderResource = Resource<LiteLoader.MetaData> & { type: 'liteloader' };
-export type ResourcePackResource = Resource<ResourcePack> & { type: 'resourcepack' };
+export type ResourcePackResource = Resource<PackMeta.Pack> & { type: 'resourcepack' };
 export type CurseforgeModpackResource = Resource<Modpack> & { type: 'curseforge-modpack' };
 export type SaveResource = Resource<LevelDataFrame> & { type: 'save' };
-export type UnknownResource = Resource<{}> & { type: 'unknown' };
+export type UnknownResource = Resource<unknown> & { type: 'unknown' };
 
 export const UNKNOWN_RESOURCE: UnknownResource = Object.freeze({
     metadata: {},

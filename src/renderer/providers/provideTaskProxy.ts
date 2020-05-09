@@ -1,7 +1,8 @@
-import { electron, TASKS_KEY, TASK_DICT_KEY, TASKS_OPS_KEY } from '@/constant';
+import { electron, TASK_PROXY } from '@/constant';
 import { TaskState } from '@universal/task';
 import { onMounted, onUnmounted, provide, reactive, Ref, ref } from '@vue/composition-api';
 import Vue from 'vue';
+import { TaskProxy } from '@/taskProxy';
 
 export function provideTasks() {
     const ipc = electron.ipcRenderer;
@@ -18,9 +19,15 @@ export function provideTasks() {
         ipc.invoke('task-request', { type: 'cancel', id });
     };
 
-    provide(TASK_DICT_KEY, idToNode);
-    provide(TASKS_KEY, tasks);
-    provide(TASKS_OPS_KEY, { pause, resume, cancel });
+    const proxy: TaskProxy = {
+        dictionary: idToNode,
+        tasks,
+        pause,
+        resume,
+        cancel,
+    };
+
+    provide(TASK_PROXY, proxy);
 
     function collectAllTaskState(tasks: TaskState[]) {
         for (const t of tasks) {
@@ -57,7 +64,7 @@ export function provideTasks() {
         }
     }
 
-    const taskUpdateHanlder = (event: Electron.IpcRenderer, { childs, statuses, adds, updates }: {
+    const taskUpdateHanlder = (event: any, { childs, statuses, adds, updates }: {
         adds: { id: string; node: TaskState }[];
         childs: { id: string; node: TaskState }[];
         updates: { [id: string]: { progress?: number; total?: number; message?: string; time?: string } };
@@ -116,4 +123,6 @@ export function provideTasks() {
     onUnmounted(() => {
         ipc.removeListener('task-update', taskUpdateHanlder);
     });
+
+    return proxy;
 }

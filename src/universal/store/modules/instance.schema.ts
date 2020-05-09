@@ -171,17 +171,10 @@ export interface DeployedInfo {
      */
     src?: string;
     /**
-     * The id listed in instance deployment
-     */
-    url: string;
-    /**
      * Deployed file relative path to the .minecraft folder
      */
     file: string;
-    /**
-     * The sha256 of the src
-     */
-    integrity: string;
+    url: string;
     /**
      * The way to resolve it. If it's false, it doesn't resolved.
      */

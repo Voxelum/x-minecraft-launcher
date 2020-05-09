@@ -1,4 +1,4 @@
-import { exists, missing, readdirEnsured } from '@main/util/fs';
+import { exists, missing, readdirEnsured, checksum } from '@main/util/fs';
 import { CreateOption, createTemplate } from '@universal/store/modules/instance';
 import { DeployedInfo, InstanceLockSchema, InstanceSchema, InstancesSchema, RuntimeVersions } from '@universal/store/modules/instance.schema';
 import { UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
@@ -8,7 +8,7 @@ import { isPrimitiveArrayEqual, assignShallow } from '@universal/util/object';
 import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/util/serverStatus';
 import { queryStatus, Status } from '@xmcl/client';
 import { readInfo, ServerInfo } from '@xmcl/server-info';
-import { lstat, readdir, readFile, readlink, remove, symlink, unlink, ensureDir } from 'fs-extra';
+import { lstat, readdir, readFile, readlink, remove, symlink, unlink, ensureDir, link, ensureFile } from 'fs-extra';
 import { join, relative, resolve } from 'path';
 import { v4 } from 'uuid';
 import CurseForgeService from './CurseForgeService';
@@ -19,6 +19,7 @@ import JavaService from './JavaService';
 import ResourceService from './ResourceService';
 import ServerStatusService from './ServerStatusService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
+import { deployByLink } from '@main/util/resource';
 
 const INSTANCES_FOLDER = 'instances';
 const INSTANCE_JSON = 'instance.json';
@@ -537,70 +538,74 @@ export class InstanceService extends Service {
      */
     async deploy(localOnly?: boolean): Promise<void> {
         const instance = this.getters.instance;
-        const alreadyDeployed = this.state.instance.deployed;
+        const deployed = this.state.instance.deployed || [];
+        this.log(`Deploy instance ${instance.path}`);
         const promises: Promise<DeployedInfo>[] = Object.values(instance.deployments).reduce((a, b) => [...a, ...b]).map(async (url) => {
-            const root = this.state.instance.path;
-            const alreadyDeployedInfo = alreadyDeployed.find(d => d.url);
-            if (alreadyDeployedInfo) {
-                if (alreadyDeployedInfo.resolved) {
-                    // if using link, validate link again
-                    if (alreadyDeployedInfo.resolved === 'link') {
-                        const destPath = join(root, alreadyDeployedInfo.file);
-                        const realPath = resolve(await readlink(destPath));
-                        if (realPath !== alreadyDeployedInfo.src!) {
-                            await symlink(alreadyDeployedInfo.src!, destPath);
+            let root = this.state.instance.path;
+
+            let resource = this.getters.queryResource(url);
+            let deployInf = deployed.find(d => d?.url === url);
+            if (deployInf) {
+                if (deployInf.resolved === 'link') {
+                    let target = join(root, deployInf.file);
+                    if (await exists(target)) {
+                        let actual = await checksum(target).catch(() => '');
+                        let expect = resource.hash;
+                        if (actual === expect) {
+                            this.log(`Resource ${url} found in lockfile and checksum matched. Skip to deploy.`);
+                            return deployInf;
                         }
+                        this.log(`Resource ${url} checksum mismatched.`);
                     }
-                    return alreadyDeployedInfo;
+                } else {
+                    this.log(`Resource ${url} found in lockfile. Skip to deploy.`);
+                    return deployInf;
                 }
             }
-            const result: DeployedInfo = {
+            let result: DeployedInfo = {
+                // url,
                 url,
                 file: '',
-                integrity: '',
                 resolved: false,
             };
-            let res = this.getters.queryResource(url);
-            if (res === UNKNOWN_RESOURCE && !localOnly) {
-                res = await this.resourceService.importResource({ uri: url, metadata: {} });
-                this.warn(`No local resource matched uri ${url}!`);
-            }
-            if (res !== UNKNOWN_RESOURCE) {
-                result.src = res.path;
-                result.integrity = res.hash;
-                if (res.domain === 'mods' || res.domain === 'resourcepacks') {
-                    const dest = join(this.state.instance.path, res.domain, res.name + res.ext);
-                    try {
-                        const stat = await lstat(dest);
-                        if (stat.isSymbolicLink()) {
-                            await unlink(dest);
-                            await symlink(res.path, dest);
-                        } else {
-                            this.pushException({ type: 'deployLinkResourceOccupied', resource: res });
-                            this.error(`Cannot deploy resource ${res.hash} -> ${dest}, since the path is occupied.`);
-                        }
-                    } catch (e) {
-                        await symlink(res.path, dest);
-                    }
-                    result.file = relative(root, dest);
+            if (resource === UNKNOWN_RESOURCE) {
+                if (!localOnly) {
+                    resource = await this.resourceService.importResource({ uri: url, metadata: {} });
+                    this.warn(`No local resource matched uri ${url}!`);
+                } else {
+                    throw new Error();
+                }
+            } else {
+                result.src = resource.path;
+                if (resource.domain === 'mods' || resource.domain === 'resourcepacks') {
+                    let targetPath = join(root, resource.domain, `${resource.name}${resource.ext}`);
+                    await ensureFile(targetPath);
+                    await remove(targetPath).catch(() => { });
+                    await link(resource.path, targetPath);
+
+                    this.log(`Link resource ${resource.path}(${url}) -> ${targetPath}.`);
+                    result.file = relative(root, targetPath);
                     result.resolved = 'link';
-                } else if (res.domain === 'saves') {
-                    const dest = await this.saveService.importSave({ source: res.path });
+                } else if (resource.domain === 'saves') {
+                    let dest = await this.saveService.importSave({ source: resource.path });
+
+                    this.log(`Unpack resource ${resource.path}(${url}) -> ${dest}.`);
                     result.file = relative(root, dest);
                     result.resolved = 'unpack';
-                } else if (res.domain === 'modpacks') { // modpack will override the profile
+                } else if (resource.domain === 'modpacks') { // modpack will override the profile
                     await this.ioService.importCurseforgeModpack({
                         instancePath: this.state.instance.path,
-                        path: res.path,
+                        path: resource.path,
                     });
+                    this.log(`Unpack resource ${resource.path}(${url}) -> ${this.state.instance.path}.`);
                     result.file = '/';
                     result.resolved = 'unpack';
                 }
             }
             return result;
         });
-        const deployed = await Promise.all(promises);
-        this.commit('instanceDeployInfo', deployed);
+        const info = await Promise.all(promises);
+        this.commit('instanceDeployInfo', info);
     }
 }
 

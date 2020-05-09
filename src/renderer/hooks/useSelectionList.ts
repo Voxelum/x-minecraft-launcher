@@ -1,4 +1,4 @@
-import { onUnmounted, Ref, ref, watch } from '@vue/composition-api';
+import { onUnmounted, Ref, ref, watch, onMounted } from '@vue/composition-api';
 import { useResourceOperation } from './useResource';
 
 export function useProgressiveLoad() {
@@ -22,7 +22,7 @@ export function useProgressiveLoad() {
  * Let a drop on the element import to resource
  */
 export function useDropImport(
-    elem: Ref<HTMLElement | null>,
+    elem: Ref<HTMLElement | null | undefined>,
     importHint?: string,
 ) {
     const { importUnknownResource } = useResourceOperation();
@@ -37,13 +37,9 @@ export function useDropImport(
             }
         }
     }
-    watch(elem, (n, o) => {
-        console.log(n);
-        if (o) {
-            o.removeEventListener('drop', onDrop);
-        }
-        if (n) {
-            n.addEventListener('drop', onDrop);
+    onMounted(() => {
+        if (elem.value) {
+            elem.value.addEventListener('drop', onDrop);
         }
     });
     onUnmounted(() => {
@@ -53,20 +49,44 @@ export function useDropImport(
     });
 }
 
-export function useDragTransferItem(elem: Ref<HTMLElement>, right: boolean, id: string, index: number) {
+/**
+ * Let a drop on the element import to resource
+ */
+export function useDropImportFile(
+    elem: Ref<HTMLElement | null>,
+    handler: (file: File) => void,
+) {
+    function onDrop(event: DragEvent) {
+        if (!event.dataTransfer) return;
+        event.preventDefault();
+        const length = event.dataTransfer.files.length;
+        if (length < 0) return;
+        console.log(`Detect drop import ${length} file(s).`);
+        for (let i = 0; i < length; ++i) {
+            handler(event.dataTransfer.files[i]);
+        }
+    }
+    onMounted(() => {
+        if (elem.value) {
+            elem.value.addEventListener('drop', onDrop);
+        }
+    });
+    onUnmounted(() => {
+        if (elem.value) {
+            elem.value.removeEventListener('drop', onDrop);
+        }
+    });
+}
+
+export function useDragTransferItem(elem: Ref<HTMLElement>, right: boolean, id: string) {
     function onDragStart(e: DragEvent) {
-        e.dataTransfer!.setData('index', `${right ? 'R' : 'L'}${index}`);
+        e.dataTransfer!.setData('side', right ? 'right' : 'left');
         e.dataTransfer!.setData('id', id);
     }
-    watch(elem, (n, o) => {
-        if (o) {
-            o.removeEventListener('dragstart', onDragStart);
-        }
-        if (n) {
-            elem.value.classList.add('draggable-card');
-            elem.value.setAttribute('draggable-index', index.toString());
-            n.addEventListener('dragstart', onDragStart);
-        }
+    onMounted(() => {
+        elem.value.classList.add('draggable-card');
+        elem.value.setAttribute('draggable-id', id);
+        elem.value.addEventListener('dragstart', onDragStart);
     });
     onUnmounted(() => {
         if (elem.value) {
@@ -78,73 +98,73 @@ export function useDragTransferItem(elem: Ref<HTMLElement>, right: boolean, id: 
 export function useDragTransferList(
     left: Ref<null | HTMLElement>,
     right: Ref<null | HTMLElement>,
-    swap: (from: number, to: number) => void,
-    add: (index: number) => void,
-    remove: (index: number) => void,
+    insert: (from: string, to: string) => void,
+    add: (id: string) => void,
+    remove: (id: string) => void,
 ) {
     function handleDrop(event: DragEvent, left: boolean) {
         event.preventDefault();
-        console.log('Drop from sele list');
         if (!event.dataTransfer) return;
-        const indexText = event.dataTransfer.getData('index');
-        if (indexText) {
-            const index = Number.parseInt(indexText.substring(1), 10);
-            const y = event.clientY;
-            if (indexText[0] === 'L') {
-                if (left) {
-                    // do nothing now...
-                } else {
-                    add(index);
-                }
-            } else if (left) {
-                remove(index);
+        let side = event.dataTransfer.getData('side');
+        let id = event.dataTransfer.getData('id');
+        if (!id || !side) return;
+        let y = event.clientY;
+        if (side === 'left') {
+            if (left) {
+                // do nothing now...
             } else {
-                const all = right.value!.getElementsByClassName('draggable-card');
-                for (let i = 0; i < all.length; ++i) {
-                    const elem = all.item(i);
-                    if (!elem) continue;
-                    const targetIndex = Number.parseInt(elem.getAttribute('draggable-index')!, 10);
-                    const rect: DOMRect = elem.getBoundingClientRect() as any;
-                    console.log(`${y} ${rect.y + rect.height}`);
-                    if (y < rect.y + rect.height) {
-                        swap(index, targetIndex);
-                        break;
-                    }
-                    if (i === all.length - 1) {
-                        swap(index, targetIndex);
-                    }
+                add(id);
+            }
+        } else if (left) {
+            remove(id);
+        } else {
+            let all = right.value!.getElementsByClassName('draggable-card');
+            for (let i = 0; i < all.length; ++i) {
+                let elem = all.item(i);
+                if (!elem) continue;
+                let targetId = elem.getAttribute('draggable-id')!;
+                let rect: DOMRect = elem.getBoundingClientRect() as any;
+                console.log(`${y} ${rect.y + rect.height}`);
+                if (y < rect.y + rect.height) {
+                    insert(id, targetId);
+                    break;
+                }
+                if (i === all.length - 1) {
+                    insert(id, targetId);
                 }
             }
         }
     }
 
     function onMouseWheel(event: Event) { event.stopPropagation(); return true; }
-    function onDragOver(event: Event) { event.preventDefault(); return false; }
+    function onDragOver(event: Event) {
+        event.preventDefault();
+        return false;
+    }
     function onDropLeft(event: DragEvent) { return handleDrop(event, true); }
     function onDropRight(event: DragEvent) { return handleDrop(event, false); }
 
-    watch(left, (n, o) => {
-        if (o) {
-            o.removeEventListener('drop', onDropLeft);
-            o.removeEventListener('dragover', onDragOver);
-            o.removeEventListener('wheel', onMouseWheel);
-        }
-        if (n) {
-            n.addEventListener('drop', onDropLeft);
-            n.addEventListener('dragover', onDragOver);
-            n.addEventListener('wheel', onMouseWheel);
-        }
+    let leftRef: any;
+    let rightRef: any;
+    onMounted(() => {
+        leftRef = left.value!;
+        rightRef = right.value!;
+        left.value!.addEventListener('drop', onDropLeft);
+        left.value!.addEventListener('dragover', onDragOver);
+        left.value!.addEventListener('wheel', onMouseWheel);
+
+        right.value!.addEventListener('drop', onDropRight);
+        right.value!.addEventListener('dragover', onDragOver);
+        right.value!.addEventListener('wheel', onMouseWheel);
     });
-    watch(right, (n, o) => {
-        if (o) {
-            o.removeEventListener('drop', onDropRight);
-            o.removeEventListener('dragover', onDragOver);
-            o.removeEventListener('wheel', onMouseWheel);
-        }
-        if (n) {
-            n.addEventListener('drop', onDropRight);
-            n.addEventListener('dragover', onDragOver);
-            n.addEventListener('wheel', onMouseWheel);
-        }
+
+    onUnmounted(() => {
+        leftRef!.removeEventListener('drop', onDropLeft);
+        leftRef!.removeEventListener('dragover', onDragOver);
+        leftRef!.removeEventListener('wheel', onMouseWheel);
+
+        rightRef!.removeEventListener('drop', onDropRight);
+        rightRef!.removeEventListener('dragover', onDragOver);
+        rightRef!.removeEventListener('wheel', onMouseWheel);
     });
 }

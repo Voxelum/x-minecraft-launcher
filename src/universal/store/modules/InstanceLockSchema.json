@@ -26,16 +26,11 @@
                     "description": "If this is deployed by link, it will be a file path to the source.",
                     "type": "string"
                 },
-                "url": {
-                    "description": "The id listed in instance deployment",
-                    "type": "string"
-                },
                 "file": {
                     "description": "Deployed file relative path to the .minecraft folder",
                     "type": "string"
                 },
-                "integrity": {
-                    "description": "The sha256 of the src",
+                "url": {
                     "type": "string"
                 },
                 "resolved": {
@@ -49,7 +44,6 @@
             },
             "required": [
                 "file",
-                "integrity",
                 "resolved",
                 "url"
             ]

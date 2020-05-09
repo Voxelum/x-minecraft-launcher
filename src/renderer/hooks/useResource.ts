@@ -41,13 +41,14 @@ function getResourcepackFormat(meta: any) {
 }
 
 export function useResourcePackResource(resource: ResourcePackResource) {
-    const { getters } = useStore();
+    const { getters, state } = useStore();
     const metadata = computed(() => resource.metadata);
-    console.log(resource);
-    const icon = computed(() => resource.metadata.icon || unknownPack);
+
+    const icon = `${state.root}/${resource.domain}/${resource.name}.${resource.hash.slice(0, 6)}.png`;
     const acceptedRange = computed(() => getters.getAcceptMinecraftRangeByFormat(getResourcepackFormat(resource.metadata)));
 
     return {
+        name: resource.name,
         metadata,
         icon,
         acceptedRange,

@@ -73,7 +73,7 @@ interface Getters {
     /**
      * The selected instance mapped resources to deploy.
      */
-    instanceResources: Resource<any>[];
+    instanceResources: Resource[];
     /**
      * The selected instance mapped minecraft server protocol version.
      * This is determined by the minecraft version of it.

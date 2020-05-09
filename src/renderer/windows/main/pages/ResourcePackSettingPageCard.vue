@@ -14,20 +14,20 @@
               @mouseleave="dragged=false">
         <v-layout justify-center align-center fill-height>
           <v-flex xs6 style="padding: 0;">
-            <v-img ref="iconImage" style="user-drag: none; user-select: none; height: 125px;" :src="metadata.icon" contain />
+            <v-img ref="iconImage" style="user-drag: none; user-select: none; height: 125px;" :src="icon" contain />
           </v-flex>
           <v-flex xs6 style="padding-top: 10px;">
-            <text-component style="white-space: normal; word-break: break-word;" :source="metadata.packName"
+            <text-component style="white-space: normal; word-break: break-word;" :source="name"
                             class="title" />
             <text-component style="white-space: normal; word-break: break-word;" :source="metadata.description" />
           </v-flex>
         </v-layout>
       </v-card>
     </template>
-    {{ compatible ? $t('resourcepack.compatible', { format: metadata.format, version: mcversion }) : $t('resourcepack.incompatible', {
+    {{ compatible ? $t('resourcepack.compatible', { format: metadata.pack_format, version: mcversion }) : $t('resourcepack.incompatible', {
       accept: acceptedRange,
       actual: mcversion,
-      format: metadata.format
+      format: metadata.pack_format
     }) }}
     <v-divider />
   </v-tooltip>
@@ -58,7 +58,7 @@ export default defineComponent({
       dragged: false,
     });
     const iconImage: Ref<any> = ref(null);
-    const { metadata, icon, acceptedRange } = useResourcePackResource(props.data as ResourcePackResource);
+    const { metadata, icon, acceptedRange, name } = useResourcePackResource(props.data as ResourcePackResource);
     const { minecraft } = useInstanceVersionBase();
     const { compatible } = useCompatible(acceptedRange, minecraft);
     function onDragStart(e: DragEvent) {
@@ -81,6 +81,7 @@ export default defineComponent({
       iconImage,
       onDragStart,
       onDragEnd,
+      name,
       mcversion: minecraft,
     };
   },

@@ -1,14 +1,16 @@
-import { computed, onMounted, reactive, ref, Ref, toRefs, onUnmounted } from '@vue/composition-api';
-import { Frame as GameSetting } from '@xmcl/gamesetting';
+import unknownPack from '@/assets/unknown_pack.png';
 import { CreateOption, InstanceConfig } from '@universal/store/modules/instance';
-import { Resource } from '@universal/store/modules/resource';
+import { FabricResource, ForgeResource, LiteloaderResource, Resource } from '@universal/store/modules/resource';
+import { isNonnull } from '@universal/util/assert';
 import { getExpectVersion } from '@universal/util/version';
+import { computed, onMounted, onUnmounted, reactive, ref, Ref, toRefs } from '@vue/composition-api';
+import { Frame as GameSetting } from '@xmcl/gamesetting';
 import Vue from 'vue';
-import { useStore } from './useStore';
 import { useBusy } from './useSemaphore';
+import { useService, useServiceOnly } from './useService';
+import { useStore } from './useStore';
 import { useCurrentUser } from './useUser';
 import { useMinecraftVersions } from './useVersion';
-import { useServiceOnly, useService } from './useService';
 
 /**
  * Use the general info of the instance
@@ -286,6 +288,45 @@ export function useInstanceVersion() {
 }
 
 /**
+ * Contains some basic info of mod to display in UI.
+ */
+export interface ModItem {
+    /**
+     * Path on disk
+     */
+    path: string;
+    /**
+     * The identity of the mod
+     */
+    id: string;
+    /**
+     * Mod display name
+     */
+    name: string;
+    /**
+     * Mod version
+     */
+    version: string;
+    description: string;
+    /**
+     * Mod icon url
+     */
+    icon: string;
+    acceptMinecraft: string;
+    /**
+     * The backing resource
+     */
+    resource?: Resource;
+
+    /**
+     * The universal location of the mod
+     */
+    url: string;
+
+    type: 'fabric' | 'forge' | 'liteloader' | 'unknown';
+}
+
+/**
  * Open read/write for current instance mods
  */
 export function useInstanceMods() {
@@ -293,41 +334,93 @@ export function useInstanceMods() {
     const { editInstance } = useService('InstanceService');
 
     const data = reactive({
-        mods: [] as string[],
+        mods: [] as ModItem[],
     });
+
+    function filterModResource(resource: Resource): resource is ForgeResource | FabricResource | LiteloaderResource {
+        return resource.type === 'forge' || resource.type === 'fabric' || resource.type === 'liteloader';
+    }
+
+    function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource): ModItem {
+        if (resource.type === 'forge') {
+            let meta = resource.metadata[0];
+            let acceptMinecraft = `[${meta.version}]`;
+            if (meta.acceptedMinecraftVersions) {
+                acceptMinecraft = meta.acceptedMinecraftVersions;
+            } else if (meta.loaderVersion) {
+                acceptMinecraft = meta.loaderVersion;
+            }
+            return {
+                path: resource.path,
+                id: meta.modid,
+                name: meta.displayName ?? meta.name ?? meta.modid,
+                version: meta.version,
+                description: meta.description ?? '',
+                icon: unknownPack,
+                acceptMinecraft,
+                type: 'forge',
+                url: resource.source.uri[0],
+                resource,
+            };
+        }
+        if (resource.type === 'fabric') {
+            return {
+                path: resource.path,
+                id: resource.metadata.id,
+                version: resource.metadata.version,
+                name: resource.metadata.name ?? resource.metadata.id,
+                description: resource.metadata.description ?? '',
+                icon: '',
+                acceptMinecraft: '[*]',
+                type: 'fabric',
+                url: resource.source.uri[0],
+                resource,
+            };
+        }
+        return {
+            path: resource.path,
+            id: resource.metadata.name,
+            name: resource.metadata.name,
+            version: resource.metadata.version ?? '',
+            description: resource.metadata.description ?? '',
+            icon: '',
+            acceptMinecraft: `[${resource.metadata.mcversion}]`,
+            type: 'liteloader',
+            url: resource.source.uri[0],
+            resource,
+        };
+    }
+
+    function getModItemFromResource(resource: Resource) {
+        if (filterModResource(resource)) {
+            return getModItemFromModResource(resource);
+        }
+        return undefined;
+    }
+
     /**
      * Unused mod resources
      */
-    const unusedModResources = computed(() => state.resource.domains.mods
-        .filter(r => r.source.uri.every(i => data.mods.indexOf(i) === -1)));
-    /**
-     * Used mod resources
-     */
-    const usedModResources = computed(() => data.mods.map(i => state.resource.directory[i]));
-
-    /**
-     * Add a new mod resource to the used list
-     */
-    function add(res: Resource<any>) {
-        data.mods.push(res.source.uri[0]);
-    }
-
-    /**
-     * Remove a mod resource from used list
-     */
-    function remove(index: number) {
-        Vue.delete(data.mods, index);
-    }
+    const unusedMods = computed(
+        () => state.resource.domains.mods
+            .map(getModItemFromResource)
+            .filter(isNonnull)
+            .filter(mod => !data.mods.find(m => m.url === mod.url)),
+    );
 
     /**
      * Commit the change for current mods setting
      */
     function commit() {
-        editInstance({ deployments: { mods: data.mods } });
+        editInstance({ deployments: { mods: data.mods.map(m => m.url) } });
     }
 
     onMounted(() => {
-        data.mods = [...getters.instance.deployments.mods];
+        data.mods = [
+            ...getters.instance.deployments.mods.map(i => state.resource.directory[i])
+                .map(getModItemFromResource)
+                .filter(isNonnull),
+        ];
     });
 
     onUnmounted(() => {
@@ -335,10 +428,8 @@ export function useInstanceMods() {
     });
 
     return {
-        unusedModResources,
-        usedModResources,
-        add,
-        remove,
+        ...toRefs(data),
+        unusedMods,
         commit,
     };
 }
