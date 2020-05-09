@@ -114,8 +114,7 @@
 </template>
 
 <script lang=ts>
-import Vue from 'vue';
-import { defineComponent, reactive, toRefs, onMounted, watch } from '@vue/composition-api';
+import { defineComponent, reactive, toRefs, onMounted, watch, nextTick } from '@/vue';
 import { useStore, useI18n } from '@/hooks';
 
 const HTTP_EXP = /(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
@@ -216,7 +215,7 @@ export default defineComponent({
 
         data.name = props.modify;
 
-        Vue.nextTick().then(() => {
+        nextTick().then(() => {
           data.step = 2;
         });
       } else {
@@ -235,7 +234,7 @@ export default defineComponent({
           profileByName: '',
           texture: '',
         };
-        Vue.nextTick().then(() => {
+        nextTick().then(() => {
           data.step = 1;
         });
       }

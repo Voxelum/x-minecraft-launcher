@@ -1,3 +1,4 @@
+import '@/assets/google.font.css';
 import locales from '@/assets/locales';
 import { I18N_KEY, ROUTER_KEY } from '@/constant';
 import provideElectron from '@/providers/provideElectron';
@@ -6,23 +7,26 @@ import provideVueI18n from '@/providers/provideVueI18n';
 import provideVuexStore from '@/providers/provideVuexStore';
 import SkinView from '@/skin/SkinView.vue';
 import TextComponent from '@/TextComponent';
-import Vuetify from 'vuetify';
-import colors from 'vuetify/es5/util/colors';
-import 'vuetify/dist/vuetify.css';
-import '@/assets/google.font.css';
-
-import Vue, { VueConstructor as App } from 'vue';
-import VueCompositionApi, { createElement as h, provide } from '@vue/composition-api';
+import Vue from 'vue';
+import { h, provide, App, createApp } from '@/vue';
+import VueI18n from 'vue-i18n';
 import VueObserveVisibility from 'vue-observe-visibility';
 import VueParticles from 'vue-particles';
 import Router from 'vue-router';
+import Vuetify from 'vuetify';
+import 'vuetify/dist/vuetify.css';
+import colors from 'vuetify/es5/util/colors';
+import Vuex from 'vuex';
 import components from './components';
-import MainWindow from './MainWindow.vue';
 import CurseforgeIcon from './components/CurseforgeIcon.vue';
+import MainWindow from './MainWindow.vue';
 import router from './router';
+
 
 function configApp(app: App) {
     app.config.productionTip = false;
+    app.use(VueI18n);
+    app.use(Vuex);
     app.use(Vuetify, {
         icons: {
             curseforge: {
@@ -36,7 +40,6 @@ function configApp(app: App) {
         },
     });
     app.use(Router);
-    app.use(VueCompositionApi);
     app.use(VueObserveVisibility);
     app.use(VueParticles);
     app.component('text-component', TextComponent);
@@ -47,7 +50,7 @@ function configApp(app: App) {
 }
 function startApp() {
     const i18n = provideVueI18n('en', locales);
-    const app = new Vue({
+    const app = createApp({
         router,
         i18n,
         setup() {

@@ -103,7 +103,6 @@
 </template>
 
 <script lang=ts>
-import Vue from 'vue';
 import { defineComponent, reactive, toRefs, computed, ref, Ref, watch } from '@vue/composition-api';
 import { ForgeResource, LiteloaderResource } from '@universal/store/modules/resource';
 import {

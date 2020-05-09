@@ -1,9 +1,6 @@
-import Vue from 'vue';
-import Vuex, { StoreOptions } from 'vuex';
+import { StoreOptions } from 'vuex';
 import modules from './modules';
 import { BaseState } from './root';
-
-Vue.use(Vuex);
 
 export default {
     state: {

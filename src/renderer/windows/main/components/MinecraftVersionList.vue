@@ -31,7 +31,6 @@
 <script lang=ts>
 import { defineComponent, ref, Ref } from '@vue/composition-api';
 import VirtualList from 'vue-virtual-scroll-list';
-import Vue from 'vue';
 import { Version } from '@xmcl/installer/minecraft';
 import { useScrollToOnMount } from '@/hooks';
 

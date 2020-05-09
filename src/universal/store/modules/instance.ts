@@ -1,12 +1,12 @@
 import { Status as ServerStatus } from '@xmcl/client';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { ServerInfo } from '@xmcl/server-info';
-import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { DeployedInfo, InstanceLockSchema, InstanceSchema } from './instance.schema';
 import { Java } from './java';
 import { Resource } from './resource';
 import { LocalVersion } from './version';
+import { set, remove } from '@universal/util/middleware';
 
 export type CreateOption = DeepPartial<Omit<InstanceSchema, 'id' | 'lastAccessDate' | 'creationDate'>>;
 export interface SaveMetadata {
@@ -220,8 +220,10 @@ const mod: InstanceModule = {
                 if (!instance.deployments.resourcepacks) {
                     instance.deployments.resourcepacks = [];
                 }
-                Vue.set(state.all, instance.path, instance);
                 state.all[instance.path] = { ...instance, serverStatus: undefined };
+
+                // TODO: remove in vue3
+                set(state.all, instance.path);
             }
         },
         instanceJava(state, jPath) {
@@ -231,7 +233,8 @@ const mod: InstanceModule = {
             state.deployed = info;
         },
         instanceRemove(state, id) {
-            Vue.delete(state.all, id);
+            // TODO: remove in vue3
+            remove(state.all, id);
             delete state.all[id];
         },
         instanceSelect(state, id) {
@@ -310,10 +313,10 @@ const mod: InstanceModule = {
                 for (const key of Object.keys(settings.deployments)) {
                     const dep = settings.deployments[key];
                     if (!dep) continue;
+                    inst.deployments[key] = dep;
+                    // TODO: remove in vue3
                     if (!inst.deployments[key]) {
-                        Vue.set(inst.deployments, key, dep);
-                    } else {
-                        inst.deployments[key] = dep;
+                        set(state.all, key);
                     }
                 }
             }
@@ -352,20 +355,21 @@ const mod: InstanceModule = {
             }
         },
         instanceGameSettings(state, settings) {
-            let container = state.settings;
+            let container = state.settings as Record<string, any>;
             if (settings.resourcePacks && settings.resourcePacks instanceof Array) {
                 container.resourcePacks = [...settings.resourcePacks];
             }
             for (let [key, value] of Object.entries(settings)) {
-                container[key] = value;
                 if (key in container) {
                     if (typeof value === typeof Reflect.get(container, key)) {
-                        Vue.set(container, key, value);
                         container[key] = value;
+                        // TODO: remove in vue3
+                        set(container, key);
                     }
                 } else {
-                    Vue.set(container, key, value);
                     container[key] = value;
+                    // TODO: remove in vue3
+                    set(container, key);
                 }
             }
         },

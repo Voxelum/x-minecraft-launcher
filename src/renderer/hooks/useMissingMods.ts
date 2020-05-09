@@ -1,7 +1,7 @@
-import { computed, Ref, ref } from '@vue/composition-api';
+import { computed, Ref, ref, nextTick } from '@/vue';
 import { Forge } from '@xmcl/mod-parser';
-import Vue from 'vue';
 import { useStore } from './useStore';
+import { useService } from './useService';
 
 export type ModStatus = 'existed' | 'absent' | 'founded' | 'not-found' | 'loading' | 'downloading' | 'unknown';
 
@@ -14,7 +14,8 @@ interface MissingMod {
 }
 
 export function useMissingMods(modList: Ref<{ modid: string; version: string }[]>) {
-    const { services, getters } = useStore();
+    const { getters } = useStore();
+    // const { } = useService('CurseForgeService');
     const items: Ref<MissingMod[]> = computed(() => (modList.value.map(i => ({ ...i, status: 'unknown', task: '' })))) as any;
     const activated = computed(() => items.value.some(i => i.status === 'founded'));
     const downloading = computed(() => items.value.some(i => i.status === 'downloading'));
@@ -30,13 +31,13 @@ export function useMissingMods(modList: Ref<{ modid: string; version: string }[]
             if (!resource) {
                 unchecked.push(m);
             }
-            await Vue.nextTick();
+            await nextTick();
         }
 
         for (const m of unchecked) {
             m.status = 'loading';
             try {
-                m.info = await services.CurseForgeService.fetchMetadataByModId(m);
+                // m.info = await services.CurseForgeService.fetchMetadataByModId(m);
                 m.status = 'founded';
             } catch (e) {
                 m.status = 'not-found';
@@ -48,7 +49,7 @@ export function useMissingMods(modList: Ref<{ modid: string; version: string }[]
 
     async function downloadAllAvailable() {
         for (const m of items.value.filter(i => i.status === 'founded')) {
-            await services.CurseForgeService.fetchMetadataByModId(m);
+            // await services.CurseForgeService.fetchMetadataByModId(m);
         }
     }
 

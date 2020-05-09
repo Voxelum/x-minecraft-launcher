@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import { defineComponent, createElement as h } from '@vue/composition-api';
 
 const files = require.context('.', false, /\.vue$/);
@@ -23,11 +22,11 @@ const components = files.keys().map((key) => {
     }
 
     const comp = files(key).default;
-    Vue.component(realName, comp);
-    return comp;
-});
+    return { [realName]: comp };
+}).reduce((obj, v) => Object.assign(obj, v), {});
 
 export default defineComponent({
+    components,
     setup() {
         return () => h('div', { staticStyle: { 'z-index': 10 } }, components.map(c => h(c)));
     },

@@ -1,7 +1,6 @@
 import { electron, TASK_PROXY } from '@/constant';
 import { TaskState } from '@universal/task';
-import { onMounted, onUnmounted, provide, reactive, Ref, ref } from '@vue/composition-api';
-import Vue from 'vue';
+import { onMounted, onUnmounted, provide, reactive, Ref, ref, set } from '@vue/composition-api';
 import { TaskProxy } from '@/taskProxy';
 
 export function provideTasks() {
@@ -59,7 +58,7 @@ export function provideTasks() {
                 let parentTask = idToNode[parent];
                 let oneDeferred = deferrendTasks.pop();
                 let index = parentTask.children.findIndex(t => t.id === oldTask.id);
-                Vue.set(parentTask.children, index, oneDeferred);
+                set(parentTask.children, index, oneDeferred);
             }
         }
     }

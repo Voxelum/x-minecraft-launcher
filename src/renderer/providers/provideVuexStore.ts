@@ -1,6 +1,5 @@
-import { provide } from '@vue/composition-api';
+import { provide, set } from '@vue/composition-api';
 import storeOption from '@universal/store';
-import Vue from 'vue';
 import Vuex, { Store, MutationPayload } from 'vuex';
 import { ipcRenderer, STORE_KEY } from '../constant';
 
@@ -28,7 +27,7 @@ export default function provideVuexStore(...modules: string[]) {
             if (k in state) {
                 (state as any)[k] = payload[k];
             } else {
-                Vue.set(state, k, payload[k]);
+                set(state, k, payload[k]);
             }
         }
     };

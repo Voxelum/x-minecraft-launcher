@@ -50,7 +50,7 @@ import {
   useI18n,
   useRouter,
 } from '@/hooks';
-import { provideTasks } from '@/providers/provideTasks'; 
+import { provideTasks } from '@/providers/provideTaskProxy'; 
 import { provideDialog, provideNotifier, useNotifier, provideLoginDialog, provideSearchToggle, SEARCH_TEXT_SYMBOL } from './hooks';
 import LoginDialog from './dialog/BaseLoginDialog.vue';
 import TaskDialog from './dialog/BaseTaskDialog.vue';

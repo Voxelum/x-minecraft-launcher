@@ -1,7 +1,7 @@
-import Vue from 'vue';
 import { requireObject, requireString } from '@universal/util/assert';
 import { ModuleOption } from '../root';
 import { Java } from './java.schema';
+import { remove } from '@universal/util/middleware';
 
 type State = {
     all: JavaState[];
@@ -77,7 +77,11 @@ const mod: JavaModule = {
             for (let i = 0; i < state.all.length; i++) {
                 const j = state.all[i];
                 if (j.path === java.path && j.version === java.version) {
-                    Vue.delete(state.all, i);
+                    state.all.splice(i, 1);
+
+                    // TODO: remove in vue3
+                    remove(state.all, i);
+
                     if (state.all.length === 0) state.default = 0;
                     return;
                 }

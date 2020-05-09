@@ -48,7 +48,6 @@
 </template>
 
 <script lang=ts>
-import Vue from 'vue';
 import { defineComponent, ref, Ref, computed } from '@vue/composition-api';
 import { useInstanceVersionBase, useDragTransferItem, useCompatible, useService, ModItem } from '@/hooks';
 

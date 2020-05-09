@@ -3,9 +3,8 @@ import { CreateOption, InstanceConfig } from '@universal/store/modules/instance'
 import { FabricResource, ForgeResource, LiteloaderResource, Resource } from '@universal/store/modules/resource';
 import { isNonnull } from '@universal/util/assert';
 import { getExpectVersion } from '@universal/util/version';
-import { computed, onMounted, onUnmounted, reactive, ref, Ref, toRefs } from '@vue/composition-api';
+import { computed, onMounted, onUnmounted, reactive, ref, Ref, toRefs, remove as $remove } from '@/vue';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
-import Vue from 'vue';
 import { useBusy } from './useSemaphore';
 import { useService, useServiceOnly } from './useService';
 import { useStore } from './useStore';
@@ -197,7 +196,7 @@ export function useInstanceResourcePacks() {
      * Remove a resource from used list
      */
     function remove(index: number) {
-        Vue.delete(data.packs, index);
+        $remove(data.packs, index);
     }
 
     function swap(from: number, to: number) {

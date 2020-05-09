@@ -16,8 +16,7 @@
 </template>
 
 <script lang=ts>
-import Vue from 'vue';
-import { defineComponent, inject, ref, onMounted, onUnmounted, Ref } from '@vue/composition-api';
+import { defineComponent, inject, ref, onMounted, onUnmounted, Ref, nextTick } from '@/vue';
 import { useSearch, useSearchToggle } from '../hooks';
 
 export default defineComponent({
@@ -35,12 +34,12 @@ export default defineComponent({
         return;
       }
       if (show.value && !focused.value) {
-        Vue.nextTick(() => {
+        nextTick(() => {
           self.value.focus();
         });
       } else {
         show.value = !show.value;
-        Vue.nextTick(() => {
+        nextTick(() => {
           self.value.focus();
         });
       }

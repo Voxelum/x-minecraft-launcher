@@ -3,9 +3,9 @@ import { requireString } from '@universal/util/assert';
 import { Forge, LiteLoader, Fabric } from '@xmcl/mod-parser';
 import { PackMeta } from '@xmcl/resourcepack';
 import { LevelDataFrame } from '@xmcl/world';
-import Vue from 'vue';
 import { ModuleOption } from '../root';
 import { ResourceSchema } from './resource.schema';
+import { remove } from '@universal/util/middleware';
 
 interface State {
     domains: {
@@ -147,10 +147,16 @@ const mod: ResourceModule = {
                 if (index === -1) {
                     throw new Error(`Cannot find resouce ${resource.name}[${resource.hash}] in domain!`);
                 }
-                Vue.delete(domain, index);
-                Vue.delete(state.directory, resource.hash);
+                domain.splice(index, 1);
+
+                // TODO: remove in Vue3
+                remove(domain, index);
+                
+                delete state.directory[resource.hash];
+                remove(state.directory, resource.hash);
                 for (const u of resource.source.uri) {
-                    Vue.delete(state.directory, u);
+                    delete state.directory[u];
+                    remove(state.directory, u);
                 }
             } else {
                 throw new Error(`Cannot remove resource for unknown domain [${resource.domain}]`);
