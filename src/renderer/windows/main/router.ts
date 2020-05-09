@@ -1,6 +1,5 @@
 import { serviceProxy } from '@/providers/provideServiceProxy';
-import Vue from 'vue';
-import Router, { Route } from 'vue-router';
+import Router from 'vue-router';
 import AdvancedSettingPage from './pages/AdvancedSettingPage.vue';
 import BaseSettingPage from './pages/BaseSettingPage.vue';
 import CurseforgePage from './pages/CurseforgePage.vue';
@@ -15,8 +14,6 @@ import SaveViewPage from './pages/SaveViewPage.vue';
 import SettingPage from './pages/SettingPage.vue';
 import UserPage from './pages/UserPage.vue';
 import VersionSettingPage from './pages/VersionSettingPage.vue';
-
-Vue.use(Router);
 
 const router = new Router({
     routes: [
@@ -81,7 +78,7 @@ const router = new Router({
     ],
 });
 
-router.beforeEach((to: Route, from: Route, next) => {
+router.beforeEach((to, from, next) => {
     const full = to.fullPath.substring(1);
     const { openInBrowser } = serviceProxy.BaseService;
     if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {

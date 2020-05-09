@@ -1,8 +1,6 @@
-import Vue from 'vue';
-
 const files = require.context('.', false, /\.vue$/);
 
-files.keys().forEach((key) => {
+export default files.keys().map((key) => {
     const name = key.replace(/(\.\/|\.vue)/g, '');
     const aCode = 'A'.charCodeAt(0);
     const zCode = 'Z'.charCodeAt(0);
@@ -22,5 +20,5 @@ files.keys().forEach((key) => {
     }
 
     const comp = files(key).default;
-    Vue.component(realName, comp);
+    return [realName, comp] as [string, any];
 });
