@@ -1,6 +1,6 @@
+import { TaskState, TaskStatus } from '@universal/task';
 import { Task, TaskHandle, TaskRuntime } from '@xmcl/task';
 import { ipcMain, WebContents } from 'electron';
-import { TaskState, TaskStatus } from '@universal/task';
 import { Manager } from '.';
 
 export interface TaskProgress { progress?: number; total?: number; message?: string; time?: string }
@@ -40,46 +40,18 @@ export default class TaskManager extends Manager {
 
     private listeners: WebContents[] = [];
 
-    readonly runtime: TaskRuntime<TaskState> = Task.createRuntime(this.factory) as any;
+    readonly runtime: TaskRuntime<TaskState> = Task.createRuntime(this.factory);
 
-    constructor(private taskThreshold: number = 30) {
+    private taskThreshold = 30;
+
+    constructor() {
         super();
-
-        ipcMain.handle('task-state', (event) => {
-            this.listeners.push(event.sender);
-            return this.handles.map(h => h.root);
-        });
-        ipcMain.handle('task-unlisten', (event) => {
-            this.listeners.splice(this.listeners.indexOf(event.sender), 1);
-        });
-        ipcMain.handle('task-request', (event, { type, id }) => {
-            if (!this.idToHandleRecord[id]) {
-                this.warn(`Cannot ${type} a unknown task id ${id}`);
-                return;
-            }
-            switch (type) {
-                case 'pause':
-                    this.idToHandleRecord[id].pause();
-                    break;
-                case 'resume':
-                    this.idToHandleRecord[id].resume();
-                    break;
-                case 'cancel':
-                    this.idToHandleRecord[id].cancel();
-                    break;
-                default:
-            }
-        });
 
         this.runtime.on('update', (progress, node) => {
             this.update(node.id, progress);
             node.progress = progress.progress || node.progress;
             node.total = progress.total || node.total;
             node.message = progress.message || node.message;
-
-            if (node.id === this.active?.root.id && node.total && node.progress) {
-                this.managers.appManager.updateProgress(node.progress / node.total);
-            }
         });
         this.runtime.on('execute', (node, parent) => {
             if (parent) {
@@ -141,7 +113,7 @@ export default class TaskManager extends Manager {
     /**
      * Submit a task to run
      */
-    submit<T>(task: Task<T>, background = false): TaskHandle<T, TaskState> {
+    submit<T>(task: Task<T>): TaskHandle<T, TaskState> {
         const handle = this.runtime.submit(task);
         const id = handle.root.id;
         handle.wait().finally(() => {
@@ -177,7 +149,7 @@ export default class TaskManager extends Manager {
 
     add(id: string, node: TaskState) {
         this.adds.push({ id, node });
-        this.checkBatchSize();
+        this.flushIfFull();
     }
 
     update(uuid: string, update: TaskProgress) {
@@ -191,7 +163,7 @@ export default class TaskManager extends Manager {
         } else {
             this.updates[uuid] = update;
         }
-        this.checkBatchSize();
+        this.flushIfFull();
     }
 
     child(parent: TaskState, node: TaskState) {
@@ -199,12 +171,12 @@ export default class TaskManager extends Manager {
             id: parent.id,
             node,
         });
-        this.checkBatchSize();
+        this.flushIfFull();
     }
 
     status(uuid: string, status: TaskStatus) {
         this.statuses.push({ id: uuid, status });
-        this.checkBatchSize();
+        this.flushIfFull();
     }
 
     flush() {
@@ -229,14 +201,25 @@ export default class TaskManager extends Manager {
         }
     }
 
-    checkBatchSize() {
+    flushIfFull() {
         if (this.adds.length + this.statuses.length + this.childs.length + Object.keys(this.updates).length > this.taskThreshold) {
             this.flush();
         }
     }
 
+    getActiveTask() {
+        return this.active;
+    }
+
+    isRootTask(id: string) {
+        return !!this.idToHandleRecord[id];
+    }
+
     storeReady() {
-        this.heartbeat = setInterval(this.flush.bind(this), 500);
+        const beat = () => {
+            this.flush();
+        };
+        this.heartbeat = setInterval(beat, 500);
         // this.submit(Task.create('test', (c) => {
         //     c.execute(Task.create('a', (ctx) => {
         //         let progress = 0;
@@ -266,5 +249,34 @@ export default class TaskManager extends Manager {
         //     }));
         //     return new Promise(() => { });
         // }));
+    }
+
+    // SETUP CODE
+    setup() {
+        ipcMain.handle('task-state', (event) => {
+            this.listeners.push(event.sender);
+            return this.handles.map(h => h.root);
+        });
+        ipcMain.handle('task-unlisten', (event) => {
+            this.listeners.splice(this.listeners.indexOf(event.sender), 1);
+        });
+        ipcMain.handle('task-request', (event, { type, id }) => {
+            if (!this.idToHandleRecord[id]) {
+                this.warn(`Cannot ${type} a unknown task id ${id}`);
+                return;
+            }
+            switch (type) {
+                case 'pause':
+                    this.idToHandleRecord[id].pause();
+                    break;
+                case 'resume':
+                    this.idToHandleRecord[id].resume();
+                    break;
+                case 'cancel':
+                    this.idToHandleRecord[id].cancel();
+                    break;
+                default:
+            }
+        });
     }
 }

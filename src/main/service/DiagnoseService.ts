@@ -18,8 +18,8 @@ import VersionService from './VersionService';
 
 
 export interface Fix {
-    match(issues: Issue[]): boolean;
-    fix(issues: Issue[]): Promise<void>;
+    match(issues: readonly Issue[]): boolean;
+    fix(issues: readonly Issue[]): Promise<void>;
     recheck: string;
 }
 
@@ -544,7 +544,7 @@ export default class DiagnoseService extends Service {
     }
 
     @Singleton('diagnose')
-    async fix(issues: Issue[]) {
+    async fix(issues: readonly Issue[]) {
         const unfixed = issues.filter(p => p.autofix)
             .filter(p => !this.state.diagnose.registry[p.id].fixing);
 

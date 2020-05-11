@@ -1,11 +1,12 @@
 
-import { App, BrowserWindow, dialog, Dock, Menu, nativeImage, Tray } from 'electron';
-import { EventEmitter } from 'events';
+import { BuiltinNotification } from '@main/notification';
 import { createI18n } from '@main/util/i18n';
+import { App, BrowserWindow, dialog, Dock, Menu, nativeImage, Notification, Tray } from 'electron';
+import { EventEmitter } from 'events';
 import { resolve } from 'path';
-import en from '../util/locales/en.json';
-import zh from '../util/locales/zh-CN.json';
-import { LauncherAppController } from './LauncherAppController';
+import en from './locales/en.json';
+import zh from './locales/zh-CN.json';
+import { LauncherAppController } from '../app/LauncherAppController';
 
 export function focusOnClick(getWindow: () => BrowserWindow | undefined) {
     return () => {
@@ -229,7 +230,69 @@ export default class BuiltinController extends LauncherAppController {
         this.mainRef!.show();
     }
 
-    updateProgress(progress: number) {
-        this.mainRef!.setProgressBar(progress, { mode: 'normal' });
+    get activeWindow() {
+        return this.mainRef ?? this.loggerRef;
+    }
+
+    private setupTask() {
+        const $t = this.i18n.t;
+        const tasks = this.managers.taskManager;
+        tasks.runtime.on('update', ({ progress, total }, node) => {
+            if (tasks.getActiveTask()?.root.id === node.id && progress && total) {
+                // eslint-disable-next-line no-unused-expressions
+                this.activeWindow?.setProgressBar(progress / total);
+            }
+        });
+        tasks.runtime.on('finish', (_, node) => {
+            if (tasks.getActiveTask()?.root.id === node.id) {
+                // eslint-disable-next-line no-unused-expressions
+                this.activeWindow?.setProgressBar(-1);
+            }
+            if (tasks.isRootTask(node.id)) {
+                this.notify('task.finish', 'success', $t('task.finish', { name: node.name }), $t('task.finishMessage'));
+            }
+        });
+        tasks.runtime.on('fail', (_, node) => {
+            if (tasks.getActiveTask()?.root.id === node.id) {
+                // eslint-disable-next-line no-unused-expressions
+                this.activeWindow?.setProgressBar(-1);
+            }
+            if (tasks.isRootTask(node.id)) {
+                this.notify('task.fail', 'warn', $t('task.fail', { name: node.name }), $t('task.failMessage'));
+            }
+        });
+        tasks.runtime.on('execute', (node, parent) => {
+            if (!parent) {
+                this.notify('task.start', 'info', $t('task.start', { name: node.name }), $t('task.startMessage'));
+            }
+        });
+    }
+
+    private notify(reason: string, level: string, title: string, body: string) {
+        if (this.activeWindow && this.activeWindow.isFocused()) {
+            this.activeWindow.webContents.send('notification', {
+                reason,
+                level,
+                title,
+                body,
+            });
+        } else {
+            let notification = new Notification({
+                title,
+                body,
+                icon: resolve(__static, 'apple-touch-icon.png'),
+            });
+            notification.show();
+            notification.on('click', () => {
+                if (this.activeWindow) {
+                    if (!this.activeWindow.isVisible()) {
+                        this.activeWindow.show();
+                    }
+                    if (!this.activeWindow.isFocused()) {
+                        this.activeWindow.focus();
+                    }
+                }
+            });
+        }
     }
 }

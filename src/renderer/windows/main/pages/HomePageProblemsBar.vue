@@ -1,17 +1,17 @@
 <template>
-  <v-menu v-show="refreshing || problems.length !== 0" offset-y top dark max-height="300">
+  <v-menu v-show="refreshing || issues.length !== 0" offset-y top dark max-height="300">
     <v-btn slot="activator" style="position: absolute; left: 200px; bottom: 10px; " :loading="refreshing"
-           :flat="problems.length !== 0" outline dark :color="problemsLevelColor">
-      <v-icon left dark :color="problemsLevelColor">
-        {{ problems.length !== 0 ?
+           :flat="issues.length !== 0" outline dark :color="color">
+      <v-icon left dark :color="color">
+        {{ issues.length !== 0 ?
           'warning' : 'check_circle' }}
       </v-icon>
-      {{ $tc('diagnosis.problem', problems.length, { count: problems.length }) }}
+      {{ $tc('diagnosis.problem', issues.length, { count: issues.length }) }}
     </v-btn>
 
     <v-list>
-      <template v-for="(item, index) in problems">
-        <v-list-tile :key="index" ripple @click="fixProblem(item)">
+      <template v-for="(item, index) in issues">
+        <v-list-tile :key="index" ripple @click="fix(item, issues)">
           <v-list-tile-content>
             <v-list-tile-title>
               {{ $tc(`diagnosis.${item.id}`, item.arguments.count || 0, item.arguments) }}
@@ -31,56 +31,20 @@
 
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api';
-import { Issue } from '@universal/store/modules/diagnose';
-import { useStore, useRouter, useService, useBusy } from '@/hooks';
-import { useDialog } from '../hooks';
+import { useIssues } from '@/hooks';
+import { useIssueHandler } from '../hooks';
 
 export default defineComponent({
   setup() {
-    const { getters } = useStore();
-    const { fix } = useService('DiagnoseService');
-    const router = useRouter();
-    const problems = computed(() => getters.issues);
-    const problemsLevelColor = computed(() => (getters.issues.some(p => !p.optional) ? 'red' : 'warning'));
-    const refreshing = useBusy('diagnose');
-    const { show: showTaskDialog } = useDialog('task');
-    const { show: showJavaDialog } = useDialog('java-wizard');
-    const { show: showModDialog } = useDialog('download-missing-mods');
+    const { issues, refreshing } = useIssues();
+    const { fix } = useIssueHandler();
+    const color = computed(() => (issues.value.some(p => !p.optional) ? 'red' : 'warning'));
 
-    async function handleManualFix(problem: Issue) {
-      switch (problem.id) {
-        case 'missingModsOnServer':
-          showModDialog();
-          break;
-        case 'unknownMod':
-        case 'incompatibleMod':
-          router.replace('/mod-setting');
-          break;
-        case 'incompatibleResourcePack':
-          router.replace('/resource-pack-setting');
-          break;
-        case 'incompatibleJava':
-          showJavaDialog();
-          break;
-        default:
-      }
-    }
-
-    function handleAutoFix() {
-      fix(problems.value as any);
-      showTaskDialog();
-    }
     return {
-      problems,
-      problemsLevelColor,
+      issues,
+      color,
       refreshing,
-      fixProblem(problem: Issue) {
-        if (!problem.autofix) {
-          handleManualFix(problem);
-        } else {
-          handleAutoFix();
-        }
-      },
+      fix,
     };
   },
 });

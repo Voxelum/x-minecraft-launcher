@@ -8,6 +8,10 @@ export interface LauncherAppManifest {
      */
     url?: string;
     /**
+     * The host url
+     */
+    host: string;
+    /**
      * The version of this app
      */
     version: string;

@@ -1,24 +1,59 @@
-import { writeFile, readFile, createWriteStream } from 'fs-extra';
+import { exists } from '@main/util/fs';
+import { createHash } from 'crypto';
+import { readFile, stat, writeFile } from 'fs-extra';
+import got from 'got';
 import { join } from 'path';
 import { Script } from 'vm';
-import got from 'got';
-import { net, Session } from 'electron';
 import { LauncherAppController } from './LauncherAppController';
-
-// async function getIfUpdate(session: Session, url: string, timestamp: string) {
-//     const req = net.request({
-//         url,
-//         session,
-//     });
-//     req.setHeader('If-Modified-Since', timestamp);
-//     req.on('response', (r) => {
-//         const lastModified = r.headers['last-modified'];
-//     });
-//     req.end();
-// }
 
 export class AppLoader {
     constructor(private host: string, private cacheRoot: string) {
+    }
+
+    async hasUpdate(url: string, timestamp: string) {
+        let res = await got.head(url, { headers: { 'last-modified': timestamp } });
+        return res.statusCode !== 304;
+    }
+
+    async fetch(url: string, timestamp: string) {
+        if (await this.hasUpdate(url, timestamp)) {
+            return got(url).buffer();
+        }
+    }
+
+    async checkIfUpdate(url: string, timestamp: string) {
+
+    }
+
+    async load(url: string): Promise<Buffer> {
+        let sha1 = createHash('sha1').update(url).digest('base64');
+
+        let cachePath = join(this.cacheRoot, sha1);
+        let cacheTimestampPath = join(this.cacheRoot, `${sha1}.timestamp`);
+
+        if (await exists(cachePath)) {
+            let cacheBuf = await readFile(cachePath);
+            let timestamp = (await readFile(cacheTimestampPath)).toString();
+
+            this.checkIfUpdate(url, timestamp);
+
+            return cacheBuf;
+        } else {
+
+        }
+        let reqPromise = got(url);
+        let resp = await reqPromise;
+        let newTimestamp = resp.headers['last-modified'];
+        let buf = await got(url).buffer();
+        writeFile(cachePath, buf);
+        return buf;
+        try {
+            let s = await stat(cachePath);
+            return readFile(cachePath);
+        } catch (e) {
+            return remoteResult;
+            // TODO: request
+        }
     }
 
     async loadController() {
@@ -27,7 +62,7 @@ export class AppLoader {
         let timestamp = '';
         let content = '';
 
-        const getUpdatePromise = host ? getRawIfUpdate(`${host}/index.js`, timestamp).catch(e => ({ content: undefined })) : Promise.resolve({ content: undefined });
+        const getUpdatePromise = host ? this.load(`${host}/index.js`, timestamp).catch(e => ({ content: undefined })) : Promise.resolve({ content: undefined });
         const cachePromise = readFile(join(this.cacheRoot, 'index.js')).then((b) => b.toString(), () => '');
 
         const result = await getUpdatePromise;
