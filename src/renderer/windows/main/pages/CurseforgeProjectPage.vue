@@ -111,9 +111,6 @@ import {
   useCurseforgeProject,
   useCurseforgeInstall,
 } from '@/hooks';
-import {
-  useNotifier,
-} from '../hooks';
 import ProjectDescription from './CurseforgeProjectPageDescription.vue';
 import ProjectFiles from './CurseforgeProjectPageFiles.vue';
 
@@ -134,7 +131,6 @@ export default defineComponent({
     const projectId = computed(() => Number.parseInt(props.id, 10));
     const project = useCurseforgeProject(projectId.value);
     const { install: installFile, getFileStatus } = useCurseforgeInstall(props.type as any);
-    const { subscribe } = useNotifier();
 
     const data = reactive({
       tab: 0,

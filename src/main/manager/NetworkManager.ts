@@ -1,12 +1,10 @@
 import { DownloadOption, HttpDownloader } from '@xmcl/installer';
 import { Task } from '@xmcl/task';
-import { BrowserWindow, DownloadItem, session, Session } from 'electron';
-import { readFile } from 'fs-extra';
+import { DownloadItem } from 'electron';
 import got from 'got';
 import { Agent as HttpAgent, AgentOptions } from 'http';
 import { Agent as HttpsAgent } from 'https';
 import { cpus } from 'os';
-import { basename, join } from 'path';
 import { Manager } from '.';
 
 function downloadItemTask(item: DownloadItem) {
@@ -30,21 +28,13 @@ function downloadItemTask(item: DownloadItem) {
 }
 
 export default class NetworkManager extends Manager {
-    private jsguard: BrowserWindow | undefined;
-
-    private jsguardClearHandle: NodeJS.Timeout | undefined;
-
-    private downloading: { [url: string]: { file: string; callback: (item: Promise<string>) => void } } = {};
-
     private inGFW = false;
 
     private downloader: HttpDownloader;
 
-    readonly request = got.extend({ });
+    readonly request = got.extend({});
 
-    private session: Session | undefined;
-
-    constructor(private tempRoot: string = 'temp') {
+    constructor() {
         super();
         let options: AgentOptions = {
             keepAlive: true,
@@ -61,14 +51,6 @@ export default class NetworkManager extends Manager {
             downloader: this.downloader,
             overwriteWhen: 'checksumNotMatchOrEmpty',
         } as const;
-    }
-
-    async rootReady(root: string) {
-        this.tempRoot = join(root, 'temp');
-    }
-
-    async appReady() {
-        this.updateGFW();
     }
 
     /**
@@ -115,66 +97,66 @@ export default class NetworkManager extends Manager {
      * Once the browser finish loading, this function will return the content of the page.
      * @param url The requesting URL
      */
-    async requestPageWithJS(url: string) {
-        this.log(`Request with js ${url}`);
-        const root = this.tempRoot;
-        this.ensureJSGuard();
-        const browser = this.jsguard!;
-        const cachePath = join(root, basename(new URL(url).pathname));
-        browser.loadURL(url, {
-            httpReferrer: browser.webContents.getURL() || '',
-        });
-        const { code, success } = await new Promise((resolve) => {
-            let scode = 0;
-            browser.webContents.once('did-navigate', (e, u, code) => {
-                scode = code;
-            });
-            browser.webContents.once('dom-ready', () => {
-                browser.webContents.savePage(cachePath, 'HTMLOnly')
-                    .then(() => resolve({ code: scode, success: true }), () => resolve({ code: scode, success: false }));
-            });
-        });
-        if (success) {
-            const buffer = await readFile(cachePath);
-            return buffer.toString();
-        }
-        throw new Error(`Fail to fetch ${url}. Code: ${code}`);
-    }
+    // async requestPageWithJS(url: string) {
+    //     this.log(`Request with js ${url}`);
+    //     const root = this.tempRoot;
+    //     this.ensureJSGuard();
+    //     const browser = this.jsguard!;
+    //     const cachePath = join(root, basename(new URL(url).pathname));
+    //     browser.loadURL(url, {
+    //         httpReferrer: browser.webContents.getURL() || '',
+    //     });
+    //     const { code, success } = await new Promise((resolve) => {
+    //         let scode = 0;
+    //         browser.webContents.once('did-navigate', (e, u, code) => {
+    //             scode = code;
+    //         });
+    //         browser.webContents.once('dom-ready', () => {
+    //             browser.webContents.savePage(cachePath, 'HTMLOnly')
+    //                 .then(() => resolve({ code: scode, success: true }), () => resolve({ code: scode, success: false }));
+    //         });
+    //     });
+    //     if (success) {
+    //         const buffer = await readFile(cachePath);
+    //         return buffer.toString();
+    //     }
+    //     throw new Error(`Fail to fetch ${url}. Code: ${code}`);
+    // }
 
-    private ensureSession() {
-        if (!this.session) {
-            this.session = session.fromPartition('persist:interal');
-            this.session.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.69 Safari/537.36 Edg/81.0.416.34');
-            this.session.on('will-download', (event, item) => {
-                const handle = this.downloading[item.getURL()];
-                const savePath = join(this.tempRoot, handle.file || item.getFilename());
-                if (!item.getSavePath()) item.setSavePath(savePath);
-                const downloadTask = downloadItemTask(item);
-                const taskHandle = this.managers.taskManager.submit(downloadTask);
-                handle.callback(taskHandle.wait());
-            });
-        }
-        return this.session;
-    }
+    // private ensureSession() {
+    //     if (!this.session) {
+    //         this.session = session.fromPartition('persist:interal');
+    //         this.session.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.69 Safari/537.36 Edg/81.0.416.34');
+    //         this.session.on('will-download', (event, item) => {
+    //             const handle = this.downloading[item.getURL()];
+    //             const savePath = join(this.tempRoot, handle.file || item.getFilename());
+    //             if (!item.getSavePath()) item.setSavePath(savePath);
+    //             const downloadTask = downloadItemTask(item);
+    //             const taskHandle = this.managers.taskManager.submit(downloadTask);
+    //             handle.callback(taskHandle.wait());
+    //         });
+    //     }
+    //     return this.session;
+    // }
 
-    private ensureJSGuard() {
-        if (!this.jsguard) {
-            this.jsguard = new BrowserWindow({
-                focusable: false,
-                webPreferences: {
-                    session: this.ensureSession(),
-                    javascript: true,
-                    devTools: false,
-                },
-                show: false,
-            });
-        }
-        if (this.jsguardClearHandle) {
-            clearTimeout(this.jsguardClearHandle);
-        }
-        this.jsguardClearHandle = setTimeout(() => {
-            this.jsguard!.close();
-            this.jsguard = undefined;
-        }, 10000);
-    }
+    // private ensureJSGuard() {
+    //     if (!this.jsguard) {
+    //         this.jsguard = new BrowserWindow({
+    //             focusable: false,
+    //             webPreferences: {
+    //                 session: this.ensureSession(),
+    //                 javascript: true,
+    //                 devTools: false,
+    //             },
+    //             show: false,
+    //         });
+    //     }
+    //     if (this.jsguardClearHandle) {
+    //         clearTimeout(this.jsguardClearHandle);
+    //     }
+    //     this.jsguardClearHandle = setTimeout(() => {
+    //         this.jsguard!.close();
+    //         this.jsguard = undefined;
+    //     }, 10000);
+    // }
 }

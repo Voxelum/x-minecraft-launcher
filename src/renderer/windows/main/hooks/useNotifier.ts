@@ -1,13 +1,13 @@
 import { inject, InjectionKey, provide, Ref, ref } from '@vue/composition-api';
 
-export type Status = 'success' | 'info' | 'warning' | 'error';
-const STATUS_SYMBOL: InjectionKey<Ref<Status>> = Symbol('NotifierStatus');
+export type Type = 'success' | 'info' | 'warning' | 'error';
+const STATUS_SYMBOL: InjectionKey<Ref<Type>> = Symbol('NotifierStatus');
 const TITLE_SYMBOL: InjectionKey<Ref<string>> = Symbol('NotifierTitle');
 const SHOW_SYMBOL: InjectionKey<Ref<boolean>> = Symbol('NotifierShowed');
 const ACTION_SYMBOL: InjectionKey<Ref<(() => void) | undefined>> = Symbol('NotifierAction');
 
 export function provideNotifier() {
-    const status: Ref<Status> = ref('success');
+    const status: Ref<Type> = ref('success');
     const title: Ref<string> = ref('');
     const content: Ref<string> = ref('');
     const error: Ref<any> = ref(undefined);
@@ -21,7 +21,7 @@ export function provideNotifier() {
     return { status, content, title, error, show, action };
 }
 
-export type Notify = (status: Status, title: string, more?: () => void) => void;
+export type Notify = (status: Type, title: string, more?: () => void) => void;
 
 type NotifyOptions = string | [string, () => void];
 

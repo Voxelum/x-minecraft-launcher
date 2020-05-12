@@ -43,8 +43,19 @@ declare module 'electron' {
          * @param id The current mutation id
          */
         invoke(channel: 'sync', id: number): Promise<{ state: any; length: number }>;
+        /**
+         * Commit a change to remote
+         */
         invoke(channel: 'commit', type: string, payload: any): Promise<void>;
+        /**
+         * Request for current task states
+         */
         invoke(channel: 'task-state'): Promise<TaskState[]>;
+        /**
+         * Request an operation to a task.
+         * You can cancel, pause, or resmue a task here.
+         * @param option 
+         */
         invoke(channel: 'task-request', option: { type: 'pause' | 'resume' | 'cancel'; id: string }): Promise<void>;
 
         /**

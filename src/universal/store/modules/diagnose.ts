@@ -15,6 +15,8 @@ export type IssueReport = {
     [K in keyof State['registry']]: State['registry'][K]['actived']
 }
 
+export type IssueType = keyof State['registry'];
+
 export interface Registry<A, AF = true, OP = false> {
     fixing: boolean;
     autofix: AF;
