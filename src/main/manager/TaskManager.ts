@@ -1,28 +1,15 @@
-import { TaskState, TaskStatus } from '@universal/task';
+import { createTaskPusher } from '@main/util/task';
+import { TaskState } from '@universal/task';
 import { Task, TaskHandle, TaskRuntime } from '@xmcl/task';
 import { ipcMain, WebContents } from 'electron';
 import { Manager } from '.';
 
-export interface TaskProgress { progress?: number; total?: number; message?: string; time?: string }
-
 export default class TaskManager extends Manager {
-    private heartbeat: NodeJS.Timeout | undefined;
-
-    private adds: { id: string; node: TaskState }[] = [];
-
-    private childs: { id: string; node: TaskState }[] = [];
-
-    private updates: { [id: string]: TaskProgress } = {};
-
-    private statuses: { id: string; status: string }[] = [];
-
-    private deferred: Function[] = [];
-
     private order = 0;
 
-    private factory: Task.StateFactory<TaskState> = n => ({
+    private factory: Task.StateFactory<TaskState> = (n) => ({
         ...n,
-        id: `task-${this.order++}`,
+        id: `${n.path}-${this.order++}`,
         children: [],
         time: new Date().toString(),
         progress: 0,
@@ -38,17 +25,14 @@ export default class TaskManager extends Manager {
 
     private active: TaskHandle<any, any> | undefined;
 
-    private listeners: WebContents[] = [];
-
     readonly runtime: TaskRuntime<TaskState> = Task.createRuntime(this.factory);
 
-    private taskThreshold = 30;
+    private pushers: Map<WebContents, () => void> = new Map();
 
     constructor() {
         super();
 
         this.runtime.on('update', (progress, node) => {
-            this.update(node.id, progress);
             node.progress = progress.progress || node.progress;
             node.total = progress.total || node.total;
             node.message = progress.message || node.message;
@@ -58,67 +42,29 @@ export default class TaskManager extends Manager {
                 this.idToHandleRecord[node.id] = this.idToHandleRecord[parent.id];
                 let rootId = this.idToHandleRecord[node.id].root.id;
                 this.idToChildsRecord[rootId].push(node.id);
-
-                if ('node' in parent) {
-                    parent = (parent as any).node;
-                    this.child(parent!, node);
-                    parent!.children = parent!.children || [];
-                    this.deferred.push(() => parent!.children.push(node));
-                } else {
-                    this.child(parent, node);
-                    parent.children = parent.children || [];
-                    this.deferred.push(() => parent!.children.push(node));
-                }
-            } else {
-                this.add(node.id, node);
+                parent.children.push(node);
             }
-            this.status(node.id, 'running');
             node.status = 'running';
         });
         this.runtime.on('pause', (node) => {
-            this.status(node.id, 'paused');
             node.status = 'paused';
         });
-        (this.runtime as any).on('pasue', (node: any) => {
-            this.status(node.id, 'paused');
-            node.status = 'paused';
+        this.runtime.on('finish', (r, node) => {
+            node.status = 'successed';
         });
         this.runtime.on('resume', (node) => {
-            this.status(node.id, 'running');
             node.status = 'running';
         });
         this.runtime.on('finish', (_, node) => {
-            this.status(node.id, 'successed');
             node.status = 'successed';
-
-            if (node.id === this.active?.root.id) {
-                this.managers.appManager.updateProgress(-1);
-            }
         });
         this.runtime.on('cancel', (node) => {
-            this.status(node.id, 'cancelled');
             node.status = 'cancelled';
-
-            if (node.id === this.active?.root.id) {
-                this.managers.appManager.updateProgress(-1);
-            }
         });
         this.runtime.on('fail', (error, node) => {
             this.log(`Error task ${node.path}(${node.id})`);
             this.log(error);
-            this.status(node.id, 'failed');
             node.status = 'failed';
-            let errorMessage;
-            if (error instanceof Error) {
-                errorMessage = error.toString();
-            } else {
-                errorMessage = JSON.stringify(error, null, 4);
-            }
-            this.update(node.id, { message: errorMessage });
-
-            if (node.id === this.active?.root.id) {
-                this.managers.appManager.updateProgress(-1);
-            }
         });
     }
 
@@ -159,66 +105,6 @@ export default class TaskManager extends Manager {
         return this.idToHandleRecord[id];
     }
 
-    add(id: string, node: TaskState) {
-        this.adds.push({ id, node });
-        this.flushIfFull();
-    }
-
-    update(uuid: string, update: TaskProgress) {
-        const last = this.updates[uuid];
-        if (last) {
-            this.updates[uuid] = {
-                progress: last.progress || update.progress,
-                total: last.total || update.total,
-                message: last.message || update.message,
-            };
-        } else {
-            this.updates[uuid] = update;
-        }
-        this.flushIfFull();
-    }
-
-    child(parent: TaskState, node: TaskState) {
-        this.childs.push({
-            id: parent.id,
-            node,
-        });
-        this.flushIfFull();
-    }
-
-    status(uuid: string, status: TaskStatus) {
-        this.statuses.push({ id: uuid, status });
-        this.flushIfFull();
-    }
-
-    flush() {
-        if (this.adds.length !== 0 || this.childs.length !== 0 || Object.keys(this.updates).length !== 0 || this.statuses.length !== 0) {
-            this.listeners.forEach((listener) => {
-                listener.send('task-update', {
-                    adds: this.adds,
-                    childs: this.childs,
-                    updates: this.updates,
-                    statuses: this.statuses,
-                });
-            });
-
-            while (this.deferred.length) {
-                this.deferred.pop()!();
-            }
-
-            this.adds = [];
-            this.childs = [];
-            this.updates = {};
-            this.statuses = [];
-        }
-    }
-
-    flushIfFull() {
-        if (this.adds.length + this.statuses.length + this.childs.length + Object.keys(this.updates).length > this.taskThreshold) {
-            this.flush();
-        }
-    }
-
     getActiveTask() {
         return this.active;
     }
@@ -227,52 +113,52 @@ export default class TaskManager extends Manager {
         return !!this.idToHandleRecord[id];
     }
 
-    storeReady() {
-        const beat = () => {
-            this.flush();
-        };
-        this.heartbeat = setInterval(beat, 500);
-        // this.submit(Task.create('test', (c) => {
-        //     c.execute(Task.create('a', (ctx) => {
-        //         let progress = 0;
-        //         let paused = false;
-        //         ctx.pausealbe(() => {
-        //             paused = true;
-        //         }, () => {
-        //             paused = false;
-        //         });
-        //         setInterval(() => {
-        //             if (!paused) {
-        //                 ctx.update(progress, 100, progress.toString());
-        //                 progress += 10;
-        //                 progress = progress > 100 ? 0 : progress;
-        //             }
-        //         }, 2000);
-        //         return new Promise(() => { });
-        //     }), 100);
-        //     c.execute(Task.create('b', (ctx) => {
-        //         let progress = 0;
-        //         setInterval(() => {
-        //             ctx.update(progress, 100, progress.toString());
-        //             progress += 10;
-        //             progress = progress > 100 ? 0 : progress;
-        //         }, 1000);
-        //         return new Promise(() => { });
-        //     }));
-        //     return new Promise(() => { });
-        // }));
-    }
+    // storeReady() {
+    //     this.submit(Task.create('test', (c) => {
+    //         c.execute(Task.create('a', (ctx) => {
+    //             let progress = 0;
+    //             let paused = false;
+    //             ctx.pausealbe(() => {
+    //                 paused = true;
+    //             }, () => {
+    //                 paused = false;
+    //             });
+    //             setInterval(() => {
+    //                 if (!paused) {
+    //                     ctx.update(progress, 100, progress.toString());
+    //                     progress += 10;
+    //                     progress = progress > 100 ? 0 : progress;
+    //                 }
+    //             }, 2000);
+    //             return new Promise(() => { });
+    //         }), 100);
+    //         c.execute(Task.create('b', (ctx) => {
+    //             let progress = 0;
+    //             setInterval(() => {
+    //                 ctx.update(progress, 100, progress.toString());
+    //                 progress += 10;
+    //                 progress = progress > 100 ? 0 : progress;
+    //             }, 1000);
+    //             return new Promise(() => { });
+    //         }));
+    //         return new Promise(() => { });
+    //     }));
+    // }
 
     // SETUP CODE
     setup() {
-        ipcMain.handle('task-state', (event) => {
-            this.listeners.push(event.sender);
+        ipcMain.handle('task-subscribe', (event) => {
+            let pusher = createTaskPusher(this.runtime, 500, 30, (payload) => {
+                event.sender.send('task-update', payload);
+            });
+            this.pushers.set(event.sender, pusher);
             return this.handles.map(h => h.root);
         });
-        ipcMain.handle('task-unlisten', (event) => {
-            this.listeners.splice(this.listeners.indexOf(event.sender), 1);
+        ipcMain.handle('task-unsubscribe', (event) => {
+            let pusher = this.pushers.get(event.sender);
+            if (pusher) { pusher(); }
         });
-        ipcMain.handle('task-request', (event, { type, id }) => {
+        ipcMain.handle('task-operation', (event, { type, id }) => {
             if (!this.idToHandleRecord[id]) {
                 this.warn(`Cannot ${type} a unknown task id ${id}`);
                 return;

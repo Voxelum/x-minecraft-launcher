@@ -48,15 +48,16 @@ declare module 'electron' {
          */
         invoke(channel: 'commit', type: string, payload: any): Promise<void>;
         /**
-         * Request for current task states
+         * Request for current task states. It will require the main process keep sending the 'task-update' event to the renderer.
          */
-        invoke(channel: 'task-state'): Promise<TaskState[]>;
+        invoke(channel: 'task-subscribe', push?: boolean): Promise<TaskState[]>;
+
+        invoke(channel: 'task-unsubscribe'): Promise<TaskState[]>;
         /**
          * Request an operation to a task.
          * You can cancel, pause, or resmue a task here.
-         * @param option 
          */
-        invoke(channel: 'task-request', option: { type: 'pause' | 'resume' | 'cancel'; id: string }): Promise<void>;
+        invoke(channel: 'task-operation', option: { type: 'pause' | 'resume' | 'cancel'; id: string }): Promise<void>;
 
         /**
          * Notify renderer that the store is synced

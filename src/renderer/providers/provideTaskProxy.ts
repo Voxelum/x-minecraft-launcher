@@ -9,22 +9,22 @@ export function provideTasks() {
     const idToNode: { [key: string]: TaskState } = {};
     const tasks: Ref<TaskState[]> = ref(reactive([]));
     const pause = (id: string) => {
-        ipc.invoke('task-request', { type: 'pause', id });
+        ipc.invoke('task-operation', { type: 'pause', id });
     };
     const resume = (id: string) => {
-        ipc.invoke('task-request', { type: 'resume', id });
+        ipc.invoke('task-operation', { type: 'resume', id });
     };
     const cancel = (id: string) => {
-        ipc.invoke('task-request', { type: 'cancel', id });
+        ipc.invoke('task-operation', { type: 'cancel', id });
     };
 
-    const proxy: TaskProxy = {
+    const proxy: TaskProxy = ({
         dictionary: idToNode,
         tasks,
         pause,
         resume,
         cancel,
-    };
+    });
 
     provide(TASK_PROXY, proxy);
 
@@ -94,7 +94,7 @@ export function provideTasks() {
                 if (message) task.message = message;
                 if (time) task.time = time || new Date().toLocaleTimeString();
             } else {
-                console.log(`Cannot apply update for task ${id}.`);
+                console.log(`Cannot apply update for task ${id} as task not found.`);
             }
         }
         for (const s of statuses) {
@@ -114,12 +114,13 @@ export function provideTasks() {
 
     onMounted(() => {
         ipc.on('task-update', taskUpdateHanlder);
-        ipc.invoke('task-state').then((t) => {
+        ipc.invoke('task-subscribe', true).then((t) => {
             collectAllTaskState(t);
             Object.values(t).forEach(ta => tasks.value.push(reactive(ta)));
         });
     });
     onUnmounted(() => {
+        ipc.invoke('task-unsubscribe');
         ipc.removeListener('task-update', taskUpdateHanlder);
     });
 

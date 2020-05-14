@@ -1,5 +1,4 @@
 
-import { BuiltinNotification } from '@main/notification';
 import { createI18n } from '@main/util/i18n';
 import { App, BrowserWindow, dialog, Dock, Menu, nativeImage, Notification, Tray } from 'electron';
 import { EventEmitter } from 'events';
@@ -86,7 +85,8 @@ export default class BuiltinController extends LauncherAppController {
         });
     }
 
-    setup(): void { }
+    setup(): void {
+    }
 
     async requestOpenExternalUrl(url: string) {
         const { t: $t } = this.i18n;
@@ -215,6 +215,7 @@ export default class BuiltinController extends LauncherAppController {
     appReady(app: App) {
         this.createMainWindow();
         this.setupTray(app);
+        this.setupTask();
 
         forwardEvent('minecraft-stdout', app, () => this.loggerRef);
         forwardEvent('minecraft-stderr', app, () => this.loggerRef);
@@ -238,13 +239,17 @@ export default class BuiltinController extends LauncherAppController {
         tasks.runtime.on('update', ({ progress, total }, node) => {
             if (tasks.getActiveTask()?.root.id === node.id && progress && total) {
                 // eslint-disable-next-line no-unused-expressions
-                this.activeWindow?.setProgressBar(progress / total);
+                if (this.activeWindow && !this.activeWindow.isDestroyed()) {
+                    this.activeWindow.setProgressBar(progress / total);
+                }
             }
         });
         tasks.runtime.on('finish', (_, node) => {
             if (tasks.getActiveTask()?.root.id === node.id) {
                 // eslint-disable-next-line no-unused-expressions
-                this.activeWindow?.setProgressBar(-1);
+                if (this.activeWindow && !this.activeWindow.isDestroyed()) {
+                    this.activeWindow.setProgressBar(-1);
+                }
             }
             if (tasks.isRootTask(node.id)) {
                 this.notify('task.finish', 'success', $t('task.finish', { name: node.name }), $t('task.finishMessage'));
@@ -253,7 +258,9 @@ export default class BuiltinController extends LauncherAppController {
         tasks.runtime.on('fail', (_, node) => {
             if (tasks.getActiveTask()?.root.id === node.id) {
                 // eslint-disable-next-line no-unused-expressions
-                this.activeWindow?.setProgressBar(-1);
+                if (this.activeWindow && !this.activeWindow.isDestroyed()) {
+                    this.activeWindow.setProgressBar(-1);
+                }
             }
             if (tasks.isRootTask(node.id)) {
                 this.notify('task.fail', 'warn', $t('task.fail', { name: node.name }), $t('task.failMessage'));
