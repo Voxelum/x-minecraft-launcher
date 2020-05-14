@@ -19,6 +19,8 @@ export function useIssueHandler() {
     register('incompatibleMod', () => replace('/mod-setting'));
     register('incompatibleResourcePack', () => replace('/resource-pack-setting'));
     register('incompatibleJava', showJavaDialog);
+    register('requireForge', () => replace('/version-setting'));
+    register('requireFabric', () => replace('/version-setting'));
 
     function fix(issue: Issue, issues: readonly Issue[]) {
         if (issue.autofix) {
@@ -28,7 +30,7 @@ export function useIssueHandler() {
             if (handler) {
                 handler();
             } else {
-                console.warn(`Cannot fix the issue ${issue.id} as it's not implemented`);
+                console.error(`Cannot fix the issue ${issue.id} as it's not implemented`);
             }
         }
     }

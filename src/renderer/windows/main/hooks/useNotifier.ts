@@ -1,24 +1,34 @@
 import { inject, InjectionKey, provide, Ref, ref } from '@vue/composition-api';
+import { useIpc } from '@/hooks';
+import { BuiltinNotification } from '@main/notification';
 
 export type Type = 'success' | 'info' | 'warning' | 'error';
 const STATUS_SYMBOL: InjectionKey<Ref<Type>> = Symbol('NotifierStatus');
 const TITLE_SYMBOL: InjectionKey<Ref<string>> = Symbol('NotifierTitle');
 const SHOW_SYMBOL: InjectionKey<Ref<boolean>> = Symbol('NotifierShowed');
 const ACTION_SYMBOL: InjectionKey<Ref<(() => void) | undefined>> = Symbol('NotifierAction');
+const NOTIFY_QUEUE_SYMBOL: InjectionKey<Ref<Array<BuiltinNotification>>> = Symbol('NotifierQueue');
 
 export function provideNotifier() {
-    const status: Ref<Type> = ref('success');
+    const type: Ref<Type> = ref('success');
     const title: Ref<string> = ref('');
     const content: Ref<string> = ref('');
-    const error: Ref<any> = ref(undefined);
     const show: Ref<boolean> = ref(false);
     const action: Ref<(() => void) | undefined> = ref(() => { });
-    provide(STATUS_SYMBOL, status);
+    provide(STATUS_SYMBOL, type);
     provide(TITLE_SYMBOL, title);
     provide(SHOW_SYMBOL, show);
     provide(ACTION_SYMBOL, action);
 
-    return { status, content, title, error, show, action };
+    const ipc = useIpc();
+    ipc.on('notification', (event, payload) => {
+        title.value = payload.title;
+        content.value = payload.body;
+        type.value = payload.level;
+        show.value = true;
+    });
+
+    return { type, content, title, show, action };
 }
 
 export type Notify = (status: Type, title: string, more?: () => void) => void;

@@ -1,6 +1,7 @@
 export interface BuiltinNotification {
-    level: string;
     id: string;
+
+    level: string;
     title: string;
     body: string;
 }  
