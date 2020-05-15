@@ -559,34 +559,39 @@ export default class DiagnoseService extends Service {
         }
     }
 
-    @Singleton('diagnose')
     async fix(issues: readonly Issue[]) {
-        const unfixed = issues.filter(p => p.autofix)
-            .filter(p => !this.state.diagnose.registry[p.id].fixing);
+        this.aquire('diagnose');
+        try {
+            const unfixed = issues.filter(p => p.autofix)
+                .filter(p => !this.state.diagnose.registry[p.id].fixing);
 
-        if (unfixed.length === 0) return;
+            if (unfixed.length === 0) return;
 
-        this.log(`Start fixing ${issues.length} issues: ${JSON.stringify(issues.map(i => i.id))}`);
+            this.log(`Start fixing ${issues.length} issues: ${JSON.stringify(issues.map(i => i.id))}`);
 
-        const recheck = {};
+            const recheck = {};
 
-        this.commit('issuesStartResolve', unfixed);
+            this.commit('issuesStartResolve', unfixed);
+            try {
+                for (const fix of this.fixes) {
+                    if (fix.match(issues)) {
+                        await fix.fix(issues).catch(e => this.pushException({ type: 'issueFix', error: e }));
+                        (recheck as any)[fix.recheck] = true;
+                    }
+                }
 
-        for (const fix of this.fixes) {
-            if (fix.match(issues)) {
-                await fix.fix(issues).catch(e => this.pushException({ type: 'issueFix', error: e }));
-                (recheck as any)[fix.recheck] = true;
+                const report: Partial<IssueReport> = {};
+                const self = this as any;
+                for (const action of Object.keys(recheck)) {
+                    if (action in self) { await self[action](report); }
+                }
+                this.commit('issuesPost', report);
+            } finally {
+                this.commit('issuesEndResolve', unfixed);
             }
+        } finally {
+            this.release('diagnose');
         }
-
-        const report: Partial<IssueReport> = {};
-        const self = this as any;
-        for (const action of Object.keys(recheck)) {
-            if (action in self) { self[action](report); }
-        }
-        this.commit('issuesPost', report);
-
-        this.commit('issuesEndResolve', unfixed);
     }
 
     async fixJavaIncompatible() {
