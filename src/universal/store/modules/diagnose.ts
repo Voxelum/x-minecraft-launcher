@@ -21,7 +21,7 @@ export interface Registry<A, AF = true, OP = false> {
     fixing: boolean;
     autofix: AF;
     optional: OP;
-    actived: (A & { file?: string })[];
+    actived: (A & { file?: string; actual?: string; expect?: string })[];
 }
 
 interface State {

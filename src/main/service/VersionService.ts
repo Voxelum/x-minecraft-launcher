@@ -38,7 +38,7 @@ export default class VersionService extends Service {
     async init() {
         this.versionsWatcher.watch(this.getGameAssetsPath('versions'));
     }
-    
+
     protected async parseVersion(versionFolder: string): Promise<LocalVersion> {
         const resolved = await Version.parse(this.state.root, versionFolder);
         const minecraft = resolved.minecraftVersion;
@@ -113,6 +113,8 @@ export default class VersionService extends Service {
                 this.commit('localVersions', versions);
             }
             this.log(`Found ${versions.length} local game versions.`);
+        } else if (patch) {
+            this.log('No new version found.');
         } else {
             this.log('No local game version found.');
         }

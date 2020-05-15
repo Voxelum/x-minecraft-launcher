@@ -6,7 +6,7 @@
     color="grey darken-4"
   >
     <v-card-text>
-      {{ items.length === 0 ? $t('task.empty') : '' }}
+      {{ items.length === 0 ? $t('issue.empty') : '' }}
       <v-treeview
         v-model="tree"
         :open="opened"

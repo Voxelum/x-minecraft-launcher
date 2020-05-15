@@ -97,11 +97,11 @@ function compositeLaunch() {
   const { show: showLaunchStatusDialog, hide: hideLaunchStatusDialog } = useDialog('launch-status');
   const { show: showLaunchBlockedDialog } = useDialog('launch-blocked');
 
-  watch([errors, errorType], () => {
-    if (errors.value.length !== 0 || errorType.value.length !== 0) {
-      notify('error', `[${errorType.value}] ${errors.value}`);
-    }
-  });
+  // watch([errors, errorType], () => {
+  //   if (errors.value.length !== 0 || errorType.value.length !== 0) {
+  //     notify('error', `[${errorType.value}] ${errors.value}`);
+  //   }
+  // });
 
   return {
     launchStatus,
@@ -138,7 +138,7 @@ export default defineComponent({
     const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log');
     const { show: showFeedbackDialog } = useDialog('feedback');
     const { refreshing, name, isServer, exportInstance: exportTo } = useInstance();
-    const { subscribe } = useNotifier();
+    const { subscribeTask } = useNotifier();
     const { missing: missingJava } = useJava();
     const { quit } = useQuit();
 
@@ -164,9 +164,7 @@ export default defineComponent({
           defaultPath: `${name.value}.zip`,
         });
         if (filePath) {
-          subscribe(exportTo({ destinationPath: filePath, mode: 'full' }),
-            () => $t('profile.export.title'),
-            () => $t('profile.export.title'));
+          subscribeTask(exportTo({ destinationPath: filePath, mode: 'full' }), $t('profile.export.title'));
         }
       },
     };

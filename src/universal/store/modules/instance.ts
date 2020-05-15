@@ -310,14 +310,13 @@ const mod: InstanceModule = {
             inst.icon = settings.icon || inst.icon;
 
             if (typeof settings.deployments === 'object') {
-                for (const key of Object.keys(settings.deployments)) {
-                    const dep = settings.deployments[key];
-                    if (!dep) continue;
-                    inst.deployments[key] = dep;
-                    // TODO: remove in vue3
-                    if (!inst.deployments[key]) {
-                        set(state.all, key);
-                    }
+                const mods = settings.deployments.mods;
+                if (mods) {
+                    inst.deployments.mods = mods;
+                }
+                const respacks = settings.deployments.resourcepacks;
+                if (respacks) {
+                    inst.deployments.resourcepacks = respacks;
                 }
             }
 

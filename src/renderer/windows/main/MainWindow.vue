@@ -32,26 +32,21 @@
 import '@/assets/common.css';
 import {
   onMounted,
-  onUnmounted,
   reactive,
   toRefs,
   watch,
   defineComponent,
   ref,
   provide,
-  Ref,
 } from '@vue/composition-api';
-import { IpcRendererEvent } from 'electron';
 import {
   useParticle,
-  useStore,
   useBackgroundImage,
   useIpc,
-  useI18n,
   useRouter,
 } from '@/hooks';
 import { provideTasks } from '@/providers/provideTaskProxy'; 
-import { provideDialog, provideNotifier, useNotifier, provideLoginDialog, provideSearchToggle, SEARCH_TEXT_SYMBOL } from './hooks';
+import { provideDialog, provideNotifier, provideLoginDialog, provideSearchToggle, SEARCH_TEXT_SYMBOL } from './hooks';
 import LoginDialog from './dialog/BaseLoginDialog.vue';
 import TaskDialog from './dialog/BaseTaskDialog.vue';
 import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue';

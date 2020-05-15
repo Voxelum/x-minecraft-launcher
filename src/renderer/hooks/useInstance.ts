@@ -10,6 +10,7 @@ import { useService, useServiceOnly } from './useService';
 import { useStore } from './useStore';
 import { useCurrentUser } from './useUser';
 import { useMinecraftVersions } from './useVersion';
+import { ImportSaveOptions, DeleteSaveOptions, CloneSaveOptions } from '@main/service/InstanceSavesService';
 
 /**
  * Use the general info of the instance
@@ -253,11 +254,11 @@ export function useInstanceSaves() {
     });
     return {
         refresh,
-        cloneSave,
-        deleteSave,
+        cloneSave: (options: CloneSaveOptions) => cloneSave(options).finally(refresh),
+        deleteSave: (options: DeleteSaveOptions) => deleteSave(options).finally(refresh),
         exportSave,
         loadAllInstancesSaves,
-        importSave,
+        importSave: (options: ImportSaveOptions) => importSave(options).finally(refresh),
         path: computed(() => state.instance.path),
         saves: computed(() => state.instance.saves),
     };

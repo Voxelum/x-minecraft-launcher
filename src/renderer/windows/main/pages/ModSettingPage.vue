@@ -141,14 +141,14 @@ export default defineComponent({
     const { minecraft } = useInstanceVersionBase();
     const { mods, unusedMods } = useInstanceMods();
     const { removeResource, importUnknownResource } = useResourceOperation();
-    const { subscribe } = useNotifier();
+    const { subscribeTask } = useNotifier();
     const { toggle } = useSearchToggle();
     const { text: filteredText } = useSearch();
 
     useDropImport(computed(() => leftList.value?.$el as HTMLElement), 'mods');
     useDropImportFile(computed(() => rightList.value?.$el as HTMLElement), (file) => {
       let promise = importUnknownResource({ path: file.path, type: 'mods' });
-      subscribe(promise, () => `Import ${file.path}`, () => `Import ${file.path}`);
+      subscribeTask(promise, `Import ${file.path}`);
     });
 
     function add(mod: string) {

@@ -312,7 +312,7 @@ export default class ResourceService extends Service {
             await context.execute(task('parsing',
                 () => this.updateBuilderMetadata(builder, data, typeHint)), 1);
 
-            this.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
+            this.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain} (type hint: ${typeHint})`);
 
             // write resource to disk
             await context.execute(task('storing',

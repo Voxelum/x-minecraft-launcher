@@ -343,6 +343,7 @@ export default class InstallService extends Service {
             this.log(`Start to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`);
             const handle = this.submit(Task.create('installFabric', () => FabricInstaller.install(versions.yarn, versions.loader, this.state.root)));
             await handle.wait();
+            this.local.refreshVersions();
             this.log(`Success to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`);
         } catch (e) {
             this.warn(`An error ocurred during install fabric yarn-${versions.yarn}, loader-${versions.loader}`);

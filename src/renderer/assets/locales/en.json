@@ -182,17 +182,17 @@
       "message": "Click to install this version"
     },
     "problem": "1 Problem | %{count} Problems",
-    "unknownMod": {
-      "": "Cannot detect Mod {name}'s Minecraft Version",
-      "message": "Please be careful if it causes crash"
+    "requireFabric": {
+      "": "Require fabric to run with Fabric Mod!",
+      "message": "Please a fabric version in version setting"
     },
     "requireForge": {
       "": "Require forge to run with Forge Mod!",
       "message": "Please a forge version in version setting"
     },
-    "requireFabric": {
-      "": "Require fabric to run with Fabric Mod!",
-      "message": "Please a fabric version in version setting"
+    "unknownMod": {
+      "": "Cannot detect Mod {name}'s Minecraft Version",
+      "message": "Please be careful if it causes crash"
     }
   },
   "download": "Download",
@@ -356,6 +356,9 @@
       "library": "Install Library"
     }
   },
+  "installFabric": {
+    "": "Install Fabric"
+  },
   "installForge": {
     "": "Install Forge",
     "downloadInstaller": "Download Installer",
@@ -412,6 +415,10 @@
       "version": "The global cache of Minecraft version metadata",
       "versions": "Same with vanilla. Save multiple versions' JSON & JAR"
     }
+  },
+  "issue": {
+    "empty": "No issue found",
+    "name": "Issues"
   },
   "java": {
     "autoAlloc": "Auto Allocated",
@@ -795,8 +802,6 @@
     },
     "refreshAccount": "Refresh Account",
     "refreshSkin": "Refresh Skin",
-    "refreshSkinFail": "Refresh Skin Failed",
-    "refreshSkinSuccess": "Refresh Skin Success",
     "requireEmail": "E-mail is required",
     "requirePassword": "Password is required",
     "requireUsername": "Username is required",

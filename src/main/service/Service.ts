@@ -205,7 +205,7 @@ export default class Service implements Managers {
     }
 
     protected pushException(e: Exceptions) {
-
+        this.appManager.push('notification', e);
     }
 
     protected async setPersistence<T>({ path, data, schema }: { path: string; data: T; schema?: Schema<T> }) {

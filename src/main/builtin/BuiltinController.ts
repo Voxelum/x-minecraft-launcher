@@ -1,11 +1,12 @@
 
 import { createI18n } from '@main/util/i18n';
+import { TaskNotification } from '@universal/util/notification';
 import { App, BrowserWindow, dialog, Dock, Menu, nativeImage, Notification, Tray } from 'electron';
 import { EventEmitter } from 'events';
 import { resolve } from 'path';
+import { LauncherAppController } from '../app/LauncherAppController';
 import en from './locales/en.json';
 import zh from './locales/zh-CN.json';
-import { LauncherAppController } from '../app/LauncherAppController';
 
 export function focusOnClick(getWindow: () => BrowserWindow | undefined) {
     return () => {
@@ -252,7 +253,7 @@ export default class BuiltinController extends LauncherAppController {
                 }
             }
             if (tasks.isRootTask(node.id)) {
-                this.notify('task.finish', 'success', $t('task.finish', { name: node.name }), $t('task.finishMessage'));
+                this.notify({ type: 'taskFinish', name: node.path });
             }
         });
         tasks.runtime.on('fail', (_, node) => {
@@ -263,41 +264,28 @@ export default class BuiltinController extends LauncherAppController {
                 }
             }
             if (tasks.isRootTask(node.id)) {
-                this.notify('task.fail', 'warn', $t('task.fail', { name: node.name }), $t('task.failMessage'));
+                this.notify({ type: 'taskFail', name: node.path });
             }
         });
         tasks.runtime.on('execute', (node, parent) => {
             if (!parent) {
-                this.notify('task.start', 'info', $t('task.start', { name: node.name }), $t('task.startMessage'));
+                this.notify({ type: 'taskStart', name: node.path });
             }
         });
     }
 
-    private notify(reason: string, level: string, title: string, body: string) {
+    private notify(n: TaskNotification) {
+        const $t = this.i18n.t;
         if (this.activeWindow && this.activeWindow.isFocused()) {
-            this.activeWindow.webContents.send('notification', {
-                reason,
-                level,
-                title,
-                body,
-            });
+            this.activeWindow.webContents.send('notification', n);
         } else {
             let notification = new Notification({
-                title,
-                body,
+                title: $t(n.name, { name: n.name }),
+                body: $t('task.continue'),
                 icon: resolve(__static, 'apple-touch-icon.png'),
             });
             notification.show();
-            notification.on('click', () => {
-                if (this.activeWindow) {
-                    if (!this.activeWindow.isVisible()) {
-                        this.activeWindow.show();
-                    }
-                    if (!this.activeWindow.isFocused()) {
-                        this.activeWindow.focus();
-                    }
-                }
-            });
+            notification.on('click', () => notification);
         }
     }
 }

@@ -1,7 +1,6 @@
 import { LauncherAppContext } from '@main/manager/AppManager';
 import { StaticStore } from '@main/util/staticStore';
 import { App, BrowserWindow, BrowserWindowConstructorOptions, Dock, Menu, NativeImage, Tray } from 'electron';
-import { BuiltinNotification } from '@main/notification';
 import { Managers } from '@main/manager';
 
 export abstract class LauncherAppController {

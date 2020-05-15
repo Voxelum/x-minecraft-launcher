@@ -14,12 +14,12 @@
           <v-tab
             :key="0"
           >
-            Tasks
+            {{ $tc('task.name', 2) }}
           </v-tab>
           <v-tab
             :key="1"
           >
-            Issues
+            {{ $t('issue.name') }}
           </v-tab>
         </v-tabs>
       </template>

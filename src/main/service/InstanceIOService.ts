@@ -12,7 +12,7 @@ import { createReadStream, mkdtemp, readdir, readJson, remove } from 'fs-extra';
 import { tmpdir } from 'os';
 import { basename, join, resolve } from 'path';
 import { ZipFile } from 'yazl';
-import InstanceService from './InstanceService';
+import InstanceService, { EditInstanceOptions } from './InstanceService';
 import ResourceService from './ResourceService';
 import Service, { Inject, Singleton } from './Service';
 
@@ -219,7 +219,7 @@ export class InstanceIOService extends Service {
 
             let forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'));
 
-            let config: Partial<InstanceConfig> = {
+            let config: EditInstanceOptions = {
                 deployments: {
                     mods: manifest.files.map(f => `curseforge://id/${f.projectID}/${f.fileID}`),
                 },

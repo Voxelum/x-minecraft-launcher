@@ -76,10 +76,17 @@ export interface InstanceSchema {
      * - Http: `https://abc.bcd.jar`
      * - Github: `github://username/reponame/releaseName`
      * 
-     * @default {}
+     * @default { mods: string[]; resourcepacks: string[] }
      */
     deployments: {
-        [domain: string]: string[];
+        /**
+         * @default []
+         */
+        mods: string[];
+        /**
+         * @default []
+         */
+        resourcepacks: string[];
     };
 
     /**

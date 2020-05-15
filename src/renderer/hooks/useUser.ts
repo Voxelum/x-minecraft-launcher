@@ -101,9 +101,6 @@ export function useLogin() {
         .map(([userId, user]) => Object.values(user.profiles)
             .map((profile) => ({ ...profile, userId, authService: user.authService, profileService: user.profileService, username: user.username, accessToken: user.accessToken })))
         .reduce((a, b) => [...a, ...b], []));
-    watch(profiles, () => {
-        console.log(`Profiles ${profiles.value}`);
-    });
     const { logined, username, authService, profileService, profileId, id } = useCurrentUser();
     const { login, switchUserProfile } = useServiceOnly('UserService', 'login', 'switchUserProfile');
     function remove(userId: string) {
@@ -253,4 +250,3 @@ export function useUserSecurity() {
 export function useUserSkin() {
 
 }
-

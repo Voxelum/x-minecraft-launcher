@@ -5,50 +5,74 @@
         <span class="headline">{{ $t('profile.launchingDetail') }}</span>
       </v-flex>
       <v-flex d-flex xs12>
-        <v-select v-model="java" 
-                  hide-details 
-                  outline 
-                  required
-                  prepend-inner-icon="add" 
-                  :item-text="getJavaText"
-                  :item-value="getJavaValue" 
-                  :label="$t('java.location')"
-                  :placeholder="$t('java.locationPlaceHolder')"
-                  :items="javas" 
-                  :menu-props="{ auto: true, overflowY: true }" 
-                  @click:prepend-inner="browseFile" />
+        <v-select
+          v-model="java"
+          hide-details
+          outline
+          required
+          prepend-inner-icon="add"
+          :item-text="getJavaText"
+          :item-value="getJavaValue"
+          :label="$t('java.location')"
+          :placeholder="$t('java.locationPlaceHolder')"
+          :items="javas"
+          :menu-props="{ auto: true, overflowY: true }"
+          @click:prepend-inner="browseFile"
+        />
       </v-flex>
       <v-flex d-flex xs6>
-        <v-text-field v-model="minMemory" 
-                      hide-details 
-                      outline 
-                      type="number" 
-                      required 
-                      clearable 
-                      :label="$t('java.minMemory')"
-                      :placeholder="$t('java.noMemory')" />
+        <v-text-field
+          v-model="minMemory"
+          hide-details
+          outline
+          type="number"
+          required
+          clearable
+          :label="$t('java.minMemory')"
+          :placeholder="$t('java.noMemory')"
+        />
       </v-flex>
       <v-flex d-flex xs6>
-        <v-text-field v-model="maxMemory" 
-                      hide-details 
-                      outline 
-                      type="number" 
-                      required 
-                      clearable 
-                      :label="$t('java.maxMemory')" 
-                      :placeholder="$t('java.noMemory')" />
+        <v-text-field
+          v-model="maxMemory"
+          hide-details
+          outline
+          type="number"
+          required
+          clearable
+          :label="$t('java.maxMemory')"
+          :placeholder="$t('java.noMemory')"
+        />
       </v-flex>
       <v-flex d-flex xs12>
-        <args-combobox v-model="vmOptions" 
+        <v-text-field
+          v-model="vmOptions"
+          hide-details
+          outline
+          required
+          clearable
+          :label="$t('profile.vmOptions')"
+        />
+        <!-- <args-combobox v-model="vmOptions" 
                        :label="$t('profile.vmOptions')" 
                        :create-hint="$t('profile.vmOptionsCreateHint')"
-                       :hint="$t('profile.vmOptionsHint')" />
+        :hint="$t('profile.vmOptionsHint')" />-->
       </v-flex>
       <v-flex d-flex xs12>
-        <args-combobox v-model="mcOptions" 
-                       :label="$t('profile.mcOptions')" 
-                       :create-hint="$t('profile.mcOptionsCreateHint')"
-                       :hint="$t('profile.mcOptionsHint')" />
+        <v-text-field
+          v-model="mcOptions"
+          hide-details
+          outline
+          required
+          clearable
+          :label="$t('profile.mcOptions')"
+        />
+        <!-- <args-combobox
+          v-model="mcOptions"
+          :label="$t('profile.mcOptions')"
+          :create-hint="$t('profile.mcOptionsCreateHint')"
+          :hint="$t('profile.mcOptionsHint')"
+        /> -->
       </v-flex>
     </v-layout>
   </v-container>
@@ -86,8 +110,8 @@ export default defineComponent({
     const { all: javas, add } = useJava();
 
     const data = reactive({
-      vmOptions: [] as { text: string }[],
-      mcOptions: [] as { text: string }[],
+      vmOptions: '',
+      mcOptions: '',
       maxMemory: undefined as number | undefined,
       minMemory: undefined as number | undefined,
       memoryRange: [256, 10240],
@@ -100,8 +124,8 @@ export default defineComponent({
       edit({
         minMemory: data.minMemory,
         maxMemory: data.maxMemory,
-        vmOptions: data.vmOptions.map(o => o.text),
-        mcOptions: data.mcOptions.map(o => o.text),
+        vmOptions: data.vmOptions.split(' ').filter(v => v.length !== 0),
+        mcOptions: data.mcOptions.split(' ').filter(v => v.length !== 0),
         java: data.java.version.toString(),
       });
       setJavaPath(data.java.path);
@@ -109,8 +133,8 @@ export default defineComponent({
     function load() {
       data.maxMemory = maxMemory.value;
       data.minMemory = minMemory.value;
-      data.vmOptions = vmOptions.value.map(a => ({ text: a }));
-      data.mcOptions = mcOptions.value.map(a => ({ text: a }));
+      data.vmOptions = vmOptions.value.join(' ');
+      data.mcOptions = mcOptions.value.join(' ');
       if (javaPath.value) {
         const found = javas.value.find(j => j.path === javaPath.value);
         if (found) { data.java = found; }

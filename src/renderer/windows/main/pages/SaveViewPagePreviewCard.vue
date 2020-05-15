@@ -36,19 +36,19 @@
         </v-icon>
         <!-- {{ $t('save.export') }} -->
       </v-btn>
-      <v-btn color="red" icon flat @click="deleteSave(value.path)"> 
+      <v-btn color="red" icon flat @click="deleteSave(value.name)"> 
         <v-icon>
           delete
         </v-icon>
         <!-- {{ $t('save.deleteTitle') }} -->
       </v-btn>
       <v-spacer />
-      <v-btn flat @click="showDetail">
+      <!-- <v-btn flat @click="showDetail">
         <v-icon left>
           info
         </v-icon>
         {{ $t('save.detail') }}
-      </v-btn>
+      </v-btn> -->
     </v-card-actions>
   </v-card>
 </template>

@@ -1,14 +1,14 @@
-import { exists, missing, readdirEnsured, checksum } from '@main/util/fs';
+import { clearDirectoryNarrow, exists, missing, readdirEnsured } from '@main/util/fs';
 import { CreateOption, createTemplate } from '@universal/store/modules/instance';
 import { DeployedInfo, InstanceLockSchema, InstanceSchema, InstancesSchema, RuntimeVersions } from '@universal/store/modules/instance.schema';
 import { UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
 import { requireObject, requireString } from '@universal/util/assert';
 import latestRelease from '@universal/util/lasteRelease.json';
-import { isPrimitiveArrayEqual, assignShallow } from '@universal/util/object';
+import { assignShallow, isPrimitiveArrayEqual } from '@universal/util/object';
 import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/util/serverStatus';
 import { queryStatus, Status } from '@xmcl/client';
 import { readInfo, ServerInfo } from '@xmcl/server-info';
-import { lstat, readdir, readFile, readlink, remove, symlink, unlink, ensureDir, link, ensureFile } from 'fs-extra';
+import { ensureDir, ensureFile, link, readdir, readFile, remove } from 'fs-extra';
 import { join, relative, resolve } from 'path';
 import { v4 } from 'uuid';
 import CurseForgeService from './CurseForgeService';
@@ -19,7 +19,6 @@ import JavaService from './JavaService';
 import ResourceService from './ResourceService';
 import ServerStatusService from './ServerStatusService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
-import { deployByLink } from '@main/util/resource';
 
 const INSTANCES_FOLDER = 'instances';
 const INSTANCE_JSON = 'instance.json';
@@ -407,12 +406,11 @@ export class InstanceService extends Service {
             let deployments = options.deployments;
             let current = state.deployments;
             result.deployments = {};
-            for (let domain of Object.keys(deployments)) {
-                if (!current[domain]) {
-                    result.deployments[domain] = deployments[domain];
-                } else if (!isPrimitiveArrayEqual(current[domain], deployments[domain])) {
-                    result.deployments[domain] = deployments[domain];
-                }
+            if ((!current.mods && deployments.mods) || (!isPrimitiveArrayEqual(current.mods, deployments.mods))) {
+                result.deployments.mods = deployments.mods;
+            }
+            if ((!current.resourcepacks && deployments.resourcepacks) || (!isPrimitiveArrayEqual(current.resourcepacks, deployments.resourcepacks))) {
+                result.deployments.resourcepacks = deployments.resourcepacks;
             }
         }
 
@@ -520,7 +518,9 @@ export class InstanceService extends Service {
                 yarn: '',
             };
             if (info.status.modinfo && info.status.modinfo.type === 'FML') {
-                options.deployments = { mods: info.status.modinfo.modList.map(m => `forge:${m.modid}/${m.version}`) };
+                options.deployments = {
+                    mods: info.status.modinfo.modList.map(m => `forge:${m.modid}/${m.version}`),
+                } as any;
             }
         }
         return this.createInstance({
@@ -538,46 +538,28 @@ export class InstanceService extends Service {
      */
     async deploy(localOnly?: boolean): Promise<void> {
         const instance = this.getters.instance;
-        const deployed = this.state.instance.deployed || [];
         this.log(`Deploy instance ${instance.path}`);
-        const promises: Promise<DeployedInfo>[] = Object.values(instance.deployments).reduce((a, b) => [...a, ...b]).map(async (url) => {
-            let root = this.state.instance.path;
+        const deployToDomain = async (domain: string, urls: string[]) => {
+            await clearDirectoryNarrow(join(instance.path, domain));
+            return Promise.all(urls.map(async (url) => {
+                let root = this.state.instance.path;
 
-            let resource = this.getters.queryResource(url);
-            let deployInf = deployed.find(d => d?.url === url);
-            if (deployInf) {
-                if (deployInf.resolved === 'link') {
-                    let target = join(root, deployInf.file);
-                    if (await exists(target)) {
-                        let actual = await checksum(target).catch(() => '');
-                        let expect = resource.hash;
-                        if (actual === expect) {
-                            this.log(`Resource ${url} found in lockfile and checksum matched. Skip to deploy.`);
-                            return deployInf;
-                        }
-                        this.log(`Resource ${url} checksum mismatched.`);
+                let resource = this.getters.queryResource(url);
+                let result: DeployedInfo = {
+                    // url,
+                    url,
+                    file: '',
+                    resolved: false,
+                };
+                if (resource === UNKNOWN_RESOURCE) {
+                    if (!localOnly) {
+                        resource = await this.resourceService.importResource({ uri: url, metadata: {} });
+                        this.warn(`No local resource matched uri ${url}!`);
+                    } else {
+                        throw new Error();
                     }
                 } else {
-                    this.log(`Resource ${url} found in lockfile. Skip to deploy.`);
-                    return deployInf;
-                }
-            }
-            let result: DeployedInfo = {
-                // url,
-                url,
-                file: '',
-                resolved: false,
-            };
-            if (resource === UNKNOWN_RESOURCE) {
-                if (!localOnly) {
-                    resource = await this.resourceService.importResource({ uri: url, metadata: {} });
-                    this.warn(`No local resource matched uri ${url}!`);
-                } else {
-                    throw new Error();
-                }
-            } else {
-                result.src = resource.path;
-                if (resource.domain === 'mods' || resource.domain === 'resourcepacks') {
+                    result.src = resource.path;
                     let targetPath = join(root, resource.domain, `${resource.name}${resource.ext}`);
                     await ensureFile(targetPath);
                     await remove(targetPath).catch(() => { });
@@ -586,26 +568,16 @@ export class InstanceService extends Service {
                     this.log(`Link resource ${resource.path}(${url}) -> ${targetPath}.`);
                     result.file = relative(root, targetPath);
                     result.resolved = 'link';
-                } else if (resource.domain === 'saves') {
-                    let dest = await this.saveService.importSave({ source: resource.path });
-
-                    this.log(`Unpack resource ${resource.path}(${url}) -> ${dest}.`);
-                    result.file = relative(root, dest);
-                    result.resolved = 'unpack';
-                } else if (resource.domain === 'modpacks') { // modpack will override the profile
-                    await this.ioService.importCurseforgeModpack({
-                        instancePath: this.state.instance.path,
-                        path: resource.path,
-                    });
-                    this.log(`Unpack resource ${resource.path}(${url}) -> ${this.state.instance.path}.`);
-                    result.file = '/';
-                    result.resolved = 'unpack';
                 }
-            }
-            return result;
-        });
-        const info = await Promise.all(promises);
-        this.commit('instanceDeployInfo', info);
+                return result;
+            }));
+        };
+        let [respacks, mods] = await Promise.all([
+            deployToDomain('resourcepacks', instance.deployments.resourcepacks),
+            deployToDomain('mods', instance.deployments.mods),
+        ]);
+
+        this.commit('instanceDeployInfo', [...respacks, ...mods]);
     }
 }
 

@@ -162,17 +162,17 @@
       "message": "启动器将自动下载JSON文件"
     },
     "problem": "1个问题待修复 | %{count}个问题待修复",
-    "unknownMod": {
-      "": "无法解析 {name} Mod 兼容的 Minecraft 版本",
-      "message": "请务必小心使用"
+    "requireFabric": {
+      "": "请启用 Fabric 来运行 Fabric 的 Mod",
+      "message": "请在版本设置页面选择一个合适的 Fabric 版本"
     },
     "requireForge": {
       "": "请启用 Forge 来运行 Forge 的 Mod",
       "message": "请在版本设置页面选择一个合适的 Forge 版本"
     },
-    "requireFabric": {
-      "": "请启用 Fabric 来运行 Fabric 的 Mod",
-      "message": "请在版本设置页面选择一个合适的 Fabric 版本"
+    "unknownMod": {
+      "": "无法解析 {name} Mod 兼容的 Minecraft 版本",
+      "message": "请务必小心使用"
     }
   },
   "downloadUpdate": "下载更新",
@@ -327,6 +327,9 @@
       "library": "检查库文件"
     }
   },
+  "installFabric": {
+    "": "安装 Fabric"
+  },
   "installForge": {
     "": "安装 Forge",
     "downloadInstaller": "下载 Forge 安装器",
@@ -383,6 +386,10 @@
       "version": "Minecraft 版本信息缓存",
       "versions": "和原版一样，保存各个版本的 JAR 和 JSON"
     }
+  },
+  "issue": {
+    "empty": "暂时没有找到问题",
+    "name": "已知问题"
   },
   "java": {
     "autoAlloc": "自动分配",

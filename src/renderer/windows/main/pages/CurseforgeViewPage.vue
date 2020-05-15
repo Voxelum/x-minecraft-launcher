@@ -19,7 +19,7 @@
             <v-progress-circular indeterminate :size="100" />
           </v-layout>
         </v-container>
-        <v-flex v-for="proj in projects" :key="proj.name" d-flex xs12>
+        <v-flex v-for="proj in projects" :key="proj.id" d-flex xs12>
           <v-card v-ripple hover exact replace :to="`/curseforge/${type}/${proj.id}`">
             <v-layout fill-height align-center justify-center>
               <v-flex shrink>

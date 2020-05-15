@@ -1,11 +1,9 @@
-import BuiltinController from '@main/builtin/BuiltinController';
-import { AppLoader } from '@main/app/AppLoader';
 import { LauncherAppController } from '@main/app/LauncherAppController';
-import { BuiltinNotification } from '@main/notification';
+import BuiltinController from '@main/builtin/BuiltinController';
 import { isDirectory } from '@main/util/fs';
 import { getPlatform } from '@xmcl/core';
 import { App, app, BrowserWindow, BrowserWindowConstructorOptions, Dock, ipcMain, Menu, NativeImage, nativeImage, shell, Tray } from 'electron';
-import { ensureFile, readFile, readJson, writeFile } from 'fs-extra';
+import { ensureFile, readFile, writeFile } from 'fs-extra';
 import { join } from 'path';
 import { ParsedUrlQuery } from 'querystring';
 import { parse as parseUrl } from 'url';

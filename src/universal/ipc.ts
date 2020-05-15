@@ -1,6 +1,6 @@
 import { MutationPayload } from 'vuex';
 import { TaskState } from './task';
-import { Exception } from './util/exception';
+import { BuiltinNotification } from './util/notification';
 
 declare module 'electron' {
     interface App extends NodeJS.EventEmitter {
@@ -76,7 +76,7 @@ declare module 'electron' {
         on(channel: 'minecraft-stdout', listener: (event: Electron.IpcRendererEvent, out: string) => void): this;
         on(channel: 'minecraft-stderr', listener: (event: Electron.IpcRendererEvent, err: string) => void): this;
 
-        on(channel: 'exception', listener: (event: Electron.IpcRendererEvent, exception: Exception) => void): this;
+        on(channel: 'notification', listener: (event: Electron.IpcRendererEvent, notification: BuiltinNotification) => void): this;
 
         on(channel: 'task-update', listener: (event: Electron.IpcRendererEvent, update: {
             adds: { id: string; node: TaskState }[];

@@ -1,4 +1,5 @@
 import { exists, missing } from '@main/util/fs';
+import { isResourcePackResource } from '@main/util/resource';
 import { Issue, IssueReport } from '@universal/store/modules/diagnose';
 import { EMPTY_JAVA } from '@universal/store/modules/java';
 import { LocalVersion } from '@universal/store/modules/version';
@@ -295,9 +296,9 @@ export default class DiagnoseService extends Service {
             };
 
             const packFormatMapping = this.state.client.packFormatMapping.mcversion;
-            for (const pack of resources.filter(r => r.type === 'resourcepack')) {
-                if (pack.metadata.format in packFormatMapping) {
-                    const acceptVersion = packFormatMapping[pack.metadata.format];
+            for (const pack of resources.filter(isResourcePackResource)) {
+                if (pack.metadata.pack_format in packFormatMapping) {
+                    const acceptVersion = packFormatMapping[pack.metadata.pack_format];
                     const range = VersionRange.createFromVersionSpec(acceptVersion);
                     if (range && !range.containsVersion(resolvedMcVersion)) {
                         tree.incompatibleResourcePack.push({ name: pack.name, accepted: acceptVersion, actual: mcversion });
@@ -508,7 +509,7 @@ export default class DiagnoseService extends Service {
                         }
                     } else if (issue.role === 'assetIndex') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
+                            tree.corruptedAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file), actual: 'issue.receivedChecksum', expect: issue.expectedChecksum });
                         } else {
                             tree.missingAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file) });
                         }
@@ -569,14 +570,14 @@ export default class DiagnoseService extends Service {
 
             this.log(`Start fixing ${issues.length} issues: ${JSON.stringify(issues.map(i => i.id))}`);
 
-            const recheck = {};
+            const recheck: Record<string, boolean> = {};
 
             this.commit('issuesStartResolve', unfixed);
             try {
                 for (const fix of this.fixes) {
                     if (fix.match(issues)) {
                         await fix.fix(issues).catch(e => this.pushException({ type: 'issueFix', error: e }));
-                        (recheck as any)[fix.recheck] = true;
+                        recheck[fix.recheck] = true;
                     }
                 }
 
