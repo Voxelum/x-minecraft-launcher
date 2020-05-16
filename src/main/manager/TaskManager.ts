@@ -110,7 +110,7 @@ export default class TaskManager extends Manager {
     }
 
     isRootTask(id: string) {
-        return !!this.idToHandleRecord[id];
+        return this.handles.some(h => h.root.id === id);
     }
 
     // storeReady() {
