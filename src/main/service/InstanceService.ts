@@ -1,10 +1,10 @@
 import { clearDirectoryNarrow, exists, missing, readdirEnsured } from '@main/util/fs';
 import { CreateOption, createTemplate } from '@universal/store/modules/instance';
 import { DeployedInfo, InstanceLockSchema, InstanceSchema, InstancesSchema, RuntimeVersions } from '@universal/store/modules/instance.schema';
-import { UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
 import { requireObject, requireString } from '@universal/util/assert';
 import latestRelease from '@universal/util/lasteRelease.json';
 import { assignShallow, isPrimitiveArrayEqual } from '@universal/util/object';
+import { UNKNOWN_RESOURCE } from '@universal/util/resource';
 import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/util/serverStatus';
 import { queryStatus, Status } from '@xmcl/client';
 import { readInfo, ServerInfo } from '@xmcl/server-info';
@@ -169,6 +169,7 @@ export class InstanceService extends Service {
             }
         }
         Object.assign(instance.deployments, option.deployments);
+        instance.server = option.server;
 
         commit('instanceAdd', instance);
 
@@ -294,6 +295,9 @@ export class InstanceService extends Service {
             } else {
                 instance.resolution = payload.resolution;
             }
+        }
+        if (payload.server) {
+            instance.server = payload.server;
         }
         Object.assign(instance.deployments, payload.deployments);
 
@@ -540,7 +544,10 @@ export class InstanceService extends Service {
         const instance = this.getters.instance;
         this.log(`Deploy instance ${instance.path}`);
         const deployToDomain = async (domain: string, urls: string[]) => {
-            await clearDirectoryNarrow(join(instance.path, domain));
+            if (urls.length === 0) { return Promise.resolve([]); }
+            let dir = join(instance.path, domain);
+            await ensureDir(dir);
+            await clearDirectoryNarrow(dir);
             return Promise.all(urls.map(async (url) => {
                 let root = this.state.instance.path;
 
@@ -580,5 +587,6 @@ export class InstanceService extends Service {
         this.commit('instanceDeployInfo', [...respacks, ...mods]);
     }
 }
+// resourcePacks:["vanilla","file/§lDefault§r..§l3D§r..Low§0§o.zip"]
 
 export default InstanceService;
