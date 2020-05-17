@@ -4,7 +4,8 @@
     <v-layout v-else fill-height>
       <side-bar />
       <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
-        <v-card class="main-body" color="grey darken-4">
+        <div class="main-body">
+        <!-- <v-card class="main-body" color="grey darken-4"> -->
           <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;">
           <vue-particles v-if="showParticle" 
                          color="#dedede" 
@@ -16,7 +17,8 @@
             <router-view />
           <!-- </keep-alive> -->
           </transition>
-        </v-card>
+        <!-- </v-card> -->
+        </div>
       </v-layout>
       <context-menu />
       <search-bar />
@@ -131,5 +133,7 @@ img {
   max-width: 720px;
   width: 100%;
   border-radius: 0px 2px 2px 0;
+  background-color: #212121 !important;
+  border-color: #212121 !important;
 }
 </style>

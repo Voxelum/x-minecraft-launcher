@@ -1,8 +1,7 @@
-import { Resource } from '@universal/store/modules/resource';
 import filenamify from 'filenamify';
 import { ensureFile, unlink, writeFile } from 'fs-extra';
 import { basename, resolve, join } from 'path';
-import { ResourceBuilder, getResourceFromBuilder } from './index';
+import { ResourceBuilder, getResourceFromBuilder, Resource } from './index';
 
 /**
  * Commit the resource to the disk

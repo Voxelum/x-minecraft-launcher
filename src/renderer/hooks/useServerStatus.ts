@@ -3,6 +3,7 @@ import { Status } from '@xmcl/client';
 import unknownServer from '@/assets/unknown_server.png';
 import { useStore } from './useStore';
 import { useService } from './useService';
+import { useI18n } from './useI18n';
 
 export function useServerStatus(ref?: Ref<Status | undefined>) {
     const { getters } = useStore();
@@ -41,6 +42,7 @@ export function useServerStatusForProfile(id: string) {
 
 export function useServer(serverRef: Ref<{ host: string; port?: number }>, protocol: Ref<number | undefined>) {
     const { pingServer } = useService('ServerStatusService');
+    const { $t } = useI18n();
     const status = ref<Status>({
         version: {
             name: '',
@@ -62,12 +64,23 @@ export function useServer(serverRef: Ref<{ host: string; port?: number }>, proto
         pinging.value = true;
         const server = serverRef.value;
         if (!server.host) return;
+        status.value.description = $t('profile.server.status.ping');
         status.value = await pingServer({
             host: server.host,
             port: server.port,
             protocol: protocol.value,
         }).finally(() => {
             pinging.value = false;
+        }).catch((e) => {
+            if (e.code === 'ENOTFOUND') {
+                status.value.description = $t('profile.server.status.nohost');
+            } else if (e.code === 'ETIMEOUT') {
+                status.value.description = $t('profile.server.status.timeout');
+            } else if (e.code === 'ECONNREFUSED') {
+                status.value.description = $t('profile.server.status.refuse');
+            } else {
+                status.value.description = '';
+            }
         });
     }
 

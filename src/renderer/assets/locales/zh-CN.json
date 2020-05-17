@@ -588,10 +588,11 @@
       "players": "玩家",
       "port": "端口",
       "recommendedMinecraftVersion": "Minecraft 版本",
+      "creationHint": "请填写服务器地址并尝试 Ping 服务器",
       "status": {
         "nohost": "找不到服务器!",
         "ping": "延迟",
-        "refurse": "服务器断开了连接!",
+        "refuse": "服务器断开了连接!",
         "timeout": "服务器响应超时!"
       },
       "unknown": "未知服务器",

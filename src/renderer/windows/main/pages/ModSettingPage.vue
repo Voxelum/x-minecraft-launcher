@@ -104,7 +104,7 @@
 
 <script lang=ts>
 import { defineComponent, reactive, toRefs, computed, ref, Ref, watch } from '@vue/composition-api';
-import { ForgeResource, LiteloaderResource } from '@universal/store/modules/resource';
+import { ForgeResource, LiteloaderResource } from '@universal/util/resource';
 import {
   useInstanceMods,
   useDragTransferList,
@@ -115,7 +115,7 @@ import {
   ModItem,
 } from '@/hooks';
 import { isCompatible } from '@universal/util/version';
-import { useNotifier, useSearchToggle, useSearch } from '../hooks';
+import { useSearchToggle, useSearch } from '../hooks';
 import ModCard from './ModSettingPageCard.vue';
 import DeleteView from './ModSettingPageDeleteView.vue';
 import DeleteButton from './ModSettingPageDeleteButton.vue';
@@ -141,14 +141,12 @@ export default defineComponent({
     const { minecraft } = useInstanceVersionBase();
     const { mods, unusedMods } = useInstanceMods();
     const { removeResource, importUnknownResource } = useResourceOperation();
-    const { subscribeTask } = useNotifier();
     const { toggle } = useSearchToggle();
     const { text: filteredText } = useSearch();
 
     useDropImport(computed(() => leftList.value?.$el as HTMLElement), 'mods');
     useDropImportFile(computed(() => rightList.value?.$el as HTMLElement), (file) => {
-      let promise = importUnknownResource({ path: file.path, type: 'mods' });
-      subscribeTask(promise, `Import ${file.path}`);
+      return importUnknownResource({ path: file.path, type: 'mods' });
     });
 
     function add(mod: string) {

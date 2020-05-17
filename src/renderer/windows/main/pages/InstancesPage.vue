@@ -144,7 +144,7 @@
         @dragstart="dragStart(instance)"
         @dragend="dragEnd"
       >
-        <preview-card :profile="instance" @click.stop="selectInstance(instance.path)" />
+        <preview-card :instance="instance" @click.stop="selectInstance(instance.path)" />
       </v-flex>
       <v-flex
         v-if="instancesByTime[1].length !== 0"
@@ -158,7 +158,7 @@
         @dragstart="dragStart(instance)"
         @dragend="dragEnd"
       >
-        <preview-card :profile="instance" @click.stop="selectInstance(instance.path)" />
+        <preview-card :instance="instance" @click.stop="selectInstance(instance.path)" />
       </v-flex>
       <v-flex
         v-if="instancesByTime[2].length !== 0"

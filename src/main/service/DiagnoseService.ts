@@ -142,7 +142,7 @@ export default class DiagnoseService extends Service {
             'diagnoseServer');
 
         this.registerMatchedFix(['invalidJava'],
-            () => this.instanceService.setJavaPath(this.state.java.all[this.state.java.default].path),
+            () => this.instanceService.setJavaPath(this.getters.defaultJava.path),
             'diagnoseJava');
     }
 

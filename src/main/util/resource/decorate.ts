@@ -2,6 +2,7 @@ import { basename, extname } from 'path';
 import { unescape } from 'querystring';
 import { parse } from 'url';
 import { DomainedSourceCollection, ResourceBuilder, ResourceHost, ResourceRegistryEntry } from '.';
+import { getSuggestedFilename } from '../fs';
 
 /**
  * Decorate the builder from resource host.
@@ -54,7 +55,7 @@ export async function decorateBuilderFromHost(builder: ResourceBuilder, resource
 export function decorateBulderWithUrlsAndHash(builder: ResourceBuilder, urls: string[], hash: string) {
     let base = unescape(urls[urls.length - 1]);
     let ext = extname(base);
-    builder.name = basename(base, ext);
+    builder.name = getSuggestedFilename(basename(base, ext));
     builder.hash = hash;
     builder.ext = ext;
     for (let u of urls) {
@@ -67,7 +68,7 @@ export function decorateBulderWithUrlsAndHash(builder: ResourceBuilder, urls: st
 export function decorateBuilderWithPathAndHash(builder: ResourceBuilder, path: string, hash: string) {
     builder.hash = hash;
     builder.ext = extname(path);
-    builder.name = basename(path, builder.ext);
+    builder.name = getSuggestedFilename(basename(path, builder.ext));
     builder.source.file = {
         path,
     };

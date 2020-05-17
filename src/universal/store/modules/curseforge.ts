@@ -1,7 +1,7 @@
+import { Resource } from '@universal/util/resource';
+import { remove } from '@universal/util/middleware';
 import { Category } from '@xmcl/curseforge';
 import { ModuleOption } from '../root';
-import { Resource } from './resource';
-import { remove } from '@universal/util/middleware';
 
 export type ProjectType = 'mc-mods' | 'texture-packs' | 'worlds' | 'modpacks';
 

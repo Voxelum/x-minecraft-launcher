@@ -2,7 +2,6 @@ import { Fabric, Forge, LiteLoader } from '@xmcl/mod-parser';
 import { PackMeta, readIcon, readPackMeta } from '@xmcl/resourcepack';
 import { LevelDataFrame, WorldReader } from '@xmcl/world';
 import { ResourceRegistryEntry } from '.';
-import { Resource } from '@universal/store/modules/resource';
 
 export const RESOURCE_ENTRY_FORGE: ResourceRegistryEntry<Forge.ModMetaData[]> = ({
     type: 'forge',
@@ -109,15 +108,3 @@ export const RESOURCE_ENTRY_MODPACK: ResourceRegistryEntry<any> = ({
     getSuggestedName: () => '',
     getUri: (_, hash) => `modpack://${hash}`,
 });
-
-export function isForgeResource(resource: Resource): resource is Resource<Forge.ModMetaData[]> {
-    return resource.type === 'forge';
-}
-
-export function isFabricResource(resource: Resource): resource is Resource<Fabric.ModMetadata> {
-    return resource.type === 'fabric';
-}
-
-export function isResourcePackResource(resource: Resource): resource is Resource<PackMeta.Pack> {
-    return resource.type === 'resourcepack';
-}

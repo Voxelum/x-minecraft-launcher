@@ -1,7 +1,7 @@
 import { CURSEMETA_CACHE } from '@main/constant';
 import { checksum, copyPassively, exists, isDirectory, readdirEnsured } from '@main/util/fs';
-import { commitResourceOnDisk, createResourceBuilder, decorateBuilderFromHost, decorateBuilderFromMetadata, decorateBuilderWithPathAndHash, decorateBulderWithUrlsAndHash, discardResourceOnDisk, getResourceFromBuilder, parseResource, ResourceHost, ResourceRegistryEntry, RESOURCE_ENTRY_FABRIC, RESOURCE_ENTRY_FORGE, RESOURCE_ENTRY_LITELOADER, RESOURCE_ENTRY_MODPACK, RESOURCE_ENTRY_RESOURCE_PACK, RESOURCE_ENTRY_SAVE, ResourceBuilder, getBuilderFromResource, DomainedSourceCollection } from '@main/util/resource';
-import { ImportOption, ImportTypeHint, Resource, UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
+import { commitResourceOnDisk, createResourceBuilder, decorateBuilderFromHost, decorateBuilderFromMetadata, decorateBuilderWithPathAndHash, decorateBulderWithUrlsAndHash, discardResourceOnDisk, DomainedSourceCollection, getBuilderFromResource, getResourceFromBuilder, parseResource, ResourceBuilder, ResourceHost, ResourceRegistryEntry, RESOURCE_ENTRY_FABRIC, RESOURCE_ENTRY_FORGE, RESOURCE_ENTRY_LITELOADER, RESOURCE_ENTRY_MODPACK, RESOURCE_ENTRY_RESOURCE_PACK, RESOURCE_ENTRY_SAVE, UNKNOWN_RESOURCE, Resource } from '@main/util/resource';
+import { ImportOption, ImportTypeHint } from '@universal/store/modules/resource';
 import { ResourceSchema } from '@universal/store/modules/resource.schema';
 import { requireString } from '@universal/util/assert';
 import { Task, task } from '@xmcl/task';
@@ -272,7 +272,7 @@ export default class ResourceService extends Service {
 
             let resolvedUrl = builder.source.uri[builder.source.uri.length - 1];
 
-            context.update(0, 4, uri);
+            context.update(0, 100, uri);
 
             let { data, urls, hash } = await context.execute(task('download', async (c) => {
                 let buffers: Buffer[] = [];
@@ -304,19 +304,19 @@ export default class ResourceService extends Service {
                     hash: hasher.digest('hex'),
                     urls,
                 };
-            }), 1);
+            }), 80);
 
             decorateBulderWithUrlsAndHash(builder, urls, hash);
 
             // use parser to parse metadata
             await context.execute(task('parsing',
-                () => this.updateBuilderMetadata(builder, data, typeHint)), 1);
+                () => this.updateBuilderMetadata(builder, data, typeHint)), 10);
 
             this.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain} (type hint: ${typeHint})`);
 
             // write resource to disk
             await context.execute(task('storing',
-                () => this.persistResource(builder, data)), 1);
+                () => this.persistResource(builder, data)), 10);
 
             let reuslt = getResourceFromBuilder(builder);
             this.commit('resource', reuslt);

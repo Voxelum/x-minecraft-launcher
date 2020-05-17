@@ -614,10 +614,11 @@
       "players": "Players",
       "port": "Port",
       "recommendedMinecraftVersion": "Minecraft Version",
+      "creationHint": "Please Fill the server address and ping the server",
       "status": {
         "nohost": "§4Cannot find host!",
         "ping": "Ping...",
-        "refurse": "§4Server refused!",
+        "refuse": "§4Server refused!",
         "timeout": "§4Connect server timeout!"
       },
       "unknown": "Unknown Server",

@@ -1,12 +1,12 @@
-import { Resource } from '@universal/store/modules/resource';
 import { FileSystem } from '@xmcl/system';
 import { UrlWithStringQuery } from 'url';
+import { Resource } from '@universal/util/resource';
 
 export * from './decorate';
 export * from './entry';
 export * from './io';
 export * from './parse';
-export * from './deploy';
+export * from '@universal/util/resource';
 
 export interface ResourceRegistryEntry<T> {
     type: string;

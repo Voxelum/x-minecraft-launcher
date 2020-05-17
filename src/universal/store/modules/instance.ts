@@ -1,12 +1,12 @@
+import { Resource } from '@main/util/resource';
+import { remove, set } from '@universal/util/middleware';
 import { Status as ServerStatus } from '@xmcl/client';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { ServerInfo } from '@xmcl/server-info';
 import { ModuleOption } from '../root';
 import { DeployedInfo, InstanceLockSchema, InstanceSchema } from './instance.schema';
 import { Java } from './java';
-import { Resource } from './resource';
 import { LocalVersion } from './version';
-import { set, remove } from '@universal/util/middleware';
 
 export type CreateOption = DeepPartial<Omit<InstanceSchema, 'id' | 'lastAccessDate' | 'creationDate'>>;
 export interface SaveMetadata {
@@ -146,6 +146,7 @@ export function createTemplate(): Instance {
         java: '8',
         deployments: {
             mods: [],
+            resourcepacks: [],
         },
         optionalDeployments: [],
         image: '',

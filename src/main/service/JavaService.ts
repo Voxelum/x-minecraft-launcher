@@ -31,21 +31,17 @@ export default class JavaService extends Service {
 
     async init() {
         const { state } = this;
-        if (state.java.all.length === 0) {
-            this.refreshLocalJava();
-        } else {
-            let local = this.getInternalJavaLocation();
-            if (!state.java.all.map(j => j.path).some(p => p === local)) {
-                this.resolveJava(local);
-            }
+        let local = this.getInternalJavaLocation();
+        if (!state.java.all.map(j => j.path).some(p => p === local)) {
+            this.resolveJava(local);
         }
+        this.refreshLocalJava();
     }
 
     async save({ mutation }: { mutation: MutationKeys }) {
         switch (mutation) {
             case 'javaUpdate':
             case 'javaRemove':
-            case 'javaSetDefault':
                 this.setPersistence({ path: this.getPath('java.json'), data: this.state.java, schema: JavaSchema });
                 break;
             default:
