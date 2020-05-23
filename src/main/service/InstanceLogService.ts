@@ -1,7 +1,7 @@
 import { decode, guessEncodingByBuffer, UTF8 } from '@main/util/encoding';
 import { readdirIfPresent } from '@main/util/fs';
 import { readFile, remove } from 'fs-extra';
-import { join } from 'path';
+import { join, isAbsolute } from 'path';
 import { gunzip } from 'zlib';
 import Service from './Service';
 
@@ -65,8 +65,13 @@ export default class InstanceLogService extends Service {
      * @param name The name of crash report
      */
     async getCrashReportContent(name: string) {
-        let filePath = join(this.state.instance.path, 'crash-reports', name);
-        let buf = await readFile(filePath);
+        let filePath: string;
+        if (isAbsolute(name)) {
+            filePath = name;
+        } else {
+            filePath = join(this.state.instance.path, 'crash-reports', name);
+        }
+        let buf = await readFile(filePath.trim());
         if (name.endsWith('.gz')) {
             buf = await new Promise<Buffer>((resolve, reject) => {
                 gunzip(buf, (e, r) => {

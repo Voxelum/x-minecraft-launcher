@@ -302,7 +302,7 @@ export class InstanceService extends Service {
         Object.assign(instance.deployments, payload.deployments);
 
         instance.path = this.getPathUnder(v4());
-        instance.runtime.minecraft = this.getters.minecraftRelease.id;
+        instance.runtime.minecraft = instance.runtime.minecraft || this.getters.minecraftRelease.id;
         instance.author = this.getters.gameProfile?.name ?? '';
         instance.creationDate = Date.now();
         instance.lastAccessDate = Date.now();
@@ -411,11 +411,16 @@ export class InstanceService extends Service {
             let deployments = options.deployments;
             let current = state.deployments;
             result.deployments = {};
-            if ((!current.mods && deployments.mods) || (!isPrimitiveArrayEqual(current.mods, deployments.mods))) {
+            if (deployments.mods
+                && (!current.mods || !isPrimitiveArrayEqual(current.mods, deployments.mods))) {
                 result.deployments.mods = deployments.mods;
             }
-            if ((!current.resourcepacks && deployments.resourcepacks) || (!isPrimitiveArrayEqual(current.resourcepacks, deployments.resourcepacks))) {
+            if (deployments.resourcepacks
+                && (!current.resourcepacks || !isPrimitiveArrayEqual(current.resourcepacks, deployments.resourcepacks))) {
                 result.deployments.resourcepacks = deployments.resourcepacks;
+            }
+            if (Object.keys(result.deployments).length === 0) {
+                delete result.deployments;
             }
         }
 

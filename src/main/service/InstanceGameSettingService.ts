@@ -64,15 +64,16 @@ export default class InstanceGameSettingService extends Service {
         let current = this.state.instance.settings;
         let result: Frame = {};
         for (let key of Object.keys(gameSetting)) {
+            if (key === 'resourcePacks') continue;
             if (key in current && (current as any)[key] !== (gameSetting as any)[key]) {
                 (result as any)[key] = (gameSetting as any)[key];
             }
         }
-        if (result.resourcePacks) {
+        if (gameSetting.resourcePacks && gameSetting.resourcePacks.length !== 0) {
             let mcversion = this.getters.instance.runtime.minecraft;
             if ((isReleaseVersion(mcversion) && compareRelease(mcversion, '1.13.0') >= 0)
                 || (isSnapshotPreview(mcversion) && compareSnapshot(mcversion, '17w43a') >= 0)) {
-                result.resourcePacks = result.resourcePacks
+                result.resourcePacks = gameSetting.resourcePacks
                     .filter(r => r !== 'vanilla')
                     .map(r => (!r.startsWith('file/') ? `file/${r}` : r));
                 result.resourcePacks.unshift('vanilla');

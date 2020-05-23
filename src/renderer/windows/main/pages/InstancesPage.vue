@@ -287,9 +287,9 @@ function useRefreshInstance(notify: Notify) {
       if (pinging.value) return;
       pinging.value = true;
       refreshServerStatusAll().then(() => {
-        notify('success', $t('profile.refreshServers'));
+        notify({ level: 'success', title: $t('profile.refreshServers') });
       }, (e) => {
-        notify('error', $t('profile.refreshServers'), e);
+        notify({ level: 'error', title: $t('profile.refreshServers') });
       }).finally(() => {
         pinging.value = false;
       });

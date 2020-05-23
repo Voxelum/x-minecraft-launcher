@@ -8,7 +8,7 @@ import { useStore } from './useStore';
 import { useBusy } from './useSemaphore';
 
 export function useVersions() {
-    return useServiceOnly('VersionService', 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory');
+    return useServiceOnly('VersionService', 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory', 'reinstall');
 }
 
 export function useLocalVersions() {
@@ -82,6 +82,28 @@ export function useFabricVersions() {
     const { refreshFabric } = useService('InstallService');
     const loaderVersions = computed(() => state.version.fabric.loaders ?? []);
     const yarnVersions = computed(() => state.version.fabric.yarns ?? []);
+    const loaderStatus = computed(() => {
+        const statusMap: { [key: string]: Status } = {};
+        const locals: { [k: string]: boolean } = {};
+        state.version.local.forEach((ver) => {
+            if (ver.fabricLoader) locals[ver.fabricLoader] = true;
+        });
+        state.version.fabric.loaders.forEach((v) => {
+            statusMap[v.version] = locals[v.version] ? 'local' : 'remote';
+        });
+        return statusMap;
+    });
+    const yarnStatus = computed(() => {
+        const statusMap: { [key: string]: Status } = {};
+        const locals: { [k: string]: boolean } = {};
+        state.version.local.forEach((ver) => {
+            if (ver.yarn) locals[ver.yarn] = true;
+        });
+        state.version.fabric.yarns.forEach((v) => {
+            statusMap[v.version] = locals[v.version] ? 'local' : 'remote';
+        });
+        return statusMap;
+    });
 
     function refresh(force = false) {
         return refreshFabric(force);
@@ -95,6 +117,8 @@ export function useFabricVersions() {
         loaderVersions,
         yarnVersions,
         refresh,
+        loaderStatus,
+        yarnStatus,
     };
 }
 
@@ -120,14 +144,10 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
         state.version.local.forEach((ver) => {
             if (ver.forge) localForgeVersion[ver.forge] = true;
         });
-
-        Object.keys(state.version.forge).forEach((mcversion) => {
-            const container = state.version.forge[mcversion];
-            if (container.versions) {
-                container.versions.forEach((version) => {
-                    statusMap[version.version] = localForgeVersion[version.version] ? 'local' : 'remote';
-                });
-            }
+        state.version.forge.forEach((container) => {
+            container.versions.forEach((version) => {
+                statusMap[version.version] = localForgeVersion[version.version] ? 'local' : 'remote';
+            });
         });
         return statusMap;
     });

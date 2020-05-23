@@ -152,7 +152,10 @@
       "": "缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少{count}个库文件 | 缺少{count}个库文件",
       "message": "启动器将自动下载并安装库文件"
     },
-    "missingVersion": "请选择一个Minecraft版本！",
+    "missingVersion": {
+      "": "未安装 {version}",
+      "message": "启动器将自动安装该版本"
+    },
     "missingVersionJar": {
       "": "%{version}版本JAR文件缺失",
       "message": "启动器将自动下载JAR文件"
@@ -417,14 +420,16 @@
       "title": "有几个待解决的问题"
     },
     "checkingProblems": "检测问题中",
-    "crash": "游戏崩溃了!!",
+    "crash": "游戏崩溃了！",
     "failed": {
+      "description": "没有找到崩溃报告，这里是游戏最新日志文件",
       "general": "启动失败",
       "generalText": "如果你反复出现同样的问题，请联系作者!",
       "illegalAuth": "用户数据为空",
       "illegalAuthText": "无效的用户数据！请尝试重新登陆或切换账号",
       "selectProfileEmpty": "启动配置为空",
       "selectProfileEmptyText": "很奇怪，你可以尝试重新创建当前的启动配置。如果你老遇到这个问题请联系作者!",
+      "title": "游戏未正常退出",
       "unresolvableProblems": "无法处理某些启动问题",
       "unresolvableProblemsText": "启动器无法自动处理一些启动前置需求。你可以尝试在主页让启动器自动修复。如果你反复遇到此问题，请联系作者"
     },
@@ -433,6 +438,7 @@
     "launching": "启动中...",
     "launchingSlow": "还在启动…Minecraft图形界面启动的会比较慢呢~",
     "openCrashReportFolder": "打开崩溃日志文件夹",
+    "openLogFolder": "打开日志文件夹",
     "showLog": "Minecraft启动后显示日志"
   },
   "launch.hideLauncher": "Minecraft 启动后隐藏启动器",
@@ -565,6 +571,7 @@
       "acceptingMinecraftVersion": "接受 Minecraft 版本",
       "add": "添加服务器",
       "create": "创建一个新的服务器",
+      "creationHint": "请填写服务器地址并尝试 Ping 服务器",
       "delete": {
         "description": "此操作将删除所有本地关于此服务器的信息。你确定继续吗？",
         "name": "删除服务器"
@@ -575,7 +582,6 @@
         "requirename": "缺少服务器名",
         "wrongVersion": "当前版本与服务器协议不匹配，可能导致连接错误"
       },
-      "version": "服务器推荐版本",
       "expectedVersions": "已支持的版本",
       "filterVersion": "过滤服务器相应的 Minecraft 版本",
       "host": "服务器地址",
@@ -589,7 +595,6 @@
       "players": "玩家",
       "port": "端口",
       "recommendedMinecraftVersion": "Minecraft 版本",
-      "creationHint": "请填写服务器地址并尝试 Ping 服务器",
       "status": {
         "nohost": "找不到服务器!",
         "ping": "延迟",
@@ -598,6 +603,7 @@
       },
       "unknown": "未知服务器",
       "unknownDescription": "未知服务器，请刷新。",
+      "version": "服务器推荐版本",
       "versionHint": "Ping 使用的 Minecraft 版本"
     },
     "setting": "游戏设置",
@@ -727,8 +733,8 @@
     "manager": "任务管理器",
     "name": "任务 | 任务",
     "running": "活跃任务",
-    "successed": "成功",
-    "start": "{name} 开始"
+    "start": "{name} 开始",
+    "successed": "成功"
   },
   "user": {
     "accessToken": "访问令牌",
@@ -826,10 +832,13 @@
     "noForge": "Forge不支持此版本",
     "noLocalVersion": "本地沒有安裝任何版本",
     "noMinecraft": "无法获取Minecraft版本列表，请检查你的网络",
+    "notInstalled": "未安装该版本",
     "pending": "下载中...",
     "prepare": "准备中",
     "recommended": "稳定版",
     "refresh": "刷新本地版本",
+    "reinstallDescription": "如果你觉得此版本安装的有问题，可以尝试重新安装该版本。",
+    "reinstallTitle": "重新安装 {version}",
     "release": "稳定版",
     "releaseDate": "发行日期",
     "remote": "下载这个版本",

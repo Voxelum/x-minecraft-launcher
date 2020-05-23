@@ -9,10 +9,11 @@ export function isCompatible(range: string, version: string) {
     return vRange.containsVersion(ArtifactVersion.of(version));
 }
 
-export function getExpectVersion(minecraft: string, forge?: string, liteloader?: string) {
+export function getExpectVersion(minecraft: string, forge?: string, liteloader?: string, fabric?: string) {
     let expectedId = minecraft;
-    if (typeof forge === 'string' && forge.length > 0) expectedId += `-forge${minecraft}-${forge}`;
+    if (typeof forge === 'string' && forge.length > 0) expectedId += `-forge${forge}`;
     if (typeof liteloader === 'string' && liteloader.length > 0) expectedId += `-liteloader${liteloader}`;
+    if (typeof fabric === 'string' && fabric.length > 0) expectedId += `-fabric${fabric}`;
     return expectedId;
 }
 

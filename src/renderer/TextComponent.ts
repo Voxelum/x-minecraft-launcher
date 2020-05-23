@@ -14,7 +14,10 @@ export default defineComponent({
         return () => {
             if (!props.source) return h('div');
 
-            const src = typeof props.source === 'string' ? fromFormattedString(props.source) : props.source as TextComponent;
+            let src = typeof props.source === 'string' ? fromFormattedString(props.source) : props.source as TextComponent;
+            if (props.source && props.source.text && Object.keys(props.source).length === 1) {
+                src = fromFormattedString(props.source.text);
+            }
             const hint = render(src);
             function generate(node: RenderNode): ReturnType<typeof h> {
                 return h('span', { style: node.style }, [$t(node.component.text), node.children.map(generate)]);

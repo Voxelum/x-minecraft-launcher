@@ -23,13 +23,16 @@
               <v-flex xs12 style="display: flex; flex-direction: row">
                 <img :src="favicon" style="max-width: 80px; max-height: 80px; min-height: 80px;">
                 <div style="flex-grow: 1" />
-                <span style="display: flex; align-items: center;">
-                  <text-component v-if="description" :source="description" />
-                  <div
-                    v-else
-                    style="font-size: 18px; font-weight: bold;"
-                  >{{ $t('profile.server.creationHint') }}</div>
-                </span>
+                <v-layout>
+                  <span style="display: flex; align-items: center;">
+                    <text-component v-if="description" :source="description" />
+                    <div
+                      v-else
+                      style="font-size: 18px; font-weight: bold;"
+                    >{{ $t('profile.server.creationHint') }}</div>
+                  </span>
+                  <text-component v-if="version.name" :source="version.name" />
+                </v-layout>
               </v-flex>
               <v-flex d-flex xs4 style="display: flex; align-items: center">
                 <v-text-field
@@ -68,7 +71,7 @@
 
               <v-flex d-flex xs4>
                 <v-text-field
-                  v-model="server.host"
+                  v-model="serverField"
                   dark
                   persistent-hint
                   :hint="$t('profile.server.hostHint')"
@@ -236,6 +239,7 @@ export default defineComponent({
       filterVersion: false,
       javaValid: true,
     });
+    const serverField = ref('');
     const ready = computed(() => data.valid && data.javaValid);
     const dataRef = toRefs(data);
 
@@ -285,11 +289,21 @@ export default defineComponent({
         }
       });
     });
+    watch(serverField, (v) => {
+      let [host, port] = v.split(':');
+      server.value.host = host;
+      if (port) {
+        server.value.port = Number.parseInt(port, 10);
+      } else {
+        server.value.port = 25565;
+      }
+    });
 
     return {
       ...dataRef,
       ...creationData,
       ...staticData,
+      serverField,
       favicon,
       acceptingVersion,
       refresh,

@@ -3,6 +3,7 @@ import { isResourcePackResource } from '@main/util/resource';
 import { Issue, IssueReport } from '@universal/store/modules/diagnose';
 import { EMPTY_JAVA } from '@universal/store/modules/java';
 import { LocalVersion } from '@universal/store/modules/version';
+import { getExpectVersion } from '@universal/util/version';
 import { MinecraftFolder } from '@xmcl/core';
 import { Diagnosis, Installer } from '@xmcl/installer';
 import { InstallProfile } from '@xmcl/installer/minecraft';
@@ -93,15 +94,30 @@ export default class DiagnoseService extends Service {
             },
             'diagnoseVersion');
 
-        this.registerMatchedFix(['missingForge'],
+        this.registerMatchedFix(['missingVersion'],
             async (issues) => {
                 if (!issues[0].arguments) return;
-                let { minecraft, forge } = issues[0].arguments;
-                let forgeVer = this.state.version.forge[minecraft]?.versions.find(v => v.version === forge);
-                if (!forgeVer) {
-                    await this.installService.installForge({ mcversion: minecraft, version: forge });
-                } else {
-                    await this.installService.installForge(forgeVer);
+                let { minecraft, forge, fabricLoader, yarn } = issues[0].arguments;
+                let targetVersion: string | undefined;
+                if (minecraft && this.state.version.local.every(v => v.minecraft !== minecraft)) {
+                    let metadata = this.state.version.minecraft.versions.find(v => v.id === minecraft);
+                    if (metadata) {
+                        await this.installService.installMinecraft(metadata);
+                    }
+                    targetVersion = metadata?.id;
+                }
+                if (forge) {
+                    let forgeVer = this.state.version.forge[minecraft]?.versions.find(v => v.version === forge);
+                    if (!forgeVer) {
+                        targetVersion = await this.installService.installForge({ mcversion: minecraft, version: forge });
+                    } else {
+                        targetVersion = await this.installService.installForge(forgeVer);
+                    }
+                } else if (fabricLoader) {
+                    targetVersion = await this.installService.installFabric({ yarn, loader: fabricLoader });
+                }
+                if (targetVersion) {
+                    await this.installService.installDependencies(targetVersion);
                 }
             },
             'diagnoseVersion');
@@ -427,7 +443,6 @@ export default class DiagnoseService extends Service {
             let currentVersion = { ...this.getters.instanceVersion };
             let targetVersion = currentVersion.folder;
             let mcversion = currentVersion.minecraft;
-            let forge = currentVersion.forge;
 
             let mcLocation = MinecraftFolder.from(this.state.root);
 
@@ -445,16 +460,13 @@ export default class DiagnoseService extends Service {
                 'corruptedLibraries' |
                 'corruptedAssets' |
 
-                'badInstall' |
-
-                'missingForge' |
-                'missingLiteloader'>;
+                'badInstall'>;
 
             let tree: VersionReport = {
                 missingVersion: [],
                 missingVersionJar: [],
-                missingAssetsIndex: [],
                 missingVersionJson: [],
+                missingAssetsIndex: [],
                 missingLibraries: [],
                 missingAssets: [],
 
@@ -464,30 +476,11 @@ export default class DiagnoseService extends Service {
                 corruptedLibraries: [],
                 corruptedAssets: [],
 
-                missingForge: [],
-                missingLiteloader: [],
-
                 badInstall: [],
             };
 
             if (targetVersion === 'unknown') {
-                if (currentVersion.minecraft) {
-                    tree.missingVersionJson.push({ version: currentVersion.minecraft, ...currentVersion });
-                }
-
-                if (currentVersion.forge) {
-                    let forge = this.state.version.local.find(v => v.forge === currentVersion.forge);
-                    if (!forge) {
-                        tree.missingForge.push({ forge: currentVersion.forge, minecraft: currentVersion.minecraft });
-                    }
-                }
-
-                if (currentVersion.liteloader) {
-                    let liteloader = this.state.version.local.find(v => v.liteloader === currentVersion.liteloader);
-                    if (!liteloader) {
-                        tree.missingLiteloader.push({ liteloader: currentVersion.liteloader, minecraft: currentVersion.minecraft });
-                    }
-                }
+                tree.missingVersion.push({ ...currentVersion, version: getExpectVersion(currentVersion.minecraft, currentVersion.forge, currentVersion.liteloader, currentVersion.fabricLoader) });
             } else {
                 this.log(`Diagnose for version ${targetVersion}`);
 
