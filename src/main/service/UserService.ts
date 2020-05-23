@@ -316,7 +316,7 @@ export default class UserService extends Service {
                 return false;
             });
 
-            this.log(`Validate user access token: ${valid ? 'valid' : 'invalid'}`);
+            this.log(`Validate ${user.authService} user access token: ${valid ? 'valid' : 'invalid'}`);
 
             if (valid) {
                 this.checkLocation();

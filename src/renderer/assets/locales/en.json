@@ -601,6 +601,7 @@
       "error": {
         "wrongVersion": "The current selected version doesn't really match the server protocol! This might cause game connection errors."
       },
+      "version": "Server Requires Version",
       "expectedVersions": "Supported Versions",
       "filterVersion": "Filter server responded Minecraft version",
       "host": "Host",
@@ -762,7 +763,8 @@
     "manager": "Task Manager",
     "name": "Task | Tasks",
     "running": "Running Tasks",
-    "successed": "Successed"
+    "successed": "Successed",
+    "start": "Task {name} Started"
   },
   "user": {
     "accessToken": "Access Token",

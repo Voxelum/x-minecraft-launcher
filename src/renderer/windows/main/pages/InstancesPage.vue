@@ -336,7 +336,6 @@ function useInstanceImport(notify: Notify) {
         properties: fromFolder ? ['openDirectory'] : ['openFile'],
       });
       if (filePaths && filePaths.length > 0) {
-        notify('info', $t('profile.import.start'));
         for (const f of filePaths) {
           if (curseforge) {
             await importUnknownResource({
@@ -349,23 +348,9 @@ function useInstanceImport(notify: Notify) {
             await importInstance(f);
           }
         }
-        notify('success', $t('profile.import.title'));
       }
     },
   };
-}
-
-function useInstancesColor() {
-  onMounted(() => {
-    // const colors = [...this.colors];
-    // const count = colors.length;
-    // const newOrder = [];
-    // for (let i = 0; i < count; ++i) {
-    //   const choise = Math.random() * Math.floor(colors.length);
-    //   newOrder.push(colors.splice(choise, 1));
-    // }
-    // this.colors = newOrder;
-  });
 }
 
 export default defineComponent({
@@ -385,10 +370,10 @@ export default defineComponent({
     const { cancel: cancelDelete, operate: doDelete, begin: startDelete, data: deletingInstance } = useOperation(defaultInstance, async (instance) => {
       if (instance && 'path' in instance) {
         await deleteInstance(instance.path).catch(() => {
-          notify('error', `Fail to delete profile ${instance.path}`);
+          // notify({ level: 'error', title: `Fail to delete profile ${instance.path}`});
         });
       } else {
-        notify('error', 'Fail to delete profile');
+        // notify('error', 'Fail to delete profile');
       }
     });
     const { begin: dragStart, cancel: dragEnd, operate: drop, data: draggingInstance } = useOperation(defaultInstance, (inst) => {

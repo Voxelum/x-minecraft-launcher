@@ -1,8 +1,8 @@
-import { YggdrasilAuthAPI, ProfileServiceAPI, GameProfile } from '@xmcl/user';
-import { toObjectReducer, assignShallow } from '@universal/util/object';
+import { remove, set } from '@universal/util/middleware';
+import { assignShallow, toObjectReducer } from '@universal/util/object';
+import { GameProfile, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user';
 import { ModuleOption } from '../root';
 import { GameProfileAndTexture, UserProfile, UserSchema } from './user.schema';
-import { set, remove } from '@universal/util/middleware';
 
 export type UserGameProfile = Omit<UserProfile, 'profiles'> & GameProfileAndTexture & { userId: string; id: string };
 

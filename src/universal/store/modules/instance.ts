@@ -1,5 +1,6 @@
 import { Resource } from '@main/util/resource';
 import { remove, set } from '@universal/util/middleware';
+import { UNKNOWN_STATUS } from '@universal/util/serverStatus';
 import { Status as ServerStatus } from '@xmcl/client';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { ServerInfo } from '@xmcl/server-info';
@@ -23,7 +24,7 @@ export interface Instance extends InstanceSchema {
     /**
      * The server status
      */
-    serverStatus: ServerStatus | undefined;
+    serverStatus: ServerStatus;
 }
 
 interface State extends InstanceLockSchema {
@@ -158,7 +159,7 @@ export function createTemplate(): Instance {
 
         lastAccessDate: -1,
         creationDate: -1,
-        serverStatus: undefined,
+        serverStatus: UNKNOWN_STATUS,
     };
     return base;
 }
@@ -221,10 +222,9 @@ const mod: InstanceModule = {
                 if (!instance.deployments.resourcepacks) {
                     instance.deployments.resourcepacks = [];
                 }
-                state.all[instance.path] = { ...instance, serverStatus: undefined };
-
                 // TODO: remove in vue3
-                set(state.all, instance.path);
+                set(state.all, instance.path, { ...instance, serverStatus: UNKNOWN_STATUS });
+                state.all[instance.path] = { ...instance, serverStatus: UNKNOWN_STATUS };
             }
         },
         instanceJava(state, jPath) {

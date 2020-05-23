@@ -166,8 +166,9 @@ export default class InstallService extends Service {
         if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
             option.assetsHost = 'http://bmclapi2.bangbang93.com/assets';
         }
-        const location = this.state.root;
-        await this.submit(Installer.installResolvedAssetsTask(assets, new MinecraftFolder(location), option)).wait();
+        let location = this.state.root;
+        let task = Installer.installResolvedAssetsTask(assets, new MinecraftFolder(location), option);
+        await this.submit(task).wait();
     }
 
     /**

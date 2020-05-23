@@ -16,6 +16,7 @@ import StoreManager from '@main/manager/StoreManager';
 
 export const INJECTIONS_SYMBOL = Symbol('__injections__');
 export const MUTATION_LISTENERS_SYMBOL = Symbol('__listeners__');
+export const PURE_SYMBOL = Symbol('__pure__');
 
 export function Inject(type: string) {
     return function (target: any, propertyKey: string) {
@@ -77,6 +78,16 @@ export function Singleton(...keys: string[]) {
             }
         };
         descriptor.value = func;
+    };
+}
+
+/**
+ * A service method decorator to make sure this service call should run in singleton -- no second call at the time. 
+ */
+export function Pure() {
+    return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
+        let func = Reflect.get(target, propertyKey);
+        Reflect.set(func, PURE_SYMBOL, true);
     };
 }
 

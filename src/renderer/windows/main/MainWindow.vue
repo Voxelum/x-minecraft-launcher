@@ -4,7 +4,7 @@
     <v-layout v-else fill-height>
       <side-bar />
       <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
-        <div class="main-body">
+        <div class="main-body v-sheet">
         <!-- <v-card class="main-body" color="grey darken-4"> -->
           <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;">
           <vue-particles v-if="showParticle" 

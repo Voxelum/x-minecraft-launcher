@@ -575,6 +575,7 @@
         "requirename": "缺少服务器名",
         "wrongVersion": "当前版本与服务器协议不匹配，可能导致连接错误"
       },
+      "version": "服务器推荐版本",
       "expectedVersions": "已支持的版本",
       "filterVersion": "过滤服务器相应的 Minecraft 版本",
       "host": "服务器地址",
@@ -726,7 +727,8 @@
     "manager": "任务管理器",
     "name": "任务 | 任务",
     "running": "活跃任务",
-    "successed": "成功"
+    "successed": "成功",
+    "start": "{name} 开始"
   },
   "user": {
     "accessToken": "访问令牌",

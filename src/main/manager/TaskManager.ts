@@ -134,11 +134,19 @@ export default class TaskManager extends Manager {
     //         }), 100);
     //         c.execute(Task.create('b', (ctx) => {
     //             let progress = 0;
+    //             let paused = false;
+    //             ctx.pausealbe(() => {
+    //                 paused = true;
+    //             }, () => {
+    //                 paused = false;
+    //             });
     //             setInterval(() => {
-    //                 ctx.update(progress, 100, progress.toString());
-    //                 progress += 10;
-    //                 progress = progress > 100 ? 0 : progress;
-    //             }, 1000);
+    //                 if (!paused) {
+    //                     ctx.update(progress, 100, progress.toString());
+    //                     progress += 10;
+    //                     progress = progress > 100 ? 0 : progress;
+    //                 }
+    //             }, 2000);
     //             return new Promise(() => { });
     //         }));
     //         return new Promise(() => { });

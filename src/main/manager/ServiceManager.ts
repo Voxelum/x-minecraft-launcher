@@ -33,6 +33,7 @@ type Constructor<T> = new () => T;
 interface ServiceCallSession {
     id: number;
     name: string;
+    pure: boolean;
     call: () => Promise<any>;
 }
 
@@ -262,6 +263,7 @@ export default class ServiceManager extends Manager {
                 const sess: ServiceCallSession = {
                     call: () => servProxy[name](payload),
                     name: `${service}.${name}`,
+                    pure: false,
                     id: sessionId,
                 };
 
