@@ -27,6 +27,7 @@ export function useNotificationHandler() {
         title(notification: T): string;
         body(notification: T): string;
         more?(): void;
+        full?: boolean;
     }
     const registry: Record<string, Handler<any> | undefined> = {};
 
@@ -36,9 +37,10 @@ export function useNotificationHandler() {
 
     register<TaskNotification>('taskStart', {
         level: 'info',
-        title: (n) => $t(n.name),
+        title: (n) => $t('task.start', { name: $t(n.name) }),
         body: (n) => $t('task.startBody', { name: $t(n.name) }),
         more: showTask,
+        full: true,
     });
     register<TaskNotification>('taskFinish', {
         level: 'success',
@@ -90,6 +92,7 @@ export function useNotifyQueueConsumer() {
         if (not) {
             data.level = not.level;
             data.title = not.title;
+            data.full = not.full ?? false;
             data.show = true;
             data.more = not.more;
         }
@@ -101,7 +104,7 @@ export function useNotifyQueueConsumer() {
         }
     });
     watch(queueLength, (newLength, oldLength) => {
-        if (newLength > oldLength) {
+        if (newLength > oldLength && !data.show) {
             consume();
         }
     });
@@ -109,7 +112,7 @@ export function useNotifyQueueConsumer() {
     function handleNotification(event: any, payload: BuiltinNotification) {
         const handler = registry[payload.type];
         if (handler) {
-            queue.value.push({ level: handler.level, title: handler.title(payload), more: handler.more });
+            queue.value.push({ level: handler.level, title: handler.title(payload), more: handler.more, full: handler.full });
         } else {
             console.warn(`Cannot handle the notification ${payload.type}`);
         }

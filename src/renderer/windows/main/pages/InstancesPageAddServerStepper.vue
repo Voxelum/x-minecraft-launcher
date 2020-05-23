@@ -21,8 +21,8 @@
           <v-container grid-list fill-height>
             <v-layout row wrap>
               <v-flex xs12 style="display: flex; flex-direction: row">
-                <img :src="favicon" style="max-width: 80px; max-height: 80px; min-height: 80px;" />
-                <div style="flex-grow: 1"></div>
+                <img :src="favicon" style="max-width: 80px; max-height: 80px; min-height: 80px;">
+                <div style="flex-grow: 1" />
                 <span style="display: flex; align-items: center;">
                   <text-component v-if="description" :source="description" />
                   <div
@@ -213,7 +213,7 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    const { create, reset: $reset, use, ...creationData } = useInstanceCreation();
+    const { create, reset: $reset, ...creationData } = useInstanceCreation();
     const { all: javas } = useJava();
     const { $t } = useI18n();
     const router = useRouter();
@@ -248,10 +248,14 @@ export default defineComponent({
       ping,
       pinging,
       description,
+      reset: resetServer,
     } = useServer(server, ref(undefined));
 
     function reset() {
       $reset();
+      resetServer();
+      server.value.host = '';
+      server.value.port = 25565;
       creationData.name.value = '';
     }
 
@@ -265,7 +269,7 @@ export default defineComponent({
     async function doCreate() {
       try {
         data.creating = true;
-        creationData.name.value = creationData.name.value ?? server.value.host;
+        creationData.name.value = creationData.name.value || server.value.host;
         creationData.server.value = server.value;
         await create();
         init();

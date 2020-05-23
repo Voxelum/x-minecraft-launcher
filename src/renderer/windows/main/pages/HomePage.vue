@@ -1,20 +1,38 @@
 <template>
   <v-layout row wrap>
-    <v-icon v-ripple style="position: absolute; right: 0; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
-            dark @click="quit">
-      close
-    </v-icon>
-    <v-icon v-ripple style="position: absolute; right: 44px; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
-            dark @click="showFeedbackDialog">
-      help_outline
-    </v-icon>
+    <v-icon
+      v-ripple
+      style="position: absolute; right: 0; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
+      dark
+      @click="quit"
+    >close</v-icon>
+    <v-icon
+      v-ripple
+      style="position: absolute; right: 44px; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
+      dark
+      @click="showFeedbackDialog"
+    >help_outline</v-icon>
 
+    <v-flex d-flex xs12 style="z-index: 1; padding-top: 50px; padding-left: 50px">
+      <home-header />
+    </v-flex>
+
+    <v-flex v-if="isServer" d-flex xs12 style="margin: 40px;">
+      <server-status-bar />
+    </v-flex>
+
+    <!-- <div style="position: absolute; left: 20px; bottom: 10px"> -->
     <v-tooltip top>
       <template v-slot:activator="{ on }">
-        <v-btn style="position: absolute; left: 20px; bottom: 10px; " flat icon dark to="/base-setting" v-on="on">
-          <v-icon dark>
-            more_vert
-          </v-icon>
+        <v-btn
+          style="position: absolute; left: 20px; bottom: 10px; "
+          flat
+          icon
+          dark
+          to="/base-setting"
+          v-on="on"
+        >
+          <v-icon dark>more_vert</v-icon>
         </v-btn>
       </template>
       {{ $t('profile.setting') }}
@@ -22,14 +40,16 @@
 
     <v-tooltip top>
       <template v-slot:activator="{ on }">
-        <v-btn style="position: absolute; left: 80px; bottom: 10px; " 
-               flat icon dark 
-               :loading="refreshing"
-               v-on="on"
-               @click="showExportDialog">
-          <v-icon dark>
-            share
-          </v-icon>
+        <v-btn
+          style="position: absolute; left: 80px; bottom: 10px; "
+          flat
+          icon
+          dark
+          :loading="refreshing"
+          v-on="on"
+          @click="showExportDialog"
+        >
+          <v-icon dark>share</v-icon>
         </v-btn>
       </template>
       {{ $t('profile.modpack.export') }}
@@ -37,32 +57,33 @@
 
     <v-tooltip top>
       <template v-slot:activator="{ on }">
-        <v-btn style="position: absolute; left: 140px; bottom: 10px; " flat icon dark v-on="on"
-               @click="showLogDialog">
-          <v-icon dark>
-            subtitles
-          </v-icon>
+        <v-btn
+          style="position: absolute; left: 140px; bottom: 10px; "
+          flat
+          icon
+          dark
+          v-on="on"
+          @click="showLogDialog"
+        >
+          <v-icon dark>subtitles</v-icon>
         </v-btn>
       </template>
       {{ $t('profile.logsCrashes.title') }}
     </v-tooltip>
+    <!-- </div> -->
 
     <problems-bar />
-    <v-flex d-flex xs12 style="z-index: 1; padding-top: 50px; padding-left: 50px">
-      <home-header />
-    </v-flex>
-    
-    <v-flex v-if="isServer" d-flex xs12 style="margin: 40px;">
-      <server-status-bar />
-    </v-flex>
 
-    <v-btn color="primary" style="position: absolute; right: 10px; bottom: 10px; " dark large
-           :disabled="refreshing || missingJava"
-           @click="launch">
+    <v-btn
+      color="primary"
+      style="position: absolute; right: 10px; bottom: 10px; "
+      dark
+      large
+      :disabled="refreshing || missingJava"
+      @click="launch"
+    >
       {{ $t('launch.launch') }}
-      <v-icon v-if="launchStatus === 'ready'" right> 
-        play_arrow
-      </v-icon>
+      <v-icon v-if="launchStatus === 'ready'" right>play_arrow</v-icon>
       <v-progress-circular v-else class="v-icon--right" indeterminate :size="20" :width="2" />
     </v-btn>
     <log-dialog v-model="isLogDialogShown" :hide="hideLogDialog" />
@@ -72,7 +93,7 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, watch } from '@vue/composition-api';
+import { defineComponent, onMounted } from '@vue/composition-api';
 import { LaunchException } from '@universal/util/exception';
 import {
   useI18n,
@@ -82,6 +103,7 @@ import {
   useJava,
   useQuit,
 } from '@/hooks';
+import { useDialog, useNotifier } from '../hooks';
 import GameExitDialog from './HomePageGameExitDialog.vue';
 import LaunchBlockedDialog from './HomePageLaunchBlockedDialog.vue';
 import FeedbackDialog from './HomePageFeedbackDialog.vue';
@@ -89,11 +111,9 @@ import LogDialog from './HomePageLogDialog.vue';
 import HomeHeader from './HomePageHeader.vue';
 import ProblemsBar from './HomePageProblemsBar.vue';
 import ServerStatusBar from './HomePageServerStatusBar.vue';
-import { useDialog, useNotifier } from '../hooks';
 
 function compositeLaunch() {
-  const { notify } = useNotifier();
-  const { launch, status: launchStatus, errors, errorType } = useLaunch();
+  const { launch, status: launchStatus } = useLaunch();
   const { show: showLaunchStatusDialog, hide: hideLaunchStatusDialog } = useDialog('launch-status');
   const { show: showLaunchBlockedDialog } = useDialog('launch-blocked');
 
@@ -137,10 +157,16 @@ export default defineComponent({
     const { showSaveDialog } = useNativeDialog();
     const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log');
     const { show: showFeedbackDialog } = useDialog('feedback');
-    const { refreshing, name, isServer, exportInstance: exportTo } = useInstance();
+    const { refreshing, name, isServer, exportInstance: exportTo, refreshServerStatus } = useInstance();
     const { subscribeTask } = useNotifier();
     const { missing: missingJava } = useJava();
     const { quit } = useQuit();
+
+    onMounted(() => {
+      if (isServer.value) {
+        refreshServerStatus();
+      }
+    });
 
     return {
       isServer,

@@ -36,17 +36,18 @@
 </template>
 
 <script lang=ts>
+import { defineComponent } from '@vue/composition-api';
 import {
   useInstance,
-  useServerStatus,
+  useInstanceServerStatus,
   useInstanceVersion,
 } from '@/hooks';
 
-export default {
+export default defineComponent({
   setup() {
     const { runtime, name, author, isServer } = useInstance();
     const { id, folder } = useInstanceVersion();
-    const { players, ping, favicon } = useServerStatus();
+    const { players, ping, favicon } = useInstanceServerStatus();
     return {
       version: runtime,
       name,
@@ -54,14 +55,10 @@ export default {
       isServer,
       id,
       folder,
-      ...(isServer.value ? {
-        players,
-        ping,
-        favicon,
-      } : {
-        author,
-      }),
+      players,
+      ping,
+      favicon,
     };
   },
-};
+});
 </script>
