@@ -305,6 +305,7 @@ export class InstanceService extends Service {
         instance.runtime.minecraft = this.getters.minecraftRelease.id;
         instance.author = this.getters.gameProfile?.name ?? '';
         instance.creationDate = Date.now();
+        instance.lastAccessDate = Date.now();
 
         instance.author = payload.author ?? instance.author;
         instance.description = payload.description ?? instance.description;
@@ -481,6 +482,7 @@ export class InstanceService extends Service {
     /**
     * If current instance is a server. It will refresh the server status
     */
+    @Singleton()
     async refreshServerStatus() {
         let prof = this.getters.instance;
         if (prof.server) {
@@ -498,7 +500,7 @@ export class InstanceService extends Service {
     async refreshServerStatusAll() {
         let all = Object.values(this.state.instance.all).filter(p => !!p.server);
         let results = await Promise.all(all.map(async p => ({ [p.path]: await queryStatus(p.server!) })));
-        this.commit('instancesStatus', results.reduce(Object.assign, {}));
+        this.commit('instancesStatus', results.reduce((a, b) => { Object.assign(a, b); return a; }, {}));
     }
 
     /**
