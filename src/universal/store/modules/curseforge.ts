@@ -1,7 +1,7 @@
+import { Resource } from '@universal/util/resource';
+import { remove } from '@universal/util/middleware';
 import { Category } from '@xmcl/curseforge';
-import Vue from 'vue';
 import { ModuleOption } from '../root';
-import { Resource } from './resource';
 
 export type ProjectType = 'mc-mods' | 'texture-packs' | 'worlds' | 'modpacks';
 
@@ -78,8 +78,11 @@ const mod: CurseForgeModule = {
         },
         curseforgeDownloadFileEnd(state, fileId) {
             let index = state.downloading.findIndex(f => f.fileId === fileId);
-            Vue.delete(state.downloading, index);
+
             state.downloading.splice(index, 1);
+
+            // TODO: remove in vue3
+            remove(state.downloading, index);
         },
         curseforgeCategories(state, { categories, timestamp }) {
             state.categories = categories;

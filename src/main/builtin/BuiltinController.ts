@@ -1,11 +1,12 @@
 
-import { App, BrowserWindow, dialog, Dock, Menu, nativeImage, Tray } from 'electron';
-import { EventEmitter } from 'events';
 import { createI18n } from '@main/util/i18n';
+import { TaskNotification } from '@universal/util/notification';
+import { App, BrowserWindow, dialog, Dock, Menu, nativeImage, Notification, Tray } from 'electron';
+import { EventEmitter } from 'events';
 import { resolve } from 'path';
-import en from '../util/locales/en.json';
-import zh from '../util/locales/zh-CN.json';
-import { LauncherAppController } from './LauncherAppController';
+import { LauncherAppController } from '../app/LauncherAppController';
+import en from './locales/en.json';
+import zh from './locales/zh-CN.json';
 
 export function focusOnClick(getWindow: () => BrowserWindow | undefined) {
     return () => {
@@ -49,7 +50,7 @@ export default class BuiltinController extends LauncherAppController {
 
     private dock: Dock | undefined = undefined;
 
-    private i18n = createI18n({ en, zh }, 'en');
+    private i18n = createI18n({ en, 'zh-CN': zh }, 'en');
 
     private primary: BrowserWindow | undefined;
 
@@ -85,7 +86,8 @@ export default class BuiltinController extends LauncherAppController {
         });
     }
 
-    setup(): void { }
+    setup(): void {
+    }
 
     async requestOpenExternalUrl(url: string) {
         const { t: $t } = this.i18n;
@@ -214,9 +216,8 @@ export default class BuiltinController extends LauncherAppController {
     appReady(app: App) {
         this.createMainWindow();
         this.setupTray(app);
+        this.setupTask();
 
-        forwardEvent('task-successed', app, () => this.loggerRef);
-        forwardEvent('task-failed', app, () => this.loggerRef);
         forwardEvent('minecraft-stdout', app, () => this.loggerRef);
         forwardEvent('minecraft-stderr', app, () => this.loggerRef);
 
@@ -227,9 +228,77 @@ export default class BuiltinController extends LauncherAppController {
 
     async dataReady(): Promise<void> {
         this.mainRef!.show();
+        this.store.subscribe((mutation) => {
+            if (mutation.type === 'locale') {
+                this.i18n.use(mutation.payload);
+            }
+        });
+        this.i18n.use(this.store.state.setting.locale);
     }
 
-    updateProgress(progress: number) {
-        this.mainRef!.setProgressBar(progress, { mode: 'normal' });
+    get activeWindow() {
+        return this.mainRef ?? this.loggerRef;
+    }
+
+    private setupTask() {
+        const $t = this.i18n.t;
+        const tasks = this.managers.taskManager;
+        tasks.runtime.on('update', ({ progress, total }, node) => {
+            if (tasks.getActiveTask()?.root.id === node.id && progress && total) {
+                // eslint-disable-next-line no-unused-expressions
+                if (this.activeWindow && !this.activeWindow.isDestroyed()) {
+                    this.activeWindow.setProgressBar(progress / total);
+                }
+            }
+        });
+        tasks.runtime.on('finish', (_, node) => {
+            if (tasks.getActiveTask()?.root.id === node.id) {
+                // eslint-disable-next-line no-unused-expressions
+                if (this.activeWindow && !this.activeWindow.isDestroyed()) {
+                    this.activeWindow.setProgressBar(-1);
+                }
+            }
+            if (tasks.isRootTask(node.id)) {
+                this.notify({ type: 'taskFinish', name: node.path, arguments: node.arguments });
+            }
+        });
+        tasks.runtime.on('fail', (_, node) => {
+            if (tasks.getActiveTask()?.root.id === node.id) {
+                // eslint-disable-next-line no-unused-expressions
+                if (this.activeWindow && !this.activeWindow.isDestroyed()) {
+                    this.activeWindow.setProgressBar(-1);
+                }
+            }
+            if (tasks.isRootTask(node.id)) {
+                this.notify({ type: 'taskFail', name: node.path, arguments: node.arguments });
+            }
+        });
+        tasks.runtime.on('execute', (node, parent) => {
+            if (!parent) {
+                this.notify({ type: 'taskStart', name: node.path, arguments: node.arguments });
+            }
+        });
+    }
+
+    private notify(n: TaskNotification) {
+        const $t = this.i18n.t;
+        if (this.activeWindow && this.activeWindow.isFocused()) {
+            this.activeWindow.webContents.send('notification', n);
+        } else if (n.type === 'taskFinish' || n.type === 'taskFail') {
+            let notification = new Notification({
+                title: n.type === 'taskFinish' ? $t('task.success') : $t('task.fail'),
+                body: $t('task.continue'),
+                icon: resolve(__static, 'apple-touch-icon.png'),
+            });
+            notification.show();
+            notification.on('click', () => {
+                if (this.activeWindow?.isVisible()) {
+                    this.activeWindow.focus();
+                } else {
+                    // eslint-disable-next-line no-unused-expressions
+                    this.activeWindow?.show();
+                }
+            });
+        }
     }
 }

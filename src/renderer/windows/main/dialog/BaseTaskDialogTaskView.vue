@@ -15,7 +15,6 @@
         :items="all"
         activatable
         item-key="id"
-        open-on-click
         item-children="children"
         item-text="localText"
       >

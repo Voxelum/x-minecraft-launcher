@@ -1,5 +1,6 @@
-import { FileStateWatcher } from '@main/util/fs';
+import { exists, FileStateWatcher } from '@main/util/fs';
 import { requireString } from '@universal/util/assert';
+import { compareRelease, compareSnapshot, isReleaseVersion, isSnapshotPreview } from '@universal/util/version';
 import { Frame, parse, stringify } from '@xmcl/gamesetting';
 import { readFile, writeFile } from 'fs-extra';
 import { join } from 'path';
@@ -38,8 +39,20 @@ export default class InstanceGameSettingService extends Service {
 
     @MutationTrigger('instanceGameSettings')
     async saveInstanceGameSetting() {
-        await writeFile(join(this.state.instance.path, 'options.txt'),
-            stringify(this.state.instance.settings));
+        let optionsTxtPath = join(this.state.instance.path, 'options.txt');
+        if (await exists(optionsTxtPath)) {
+            let buf = await readFile(optionsTxtPath);
+            let content = parse(buf.toString());
+            for (let [key, value] of Object.entries(this.state.instance.settings)) {
+                if (key in content) {
+                    (content as any)[key] = value;
+                }
+            }
+            await writeFile(optionsTxtPath, stringify(content));
+        } else {
+            await writeFile(optionsTxtPath, stringify(this.state.instance.settings));
+        }
+
         this.log(`Saved instance gamesettings ${this.state.instance.path}`);
     }
 
@@ -51,8 +64,19 @@ export default class InstanceGameSettingService extends Service {
         let current = this.state.instance.settings;
         let result: Frame = {};
         for (let key of Object.keys(gameSetting)) {
+            if (key === 'resourcePacks') continue;
             if (key in current && (current as any)[key] !== (gameSetting as any)[key]) {
                 (result as any)[key] = (gameSetting as any)[key];
+            }
+        }
+        if (gameSetting.resourcePacks && gameSetting.resourcePacks.length !== 0) {
+            let mcversion = this.getters.instance.runtime.minecraft;
+            if ((isReleaseVersion(mcversion) && compareRelease(mcversion, '1.13.0') >= 0)
+                || (isSnapshotPreview(mcversion) && compareSnapshot(mcversion, '17w43a') >= 0)) {
+                result.resourcePacks = gameSetting.resourcePacks
+                    .filter(r => r !== 'vanilla')
+                    .map(r => (!r.startsWith('file/') ? `file/${r}` : r));
+                result.resourcePacks.unshift('vanilla');
             }
         }
         if (Object.keys(result).length > 0) {

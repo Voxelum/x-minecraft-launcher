@@ -68,11 +68,6 @@ const mainConfig = {
     },
     plugins: [
         new webpack.NoEmitOnErrorsPlugin(),
-        new BundleAnalyzerPlugin({
-            analyzerMode: 'static',
-            reportFilename: 'main.report.html',
-            openAnalyzer: false,
-        }),
         // new ForkTsCheckerWebpackPlugin({
         //     // eslint: true,
         //     tsconfig: path.resolve(__dirname, '../tsconfig.json'),
@@ -106,9 +101,15 @@ if (process.env.NODE_ENV !== 'production') {
  * Adjust mainConfig for production settings
  */
 if (process.env.NODE_ENV === 'production') {
+    mainConfig.externals = mainConfig.externals.filter(v => !v.startsWith('@xmcl'));
     mainConfig.plugins.push(
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': '"production"',
+        }),
+        new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            reportFilename: 'main.report.html',
+            openAnalyzer: false,
         }),
     );
 }

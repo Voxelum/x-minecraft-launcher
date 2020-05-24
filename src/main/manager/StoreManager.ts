@@ -16,26 +16,11 @@ export default class StoreManager extends Manager {
         this.storeReadyCb = resolve;
     })
 
-    setup() {
-        ipcMain.handle('sync', (_, id) => this.storeReadyPromise.then(() => this.sync(id)));
-    }
-
-    rootReady(root: string) {
-        this.store!.commit('root', root);
-        this.setupAutoSync();
-    }
-
     setLoadDone() {
         this.storeReadyCb();
     }
 
-    appReady() {
-        ipcMain.handle('commit', (event, type, payload) => {
-            this.store!.commit(type, payload);
-        });
-    }
-
-    private sync(currentId: number) {
+    sync(currentId: number) {
         const checkPointId = this.checkPointId;
         this.log(`Sync from renderer: ${currentId}, main: ${checkPointId}.`);
         if (currentId === checkPointId) {
@@ -56,6 +41,23 @@ export default class StoreManager extends Manager {
             this.checkPoint = state;
             this.checkPointId += 1; // record the total order
             this.managers.appManager.push('commit', mutation, this.checkPointId);
+        });
+    }
+
+    // SETUP CODE
+
+    setup() {
+        ipcMain.handle('sync', (_, id) => this.storeReadyPromise.then(() => this.sync(id)));
+    }
+
+    rootReady(root: string) {
+        this.store!.commit('root', root);
+        this.setupAutoSync();
+    }
+
+    appReady() {
+        ipcMain.handle('commit', (event, type, payload) => {
+            this.store!.commit(type, payload);
         });
     }
 }

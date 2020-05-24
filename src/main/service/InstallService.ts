@@ -154,6 +154,42 @@ export default class InstallService extends Service {
         await this.submit(Installer.installAssetsTask(resolvedVersion, option)).wait();
     }
 
+    @Singleton('install')
+    async installDependencies(version: string) {
+        let option: Installer.AssetsOption & Installer.LibraryOption = {
+        };
+        if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
+            option.assetsHost = 'http://bmclapi2.bangbang93.com/assets';
+            option.mavenHost = 'http://bmclapi.bangbang93.com/maven';
+        }
+        const location = this.state.root;
+        const resolvedVersion = await Version.parse(location, version);
+        await this.submit(Installer.installLibrariesTask(resolvedVersion, option)).wait();
+        await this.submit(Installer.installAssetsTask(resolvedVersion, option)).wait();
+    }
+
+    @Singleton('install')
+    async reinstall(version: string) {
+        let option: Installer.AssetsOption & Installer.LibraryOption = {
+        };
+        if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
+            option.assetsHost = 'http://bmclapi2.bangbang93.com/assets';
+            option.mavenHost = 'http://bmclapi.bangbang93.com/maven';
+        }
+        let location = this.state.root;
+        let resolvedVersion = await Version.parse(location, version);
+        let local = this.state.version.local.find(v => v.folder === version);
+        await this.submit(Installer.installVersionTask('client', { id }, location)).wait();
+        if (local?.forge) {
+            await this.submit(ForgeInstaller.installTask({ version: local.forge, mcversion: local.minecraft }, location)).wait();
+        }
+        if (local?.fabricLoader) {
+            await this.installFabric({ yarn: local.yarn, loader: local.fabricLoader });
+        }
+        await this.submit(Installer.installLibrariesTask(resolvedVersion, option)).wait();
+        await this.submit(Installer.installAssetsTask(resolvedVersion, option)).wait();
+    }
+
     /**
      * Install assets to the version
      * @param version The local version id
@@ -166,8 +202,9 @@ export default class InstallService extends Service {
         if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
             option.assetsHost = 'http://bmclapi2.bangbang93.com/assets';
         }
-        const location = this.state.root;
-        await this.submit(Installer.installResolvedAssetsTask(assets, new MinecraftFolder(location), option)).wait();
+        let location = this.state.root;
+        let task = Installer.installResolvedAssetsTask(assets, new MinecraftFolder(location), option);
+        await this.submit(task).wait();
     }
 
     /**
@@ -175,17 +212,16 @@ export default class InstallService extends Service {
      */
     @Singleton('install')
     async installMinecraft(meta: Installer.Version) {
-        const id = meta.id;
+        let id = meta.id;
 
         let option = {};
         if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
             option = { client: `https://bmclapi2.bangbang93.com/version/${meta.id}/client` };
         }
 
-        const task = this.submit(Installer.installVersionTask('client', meta, this.state.root, option));
-
+        let task = Installer.installVersionTask('client', meta, this.state.root, option);
         try {
-            await task.wait();
+            await this.submit(task).wait();
             this.local.refreshVersions();
         } catch (e) {
             this.warn(`An error ocurred during download version ${id}`);
@@ -205,21 +241,16 @@ export default class InstallService extends Service {
         } else {
             resolved = libraries as any; // TODO: typecheck
         }
-        let option = {};
+        let option: Installer.LibraryOption = {};
         if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
-            option = { libraryHost: (lib: ResolvedLibrary) => `http://bmclapi.bangbang93.com/maven/${lib.path}` };
+            option.mavenHost = 'http://bmclapi.bangbang93.com/maven';
         }
 
+        let task = Installer.installResolvedLibrariesTask(resolved, this.state.root, option);
         try {
-            await this.submit(Installer.installResolvedLibrariesTask(resolved, this.state.root, option)).wait();
+            await this.submit(task).wait();
         } catch (e) {
-            if ('libraryHost' in option) {
-                try {
-                    await this.submit(Installer.installResolvedLibrariesTask(resolved, this.state.root)).wait();
-                } catch (e) {
-                    this.warn(e);
-                }
-            }
+            this.warn('An error ocurred during install libraries:');
             this.warn(e);
         }
     }
@@ -342,12 +373,15 @@ export default class InstallService extends Service {
         try {
             this.log(`Start to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`);
             const handle = this.submit(Task.create('installFabric', () => FabricInstaller.install(versions.yarn, versions.loader, this.state.root)));
-            await handle.wait();
+            let result = await handle.wait();
+            this.local.refreshVersions();
             this.log(`Success to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`);
+            return result;
         } catch (e) {
             this.warn(`An error ocurred during install fabric yarn-${versions.yarn}, loader-${versions.loader}`);
             this.warn(e);
         }
+        return undefined;
     }
 
     @Singleton()
@@ -369,7 +403,7 @@ export default class InstallService extends Service {
 
     @Singleton('install')
     async installLiteloader(meta: LiteLoaderInstaller.Version) {
-        const task = this.submit(LiteLoaderInstaller.installTask(meta, this.state.root));
+        let task = this.submit(LiteLoaderInstaller.installTask(meta, this.state.root));
         try {
             await task.wait();
         } catch (err) {

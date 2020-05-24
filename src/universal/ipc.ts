@@ -1,6 +1,6 @@
 import { MutationPayload } from 'vuex';
 import { TaskState } from './task';
-import { Exception } from './util/exception';
+import { BuiltinNotification } from './util/notification';
 
 declare module 'electron' {
     interface App extends NodeJS.EventEmitter {
@@ -43,9 +43,21 @@ declare module 'electron' {
          * @param id The current mutation id
          */
         invoke(channel: 'sync', id: number): Promise<{ state: any; length: number }>;
+        /**
+         * Commit a change to remote
+         */
         invoke(channel: 'commit', type: string, payload: any): Promise<void>;
-        invoke(channel: 'task-state'): Promise<TaskState[]>;
-        invoke(channel: 'task-request', option: { type: 'pause' | 'resume' | 'cancel'; id: string }): Promise<void>;
+        /**
+         * Request for current task states. It will require the main process keep sending the 'task-update' event to the renderer.
+         */
+        invoke(channel: 'task-subscribe', push?: boolean): Promise<TaskState[]>;
+
+        invoke(channel: 'task-unsubscribe'): Promise<TaskState[]>;
+        /**
+         * Request an operation to a task.
+         * You can cancel, pause, or resmue a task here.
+         */
+        invoke(channel: 'task-operation', option: { type: 'pause' | 'resume' | 'cancel'; id: string }): Promise<void>;
 
         /**
          * Notify renderer that the store is synced
@@ -64,7 +76,7 @@ declare module 'electron' {
         on(channel: 'minecraft-stdout', listener: (event: Electron.IpcRendererEvent, out: string) => void): this;
         on(channel: 'minecraft-stderr', listener: (event: Electron.IpcRendererEvent, err: string) => void): this;
 
-        on(channel: 'exception', listener: (event: Electron.IpcRendererEvent, exception: Exception) => void): this;
+        on(channel: 'notification', listener: (event: Electron.IpcRendererEvent, notification: BuiltinNotification) => void): this;
 
         on(channel: 'task-update', listener: (event: Electron.IpcRendererEvent, update: {
             adds: { id: string; node: TaskState }[];

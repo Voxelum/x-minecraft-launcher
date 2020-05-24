@@ -30,12 +30,48 @@
             "description": "The external resource deployment of this instance, like mods or resource packs.\n\nThe domain is the directory it will deployed to. For example, `mods` will deploy to `.minecraft/mods` folder.\n\nEach is a list of uri in specific format\n\n- Curseforge file `curseforge://projectId/fileId` or `curseforge://fileId`\n- Forge mod: `forge://modid/version`\n- Liteloader mod: `liteloader://name/version`\n- Fabric mod: `fabric://name/version`\n- Local managed resource: `resource://hash`\n- Http: `https://abc.bcd.jar`\n- Github: `github://username/reponame/releaseName`",
             "default": {},
             "type": "object",
-            "additionalProperties": {
-                "type": "array",
-                "items": {
-                    "type": "string"
+            "properties": {
+                "mods": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "resourcepacks": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
-            }
+            },
+            "required": [
+                "mods",
+                "resourcepacks"
+            ]
+        },
+        "installs": {
+            "default": "{ saves: []; modpacks: string[] }",
+            "type": "object",
+            "properties": {
+                "saves": {
+                    "default": [],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "modpacks": {
+                    "default": [],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "modpacks",
+                "saves"
+            ]
         },
         "optionalDeployments": {
             "description": "The optional external resource deployment of this profiles, like mods or resource packs",
@@ -164,6 +200,7 @@
         "hideLauncher",
         "icon",
         "image",
+        "installs",
         "java",
         "lastAccessDate",
         "maxMemory",

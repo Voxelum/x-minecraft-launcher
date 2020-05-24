@@ -1,11 +1,7 @@
-import { Modpack } from '@main/service/CurseForgeService';
 import { requireString } from '@universal/util/assert';
-import { Forge, LiteLoader } from '@xmcl/mod-parser';
-import { ResourcePack } from '@xmcl/resourcepack';
-import { LevelDataFrame } from '@xmcl/world';
-import Vue from 'vue';
+import { remove } from '@universal/util/middleware';
+import { CurseforgeModpackResource, ForgeResource, LiteloaderResource, Resource, ResourcePackResource, SaveResource, UNKNOWN_RESOURCE } from '@universal/util/resource';
 import { ModuleOption } from '../root';
-import { ResourceSchema } from './resource.schema';
 
 interface State {
     domains: {
@@ -16,7 +12,7 @@ interface State {
         modpacks: CurseforgeModpackResource[];
     };
     directory: {
-        [hash: string]: AnyResource;
+        [hash: string]: Resource;
     };
 
 }
@@ -29,18 +25,18 @@ interface Getters {
     /**
      * Get the resource by resource hash
      */
-    getResource: (hash: string) => AnyResource;
+    getResource: (hash: string) => Resource;
     /**
      * Query local resource by uri
      * @param uri The uri
      */
-    queryResource(uri: string): AnyResource;
+    queryResource(uri: string): Resource;
 }
 
 interface Mutations {
-    resource: AnyResource;
-    resources: AnyResource[];
-    resourceRemove: AnyResource;
+    resource: Resource;
+    resources: Resource[];
+    resourceRemove: Resource;
 }
 
 
@@ -61,29 +57,6 @@ export type ImportOption = {
     metadata?: any;
     background?: boolean;
 }
-
-export type Resource<T> = Omit<ResourceSchema, 'metadata'> & { metadata: T };
-export type AnyResource = Resource<any>;
-export type ForgeResource = Resource<Forge.ModMetaData[]> & { type: 'forge' };
-export type LiteloaderResource = Resource<LiteLoader.MetaData> & { type: 'liteloader' };
-export type ResourcePackResource = Resource<ResourcePack> & { type: 'resourcepack' };
-export type CurseforgeModpackResource = Resource<Modpack> & { type: 'curseforge-modpack' };
-export type SaveResource = Resource<LevelDataFrame> & { type: 'save' };
-export type UnknownResource = Resource<{}> & { type: 'unknown' };
-
-export const UNKNOWN_RESOURCE: UnknownResource = Object.freeze({
-    metadata: {},
-    type: 'unknown',
-    domain: 'unknown',
-    hash: '',
-    ext: '',
-    path: '',
-    name: '',
-    source: {
-        uri: [],
-        date: new Date('2000').toJSON(),
-    },
-});
 
 const mod: ResourceModule = {
     state: {
@@ -147,10 +120,16 @@ const mod: ResourceModule = {
                 if (index === -1) {
                     throw new Error(`Cannot find resouce ${resource.name}[${resource.hash}] in domain!`);
                 }
-                Vue.delete(domain, index);
-                Vue.delete(state.directory, resource.hash);
+                domain.splice(index, 1);
+
+                // TODO: remove in Vue3
+                remove(domain, index);
+                
+                delete state.directory[resource.hash];
+                remove(state.directory, resource.hash);
                 for (const u of resource.source.uri) {
-                    Vue.delete(state.directory, u);
+                    delete state.directory[u];
+                    remove(state.directory, u);
                 }
             } else {
                 throw new Error(`Cannot remove resource for unknown domain [${resource.domain}]`);

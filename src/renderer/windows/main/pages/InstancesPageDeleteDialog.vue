@@ -6,7 +6,7 @@
           {{ $t('profile.delete') }}
         </h2>
       </v-card-title>
-      <v-card-text>
+      <v-card-text style="overflow: hidden; word-break: break-all;">
         {{ $t('profile.deleteHint', { name: instance.name, id: instance.path }) }}
       </v-card-text>
       <v-card-actions>

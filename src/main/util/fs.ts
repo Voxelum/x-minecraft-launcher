@@ -1,6 +1,7 @@
 import { checksum } from '@xmcl/installer/util';
-import { access, constants, copyFile, ensureDir, FSWatcher, readdir, stat, watch } from 'fs-extra';
-import { resolve } from 'path';
+import { access, constants, copyFile, ensureDir, FSWatcher, readdir, stat, watch, remove, unlink } from 'fs-extra';
+import { resolve, join } from 'path';
+import filenamify from 'filenamify';
 
 export function missing(file: string) {
     return access(file, constants.F_OK).then(() => false, () => true);
@@ -42,6 +43,15 @@ export async function copyPassively(src: string, dest: string, filter: (name: st
         await copyFile(src, dest);
     }
 }
+export async function clearDirectoryNarrow(dir: string) {
+    let files = await readdir(dir);
+    await Promise.all(files.map(async (f) => {
+        let file = join(dir, f);
+        if (await exists(file) && !(await isDirectory(file))) {
+            await unlink(join(dir, f));
+        }
+    }));
+}
 
 export class FileStateWatcher<T> {
     private watcher: FSWatcher | undefined;
@@ -69,4 +79,10 @@ export class FileStateWatcher<T> {
         this.state = this.defaultState;
         return state;
     }
+}
+
+export function getSuggestedFilename(name: string) {
+    name = filenamify(name);
+    name = name.replace('§', '');
+    return name;
 }

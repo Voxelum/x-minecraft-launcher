@@ -144,7 +144,7 @@
         @dragstart="dragStart(instance)"
         @dragend="dragEnd"
       >
-        <preview-card :profile="instance" @click.stop="selectInstance(instance.path)" />
+        <preview-card :instance="instance" @click.stop="selectInstance(instance.path)" />
       </v-flex>
       <v-flex
         v-if="instancesByTime[1].length !== 0"
@@ -158,7 +158,7 @@
         @dragstart="dragStart(instance)"
         @dragend="dragEnd"
       >
-        <preview-card :profile="instance" @click.stop="selectInstance(instance.path)" />
+        <preview-card :instance="instance" @click.stop="selectInstance(instance.path)" />
       </v-flex>
       <v-flex
         v-if="instancesByTime[2].length !== 0"
@@ -287,9 +287,9 @@ function useRefreshInstance(notify: Notify) {
       if (pinging.value) return;
       pinging.value = true;
       refreshServerStatusAll().then(() => {
-        notify('success', $t('profile.refreshServers'));
+        notify({ level: 'success', title: $t('profile.refreshServers') });
       }, (e) => {
-        notify('error', $t('profile.refreshServers'), e);
+        notify({ level: 'error', title: $t('profile.refreshServers') });
       }).finally(() => {
         pinging.value = false;
       });
@@ -336,7 +336,6 @@ function useInstanceImport(notify: Notify) {
         properties: fromFolder ? ['openDirectory'] : ['openFile'],
       });
       if (filePaths && filePaths.length > 0) {
-        notify('info', $t('profile.import.start'));
         for (const f of filePaths) {
           if (curseforge) {
             await importUnknownResource({
@@ -349,23 +348,9 @@ function useInstanceImport(notify: Notify) {
             await importInstance(f);
           }
         }
-        notify('success', $t('profile.import.title'));
       }
     },
   };
-}
-
-function useInstancesColor() {
-  onMounted(() => {
-    // const colors = [...this.colors];
-    // const count = colors.length;
-    // const newOrder = [];
-    // for (let i = 0; i < count; ++i) {
-    //   const choise = Math.random() * Math.floor(colors.length);
-    //   newOrder.push(colors.splice(choise, 1));
-    // }
-    // this.colors = newOrder;
-  });
 }
 
 export default defineComponent({
@@ -385,10 +370,10 @@ export default defineComponent({
     const { cancel: cancelDelete, operate: doDelete, begin: startDelete, data: deletingInstance } = useOperation(defaultInstance, async (instance) => {
       if (instance && 'path' in instance) {
         await deleteInstance(instance.path).catch(() => {
-          notify('error', `Fail to delete profile ${instance.path}`);
+          // notify({ level: 'error', title: `Fail to delete profile ${instance.path}`});
         });
       } else {
-        notify('error', 'Fail to delete profile');
+        // notify('error', 'Fail to delete profile');
       }
     });
     const { begin: dragStart, cancel: dragEnd, operate: drop, data: draggingInstance } = useOperation(defaultInstance, (inst) => {

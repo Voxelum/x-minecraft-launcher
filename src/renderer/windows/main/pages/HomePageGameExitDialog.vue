@@ -6,7 +6,7 @@
       >{{ isCrash ? $t('launch.crash') : $t('launch.failed.title') }}</v-toolbar-title>
       <v-spacer />
       <v-toolbar-items>
-        <v-btn flat @click="openFolder">{{ $t('launch.openCrashReportFolder') }}</v-btn>
+        <v-btn flat @click="openFolder">{{ isCrash ? $t('launch.openCrashReportFolder') : $t('launch.openLogFolder') }}</v-btn>
       </v-toolbar-items>
       <v-btn icon @click="isShown=false">
         <v-icon>arrow_drop_down</v-icon>
@@ -14,7 +14,7 @@
     </v-toolbar>
     <v-card>
       <v-card-text>
-        <div style="padding: 10px">{{ $t(`launch.failed.description`) }}</div>
+        <div style="padding: 10px">{{ isCrash ? $t(`launch.crash`) : $t(`launch.failed.description`) }}</div>
         <div style="min-height: 400px; max-height: 400px; overflow: auto; ">
           <v-textarea
             auto-grow
@@ -47,12 +47,13 @@ export default defineComponent({
     const { getLogContent, getCrashReportContent, showLog } = useInstanceLogs();
     const { showItemInDirectory } = useService('BaseService');
     function decorate(log: string) {
-      let lines = log.split('\n');
-      let result: string[] = [];
-      for (let i = 0; i < lines.length; i++) {
-        result.push(lines[i].trim(), ' ');
-      }
-      return result.join('\n');
+      // let lines = log.split('\n');
+      // let result: string[] = [];
+      // for (let i = 0; i < lines.length; i++) {
+      //   result.push(lines[i].trim(), ' ');
+      // }
+      // return result.join('\n');
+      return log;
     }
     async function displayLog() {
       let log = await getLogContent('latest.log');
@@ -65,8 +66,6 @@ export default defineComponent({
       data.isShown = true;
     }
     ipc.on('minecraft-exit', (event, { code, signal, crashReport, crashReportLocation }) => {
-      console.log('exit!');
-      
       if (code !== 0) {
         if (crashReportLocation) {
           data.crashReportLocation = crashReportLocation;

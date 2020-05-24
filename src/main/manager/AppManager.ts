@@ -1,15 +1,14 @@
-import BuiltinController from '@main/app/BuiltinController';
 import { LauncherAppController } from '@main/app/LauncherAppController';
+import BuiltinController from '@main/builtin/BuiltinController';
 import { isDirectory } from '@main/util/fs';
 import { getPlatform } from '@xmcl/core';
 import { App, app, BrowserWindow, BrowserWindowConstructorOptions, Dock, ipcMain, Menu, NativeImage, nativeImage, shell, Tray } from 'electron';
-import { ensureFile, readFile, readJson, writeFile } from 'fs-extra';
+import { ensureFile, readFile, writeFile } from 'fs-extra';
 import { join } from 'path';
 import { ParsedUrlQuery } from 'querystring';
 import { parse as parseUrl } from 'url';
 import { Store } from 'vuex';
 import { Manager } from '.';
-import { AppLoader } from '@main/app/AppLoader';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -75,11 +74,10 @@ function queryToWindowOptions(query: ParsedUrlQuery) {
     } as BrowserWindowConstructorOptions;
 }
 
-const appData = app.getPath('appData');
-const persistRoot = `${appData}/voxelauncher`;
-const cfgFile = `${appData}/voxelauncher/launcher.json`;
+const APP_DATA = app.getPath('appData');
+const CFG_PATH = `${APP_DATA}/voxelauncher/launcher.json`;
 
-export type ExtendsApp = Pick<typeof ipcMain, 'handle'>
+export type ExtendsApp = Pick<typeof ipcMain, 'handle'> & Pick<typeof app, 'getPath'>;
 
 export interface AppManager extends ExtendsApp {
 }
@@ -96,7 +94,7 @@ export class AppManager extends Manager {
      */
     private parking = false;
 
-    private controller: LauncherAppController | undefined;
+    private controller: LauncherAppController;
 
     /**
      * A map to keep running browser
@@ -109,14 +107,16 @@ export class AppManager extends Manager {
 
     constructor() {
         super();
+        this.root = join(APP_DATA, 'VoxeLauncher');
         this.handle = ipcMain.handle;
+        this.controller = undefined as any;
     }
 
     private async persistRoot(root: string) {
         try {
             this.log(`Setup root ${root}`);
-            await ensureFile(cfgFile);
-            await writeFile(cfgFile, JSON.stringify({ path: root }));
+            await ensureFile(CFG_PATH);
+            await writeFile(CFG_PATH, JSON.stringify({ path: root }));
         } catch (e) {
             this.error('An error occured during setup root');
             this.error(e);
@@ -124,17 +124,7 @@ export class AppManager extends Manager {
         }
     }
 
-    async setup() {
-        let root;
-        try {
-            const cfg = await readJson(cfgFile);
-            root = cfg.path || join(appData, 'voxelauncher');
-        } catch (e) {
-            root = join(appData, 'voxelauncher');
-        }
-        await this.persistRoot(root);
-        this.root = root;
-
+    async startApp() {
         Reflect.set(LauncherAppController.prototype, 'app', app);
         Reflect.set(LauncherAppController.prototype, 'Tray', Tray);
         Reflect.set(LauncherAppController.prototype, 'Dock', Dock);
@@ -152,32 +142,29 @@ export class AppManager extends Manager {
             this.controller = new BuiltinController();
         }
 
-        app
-            .on('open-url', (event, url) => {
-                event.preventDefault();
-                this.handleUrlRequest(url);
-            })
-            .on('second-instance', (e, argv) => {
-                if (process.platform === 'win32') {
-                    // Keep only command line / deep linked arguments
-                    this.handleUrlRequest(argv[argv.length - 1]);
-                }
-            });
+        app.on('open-url', (event, url) => {
+            event.preventDefault();
+            this.handleUrlRequest(url);
+        }).on('second-instance', (e, argv) => {
+            if (process.platform === 'win32') {
+                // Keep only command line / deep linked arguments
+                this.handleUrlRequest(argv[argv.length - 1]);
+            }
+        });
     }
 
-    async rootReady(root: string) {
-        const sites = await readFile(join(root, 'sites')).then((b) => b.toString().split('\n')).catch(() => []);
-        this.trustedSites = sites;
-    }
-
+    /**
+     * Launch app from url request
+     * @param url 
+     */
     async handleUrlRequest(url: string) {
         try {
             const { host, query } = parseUrl(url, true);
             if (host === 'app') {
                 // TODO: implement app
                 const host = query.url as string;
-                let loader = new AppLoader(host, join(host));
-                let controller = await loader.loadController();
+                // let loader = new AppLoader(host, join(host));
+                // let controller = await loader.loadController();
             } else if (host === 'window') {
                 const windowUrl = query.url;
                 const name = query.name as string || url;
@@ -191,10 +178,6 @@ export class AppManager extends Manager {
         } catch (e) {
             this.error(e);
         }
-    }
-
-    updateProgress(progress: number) {
-        this.controller!.updateProgress(progress);
     }
 
     /**
@@ -249,29 +232,8 @@ export class AppManager extends Manager {
         });
     }
 
-    async appReady(app: App) {
-        app
-            .on('window-all-closed', () => {
-                if (this.parking) return;
-                if (process.platform !== 'darwin') { app.quit(); }
-            })
-            .on('minecraft-start', () => { this.parking = true; })
-            .on('minecraft-exit', () => { this.parking = false; });
-        ipcMain
-            .on('exit', () => { app.quit(); });
-
-        this.controller!.appReady(app);
-    }
 
     get isParking() { return this.parking; }
-
-    async storeReady(store: Store<any>) {
-        this.parking = true;
-        Object.assign(LauncherAppController.prototype, { store });
-        await this.controller!.dataReady(store);
-        this.log('App booted');
-        this.parking = false;
-    }
 
     async getTrustedSites() {
         return this.trustedSites;
@@ -308,6 +270,9 @@ export class AppManager extends Manager {
         return false;
     }
 
+    /**
+     * Push an event to the client
+     */
     push(channel: string, ...payload: any[]) {
         Object.values(this.windows).map(w => w.webContents).forEach(c => {
             c.send(channel, ...payload);
@@ -319,6 +284,77 @@ export class AppManager extends Manager {
     quit = app.quit;
 
     exit = app.exit;
+
+    getPath = app.getPath;
+
+    // setup code
+
+    async setup() {
+        // let root;
+        // try {
+        //     const cfg = await readJson(CFG_PATH);
+        //     root = cfg.path || join(APP_DATA, 'voxelauncher');
+        // } catch (e) {
+        //     root = join(APP_DATA, 'voxelauncher');
+        // }
+        // await this.persistRoot(root);
+        // this.root = root;
+
+        Reflect.set(LauncherAppController.prototype, 'app', app);
+        Reflect.set(LauncherAppController.prototype, 'Tray', Tray);
+        Reflect.set(LauncherAppController.prototype, 'Dock', Dock);
+        Reflect.set(LauncherAppController.prototype, 'Menu', Menu);
+        Reflect.set(LauncherAppController.prototype, 'managers', this.managers);
+        Reflect.set(LauncherAppController.prototype, 'newWindow', this.newWindow.bind(this));
+
+        if (process.platform === 'win32') {
+            const launchUrl = process.argv[process.argv.length - 1];
+            if (launchUrl && launchUrl.trim().length !== 0) {
+                await this.handleUrlRequest(launchUrl).then(() => true, () => false);
+            }
+        }
+
+        if (!this.controller) {
+            this.controller = new BuiltinController();
+        }
+
+        app.on('open-url', (event, url) => {
+            event.preventDefault();
+            this.handleUrlRequest(url);
+        }).on('second-instance', (e, argv) => {
+            if (process.platform === 'win32') {
+                // Keep only command line / deep linked arguments
+                this.handleUrlRequest(argv[argv.length - 1]);
+            }
+        });
+    }
+
+    async rootReady(root: string) {
+        const sites = await readFile(join(root, 'sites')).then((b) => b.toString().split('\n')).catch(() => []);
+        this.trustedSites = sites;
+    }
+
+    async appReady(app: App) {
+        app
+            .on('window-all-closed', () => {
+                if (this.parking) return;
+                if (process.platform !== 'darwin') { app.quit(); }
+            })
+            .on('minecraft-start', () => { this.parking = true; })
+            .on('minecraft-exit', () => { this.parking = false; });
+        ipcMain
+            .on('exit', () => { app.quit(); });
+
+        this.controller!.appReady(app);
+    }
+
+    async storeReady(store: Store<any>) {
+        this.parking = true;
+        Object.assign(LauncherAppController.prototype, { store });
+        await this.controller!.dataReady(store);
+        this.log('App booted');
+        this.parking = false;
+    }
 }
 
 export default AppManager;

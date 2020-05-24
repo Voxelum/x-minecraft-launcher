@@ -1,14 +1,14 @@
-import { exists, missing, readdirEnsured } from '@main/util/fs';
+import { clearDirectoryNarrow, exists, missing, readdirEnsured } from '@main/util/fs';
 import { CreateOption, createTemplate } from '@universal/store/modules/instance';
 import { DeployedInfo, InstanceLockSchema, InstanceSchema, InstancesSchema, RuntimeVersions } from '@universal/store/modules/instance.schema';
-import { UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
 import { requireObject, requireString } from '@universal/util/assert';
 import latestRelease from '@universal/util/lasteRelease.json';
-import { isPrimitiveArrayEqual, assignShallow } from '@universal/util/object';
+import { assignShallow, isPrimitiveArrayEqual } from '@universal/util/object';
+import { UNKNOWN_RESOURCE } from '@universal/util/resource';
 import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/util/serverStatus';
 import { queryStatus, Status } from '@xmcl/client';
 import { readInfo, ServerInfo } from '@xmcl/server-info';
-import { lstat, readdir, readFile, readlink, remove, symlink, unlink, ensureDir } from 'fs-extra';
+import { ensureDir, ensureFile, link, readdir, readFile, remove } from 'fs-extra';
 import { join, relative, resolve } from 'path';
 import { v4 } from 'uuid';
 import CurseForgeService from './CurseForgeService';
@@ -169,6 +169,7 @@ export class InstanceService extends Service {
             }
         }
         Object.assign(instance.deployments, option.deployments);
+        instance.server = option.server;
 
         commit('instanceAdd', instance);
 
@@ -295,12 +296,16 @@ export class InstanceService extends Service {
                 instance.resolution = payload.resolution;
             }
         }
+        if (payload.server) {
+            instance.server = payload.server;
+        }
         Object.assign(instance.deployments, payload.deployments);
 
         instance.path = this.getPathUnder(v4());
-        instance.runtime.minecraft = this.getters.minecraftRelease.id;
+        instance.runtime.minecraft = instance.runtime.minecraft || this.getters.minecraftRelease.id;
         instance.author = this.getters.gameProfile?.name ?? '';
         instance.creationDate = Date.now();
+        instance.lastAccessDate = Date.now();
 
         instance.author = payload.author ?? instance.author;
         instance.description = payload.description ?? instance.description;
@@ -406,12 +411,16 @@ export class InstanceService extends Service {
             let deployments = options.deployments;
             let current = state.deployments;
             result.deployments = {};
-            for (let domain of Object.keys(deployments)) {
-                if (!current[domain]) {
-                    result.deployments[domain] = deployments[domain];
-                } else if (!isPrimitiveArrayEqual(current[domain], deployments[domain])) {
-                    result.deployments[domain] = deployments[domain];
-                }
+            if (deployments.mods
+                && (!current.mods || !isPrimitiveArrayEqual(current.mods, deployments.mods))) {
+                result.deployments.mods = deployments.mods;
+            }
+            if (deployments.resourcepacks
+                && (!current.resourcepacks || !isPrimitiveArrayEqual(current.resourcepacks, deployments.resourcepacks))) {
+                result.deployments.resourcepacks = deployments.resourcepacks;
+            }
+            if (Object.keys(result.deployments).length === 0) {
+                delete result.deployments;
             }
         }
 
@@ -478,6 +487,7 @@ export class InstanceService extends Service {
     /**
     * If current instance is a server. It will refresh the server status
     */
+    @Singleton()
     async refreshServerStatus() {
         let prof = this.getters.instance;
         if (prof.server) {
@@ -495,7 +505,7 @@ export class InstanceService extends Service {
     async refreshServerStatusAll() {
         let all = Object.values(this.state.instance.all).filter(p => !!p.server);
         let results = await Promise.all(all.map(async p => ({ [p.path]: await queryStatus(p.server!) })));
-        this.commit('instancesStatus', results.reduce(Object.assign, {}));
+        this.commit('instancesStatus', results.reduce((a, b) => { Object.assign(a, b); return a; }, {}));
     }
 
     /**
@@ -519,7 +529,9 @@ export class InstanceService extends Service {
                 yarn: '',
             };
             if (info.status.modinfo && info.status.modinfo.type === 'FML') {
-                options.deployments = { mods: info.status.modinfo.modList.map(m => `forge:${m.modid}/${m.version}`) };
+                options.deployments = {
+                    mods: info.status.modinfo.modList.map(m => `forge:${m.modid}/${m.version}`),
+                } as any;
             }
         }
         return this.createInstance({
@@ -537,71 +549,51 @@ export class InstanceService extends Service {
      */
     async deploy(localOnly?: boolean): Promise<void> {
         const instance = this.getters.instance;
-        const alreadyDeployed = this.state.instance.deployed;
-        const promises: Promise<DeployedInfo>[] = Object.values(instance.deployments).reduce((a, b) => [...a, ...b]).map(async (url) => {
-            const root = this.state.instance.path;
-            const alreadyDeployedInfo = alreadyDeployed.find(d => d.url);
-            if (alreadyDeployedInfo) {
-                if (alreadyDeployedInfo.resolved) {
-                    // if using link, validate link again
-                    if (alreadyDeployedInfo.resolved === 'link') {
-                        const destPath = join(root, alreadyDeployedInfo.file);
-                        const realPath = resolve(await readlink(destPath));
-                        if (realPath !== alreadyDeployedInfo.src!) {
-                            await symlink(alreadyDeployedInfo.src!, destPath);
-                        }
+        this.log(`Deploy instance ${instance.path}`);
+        const deployToDomain = async (domain: string, urls: string[]) => {
+            if (urls.length === 0) { return Promise.resolve([]); }
+            let dir = join(instance.path, domain);
+            await ensureDir(dir);
+            await clearDirectoryNarrow(dir);
+            return Promise.all(urls.map(async (url) => {
+                let root = this.state.instance.path;
+
+                let resource = this.getters.queryResource(url);
+                let result: DeployedInfo = {
+                    // url,
+                    url,
+                    file: '',
+                    resolved: false,
+                };
+                if (resource === UNKNOWN_RESOURCE) {
+                    if (!localOnly) {
+                        resource = await this.resourceService.importResource({ uri: url, metadata: {} });
+                        this.warn(`No local resource matched uri ${url}!`);
+                    } else {
+                        throw new Error();
                     }
-                    return alreadyDeployedInfo;
-                }
-            }
-            const result: DeployedInfo = {
-                url,
-                file: '',
-                integrity: '',
-                resolved: false,
-            };
-            let res = this.getters.queryResource(url);
-            if (res === UNKNOWN_RESOURCE && !localOnly) {
-                res = await this.resourceService.importResource({ uri: url, metadata: {} });
-                this.warn(`No local resource matched uri ${url}!`);
-            }
-            if (res !== UNKNOWN_RESOURCE) {
-                result.src = res.path;
-                result.integrity = res.hash;
-                if (res.domain === 'mods' || res.domain === 'resourcepacks') {
-                    const dest = join(this.state.instance.path, res.domain, res.name + res.ext);
-                    try {
-                        const stat = await lstat(dest);
-                        if (stat.isSymbolicLink()) {
-                            await unlink(dest);
-                            await symlink(res.path, dest);
-                        } else {
-                            this.pushException({ type: 'deployLinkResourceOccupied', resource: res });
-                            this.error(`Cannot deploy resource ${res.hash} -> ${dest}, since the path is occupied.`);
-                        }
-                    } catch (e) {
-                        await symlink(res.path, dest);
-                    }
-                    result.file = relative(root, dest);
+                } else {
+                    result.src = resource.path;
+                    let targetPath = join(root, resource.domain, `${resource.name}${resource.ext}`);
+                    await ensureFile(targetPath);
+                    await remove(targetPath).catch(() => { });
+                    await link(resource.path, targetPath);
+
+                    this.log(`Link resource ${resource.path}(${url}) -> ${targetPath}.`);
+                    result.file = relative(root, targetPath);
                     result.resolved = 'link';
-                } else if (res.domain === 'saves') {
-                    const dest = await this.saveService.importSave({ source: res.path });
-                    result.file = relative(root, dest);
-                    result.resolved = 'unpack';
-                } else if (res.domain === 'modpacks') { // modpack will override the profile
-                    await this.ioService.importCurseforgeModpack({
-                        instancePath: this.state.instance.path,
-                        path: res.path,
-                    });
-                    result.file = '/';
-                    result.resolved = 'unpack';
                 }
-            }
-            return result;
-        });
-        const deployed = await Promise.all(promises);
-        this.commit('instanceDeployInfo', deployed);
+                return result;
+            }));
+        };
+        let [respacks, mods] = await Promise.all([
+            deployToDomain('resourcepacks', instance.deployments.resourcepacks),
+            deployToDomain('mods', instance.deployments.mods),
+        ]);
+
+        this.commit('instanceDeployInfo', [...respacks, ...mods]);
     }
 }
+// resourcePacks:["vanilla","file/§lDefault§r..§l3D§r..Low§0§o.zip"]
 
 export default InstanceService;

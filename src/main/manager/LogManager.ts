@@ -1,4 +1,3 @@
-import { app } from 'electron';
 import { createWriteStream, WriteStream, mkdirSync } from 'fs';
 import { resolve } from 'path';
 import { PassThrough, pipeline, Transform } from 'stream';
@@ -20,7 +19,7 @@ export default class LogManager extends Manager {
     constructor() {
         super();
 
-        function transform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`); } }); }
+        function transform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}\n`); } }); }
         pipeline(this.loggerEntries.log, transform('INFO'), this.output, () => { });
         pipeline(this.loggerEntries.warn, transform('WARN'), this.output, () => { });
         pipeline(this.loggerEntries.error, transform('ERROR'), this.output, () => { });
@@ -36,22 +35,6 @@ export default class LogManager extends Manager {
         if (DEV) {
             this.output.on('data', (b) => console.log(b.toString()));
         }
-    }
-
-    setup() {
-        let root = app.getPath('userData');
-        try {
-            mkdirSync(resolve(root, 'logs'));
-        } catch (e) {
-            if (e.code !== 'EEXIST') {
-                throw e;
-            }
-        }
-
-        this.logRoot = resolve(root, 'logs');
-
-        let mainLog = resolve(root, 'logs', 'main.log');
-        this.output.pipe(createWriteStream(mainLog, { encoding: 'utf-8', flags: 'w+' }));
     }
 
     readonly log = (message: any, ...options: any[]) => { this.loggerEntries.log.write(formatMsg(message, options)); }
@@ -70,5 +53,24 @@ export default class LogManager extends Manager {
 
     closeWindowLog(name: string) {
         this.openedStream[name].close();
+    }
+
+    redirectLogPipeline(root: string) {
+        try {
+            mkdirSync(resolve(root, 'logs'));
+        } catch (e) {
+            if (e.code !== 'EEXIST') {
+                throw e;
+            }
+        }
+        this.logRoot = resolve(root, 'logs');
+        let mainLog = resolve(root, 'logs', 'main.log');
+        this.output.pipe(createWriteStream(mainLog, { encoding: 'utf-8', flags: 'w+' }));
+    }
+
+    // SETUP CODE
+
+    setup() {
+        this.redirectLogPipeline(this.managers.appManager.root);
     }
 }

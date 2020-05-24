@@ -9,7 +9,7 @@
         <fabric-artifact-version-list
           :versions="yarnVersions"
           :version="yarn"
-          :statuses="{}"
+          :statuses="yarnStatus"
           :select="selectYarn"
         />
       </v-flex>
@@ -18,7 +18,7 @@
         <fabric-artifact-version-list
           :versions="loaderVersions"
           :version="loader"
-          :statuses="{}"
+          :statuses="loaderStatus"
           :select="selectLoader"
         />
       </v-flex>
@@ -61,7 +61,7 @@ export default defineComponent<Props>({
       showStableOnly: false,
     });
 
-    const { yarnVersions: yv, loaderVersions: lv } = useFabricVersions();
+    const { yarnVersions: yv, loaderVersions: lv, yarnStatus, loaderStatus } = useFabricVersions();
     const loaderVersions = computed(() => lv.value.filter((v) => {
       if (data.showStableOnly && !v.stable) {
         return false;
@@ -102,6 +102,8 @@ export default defineComponent<Props>({
       yarnVersions,
       loaderVersions,
       fabricSupported,
+      yarnStatus, 
+      loaderStatus,
     };
   },
 });

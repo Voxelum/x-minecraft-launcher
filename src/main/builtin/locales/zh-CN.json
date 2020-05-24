@@ -10,6 +10,11 @@
     "trust": "信任此网站，下次不再显示",
     "yes": "允许"
   },
+  "task": {
+    "success": "有一个任务成功完成了",
+    "fail": "有一个任务失败了",
+    "continue": "在启动器中查看"
+  },
   "quit": "退出",
   "showDiagnosis": "显示 Debug 信息",
   "title": "Voxelauncher"

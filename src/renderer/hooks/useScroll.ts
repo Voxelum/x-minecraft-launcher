@@ -1,5 +1,4 @@
 import { Ref, onMounted } from '@vue/composition-api';
-import Vue from 'vue';
 
 export function useScrollToOnMount(elem: Ref<null | Vue | HTMLElement>, computeOffset: () => number) {
     onMounted(() => {

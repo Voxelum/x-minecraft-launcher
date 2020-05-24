@@ -172,7 +172,10 @@
       "": "Missing {name} Library | Missing {name} Library | Missing {count} Libraries | Missing {count} Libraries",
       "message": "Launcher will install libraries for you"
     },
-    "missingVersion": "Please select a Minecraft version for this profile!",
+    "missingVersion": {
+      "": "The version {version} is not installed!",
+      "message": "Click to install this version"
+    },
     "missingVersionJar": {
       "": "Missing version jar for Minecraft %{version}",
       "message": "Click to install this version"
@@ -182,6 +185,14 @@
       "message": "Click to install this version"
     },
     "problem": "1 Problem | %{count} Problems",
+    "requireFabric": {
+      "": "Require fabric to run with Fabric Mod!",
+      "message": "Please a fabric version in version setting"
+    },
+    "requireForge": {
+      "": "Require forge to run with Forge Mod!",
+      "message": "Please a forge version in version setting"
+    },
     "unknownMod": {
       "": "Cannot detect Mod {name}'s Minecraft Version",
       "message": "Please be careful if it causes crash"
@@ -348,6 +359,9 @@
       "library": "Install Library"
     }
   },
+  "installFabric": {
+    "": "Install Fabric"
+  },
   "installForge": {
     "": "Install Forge",
     "downloadInstaller": "Download Installer",
@@ -405,6 +419,10 @@
       "versions": "Same with vanilla. Save multiple versions' JSON & JAR"
     }
   },
+  "issue": {
+    "empty": "No issue found",
+    "name": "Issues"
+  },
   "java": {
     "autoAlloc": "Auto Allocated",
     "browse": "Browse Java executable",
@@ -449,6 +467,7 @@
     "launching": "Launching...",
     "launchingSlow": "Still launching... Starting graphic engine can be slow...",
     "openCrashReportFolder": "Open Crash Report Folder",
+    "openLogFolder": "Open Log Folder",
     "showLog": "Show Minecraft Log"
   },
   "launcher": {
@@ -485,6 +504,7 @@
     "deletion": "Deleting {mod} mod",
     "deletionHint": "You will lose this mod & its metadata forever. Are you sure you want to delete it?",
     "export": "Export Mod",
+    "hideIncompatible": "Hide Incompatible Mods",
     "hint": "Drop mod's .jar/.litemod here to import.",
     "import": "Import Mod",
     "incompatible": "Incompatible Mod. Accept {accept}. Current: {actual}",
@@ -502,6 +522,7 @@
     "name": "Mod | Mods",
     "nocompatible": "Unknown Compatibility",
     "selected": "Selected Mods",
+    "showIncompatible": "Show Incompatible Mods",
     "unselected": "Unselected Mods"
   },
   "name": "Name",
@@ -576,6 +597,7 @@
       "acceptingMinecraftVersion": "Accepting Minecraft Version",
       "add": "Add Server",
       "create": "Create A New Server",
+      "creationHint": "Please Fill the server address and ping the server",
       "delete": {
         "description": "This will delete all the local data about this server. Are you sure to do this?",
         "name": "Delete the server"
@@ -600,11 +622,12 @@
       "status": {
         "nohost": "§4Cannot find host!",
         "ping": "Ping...",
-        "refurse": "§4Server refused!",
+        "refuse": "§4Server refused!",
         "timeout": "§4Connect server timeout!"
       },
       "unknown": "Unknown Server",
       "unknownDescription": "Unknown Server. Please Refresh",
+      "version": "Server Requires Version",
       "versionHint": "The Minecraft Version To Ping"
     },
     "setting": "Settings",
@@ -744,6 +767,7 @@
     "manager": "Task Manager",
     "name": "Task | Tasks",
     "running": "Running Tasks",
+    "start": "Task {name} Started",
     "successed": "Successed"
   },
   "user": {
@@ -785,8 +809,6 @@
     },
     "refreshAccount": "Refresh Account",
     "refreshSkin": "Refresh Skin",
-    "refreshSkinFail": "Refresh Skin Failed",
-    "refreshSkinSuccess": "Refresh Skin Success",
     "requireEmail": "E-mail is required",
     "requirePassword": "Password is required",
     "requireUsername": "Username is required",
@@ -851,6 +873,8 @@
     "prepare": "Preparing Files",
     "recommended": "Recommended",
     "refresh": "Refresh Versions",
+    "reinstallDescription": "If you think this version installation has some problems, you can try to reinstall it.",
+    "reinstallTitle": "Reinstall {version}",
     "release": "Release",
     "releaseDate": "Release Date",
     "remote": "Download this version",

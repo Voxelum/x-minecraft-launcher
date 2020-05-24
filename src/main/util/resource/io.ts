@@ -1,8 +1,7 @@
-import { AnyResource } from '@universal/store/modules/resource';
 import filenamify from 'filenamify';
 import { ensureFile, unlink, writeFile } from 'fs-extra';
 import { basename, resolve, join } from 'path';
-import { ResourceBuilder, getResourceFromBuilder } from './index';
+import { ResourceBuilder, getResourceFromBuilder, Resource } from './index';
 
 /**
  * Commit the resource to the disk
@@ -30,7 +29,7 @@ export async function commitResourceOnDisk(builder: ResourceBuilder, data: Buffe
     }
 }
 
-export async function discardResourceOnDisk(resource: Readonly<AnyResource>, root: string) {
+export async function discardResourceOnDisk(resource: Readonly<Resource>, root: string) {
     let baseName = basename(resource.path, resource.ext);
 
     let filePath = resource.path;

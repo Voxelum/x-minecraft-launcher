@@ -15,16 +15,17 @@ export type IssueReport = {
     [K in keyof State['registry']]: State['registry'][K]['actived']
 }
 
+export type IssueType = keyof State['registry'];
+
 export interface Registry<A, AF = true, OP = false> {
     fixing: boolean;
     autofix: AF;
     optional: OP;
-    actived: (A & { file?: string })[];
+    actived: (A & { file?: string; actual?: string; expect?: string })[];
 }
 
 interface State {
     registry: {
-        missingVersion: Registry<{}>;
         missingVersionJar: Registry<{ version: string } & LocalVersion>;
         missingVersionJson: Registry<{ version: string } & LocalVersion>;
         missingLibraries: Registry<ResolvedLibrary>;
@@ -47,8 +48,10 @@ interface State {
         missingAuthlibInjector: Registry<{}>;
         missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
 
-        missingForge: Registry<{ forge: string; minecraft: string }>;
-        missingLiteloader: Registry<{ liteloader: string; minecraft: string }>;
+        missingVersion: Registry<{ forge: string; minecraft: string; yarn: string; fabricLoader: string; version: string }>;
+
+        requireForge: Registry<{}, false, true>;
+        requireFabric: Registry<{}, false, true>;
 
         badInstall: Registry<{ minecraft: string; version: string; installProfile: InstallProfile }>;
 
@@ -96,8 +99,6 @@ const mod: DiagnoseModule = {
             invalidJava: { fixing: false, autofix: true, optional: false, actived: [] },
             missingJava: { fixing: false, autofix: true, optional: false, actived: [] },
 
-            missingForge: { fixing: false, autofix: true, optional: false, actived: [] },
-            missingLiteloader: { fixing: false, autofix: true, optional: false, actived: [] },
             unknownMod: { fixing: false, autofix: false, optional: true, actived: [] },
             incompatibleMod: { fixing: false, autofix: false, optional: true, actived: [] },
             incompatibleResourcePack: { fixing: false, autofix: false, optional: true, actived: [] },
@@ -105,6 +106,9 @@ const mod: DiagnoseModule = {
             incompatibleJava: { fixing: false, autofix: false, optional: true, actived: [] },
             missingModsOnServer: { fixing: false, autofix: false, optional: false, actived: [] },
             badInstall: { fixing: false, autofix: true, optional: false, actived: [] },
+
+            requireFabric: { fixing: false, autofix: false, optional: true, actived: [] },
+            requireForge: { fixing: false, autofix: false, optional: true, actived: [] },
         },
     },
     getters: {

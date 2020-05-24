@@ -1,4 +1,4 @@
-import { Resource } from '@universal/store/modules/resource';
+import { Resource } from '@universal/util/resource';
 import { Issue } from '@universal/store/modules/diagnose';
 
 export type Exceptions = CurseforgeModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException;

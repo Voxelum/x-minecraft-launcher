@@ -1,5 +1,4 @@
 {
-  "$schema": "../locale.schema.json",
   "actionforbidden": "创建失败",
   "add": "添加",
   "advanced": "高级",
@@ -84,6 +83,26 @@
       "": "Forge 需要生成文件才能启动 {jar}",
       "message": "点击来让 Forge 完成安装"
     },
+    "corruptedAssets": {
+      "": "Asset 文件损坏: {name} | Asset 文件损坏: {name} | 有 {count} 个游戏资源可能损坏",
+      "message": "启动器将重新下载游戏文件"
+    },
+    "corruptedAssetsIndex": {
+      "": "{version}游戏资源目录可能损坏.",
+      "message": "启动器将重新下载游戏资源目录"
+    },
+    "corruptedLibraries": {
+      "": "库文件损坏: {name} | 库文件损坏: {name} | {count} 个库文件损坏 | {count} 个库文件损坏",
+      "message": "启动器将重新下载损坏的文件"
+    },
+    "corruptedVersionJar": {
+      "": "Minecraft %{version} 游戏 Jar 文件损坏.",
+      "message": "启动器将重新下载损坏的文件"
+    },
+    "corruptedVersionJson": {
+      "": "Minecraft %{version} 版本 Json 文件损坏.",
+      "message": "启动器将重新下载损坏的文件"
+    },
     "fix": "问题修复",
     "incompatibleJava": {
       "": "Minecraft {mcversion} 不支持 Java {java}!",
@@ -101,17 +120,9 @@
       "": "Asset 文件缺失: {name} | Asset 文件缺失: {name} | 缺少%{count}个游戏资源",
       "message": "启动器将自动下载并安装游戏文件"
     },
-    "corruptedAssets": {
-      "": "Asset 文件损坏: {name} | Asset 文件损坏: {name} | 有 {count} 个游戏资源可能损坏",
-      "message": "启动器将重新下载游戏文件"
-    },
     "missingAssetsIndex": {
       "": "%{version}缺少游戏资源目录",
       "message": "启动器将自动下载并安装游戏资源目录"
-    },
-    "corruptedAssetsIndex": {
-      "": "{version}游戏资源目录可能损坏.",
-      "message": "启动器将重新下载游戏资源目录"
     },
     "missingAuthlibInjector": {
       "": "需要安装 authlib-injector",
@@ -120,18 +131,6 @@
     "missingForgeJar": {
       "": "缺少对应 Minecraft {minecraft} 版本的 Forge {forge} 依赖文件",
       "message": "启动器将自动安装Forge文件"
-    },
-    "corruptedLibraries": {
-      "": "库文件损坏: {name} | 库文件损坏: {name} | {count} 个库文件损坏 | {count} 个库文件损坏",
-      "message": "启动器将重新下载损坏的文件"
-    },
-    "corruptedVersionJar": {
-      "": "Minecraft %{version} 游戏 Jar 文件损坏.",
-      "message": "启动器将重新下载损坏的文件"
-    },
-    "corruptedVersionJson": {
-      "": "Minecraft %{version} 版本 Json 文件损坏.",
-      "message": "启动器将重新下载损坏的文件"
     },
     "missingJava": {
       "": "没有分配Java",
@@ -153,7 +152,10 @@
       "": "缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少{count}个库文件 | 缺少{count}个库文件",
       "message": "启动器将自动下载并安装库文件"
     },
-    "missingVersion": "请选择一个Minecraft版本！",
+    "missingVersion": {
+      "": "未安装 {version}",
+      "message": "启动器将自动安装该版本"
+    },
     "missingVersionJar": {
       "": "%{version}版本JAR文件缺失",
       "message": "启动器将自动下载JAR文件"
@@ -163,6 +165,14 @@
       "message": "启动器将自动下载JSON文件"
     },
     "problem": "1个问题待修复 | %{count}个问题待修复",
+    "requireFabric": {
+      "": "请启用 Fabric 来运行 Fabric 的 Mod",
+      "message": "请在版本设置页面选择一个合适的 Fabric 版本"
+    },
+    "requireForge": {
+      "": "请启用 Forge 来运行 Forge 的 Mod",
+      "message": "请在版本设置页面选择一个合适的 Forge 版本"
+    },
     "unknownMod": {
       "": "无法解析 {name} Mod 兼容的 Minecraft 版本",
       "message": "请务必小心使用"
@@ -320,6 +330,9 @@
       "library": "检查库文件"
     }
   },
+  "installFabric": {
+    "": "安装 Fabric"
+  },
   "installForge": {
     "": "安装 Forge",
     "downloadInstaller": "下载 Forge 安装器",
@@ -377,6 +390,10 @@
       "versions": "和原版一样，保存各个版本的 JAR 和 JSON"
     }
   },
+  "issue": {
+    "empty": "暂时没有找到问题",
+    "name": "已知问题"
+  },
   "java": {
     "autoAlloc": "自动分配",
     "browse": "浏览java可执行文件",
@@ -403,14 +420,16 @@
       "title": "有几个待解决的问题"
     },
     "checkingProblems": "检测问题中",
-    "crash": "游戏崩溃了!!",
+    "crash": "游戏崩溃了！",
     "failed": {
+      "description": "没有找到崩溃报告，这里是游戏最新日志文件",
       "general": "启动失败",
       "generalText": "如果你反复出现同样的问题，请联系作者!",
       "illegalAuth": "用户数据为空",
       "illegalAuthText": "无效的用户数据！请尝试重新登陆或切换账号",
       "selectProfileEmpty": "启动配置为空",
       "selectProfileEmptyText": "很奇怪，你可以尝试重新创建当前的启动配置。如果你老遇到这个问题请联系作者!",
+      "title": "游戏未正常退出",
       "unresolvableProblems": "无法处理某些启动问题",
       "unresolvableProblemsText": "启动器无法自动处理一些启动前置需求。你可以尝试在主页让启动器自动修复。如果你反复遇到此问题，请联系作者"
     },
@@ -419,6 +438,7 @@
     "launching": "启动中...",
     "launchingSlow": "还在启动…Minecraft图形界面启动的会比较慢呢~",
     "openCrashReportFolder": "打开崩溃日志文件夹",
+    "openLogFolder": "打开日志文件夹",
     "showLog": "Minecraft启动后显示日志"
   },
   "launch.hideLauncher": "Minecraft 启动后隐藏启动器",
@@ -457,6 +477,7 @@
     "deletion": "删除 {mod} Mod",
     "deletionHint": "你将失去这个 Mod 的文件和信息。你确定吗？",
     "export": "导出 Mod",
+    "hideIncompatible": "隐藏不兼容 Mods",
     "hint": "将Mod的jar文件拖入此处来导入",
     "import": "导入 Mod",
     "incompatible": "不兼容Minecraft {actual} 的Mod。需要Minecraft {accept}。",
@@ -474,6 +495,7 @@
     "name": "Mod | Mods",
     "nocompatible": "无法解析 Minecraft 兼容性",
     "selected": "已选 Mods",
+    "showIncompatible": "显示不兼容 Mods",
     "unselected": "未选 Mods"
   },
   "name": "名称",
@@ -549,6 +571,7 @@
       "acceptingMinecraftVersion": "接受 Minecraft 版本",
       "add": "添加服务器",
       "create": "创建一个新的服务器",
+      "creationHint": "请填写服务器地址并尝试 Ping 服务器",
       "delete": {
         "description": "此操作将删除所有本地关于此服务器的信息。你确定继续吗？",
         "name": "删除服务器"
@@ -575,11 +598,12 @@
       "status": {
         "nohost": "找不到服务器!",
         "ping": "延迟",
-        "refurse": "服务器断开了连接!",
+        "refuse": "服务器断开了连接!",
         "timeout": "服务器响应超时!"
       },
       "unknown": "未知服务器",
       "unknownDescription": "未知服务器，请刷新。",
+      "version": "服务器推荐版本",
       "versionHint": "Ping 使用的 Minecraft 版本"
     },
     "setting": "游戏设置",
@@ -709,6 +733,7 @@
     "manager": "任务管理器",
     "name": "任务 | 任务",
     "running": "活跃任务",
+    "start": "{name} 开始",
     "successed": "成功"
   },
   "user": {
@@ -807,10 +832,13 @@
     "noForge": "Forge不支持此版本",
     "noLocalVersion": "本地沒有安裝任何版本",
     "noMinecraft": "无法获取Minecraft版本列表，请检查你的网络",
+    "notInstalled": "未安装该版本",
     "pending": "下载中...",
     "prepare": "准备中",
     "recommended": "稳定版",
     "refresh": "刷新本地版本",
+    "reinstallDescription": "如果你觉得此版本安装的有问题，可以尝试重新安装该版本。",
+    "reinstallTitle": "重新安装 {version}",
     "release": "稳定版",
     "releaseDate": "发行日期",
     "remote": "下载这个版本",

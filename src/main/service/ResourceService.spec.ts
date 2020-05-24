@@ -1,6 +1,6 @@
 import ResourceService from '@main/service/ResourceService';
 import { exists, missing } from '@main/util/fs';
-import { UNKNOWN_RESOURCE } from '@universal/store/modules/resource';
+import { UNKNOWN_RESOURCE } from '@universal/util/resource';
 import { Task } from '@xmcl/task';
 import fs from 'fs-extra';
 import { join } from 'path';

@@ -19,7 +19,18 @@
         </v-list-tile-avatar>
         <v-list-tile-title>{{ item.folder }}</v-list-tile-title>
         <v-list-tile-sub-title>{{ item.minecraft }}</v-list-tile-sub-title>
-        <v-list-tile-action style="justify-content: flex-end;">
+        <v-list-tile-action style="flex-direction: row; justify-content: flex-end;">
+          <v-btn
+            style="cursor: pointer"
+            icon
+            flat
+            @mousedown.stop
+            @click.stop="startReinstall(item)"
+          >
+            <v-icon>build</v-icon>
+          </v-btn>
+        </v-list-tile-action>
+        <v-list-tile-action style="flex-direction: row; justify-content: flex-end;">
           <v-btn
             style="cursor: pointer"
             icon
@@ -44,6 +55,22 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="reinstallVersion" max-width="390">
+      <v-card dark>
+        <v-card-title
+          class="headline"
+        >{{ $t('version.reinstallTitle', { version: reinstallVersionId }) }}</v-card-title>
+        <v-card-text>{{ $t('version.reinstallDescription') }}</v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn flat @click="cancelReinstall()">{{ $t('no') }}</v-btn>
+          <v-btn color="orange darken-1" flat @click="comfireReinstall()">
+            <v-icon left>build</v-icon>
+            {{ $t('yes') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-list>
   <v-container v-else fill-height>
     <v-layout align-center justify-center row fill-height>
@@ -53,7 +80,6 @@
           {{ $t('version.noLocalVersion') }}
         </v-btn>
         <v-btn large color="primary" @click="refreshVersions">
-          <v-icon left>refresh</v-icon>
           {{ $t('version.refresh') }}
         </v-btn>
       </v-flex>
@@ -81,8 +107,11 @@ export default defineComponent({
     const data = reactive({
       deletingVersion: false,
       deletingVersionId: '',
+
+      reinstallVersion: false,
+      reinstallVersionId: '',
     });
-    const { localVersions, deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions } = useLocalVersions();
+    const { localVersions, deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions, reinstall } = useLocalVersions();
     const versions = computed(() => localVersions.value.filter(v => v.folder.indexOf(props.filterText) !== -1));
 
     function isSelected(v: LocalVersion) {
@@ -106,14 +135,27 @@ export default defineComponent({
       data.deletingVersion = true;
       data.deletingVersionId = v.folder;
     }
+    function startReinstall(v: { folder: string }) {
+      data.reinstallVersion = true;
+      data.reinstallVersionId = v.folder;
+    }
     function comfireDeleting() {
       deleteVersion(data.deletingVersionId);
       data.deletingVersion = false;
       data.deletingVersionId = '';
     }
+    function comfireReinstall() {
+      reinstall(data.reinstallVersionId);
+      data.reinstallVersion = false;
+      data.reinstallVersionId = '';
+    }
     function cancelDeleting() {
       data.deletingVersion = false;
       data.deletingVersionId = '';
+    }
+    function cancelReinstall() {
+      data.reinstallVersion = false;
+      data.reinstallVersionId = '';
     }
 
     return {
@@ -127,6 +169,9 @@ export default defineComponent({
       browseVersoinsFolder,
       refreshVersions,
       selectVersion,
+      startReinstall,
+      cancelReinstall,
+      comfireReinstall,
     };
   },
 });

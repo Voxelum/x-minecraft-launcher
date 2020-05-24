@@ -40,16 +40,12 @@ import {
   useCurseforgeProjectFiles,
   useCurseforgeInstall,
 } from '@/hooks';
-import {
-  useNotifier,
-} from '../hooks';
 
 export default defineComponent<{ project: number; type: ProjectType }>({
   components: { VirtualList },
   props: { project: Number, type: String },
   setup(props) {
     const { files, loading, refresh } = useCurseforgeProjectFiles(props.project);
-    const { subscribe } = useNotifier();
     const releases = ['', 'R', 'A', 'B'];
     const { install, getFileStatus } = useCurseforgeInstall(props.type);
     function getColor(type: number) {

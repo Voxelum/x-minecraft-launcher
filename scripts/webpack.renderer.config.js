@@ -75,7 +75,7 @@ const rendererConfig = {
                     {
                         loader: 'ts-loader',
                         options: {
-                            appendTsSuffixTo: [/\.vue$/], 
+                            appendTsSuffixTo: [/\.vue$/],
                             happyPackMode: true
                         },
                     }
@@ -144,13 +144,6 @@ const rendererConfig = {
                 : false,
         }),
         new webpack.NoEmitOnErrorsPlugin(),
-        new BundleAnalyzerPlugin({
-            analyzerMode: 'static',
-            reportFilename: 'renderer.report.html',
-            generateStatsFile: true,
-            statsFilename: 'stat.renderer.json',
-            openAnalyzer: false,
-        }),
     ],
     output: {
         filename: '[name].js',
@@ -198,6 +191,13 @@ if (process.env.NODE_ENV === 'production') {
         }),
         new webpack.LoaderOptionsPlugin({
             minimize: true,
+        }),
+        new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            reportFilename: 'renderer.report.html',
+            generateStatsFile: true,
+            statsFilename: 'stat.renderer.json',
+            openAnalyzer: false,
         }),
     );
 }

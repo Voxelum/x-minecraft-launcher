@@ -1,9 +1,12 @@
 <template>
   <v-stepper v-model="step" non-linear dark>
     <v-stepper-header>
-      <v-stepper-step :rules="[() => valid]" editable :complete="step > 1" step="1">
-        {{ $t('profile.baseSetting') }}
-      </v-stepper-step>
+      <v-stepper-step
+        :rules="[() => valid]"
+        editable
+        :complete="step > 1"
+        step="1"
+      >{{ $t('profile.baseSetting') }}</v-stepper-step>
       <v-divider />
       <v-stepper-step editable :complete="step > 2" step="2">
         {{ $t('profile.advancedSetting') }}
@@ -17,78 +20,116 @@
         <v-form ref="form" v-model="valid" lazy-validation style="height: 100%;">
           <v-container grid-list fill-height>
             <v-layout row wrap>
+              <v-flex xs12 style="display: flex; flex-direction: row">
+                <img :src="favicon" style="max-width: 80px; max-height: 80px; min-height: 80px;">
+                <div style="flex-grow: 1" />
+                <v-layout>
+                  <span style="display: flex; align-items: center;">
+                    <text-component v-if="description" :source="description" />
+                    <div
+                      v-else
+                      style="font-size: 18px; font-weight: bold;"
+                    >{{ $t('profile.server.creationHint') }}</div>
+                  </span>
+                  <text-component v-if="version.name" :source="version.name" />
+                </v-layout>
+              </v-flex>
+              <v-flex d-flex xs4 style="display: flex; align-items: center">
+                <v-text-field
+                  :value="$t(version.name)"
+                  dark
+                  append-icon="title"
+                  :label="$t('profile.server.version')"
+                  :readonly="true"
+                  :loading="pinging"
+                />
+              </v-flex>
+              <v-flex style="display: flex; align-items: center">
+                <v-text-field
+                  :value="players.online + '/' + players.max"
+                  dark
+                  append-icon="people"
+                  :label="$t('profile.server.players')"
+                  :readonly="true"
+                  :loading="pinging"
+                />
+              </v-flex>
+              <v-flex style="display: flex; align-items: center">
+                <v-text-field
+                  :value="ping"
+                  dark
+                  append-icon="signal_cellular_alt"
+                  :label="$t('profile.server.pings')"
+                  :readonly="true"
+                  :loading="pinging"
+                />
+              </v-flex>
+
               <v-flex d-flex xs12>
-                <v-card>
-                  <v-layout justify-center align-center>
-                    <v-flex xs3>
-                      <img :src="favicon" style="max-width: 80px; max-height: 80px; min-height: 80px; margin: 5px 0 0 30px;">
-                    </v-flex>
-                    <v-flex xs9>
-                      <v-layout row>
-                        <v-flex>
-                          <v-icon left>
-                            title
-                          </v-icon>
-                          {{ $t(version.name) }}
-                        </v-flex>
-                        <v-flex>
-                          <v-icon left>
-                            people
-                          </v-icon>
-                          {{ players.online + '/' + players.max }}
-                        </v-flex>
-                        <v-flex>
-                          <v-icon left>
-                            signal_cellular_alt
-                          </v-icon>
-                          {{ ping }}
-                        </v-flex>
-                      </v-layout>
-                    </v-flex>
-                  </v-layout>
-                </v-card>
+                <v-divider />
+              </v-flex>
+
+              <v-flex d-flex xs4>
+                <v-text-field
+                  v-model="serverField"
+                  dark
+                  persistent-hint
+                  :hint="$t('profile.server.hostHint')"
+                  :label="$t('profile.server.host')"
+                  required
+                />
               </v-flex>
               <v-flex d-flex xs4>
-                <v-text-field v-model="name" dark persistent-hint :hint="$t('profile.name')" :label="$t('profile.name')"
-                              required />
-              </v-flex>
-              <v-flex d-flex xs4>
-                <v-text-field v-model="host" dark persistent-hint :hint="$t('profile.server.hostHint')" :label="$t('profile.server.host')"
-                              required />
-              </v-flex>
-              <v-flex d-flex xs4>
-                <version-menu :accept-range="acceptingVersion" @input="version.minecraft = $event">
+                <minecraft-version-menu
+                  :accept-range="acceptingVersion"
+                  @input="runtime.minecraft = $event"
+                >
                   <template v-slot="{ on }">
-                    <v-text-field v-model="version.minecraft" dark append-icon="arrow" persistent-hint
-                                  :hint="$t('profile.server.versionHint')" :label="$t('minecraft.version')" :readonly="true" @click:append="on.keydown"
-                                  v-on="on" />
+                    <v-text-field
+                      v-model="runtime.minecraft"
+                      dark
+                      append-icon="arrow"
+                      persistent-hint
+                      :hint="$t('profile.server.versionHint')"
+                      :label="$t('minecraft.version')"
+                      :readonly="true"
+                      @click:append="on.keydown"
+                      v-on="on"
+                    />
                   </template>
-                </version-menu>
+                </minecraft-version-menu>
               </v-flex>
-              
               <v-flex d-flex xs4>
-                <v-switch v-model="filterVersion" :label="$t('profile.server.filterVersion')" />
-              </v-flex>
-              <v-flex d-flex xs4 />
-              <v-flex d-flex xs4>
-                <v-btn :loading="pinging" :disabled="!host || !port" @click="refresh">
-                  {{ $t('profile.server.ping') }}
-                </v-btn>
+                <v-text-field
+                  v-model="name"
+                  :placeholder="server.host"
+                  dark
+                  persistent-hint
+                  :hint="$t('profile.name')"
+                  :label="$t('profile.name')"
+                  required
+                />
               </v-flex>
             </v-layout>
           </v-container>
         </v-form>
         <v-layout>
-          <v-btn :disabled="creating" flat @click="quit">
-            {{ $t('cancel') }}
-          </v-btn>
+          <v-btn :disabled="creating" flat @click="quit">{{ $t('cancel') }}</v-btn>
           <v-spacer />
-          <v-btn flat @click="step = 2">
-            {{ $t('next') }}
-          </v-btn>
-          <v-btn :loading="creating" color="primary" :disabled="!valid || name === '' || version.minecraft === ''" @click="doCreate">
-            {{ $t('create') }}
-          </v-btn>
+          <!-- <v-switch v-model="filterVersion" :label="$t('profile.server.filterVersion')" /> -->
+          <v-btn flat @click="step = 2">{{ $t('next') }}</v-btn>
+          <v-btn
+            flat
+            :loading="pinging"
+            :disabled="!server.host || !server.port"
+            @click="refresh"
+          >{{ $t('profile.server.ping') }}</v-btn>
+          <v-btn
+            :loading="creating"
+            color="primary"
+            :disabled="!valid || runtime.minecraft === ''"
+            @click="doCreate"
+          >{{ $t('create') }}</v-btn>
         </v-layout>
       </v-stepper-content>
       <v-stepper-content step="2">
@@ -96,24 +137,51 @@
           <v-container grid-list fill-height style="overflow: auto;">
             <v-layout row wrap>
               <v-flex d-flex xs6>
-                <v-select v-model="java.path" class="java-select" hide-details :item-text="java => `JRE${java.majorVersion}, ${java.path}`"
-                          :item-value="v => v" prepend-inner-icon="add" :label="$t('java.location')" :items="javas"
-                          required :menu-props="{ auto: true, overflowY: true }" />
+                <v-select
+                  v-model="java"
+                  class="java-select"
+                  hide-details
+                  :item-text="java => `JRE${java.majorVersion}, ${java}`"
+                  :item-value="v => v"
+                  prepend-inner-icon="add"
+                  :label="$t('java.location')"
+                  :items="javas"
+                  required
+                  :menu-props="{ auto: true, overflowY: true }"
+                />
               </v-flex>
               <v-flex d-flex xs3>
-                <v-text-field v-model="minMemory" hide-details type="number" :label="$t('java.minMemory')"
-                              required />
+                <v-text-field
+                  v-model="minMemory"
+                  hide-details
+                  type="number"
+                  :label="$t('java.minMemory')"
+                  required
+                />
               </v-flex>
               <v-flex d-flex xs3>
-                <v-text-field v-model="maxMemory" hide-details type="number" :label="$t('java.maxMemory')"
-                              required />
+                <v-text-field
+                  v-model="maxMemory"
+                  hide-details
+                  type="number"
+                  :label="$t('java.maxMemory')"
+                  required
+                />
               </v-flex>
               <v-flex d-flex xs6>
-                <forge-version-menu :minecraft="version.minecraft" @input="version.forge = $event">
+                <forge-version-menu :minecraft="runtime.minecraft" @input="runtime.forge = $event">
                   <template v-slot="{ on }">
-                    <v-text-field v-model="version.forge" dark append-icon="arrow" persistent-hint
-                                  :hint="$t('profile.versionHint')" :label="$t('forge.version')" :readonly="true" @click:append="on.keydown"
-                                  v-on="on" />
+                    <v-text-field
+                      v-model="runtime.forge"
+                      dark
+                      append-icon="arrow"
+                      persistent-hint
+                      :hint="$t('profile.versionHint')"
+                      :label="$t('forge.version')"
+                      :readonly="true"
+                      @click:append="on.keydown"
+                      v-on="on"
+                    />
                   </template>
                 </forge-version-menu>
               </v-flex>
@@ -122,13 +190,14 @@
         </v-form>
 
         <v-layout>
-          <v-btn :disabled="creating" flat @click="quit">
-            {{ $t('cancel') }}
-          </v-btn>
+          <v-btn :disabled="creating" flat @click="quit">{{ $t('cancel') }}</v-btn>
           <v-spacer />
-          <v-btn :loading="creating" color="primary" :disabled="!valid || name === '' || version.minecraft === ''" @click="doCreate">
-            {{ $t('create') }}
-          </v-btn>
+          <v-btn
+            :loading="creating"
+            color="primary"
+            :disabled="!valid || runtime.minecraft === ''"
+            @click="doCreate"
+          >{{ $t('create') }}</v-btn>
         </v-layout>
       </v-stepper-content>
     </v-stepper-items>
@@ -136,8 +205,8 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, ref, computed, onMounted, watch, defineComponent } from '@vue/composition-api';
-import { useMinecraftVersions, useForgeVersions, useJava, useI18n, useServer, useRouter, useInstanceCreation } from '@/hooks';
+import { reactive, toRefs, ref, Ref, computed, onMounted, watch, defineComponent } from '@vue/composition-api';
+import { useJava, useI18n, useServer, useRouter, useInstanceCreation } from '@/hooks';
 
 export default defineComponent({
   props: {
@@ -147,14 +216,15 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    const { release, snapshot } = useMinecraftVersions();
-    const latestVersion = computed(() => release.value!.id);
-    const { create, reset, use, ...creationData } = useInstanceCreation();
-    const { versions: forgeVersions, recommended, latest } = useForgeVersions(latestVersion);
+    const { create, reset: $reset, ...creationData } = useInstanceCreation();
     const { all: javas } = useJava();
     const { $t } = useI18n();
     const router = useRouter();
 
+    const server: Ref<{ host: string; port?: number }> = ref({
+      host: '',
+      port: 25565,
+    });
     const staticData = {
       memoryRule: [(v: number) => Number.isInteger(v)],
       nameRules: [
@@ -169,6 +239,7 @@ export default defineComponent({
       filterVersion: false,
       javaValid: true,
     });
+    const serverField = ref('');
     const ready = computed(() => data.valid && data.javaValid);
     const dataRef = toRefs(data);
 
@@ -180,7 +251,17 @@ export default defineComponent({
       players,
       ping,
       pinging,
-    } = useServer(creationData.server, ref(undefined));
+      description,
+      reset: resetServer,
+    } = useServer(server, ref(undefined));
+
+    function reset() {
+      $reset();
+      resetServer();
+      server.value.host = '';
+      server.value.port = 25565;
+      creationData.name.value = '';
+    }
 
     function init() {
       data.step = 1;
@@ -192,6 +273,8 @@ export default defineComponent({
     async function doCreate() {
       try {
         data.creating = true;
+        creationData.name.value = creationData.name.value || server.value.host;
+        creationData.server.value = server.value;
         await create();
         init();
         router.replace('/');
@@ -206,11 +289,21 @@ export default defineComponent({
         }
       });
     });
+    watch(serverField, (v) => {
+      let [host, port] = v.split(':');
+      server.value.host = host;
+      if (port) {
+        server.value.port = Number.parseInt(port, 10);
+      } else {
+        server.value.port = 25565;
+      }
+    });
 
     return {
       ...dataRef,
       ...creationData,
       ...staticData,
+      serverField,
       favicon,
       acceptingVersion,
       refresh,
@@ -222,6 +315,8 @@ export default defineComponent({
       doCreate,
       quit,
       pinging,
+      server,
+      description,
     };
   },
 });

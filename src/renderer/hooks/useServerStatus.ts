@@ -1,27 +1,20 @@
-import { computed, Ref, ref } from '@vue/composition-api';
-import { Status } from '@xmcl/client';
 import unknownServer from '@/assets/unknown_server.png';
-import { useStore } from './useStore';
+import { computed, reactive, Ref, ref, toRefs } from '@vue/composition-api';
+import { useI18n } from './useI18n';
 import { useService } from './useService';
+import { useStore } from './useStore';
 
-export function useServerStatus(ref?: Ref<Status | undefined>) {
+export function useSeverStatusAcceptVersion(protocol: Ref<number>) {
     const { getters } = useStore();
+    return computed(() => `[${getters.getAcceptMinecraftsByProtocol(protocol.value).join(', ')}]`);
+}
 
-    const using = ref || computed(() => getters.instance.serverStatus);
-    const status: Ref<Status> = computed(() => using.value || {
-        version: {
-            name: '',
-            protocol: 0,
-        },
-        players: {
-            max: 0,
-            online: 0,
-        },
-        description: '',
-        favicon: '',
-        ping: -1,
-    });
-    const acceptingVersion = computed(() => `[${getters.getAcceptMinecraftsByProtocol(status.value.version.protocol).join(', ')}]`);
+export function useInstanceServerStatus(instancePath?: string) {
+    const { state } = useStore();
+
+    const status = computed(() => state.instance.all[instancePath ?? state.instance.path].serverStatus);
+    const acceptingVersion = useSeverStatusAcceptVersion(computed(() => status.value.version.protocol));
+    const refresh = useService('InstanceService').refreshServerStatus;
 
     return {
         acceptingVersion,
@@ -30,18 +23,14 @@ export function useServerStatus(ref?: Ref<Status | undefined>) {
         description: computed(() => status.value.description),
         favicon: computed(() => status.value.favicon || unknownServer),
         ping: computed(() => status.value.ping),
-        refresh: useService('InstanceService').refreshServerStatus,
+        refresh,
     };
-}
-
-export function useServerStatusForProfile(id: string) {
-    const { state } = useStore();
-    return useServerStatus(computed(() => state.instance.all[id].serverStatus));
 }
 
 export function useServer(serverRef: Ref<{ host: string; port?: number }>, protocol: Ref<number | undefined>) {
     const { pingServer } = useService('ServerStatusService');
-    const status = ref<Status>({
+    const { $t } = useI18n();
+    const status = reactive({
         version: {
             name: '',
             protocol: 0,
@@ -51,7 +40,7 @@ export function useServer(serverRef: Ref<{ host: string; port?: number }>, proto
             online: 0,
         },
         description: '',
-        favicon: '',
+        favicon: unknownServer,
         ping: -1,
     });
     const pinging = ref(false);
@@ -62,18 +51,48 @@ export function useServer(serverRef: Ref<{ host: string; port?: number }>, proto
         pinging.value = true;
         const server = serverRef.value;
         if (!server.host) return;
-        status.value = await pingServer({
+        status.description = $t('profile.server.status.ping');
+        status.favicon = unknownServer;
+
+        let result = await pingServer({
             host: server.host,
             port: server.port,
             protocol: protocol.value,
         }).finally(() => {
             pinging.value = false;
         });
+        status.description = result.description as any;
+        status.players = result.players;
+        status.version = result.version;
+        status.favicon = result.favicon;
+        status.ping = result.ping;
+        /* .catch((e) => {
+            if (e.code === 'ENOTFOUND') {
+                status.value.description = $t('profile.server.status.nohost');
+            } else if (e.code === 'ETIMEOUT') {
+                status.value.description = $t('profile.server.status.timeout');
+            } else if (e.code === 'ECONNREFUSED') {
+                status.value.description = $t('profile.server.status.refuse');
+            } else {
+                status.value.description = '';
+            }
+        }); */
     }
 
+    function reset() {
+        status.description = '';
+        status.players = { max: 0, online: 0 };
+        status.version = { name: '', protocol: 0 };
+        status.favicon = unknownServer;
+        status.ping = -1;
+    }
+
+    const acceptingVersion = useSeverStatusAcceptVersion(computed(() => status.version.protocol));
     return {
+        acceptingVersion,
+        ...toRefs(status),
         pinging,
-        ...useServerStatus(status),
         refresh,
+        reset,
     };
 }

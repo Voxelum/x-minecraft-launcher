@@ -1,6 +1,6 @@
-import { YggdrasilAuthAPI, ProfileServiceAPI, GameProfile } from '@xmcl/user';
-import { toObjectReducer, assignShallow } from '@universal/util/object';
-import Vue from 'vue';
+import { remove, set } from '@universal/util/middleware';
+import { assignShallow, toObjectReducer } from '@universal/util/object';
+import { GameProfile, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user';
 import { ModuleOption } from '../root';
 import { GameProfileAndTexture, UserProfile, UserSchema } from './user.schema';
 
@@ -165,8 +165,10 @@ const mod: UserModule = {
             const userProfile = state.users[userId];
             if (profile.id in userProfile.profiles) {
                 let instance = { textures: { SKIN: { url: '' } }, ...profile };
-                Vue.set(userProfile.profiles, profile.id, instance);
                 userProfile.profiles[profile.id] = instance;
+
+                // TODO: remove in vue3
+                set(userProfile.profiles, profile.id);
             } else {
                 userProfile.profiles[profile.id] = {
                     textures: { SKIN: { url: '' } },
@@ -180,20 +182,23 @@ const mod: UserModule = {
             }
         },
         authServiceRemove(state, name) {
-            Vue.delete(state.authServices, name);
             delete state.authServices[name];
+            // TODO: remove in vue3
+            remove(state.authServices, name);
         },
         profileServiceRemove(state, name) {
-            Vue.delete(state.profileServices, name);
             delete state.profileServices[name];
+            // TODO: remove in vue3
+            remove(state.profileServices, name);
         },
         userProfileRemove(state, userId) {
             if (state.selectedUser.id === userId) {
                 state.selectedUser.id = '';
                 state.selectedUser.profile = '';
             }
-            Vue.delete(state.users, userId);
             delete state.users[userId];
+            // TODO: remove in vue3
+            remove(state.users, userId);
         },
         userProfileAdd(state, profile) {
             let value = {
@@ -202,8 +207,10 @@ const mod: UserModule = {
                     .map(p => ({ ...p, textures: { SKIN: { url: '' } } }))
                     .reduce(toObjectReducer<GameProfileAndTexture, 'id'>('id'), {}),
             };
-            Vue.set(state.users, profile.id, value);
             state.users[profile.id] = value;
+
+            // TODO: remove in vue3
+            set(state.users, profile.id);
         },
         userProfileUpdate(state, profile) {
             let user = state.users[profile.id];
@@ -231,7 +238,9 @@ const mod: UserModule = {
                 state.authServices[name] = api;
             } else {
                 state.authServices[name] = api;
-                Vue.set(state.authServices, name, api);
+
+                // TODO: remove in vue3
+                set(state.authServices, name);
             }
         },
         profileService(state, { name, api }) {
@@ -239,7 +248,8 @@ const mod: UserModule = {
                 state.profileServices[name] = api;
             } else {
                 state.profileServices[name] = api;
-                Vue.set(state.profileServices, name, api);
+                // TODO: remove in vue3
+                set(state.profileServices, name);
             }
         },
     },

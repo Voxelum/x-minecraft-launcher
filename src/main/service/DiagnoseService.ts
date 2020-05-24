@@ -1,7 +1,9 @@
 import { exists, missing } from '@main/util/fs';
+import { isResourcePackResource } from '@main/util/resource';
 import { Issue, IssueReport } from '@universal/store/modules/diagnose';
 import { EMPTY_JAVA } from '@universal/store/modules/java';
 import { LocalVersion } from '@universal/store/modules/version';
+import { getExpectVersion } from '@universal/util/version';
 import { MinecraftFolder } from '@xmcl/core';
 import { Diagnosis, Installer } from '@xmcl/installer';
 import { InstallProfile } from '@xmcl/installer/minecraft';
@@ -18,8 +20,8 @@ import VersionService from './VersionService';
 
 
 export interface Fix {
-    match(issues: Issue[]): boolean;
-    fix(issues: Issue[]): Promise<void>;
+    match(issues: readonly Issue[]): boolean;
+    fix(issues: readonly Issue[]): Promise<void>;
     recheck: string;
 }
 
@@ -92,15 +94,30 @@ export default class DiagnoseService extends Service {
             },
             'diagnoseVersion');
 
-        this.registerMatchedFix(['missingForge'],
+        this.registerMatchedFix(['missingVersion'],
             async (issues) => {
                 if (!issues[0].arguments) return;
-                let { minecraft, forge } = issues[0].arguments;
-                let forgeVer = this.state.version.forge[minecraft]?.versions.find(v => v.version === forge);
-                if (!forgeVer) {
-                    await this.installService.installForge({ mcversion: minecraft, version: forge });
-                } else {
-                    await this.installService.installForge(forgeVer);
+                let { minecraft, forge, fabricLoader, yarn } = issues[0].arguments;
+                let targetVersion: string | undefined;
+                if (minecraft && this.state.version.local.every(v => v.minecraft !== minecraft)) {
+                    let metadata = this.state.version.minecraft.versions.find(v => v.id === minecraft);
+                    if (metadata) {
+                        await this.installService.installMinecraft(metadata);
+                    }
+                    targetVersion = metadata?.id;
+                }
+                if (forge) {
+                    let forgeVer = this.state.version.forge[minecraft]?.versions.find(v => v.version === forge);
+                    if (!forgeVer) {
+                        targetVersion = await this.installService.installForge({ mcversion: minecraft, version: forge });
+                    } else {
+                        targetVersion = await this.installService.installForge(forgeVer);
+                    }
+                } else if (fabricLoader) {
+                    targetVersion = await this.installService.installFabric({ yarn, loader: fabricLoader });
+                }
+                if (targetVersion) {
+                    await this.installService.installDependencies(targetVersion);
                 }
             },
             'diagnoseVersion');
@@ -141,7 +158,7 @@ export default class DiagnoseService extends Service {
             'diagnoseServer');
 
         this.registerMatchedFix(['invalidJava'],
-            () => this.instanceService.setJavaPath(this.state.java.all[this.state.java.default].path),
+            () => this.instanceService.setJavaPath(this.getters.defaultJava.path),
             'diagnoseJava');
     }
 
@@ -232,13 +249,16 @@ export default class DiagnoseService extends Service {
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
             const pattern = /^\[.+\]$/;
 
-            const tree: Pick<IssueReport, 'unknownMod' | 'incompatibleMod'> = {
+            const tree: Pick<IssueReport, 'unknownMod' | 'incompatibleMod' | 'requireForge' | 'requireFabric'> = {
                 unknownMod: [],
                 incompatibleMod: [],
+                requireForge: [],
+                requireFabric: [],
             };
-            for (const mod of resources.filter(m => !!m && m.type === 'forge')) {
-                const metadatas: Forge.ModMetaData[] = mod.metadata;
-                for (const meta of metadatas) {
+            let forgeMods = resources.filter(m => !!m && m.type === 'forge');
+            for (let mod of forgeMods) {
+                let metadatas = mod.metadata as Forge.ModMetaData[];
+                for (let meta of metadatas) {
                     let acceptVersion = meta.acceptedMinecraftVersions;
                     if (!acceptVersion) {
                         if (!meta.mcversion) {
@@ -251,12 +271,25 @@ export default class DiagnoseService extends Service {
                         tree.unknownMod.push({ name: mod.name, actual: mcversion });
                         continue;
                     }
-                    const range = VersionRange.createFromVersionSpec(acceptVersion);
+                    let range = VersionRange.createFromVersionSpec(acceptVersion);
                     if (range && !range.containsVersion(resolvedMcVersion)) {
                         tree.incompatibleMod.push({ name: mod.name, accepted: acceptVersion, actual: mcversion });
                     }
                 }
             }
+            if (forgeMods.length > 0) {
+                if (!version.forge) {
+                    tree.requireForge.push({});
+                }
+            }
+
+            let fabricMods = resources.filter(m => m.type === 'fabric');
+            if (fabricMods.length > 0) {
+                if (!version.fabricLoader || !version.yarn) {
+                    tree.requireFabric.push({});
+                }
+            }
+
             Object.assign(report, tree);
         } finally {
             this.release('diagnose');
@@ -279,9 +312,9 @@ export default class DiagnoseService extends Service {
             };
 
             const packFormatMapping = this.state.client.packFormatMapping.mcversion;
-            for (const pack of resources.filter(r => r.type === 'resourcepack')) {
-                if (pack.metadata.format in packFormatMapping) {
-                    const acceptVersion = packFormatMapping[pack.metadata.format];
+            for (const pack of resources.filter(isResourcePackResource)) {
+                if (pack.metadata.pack_format in packFormatMapping) {
+                    const acceptVersion = packFormatMapping[pack.metadata.pack_format];
                     const range = VersionRange.createFromVersionSpec(acceptVersion);
                     if (range && !range.containsVersion(resolvedMcVersion)) {
                         tree.incompatibleResourcePack.push({ name: pack.name, accepted: acceptVersion, actual: mcversion });
@@ -410,7 +443,6 @@ export default class DiagnoseService extends Service {
             let currentVersion = { ...this.getters.instanceVersion };
             let targetVersion = currentVersion.folder;
             let mcversion = currentVersion.minecraft;
-            let forge = currentVersion.forge;
 
             let mcLocation = MinecraftFolder.from(this.state.root);
 
@@ -428,16 +460,13 @@ export default class DiagnoseService extends Service {
                 'corruptedLibraries' |
                 'corruptedAssets' |
 
-                'badInstall' |
-
-                'missingForge' |
-                'missingLiteloader'>;
+                'badInstall'>;
 
             let tree: VersionReport = {
                 missingVersion: [],
                 missingVersionJar: [],
-                missingAssetsIndex: [],
                 missingVersionJson: [],
+                missingAssetsIndex: [],
                 missingLibraries: [],
                 missingAssets: [],
 
@@ -447,30 +476,11 @@ export default class DiagnoseService extends Service {
                 corruptedLibraries: [],
                 corruptedAssets: [],
 
-                missingForge: [],
-                missingLiteloader: [],
-
                 badInstall: [],
             };
 
             if (targetVersion === 'unknown') {
-                if (currentVersion.minecraft) {
-                    tree.missingVersionJson.push({ version: currentVersion.minecraft, ...currentVersion });
-                }
-
-                if (currentVersion.forge) {
-                    let forge = this.state.version.local.find(v => v.forge === currentVersion.forge);
-                    if (!forge) {
-                        tree.missingForge.push({ forge: currentVersion.forge, minecraft: currentVersion.minecraft });
-                    }
-                }
-
-                if (currentVersion.liteloader) {
-                    let liteloader = this.state.version.local.find(v => v.liteloader === currentVersion.liteloader);
-                    if (!liteloader) {
-                        tree.missingLiteloader.push({ liteloader: currentVersion.liteloader, minecraft: currentVersion.minecraft });
-                    }
-                }
+                tree.missingVersion.push({ ...currentVersion, version: getExpectVersion(currentVersion.minecraft, currentVersion.forge, currentVersion.liteloader, currentVersion.fabricLoader) });
             } else {
                 this.log(`Diagnose for version ${targetVersion}`);
 
@@ -492,7 +502,7 @@ export default class DiagnoseService extends Service {
                         }
                     } else if (issue.role === 'assetIndex') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
+                            tree.corruptedAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file), actual: 'issue.receivedChecksum', expect: issue.expectedChecksum });
                         } else {
                             tree.missingAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file) });
                         }
@@ -543,34 +553,39 @@ export default class DiagnoseService extends Service {
         }
     }
 
-    @Singleton('diagnose')
-    async fix(issues: Issue[]) {
-        const unfixed = issues.filter(p => p.autofix)
-            .filter(p => !this.state.diagnose.registry[p.id].fixing);
+    async fix(issues: readonly Issue[]) {
+        this.aquire('diagnose');
+        try {
+            const unfixed = issues.filter(p => p.autofix)
+                .filter(p => !this.state.diagnose.registry[p.id].fixing);
 
-        if (unfixed.length === 0) return;
+            if (unfixed.length === 0) return;
 
-        this.log(`Start fixing ${issues.length} issues: ${JSON.stringify(issues.map(i => i.id))}`);
+            this.log(`Start fixing ${issues.length} issues: ${JSON.stringify(issues.map(i => i.id))}`);
 
-        const recheck = {};
+            const recheck: Record<string, boolean> = {};
 
-        this.commit('issuesStartResolve', unfixed);
+            this.commit('issuesStartResolve', unfixed);
+            try {
+                for (const fix of this.fixes) {
+                    if (fix.match(issues)) {
+                        await fix.fix(issues).catch(e => this.pushException({ type: 'issueFix', error: e }));
+                        recheck[fix.recheck] = true;
+                    }
+                }
 
-        for (const fix of this.fixes) {
-            if (fix.match(issues)) {
-                await fix.fix(issues).catch(e => this.pushException({ type: 'issueFix', error: e }));
-                (recheck as any)[fix.recheck] = true;
+                const report: Partial<IssueReport> = {};
+                const self = this as any;
+                for (const action of Object.keys(recheck)) {
+                    if (action in self) { await self[action](report); }
+                }
+                this.commit('issuesPost', report);
+            } finally {
+                this.commit('issuesEndResolve', unfixed);
             }
+        } finally {
+            this.release('diagnose');
         }
-
-        const report: Partial<IssueReport> = {};
-        const self = this as any;
-        for (const action of Object.keys(recheck)) {
-            if (action in self) { self[action](report); }
-        }
-        this.commit('issuesPost', report);
-
-        this.commit('issuesEndResolve', unfixed);
     }
 
     async fixJavaIncompatible() {

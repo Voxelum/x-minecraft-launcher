@@ -4,7 +4,8 @@
     <v-layout v-else fill-height>
       <side-bar />
       <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
-        <v-card class="main-body" color="grey darken-4">
+        <div class="main-body v-sheet">
+        <!-- <v-card class="main-body" color="grey darken-4"> -->
           <img v-if="backgroundImage" :src="`file:///${backgroundImage}`" :style="{ filter: `blur:${blur}px` }" style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;">
           <vue-particles v-if="showParticle" 
                          color="#dedede" 
@@ -16,7 +17,8 @@
             <router-view />
           <!-- </keep-alive> -->
           </transition>
-        </v-card>
+        <!-- </v-card> -->
+        </div>
       </v-layout>
       <context-menu />
       <search-bar />
@@ -32,25 +34,21 @@
 import '@/assets/common.css';
 import {
   onMounted,
-  onUnmounted,
   reactive,
   toRefs,
   watch,
   defineComponent,
   ref,
-  Ref,
+  provide,
 } from '@vue/composition-api';
-import { IpcRendererEvent } from 'electron';
 import {
   useParticle,
-  useStore,
   useBackgroundImage,
   useIpc,
-  useI18n,
   useRouter,
 } from '@/hooks';
-import { provideTasks } from '@/providers/provideTasks'; 
-import { provideDialog, provideNotifier, useNotifier, provideLoginDialog, provideSearchToggle } from './hooks';
+import { provideTasks } from '@/providers/provideTaskProxy'; 
+import { provideDialog, provideNotifier, provideLoginDialog, provideSearchToggle, SEARCH_TEXT_SYMBOL } from './hooks';
 import LoginDialog from './dialog/BaseLoginDialog.vue';
 import TaskDialog from './dialog/BaseTaskDialog.vue';
 import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue';
@@ -62,14 +60,12 @@ export default defineComponent({
     provideNotifier();
     provideTasks();
 
+    provide(SEARCH_TEXT_SYMBOL, ref(''));
     provideSearchToggle();
 
     const ipcRenderer = useIpc();
     const { particleMode, showParticle } = useParticle();
-    const { $t } = useI18n();
     const { blur, backgroundImage } = useBackgroundImage();
-    const { notify } = useNotifier();
-    const { state } = useStore();
     const router = useRouter();
     const onHomePage = ref(router.currentRoute.path === '/');
     provideLoginDialog();
@@ -82,28 +78,9 @@ export default defineComponent({
       loading: true,
     });
 
-    function onSuccessed(event: IpcRendererEvent, id: string) {
-      // const task = state.task.tree[id];
-      // if (task.background) return;
-      // notify('success', $t(task.path, task.arguments || {}));
-    }
-    function onFailed(event: IpcRendererEvent, id: string, error: any) {
-      // const task = state.task.tree[id];
-      // if (task.background) return;
-      // console.log(`Recieve fail task ${id}`);
-      // notify('error', $t(task.path, task.arguments || {}), $t('task.failedDescription'), error);
-    }
     function refreshImage() {
       const img = backgroundImage;
     }
-    onMounted(() => {
-      ipcRenderer.addListener('task-successed', onSuccessed);
-      ipcRenderer.addListener('task-failed', onFailed);
-    });
-    onUnmounted(() => {
-      ipcRenderer.removeListener('task-successed', onSuccessed);
-      ipcRenderer.removeListener('task-failed', onFailed);
-    });
 
     onMounted(() => {
       ipcRenderer.once('synced', () => {
@@ -156,5 +133,7 @@ img {
   max-width: 720px;
   width: 100%;
   border-radius: 0px 2px 2px 0;
+  background-color: #212121 !important;
+  border-color: #212121 !important;
 }
 </style>

@@ -119,6 +119,7 @@
         "@typescript-eslint/no-non-null-assertion": 0,
         "max-classes-per-file": 0,
         "arrow-parens": 0,
+        "no-nested-ternary": 0,
         "no-useless-constructor": 0
     }
 }

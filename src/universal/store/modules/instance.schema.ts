@@ -76,10 +76,17 @@ export interface InstanceSchema {
      * - Http: `https://abc.bcd.jar`
      * - Github: `github://username/reponame/releaseName`
      * 
-     * @default {}
+     * @default { mods: string[]; resourcepacks: string[] }
      */
     deployments: {
-        [domain: string]: string[];
+        /**
+         * @default []
+         */
+        mods: string[];
+        /**
+         * @default []
+         */
+        resourcepacks: string[];
     };
 
     /**
@@ -171,17 +178,10 @@ export interface DeployedInfo {
      */
     src?: string;
     /**
-     * The id listed in instance deployment
-     */
-    url: string;
-    /**
      * Deployed file relative path to the .minecraft folder
      */
     file: string;
-    /**
-     * The sha256 of the src
-     */
-    integrity: string;
+    url: string;
     /**
      * The way to resolve it. If it's false, it doesn't resolved.
      */

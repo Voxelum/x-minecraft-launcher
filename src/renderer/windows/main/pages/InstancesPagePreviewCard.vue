@@ -16,16 +16,16 @@
         <v-layout fill-height row wrap>
           <v-flex xs12 align-end flexbox>
             <v-icon left>
-              {{ profile.server ? 'storage' : 'layers' }}
+              {{ instance.server ? 'storage' : 'layers' }}
             </v-icon>
             <span class="headline">
-              {{ profile.name || `Minecraft ${profile.runtime.minecraft}` }}
+              {{ instance.name || `Minecraft ${instance.runtime.minecraft}` }}
             </span>
           </v-flex>
-          <v-flex v-if="profile.server" xs12 align-end flexbox>
-            <div style="color: #bdbdbd">
-              {{ profile.host }}:{{ profile.port }}
-            </div>
+          <v-flex v-if="instance.server" xs12 align-end flexbox>
+            <v-chip color="green" label small style="">
+              {{ instance.server.host }}:{{ instance.server.port }}
+            </v-chip>
           </v-flex>
         </v-layout>
       </v-container>
@@ -38,19 +38,7 @@
     <v-card-actions style="">
       <v-list-tile class="grow">
         <v-list-tile-content style="overflow-x: auto; max-width: 275px; white-space: nowrap; display: block;">
-          <v-chip label small :selected="false" @click.stop>
-            <v-avatar>
-              <v-icon>power</v-icon>
-            </v-avatar>
-            {{ profile.runtime.minecraft }}
-          </v-chip>
-          <v-chip v-if="profile.server" small label :selected="false" @click.stop>
-            <v-avatar>
-              <v-icon>people</v-icon>
-            </v-avatar>
-            {{ players.online }}  /{{ players.max }} 
-          </v-chip>
-          <v-chip v-if="profile.server" small label :selected="false" @click.stop>
+          <v-chip v-if="instance.server" small label :selected="false" @click.stop>
             <v-avatar>
               <v-icon :style="{ color: ping < 100 ? 'green' : ping < 300 ? 'orange' : 'red' }">
                 signal_cellular_alt
@@ -58,14 +46,26 @@
             </v-avatar>
             {{ ping }} ms  
           </v-chip>
-          <v-chip v-if="profile.server" small label :selected="false" @click.stop>
+          <v-chip v-if="instance.server" small label :selected="false" @click.stop>
+            <v-avatar>
+              <v-icon>people</v-icon>
+            </v-avatar>
+            {{ players.online }} / {{ players.max }} 
+          </v-chip>
+          <v-chip label small :selected="false" @click.stop>
+            <v-avatar>
+              <v-icon>power</v-icon>
+            </v-avatar>
+            {{ instance.runtime.minecraft }}
+          </v-chip>
+          <v-chip v-if="instance.server" small label :selected="false" @click.stop>
             {{ version.name }}  
           </v-chip>
-          <v-chip v-if="!profile.server" small label :selected="false" @click.stop>
+          <v-chip v-if="!instance.server" small label :selected="false" @click.stop>
             <v-avatar>
               <v-icon>person</v-icon>
             </v-avatar>
-            {{ profile.author }}
+            {{ instance.author }}
           </v-chip>
         </v-list-tile-content>
       </v-list-tile>
@@ -74,11 +74,11 @@
 </template>
 <script lang=ts>
 import { defineComponent, reactive, toRefs, computed } from '@vue/composition-api';
-import { useServerStatusForProfile } from '@/hooks';
+import { useInstanceServerStatus } from '@/hooks';
 
 export default defineComponent({
   props: {
-    profile: {
+    instance: {
       type: Object,
       required: true,
     },
@@ -89,13 +89,10 @@ export default defineComponent({
     });
     const refs = toRefs(data);
 
-    return props.profile.server ? {
+    return {
+      ...useInstanceServerStatus(props.instance.path),
       dragged: refs.dragged,
-      ...useServerStatusForProfile(props.profile.id),
-    } : {
-      dragged: refs.dragged,
-      favicon: '',
-      description: computed(() => props.profile.description),
+      description: computed(() => props.instance.description),
     };
   },
 });

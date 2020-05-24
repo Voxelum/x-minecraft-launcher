@@ -3,7 +3,7 @@ import { createFailureServerStatus } from '@universal/util/serverStatus';
 import { queryStatus } from '@xmcl/client';
 import { readFile, readJSON } from 'fs-extra';
 import { join } from 'path';
-import Service from './Service';
+import Service, { Pure } from './Service';
 
 export default class ServerStatusService extends Service {
     async load() {
@@ -34,6 +34,7 @@ export default class ServerStatusService extends Service {
         }
     }
 
+    @Pure()
     async pingServer(payload: { host: string; port?: number; protocol?: number }) {
         const { host, port = 25565, protocol } = payload;
         this.log(`Ping server ${host}:${port} with ${protocol}`);
@@ -53,6 +54,7 @@ export default class ServerStatusService extends Service {
         }
     }
 
+    @Pure()
     async pingServers() {
         const version = this.getters.instanceProtocolVersion;
         if (this.state.instance.serverInfos.length > 0) {

@@ -10,6 +10,11 @@
     "trust": "Trust this site and don't show next time",
     "yes": "Yes"
   },
+  "task": {
+    "success": "One Task Success",
+    "fail": "One Task Failed",
+    "continue": "View in Launcher"
+  },
   "quit": "Quit",
   "showDiagnosis": "Show Diagnose",
   "title": "Voxelauncher"

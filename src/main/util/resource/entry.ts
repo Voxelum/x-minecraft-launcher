@@ -1,27 +1,28 @@
 import { Fabric, Forge, LiteLoader } from '@xmcl/mod-parser';
-import { WorldReader } from '@xmcl/world';
+import { PackMeta, readIcon, readPackMeta } from '@xmcl/resourcepack';
+import { LevelDataFrame, WorldReader } from '@xmcl/world';
 import { ResourceRegistryEntry } from '.';
 
-export const RESOURCE_ENTRY_FORGE: ResourceRegistryEntry<any> = ({
+export const RESOURCE_ENTRY_FORGE: ResourceRegistryEntry<Forge.ModMetaData[]> = ({
     type: 'forge',
     domain: 'mods',
     ext: '.jar',
     parseIcon: async (meta, fs) => {
-        if (!meta || !meta.logoFile) { return undefined; }
-        return fs.readFile(meta.logoFile);
+        if (!meta[0] || !meta[0].logoFile) { return undefined; }
+        return fs.readFile(meta[0].logoFile);
     },
     parseMetadata: fs => Forge.readModMetaData(fs),
     getSuggestedName: (meta) => {
         let name = '';
         if (meta && meta.length > 0) {
-            meta = meta[0];
-            if (typeof meta.name === 'string' || typeof meta.modid === 'string') {
-                name += (meta.name || meta.modid);
-                if (typeof meta.mcversion === 'string') {
-                    name += `-${meta.mcversion}`;
+            let metadata = meta[0];
+            if (typeof metadata.name === 'string' || typeof metadata.modid === 'string') {
+                name += (metadata.name || metadata.modid);
+                if (typeof metadata.mcversion === 'string') {
+                    name += `-${metadata.mcversion}`;
                 }
-                if (typeof meta.version === 'string') {
-                    name += `-${meta.version}`;
+                if (typeof metadata.version === 'string') {
+                    name += `-${metadata.version}`;
                 }
             }
         }
@@ -29,7 +30,7 @@ export const RESOURCE_ENTRY_FORGE: ResourceRegistryEntry<any> = ({
     },
     getUri: meta => `forge://${meta[0].modid}/${meta[0].version}`,
 });
-export const RESOURCE_ENTRY_LITELOADER: ResourceRegistryEntry<any> = ({
+export const RESOURCE_ENTRY_LITELOADER: ResourceRegistryEntry<LiteLoader.MetaData> = ({
     type: 'liteloader',
     domain: 'mods',
     ext: '.litemod',
@@ -53,7 +54,7 @@ export const RESOURCE_ENTRY_LITELOADER: ResourceRegistryEntry<any> = ({
     },
     getUri: meta => `liteloader://${meta.name}/${meta.version}`,
 });
-export const RESOURCE_ENTRY_FABRIC: ResourceRegistryEntry<any> = ({
+export const RESOURCE_ENTRY_FABRIC: ResourceRegistryEntry<Fabric.ModMetadata> = ({
     type: 'fabric',
     domain: 'mods',
     ext: '.jar',
@@ -80,16 +81,16 @@ export const RESOURCE_ENTRY_FABRIC: ResourceRegistryEntry<any> = ({
     },
     getUri: meta => `fabric://${meta.id}/${meta.version}`,
 });
-export const RESOURCE_ENTRY_RESOURCE_PACK: ResourceRegistryEntry<any> = ({
+export const RESOURCE_ENTRY_RESOURCE_PACK: ResourceRegistryEntry<PackMeta.Pack> = ({
     type: 'resourcepack',
     domain: 'resourcepacks',
     ext: '.zip',
-    parseIcon: async (meta, fs) => fs.readFile('icon.png'),
-    parseMetadata: fs => fs.readFile('pack.mcmeta', 'utf-8').then(JSON.parse),
+    parseIcon: async (meta, fs) => readIcon(fs),
+    parseMetadata: fs => readPackMeta(fs),
     getSuggestedName: () => '',
     getUri: (_, hash) => `resourcepack://${hash}`,
 });
-export const RESOURCE_ENTRY_SAVE: ResourceRegistryEntry<any> = ({
+export const RESOURCE_ENTRY_SAVE: ResourceRegistryEntry<LevelDataFrame> = ({
     type: 'save',
     domain: 'saves',
     ext: '.zip',

@@ -16,11 +16,11 @@
 
 <script lang=ts>
 import { onMounted, defineComponent } from '@vue/composition-api';
-import { useServerStatus, useBusy } from '@/hooks';
+import { useInstanceServerStatus, useBusy } from '@/hooks';
 
 export default defineComponent({
   setup() {
-    const { refresh: refreshServer, description, favicon, version, ping } = useServerStatus();
+    const { refresh: refreshServer, description, favicon, version, ping } = useInstanceServerStatus();
     const loading = useBusy(refreshServer);
     
     onMounted(() => {

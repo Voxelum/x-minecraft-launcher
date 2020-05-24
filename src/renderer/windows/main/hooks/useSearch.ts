@@ -23,7 +23,7 @@ export function provideSearchToggle() {
     }
     function handleKeyup(e: KeyboardEvent) {
         if (e.key === 'Escape') {
-            toggle.value[0](false);
+            toggle.value[0](true);
         }
     }
     onMounted(() => {

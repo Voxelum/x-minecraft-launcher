@@ -1,4 +1,4 @@
-import { copyPassively, exists, FileStateWatcher, isFile, missing, readdirIfPresent } from '@main/util/fs';
+import { copyPassively, exists, FileStateWatcher, isFile, missing, readdirIfPresent, isDirectory } from '@main/util/fs';
 import { compressZipTo, includeAllToZip, unpack7z } from '@main/util/zip';
 import { SaveMetadata } from '@universal/store/modules/instance';
 import { requireString, requireObject } from '@universal/util/assert';
@@ -144,9 +144,7 @@ export default class InstanceSavesService extends Service {
                 .map((p) => getSaveMetadata(p, this.getters.instance.name));
 
             this.log(`Found ${result.length} saves in instance ${path}.`);
-            if (result.length !== 0) {
-                this.commit('instanceSaves', result);
-            }
+            this.commit('instanceSaves', result);
         } catch (e) {
             throw new ServiceException({ type: 'fsError', ...e }, `An error ocurred during parsing the save of ${path}`);
         }
@@ -204,7 +202,7 @@ export default class InstanceSavesService extends Service {
             throw new Error(); // TODO: decorate error
         }
 
-        let savePath = join(instancePath, saveName);
+        let savePath = join(instancePath, 'saves', saveName);
 
         if (await missing(savePath)) {
             throw new Exception({ type: 'instanceDeleteNoSave', name: saveName });
@@ -223,6 +221,7 @@ export default class InstanceSavesService extends Service {
          * Find the directory contains the level.dat 
          */
         async function findLevelDatRoot(dir: string): Promise<string | undefined> {
+            if (!(await isDirectory(dir))) return undefined;
             if (await exists(join(dir, 'level.dat'))) return dir;
             for (let subdir of await readdir(dir)) {
                 let result = await findLevelDatRoot(join(dir, subdir));
@@ -262,7 +261,7 @@ export default class InstanceSavesService extends Service {
             throw new Exception({ type: 'instanceImportIllegalSave', path: source });
         }
 
-        await copyPassively(sourceDir, destinationDir);
+        await copyPassively(levelRoot, destinationDir);
 
         if (useTemp) {
             await remove(sourceDir);

@@ -17,7 +17,7 @@ export async function parseResource(resourceRegistry: ResourceRegistryEntry<any>
 
     async function parseMetadataAndIcon(entry: ResourceRegistryEntry<any>, fs: FileSystem) {
         let metadata = await entry.parseMetadata(fs);
-        let icon = await entry.parseIcon(metadata, fs);
+        let icon = await entry.parseIcon(metadata, fs).catch(() => undefined);
         return { metadata, icon };
     }
 

@@ -85,7 +85,7 @@
                   :label="$t('user.authService')"
                   :value="authService"
                   color="primary"
-                  @click:append="isUserServicesDialogShown = true"
+                  @click:append="showUserServiceDialog"
                 />
               </v-flex>
               <v-flex xs1 style="padding-left: 5px;">
@@ -97,7 +97,7 @@
                   append-icon="add"
                   :label="$t('user.profileService')"
                   :value="profileService"
-                  @click:append="isUserServicesDialogShown = true"
+                  @click:append="showUserServiceDialog"
                 />
               </v-flex>
 
@@ -176,7 +176,7 @@
     </v-layout>
     <challenges-dialog v-model="isChallengesDialogShown" />
     <import-skin-url-dialog v-model="isImportSkinDialogShown" :update="updateSkinUrl" />
-    <user-services-dialog v-model="isUserServicesDialogShown" />
+    <user-services-dialog />
   </v-container>
 </template>
 
@@ -189,7 +189,7 @@ import {
   useNativeDialog,
   useClipboard,
 } from '@/hooks';
-import { useNotifier, useLoginDialog } from '../hooks';
+import { useNotifier, useLoginDialog, useDialog } from '../hooks';
 import ChallengesDialog from './UserPageChallengesDialog.vue';
 import ImportSkinUrlDialog from './UserPageImportSkinUrlDialog.vue';
 import UserServicesDialog from './UserPageUserServicesDialog.vue';
@@ -218,8 +218,9 @@ export default defineComponent({
     const { url, slim, refreshing, refresh, save, exportTo, loading, modified, reset } = useCurrentUserSkin();
     const { showOpenDialog, showSaveDialog } = useNativeDialog();
     const { show: showLoginDialog, isSwitchingUser } = useLoginDialog();
-    const { notify, watcher } = useNotifier();
+    const { notify, watcherTask } = useNotifier();
     const pending = computed(() => refreshing.value || loading.value);
+    const { show: showUserServiceDialog } = useDialog('user-service');
 
     const data = reactive({
       isImportSkinDialogShown: false,
@@ -266,13 +267,15 @@ export default defineComponent({
       authService,
       profileService,
 
+      showUserServiceDialog,
+
       url,
       slim,
       modified,
       reset,
       updateSkinUrl,
-      refresh: watcher(() => refresh(true), () => $t('user.refreshSkinSuccess'), () => $t('user.refreshSkinFail')),
-      save: watcher(save, () => $t('user.skin.upload.success'), () => $t('user.skin.upload.fail')),
+      refresh: watcherTask(() => refresh(true), $t('user.refreshSkin')),
+      save: watcherTask(save, $t('skin.upload')),
       loadSkin,
       exportSkin,
       dropSkin,

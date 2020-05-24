@@ -1,3 +1,4 @@
+import { LoggerFacade } from '@main/app/AppContext';
 import AuthLibService from '@main/service/AuthLibService';
 import BaseService from '@main/service/BaseService';
 import CurseForgeService from '@main/service/CurseForgeService';
@@ -16,16 +17,25 @@ import Service, { INJECTIONS_SYMBOL, MUTATION_LISTENERS_SYMBOL } from '@main/ser
 import SettingService from '@main/service/SettingService';
 import UserService from '@main/service/UserService';
 import VersionService from '@main/service/VersionService';
+import { Client } from '@main/session';
 import { StaticStore } from '@main/util/staticStore';
 import { aquire, isBusy, release } from '@universal/util/semaphore';
+import { Platform } from '@xmcl/core';
 import { Task, TaskHandle } from '@xmcl/task';
-import { app, ipcMain } from 'electron';
+import { ipcMain, app } from 'electron';
 import { EventEmitter } from 'events';
 import { join } from 'path';
-import { Manager } from '.';
+import { Manager, Managers } from '.';
 
 // eslint-disable-next-line @typescript-eslint/type-annotation-spacing
 type Constructor<T> = new () => T;
+
+interface ServiceCallSession {
+    id: number;
+    name: string;
+    pure: boolean;
+    call: () => Promise<any>;
+}
 
 export default class ServiceManager extends Manager {
     private registeredServices: Constructor<Service>[] = [];
@@ -36,7 +46,7 @@ export default class ServiceManager extends Manager {
 
     private usedSession = 0;
 
-    private sessions: { [key: number]: [() => Promise<void>, string] } = {};
+    private sessions: { [key: number]: ServiceCallSession } = {};
 
     private mutationEventBus = new EventEmitter();
 
@@ -67,6 +77,8 @@ export default class ServiceManager extends Manager {
         this.registerService(InstanceIOService);
     }
 
+    protected registerService(s: Constructor<Service>) { this.registeredServices.push(s); }
+
     aquire(res: string | string[]) {
         aquire(this.semaphore, res);
         this.managers.appManager.push('aquire', res);
@@ -81,13 +93,13 @@ export default class ServiceManager extends Manager {
         return isBusy(this.semaphore, res);
     }
 
-    protected registerService(s: Constructor<Service>) { this.registeredServices.push(s); }
-
-    private setupService(store: StaticStore<any>, root: string) {
+    /**
+     * Setup all services.
+     */
+    setupServices(appData: string, platform: Platform, logger: LoggerFacade, managers: Managers, store: StaticStore<any>, root: string) {
         this.log(`Setup service ${root}`);
-        const userPath = join(app.getPath('appData'), 'voxelauncher');
-        const managers = this.managers;
-        const mcPath = join(app.getPath('appData'), this.managers.appManager.platform.name === 'osx' ? 'minecraft' : '.minecraft');
+        const userPath = join(appData, 'voxelauncher');
+        const mcPath = join(appData, platform.name === 'osx' ? 'minecraft' : '.minecraft');
 
         Object.defineProperties(Service.prototype, {
             commit: { value: store.commit },
@@ -101,20 +113,23 @@ export default class ServiceManager extends Manager {
 
         Object.assign(Service.prototype, managers);
 
-        for (let ser of this.registeredServices) {
-            const name = ser.name;
-            Object.defineProperties(ser.prototype, {
-                log: { value: (m: any, ...a: any[]) => this.managers.logManager.log(`[${name}] ${m}`, ...a) },
-                warn: { value: (m: any, ...a: any[]) => this.managers.logManager.warn(`[${name}] ${m}`, ...a) },
-                error: { value: (m: any, ...a: any[]) => this.managers.logManager.error(`[${name}] ${m}`, ...a) },
+        // inject the logger to service prototype
+        for (let service of this.registeredServices) {
+            const name = service.name;
+            Object.defineProperties(service.prototype, {
+                log: { value: (m: any, ...a: any[]) => logger.log(`[${name}] ${m}`, ...a) },
+                warn: { value: (m: any, ...a: any[]) => logger.warn(`[${name}] ${m}`, ...a) },
+                error: { value: (m: any, ...a: any[]) => logger.error(`[${name}] ${m}`, ...a) },
             });
         }
 
+        // create service instance
         let services: Service[] = this.services;
-        for (let Ser of this.registeredServices) {
-            services.push(new Ser());
+        for (let ServiceConstructor of this.registeredServices) {
+            services.push(new ServiceConstructor());
         }
 
+        // register the service to map
         let servMap = this.serviceMap;
         for (let serv of services) {
             let name = Object.getPrototypeOf(serv).constructor.name;
@@ -122,6 +137,9 @@ export default class ServiceManager extends Manager {
             servMap[name] = serv;
         }
 
+        /**
+         * Inject service dependencies
+         */
         for (let serv of services) {
             let injects = Object.getPrototypeOf(serv)[INJECTIONS_SYMBOL] || [];
             for (let i of injects) {
@@ -142,11 +160,8 @@ export default class ServiceManager extends Manager {
                 this.mutationEventBus.addListener(lis.event, (payload) => lis.listener.apply(serv, [payload]));
             }
         }
-    }
 
-    async rootReady(root: string) {
-        this.setupService(this.managers.storeManager.store!, root);
-
+        // check if the service initalize incorrectly.
         for (const s of this.services) {
             for (const key of Object.keys(s)) {
                 if (typeof (s as any)[key] === 'undefined') {
@@ -154,7 +169,12 @@ export default class ServiceManager extends Manager {
                 }
             }
         }
+    }
 
+    /**
+     * Load all the services
+     */
+    async loadServices() {
         const startingTime = Date.now();
         await Promise.all(this.services.map(s => s.load().catch((e) => {
             this.error(`Error during load service: ${Object.getPrototypeOf(s).constructor.name}`);
@@ -162,13 +182,12 @@ export default class ServiceManager extends Manager {
         })));
 
         this.log(`Successfully load modules. Total Time is ${Date.now() - startingTime}ms.`);
-
-        this.setupAutoSave();
-
-        this.managers.storeManager.setLoadDone();
     }
 
-    async appReady() {
+    /**
+     * Initialize all the services
+     */
+    async initializeService() {
         // wait app ready since in the init stage, the module can access network & others
         const startingTime = Date.now();
         try {
@@ -178,73 +197,112 @@ export default class ServiceManager extends Manager {
             this.error(e);
         }
         this.log(`Successfully init modules. Total Time is ${Date.now() - startingTime}ms.`);
-
-        this.setupSessionReciever();
     }
 
-    private setupSessionReciever() {
-        ipcMain.handle('session', (event, id) => {
-            if (!this.sessions[id]) {
-                this.error(`Unknown session ${id}!`);
+    /**
+     * Start the specific service call from its id.
+     * @param id The service call session id.
+     */
+    startServiceCall(id: number) {
+        if (!this.sessions[id]) {
+            this.error(`Unknown service call session ${id}!`);
+        }
+        try {
+            const r = this.sessions[id].call();
+            if (r instanceof Promise) {
+                return r.then(r => ({ result: r }), (e) => {
+                    this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`);
+                    this.warn(e);
+                    return { error: e };
+                });
             }
-            try {
-                const r = this.sessions[id][0]();
-                if (r instanceof Promise) {
-                    return r.then(r => ({ result: r }), (e) => {
-                        this.warn(`Error during service call session ${id}(${this.sessions[id][1]}):`);
-                        this.warn(e);
-                        return { error: e };
-                    });
-                }
-                return { result: r };
-            } catch (e) {
-                this.warn(`Error during service call session ${id}(${this.sessions[id][1]}):`);
-                this.error(e);
-                return { error: e };
-            }
-        });
-        ipcMain.handle('service-call', (event, service: string, name: string, payload: any) => {
-            const serv = this.serviceMap[service];
-            if (!serv) {
-                this.error(`Cannot execute service call ${name} from service ${service}. The service not found.`);
-            } else {
-                if (name in serv) {
-                    const tasks: TaskHandle<any, any>[] = [];
-                    const sessionId = this.usedSession++;
-                    const taskManager = this.managers.taskManager;
-                    const submit = (task: Task<any>) => {
-                        const handle = taskManager.submit(task);
-                        event.sender.send(`session-${sessionId}`, taskManager.getHandleId(handle));
-                        tasks.push(handle);
-                        return handle;
-                    };
-                    /**
-                     * Create a proxy to this specific service call to record the tasks it submit
-                     */
-                    const servProxy: any = new Proxy(serv, {
-                        get(target, key) {
-                            if (key === 'submit') { return submit; }
-                            return Reflect.get(target, key);
-                        },
-                    });
+            return { result: r };
+        } catch (e) {
+            this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`);
+            this.error(e);
+            return { error: e };
+        }
+    }
 
-                    this.sessions[sessionId] = [() => servProxy[name](payload), `${service}.${name}`];
+    /**
+     * Prepare a service call from a client. It will return the service call id.
+     * 
+     * This will start a session in this manager. 
+     * To exectute this service call session, you shoul call `handleSession`
+     * 
+     * @param client The client calling this service
+     * @param service The service name
+     * @param name The service function name
+     * @param payload The payload
+     * @returns The service call session id
+     */
+    prepareServiceCall(client: Client, service: string, name: string, payload: any): number | undefined {
+        const serv = this.serviceMap[service];
+        if (!serv) {
+            this.error(`Cannot execute service call ${name} from service ${service}. The service not found.`);
+        } else {
+            if (name in serv) {
+                const tasks: TaskHandle<any, any>[] = [];
+                const sessionId = this.usedSession++;
+                const taskManager = this.managers.taskManager;
+                const submit = (task: Task<any>) => {
+                    const handle = taskManager.submit(task);
+                    client.send(`session-${sessionId}`, handle.root.id);
+                    tasks.push(handle);
+                    return handle;
+                };
+                /**
+                * Create a proxy to this specific service call to record the tasks it submit
+                */
+                const servProxy: any = new Proxy(serv, {
+                    get(target, key) {
+                        if (key === 'submit') { return submit; }
+                        return Reflect.get(target, key);
+                    },
+                });
+                const sess: ServiceCallSession = {
+                    call: () => servProxy[name](payload),
+                    name: `${service}.${name}`,
+                    pure: false,
+                    id: sessionId,
+                };
 
-                    return sessionId;
-                }
-                this.error(`Cannot execute service call ${name} from service ${serv}. The service doesn't have such method!`);
+                this.sessions[sessionId] = sess;
+
+                return sessionId;
             }
-            return undefined;
-        });
+            this.error(`Cannot execute service call ${name} from service ${serv}. The service doesn't have such method!`);
+        }
+        return undefined;
     }
 
     /**
      * Auto save to listen any incoming mutations and call the save function for each services 
      */
-    private setupAutoSave() {
-        this.managers.storeManager.store!.subscribe((mutation) => {
+    setupAutoSave(store: StaticStore<any>) {
+        store!.subscribe((mutation) => {
             this.mutationEventBus.emit(mutation.type, mutation.payload);
             this.services.map(s => s.save({ mutation: mutation.type as any, payload: mutation.payload }));
         });
+    }
+
+    // SETUP CODE
+
+    async rootReady() {
+        this.setupServices(app.getPath('appData'),
+            this.managers.appManager.platform,
+            this.managers.logManager,
+            this.managers,
+            this.managers.storeManager.store!,
+            this.managers.appManager.root);
+        await this.loadServices();
+        this.setupAutoSave(this.managers.storeManager.store!);
+        this.managers.storeManager.setLoadDone();
+    }
+
+    async appReady() {
+        ipcMain.handle('service-call', (e, service: string, name: string, payload: any) => this.prepareServiceCall(e.sender, service, name, payload));
+        ipcMain.handle('session', (_, id) => this.startServiceCall(id));
+        this.initializeService();
     }
 }

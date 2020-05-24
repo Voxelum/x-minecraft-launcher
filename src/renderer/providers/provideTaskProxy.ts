@@ -1,7 +1,7 @@
-import { electron, TASKS_KEY, TASK_DICT_KEY, TASKS_OPS_KEY } from '@/constant';
+import { electron, TASK_PROXY } from '@/constant';
 import { TaskState } from '@universal/task';
-import { onMounted, onUnmounted, provide, reactive, Ref, ref } from '@vue/composition-api';
-import Vue from 'vue';
+import { onMounted, onUnmounted, provide, reactive, Ref, ref, set } from '@vue/composition-api';
+import { TaskProxy } from '@/taskProxy';
 
 export function provideTasks() {
     const ipc = electron.ipcRenderer;
@@ -9,18 +9,24 @@ export function provideTasks() {
     const idToNode: { [key: string]: TaskState } = {};
     const tasks: Ref<TaskState[]> = ref(reactive([]));
     const pause = (id: string) => {
-        ipc.invoke('task-request', { type: 'pause', id });
+        ipc.invoke('task-operation', { type: 'pause', id });
     };
     const resume = (id: string) => {
-        ipc.invoke('task-request', { type: 'resume', id });
+        ipc.invoke('task-operation', { type: 'resume', id });
     };
     const cancel = (id: string) => {
-        ipc.invoke('task-request', { type: 'cancel', id });
+        ipc.invoke('task-operation', { type: 'cancel', id });
     };
 
-    provide(TASK_DICT_KEY, idToNode);
-    provide(TASKS_KEY, tasks);
-    provide(TASKS_OPS_KEY, { pause, resume, cancel });
+    const proxy: TaskProxy = ({
+        dictionary: idToNode,
+        tasks,
+        pause,
+        resume,
+        cancel,
+    });
+
+    provide(TASK_PROXY, proxy);
 
     function collectAllTaskState(tasks: TaskState[]) {
         for (const t of tasks) {
@@ -52,12 +58,12 @@ export function provideTasks() {
                 let parentTask = idToNode[parent];
                 let oneDeferred = deferrendTasks.pop();
                 let index = parentTask.children.findIndex(t => t.id === oldTask.id);
-                Vue.set(parentTask.children, index, oneDeferred);
+                set(parentTask.children, index, oneDeferred);
             }
         }
     }
 
-    const taskUpdateHanlder = (event: Electron.IpcRenderer, { childs, statuses, adds, updates }: {
+    const taskUpdateHanlder = (event: any, { childs, statuses, adds, updates }: {
         adds: { id: string; node: TaskState }[];
         childs: { id: string; node: TaskState }[];
         updates: { [id: string]: { progress?: number; total?: number; message?: string; time?: string } };
@@ -65,13 +71,21 @@ export function provideTasks() {
     }) => {
         for (const add of adds) {
             const { id, node } = add;
-            const local = reactive({ ...node });
+            if (idToNode[id]) {
+                console.warn(`Skip for duplicated task ${id}`);
+                continue;
+            }
+            const local = reactive({ ...node, children: [] });
             tasks.value.unshift(local);
             idToNode[id] = local;
         }
         for (const child of childs) {
             const { id, node } = child;
-            const local = reactive({ ...node });
+            if (idToNode[node.id]) {
+                console.warn(`Skip for duplicated task ${node.id}`);
+                continue;
+            }
+            const local = reactive({ ...node, children: [] });
             if (!idToNode[id]) {
                 throw new Error(`Cannot add child ${node.id} for parent ${id}.`);
             } else {
@@ -88,7 +102,7 @@ export function provideTasks() {
                 if (message) task.message = message;
                 if (time) task.time = time || new Date().toLocaleTimeString();
             } else {
-                console.log(`Cannot apply update for task ${id}.`);
+                console.log(`Cannot apply update for task ${id} as task not found.`);
             }
         }
         for (const s of statuses) {
@@ -108,12 +122,15 @@ export function provideTasks() {
 
     onMounted(() => {
         ipc.on('task-update', taskUpdateHanlder);
-        ipc.invoke('task-state').then((t) => {
+        ipc.invoke('task-subscribe', true).then((t) => {
             collectAllTaskState(t);
             Object.values(t).forEach(ta => tasks.value.push(reactive(ta)));
         });
     });
     onUnmounted(() => {
+        ipc.invoke('task-unsubscribe');
         ipc.removeListener('task-update', taskUpdateHanlder);
     });
+
+    return proxy;
 }
