@@ -19,7 +19,7 @@ export default class LogManager extends Manager {
     constructor() {
         super();
 
-        function transform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`); } }); }
+        function transform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}\n`); } }); }
         pipeline(this.loggerEntries.log, transform('INFO'), this.output, () => { });
         pipeline(this.loggerEntries.warn, transform('WARN'), this.output, () => { });
         pipeline(this.loggerEntries.error, transform('ERROR'), this.output, () => { });

@@ -107,7 +107,7 @@ export class AppManager extends Manager {
 
     constructor() {
         super();
-        this.root = join(APP_DATA, 'voxelauncher');
+        this.root = join(APP_DATA, 'VoxeLauncher');
         this.handle = ipcMain.handle;
         this.controller = undefined as any;
     }

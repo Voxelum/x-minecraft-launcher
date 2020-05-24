@@ -44,9 +44,9 @@
                 <v-card-text>{{ proj.summary }}</v-card-text>
               </v-flex>
               <v-flex xs4 style="padding-top: 10px;">
-                <v-chip v-for="cat of proj.categories" :key="cat.name">
+                <v-chip v-for="cat of proj.categories" :key="cat.categoryId">
                   <v-avatar>
-                    <img :src="cat.avatarUrl" style="max-height:30px; max-width: 30px">
+                    <img :src="cat.avatarUrl" style="max-height:30px; max-width: 30px" />
                   </v-avatar>
                   {{ cat.name }}
                 </v-chip>
@@ -66,7 +66,7 @@
 
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api';
-import { useCurseforgeSearch, useCurseforgeCategories } from '@/hooks';
+import { useCurseforgeSearch } from '@/hooks';
 
 export default defineComponent({
   props: {
@@ -76,8 +76,24 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { categories } = useCurseforgeCategories();
-    const preview = useCurseforgeSearch(categories.value.find((p) => p.slug === props.type)!.id);
+    // const { categories } = useCurseforgeCategories();
+    let id: number;
+    switch (props.type) {
+      default:
+      case 'mc-mods':
+        id = 6;
+        break;
+      case 'modpacks':
+        id = 4471;
+        break;
+      case 'texture-packs':
+        id = 12;
+        break;
+      case 'worlds':
+        id = 17;
+        break;
+    }
+    const preview = useCurseforgeSearch(id);
     return {
       ...preview,
     };

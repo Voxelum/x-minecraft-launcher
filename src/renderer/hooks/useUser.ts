@@ -179,6 +179,7 @@ export function useLoginValidation(isOffline: Ref<boolean>) {
             data.usernameErrors = [msg];
             data.passwordErrors = [msg];
         } else {
+            data.usernameErrors = [e.message ?? e.errorMessage];
             console.error(e);
         }
     }

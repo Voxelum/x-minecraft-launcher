@@ -71,13 +71,21 @@ export function provideTasks() {
     }) => {
         for (const add of adds) {
             const { id, node } = add;
-            const local = reactive({ ...node });
+            if (idToNode[id]) {
+                console.warn(`Skip for duplicated task ${id}`);
+                continue;
+            }
+            const local = reactive({ ...node, children: [] });
             tasks.value.unshift(local);
             idToNode[id] = local;
         }
         for (const child of childs) {
             const { id, node } = child;
-            const local = reactive({ ...node });
+            if (idToNode[node.id]) {
+                console.warn(`Skip for duplicated task ${node.id}`);
+                continue;
+            }
+            const local = reactive({ ...node, children: [] });
             if (!idToNode[id]) {
                 throw new Error(`Cannot add child ${node.id} for parent ${id}.`);
             } else {

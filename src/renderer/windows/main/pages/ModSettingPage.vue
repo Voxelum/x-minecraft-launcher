@@ -6,14 +6,8 @@
         <v-spacer />
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn
-              icon
-              v-on="on"
-              @click="filterInCompatible = !filterInCompatible"
-            >
-              <v-icon>
-                {{ filterInCompatible ? 'visibility' : 'visibility_off' }}
-              </v-icon>
+            <v-btn icon v-on="on" @click="filterInCompatible = !filterInCompatible">
+              <v-icon>{{ filterInCompatible ? 'visibility' : 'visibility_off' }}</v-icon>
             </v-btn>
           </template>
           {{ filterInCompatible ? $t('mod.showIncompatible') : $t('mod.hideIncompatible') }}
@@ -115,6 +109,7 @@ import {
   ModItem,
 } from '@/hooks';
 import { isCompatible } from '@universal/util/version';
+import { useLocalStorageCacheBool } from '@/hooks/useCache';
 import { useSearchToggle, useSearch } from '../hooks';
 import ModCard from './ModSettingPageCard.vue';
 import DeleteView from './ModSettingPageDeleteView.vue';
@@ -130,7 +125,7 @@ export default defineComponent({
   },
   setup() {
     const data = reactive({
-      filterInCompatible: true,
+      filterInCompatible: useLocalStorageCacheBool('ModSettingPage.filterInCompatible', false),
       filterModId: '',
 
       draggingMod: false,
@@ -145,9 +140,8 @@ export default defineComponent({
     const { text: filteredText } = useSearch();
 
     useDropImport(computed(() => leftList.value?.$el as HTMLElement), 'mods');
-    useDropImportFile(computed(() => rightList.value?.$el as HTMLElement), (file) => {
-      return importUnknownResource({ path: file.path, type: 'mods' });
-    });
+    useDropImportFile(computed(() => rightList.value?.$el as HTMLElement),
+      (file) => importUnknownResource({ path: file.path, type: 'mods' }));
 
     function add(mod: string) {
       let found = unusedMods.value.find(m => m.url === mod);
@@ -198,15 +192,10 @@ export default defineComponent({
     const unselectedItems = computed(() => unusedMods.value
       .filter(filterText)
       .filter(isCompatibleMod)
-      .reduce(isDuplicated, [] as ModItem[]),
-    );
+      .reduce(isDuplicated, [] as ModItem[]));
 
     const selectedItems = computed(() => mods.value
       .filter(filterText));
-
-    watch(selectedItems, () => {
-      console.log(selectedItems.value);
-    });
 
     function commitModRemove(confirm: boolean) {
       if (confirm) {

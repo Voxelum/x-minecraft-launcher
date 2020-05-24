@@ -468,8 +468,8 @@ export default class UserService extends Service {
             }, usingAuthService).catch((e) => {
                 if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
                     throw new Exception({ type: 'loginInternetNotConnected', error: e });
-                } else if (e.type === 'ForbiddenOperationException'
-                    && e.message === 'Invalid credentials. Invalid username or password.') {
+                } else if (e.error === 'ForbiddenOperationException'
+                    && e.errorMessage === 'Invalid credentials. Invalid username or password.') {
                     throw new Exception({ type: 'loginInvalidCredentials', error: e });
                 }
                 throw new Exception({ type: 'loginGeneral', error: e });

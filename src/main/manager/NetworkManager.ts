@@ -159,4 +159,9 @@ export default class NetworkManager extends Manager {
     //         this.jsguard = undefined;
     //     }, 10000);
     // }
+
+    // setup code
+    setup() {
+        this.updateGFW();
+    }
 }

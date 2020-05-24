@@ -127,7 +127,7 @@ export default class LaunchService extends Service {
                     code,
                     signal,
                     crashReport,
-                    crashReportLocation,
+                    crashReportLocation: crashReportLocation.trim(),
                 });
                 this.commit('launchStatus', 'ready');
                 this.launchedProcess = undefined;

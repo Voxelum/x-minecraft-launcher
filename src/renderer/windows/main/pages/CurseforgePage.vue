@@ -14,15 +14,7 @@
           :disabled="!ready"
         >
           <v-responsive>
-            <v-img :src="images[target]">
-              <v-expand-transition>
-                <div
-                  v-if="!ready"
-                  class="d-flex transition-fast-in-fast-out orange darken-2 v-card--reveal display-3 white--text"
-                  style="height: 100%; display: flex; align-item: center; justify-content: center"
-                >Offline</div>
-              </v-expand-transition>
-            </v-img>
+            <v-img :src="images[target]" />
           </v-responsive>
           <v-card-title>
             <h2>{{ $t(`curseforge.${target}.name`) }}</h2>

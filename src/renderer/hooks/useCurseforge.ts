@@ -131,7 +131,7 @@ export function useCurseforgeSearch(sectionId: number) {
     const { searchProjects } = useService('CurseForgeService');
     const pageSize = 5;
     const data = reactive({
-        page: 0,
+        page: 1,
         pages: 5,
 
         gameVersion: undefined as undefined | string,
@@ -144,7 +144,7 @@ export function useCurseforgeSearch(sectionId: number) {
 
         keyword: undefined as undefined | string,
     });
-    const index = computed(() => data.page * pageSize);
+    const index = computed(() => (data.page - 1) * pageSize);
     const searchFilter = ref(undefined as undefined | string);
     const refs = toRefs(data);
     async function refresh() {
@@ -161,6 +161,8 @@ export function useCurseforgeSearch(sectionId: number) {
             if (data.page > data.pages / 2) {
                 data.pages += 5;
             }
+            projects.forEach(p => Object.freeze(p));
+            projects.forEach(p => Object.freeze(p.categories));
             data.projects = Object.freeze(projects) as any;
         } finally {
             data.loading = false;
