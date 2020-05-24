@@ -7,6 +7,7 @@ export interface NotificationBase {
 export interface TaskNotification extends NotificationBase {
     type: 'taskStart' | 'taskFinish' | 'taskFail';
     name: string; // the task path
+    arguments?: object;
 }
 
 export type BuiltinNotification = Exceptions | TaskNotification;

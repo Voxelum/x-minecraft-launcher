@@ -26,7 +26,7 @@ export abstract class LauncherAppController {
 
     abstract appReady(app: App): void;
 
-    abstract dataReady(store: StaticStore<string>): Promise<void>;
+    abstract dataReady(store: StaticStore<any>): Promise<void>;
 
     abstract requestOpenExternalUrl(url: string): Promise<boolean>;
 

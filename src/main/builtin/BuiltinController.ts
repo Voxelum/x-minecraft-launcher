@@ -50,7 +50,7 @@ export default class BuiltinController extends LauncherAppController {
 
     private dock: Dock | undefined = undefined;
 
-    private i18n = createI18n({ en, zh }, 'en');
+    private i18n = createI18n({ en, 'zh-CN': zh }, 'en');
 
     private primary: BrowserWindow | undefined;
 
@@ -228,6 +228,12 @@ export default class BuiltinController extends LauncherAppController {
 
     async dataReady(): Promise<void> {
         this.mainRef!.show();
+        this.store.subscribe((mutation) => {
+            if (mutation.type === 'locale') {
+                this.i18n.use(mutation.payload);
+            }
+        });
+        this.i18n.use(this.store.state.setting.locale);
     }
 
     get activeWindow() {
@@ -253,7 +259,7 @@ export default class BuiltinController extends LauncherAppController {
                 }
             }
             if (tasks.isRootTask(node.id)) {
-                this.notify({ type: 'taskFinish', name: node.path });
+                this.notify({ type: 'taskFinish', name: node.path, arguments: node.arguments });
             }
         });
         tasks.runtime.on('fail', (_, node) => {
@@ -264,28 +270,42 @@ export default class BuiltinController extends LauncherAppController {
                 }
             }
             if (tasks.isRootTask(node.id)) {
-                this.notify({ type: 'taskFail', name: node.path });
+                this.notify({ type: 'taskFail', name: node.path, arguments: node.arguments });
             }
         });
         tasks.runtime.on('execute', (node, parent) => {
             if (!parent) {
-                this.notify({ type: 'taskStart', name: node.path });
+                this.notify({ type: 'taskStart', name: node.path, arguments: node.arguments });
             }
         });
+
+        setInterval(() => {
+            this.notify({
+                type: 'taskFinish',
+                name: 'installForge',
+            });
+        }, 5000);
     }
 
     private notify(n: TaskNotification) {
         const $t = this.i18n.t;
         if (this.activeWindow && this.activeWindow.isFocused()) {
             this.activeWindow.webContents.send('notification', n);
-        } else {
+        } else if (n.type === 'taskFinish' || n.type === 'taskFail') {
             let notification = new Notification({
-                title: $t(n.name, { name: n.name }),
+                title: n.type === 'taskFinish' ? $t('task.success') : $t('task.fail'),
                 body: $t('task.continue'),
                 icon: resolve(__static, 'apple-touch-icon.png'),
             });
             notification.show();
-            notification.on('click', () => notification);
+            notification.on('click', () => {
+                if (this.activeWindow?.isVisible()) {
+                    this.activeWindow.focus();
+                } else {
+                    // eslint-disable-next-line no-unused-expressions
+                    this.activeWindow?.show();
+                }
+            });
         }
     }
 }
