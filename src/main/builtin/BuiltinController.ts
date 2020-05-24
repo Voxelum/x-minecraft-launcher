@@ -278,13 +278,6 @@ export default class BuiltinController extends LauncherAppController {
                 this.notify({ type: 'taskStart', name: node.path, arguments: node.arguments });
             }
         });
-
-        setInterval(() => {
-            this.notify({
-                type: 'taskFinish',
-                name: 'installForge',
-            });
-        }, 5000);
     }
 
     private notify(n: TaskNotification) {
