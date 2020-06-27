@@ -74,19 +74,20 @@ async function main(output) {
     const package = JSON.parse(fs.readFileSync(`package.json`).toString());
     const packageLock = JSON.parse(fs.readFileSync(`package-lock.json`).toString());
 
+    console.log(`Release type ${suggesstion.releaseType}`)
     if (suggesstion.releaseType) {
         const newVersion = semver.inc(package.version, suggesstion.releaseType);
-        writeFile('pacakge.json', JSON.stringify(Object.assign(package, { version: newVersion }), null, 4));
-        writeFile('pacakge-lock.json', JSON.stringify(Object.assign(packageLock, { version: newVersion }), null, 4));
+        console.log(`New version ${package.version} -> ${newVersion}`)
         const newChangelog = await generateChangelog(newVersion, package.version);
         console.log(newChangelog);
+
+        writeFile('pacakge.json', JSON.stringify(Object.assign(package, { version: newVersion }), null, 4));
+        writeFile('pacakge-lock.json', JSON.stringify(Object.assign(packageLock, { version: newVersion }), null, 4));
 
         const changelog = fs.readFileSync('CHANGELOG.md').toString();
         const changelogLines = changelog.split('\n')
 
         const start = changelogLines.findIndex(l => l.startsWith('## ')) - 1;
-
-        console.log(start);
 
         const result = [...changelogLines.slice(0, start), '', '', ...newChangelog.split('\n'), ...changelogLines.slice(start)].join('\n');
 
