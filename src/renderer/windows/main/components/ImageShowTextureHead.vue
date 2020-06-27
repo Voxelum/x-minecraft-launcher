@@ -1,13 +1,17 @@
 <template>
-  <div style="overflow: hidden" 
-       :style="{ 'max-width': `${dimension}px`, 'max-height': `${dimension}px`, 'min-height': `${dimension}px`, 'min-width': `${dimension}px` }">
-    <img ref="image" 
-         :src="src || steve"
-         :width="textureWidth"
-         :height="textureHeight"
-         style="image-rendering: pixelated; border-radius: 0" 
-         :style="style"
-         @load="onload">
+  <div
+    style="overflow: hidden"
+    :style="{ 'max-width': `${dimension}px`, 'max-height': `${dimension}px`, 'min-height': `${dimension}px`, 'min-width': `${dimension}px` }"
+  >
+    <img
+      ref="image"
+      :src="src || steve"
+      :width="textureWidth"
+      :height="textureHeight"
+      style="image-rendering: pixelated; border-radius: 0"
+      :style="style"
+      @load="onload"
+    />
   </div>
 </template>
 

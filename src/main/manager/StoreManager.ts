@@ -6,6 +6,10 @@ import { Manager } from '.';
 export default class StoreManager extends Manager {
     public store: StaticStore<any> = createStaticStore(storeTemplate);
 
+    /**
+     * The total order of the current store state.
+     * One commit will make this id increment by one.
+     */
     private checkPointId = 0;
 
     private checkPoint: any;

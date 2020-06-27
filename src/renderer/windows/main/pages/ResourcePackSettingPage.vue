@@ -1,23 +1,83 @@
 <template>
-  <v-container grid-list-xs fill-height style="overflow: auto;">
-    <v-layout row wrap>
-      <v-flex tag="h1" class="white--text" xs7>
+  <v-container
+    grid-list-xs
+    fill-height
+    style="overflow: auto;"
+  >
+    <v-layout
+      row
+      wrap
+    >
+      <v-toolbar
+        dark
+        flat
+        dense
+        color="transparent"
+      >
+        <v-toolbar-title>{{ $tc('resourcepack.name', 2) }}</v-toolbar-title>
+        <v-spacer />
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              icon
+              v-on="on"
+            >
+              <!-- <v-icon>{{ filterInCompatible ? 'visibility' : 'visibility_off' }}</v-icon> -->
+            </v-btn>
+          </template>
+          <!-- {{ filterInCompatible ? $t('mod.showIncompatible') : $t('mod.hideIncompatible') }} -->
+        </v-tooltip>
+        <!-- <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              icon
+              v-on="on"
+              @click="toggle[0]()"
+            >
+              <v-icon>search</v-icon>
+            </v-btn>
+          </template>
+          {{ $t('filter') }}
+        </v-tooltip>-->
+        <v-flex xs5>
+          <v-text-field
+            v-model="filterText"
+            color="primary"
+            class="focus-solo"
+            append-icon="filter_list"
+            :label="$t('filter')"
+            dark
+            hide-details
+          />
+        </v-flex>
+      </v-toolbar>
+
+      <!-- <v-flex
+        tag="h1"
+        class="white--text"
+        xs7
+      >
         <span class="headline">{{ $tc('resourcepack.name', 2) }}</span>
       </v-flex>
-      <v-flex xs5>
-        <v-text-field
-          v-model="filterText"
-          color="primary"
-          class="focus-solo"
-          append-icon="filter_list"
-          :label="$t('filter')"
+      -->
+      <v-flex
+        d-flex
+        xs6
+        style="padding-right: 5px"
+      >
+        <v-card
+          ref="leftList"
           dark
-          hide-details
-        />
-      </v-flex>
-      <v-flex d-flex xs6 style="padding-right: 5px">
-        <v-card ref="leftList" dark class="card-list" @drop="dragging = false">
-          <v-card-title>
+          class="card-list"
+          color="transparent"
+          flat
+          @drop="dragging = false"
+        >
+          <v-card-title
+            style="border-color: rgba(255,255,255,0.7);
+              border-style: solid;
+              border-width: 0 0 thin 0;"
+          >
             <span
               class="text-sm-center"
               style="width: 100%; font-size: 16px;"
@@ -30,22 +90,45 @@
             :absolute="true"
             style="height: 100%"
           />
-          <div v-else class="list">
-            <resource-pack-card
-              v-for="item in unselectedItems"
-              :key="item.id"
-              :pack="item"
-              :is-selected="false"
-              @dragstart="dragging = true"
-              @dragend="dragging = false"
-              @mouseup="dragging = false"
-            />
+          <div
+            v-else
+            class="list"
+          >
+            <transition-group
+              name="transition-list"
+              tag="div"
+            >
+              <resource-pack-card
+                v-for="item in unselectedItems"
+                :key="item.id"
+                :pack="item"
+                :is-selected="false"
+                @dragstart="dragging = true"
+                @dragend="dragging = false"
+                @mouseup="dragging = false"
+              />
+            </transition-group>
           </div>
         </v-card>
       </v-flex>
-      <v-flex d-flex xs6 style="padding-left: 5px">
-        <v-card ref="rightList" dark class="card-list right" @drop="dragging = false">
-          <v-card-title>
+      <v-flex
+        d-flex
+        xs6
+        style="padding-left: 5px"
+      >
+        <v-card
+          ref="rightList"
+          color="transparent"
+          dark
+          flat
+          class="card-list right"
+          @drop="dragging = false"
+        >
+          <v-card-title
+            style="border-color: rgba(255,255,255,0.7);
+              border-style: solid;
+              border-width: 0 0 thin 0;"
+          >
             <span
               class="text-sm-center"
               style="width: 100%; font-size: 16px;"
@@ -58,16 +141,24 @@
             :absolute="true"
             style="height: 100%"
           />
-          <div v-else ref="rightList" class="list">
-            <resource-pack-card
-              v-for="item in selectedItems"
-              :key="item.id"
-              :pack="item"
-              :is-selected="true"
-              @dragstart="dragging = true"
-              @dragend="dragging = false"
-              @mouseup="dragging = false"
-            />
+          <div
+            v-else
+            class="list"
+          >
+            <transition-group
+              name="transition-list"
+              tag="div"
+            >
+              <resource-pack-card
+                v-for="item in selectedItems"
+                :key="item.id"
+                :pack="item"
+                :is-selected="true"
+                @dragstart="dragging = true"
+                @dragend="dragging = false"
+                @mouseup="dragging = false"
+              />
+            </transition-group>
           </div>
         </v-card>
       </v-flex>
@@ -88,7 +179,11 @@
         <v-icon>delete</v-icon>
       </v-btn>
     </v-fab-transition>
-    <v-dialog :value="!!deletingPack" width="400" persistance>
+    <v-dialog
+      :value="!!deletingPack"
+      width="400"
+      persistance
+    >
       <v-card>
         <v-card-title primary-title>
           <div>
@@ -101,9 +196,16 @@
 
         <v-divider />
         <v-card-actions>
-          <v-btn flat @click="isDeletingPack = false; deletingPack = null">{{ $t('no') }}</v-btn>
+          <v-btn
+            flat
+            @click="isDeletingPack = false; deletingPack = null"
+          >{{ $t('no') }}</v-btn>
           <v-spacer />
-          <v-btn flat color="red" @click="confirmDeletingPack">
+          <v-btn
+            flat
+            color="red"
+            @click="confirmDeletingPack"
+          >
             <v-icon left>delete</v-icon>
             {{ $t('yes') }}
           </v-btn>
@@ -132,7 +234,7 @@ export default defineComponent({
     const filterText = inject('filter-text', ref(''));
     const rightList: Ref<null | Vue> = ref(null);
     const leftList: Ref<null | Vue> = ref(null);
-    const { packs, unused, add, remove, commit, insert } = useInstanceResourcePacks();
+    const { enabled, disabled, add, remove, commit, insert } = useInstanceResourcePacks();
     const { removeResource } = useResourceOperation();
     const data = reactive({
       dragging: false,
@@ -158,9 +260,9 @@ export default defineComponent({
       return r.name.toLowerCase().indexOf(filterText.value.toLowerCase()) !== -1;
     }
 
-    const unselectedItems = computed(() => unused.value
+    const unselectedItems = computed(() => disabled.value
       .filter((a) => filterName(a)));
-    const selectedItems = computed(() => packs.value
+    const selectedItems = computed(() => enabled.value
       .filter((a) => filterName(a)));
 
     async function confirmDeletingPack() {
@@ -169,7 +271,7 @@ export default defineComponent({
     }
     function onDropDelete(e: DragEvent) {
       const url = e.dataTransfer!.getData('id');
-      const target = packs.value.find(m => m.id === url) ?? unused.value.find(m => m.id === url) ?? null;
+      const target = enabled.value.find(m => m.id === url) ?? disabled.value.find(m => m.id === url) ?? null;
       data.deletingPack = target;
     }
     return {
@@ -190,4 +292,7 @@ export default defineComponent({
 </script>
 
 <style>
+.card-list {
+  background: transparent;
+}
 </style>

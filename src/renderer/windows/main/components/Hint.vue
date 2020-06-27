@@ -1,13 +1,32 @@
 <template>
-  <v-container :class="{ 'absoluted': absolute }">
-    <v-layout align-center justify-center row fill-height>
-      <v-flex v-if="!button" style="text-align:center; user-select: none;" class="headline">
-        <v-icon :style="{ 'font-size' : `${size}px` }" style="display: block">{{ icon }}</v-icon>
+  <v-container :class="{ 'absoluted': absolute }" @click="$emit('click', $event)">
+    <v-layout
+      align-center
+      justify-center
+      row
+      fill-height
+    >
+      <v-flex
+        v-if="!button"
+        style="text-align:center; user-select: none;"
+        class="headline"
+      >
+        <v-icon
+          :style="{ 'font-size' : `${size}px` }"
+          style="display: block"
+        >{{ icon }}</v-icon>
         {{ text }}
       </v-flex>
-      <v-flex v-else style="text-align:center; user-select: none;" class="headline">
+      <v-flex
+        v-else
+        style="text-align:center; user-select: none;"
+        class="headline"
+      >
         <v-btn>
-          <v-icon :style="{ 'font-size' : `${size}px` }" style="display: block">{{ icon }}</v-icon>
+          <v-icon
+            :style="{ 'font-size' : `${size}px` }"
+            style="display: block"
+          >{{ icon }}</v-icon>
           {{ text }}
         </v-btn>
       </v-flex>
@@ -16,7 +35,7 @@
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from '@vue/composition-api';
 
 export default defineComponent({
   props: {

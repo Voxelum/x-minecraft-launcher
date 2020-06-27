@@ -1,6 +1,6 @@
 import { UpdateInfo } from 'electron-updater';
 import { ModuleOption } from '../root';
-import { ParticleMode, SettingSchema } from './setting.schema';
+import { SettingSchema } from './setting.schema';
 
 interface State extends SettingSchema {
     /**
@@ -8,7 +8,7 @@ interface State extends SettingSchema {
      */
     locales: string[];
     updateInfo: UpdateInfo | null;
-    readyToUpdate: boolean;
+    readyToUpdate: 'asar' | 'full' | 'none';
     checkingUpdate: boolean;
     downloadingUpdate: boolean;
 }
@@ -18,20 +18,19 @@ interface Mutations {
     locale: string;
     allowPrerelease: boolean;
     autoInstallOnAppQuit: boolean;
-    readyToUpdate: boolean;
+    readyToUpdate: 'asar' | 'full' | 'none';
     autoDownload: boolean;
     updateInfo: UpdateInfo;
     downloadingUpdate: boolean;
     checkingUpdate: boolean;
     settings: { [key: string]: number | string | boolean | object };
-    defaultBackgroundImage: string;
-    defaultBlur: number;
     useBmclApi: boolean;
-    showParticle: boolean;
-    particleMode: ParticleMode;
 }
 
 
+/**
+ * Whole launcher setting
+ */
 export type SettingModule = ModuleOption<State, {}, Mutations, {}>;
 
 const mod: SettingModule = {
@@ -41,17 +40,13 @@ const mod: SettingModule = {
         locale: '',
         locales: [],
         updateInfo: null,
-        readyToUpdate: false,
+        readyToUpdate: 'none',
         allowPrerelease: false,
         autoInstallOnAppQuit: false,
         downloadingUpdate: false,
         checkingUpdate: false,
         autoDownload: false,
-        defaultBackgroundImage: '',
-        defaultBlur: 0,
         useBmclAPI: true,
-        showParticle: false,
-        particleMode: ParticleMode.REPULSE,
     },
     mutations: {
         downloadingUpdate(state, d) { state.downloadingUpdate = !!d; },
@@ -79,23 +74,12 @@ const mod: SettingModule = {
             state.autoInstallOnAppQuit = config.autoDownload || false;
             state.allowPrerelease = config.allowPrerelease || false;
             state.useBmclAPI = typeof config.useBmclAPI === 'boolean' ? config.useBmclAPI : true;
-            state.showParticle = config.showParticle;
-            state.particleMode = config.particleMode;
         },
         settings(state, settings) {
             // Object.assign(state.settings, settings);
         },
-        defaultBackgroundImage(state, img) {
-            if (typeof img === 'string') state.defaultBackgroundImage = img;
-        },
-        defaultBlur(state, blur) {
-            if (typeof blur === 'number') state.defaultBlur = blur;
-        },
         useBmclApi(state, use) { state.useBmclAPI = use; },
-        showParticle(state, v) { state.showParticle = v; },
-        particleMode(state, v) { state.particleMode = v; },
     },
 };
 
 export default mod;
-export { ParticleMode };

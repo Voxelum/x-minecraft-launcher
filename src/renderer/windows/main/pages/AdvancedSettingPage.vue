@@ -1,10 +1,26 @@
 <template>
-  <v-container grid-list-xs fill-height style="overflow: auto;">
-    <v-layout row wrap justify-start align-content-start>
-      <v-flex tag="h1" class="white--text" xs12>
+  <v-container
+    grid-list-xs
+    fill-height
+    style="overflow: auto;"
+  >
+    <v-layout
+      row
+      wrap
+      justify-start
+      align-content-start
+    >
+      <v-flex
+        tag="h1"
+        class="white--text"
+        xs12
+      >
         <span class="headline">{{ $t('profile.launchingDetail') }}</span>
       </v-flex>
-      <v-flex d-flex xs12>
+      <v-flex
+        d-flex
+        xs12
+      >
         <v-select
           v-model="java"
           hide-details
@@ -20,7 +36,10 @@
           @click:prepend-inner="browseFile"
         />
       </v-flex>
-      <v-flex d-flex xs6>
+      <v-flex
+        d-flex
+        xs6
+      >
         <v-text-field
           v-model="minMemory"
           hide-details
@@ -32,7 +51,10 @@
           :placeholder="$t('java.noMemory')"
         />
       </v-flex>
-      <v-flex d-flex xs6>
+      <v-flex
+        d-flex
+        xs6
+      >
         <v-text-field
           v-model="maxMemory"
           hide-details
@@ -44,7 +66,10 @@
           :placeholder="$t('java.noMemory')"
         />
       </v-flex>
-      <v-flex d-flex xs12>
+      <v-flex
+        d-flex
+        xs12
+      >
         <v-text-field
           v-model="vmOptions"
           hide-details
@@ -58,7 +83,10 @@
                        :create-hint="$t('profile.vmOptionsCreateHint')"
         :hint="$t('profile.vmOptionsHint')" />-->
       </v-flex>
-      <v-flex d-flex xs12>
+      <v-flex
+        d-flex
+        xs12
+      >
         <v-text-field
           v-model="mcOptions"
           hide-details
@@ -72,7 +100,7 @@
           :label="$t('profile.mcOptions')"
           :create-hint="$t('profile.mcOptionsCreateHint')"
           :hint="$t('profile.mcOptionsHint')"
-        /> -->
+        />-->
       </v-flex>
     </v-layout>
   </v-container>
@@ -105,7 +133,6 @@ export default defineComponent({
       mcOptions,
       java,
       javaPath,
-      setJavaPath,
     } = useInstance();
     const { all: javas, add } = useJava();
 
@@ -126,22 +153,15 @@ export default defineComponent({
         maxMemory: data.maxMemory,
         vmOptions: data.vmOptions.split(' ').filter(v => v.length !== 0),
         mcOptions: data.mcOptions.split(' ').filter(v => v.length !== 0),
-        java: data.java.version.toString(),
+        java: data.java.path,
       });
-      setJavaPath(data.java.path);
     }
     function load() {
       data.maxMemory = maxMemory.value;
       data.minMemory = minMemory.value;
       data.vmOptions = vmOptions.value.join(' ');
       data.mcOptions = mcOptions.value.join(' ');
-      if (javaPath.value) {
-        const found = javas.value.find(j => j.path === javaPath.value);
-        if (found) { data.java = found; }
-      } else if (java.value) {
-        const found = javas.value.find(j => j.version === java.value || j.majorVersion.toString() === java.value);
-        if (found) { data.java = found; }
-      }
+      data.java = javas.value.find(j => j.path === javaPath.value)! ?? data.java;
     }
     useAutoSaveLoad(save, load);
 

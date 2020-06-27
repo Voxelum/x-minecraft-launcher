@@ -1,5 +1,4 @@
 {
-    "$schema": "../locale.schema.json",
     "en": "English",
     "zh-CN": "中文（简体）"
 }

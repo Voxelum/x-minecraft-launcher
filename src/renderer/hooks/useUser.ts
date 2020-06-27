@@ -2,55 +2,96 @@ import { EMPTY_GAME_PROFILE } from '@universal/store/modules/user';
 import { UserProfile } from '@universal/store/modules/user.schema';
 import { LoginException } from '@universal/util/exception';
 import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api';
+import { GameProfile } from '@xmcl/user';
 import { useI18n } from './useI18n';
+import { useBusy } from './useSemaphore';
 import { useServiceOnly } from './useService';
 import { useStore } from './useStore';
-import { useBusy } from './useSemaphore';
 
-export function useCurrentUserStatus() {
-    const { state, getters } = useStore();
-    const user: UserProfile & Data = getters.user as any;
-    const offline = computed(() => getters.offline);
-    const logined = computed(() => getters.accessTokenValid);
-    const isServiceCompatible = computed(() => getters.isServiceCompatible);
-    const security = computed(() => (user.authServices === 'mojang' ? state.user.mojangSecurity : true));
-    const refreshingSecurity = useBusy('checkLocation');
+export function useGameProfile(gameProfile: Ref<GameProfile>) {
+    const name = computed(() => gameProfile.value.name);
+    const id = computed(() => gameProfile.value.id);
+    return { name, id };
+}
+
+export function useUserProfile(userProfile: Ref<UserProfile>) {
+    const { state } = useStore();
+    const profileService = computed(() => ({ ...state.user.profileServices[userProfile.value.profileService], name: userProfile.value.profileService }));
+    const authService = computed(() => ({ ...state.user.authServices[userProfile.value.authService], name: userProfile.value.authService }));
+    const accessToken = computed(() => userProfile.value.accessToken);
+    const username = computed(() => userProfile.value.username);
+    const profiles = computed(() => userProfile.value.profiles);
+    const id = computed(() => userProfile.value.id);
     return {
-        logined,
-        offline,
-        isServiceCompatible,
-        security,
-        refreshingSecurity,
-        ...useServiceOnly('UserService', 'checkLocation', 'getChallenges', 'submitChallenges'),
+        profileService,
+        authService,
+        accessToken,
+        username,
+        profiles,
+        id,
     };
 }
 
+export function useUserProfileStatus(userProfile: Ref<UserProfile>) {
+    const accessTokenValid = computed(() => userProfile.value.accessToken !== '');
+    const offline = computed(() => userProfile.value.authService === 'offline');
+    const isServiceCompatible = computed(() => userProfile.value.authService === userProfile.value.profileService);
+    return {
+        accessTokenValid,
+        offline,
+        isServiceCompatible,
+        logined: accessTokenValid,
+    };
+}
+
+export function useSelectedUser() {
+    const { state } = useStore();
+    const userId = computed(() => state.user.selectedUser.id);
+    const profileId = computed(() => state.user.selectedUser.profile);
+    return { userId, profileId };
+}
+
+export function useProfileId(userId: Ref<string>, profileId: Ref<string>) {
+    const { state } = useStore();
+    const userProfile = computed(() => state.user.users[userId.value]);
+    const gameProfile = computed(() => userProfile.value.profiles[profileId.value]);
+    return { userProfile, gameProfile };
+}
+
+const NO_USER_PROFILE: UserProfile = Object.freeze({
+    selectedProfile: '',
+    accessToken: '',
+    authService: '',
+    profileService: '',
+    profiles: {},
+    id: '',
+    username: '',
+});
+const NO_GAME_PROFILE: GameProfile = Object.freeze({
+    id: '',
+    name: '',
+});
+
 export function useCurrentUser() {
-    const { getters } = useStore();
-    const user: UserProfile & Data = getters.user as any;
-    const theAuthService = computed(() => getters.authService);
-    const theProfileService = computed(() => getters.profileService);
-    /**
-     * selected profile name
-     */
-    const name = computed(() => getters.gameProfile.name);
+    const { state } = useStore();
+    const { userId, profileId } = useSelectedUser();
+    const userProfile: Ref<UserProfile> = computed(() => state.user.users[userId.value] ?? NO_USER_PROFILE);
+    const gameProfile: Ref<GameProfile> = computed(() => userProfile.value.profiles[profileId.value] ?? NO_GAME_PROFILE);
+
     /**
      * selected profile id
      */
-    const profileId = computed(() => getters.gameProfile.id);
-
     return {
-        ...toRefs(user),
-        name,
+        userId,
         profileId,
-        theAuthService,
-        theProfileService,
-        ...useCurrentUserStatus(),
+        userProfile,
+        gameProfile,
         ...useServiceOnly('UserService', 'refreshStatus', 'switchUserProfile', 'logout'),
     };
 }
 
-export function useCurrentUserSkin() {
+
+export function useUserSkin(userId: Ref<string>, gameProfileId: Ref<string>) {
     const { state } = useStore();
     const { refreshSkin, uploadSkin, saveSkin } = useServiceOnly('UserService', 'refreshSkin', 'uploadSkin', 'saveSkin');
     const data = reactive({
@@ -58,7 +99,7 @@ export function useCurrentUserSkin() {
         slim: false,
         loading: false,
     });
-    const gameProfile = computed(() => state.user.users[state.user.selectedUser.id]?.profiles[state.user.selectedUser.profile] || EMPTY_GAME_PROFILE);
+    const gameProfile = computed(() => state.user.users[userId.value]?.profiles[gameProfileId.value] || EMPTY_GAME_PROFILE);
     function reset() {
         data.url = gameProfile.value.textures.SKIN.url;
         data.slim = gameProfile.value.textures.SKIN.metadata ? gameProfile.value.textures.SKIN.metadata.model === 'slim' : false;
@@ -74,17 +115,22 @@ export function useCurrentUserSkin() {
         }
     }
     onMounted(() => {
-        refreshSkin();
+        refreshSkin({ userId: userId.value, gameProfileId: gameProfileId.value }).then(() => reset());
         reset();
     });
-    watch(gameProfile, () => {
-        refreshSkin();
+    function refresh() {
+        refreshSkin({ userId: userId.value, gameProfileId: gameProfileId.value, force: true });
+    }
+    watch([userId, gameProfileId], () => {
+        if (userId.value && gameProfileId.value) {
+            refreshSkin({ userId: userId.value, gameProfileId: gameProfileId.value }).then(() => reset());
+        }
         reset();
     });
     return {
         ...toRefs(data),
         refreshing: useBusy('refreshSkin'),
-        refresh: refreshSkin,
+        refresh,
         save,
         reset,
         modified,
@@ -93,16 +139,62 @@ export function useCurrentUserSkin() {
     };
 }
 
+export function useUserServices() {
+    const { state } = useStore();
+    const authServices = computed(() => ['offline', ...Object.keys(state.user.authServices)]);
+    const profileServices = computed(() => Object.keys(state.user.profileServices));
+    return {
+        authServices,
+        profileServices,
+    };
+}
+
+export function useUsers() {
+    const { state } = useStore();
+    const users = computed(() => Object.values(state.user.users));
+    return { users };
+}
+
+export function useSwitchUser() {
+    const { commit: _commit } = useStore();
+    const { userId, profileId } = useSelectedUser();
+
+    const data = reactive({
+        profileId: profileId.value,
+        userId: userId.value,
+    });
+    const modified = computed(() => data.profileId !== profileId.value || data.userId !== userId.value);
+    const { switchUserProfile } = useServiceOnly('UserService', 'switchUserProfile');
+    function commit() {
+        return switchUserProfile({ profileId: data.profileId, userId: data.userId });
+    }
+    function select(profileId: string, userId: string) {
+        data.profileId = profileId;
+        data.userId = userId;
+    }
+    function remove(userId: string) {
+        _commit('userProfileRemove', userId);
+    }
+    return {
+        selectedUserId: userId,
+        selectedProfileId: profileId,
+        select,
+        remove,
+        commit,
+        modified,
+        ...toRefs(data),
+    };
+}
+
 export function useLogin() {
     const { state, commit } = useStore();
     const authServices = computed(() => ['offline', ...Object.keys(state.user.authServices)]);
     const profileServices = computed(() => Object.keys(state.user.profileServices));
-    const profiles = computed(() => Object.entries(state.user.users)
-        .map(([userId, user]) => Object.values(user.profiles)
-            .map((profile) => ({ ...profile, userId, authService: user.authService, profileService: user.profileService, username: user.username, accessToken: user.accessToken })))
-        .reduce((a, b) => [...a, ...b], []));
-    const { logined, username, authService, profileService, profileId, id } = useCurrentUser();
-    const { login, switchUserProfile } = useServiceOnly('UserService', 'login', 'switchUserProfile');
+    const { userId, profileId, userProfile } = useCurrentUser();
+    const { username, authService, profileService } = useUserProfile(userProfile);
+    const { logined } = useUserProfileStatus(userProfile);
+    // const { authService, profileService, profileId, id } = useCurrentUser();
+    const { login } = useServiceOnly('UserService', 'login', 'switchUserProfile');
     function remove(userId: string) {
         commit('userProfileRemove', userId);
     }
@@ -112,13 +204,8 @@ export function useLogin() {
         password: '',
         authService: '',
         profileService: '',
-
-        profile: '',
-        user: '',
+        selectProfile: false,
     });
-    function select() {
-        return switchUserProfile({ profileId: data.profile, userId: data.user });
-    }
     async function _login() {
         data.logining = true;
         await login(data).finally(() => { data.logining = false; });
@@ -127,23 +214,18 @@ export function useLogin() {
         data.logining = false;
         data.username = username.value;
         data.password = '';
-        data.authService = authService.value ?? 'mojang';
-        data.profileService = profileService.value ?? 'mojang';
-
-        data.user = id.value;
-        data.profile = profileId.value;
+        data.authService = authService.value.name ?? 'mojang';
+        data.profileService = profileService.value.name ?? 'mojang';
     }
     return {
         ...toRefs(data),
         logined,
         login: _login,
         reset,
-        select,
         remove,
-        profiles,
 
         selectedProfile: profileId,
-        selectedUser: id,
+        selectedUser: userId,
 
         authServices,
         profileServices,
@@ -192,6 +274,16 @@ export function useLoginValidation(isOffline: Ref<boolean>) {
     };
 }
 
+export function useUserSecurityStatus() {
+    const { state } = useStore();
+    const security = computed(() => (state.user.users[state.user.selectedUser.id].authService === 'mojang' ? state.user.mojangSecurity : true));
+
+    return {
+        security,
+        refreshing: useBusy('checkLocation'),
+    };
+}
+
 export function useUserSecurity() {
     interface MojangChallenge {
         readonly answer: {
@@ -204,14 +296,14 @@ export function useUserSecurity() {
         };
     }
 
-    const { offline, security, refreshingSecurity, getChallenges, checkLocation, submitChallenges } = useCurrentUserStatus();
+    const { security, refreshing } = useUserSecurityStatus();
+    const { getChallenges, checkLocation, submitChallenges } = useServiceOnly('UserService', 'getChallenges', 'checkLocation', 'submitChallenges');
     const data = reactive({
         loading: false,
         challenges: [] as MojangChallenge[],
         error: undefined as any,
     });
     async function check() {
-        if (offline.value) return;
         try {
             data.loading = true;
             let sec = await checkLocation();
@@ -241,13 +333,9 @@ export function useUserSecurity() {
     });
     return {
         ...toRefs(data),
-        refreshing: refreshingSecurity,
+        refreshing,
         security,
         check,
         submit,
     };
-}
-
-export function useUserSkin() {
-
 }

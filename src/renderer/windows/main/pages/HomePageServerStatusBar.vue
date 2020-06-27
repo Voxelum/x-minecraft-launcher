@@ -1,5 +1,5 @@
 <template>
-  <div class="v-alert v-alert--outline white--text" style="">
+  <div class="v-alert white--text" style="border-color: transparent !important">
     <i aria-hidden="true" class="v-icon material-icons theme--dark v-alert__icon">
       <img :src="favicon" style="max-height: 64px;">
     </i>
@@ -24,7 +24,7 @@ export default defineComponent({
     const loading = useBusy(refreshServer);
     
     onMounted(() => {
-      if (ping.value === -1) {
+      if (ping.value <= 0) {
         refreshServer();
       }
     });

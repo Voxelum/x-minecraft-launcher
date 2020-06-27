@@ -31,7 +31,6 @@ export function useSettings() {
     const downloadingUpdate = computed(() => state.setting.downloadingUpdate);
     const updateInfo: Ref<UpdateInfo> = computed(() => state.setting.updateInfo || {}) as any;
 
-
     return {
         ...useServiceOnly('BaseService', 'checkUpdate'),
         locales,

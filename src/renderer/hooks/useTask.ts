@@ -1,28 +1,8 @@
-import { computed, inject } from '@vue/composition-api';
+import { computed, inject, watch, ref, Ref } from '@vue/composition-api';
 import { TASK_PROXY } from '@/constant';
 import { requireNonnull } from '@universal/util/assert';
-
-// export function useTask(taskHandle: string | Promise<any>) {
-//     const { state } = useStore();
-//     const handle = typeof taskHandle === 'string' ? taskHandle : (taskHandle as any).__tasks__[0];
-//     const taskState = state.task.tree[handle];
-//     const status = computed(() => taskState.status);
-//     const progress = computed(() => taskState.progress);
-//     const total = computed(() => taskState.total);
-//     const message = computed(() => taskState.message);
-//     function wait() {
-//         // return dispatch('waitTask', taskHandle);
-//     }
-//     return {
-//         name: taskState.name,
-//         time: taskState.time,
-//         progress,
-//         total,
-//         message,
-//         status,
-//         wait,
-//     };
-// }
+import { getServiceCallTasks } from '@/providers/provideServiceProxy';
+import { TaskState } from '@universal/task';
 
 export function useTaskCount() {
     const proxy = inject(TASK_PROXY);
@@ -41,4 +21,32 @@ export function useTasks() {
     requireNonnull(proxy);
     const { pause, resume, cancel, tasks } = proxy;
     return { tasks, pause, resume, cancel };
+}
+
+export function useTaskFromServiceCall(call: Ref<Readonly<Promise<any>>>) {
+    const proxy = inject(TASK_PROXY);
+    requireNonnull(proxy);
+
+    let { tasks: tasksList } = proxy;
+
+    const task = computed(() => tasksList.value.find(() => getServiceCallTasks(call.value)?.value[0]));
+    const name = computed(() => task.value?.name);
+    const time = computed(() => task.value?.time);
+    const status = computed(() => task.value?.status);
+    const progress = computed(() => task.value?.progress);
+    const total = computed(() => task.value?.total);
+    const message = computed(() => task.value?.message);
+
+    function wait() {
+        // return dispatch('waitTask', taskHandle);
+    }
+    return {
+        name,
+        time,
+        progress,
+        total,
+        message,
+        status,
+        wait,
+    };
 }

@@ -1,5 +1,8 @@
 <template>
-  <v-layout row wrap>
+  <v-layout
+    row
+    wrap
+  >
     <v-icon
       v-ripple
       style="position: absolute; right: 0; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
@@ -13,11 +16,20 @@
       @click="showFeedbackDialog"
     >help_outline</v-icon>
 
-    <v-flex d-flex xs12 style="z-index: 1; padding-top: 50px; padding-left: 50px">
+    <v-flex
+      d-flex
+      xs12
+      style="z-index: 1; padding-top: 50px; padding-left: 50px"
+    >
       <home-header />
     </v-flex>
 
-    <v-flex v-if="isServer" d-flex xs12 style="margin: 40px;">
+    <v-flex
+      v-if="isServer"
+      d-flex
+      xs12
+      style="margin: 40px;"
+    >
       <server-status-bar />
     </v-flex>
 
@@ -74,19 +86,74 @@
 
     <problems-bar />
 
+    <!-- <v-speed-dial
+      class="launch-speed-dial"
+      direction="top"
+      :disabled="refreshing || missingJava || launchStatus !== 'ready'"
+      :open-on-hover="false"
+    >
+      <template v-slot:activator>
+        <v-btn
+          dark
+          large
+          class="launch-side-button"
+          color="primary"
+          :disabled="refreshing || missingJava || launchStatus !== 'ready'"
+          v-on="on"
+        >
+          <v-icon>expand_less</v-icon>
+        </v-btn>
+      </template>
+      <v-btn
+        dark
+        color="orange"
+        :disabled="refreshing || missingJava || launchStatus !== 'ready'"
+        @click="selectLaunchTarget(false)"
+      >
+        <v-flex xs3>
+          <v-icon left>check</v-icon>
+        </v-flex>
+        <v-divider vertical />
+        <v-flex>{{ $t('launch.client') }}</v-flex>
+      </v-btn>
+      <v-btn
+        dark
+        color="red"
+        :disabled="refreshing || missingJava || launchStatus !== 'ready'"
+        @click="selectLaunchTarget(true)"
+      >
+        <v-flex xs3>
+        </v-flex>
+        <v-divider vertical />
+        <v-flex>{{ $t('launch.localhost') }}</v-flex>
+      </v-btn>
+    </v-speed-dial> -->
+
     <v-btn
       color="primary"
-      style="position: absolute; right: 10px; bottom: 10px; "
       dark
       large
       :disabled="refreshing || missingJava"
+      class="launch-button"
       @click="launch"
     >
       {{ $t('launch.launch') }}
-      <v-icon v-if="launchStatus === 'ready'" right>play_arrow</v-icon>
-      <v-progress-circular v-else class="v-icon--right" indeterminate :size="20" :width="2" />
+      <v-icon
+        v-if="launchStatus === 'ready'"
+        right
+      >play_arrow</v-icon>
+      <v-progress-circular
+        v-else
+        class="v-icon--right"
+        indeterminate
+        :size="20"
+        :width="2"
+      />
     </v-btn>
-    <log-dialog v-model="isLogDialogShown" :hide="hideLogDialog" />
+    <log-dialog
+      v-model="isLogDialogShown"
+      :hide="hideLogDialog"
+    />
     <game-exit-dialog />
     <feedback-dialog />
   </v-layout>
@@ -112,11 +179,15 @@ import HomeHeader from './HomePageHeader.vue';
 import ProblemsBar from './HomePageProblemsBar.vue';
 import ServerStatusBar from './HomePageServerStatusBar.vue';
 
-function compositeLaunch() {
+function setupLaunch() {
   const { launch, status: launchStatus } = useLaunch();
   const { show: showLaunchStatusDialog, hide: hideLaunchStatusDialog } = useDialog('launch-status');
   const { show: showLaunchBlockedDialog } = useDialog('launch-blocked');
 
+  // let launchTarget = useLocalStorageCacheBool('launchTarget', false);
+  // function selectLaunchTarget(isServer: boolean) {
+  //     launchTarget.value = isServer;
+  // }
   // watch([errors, errorType], () => {
   //   if (errors.value.length !== 0 || errorType.value.length !== 0) {
   //     notify('error', `[${errorType.value}] ${errors.value}`);
@@ -126,6 +197,8 @@ function compositeLaunch() {
   return {
     launchStatus,
     hideLaunchStatusDialog,
+    // selectLaunchTarget,
+    // launchTarget,
     launch() {
       if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching' || launchStatus.value === 'launched') {
         showLaunchStatusDialog();
@@ -175,7 +248,7 @@ export default defineComponent({
       showFeedbackDialog,
       quit,
 
-      ...compositeLaunch(),
+      ...setupLaunch(),
 
       showLogDialog,
       isLogDialogShown,
@@ -216,5 +289,39 @@ export default defineComponent({
 
 .pointer * {
   cursor: pointer !important;
+}
+
+.launch-side-button {
+  /* position: absolute !important; */
+  /* right: 147px; */
+  /* bottom: 10px; */
+  border-radius: 2px 0px 0px 2px;
+  padding: 0px;
+  min-width: 0px;
+}
+
+.launch-side-button .v-btn__content {
+  min-width: 0px;
+}
+.launch-side-button i {
+  font-size: 22px;
+}
+.launch-button {
+  position: absolute !important;
+  border-radius: 0px 2px 2px 0px;
+  right: 10px;
+  bottom: 10px;
+}
+.launch-speed-dial {
+  right: 147px;
+  bottom: 10px;
+  position: absolute;
+}
+.launch-speed-dial .v-speed-dial__list {
+  align-items: start;
+}
+.launch-speed-dial .v-speed-dial__list .v-btn {
+  max-width: 159px;
+  min-width: 159px;
 }
 </style>

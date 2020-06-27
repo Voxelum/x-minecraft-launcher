@@ -1,58 +1,34 @@
 <template>
-  <v-list dark style="overflow-y: scroll; scrollbar-width: 0; background-color: transparent;">
+  <v-list dark style="background-color: transparent; height: 100%">
     <v-list-tile ripple @click="select({ version: '' })">
       <v-list-tile-avatar>
-        <v-icon> close </v-icon>
+        <v-icon>close</v-icon>
       </v-list-tile-avatar>
       {{ $t('forge.disable') }}
     </v-list-tile>
-    <virtual-list :size="48" :remain="6"> 
-      <template v-for="(item) in value">
-        <v-list-tile
-          :key="item.version"
-          :class="{ grey: selected === item.version, 'darken-1' : selected === item.version }" 
-          ripple 
-          @click="select(item)">
-          <v-list-tile-avatar>
-            <v-icon v-if="status[item.version] !== 'loading'">
-              {{ status[item.version] === 'remote' ? 'cloud' : 'folder' }}
-            </v-icon>
-            <v-progress-circular v-else :width="2" :size="24" indeterminate />
-          </v-list-tile-avatar>
-
-          <v-list-tile-title>
-            {{ item.version }}
-          </v-list-tile-title>
-          <!-- <v-list-tile-sub-title v-if="showTime">
-          {{ item.date }}
-        </v-list-tile-sub-title> -->
-
-          <v-list-tile-action style="justify-content: flex-end;">
-            <v-chip 
-              v-if="item.type !== 'common'" 
-              label 
-              :color="item.type === 'recommended' ? 'green' : ''">
-              {{ item.type }}
-            </v-chip>
-          <!-- <v-icon v-if="iconMapping[item.type]">{{iconMapping[item.type]}}</v-icon> -->
-          </v-list-tile-action>
-        </v-list-tile>
-      </template>
-    </virtual-list>
+    <virtual-list
+      style="overflow-y: scroll; scrollbar-width: 0; height: 100%"
+      :data-sources="items"
+      :data-key="'version'"
+      :data-component="Tile"
+      :keep="16"
+      :extra-props="{ selected: selected, select: select }"
+    />
   </v-list>
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent, computed } from '@vue/composition-api';
 import { ForgeInstaller } from '@xmcl/installer';
 import VirtualList from 'vue-virtual-scroll-list';
+import Tile from './ForgeVersionListTile.vue';
 
 export type Status = 'loading' | 'folder' | 'cloud';
 
 export interface Props {
   selected: string;
   value: ForgeInstaller.Version[];
-  status: Status[];
+  status: Record<string, Status>;
   select: (version: { version: string }) => void;
 }
 
@@ -64,13 +40,15 @@ export default defineComponent<Props>({
     select: Function,
     selected: String,
   },
-  setup() {
+  setup(props) {
     return {
+      items: computed(() => props.value.map((v, i) => ({ ...v, status: props.status[v.version] }))),
       iconMapping: {
         buggy: 'bug_report',
         recommended: 'star',
         latest: 'fiber_new',
       },
+      Tile,
     };
   },
 });

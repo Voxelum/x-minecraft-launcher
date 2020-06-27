@@ -1,16 +1,15 @@
 import { LauncherAppController } from '@main/app/LauncherAppController';
 import BuiltinController from '@main/builtin/BuiltinController';
+import { IS_DEV } from '@main/constant';
 import { isDirectory } from '@main/util/fs';
 import { getPlatform } from '@xmcl/core';
-import { App, app, BrowserWindow, BrowserWindowConstructorOptions, Dock, ipcMain, Menu, NativeImage, nativeImage, shell, Tray } from 'electron';
+import { App, app, BrowserWindow, BrowserWindowConstructorOptions, Dock, ipcMain, Menu, NativeImage, nativeImage, session, shell, Tray } from 'electron';
 import { ensureFile, readFile, writeFile } from 'fs-extra';
 import { join } from 'path';
 import { ParsedUrlQuery } from 'querystring';
 import { parse as parseUrl } from 'url';
 import { Store } from 'vuex';
 import { Manager } from '.';
-
-const isDev = process.env.NODE_ENV === 'development';
 
 export interface LauncherAppContext {
     getNativeImageAsset(imageName: string): NativeImage;
@@ -192,10 +191,11 @@ export class AppManager extends Manager {
         };
 
         if (!normalizedOptions.webPreferences) { normalizedOptions.webPreferences = {}; }
-        normalizedOptions.webPreferences.webSecurity = !isDev; // disable security for loading local image
-        normalizedOptions.webPreferences.nodeIntegration = isDev; // enable node for webpack in dev
+        normalizedOptions.webPreferences.webSecurity = !IS_DEV; // disable security for loading local image
+        normalizedOptions.webPreferences.nodeIntegration = IS_DEV; // enable node for webpack in dev
         // ops.webPreferences.enableRemoteModule = true;
         normalizedOptions.webPreferences.preload = join(__static, 'preload.js');
+        normalizedOptions.webPreferences.session = session.fromPartition(`persist:${name}`);
         // normalizedOptions.webPreferences.devTools = false;
 
         const ref = new BrowserWindow(normalizedOptions);
@@ -206,7 +206,7 @@ export class AppManager extends Manager {
         ref.loadURL(url);
         ref.webContents.on('will-navigate', (event, url) => {
             event.preventDefault();
-            if (!isDev) {
+            if (!IS_DEV) {
                 shell.openExternal(url);
             } else if (!url.startsWith('http://localhost')) {
                 shell.openExternal(url);

@@ -1,12 +1,8 @@
-import unknownPack from '@/assets/unknown_pack.png';
-import { computed, onMounted, onUnmounted, reactive, ref, Ref, toRefs } from '@/vue';
+import { computed, onMounted, reactive, toRefs } from '@/vue';
 import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions } from '@main/service/InstanceSavesService';
 import { CreateOption, InstanceConfig } from '@universal/store/modules/instance';
-import { isNonnull } from '@universal/util/assert';
-import { isModResource, isResourcePackResource, FabricResource, ForgeResource, LiteloaderResource, Resource } from '@universal/util/resource';
 import { getExpectVersion } from '@universal/util/version';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
-import { PackMeta } from '@xmcl/resourcepack';
 import { useBusy } from './useSemaphore';
 import { useService, useServiceOnly } from './useService';
 import { useStore } from './useStore';
@@ -26,7 +22,7 @@ export function useInstance() {
 
     const server = computed(() => instance.server);
     const refreshing = computed(() => state.semaphore.instance > 0);
-    const javaPath = computed(() => state.instance.java);
+    const javaPath = computed(() => instance.java);
 
     const refs = toRefs(instance);
     return {
@@ -39,7 +35,7 @@ export function useInstance() {
         server,
         refreshing,
 
-        ...useServiceOnly('InstanceService', 'editInstance', 'setJavaPath', 'refreshServerStatus'),
+        ...useServiceOnly('InstanceService', 'editInstance', 'refreshServerStatus'),
         ...useServiceOnly('InstanceIOService', 'exportInstance'),
     };
 }
@@ -61,7 +57,7 @@ export function useInstances() {
  * Hook to create a general instance
  */
 export function useInstanceCreation() {
-    const { name } = useCurrentUser();
+    const { gameProfile } = useCurrentUser();
     const { createAndSelect } = useService('InstanceService');
     const { release } = useMinecraftVersions();
     const data = reactive({
@@ -74,7 +70,7 @@ export function useInstanceCreation() {
         mcOptions: [] as string[],
         maxMemory: undefined as undefined | number,
         minMemory: undefined as undefined | number,
-        author: name.value,
+        author: gameProfile.value.name,
         description: '',
         deployments: { mods: [], resourcepacks: [] },
         resolution: undefined as undefined | CreateOption['resolution'],
@@ -113,7 +109,7 @@ export function useInstanceCreation() {
             data.mcOptions = [];
             data.maxMemory = undefined;
             data.minMemory = undefined;
-            data.author = name.value;
+            data.author = gameProfile.value.name;
             data.description = '';
             data.deployments = { mods: [], resourcepacks: [] };
             data.resolution = undefined;
@@ -156,120 +152,14 @@ export function useInstanceVersionBase() {
     };
 }
 
-export function useProfileTemplates() {
-    const { getters } = useStore();
+export function useInstanceTemplates() {
+    const { getters, state } = useStore();
     return {
-        profiles: computed(() => getters.instances),
-        modpacks: computed(() => getters.modpacks),
+        instances: computed(() => getters.instances),
+        modpacks: computed(() => state.resource.domains.modpacks),
     };
 }
 
-export interface ResourcePackItem extends PackMeta.Pack {
-    name: string;
-    id: string;
-    url: string[];
-    acceptingRange: string;
-    icon: string;
-}
-
-/**
- * The hook return a reactive resource pack array.
- */
-export function useInstanceResourcePacks() {
-    const { state, getters } = useStore();
-    const { editInstance } = useService('InstanceService');
-    const { edit } = useService('InstanceGameSettingService');
-
-    const data = reactive({
-        packs: [] as ResourcePackItem[],
-    });
-
-    function getResourcepackFormat(meta: any) {
-        return meta ? meta.format || meta.pack_format : 3;
-    }
-    function getResourcePackItem(resource: Resource<PackMeta.Pack>): ResourcePackItem {
-        const icon = `${resource.path.substring(0, resource.path.length - resource.ext.length)}.png`;
-        return {
-            name: `${resource.name}${resource.ext}`,
-            id: resource.source.uri[0],
-            url: resource.source.uri,
-            // eslint-disable-next-line @typescript-eslint/camelcase
-            pack_format: resource.metadata.pack_format,
-            description: resource.metadata.description,
-            acceptingRange: getters.getAcceptMinecraftRangeByFormat(getResourcepackFormat(resource.metadata)),
-            icon,
-        };
-    }
-    function getResourcePackItemFromUrl([name, url]: [string, string]): ResourcePackItem {
-        let resource = state.resource.directory[url];
-        if (resource && isResourcePackResource(resource)) {
-            return getResourcePackItem(resource);
-        }
-        return {
-            name,
-            url: [url],
-            id: url,
-            // eslint-disable-next-line @typescript-eslint/camelcase
-            pack_format: -1,
-            description: 'Unknown Pack',
-            acceptingRange: '[*]',
-            icon: unknownPack,
-        };
-    }
-
-    /**
-     * Unused resources
-     */
-    const unused = computed(() => state.resource.domains.resourcepacks.filter(r => r.source.uri
-        .every(u => data.packs.every(p => p.id !== u)))
-        .map(getResourcePackItem)
-        .filter(isNonnull));
-
-    /**
-     * Add a new resource to the used list
-     */
-    function add(id: string) {
-        let found = unused.value.find(m => m.id === id);
-        if (found) { data.packs.push(found); }
-    }
-
-    /**
-     * Remove a resource from used list
-     */
-    function remove(id: string) {
-        data.packs = data.packs.filter(m => m.id !== id);
-    }
-
-    function insert(from: string, to: string) {
-        const temp = data.packs.splice(data.packs.findIndex(p => p.id === from), 1);
-        data.packs.splice(data.packs.findIndex(p => p.id === to), 0, ...temp);
-        data.packs = [...data.packs];
-    }
-
-    /**
-     * Commit the change for current mods setting
-     */
-    function commit() {
-        edit({
-            resourcePacks: data.packs.map(r => r.name),
-        });
-        editInstance({ deployments: { resourcepacks: data.packs.map(r => r.id) } });
-    }
-
-    onMounted(() => {
-        data.packs = Object.entries(getters.instance.deployments.resourcepacks)
-            .map(getResourcePackItemFromUrl);
-    });
-
-    return {
-        ...toRefs(data),
-        unused,
-        add,
-        remove,
-        commit,
-        insert,
-    };
-}
 
 export function useInstanceGameSetting() {
     const { state } = useStore();
@@ -292,9 +182,6 @@ export function useInstanceSaves() {
     const { state } = useStore();
     const { cloneSave, deleteSave, exportSave, loadAllInstancesSaves, importSave, mountInstanceSaves } = useService('InstanceSavesService');
     const refresh = () => mountInstanceSaves(state.instance.path);
-    onMounted(() => {
-        refresh();
-    });
     return {
         refresh,
         cloneSave: (options: CloneSaveOptions) => cloneSave(options).finally(refresh),
@@ -327,149 +214,6 @@ export function useInstanceVersion() {
         ...refVersion,
         id,
         folder,
-    };
-}
-
-/**
- * Contains some basic info of mod to display in UI.
- */
-export interface ModItem {
-    /**
-     * Path on disk
-     */
-    path: string;
-    /**
-     * The identity of the mod
-     */
-    id: string;
-    /**
-     * Mod display name
-     */
-    name: string;
-    /**
-     * Mod version
-     */
-    version: string;
-    description: string;
-    /**
-     * Mod icon url
-     */
-    icon: string;
-    acceptMinecraft: string;
-    /**
-     * The backing resource
-     */
-    resource?: Resource;
-
-    /**
-     * The universal location of the mod
-     */
-    url: string;
-
-    type: 'fabric' | 'forge' | 'liteloader' | 'unknown';
-}
-
-/**
- * Open read/write for current instance mods
- */
-export function useInstanceMods() {
-    const { state, getters } = useStore();
-    const { editInstance } = useService('InstanceService');
-
-    const data = reactive({
-        mods: [] as ModItem[],
-    });
-
-    function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource): ModItem {
-        if (resource.type === 'forge') {
-            let meta = resource.metadata[0];
-            let acceptMinecraft = `[${meta.version}]`;
-            if (meta.acceptedMinecraftVersions) {
-                acceptMinecraft = meta.acceptedMinecraftVersions;
-            } else if (meta.loaderVersion) {
-                acceptMinecraft = meta.loaderVersion;
-            }
-            return {
-                path: resource.path,
-                id: meta.modid,
-                name: meta.displayName ?? meta.name ?? meta.modid,
-                version: meta.version,
-                description: meta.description ?? '',
-                icon: unknownPack,
-                acceptMinecraft,
-                type: 'forge',
-                url: resource.source.uri[0],
-                resource,
-            };
-        }
-        if (resource.type === 'fabric') {
-            return {
-                path: resource.path,
-                id: resource.metadata.id,
-                version: resource.metadata.version,
-                name: resource.metadata.name ?? resource.metadata.id,
-                description: resource.metadata.description ?? '',
-                icon: '',
-                acceptMinecraft: '[*]',
-                type: 'fabric',
-                url: resource.source.uri[0],
-                resource,
-            };
-        }
-        return {
-            path: resource.path,
-            id: resource.metadata.name,
-            name: resource.metadata.name,
-            version: resource.metadata.version ?? '',
-            description: resource.metadata.description ?? '',
-            icon: '',
-            acceptMinecraft: `[${resource.metadata.mcversion}]`,
-            type: 'liteloader',
-            url: resource.source.uri[0],
-            resource,
-        };
-    }
-
-    function getModItemFromResource(resource: Resource) {
-        if (isModResource(resource)) {
-            return getModItemFromModResource(resource);
-        }
-        return undefined;
-    }
-
-    /**
-     * Unused mod resources
-     */
-    const unusedMods = computed(
-        () => state.resource.domains.mods
-            .map(getModItemFromResource)
-            .filter(isNonnull)
-            .filter(mod => !data.mods.find(m => m.url === mod.url)),
-    );
-
-    /**
-     * Commit the change for current mods setting
-     */
-    function commit() {
-        editInstance({ deployments: { mods: data.mods.map(m => m.url) } });
-    }
-
-    onMounted(() => {
-        data.mods = [
-            ...getters.instance.deployments.mods.map(i => state.resource.directory[i])
-                .map(getModItemFromResource)
-                .filter(isNonnull),
-        ];
-    });
-
-    onUnmounted(() => {
-        commit();
-    });
-
-    return {
-        ...toRefs(data),
-        unusedMods,
-        commit,
     };
 }
 

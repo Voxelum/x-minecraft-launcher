@@ -1,10 +1,7 @@
 {
     "eslint.validate": [
         "typescript",
-        {
-            "language": "vue",
-            "autoFix": true
-        }
+        "vue"
     ],
     "eslint.enable": true,
     "files.eol": "\n",
@@ -25,16 +22,10 @@
     "vetur.experimental.templateInterpolationService": true,
     "vetur.format.defaultFormatterOptions": {
         "vscode-typescript": {
-            "indent_size": 4
+            "indent_size": 2
         },
-        "js-beautify-html": {
-            "indent_char": " ",
-            "indent_character": " ",
-            "indent_inner_html": false,
-            "indent_size": 4,
-            "indent_with_tabs": false,
-            "wrap_attributes": "auto",
-            "wrap_line_length": 100
+        "prettyhtml": {
+            "wrapAttributes": true
         }
     },
     "typescript.tsdk": "node_modules/typescript/lib",

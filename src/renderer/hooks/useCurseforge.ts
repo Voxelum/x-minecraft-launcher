@@ -37,7 +37,7 @@ export function useCurseforgeProjectFiles(projectId: number) {
     };
 }
 
-export function useCurseforgeInstall(type: ProjectType) {
+export function useCurseforgeInstall(type: ProjectType, projectId: number) {
     const { installFile } = useService('CurseForgeService');
     const { state, getters } = useStore();
     function getFileStatus(file: File): 'downloading' | 'downloaded' | 'remote' {
@@ -48,11 +48,14 @@ export function useCurseforgeInstall(type: ProjectType) {
         let downloading = state.curseforge.downloading.find((f) => f.fileId === file.id);
         return downloading ? 'downloading' : 'remote';
     }
+    function getFileResource(file: File) {
+        return getters.queryResource(file.downloadUrl);
+    }
     async function install(file: File) {
-        return installFile({ file, type });
+        return installFile({ file, type, projectId });
     }
 
-    return { getFileStatus, install };
+    return { getFileStatus, install, getFileResource };
 }
 
 export function useCurseforgeProjectDescription(projectId: number) {

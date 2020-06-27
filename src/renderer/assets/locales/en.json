@@ -35,6 +35,8 @@
   "curseforge": {
     "createdDate": "Created Date",
     "description": "CurseForge is now the largest repository for modded Minecraft featuring thousands of mods, texture packs and worlds.",
+    "downloadOnly": "Download",
+    "downloaded": "Downloaded",
     "gameversion": "Game Version",
     "install": "Install",
     "installed": "Installed",
@@ -343,9 +345,12 @@
   "installCurseforgeFile": "Install Curseforge File",
   "installCurseforgeModpack": {
     "": "Install Curseforge Modpack",
-    "createProfile": "Create Profile",
-    "installMods": "Install Mods",
-    "resolveEntries": "Resolve Entries"
+    "deploy": "Deploy",
+    "download": {
+      "": "Download",
+      "file": "Download File"
+    },
+    "unpack": "Unpack Modpack"
   },
   "installDependencies": {
     "": "Install {version}'s Dependencies",
@@ -435,6 +440,7 @@
     "minMemory": "Min Memory",
     "missing": "Missing Java",
     "missingHint": "The Launcher cannot detect any java in your computer. You can:",
+    "modifyInstance": "Modify Java Path",
     "noJavaInPath": "Still cannot find the java in PATH environment variable. You can try another way.",
     "noLegalJava": "Cannot detect legal java for this location. Please try again.",
     "noMemory": "Do not limit memory usage",
@@ -449,6 +455,7 @@
       "title": "Launch Blocked by Issues"
     },
     "checkingProblems": "Checking Problems",
+    "client": "Client",
     "crash": "Game Crashed!!",
     "failed": {
       "description": "There is no crash report. This this the latest log.",
@@ -462,10 +469,12 @@
       "unresolvableProblems": "Unresolvable Problems",
       "unresolvableProblemsText": "Existed some problems cannot be resolved. If you cannot handle this, please contact author for help!"
     },
+    "game": "Local Game",
     "hideLauncher": "Hide the launcher after launch",
     "launch": "Launch",
     "launching": "Launching...",
     "launchingSlow": "Still launching... Starting graphic engine can be slow...",
+    "localhost": "Localhost",
     "openCrashReportFolder": "Open Crash Report Folder",
     "openLogFolder": "Open Log Folder",
     "showLog": "Show Minecraft Log"
@@ -499,15 +508,16 @@
     "version": "Minecraft Version"
   },
   "mod": {
+    "acceptVersion": "Accept Minecraft {version} with loader {loaderVersion}",
     "backToAllMods": "Back to All Mods",
-    "compatible": "Available on {version}",
-    "deletion": "Deleting {mod} mod",
+    "compatible": "Compatible Mod.",
+    "deletion": "Deleting Mod",
     "deletionHint": "You will lose this mod & its metadata forever. Are you sure you want to delete it?",
     "export": "Export Mod",
     "hideIncompatible": "Hide Incompatible Mods",
     "hint": "Drop mod's .jar/.litemod here to import.",
     "import": "Import Mod",
-    "incompatible": "Incompatible Mod. Accept {accept}. Current: {actual}",
+    "incompatible": "Incompatible Mod.",
     "missing": {
       "absent": "",
       "checkAvailabilities": "",
@@ -521,7 +531,11 @@
     },
     "name": "Mod | Mods",
     "nocompatible": "Unknown Compatibility",
+    "openLink": "Open the mod url {url}",
+    "searchOnCurseforge": "Search the mod in curseforge",
     "selected": "Selected Mods",
+    "showFile": "Show the mod path {file}",
+    "showInCurseforge": "Show the mod in curseforge",
     "showIncompatible": "Show Incompatible Mods",
     "unselected": "Unselected Mods"
   },
@@ -672,7 +686,10 @@
     "import": "Import Resource Pack",
     "incompatible": "Incompatible Resource Pack format({format}). Fitin {accept}. Current {actual}.",
     "name": "Resource Pack | Resource Packs",
+    "searchOnCurseforge": "Search {name} in curseforge",
     "selected": "Selected Resource Packs",
+    "showFile": "Show resource pack in folder {file}",
+    "showInCurseforge": "Show {name} in curseforge",
     "unselected": "Unselected Resource Packs"
   },
   "save": {
@@ -774,7 +791,11 @@
     "accessToken": "Access Token",
     "account": {
       "add": "Add Account",
-      "switch": "Switch Account"
+      "switch": "Switch Account",
+      "removeTitle": "Remove Account",
+      "removeDescription": "This will wipe out all the info of this account. Are you sure?",
+      "removeCancel": "Cancel",
+      "removeConfirm": "Remove"
     },
     "authMode": "Auth Service",
     "authService": "Authorize Service",

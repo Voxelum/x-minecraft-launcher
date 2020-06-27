@@ -1,29 +1,28 @@
 import { clearDirectoryNarrow, exists, missing, readdirEnsured } from '@main/util/fs';
 import { CreateOption, createTemplate } from '@universal/store/modules/instance';
-import { DeployedInfo, InstanceLockSchema, InstanceSchema, InstancesSchema, RuntimeVersions } from '@universal/store/modules/instance.schema';
+import { InstanceSchema, InstancesSchema, RuntimeVersions } from '@universal/store/modules/instance.schema';
 import { requireObject, requireString } from '@universal/util/assert';
 import latestRelease from '@universal/util/lasteRelease.json';
 import { assignShallow, isPrimitiveArrayEqual } from '@universal/util/object';
-import { UNKNOWN_RESOURCE } from '@universal/util/resource';
 import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/util/serverStatus';
 import { queryStatus, Status } from '@xmcl/client';
 import { readInfo, ServerInfo } from '@xmcl/server-info';
-import { ensureDir, ensureFile, link, readdir, readFile, remove } from 'fs-extra';
-import { join, relative, resolve } from 'path';
+import { ensureDir, readdir, readFile, remove } from 'fs-extra';
+import { join, resolve } from 'path';
 import { v4 } from 'uuid';
 import CurseForgeService from './CurseForgeService';
 import InstanceGameSettingService from './InstanceGameSettingService';
-import { InstanceIOService } from './InstanceIOService';
+import InstanceIOService from './InstanceIOService';
 import InstanceSavesService from './InstanceSavesService';
 import JavaService from './JavaService';
 import ResourceService from './ResourceService';
 import ServerStatusService from './ServerStatusService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
+import InstanceResourceService from './InstanceResourceService';
 
 const INSTANCES_FOLDER = 'instances';
 const INSTANCE_JSON = 'instance.json';
 const INSTANCES_JSON = 'instances.json';
-const INSTANCE_LOCK_JSON = 'instance-lock.json';
 
 export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'deployments' | 'runtime' | 'server'>> {
     deployments?: Record<string, string[]>;
@@ -68,6 +67,9 @@ export class InstanceService extends Service {
     @Inject('InstanceSavesService')
     protected readonly saveService!: InstanceSavesService;
 
+    @Inject('InstanceResourceService')
+    protected readonly instResourceService!: InstanceResourceService;
+
     @Inject('InstanceGameSettingService')
     protected readonly gameService!: InstanceGameSettingService;
 
@@ -96,40 +98,6 @@ export class InstanceService extends Service {
             this.warn(`An error occured during loading server infos of ${path}`);
             this.error(e);
         }
-    }
-
-    @Singleton()
-    async loadInstanceLock(path: string) {
-        requireString(path);
-        let { commit } = this;
-
-        let jsonPath = join(path, INSTANCE_LOCK_JSON);
-        let option: InstanceLockSchema;
-        try {
-            option = await this.getPersistence({ path: jsonPath, schema: InstanceLockSchema });
-        } catch (e) {
-            return;
-        }
-
-        let lockFile = {
-            ...option,
-        };
-
-        const config = this.state.instance.all[path];
-        if (!lockFile.java) {
-            const javaVersion = config.java;
-            if (javaVersion) {
-                const local = this.state.java.all.find(j => j.majorVersion.toString() === javaVersion || j.version === javaVersion);
-                if (local) { lockFile.java = local.path; }
-            } else {
-                let j8 = this.state.java.all.find(j => j.majorVersion === 8);
-                if (j8) {
-                    lockFile.java = j8.path;
-                }
-            }
-        }
-
-        commit('instanceLockFile', lockFile);
     }
 
     async loadInstance(path: string) {
@@ -236,16 +204,6 @@ export class InstanceService extends Service {
         this.log(`Saved instance ${this.state.instance.path}`);
     }
 
-    @MutationTrigger('instanceJava', 'instanceDeployInfo')
-    async saveInstanceLock() {
-        await this.setPersistence({
-            path: join(this.state.instance.path, INSTANCE_LOCK_JSON),
-            data: { java: this.state.instance.java, deployed: this.state.instance.deployed },
-            schema: InstanceLockSchema,
-        });
-        this.log(`Saved instance lock ${this.state.instance.path}`);
-    }
-
     @MutationTrigger('instanceSelect')
     async saveInstanceSelect(path: string) {
         await Promise.all([this.setPersistence({
@@ -347,11 +305,9 @@ export class InstanceService extends Service {
             return;
         }
 
-        this.log(`Try to mount instance ${path}.`);
+        this.log(`Try to mount instance ${path}`);
 
         // not await this to improve the performance
-
-        await this.loadInstanceLock(path);
 
         this.commit('instanceSelect', path);
     }
@@ -386,7 +342,8 @@ export class InstanceService extends Service {
     }
 
     /**
-     * Edit the instance. If the `id` is not present
+     * Edit the instance. If the `path` is not present, it will edit the current selected instance.
+     * Otherwise, it will edit the instance on the provided path
      */
     async editInstance(options: EditInstanceOptions) {
         requireObject(options);
@@ -473,18 +430,6 @@ export class InstanceService extends Service {
     }
 
     /**
-     * Set a real java path to the current instance
-     * @param path The real java executable path
-     */
-    async setJavaPath(path: string) {
-        let resolved = await this.javaService.resolveJava(path);
-        if (resolved) {
-            this.commit('instanceJava', path);
-            this.editInstance({ java: resolved.majorVersion.toString() });
-        }
-    }
-
-    /**
     * If current instance is a server. It will refresh the server status
     */
     @Singleton()
@@ -538,60 +483,6 @@ export class InstanceService extends Service {
             ...options,
             server: getHostAndPortFromIp(info.ip),
         });
-    }
-
-    /**
-     * Deploy all the resources in `deployments` into current instance.
-     * 
-     * The `mods` and `resourcepacks` will be deploied by linking the mods & resourcepacks files into the `mods` and `resourcepacks` directory of the instance.
-     * 
-     * The `saves` and `modpack` will be deploied by pasting the saves and modpack overrides into this instance directory.
-     */
-    async deploy(localOnly?: boolean): Promise<void> {
-        const instance = this.getters.instance;
-        this.log(`Deploy instance ${instance.path}`);
-        const deployToDomain = async (domain: string, urls: string[]) => {
-            if (urls.length === 0) { return Promise.resolve([]); }
-            let dir = join(instance.path, domain);
-            await ensureDir(dir);
-            await clearDirectoryNarrow(dir);
-            return Promise.all(urls.map(async (url) => {
-                let root = this.state.instance.path;
-
-                let resource = this.getters.queryResource(url);
-                let result: DeployedInfo = {
-                    // url,
-                    url,
-                    file: '',
-                    resolved: false,
-                };
-                if (resource === UNKNOWN_RESOURCE) {
-                    if (!localOnly) {
-                        resource = await this.resourceService.importResource({ uri: url, metadata: {} });
-                        this.warn(`No local resource matched uri ${url}!`);
-                    } else {
-                        throw new Error();
-                    }
-                } else {
-                    result.src = resource.path;
-                    let targetPath = join(root, resource.domain, `${resource.name}${resource.ext}`);
-                    await ensureFile(targetPath);
-                    await remove(targetPath).catch(() => { });
-                    await link(resource.path, targetPath);
-
-                    this.log(`Link resource ${resource.path}(${url}) -> ${targetPath}.`);
-                    result.file = relative(root, targetPath);
-                    result.resolved = 'link';
-                }
-                return result;
-            }));
-        };
-        let [respacks, mods] = await Promise.all([
-            deployToDomain('resourcepacks', instance.deployments.resourcepacks),
-            deployToDomain('mods', instance.deployments.mods),
-        ]);
-
-        this.commit('instanceDeployInfo', [...respacks, ...mods]);
     }
 }
 // resourcePacks:["vanilla","file/§lDefault§r..§l3D§r..Low§0§o.zip"]

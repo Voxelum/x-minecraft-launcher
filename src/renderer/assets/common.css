@@ -1,32 +1,49 @@
 p {
     margin-bottom: 0px !important;
 }
+
 .moveable {
     -webkit-app-region: drag;
     user-select: none;
 }
-  
+
 .non-moveable {
     -webkit-app-region: no-drag;
 }
 
-.fade-enter-active,
-.fade-leave-active {
+.fade-enter-active, .fade-leave-active {
     transition: opacity 0.01s;
 }
 
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.fade-enter, .fade-leave-to {
     opacity: 0;
+    transition: all 0.01s;
+}
+
+.transition-list-enter-active, .transition-list-leave-active {
+    transition: all 0.7s;
+}
+
+.transition-list-enter, .transition-list-leave-to {
+    opacity: 0;
+    transition: all 0.7s;
+    /* transform: translateY(30px); */
+}
+
+.transition-list-move {
+    transition: transform 0.7s;
 }
 
 ::-webkit-scrollbar {
-    width: 0px; /* remove scrollbar space */
-    background: transparent; /* optional: just make scrollbar invisible */
+    width: 0px;
+    /* remove scrollbar space */
+    background: transparent;
+    /* optional: just make scrollbar invisible */
 }
 
 .card-list {
     max-width: 100%;
-    padding: 10px;
+    padding: 0 10px 10px 10px;
     margin: 0px 0px 0px 0px;
     min-height: 80vh;
     max-height: 80vh;
@@ -34,14 +51,13 @@ p {
 
 .card-list .list {
     overflow: auto;
-    min-height: 65vh;
-    max-height: 65vh;
+    min-height: 73vh;
+    max-height: 73vh;
 }
 
 .card-list .v-input__slot {
     box-shadow: none !important;
-    transition: background 0.3s cubic-bezier(0.25, 0.8, 0.5, 1),
-    box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.5, 1) !important;
+    transition: background 0.3s cubic-bezier(0.25, 0.8, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.5, 1) !important;
     transition-property: background;
     transition-duration: 0.3s;
     transition-timing-function: cubic-bezier(0.25, 0.8, 0.5, 1);
@@ -49,16 +65,15 @@ p {
 }
 
 .card-list .v-input__slot:hover {
-    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
-        0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
 }
 
 .card-list .v-input--is-focused .v-input__control .v-input__slot {
-    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
-        0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
 }
 
-.v-menu { /* fix wrong menu width */
+.v-menu {
+    /* fix wrong menu width */
     max-width: 0px;
 }
 
@@ -66,7 +81,7 @@ p {
     margin-bottom: 10px;
     padding: 6px 8px !important;
 }
-  
+
 .main-body .container {
     padding-left: 30px;
     padding-right: 30px;
@@ -77,5 +92,45 @@ p {
     padding-right: 30px;
 }
 
-.theme--dark.v-sheet {
+.theme--dark.v-sheet {}
+
+.sidebar.v-navigation-drawer .v-list {
+    background: unset;
+}
+
+/* Platform specific css */
+
+.darwin .theme--dark.v-navigation-drawer {
+    background-color: rgba(66, 66, 66, 0.4);
+}
+
+.darwin .main-body {
+    background-color: unset;
+    border-color: unset;
+}
+
+.win32 .loading-background {
+    background-color: unset;
+}
+
+.win32 .theme--dark.v-navigation-drawer {
+    background-color: rgba(66, 66, 66, 0.8);
+    /* background-color: rgba(33, 33, 33, 0.85); */
+}
+
+.win32 .main-body {
+    /* background-color: rgba(66, 66, 66, 0.68); */
+    background-color: rgba(33, 33, 33, 0.78);
+    /* background-color: rgba(33, 33, 33, 0.7) !important; */
+    /* border-color: rgba(33, 33, 33, 0.7) !important; */
+}
+
+.win32 .loading-background {
+    background-color: rgba(33, 33, 33, 0.78);
+}
+
+
+/* Draggable card */
+.draggable-card.dragged {
+    transform: scale(0.8);
 }

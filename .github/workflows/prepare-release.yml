@@ -44,15 +44,14 @@ jobs:
 
     - name: Create Pull Request
       if: ${{ steps.version.outputs.release == 'true' }}
-      uses: peter-evans/create-pull-request@v1.4.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        COMMIT_MESSAGE: ${{ steps.pr.outputs.commit_message }}
-        PULL_REQUEST_TITLE: ${{ steps.pr.outputs.pr_title }}
-        PULL_REQUEST_BODY: ${{ steps.pr.outputs.pr_body }}
-        PULL_REQUEST_ASSIGNEES: ci010
-        PULL_REQUEST_REVIEWERS: ci010
-        PULL_REQUEST_BRANCH: prepare-release
-        BRANCH_SUFFIX: none
+      uses: peter-evans/create-pull-request@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: ${{ steps.pr.outputs.commit_message }}
+        title: ${{ steps.pr.outputs.pr_title }}
+        body: ${{ steps.pr.outputs.pr_body }}
+        reviewers: ci010
+        assignees: ci010
+        branch: prepare-release
 
 

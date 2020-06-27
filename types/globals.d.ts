@@ -51,6 +51,7 @@ declare namespace NodeJS {
 }
 
 declare const __static: string;
+declare const __static_unpack: string;
 
 // webpack import image to url
 declare module '*.png' {

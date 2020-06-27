@@ -26,6 +26,8 @@ export function provideTasks() {
         cancel,
     });
 
+    let syncing: Promise<void> | undefined;
+
     provide(TASK_PROXY, proxy);
 
     function collectAllTaskState(tasks: TaskState[]) {
@@ -63,12 +65,15 @@ export function provideTasks() {
         }
     }
 
-    const taskUpdateHanlder = (event: any, { childs, statuses, adds, updates }: {
+    const taskUpdateHandler = async (event: any, { childs, statuses, adds, updates }: {
         adds: { id: string; node: TaskState }[];
         childs: { id: string; node: TaskState }[];
         updates: { [id: string]: { progress?: number; total?: number; message?: string; time?: string } };
         statuses: { id: string; status: string }[];
     }) => {
+        if (syncing) {
+            await syncing;
+        }
         for (const add of adds) {
             const { id, node } = add;
             if (idToNode[id]) {
@@ -121,15 +126,18 @@ export function provideTasks() {
     };
 
     onMounted(() => {
-        ipc.on('task-update', taskUpdateHanlder);
+        let _resolve: () => void;
+        syncing = new Promise((resolve) => { _resolve = resolve; });
+        ipc.on('task-update', taskUpdateHandler);
         ipc.invoke('task-subscribe', true).then((t) => {
+            _resolve();
             collectAllTaskState(t);
             Object.values(t).forEach(ta => tasks.value.push(reactive(ta)));
         });
     });
     onUnmounted(() => {
         ipc.invoke('task-unsubscribe');
-        ipc.removeListener('task-update', taskUpdateHanlder);
+        ipc.removeListener('task-update', taskUpdateHandler);
     });
 
     return proxy;

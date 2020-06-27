@@ -16,27 +16,27 @@
             "internalConsoleOptions": "neverOpen",
             "port": 9229
         },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Electron: Main (npm)",
-            "cwd": "${workspaceFolder}",
-            "outFiles": [
-                "${workspaceFolder}/dist/*.js",
-                "${workspaceFolder}/src/**/*.js"
-            ],
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run-script",
-                "dev"
-            ],
-            "outputCapture": "std",
-            "smartStep": true,
-            "sourceMaps": true,
-            "protocol": "inspector",
-            "port": 5858,
-            "timeout": 200000
-        },
+        // {
+        //     "type": "node",
+        //     "request": "launch",
+        //     "name": "Electron: Main (npm)",
+        //     "cwd": "${workspaceFolder}",
+        //     "outFiles": [
+        //         "${workspaceFolder}/dist/*.js",
+        //         "${workspaceFolder}/src/**/*.js"
+        //     ],
+        //     "runtimeExecutable": "npm",
+        //     "runtimeArgs": [
+        //         "run-script",
+        //         "dev"
+        //     ],
+        //     "outputCapture": "std",
+        //     "smartStep": true,
+        //     "sourceMaps": true,
+        //     "protocol": "inspector",
+        //     "port": 5858,
+        //     "timeout": 200000
+        // },
         {
             "name": "Electron: Main (attach)",
             "type": "node",

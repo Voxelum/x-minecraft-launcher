@@ -4,18 +4,29 @@ import { UNKNOWN_STATUS } from '@universal/util/serverStatus';
 import { Status as ServerStatus } from '@xmcl/client';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { ServerInfo } from '@xmcl/server-info';
+import { GameType } from '@xmcl/world';
 import { ModuleOption } from '../root';
-import { DeployedInfo, InstanceLockSchema, InstanceSchema } from './instance.schema';
-import { Java } from './java';
+import { InstanceSchema } from './instance.schema';
+import { JavaRecord } from './java';
 import { LocalVersion } from './version';
 
 export type CreateOption = DeepPartial<Omit<InstanceSchema, 'id' | 'lastAccessDate' | 'creationDate'>>;
-export interface SaveMetadata {
+export interface InstanceSave {
     path: string;
     instanceName: string;
     name: string;
     icon: string;
 }
+
+export interface InstanceSaveMetadata extends InstanceSave {
+    levelName: string;
+    mode: GameType;
+    cheat: boolean;
+    gameVersion: string;
+    difficulty: number;
+    lastPlayed: number;
+}
+
 export { InstanceSchema as InstanceConfig };
 
 export interface Instance extends InstanceSchema {
@@ -27,7 +38,11 @@ export interface Instance extends InstanceSchema {
     serverStatus: ServerStatus;
 }
 
-interface State extends InstanceLockSchema {
+export interface InstanceResource extends Resource {
+    filePath: string;
+}
+
+interface State {
     /**
      * All loaded launch instances
      */
@@ -44,11 +59,15 @@ interface State extends InstanceLockSchema {
     /**
      * The saves cache of current selected instance
      */
-    saves: SaveMetadata[];
+    saves: InstanceSaveMetadata[];
     /**
      * The game setting of current selected instance
      */
     settings: GameSetting & { resourcePacks: Array<string> };
+
+    mods: InstanceResource[];
+
+    resourcepacks: InstanceResource[];
 }
 
 interface Getters {
@@ -70,11 +89,7 @@ interface Getters {
      * If there is no matching java for current instance, it will return the `DEFAULT_JAVA`
      * which contains the `majorVersion` equal to 0
      */
-    instanceJava: Java;
-    /**
-     * The selected instance mapped resources to deploy.
-     */
-    instanceResources: Resource[];
+    instanceJava: JavaRecord;
     /**
      * The selected instance mapped minecraft server protocol version.
      * This is determined by the minecraft version of it.
@@ -85,8 +100,6 @@ interface Getters {
 interface Mutations {
     instanceAdd: InstanceSchema & { path: string };
     instanceRemove: string;
-    instanceJava: string;
-    instanceDeployInfo: DeployedInfo[];
     instanceSelect: string;
 
     /**
@@ -111,11 +124,20 @@ interface Mutations {
 
     instanceStatus: ServerStatus;
     instanceCache: { gamesettings: GameSetting } | { serverInfos: ServerInfo[] };
-    instanceSaves: SaveMetadata[];
 
     instancesStatus: { [path: string]: ServerStatus };
 
-    instanceLockFile: any;
+    instanceSaves: InstanceSaveMetadata[];
+    instanceSaveAdd: InstanceSaveMetadata;
+    instanceSaveRemove: string;
+
+    instanceMods: InstanceResource[];
+    instanceModAdd: InstanceResource;
+    instanceModRemove: InstanceResource;
+
+    instanceResourcepacks: InstanceResource[];
+    instanceResourcepackAdd: InstanceResource;
+    instanceResourcepackRemove: InstanceResource;
 }
 
 export type InstanceModule = ModuleOption<State, Getters, Mutations, {}>;
@@ -144,12 +166,11 @@ export function createTemplate(): Instance {
             fabricLoader: '',
             yarn: '',
         },
-        java: '8',
+        java: '',
         deployments: {
             mods: [],
             resourcepacks: [],
         },
-        optionalDeployments: [],
         image: '',
         blur: 4,
         server: null,
@@ -177,8 +198,8 @@ const mod: InstanceModule = {
         serverInfos: [],
         saves: [],
 
-        java: '',
-        deployed: [],
+        mods: [],
+        resourcepacks: [],
     },
     getters: {
         instances: state => Object.keys(state.all).map(k => state.all[k]),
@@ -186,7 +207,7 @@ const mod: InstanceModule = {
         instance: state => state.all[state.path] || DEFAULT_PROFILE,
         instanceVersion: (state, getters, rootState) => {
             const current = state.all[state.path] || DEFAULT_PROFILE;
-            const requirements = ['minecraft', 'forge', 'fabric-loader', 'yarn', 'liteloader']
+            const requirements = ['minecraft', 'forge', 'fabricLoader', 'yarn', 'liteloader']
                 .filter(k => current.runtime[k]);
 
             const localVersion = rootState.version.local.find(loc => requirements
@@ -198,22 +219,37 @@ const mod: InstanceModule = {
             } as any;
         },
         instanceJava: (state, getters, rootState, rootGetter) => {
-            const javaPath = state.java;
+            const javaPath = getters.instance.java;
             if (javaPath && javaPath !== '') {
                 return rootState.java.all.find(j => j.path === javaPath) || {
                     path: javaPath,
                     version: '',
                     majorVersion: 0,
+                    valid: false,
                 };
             }
-            const instance = getters.instance;
-            return rootState.java.all.find(j => j.majorVersion.toString() === instance.runtime.java
-                || j.version === instance.runtime.java) || rootGetter.defaultJava;
+            return rootGetter.defaultJava;
         },
-        instanceResources: (state, getters, rootState, rootGetters) => Object.values(getters.instance.deployments).reduce((a, b) => [...a, ...b])
-            .map(u => rootGetters.queryResource(u)),
     },
     mutations: {
+        instanceModAdd(state, r) {
+            state.mods.push(r);
+        },
+        instanceModRemove(state, r) {
+            state.mods = state.mods.filter(m => m.hash !== r.hash);
+        },
+        instanceMods(state, resources) {
+            state.mods = resources;
+        },
+        instanceResourcepackAdd(state, r) {
+            state.resourcepacks.push(r);
+        },
+        instanceResourcepackRemove(state, r) {
+            state.resourcepacks = state.resourcepacks.filter(p => p.hash !== r.hash);
+        },
+        instanceResourcepacks(state, resources) {
+            state.resourcepacks = resources;
+        },
         instanceAdd(state, instance) {
             /**
              * Prevent the case that hot reload keep the vuex state
@@ -227,12 +263,6 @@ const mod: InstanceModule = {
                 state.all[instance.path] = { ...instance, serverStatus: UNKNOWN_STATUS };
             }
         },
-        instanceJava(state, jPath) {
-            state.java = jPath;
-        },
-        instanceDeployInfo(state, info) {
-            state.deployed = info;
-        },
         instanceRemove(state, id) {
             // TODO: remove in vue3
             remove(state.all, id);
@@ -245,10 +275,6 @@ const mod: InstanceModule = {
                 state.path = Object.keys(state.all)[0];
             }
             state.all[state.path].lastAccessDate = Date.now();
-        },
-        instanceLockFile(state, lock) {
-            state.java = lock.java;
-            state.deployed = lock.deployed;
         },
         instance(state, settings) {
             const inst = state.all[settings.path || state.path];
@@ -309,6 +335,7 @@ const mod: InstanceModule = {
 
             inst.url = settings.url || inst.url;
             inst.icon = settings.icon || inst.icon;
+            inst.java = settings.java || inst.java;
 
             if (typeof settings.deployments === 'object') {
                 const mods = settings.deployments.mods;
@@ -378,6 +405,12 @@ const mod: InstanceModule = {
         },
         instanceSaves(state, saves) {
             state.saves = saves;
+        },
+        instanceSaveAdd(state, save) {
+            state.saves.push(save);
+        },
+        instanceSaveRemove(state, save) {
+            state.saves = state.saves.filter((s) => s.path === save);
         },
         instanceStatus(state, status) {
             state.all[state.path].serverStatus = status;

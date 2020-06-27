@@ -29,7 +29,8 @@ const whiteListedModules = [
     '@xmcl/text-component',
     '@xmcl/model',
     'three',
-    'three-orbit-controls'
+    'three-orbit-controls',
+    'vue-virtual-scroll-list'
 ];
 
 /**
@@ -194,9 +195,9 @@ if (process.env.NODE_ENV === 'production') {
         }),
         new BundleAnalyzerPlugin({
             analyzerMode: 'static',
-            reportFilename: 'renderer.report.html',
             generateStatsFile: true,
-            statsFilename: 'stat.renderer.json',
+            reportFilename: path.join(__dirname, '../dist/renderer.report.html'),
+            statsFilename: path.join(__dirname, '../dist/renderer.stat.json'),
             openAnalyzer: false,
         }),
     );

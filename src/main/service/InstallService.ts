@@ -85,7 +85,7 @@ export default class InstallService extends Service {
     async init() {
     }
 
-    private async getForgesFromBMCL(mcversion: string) {
+    private async getForgesFromBMCL(mcversion: string, currentForgeVersion: ForgeInstaller.VersionList) {
         interface BMCLForge {
             'branch': string; // '1.9';
             'build': string; // 1766;
@@ -98,7 +98,18 @@ export default class InstallService extends Service {
                 hash: string;
             }[];
         }
-        let forges: BMCLForge[] = await this.networkManager.request.get(`https://bmclapi2.bangbang93.com/forge/minecraft/${mcversion}`).json();
+
+        let { body, statusCode, headers } = await this.networkManager.request({
+            method: 'GET',
+            url: `https://bmclapi2.bangbang93.com/forge/minecraft/${mcversion}`,
+            headers: currentForgeVersion && currentForgeVersion.timestamp ? {
+                'If-Modified-Since': currentForgeVersion.timestamp,
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
+            } : {
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
+            },
+            rejectUnauthorized: false,
+        });
         function convert(v: BMCLForge): ForgeInstaller.Version {
             let installer = v.files.find(f => f.category === 'installer')!;
             let universal = v.files.find(f => f.category === 'universal')!;
@@ -106,11 +117,16 @@ export default class InstallService extends Service {
                 mcversion: v.mcversion,
                 version: v.version,
                 type: 'common',
+                date: v.modified,
             } as any;
         }
+        if (statusCode === 304) {
+            return currentForgeVersion;
+        }
+        let forges: BMCLForge[] = JSON.parse(body);
         let result: ForgeInstaller.VersionList = {
             mcversion,
-            timestamp: forges[0]?.modified,
+            timestamp: headers['if-modified-since'] ?? forges[0]?.modified,
             versions: forges.map(convert),
         };
         return result;
@@ -285,7 +301,7 @@ export default class InstallService extends Service {
             let newForgeVersion: ForgeInstaller.VersionList = currentForgeVersion;
             if (this.networkManager.isInGFW) {
                 this.log(`Update forge version list (BMCL) for Minecraft ${minecraftVersion}`);
-                newForgeVersion = await this.getForgesFromBMCL(mcversion);
+                newForgeVersion = await this.getForgesFromBMCL(mcversion, currentForgeVersion);
             } else {
                 this.log(`Update forge version list (ForgeOfficial) for Minecraft ${minecraftVersion}`);
                 newForgeVersion = await ForgeInstaller.getVersionList({ mcversion: minecraftVersion, original: currentForgeVersion });

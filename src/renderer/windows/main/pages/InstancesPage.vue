@@ -172,7 +172,7 @@
         @dragstart="dragStart(instance)"
         @dragend="dragEnd"
       >
-        <preview-card :profile="instance" @click.stop="selectInstance(instance.path)" />
+        <preview-card :instance="instance" @click.stop="selectInstance(instance.path)" />
       </v-flex>
     </v-layout>
 
@@ -322,7 +322,7 @@ function useInstanceImport(notify: Notify) {
   const { importInstance } = useInstances();
   const { showOpenDialog } = useNativeDialog();
   const { $t } = useI18n();
-  const { importUnknownResource } = useResourceOperation();
+  const { importResource } = useResourceOperation();
   const { importCurseforgeModpack } = useCurseforgeImport();
   return {
     async doImport(fromFolder: boolean, curseforge: boolean) {
@@ -338,7 +338,7 @@ function useInstanceImport(notify: Notify) {
       if (filePaths && filePaths.length > 0) {
         for (const f of filePaths) {
           if (curseforge) {
-            await importUnknownResource({
+            await importResource({
               path: f,
               type: 'curseforge-modpack',
               background: true,

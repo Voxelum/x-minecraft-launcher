@@ -11,9 +11,10 @@ import InstallService from '@main/service/InstallService';
 import VersionService from '@main/service/VersionService';
 import BaseService from './BaseService';
 import InstanceLogService from './InstanceLogService';
-import { InstanceIOService } from './InstanceIOService';
+import InstanceIOService from './InstanceIOService';
 import InstanceGameSettingService from './InstanceGameSettingService';
 import InstanceSavesService from './InstanceSavesService';
+import InstanceResourceService from './InstanceResourceService';
 
 export interface BuiltinServices {
     ServerStatusService: ServerStatusService;
@@ -41,4 +42,5 @@ export interface BuiltinServices {
     InstanceIOService: InstanceIOService;
     InstanceGameSettingService: InstanceGameSettingService;
     InstanceSavesService: InstanceSavesService;
+    InstanceResourceService: InstanceResourceService;
 }

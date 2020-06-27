@@ -25,7 +25,7 @@ export function useDropImport(
     elem: Ref<HTMLElement | null | undefined>,
     importHint?: string,
 ) {
-    const { importUnknownResource } = useResourceOperation();
+    const { importResource: importUnknownResource } = useResourceOperation();
     function onDrop(event: DragEvent) {
         if (!event.dataTransfer) return;
         event.preventDefault();
@@ -78,28 +78,69 @@ export function useDropImportFile(
     });
 }
 
-export function useDragTransferItem(elem: Ref<HTMLElement>, right: boolean, id: string) {
+export function useDragTransferItemMutable(elem: Ref<HTMLElement>, item: Ref<{ id: string; side: string }>) {
+    let memo: HTMLElement;
     function onDragStart(e: DragEvent) {
-        e.dataTransfer!.setData('side', right ? 'right' : 'left');
+        e.dataTransfer!.setData('side', item.value.side);
+        e.dataTransfer!.setData('id', item.value.id);
+    }
+    function setup() {
+        let element = elem.value;
+        if (element) {
+            memo = element;
+            element.classList.add('draggable-card');
+            element.setAttribute('draggable-id', item.value.id);
+            element.addEventListener('dragstart', onDragStart);
+        }
+    }
+    watch(item, setup);
+    onMounted(setup);
+    onUnmounted(() => {
+        if (memo) {
+            memo.removeEventListener('dragstart', onDragStart);
+        }
+    });
+}
+
+export function useDragTransferItem(elem: Ref<HTMLElement>, id: string, side: string) {
+    let memo: HTMLElement;
+    function onDragStart(e: DragEvent) {
+        e.dataTransfer!.setData('side', side);
         e.dataTransfer!.setData('id', id);
     }
     onMounted(() => {
-        elem.value.classList.add('draggable-card');
-        elem.value.setAttribute('draggable-id', id);
-        elem.value.addEventListener('dragstart', onDragStart);
-    });
-    onUnmounted(() => {
-        if (elem.value) {
-            elem.value.removeEventListener('dragstart', onDragStart);
+        let element = elem.value;
+        if (element) {
+            memo = element;
+            element.classList.add('draggable-card');
+            element.setAttribute('draggable-id', id);
+            element.addEventListener('dragstart', onDragStart);
         }
     });
+    onUnmounted(() => {
+        if (memo) {
+            memo.removeEventListener('dragstart', onDragStart);
+        }
+    });
+}
+
+function findIntersectElement(y: number, all: HTMLCollectionOf<Element>) {
+    for (let i = 0; i < all.length; ++i) {
+        let elem = all.item(i);
+        if (!elem) continue;
+        let rect: DOMRect = elem.getBoundingClientRect() as any;
+        if (y < rect.y + rect.height) {
+            return elem;
+        }
+    }
+    return null;
 }
 
 export function useDragTransferList(
     left: Ref<null | HTMLElement>,
     right: Ref<null | HTMLElement>,
     insert: (from: string, to: string) => void,
-    add: (id: string) => void,
+    add: (id: string, to?: string) => void,
     remove: (id: string) => void,
 ) {
     function handleDrop(event: DragEvent, left: boolean) {
@@ -113,26 +154,18 @@ export function useDragTransferList(
             if (left) {
                 // do nothing now...
             } else {
-                add(id);
+                let all = right.value!.getElementsByClassName('draggable-card');
+                let elem = findIntersectElement(y, all) || all.item(all.length - 1);
+                let targetId = elem!.getAttribute('draggable-id')!;
+                add(id, targetId);
             }
         } else if (left) {
             remove(id);
         } else {
             let all = right.value!.getElementsByClassName('draggable-card');
-            for (let i = 0; i < all.length; ++i) {
-                let elem = all.item(i);
-                if (!elem) continue;
-                let targetId = elem.getAttribute('draggable-id')!;
-                let rect: DOMRect = elem.getBoundingClientRect() as any;
-                console.log(`${y} ${rect.y + rect.height}`);
-                if (y < rect.y + rect.height) {
-                    insert(id, targetId);
-                    break;
-                }
-                if (i === all.length - 1) {
-                    insert(id, targetId);
-                }
-            }
+            let elem = findIntersectElement(y, all) || all.item(all.length - 1);
+            let targetId = elem!.getAttribute('draggable-id')!;
+            insert(id, targetId);
         }
     }
 

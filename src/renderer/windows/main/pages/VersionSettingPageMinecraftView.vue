@@ -8,17 +8,17 @@
     <minecraft-version-list
       v-else-if="versions.length !== 0"
       :value="version"
-      :statuses="status"
+      :statuses="statuses"
       :versions="versions"
       :select="select"
     />
     <hint
       v-else
       v-ripple
-      style="flex-grow: 1"
+      style="flex-grow: 1; cursor: pointer"
       icon="refresh"
       :text="$t('minecraft.noVersion', { version: version })"
-      @click="refresh"
+      @click="refresh(true)"
     />
   </div>
 </template>
@@ -49,7 +49,7 @@ export default defineComponent<Props>({
       acceptingRange,
       versions,
       refreshing,
-      status: statuses,
+      statuses,
       refresh,
     };
   },

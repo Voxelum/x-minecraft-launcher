@@ -1,40 +1,37 @@
 <template>
   <v-menu
-    v-model="show"
+    v-model="shown"
     :position-x="x"
     :position-y="y"
     absolute
     offset-y
     z-index="205"
   >
-    <v-list>
-      <v-list-tile
-        v-for="(item, index) in items"
-        :key="index"
-        @click="item.onClick"
-      >
-        <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-      </v-list-tile>
+    <v-list dense>
+      <template v-for="(item, index) in items">
+        <v-list-tile
+          :key="item.text"
+          color="green"
+          @click="item.onClick"
+        >
+          <v-list-tile-avatar>
+            <v-icon :size="item.icon === '$vuetify.icons.curseforge' ? 14: undefined">{{ item.icon }}</v-icon>
+          </v-list-tile-avatar>
+          <v-list-tile-title>{{ item.text }}</v-list-tile-title>
+        </v-list-tile>
+        <v-divider :key="index"></v-divider>
+      </template>
     </v-list>
   </v-menu>
 </template>
 
 <script lang=ts>
-import { defineComponent, inject, ref } from '@vue/composition-api';
+import { defineComponent } from '@vue/composition-api';
+import { useContextMenuData } from '../hooks';
 
 export default defineComponent({
   setup() {
-    const show = inject('context-menu', ref(false));
-    const x = inject('context-menu-x', ref(0));
-    const y = inject('context-menu-y', ref(0));
-    const items = inject('context-menu-items', ref([]));
-
-    return {
-      show,
-      x,
-      y,
-      items,
-    };
+    return useContextMenuData();
   },
 });
 </script>

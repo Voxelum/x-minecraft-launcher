@@ -4,10 +4,10 @@ import { useService } from './useService';
 
 export function useJava() {
     const { state, getters } = useStore();
-    const { resolveJava, installJava, refreshLocalJava } = useService('JavaService');
+    const { resolveJava, installDefaultJava: installJava, refreshLocalJava } = useService('JavaService');
     const { openInBrowser } = useService('BaseService');
     const all = computed(() => state.java.all);
-    const defaultJava = computed(() => state.java.all[state.java.default]);
+    const defaultJava = computed(() => state.java.all.find(j => j.majorVersion === 8) ?? state.java.all[0]);
     const missing = computed(() => getters.missingJava);
 
     return {

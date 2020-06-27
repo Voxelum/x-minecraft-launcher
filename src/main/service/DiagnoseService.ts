@@ -8,6 +8,7 @@ import { MinecraftFolder } from '@xmcl/core';
 import { Diagnosis, Installer } from '@xmcl/installer';
 import { InstallProfile } from '@xmcl/installer/minecraft';
 import { Forge } from '@xmcl/mod-parser';
+import { PackMeta } from '@xmcl/resourcepack';
 import { readJSON } from 'fs-extra';
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
 import { basename, join, relative } from 'path';
@@ -61,8 +62,7 @@ export default class DiagnoseService extends Service {
     constructor() {
         super();
         this.registerMatchedFix(['missingVersion'],
-            () => this.commit('instance', { runtime: { minecraft: this.getters.minecraftRelease.id }, path: this.state.instance.path }),
-            'diagnoseVersion');
+            () => this.commit('instance', { runtime: { minecraft: this.getters.minecraftRelease.id }, path: this.state.instance.path }));
 
         this.registerMatchedFix(['missingVersionJson', 'missingVersionJar', 'corruptedVersionJson', 'corruptedVersionJar'],
             async (issues) => {
@@ -158,8 +158,20 @@ export default class DiagnoseService extends Service {
             'diagnoseServer');
 
         this.registerMatchedFix(['invalidJava'],
-            () => this.instanceService.setJavaPath(this.getters.defaultJava.path),
-            'diagnoseJava');
+            () => this.instanceService.editInstance({ java: this.getters.defaultJava.path }),
+            // here the editInstance will automatically diagnose for java
+            '');
+
+        this.registerMatchedFix(['incompatibleJava'],
+            async () => {
+                let internalLocation = this.javaService.getInternalJavaLocation();
+                if (!this.state.java.all.find(j => j.path === internalLocation)) {
+                    await this.javaService.installDefaultJava();
+                }
+                await this.instanceService.editInstance({ java: this.javaService.getInternalJavaLocation() });
+            },
+            // here the editInstance will automatically diagnose for java
+            '');
     }
 
     @MutationTrigger('instanceSelect')
@@ -168,11 +180,29 @@ export default class DiagnoseService extends Service {
         const report: Partial<IssueReport> = {};
         await this.diagnoseVersion(report);
         await this.diagnoseJava(report);
-        await this.diagnoseMods(report);
-        await this.diagnoseResourcePacks(report);
         await this.diagnoseServer(report);
-        this.commit('issuesPost', report);
+        this.report(report);
         this.release('diagnose');
+    }
+
+    @MutationTrigger('instanceMods', 'instanceModAdd', 'instanceModRemove')
+    async onInstanceModsLoad() {
+        this.aquire('diagnose');
+        const report: Partial<IssueReport> = {};
+        await this.diagnoseMods(report);
+        this.report(report);
+        this.release('diagnose');
+    }
+
+    @MutationTrigger('instanceGameSettings')
+    async onInstanceResourcepacksLaod(payload: any) {
+        if ('resourcePacks' in payload) {
+            this.aquire('diagnose');
+            const report: Partial<IssueReport> = {};
+            await this.diagnoseResourcePacks(report);
+            this.report(report);
+            this.release('diagnose');
+        }
     }
 
     @MutationTrigger('instance')
@@ -185,39 +215,37 @@ export default class DiagnoseService extends Service {
             this.aquire('diagnose');
             await this.diagnoseVersion(report);
             await this.diagnoseJava(report);
-            await this.diagnoseMods(report);
-            await this.diagnoseResourcePacks(report);
             await this.diagnoseServer(report);
             this.release('diagnose');
-            this.commit('issuesPost', report);
+            this.report(report);
             return;
         }
         if ('java' in payload) {
             await this.diagnoseJava(report);
         }
-        if ('deployments' in payload) {
-            if ('mods' in payload.deployments) {
-                await this.diagnoseMods(report);
-            }
-            if ('resourcepacks' in payload.deployments) {
-                await this.diagnoseResourcePacks(report);
-            }
-        }
-        this.commit('issuesPost', report);
+        // if ('deployments' in payload) {
+        //     if ('mods' in payload.deployments) {
+        //         await this.diagnoseMods(report);
+        //     }
+        //     if ('resourcepacks' in payload.deployments) {
+        //         await this.diagnoseResourcePacks(report);
+        //     }
+        // }
+        this.report(report);
     }
 
     @MutationTrigger('userGameProfileSelect', 'userProfileUpdate')
     async onUserUpdate() {
         const report: Partial<IssueReport> = {};
         await this.diagnoseUser(report);
-        this.commit('issuesPost', report);
+        this.report(report);
     }
 
     @MutationTrigger('instanceStatus')
     async onInstanceStatus() {
         const report: Partial<IssueReport> = {};
         await this.diagnoseServer(report);
-        this.commit('issuesPost', report);
+        this.report(report);
     }
 
     async init() {
@@ -227,11 +255,9 @@ export default class DiagnoseService extends Service {
             const report: Partial<IssueReport> = {};
             await this.diagnoseVersion(report);
             await this.diagnoseJava(report);
-            await this.diagnoseMods(report);
-            await this.diagnoseResourcePacks(report);
             await this.diagnoseServer(report);
             await this.diagnoseUser(report);
-            this.commit('issuesPost', report);
+            this.report(report);
         } finally {
             this.release('diagnose');
         }
@@ -242,8 +268,8 @@ export default class DiagnoseService extends Service {
         this.aquire('diagnose');
         try {
             const { runtime: version } = this.getters.instance;
-            const resources = this.getters.instanceResources;
-            if (!resources) return;
+            const mods = this.state.instance.mods;
+            if (!mods) return;
 
             const mcversion = version.minecraft;
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
@@ -255,7 +281,7 @@ export default class DiagnoseService extends Service {
                 requireForge: [],
                 requireFabric: [],
             };
-            let forgeMods = resources.filter(m => !!m && m.type === 'forge');
+            let forgeMods = mods.filter(m => !!m && m.type === 'forge');
             for (let mod of forgeMods) {
                 let metadatas = mod.metadata as Forge.ModMetaData[];
                 for (let meta of metadatas) {
@@ -283,7 +309,7 @@ export default class DiagnoseService extends Service {
                 }
             }
 
-            let fabricMods = resources.filter(m => m.type === 'fabric');
+            let fabricMods = mods.filter(m => m.type === 'fabric');
             if (fabricMods.length > 0) {
                 if (!version.fabricLoader || !version.yarn) {
                     tree.requireFabric.push({});
@@ -301,20 +327,22 @@ export default class DiagnoseService extends Service {
         this.aquire('diagnose');
         try {
             const { runtime: version } = this.getters.instance;
-            const resources = this.getters.instanceResources;
+            const resourcePacks = this.state.instance.settings.resourcePacks;
+            const resources = resourcePacks.map((name) => this.state.resource.domains.resourcepacks.find((pack) => `file/${pack.name}${pack.ext}` === name));
+
             const mcversion = version.minecraft;
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
-
-            if (!resources) return;
 
             const tree: Pick<IssueReport, 'incompatibleResourcePack'> = {
                 incompatibleResourcePack: [],
             };
 
             const packFormatMapping = this.state.client.packFormatMapping.mcversion;
-            for (const pack of resources.filter(isResourcePackResource)) {
-                if (pack.metadata.pack_format in packFormatMapping) {
-                    const acceptVersion = packFormatMapping[pack.metadata.pack_format];
+            for (const pack of resources) {
+                if (!pack) continue;
+                let metadata = pack.metadata as PackMeta.Pack;
+                if (metadata.pack_format in packFormatMapping) {
+                    const acceptVersion = packFormatMapping[metadata.pack_format];
                     const range = VersionRange.createFromVersionSpec(acceptVersion);
                     if (range && !range.containsVersion(resolvedMcVersion)) {
                         tree.incompatibleResourcePack.push({ name: pack.name, accepted: acceptVersion, actual: mcversion });
@@ -332,19 +360,21 @@ export default class DiagnoseService extends Service {
     async diagnoseUser(report: Partial<IssueReport>) {
         this.aquire('diagnose');
         try {
-            const user = this.getters.user;
+            const user = this.state.user.users[this.state.user.selectedUser.id];
 
-            const tree: Pick<IssueReport, 'missingAuthlibInjector'> = {
-                missingAuthlibInjector: [],
-            };
+            if (user) {
+                const tree: Pick<IssueReport, 'missingAuthlibInjector'> = {
+                    missingAuthlibInjector: [],
+                };
 
-            if (user.authService !== 'mojang' && user.authService !== 'offline') {
-                if (!await this.authLibService.doesAuthlibInjectionExisted()) {
-                    tree.missingAuthlibInjector.push({});
+                if (user.authService !== 'mojang' && user.authService !== 'offline') {
+                    if (!await this.authLibService.doesAuthlibInjectionExisted()) {
+                        tree.missingAuthlibInjector.push({});
+                    }
                 }
-            }
 
-            Object.assign(report, tree);
+                Object.assign(report, tree);
+            }
         } finally {
             this.release('diagnose');
         }
@@ -368,7 +398,7 @@ export default class DiagnoseService extends Service {
 
             if (instanceJava === EMPTY_JAVA) {
                 tree.missingJava.push({});
-            } else if (await missing(instanceJava.path)) {
+            } else if (!instanceJava.valid || await missing(instanceJava.path)) {
                 if (this.state.java.all.length === 0) {
                     tree.missingJava.push({});
                 } else {
@@ -405,7 +435,7 @@ export default class DiagnoseService extends Service {
             }
         }
 
-        this.commit('issuesPost', tree);
+        this.report(tree);
     }
 
     @Singleton()
@@ -553,6 +583,24 @@ export default class DiagnoseService extends Service {
         }
     }
 
+    /**
+     * Report certain issues.
+     * @param report The partial issue report
+     */
+    report(report: Partial<IssueReport>) {
+        for (let [key, value] of Object.entries(report)) {
+            let reg = this.state.diagnose.registry[key];
+            if (value && reg.actived.length === 0 && value.length === 0) {
+                delete report[key];
+            }
+        }
+        this.commit('issuesPost', report);
+    }
+
+    /**
+     * Fix all provided issues
+     * @param issues The issues to be fixed.
+     */
     async fix(issues: readonly Issue[]) {
         this.aquire('diagnose');
         try {
@@ -570,7 +618,9 @@ export default class DiagnoseService extends Service {
                 for (const fix of this.fixes) {
                     if (fix.match(issues)) {
                         await fix.fix(issues).catch(e => this.pushException({ type: 'issueFix', error: e }));
-                        recheck[fix.recheck] = true;
+                        if (fix.recheck) {
+                            recheck[fix.recheck] = true;
+                        }
                     }
                 }
 
@@ -579,19 +629,12 @@ export default class DiagnoseService extends Service {
                 for (const action of Object.keys(recheck)) {
                     if (action in self) { await self[action](report); }
                 }
-                this.commit('issuesPost', report);
+                this.report(report);
             } finally {
                 this.commit('issuesEndResolve', unfixed);
             }
         } finally {
             this.release('diagnose');
         }
-    }
-
-    async fixJavaIncompatible() {
-        let instancePath = this.state.instance.path;
-        await this.javaService.installJava();
-        await this.instanceService.editInstance({ instancePath, java: '8' });
-        await this.instanceService.setJavaPath(this.javaService.getInternalJavaLocation());
     }
 }

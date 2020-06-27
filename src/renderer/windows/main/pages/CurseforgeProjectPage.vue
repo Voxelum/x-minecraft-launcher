@@ -130,7 +130,7 @@ export default defineComponent({
   setup(props) {
     const projectId = computed(() => Number.parseInt(props.id, 10));
     const project = useCurseforgeProject(projectId.value);
-    const { install: installFile, getFileStatus } = useCurseforgeInstall(props.type as any);
+    const { install: installFile, getFileStatus } = useCurseforgeInstall(props.type as any, projectId.value);
 
     const data = reactive({
       tab: 0,

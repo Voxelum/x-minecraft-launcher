@@ -71,7 +71,7 @@ export default defineComponent({
       showAlpha: false,
       filterText: '',
     });
-    const { versions, statuses, isMinecraftRefreshing } = useMinecraftVersions();
+    const { versions, statuses, refreshing } = useMinecraftVersions();
     function filterMinecraft(v: MinecraftVersion) {
       if (!data.showAlpha && v.type !== 'release') return false;
       return v.id.indexOf(data.filterText) !== -1;

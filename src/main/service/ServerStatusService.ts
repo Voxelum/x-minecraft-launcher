@@ -37,7 +37,7 @@ export default class ServerStatusService extends Service {
     @Pure()
     async pingServer(payload: { host: string; port?: number; protocol?: number }) {
         const { host, port = 25565, protocol } = payload;
-        this.log(`Ping server ${host}:${port} with ${protocol}`);
+        this.log(`Ping server ${host}:${port} with protocol: ${protocol}`);
         try {
             return queryStatus({ host, port }, { protocol });
         } catch (e) {

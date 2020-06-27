@@ -33,9 +33,12 @@ export const UNKNOWN_RESOURCE: UnknownResource = Object.freeze({
     metadata: {},
     type: 'unknown',
     domain: 'unknown',
+    ino: 0,
+    size: 0,
     hash: '',
     ext: '',
     path: '',
+    tags: [],
     name: '',
     source: {
         uri: [],

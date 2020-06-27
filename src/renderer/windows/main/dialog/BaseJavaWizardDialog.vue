@@ -1,16 +1,36 @@
 <template>
-  <v-dialog v-model="isShown" :persistent="missing" width="600">
-    <v-card dark color="grey darken-4">
-      <v-toolbar dark tabs color="grey darken-3">
+  <v-dialog
+    v-model="isShown"
+    :persistent="missing"
+    width="600"
+  >
+    <v-card
+      dark
+      color="grey darken-4"
+    >
+      <v-toolbar
+        dark
+        tabs
+        color="grey darken-3"
+      >
         <v-toolbar-title>{{ reason }}</v-toolbar-title>
       </v-toolbar>
       <v-window v-model="step">
         <v-window-item :value="0">
           <v-card-text>{{ hint }}</v-card-text>
 
-          <v-list style="width: 100%" class="grey darken-4" dark>
+          <v-list
+            style="width: 100%"
+            class="grey darken-4"
+            dark
+          >
             <template v-for="(option, i) in options">
-              <v-list-tile :key="i" ripple :disabled="option.disabled" @click="fixProblem(i)">
+              <v-list-tile
+                :key="i"
+                ripple
+                :disabled="option.disabled"
+                @click="fixProblem(i)"
+              >
                 <v-list-tile-content>
                   <v-list-tile-title>{{ (i + 1) + '. ' + option.title }}</v-list-tile-title>
                   <v-list-tile-sub-title>{{ option.disabled ? option['disabled-message'] : option.message }}</v-list-tile-sub-title>
@@ -24,42 +44,27 @@
         </v-window-item>
 
         <v-window-item :value="1">
-          <v-card-text v-if="downloadError">
-            {{ $t('java.errorDownload') }}
-            <div>{{ downloadError }}</div>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn @click="back">
-              {{ $t('back') }}
-              <v-icon right>arrow_left</v-icon>
-            </v-btn>
-          </v-card-actions>
-        </v-window-item>
+          <!-- <v-card-text>{{ $t('java.selectJava') }}</v-card-text>
+          <v-list style="width: 100%" class="grey darken-4" dark>
+            <template v-for="(java, i) in externalJavas">
+              <v-list-tile :key="i" ripple @click="selectJava(java)">
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ java.path }}</v-list-tile-title>
+                  <v-list-tile-sub-title>{{ java.path }}</v-list-tile-sub-title>
+                </v-list-tile-content>
+                <v-list-tile-action>
+                  <v-progress-circular v-if="java.loading" indeterminate small :width="3" />
+                  <v-icon v-else :color="{ green: java.valid, red: !java.valid }">{{ java.valid ? 'check' : 'stop' }}</v-icon>
+                </v-list-tile-action>
+              </v-list-tile>
+            </template>
+          </v-list>-->
 
-        <v-window-item :value="2">
-          <v-card-text>{{ status === 'none' ? $t('java.refreshAfter') : $t('java.noJavaInPath') }}</v-card-text>
           <v-card-actions>
-            <v-btn @click="back">
-              {{ $t('back') }}
-              <v-icon right>arrow_left</v-icon>
-            </v-btn>
-            <v-spacer />
-            <v-btn :loading="status==='resolving'" @click="refresh">
-              {{ $t('refresh') }}
-              <v-icon right>refresh</v-icon>
-            </v-btn>
-          </v-card-actions>
-        </v-window-item>
-
-        <v-window-item :value="3">
-          <v-container v-if="status === 'resolving'" fill-height>
-            <v-layout fill-height align-center justify-center>
-              <v-progress-circular :size="128" indeterminate />
-            </v-layout>
-          </v-container>
-          <v-card-text v-else-if="status === 'error'">{{ $t('java.noLegalJava') }}</v-card-text>
-          <v-card-actions v-if="status === 'error'">
-            <v-btn @click="back">
+            <v-btn
+              flat
+              @click="back"
+            >
               {{ $t('back') }}
               <v-icon right>arrow_left</v-icon>
             </v-btn>
@@ -73,7 +78,7 @@
 <script lang=ts>
 import { reactive, computed, toRefs, onMounted, onUnmounted, watch, defineComponent } from '@vue/composition-api';
 import { useI18n, useStore, useJava, useNativeDialog, useServiceOnly, useInstance } from '@/hooks';
-import { useDialog } from '../hooks';
+import { useDialog, useJavaWizardDialog, useNotifier } from '../hooks';
 
 export default defineComponent({
   props: {
@@ -84,20 +89,20 @@ export default defineComponent({
   },
   setup() {
     const dialog = useNativeDialog();
-    const { getters, state } = useStore();
+    const { state } = useStore();
     const { $t } = useI18n();
-    const { show, isShown } = useDialog('java-wizard');
-    const { add, refreshLocalJava, installDefault, openJavaSite } = useJava();
-    const { editInstance, setJavaPath } = useInstance();
-    const { fixJavaIncompatible } = useServiceOnly('DiagnoseService', 'fixJavaIncompatible');
+    const { show, isShown, javaIssue } = useJavaWizardDialog();
+    const { add, refreshLocalJava } = useJava();
+    const { editInstance } = useInstance();
+    const { fix } = useServiceOnly('DiagnoseService', 'fix');
     const java8 = computed(() => state.java.all.find(j => j.majorVersion === 8 && j.valid));
+    const { subscribeTask } = useNotifier();
     const data = reactive({
       step: 0,
 
       items: [],
 
       status: 'none',
-      downloadError: undefined,
 
       options: [{
         autofix: true,
@@ -105,28 +110,23 @@ export default defineComponent({
         message: $t('diagnosis.missingJava.switch.message'),
         'disabled-message': $t('diagnosis.missingJava.switch.disabled'),
         disabled: java8.value === undefined,
+        recommended: true,
       }, {
         autofix: true,
         title: $t('diagnosis.missingJava.autoDownload'),
         message: $t('diagnosis.missingJava.autoDownload.message'),
-        disabled: false,
-      }, {
-        title: $t('diagnosis.missingJava.manualDownload'),
-        message: $t('diagnosis.missingJava.manualDownload.message'),
-        disabled: false,
+        disabled: java8.value !== undefined,
       }, {
         title: $t('diagnosis.missingJava.selectJava'),
         message: $t('diagnosis.missingJava.selectJava.message'),
         disabled: false,
       }],
     });
-    const missing = computed(() => getters.missingJava);
+
+    const missing = computed(() => javaIssue.value === 'missing');
     const reason = computed(() => (!missing.value ? $t('java.incompatibleJava') : $t('java.missing')));
     const hint = computed(() => (!missing.value ? $t('java.incompatibleJavaHint') : $t('java.missingHint')));
 
-    function updateValue() {
-      if (missing.value) { show(); }
-    }
     function refresh() {
       data.status = 'resolving';
       refreshLocalJava().finally(() => {
@@ -139,11 +139,9 @@ export default defineComponent({
         }
       });
     }
-
-    onMounted(() => {
-      updateValue();
-      watch(missing, updateValue);
-    });
+    function selectJava(java: { path: string }) {
+      editInstance({ java: java.path });
+    }
 
     return {
       ...toRefs(data),
@@ -152,31 +150,30 @@ export default defineComponent({
       hint,
       missing,
       refresh,
+      selectJava,
       async fixProblem(index: number) {
-        data.step = index + 1;
         if (index === 0) {
-          editInstance({ java: '8' });
-          setJavaPath(java8.value!.path);
+          subscribeTask(editInstance({ java: java8.value!.path }), $t('java.modifyInstance'));
+          isShown.value = false;
         } else if (index === 1) {
-          // showDialog('task');
-          await fixJavaIncompatible();
+          await fix([{ id: 'incompatibleJava', multi: false, arguments: {} }]);
+          isShown.value = false;
         } else if (index === 2) {
-          await openJavaSite();
-        } else if (index === 3) {
-          data.status = 'resolving';
-          const { filePaths } = await dialog.showOpenDialog({
+          const { filePaths, canceled } = await dialog.showOpenDialog({
             title: $t('java.browse'),
           });
-          filePaths.forEach((p) => {
-            add(p).then((r) => {
-              if (!r) { data.status = 'error'; }
-            });
-          });
+
+          if (filePaths.length === 0 || canceled) {
+            return;
+          }
+
+          let javas = await Promise.all(filePaths.map(add));
+          subscribeTask(editInstance({ java: javas.find((j) => !!j)!.path }), $t('java.modifyInstance'));
+          isShown.value = false;
         }
       },
       back() {
         data.step = 0;
-        data.status = 'none';
       },
     };
   },

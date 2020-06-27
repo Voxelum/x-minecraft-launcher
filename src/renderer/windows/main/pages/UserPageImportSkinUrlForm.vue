@@ -1,28 +1,41 @@
 <template>
-  <v-dialog :value="value" width="400" @input="$emit('input', $event)">
-    <v-card dark>
-      <v-container fluid grid-list-md>
-        <v-layout row wrap>
-          <v-flex d-flex xs12>
-            <v-text-field
-              v-model="url"
-              :rules="rules"
-              :label="$t('user.skinPlaceUrlHere')"
-              validate-on-blur
-              clearable
-              @input="validate"
-            />
-          </v-flex>
-          <v-flex d-flex xs12>
-            <v-btn :disabled="error" @click="submit">
-              <v-icon left>inbox</v-icon>
-              {{ $t('user.skinImport') }}
-            </v-btn>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-card>
-  </v-dialog>
+  <v-card dark>
+    <v-container
+      fluid
+      grid-list-md
+    >
+      <v-layout
+        row
+        wrap
+      >
+        <v-flex
+          d-flex
+          xs12
+        >
+          <v-text-field
+            v-model="url"
+            :rules="rules"
+            :label="$t('user.skinPlaceUrlHere')"
+            validate-on-blur
+            clearable
+            @input="validate"
+          />
+        </v-flex>
+        <v-flex
+          d-flex
+          xs12
+        >
+          <v-btn
+            :disabled="error"
+            @click="submit"
+          >
+            <v-icon left>inbox</v-icon>
+            {{ $t('user.skinImport') }}
+          </v-btn>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </v-card>
 </template>
 
 <script lang=ts>
@@ -37,17 +50,8 @@ const URL_PATTERN = new RegExp('^(https?:\\/\\/)?' // protocol
   + '(\\?[;&a-z\\d%_.~+=-]*)?' // query string
   + '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
 
-interface Props {  
-  value: boolean;
-  update(url: string): void;
-}
-
-export default defineComponent<Props>({
-  props: {
-    value: Boolean,
-    update: Function,
-  },
-  setup(props) {
+export default defineComponent({
+  setup(props, context) {
     const { $t } = useI18n();
     const rules = [
       (v: any) => !!v || $t('user.skinUrlNotEmpty'),
@@ -61,7 +65,7 @@ export default defineComponent<Props>({
       data.error = rules.some(r => typeof r(data.url) === 'string');
     }
     function submit() {
-      props.update(data.url);
+      context.emit('input', data.url);
     }
     return {
       ...toRefs(data),

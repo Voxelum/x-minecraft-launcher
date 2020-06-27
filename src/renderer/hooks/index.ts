@@ -9,6 +9,8 @@ export * from './useElectron';
 export * from './useNetworkStatus';
 export * from './useParticle';
 export * from './useInstance';
+export * from './useInstanceResource';
+export * from './useInstanceMod';
 export * from './useResource';
 export * from './useRouter';
 export * from './useSaveLoad';

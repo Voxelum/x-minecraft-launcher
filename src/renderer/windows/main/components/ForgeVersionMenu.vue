@@ -1,38 +1,59 @@
 <template>
-  <v-menu v-model="opened" bottom dark full-width max-height="300" :close-on-content-click="false"
-          :disabled="disabled" style="background-color: #303030">
+  <v-menu
+    v-model="opened"
+    bottom
+    dark
+    full-width
+    max-height="300"
+    :close-on-content-click="false"
+    :disabled="disabled"
+    style="background-color: #303030"
+  >
     <template v-slot:activator="{ on }">
       <slot :on="on" />
     </template>
-    <v-text-field v-model="filterText" color="green" append-icon="filter_list" :label="$t('filter')"
-                  solo dark hide-details>
+    <v-text-field
+      v-model="filterText"
+      color="green"
+      append-icon="filter_list"
+      :label="$t('filter')"
+      solo
+      dark
+      hide-details
+    >
       <template v-slot:prepend>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
-            <v-chip :color="recommendedAndLatestOnly ? 'green': ''" icon
-                    dark label style="margin: 0px; height: 48px; border-radius: 0;" @click="recommendedAndLatestOnly = !recommendedAndLatestOnly">
-              <v-icon v-on="on">
-                bug_report
-              </v-icon>
+            <v-chip
+              :color="recommendedAndLatestOnly ? 'green': ''"
+              icon
+              dark
+              label
+              style="margin: 0px; height: 48px; border-radius: 0;"
+              @click="recommendedAndLatestOnly = !recommendedAndLatestOnly"
+            >
+              <v-icon v-on="on">bug_report</v-icon>
             </v-chip>
           </template>
           {{ $t('version.showSnapshot') }}
         </v-tooltip>
       </template>
     </v-text-field>
-    <forge-version-list 
-      :minecraft="minecraft" 
-      :recommended-only="recommendedAndLatestOnly" 
-      :show-buggy="false" 
-      :show-time="false"
-      :filter-text="filterText" 
-      style="max-height: 180px; background-color: #424242" 
-      @input="selectVersion" />
+    <forge-version-list
+      :minecraft="minecraft"
+      :value="versions"
+      :status="status"
+      :select="select"
+      :selected="''"
+      style="max-height: 180px; background-color: #424242"
+    />
   </v-menu>
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent } from '@vue/composition-api';
+import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api';
+import { useForgeVersions } from '@/hooks';
+import { ForgeVersion } from '@universal/store/modules/version';
 
 export default defineComponent({
   props: {
@@ -52,13 +73,24 @@ export default defineComponent({
       recommendedAndLatestOnly: true,
       filterText: '',
     });
+
+    function filterForge(version: ForgeVersion) {
+      if (data.recommendedAndLatestOnly && version.type !== 'recommended' && version.type !== 'latest') return false;
+      if (data.showBuggy && version.type !== 'buggy') return true;
+      return version.version.indexOf(data.filterText) !== -1;
+    }
+    const { statuses, versions: vers } = useForgeVersions(computed(() => props.minecraft));
+    const versions = computed(() => vers.value.filter(filterForge));
+
     function selectVersion(item: any) {
       context.emit('input', item);
       data.opened = false;
     }
     return {
       ...toRefs(data),
-      selectVersion,
+      versions,
+      status: statuses,
+      select: selectVersion,
     };
   },
 });

@@ -1,12 +1,12 @@
 import filenamify from 'filenamify';
-import { ensureFile, unlink, writeFile } from 'fs-extra';
+import { ensureFile, unlink, writeFile, link } from 'fs-extra';
 import { basename, resolve, join } from 'path';
 import { ResourceBuilder, getResourceFromBuilder, Resource } from './index';
 
 /**
  * Commit the resource to the disk
  */
-export async function commitResourceOnDisk(builder: ResourceBuilder, data: Buffer, root: string) {
+export async function commitResourceOnDisk(builder: ResourceBuilder, data: Buffer, root: string, path?: string) {
     let name = filenamify(builder.name, { replacement: '-' });
 
     let slice = builder.hash.slice(0, 6);
@@ -22,7 +22,15 @@ export async function commitResourceOnDisk(builder: ResourceBuilder, data: Buffe
     builder.path = filePath;
 
     await ensureFile(filePath);
-    await writeFile(filePath, data);
+    let writeData = false;
+    if (path) {
+        await link(path, filePath).catch(() => { writeData = true; });
+    } else {
+        writeData = true;
+    }
+    if (writeData) {
+        await writeFile(filePath, data);
+    }
     await writeFile(metadataPath, JSON.stringify(getResourceFromBuilder(builder), null, 4));
     if (builder.icon) {
         await writeFile(iconPath, builder.icon);

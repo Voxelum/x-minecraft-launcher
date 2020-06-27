@@ -120,6 +120,8 @@
         "max-classes-per-file": 0,
         "arrow-parens": 0,
         "no-nested-ternary": 0,
-        "no-useless-constructor": 0
+        "no-useless-constructor": 0,
+        "vue/singleline-html-element-content-newline": 0,
+        "vue/html-self-closing": 0
     }
 }

@@ -1,14 +1,16 @@
+import { createhDynamicThrottle } from '@main/util/trafficAgent';
+import { fitMinecraftLauncherProfileData } from '@main/util/userData';
 import { MutationKeys } from '@universal/store';
 import { UserSchema } from '@universal/store/modules/user.schema';
 import { requireNonnull, requireObject, requireString } from '@universal/util/assert';
 import { Exception } from '@universal/util/exception';
-import { AUTH_API_MOJANG, checkLocation, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user';
+import { AUTH_API_MOJANG, checkLocation, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate, GameProfile } from '@xmcl/user';
 import { readFile, readJSON } from 'fs-extra';
 import { parse } from 'url';
+import Service, { DynamicSingleton, Singleton } from './Service';
 import { v4 } from 'uuid';
-import Service, { Singleton } from './Service';
 
-interface LauncherProfile {
+export interface LauncherProfile {
     /**
      * All the launcher profiles and their configurations.
      */
@@ -91,10 +93,44 @@ export interface LoginOptions {
      * The profile serivce name, like mojang
      */
     profileService?: string;
+
+    /**
+     * Select selected profile after login
+     */
+    selectProfile?: boolean;
+}
+
+export interface RefreshSkinOptions {
+    gameProfileId?: string;
+    userId?: string;
+    force?: boolean;
+}
+
+export interface UploadSkinOptions {
+    /**
+     * The game profile id of this skin
+     */
+    gameProfileId?: string;
+    /**
+     * The user id of this skin
+     */
+    userId?: string;
+    /**
+     * The skin url. Can be either a http/https url or a file: protocol url.
+     */
+    url: string;
+    /**
+     * If the skin is using slim model.
+     */
+    slim: boolean;
 }
 
 export default class UserService extends Service {
-    private refreshedSkin = false;
+    private refreshSkinRecord: Record<string, boolean> = {};
+
+    private lookup = createhDynamicThrottle(lookup, (uuid, options = {}) => (options.api ?? PROFILE_API_MOJANG).profile, 2400);
+
+    private validate = createhDynamicThrottle(validate, ({ accessToken }, api) => (api ?? AUTH_API_MOJANG).hostName, 2400);
 
     async save({ mutation }: { mutation: MutationKeys }) {
         switch (mutation) {
@@ -135,56 +171,12 @@ export default class UserService extends Service {
             clientToken: '',
         };
         let mcdb = await this.getMinecraftAuthDb();
-        if (typeof data === 'object') {
-            result.authServices = data.authServices;
-            result.authServices.mojang = AUTH_API_MOJANG;
+        fitMinecraftLauncherProfileData(result, data, mcdb);
 
-            result.profileServices = data.profileServices;
-            result.profileServices.mojang = PROFILE_API_MOJANG;
+        this.log(`Load ${Object.keys(result.users).length} users`);
 
-            if (data.clientToken) {
-                result.clientToken = data.clientToken;
-            } else {
-                result.clientToken = mcdb?.clientToken ?? v4().replace(/-/g, '');
-            }
-
-            result.selectedUser = data.selectedUser;
-            result.users = data.users;
-        } else {
-            // import mojang authDB
-
-            result.clientToken = mcdb?.clientToken ?? v4().replace(/-/g, '');
-            result.authServices = { mojang: AUTH_API_MOJANG };
-            result.profileServices = { mojang: PROFILE_API_MOJANG };
-
-            if (mcdb.selectedUser) {
-                result.selectedUser.id = mcdb.selectedUser.account;
-                result.selectedUser.profile = mcdb.selectedUser.profile;
-            }
-        }
-        if (mcdb?.clientToken === result.clientToken && mcdb.authenticationDatabase) {
-            let adb = mcdb.authenticationDatabase;
-            for (let userId of Object.keys(adb)) {
-                let user = adb[userId];
-                if (!result.users[userId]) {
-                    result.users[userId] = {
-                        id: userId,
-                        username: user.username,
-                        accessToken: user.accessToken,
-                        authService: 'mojang',
-                        profileService: 'mojang',
-                        profiles: Object.entries(user.profiles)
-                            .reduce((dict, [id, o]) => {
-                                dict[id] = {
-                                    id,
-                                    name: o.displayName,
-                                    textures: { SKIN: { url: '' } },
-                                };
-                                return dict;
-                            }, {} as { [key: string]: any }),
-                    };
-                }
-            }
+        if (!result.clientToken) {
+            result.clientToken = v4().replace(/-/g, '');
         }
         this.commit('userSnapshot', result);
     }
@@ -253,62 +245,13 @@ export default class UserService extends Service {
     }
 
     /**
-     * Refresh current skin status
-     */
-    @Singleton()
-    async refreshSkin(force = false) {
-        let user = this.getters.user;
-        let gameProfile = this.getters.gameProfile;
-        // if no profile service, return
-        if (user.profileService === '') return;
-        // if no game profile (maybe not logined), return
-        if (gameProfile.name === '') return;
-        // if user doesn't have a valid access token, return
-        if (!this.getters.accessTokenValid) return;
-
-        if (this.refreshedSkin && !force) return;
-
-        this.refreshedSkin = false;
-
-        let { id, name } = gameProfile;
-
-        try {
-            let profile;
-            if (this.getters.isServiceCompatible) {
-                profile = await lookup(id, { api: this.getters.profileService });
-            } else {
-                // use name to look up
-                profile = await lookupByName(name, { api: this.getters.profileService });
-                if (!profile) {
-                    throw new Error(`Profile not found named ${name}!`);
-                }
-                profile = await lookup(profile.id, { api: this.getters.profileService });
-            }
-            let textures = getTextures(profile);
-            let skin = textures?.textures.SKIN;
-            if (skin) {
-                this.commit('gameProfile', {
-                    userId: user.id,
-                    profile: {
-                        ...gameProfile,
-                        textures: { ...(textures?.textures || {}), SKIN: skin },
-                    },
-                });
-            }
-        } catch (e) {
-            this.warn(`Cannot refresh the skin data for user ${name}(${id}).`);
-            this.warn(JSON.stringify(e));
-        }
-    }
-
-    /**
      * Refresh the user auth status
      */
     async refreshStatus() {
         let user = this.getters.user;
 
         if (!this.getters.offline) {
-            let valid = await validate({
+            let valid = await this.validate({
                 accessToken: user.accessToken,
                 clientToken: this.state.user.clientToken,
             }, this.getters.authService).catch((e) => {
@@ -333,6 +276,8 @@ export default class UserService extends Service {
                     accessToken: result.accessToken,
                     // profiles: result.availableProfiles,
                     profiles: [],
+
+                    selectedProfile: undefined,
                 });
                 this.checkLocation();
 
@@ -346,35 +291,120 @@ export default class UserService extends Service {
                     // }
                 }
             } catch (e) {
+                this.log(e);
+                this.log(`Invalid current user ${user.id} accessToken!`);
                 this.commit('userInvalidate');
             }
+        } else {
+            this.log(`Current user ${user.id} is offline. Skip to refresh credential.`);
+        }
+    }
+
+
+    /**
+     * Refresh current skin status
+     */
+    @DynamicSingleton(function (this: Service, o: RefreshSkinOptions) {
+        let {
+            gameProfileId = this.state.user.selectedUser.profile,
+            userId = this.state.user.selectedUser.id,
+        } = o;
+        return `${userId}[${gameProfileId}]`;
+    })
+    async refreshSkin(refreshSkinOptions: RefreshSkinOptions = {}) {
+        let {
+            gameProfileId = this.state.user.selectedUser.profile,
+            userId = this.state.user.selectedUser.id,
+            force,
+        } = refreshSkinOptions;
+        let user = this.state.user.users[userId];
+        let gameProfile = user.profiles[gameProfileId];
+        // if no game profile (maybe not logined), return
+        if (gameProfile.name === '') return;
+        // if user doesn't have a valid access token, return
+        if (!this.getters.accessTokenValid) return;
+
+        let userAndProfileId = `${userId}[${gameProfileId}]`;
+        let refreshed = this.refreshSkinRecord[userAndProfileId];
+
+        // skip if we have refreshed
+        if (refreshed && !force) return;
+
+        let { id, name } = gameProfile;
+        try {
+            let profile: GameProfile;
+            let api = this.state.user.profileServices[user.profileService];
+            let compatible = user.profileService === user.authService;
+            this.log(`Refresh skin for user ${gameProfile.name} in ${user.profileService} service ${compatible ? 'compatiblely' : 'incompatiblely'}`);
+
+            if (!api) {
+                this.warn(`Cannot find the profile service named ${user.profileService}. Use default mojang service`);
+            }
+
+            if (compatible) {
+                profile = await this.lookup(id, { api });
+            } else {
+                // use name to look up
+                profile = await lookupByName(name, { api });
+                if (!profile) throw new Error(`Profile not found named ${name}!`);
+                profile = await this.lookup(profile.id, { api });
+            }
+            let textures = getTextures(profile);
+            let skin = textures?.textures.SKIN;
+
+            // mark skin already refreshed
+            this.refreshSkinRecord[userAndProfileId] = true;
+            if (skin) {
+                this.log(`Update the skin for user ${gameProfile.name} in ${user.profileService} service`);
+                this.commit('gameProfile', {
+                    userId: user.id,
+                    profile: {
+                        ...gameProfile,
+                        textures: { ...(textures?.textures || {}), SKIN: skin },
+                    },
+                });
+            } else {
+                this.log(`The user ${gameProfile.name} in ${user.profileService} does not have skin!`);
+            }
+        } catch (e) {
+            this.warn(`Cannot refresh the skin data for user ${name}(${id}) in ${user.profileService}`);
+            this.warn(JSON.stringify(e));
         }
     }
 
     /**
-     * Upload the skin to server
-     * @param payload 
+     * Upload the skin to server. If the userId and profileId is not assigned,
+     * it will use the selected user and selected profile.
+     * 
+     * Notice that this operation might fail if the user is not authorized (accessToken is not valid).
+     * If that happened, please let user refresh it credential or relogin.
      */
-    async uploadSkin(payload: { url: string; slim: boolean }) {
-        requireObject(payload);
-        requireNonnull(payload.url);
+    async uploadSkin(options: UploadSkinOptions) {
+        requireObject(options);
+        requireNonnull(options.url);
+        if (typeof options.slim !== 'boolean') options.slim = false;
 
-        let user = this.getters.user;
-        let gameProfile = this.getters.gameProfile;
-
-        if (typeof payload.slim !== 'boolean') payload.slim = false;
-        let { url, slim } = payload;
+        let {
+            gameProfileId = this.state.user.selectedUser.profile,
+            userId = this.state.user.selectedUser.id,
+            url,
+            slim,
+        } = options;
+        let user = this.state.user.users[userId];
+        let gameProfile = user.profiles[gameProfileId];
 
         let parsedUrl = parse(url);
         let data: Buffer | undefined;
-        let urlString = '';
+        let skinUrl = '';
         if (parsedUrl.protocol === 'file:') {
             data = await readFile(url);
         } else if (parsedUrl.protocol === 'https:' || parsedUrl.protocol === 'http:') {
-            urlString = url;
+            skinUrl = url;
         } else {
             throw new Error('Unknown url protocol! Require a file or http/https protocol!');
         }
+
+        this.log(`Upload texture ${gameProfile.name}(${gameProfile.id})`);
         return setTexture({
             uuid: gameProfile.id,
             accessToken: user.accessToken,
@@ -383,20 +413,20 @@ export default class UserService extends Service {
                 metadata: {
                     model: slim ? 'slim' : 'steve',
                 },
-                url: urlString,
+                url: skinUrl,
                 data,
             },
         }, this.getters.profileService);
     }
 
     /**
-     * Save the skin to the disk
+     * Save the skin to the disk.
      */
-    async saveSkin(option: { url: string; path: string }) {
-        requireObject(option);
-        requireString(option.url);
-        requireString(option.path);
-        let { path, url } = option;
+    async saveSkin(options: { url: string; path: string }) {
+        requireObject(options);
+        requireString(options.url);
+        requireString(options.path);
+        let { path, url } = options;
         await this.networkManager.downloadFile({ url, destination: path });
     }
 
@@ -430,8 +460,7 @@ export default class UserService extends Service {
             return;
         }
 
-        this.refreshedSkin = false;
-
+        this.log(`Switch game profile ${payload.userId} ${payload.profileId}`);
         this.commit('userGameProfileSelect', payload);
         await this.refreshUser();
     }
@@ -458,6 +487,8 @@ export default class UserService extends Service {
             throw new Error(`Cannot find auth service named ${authService}`);
         }
 
+        this.log(`Try login username: ${username} ${password ? 'with password' : 'without password'} to auth ${authService} and profile ${profileService}`);
+
         let result = authService === 'offline'
             ? offline(username)
             : await login({
@@ -475,9 +506,11 @@ export default class UserService extends Service {
                 throw new Exception({ type: 'loginGeneral', error: e });
             });
 
-        this.refreshedSkin = false;
+        // this.refreshedSkin = false;
 
         if (!this.state.user.users[result.user!.id]) {
+            this.log(`New user added ${result.user!.id}`);
+
             this.commit('userProfileAdd', {
                 id: result.user!.id || '',
                 accessToken: result.accessToken,
@@ -486,17 +519,27 @@ export default class UserService extends Service {
                 username,
                 profileService,
                 authService,
+
+                selectedProfile: result.selectedProfile ? result.selectedProfile.id : '',
             });
         } else {
+            this.log(`Found existed user ${result.user!.id}. Update the profiles of it`);
             this.commit('userProfileUpdate', {
-                id: selectedUserProfile.id,
+                id: result.user!.id,
                 accessToken: result.accessToken,
                 profiles: result.availableProfiles,
+                selectedProfile: result.selectedProfile ? result.selectedProfile.id : '',
             });
         }
-        this.commit('userGameProfileSelect', {
-            profileId: result.selectedProfile.id,
-            userId: result.user!.id,
-        });
+        if (options.selectProfile && result.selectedProfile) {
+            this.log(`Select the game profile ${result.selectedProfile.id} in user ${result.user!.id}`);
+            this.commit('userGameProfileSelect', {
+                profileId: result.selectedProfile.id,
+                userId: result.user!.id,
+            });
+        } else {
+            this.log(`No game profiles found for user ${username} in ${authService}, ${profileService} services.`);
+            this.pushException({ type: 'userNoProfiles', authService, profileService, username });
+        }
     }
 }

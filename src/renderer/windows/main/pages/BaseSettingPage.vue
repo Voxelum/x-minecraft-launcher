@@ -33,11 +33,11 @@
           <v-text-field v-model="description" outline hide-details dark :label="$t('profile.modpack.description')" />
         </v-flex>
 
-        <v-flex d-flex xs6>
+        <!-- <v-flex d-flex xs6>
           <v-btn outline large replace to="/game-setting">
             {{ $tc('gamesetting.name', 2) }}
           </v-btn>
-        </v-flex>
+        </v-flex> -->
         <v-flex d-flex xs6>
           <v-btn outline large replace to="/advanced-setting">
             {{ $t('profile.launchingDetail') }}
@@ -60,11 +60,11 @@
           </v-btn>
         </v-flex>
 
-        <v-flex d-flex xs6>
+        <!-- <v-flex d-flex xs6> -->
           <!-- <v-btn outline large replace to="/server">
             {{ $tc('server.name', 2) }}
           </v-btn> -->
-        </v-flex>
+        <!-- </v-flex> -->
 
         <v-flex d-flex xs6>
           <v-checkbox v-model="hideLauncher" hide-details dark :label="$t('launch.hideLauncher')" />
@@ -79,7 +79,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, defineComponent } from '@vue/composition-api';
-import { useInstance, useAutoSaveLoad, useRouter, useCurrentUser } from '@/hooks';
+import { useInstance, useAutoSaveLoad, useRouter, useCurrentUser, useSelectedUser, useProfileId, useGameProfile } from '@/hooks';
 
 export default defineComponent({
   setup() {
@@ -96,7 +96,9 @@ export default defineComponent({
       editInstance: edit,
     } = useInstance();
     const router = useRouter();
-    const { name: username } = useCurrentUser();
+    const { userId, profileId } = useSelectedUser();
+    const { gameProfile } = useProfileId(userId, profileId);
+    const { name: username } = useGameProfile(gameProfile);
     const data: {
       active: number;
       valid: boolean;

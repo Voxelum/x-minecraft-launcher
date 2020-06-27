@@ -1,31 +1,9 @@
-import { DownloadOption, HttpDownloader } from '@xmcl/installer';
-import { Task } from '@xmcl/task';
-import { DownloadItem } from 'electron';
+import { DownloadOption, HttpDownloader, downloadFileTask } from '@xmcl/installer';
 import got from 'got';
 import { Agent as HttpAgent, AgentOptions } from 'http';
 import { Agent as HttpsAgent } from 'https';
 import { cpus } from 'os';
 import { Manager } from '.';
-
-function downloadItemTask(item: DownloadItem) {
-    return Task.create('downloadItem', (context: Task.Context) => new Promise<string>((resolve, reject) => {
-        item.on('updated', () => {
-            context.update(item.getReceivedBytes(), item.getTotalBytes(), item.getURL());
-        });
-        item.on('done', (event, state) => {
-            switch (state) {
-                case 'completed':
-                    resolve(item.getSavePath());
-                    break;
-                case 'cancelled':
-                case 'interrupted':
-                default:
-                    reject(new Error(state));
-                    break;
-            }
-        });
-    }), { url: item.getURL(), file: item.getFilename() });
-}
 
 export default class NetworkManager extends Manager {
     private inGFW = false;
@@ -74,6 +52,10 @@ export default class NetworkManager extends Manager {
 
     async downloadFile(options: DownloadOption) {
         return this.downloader.downloadFile(options);
+    }
+
+    downloadFileTask(options: DownloadOption) {
+        return downloadFileTask(options, { downloader: this.downloader });
     }
 
     /**

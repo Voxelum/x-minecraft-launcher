@@ -1,7 +1,7 @@
 import { basename, extname } from 'path';
 import { unescape } from 'querystring';
 import { parse } from 'url';
-import { DomainedSourceCollection, ResourceBuilder, ResourceHost, ResourceRegistryEntry } from '.';
+import { SourceInfomation, ResourceBuilder, ResourceHost, ResourceRegistryEntry } from '.';
 import { getSuggestedFilename } from '../fs';
 
 /**
@@ -12,7 +12,7 @@ import { getSuggestedFilename } from '../fs';
  */
 export async function decorateBuilderFromHost(builder: ResourceBuilder, resourceHosts: ResourceHost[], url: string, typeHint?: string) {
     let resolvedUrl: string | undefined;
-    let source: DomainedSourceCollection | undefined;
+    let source: SourceInfomation | undefined;
     let type: string | undefined = typeHint;
 
     let parsedUrl = parse(url);
@@ -46,42 +46,34 @@ export async function decorateBuilderFromHost(builder: ResourceBuilder, resource
     return true;
 }
 
-/**
- * Decoarte the resource builder with real routing urls and hash. 
- * @param builder 
- * @param urls The urls goes through to download
- * @param hash The hash of the resource
- */
-export function decorateBulderWithUrlsAndHash(builder: ResourceBuilder, urls: string[], hash: string) {
-    let base = unescape(urls[urls.length - 1]);
-    let ext = extname(base);
-    builder.name = getSuggestedFilename(basename(base, ext));
-    builder.hash = hash;
-    builder.ext = ext;
+export function decorateBuilderSourceUrls(builder: ResourceBuilder, urls: string[]) {
     for (let u of urls) {
+        if (!u) continue;
         if (builder.source.uri.indexOf(u) === -1) {
             builder.source.uri.push(u);
         }
     }
+}
+export function decorateBuilderFromStat(builder: ResourceBuilder, stat: { ino: number; size: number }) {
+    builder.size = stat.size;
+    builder.ino = stat.ino;
 }
 
 export function decorateBuilderWithPathAndHash(builder: ResourceBuilder, path: string, hash: string) {
     builder.hash = hash;
     builder.ext = extname(path);
     builder.name = getSuggestedFilename(basename(path, builder.ext));
-    builder.source.file = {
-        path,
-    };
 }
+
 
 /**
 * Decorate the resource metadata resource parsed result
 */
 export function decorateBuilderFromMetadata(builder: ResourceBuilder, resource: ResourceRegistryEntry<any> & { metadata: any; icon: Uint8Array | undefined }) {
     let { domain, metadata, icon, type, getSuggestedName, getUri } = resource;
-    builder.domain = domain;
-    builder.metadata = metadata;
-    builder.type = type;
+    builder.domain = domain ?? 'unknown';
+    builder.metadata = metadata ?? {};
+    builder.type = type ?? 'unknown';
 
     let suggested = getSuggestedName(metadata);
     if (suggested) {

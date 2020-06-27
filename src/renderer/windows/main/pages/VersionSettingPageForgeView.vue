@@ -17,7 +17,7 @@
     <hint
       v-else
       v-ripple
-      style="flex-grow: 1"
+      style="flex-grow: 1; cursor: pointer"
       icon="refresh"
       :text="$t('forge.noVersion', { version: minecraft })"
       @click="refresh"

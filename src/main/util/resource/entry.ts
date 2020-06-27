@@ -28,7 +28,7 @@ export const RESOURCE_ENTRY_FORGE: ResourceRegistryEntry<Forge.ModMetaData[]> = 
         }
         return name;
     },
-    getUri: meta => `forge://${meta[0].modid}/${meta[0].version}`,
+    getUri: meta => (meta[0] ? `forge://${meta[0].modid}/${meta[0].version}` : ''),
 });
 export const RESOURCE_ENTRY_LITELOADER: ResourceRegistryEntry<LiteLoader.MetaData> = ({
     type: 'liteloader',
@@ -104,7 +104,7 @@ export const RESOURCE_ENTRY_MODPACK: ResourceRegistryEntry<any> = ({
     domain: 'modpacks',
     ext: '.zip',
     parseIcon: () => Promise.resolve(undefined),
-    parseMetadata: fs => fs.readFile('mainifest.json', 'utf-8').then(JSON.parse),
+    parseMetadata: fs => fs.readFile('manifest.json', 'utf-8').then(JSON.parse),
     getSuggestedName: () => '',
     getUri: (_, hash) => `modpack://${hash}`,
 });

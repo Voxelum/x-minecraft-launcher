@@ -1,7 +1,8 @@
-import { createTaskPusher } from '@main/util/task';
+import { createTaskPusher } from '@main/util/taskMonitor';
 import { TaskState } from '@universal/task';
 import { Task, TaskHandle, TaskRuntime } from '@xmcl/task';
 import { ipcMain, WebContents } from 'electron';
+import { v4 } from 'uuid';
 import { Manager } from '.';
 
 export default class TaskManager extends Manager {
@@ -9,7 +10,7 @@ export default class TaskManager extends Manager {
 
     private factory: Task.StateFactory<TaskState> = (n) => ({
         ...n,
-        id: `${n.path}-${this.order++}`,
+        id: `${n.path}-${this.order++}-${v4()}`,
         children: [],
         time: new Date().toString(),
         progress: 0,
@@ -113,45 +114,54 @@ export default class TaskManager extends Manager {
         return this.handles.some(h => h.root.id === id);
     }
 
-    // storeReady() {
-    //     this.submit(Task.create('test', (c) => {
-    //         c.execute(Task.create('a', (ctx) => {
-    //             let progress = 0;
-    //             let paused = false;
-    //             ctx.pausealbe(() => {
-    //                 paused = true;
-    //             }, () => {
-    //                 paused = false;
-    //             });
-    //             setInterval(() => {
-    //                 if (!paused) {
-    //                     ctx.update(progress, 100, progress.toString());
-    //                     progress += 10;
-    //                     progress = progress > 100 ? 0 : progress;
-    //                 }
-    //             }, 2000);
-    //             return new Promise(() => { });
-    //         }), 100);
-    //         c.execute(Task.create('b', (ctx) => {
-    //             let progress = 0;
-    //             let paused = false;
-    //             ctx.pausealbe(() => {
-    //                 paused = true;
-    //             }, () => {
-    //                 paused = false;
-    //             });
-    //             setInterval(() => {
-    //                 if (!paused) {
-    //                     ctx.update(progress, 100, progress.toString());
-    //                     progress += 10;
-    //                     progress = progress > 100 ? 0 : progress;
-    //                 }
-    //             }, 2000);
-    //             return new Promise(() => { });
-    //         }));
-    //         return new Promise(() => { });
-    //     }));
-    // }
+    storeReady() {
+        // let i = 0;
+        // setInterval(() => {
+        //     this.submit(Task.create(`test-${i}`, async (c) => {
+        //         i++;
+        //         await c.execute(Task.create('a', () => new Promise((resolve) => setTimeout(resolve, 1000))));
+        //         await c.execute(Task.create('b', () => new Promise((resolve) => setTimeout(resolve, 1000))));
+        //         await c.execute(Task.create('c', () => new Promise((resolve) => setTimeout(resolve, 1000))));
+        //     }));
+        // }, 3000);
+        // this.submit(Task.create('test', (c) => {
+        //     c.execute(Task.create('a', (ctx) => {
+        //         let progress = 0;
+        //         let paused = false;
+        //         ctx.pausealbe(() => {
+        //             paused = true;
+        //         }, () => {
+        //             paused = false;
+        //         });
+        //         setInterval(() => {
+        //             if (!paused) {
+        //                 ctx.update(progress, 100, progress.toString());
+        //                 progress += 10;
+        //                 progress = progress > 100 ? 0 : progress;
+        //             }
+        //         }, 2000);
+        //         return new Promise(() => { });
+        //     }), 100);
+        //     c.execute(Task.create('b', (ctx) => {
+        //         let progress = 0;
+        //         let paused = false;
+        //         ctx.pausealbe(() => {
+        //             paused = true;
+        //         }, () => {
+        //             paused = false;
+        //         });
+        //         setInterval(() => {
+        //             if (!paused) {
+        //                 ctx.update(progress, 100, progress.toString());
+        //                 progress += 10;
+        //                 progress = progress > 100 ? 0 : progress;
+        //             }
+        //         }, 2000);
+        //         return new Promise(() => { });
+        //     }));
+        //     return new Promise(() => { });
+        // }));
+    }
 
     // SETUP CODE
     setup() {

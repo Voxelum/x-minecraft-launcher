@@ -1,16 +1,13 @@
 import unknownPack from '@/assets/unknown_pack.png';
-import { CurseforgeModpackResource, ForgeResource, LiteloaderResource, ResourcePackResource, SaveResource } from '@universal/store/modules/resource';
+import { CurseforgeModpackResource, ForgeResource, LiteloaderResource, ResourcePackResource, SaveResource } from '@universal/util/resource';
 import { requireTrue } from '@universal/util/assert';
 import { computed, Ref, ref } from '@vue/composition-api';
 import { useServiceOnly } from './useService';
 import { useStore } from './useStore';
 
 export function useResourceOperation() {
-    const { getters } = useStore();
     return {
-        queryResource: getters.queryResource,
-        ...useServiceOnly('ResourceService', 'importResource', 'importUnknownResource', 'removeResource'),
-        getResource: getters.getResource,
+        ...useServiceOnly('ResourceService', 'importResource', 'removeResource'),
     };
 }
 

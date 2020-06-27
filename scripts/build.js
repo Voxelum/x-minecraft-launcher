@@ -42,7 +42,7 @@ function build() {
     m.on('success', () => {
         process.stdout.write('\x1B[2J\x1B[0f');
         console.log(`\n\n${results}`);
-        console.log(`${okayLog}take it away ${chalk.yellow('`electron-builder`')}\n`);
+        console.log(`${okayLog}\n`);
         process.exit();
     });
 

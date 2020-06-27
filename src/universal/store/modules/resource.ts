@@ -11,21 +11,9 @@ interface State {
         saves: SaveResource[];
         modpacks: CurseforgeModpackResource[];
     };
-    directory: {
-        [hash: string]: Resource;
-    };
-
 }
 
 interface Getters {
-    /**
-     * All the deployable domains
-     */
-    domains: string[];
-    /**
-     * Get the resource by resource hash
-     */
-    getResource: (hash: string) => Resource;
     /**
      * Query local resource by uri
      * @param uri The uri
@@ -41,22 +29,6 @@ interface Mutations {
 
 
 export type ResourceModule = ModuleOption<State, Getters, Mutations, {}>;
-export type ImportTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save';
-export type ImportOption = {
-    /**
-     * The real file path of the resource
-     */
-    path: string;
-    /**
-     * The hint for the import file type
-     */
-    type?: ImportTypeHint;
-    /**
-     * The extra info you want to provide to the source of the resource
-     */
-    metadata?: any;
-    background?: boolean;
-}
 
 const mod: ResourceModule = {
     state: {
@@ -67,11 +39,8 @@ const mod: ResourceModule = {
             modpacks: [],
             unknown: [],
         },
-        directory: {},
     },
     getters: {
-        domains: () => ['mods', 'resourcepacks', 'modpacks', 'saves', 'unknown'],
-        getResource: state => hash => state.directory[hash] || UNKNOWN_RESOURCE,
         queryResource: state => (url) => {
             requireString(url);
             for (const d of Object.keys(state.domains)) {
@@ -91,10 +60,6 @@ const mod: ResourceModule = {
             if (res.domain in state.domains) {
                 const domain = state.domains[res.domain];
                 domain.push(Object.freeze(res));
-                state.directory[res.hash] = res;
-                for (const u of res.source.uri) {
-                    state.directory[u] = res;
-                }
             } else {
                 throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`);
             }
@@ -104,10 +69,6 @@ const mod: ResourceModule = {
                 if (res.domain in state.domains) {
                     const domain = state.domains[res.domain];
                     domain.push(Object.freeze(res));
-                    state.directory[res.hash] = res;
-                    for (const u of res.source.uri || []) {
-                        state.directory[u] = res;
-                    }
                 } else {
                     throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`);
                 }
@@ -124,13 +85,6 @@ const mod: ResourceModule = {
 
                 // TODO: remove in Vue3
                 remove(domain, index);
-                
-                delete state.directory[resource.hash];
-                remove(state.directory, resource.hash);
-                for (const u of resource.source.uri) {
-                    delete state.directory[u];
-                    remove(state.directory, u);
-                }
             } else {
                 throw new Error(`Cannot remove resource for unknown domain [${resource.domain}]`);
             }

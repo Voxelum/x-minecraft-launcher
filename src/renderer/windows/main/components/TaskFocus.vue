@@ -1,28 +1,39 @@
 <template>
-  <v-container grid-list-xs fill-height>
-    <v-layout row wrap justify-center align-center fill-height>
-      <v-flex v-for="t in tasks" :key="t.id">
-        {{ $t(t.name) }}
-        <v-progress-circular :indeterminate="t.progress === -1" :value="t.progress / t.total" />
-      </v-flex>
+  <v-container
+    grid-list-xs
+    fill-height
+  >
+    <v-layout
+      row
+      wrap
+      justify-center
+      align-center
+      fill-height
+    >
+      <v-progress-circular
+        :size="120"
+        :width="15"
+        :indeterminate="progress === -1"
+        :value="progress / total * 100"
+      >
+        {{ $t(name) }}
+      </v-progress-circular>
     </v-layout>
   </v-container>
 </template>
 
 <script lang=ts>
 import { defineComponent, computed } from '@vue/composition-api';
-import { useStore } from '@/hooks';
+import { useTaskFromServiceCall } from '@/hooks';
 
-export default defineComponent({
-  props: {
-    value: {
-      type: Promise,
-    },
-  },
+export interface Props {
+  promise: Promise<any>;
+}
+
+export default defineComponent<Props>({
+  props: { promise: Promise },
   setup(props) {
-    const { state } = useStore();
-    const tasks = computed(() => state.task.tasks.filter(t => (props.value as any)?.__tasks__.indexOf(t.id) !== -1));
-    return { tasks };
+    return useTaskFromServiceCall(computed(() => props.promise));
   },
 });
 </script>

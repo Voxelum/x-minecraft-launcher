@@ -1,15 +1,9 @@
 import { computed } from '@vue/composition-api';
-import { useStore } from './useStore';
+import { useLocalStorageCacheInt } from './useCache';
 
 export function useBackgroundImage() {
-    const { state, getters } = useStore();
-    const blur = computed(
-        () => getters.instance.blur || state.setting.defaultBlur,
-    );
-    const backgroundImage = computed(
-        () => getters.instance.image
-            || state.setting.defaultBackgroundImage,
-    );
+    const blur = useLocalStorageCacheInt('blur', 0);
+    const backgroundImage = computed(() => null);
     return {
         blur,
         backgroundImage,

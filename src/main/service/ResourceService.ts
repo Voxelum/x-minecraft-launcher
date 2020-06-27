@@ -1,23 +1,42 @@
-import { CURSEMETA_CACHE } from '@main/constant';
-import { checksum, copyPassively, exists, isDirectory, readdirEnsured } from '@main/util/fs';
-import { commitResourceOnDisk, createResourceBuilder, decorateBuilderFromHost, decorateBuilderFromMetadata, decorateBuilderWithPathAndHash, decorateBulderWithUrlsAndHash, discardResourceOnDisk, DomainedSourceCollection, getBuilderFromResource, getResourceFromBuilder, parseResource, ResourceBuilder, ResourceHost, ResourceRegistryEntry, RESOURCE_ENTRY_FABRIC, RESOURCE_ENTRY_FORGE, RESOURCE_ENTRY_LITELOADER, RESOURCE_ENTRY_MODPACK, RESOURCE_ENTRY_RESOURCE_PACK, RESOURCE_ENTRY_SAVE, UNKNOWN_RESOURCE, Resource } from '@main/util/resource';
-import { ImportOption, ImportTypeHint } from '@universal/store/modules/resource';
-import { ResourceSchema } from '@universal/store/modules/resource.schema';
+import { copyPassively, exists, readdirEnsured, sha1 } from '@main/util/fs';
+import { commitResourceOnDisk, createResourceBuilder, decorateBuilderFromMetadata, decorateBuilderFromStat, decorateBuilderSourceUrls, decorateBuilderWithPathAndHash, discardResourceOnDisk, getBuilderFromResource, getResourceFromBuilder, parseResource, Resource, ResourceBuilder, ResourceRegistryEntry, RESOURCE_ENTRY_FABRIC, RESOURCE_ENTRY_FORGE, RESOURCE_ENTRY_LITELOADER, RESOURCE_ENTRY_MODPACK, RESOURCE_ENTRY_RESOURCE_PACK, RESOURCE_ENTRY_SAVE, SourceInfomation, UNKNOWN_RESOURCE, getCurseforgeUrl } from '@main/util/resource';
+import { CurseforgeSource, ResourceSchema } from '@universal/store/modules/resource.schema';
 import { requireString } from '@universal/util/assert';
 import { Task, task } from '@xmcl/task';
-import { createHash } from 'crypto';
-import { readFile, writeFile } from 'fs-extra';
+import { readFile, stat, writeFile } from 'fs-extra';
 import { extname, join } from 'path';
 import Service from './Service';
 
-function sha1(data: Buffer) {
-    return createHash('sha1').update(data).digest('hex');
+export type ImportTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save';
+export type ImportOption = {
+    /**
+     * The real file path of the resource
+     */
+    path: string;
+    /**
+     * The hint for the import file type
+     */
+    type?: ImportTypeHint;
+    /**
+     * The extra info you want to provide to the source of the resource
+     */
+    source?: SourceInfomation;
+
+    url?: string[];
+
+    background?: boolean;
+}
+
+export interface Query {
+    hash?: string;
+    url?: string | string[];
+    ino?: number;
 }
 
 export default class ResourceService extends Service {
     private resourceRegistry: ResourceRegistryEntry<any>[] = [];
 
-    private resourceHosts: ResourceHost[] = [];
+    private hashOrUrlOrInoOrFilePathToResource: Record<string, Resource> = {};
 
     constructor() {
         super();
@@ -27,47 +46,6 @@ export default class ResourceService extends Service {
         this.registerResourceType(RESOURCE_ENTRY_SAVE);
         this.registerResourceType(RESOURCE_ENTRY_RESOURCE_PACK);
         this.registerResourceType(RESOURCE_ENTRY_MODPACK);
-
-        let networkManager = this.networkManager;
-        this.resourceHosts.push({
-            async query(uri) {
-                if (uri.protocol !== 'curseforge:') {
-                    return undefined;
-                }
-                if (uri.host === 'path') {
-                    const [projectType, projectPath, fileId] = uri.path!.split('/').slice(1);
-                    return {
-                        url: `https://www.curseforge.com/minecraft/${projectType}/${projectPath}/download/${fileId}/file`,
-                        type: '*',
-                        source: {
-                            curseforge: {
-                                projectType,
-                                projectPath,
-                            },
-                        },
-                    };
-                }
-                const [projectId, fileId] = uri.path!.split('/').slice(1);
-                const metadataUrl = `${CURSEMETA_CACHE}/${projectId}/${fileId}.json`;
-                const o: any = await networkManager.request(metadataUrl).json();
-                const url = o.body.DownloadURL;
-                return {
-                    url,
-                    type: '*',
-                    source: {
-                        key: 'curseforge',
-                        value: {
-                            projectId,
-                            fileId,
-                        },
-                    },
-                };
-            },
-        });
-    }
-
-    protected normalizeResource(resource: string | Resource) {
-        return typeof resource === 'string' ? this.getters.getResource(resource) : resource;
     }
 
     protected registerResourceType(entry: ResourceRegistryEntry<any>) {
@@ -77,24 +55,45 @@ export default class ResourceService extends Service {
         this.resourceRegistry.push(entry);
     }
 
+    protected normalizeResource(resource: string | Resource) {
+        return (typeof resource === 'string' ? this.hashOrUrlOrInoOrFilePathToResource[resource] : resource) ?? UNKNOWN_RESOURCE;
+    }
+
     /**
-     * Query local resource by url
+     * Query in memory resource by key.
+     * The key can be `hash`, `url` or `ino` of the file.
      */
-    queryResouceLocal(url: string) {
-        requireString(url);
-        const state = this.state.resource;
-        for (const d of Object.keys(state.domains)) {
-            const res = state.domains[d];
-            for (const v of Object.values(res)) {
-                const uris = v.source.uri;
-                if (uris.some(u => u === url)) {
-                    return v;
+    getResourceByKey(key: string | number): Resource | undefined {
+        return this.hashOrUrlOrInoOrFilePathToResource[key];
+    }
+
+    /**
+     * Query resource in memory by the resource query 
+     * @param query The resource query.
+     */
+    getResource(query: Query) {
+        let res: Resource;
+        if (query.hash) {
+            res = this.hashOrUrlOrInoOrFilePathToResource[query.hash];
+            if (res) return res;
+        }
+        if (query.url) {
+            if (typeof query.url === 'string') {
+                res = this.hashOrUrlOrInoOrFilePathToResource[query.url];
+                if (res) return res;
+            } else {
+                for (let u of query.url) {
+                    res = this.hashOrUrlOrInoOrFilePathToResource[u];
+                    if (res) return res;
                 }
             }
         }
+        if (query.ino) {
+            res = this.hashOrUrlOrInoOrFilePathToResource[query.ino];
+            if (res) return res;
+        }
         return UNKNOWN_RESOURCE;
     }
-
 
     async load() {
         if (await exists(this.getPath('resources'))) {
@@ -117,6 +116,23 @@ export default class ResourceService extends Service {
                 }
             }));
         this.commit('resources', resources);
+
+        for (let resource of resources) {
+            this.hashOrUrlOrInoOrFilePathToResource[resource.hash] = resource;
+            for (let url of resource.source.uri) {
+                this.hashOrUrlOrInoOrFilePathToResource[url] = resource;
+            }
+            if (resource.source.curseforge) {
+                this.hashOrUrlOrInoOrFilePathToResource[getCurseforgeUrl(resource.source.curseforge.projectId, resource.source.curseforge.fileId)] = resource;
+            }
+            this.hashOrUrlOrInoOrFilePathToResource[resource.path] = resource;
+            stat(resource.path).then(s => {
+                this.hashOrUrlOrInoOrFilePathToResource[s.ino.toString()] = resource;
+            }).catch((e) => {
+                this.error(`Unable to load resource ino ${resource.path}`);
+                this.error(e);
+            });
+        }
     }
 
     /**
@@ -130,12 +146,9 @@ export default class ResourceService extends Service {
             let builder = getBuilderFromResource(resource);
 
             let data = await readFile(resource.path);
-
             await this.updateBuilderMetadata(builder, data);
-
             await this.persistResource(builder, data);
-
-            this.commit('resource', getResourceFromBuilder(builder));
+            this.cacheResource(getResourceFromBuilder(builder));
         } catch (e) {
             this.error(e);
             await this.unpersistResource(resource);
@@ -146,10 +159,11 @@ export default class ResourceService extends Service {
     /**
      * Touch a resource. If it's checksum not matched, it will re-import this resource.
      */
-    async touchResource(res: string | Resource) {
+    async touchResource(res: string) {
         let resource = this.normalizeResource(res);
-
-        if (resource === UNKNOWN_RESOURCE) return;
+        if (resource === UNKNOWN_RESOURCE) {
+            return;
+        }
         try {
             let builder = getBuilderFromResource(resource);
             let data = await readFile(resource.path);
@@ -159,7 +173,7 @@ export default class ResourceService extends Service {
                 await this.unpersistResource(resource);
                 await this.persistResource(builder, data);
 
-                this.commit('resource', getResourceFromBuilder(builder));
+                this.cacheResource(getResourceFromBuilder(builder));
             }
         } catch (e) {
             await this.unpersistResource(resource);
@@ -186,40 +200,31 @@ export default class ResourceService extends Service {
      */
     async renameResource(option: { resource: string | Resource; name: string }) {
         const resource = this.normalizeResource(option.resource);
-        if (!resource) return;
+        if (resource === UNKNOWN_RESOURCE) return;
         const builder = getBuilderFromResource(resource);
         builder.name = option.name;
         const result = getResourceFromBuilder(builder);
         const ext = extname(resource.path);
         const pure = resource.path.substring(0, resource.path.length - ext.length);
         await writeFile(`${pure}.json`, JSON.stringify(result));
-        this.commit('resource', result);
+        this.cacheResource(result);
     }
 
     /**
      * Import the resource into the launcher.
      * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.
      */
-    importUnknownResource({ path, type, metadata = {} }: ImportOption) {
-        requireString(path);
-        let task = this.importUnknownResourceTask(path, type, metadata);
-        return this.submit(task).wait();
-    }
-
-    /**
-     * Import resource from uri
-     */
-    async importResource(option: {
-        /**
-         * The expected uri
-         */
-        uri: string;
-        typeHint?: string;
-        metadata?: DomainedSourceCollection;
-    }) {
-        const { uri, metadata = {}, typeHint } = option;
-        requireString(uri);
-        return this.submit(this.importResourceTask(uri, metadata, typeHint)).wait();
+    async importResource(option: ImportOption) {
+        requireString(option.path);
+        let task = this.resolveResourceTask(option);
+        let { resource, imported } = await (option.background ? task.execute().wait() : this.submit(task).wait());
+        if (imported) {
+            this.log(`Import and cache newly added resource ${resource.path}`);
+            this.cacheResource(resource);
+        } else if (!option.background) {
+            this.log(`Import existed resource ${resource.path}`);
+        }
+        return resource;
     }
 
     /**
@@ -230,11 +235,8 @@ export default class ResourceService extends Service {
 
         const promises = [];
         for (const resource of resources) {
-            let res: Resource<any> | undefined;
-            if (typeof resource === 'string') res = this.getters.getResource(resource);
-            else res = resource;
-
-            if (!res) throw new Error(`Cannot find the resource ${resource}`);
+            let res: Resource<any> = this.normalizeResource(resource);
+            if (res === UNKNOWN_RESOURCE) throw new Error(`Cannot find the resource ${resource}`);
 
             promises.push(copyPassively(res.path, join(targetDirectory, res.name + res.ext)));
         }
@@ -243,134 +245,109 @@ export default class ResourceService extends Service {
 
     // bridge from dry function to `this` context
 
-
     /**
-     * Import regular resource from uri.
-     * 
-     * - forge mod: forge://<modid>/<version>
-     * - liteloader mod: liteloader://<name>/<version>
-     * - curseforge file: curseforge://<projectId>/<fileId>
-     * 
-     * @param uri The spec uri format
-     */
-    importResourceTask(uri: string, sourceInfo: DomainedSourceCollection = {}, typeHint?: string) {
-        const importResource = task('importResource', async (context: Task.Context) => {
-            let localResource = this.getters.queryResource(uri);
-            if (localResource !== UNKNOWN_RESOURCE) {
-                this.log(`Found existed resource for ${uri}. Return.`);
-                return localResource;
-            }
-
-            let builder = createResourceBuilder(sourceInfo);
-
-            let resolved = await decorateBuilderFromHost(builder, this.resourceHosts, uri, typeHint);
-
-            if (!resolved) {
-                this.warn(`Cannot find the remote source of the resource ${uri}. Return unknown resource.`);
-                return UNKNOWN_RESOURCE;
-            }
-
-            let resolvedUrl = builder.source.uri[builder.source.uri.length - 1];
-
-            context.update(0, 100, uri);
-
-            let { data, urls, hash } = await context.execute(task('download', async (c) => {
-                let buffers: Buffer[] = [];
-                let hasher = createHash('sha1');
-                let urls: string[] = [];
-                let stream = this.networkManager.request.stream(resolvedUrl, {
-                    followRedirect: true,
-                });
-
-                c.pausealbe(stream.pause, stream.resume);
-
-                stream.on('data', (b) => {
-                    buffers.push(b);
-                    hasher.update(b);
-                });
-                stream.on('downloadProgress', (p) => {
-                    c.update(p.transferred, p.total || undefined);
-                });
-                stream.on('redirect', (m) => {
-                    if (m.url) { urls.push(m.url); }
-                });
-                await new Promise((resolve, reject) => {
-                    stream.on('end', resolve);
-                    stream.on('error', reject);
-                });
-
-                return {
-                    data: Buffer.concat(buffers),
-                    hash: hasher.digest('hex'),
-                    urls,
-                };
-            }), 80);
-
-            decorateBulderWithUrlsAndHash(builder, urls, hash);
-
-            // use parser to parse metadata
-            await context.execute(task('parsing',
-                () => this.updateBuilderMetadata(builder, data, typeHint)), 10);
-
-            this.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain} (type hint: ${typeHint})`);
-
-            // write resource to disk
-            await context.execute(task('storing',
-                () => this.persistResource(builder, data)), 10);
-
-            let reuslt = getResourceFromBuilder(builder);
-            this.commit('resource', reuslt);
-            return reuslt;
-        });
-        return importResource;
+    * Import the resource from the same disk. This will parse the file and import it into our db by hardlink.
+    * 
+    * The original file will not be modified.
+    * 
+    * @param path The path in the same disk
+    * @param urls The urls
+    * @param source The source metadata
+    */
+    async importResources(files: {
+        filePath: string;
+        url: string[];
+        source?: {
+            curseforge?: CurseforgeSource;
+        };
+    }[], typeHint?: string) {
+        let resources = await Promise.all(files.map((f) => this.resolveResourceTask({ path: f.filePath, url: f.url, source: f.source, type: typeHint }).execute().wait()));
+        this.log(`Import ${files.length} resources. Imported ${resources.filter(r => r.imported).length} new resources, and ${resources.filter(r => !r.imported).length} resources existed.`);
+        this.cacheResources(resources.filter(r => r.imported).map(r => r.resource));
     }
 
     /**
-     * Import unknown resource task. Only used for importing unknown resource from file.
-     * @param path The file path
-     * @param type The guessing resource hint
+     * Resolve resource task. This will not write the resource to the cache, but it will persist the resource to disk.  
      */
-    protected importUnknownResourceTask(path: string, type: ImportTypeHint | undefined, metadata: any) {
-        const importResource = async (context: Task.Context) => {
+    resolveResourceTask(importOption: ImportOption) {
+        const resolve = async (context: Task.Context) => {
+            let { path, source = {}, url = [], type } = importOption;
             context.update(0, 4, path);
 
-            if (await isDirectory(path)) throw new Error(`Cannot import directory as resource! ${path}`);
-
-            let data = await readFile(path);
-            let builder = createResourceBuilder(metadata);
-
-            decorateBuilderWithPathAndHash(builder, path, await checksum(path, 'sha1'));
-
-            // check the resource existence
-            let existed = await context.execute(task('checking', async () => {
-                let resource = this.getters.getResource(builder.hash);
-                if (resource !== UNKNOWN_RESOURCE) {
-                    Object.assign(builder, resource, { source: builder.source });
-                    return true;
-                }
-                return false;
-            }), 1);
-            if (!existed) {
-                // use parser to parse metadata
-                await context.execute(task('parsing',
-                    () => this.updateBuilderMetadata(builder, data, type)), 1);
-
-                this.log(`Imported resource ${builder.name}${builder.ext}(${builder.hash}) into ${builder.domain}`);
-
-                // write resource to disk
-                await context.execute(task('storing',
-                    () => this.persistResource(builder, data)), 1);
+            let data: Buffer | undefined;
+            let hash: string | undefined;
+            let fileStat = await stat(path);
+            if (fileStat.isDirectory()) {
+                throw new Error(`Cannot import dictionary resource ${importOption.path}`);
+            }
+            let resource: Resource | undefined;
+            let ino = fileStat.ino;
+            resource = this.getResourceByKey(ino);
+            if (!resource) {
+                data = await readFile(path);
+                hash = sha1(data);
+                resource = this.getResourceByKey(hash);
+            }
+            // resource existed
+            if (resource) {
+                return { imported: false, resource };
             }
 
-            let resource = getResourceFromBuilder(builder);
-            this.commit('resource', resource);
-            return resource;
+            if (!data) {
+                data = await readFile(path);
+            }
+            if (!hash) {
+                hash = sha1(data);
+            }
+
+            let builder = createResourceBuilder(source);
+            context.update(1, 4, path);
+            decorateBuilderWithPathAndHash(builder, path, hash);
+            decorateBuilderSourceUrls(builder, url);
+            decorateBuilderFromStat(builder, fileStat);
+
+            // check the resource existence
+            // use parser to parse metadata
+            await this.updateBuilderMetadata(builder, data, type);
+            context.update(2, 4, path);
+
+            // write resource to disk
+            await this.persistResource(builder, data);
+            context.update(3, 4, path);
+
+            resource = getResourceFromBuilder(builder);
+
+            context.update(4, 4, path);
+            return { imported: true, resource };
         };
-        return task('importResource', importResource);
+
+        return task('importResource', resolve);
     }
 
-    protected persistResource(builder: ResourceBuilder, resourceData: Buffer) {
-        return commitResourceOnDisk(builder, resourceData, this.getPath());
+    public cacheResources(resources: Resource[]) {
+        for (let resource of resources) {
+            this.hashOrUrlOrInoOrFilePathToResource[resource.hash] = resource;
+            for (let url of resource.source.uri) {
+                this.hashOrUrlOrInoOrFilePathToResource[url] = resource;
+            }
+            this.hashOrUrlOrInoOrFilePathToResource[resource.ino.toString()] = resource;
+            this.hashOrUrlOrInoOrFilePathToResource[resource.path] = resource;
+        }
+        this.commit('resources', resources);
+    }
+
+    protected cacheResource(resource: Resource) {
+        this.hashOrUrlOrInoOrFilePathToResource[resource.hash] = resource;
+        for (let url of resource.source.uri) {
+            this.hashOrUrlOrInoOrFilePathToResource[url] = resource;
+        }
+        this.hashOrUrlOrInoOrFilePathToResource[resource.ino] = resource;
+        this.hashOrUrlOrInoOrFilePathToResource[resource.path] = resource;
+        this.commit('resource', resource);
+    }
+
+    protected persistResource(builder: ResourceBuilder, resourceData: Buffer, resourcePath?: string) {
+        return commitResourceOnDisk(builder, resourceData, this.getPath(), resourcePath);
     }
 
     protected unpersistResource(builder: ResourceBuilder) {
