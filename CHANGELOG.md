@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+
+## [0.3.2](https://github.com/voxelum/voxelauncher/compare/v0.3.1...v0.3.2)
+
+* chore: fix the bump version and remove travis ([da3e2ec](https://github.com/voxelum/voxelauncher/commit/da3e2ec))
+* chore: fix the package naming ([d095651](https://github.com/voxelum/voxelauncher/commit/d095651))
+* chore: fix the pr args passing ([75b963b](https://github.com/voxelum/voxelauncher/commit/75b963b))
+* chore: make prepare release run on all push ([b43ae08](https://github.com/voxelum/voxelauncher/commit/b43ae08))
+* chore: make sure it fetch all history ([7c330b0](https://github.com/voxelum/voxelauncher/commit/7c330b0))
+* chore: setup gh workflow (#65) ([e5952e0](https://github.com/voxelum/voxelauncher/commit/e5952e0)), closes [#65](https://github.com/voxelum/voxelauncher/issues/65)
+* chore: use checkout@v2 ([26a69f0](https://github.com/voxelum/voxelauncher/commit/26a69f0))
+* refactor: Dev Update (#68) ([d988b75](https://github.com/voxelum/voxelauncher/commit/d988b75)), closes [#68](https://github.com/voxelum/voxelauncher/issues/68)
+* refactor: Mostly refactor (#64) ([9a08855](https://github.com/voxelum/voxelauncher/commit/9a08855)), closes [#64](https://github.com/voxelum/voxelauncher/issues/64)
+* fix: Dev Update (#66) ([f26e328](https://github.com/voxelum/voxelauncher/commit/f26e328)), closes [#66](https://github.com/voxelum/voxelauncher/issues/66)
+
+
 ## [0.3.1](https://github.com/voxelum/voxelauncher/compare/v0.3.0...v0.3.1) (2019-09-22)
 
 
