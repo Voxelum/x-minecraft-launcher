@@ -29,7 +29,6 @@ async function main(output) {
     output('title', prTitle(version));
     output('body', prBody(body));
     output('message', commitMessage(version));
-    output('release', true);
 }
 
 main(core ? core.setOutput : (k, v) => {

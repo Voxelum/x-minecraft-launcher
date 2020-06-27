@@ -43,9 +43,9 @@ jobs:
       uses: peter-evans/create-pull-request@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: ${{ steps.pr.outputs.commit_message }}
-        title: ${{ steps.pr.outputs.pr_title }}
-        body: ${{ steps.pr.outputs.pr_body }}
+        commit-message: ${{ steps.pr.outputs.message }}
+        title: ${{ steps.pr.outputs.title }}
+        body: ${{ steps.pr.outputs.body }}
         reviewers: ci010
         assignees: ci010
         branch: prepare-release
