@@ -4,12 +4,6 @@ on:
   push:
     branches: 
       - master
-    paths:
-      - 'src/**/*.ts'
-      - '.github/*'
-      - 'build/**/*'
-      - 'static/**/*'
-      - 'script/*'
 
 jobs:
   repare-release:
