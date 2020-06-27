@@ -81,8 +81,8 @@ async function main(output) {
         const newChangelog = await generateChangelog(newVersion, package.version);
         console.log(newChangelog);
 
-        writeFile('pacakge.json', JSON.stringify(Object.assign(package, { version: newVersion }), null, 4));
-        writeFile('pacakge-lock.json', JSON.stringify(Object.assign(packageLock, { version: newVersion }), null, 4));
+        writeFile('package.json', JSON.stringify(Object.assign(package, { version: newVersion }), null, 4));
+        writeFile('package-lock.json', JSON.stringify(Object.assign(packageLock, { version: newVersion }), null, 4));
 
         const changelog = fs.readFileSync('CHANGELOG.md').toString();
         const changelogLines = changelog.split('\n')
