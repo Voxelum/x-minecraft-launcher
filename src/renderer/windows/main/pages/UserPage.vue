@@ -161,7 +161,7 @@
           <v-btn
             color="primary"
             flat
-            @click="confirmRemoveProfile"
+            @click="confirmRemoveProfile(); isDeleteDialogShown=false"
           >{{ $t('user.account.removeConfirm') }}</v-btn>
         </v-card-actions>
       </v-card>
