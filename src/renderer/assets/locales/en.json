@@ -909,5 +909,9 @@
     "unknown": "Unknown Version",
     "unset": "Unset"
   },
-  "yes": "Yes"
+  "yes": "Yes",
+  "notification": {
+    "name:": "Notification",
+    "empty": "No Notification"
+  }
 }
