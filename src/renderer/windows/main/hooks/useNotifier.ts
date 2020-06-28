@@ -98,11 +98,6 @@ export function useNotifyQueueConsumer() {
         }
     }
 
-    watch(refs.show, (isShown) => {
-        if (!isShown) {
-            consume();
-        }
-    });
     watch(queueLength, (newLength, oldLength) => {
         if (newLength > oldLength && !data.show) {
             consume();

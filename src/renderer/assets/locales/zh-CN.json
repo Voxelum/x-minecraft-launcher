@@ -875,5 +875,9 @@
     "unknown": "未知的版本",
     "unset": "未启用"
   },
-  "yes": "是"
+  "yes": "是",
+  "notification": {
+    "name": "通知",
+    "empty": "暂时没有通知"
+  }
 }

@@ -21,6 +21,11 @@
           >
             {{ $t('issue.name') }}
           </v-tab>
+           <v-tab
+            :key="2"
+          >
+            {{ $t('notification.name') }}
+          </v-tab>
         </v-tabs>
       </template>
     </v-toolbar>
@@ -35,6 +40,11 @@
       >
         <issue-view />
       </v-tab-item>
+      <v-tab-item
+        :key="2"
+      >
+        <notification-view />
+      </v-tab-item>
     </v-tabs-items>
   </v-dialog>
 </template>
@@ -44,9 +54,10 @@ import { reactive, toRefs, defineComponent } from '@vue/composition-api';
 import { useDialog } from '../hooks';
 import TaskView from './BaseTaskDialogTaskView.vue';
 import IssueView from './BaseTaskDialogIssueView.vue';
+import NotificationView from './BaseTaskDialogNotificationView.vue';
 
 export default defineComponent({
-  components: { TaskView, IssueView },
+  components: { TaskView, IssueView, NotificationView },
   props: {
     value: {
       type: Boolean,
