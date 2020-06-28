@@ -187,9 +187,10 @@ const mod: UserModule = {
                 state.selectedUser.id = '';
                 state.selectedUser.profile = '';
             }
-            delete state.users[userId];
+
             // TODO: remove in vue3
             remove(state.users, userId);
+            delete state.users[userId];
         },
         userProfileAdd(state, profile) {
             let value = {
@@ -199,10 +200,9 @@ const mod: UserModule = {
                     .reduce(toObjectReducer<GameProfileAndTexture, 'id'>('id'), {}),
                 selectedProfile: profile.selectedProfile,
             };
-            state.users[profile.id] = value;
-
             // TODO: remove in vue3
             set(state.users, profile.id);
+            state.users[profile.id] = value;
         },
         userProfileUpdate(state, profile) {
             let user = state.users[profile.id];
