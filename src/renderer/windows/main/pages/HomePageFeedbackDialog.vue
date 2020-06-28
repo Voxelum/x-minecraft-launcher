@@ -1,11 +1,11 @@
 <template>
   <v-dialog v-model="isShown" hide-overlay transition="dialog-bottom-transition" width="500">
     <v-toolbar color="warning">
-      <v-btn icon dark @click="hide">
-        <v-icon>close</v-icon>
-      </v-btn>
       <v-toolbar-title> {{ $t('feedback') }} </v-toolbar-title>
       <v-spacer />
+       <v-btn icon dark @click="hide">
+        <v-icon>close</v-icon>
+      </v-btn>
     </v-toolbar>
     <v-list three-line subheader>
       <v-subheader>{{ $t('feedback.description') }}</v-subheader>
