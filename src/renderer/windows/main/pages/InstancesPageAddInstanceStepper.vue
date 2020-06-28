@@ -299,11 +299,13 @@ import { InstanceSchema } from '@universal/store/modules/instance.schema';
 import {
   useI18n,
   useJava,
-  useCurrentUser,
   useRouter,
   useInstanceTemplates,
   useCurseforgeImport,
   useInstanceCreation,
+  useSelectedUser,
+  useProfileId,
+  useGameProfile,
 } from '@/hooks';
 import { Java } from '@universal/store/modules/java';
 import { Modpack } from '@main/service/CurseForgeService';
@@ -403,7 +405,9 @@ export default defineComponent({
     const importTask: Ref<Promise<string> | null> = ref(null);
     const notImporting = computed(() => importTask.value === null);
 
-    const { name } = useCurrentUser();
+    const { userId, profileId } = useSelectedUser();
+    const { gameProfile } = useProfileId(userId, profileId);
+    const { name } = useGameProfile(gameProfile);
     const { all: javas } = useJava();
     const { templates } = setupTemplates();
     const { importCurseforgeModpack } = useCurseforgeImport();
@@ -433,7 +437,9 @@ export default defineComponent({
       reset();
       data.step = 1;
       data.template = props.initialTemplate ? templates.value.findIndex(m => m.path === props.initialTemplate) : -1;
-      selectTemplate(data.template, templates.value[data.template]);
+      if (data.template !== -1) {
+        selectTemplate(data.template, templates.value[data.template]);
+      }
       data.creating = false;
     }
     async function doCreate() {
