@@ -1,7 +1,9 @@
 import { Fabric, Forge, LiteLoader } from '@xmcl/mod-parser';
+import { deserialize } from '@xmcl/nbt';
 import { PackMeta, readIcon, readPackMeta } from '@xmcl/resourcepack';
-import { LevelDataFrame, WorldReader } from '@xmcl/world';
+import { LevelDataFrame } from '@xmcl/world';
 import { ResourceRegistryEntry } from '.';
+import { findLevelRoot } from '../save';
 
 export const RESOURCE_ENTRY_FORGE: ResourceRegistryEntry<Forge.ModMetaData[]> = ({
     type: 'forge',
@@ -95,7 +97,11 @@ export const RESOURCE_ENTRY_SAVE: ResourceRegistryEntry<LevelDataFrame> = ({
     domain: 'saves',
     ext: '.zip',
     parseIcon: async (meta, fs) => fs.readFile('icon.png'),
-    parseMetadata: fs => new WorldReader(fs).getLevelData(),
+    parseMetadata: async fs => {
+        let root = await findLevelRoot(fs, '');
+        if (!root) throw new Error();
+        return deserialize(await fs.readFile(`${root}level.dat`));
+    },
     getSuggestedName: meta => meta.LevelName,
     getUri: (_, hash) => `save://${hash}`,
 });
