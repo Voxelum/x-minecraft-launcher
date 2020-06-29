@@ -269,7 +269,10 @@ export default class DiagnoseService extends Service {
         try {
             const { runtime: version } = this.getters.instance;
             const mods = this.state.instance.mods;
-            if (!mods) return;
+            if (typeof mods === 'undefined') {
+                this.warn(`The instance mods folder is undefined ${this.state.instance.path}!`);
+                return;
+            }
 
             const mcversion = version.minecraft;
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
