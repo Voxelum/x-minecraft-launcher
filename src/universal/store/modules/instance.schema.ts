@@ -62,34 +62,6 @@ export interface InstanceSchema {
     hideLauncher: boolean;
 
     /**
-     * The external resource deployment of this instance, like mods or resource packs.
-     * 
-     * The domain is the directory it will deployed to. For example, `mods` will deploy to `.minecraft/mods` folder.
-     * 
-     * Each is a list of uri in specific format
-     * 
-     * - Curseforge file `curseforge://projectId/fileId` or `curseforge://fileId`
-     * - Forge mod: `forge://modid/version`
-     * - Liteloader mod: `liteloader://name/version`
-     * - Fabric mod: `fabric://name/version`
-     * - Local managed resource: `resource://hash`
-     * - Http: `https://abc.bcd.jar`
-     * - Github: `github://username/reponame/releaseName`
-     * 
-     * @default { mods: string[]; resourcepacks: string[] }
-     */
-    deployments: {
-        /**
-         * @default []
-         */
-        mods: string[];
-        /**
-         * @default []
-         */
-        resourcepacks: string[];
-    };
-
-    /**
      * The runtime version requirement of the profile.
      * 
      * Containing the forge & liteloader & etc.
