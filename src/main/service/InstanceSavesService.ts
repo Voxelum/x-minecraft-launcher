@@ -8,7 +8,7 @@ import { createHash } from 'crypto';
 import filenamify from 'filenamify';
 import { ensureDir, ensureFile, FSWatcher, readdir, remove } from 'fs-extra';
 import watch from 'node-watch';
-import { basename, join, resolve } from 'path';
+import { basename, join, resolve, extname } from 'path';
 import { ZipFile } from 'yazl';
 import Service, { MutationTrigger, ServiceException, Singleton } from './Service';
 
@@ -187,7 +187,7 @@ export default class InstanceSavesService extends Service {
         this.watching = savesDir;
         this.watcher = watch(savesDir, (event, filename) => {
             if (filename.startsWith('.')) return;
-            let filePath = join(savesDir, filename);
+            let filePath = filename;
             if (event === 'update') {
                 if (this.state.instance.saves.every((s) => s.path !== filename)) {
                     loadSave(filePath, this.getters.instance.name).then((save) => {
@@ -295,7 +295,7 @@ export default class InstanceSavesService extends Service {
         saveName = filenamify(saveName);
 
         let sourceDir = source;
-        let destinationDir = join(instancePath, 'saves', saveName);
+        let destinationDir = join(instancePath, 'saves', basename(saveName, extname(saveName)));
         let useTemp = false;
 
         if (await isFile(source)) {
