@@ -410,7 +410,7 @@ const mod: InstanceModule = {
             state.saves.push(save);
         },
         instanceSaveRemove(state, save) {
-            state.saves = state.saves.filter((s) => s.path === save);
+            state.saves = state.saves.filter((s) => s.path !== save);
         },
         instanceStatus(state, status) {
             state.all[state.path].serverStatus = status;
