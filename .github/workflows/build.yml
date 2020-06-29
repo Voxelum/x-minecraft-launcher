@@ -30,10 +30,15 @@ jobs:
     - name: Install
       run: |
         npm ci
+    - name: Get Build Number
+      uses: ./.github/actions/get-build-number
+      id: vars
     - name: Build
       run: |
         npm run build
         npx electron-builder --publish=never
+      env:
+        BUILD_NUMBER: ${{ steps.vars.outputs.build_number }}
     - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
