@@ -74,19 +74,13 @@ jobs:
       uses: ./.github/actions/prepare-release
     - name: Draft Release
       id: create_release
-      uses: actions/create-release@master
+      uses: voxelum/create-release@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ steps.prepare_release.outputs.tag }}
         release_name: ${{ steps.prepare_release.outputs.release }}
-        draft: ${{ steps.prepare_release.outputs.draft }}
+        draft: true
         prerelease: ${{ steps.prepare_release.outputs.prerelease }}
         body: ${{ steps.prepare_release.outputs.body }}
-    - name: Upload Assets to Release
-      uses: ci010/upload-release-asset@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         asset_dir_path: ./build
