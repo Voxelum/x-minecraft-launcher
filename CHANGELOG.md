@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.4.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.3.2...v0.4.0)
+
+* chore: add build number ([69d4ef5](https://github.com/voxelum/x-minecraft-launcher/commit/69d4ef5))
+* chore: bump core version ([6a759be](https://github.com/voxelum/x-minecraft-launcher/commit/6a759be))
+* chore: disable cache for validation ([3c72581](https://github.com/voxelum/x-minecraft-launcher/commit/3c72581))
+* chore: use own action to create release ([2160373](https://github.com/voxelum/x-minecraft-launcher/commit/2160373))
+* fix: add instance ui quit ([9f777e8](https://github.com/voxelum/x-minecraft-launcher/commit/9f777e8))
+* fix: clean up old naming ([52c4f9b](https://github.com/voxelum/x-minecraft-launcher/commit/52c4f9b))
+* fix: clear up the code ([851bcbc](https://github.com/voxelum/x-minecraft-launcher/commit/851bcbc))
+* fix: correctly parse save from curseforge ([4743b15](https://github.com/voxelum/x-minecraft-launcher/commit/4743b15))
+* fix: remove save correctly and adjust save view hint ([cc1ad49](https://github.com/voxelum/x-minecraft-launcher/commit/cc1ad49))
+* fix: remove schema ([5b4c805](https://github.com/voxelum/x-minecraft-launcher/commit/5b4c805))
+* fix: user ui reactivity ([c263f28](https://github.com/voxelum/x-minecraft-launcher/commit/c263f28))
+* refactor: add log to undefined mods ([45d9c65](https://github.com/voxelum/x-minecraft-launcher/commit/45d9c65))
+* refactor: align ui style ([ae54657](https://github.com/voxelum/x-minecraft-launcher/commit/ae54657))
+* feat: add notitication center ([1897761](https://github.com/voxelum/x-minecraft-launcher/commit/1897761))
+
+
 ## [0.3.2](https://github.com/voxelum/x-minecraft-launcher/compare/v0.3.1...v0.3.2)
 
 * chore: fix the bump version and remove travis ([da3e2ec](https://github.com/voxelum/x-minecraft-launcher/commit/da3e2ec))
