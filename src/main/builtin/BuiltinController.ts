@@ -61,7 +61,7 @@ export default class BuiltinController extends LauncherAppController {
 
     createMainWindow() {
         this.mainRef = this.newWindow('main', `${baseURL}main.html`, {
-            title: 'VoxeLauncher',
+            title: 'XMCL',
             width: 800,
             height: 580,
             resizable: false,
@@ -88,7 +88,7 @@ export default class BuiltinController extends LauncherAppController {
 
     createLoggerWindow() {
         this.loggerRef = this.newWindow('logger', `${baseURL}logger.html`, {
-            title: 'VoxeLauncher',
+            title: 'XMCL',
             width: 770,
             height: 580,
             frame: false,

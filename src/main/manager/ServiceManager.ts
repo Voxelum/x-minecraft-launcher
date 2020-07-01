@@ -100,7 +100,7 @@ export default class ServiceManager extends Manager {
      */
     setupServices(appData: string, platform: Platform, logger: LoggerFacade, managers: Managers, store: StaticStore<any>, root: string) {
         this.log(`Setup service ${root}`);
-        const userPath = join(appData, 'voxelauncher');
+        const userPath = join(appData, 'xmcl');
         const mcPath = join(appData, platform.name === 'osx' ? 'minecraft' : '.minecraft');
 
         Object.defineProperties(Service.prototype, {

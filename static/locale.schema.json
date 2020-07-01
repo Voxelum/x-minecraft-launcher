@@ -3216,5 +3216,5 @@
         "refresh",
         "skin"
     ],
-    "$id": "https://raw.githubusercontent.com/voxelum/VoxeLauncher/master/static/locale.schema.json"
+    "$id": "https://raw.githubusercontent.com/voxelum/x-minecraft-launcher/master/static/locale.schema.json"
 }

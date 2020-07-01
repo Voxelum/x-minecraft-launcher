@@ -54,7 +54,7 @@ function generateChangelog(newVersion, oldVersion) {
         })
 
         changelogStream.on('end', function () {
-            content = content.replace(/## .+/, `## [${newVersion}](https://github.com/voxelum/voxelauncher/compare/v${oldVersion}...v${newVersion})`)
+            content = content.replace(/## .+/, `## [${newVersion}](https://github.com/voxelum/x-minecraft-launcher/compare/v${oldVersion}...v${newVersion})`)
             content = `\n${content.trim()}\n`;
             return resolve(content)
         })

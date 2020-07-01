@@ -15,7 +15,7 @@
           <v-list-tile-sub-title> {{ $t('feedback.githubDescription') }} </v-list-tile-sub-title>
         </v-list-tile-content>
         <v-list-tile-action>
-          <v-btn flat href="https://github.com/Voxelum/VoxeLauncher/issues/new">
+          <v-btn flat href="https://github.com/Voxelum/x-minecraft-launcher/issues/new">
             {{ $t('feedback.githubOpenIssue') }}
           </v-btn>
         </v-list-tile-action>

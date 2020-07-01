@@ -1,10 +1,10 @@
 import { LauncherAppController } from '@main/app/LauncherAppController';
 import BuiltinController from '@main/builtin/BuiltinController';
-import { IS_DEV } from '@main/constant';
+import { IS_DEV, LAUNCHER_NAME } from '@main/constant';
 import { isDirectory } from '@main/util/fs';
 import { getPlatform } from '@xmcl/core';
 import { App, app, BrowserWindow, BrowserWindowConstructorOptions, Dock, ipcMain, Menu, NativeImage, nativeImage, session, shell, Tray } from 'electron';
-import { ensureFile, readFile, writeFile } from 'fs-extra';
+import { readFile } from 'fs-extra';
 import { join } from 'path';
 import { ParsedUrlQuery } from 'querystring';
 import { parse as parseUrl } from 'url';
@@ -74,7 +74,7 @@ function queryToWindowOptions(query: ParsedUrlQuery) {
 }
 
 const APP_DATA = app.getPath('appData');
-const CFG_PATH = `${APP_DATA}/voxelauncher/launcher.json`;
+const CFG_PATH = `${app.getPath('appData')}/xmcl/launcher.json`;
 
 export type ExtendsApp = Pick<typeof ipcMain, 'handle'> & Pick<typeof app, 'getPath'>;
 
@@ -84,7 +84,7 @@ export class AppManager extends Manager {
     public app = app;
 
     /**
-     * Game assets root
+     * Launcher root
      */
     public root!: string;
 
@@ -106,21 +106,9 @@ export class AppManager extends Manager {
 
     constructor() {
         super();
-        this.root = join(APP_DATA, 'VoxeLauncher');
+        this.root = join(app.getPath('appData'), LAUNCHER_NAME);
         this.handle = ipcMain.handle;
         this.controller = undefined as any;
-    }
-
-    private async persistRoot(root: string) {
-        try {
-            this.log(`Setup root ${root}`);
-            await ensureFile(CFG_PATH);
-            await writeFile(CFG_PATH, JSON.stringify({ path: root }));
-        } catch (e) {
-            this.error('An error occured during setup root');
-            this.error(e);
-            app.exit(1);
-        }
     }
 
     async startApp() {
@@ -290,16 +278,6 @@ export class AppManager extends Manager {
     // setup code
 
     async setup() {
-        // let root;
-        // try {
-        //     const cfg = await readJson(CFG_PATH);
-        //     root = cfg.path || join(APP_DATA, 'voxelauncher');
-        // } catch (e) {
-        //     root = join(APP_DATA, 'voxelauncher');
-        // }
-        // await this.persistRoot(root);
-        // this.root = root;
-
         Reflect.set(LauncherAppController.prototype, 'app', app);
         Reflect.set(LauncherAppController.prototype, 'Tray', Tray);
         Reflect.set(LauncherAppController.prototype, 'Dock', Dock);
