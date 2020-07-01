@@ -45,7 +45,7 @@ export default defineComponent({
   setup() {
     const queue = useNotificationQueue();
     function onClick(not: LocalNotification) {
-        queue.value = queue.value.filter(q => q !== not);
+      queue.value = queue.value.filter(q => q !== not);
     }
     return {
       queue,

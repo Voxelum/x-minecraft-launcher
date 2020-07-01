@@ -124,14 +124,6 @@
           </v-list-tile>
         </v-list>
       </v-flex>
-
-      <!-- <p class="white--text" style="position: absolute; bottom: 35px; right: 315px;">
-        <a href="https://github.com/voxelum/voxelauncher"> Github Repo </a>
-      </p>
-
-      <p class="white--text" style="position: absolute; bottom: 10px; right: 300px;">
-        Present by <a href="https://github.com/ci010"> CI010 </a>
-      </p> -->
     </v-layout>
 
     <update-info-dialog v-model="viewingUpdateDetail" />

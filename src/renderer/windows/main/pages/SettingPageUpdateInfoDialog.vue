@@ -3,7 +3,7 @@
     <v-card v-if="updateInfo" dark>
       <v-card-title style="display: block;">
         <h1>
-          <a href="https://github.com/voxelum/VoxeLauncher/releases">
+          <a href="https://github.com/voxelum/x-minecraft-launcher/releases">
             {{ updateInfo.releaseName }}
           </a>
         </h1>
@@ -39,7 +39,7 @@
       </v-card-actions>
     </v-card>
     <v-card v-else hover dark style="width: 100%"
-            to="https://github.com/voxelum/VoxeLauncher/releases"
+            to="https://github.com/voxelum/x-minecraft-launcher/releases"
             replace>
       <v-container fill-height>
         <v-layout fill-height justify-space-around align-center>

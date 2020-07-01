@@ -1,22 +1,18 @@
-# Voxelauncher
+# X minecraft launcher
 
-[![Build Status](https://travis-ci.org/voxelum/VoxeLauncher.svg?branch=master)](https://travis-ci.org/voxelum/VoxeLauncher)
+![Build](https://github.com/Voxelum/x-minecraft-launcher/workflows/Build/badge.svg)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 > An WIP Minecraft Launcher based on electron-vue 
 
-[Old Readme](README.old.md)
-
 ## General RoadMap
 
-Beta: Cover the basic features related to mods.
+1.0: Stabled resource management and useable protocol 
 
-1. Be able to install Liteloader/Fabric on corresponding Minecraft version.
-2. Be able to detect mod version with Forge/Fabric version and Minecraft Version (detect mod compatibility).
-
-Want to know exact features we have? See [Feature Design vs Implemenatation](#Feature-Design-vs-Implemenatation)
 
 ## Design
+
+The program is splited into two parts like general electron app. The main process and renderer process.
 
 ### Tech Stack
 
@@ -61,9 +57,6 @@ This project is designed to easy to dev... hopefully.
 After you clone the project
 
 ``` bash
-# optional on Windows to install build tools
-npm install --global windows-build-tools
-
 # install dependencies
 npm install
 
@@ -142,45 +135,6 @@ Refer from [this gist](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f
 > chore: (updating grunt tasks etc; no production code change)
 
 **Your commit will be rejected if you do not follow these rules.**
-
-## Feature Design vs Implemenatation
-
-Here we list the features & corresponding files to implement the features.
-
-| Feature                              | Core Logic File             | Related Vuex Actions                                           | Who Trigger                     | UI                          |
-| ------------------------------------ | --------------------------- | -------------------------------------------------------------- | ------------------------------- | --------------------------- |
-| User Login                           | user.ts                     | login                                                          | User by UI                      | DialogLogin.vue               |
-| User Skin Display                    | user.ts                     | refreshSkin                                                    | -                               | UserPage.vue                |
-| User Skin Upload                     | user.ts                     | uploadSkin                                                     | User by UI                      | UserPage.vue                |
-| User Mojang Identity Validataition   | user.ts                     | checkLocation, getChallenges, submitChallenges                 | Launcher Initialize, User by UI | UserPage.vue                |
-| User Logout                          | user.ts                     | logout                                                         | User by UI                      | UserPage.vue                |
-| Launch Profile Creation              | profile.ts                  | createProfile, createAndSelectProfile                          | User by UI                      | ProfilesPage.vue            |
-| Server Profile Creation              | profile.ts                  | createProfile, createAndSelectProfile, createProfileFromServer | User by UI                      | ProfilesPage.vue            |
-| Edit Basic Profile Setting           | profile.ts                  | editProfile                                                    | User by UI                      | BaseSettingPage.vue         |
-| Edit Launch Setting (Java)           | profile.ts                  | editProfile                                                    | User by UI                      | AdvancedSettingPage.vue     |
-| Select Mods to Launch                | profile.ts                  | editProfile                                                    | User by UI                      | ModSettingPage.vue          |
-| Select Resource Packs to Launch      | profile.ts                  | editProfile                                                    | User by UI                      | ResourcePackSettingPage.vue |
-| Modify Game Setting                  | profile.ts                  | mutation: gamesettings                                         | User by UI                      | GameSettingPage.vue         |
-| Select Launch Version                | profile.ts                  | editProfile                                                    | User by UI                      | VersionSettingPage.vue      |
-| Ping Server                          | profile.ts                  | pingServer                                                     | User by UI                      | HomePage.vue                |
-| Ping All Servers in a Profile        | profile.ts                  | pingServers                                                    | User by UI                      | HomePage.vue                |
-| Import Modpack                       | profile.ts                  | importProfile                                                  | User by UI                      | HomePage.vue                |
-| Export Modpack                       | profile.ts                  | exportProfile                                                  | User by UI                      | HomePage.vue                |
-| Diagnose Profile (Detect Problems)   | diagnose.ts                 | diagnoseProfile                                                | Any Changes by editProfile      | -                           |
-| Fix Profile Problems                 | diagnose.ts                 | fixProfile                                                     | User by UI                      | HomePage.vue                |
-| Auto Detect Java Location on Disk    | java.ts                     | refreshLocalJava                                               | Launcher Initialize             | -                           |
-| Install Java                         | java.ts                     | installJava                                                    | User by UI                      | JavaWizard.vue              |
-| Fetch Minecraft Versions List        | version.ts                  | refreshMinecraft                                               | Launcher Initialize             | VersionSettingPage.vue      |
-| Fetch Forge Versions List            | version.ts                  | refreshForge                                                   | User by UI, Launcher Initialize | VersionSettingPage.vue      |
-| Install Minecraft Version            | version.ts                  | installMinecraft                                               | User Fix Problems               | -                           |
-| Install Forge Version                | version.ts                  | installForge                                                   | User Fix Problems               | -                           |
-| Scan Installed Versions on Disk      | version.ts                  | refreshVersions                                                | User Fix Problems               | -                           |
-| Install Version Missing Dependencies | version.ts                  | installDependencies                                            | User Fix Problems               | -                           |
-| Import Mods                          | resource.ts                 | importResource                                                 | User by UI                      | ModSettingPage.vue          |
-| Import Resource Packs                | resource.ts                 | importResource                                                 | User by UI                      | ResourcePackSettingPage.vue |
-| Display Mod Compatibility            | universal/utils/versions.ts | -                                                              | UI Initialize                   | ModCard.vue                 |
-| Display Resource Pack Compatibility  | universal/utils/versions.ts | -                                                              | UI Initialize                   | ResourcePackCard.vue        |
-
 
 ## LICENSE 
 

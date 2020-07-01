@@ -1,8 +1,8 @@
 {
-    "name": "voxelauncher",
+    "name": "x-minecraft-launcher",
     "private": true,
     "main": "./dist/electron/main.js",
-    "productName": "VoxeLauncher",
+    "productName": "XMCL",
     "version": "0.3.2",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "A great minecraft launcher in the future",
@@ -12,7 +12,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/voxelum/voxelauncher.git"
+        "url": "https://github.com/voxelum/x-minecraft-launcher"
     },
     "scripts": {
         "build": "node scripts/build.js",
@@ -30,8 +30,8 @@
         "test": "jest"
     },
     "build": {
-        "productName": "voxelauncher",
-        "appId": "voxelum.voxelauncher",
+        "productName": "XMCL",
+        "appId": "xmcl",
         "directories": {
             "output": "build"
         },
@@ -44,7 +44,7 @@
             {
                 "provider": "github",
                 "owner": "voxelum",
-                "repo": "VoxeLauncher"
+                "repo": "x-minecraft-launcher"
             }
         ],
         "files": [
@@ -154,9 +154,7 @@
         ]
     },
     "husky": {
-        "hooks": {
-            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-        }
+        "hooks": {}
     },
     "dependencies": {
         "7zip-min": "^1.1.1",

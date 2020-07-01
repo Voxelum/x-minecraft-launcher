@@ -13,7 +13,7 @@ import { Manager } from '.';
 if (process.env.NODE_ENV === 'development') {
     autoUpdater.setFeedURL({
         provider: 'github',
-        repo: 'VoxeLauncher',
+        repo: 'x-minecraft-launcher',
         owner: 'voxelum',
     });
     autoUpdater.logger = null;
