@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.4.1](https://github.com/voxelum/x-minecraft-launcher/compare/v0.4.0...v0.4.1)
+
+* chore: adjust the productName ([b4705f0](https://github.com/voxelum/x-minecraft-launcher/commit/b4705f0))
+* fix: disable the changing root ([eff5080](https://github.com/voxelum/x-minecraft-launcher/commit/eff5080))
+* fix: remove user should not force user login ([6878308](https://github.com/voxelum/x-minecraft-launcher/commit/6878308))
+
+
 ## [0.4.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.3.2...v0.4.0)
 
 * chore: add build number ([69d4ef5](https://github.com/voxelum/x-minecraft-launcher/commit/69d4ef5))
