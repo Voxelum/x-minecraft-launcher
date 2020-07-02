@@ -30,7 +30,7 @@
               </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn outline flat style="margin-right: 10px;" @click="browseRootDir">
+              <v-btn disabled outline flat style="margin-right: 10px;" @click="browseRootDir">
                 {{ $t('setting.browseRoot') }}
               </v-btn>
             </v-list-tile-action>
