@@ -43,7 +43,7 @@ export function getModIdentifier(modObject: Resource<any>) {
 }
 
 export function isReleaseVersion(version: string) {
-    return version.match(/^[0-9]+\.[0-9]+\.[0-9]$/g);
+    return version.match(/^[0-9]+\.[0-9]+(\.[0-9]+)?$/g);
 }
 export function isSnapshotPreview(version: string) {
     return version.match(/^[0-9]+\.[0-9]+((\.[0-9])?-pre[0-9]+)?$/g)

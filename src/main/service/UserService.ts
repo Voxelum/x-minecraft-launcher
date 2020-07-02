@@ -4,11 +4,11 @@ import { MutationKeys } from '@universal/store';
 import { UserSchema } from '@universal/store/modules/user.schema';
 import { requireNonnull, requireObject, requireString } from '@universal/util/assert';
 import { Exception } from '@universal/util/exception';
-import { AUTH_API_MOJANG, checkLocation, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate, GameProfile } from '@xmcl/user';
+import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user';
 import { readFile, readJSON } from 'fs-extra';
 import { parse } from 'url';
-import Service, { DynamicSingleton, Singleton } from './Service';
 import { v4 } from 'uuid';
+import Service, { DynamicSingleton, Singleton } from './Service';
 
 export interface LauncherProfile {
     /**
@@ -465,6 +465,22 @@ export default class UserService extends Service {
         await this.refreshUser();
     }
 
+    async removeUserProfile(userId: string) {
+        requireString(userId);
+        if (this.state.user.selectedUser.id === userId) {
+            const user = Object.values(this.state.user.users).find((u) => !!u.selectedProfile);
+            if (!user) {
+                this.warn(`No valid user after remove user profile ${userId}!`);
+            } else {
+                const userId = user.id;
+                const profileId = user.selectedProfile;
+                this.log(`Switch game profile ${userId} ${profileId}`);
+                this.commit('userGameProfileSelect', { userId, profileId });
+            }
+        }
+        this.commit('userProfileRemove', userId);
+    }
+
     /**
      * Login the user by current login mode. Refresh the skin and account information.
      */
@@ -501,6 +517,9 @@ export default class UserService extends Service {
                     throw new Exception({ type: 'loginInternetNotConnected', error: e });
                 } else if (e.error === 'ForbiddenOperationException'
                     && e.errorMessage === 'Invalid credentials. Invalid username or password.') {
+                    throw new Exception({ type: 'loginInvalidCredentials', error: e });
+                } else if (e.error === 'ForbiddenOperationException'
+                    && e.errorMessage === 'Invalid credential information.') {
                     throw new Exception({ type: 'loginInvalidCredentials', error: e });
                 }
                 throw new Exception({ type: 'loginGeneral', error: e });

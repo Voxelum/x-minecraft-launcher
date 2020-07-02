@@ -44,19 +44,6 @@ export function useUserProfileStatus(userProfile: Ref<UserProfile>) {
     };
 }
 
-export function useSelectedUser() {
-    const { state } = useStore();
-    const userId = computed(() => state.user.selectedUser.id);
-    const profileId = computed(() => state.user.selectedUser.profile);
-    return { userId, profileId };
-}
-
-export function useProfileId(userId: Ref<string>, profileId: Ref<string>) {
-    const { state } = useStore();
-    const userProfile = computed(() => state.user.users[userId.value]);
-    const gameProfile = computed(() => userProfile.value.profiles[profileId.value]);
-    return { userProfile, gameProfile };
-}
 
 const NO_USER_PROFILE: UserProfile = Object.freeze({
     selectedProfile: '',
@@ -71,6 +58,20 @@ const NO_GAME_PROFILE: GameProfile = Object.freeze({
     id: '',
     name: '',
 });
+
+export function useSelectedUser() {
+    const { state } = useStore();
+    const userId = computed(() => state.user.selectedUser.id);
+    const profileId = computed(() => state.user.selectedUser.profile);
+    return { userId, profileId };
+}
+
+export function useProfileId(userId: Ref<string>, profileId: Ref<string>) {
+    const { state } = useStore();
+    const userProfile = computed(() => state.user.users[userId.value] ?? NO_USER_PROFILE);
+    const gameProfile = computed(() => userProfile.value.profiles[profileId.value] ?? NO_GAME_PROFILE);
+    return { userProfile, gameProfile };
+}
 
 export function useCurrentUser() {
     const { state } = useStore();
@@ -156,7 +157,6 @@ export function useUsers() {
 }
 
 export function useSwitchUser() {
-    const { commit: _commit } = useStore();
     const { userId, profileId } = useSelectedUser();
 
     const data = reactive({
@@ -164,7 +164,7 @@ export function useSwitchUser() {
         userId: userId.value,
     });
     const modified = computed(() => data.profileId !== profileId.value || data.userId !== userId.value);
-    const { switchUserProfile } = useServiceOnly('UserService', 'switchUserProfile');
+    const { switchUserProfile, removeUserProfile } = useServiceOnly('UserService', 'switchUserProfile', 'removeUserProfile');
     function commit() {
         return switchUserProfile({ profileId: data.profileId, userId: data.userId });
     }
@@ -173,8 +173,12 @@ export function useSwitchUser() {
         data.userId = userId;
     }
     function remove(userId: string) {
-        _commit('userProfileRemove', userId);
+        removeUserProfile(userId);
     }
+    watch([profileId, userId], () => {
+        data.profileId = profileId.value;
+        data.userId = userId.value;
+    });
     return {
         selectedUserId: userId,
         selectedProfileId: profileId,
@@ -276,7 +280,7 @@ export function useLoginValidation(isOffline: Ref<boolean>) {
 
 export function useUserSecurityStatus() {
     const { state } = useStore();
-    const security = computed(() => (state.user.users[state.user.selectedUser.id].authService === 'mojang' ? state.user.mojangSecurity : true));
+    const security = computed(() => (state.user.users[state.user.selectedUser.id]?.authService === 'mojang' ? state.user.mojangSecurity : true));
 
     return {
         security,
