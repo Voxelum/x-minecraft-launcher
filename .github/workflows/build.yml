@@ -84,3 +84,11 @@ jobs:
         prerelease: ${{ steps.prepare_release.outputs.prerelease }}
         body: ${{ steps.prepare_release.outputs.body }}
         asset_dir_path: ./build
+    - name: Upload to Azure
+      uses: ci010/upload-blob-to-azure@master
+      env:
+        AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
+      with:
+        account: xmcl
+        container: releases
+        directory: ./build
