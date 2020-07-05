@@ -1,6 +1,10 @@
-import { UpdateInfo } from 'electron-updater';
+import { UpdateInfo as _UpdateInfo } from 'electron-updater';
 import { ModuleOption } from '../root';
 import { SettingSchema } from './setting.schema';
+
+export interface UpdateInfo extends _UpdateInfo {
+    incremental: boolean;
+}
 
 interface State extends SettingSchema {
     /**
@@ -8,9 +12,9 @@ interface State extends SettingSchema {
      */
     locales: string[];
     updateInfo: UpdateInfo | null;
-    readyToUpdate: 'asar' | 'full' | 'none';
-    checkingUpdate: boolean;
-    downloadingUpdate: boolean;
+    updateStatus: 'ready' | 'none' | 'pending';
+    version: string;
+    build: number;
 }
 
 interface Mutations {
@@ -18,13 +22,13 @@ interface Mutations {
     locale: string;
     allowPrerelease: boolean;
     autoInstallOnAppQuit: boolean;
-    readyToUpdate: 'asar' | 'full' | 'none';
+    updateStatus: 'ready' | 'none' | 'pending';
     autoDownload: boolean;
     updateInfo: UpdateInfo;
-    downloadingUpdate: boolean;
-    checkingUpdate: boolean;
     settings: { [key: string]: number | string | boolean | object };
     useBmclApi: boolean;
+
+    version: [string, number];
 }
 
 
@@ -40,21 +44,19 @@ const mod: SettingModule = {
         locale: '',
         locales: [],
         updateInfo: null,
-        readyToUpdate: 'none',
+        updateStatus: 'none',
         allowPrerelease: false,
         autoInstallOnAppQuit: false,
-        downloadingUpdate: false,
-        checkingUpdate: false,
         autoDownload: false,
         useBmclAPI: true,
+        version: '',
+        build: 0,
     },
     mutations: {
-        downloadingUpdate(state, d) { state.downloadingUpdate = !!d; },
-        checkingUpdate(state, d) { state.checkingUpdate = !!d; },
         updateInfo(state, updateInfo) {
             if (typeof updateInfo === 'object') state.updateInfo = updateInfo;
         },
-        readyToUpdate(state, readyToUpdate) { state.readyToUpdate = readyToUpdate; },
+        updateStatus(state, updateStatus) { state.updateStatus = updateStatus; },
         allowPrerelease(state, allowPrerelease) {
             if (typeof allowPrerelease === 'boolean') { state.allowPrerelease = allowPrerelease; }
         },
@@ -79,6 +81,7 @@ const mod: SettingModule = {
             // Object.assign(state.settings, settings);
         },
         useBmclApi(state, use) { state.useBmclAPI = use; },
+        version(state, [version, build]) { state.version = version; state.build = build ?? 0; },
     },
 };
 

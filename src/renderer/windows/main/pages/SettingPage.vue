@@ -1,43 +1,68 @@
 <template>
-  <v-container grid-list-md fluid style="z-index: 2">
-    <v-layout wrap style="padding: 6px; 8px; overflow: auto; max-height: 95vh" fill-height>
-      <v-flex d-flex xs12 tag="h1" style="margin-bottom: 20px; " class="white--text">
+  <v-container
+    grid-list-md
+    fluid
+    style="z-index: 2"
+  >
+    <v-layout
+      wrap
+      style="padding: 6px; 8px; overflow: auto; max-height: 95vh"
+      fill-height
+    >
+      <v-flex
+        d-flex
+        xs12
+        tag="h1"
+        style="margin-bottom: 20px; "
+        class="white--text"
+      >
         <span class="headline">{{ $tc('setting.name', 2) }}</span>
       </v-flex>
-      <v-flex d-flex xs12>
-        <v-list three-line subheader style="background: transparent; width: 100%">
+      <v-flex
+        d-flex
+        xs12
+      >
+        <v-list
+          three-line
+          subheader
+          style="background: transparent; width: 100%"
+        >
           <v-subheader>{{ $t('setting.general') }}</v-subheader>
           <v-list-tile>
             <v-list-tile-content>
-              <v-list-tile-title> {{ $t('setting.language') }} </v-list-tile-title>
-              <v-list-tile-sub-title>
-                {{ $t('setting.languageDescription') }}
-              </v-list-tile-sub-title>
+              <v-list-tile-title>{{ $t('setting.language') }}</v-list-tile-title>
+              <v-list-tile-sub-title>{{ $t('setting.languageDescription') }}</v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-select v-model="selectedLocale"
-                        style="max-width: 185px;" 
-                        dark 
-                        hide-details 
-                        :items="locales" />
+              <v-select
+                v-model="selectedLocale"
+                style="max-width: 185px;"
+                dark
+                hide-details
+                :items="locales"
+              />
             </v-list-tile-action>
           </v-list-tile>
           <v-list-tile>
             <v-list-tile-content>
               <v-list-tile-title>{{ $t('setting.location') }}</v-list-tile-title>
-              <v-list-tile-sub-title>
-                {{ rootLocation }}
-              </v-list-tile-sub-title>
+              <v-list-tile-sub-title>{{ rootLocation }}</v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn disabled outline flat style="margin-right: 10px;" @click="browseRootDir">
-                {{ $t('setting.browseRoot') }}
-              </v-btn>
+              <v-btn
+                disabled
+                outline
+                flat
+                style="margin-right: 10px;"
+                @click="browseRootDir"
+              >{{ $t('setting.browseRoot') }}</v-btn>
             </v-list-tile-action>
             <v-list-tile-action>
-              <v-btn outline flat @click="showRootDir">
-                {{ $t('setting.showRoot') }}
-              </v-btn>
+              <v-btn
+                outline
+                flat
+                @click="showRootDir"
+              >{{ $t('setting.showRoot') }}</v-btn>
             </v-list-tile-action>
           </v-list-tile>
           <v-list-tile>
@@ -45,53 +70,62 @@
               <v-checkbox v-model="useBmclAPI" />
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title> {{ $t('setting.useBmclAPI') }} </v-list-tile-title>
-              <v-list-tile-sub-title> {{ $t('setting.useBmclAPIDescription') }} </v-list-tile-sub-title>
+              <v-list-tile-title>{{ $t('setting.useBmclAPI') }}</v-list-tile-title>
+              <v-list-tile-sub-title>{{ $t('setting.useBmclAPIDescription') }}</v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
       </v-flex>
       <v-divider dark />
       <v-flex style="background: transparent">
-        <v-list three-line subheader style="background: transparent">
+        <v-list
+          three-line
+          subheader
+          style="background: transparent"
+        >
           <v-subheader>{{ $t('setting.update') }}</v-subheader>
           <v-list-tile avatar>
             <v-list-tile-action>
-              <v-btn icon :loading="checkingUpdate" @click="checkUpdate">
-                <v-icon>
-                  refresh
-                </v-icon>
+              <v-btn
+                icon
+                :loading="checkingUpdate"
+                @click="checkUpdate"
+              >
+                <v-icon>refresh</v-icon>
               </v-btn>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title> {{ $t('setting.latestVersion') }} </v-list-tile-title>
-              <v-list-tile-sub-title> {{ updateInfo.version || 'Unknown' }} </v-list-tile-sub-title>
+              <v-list-tile-title>{{ $t('setting.latestVersion') }}</v-list-tile-title>
+              <v-list-tile-sub-title>{{ version }} build {{ build }}  {{ updateInfo.version ? `-> ${updateInfo.version}` : '' }}</v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn v-if="!readyToUpdate" flat @click="viewUpdateDetail">
-                {{ $t('setting.updateToThisVersion') }}
-              </v-btn>
-              <v-btn v-else block @click="viewUpdateDetail">
-                {{ $t('setting.installAndQuit') }}
-              </v-btn>
+              <v-btn
+                :loading="checkingUpdate"
+                :disabled="updateStatus === 'none'"
+                flat
+                @click="viewUpdateDetail"
+              >{{ updateStatus === 'none' ? $t('setting.alreadyLatest') : updateStatus === 'pending' ? $t('setting.updateToThisVersion') : $t('setting.installAndQuit') }}</v-btn>
             </v-list-tile-action>
           </v-list-tile>
-          <v-list-tile avatar>
+          <!-- <v-list-tile avatar>
             <v-list-tile-action>
               <v-checkbox v-model="autoInstallOnAppQuit" />
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title> {{ $t('setting.autoInstallOnAppQuit') }} </v-list-tile-title>
-              <v-list-tile-sub-title> {{ $t('setting.autoInstallOnAppQuitDescription') }} </v-list-tile-sub-title>
+              <v-list-tile-title>{{ $t('setting.autoInstallOnAppQuit') }}</v-list-tile-title>
+              <v-list-tile-sub-title>{{ $t('setting.autoInstallOnAppQuitDescription') }}</v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-list-tile avatar>
             <v-list-tile-action>
-              <v-checkbox v-model="autoDownload" dark />
+              <v-checkbox
+                v-model="autoDownload"
+                dark
+              />
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title> {{ $t('setting.autoDownload') }} </v-list-tile-title>
-              <v-list-tile-sub-title> {{ $t('setting.autoDownloadDescription') }} </v-list-tile-sub-title>
+              <v-list-tile-title>{{ $t('setting.autoDownload') }}</v-list-tile-title>
+              <v-list-tile-sub-title>{{ $t('setting.autoDownloadDescription') }}</v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-list-tile avatar>
@@ -99,27 +133,30 @@
               <v-checkbox v-model="allowPrerelease" />
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title> {{ $t('setting.allowPrerelease') }} </v-list-tile-title>
-              <v-list-tile-sub-title> {{ $t('setting.allowPrereleaseDescription') }} </v-list-tile-sub-title>
+              <v-list-tile-title>{{ $t('setting.allowPrerelease') }}</v-list-tile-title>
+              <v-list-tile-sub-title>{{ $t('setting.allowPrereleaseDescription') }}</v-list-tile-sub-title>
             </v-list-tile-content>
-          </v-list-tile>
+          </v-list-tile>-->
           <v-subheader>{{ $t('setting.appearance') }}</v-subheader>
           <v-list-tile avatar>
             <v-list-tile-action>
               <v-checkbox v-model="showParticle" />
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title> {{ $t('setting.showParticle') }} </v-list-tile-title>
-              <v-list-tile-sub-title> {{ $t('setting.showParticleDescription') }} </v-list-tile-sub-title>
+              <v-list-tile-title>{{ $t('setting.showParticle') }}</v-list-tile-title>
+              <v-list-tile-sub-title>{{ $t('setting.showParticleDescription') }}</v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-list-tile>
             <v-list-tile-content>
-              <v-list-tile-title> {{ $t('setting.particleMode') }} </v-list-tile-title>
-              <v-list-tile-sub-title> {{ $t('setting.particleModeDescription') }} </v-list-tile-sub-title>
+              <v-list-tile-title>{{ $t('setting.particleMode') }}</v-list-tile-title>
+              <v-list-tile-sub-title>{{ $t('setting.particleModeDescription') }}</v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-select v-model="particleMode" :items="particleModes" />
+              <v-select
+                v-model="particleMode"
+                :items="particleModes"
+              />
             </v-list-tile-action>
           </v-list-tile>
         </v-list>
@@ -127,57 +164,70 @@
     </v-layout>
 
     <update-info-dialog v-model="viewingUpdateDetail" />
-    <v-dialog :value="reloadDialog" :persistent="!reloadError">
-      <v-card v-if="!reloading" dark>
+    <v-dialog
+      :value="reloadDialog"
+      :persistent="!reloadError"
+    >
+      <v-card
+        v-if="!reloading"
+        dark
+      >
         <v-card-title>
-          <h2 style="display: block; min-width: 100%">
-            {{ $t('setting.setRootTitle') }}
-          </h2>
-          <div style="color: grey;">
-            {{ rootLocation }}
-          </div>
+          <h2 style="display: block; min-width: 100%">{{ $t('setting.setRootTitle') }}</h2>
+          <div style="color: grey;">{{ rootLocation }}</div>
         </v-card-title>
         <v-card-text>
-          <p>
-            {{ $t('setting.setRootDescription') }}
-          </p>
-          <p>
-            {{ $t('setting.setRootCause') }}
-          </p>
+          <p>{{ $t('setting.setRootDescription') }}</p>
+          <p>{{ $t('setting.setRootCause') }}</p>
         </v-card-text>
         <v-divider />
         <v-card-actions>
-          <v-checkbox v-model="clearData" style="margin-left: 10px" persistent-hint :hint="$t('setting.cleanOldDataHint')"
-                      :label="$t('setting.cleanOldData')" />
-          <v-checkbox v-model="migrateData" persistent-hint :hint="$t('setting.copyOldToNewHint')"
-                      :label="$t('setting.copyOldToNew')" />
+          <v-checkbox
+            v-model="clearData"
+            style="margin-left: 10px"
+            persistent-hint
+            :hint="$t('setting.cleanOldDataHint')"
+            :label="$t('setting.cleanOldData')"
+          />
+          <v-checkbox
+            v-model="migrateData"
+            persistent-hint
+            :hint="$t('setting.copyOldToNewHint')"
+            :label="$t('setting.copyOldToNew')"
+          />
         </v-card-actions>
         <v-card-actions>
-          <v-btn flat large @click="doCancelApplyRoot">
-            {{ $t('cancel') }}
-          </v-btn>
+          <v-btn
+            flat
+            large
+            @click="doCancelApplyRoot"
+          >{{ $t('cancel') }}</v-btn>
           <v-spacer />
-          <v-btn flat large @click="doApplyRoot()">
-            {{ $t('setting.apply') }}
-          </v-btn>
+          <v-btn
+            flat
+            large
+            @click="doApplyRoot()"
+          >{{ $t('setting.apply') }}</v-btn>
         </v-card-actions>
       </v-card>
-      <v-card v-else dark>
+      <v-card
+        v-else
+        dark
+      >
         <v-card-title>
-          <h2>
-            {{ $t('setting.waitReload') }}
-          </h2>
+          <h2>{{ $t('setting.waitReload') }}</h2>
         </v-card-title>
         <v-spacer />
-        <v-progress-circular v-if="!reloadError" indeterminate />
+        <v-progress-circular
+          v-if="!reloadError"
+          indeterminate
+        />
         <v-card-text v-else>
           {{ $t('setting.reloadFailed') }}:
           {{ reloadError }}
         </v-card-text>
         <v-card-actions v-if="reloadError">
-          <v-btn>
-            {{ $t('ok') }}
-          </v-btn>
+          <v-btn>{{ $t('ok') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -185,8 +235,8 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, ref, toRefs, watch, Ref } from '@vue/composition-api';
-import { useStore, useI18n, useParticle, useSettings, useIpc, useNativeDialog, useService } from '@/hooks';
+import { defineComponent, reactive, ref, toRefs, watch, Ref, computed } from '@vue/composition-api';
+import { useStore, useI18n, useParticle, useSettings, useIpc, useNativeDialog, useService, useLauncherVersion } from '@/hooks';
 import localMapping from '@/assets/locales/index.json';
 
 import UpdateInfoDialog from './SettingPageUpdateInfoDialog.vue';
@@ -214,6 +264,7 @@ export default defineComponent({
       viewingUpdateDetail: false,
     });
 
+    const { version, build } = useLauncherVersion();
     const particleModes: Ref<{ value: string; text: string }[]> = ref(['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) })));
     watch(settings.selectedLocale, () => {
       particleModes.value = ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) }));
@@ -221,6 +272,8 @@ export default defineComponent({
     return {
       ...toRefs(data),
       ...settings,
+      version,
+      build,
       locales: settings.locales.value.map(l => ({ text: localMapping[l] ?? l, value: l })),
       showParticle,
       particleMode,

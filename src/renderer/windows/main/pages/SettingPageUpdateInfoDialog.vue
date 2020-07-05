@@ -24,7 +24,7 @@
       <v-divider />
       <v-card-text style="overflow: auto;" v-html="updateInfo.releaseNotes" />
       <v-card-actions>
-        <v-btn v-if="!readyToUpdate" block color="primary" flat :loading="downloadingUpdate" :disabled="downloadingUpdate" @click="downloadUpdate">
+        <v-btn v-if="updateStatus === 'pending'" block color="primary" flat :loading="downloadingUpdate" :disabled="downloadingUpdate" @click="downloadUpdate">
           <v-icon color="white" left>
             cloud_download
           </v-icon>
