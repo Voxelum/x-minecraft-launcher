@@ -1,8 +1,7 @@
 import { copyPassively, exists } from '@main/util/fs';
 import { Task } from '@xmcl/task';
 import { join } from 'path';
-import { SemVer } from 'semver';
-import Service from './Service';
+import Service, { Singleton } from './Service';
 
 export default class BaseService extends Service {
     async init() {
@@ -47,53 +46,59 @@ export default class BaseService extends Service {
     openDirectory = this.appManager.openDirectory;
 
     async quitAndInstall() {
-        if (this.state.setting.readyToUpdate !== 'none') {
-            if (this.state.setting.readyToUpdate === 'asar') {
+        if (this.state.setting.updateStatus === 'ready') {
+            if (this.state.setting.updateInfo?.incremental) {
+                this.warn('Restart to install a asar update!');
                 await this.updateManager.quitAndInstallAsar();
             } else {
+                this.warn('Restart to install a full update!');
                 this.updateManager.quitAndInstallFullUpdate();
             }
+        } else {
+            this.warn('There is no update avaiable!');
         }
     }
 
+    @Singleton()
     async checkUpdate() {
-        this.commit('checkingUpdate', true);
-        const checkUpdate = Task.create('checkUpdate', async () => {
-            try {
-                const info = await this.updateManager.checkForUpdates();
-                this.commit('updateInfo', info.updateInfo);
-                return info;
-            } catch {
-                return undefined;
-            } finally {
-                this.commit('checkingUpdate', false);
-            }
-        });
-        return this.submit(checkUpdate);
+        let handle = this.submit(this.updateManager.checkUpdateTask());
+        try {
+            this.log('Check update');
+            let info = await handle.wait();
+            this.commit('updateInfo', info);
+        } catch (e) {
+            this.error('Check update failed');
+            this.error(e);
+            throw e;
+        }
     }
 
     /**
      * Download the update if there is avaiable update
      */
+    @Singleton()
     async downloadUpdate() {
         if (!this.state.setting.updateInfo) {
             throw new Error('Cannot download update if we don\'t check the version update!');
         }
-        let currentVersion = new SemVer(this.state.launcherVersion);
-        let newVersion = new SemVer(this.state.setting.updateInfo.version);
         let task: Task<void>;
-        if (newVersion.major !== currentVersion.major) {
+        if (!this.state.setting.updateInfo.incremental) {
             task = this.updateManager.downloadFullUpdateTask();
+            this.log('Start to download full update!');
         } else {
-            let asarFile = this.state.setting.updateInfo.files.find((f) => f.url.endsWith('app.asar'));
-            if (asarFile) {
-                task = this.updateManager.downloadAsarUpdateTask(asarFile.url, asarFile.sha512);
-            } else {
-                task = this.updateManager.downloadFullUpdateTask();
-            }
+            task = this.updateManager.downloadAsarUpdateTask();
+            this.log('Start to download incremental update!');
         }
         let handle = this.submit(task);
-        await handle.wait();
+        try {
+            await handle.wait();
+            this.commit('updateStatus', 'ready');
+            this.log('Successfully download the update!');
+        } catch (e) {
+            this.error('Fail to download update!');
+            this.error(e);
+            throw e;
+        }
     }
 
     quit = this.appManager.quit;

@@ -55,13 +55,19 @@ export default function provideServiceProxy() {
             if (s in semaphore) {
                 semaphore[s] += 1;
             } else {
-                // semaphore[s] = 1;
                 set(semaphore, s, 1);
             }
         }
     });
     ipcRenderer.on('release', (e, res) => {
-        release(semaphore, res);
+        const sem = res instanceof Array ? res : [res];
+        for (const s of sem) {
+            if (s in semaphore) {
+                semaphore[s] = Math.max(0, semaphore[s] - 1);
+            } else {
+                set(semaphore, s, 0);
+            }
+        }
     });
     provide(SERVICES_SEMAPHORE_KEY, semaphore);
     return serviceProxy;

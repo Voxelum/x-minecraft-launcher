@@ -2,6 +2,7 @@ import { computed, Ref } from '@vue/composition-api';
 import { UpdateInfo } from 'electron-updater';
 import { useStore } from './useStore';
 import { useServiceOnly } from './useService';
+import { useBusy } from './useSemaphore';
 
 export function useSettings() {
     const { state, commit } = useStore();
@@ -26,9 +27,9 @@ export function useSettings() {
         get: () => state.setting.useBmclAPI,
         set: v => commit('useBmclApi', v),
     });
-    const readyToUpdate = computed(() => state.setting.readyToUpdate);
-    const checkingUpdate = computed(() => state.setting.checkingUpdate);
-    const downloadingUpdate = computed(() => state.setting.downloadingUpdate);
+    const updateStatus = computed(() => state.setting.updateStatus);
+    const checkingUpdate = useBusy('checkUpdate');
+    const downloadingUpdate = useBusy('downloadUpdate');
     const updateInfo: Ref<UpdateInfo> = computed(() => state.setting.updateInfo || {}) as any;
 
     return {
@@ -39,24 +40,34 @@ export function useSettings() {
         autoDownload,
         autoInstallOnAppQuit,
         useBmclAPI,
-        readyToUpdate,
+        updateStatus,
         checkingUpdate,
         downloadingUpdate,
         updateInfo,
     };
 }
 
+export function useLauncherVersion() {
+    const { state } = useStore();
+    const version = computed(() => state.setting.version);
+    const build = computed(() => state.setting.build);
+    return {
+        version,
+        build,
+    };
+}
+
 export function useUpdateInfo() {
     const { state } = useStore();
-    const checkingUpdate = computed(() => state.setting.checkingUpdate);
-    const downloadingUpdate = computed(() => state.setting.downloadingUpdate);
+    const checkingUpdate = useBusy('checkUpdate');
+    const downloadingUpdate = useBusy('downloadUpdate');
     const updateInfo = computed(() => state.setting.updateInfo);
-    const readyToUpdate = computed(() => state.setting.readyToUpdate);
+    const updateStatus = computed(() => state.setting.updateStatus);
     return {
         checkingUpdate,
         downloadingUpdate,
         updateInfo,
-        readyToUpdate,
+        updateStatus,
         ...useServiceOnly('BaseService', 'downloadUpdate', 'quitAndInstall', 'checkUpdate'),
     };
 }

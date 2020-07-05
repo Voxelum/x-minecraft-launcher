@@ -13,7 +13,16 @@
 // Install `electron-debug` with `devtron`
 require('electron-debug')({
     showDevTools: true
-})
+});
+
+import { autoUpdater } from 'electron-updater';
+
+autoUpdater.setFeedURL({
+    provider: 'github',
+    repo: 'x-minecraft-launcher',
+    owner: 'voxelum',
+});
+autoUpdater.logger = null;
 
 // Require `main` process to boot app
-require('./index')
+require('./index');

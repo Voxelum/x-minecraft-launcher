@@ -1,4 +1,4 @@
-import { createhDynamicThrottle } from '@main/util/trafficAgent';
+import { createhDynamicThrottle as createDynamicThrottle } from '@main/util/trafficAgent';
 import { fitMinecraftLauncherProfileData } from '@main/util/userData';
 import { MutationKeys } from '@universal/store';
 import { UserSchema } from '@universal/store/modules/user.schema';
@@ -128,9 +128,9 @@ export interface UploadSkinOptions {
 export default class UserService extends Service {
     private refreshSkinRecord: Record<string, boolean> = {};
 
-    private lookup = createhDynamicThrottle(lookup, (uuid, options = {}) => (options.api ?? PROFILE_API_MOJANG).profile, 2400);
+    private lookup = createDynamicThrottle(lookup, (uuid, options = {}) => (options.api ?? PROFILE_API_MOJANG).profile, 2400);
 
-    private validate = createhDynamicThrottle(validate, ({ accessToken }, api) => (api ?? AUTH_API_MOJANG).hostName, 2400);
+    private validate = createDynamicThrottle(validate, ({ accessToken }, api) => (api ?? AUTH_API_MOJANG).hostName, 2400);
 
     async save({ mutation }: { mutation: MutationKeys }) {
         switch (mutation) {
