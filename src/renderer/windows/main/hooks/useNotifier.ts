@@ -88,7 +88,7 @@ export function useNotifyQueueConsumer() {
     const queueLength = computed(() => queue.value.length);
 
     function consume() {
-        let not = queue.value.shift();
+        let not = queue.value.pop();
         if (not) {
             data.level = not.level;
             data.title = not.title;
