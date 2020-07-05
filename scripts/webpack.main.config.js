@@ -106,6 +106,7 @@ if (process.env.NODE_ENV === 'production') {
     mainConfig.plugins.push(
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': '"production"',
+            'process.env.BUILD_NUMBER': process.env.BUILD_NUMBER,
         }),
         new BundleAnalyzerPlugin({
             analyzerMode: 'static',
