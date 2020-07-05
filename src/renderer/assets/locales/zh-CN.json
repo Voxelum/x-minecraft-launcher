@@ -34,10 +34,10 @@
   "criticalGraphics": "图像设置",
   "curseforge": {
     "createdDate": "创建日期",
-    "gameversion": "游戏版本",
-    "install": "安装",
     "downloadOnly": "只下载",
     "downloaded": "已下载",
+    "gameversion": "游戏版本",
+    "install": "安装",
     "installed": "已安装",
     "lastUpdate": "上次更新日期",
     "license": "版权许可",
@@ -443,15 +443,15 @@
       "unresolvableProblems": "无法处理某些启动问题",
       "unresolvableProblemsText": "启动器无法自动处理一些启动前置需求。你可以尝试在主页让启动器自动修复。如果你反复遇到此问题，请联系作者"
     },
+    "game": "本地游戏",
     "hideLauncher": "Minecraft启动后隐藏启动器",
     "launch": "启动",
     "launching": "启动中...",
     "launchingSlow": "还在启动…Minecraft图形界面启动的会比较慢呢~",
+    "localhost": "本地服务器",
     "openCrashReportFolder": "打开崩溃日志文件夹",
     "openLogFolder": "打开日志文件夹",
-    "showLog": "Minecraft启动后显示日志",
-    "localhost": "本地服务器",
-    "game": "本地游戏"
+    "showLog": "Minecraft启动后显示日志"
   },
   "launch.hideLauncher": "Minecraft 启动后隐藏启动器",
   "launch.showLog": "Minecraft 启动后显示日志",
@@ -484,21 +484,16 @@
     "version": "Minecraft 版本"
   },
   "mod": {
+    "acceptVersion": "需要 Minecraft {version} 和 Forge {loaderVersion}",
     "backToAllMods": "返回所有 Mods",
     "compatible": "可用于当前版本。",
-    "incompatible": "不兼容当前版本。",
-    "nocompatible": "无法解析兼容性。",
-    "acceptVersion": "需要 Minecraft {version} 和 Forge {loaderVersion}",
     "deletion": "删除 Mod",
     "deletionHint": "你将失去这个 Mod 的文件和信息。你确定吗？",
     "export": "导出 Mod",
     "hideIncompatible": "隐藏不兼容 Mods",
     "hint": "将Mod的jar文件拖入此处来导入",
-    "showFile": "打开 Mod 所在位置 {file}",
-    "openLink": "打开 Mod 链接 {url}",
-    "searchOnCurseforge": "在 Curseforge 上搜索该 Mod",
-    "showInCurseforge": "在 Curseforge 上显示该 Mod",
     "import": "导入 Mod",
+    "incompatible": "不兼容当前版本。",
     "missing": {
       "absent": "",
       "checkAvailabilities": "",
@@ -511,7 +506,12 @@
       "unknown": ""
     },
     "name": "Mod | Mods",
+    "nocompatible": "无法解析兼容性。",
+    "openLink": "打开 Mod 链接 {url}",
+    "searchOnCurseforge": "在 Curseforge 上搜索该 Mod",
     "selected": "已选 Mods",
+    "showFile": "打开 Mod 所在位置 {file}",
+    "showInCurseforge": "在 Curseforge 上显示该 Mod",
     "showIncompatible": "显示不兼容 Mods",
     "unselected": "未选 Mods"
   },
@@ -519,6 +519,10 @@
   "next": "下一项",
   "no": "否",
   "nodescription": "暂时没有简介",
+  "notification": {
+    "empty": "暂时没有通知",
+    "name": "通知"
+  },
   "ok": "好的",
   "optional": "可选的",
   "popular": "热度",
@@ -664,10 +668,10 @@
     "import": "导入资源包",
     "incompatible": "不兼容的资源包格式({format})。适用范围 {accept}。当前版本 {actual}。",
     "name": "资源包 | 资源包",
-    "showFile": "在文件夹中显示 {file}",
     "searchOnCurseforge": "在 Curseforge 中查找 {name}",
-    "showInCurseforge": "在 Curseforge 中显示 {name}",
     "selected": "已选资源包",
+    "showFile": "在文件夹中显示 {file}",
+    "showInCurseforge": "在 Curseforge 中显示 {name}",
     "unselected": "未选资源包"
   },
   "save": {
@@ -700,6 +704,7 @@
   "setting": {
     "allowPrerelease": "是否下载抢先版",
     "allowPrereleaseDescription": "抢先版可能不是那么稳定",
+    "alreadyLatest": "已经是最新",
     "appearance": "外观",
     "apply": "开始迁移",
     "autoDownload": "自动下载",
@@ -760,11 +765,11 @@
     "accessToken": "访问令牌",
     "account": {
       "add": "添加账号",
-      "switch": "切换账号",
-      "removeTitle": "移除账号",
-      "removeDescription": "这将抹去所有关于此账号的信息，您是否确定？",
       "removeCancel": "取消",
-      "removeConfirm": "确定移除"
+      "removeConfirm": "确定移除",
+      "removeDescription": "这将抹去所有关于此账号的信息，您是否确定？",
+      "removeTitle": "移除账号",
+      "switch": "切换账号"
     },
     "authMode": "验证服务",
     "authService": "验证服务器",
@@ -875,9 +880,5 @@
     "unknown": "未知的版本",
     "unset": "未启用"
   },
-  "yes": "是",
-  "notification": {
-    "name": "通知",
-    "empty": "暂时没有通知"
-  }
+  "yes": "是"
 }

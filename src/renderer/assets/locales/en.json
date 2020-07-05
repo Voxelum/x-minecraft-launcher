@@ -542,6 +542,10 @@
   "name": "Name",
   "next": "Next",
   "no": "No",
+  "notification": {
+    "empty": "No Notification",
+    "name:": "Notification"
+  },
   "ok": "OK",
   "optional": "Optional",
   "popular": "Popularity",
@@ -722,6 +726,7 @@
   "setting": {
     "allowPrerelease": "Download Prerelease",
     "allowPrereleaseDescription": "Prerelease might be instable",
+    "alreadyLatest": "Up To Date",
     "appearance": "Appearance",
     "apply": "Apply Setting",
     "autoDownload": "Auto Download",
@@ -791,11 +796,11 @@
     "accessToken": "Access Token",
     "account": {
       "add": "Add Account",
-      "switch": "Switch Account",
-      "removeTitle": "Remove Account",
-      "removeDescription": "This will wipe out all the info of this account. Are you sure?",
       "removeCancel": "Cancel",
-      "removeConfirm": "Remove"
+      "removeConfirm": "Remove",
+      "removeDescription": "This will wipe out all the info of this account. Are you sure?",
+      "removeTitle": "Remove Account",
+      "switch": "Switch Account"
     },
     "authMode": "Auth Service",
     "authService": "Authorize Service",
@@ -909,9 +914,5 @@
     "unknown": "Unknown Version",
     "unset": "Unset"
   },
-  "yes": "Yes",
-  "notification": {
-    "name:": "Notification",
-    "empty": "No Notification"
-  }
+  "yes": "Yes"
 }
