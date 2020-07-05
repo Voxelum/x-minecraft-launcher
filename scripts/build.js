@@ -9,8 +9,10 @@ const webpack = require('webpack');
 const Multispinner = require('multispinner');
 const { writeFileSync } = require('fs');
 const { join } = require('path');
+const { build: electronBuild } = require('electron-builder');
 
-
+const liteConfig = require('./build.lite.config');
+const fullConfig = require('./build.full.config');
 const mainConfig = require('./webpack.main.config');
 const rendererConfig = require('./webpack.renderer.config');
 
@@ -18,9 +20,6 @@ const doneLog = `${chalk.bgGreen.white(' DONE ')}  `;
 const errorLog = `${chalk.bgRed.white(' ERROR ')}  `;
 const okayLog = `${chalk.bgBlue.white(' OKAY ')}  `;
 const isCI = process.env.CI || false;
-
-if (process.env.BUILD_TARGET === 'clean') clean();
-else build();
 
 function clean() {
     del.sync(['build/*', '!build/icons', '!build/icons/icon.*', '!build/electron-publisher-customer.js']);
@@ -39,12 +38,14 @@ function build() {
 
     let results = '';
 
-    m.on('success', () => {
-        process.stdout.write('\x1B[2J\x1B[0f');
-        console.log(`\n\n${results}`);
-        console.log(`${okayLog}\n`);
-        process.exit();
-    });
+    let p = new Promise((res) => {
+        m.on('success', () => {
+            process.stdout.write('\x1B[2J\x1B[0f');
+            console.log(`\n\n${results}`);
+            res();
+        });
+    })
+
 
     pack(mainConfig).then((result) => {
         results += `${result}\n\n`;
@@ -55,7 +56,6 @@ function build() {
         console.error(`\n${err}\n`);
         process.exit(1);
     });
-
     pack(rendererConfig).then((result) => {
         results += `${result}\n\n`;
         m.success('renderer');
@@ -64,7 +64,9 @@ function build() {
         console.log(`\n  ${errorLog}failed to build renderer process`);
         console.error(`\n${err}\n`);
         process.exit(1);
-    });
+    })
+
+    return p;
 }
 
 function pack(config) {
@@ -99,4 +101,28 @@ function pack(config) {
             }
         });
     });
+}
+
+function buildFull() {
+    return electronBuild({ publish: "never", config: fullConfig }).then((v) => {
+        console.log(`${okayLog}${v.join(' ')}`);
+    });
+}
+
+function buildLite() {
+    return electronBuild({ publish: "never", config: liteConfig }).then((v) => {
+        console.log(`${okayLog}${v.join(' ')}`);
+    });
+}
+
+switch (process.env.BUILD_TARGET) {
+    case 'clean':
+        clean();
+        break;
+    case 'production':
+        build().then(process.env.FULL_RELEASE === 'true' ? buildFull : buildLite);
+        break;
+    default:
+        build();
+        break;
 }
