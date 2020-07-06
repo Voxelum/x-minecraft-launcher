@@ -12,6 +12,10 @@ async function main(output) {
     if (start !== -1) {
         const end = changelogLines.slice(start + 1).findIndex(l => l.startsWith('## '))
         body = changelogLines.slice(start, end).join('\n') + '\n';
+    } else {
+        console.warn(`Not found this version start:`);
+        let lines = changelogLines.filter(c => c.startsWith('##'));
+        for (let l of lines) console.log(`${l.start(`## [${version}]`)}: ${l}`);
     }
 
     console.log(body);
