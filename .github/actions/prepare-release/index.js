@@ -4,9 +4,7 @@ const core = require('@actions/core');
 async function main(output) {
     const { version } = JSON.parse(fs.readFileSync(`package.json`).toString());
     const changelog = fs.readFileSync('CHANGELOG.md').toString();
-    const changelogLines = changelog.split('\n')
-
-    console.log(changelog);
+    const changelogLines = changelog.split('\n').map(s => s.trim());
 
     const start = changelogLines.findIndex(l => l.startsWith(`## [${version}]`));
 
