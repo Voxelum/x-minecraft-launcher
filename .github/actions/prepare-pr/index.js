@@ -22,7 +22,7 @@ async function main(output) {
 
     const start = changelogLines.findIndex(l => l.startsWith('## '));
     const end = changelogLines.slice(start + 1).findIndex(l => l.startsWith('## '))
-    const body = changelogLines.slice(start, end).join('\n') + '\n';
+    const body = changelogLines.slice(start, start + end).join('\n') + '\n';
 
     console.log(body);
 
