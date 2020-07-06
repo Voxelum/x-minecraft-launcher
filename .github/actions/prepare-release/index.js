@@ -6,6 +6,8 @@ async function main(output) {
     const changelog = fs.readFileSync('CHANGELOG.md').toString();
     const changelogLines = changelog.split('\n')
 
+    console.log(changelog);
+
     const start = changelogLines.findIndex(l => l.startsWith(`## [${version}]`));
 
     let body = 'Manual Release';
