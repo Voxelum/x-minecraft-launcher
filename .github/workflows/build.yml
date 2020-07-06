@@ -58,6 +58,48 @@ jobs:
         name: build
         path: build/win-unpacked/resources/app.asar
 
+  repare-release:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ !startsWith(github.event.commits[0].message, 'chore(release)') }}
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fetch All
+      run: git fetch --prune --unshallow
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install
+      run: |
+        npm ci
+      env:
+        CI: true
+    - name: Bump Version
+      id: version
+      uses: ./.github/actions/bump-version
+
+    - name: Prepare Pull Reuqest
+      if: ${{ steps.version.outputs.release == 'true' }}
+      id: pr
+      uses: ./.github/actions/prepare-pr
+
+    - name: Create Pull Request
+      if: ${{ steps.version.outputs.release == 'true' }}
+      uses: peter-evans/create-pull-request@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: ${{ steps.pr.outputs.message }}
+        title: ${{ steps.pr.outputs.title }}
+        body: ${{ steps.pr.outputs.body }}
+        reviewers: ci010
+        assignees: ci010
+        branch: prepare-release
+
   release:
     if: startsWith(github.event.commits[0].message, 'chore(release)')
     runs-on: ubuntu-latest
