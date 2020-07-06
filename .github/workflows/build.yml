@@ -48,7 +48,7 @@ jobs:
       if: ${{ runner.os == 'Windows' && startsWith(github.event.commits[0].message, 'chore(release)') }} 
       uses: actions/upload-artifact@v2
       with:
-        name: app.asar
+        name: build
         path: build/win-unpacked/resources/app.asar
 
   release:
@@ -70,11 +70,6 @@ jobs:
     - name: Install
       run: |
         npm ci
-    - name: Download Asar
-      uses: actions/download-artifact@v2
-      with:
-        name: app.asar
-        path: build/app.asar
     - name: Download Build
       uses: actions/download-artifact@v2
       with:

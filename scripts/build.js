@@ -15,6 +15,7 @@ const liteConfig = require('./build.lite.config');
 const fullConfig = require('./build.full.config');
 const mainConfig = require('./webpack.main.config');
 const rendererConfig = require('./webpack.renderer.config');
+const { move, readdir } = require('fs-extra');
 
 const doneLog = `${chalk.bgGreen.white(' DONE ')}  `;
 const errorLog = `${chalk.bgRed.white(' ERROR ')}  `;
@@ -103,8 +104,18 @@ function pack(config) {
     });
 }
 
+async function renameFiles(s) {
+    let files = await readdir('build');
+    for (let file of files) {
+        if (file.indexOf(' ') !== -1) {
+            await move(`build/${file}`, `build/${file.replace(/ /g, '-')}`)
+        }
+    }
+    return s;
+}
+
 function buildFull() {
-    return electronBuild({ publish: "never", config: fullConfig }).then((v) => {
+    return electronBuild({ publish: "never", config: fullConfig }).then(renameFiles).then((v) => {
         console.log(`${okayLog}${v.join(' ')}`);
     });
 }
