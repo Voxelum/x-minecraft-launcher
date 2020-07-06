@@ -8,6 +8,17 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.4.2](https://github.com/voxelum/x-minecraft-launcher/compare/v0.4.1...v0.4.2)
+
+* chore: inject build number ([4d72fc6](https://github.com/voxelum/x-minecraft-launcher/commit/4d72fc6))
+* chore: ship the release to azure ([8f02c91](https://github.com/voxelum/x-minecraft-launcher/commit/8f02c91))
+* chore: upload app.asar to release ([91c716a](https://github.com/voxelum/x-minecraft-launcher/commit/91c716a))
+* fix: optimize the auto update experience ([3a942d9](https://github.com/voxelum/x-minecraft-launcher/commit/3a942d9))
+* fix: pop up latest notification not the next one ([cd28ead](https://github.com/voxelum/x-minecraft-launcher/commit/cd28ead))
+
+
 ## [0.4.1](https://github.com/voxelum/x-minecraft-launcher/compare/v0.4.0...v0.4.1)
 
 * chore: adjust the productName ([b4705f0](https://github.com/voxelum/x-minecraft-launcher/commit/b4705f0))
