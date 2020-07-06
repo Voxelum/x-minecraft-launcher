@@ -10,10 +10,12 @@ async function main(output) {
 
     let body = 'Manual Release';
     if (start !== -1) {
+        console.log(`Found start line @${start}`);
         const end = changelogLines.slice(start + 1).findIndex(l => l.startsWith('## '))
+        console.log(`Found end line @${end}`);
         body = changelogLines.slice(start, end).join('\n') + '\n';
     } else {
-        console.warn(`Not found this version start:`);
+        console.log(`Not found this version start:`);
         let lines = changelogLines.filter(c => c.startsWith('##'));
         for (let l of lines) console.log(`${l.start(`## [${version}]`)}: ${l}`);
     }
