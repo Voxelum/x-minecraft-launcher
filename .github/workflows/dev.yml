@@ -17,6 +17,9 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 12
+    - name: Install
+      run: |
+        npm ci
     - name: Prepare Release
       id: prepare_release
       uses: ./.github/actions/prepare-release

@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches:
-      - workflow-reorg
+      - master
 
 jobs:
   build:
@@ -45,7 +45,7 @@ jobs:
         name: build
         path: build/*.*
     - name: Upload Windows Asar
-      if: ${{ runner.os == 'Windows' }} 
+      if: ${{ runner.os == 'Windows' && startsWith(github.event.commits[0].message, 'chore(release)') }} 
       uses: actions/upload-artifact@v2
       with:
         name: app.asar
@@ -91,7 +91,7 @@ jobs:
       with:
         tag_name: ${{ steps.prepare_release.outputs.tag }}
         release_name: ${{ steps.prepare_release.outputs.release }}
-        draft: true
+        draft: false
         prerelease: ${{ steps.prepare_release.outputs.prerelease }}
         body: ${{ steps.prepare_release.outputs.body }}
         asset_dir_path: ./build
