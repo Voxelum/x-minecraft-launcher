@@ -6,44 +6,6 @@ on:
       - workflow-reorg
 
 jobs:
-  pack:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 12
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12
-    - name: Get npm cache directory
-      id: npm-cache
-      run: |
-        echo "::set-output name=dir::$(npm config get cache)"
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.npm-cache.outputs.dir }}
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-    - name: Install
-      run: |
-        npm ci
-    - name: Build
-      run: |
-        npm run build
-        npx electron-builder --publish=never
-      env:
-        BUILD_NUMBER: ${{ steps.vars.outputs.build_number }}
-    - name: Upload Build
-      uses: actions/upload-artifact@v2
-      with:
-        name: build
-        path: build/*.*
-    - name: Upload Windows Asar
-      if: runner.os == 'windows-latest'
-      uses: actions/upload-artifact@v2
-      with:
-        name: app.asar
-        path: build/win-unpacked/resources/app.asar
   build:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -72,22 +34,18 @@ jobs:
       uses: ./.github/actions/get-build-number
       id: vars
     - name: Build
-      if: ${{ !startsWith(github.event.commits[0].message, 'chore(release)') }}
       run: |
-        npm run build:lite
-    - name: Build
-      if: startsWith(github.event.commits[0].message, 'chore(release)')
-      run: |
-        npm run build:full
+        npm run build:production
       env:
         BUILD_NUMBER: ${{ steps.vars.outputs.build_number }}
+        FULL_RELEASE: ${{ startsWith(github.event.commits[0].message, 'chore(release)') }}
     - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
         name: build
         path: build/*.*
     - name: Upload Windows Asar
-      if: ${{ runner.os == 'windows-latest' && startsWith(github.event.commits[0].message, 'chore(release)') }} 
+      if: ${{ runner.os == 'Windows' }} 
       uses: actions/upload-artifact@v2
       with:
         name: app.asar

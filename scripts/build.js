@@ -115,16 +115,13 @@ function buildLite() {
     });
 }
 
-
 switch (process.env.BUILD_TARGET) {
     case 'clean':
         clean();
         break;
-    case 'lite':
-        build().then(buildLite);
+    case 'production':
+        build().then(process.env.FULL_RELEASE === 'true' ? buildFull : buildLite);
         break;
-    case 'full':
-        build().then(buildFull);
     default:
         build();
         break;
