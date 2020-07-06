@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'build/**'
+      - 'scripts/*'
+      - 'src/**'
+      - 'static/**'
+      - 'package.json'
+      - 'package-lock.json'
 
 jobs:
   build:
