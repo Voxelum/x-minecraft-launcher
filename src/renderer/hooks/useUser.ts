@@ -206,8 +206,8 @@ export function useLogin() {
         logining: false,
         username: '',
         password: '',
-        authService: '',
-        profileService: '',
+        authService: authService.value.name || 'mojang',
+        profileService: profileService.value.name || 'mojang',
         selectProfile: false,
     });
     async function _login() {
@@ -218,9 +218,12 @@ export function useLogin() {
         data.logining = false;
         data.username = username.value;
         data.password = '';
-        data.authService = authService.value.name ?? 'mojang';
-        data.profileService = profileService.value.name ?? 'mojang';
+        data.authService = authService.value.name || 'mojang';
+        data.profileService = profileService.value.name || 'mojang';
     }
+    onMounted(() => {
+        reset();
+    });
     return {
         ...toRefs(data),
         logined,

@@ -23,8 +23,6 @@
                 v-model="authService"
                 prepend-icon="vpn_key"
                 :items="authServices"
-                :item-value="t => t"
-                :item-text="t => $te(`user.${t}.name`) ? $t(`user.${t}.name`) : $t(`user.${t}.name`)"
                 :label="$t('user.authMode')"
                 flat
                 dark
@@ -35,8 +33,6 @@
                 v-model="profileService"
                 prepend-icon="receipt"
                 :items="profileServices"
-                :item-value="t => t"
-                :item-text="t => $te(`user.${t}.name`) ? $t(`user.${t}.name`) : t"
                 :label="$t('user.profileMode')"
                 flat
                 dark
@@ -110,12 +106,13 @@
 
 <script lang=ts>
 import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref } from '@vue/composition-api';
-import { useLogin, useLoginValidation } from '@/hooks';
+import { useLogin, useLoginValidation, useI18n } from '@/hooks';
 import { useLoginDialog } from '../hooks/index';
 
 export default defineComponent({
   setup(props, context) {
     const { hide, isShown, show } = useLoginDialog();
+    const { $te, $t } = useI18n();
     const {
       username,
       password,
@@ -186,15 +183,23 @@ export default defineComponent({
         }
       });
     });
+    const _profileServices = computed(() => profileServices.value.map((a) => ({ value: a, text: $te(`user.${a}.name`) ? $t(`user.${a}.name`) : a })));
+    const _authServices = computed(() => authServices.value.map((a) => ({ value: a, text: $te(`user.${a}.name`) ? $t(`user.${a}.name`) : a })));
     return {
       ...toRefs(data),
       logining,
       username,
       password,
-      authService,
-      profileService,
-      profileServices,
-      authServices,
+      authService: computed<{ value: string; text: string }>({
+        get() { return _authServices.value.find(a => a.value === authService.value)!; },
+        set(v) { authService.value = v.value; },
+      }),
+      profileService: computed<{ value: string; text: string }>({
+        get() { return _profileServices.value.find(a => a.value === profileService.value)!; },
+        set(v) { profileService.value = v.value; },
+      }),
+      profileServices: _profileServices,
+      authServices: _authServices,
       isOffline,
 
       selectedProfile,
