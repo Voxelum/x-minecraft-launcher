@@ -304,7 +304,7 @@ export default class UserService extends Service {
     /**
      * Refresh current skin status
      */
-    @DynamicSingleton(function (this: Service, o: RefreshSkinOptions) {
+    @DynamicSingleton(function (this: Service, o: RefreshSkinOptions = {}) {
         let {
             gameProfileId = this.state.user.selectedUser.profile,
             userId = this.state.user.selectedUser.id,

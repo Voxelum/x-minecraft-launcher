@@ -87,7 +87,7 @@ export function useCurrentUser() {
         profileId,
         userProfile,
         gameProfile,
-        ...useServiceOnly('UserService', 'refreshStatus', 'switchUserProfile', 'logout'),
+        ...useServiceOnly('UserService', 'refreshStatus', 'switchUserProfile', 'logout', 'refreshSkin'),
     };
 }
 

@@ -32,7 +32,7 @@
             icon
             large
             v-on="on"
-            @click="refreshAccount"
+            @click="refresh"
           >
             <v-icon>refresh</v-icon>
           </v-btn>
@@ -199,7 +199,7 @@ export default defineComponent({
     UserList,
   },
   setup() {
-    const { refreshStatus: refreshAccount } = useCurrentUser();
+    const { refreshStatus: refreshAccount, refreshSkin } = useCurrentUser();
     const { security } = useUserSecurityStatus();
     const { show: showLoginDialog } = useLoginDialog();
     const { show: showUserServiceDialog } = useDialog('user-service');
@@ -240,10 +240,15 @@ export default defineComponent({
       }
     });
 
+    function refresh() {
+      refreshAccount();
+      refreshSkin();
+    }
+
     return {
       ...toRefs(data),
       security,
-      refreshAccount,
+      refresh,
 
       loading,
 

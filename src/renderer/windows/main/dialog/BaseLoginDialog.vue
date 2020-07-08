@@ -192,11 +192,11 @@ export default defineComponent({
       password,
       authService: computed<{ value: string; text: string }>({
         get() { return _authServices.value.find(a => a.value === authService.value)!; },
-        set(v) { authService.value = v.value; },
+        set(v) { authService.value = v as any as string; },
       }),
       profileService: computed<{ value: string; text: string }>({
         get() { return _profileServices.value.find(a => a.value === profileService.value)!; },
-        set(v) { profileService.value = v.value; },
+        set(v) { profileService.value = v as any as string; },
       }),
       profileServices: _profileServices,
       authServices: _authServices,
