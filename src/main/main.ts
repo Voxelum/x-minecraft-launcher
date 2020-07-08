@@ -30,6 +30,7 @@ import TaskManager from "./manager/TaskManager";
 import UpdateManager from "./manager/UpdateManager";
 import LogManager from './manager/LogManager';
 import StoreManager from './manager/StoreManager';
+import { ensureDir } from '@xmcl/installer/util';
 
 const managers: Managers = {
     appManager: new AppManager(),
@@ -46,6 +47,7 @@ async function main() {
     managers.logManager.log(process.cwd());
     managers.logManager.log(process.argv);
     manList.forEach(man => (man as any).managers = managers);
+    await ensureDir(`${app.getPath('appData')}/xmcl`);
     await Promise.all(manList.map(async m => await m.setup(managers)));
     await Promise.all(manList.map(m => m.rootReady(managers.appManager.root)));
     await app.whenReady();
