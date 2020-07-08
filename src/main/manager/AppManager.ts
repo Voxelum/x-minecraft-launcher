@@ -328,6 +328,9 @@ export class AppManager extends Manager {
 
     async storeReady(store: Store<any>) {
         this.parking = true;
+        if (!store.state.locale) {
+            store.commit('locale', app.getLocale());
+        }
         Object.assign(LauncherAppController.prototype, { store });
         await this.controller!.dataReady(store);
         this.log('App booted');
