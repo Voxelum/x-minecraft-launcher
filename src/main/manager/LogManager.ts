@@ -1,5 +1,6 @@
 import { IS_DEV } from '@main/constant';
-import { createWriteStream, mkdirSync, WriteStream } from 'fs';
+import { createWriteStream, WriteStream } from 'fs';
+import { ensureDir } from 'fs-extra';
 import { resolve } from 'path';
 import { PassThrough, pipeline, Transform } from 'stream';
 import { format } from 'util';
@@ -54,9 +55,9 @@ export default class LogManager extends Manager {
         this.openedStream[name].close();
     }
 
-    redirectLogPipeline(root: string) {
+    async redirectLogPipeline(root: string) {
         try {
-            mkdirSync(resolve(root, 'logs'));
+            await ensureDir(resolve(root, 'logs'));
         } catch (e) {
             if (e.code !== 'EEXIST') {
                 throw e;
