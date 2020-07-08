@@ -10,6 +10,21 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.4.3](https://github.com/voxelum/x-minecraft-launcher/compare/v0.4.2...v0.4.3)
+
+* fix: initialize root dir failure ([5ffeaa5](https://github.com/voxelum/x-minecraft-launcher/commit/5ffeaa5))
+* fix: login dialog not select ([09bc574](https://github.com/voxelum/x-minecraft-launcher/commit/09bc574))
+* fix: select locale if absent ([e443118](https://github.com/voxelum/x-minecraft-launcher/commit/e443118))
+* fix: sort curseforge file by default ([8d28685](https://github.com/voxelum/x-minecraft-launcher/commit/8d28685))
+* fix: wrong user login type & refresh ([bbd96ee](https://github.com/voxelum/x-minecraft-launcher/commit/bbd96ee))
+* chore: config the workflow run condition ([1816840](https://github.com/voxelum/x-minecraft-launcher/commit/1816840))
+* chore: fix asar upload and setup filename ([e21edd1](https://github.com/voxelum/x-minecraft-launcher/commit/e21edd1))
+* chore: merge the workflow ([da1c5cf](https://github.com/voxelum/x-minecraft-launcher/commit/da1c5cf))
+* chore: update the site ([6e1cfb0](https://github.com/voxelum/x-minecraft-launcher/commit/6e1cfb0))
+
+
 ## [0.4.2](https://github.com/voxelum/x-minecraft-launcher/compare/v0.4.1...v0.4.2)
 
 * chore: inject build number ([4d72fc6](https://github.com/voxelum/x-minecraft-launcher/commit/4d72fc6))
