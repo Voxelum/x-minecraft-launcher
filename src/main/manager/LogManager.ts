@@ -1,3 +1,4 @@
+import LauncherApp from '@main/app/LauncherApp';
 import { IS_DEV } from '@main/constant';
 import { createWriteStream, WriteStream } from 'fs';
 import { ensureDir } from 'fs-extra';
@@ -7,8 +8,16 @@ import { format } from 'util';
 import { Manager } from '.';
 
 function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, options) : format(message); }
+function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}\n`); } }); }
+
+export interface Logger {
+    log(message: any, ...options: any[]): void;
+    warn(message: any, ...options: any[]): void;
+    error(message: any, ...options: any[]): void;
+}
+
 export default class LogManager extends Manager {
-    private loggerEntries = { log: new PassThrough(), warn: new PassThrough(), error: new PassThrough() };
+    private loggerEntries = { log: baseTransform('INFO'), warn: baseTransform('WARN'), error: baseTransform('ERROR') };
 
     private output = new PassThrough();
 
@@ -16,13 +25,12 @@ export default class LogManager extends Manager {
 
     private openedStream: { [name: string]: WriteStream } = {};
 
-    constructor() {
-        super();
+    constructor(app: LauncherApp) {
+        super(app);
 
-        function transform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}\n`); } }); }
-        pipeline(this.loggerEntries.log, transform('INFO'), this.output, () => { });
-        pipeline(this.loggerEntries.warn, transform('WARN'), this.output, () => { });
-        pipeline(this.loggerEntries.error, transform('ERROR'), this.output, () => { });
+        pipeline(this.loggerEntries.log, this.output, () => { });
+        pipeline(this.loggerEntries.warn, this.output, () => { });
+        pipeline(this.loggerEntries.error, this.output, () => { });
 
         process.on('uncaughtException', (err) => {
             this.error('Uncaught Exception');
@@ -42,6 +50,18 @@ export default class LogManager extends Manager {
     readonly warn = (message: any, ...options: any[]) => { this.loggerEntries.warn.write(formatMsg(message, options)); }
 
     readonly error = (message: any, ...options: any[]) => { this.loggerEntries.error.write(formatMsg(message, options)); }
+
+    getLoggerFor(tag: string): Logger {
+        function transform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] ${c}\n`); } }); }
+        const log = transform(tag).pipe(this.loggerEntries.log);
+        const warn = transform(tag).pipe(this.loggerEntries.warn);
+        const error = transform(tag).pipe(this.loggerEntries.error);
+        return {
+            log(message: any, ...options: any[]) { log.write(formatMsg(message, options)); },
+            warn(message: any, ...options: any[]) { warn.write(formatMsg(message, options)); },
+            error(message: any, ...options: any[]) { error.write(formatMsg(message, options)); },
+        };
+    }
 
     openWindowLog(name: string) {
         const loggerPath = resolve(this.logRoot, `renderer.${name}.log`);
@@ -71,6 +91,6 @@ export default class LogManager extends Manager {
     // SETUP CODE
 
     setup() {
-        this.redirectLogPipeline(this.managers.appManager.root);
+        this.redirectLogPipeline(this.app.root);
     }
 }

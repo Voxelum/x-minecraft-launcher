@@ -10,7 +10,7 @@ import { InstanceSchema } from './instance.schema';
 import { JavaRecord } from './java';
 import { LocalVersion } from './version';
 
-export type CreateOption = DeepPartial<Omit<InstanceSchema, 'id' | 'lastAccessDate' | 'creationDate'>>;
+export type CreateOption = DeepPartial<Omit<InstanceSchema, 'id' | 'lastAccessDate' | 'creationDate'> & { path: string }>;
 export interface InstanceSave {
     path: string;
     instanceName: string;
@@ -167,10 +167,6 @@ export function createTemplate(): Instance {
             yarn: '',
         },
         java: '',
-        deployments: {
-            mods: [],
-            resourcepacks: [],
-        },
         image: '',
         blur: 4,
         server: null,
@@ -255,9 +251,6 @@ const mod: InstanceModule = {
              * Prevent the case that hot reload keep the vuex state
              */
             if (!state.all[instance.path]) {
-                if (!instance.deployments.resourcepacks) {
-                    instance.deployments.resourcepacks = [];
-                }
                 // TODO: remove in vue3
                 set(state.all, instance.path, { ...instance, serverStatus: UNKNOWN_STATUS });
                 state.all[instance.path] = { ...instance, serverStatus: UNKNOWN_STATUS };
@@ -336,17 +329,6 @@ const mod: InstanceModule = {
             inst.url = settings.url || inst.url;
             inst.icon = settings.icon || inst.icon;
             inst.java = settings.java || inst.java;
-
-            if (typeof settings.deployments === 'object') {
-                const mods = settings.deployments.mods;
-                if (mods) {
-                    inst.deployments.mods = mods;
-                }
-                const respacks = settings.deployments.resourcepacks;
-                if (respacks) {
-                    inst.deployments.resourcepacks = respacks;
-                }
-            }
 
             if (typeof settings.showLog === 'boolean') {
                 inst.showLog = settings.showLog;

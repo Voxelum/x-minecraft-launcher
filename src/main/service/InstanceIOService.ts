@@ -117,14 +117,21 @@ export default class InstanceIOService extends Service {
      * @param path 
      */
     async linkInstance(path: string) {
-        const { root } = parse(this.getPath());
-        const { root: destRoot } = parse(path);
-        if (destRoot !== root) {
-            // not on same disk, cannot hard link
-            this.commit('instanceAdd');
-        } else {
-
+        if (this.state.instance.all[path]) {
+            this.log(`Skip to link already managed instance ${path}`);
+            return false;
         }
+        let loaded = await this.instanceService.loadInstance(path);
+        if (!loaded) {
+            await this.instanceService.createInstance({ path });
+        }
+
+        // copy assets, library and versions
+        await copyPassively(resolve(path, 'assets'), this.getGameAssetsPath('assets'));
+        await copyPassively(resolve(path, 'libraries'), this.getGameAssetsPath('libraries'));
+        await copyPassively(resolve(path, 'versions'), this.getGameAssetsPath('versions'));
+        
+        return true;
     }
 
     /**
@@ -156,10 +163,6 @@ export default class InstanceIOService extends Service {
             instanceTemplate.creationDate = Date.now();
         }
 
-        let deployments = instanceTemplate.deployments;
-        if (!deployments.mods) deployments.mods = [];
-        if (!deployments.resourcepacks) deployments.resourcepacks = [];
-
         // create instance
         let instancePath = await this.instanceService.createInstance(instanceTemplate);
 
@@ -168,8 +171,6 @@ export default class InstanceIOService extends Service {
             if (path.endsWith('/versions')) return false;
             if (path.endsWith('/assets')) return false;
             if (path.endsWith('/libraries')) return false;
-            if (path.endsWith('/resourcepacks')) return false;
-            if (path.endsWith('/mods')) return false;
             return true;
         });
 
@@ -177,29 +178,6 @@ export default class InstanceIOService extends Service {
         await copyPassively(resolve(srcDirectory, 'assets'), this.getGameAssetsPath('assets'));
         await copyPassively(resolve(srcDirectory, 'libraries'), this.getGameAssetsPath('libraries'));
         await copyPassively(resolve(srcDirectory, 'versions'), this.getGameAssetsPath('versions')); // TODO: check this
-
-        // import mods/resourcepacks
-        let mods = [];
-        let modsDir = resolve(srcDirectory, 'mods');
-        for (let file of await readdirIfPresent(modsDir)) {
-            try {
-                let resource = await this.resourceService.importResource({ path: resolve(srcDirectory, 'mods', file), type: 'mods' });
-                if (resource.type !== 'unknown') { mods.push(resource.hash); }
-            } catch (e) {
-                this.pushException({ type: 'instanceImportIllegalResource', file });
-            }
-        }
-
-        let resourcepacks = [];
-        let resourcepacksDir = resolve(srcDirectory, 'resourcepacks');
-        for (let file of await readdirIfPresent(resourcepacksDir)) {
-            try {
-                let resource = await this.resourceService.importResource({ path: resolve(srcDirectory, 'resourcepacks', file), type: 'resourcepack' });
-                if (resource.type !== 'unknown') { resourcepacks.push(resource.hash); }
-            } catch (e) {
-                this.pushException({ type: 'instanceImportIllegalResource', file });
-            }
-        }
 
         if (!isDir) { await remove(srcDirectory); }
     }

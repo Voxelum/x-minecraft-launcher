@@ -13,7 +13,7 @@ import { join } from 'path';
 import Service, { Singleton } from './Service';
 
 export default class JavaService extends Service {
-    private javaFile = this.appManager.platform.name === 'windows' ? 'javaw.exe' : 'java';
+    private javaFile = this.app.platform.name === 'windows' ? 'javaw.exe' : 'java';
 
     getInternalJavaLocation() {
         return join(this.state.root, 'jre', 'bin', this.javaFile);
@@ -70,8 +70,9 @@ export default class JavaService extends Service {
 
     private installFromTsingHuaTask() {
         return task('installJre', async (c) => {
-            let system = this.appManager.platform.name === 'osx' ? 'mac' as const : this.appManager.platform.name;
-            let arch = this.appManager.platform.arch === 'x64' ? '64' as const : '32' as const;
+            let system = this.app.platform.name === 'osx' ? 'mac' as const : this.app.platform.name;
+            let arch = this.app.platform.arch === 'x64' ? '64' as const : '32' as const;
+            if (system === 'unknown') { throw new Error(`Cannot install jre in system ${system}`); }
             let [url, sha256Url] = getTsingHuaMirror(system, arch);
             let sha256 = await this.networkManager.request(sha256Url).text();
             sha256 = sha256.split(' ')[0];

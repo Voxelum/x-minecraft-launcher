@@ -1,4 +1,3 @@
-import { LoggerFacade } from '@main/app/AppContext';
 import AuthLibService from '@main/service/AuthLibService';
 import BaseService from '@main/service/BaseService';
 import CurseForgeService from '@main/service/CurseForgeService';
@@ -18,12 +17,11 @@ import Service, { INJECTIONS_SYMBOL, MUTATION_LISTENERS_SYMBOL } from '@main/ser
 import SettingService from '@main/service/SettingService';
 import UserService from '@main/service/UserService';
 import VersionService from '@main/service/VersionService';
-import { Client } from '@main/session';
-import { StaticStore } from '@main/util/staticStore';
+import { Client } from '@main/engineBridge';
+import { StaticStore } from '@universal/util/staticStore';
 import { aquire, isBusy, release } from '@universal/util/semaphore';
 import { Platform } from '@xmcl/core';
 import { Task, TaskHandle } from '@xmcl/task';
-import { ipcMain, app } from 'electron';
 import { EventEmitter } from 'events';
 import { join } from 'path';
 import { Manager, Managers } from '.';
@@ -57,38 +55,16 @@ export default class ServiceManager extends Manager {
         return this.serviceMap[service.name] as any;
     }
 
-    setup() {
-        this.registerService(AuthLibService);
-        this.registerService(CurseForgeService);
-        this.registerService(DiagnoseService);
-        this.registerService(InstanceService);
-        this.registerService(JavaService);
-        this.registerService(LaunchService);
-        this.registerService(ServerStatusService);
-        this.registerService(ResourceService);
-        this.registerService(SettingService);
-        this.registerService(UserService);
-        this.registerService(InstallService);
-        this.registerService(VersionService);
-        this.registerService(BaseService);
-
-        this.registerService(InstanceGameSettingService);
-        this.registerService(InstanceSavesService);
-        this.registerService(InstanceLogService);
-        this.registerService(InstanceIOService);
-        this.registerService(InstanceResourceService);
-    }
-
     protected registerService(s: Constructor<Service>) { this.registeredServices.push(s); }
 
     aquire(res: string | string[]) {
         aquire(this.semaphore, res);
-        this.managers.appManager.push('aquire', res);
+        this.app.broadcast('aquire', res);
     }
 
     release(res: string | string[]) {
         release(this.semaphore, res);
-        this.managers.appManager.push('release', res);
+        this.app.broadcast('release', res);
     }
 
     isBusy(res: string) {
@@ -98,7 +74,7 @@ export default class ServiceManager extends Manager {
     /**
      * Setup all services.
      */
-    setupServices(appData: string, platform: Platform, logger: LoggerFacade, managers: Managers, store: StaticStore<any>, root: string) {
+    setupServices(appData: string, platform: Platform, managers: Managers, store: StaticStore<any>, root: string) {
         this.log(`Setup service ${root}`);
         const userPath = join(appData, 'xmcl');
         const mcPath = join(appData, platform.name === 'osx' ? 'minecraft' : '.minecraft');
@@ -111,10 +87,15 @@ export default class ServiceManager extends Manager {
             getPath: { value: (...args: string[]) => join(userPath, ...args) },
             getMinecraftPath: { value: (...args: string[]) => join(mcPath, ...args) },
             getGameAssetsPath: { value: (...args: string[]) => join(root, ...args) },
+            app: { value: this.app },
+            networkManager: { value: this.app.networkManager },
+            logManager: { value: this.app.logManager },
+            taskManager: { value: this.app.taskManager },
+            storeManager: { value: this.app.storeManager },
+            serviceManager: { value: this.app.serviceManager },
         });
 
-        Object.assign(Service.prototype, managers);
-
+        const logger = this.app.logManager;
         // inject the logger to service prototype
         for (let service of this.registeredServices) {
             const name = service.name;
@@ -246,7 +227,7 @@ export default class ServiceManager extends Manager {
             if (name in serv) {
                 const tasks: TaskHandle<any, any>[] = [];
                 const sessionId = this.usedSession++;
-                const taskManager = this.managers.taskManager;
+                const taskManager = this.app.taskManager;
                 const submit = (task: Task<any>) => {
                     const handle = taskManager.submit(task);
                     client.send(`session-${sessionId}`, handle.root.id);
@@ -290,21 +271,42 @@ export default class ServiceManager extends Manager {
 
     // SETUP CODE
 
-    async rootReady() {
-        this.setupServices(app.getPath('appData'),
-            this.managers.appManager.platform,
-            this.managers.logManager,
-            this.managers,
-            this.managers.storeManager.store!,
-            this.managers.appManager.root);
+    async setup() {
+        this.registerService(AuthLibService);
+        this.registerService(CurseForgeService);
+        this.registerService(DiagnoseService);
+        this.registerService(InstanceService);
+        this.registerService(JavaService);
+        this.registerService(LaunchService);
+        this.registerService(ServerStatusService);
+        this.registerService(ResourceService);
+        this.registerService(SettingService);
+        this.registerService(UserService);
+        this.registerService(InstallService);
+        this.registerService(VersionService);
+        this.registerService(BaseService);
+
+        this.registerService(InstanceGameSettingService);
+        this.registerService(InstanceSavesService);
+        this.registerService(InstanceLogService);
+        this.registerService(InstanceIOService);
+        this.registerService(InstanceResourceService);
+
+        this.setupServices(
+            this.app.getPath('appData'),
+            this.app.platform,
+            this.app,
+            this.app.storeManager.store!,
+            this.app.root,
+        );
         await this.loadServices();
-        this.setupAutoSave(this.managers.storeManager.store!);
-        this.managers.storeManager.setLoadDone();
+        this.setupAutoSave(this.app.storeManager.store!);
+        this.app.emit('store-ready');
     }
 
-    async appReady() {
-        ipcMain.handle('service-call', (e, service: string, name: string, payload: any) => this.prepareServiceCall(e.sender, service, name, payload));
-        ipcMain.handle('session', (_, id) => this.startServiceCall(id));
+    async engineReady() {
+        this.app.handle('service-call', (e, service: string, name: string, payload: any) => this.prepareServiceCall(e.sender, service, name, payload));
+        this.app.handle('session', (_, id) => this.startServiceCall(id));
         this.initializeService();
     }
 }

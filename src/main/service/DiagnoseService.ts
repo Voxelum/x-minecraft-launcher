@@ -87,6 +87,7 @@ export default class DiagnoseService extends Service {
                     if (fabricLoader && yarn) {
                         await this.installService.installFabric({ yarn, loader: fabricLoader });
                     }
+
                     // TODO: check liteloader fabric
                 } else {
                     this.pushException({ type: 'fixVersionNoVersionMetadata', minecraft });
@@ -223,14 +224,6 @@ export default class DiagnoseService extends Service {
         if ('java' in payload) {
             await this.diagnoseJava(report);
         }
-        // if ('deployments' in payload) {
-        //     if ('mods' in payload.deployments) {
-        //         await this.diagnoseMods(report);
-        //     }
-        //     if ('resourcepacks' in payload.deployments) {
-        //         await this.diagnoseResourcePacks(report);
-        //     }
-        // }
         this.report(report);
     }
 

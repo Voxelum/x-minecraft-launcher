@@ -1,7 +1,8 @@
+import LauncherApp from '@main/app/LauncherApp';
+import { Client } from '@main/engineBridge';
 import { createTaskPusher } from '@main/util/taskMonitor';
 import { TaskState } from '@universal/task';
 import { Task, TaskHandle, TaskRuntime } from '@xmcl/task';
-import { ipcMain, WebContents } from 'electron';
 import { v4 } from 'uuid';
 import { Manager } from '.';
 
@@ -28,10 +29,10 @@ export default class TaskManager extends Manager {
 
     readonly runtime: TaskRuntime<TaskState> = Task.createRuntime(this.factory);
 
-    private pushers: Map<WebContents, () => void> = new Map();
+    private pushers: Map<Client, () => void> = new Map();
 
-    constructor() {
-        super();
+    constructor(app: LauncherApp) {
+        super(app);
 
         this.runtime.on('update', (progress, node) => {
             node.progress = progress.progress || node.progress;
@@ -48,18 +49,21 @@ export default class TaskManager extends Manager {
             node.status = 'running';
         });
         this.runtime.on('pause', (node) => {
+            this.log(`Task node ${node.id} paused`);
             node.status = 'paused';
         });
         this.runtime.on('finish', (r, node) => {
             node.status = 'successed';
         });
         this.runtime.on('resume', (node) => {
+            this.log(`Task node ${node.id} resmued`);
             node.status = 'running';
         });
         this.runtime.on('finish', (_, node) => {
             node.status = 'successed';
         });
         this.runtime.on('cancel', (node) => {
+            this.log(`Task node ${node.id} cancelled`);
             node.status = 'cancelled';
         });
         this.runtime.on('fail', (error, node) => {
@@ -165,30 +169,33 @@ export default class TaskManager extends Manager {
 
     // SETUP CODE
     setup() {
-        ipcMain.handle('task-subscribe', (event) => {
+        this.app.handle('task-subscribe', (event) => {
             let pusher = createTaskPusher(this.runtime, 500, 30, (payload) => {
                 event.sender.send('task-update', payload);
             });
             this.pushers.set(event.sender, pusher);
             return this.handles.map(h => h.root);
         });
-        ipcMain.handle('task-unsubscribe', (event) => {
+        this.app.handle('task-unsubscribe', (event) => {
             let pusher = this.pushers.get(event.sender);
             if (pusher) { pusher(); }
         });
-        ipcMain.handle('task-operation', (event, { type, id }) => {
+        this.app.handle('task-operation', (event, { type, id }) => {
             if (!this.idToHandleRecord[id]) {
                 this.warn(`Cannot ${type} a unknown task id ${id}`);
                 return;
             }
             switch (type) {
                 case 'pause':
+                    this.log(`Request ${id} to pause`);
                     this.idToHandleRecord[id].pause();
                     break;
                 case 'resume':
+                    this.log(`Request ${id} to resume`);
                     this.idToHandleRecord[id].resume();
                     break;
                 case 'cancel':
+                    this.log(`Request ${id} to cancel`);
                     this.idToHandleRecord[id].cancel();
                     break;
                 default:

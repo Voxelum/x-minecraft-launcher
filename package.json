@@ -68,6 +68,7 @@
         "maven-artifact-version": "0.0.1",
         "node-powershell": "^4.0.0",
         "node-watch": "^0.6.4",
+        "original-fs": "^1.1.0",
         "three": "^0.115.0",
         "uuid": "^7.0.3",
         "vue": "^2.6.11",

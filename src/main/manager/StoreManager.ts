@@ -1,10 +1,9 @@
-import { StaticStore, createStaticStore } from '@main/util/staticStore';
-import storeTemplate from '@universal/store';
-import { ipcMain } from 'electron';
+import { StaticStore, createStaticStore } from '@universal/util/staticStore';
+import storeTemplate, { RootState } from '@universal/store';
 import { Manager } from '.';
 
 export default class StoreManager extends Manager {
-    public store: StaticStore<any> = createStaticStore(storeTemplate);
+    public store: StaticStore<RootState> = createStaticStore(storeTemplate) as any;
 
     /**
      * The total order of the current store state.
@@ -13,16 +12,6 @@ export default class StoreManager extends Manager {
     private checkPointId = 0;
 
     private checkPoint: any;
-
-    private storeReadyCb = () => { };
-
-    private storeReadyPromise = new Promise((resolve) => {
-        this.storeReadyCb = resolve;
-    })
-
-    setLoadDone() {
-        this.storeReadyCb();
-    }
 
     sync(currentId: number) {
         const checkPointId = this.checkPointId;
@@ -44,23 +33,20 @@ export default class StoreManager extends Manager {
         this.store!.subscribe((mutation, state) => {
             this.checkPoint = state;
             this.checkPointId += 1; // record the total order
-            this.managers.appManager.push('commit', mutation, this.checkPointId);
+            this.app.broadcast('commit', mutation, this.checkPointId);
         });
     }
 
     // SETUP CODE
 
     setup() {
-        ipcMain.handle('sync', (_, id) => this.storeReadyPromise.then(() => this.sync(id)));
-    }
-
-    rootReady(root: string) {
-        this.store!.commit('root', root);
+        this.app.handle('sync', (_, id) => this.app.storeReadyPromise.then(() => this.sync(id)));
+        this.store!.commit('root', this.app.root);
         this.setupAutoSync();
     }
 
-    appReady() {
-        ipcMain.handle('commit', (event, type, payload) => {
+    engineReady() {
+        this.app.handle('commit', (event, type, payload) => {
             this.store!.commit(type, payload);
         });
     }

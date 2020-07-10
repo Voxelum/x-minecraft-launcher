@@ -32,6 +32,9 @@ export function validateSha256(path: string, sha256: string) {
     return checksum(path, 'sha256').then(s => s === sha256, () => false);
 }
 export { checksum };
+/**
+ * This copy will not replace existed files.
+ */
 export async function copyPassively(src: string, dest: string, filter: (name: string) => boolean = () => true) {
     const s = await stat(src).catch(() => { });
     if (!s) { return; }

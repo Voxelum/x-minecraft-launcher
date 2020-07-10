@@ -1,4 +1,4 @@
-import { clearDirectoryNarrow, exists, missing, readdirEnsured } from '@main/util/fs';
+import { exists, missing, readdirEnsured } from '@main/util/fs';
 import { CreateOption, createTemplate } from '@universal/store/modules/instance';
 import { InstanceSchema, InstancesSchema, RuntimeVersions } from '@universal/store/modules/instance.schema';
 import { requireObject, requireString } from '@universal/util/assert';
@@ -13,12 +13,12 @@ import { v4 } from 'uuid';
 import CurseForgeService from './CurseForgeService';
 import InstanceGameSettingService from './InstanceGameSettingService';
 import InstanceIOService from './InstanceIOService';
+import InstanceResourceService from './InstanceResourceService';
 import InstanceSavesService from './InstanceSavesService';
 import JavaService from './JavaService';
 import ResourceService from './ResourceService';
 import ServerStatusService from './ServerStatusService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
-import InstanceResourceService from './InstanceResourceService';
 
 const INSTANCES_FOLDER = 'instances';
 const INSTANCE_JSON = 'instance.json';
@@ -108,7 +108,7 @@ export class InstanceService extends Service {
         let jsonPath = join(path, INSTANCE_JSON);
         if (await missing(jsonPath)) {
             this.warn(`Cannot load instance ${path}`);
-            return;
+            return false;
         }
 
         let option: InstanceSchema;
@@ -116,7 +116,7 @@ export class InstanceService extends Service {
             option = await this.getPersistence({ path: jsonPath, schema: InstanceSchema });
         } catch (e) {
             this.warn(`Cannot load instance json ${path}`);
-            return;
+            return false;
         }
 
         let instance = createTemplate();
@@ -136,12 +136,13 @@ export class InstanceService extends Service {
                 instance.resolution = option.resolution;
             }
         }
-        Object.assign(instance.deployments, option.deployments);
         instance.server = option.server;
 
         commit('instanceAdd', instance);
 
         this.log(`Added instance ${instance.path}`);
+
+        return true;
     }
 
     async init() {
@@ -165,7 +166,7 @@ export class InstanceService extends Service {
 
         this.log(`Found ${managed.length} managed instances and ${instanceConfig.instances.length} external instances.`);
 
-        let all = [...managed, ...instanceConfig.instances];
+        let all = [...new Set([...instanceConfig.instances, ...managed])];
 
         if (all.length === 0) {
             return;
@@ -191,7 +192,21 @@ export class InstanceService extends Service {
             data: payload,
             schema: InstanceSchema,
         });
+        await this.setPersistence({
+            path: this.getPath(INSTANCES_JSON),
+            data: { instances: Object.keys(this.state.instance.all), selectedInstance: this.state.instance.path },
+            schema: InstancesSchema,
+        });
         this.log(`Saved new instance ${payload.path}`);
+    }
+
+    @MutationTrigger('instanceRemove')
+    async saveInstanceRemoved() {
+        await this.setPersistence({
+            path: this.getPath(INSTANCES_JSON),
+            data: { instances: Object.keys(this.state.instance.all), selectedInstance: this.state.instance.path },
+            schema: InstancesSchema,
+        });
     }
 
     @MutationTrigger('instance')
@@ -208,7 +223,7 @@ export class InstanceService extends Service {
     async saveInstanceSelect(path: string) {
         await Promise.all([this.setPersistence({
             path: this.getPath(INSTANCES_JSON),
-            data: { selectedInstance: path, instances: [] },
+            data: { selectedInstance: path, instances: Object.keys(this.state.instance.all) },
             schema: InstancesSchema,
         }), this.setPersistence({
             path: join(path, INSTANCE_JSON),
@@ -257,9 +272,8 @@ export class InstanceService extends Service {
         if (payload.server) {
             instance.server = payload.server;
         }
-        Object.assign(instance.deployments, payload.deployments);
 
-        instance.path = this.getPathUnder(v4());
+        instance.path = payload.path ?? this.getPathUnder(v4());
         instance.runtime.minecraft = instance.runtime.minecraft || this.getters.minecraftRelease.id;
         instance.author = this.getters.gameProfile?.name ?? '';
         instance.creationDate = Date.now();
@@ -364,23 +378,6 @@ export class InstanceService extends Service {
             }
         }
 
-        if ('deployments' in options && options.deployments) {
-            let deployments = options.deployments;
-            let current = state.deployments;
-            result.deployments = {};
-            if (deployments.mods
-                && (!current.mods || !isPrimitiveArrayEqual(current.mods, deployments.mods))) {
-                result.deployments.mods = deployments.mods;
-            }
-            if (deployments.resourcepacks
-                && (!current.resourcepacks || !isPrimitiveArrayEqual(current.resourcepacks, deployments.resourcepacks))) {
-                result.deployments.resourcepacks = deployments.resourcepacks;
-            }
-            if (Object.keys(result.deployments).length === 0) {
-                delete result.deployments;
-            }
-        }
-
         if ('runtime' in options && options.runtime) {
             let runtime = options.runtime;
             let currentRuntime = state.runtime;
@@ -474,9 +471,7 @@ export class InstanceService extends Service {
                 yarn: '',
             };
             if (info.status.modinfo && info.status.modinfo.type === 'FML') {
-                options.deployments = {
-                    mods: info.status.modinfo.modList.map(m => `forge:${m.modid}/${m.version}`),
-                } as any;
+                // TODO: handle mod server
             }
         }
         return this.createInstance({

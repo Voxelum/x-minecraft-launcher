@@ -4,9 +4,6 @@ import { BuiltinNotification } from './util/notification';
 
 declare module 'electron' {
     interface App extends NodeJS.EventEmitter {
-        on(channel: 'browser-window-setup', listener: (window: BrowserWindow, name: string) => void): this;
-        on(channel: 'locale-changed', listener: () => void): this;
-
         on(channel: 'minecraft-window-ready', listener: () => void): this;
         on(channel: 'minecraft-start', listener: () => void): this;
         on(channel: 'minecraft-exit', listener: (exitStatus?: { code?: string; signal?: string; crashReport?: string; crashReportLocation?: string }) => void): this;
