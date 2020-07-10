@@ -3,10 +3,9 @@ import { MutationKeys, RootCommit, RootGetters, RootState } from '@universal/sto
 import { Exception, Exceptions } from '@universal/util/exception';
 import { Task, TaskHandle } from '@xmcl/task';
 import NetworkManager from '@main/manager/NetworkManager';
-import AppManager from '@main/manager/AppManager';
+import LauncherApp from '@main/app/LauncherApp';
 import ServiceManager from '@main/manager/ServiceManager';
 import TaskManager from '@main/manager/TaskManager';
-import UpdateManager from '@main/manager/UpdateManager';
 import LogManager from '@main/manager/LogManager';
 import { createContext, runInContext } from 'vm';
 import { readFile, ensureFile, writeFile } from 'fs-extra';
@@ -159,19 +158,17 @@ export class ServiceException extends Error {
  * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied 
  */
 export default class Service implements Managers {
-    appManager!: AppManager;
+    readonly app!: LauncherApp;
 
-    networkManager!: NetworkManager;
+    readonly networkManager!: NetworkManager;
 
-    serviceManager!: ServiceManager;
+    readonly serviceManager!: ServiceManager;
 
-    taskManager!: TaskManager;
+    readonly taskManager!: TaskManager;
 
-    updateManager!: UpdateManager;
+    readonly logManager!: LogManager;
 
-    logManager!: LogManager;
-
-    storeManager!: StoreManager;
+    readonly storeManager!: StoreManager;
 
     /**
      * Submit a task into the task manager. 
@@ -257,7 +254,7 @@ export default class Service implements Managers {
     }
 
     protected pushException(e: Exceptions) {
-        this.appManager.push('notification', e);
+        this.app.broadcast('notification', e);
     }
 
     protected async setPersistence<T>({ path, data, schema }: { path: string; data: T; schema?: Schema<T> }) {

@@ -119,9 +119,8 @@ export default class LaunchService extends Service {
             this.launchedProcess = process;
             this.commit('launchStatus', 'launched');
 
-            const eventBus = this.appManager.app;
 
-            eventBus.emit('minecraft-start', showLog);
+            this.app.emit('minecraft-start', showLog);
             let watcher = createMinecraftProcessWatcher(process);
 
             watcher.on('error', (err) => {
@@ -132,7 +131,7 @@ export default class LaunchService extends Service {
                 if (crashReportLocation) {
                     crashReportLocation = crashReportLocation.substring(0, crashReportLocation.lastIndexOf('.txt') + 4);
                 }
-                eventBus.emit('minecraft-exit', {
+                this.app.emit('minecraft-exit', {
                     code,
                     signal,
                     crashReport,
@@ -141,16 +140,16 @@ export default class LaunchService extends Service {
                 this.commit('launchStatus', 'ready');
                 this.launchedProcess = undefined;
             }).on('minecraft-window-ready', () => {
-                eventBus.emit('minecraft-window-ready');
+                this.app.emit('minecraft-window-ready');
             });
             /* eslint-disable no-unused-expressions */
             process.stdout?.on('data', (s) => {
                 const string = s.toString();
-                eventBus.emit('minecraft-stdout', string);
+                this.app.emit('minecraft-stdout', string);
             });
             process.stderr?.on('data', (s) => {
                 this.warn(s.toString());
-                eventBus.emit('minecraft-stderr', s.toString());
+                this.app.emit('minecraft-stderr', s.toString());
             });
             process.unref();
             return true;

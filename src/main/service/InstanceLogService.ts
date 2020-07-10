@@ -20,6 +20,7 @@ export default class InstanceLogService extends Service {
      */
     async removeLog(name: string) {
         const filePath = join(this.state.instance.path, 'logs', name);
+        this.log(`Remove log ${filePath}`);
         await remove(filePath);
     }
 
@@ -52,6 +53,7 @@ export default class InstanceLogService extends Service {
      */
     async removeCrashReport(name: string) {
         const filePath = join(this.state.instance.path, 'crash-reports', name);
+        this.log(`Remove crash report ${filePath}`);
         await remove(filePath);
     }
 
@@ -81,7 +83,7 @@ export default class InstanceLogService extends Service {
      */
     showLog(name: string) {
         const filePath = join(this.state.instance.path, 'logs', name);
-        this.appManager.showItemInFolder(filePath);
+        this.app.showItemInFolder(filePath);
     }
 
     /**
@@ -90,6 +92,6 @@ export default class InstanceLogService extends Service {
      */
     showCrash(name: string) {
         const filePath = join(this.state.instance.path, 'crash-reports', name);
-        this.appManager.showItemInFolder(filePath);
+        this.app.showItemInFolder(filePath);
     }
 }

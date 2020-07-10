@@ -129,11 +129,11 @@ export default class VersionService extends Service {
 
     async showVersionsDirectory() {
         const path = this.getGameAssetsPath('versions');
-        return this.appManager.openDirectory(path);
+        return this.app.openDirectory(path);
     }
 
     async showVersionDirectory(version: string) {
         const path = this.getGameAssetsPath('versions', version);
-        return this.appManager.openDirectory(path);
+        return this.app.openDirectory(path);
     }
 }

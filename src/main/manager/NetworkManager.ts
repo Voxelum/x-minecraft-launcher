@@ -1,4 +1,5 @@
-import { DownloadOption, HttpDownloader, downloadFileTask } from '@xmcl/installer';
+import LauncherApp from '@main/app/LauncherApp';
+import { downloadFileTask, DownloadOption, HttpDownloader } from '@xmcl/installer';
 import got from 'got';
 import { Agent as HttpAgent, AgentOptions } from 'http';
 import { Agent as HttpsAgent } from 'https';
@@ -12,8 +13,8 @@ export default class NetworkManager extends Manager {
 
     readonly request = got.extend({});
 
-    constructor() {
-        super();
+    constructor(app: LauncherApp) {
+        super(app);
         let options: AgentOptions = {
             keepAlive: true,
             maxSockets: cpus().length * 4,

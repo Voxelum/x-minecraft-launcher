@@ -1,5 +1,5 @@
 import { InjectionKey } from '@vue/composition-api';
-import { Clipboard, Dialog, IpcRenderer, RendererInterface } from 'electron';
+import type { Clipboard, Dialog, IpcRenderer, RendererInterface } from 'electron';
 import { BuiltinServices } from '@main/service';
 import { Store } from '@universal/store';
 import VueI18n from 'vue-i18n';
