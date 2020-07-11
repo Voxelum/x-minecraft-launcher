@@ -1,5 +1,5 @@
 import { TextComponent, render, RenderNode, fromFormattedString } from '@xmcl/text-component';
-import { defineComponent, createElement as h } from '@vue/composition-api';
+import { defineComponent, h } from '@vue/composition-api';
 import { useI18n } from './hooks';
 
 export default defineComponent({
