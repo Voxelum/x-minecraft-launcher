@@ -126,6 +126,12 @@ function buildLite() {
     });
 }
 
+function buildDir() {
+    return electronBuild({ publish: "never", config: liteConfig, dir: true }).then((v) => {
+        console.log(`${okayLog}${v.join(' ')}`);
+    });
+}
+
 switch (process.env.BUILD_TARGET) {
     case 'clean':
         clean();
@@ -133,6 +139,8 @@ switch (process.env.BUILD_TARGET) {
     case 'production':
         build().then(process.env.FULL_RELEASE === 'true' ? buildFull : buildLite);
         break;
+    case 'debug':
+        build().then(buildDir)
     default:
         build();
         break;

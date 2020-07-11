@@ -13,10 +13,10 @@ const config = {
             },
         ],
         files: [
-            "dist/electron/**/*",
+            "node_modules/7zip-bin/**/*",
+            "!dist/electron/static/Acrylic.cs",
             "!node_modules/7zip-bin/linux/**",
-            "!node_modules/7zip-bin/win/**",
-            "!dist/electron/static/*.cs"
+            "!node_modules/7zip-bin/win/**"
         ]
     },
     win: {
@@ -31,7 +31,7 @@ const config = {
             },
         ],
         files: [
-            "dist/electron/**/*",
+            "node_modules/7zip-bin/**/*",
             "!node_modules/7zip-bin/linux/**",
             "!node_modules/7zip-bin/mac/**"
         ]
@@ -44,10 +44,10 @@ const config = {
             }
         ],
         files: [
-            "dist/electron/**/*",
+            "node_modules/7zip-bin/**/*",
+            "!dist/electron/static/Acrylic.cs",
             "!node_modules/7zip-bin/win/**",
-            "!node_modules/7zip-bin/mac/**",
-            "!dist/electron/static/*.cs"
+            "!node_modules/7zip-bin/mac/**"
         ]
     },
 }
