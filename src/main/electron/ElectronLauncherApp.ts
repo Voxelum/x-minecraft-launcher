@@ -64,11 +64,16 @@ export default class ElectronLauncherApp extends LauncherApp {
                 if (normalizedOptions.vibrancy && isWin) {
                     setTimeout(() => {
                         const id = ref!.webContents.getOSProcessId();
-                        self.log(`[Acrylic] Set window transparent ${id}`);
+                        self.log(`Set window Acrylic transparent ${id}`);
                         acrylic(id).then((e) => {
-                            self.log(`[Acrylic] ${e}`);
+                            if (e) {
+                                self.log('Set window Acrylic success');
+                            } else {
+                                self.warn('Set window Acrylic failed');
+                            }
                         }, (e) => {
-                            self.error(`[Acrylic] ${e}`);
+                            self.warn('Set window Acrylic failed');
+                            self.warn(e);
                         });
                     }, 100);
                 }
@@ -199,17 +204,18 @@ export default class ElectronLauncherApp extends LauncherApp {
             }
         }
 
+        // forward window-all-closed event
         app.on('window-all-closed', () => {
             this.emit('window-all-closed');
         });
 
         app.on('open-url', (event, url) => {
             event.preventDefault();
-            this.handleUrlRequest(url);
+            this.startFromUrl(url);
         }).on('second-instance', (e, argv) => {
             if (process.platform === 'win32') {
                 // Keep only command line / deep linked arguments
-                this.handleUrlRequest(argv[argv.length - 1]);
+                this.startFromFilePath(argv[argv.length - 1]);
             }
         });
 
