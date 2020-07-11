@@ -17,12 +17,6 @@ require('electron-debug')({
 
 import { autoUpdater } from 'electron-updater';
 
-/**
- * Set `__static` path to static files in production
- * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
- */
-global.__static = require('path').join(__dirname, '/static').replace(/\\\\/g, '\\\\\\\\');
-
 autoUpdater.setFeedURL({
     provider: 'github',
     repo: 'x-minecraft-launcher',
