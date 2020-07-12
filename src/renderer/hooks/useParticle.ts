@@ -8,8 +8,8 @@ export enum ParticleMode {
 }
 
 export function useParticle() {
-    const particleMode = useLocalStorageCacheStringValue<ParticleMode>('particleMode', ParticleMode.REPULSE);
-    const showParticle = useLocalStorageCacheBool('showParticle', false);
+    const particleMode = useLocalStorageCacheStringValue<ParticleMode>('particleMode', ParticleMode.PUSH);
+    const showParticle = useLocalStorageCacheBool('showParticle', true);
     return {
         showParticle,
         particleMode,
