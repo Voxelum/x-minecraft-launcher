@@ -10,7 +10,6 @@ import { InstanceSchema } from './instance.schema';
 import { JavaRecord } from './java';
 import { LocalVersion } from './version';
 
-export type CreateOption = DeepPartial<Omit<InstanceSchema, 'id' | 'lastAccessDate' | 'creationDate'> & { path: string }>;
 export interface InstanceSave {
     path: string;
     instanceName: string;
