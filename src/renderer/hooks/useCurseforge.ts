@@ -180,6 +180,9 @@ export function useCurseforgeSearch(sectionId: number) {
         }
     }
     watch([index, refs.sort, refs.gameVersion, searchFilter], () => refresh());
+    onMounted(() => {
+        refresh();
+    });
     return {
         ...refs,
         search,
