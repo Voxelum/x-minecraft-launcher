@@ -1,6 +1,7 @@
 import { computed, onMounted, reactive, toRefs } from '@/vue';
 import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions } from '@main/service/InstanceSavesService';
-import { CreateOption, InstanceConfig } from '@universal/store/modules/instance';
+import { CreateOption } from '@main/service/InstanceService';
+import { InstanceConfig } from '@universal/store/modules/instance';
 import { getExpectVersion } from '@universal/util/version';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { useBusy } from './useSemaphore';
@@ -14,27 +15,48 @@ import { useMinecraftVersions } from './useVersion';
  */
 export function useInstance() {
     const { getters, state } = useStore();
-    const instance: InstanceConfig & { [key: string]: unknown } = getters.instance as any;
 
-    const maxMemory = computed(() => instance.maxMemory);
-    const minMemory = computed(() => instance.minMemory);
-    const author = computed(() => instance.author || '');
-
-    const server = computed(() => instance.server);
-    const refreshing = computed(() => state.semaphore.instance > 0);
-    const javaPath = computed(() => instance.java);
-
-    const refs = toRefs(instance);
+    const name = computed(() => getters.instance.name);
+    const author = computed(() => getters.instance.author || '');
+    const description = computed(() => getters.instance.description);
+    const showLog = computed(() => getters.instance.showLog);
+    const hideLauncher = computed(() => getters.instance.hideLauncher);
+    const runtime = computed(() => getters.instance.runtime);
+    const java = computed(() => getters.instance.java);
+    const resolution = computed(() => getters.instance.resolution);
+    const minMemory = computed(() => getters.instance.minMemory);
+    const maxMemory = computed(() => getters.instance.maxMemory);
+    const vmOptions = computed(() => getters.instance.vmOptions);
+    const mcOptions = computed(() => getters.instance.mcOptions);
+    const url = computed(() => getters.instance.url);
+    const icon = computed(() => getters.instance.icon);
+    const image = computed(() => getters.instance.image);
+    const blur = computed(() => getters.instance.blur);
+    const lastAccessDate = computed(() => getters.instance.lastAccessDate);
+    const creationDate = computed(() => getters.instance.creationDate);
+    const server = computed(() => getters.instance.server);
     return {
-        ...refs,
+        name,
         author,
-        maxMemory,
+        description,
+        showLog,
+        hideLauncher,
+        runtime,
+        java,
+        resolution,
         minMemory,
-        isServer: computed(() => instance.server !== null),
-        javaPath,
+        maxMemory,
+        vmOptions,
+        mcOptions,
+        url,
+        icon,
+        image,
+        blur,
+        lastAccessDate,
+        creationDate,
         server,
-        refreshing,
-
+        isServer: computed(() => getters.instance.server !== null),
+        refreshing: computed(() => state.semaphore.instance > 0),
         ...useServiceOnly('InstanceService', 'editInstance', 'refreshServerStatus'),
         ...useServiceOnly('InstanceIOService', 'exportInstance'),
     };
@@ -49,7 +71,7 @@ export function useInstances() {
         instances: computed(() => getters.instances),
 
         ...useServiceOnly('InstanceService', 'mountInstance', 'deleteInstance', 'refreshServerStatusAll'),
-        ...useServiceOnly('InstanceIOService', 'importInstance'),
+        ...useServiceOnly('InstanceIOService', 'importInstance', 'linkInstance'),
     };
 }
 
@@ -58,7 +80,7 @@ export function useInstances() {
  */
 export function useInstanceCreation() {
     const { gameProfile } = useCurrentUser();
-    const { createAndSelect } = useService('InstanceService');
+    const { createAndMount: createAndSelect } = useService('InstanceService');
     const { release } = useMinecraftVersions();
     const data = reactive({
         name: '',
@@ -146,9 +168,15 @@ export function useInstanceCreation() {
 
 export function useInstanceVersionBase() {
     const { getters } = useStore();
-    const profile: InstanceConfig = getters.instance;
+    const minecraft = computed(() => getters.instance.runtime.minecraft);
+    const forge = computed(() => getters.instance.runtime.forge);
+    const fabricLoader = computed(() => getters.instance.runtime.fabricLoader);
+    const yarn = computed(() => getters.instance.runtime.yarn);
     return {
-        ...toRefs(profile.runtime),
+        minecraft,
+        forge,
+        fabricLoader,
+        yarn,
     };
 }
 
@@ -200,18 +228,16 @@ export function useInstanceSaves() {
 export function useInstanceVersion() {
     const { getters } = useStore();
 
-    const instance: InstanceConfig = getters.instance;
 
-    const refVersion = toRefs(instance.runtime);
     const folder = computed(() => getters.instanceVersion.folder);
     const id = computed(() => getExpectVersion(
-        instance.runtime.minecraft,
-        instance.runtime.forge,
-        instance.runtime.liteloader,
+        getters.instance.runtime.minecraft,
+        getters.instance.runtime.forge,
+        getters.instance.runtime.liteloader,
     ));
 
     return {
-        ...refVersion,
+        ...useInstanceVersionBase(),
         id,
         folder,
     };
