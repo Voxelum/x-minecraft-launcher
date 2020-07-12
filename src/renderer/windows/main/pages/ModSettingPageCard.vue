@@ -3,7 +3,7 @@
     ref="card"
     v-draggable-card
     hover
-    draggable
+    :draggable="!enabled"
     :dark="!source.subsequence"
     :class="{ 
       grey: source.subsequence,
@@ -83,7 +83,7 @@
 
 <script lang=ts>
 import { defineComponent, ref, Ref, computed, inject, watch } from '@vue/composition-api';
-import { useInstanceVersionBase, useDragTransferItemMutable, useCompatible, useService, ModItem, useI18n } from '@/hooks';
+import { useInstanceVersionBase, useCompatible, useService, ModItem, useI18n } from '@/hooks';
 import { basename } from '@/util/basename';
 import unknownPack from '@/assets/unknown_pack.png';
 import { useContextMenu, ContextMenuItem, useCurseforgeRoute } from '../hooks';
@@ -160,6 +160,9 @@ export default defineComponent<Props>({
     // );
 
     function onDragStart(e: DragEvent) {
+      if (props.source.enabled) {
+        return;
+      }
       if (iconImage.value) {
         e.dataTransfer!.setDragImage(iconImage.value!, 0, 0);
       } else {
@@ -176,6 +179,9 @@ export default defineComponent<Props>({
       context.emit('dragstart', e);
     }
     function onDragEnd() {
+      if (props.source.enabled) {
+        return;
+      }
       isDraggingMod.value = true;
     }
     function tryOpen(e: MouseEvent) {

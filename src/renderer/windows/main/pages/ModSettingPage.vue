@@ -3,6 +3,8 @@
     fill-height
     style="overflow: auto;"
     @dragend="draggingMod = false"
+    @dragover.prevent
+    @drop="onDropToImport"
   >
     <v-layout
       column
@@ -106,6 +108,7 @@ import {
   useDropImportFile,
   ModItem,
   useOperation,
+  useDrop,
 } from '@/hooks';
 import { isCompatible } from '@universal/util/version';
 import { useLocalStorageCacheBool } from '@/hooks/useCache';
@@ -141,12 +144,18 @@ export default defineComponent({
     });
     provide('HoveringMod', ref(''));
     const { minecraft } = useInstanceVersionBase();
+    const { importResource } = useResourceOperation();
     const { enabled, disabled, commit } = useInstanceMods();
     const { removeResource } = useResourceOperation();
     const { toggle } = useSearchToggle();
     const { text: filteredText } = useSearch();
     const { begin: beginDelete, cancel: cancelDelete, operate: confirmDelete, data: deletingMod } = useOperation<ModItem | undefined>(undefined, (mod) => {
       removeResource(mod!.hash);
+      if (mod!.enabled) {
+        removeResource(mod!.hash);
+      } else {
+
+      }
     });
 
     const mods = computed(() => [
@@ -207,13 +216,9 @@ export default defineComponent({
         });
       });
     }
-    // const { filter: filterLeft, onItemVisibile: onLeftSeen } = useProgressiveLoad();
-    // const { filter: filterRight, onItemVisibile: onRightSeen } = useProgressiveLoad();
-
-    // const unselectedItems = computed(() => unusedMods.value
-    //   .filter(filterText)
-    //   .filter(isCompatibleMod)
-    //   .reduce(isDuplicated, [] as ModItem[]));
+    const { onDrop: onDropToImport } = useDrop((file) => {
+      importResource({ type: 'mods', path: file.path });
+    });
 
     function onDropMod(e: DragEvent) {
       const url = e.dataTransfer!.getData('id');
@@ -243,6 +248,7 @@ export default defineComponent({
       deletingMod,
 
       onDropMod,
+      onDropToImport,
       setFilteredModid,
       toggle,
       ModCard,
