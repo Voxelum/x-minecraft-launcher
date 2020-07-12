@@ -111,7 +111,7 @@ export function useInstanceMods() {
             modItem.description = resource.metadata.description ?? '';
             modItem.acceptVersion = '[*]';
             modItem.acceptLoaderVersion = '';
-            modItem.type = 'liteloader';
+            modItem.type = 'fabric';
             return modItem;
         }
         modItem.type = 'liteloader';

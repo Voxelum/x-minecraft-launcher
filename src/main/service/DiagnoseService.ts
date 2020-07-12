@@ -1,5 +1,5 @@
 import { exists, missing } from '@main/util/fs';
-import { isResourcePackResource } from '@main/util/resource';
+import { FabricResource } from '@main/util/resource';
 import { Issue, IssueReport } from '@universal/store/modules/diagnose';
 import { EMPTY_JAVA } from '@universal/store/modules/java';
 import { LocalVersion } from '@universal/store/modules/version';
@@ -8,6 +8,7 @@ import { MinecraftFolder } from '@xmcl/core';
 import { Diagnosis, Installer } from '@xmcl/installer';
 import { InstallProfile } from '@xmcl/installer/minecraft';
 import { Forge } from '@xmcl/mod-parser';
+import { ModMetadata } from '@xmcl/mod-parser/fabric';
 import { PackMeta } from '@xmcl/resourcepack';
 import { readJSON } from 'fs-extra';
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
@@ -271,11 +272,12 @@ export default class DiagnoseService extends Service {
             const resolvedMcVersion = ArtifactVersion.of(mcversion);
             const pattern = /^\[.+\]$/;
 
-            const tree: Pick<IssueReport, 'unknownMod' | 'incompatibleMod' | 'requireForge' | 'requireFabric'> = {
+            const tree: Pick<IssueReport, 'unknownMod' | 'incompatibleMod' | 'requireForge' | 'requireFabric' | 'requireFabricAPI'> = {
                 unknownMod: [],
                 incompatibleMod: [],
                 requireForge: [],
                 requireFabric: [],
+                requireFabricAPI: [],
             };
             let forgeMods = mods.filter(m => !!m && m.type === 'forge');
             for (let mod of forgeMods) {
@@ -305,10 +307,19 @@ export default class DiagnoseService extends Service {
                 }
             }
 
-            let fabricMods = mods.filter(m => m.type === 'fabric');
+            let fabricMods = mods.filter(m => m.type === 'fabric') as FabricResource[];
             if (fabricMods.length > 0) {
                 if (!version.fabricLoader || !version.yarn) {
                     tree.requireFabric.push({});
+                }
+                for (let mod of fabricMods) {
+                    let fabMetadata = mod.metadata as ModMetadata;
+                    if (fabMetadata.depends) {
+                        let fabApiVer = (fabMetadata.depends as any)['fabric-api-base'];
+                        if (fabApiVer && !fabricMods.some(m => m.metadata.id === 'fabric')) {
+                            tree.requireFabricAPI.push({ version: fabApiVer, name: mod.name });
+                        }
+                    }
                 }
             }
 
