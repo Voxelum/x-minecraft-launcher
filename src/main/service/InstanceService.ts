@@ -1,9 +1,9 @@
 import { exists, missing, readdirEnsured } from '@main/util/fs';
-import { CreateOption, createTemplate } from '@universal/store/modules/instance';
+import { createTemplate } from '@universal/store/modules/instance';
 import { InstanceSchema, InstancesSchema, RuntimeVersions } from '@universal/store/modules/instance.schema';
 import { requireObject, requireString } from '@universal/util/assert';
 import latestRelease from '@universal/util/lasteRelease.json';
-import { assignShallow, isPrimitiveArrayEqual } from '@universal/util/object';
+import { assignShallow } from '@universal/util/object';
 import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/util/serverStatus';
 import { queryStatus, Status } from '@xmcl/client';
 import { readInfo, ServerInfo } from '@xmcl/server-info';
@@ -23,6 +23,8 @@ import Service, { Inject, MutationTrigger, Singleton } from './Service';
 const INSTANCES_FOLDER = 'instances';
 const INSTANCE_JSON = 'instance.json';
 const INSTANCES_JSON = 'instances.json';
+
+export type CreateOption = DeepPartial<Omit<InstanceSchema, 'id' | 'lastAccessDate' | 'creationDate'> & { path: string }>;
 
 export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'deployments' | 'runtime' | 'server'>> {
     deployments?: Record<string, string[]>;
@@ -150,7 +152,7 @@ export class InstanceService extends Service {
         let instances = getters.instances;
         if (instances.length === 0) {
             this.log('Cannot find any instances, try to init one default modpack.');
-            await this.createAndSelect({});
+            await this.createAndMount({});
         }
     }
 
@@ -295,7 +297,7 @@ export class InstanceService extends Service {
     /**
      * Create a managed instance in storage.
      */
-    async createAndSelect(payload: CreateOption): Promise<string> {
+    async createAndMount(payload: CreateOption): Promise<string> {
         requireObject(payload);
 
         let path = await this.createInstance(payload);
@@ -339,7 +341,7 @@ export class InstanceService extends Service {
             // if only one instance left
             if (restPath.length === 0) {
                 // then create and select a new one
-                await this.createAndSelect({});
+                await this.createAndMount({});
             } else {
                 // else select the first instance
                 await this.mountInstance(restPath[0]);
