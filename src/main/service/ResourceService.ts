@@ -151,6 +151,7 @@ export default class ResourceService extends Service {
             this.cacheResource(getResourceFromBuilder(builder));
         } catch (e) {
             this.error(e);
+            this.uncacheResource(resource);
             await this.unpersistResource(resource);
             this.commit('resourceRemove', resource);
         }
@@ -176,6 +177,7 @@ export default class ResourceService extends Service {
                 this.cacheResource(getResourceFromBuilder(builder));
             }
         } catch (e) {
+            this.uncacheResource(resource);
             await this.unpersistResource(resource);
             this.commit('resourceRemove', resource);
 
@@ -191,6 +193,7 @@ export default class ResourceService extends Service {
         let resourceObject = this.normalizeResource(resource);
         if (resourceObject === UNKNOWN_RESOURCE) return;
 
+        this.uncacheResource(resourceObject);
         this.commit('resourceRemove', resourceObject);
         this.unpersistResource(resourceObject);
     }
@@ -334,6 +337,15 @@ export default class ResourceService extends Service {
             this.hashOrUrlOrInoOrFilePathToResource[resource.path] = resource;
         }
         this.commit('resources', resources);
+    }
+
+    protected uncacheResource(resource: Resource) {
+        delete this.hashOrUrlOrInoOrFilePathToResource[resource.hash];
+        for (let url of resource.source.uri) {
+            delete this.hashOrUrlOrInoOrFilePathToResource[url];
+        }
+        delete this.hashOrUrlOrInoOrFilePathToResource[resource.ino];
+        delete this.hashOrUrlOrInoOrFilePathToResource[resource.path];
     }
 
     protected cacheResource(resource: Resource) {
