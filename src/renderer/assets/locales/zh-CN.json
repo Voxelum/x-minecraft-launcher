@@ -175,6 +175,10 @@
       "": "请启用 Fabric 来运行 Fabric 的 Mod",
       "message": "请在版本设置页面选择一个合适的 Fabric 版本"
     },
+    "requireFabricAPI": {
+      "": "请安装 FabricAPI {version} 来运行 {name}",
+      "message": "请去 Curseforge 下载，如果已经下载了可以去 Mod 设置页面启用 Fabric API"
+    },
     "requireForge": {
       "": "请启用 Forge 来运行 Forge 的 Mod",
       "message": "请在版本设置页面选择一个合适的 Forge 版本"

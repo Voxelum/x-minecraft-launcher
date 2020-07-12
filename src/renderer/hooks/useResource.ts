@@ -1,5 +1,5 @@
 import unknownPack from '@/assets/unknown_pack.png';
-import { CurseforgeModpackResource, ForgeResource, LiteloaderResource, ResourcePackResource, SaveResource } from '@universal/util/resource';
+import { CurseforgeModpackResource, ForgeResource, LiteloaderResource, ResourcePackResource, SaveResource, FabricResource } from '@universal/util/resource';
 import { requireTrue } from '@universal/util/assert';
 import { computed, Ref, ref } from '@vue/composition-api';
 import { useServiceOnly } from './useService';
@@ -13,7 +13,7 @@ export function useResourceOperation() {
 
 /* eslint-disable import/export */
 export function useResource(domain: 'mods'): {
-    resources: Ref<Array<ForgeResource | LiteloaderResource>>;
+    resources: Ref<Array<ForgeResource | LiteloaderResource | FabricResource>>;
 } & ReturnType<typeof useResourceOperation>;
 export function useResource(domain: 'resourcepacks'): {
     resources: Ref<Array<ResourcePackResource>>;

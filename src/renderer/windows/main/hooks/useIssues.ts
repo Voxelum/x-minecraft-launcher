@@ -1,5 +1,5 @@
 import { Issue, IssueType } from '@universal/store/modules/diagnose';
-import { useService, useRouter } from '@/hooks';
+import { useService, useRouter, useInstanceMods, useResource } from '@/hooks';
 import { useDialog } from '.';
 import { useJavaWizardDialog } from './useDialog';
 
@@ -8,6 +8,8 @@ export function useIssueHandler() {
     const { replace } = useRouter();
     const { show: showJavaDialog, javaIssue } = useJavaWizardDialog();
     const { show: showModDialog } = useDialog('download-missing-mods');
+    const { deploy } = useService('InstanceResourceService');
+    const { resources } = useResource('mods');
 
     const handlerRegistry: Record<string, () => void> = {};
 
@@ -29,18 +31,24 @@ export function useIssueHandler() {
     });
     register('requireForge', () => replace('/version-setting'));
     register('requireFabric', () => replace('/version-setting'));
+    register('requireFabricAPI', () => {
+        let fabric = resources.value.find((r) => r.type === 'fabric' && r.metadata.id === 'fabric');
+        if (fabric) {
+            deploy([fabric]);
+        } else {
+            replace('/curseforge/mc-mods/306612');
+        }
+    });
 
     function fix(issue: Issue, issues: readonly Issue[]) {
         console.log(`Fix issue ${issue.id}`);
-        if (issue.autofix) {
+        let handler = handlerRegistry[issue.id];
+        if (handler) {
+            handler();
+        } else if (issue.autofix) {
             fixIssue(issues);
         } else {
-            let handler = handlerRegistry[issue.id];
-            if (handler) {
-                handler();
-            } else {
-                console.error(`Cannot fix the issue ${issue.id} as it's not implemented`);
-            }
+            console.error(`Cannot fix the issue ${issue.id} as it's not implemented`);
         }
     }
     return { fix };

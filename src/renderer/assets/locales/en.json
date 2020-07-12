@@ -191,6 +191,10 @@
       "": "Require fabric to run with Fabric Mod!",
       "message": "Please a fabric version in version setting"
     },
+    "requireFabricAPI": {
+      "": "Require fabric API {version} to run the {name}!",
+      "message": "Either download fabric API or enable it in Mod Settings"
+    },
     "requireForge": {
       "": "Require forge to run with Forge Mod!",
       "message": "Please a forge version in version setting"

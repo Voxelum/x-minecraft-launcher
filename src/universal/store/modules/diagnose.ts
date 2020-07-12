@@ -52,6 +52,7 @@ interface State {
 
         requireForge: Registry<{}, false, true>;
         requireFabric: Registry<{}, false, true>;
+        requireFabricAPI: Registry<{ version: string; name: string }, false, true>;
 
         badInstall: Registry<{ minecraft: string; version: string; installProfile: InstallProfile }>;
 
@@ -109,6 +110,7 @@ const mod: DiagnoseModule = {
 
             requireFabric: { fixing: false, autofix: false, optional: true, actived: [] },
             requireForge: { fixing: false, autofix: false, optional: true, actived: [] },
+            requireFabricAPI: { fixing: false, autofix: false, optional: true, actived: [] },
         },
     },
     getters: {
