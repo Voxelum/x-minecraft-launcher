@@ -12,6 +12,4 @@
 *.litemod binary
 *.dat binary
 *.mcmeta binary
-
-
-
+*.web binary

@@ -3,7 +3,9 @@
 ![Build](https://github.com/Voxelum/x-minecraft-launcher/workflows/Build/badge.svg)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
-> An WIP Minecraft Launcher based on electron-vue 
+![](misc/home.webp)
+
+Visit Github Release page to download installer/zip. Or you can visit the [official site](https://voxelum.github.io/x-minecraft-launcher) to auto detect what to download for your OS.
 
 ## General RoadMap
 
