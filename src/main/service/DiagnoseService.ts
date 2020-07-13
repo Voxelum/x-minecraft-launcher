@@ -62,9 +62,6 @@ export default class DiagnoseService extends Service {
 
     constructor() {
         super();
-        this.registerMatchedFix(['missingVersion'],
-            () => this.commit('instance', { runtime: { minecraft: this.getters.minecraftRelease.id }, path: this.state.instance.path }));
-
         this.registerMatchedFix(['missingVersionJson', 'missingVersionJar', 'corruptedVersionJson', 'corruptedVersionJar'],
             async (issues) => {
                 const i = issues[0];
