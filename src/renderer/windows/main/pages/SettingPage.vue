@@ -66,13 +66,20 @@
             </v-list-tile-action>
           </v-list-tile>
           <v-list-tile>
-            <v-list-tile-action>
-              <v-checkbox v-model="useBmclAPI" />
-            </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>{{ $t('setting.useBmclAPI') }}</v-list-tile-title>
               <v-list-tile-sub-title>{{ $t('setting.useBmclAPIDescription') }}</v-list-tile-sub-title>
             </v-list-tile-content>
+            <v-list-tile-action>
+              <v-select
+                v-model="apiSetsPreference"
+                style="max-width: 185px;"
+                dark
+                hide-details
+                :items="apiSets"
+                item-text="name"
+              />
+            </v-list-tile-action>
           </v-list-tile>
         </v-list>
       </v-flex>
@@ -96,7 +103,7 @@
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>{{ $t('setting.latestVersion') }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{ version }} build {{ build }}  {{ updateInfo.version ? `-> ${updateInfo.version}` : '' }}</v-list-tile-sub-title>
+              <v-list-tile-sub-title>{{ version }} build {{ build }} {{ updateInfo.version ? `-> ${updateInfo.version}` : '' }}</v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <v-btn

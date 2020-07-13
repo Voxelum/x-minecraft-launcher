@@ -85,6 +85,67 @@ export default class InstallService extends Service {
     async init() {
     }
 
+    protected getMinecraftJsonManifestRemote() {
+        if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
+            const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference);
+            if (api) {
+                return `${api.url}/mc/game/version_manifest.json`;
+            }
+        }
+        return undefined;
+    }
+
+    protected getForgeInstallOptions(): ForgeInstaller.Options {
+        let options: ForgeInstaller.Options = {
+            ...this.networkManager.getDownloaderOption(),
+            java: this.getters.defaultJava.path,
+        };
+        if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
+            const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference);
+            if (api) {
+                options.mavenHost = [`${api.url}/maven`];
+            }
+        }
+        return options;
+    }
+
+    protected getInstallOptions(): Installer.Option {
+        let option: Installer.Option = {
+            assetsDownloadConcurrency: 16,
+            ...this.networkManager.getDownloaderOption(),
+        };
+
+        if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
+            const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference);
+            if (api) {
+                option.assetsHost = `${api.url}/assets`;
+                option.mavenHost = `${api.url}/maven`;
+                option.assetsIndexUrl = (u) => {
+                    let url = new URL(u.assetIndex.url);
+                    const host = new URL(api.url).host;
+                    url.host = host;
+                    url.hostname = host;
+                    return url.toString();
+                };
+                option.json = (u) => {
+                    let url = new URL(u.url);
+                    const host = new URL(api.url).host;
+                    url.host = host;
+                    url.hostname = host;
+                    return url.toString();
+                };
+                option.client = (u) => {
+                    let url = new URL(u.downloads.client.url);
+                    const host = new URL(api.url).host;
+                    url.host = host;
+                    url.hostname = host;
+                    return url.toString();
+                };
+            }
+        }
+        return option;
+    }
+
     private async getForgesFromBMCL(mcversion: string, currentForgeVersion: ForgeInstaller.VersionList) {
         interface BMCLForge {
             'branch': string; // '1.9';
@@ -102,12 +163,14 @@ export default class InstallService extends Service {
         let { body, statusCode, headers } = await this.networkManager.request({
             method: 'GET',
             url: `https://bmclapi2.bangbang93.com/forge/minecraft/${mcversion}`,
-            headers: currentForgeVersion && currentForgeVersion.timestamp ? {
-                'If-Modified-Since': currentForgeVersion.timestamp,
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
-            } : {
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
-            },
+            headers: currentForgeVersion && currentForgeVersion.timestamp
+                ? {
+                    'If-Modified-Since': currentForgeVersion.timestamp,
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
+                }
+                : {
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
+                },
             rejectUnauthorized: false,
         });
         function convert(v: BMCLForge): ForgeInstaller.Version {
@@ -143,7 +206,8 @@ export default class InstallService extends Service {
         }
         this.log('Start to refresh minecraft version metadata.');
         const oldMetadata = this.state.version.minecraft;
-        const newMetadata = await Installer.getVersionList({ original: oldMetadata });
+        const remote = this.getMinecraftJsonManifestRemote();
+        const newMetadata = await Installer.getVersionList({ original: oldMetadata, remote });
         if (oldMetadata !== newMetadata) {
             this.log('Found new minecraft version metadata. Update it.');
             this.commit('minecraftMetadata', newMetadata);
@@ -159,12 +223,7 @@ export default class InstallService extends Service {
      */
     @Singleton('install')
     async installAssetsAll(version: string) {
-        let option: Installer.AssetsOption = {
-            assetsDownloadConcurrency: 16,
-        };
-        if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
-            option.assetsHost = 'http://bmclapi2.bangbang93.com/assets';
-        }
+        const option = this.getInstallOptions();
         const location = this.state.root;
         const resolvedVersion = await Version.parse(location, version);
         await this.submit(Installer.installAssetsTask(resolvedVersion, option)).wait();
@@ -172,12 +231,7 @@ export default class InstallService extends Service {
 
     @Singleton('install')
     async installDependencies(version: string) {
-        let option: Installer.AssetsOption & Installer.LibraryOption = {
-        };
-        if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
-            option.assetsHost = 'http://bmclapi2.bangbang93.com/assets';
-            option.mavenHost = 'http://bmclapi.bangbang93.com/maven';
-        }
+        const option = this.getInstallOptions();
         const location = this.state.root;
         const resolvedVersion = await Version.parse(location, version);
         await this.submit(Installer.installLibrariesTask(resolvedVersion, option)).wait();
@@ -186,12 +240,7 @@ export default class InstallService extends Service {
 
     @Singleton('install')
     async reinstall(version: string) {
-        let option: Installer.AssetsOption & Installer.LibraryOption = {
-        };
-        if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
-            option.assetsHost = 'http://bmclapi2.bangbang93.com/assets';
-            option.mavenHost = 'http://bmclapi.bangbang93.com/maven';
-        }
+        let option = this.getInstallOptions();
         let location = this.state.root;
         let resolvedVersion = await Version.parse(location, version);
         let local = this.state.version.local.find(v => v.folder === version);
@@ -212,12 +261,7 @@ export default class InstallService extends Service {
      */
     @Singleton('install')
     async installAssets(assets: { name: string; size: number; hash: string }[]) {
-        let option: Installer.AssetsOption = {
-            assetsDownloadConcurrency: 16,
-        };
-        if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
-            option.assetsHost = 'http://bmclapi2.bangbang93.com/assets';
-        }
+        let option = this.getInstallOptions();
         let location = this.state.root;
         let task = Installer.installResolvedAssetsTask(assets, new MinecraftFolder(location), option);
         await this.submit(task).wait();
@@ -230,11 +274,7 @@ export default class InstallService extends Service {
     async installMinecraft(meta: Installer.Version) {
         let id = meta.id;
 
-        let option = {};
-        if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
-            option = { client: `https://bmclapi2.bangbang93.com/version/${meta.id}/client` };
-        }
-
+        let option = this.getInstallOptions();
         let task = Installer.installVersionTask('client', meta, this.state.root, option);
         try {
             await this.submit(task).wait();
@@ -257,11 +297,7 @@ export default class InstallService extends Service {
         } else {
             resolved = libraries as any; // TODO: typecheck
         }
-        let option: Installer.LibraryOption = {};
-        if (this.networkManager.isInGFW && this.state.setting.useBmclAPI) {
-            option.mavenHost = 'http://bmclapi.bangbang93.com/maven';
-        }
-
+        let option = this.getInstallOptions();
         let task = Installer.installResolvedLibrariesTask(resolved, this.state.root, option);
         try {
             await this.submit(task).wait();
@@ -324,15 +360,11 @@ export default class InstallService extends Service {
      */
     @Singleton('install')
     async installForge(meta: Parameters<typeof installTask>[0]) {
-        let maven = this.networkManager.isInGFW ? ['https://bmclapi2.bangbang93.com/maven'] : [];
-        let handle = this.submit(ForgeInstaller.installTask(meta, this.state.root, {
-            mavenHost: maven,
-            java: this.getters.defaultJava.path,
-            overwriteWhen: 'checksumNotMatchOrEmpty',
-        }));
+        let options = this.getForgeInstallOptions();
+        let handle = this.submit(ForgeInstaller.installTask(meta, this.state.root, options));
         let version: string | undefined;
         try {
-            this.log(`Start to install forge ${meta.version} on ${meta.mcversion} using maven ${maven}`);
+            this.log(`Start to install forge ${meta.version} on ${meta.mcversion}`);
             version = await handle.wait();
             this.local.refreshVersions();
             this.log(`Success to install forge ${meta.version} on ${meta.mcversion}`);
