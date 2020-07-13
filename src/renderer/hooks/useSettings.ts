@@ -23,10 +23,11 @@ export function useSettings() {
         get: () => state.setting.autoDownload,
         set: v => commit('autoDownload', v),
     });
-    const useBmclAPI = computed({
-        get: () => state.setting.useBmclAPI,
-        set: v => commit('useBmclApi', v),
+    const apiSetsPreference = computed({
+        get: () => state.setting.apiSetsPreference,
+        set: v => commit('apiSetsPreference', v),
     });
+    const apiSets = computed(() => ['mojang', ...state.setting.apiSets]);
     const updateStatus = computed(() => state.setting.updateStatus);
     const checkingUpdate = useBusy('checkUpdate');
     const downloadingUpdate = useBusy('downloadUpdate');
@@ -39,7 +40,8 @@ export function useSettings() {
         allowPrerelease,
         autoDownload,
         autoInstallOnAppQuit,
-        useBmclAPI,
+        apiSetsPreference,
+        apiSets,
         updateStatus,
         checkingUpdate,
         downloadingUpdate,

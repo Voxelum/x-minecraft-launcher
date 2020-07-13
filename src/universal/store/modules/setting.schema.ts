@@ -35,10 +35,14 @@ export interface SettingSchema {
      */
     allowPrerelease: boolean;
     /**
-     * Use bmcl API in China Mainland
-     * @default true
+     * The download API set preferences
+     * @default 'mcbbs'
      */
-    useBmclAPI: boolean;
+    apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl';
+    /**
+     * The supported unofficial api sets
+     */
+    apiSets: Array<{ name: string; url: string }>;
 }
 
 export const SettingSchema: Schema<SettingSchema> = require('./SettingSchema.json');

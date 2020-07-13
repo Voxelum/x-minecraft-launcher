@@ -81,7 +81,9 @@ interface Mutations {
     autoDownload: boolean;
     updateInfo: UpdateInfo;
     settings: { [key: string]: number | string | boolean | object };
-    useBmclApi: boolean;
+
+    apiSetsPreference: 'mojang' | 'bmcl' | 'mcbbs';
+    apiSets: { name: string; url: string }[];
 
     version: [string, number];
 }
@@ -103,7 +105,8 @@ const mod: SettingModule = {
         allowPrerelease: false,
         autoInstallOnAppQuit: false,
         autoDownload: false,
-        useBmclAPI: true,
+        apiSetsPreference: 'mojang',
+        apiSets: [{ name: 'mcbbs', url: 'https://download.mcbbs.net' }, { name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }],
         version: '',
         build: 0,
     },
@@ -130,12 +133,13 @@ const mod: SettingModule = {
             state.autoDownload = config.autoDownload || false;
             state.autoInstallOnAppQuit = config.autoDownload || false;
             state.allowPrerelease = config.allowPrerelease || false;
-            state.useBmclAPI = typeof config.useBmclAPI === 'boolean' ? config.useBmclAPI : true;
+            state.apiSetsPreference = typeof config.apiSetsPreference === 'string' ? config.apiSetsPreference : 'mojang';
         },
         settings(state, settings) {
             // Object.assign(state.settings, settings);
         },
-        useBmclApi(state, use) { state.useBmclAPI = use; },
+        apiSetsPreference(state, use) { state.apiSetsPreference = use; },
+        apiSets(state, sets) { state.apiSets = sets; },
         version(state, [version, build]) { state.version = version; state.build = build ?? 0; },
     },
 };

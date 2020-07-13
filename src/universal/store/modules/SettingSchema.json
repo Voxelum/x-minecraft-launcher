@@ -34,20 +34,45 @@
             "default": false,
             "type": "boolean"
         },
-        "useBmclAPI": {
-            "description": "Use bmcl API in China Mainland",
-            "default": true,
-            "type": "boolean"
+        "apiSetsPreference": {
+            "description": "The download API set preferences",
+            "default": "'mcbbs'",
+            "enum": [
+                "bmcl",
+                "mcbbs",
+                "mojang"
+            ],
+            "type": "string"
+        },
+        "apiSets": {
+            "description": "The supported unofficial api sets",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name",
+                    "url"
+                ]
+            }
         }
     },
     "required": [
         "allowPrerelease",
+        "apiSets",
+        "apiSetsPreference",
         "autoDownload",
         "autoInstallOnAppQuit",
         "locale",
         "primaryRoot",
-        "roots",
-        "useBmclAPI"
+        "roots"
     ],
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false
