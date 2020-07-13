@@ -12,6 +12,27 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.4.4](https://github.com/voxelum/x-minecraft-launcher/compare/v0.4.3...v0.4.4)
+
+* fix: bump vue api version ([0ea6034](https://github.com/voxelum/x-minecraft-launcher/commit/0ea6034))
+* fix: clear resource cache after resource removed ([076587c](https://github.com/voxelum/x-minecraft-launcher/commit/076587c))
+* fix: correctly use bmcl api with mcbbs support ([485fce4](https://github.com/voxelum/x-minecraft-launcher/commit/485fce4))
+* fix: drop to import mods ([060018c](https://github.com/voxelum/x-minecraft-launcher/commit/060018c))
+* fix: fabric mod import & use experience ([166ea65](https://github.com/voxelum/x-minecraft-launcher/commit/166ea65))
+* fix: instance reactivity in vue ([8268f49](https://github.com/voxelum/x-minecraft-launcher/commit/8268f49))
+* fix: refresh curseforge page on enter ([4188404](https://github.com/voxelum/x-minecraft-launcher/commit/4188404))
+* fix: show particle at default ([59f0519](https://github.com/voxelum/x-minecraft-launcher/commit/59f0519))
+* fix: toggle intances page ui slightly ([f4f55b1](https://github.com/voxelum/x-minecraft-launcher/commit/f4f55b1))
+* fix: wrong fix for missingVersion ([72a613b](https://github.com/voxelum/x-minecraft-launcher/commit/72a613b))
+* chore: bump core deps ([594dc09](https://github.com/voxelum/x-minecraft-launcher/commit/594dc09))
+* chore: fix build size & bump core ([4bfa0a0](https://github.com/voxelum/x-minecraft-launcher/commit/4bfa0a0))
+* refactor: change some api name ([e526fd2](https://github.com/voxelum/x-minecraft-launcher/commit/e526fd2))
+* refactor: make acrylic log readable ([67f6f91](https://github.com/voxelum/x-minecraft-launcher/commit/67f6f91))
+* refactor: split electron engine in main process stage 1 ([fcea70a](https://github.com/voxelum/x-minecraft-launcher/commit/fcea70a))
+
+
 ## [0.4.3](https://github.com/voxelum/x-minecraft-launcher/compare/v0.4.2...v0.4.3)
 
 * fix: initialize root dir failure ([5ffeaa5](https://github.com/voxelum/x-minecraft-launcher/commit/5ffeaa5))
