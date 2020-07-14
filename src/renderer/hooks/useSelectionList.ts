@@ -156,8 +156,7 @@ export function useDragTransferList(
             } else {
                 let all = right.value!.getElementsByClassName('draggable-card');
                 let elem = findIntersectElement(y, all) || all.item(all.length - 1);
-                let targetId = elem!.getAttribute('draggable-id')!;
-                add(id, targetId);
+                add(id, elem?.getAttribute('draggable-id') ?? undefined);
             }
         } else if (left) {
             remove(id);
