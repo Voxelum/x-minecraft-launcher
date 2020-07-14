@@ -173,12 +173,10 @@ export default class ServiceManager extends Manager {
     async initializeService() {
         // wait app ready since in the init stage, the module can access network & others
         const startingTime = Date.now();
-        try {
-            await Promise.all(this.services.map(s => s.init()));
-        } catch (e) {
-            this.error('Error during service init:');
+        await Promise.all(this.services.map(s => s.init().catch((e) => {
+            this.error(`Error during service init ${Object.getPrototypeOf(s).constructor.name}:`);
             this.error(e);
-        }
+        })));
         this.log(`Successfully init modules. Total Time is ${Date.now() - startingTime}ms.`);
     }
 
