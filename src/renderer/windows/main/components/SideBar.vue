@@ -31,7 +31,6 @@
         style="display: block !important;"
       />
       <v-list-tile
-        :disabled="!logined"
         replace
         to="/"
       >
@@ -40,7 +39,6 @@
         </v-list-tile-action>
       </v-list-tile>
       <v-list-tile
-        :disabled="!logined"
         replace
         to="/instances"
       >
@@ -49,7 +47,6 @@
         </v-list-tile-action>
       </v-list-tile>
       <v-list-tile
-        :disabled="!logined"
         replace
         to="/user"
       >
@@ -58,7 +55,6 @@
         </v-list-tile-action>
       </v-list-tile>
       <v-list-tile
-        :disabled="!logined"
         replace
         to="/curseforge"
       >
@@ -117,8 +113,6 @@ import {
 } from '@vue/composition-api';
 import {
   useRouter,
-  useCurrentUser,
-  useUserProfileStatus,
   useTaskCount,
 } from '@/hooks';
 import { useDialog, useAsyncRouteBeforeLeaves } from '../hooks';
@@ -126,7 +120,6 @@ import { useDialog, useAsyncRouteBeforeLeaves } from '../hooks';
 export default defineComponent({
   setup() {
     const { activeTasksCount } = useTaskCount();
-    const { accessTokenValid: logined } = useUserProfileStatus(useCurrentUser().userProfile);
     const { show } = useDialog('task');
     const beforeLeaves = useAsyncRouteBeforeLeaves();
 
@@ -145,9 +138,6 @@ export default defineComponent({
       if (!timeTraveling) localHistory.push(from.fullPath);
     });
     async function goBack() {
-      if (!logined.value && router.currentRoute.path === '/login') {
-        return;
-      }
       timeTraveling = true;
       const before = localHistory.pop();
       if (before) {
@@ -167,7 +157,6 @@ export default defineComponent({
       activeTasksCount,
       showTaskDialog: show,
       goBack,
-      logined,
       onEnterBar() {
         startHoverTime = Date.now();
       },

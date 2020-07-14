@@ -183,6 +183,13 @@ export default class UserService extends Service {
 
     async init() {
         this.refreshUser();
+        if (this.state.user.selectedUser.id === '' && Object.keys(this.state.user.users).length > 0) {
+            const [userId, user] = Object.entries(this.state.user.users)[0];
+            this.switchUserProfile({
+                userId,
+                profileId: user.selectedProfile,
+            });
+        }
     }
 
     /**
@@ -550,7 +557,7 @@ export default class UserService extends Service {
                 selectedProfile: result.selectedProfile ? result.selectedProfile.id : '',
             });
         }
-        if (options.selectProfile && result.selectedProfile) {
+        if (!this.state.user.selectedUser.id || (options.selectProfile && result.selectedProfile)) {
             this.log(`Select the game profile ${result.selectedProfile.id} in user ${result.user!.id}`);
             this.commit('userGameProfileSelect', {
                 profileId: result.selectedProfile.id,
