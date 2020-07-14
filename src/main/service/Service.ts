@@ -65,7 +65,7 @@ export function Singleton(...keys: string[]) {
                 const result = method.apply(this, arges);
                 if (result instanceof Promise) {
                     isPromise = true;
-                    result.finally(() => {
+                    return result.finally(() => {
                         this.release(sem);
                     });
                 }
@@ -96,7 +96,7 @@ export function DynamicSingleton(keySerializer: (this: Service, ...params: any[]
                 const result = method.apply(this, arges);
                 if (result instanceof Promise) {
                     isPromise = true;
-                    result.finally(() => {
+                    return result.finally(() => {
                         this.release(sem);
                     });
                 }
