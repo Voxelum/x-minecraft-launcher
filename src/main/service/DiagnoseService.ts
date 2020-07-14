@@ -3,7 +3,7 @@ import { FabricResource } from '@main/util/resource';
 import { Issue, IssueReport } from '@universal/store/modules/diagnose';
 import { EMPTY_JAVA } from '@universal/store/modules/java';
 import { LocalVersion } from '@universal/store/modules/version';
-import { getExpectVersion } from '@universal/util/version';
+import { getExpectVersion, compareRelease } from '@universal/util/version';
 import { MinecraftFolder } from '@xmcl/core';
 import { Diagnosis, Installer } from '@xmcl/installer';
 import { InstallProfile } from '@xmcl/installer/minecraft';
@@ -13,7 +13,7 @@ import { PackMeta } from '@xmcl/resourcepack';
 import { readJSON } from 'fs-extra';
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
 import { basename, join, relative } from 'path';
-import AuthLibService from './AuthLibService';
+import ExternalAuthSkinService from './ExternalAuthSkinService';
 import InstallService from './InstallService';
 import InstanceService from './InstanceService';
 import JavaService from './JavaService';
@@ -34,8 +34,8 @@ export default class DiagnoseService extends Service {
     @Inject('InstallService')
     private installService!: InstallService;
 
-    @Inject('AuthLibService')
-    private authLibService!: AuthLibService;
+    @Inject('ExternalAuthSkinService')
+    private externalAuthSkinService!: ExternalAuthSkinService;
 
     @Inject('JavaService')
     private javaService!: JavaService;
@@ -153,8 +153,40 @@ export default class DiagnoseService extends Service {
             'diagnoseVersion');
 
         this.registerMatchedFix(['missingAuthlibInjector'],
-            () => this.authLibService.ensureAuthlibInjection(),
+            () => this.externalAuthSkinService.ensureAuthlibInjection(),
             'diagnoseServer');
+
+        this.registerMatchedFix(['missingCustomSkinLoader'],
+            async ([issue]) => {
+                const { target, missingJar } = issue.arguments;
+                const instance = this.getters.instance;
+                const { fabricLoader, forge, minecraft } = instance.runtime;
+                if (target === 'forge') {
+                    if (!forge) {
+                        const forges = this.state.version.forge.find(f => f.mcversion === minecraft);
+                        if (forges) {
+                            let version = forges.versions.find(v => v.type === 'latest') ?? forges.versions.find(v => v.type === 'common');
+                            if (version) {
+                                await this.instanceService.editInstance({ runtime: { forge: version?.version ?? '' } });
+                            }
+                        }
+                    }
+                    if (missingJar) {
+                        await this.externalAuthSkinService.downloadCustomSkinLoader('forge');
+                    }
+                } else {
+                    if (!fabricLoader) {
+                        const loader = this.state.version.fabric.loaders[0]?.version ?? '';
+                        const yarn = this.state.version.fabric.yarns.find(y => y.gameVersion === 'minecraft')?.version ?? '';
+                        const runtime = { yarn, fabricLoader: loader };
+                        await this.instanceService.editInstance({ runtime });
+                    }
+                    if (missingJar) {
+                        await this.externalAuthSkinService.downloadCustomSkinLoader('forge');
+                    }
+                }
+            },
+            'diagnoseCustomSkin');
 
         this.registerMatchedFix(['invalidJava'],
             () => this.instanceService.editInstance({ java: this.getters.defaultJava.path }),
@@ -169,6 +201,7 @@ export default class DiagnoseService extends Service {
         await this.diagnoseVersion(report);
         await this.diagnoseJava(report);
         await this.diagnoseServer(report);
+        await this.diagnoseCustomSkin(report);
         this.report(report);
         this.release('diagnose');
     }
@@ -204,6 +237,7 @@ export default class DiagnoseService extends Service {
             await this.diagnoseVersion(report);
             await this.diagnoseJava(report);
             await this.diagnoseServer(report);
+            await this.diagnoseCustomSkin(report);
             this.release('diagnose');
             this.report(report);
             return;
@@ -217,6 +251,7 @@ export default class DiagnoseService extends Service {
     @MutationTrigger('userGameProfileSelect', 'userProfileUpdate')
     async onUserUpdate() {
         const report: Partial<IssueReport> = {};
+        await this.diagnoseCustomSkin(report);
         await this.diagnoseUser(report);
         this.report(report);
     }
@@ -236,6 +271,7 @@ export default class DiagnoseService extends Service {
             await this.diagnoseVersion(report);
             await this.diagnoseJava(report);
             await this.diagnoseServer(report);
+            await this.diagnoseCustomSkin(report);
             await this.diagnoseUser(report);
             this.report(report);
         } finally {
@@ -361,13 +397,58 @@ export default class DiagnoseService extends Service {
                 };
 
                 if (user.authService !== 'mojang' && user.authService !== 'offline') {
-                    if (!await this.authLibService.doesAuthlibInjectionExisted()) {
+                    if (!await this.externalAuthSkinService.doesAuthlibInjectionExisted()) {
                         tree.missingAuthlibInjector.push({});
                     }
                 }
-
                 Object.assign(report, tree);
             }
+        } finally {
+            this.release('diagnose');
+        }
+    }
+
+    @Singleton()
+    async diagnoseCustomSkin(report: Partial<IssueReport>) {
+        this.aquire('diagnose');
+        try {
+            const user = this.state.user.users[this.state.user.selectedUser.id];
+            const tree: Pick<IssueReport, 'missingCustomSkinLoader'> = {
+                missingCustomSkinLoader: [],
+            };
+            if (user.profileService !== 'mojang') {
+                const instance = this.state.instance.all[this.state.instance.path];
+                const { minecraft, fabricLoader, forge } = instance.runtime;
+                if ((!forge && !fabricLoader) || forge) {
+                    if (compareRelease(minecraft, '1.8.9') >= 0) {
+                        // use forge by default
+                        const res = this.state.instance.mods.find((r) => r.type === 'forge' && (r.metadata as any)[0].modid === 'customskinloader');
+                        if (!res || !forge) {
+                            tree.missingCustomSkinLoader.push({
+                                target: 'forge',
+                                skinService: user.profileService,
+                                missingJar: !res,
+                                noVersionSelected: !forge,
+                            });
+                        }
+                    } else {
+                        this.warn('Current support on custom skin loader forge does not support version below 1.8.9!');
+                    }
+                } else if (compareRelease(minecraft, '1.14') >= 0) {
+                    const res = this.state.instance.mods.find((r) => r.type === 'fabric' && (r.metadata as any).id === 'customskinloader');
+                    if (!res) {
+                        tree.missingCustomSkinLoader.push({
+                            target: 'fabric',
+                            skinService: user.profileService,
+                            missingJar: true,
+                            noVersionSelected: false,
+                        });
+                    }
+                } else {
+                    this.warn('Current support on custom skin loader fabric does not support version below 1.14!');
+                }
+            }
+            Object.assign(report, tree);
         } finally {
             this.release('diagnose');
         }

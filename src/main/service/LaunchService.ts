@@ -1,7 +1,7 @@
 import { Exception } from '@universal/util/exception';
 import { createMinecraftProcessWatcher, launch, LaunchOption, MinecraftFolder } from '@xmcl/core';
 import { ChildProcess } from 'child_process';
-import AuthLibService from './AuthLibService';
+import ExternalAuthSkinService from './ExternalAuthSkinService';
 import DiagnoseService from './DiagnoseService';
 import Service, { Inject } from './Service';
 import InstanceResourceService from './InstanceResourceService';
@@ -10,8 +10,8 @@ export default class LaunchService extends Service {
     @Inject('DiagnoseService')
     private diagnoseService!: DiagnoseService;
 
-    @Inject('AuthLibService')
-    private authLibService!: AuthLibService;
+    @Inject('ExternalAuthSkinService')
+    private externalAuthSkinService!: ExternalAuthSkinService;
 
     private launchedProcess: ChildProcess | undefined;
 
@@ -98,7 +98,7 @@ export default class LaunchService extends Service {
                     cwd: minecraftFolder.root,
                 },
                 yggdrasilAgent: user.authService !== 'mojang' && user.authService !== 'offline' ? {
-                    jar: await this.authLibService.ensureAuthlibInjection(),
+                    jar: await this.externalAuthSkinService.ensureAuthlibInjection(),
                     server: this.getters.authService.hostName,
                 } : undefined,
             };

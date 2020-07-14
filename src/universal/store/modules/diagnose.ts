@@ -42,10 +42,12 @@ interface State {
         incompatibleMod: Registry<{ name: string; actual: string; accepted: string }, false, true>;
         incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string }, false, true>;
         incompatibleJava: Registry<{ java: string; type: string; version: string }, false, true>;
+
         missingJava: Registry<{}>;
         invalidJava: Registry<{ java: string }>;
 
         missingAuthlibInjector: Registry<{}>;
+        missingCustomSkinLoader: Registry<{ target: 'forge' | 'fabric'; skinService: string; noVersionSelected: boolean; missingJar: boolean }>;
         missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
 
         missingVersion: Registry<{ forge: string; minecraft: string; yarn: string; fabricLoader: string; version: string }>;
@@ -104,6 +106,7 @@ const mod: DiagnoseModule = {
             incompatibleMod: { fixing: false, autofix: false, optional: true, actived: [] },
             incompatibleResourcePack: { fixing: false, autofix: false, optional: true, actived: [] },
             missingAuthlibInjector: { fixing: false, autofix: true, optional: false, actived: [] },
+            missingCustomSkinLoader: { fixing: false, autofix: true, optional: false, actived: [] },
             incompatibleJava: { fixing: false, autofix: false, optional: true, actived: [] },
             missingModsOnServer: { fixing: false, autofix: false, optional: false, actived: [] },
             badInstall: { fixing: false, autofix: true, optional: false, actived: [] },

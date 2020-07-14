@@ -7,17 +7,39 @@ import { Task } from '@xmcl/task';
 import { readJson } from 'fs-extra';
 import DiagnoseService from './DiagnoseService';
 import Service, { Inject } from './Service';
+import ResourceService from './ResourceService';
 
-export default class AuthLibService extends Service {
+export default class ExternalAuthSkinService extends Service {
     @Inject('DiagnoseService')
     private diagnoseService!: DiagnoseService;
 
+    @Inject('ResourceService')
+    private resourceService!: ResourceService;
+
+    async downloadCustomSkinLoader(type: 'forge' | 'fabric' = 'forge') {
+        const url = type === 'forge'
+            ? 'https://github.com/xfl03/MCCustomSkinLoader/releases/download/14.12/CustomSkinLoader_Forge-14.12.jar'
+            : 'https://github.com/xfl03/MCCustomSkinLoader/releases/download/14.12/CustomSkinLoader_Fabric-14.12.jar';
+        const destination = type === 'forge'
+            ? this.getPath('temp', 'CustomSkinLoader_Forge-14.12.jar')
+            : this.getPath('temp', 'CustomSkinLoader_Fabric-14.12.jar');
+        const handle = this.submit(Task.create('downloadCustomSkinLoader', this.networkManager.downloadFileTask({
+            url,
+            destination,
+        })));
+        await handle.wait();
+        await this.resourceService.importResource({ 
+            path: destination,
+            type: 'mods',
+        });
+    }
+
     async doesAuthlibInjectionExisted(): Promise<boolean> {
         const jsonPath = this.getPath('authlib-injection.json');
-        const mc = new MinecraftFolder(this.state.root);
         const content = await readJson(jsonPath).catch(() => undefined);
         if (!content) return false;
         const info = LibraryInfo.resolve(`${AUTHLIB_ORG_NAME}:${content.version}`);
+        const mc = new MinecraftFolder(this.state.root);
         const libPath = mc.getLibraryByPath(info.path);
         return validateSha256(libPath, content.checksums.sha256);
     }

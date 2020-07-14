@@ -1,4 +1,4 @@
-import AuthLibService from '@main/service/AuthLibService';
+import ExternalAuthSkinService from '@main/service/ExternalAuthSkinService';
 import BaseService from '@main/service/BaseService';
 import CurseForgeService from '@main/service/CurseForgeService';
 import DiagnoseService from '@main/service/DiagnoseService';
@@ -272,7 +272,7 @@ export default class ServiceManager extends Manager {
     // SETUP CODE
 
     async setup() {
-        this.registerService(AuthLibService);
+        this.registerService(ExternalAuthSkinService);
         this.registerService(CurseForgeService);
         this.registerService(DiagnoseService);
         this.registerService(InstanceService);
