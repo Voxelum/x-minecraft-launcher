@@ -42,43 +42,15 @@
             </template>
           </v-list>
         </v-window-item>
-
-        <v-window-item :value="1">
-          <!-- <v-card-text>{{ $t('java.selectJava') }}</v-card-text>
-          <v-list style="width: 100%" class="grey darken-4" dark>
-            <template v-for="(java, i) in externalJavas">
-              <v-list-tile :key="i" ripple @click="selectJava(java)">
-                <v-list-tile-content>
-                  <v-list-tile-title>{{ java.path }}</v-list-tile-title>
-                  <v-list-tile-sub-title>{{ java.path }}</v-list-tile-sub-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
-                  <v-progress-circular v-if="java.loading" indeterminate small :width="3" />
-                  <v-icon v-else :color="{ green: java.valid, red: !java.valid }">{{ java.valid ? 'check' : 'stop' }}</v-icon>
-                </v-list-tile-action>
-              </v-list-tile>
-            </template>
-          </v-list>-->
-
-          <v-card-actions>
-            <v-btn
-              flat
-              @click="back"
-            >
-              {{ $t('back') }}
-              <v-icon right>arrow_left</v-icon>
-            </v-btn>
-          </v-card-actions>
-        </v-window-item>
       </v-window>
     </v-card>
   </v-dialog>
 </template>
 
 <script lang=ts>
-import { reactive, computed, toRefs, onMounted, onUnmounted, watch, defineComponent } from '@vue/composition-api';
+import { reactive, computed, toRefs, defineComponent } from '@vue/composition-api';
 import { useI18n, useStore, useJava, useNativeDialog, useServiceOnly, useInstance } from '@/hooks';
-import { useDialog, useJavaWizardDialog, useNotifier } from '../hooks';
+import { useJavaWizardDialog, useNotifier } from '../hooks';
 
 export default defineComponent({
   props: {
@@ -88,15 +60,16 @@ export default defineComponent({
     },
   },
   setup() {
-    const dialog = useNativeDialog();
+    const { showOpenDialog } = useNativeDialog();
     const { state } = useStore();
     const { $t } = useI18n();
     const { show, isShown, javaIssue } = useJavaWizardDialog();
     const { add, refreshLocalJava } = useJava();
     const { editInstance } = useInstance();
-    const { fix } = useServiceOnly('DiagnoseService', 'fix');
-    const java8 = computed(() => state.java.all.find(j => j.majorVersion === 8 && j.valid));
+    const { fixNoJava } = useServiceOnly('DiagnoseService', 'fixNoJava');
     const { subscribeTask } = useNotifier();
+
+    const java8 = computed(() => state.java.all.find(j => j.majorVersion === 8 && j.valid));
     const data = reactive({
       step: 0,
 
@@ -115,7 +88,7 @@ export default defineComponent({
         autofix: true,
         title: $t('diagnosis.missingJava.autoDownload'),
         message: $t('diagnosis.missingJava.autoDownload.message'),
-        disabled: java8.value !== undefined,
+        disabled: false,
       }, {
         title: $t('diagnosis.missingJava.selectJava'),
         message: $t('diagnosis.missingJava.selectJava.message'),
@@ -133,16 +106,12 @@ export default defineComponent({
         if (missing.value) {
           data.status = 'error';
           show();
-        } else {
-          // reason.value = '';
-          // hint.value = '';
         }
       });
     }
     function selectJava(java: { path: string }) {
       editInstance({ java: java.path });
     }
-
     return {
       ...toRefs(data),
       isShown,
@@ -156,10 +125,10 @@ export default defineComponent({
           subscribeTask(editInstance({ java: java8.value!.path }), $t('java.modifyInstance'));
           isShown.value = false;
         } else if (index === 1) {
-          await fix([{ id: 'incompatibleJava', multi: false, arguments: {} }]);
+          fixNoJava();
           isShown.value = false;
         } else if (index === 2) {
-          const { filePaths, canceled } = await dialog.showOpenDialog({
+          const { filePaths, canceled } = await showOpenDialog({
             title: $t('java.browse'),
           });
 
@@ -171,9 +140,6 @@ export default defineComponent({
           subscribeTask(editInstance({ java: javas.find((j) => !!j)!.path }), $t('java.modifyInstance'));
           isShown.value = false;
         }
-      },
-      back() {
-        data.step = 0;
       },
     };
   },

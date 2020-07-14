@@ -160,17 +160,6 @@ export default class DiagnoseService extends Service {
             () => this.instanceService.editInstance({ java: this.getters.defaultJava.path }),
             // here the editInstance will automatically diagnose for java
             '');
-
-        this.registerMatchedFix(['incompatibleJava'],
-            async () => {
-                let internalLocation = this.javaService.getInternalJavaLocation();
-                if (!this.state.java.all.find(j => j.path === internalLocation)) {
-                    await this.javaService.installDefaultJava();
-                }
-                await this.instanceService.editInstance({ java: this.javaService.getInternalJavaLocation() });
-            },
-            // here the editInstance will automatically diagnose for java
-            '');
     }
 
     @MutationTrigger('instanceSelect')
@@ -637,6 +626,20 @@ export default class DiagnoseService extends Service {
             } finally {
                 this.commit('issuesEndResolve', unfixed);
             }
+        } finally {
+            this.release('diagnose');
+        }
+    }
+
+    @Singleton()
+    async fixNoJava() {
+        this.aquire('diagnose');
+        try {
+            let internalLocation = this.javaService.getInternalJavaLocation();
+            if (!this.state.java.all.find(j => j.path === internalLocation)) {
+                await this.javaService.installDefaultJava();
+            }
+            await this.instanceService.editInstance({ java: this.javaService.getInternalJavaLocation() });
         } finally {
             this.release('diagnose');
         }

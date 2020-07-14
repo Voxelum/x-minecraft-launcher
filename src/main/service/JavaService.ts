@@ -1,5 +1,4 @@
 import { missing } from '@main/util/fs';
-import { getTsingHuaMirror } from '@main/util/jreTsingHuaMirror';
 import { unpack7z } from '@main/util/zip';
 import { MutationKeys } from '@universal/store';
 import { JavaRecord } from '@universal/store/modules/java';
@@ -72,19 +71,30 @@ export default class JavaService extends Service {
         return task('installJre', async (c) => {
             let system = this.app.platform.name === 'osx' ? 'mac' as const : this.app.platform.name;
             let arch = this.app.platform.arch === 'x64' ? '64' as const : '32' as const;
-            if (system === 'unknown') { throw new Error(`Cannot install jre in system ${system}`); }
-            let [url, sha256Url] = getTsingHuaMirror(system, arch);
-            let sha256 = await this.networkManager.request(sha256Url).text();
-            sha256 = sha256.split(' ')[0];
+            let list = (await this.networkManager.request.get('https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/filelist').text())
+                .split('\n')
+                .map(l => l.split('/').slice(5));
+            const zipFile = list
+                .find(l => l[0] === 'jre' && l[1] === `x${arch}` && l[2] === system && (l[3].endsWith('.zip') || l[3].endsWith('.tar.gz')));
+            if (!zipFile) {
+                throw new Error(`Cannot find jre for ${system} x${arch}`);
+            }
+            let sha256File = list.find(l => l[3] === `${zipFile[3]}.sha256.txt`);
+            let url = `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/${zipFile.join('/')}`;
+            let sha256Url = `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/${sha256File?.join('/')}`;
+            let sha256 = await this.networkManager.request(sha256Url).text().then((s) => s.split(' ')[0]).catch(e => '');
             let dest = join(this.state.root, 'jre');
             let tempZip = join(this.state.root, 'temp', 'java-temp');
+            let checksum = sha256 ? {
+                algorithm: 'sha256',
+                hash: sha256,
+            } : undefined;
+
+            this.log(`Install jre for ${system} x${arch} from tsing hua mirror ${url}`);
             await c.execute(task('download', downloadFileTask({
                 destination: tempZip,
                 url,
-                checksum: {
-                    algorithm: 'sha256',
-                    hash: sha256,
-                },
+                checksum,
             }, this.networkManager.getDownloaderOption())), 90);
 
             await c.execute(task('decompress', async () => {
@@ -104,6 +114,7 @@ export default class JavaService extends Service {
                 }
                 await unlink(tempZip);
             }), 10);
+            this.log('Install jre for from tsing hua mirror success!');
         });
     }
 

@@ -140,6 +140,11 @@
     },
     "missingJava": {
       "": "没有分配Java",
+      "switch": {
+        "": "切换到 Java 8",
+        "message": "启动器将使用您现在安装的 Java 8",
+        "disabled": "在电脑中没有检测到 Java，无法切换"
+      },
       "autoDownload": {
         "": "自动下载",
         "message": "启动器将从Mojang源下载并安装Java"
