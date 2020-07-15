@@ -208,7 +208,7 @@ export function useLogin() {
         password: '',
         authService: authService.value.name || 'mojang',
         profileService: profileService.value.name || 'mojang',
-        selectProfile: false,
+        selectProfile: true,
     });
     async function _login() {
         data.logining = true;
