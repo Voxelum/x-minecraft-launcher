@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="isShown" persistent hide-overlay width="500" style="max-height: 100%">
+  <v-dialog v-model="isShown" persistent hide-overlay width="500" style="max-height: 100%" class="task-dialog">
     <v-toolbar dark tabs color="grey darken-3">
       <v-toolbar-title>{{ $t('task.manager') }}</v-toolbar-title>
       <v-spacer />
@@ -91,7 +91,7 @@ export default defineComponent({
   line-break: normal;
   word-break: break-all;
 }
-.v-treeview > .v-treeview-node--leaf {
+.task-dialog .v-treeview > .v-treeview-node--leaf {
   margin-left: 0px;
 }
 </style>

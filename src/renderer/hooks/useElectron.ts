@@ -1,7 +1,7 @@
 import { ELECTRON_CLIPBOARD, IPC_KEY, REMOTE_DIALOG_KEY } from '@/constant';
 import { requireNonnull } from '@universal/util/assert';
 import { inject } from '@vue/composition-api';
-import type { Clipboard, Dialog, IpcRenderer } from 'electron';
+import { Clipboard, Dialog, IpcRenderer } from 'electron';
 import { useServiceOnly } from './useService';
 
 /**
