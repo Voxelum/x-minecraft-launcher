@@ -94,16 +94,26 @@
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent, watch, computed } from '@vue/composition-api';
 import { useUserSecurity } from '@/hooks';
 
-export default defineComponent({
-  setup() {
-    const { submit, challenges, error, security, refreshing, loading } = useUserSecurity();
+interface Props {
+  show: boolean;
+}
+
+export default defineComponent<Props>({
+  props: { show: Boolean },
+  setup(props) {
+    const { submit, challenges, error, security, refreshing, loading, check } = useUserSecurity();
     function updateAnswer(index: number, content: string) {
       challenges.value[index].answer.answer = content;
       error.value = undefined;
     }
+    watch(computed(() => props.show), (newValue) => {
+      if (newValue) {
+        check();
+      }
+    });
     return {
       loading,
       updateAnswer,

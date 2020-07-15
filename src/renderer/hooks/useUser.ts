@@ -312,6 +312,8 @@ export function useUserSecurity() {
     });
     async function check() {
         try {
+            if (data.loading) return;
+            if (data.challenges.length > 0) return;
             data.loading = true;
             let sec = await checkLocation();
             if (sec) return;
@@ -335,9 +337,6 @@ export function useUserSecurity() {
             data.loading = false;
         }
     }
-    onMounted(() => {
-        check();
-    });
     return {
         ...toRefs(data),
         refreshing,

@@ -113,7 +113,7 @@
       v-model="isChallengesDialogShown"
       width="500"
     >
-      <challenges-form />
+      <challenges-form :show="isChallengesDialogShown" />
     </v-dialog>
     <v-dialog
       v-model="isUserServicesDialogShown"
