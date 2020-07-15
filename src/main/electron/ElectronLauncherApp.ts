@@ -90,7 +90,7 @@ export default class ElectronLauncherApp extends LauncherApp {
 
     showItemInFolder = shell.showItemInFolder;
 
-    quit = app.quit;
+    quitApp = app.quit;
 
     exit = app.exit;
 

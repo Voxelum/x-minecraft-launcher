@@ -21,6 +21,8 @@ export abstract class Manager {
     storeReady(store: StaticStore<any>): Promise<void> | void { }
     /* eslint-enable */
 
+    beforeQuit(): Promise<void> | void { }
+
     log(m: any, ...args: any[]) { this.app.logManager.log(`[${this.name}] ${m}`, ...args); }
 
     warn(m: any, ...args: any[]) { this.app.logManager.warn(`[${this.name}] ${m}`, ...args); }

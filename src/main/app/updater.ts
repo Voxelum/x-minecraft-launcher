@@ -124,7 +124,7 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
         await promisify(unlink)(appAsarPath);
         await promisify(rename)(updateAsarPath, appAsarPath);
     }
-    this.quit();
+    this.quitApp();
 }
 
 

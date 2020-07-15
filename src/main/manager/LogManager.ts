@@ -1,11 +1,14 @@
 import LauncherApp from '@main/app/LauncherApp';
 import { IS_DEV } from '@main/constant';
 import { createWriteStream, WriteStream } from 'fs';
-import { ensureDir } from 'fs-extra';
-import { resolve } from 'path';
+import { ensureDir, copy, readFile, writeFile } from 'fs-extra';
+import { resolve, join } from 'path';
 import { PassThrough, pipeline, Transform } from 'stream';
 import { format } from 'util';
 import { Manager } from '.';
+import { createGzip } from 'zlib';
+import filenamify from 'filenamify';
+import { gzip } from '@main/util/zip';
 
 function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, options) : format(message); }
 function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}\n`); } }); }
@@ -25,12 +28,18 @@ export default class LogManager extends Manager {
 
     private openedStream: { [name: string]: WriteStream } = {};
 
+    private hasError = false;
+
     constructor(app: LauncherApp) {
         super(app);
 
         pipeline(this.loggerEntries.log, this.output, () => { });
         pipeline(this.loggerEntries.warn, this.output, () => { });
         pipeline(this.loggerEntries.error, this.output, () => { });
+
+        this.loggerEntries.error.once('data', () => {
+            this.hasError = true;
+        });
 
         process.on('uncaughtException', (err) => {
             this.error('Uncaught Exception');
@@ -76,21 +85,26 @@ export default class LogManager extends Manager {
     }
 
     async redirectLogPipeline(root: string) {
-        try {
-            await ensureDir(resolve(root, 'logs'));
-        } catch (e) {
-            if (e.code !== 'EEXIST') {
-                throw e;
-            }
-        }
         this.logRoot = resolve(root, 'logs');
-        let mainLog = resolve(root, 'logs', 'main.log');
-        this.output.pipe(createWriteStream(mainLog, { encoding: 'utf-8', flags: 'w+' }));
+        await ensureDir(this.logRoot);
+        const mainLog = join(this.logRoot, 'main.log');
+        const stream = createWriteStream(mainLog, { encoding: 'utf-8', flags: 'w+' });
+        this.output.pipe(stream);
+        this.openedStream.MAIN_LOG = stream;
     }
 
     // SETUP CODE
 
     setup() {
-        this.redirectLogPipeline(this.app.root);
+        return this.redirectLogPipeline(this.app.root);
+    }
+
+    async beforeQuit() {
+        const mainLog = this.openedStream.MAIN_LOG;
+        mainLog.close();
+        const mainLogPath = join(this.logRoot, 'main.log');
+        if (this.hasError) {
+            await writeFile(join(this.logRoot, filenamify(new Date().toJSON())), await gzip(await readFile(mainLogPath)));
+        }
     }
 }

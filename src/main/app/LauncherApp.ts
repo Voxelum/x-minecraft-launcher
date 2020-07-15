@@ -160,7 +160,15 @@ export abstract class LauncherApp extends EventEmitter {
     /**
      * Quit the app gentally.
      */
-    abstract quit(): void;
+    quit() {
+        Promise.all(this.managers.map(m => m.beforeQuit()))
+            .then(() => this.quitApp());
+    }
+
+    /**
+     * Quit the app gentally.
+     */
+    protected abstract quitApp(): void;
 
     /**
      * Force exit the app with exit code
@@ -337,7 +345,7 @@ export abstract class LauncherApp extends EventEmitter {
         this
             .on('window-all-closed', () => {
                 if (this.parking) return;
-                if (process.platform !== 'darwin') { this.quit(); }
+                if (process.platform !== 'darwin') { this.quitApp(); }
             })
             .on('minecraft-start', () => { this.parking = true; })
             .on('minecraft-exit', () => { this.parking = false; });

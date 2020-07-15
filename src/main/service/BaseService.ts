@@ -85,7 +85,7 @@ export default class BaseService extends Service {
         this.commit('updateStatus', 'ready');
     }
 
-    quit = this.app.quit;
+    quit = this.app.quit.bind(this.app);
 
     exit = this.app.exit;
 }
