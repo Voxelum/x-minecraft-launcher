@@ -1,4 +1,4 @@
-import { missing } from '@main/util/fs';
+import { missing, readdirIfPresent } from '@main/util/fs';
 import { unpack7z } from '@main/util/zip';
 import { MutationKeys } from '@universal/store';
 import { JavaRecord } from '@universal/store/modules/java';
@@ -145,7 +145,13 @@ export default class JavaService extends Service {
     async refreshLocalJava() {
         if (this.state.java.all.length === 0) {
             this.log('No local cache found. Scan java through the disk.');
-            let javas = await JavaInstaller.scanLocalJava([]);
+            let commonLocations = [] as string[];
+            if (this.app.platform.name === 'windows') {
+                let files = await readdirIfPresent('C:\\Program Files\\Java');
+                files = files.map(f => join('C:\\Program Files\\Java', f, 'bin', 'java.exe'));
+                commonLocations.push(...files);
+            }
+            let javas = await JavaInstaller.scanLocalJava(commonLocations);
             let infos = javas.map(j => ({ ...j, valid: true }));
             this.log(`Found ${infos.length} java.`);
             this.commit('javaUpdate', infos);
