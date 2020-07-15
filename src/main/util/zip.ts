@@ -2,7 +2,7 @@ import { promises, createWriteStream, Stats } from 'fs';
 import { join, relative } from 'path';
 import { ZipFile } from 'yazl';
 import { unpack } from '7zip-min';
-import { gunzip as _gunzip } from 'zlib';
+import { gunzip as _gunzip, gzip as _gzip } from 'zlib';
 import { promisify } from 'util';
 import { task } from '@xmcl/task';
 import { stat } from 'fs-extra';
@@ -25,6 +25,7 @@ export async function includeAllToZip(root: string, real: string, zip: ZipFile, 
 }
 
 export const gunzip: (data: Buffer) => Promise<Buffer> = promisify(_gunzip);
+export const gzip: (data: Buffer) => Promise<Buffer> = promisify(_gzip);
 
 export function openCompressedStream(zip: ZipFile, dest: string) {
     return new Promise<void>((resolve, reject) => {
@@ -43,10 +44,10 @@ export function openCompressedStreamTask(dest: string) {
         update = () => {
             ctx.update(progress, total, dest);
         };
-        ctx.pausealbe(() => {
+        ctx.setup(() => {
 
         }, () => {
-            
+
         });
         update();
         return new Promise<void>((resolve, reject) => {
@@ -74,6 +75,14 @@ export function openCompressedStreamTask(dest: string) {
         total += fStat.size;
         zip.addFile(filePath, metaPath);
     }
+    function addBuffer(buffer: Buffer, metaPath: string) {
+        total += buffer.length;
+        zip.addBuffer(buffer, metaPath);
+    }
+    function addEmptyDirectory(metaPath: string) {
+        zip.addEmptyDirectory(metaPath);
+    }
+
     function end() {
         zip.end();
         update();
@@ -82,6 +91,8 @@ export function openCompressedStreamTask(dest: string) {
         task: t,
         include,
         add,
+        addEmptyDirectory,
+        addBuffer,
         end,
     };
 }

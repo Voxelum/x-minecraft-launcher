@@ -9,13 +9,14 @@ import { Version } from '@xmcl/core';
 import { CurseforgeInstaller } from '@xmcl/installer';
 import { Task } from '@xmcl/task';
 import Unzip from '@xmcl/unzip';
-import { createReadStream, mkdtemp, readdir, readJson, remove } from 'fs-extra';
+import { createReadStream, mkdtemp, readdir, readJson, remove, stat } from 'fs-extra';
 import { tmpdir } from 'os';
-import { basename, join, resolve, parse } from 'path';
+import { basename, join, resolve, relative } from 'path';
 import InstanceResourceService from './InstanceResourceService';
 import InstanceService, { EditInstanceOptions } from './InstanceService';
 import ResourceService from './ResourceService';
 import Service, { Inject, Singleton } from './Service';
+import { Modpack } from './CurseForgeService';
 
 export interface ExportInstanceOptions {
     /**
@@ -29,7 +30,30 @@ export interface ExportInstanceOptions {
     /**
      * The export mod of this operation
      */
-    mode: 'full' | 'no-assets' | 'curseforge';
+    mode: 'full' | 'no-assets';
+}
+
+export interface ExportCurseforgeModpackOptions {
+    /**
+     * An list of files should be included in overrides
+     */
+    overrides: string[];
+    /**
+     * The instance path to be exported
+     */
+    instancePath?: string;
+    /**
+    * The dest path of the exported instance
+    */
+    destinationPath: string;
+
+    name: string;
+
+    version: string;
+
+    author: string;
+
+    gameVersion: string;
 }
 
 export interface ImportCurseforgeModpackOptions {
@@ -72,9 +96,6 @@ export default class InstanceIOService extends Service {
         // let instanceObject = this.state.instance.all[src];
 
         let from = src;
-        if (mode === 'curseforge') {
-            throw new Error('Not implemented!');
-        }
 
         let { task, include, add, end } = openCompressedStreamTask(from);
         let handle = this.submit(task);
@@ -113,6 +134,92 @@ export default class InstanceIOService extends Service {
     }
 
     /**
+     * Scan all the files under the current instance.
+     * It will hint if a mod resource is in curseforge
+     */
+    async getInstanceFiles(): Promise<{ path: string; isDirectory: boolean; isResource: boolean }[]> {
+        const path = this.state.instance.path;
+        const files = [] as { path: string; isDirectory: boolean; isResource: boolean }[];
+
+        const scan = async (p: string) => {
+            const status = await stat(p);
+            const ino = status.ino;
+            const isDirectory = status.isDirectory();
+            const isResource = !!this.resourceService.getResourceByKey(ino)?.source.curseforge;
+            files.push({ isDirectory, path: relative(path, p).replace(/\\/g, '/'), isResource });
+            if (isDirectory) {
+                let childs = await readdirIfPresent(p);
+                for (let child of childs) {
+                    await scan(join(p, child));
+                }
+            }
+        };
+
+        await scan(path);
+        files.shift();
+
+        return files;
+    }
+
+    /**
+     * Export the instance as an curseforge modpack
+     * @param options The curseforge modpack export options
+     */
+    async exportCurseforge(options: ExportCurseforgeModpackOptions) {
+        requireObject(options);
+
+        let { instancePath = this.state.instance.path, destinationPath, overrides, name, version, gameVersion, author } = options;
+
+        if (!this.state.instance.all[instancePath]) {
+            this.warn(`Cannot export unmanaged instance ${instancePath}`);
+            return;
+        }
+
+        const ganeVersionInstance = this.state.version.local.find(v => v.folder === gameVersion);
+        const instance = this.state.instance.all[instancePath];
+        const modLoaders = ganeVersionInstance?.forge ? [{
+            id: `forge-${ganeVersionInstance?.forge}`,
+            primary: true,
+        }] : [];
+        const curseforgeConfig: Modpack = {
+            manifestType: 'minecraftModpack',
+            manifestVersion: 1,
+            minecraft: {
+                version: ganeVersionInstance?.minecraft ?? instance.runtime.minecraft,
+                modLoaders,
+            },
+            name: options.name ?? name,
+            version,
+            author: author ?? instance.author,
+            files: [],
+            overrides: 'overrides',
+        };
+
+        for (const mod of this.state.instance.mods) {
+            if (!mod.source.curseforge) {
+                // add to override
+            } else {
+                curseforgeConfig.files.push({ projectID: mod.source.curseforge.projectId, fileID: mod.source.curseforge.fileId, required: true });
+            }
+        }
+
+        const { task, add, addBuffer, addEmptyDirectory, end } = openCompressedStreamTask(destinationPath);
+
+        addEmptyDirectory('overrides');
+
+        for (let file of overrides) {
+            await add(join(instancePath, file), `overrides/${file}`);
+        }
+
+        addBuffer(Buffer.from(JSON.stringify(curseforgeConfig)), 'manifest.json');
+
+        end();
+
+        const handle = this.submit(task);
+        await handle.wait();
+    }
+
+    /**
      * Link a existed instance on you disk.
      * @param path 
      */
@@ -130,7 +237,7 @@ export default class InstanceIOService extends Service {
         await copyPassively(resolve(path, 'assets'), this.getGameAssetsPath('assets'));
         await copyPassively(resolve(path, 'libraries'), this.getGameAssetsPath('libraries'));
         await copyPassively(resolve(path, 'versions'), this.getGameAssetsPath('versions'));
-        
+
         return true;
     }
 

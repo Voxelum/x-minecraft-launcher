@@ -1,4 +1,5 @@
 import { computed, inject, InjectionKey, provide, Ref, ref } from '@vue/composition-api';
+import { useI18n } from '@/hooks';
 
 export type DialogNames = 'task' | 'java-wizard' | 'login' | 'detail' | ''
     | 'user-service'
@@ -8,6 +9,15 @@ export type DialogNames = 'task' | 'java-wizard' | 'login' | 'detail' | ''
 export const DIALOG_SYMBOL: InjectionKey<Ref<DialogNames>> = Symbol('ShowingDialog');
 export const DIALOG_LOGIN_SWITCH_USER: InjectionKey<Ref<boolean>> = Symbol('SwitchingUser');
 export const DIALOG_JAVA_ISSUE: InjectionKey<Ref<'incompatible' | 'missing'>> = Symbol('JavaIssue');
+
+export function useZipFilter() {
+    const { $t } = useI18n();
+    const zipFilter: Electron.FileFilter = {
+        extensions: ['zip'],
+        name: $t('zip'),
+    };
+    return zipFilter;
+}
 
 export function provideDialog() {
     provide(DIALOG_SYMBOL, ref(''));

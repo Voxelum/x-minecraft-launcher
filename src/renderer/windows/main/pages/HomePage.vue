@@ -15,6 +15,12 @@
       dark
       @click="showFeedbackDialog"
     >help_outline</v-icon>
+    <v-icon
+      v-ripple
+      style="position: absolute; right: 88px; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
+      dark
+      @click="showInstanceFolder"
+    >folder</v-icon>
 
     <v-flex
       d-flex
@@ -33,7 +39,6 @@
       <server-status-bar />
     </v-flex>
 
-    <!-- <div style="position: absolute; left: 20px; bottom: 10px"> -->
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-btn
@@ -50,22 +55,10 @@
       {{ $t('profile.setting') }}
     </v-tooltip>
 
-    <v-tooltip top>
-      <template v-slot:activator="{ on }">
-        <v-btn
-          style="position: absolute; left: 80px; bottom: 10px; "
-          flat
-          icon
-          dark
-          :loading="refreshing"
-          v-on="on"
-          @click="showExportDialog"
-        >
-          <v-icon dark>share</v-icon>
-        </v-btn>
-      </template>
-      {{ $t('profile.modpack.export') }}
-    </v-tooltip>
+    <export-speed-dial
+      :refreshing="refreshing"
+      @show="showExport"
+    />
 
     <v-tooltip top>
       <template v-slot:activator="{ on }">
@@ -82,7 +75,6 @@
       </template>
       {{ $t('profile.logsCrashes.title') }}
     </v-tooltip>
-    <!-- </div> -->
 
     <problems-bar />
 
@@ -127,13 +119,13 @@
         <v-divider vertical />
         <v-flex>{{ $t('launch.localhost') }}</v-flex>
       </v-btn>
-    </v-speed-dial> -->
+    </v-speed-dial>-->
 
     <v-btn
       color="primary"
       dark
       large
-      :disabled="refreshing || missingJava"
+      :disabled="refreshing"
       class="launch-button"
       @click="launch"
     >
@@ -156,11 +148,12 @@
     />
     <game-exit-dialog />
     <feedback-dialog />
+    <curseforge-export-dialog v-model="isExportingCurseforge" />
   </v-layout>
 </template>
 
 <script lang=ts>
-import { defineComponent, onMounted } from '@vue/composition-api';
+import { defineComponent, onMounted, ref } from '@vue/composition-api';
 import { LaunchException } from '@universal/util/exception';
 import {
   useI18n,
@@ -169,8 +162,9 @@ import {
   useInstance,
   useJava,
   useQuit,
+  useService,
 } from '@/hooks';
-import { useDialog, useNotifier } from '../hooks';
+import { useDialog, useNotifier, useJavaWizardDialog } from '../hooks';
 import GameExitDialog from './HomePageGameExitDialog.vue';
 import LaunchBlockedDialog from './HomePageLaunchBlockedDialog.vue';
 import FeedbackDialog from './HomePageFeedbackDialog.vue';
@@ -178,11 +172,15 @@ import LogDialog from './HomePageLogDialog.vue';
 import HomeHeader from './HomePageHeader.vue';
 import ProblemsBar from './HomePageProblemsBar.vue';
 import ServerStatusBar from './HomePageServerStatusBar.vue';
+import CurseforgeExportDialog from './HomePageCurseforgeExportDialog.vue';
+import ExportSpeedDial from './HomePageExportSpeedDial.vue';
 
 function setupLaunch() {
   const { launch, status: launchStatus } = useLaunch();
   const { show: showLaunchStatusDialog, hide: hideLaunchStatusDialog } = useDialog('launch-status');
+  const { missing: missingJava } = useJava();
   const { show: showLaunchBlockedDialog } = useDialog('launch-blocked');
+  const { show: showJavaDialog } = useJavaWizardDialog();
 
   // let launchTarget = useLocalStorageCacheBool('launchTarget', false);
   // function selectLaunchTarget(isServer: boolean) {
@@ -200,7 +198,9 @@ function setupLaunch() {
     // selectLaunchTarget,
     // launchTarget,
     launch() {
-      if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching' || launchStatus.value === 'launched') {
+      if (missingJava.value) {
+        showJavaDialog();
+      } else if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching' || launchStatus.value === 'launched') {
         showLaunchStatusDialog();
       } else {
         launch().catch((e: LaunchException) => {
@@ -224,37 +224,23 @@ export default defineComponent({
     ServerStatusBar,
     GameExitDialog,
     FeedbackDialog,
+    CurseforgeExportDialog,
+    ExportSpeedDial,
   },
   setup() {
     const { $t } = useI18n();
     const { showSaveDialog } = useNativeDialog();
     const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log');
     const { show: showFeedbackDialog } = useDialog('feedback');
-    const { refreshing, name, isServer, exportInstance: exportTo, refreshServerStatus } = useInstance();
+    const { refreshing, name, isServer, exportInstance: exportTo, refreshServerStatus, path } = useInstance();
+    const { openDirectory } = useService('BaseService');
     const { subscribeTask } = useNotifier();
-    const { missing: missingJava } = useJava();
     const { quit } = useQuit();
-
-    onMounted(() => {
-      if (isServer.value) {
-        refreshServerStatus();
-      }
-    });
-
-    return {
-      isServer,
-      refreshing,
-      missingJava,
-      showFeedbackDialog,
-      quit,
-
-      ...setupLaunch(),
-
-      showLogDialog,
-      isLogDialogShown,
-      hideLogDialog,
-
-      async showExportDialog() {
+    const isExportingCurseforge = ref(false);
+    async function showExport(type: 'normal' | 'curseforge') {
+      if (type === 'curseforge') {
+        isExportingCurseforge.value = true;
+      } else {
         if (refreshing.value) return;
         const { filePath } = await showSaveDialog({
           title: $t('profile.export.title'),
@@ -265,7 +251,34 @@ export default defineComponent({
         if (filePath) {
           subscribeTask(exportTo({ destinationPath: filePath, mode: 'full' }), $t('profile.export.title'));
         }
-      },
+      }
+    }
+    function showInstanceFolder() {
+      openDirectory(path.value);
+    }
+
+    onMounted(() => {
+      if (isServer.value) {
+        refreshServerStatus();
+      }
+    });
+
+    return {
+      isServer,
+      refreshing,
+      showFeedbackDialog,
+      quit,
+
+      isExportingCurseforge,
+
+      ...setupLaunch(),
+
+      showLogDialog,
+      isLogDialogShown,
+      hideLogDialog,
+
+      showExport,
+      showInstanceFolder,
     };
   },
 });

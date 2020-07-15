@@ -16,6 +16,7 @@ import { useMinecraftVersions } from './useVersion';
 export function useInstance() {
     const { getters, state } = useStore();
 
+    const path = computed(() => state.instance.path);
     const name = computed(() => getters.instance.name);
     const author = computed(() => getters.instance.author || '');
     const description = computed(() => getters.instance.description);
@@ -36,6 +37,7 @@ export function useInstance() {
     const creationDate = computed(() => getters.instance.creationDate);
     const server = computed(() => getters.instance.server);
     return {
+        path,
         name,
         author,
         description,

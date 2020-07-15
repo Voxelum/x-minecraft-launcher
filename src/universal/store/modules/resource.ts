@@ -1,12 +1,12 @@
 import { requireString } from '@universal/util/assert';
 import { remove } from '@universal/util/middleware';
-import { CurseforgeModpackResource, ForgeResource, LiteloaderResource, Resource, ResourcePackResource, SaveResource, UNKNOWN_RESOURCE } from '@universal/util/resource';
+import { CurseforgeModpackResource, ForgeResource, LiteloaderResource, Resource, ResourcePackResource, SaveResource, UNKNOWN_RESOURCE, FabricResource } from '@universal/util/resource';
 import { ModuleOption } from '../root';
 
 interface State {
     domains: {
         [domain: string]: Resource<any>[];
-        mods: Array<ForgeResource | LiteloaderResource>;
+        mods: Array<ForgeResource | LiteloaderResource | FabricResource>;
         resourcepacks: ResourcePackResource[];
         saves: SaveResource[];
         modpacks: CurseforgeModpackResource[];

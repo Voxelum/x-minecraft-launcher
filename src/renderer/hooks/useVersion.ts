@@ -2,7 +2,6 @@ import { Status } from '@universal/store/modules/version';
 import { isNonnull } from '@universal/util/assert';
 import { computed, onMounted, onUnmounted, reactive, Ref, toRefs, watch } from '@vue/composition-api';
 import { Version as MinecraftVersion } from '@xmcl/installer/minecraft';
-import { useInstanceVersion } from './useInstance';
 import { useService, useServiceOnly } from './useService';
 import { useStore } from './useStore';
 import { useBusy } from './useSemaphore';
@@ -14,13 +13,9 @@ export function useVersions() {
 export function useLocalVersions() {
     const { state } = useStore();
     const localVersions = computed(() => state.version.local);
-    const { minecraft, forge, liteloader } = useInstanceVersion();
-    const selected = computed(() => localVersions.value.find(v => v.minecraft === minecraft.value
-        && v.forge === forge.value && v.liteloader === liteloader.value));
 
     return {
         localVersions,
-        selected,
         ...useVersions(),
     };
 }
