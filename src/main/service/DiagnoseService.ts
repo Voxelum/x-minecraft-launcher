@@ -416,38 +416,41 @@ export default class DiagnoseService extends Service {
             const tree: Pick<IssueReport, 'missingCustomSkinLoader'> = {
                 missingCustomSkinLoader: [],
             };
-            if (user.profileService !== 'mojang') {
-                const instance = this.state.instance.all[this.state.instance.path];
-                const { minecraft, fabricLoader, forge } = instance.runtime;
-                if ((!forge && !fabricLoader) || forge) {
-                    if (compareRelease(minecraft, '1.8.9') >= 0) {
-                        // use forge by default
-                        const res = this.state.instance.mods.find((r) => r.type === 'forge' && (r.metadata as any)[0].modid === 'customskinloader');
-                        if (!res || !forge) {
+            if (user) {
+                if (user.profileService !== 'mojang') {
+                    const instance = this.state.instance.all[this.state.instance.path];
+                    const { minecraft, fabricLoader, forge } = instance.runtime;
+                    if ((!forge && !fabricLoader) || forge) {
+                        if (compareRelease(minecraft, '1.8.9') >= 0) {
+                            // use forge by default
+                            const res = this.state.instance.mods.find((r) => r.type === 'forge' && (r.metadata as any)[0].modid === 'customskinloader');
+                            if (!res || !forge) {
+                                tree.missingCustomSkinLoader.push({
+                                    target: 'forge',
+                                    skinService: user.profileService,
+                                    missingJar: !res,
+                                    noVersionSelected: !forge,
+                                });
+                            }
+                        } else {
+                            this.warn('Current support on custom skin loader forge does not support version below 1.8.9!');
+                        }
+                    } else if (compareRelease(minecraft, '1.14') >= 0) {
+                        const res = this.state.instance.mods.find((r) => r.type === 'fabric' && (r.metadata as any).id === 'customskinloader');
+                        if (!res) {
                             tree.missingCustomSkinLoader.push({
-                                target: 'forge',
+                                target: 'fabric',
                                 skinService: user.profileService,
-                                missingJar: !res,
-                                noVersionSelected: !forge,
+                                missingJar: true,
+                                noVersionSelected: false,
                             });
                         }
                     } else {
-                        this.warn('Current support on custom skin loader forge does not support version below 1.8.9!');
+                        this.warn('Current support on custom skin loader fabric does not support version below 1.14!');
                     }
-                } else if (compareRelease(minecraft, '1.14') >= 0) {
-                    const res = this.state.instance.mods.find((r) => r.type === 'fabric' && (r.metadata as any).id === 'customskinloader');
-                    if (!res) {
-                        tree.missingCustomSkinLoader.push({
-                            target: 'fabric',
-                            skinService: user.profileService,
-                            missingJar: true,
-                            noVersionSelected: false,
-                        });
-                    }
-                } else {
-                    this.warn('Current support on custom skin loader fabric does not support version below 1.14!');
                 }
             }
+
             Object.assign(report, tree);
         } finally {
             this.release('diagnose');
@@ -470,7 +473,7 @@ export default class DiagnoseService extends Service {
                 invalidJava: [],
             };
 
-            if (instanceJava === EMPTY_JAVA) {
+            if (instanceJava === EMPTY_JAVA || this.getters.missingJava) {
                 tree.missingJava.push({});
             } else if (!instanceJava.valid || await missing(instanceJava.path)) {
                 if (this.state.java.all.length === 0) {
