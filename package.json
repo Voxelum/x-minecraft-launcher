@@ -3,7 +3,7 @@
     "private": true,
     "main": "./dist/electron/main.js",
     "productName": "xmcl",
-    "version": "0.4.4",
+    "version": "0.5.0",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "A great minecraft launcher in the future",
     "license": "MIT",
