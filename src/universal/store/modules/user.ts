@@ -173,14 +173,14 @@ const mod: UserModule = {
             }
         },
         authServiceRemove(state, name) {
-            delete state.authServices[name];
             // TODO: remove in vue3
             remove(state.authServices, name);
+            delete state.authServices[name];
         },
         profileServiceRemove(state, name) {
-            delete state.profileServices[name];
             // TODO: remove in vue3
             remove(state.profileServices, name);
+            delete state.profileServices[name];
         },
         userProfileRemove(state, userId) {
             if (state.selectedUser.id === userId) {
@@ -232,19 +232,18 @@ const mod: UserModule = {
             if (name in state.authServices) {
                 state.authServices[name] = api;
             } else {
-                state.authServices[name] = api;
-
                 // TODO: remove in vue3
                 set(state.authServices, name);
+                state.authServices[name] = api;
             }
         },
         profileService(state, { name, api }) {
             if (name in state.profileServices) {
                 state.profileServices[name] = api;
             } else {
-                state.profileServices[name] = api;
                 // TODO: remove in vue3
                 set(state.profileServices, name);
+                state.profileServices[name] = api;
             }
         },
     },

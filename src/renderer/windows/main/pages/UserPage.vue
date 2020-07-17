@@ -118,6 +118,7 @@
     <v-dialog
       v-model="isUserServicesDialogShown"
       width="550"
+      persistence
     >
       <v-toolbar color="primary">
         <h2>{{ $t('user.service.title') }}</h2>
