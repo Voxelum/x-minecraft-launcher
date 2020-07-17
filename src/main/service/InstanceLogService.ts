@@ -29,14 +29,19 @@ export default class InstanceLogService extends Service {
      * @param name The log file name
      */
     async getLogContent(name: string) {
-        let filePath = join(this.state.instance.path, 'logs', name);
-        let buf = await readFile(filePath);
-        if (name.endsWith('.gz')) {
-            buf = await gunzip(buf);
+        try {
+            let filePath = join(this.state.instance.path, 'logs', name);
+            let buf = await readFile(filePath);
+            if (name.endsWith('.gz')) {
+                buf = await gunzip(buf);
+            }
+            let encoding = await guessEncodingByBuffer(buf);
+            let result = decode(buf, encoding || UTF8);
+            return result;
+        } catch (e) {
+            this.error(e);
+            return '';
         }
-        let encoding = await guessEncodingByBuffer(buf);
-        let result = decode(buf, encoding || UTF8);
-        return result;
     }
 
     /**
