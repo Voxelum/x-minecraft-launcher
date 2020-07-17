@@ -1,8 +1,14 @@
 <template>
-  <v-stepper v-model="step" non-linear vertical>
-    <v-stepper-step :editable="!modify" step="1" :complete="step > 1">
-      {{ $t('user.service.typeOfService') }}
-    </v-stepper-step>
+  <v-stepper
+    v-model="step"
+    non-linear
+    vertical
+  >
+    <v-stepper-step
+      :editable="!modify"
+      step="1"
+      :complete="step > 1"
+    >{{ $t('user.service.typeOfService') }}</v-stepper-step>
     <v-stepper-content step="1">
       <v-text-field
         v-model="name"
@@ -32,29 +38,33 @@
         />
       </v-radio-group>
       <v-layout row>
-        <v-btn flat style="" @click="$emit('cancel')">
-          {{ $t('cancel') }}
-        </v-btn>
+        <v-btn
+          flat
+          style
+          @click="$emit('cancel')"
+        >{{ $t('cancel') }}</v-btn>
         <v-spacer />
         <v-flex shrink>
-          <v-btn flat 
-                 color="primary" 
-                 :disabled="baseUrlError || !baseUrl || nameError" 
-                 @click.native="step = 2">
+          <v-btn
+            flat
+            color="primary"
+            :disabled="baseUrlError || !baseUrl || nameError"
+            @click.native="step = 2"
+          >
             {{ $t('next') }}
-            <v-icon right>
-              arrow_right
-            </v-icon>
+            <v-icon right>arrow_right</v-icon>
           </v-btn>
         </v-flex>
       </v-layout>
     </v-stepper-content>
-    <v-stepper-step step="2" :editable="step > 2 && enableAuthService" :complete="step > 2">
-      {{ $t('user.service.authServiceDetail') }}
-    </v-stepper-step>
+    <v-stepper-step
+      step="2"
+      :editable="step > 2 && enableAuthService"
+      :complete="step > 2"
+    >{{ $t('user.service.authServiceDetail') }}</v-stepper-step>
     <v-stepper-content step="2">
       <v-text-field
-        v-for="type in authOrder" 
+        v-for="type in authOrder"
         :key="type"
         v-model="newAuth[type]"
         style="margin-bottom: 10px;"
@@ -63,29 +73,37 @@
         :messages="[$t(`user.service.${type}Hint`)]"
       />
       <v-layout row>
-        <v-btn flat style="" @click="$emit('cancel')">
-          {{ $t('cancel') }}
-        </v-btn>
+        <v-btn
+          flat
+          style
+          @click="$emit('cancel')"
+        >{{ $t('cancel') }}</v-btn>
         <v-spacer />
         <v-flex shrink>
-          <v-btn flat color="primary" @click.native="finish">
+          <v-btn
+            flat
+            color="primary"
+            @click.native="finish"
+          >
             {{ $t('finish') }}
-            <v-icon right>
-              check
-            </v-icon>
+            <v-icon right>check</v-icon>
           </v-btn>
-          <v-btn flat color="primary" @click.native="step = 3">
+          <v-btn
+            flat
+            color="primary"
+            @click.native="step = 3"
+          >
             {{ $t('next') }}
-            <v-icon right>
-              arrow_right
-            </v-icon>
+            <v-icon right>arrow_right</v-icon>
           </v-btn>
         </v-flex>
       </v-layout>
     </v-stepper-content>
-    <v-stepper-step step="3" :complete="step > 3" :editable="step > 1 && enableProfileService">
-      {{ $t('user.service.profileServiceDetail') }}
-    </v-stepper-step>
+    <v-stepper-step
+      step="3"
+      :complete="step > 3"
+      :editable="step > 1 && enableProfileService"
+    >{{ $t('user.service.profileServiceDetail') }}</v-stepper-step>
     <v-stepper-content step="3">
       <v-text-field
         v-for="type in Object.keys(newProfileService)"
@@ -96,16 +114,20 @@
         :messages="[$t(`user.service.${type}Hint`)]"
       />
       <v-layout row>
-        <v-btn flat style="margin-left: 0" @click="$emit('cancel')">
-          {{ $t('cancel') }}
-        </v-btn>
+        <v-btn
+          flat
+          style="margin-left: 0"
+          @click="$emit('cancel')"
+        >{{ $t('cancel') }}</v-btn>
         <v-spacer />
         <v-flex shrink>
-          <v-btn flat color="primary" @click.native="finish">
+          <v-btn
+            flat
+            color="primary"
+            @click.native="finish"
+          >
             {{ $t('finish') }}
-            <v-icon right>
-              check
-            </v-icon>
+            <v-icon right>check</v-icon>
           </v-btn>
         </v-flex>
       </v-layout>
@@ -175,16 +197,20 @@ export default defineComponent({
             if (!data.baseUrl.startsWith('http://') && !data.baseUrl.startsWith('https://')) {
               data.baseUrl = `http://${data.baseUrl}`;
             }
+            data.newAuth.hostName = `${data.baseUrl}`;
             if (data.template === 0) {
-              data.newAuth.hostName = `${data.baseUrl}`;
+              data.newAuth.authenticate = '/authenticate';
+              data.newAuth.refresh = '/refresh';
+              data.newAuth.validate = '/validate';
+              data.newAuth.invalidate = '/invalidate';
+              data.newAuth.signout = '/signout';
             } else {
-              data.newAuth.hostName = `${data.baseUrl}/authserver`;
+              data.newAuth.authenticate = '/authserver/authenticate';
+              data.newAuth.refresh = '/authserver/refresh';
+              data.newAuth.validate = '/authserver/validate';
+              data.newAuth.invalidate = '/authserver/invalidate';
+              data.newAuth.signout = '/authserver/signout';
             }
-            data.newAuth.authenticate = '/authenticate';
-            data.newAuth.refresh = '/refresh';
-            data.newAuth.validate = '/validate';
-            data.newAuth.invalidate = '/invalidate';
-            data.newAuth.signout = '/signout';
           }
 
           if (data.newProfileService.profile === ''
