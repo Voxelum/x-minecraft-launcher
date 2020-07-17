@@ -276,7 +276,7 @@ export default class UserService extends Service {
                 let result = await refresh({
                     accessToken: user.accessToken,
                     clientToken: this.state.user.clientToken,
-                });
+                }, this.getters.authService);
                 this.log(`Refreshed user access token for user: ${user.id}`);
                 this.commit('userProfileUpdate', {
                     id: user.id,
@@ -287,19 +287,9 @@ export default class UserService extends Service {
                     selectedProfile: undefined,
                 });
                 this.checkLocation();
-
-                if (user.authService === 'mojang') {
-                    // try {
-                    //     let info = await getAccountInfo(user.accessToken);
-                    //     this.commit('userMojangInfo', info);
-                    // } catch (e) {
-                    //     this.warn(`Cannot refresh mojang info for user ${user.username}.`);
-                    //     this.warn(e);
-                    // }
-                }
             } catch (e) {
-                this.log(e);
-                this.log(`Invalid current user ${user.id} accessToken!`);
+                this.error(e);
+                this.warn(`Invalid current user ${user.id} accessToken!`);
                 this.commit('userInvalidate');
             }
         } else {
@@ -315,7 +305,7 @@ export default class UserService extends Service {
         let {
             gameProfileId = this.state.user.selectedUser.profile,
             userId = this.state.user.selectedUser.id,
-        } = o;
+        } = o ?? {};
         return `${userId}[${gameProfileId}]`;
     })
     async refreshSkin(refreshSkinOptions: RefreshSkinOptions = {}) {
@@ -323,7 +313,7 @@ export default class UserService extends Service {
             gameProfileId = this.state.user.selectedUser.profile,
             userId = this.state.user.selectedUser.id,
             force,
-        } = refreshSkinOptions;
+        } = refreshSkinOptions ?? {};
         let user = this.state.user.users[userId];
         let gameProfile = user.profiles[gameProfileId];
         // if no game profile (maybe not logined), return
