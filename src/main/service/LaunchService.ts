@@ -79,6 +79,7 @@ export default class LaunchService extends Service {
             const toBeDeploiedPacks = allPacks.filter(p => !deploiedPacks.find((r) => r.hash === p.hash));
             this.log(`Deploying ${toBeDeploiedPacks.length} resource packs`);
             await this.instanceResourceService.deploy(toBeDeploiedPacks);
+            const useAuthLib = user.authService !== 'mojang' && user.authService !== 'offline';
 
             /**
              * Build launch condition
@@ -97,8 +98,8 @@ export default class LaunchService extends Service {
                     detached: true,
                     cwd: minecraftFolder.root,
                 },
-                yggdrasilAgent: user.authService !== 'mojang' && user.authService !== 'offline' ? {
-                    jar: await this.externalAuthSkinService.ensureAuthlibInjection(),
+                yggdrasilAgent: useAuthLib ? {
+                    jar: await this.externalAuthSkinService.installAuthlibInjection(),
                     server: this.getters.authService.hostName,
                 } : undefined,
             };
@@ -118,7 +119,6 @@ export default class LaunchService extends Service {
             const process = await launch(option);
             this.launchedProcess = process;
             this.commit('launchStatus', 'launched');
-
 
             this.app.emit('minecraft-start', showLog);
             let watcher = createMinecraftProcessWatcher(process);

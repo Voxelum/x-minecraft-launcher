@@ -19,6 +19,8 @@ import InstanceService from './InstanceService';
 import JavaService from './JavaService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
 import VersionService from './VersionService';
+import InstanceIOService from './InstanceIOService';
+import InstanceResourceService from './InstanceResourceService';
 
 
 export interface Fix {
@@ -42,6 +44,9 @@ export default class DiagnoseService extends Service {
 
     @Inject('InstanceService')
     private instanceService!: InstanceService;
+
+    @Inject('InstanceResourceService')
+    private instanceResourceService!: InstanceResourceService;
 
     private fixes: Fix[] = [];
 
@@ -153,8 +158,8 @@ export default class DiagnoseService extends Service {
             'diagnoseVersion');
 
         this.registerMatchedFix(['missingAuthlibInjector'],
-            () => this.externalAuthSkinService.ensureAuthlibInjection(),
-            'diagnoseServer');
+            () => this.externalAuthSkinService.installAuthlibInjection(),
+            'diagnoseUser');
 
         this.registerMatchedFix(['missingCustomSkinLoader'],
             async ([issue]) => {
@@ -172,7 +177,14 @@ export default class DiagnoseService extends Service {
                         }
                     }
                     if (missingJar) {
-                        await this.externalAuthSkinService.downloadCustomSkinLoader('forge');
+                        let resource = this.state.resource.domains.mods.find((r) => r.type === 'forge' && (r.metadata as any)[0].modid === 'customskinloader');
+                        if (!resource) {
+                            resource = await this.externalAuthSkinService.downloadCustomSkinLoader('forge') as any;
+                        }
+                        if (!resource) {
+                            throw new Error('Cannot find custom skin loader event we try to download it!');
+                        }
+                        await this.instanceResourceService.deploy([resource]);
                     }
                 } else {
                     if (!fabricLoader) {
@@ -182,7 +194,14 @@ export default class DiagnoseService extends Service {
                         await this.instanceService.editInstance({ runtime });
                     }
                     if (missingJar) {
-                        await this.externalAuthSkinService.downloadCustomSkinLoader('forge');
+                        const resource = this.state.resource.domains.mods.find((r) => r.type === 'fabric' && (r.metadata as any).id === 'customskinloader');
+                        if (!resource) {
+                            await this.externalAuthSkinService.downloadCustomSkinLoader('fabric');
+                        }
+                        if (!resource) {
+                            throw new Error('Cannot find custom skin loader event we try to download it!');
+                        }
+                        await this.instanceResourceService.deploy([resource]);
                     }
                 }
             },
@@ -201,7 +220,7 @@ export default class DiagnoseService extends Service {
         await this.diagnoseVersion(report);
         await this.diagnoseJava(report);
         await this.diagnoseServer(report);
-        await this.diagnoseCustomSkin(report);
+        // await this.diagnoseCustomSkin(report);
         this.report(report);
         this.release('diagnose');
     }
@@ -237,7 +256,7 @@ export default class DiagnoseService extends Service {
             await this.diagnoseVersion(report);
             await this.diagnoseJava(report);
             await this.diagnoseServer(report);
-            await this.diagnoseCustomSkin(report);
+            // await this.diagnoseCustomSkin(report);
             this.release('diagnose');
             this.report(report);
             return;
@@ -251,7 +270,7 @@ export default class DiagnoseService extends Service {
     @MutationTrigger('userGameProfileSelect', 'userProfileUpdate')
     async onUserUpdate() {
         const report: Partial<IssueReport> = {};
-        await this.diagnoseCustomSkin(report);
+        // await this.diagnoseCustomSkin(report);
         await this.diagnoseUser(report);
         this.report(report);
     }
@@ -271,7 +290,7 @@ export default class DiagnoseService extends Service {
             await this.diagnoseVersion(report);
             await this.diagnoseJava(report);
             await this.diagnoseServer(report);
-            await this.diagnoseCustomSkin(report);
+            // await this.diagnoseCustomSkin(report);
             await this.diagnoseUser(report);
             this.report(report);
         } finally {

@@ -46,8 +46,8 @@ interface State {
         missingJava: Registry<{}>;
         invalidJava: Registry<{ java: string }>;
 
-        missingAuthlibInjector: Registry<{}>;
-        missingCustomSkinLoader: Registry<{ target: 'forge' | 'fabric'; skinService: string; noVersionSelected: boolean; missingJar: boolean }>;
+        missingAuthlibInjector: Registry<{}, true, true>;
+        missingCustomSkinLoader: Registry<{ target: 'forge' | 'fabric'; skinService: string; noVersionSelected: boolean; missingJar: boolean }, true, true>;
         missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
 
         missingVersion: Registry<{ forge: string; minecraft: string; yarn: string; fabricLoader: string; version: string }>;
@@ -105,8 +105,8 @@ const mod: DiagnoseModule = {
             unknownMod: { fixing: false, autofix: false, optional: true, actived: [] },
             incompatibleMod: { fixing: false, autofix: false, optional: true, actived: [] },
             incompatibleResourcePack: { fixing: false, autofix: false, optional: true, actived: [] },
-            missingAuthlibInjector: { fixing: false, autofix: true, optional: false, actived: [] },
-            missingCustomSkinLoader: { fixing: false, autofix: true, optional: false, actived: [] },
+            missingAuthlibInjector: { fixing: false, autofix: true, optional: true, actived: [] },
+            missingCustomSkinLoader: { fixing: false, autofix: true, optional: true, actived: [] },
             incompatibleJava: { fixing: false, autofix: false, optional: true, actived: [] },
             missingModsOnServer: { fixing: false, autofix: false, optional: false, actived: [] },
             badInstall: { fixing: false, autofix: true, optional: false, actived: [] },
