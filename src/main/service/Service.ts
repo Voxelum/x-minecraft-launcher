@@ -88,12 +88,12 @@ export function DynamicSingleton(keySerializer: (this: Service, ...params: any[]
     return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
         const method = descriptor.value;
         const func = function (this: Service, ...arges: any[]) {
-            let sem = keySerializer.bind(this)(arges);
+            let sem = keySerializer.bind(this)(...arges);
             if (this.isBusy(sem)) return undefined;
             this.aquire(sem);
             let isPromise = false;
             try {
-                const result = method.apply(this, arges);
+                const result = method.apply(this, ...arges);
                 if (result instanceof Promise) {
                     isPromise = true;
                     return result.finally(() => {
@@ -285,7 +285,12 @@ export default class Service implements Managers {
     protected async getPersistence<T>(option: { path: string; schema?: Schema<T> }): Promise<T> {
         const { path, schema } = option;
         const originalString = await readFile(path).then(b => b.toString(), () => '{}');
-        const object = JSON.parse(originalString);
+        let object;
+        try {
+            object = JSON.parse(originalString);
+        } catch (e) {
+            object = {};
+        }
         if (object && schema) {
             const schemaObject = schema;
             const ajv = new Ajv({ useDefaults: true, removeAdditional: true });
