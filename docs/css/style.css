@@ -57,3 +57,7 @@ body {
 .light.fixed {
     background-color: #666666;
 }
+
+.ui.dropdown .menu>.item {
+    min-height: unset !important;
+}
