@@ -43,7 +43,6 @@ export interface ResourcePackItem extends PackMeta.Pack {
  */
 export function useInstanceResourcePacks() {
     const { state, getters } = useStore();
-    const { mountResourcepacks, deploy, undeploy } = useService('InstanceResourceService');
     const { edit } = useService('InstanceGameSettingService');
 
     const loading = useBusy('mountResourcepacks');
@@ -125,7 +124,7 @@ export function useInstanceResourcePacks() {
                 url: [],
             };
         }
-        let foundedItem = storage.value.find((p) => p.id === resourcePackName);
+        let foundedItem = storage.value.find((p) => p.id === resourcePackName || p.id === `file/${resourcePackName}`);
         if (foundedItem) {
             return foundedItem;
         }
@@ -187,14 +186,20 @@ export function useInstanceResourcePacks() {
         edit({ resourcePacks: enabledResourcePackNames.value });
     }
 
+    const settingedResourcePacks = computed(() => state.instance.settings.resourcePacks);
+    watch(settingedResourcePacks, (packs) => {
+        let arr = [...packs];
+        if (arr.indexOf('vanilla') === -1) {
+            arr.unshift('vanilla');
+        }
+        enabledResourcePackNames.value = arr;
+    });
     onMounted(() => {
-        watch(computed(() => state.instance.settings.resourcePacks), (packs) => {
-            let arr = [...packs];
-            if (arr.indexOf('vanilla') === -1) {
-                arr.unshift('vanilla');
-            }
-            enabledResourcePackNames.value = arr;
-        });
+        let arr = [...settingedResourcePacks.value];
+        if (arr.indexOf('vanilla') === -1) {
+            arr.unshift('vanilla');
+        }
+        enabledResourcePackNames.value = arr;
     });
 
     return {

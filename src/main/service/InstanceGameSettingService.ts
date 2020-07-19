@@ -69,7 +69,7 @@ export default class InstanceGameSettingService extends Service {
                 (result as any)[key] = (gameSetting as any)[key];
             }
         }
-        if (gameSetting.resourcePacks && gameSetting.resourcePacks.length !== 0) {
+        if (gameSetting.resourcePacks) {
             let mcversion = this.getters.instance.runtime.minecraft;
             if ((isReleaseVersion(mcversion) && compareRelease(mcversion, '1.13.0') >= 0)
                 || (isSnapshotPreview(mcversion) && compareSnapshot(mcversion, '17w43a') >= 0)) {
@@ -77,6 +77,9 @@ export default class InstanceGameSettingService extends Service {
                     .filter(r => r !== 'vanilla')
                     .map(r => (!r.startsWith('file/') ? `file/${r}` : r));
                 result.resourcePacks.unshift('vanilla');
+            } else {
+                result.resourcePacks = gameSetting.resourcePacks.filter(r => r !== 'vanilla')
+                    .map(r => (r.startsWith('file/') ? r.substring(5) : r));
             }
         }
         if (Object.keys(result).length > 0) {
