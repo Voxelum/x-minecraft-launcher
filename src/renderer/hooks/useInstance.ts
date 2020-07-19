@@ -1,4 +1,4 @@
-import { computed, onMounted, reactive, toRefs } from '@/vue';
+import { computed, onMounted, reactive, toRefs } from '@vue/composition-api';
 import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions } from '@main/service/InstanceSavesService';
 import { CreateOption } from '@main/service/InstanceService';
 import { InstanceConfig } from '@universal/store/modules/instance';

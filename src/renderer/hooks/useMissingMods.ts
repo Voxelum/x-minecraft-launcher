@@ -1,7 +1,6 @@
-import { computed, Ref, ref, nextTick } from '@/vue';
+import { computed, Ref, ref, nextTick } from '@vue/composition-api';
 import { Forge } from '@xmcl/mod-parser';
 import { useStore } from './useStore';
-import { useService } from './useService';
 
 export type ModStatus = 'existed' | 'absent' | 'founded' | 'not-found' | 'loading' | 'downloading' | 'unknown';
 
