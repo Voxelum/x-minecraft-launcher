@@ -132,7 +132,6 @@ export default defineComponent({
       vmOptions,
       mcOptions,
       java,
-      javaPath,
     } = useInstance();
     const { all: javas, add } = useJava();
 
@@ -161,7 +160,7 @@ export default defineComponent({
       data.minMemory = minMemory.value;
       data.vmOptions = vmOptions.value.join(' ');
       data.mcOptions = mcOptions.value.join(' ');
-      data.java = javas.value.find(j => j.path === javaPath.value)! ?? data.java;
+      data.java = javas.value.find(j => j.path === java.value)! ?? data.java;
     }
     useAutoSaveLoad(save, load);
 

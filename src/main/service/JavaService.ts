@@ -169,6 +169,9 @@ export default class JavaService extends Service {
             let invalided = javas.filter(j => !j.valid).length;
             if (invalided !== 0) {
                 this.log(`Invalidate ${invalided} java!`);
+                for (let i of javas.filter(j => !j.valid)) {
+                    this.log(i.path);
+                }
             }
             this.commit('javaUpdate', javas);
         }
