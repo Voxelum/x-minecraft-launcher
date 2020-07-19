@@ -3,6 +3,8 @@
     grid-list-md
     fill-height
     style="overflow: auto;"
+    @dragover.prevent
+    @drop="onDropSave"
   >
     <v-layout
       column
@@ -128,6 +130,14 @@ export default defineComponent({
     const dragging = ref(false);
     const { onDrop } = useDrop((file) => importSave({ source: file.path }));
     const isCopyFromDialogShown = ref(false);
+    function onDropSave(e: DragEvent) {
+      if (!e.dataTransfer) return;
+      if (e.dataTransfer.files.length === 0) return;
+      for (let i = 0; i < e.dataTransfer.files.length; ++i) {
+        importSave({ source: e.dataTransfer.files.item(i)!.path });
+      }
+    }
+
     return {
       saves,
       instances: computed(() => instances.value.map(i => i.path)),
@@ -148,6 +158,8 @@ export default defineComponent({
       cancelCopy,
 
       dragging,
+
+      onDropSave,
 
       async doImport() {
         const { filePaths } = await showOpenDialog({
