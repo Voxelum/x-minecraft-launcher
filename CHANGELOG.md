@@ -16,6 +16,35 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.6.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.5.0...v0.6.0)
+
+* fix: add more default search java for win32 ([f13b4aa](https://github.com/voxelum/x-minecraft-launcher/commit/f13b4aa))
+* fix: backup log if has error ([355a2f0](https://github.com/voxelum/x-minecraft-launcher/commit/355a2f0))
+* fix: challege not refresh when it show ([aee50f0](https://github.com/voxelum/x-minecraft-launcher/commit/aee50f0))
+* fix: correctly impl authlib-injector protocol ([586918b](https://github.com/voxelum/x-minecraft-launcher/commit/586918b))
+* fix: diagnose custom skin crash launcher ([854b134](https://github.com/voxelum/x-minecraft-launcher/commit/854b134))
+* fix: drop resource pack on empty list ([016388e](https://github.com/voxelum/x-minecraft-launcher/commit/016388e))
+* fix: java install from china download ([47a7af5](https://github.com/voxelum/x-minecraft-launcher/commit/47a7af5))
+* fix: launch authlib correctly & disable customskin temp ([1df6140](https://github.com/voxelum/x-minecraft-launcher/commit/1df6140))
+* fix: leak of uncaught promise ([ace32bd](https://github.com/voxelum/x-minecraft-launcher/commit/ace32bd))
+* fix: make no user not blocking issue ([fade38b](https://github.com/voxelum/x-minecraft-launcher/commit/fade38b))
+* fix: one service crash should not crash other service ([770578b](https://github.com/voxelum/x-minecraft-launcher/commit/770578b))
+* fix: raise warning if a third party skin used ([e5d03b3](https://github.com/voxelum/x-minecraft-launcher/commit/e5d03b3))
+* fix: return empty for no log ([09a5991](https://github.com/voxelum/x-minecraft-launcher/commit/09a5991))
+* fix: select logined user by default ([7cc49e3](https://github.com/voxelum/x-minecraft-launcher/commit/7cc49e3))
+* fix: user page reactivity and experience ([397468e](https://github.com/voxelum/x-minecraft-launcher/commit/397468e))
+* fix: user refresh use correct api ([41e5e31](https://github.com/voxelum/x-minecraft-launcher/commit/41e5e31))
+* fix: wrong argument pass to dynamic singleton ([d990b08](https://github.com/voxelum/x-minecraft-launcher/commit/d990b08))
+* chore: bump core version ([69d6eb6](https://github.com/voxelum/x-minecraft-launcher/commit/69d6eb6))
+* chore(release): version 0.5.0 ([4dd2a81](https://github.com/voxelum/x-minecraft-launcher/commit/4dd2a81))
+* refactor: clean up type style ([85a915f](https://github.com/voxelum/x-minecraft-launcher/commit/85a915f))
+* feat: support export to curseforge ([d89c9b3](https://github.com/voxelum/x-minecraft-launcher/commit/d89c9b3))
+* docs: add keyword to ghpage ([787622a](https://github.com/voxelum/x-minecraft-launcher/commit/787622a))
+* docs: update readme ([6398d21](https://github.com/voxelum/x-minecraft-launcher/commit/6398d21))
+
+
 ## [0.5.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.4.4...v0.5.0)
 
 * chore: bump core version ([69d6eb6](https://github.com/voxelum/x-minecraft-launcher/commit/69d6eb6))
