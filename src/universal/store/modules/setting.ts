@@ -105,7 +105,7 @@ const mod: SettingModule = {
         allowPrerelease: false,
         autoInstallOnAppQuit: false,
         autoDownload: false,
-        apiSetsPreference: 'mojang',
+        apiSetsPreference: 'mcbbs',
         apiSets: [{ name: 'mcbbs', url: 'https://download.mcbbs.net' }, { name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }],
         version: '',
         build: 0,
@@ -133,7 +133,7 @@ const mod: SettingModule = {
             state.autoDownload = config.autoDownload || false;
             state.autoInstallOnAppQuit = config.autoDownload || false;
             state.allowPrerelease = config.allowPrerelease || false;
-            state.apiSetsPreference = typeof config.apiSetsPreference === 'string' ? config.apiSetsPreference : 'mojang';
+            state.apiSetsPreference = typeof config.apiSetsPreference === 'string' ? config.apiSetsPreference : 'mcbbs';
         },
         settings(state, settings) {
             // Object.assign(state.settings, settings);
