@@ -136,7 +136,7 @@ jobs:
         tag_name: ${{ steps.prepare_release.outputs.tag }}
         release_name: ${{ steps.prepare_release.outputs.release }}
         draft: false
-        prerelease: ${{ steps.prepare_release.outputs.prerelease }}
+        prerelease: false
         body: ${{ steps.prepare_release.outputs.body }}
         asset_dir_path: ./build
     - name: Upload to Azure
