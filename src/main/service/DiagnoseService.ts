@@ -104,6 +104,9 @@ export default class DiagnoseService extends Service {
                 let { minecraft, forge, fabricLoader, yarn } = issues[0].arguments;
                 let targetVersion: string | undefined;
                 if (minecraft && this.state.version.local.every(v => v.minecraft !== minecraft)) {
+                    if (this.state.version.minecraft.versions.length === 0) {
+                        await this.installService.refreshMinecraft();
+                    }
                     let metadata = this.state.version.minecraft.versions.find(v => v.id === minecraft);
                     if (metadata) {
                         await this.installService.installMinecraft(metadata);
@@ -111,6 +114,9 @@ export default class DiagnoseService extends Service {
                     targetVersion = metadata?.id;
                 }
                 if (forge) {
+                    if (!this.state.version.forge[minecraft]) {
+                        await this.installService.refreshForge({ mcversion: minecraft });
+                    }
                     let forgeVer = this.state.version.forge[minecraft]?.versions.find(v => v.version === forge);
                     if (!forgeVer) {
                         targetVersion = await this.installService.installForge({ mcversion: minecraft, version: forge });
@@ -221,6 +227,15 @@ export default class DiagnoseService extends Service {
         await this.diagnoseJava(report);
         await this.diagnoseServer(report);
         // await this.diagnoseCustomSkin(report);
+        this.report(report);
+        this.release('diagnose');
+    }
+
+    @MutationTrigger('localVersions')
+    async onLocalVersionsChanegd() {
+        this.aquire('diagnose');
+        const report: Partial<IssueReport> = {};
+        await this.diagnoseVersion(report);
         this.report(report);
         this.release('diagnose');
     }
