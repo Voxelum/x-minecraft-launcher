@@ -154,10 +154,6 @@ export default class InstanceSavesService extends Service {
     async mountInstanceSaves(path: string) {
         requireString(path);
 
-        if (!this.state.instance.all[path]) {
-            throw new Error();
-        }
-
         let savesDir = join(path, 'saves');
 
         if (this.watching === savesDir) {
