@@ -4,7 +4,6 @@ import VueCompositionApi, { h } from '@vue/composition-api';
 Vue.use(VueCompositionApi);
 
 export * from '@vue/composition-api';
-export const nextTick = Vue.nextTick;
 
 export const remove = Vue.delete;
 export const set = Vue.set;

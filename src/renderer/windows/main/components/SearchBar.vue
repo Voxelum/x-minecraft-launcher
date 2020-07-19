@@ -16,7 +16,7 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, inject, ref, onMounted, onUnmounted, Ref, nextTick } from '@/vue';
+import { defineComponent, inject, ref, onMounted, onUnmounted, Ref, nextTick } from '@vue/composition-api';
 import { useSearch, useSearchToggle } from '../hooks';
 
 export default defineComponent({

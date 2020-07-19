@@ -13,10 +13,10 @@ export default class LaunchService extends Service {
     @Inject('ExternalAuthSkinService')
     private externalAuthSkinService!: ExternalAuthSkinService;
 
-    private launchedProcess: ChildProcess | undefined;
-
     @Inject('InstanceResourceService')
     private instanceResourceService!: InstanceResourceService;
+
+    private launchedProcess: ChildProcess | undefined;
 
     /**
      * Launch the current selected instance. This will return a boolean promise indeicate whether launch is success.
