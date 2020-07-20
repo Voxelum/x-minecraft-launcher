@@ -50,7 +50,6 @@
             </v-list-tile-content>
             <v-list-tile-action>
               <v-btn
-                disabled
                 outline
                 flat
                 style="margin-right: 10px;"
@@ -172,37 +171,26 @@
 
     <update-info-dialog v-model="viewingUpdateDetail" />
     <v-dialog
-      :value="reloadDialog"
-      :persistent="!reloadError"
+      :value="migrateDialog"
+      persistent
     >
       <v-card
-        v-if="!reloading"
+        v-if="migrateState === 0"
         dark
       >
         <v-card-title>
           <h2 style="display: block; min-width: 100%">{{ $t('setting.setRootTitle') }}</h2>
-          <div style="color: grey;">{{ rootLocation }}</div>
+          <v-text-field
+            :value="rootLocation"
+            readonly
+            hide-details
+          ></v-text-field>
         </v-card-title>
         <v-card-text>
           <p>{{ $t('setting.setRootDescription') }}</p>
           <p>{{ $t('setting.setRootCause') }}</p>
         </v-card-text>
         <v-divider />
-        <v-card-actions>
-          <v-checkbox
-            v-model="clearData"
-            style="margin-left: 10px"
-            persistent-hint
-            :hint="$t('setting.cleanOldDataHint')"
-            :label="$t('setting.cleanOldData')"
-          />
-          <v-checkbox
-            v-model="migrateData"
-            persistent-hint
-            :hint="$t('setting.copyOldToNewHint')"
-            :label="$t('setting.copyOldToNew')"
-          />
-        </v-card-actions>
         <v-card-actions>
           <v-btn
             flat
@@ -218,23 +206,47 @@
         </v-card-actions>
       </v-card>
       <v-card
-        v-else
+        v-else-if="migrateState === 1"
         dark
       >
         <v-card-title>
           <h2>{{ $t('setting.waitReload') }}</h2>
         </v-card-title>
         <v-spacer />
-        <v-progress-circular
-          v-if="!reloadError"
-          indeterminate
-        />
-        <v-card-text v-else>
-          {{ $t('setting.reloadFailed') }}:
-          {{ reloadError }}
-        </v-card-text>
-        <v-card-actions v-if="reloadError">
-          <v-btn>{{ $t('ok') }}</v-btn>
+        <div style="display: flex;width: 100; justify-content: center">
+          <v-progress-circular :size="100" color="white" indeterminate />
+        </div>
+      </v-card>
+      <v-card
+        v-else
+        dark
+      >
+        <v-card-title>
+          <h2 v-if="migrateError">{{ $t('setting.migrateFailed') }}</h2>
+          <h2 v-else-if="!cleaningMigration">{{ $t('setting.migrateSuccess') }}</h2>
+          <h2 v-else>{{ $t('setting.postMigrating') }}</h2>
+        </v-card-title>
+        <v-spacer />
+        <v-card-text v-if="migrateError">{{ migrateError }}</v-card-text>
+        <v-divider />
+        <v-card-actions v-if="!migrateError">
+          <v-checkbox
+            v-model="clearData"
+            style="margin-left: 10px"
+            persistent-hint
+            :hint="$t('setting.cleanOldDataHint')"
+            :label="$t('setting.cleanOldData')"
+          />
+        </v-card-actions>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            flat
+            color="primary"
+            :loading="cleaningMigration"
+            :disabled="cleaningMigration"
+            @click="postMigrate"
+          >{{ $t('setting.migrateDone') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -242,8 +254,8 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, ref, toRefs, watch, Ref, computed } from '@vue/composition-api';
-import { useStore, useI18n, useParticle, useSettings, useIpc, useNativeDialog, useService, useLauncherVersion } from '@/hooks';
+import { defineComponent, reactive, ref, toRefs, watch, Ref } from '@vue/composition-api';
+import { useStore, useI18n, useParticle, useSettings, useNativeDialog, useService, useLauncherVersion } from '@/hooks';
 import localMapping from '@/assets/locales/index.json';
 
 import UpdateInfoDialog from './SettingPageUpdateInfoDialog.vue';
@@ -251,9 +263,9 @@ import UpdateInfoDialog from './SettingPageUpdateInfoDialog.vue';
 export default defineComponent({
   components: { UpdateInfoDialog },
   setup() {
-    const ipcRenderer = useIpc();
     const dialog = useNativeDialog();
     const { showParticle, particleMode } = useParticle();
+    const { migrate, postMigrate } = useService('BaseService');
     const { state } = useStore();
     const settings = useSettings();
     const { $t } = useI18n();
@@ -264,9 +276,11 @@ export default defineComponent({
       clearData: false,
       migrateData: false,
 
-      reloadDialog: false,
-      reloading: false,
-      reloadError: undefined as undefined | Error,
+      migrateDialog: false,
+
+      migrateState: 0,
+      cleaningMigration: false,
+      migrateError: undefined as undefined | Error,
 
       viewingUpdateDetail: false,
     });
@@ -299,24 +313,33 @@ export default defineComponent({
         });
         if (filePaths && filePaths.length !== 0) {
           data.rootLocation = filePaths[0];
-          data.reloadDialog = true;
+          data.migrateDialog = true;
         }
       },
       doCancelApplyRoot() {
-        data.reloadDialog = false;
+        data.migrateDialog = false;
         data.rootLocation = state.root;
       },
       doApplyRoot() {
-        data.reloading = true;
-        ipcRenderer.once('root', (error) => {
-          data.reloading = false;
-          if (error) {
-            // data.reloadError = error;
-          } else {
-            data.reloadDialog = false;
-          }
-        });
-        ipcRenderer.send('root', { path: data.rootLocation, migrate: data.migrateData, clear: data.clearData });
+        data.migrateState = 1;
+        migrate({ destination: data.rootLocation })
+          .catch((e) => {
+            data.migrateError = e;
+          })
+          .finally(() => {
+            data.migrateState = 2;
+          });
+      },
+      postMigrate() {
+        if (data.clearData) {
+          data.cleaningMigration = true;
+          postMigrate().finally(() => {
+            data.migrateDialog = false;
+            data.cleaningMigration = false;
+          });
+        } else {
+          data.migrateDialog = false;
+        }
       },
     };
   },
