@@ -199,12 +199,12 @@ export default class Service implements Managers {
     /**
      * Return the path under the config root
      */
-    protected getPath!: (...args: string[]) => string;
+    protected getAppDataPath!: (...args: string[]) => string;
 
     /**
      * Return the path under game libraries/assets root
      */
-    protected getGameAssetsPath!: (...args: string[]) => string;
+    protected getPath!: (...args: string[]) => string;
 
     /**
      * Return the path under .minecraft folder
@@ -221,6 +221,8 @@ export default class Service implements Managers {
     async load(): Promise<void> { }
 
     async init(): Promise<void> { }
+
+    async dispose(): Promise<void> { }
 
     protected readonly log!: typeof console.log;
 

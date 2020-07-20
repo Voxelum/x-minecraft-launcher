@@ -124,6 +124,12 @@ export default class InstanceSavesService extends Service {
         this.mountInstanceSaves(this.state.instance.path);
     }
 
+    async dispose() {
+        if (this.watcher) {
+            this.watcher.close();
+        }
+    }
+
     /**
      * Load all registered instances' saves metadata
      */
@@ -296,7 +302,7 @@ export default class InstanceSavesService extends Service {
 
         if (await isFile(source)) {
             let hash = createHash('sha1').update(source).digest('hex');
-            sourceDir = this.getPath('temp', hash); // save will unzip to the /saves
+            sourceDir = join(this.app.temporaryPath, hash); // save will unzip to the /saves
             await unpack7z(source, sourceDir);
             useTemp = true;
         }

@@ -74,19 +74,19 @@ export default class ServiceManager extends Manager {
     /**
      * Setup all services.
      */
-    setupServices(appData: string, platform: Platform, managers: Managers, store: StaticStore<any>, root: string) {
-        this.log(`Setup service ${root}`);
-        const userPath = join(appData, 'xmcl');
-        const mcPath = join(appData, platform.name === 'osx' ? 'minecraft' : '.minecraft');
+    setupServices() {
+        const store = this.app.storeManager.store;
+
+        this.log(`Setup service ${this.app.gameDataPath}`);
 
         Object.defineProperties(Service.prototype, {
             commit: { value: store.commit },
             state: { value: store.state },
             getters: { value: store.getters },
-            minecraftPath: { value: mcPath },
-            getPath: { value: (...args: string[]) => join(userPath, ...args) },
-            getMinecraftPath: { value: (...args: string[]) => join(mcPath, ...args) },
-            getGameAssetsPath: { value: (...args: string[]) => join(root, ...args) },
+            minecraftPath: { value: this.app.minecraftDataPath },
+            getPath: { value: (...args: string[]) => join(this.app.gameDataPath, ...args) },
+            getMinecraftPath: { value: (...args: string[]) => join(this.app.minecraftDataPath, ...args) },
+            getAppDataPath: { value: (...args: string[]) => join(this.app.appDataPath, ...args) },
             app: { value: this.app },
             networkManager: { value: this.app.networkManager },
             logManager: { value: this.app.logManager },
@@ -194,6 +194,7 @@ export default class ServiceManager extends Manager {
                 return r.then(r => ({ result: r }), (e) => {
                     this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`);
                     this.warn(e);
+                    this.warn(e.stack);
                     return { error: e };
                 });
             }
@@ -267,6 +268,13 @@ export default class ServiceManager extends Manager {
         });
     }
 
+    dispose() {
+        return Promise.all(this.services.map((s) => s.dispose().catch((e) => {
+            this.error(`Error during dispose ${Object.getPrototypeOf(s).constructor.name}:`);
+            this.error(e);
+        })));
+    }
+
     // SETUP CODE
 
     async setup() {
@@ -290,13 +298,7 @@ export default class ServiceManager extends Manager {
         this.registerService(InstanceIOService);
         this.registerService(InstanceResourceService);
 
-        this.setupServices(
-            this.app.getPath('appData'),
-            this.app.platform,
-            this.app,
-            this.app.storeManager.store!,
-            this.app.root,
-        );
+        this.setupServices();
         await this.loadServices();
         this.setupAutoSave(this.app.storeManager.store!);
         this.app.emit('store-ready');

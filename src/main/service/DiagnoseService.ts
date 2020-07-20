@@ -631,33 +631,33 @@ export default class DiagnoseService extends Service {
                 for (let issue of gameReport.issues) {
                     if (issue.role === 'versionJson') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedVersionJson.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
+                            tree.corruptedVersionJson.push({ version: issue.version, ...currentVersion, file: relative(location, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
                         } else {
-                            tree.missingVersionJson.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file) });
+                            tree.missingVersionJson.push({ version: issue.version, ...currentVersion, file: relative(location, issue.file) });
                         }
                     } else if (issue.role === 'minecraftJar') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedVersionJar.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
+                            tree.corruptedVersionJar.push({ version: issue.version, ...currentVersion, file: relative(location, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
                         } else {
-                            tree.missingVersionJar.push({ version: issue.version, ...currentVersion, file: relative(this.state.root, issue.file) });
+                            tree.missingVersionJar.push({ version: issue.version, ...currentVersion, file: relative(location, issue.file) });
                         }
                     } else if (issue.role === 'assetIndex') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file), actual: 'issue.receivedChecksum', expect: issue.expectedChecksum });
+                            tree.corruptedAssetsIndex.push({ version: issue.version, file: relative(location, issue.file), actual: 'issue.receivedChecksum', expect: issue.expectedChecksum });
                         } else {
-                            tree.missingAssetsIndex.push({ version: issue.version, file: relative(this.state.root, issue.file) });
+                            tree.missingAssetsIndex.push({ version: issue.version, file: relative(location, issue.file) });
                         }
                     } else if (issue.role === 'asset') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedAssets.push({ ...issue.asset, version: currentVersion.minecraft, hash: issue.asset.hash, file: relative(this.state.root, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
+                            tree.corruptedAssets.push({ ...issue.asset, version: currentVersion.minecraft, hash: issue.asset.hash, file: relative(location, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
                         } else {
-                            tree.missingAssets.push({ ...issue.asset, version: currentVersion.minecraft, hash: issue.asset.hash, file: relative(this.state.root, issue.file) });
+                            tree.missingAssets.push({ ...issue.asset, version: currentVersion.minecraft, hash: issue.asset.hash, file: relative(location, issue.file) });
                         }
                     } else if (issue.role === 'library') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedLibraries.push({ ...issue.library, file: relative(this.state.root, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
+                            tree.corruptedLibraries.push({ ...issue.library, file: relative(location, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
                         } else {
-                            tree.missingLibraries.push({ ...issue.library, file: relative(this.state.root, issue.file) });
+                            tree.missingLibraries.push({ ...issue.library, file: relative(location, issue.file) });
                         }
                     }
                 }
@@ -675,9 +675,9 @@ export default class DiagnoseService extends Service {
                             badInstall = true;
                         } else if (issue.role === 'library') {
                             if (issue.type === 'corrupted') {
-                                corruptedInstallProfileLibs.push({ ...issue.library, file: relative(this.state.root, issue.file) });
+                                corruptedInstallProfileLibs.push({ ...issue.library, file: relative(location, issue.file) });
                             } else {
-                                missedInstallProfileLibs.push({ ...issue.library, file: relative(this.state.root, issue.file) });
+                                missedInstallProfileLibs.push({ ...issue.library, file: relative(location, issue.file) });
                             }
                         }
                     }

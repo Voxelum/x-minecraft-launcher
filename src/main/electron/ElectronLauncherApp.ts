@@ -29,6 +29,12 @@ export default class ElectronLauncherApp extends LauncherApp {
             createNotification(notificationOptions) {
                 return new Notification(notificationOptions);
             },
+            closeWindow(name) {
+                const win = self.windows[name];
+                win.removeAllListeners();
+                win.close();
+                delete self.windows[name];
+            },
             openWindow(name, url, options) {
                 const normalizedOptions: BrowserWindowConstructorOptions = {
                     ...options,
@@ -174,12 +180,15 @@ export default class ElectronLauncherApp extends LauncherApp {
         return app.whenReady();
     }
 
-
     getModule(module: string) {
         if (module === 'electron') {
             return {};
         }
         return undefined;
+    }
+
+    relaunch() {
+        app.relaunch();
     }
 
     protected async setup() {
@@ -225,6 +234,10 @@ export default class ElectronLauncherApp extends LauncherApp {
     protected async onEngineReady() {
         app.allowRendererProcessReuse = true;
         return super.onEngineReady();
+    }
+
+    getLocale() {
+        return app.getLocale();
     }
 
     protected async onStoreReady(store: StaticStore<any>) {

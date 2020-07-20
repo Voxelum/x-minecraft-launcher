@@ -4,7 +4,8 @@ import { IssueReport } from '@universal/store/modules/diagnose';
 import { LibraryInfo, MinecraftFolder, Version } from '@xmcl/core';
 import { Installer } from '@xmcl/installer';
 import { Task } from '@xmcl/task';
-import { createWriteStream, readJson, writeFile, ensureFile } from 'fs-extra';
+import { createWriteStream, ensureFile, readJson, writeFile } from 'fs-extra';
+import { join } from 'path';
 import { pipeline } from 'stream';
 import DiagnoseService from './DiagnoseService';
 import ResourceService from './ResourceService';
@@ -22,8 +23,8 @@ export default class ExternalAuthSkinService extends Service {
             ? 'https://github.com/xfl03/MCCustomSkinLoader/releases/download/14.12/CustomSkinLoader_Forge-14.12.jar'
             : 'https://github.com/xfl03/MCCustomSkinLoader/releases/download/14.12/CustomSkinLoader_Fabric-14.12.jar';
         const destination = type === 'forge'
-            ? this.getPath('temp', 'CustomSkinLoader_Forge-14.12.jar')
-            : this.getPath('temp', 'CustomSkinLoader_Fabric-14.12.jar');
+            ? join(this.app.temporaryPath, 'CustomSkinLoader_Forge-14.12.jar')
+            : join(this.app.temporaryPath, 'CustomSkinLoader_Fabric-14.12.jar');
         const handle = this.submit(Task.create('downloadCustomSkinLoader', async (context) => {
             const downloadStream = this.networkManager.request.stream(url, { followRedirect: true });
             await ensureFile(destination);

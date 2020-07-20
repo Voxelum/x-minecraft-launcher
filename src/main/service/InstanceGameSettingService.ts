@@ -15,6 +15,10 @@ export interface EditGameSettingOptions extends Frame {
 export default class InstanceGameSettingService extends Service {
     private watcher = new FileStateWatcher(false, () => true);
 
+    async dispose() {
+        this.watcher.close();
+    }
+
     @Singleton()
     async loadInstanceGameSettings(path: string) {
         requireString(path);

@@ -50,6 +50,15 @@ export default class InstanceResourceService extends Service {
         this.mountResourcepacks();
     }
 
+    async dispose() {
+        if (this.modsWatcher) {
+            this.modsWatcher.close();
+        }
+        if (this.resourcepacksWatcher) {
+            this.resourcepacksWatcher.close();
+        }
+    }
+
     /**
      * Read all mods under the current instance
      */

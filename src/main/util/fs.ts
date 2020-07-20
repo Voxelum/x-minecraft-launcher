@@ -83,6 +83,10 @@ export class FileStateWatcher<T> {
         this.state = this.defaultState;
         return state;
     }
+
+    close() {
+        this.watcher?.close();
+    }
 }
 
 export function getSuggestedFilename(name: string) {

@@ -96,7 +96,7 @@ export default class LogManager extends Manager {
     // SETUP CODE
 
     setup() {
-        return this.redirectLogPipeline(this.app.root);
+        return this.redirectLogPipeline(this.app.appDataPath);
     }
 
     async beforeQuit() {

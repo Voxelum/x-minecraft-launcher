@@ -41,7 +41,7 @@ export default class StoreManager extends Manager {
 
     setup() {
         this.app.handle('sync', (_, id) => this.app.storeReadyPromise.then(() => this.sync(id)));
-        this.store!.commit('root', this.app.root);
+        this.store!.commit('root', this.app.gameDataPath);
         this.setupAutoSync();
     }
 

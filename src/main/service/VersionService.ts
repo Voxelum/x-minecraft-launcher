@@ -31,12 +31,16 @@ export default class VersionService extends Service {
             ?.name.split(':')[2] || '');
     }
 
+    async dispose() {
+        this.versionsWatcher.close();
+    }
+
     async load() {
         await this.refreshVersions();
     }
 
     async init() {
-        this.versionsWatcher.watch(this.getGameAssetsPath('versions'));
+        this.versionsWatcher.watch(this.getPath('versions'));
     }
 
     protected async parseVersion(versionFolder: string): Promise<LocalVersion> {
@@ -84,12 +88,12 @@ export default class VersionService extends Service {
         let files: string[];
         let patch = false;
         if (force) {
-            files = await readdirEnsured(this.getGameAssetsPath('versions'));
+            files = await readdirEnsured(this.getPath('versions'));
         } else if (this.versionLoaded) {
             patch = true;
             files = this.versionsWatcher.getStateAndReset();
         } else {
-            files = await readdirEnsured(this.getGameAssetsPath('versions'));
+            files = await readdirEnsured(this.getPath('versions'));
         }
 
         files = files.filter(f => !f.startsWith('.'));
@@ -122,18 +126,18 @@ export default class VersionService extends Service {
     }
 
     async deleteVersion(version: string) {
-        const path = this.getGameAssetsPath('versions', version);
+        const path = this.getPath('versions', version);
         await remove(path);
         this.commit('localVersions', this.state.version.local.filter(v => v.folder !== version));
     }
 
     async showVersionsDirectory() {
-        const path = this.getGameAssetsPath('versions');
+        const path = this.getPath('versions');
         return this.app.openDirectory(path);
     }
 
     async showVersionDirectory(version: string) {
-        const path = this.getGameAssetsPath('versions', version);
+        const path = this.getPath('versions', version);
         return this.app.openDirectory(path);
     }
 }
