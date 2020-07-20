@@ -5,16 +5,6 @@ import Schema from '../Schema';
 
 export interface SettingSchema {
     /**
-     * The root paths of all the minecraft
-     * @default []
-     */
-    roots: string[];
-    /**
-     * The primary installation root
-     * @default ""
-     */
-    primaryRoot: string;
-    /**
      * The display language of the launcher
      * @default "en"
      */

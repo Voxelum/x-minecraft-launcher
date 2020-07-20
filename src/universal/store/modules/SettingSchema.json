@@ -1,19 +1,6 @@
 {
     "type": "object",
     "properties": {
-        "roots": {
-            "description": "The root paths of all the minecraft",
-            "default": [],
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
-        },
-        "primaryRoot": {
-            "description": "The primary installation root",
-            "default": "",
-            "type": "string"
-        },
         "locale": {
             "description": "The display language of the launcher",
             "default": "en",
@@ -70,9 +57,7 @@
         "apiSetsPreference",
         "autoDownload",
         "autoInstallOnAppQuit",
-        "locale",
-        "primaryRoot",
-        "roots"
+        "locale"
     ],
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false
