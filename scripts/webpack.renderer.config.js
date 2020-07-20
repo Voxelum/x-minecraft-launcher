@@ -43,12 +43,17 @@ const rendererConfig = {
     entry: {
         renderer: path.join(__dirname, '../src/renderer/windows/main/index.ts'),
         logger: path.join(__dirname, '../src/renderer/windows/logger/index.ts'),
+        setup: path.join(__dirname, '../src/renderer/windows/setup/index.ts'),
     },
     externals: [
         ...Object.keys(dependencies || {}).filter(d => !whiteListedModules.includes(d)),
     ],
     module: {
         rules: [
+            {
+                test: /\.styl$/,
+                loader: 'css-loader!stylus-loader?paths=node_modules/bootstrap-stylus/stylus/'
+            },
             {
                 test: /\.css$/,
                 use: ['vue-style-loader', 'css-loader'],
@@ -134,6 +139,19 @@ const rendererConfig = {
         new HtmlWebpackPlugin({
             filename: 'logger.html',
             chunks: ['logger'],
+            template: path.resolve(__dirname, '../src/index.ejs'),
+            minify: {
+                collapseWhitespace: true,
+                removeAttributeQuotes: true,
+                removeComments: true,
+            },
+            nodeModules: process.env.NODE_ENV !== 'production'
+                ? path.resolve(__dirname, '../node_modules')
+                : false,
+        }),
+        new HtmlWebpackPlugin({
+            filename: 'setup.html',
+            chunks: ['setup'],
             template: path.resolve(__dirname, '../src/index.ejs'),
             minify: {
                 collapseWhitespace: true,
