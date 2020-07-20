@@ -18,6 +18,31 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.7.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.6.0...v0.7.0)
+
+* chore: bump eslint & @xmcl/installer ([a0f02e6](https://github.com/voxelum/x-minecraft-launcher/commit/a0f02e6))
+* chore: mark not a pre-release ([d299d95](https://github.com/voxelum/x-minecraft-launcher/commit/d299d95))
+* chore: slightly change build env ([12dbc57](https://github.com/voxelum/x-minecraft-launcher/commit/12dbc57))
+* refactor: clean typing and struct ([96e5075](https://github.com/voxelum/x-minecraft-launcher/commit/96e5075))
+* refactor: clean up & organize the path ([8325e2d](https://github.com/voxelum/x-minecraft-launcher/commit/8325e2d))
+* refactor: min the bundle size ([f3bb731](https://github.com/voxelum/x-minecraft-launcher/commit/f3bb731))
+* refactor: remote unused field in setting ([c1ddf3b](https://github.com/voxelum/x-minecraft-launcher/commit/c1ddf3b))
+* fix: cannot download mc on first launch & delete version not reactive ([f24ed42](https://github.com/voxelum/x-minecraft-launcher/commit/f24ed42))
+* fix: change wording of modpack ([6beb3df](https://github.com/voxelum/x-minecraft-launcher/commit/6beb3df))
+* fix: diagnose reactivity ([6e6396b](https://github.com/voxelum/x-minecraft-launcher/commit/6e6396b))
+* fix: fail to listen the saves on init ([6de402a](https://github.com/voxelum/x-minecraft-launcher/commit/6de402a))
+* fix: java select ux & log invalid java ([eac6c66](https://github.com/voxelum/x-minecraft-launcher/commit/eac6c66))
+* fix: make i18n not confused ([b7581dd](https://github.com/voxelum/x-minecraft-launcher/commit/b7581dd))
+* fix: mcbbs api sets by default ([1005f5e](https://github.com/voxelum/x-minecraft-launcher/commit/1005f5e))
+* fix: resourcepack save/load on older version ([9e3d1e3](https://github.com/voxelum/x-minecraft-launcher/commit/9e3d1e3))
+* fix: save drop import ([53c4aac](https://github.com/voxelum/x-minecraft-launcher/commit/53c4aac))
+* feat: setup page at the beginning ([406506d](https://github.com/voxelum/x-minecraft-launcher/commit/406506d))
+* docs: use jsdelivr & fomantic-ui ([d2df41a](https://github.com/voxelum/x-minecraft-launcher/commit/d2df41a))
+* Merge branch 'master' of https://github.com/Voxelum/x-minecraft-launcher ([06c1316](https://github.com/voxelum/x-minecraft-launcher/commit/06c1316))
+
+
 ## [0.6.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.5.0...v0.6.0)
 
 * fix: add more default search java for win32 ([f13b4aa](https://github.com/voxelum/x-minecraft-launcher/commit/f13b4aa))
