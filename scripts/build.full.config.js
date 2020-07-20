@@ -5,6 +5,11 @@ const baseConfig = require('./build.base.config');
  */
 const config = {
     ...baseConfig,
+    nsis: {
+        oneClick: false,
+        allowToChangeInstallationDirectory: true,
+        perMachine: true,
+    },
     dmg: {
         contents: [
             {
@@ -45,7 +50,7 @@ const config = {
                 arch: [
                     "x64",
                     "ia32"
-                ]
+                ],
             },
             {
                 target: "zip",

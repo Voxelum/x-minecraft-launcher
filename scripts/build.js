@@ -140,7 +140,8 @@ switch (process.env.BUILD_TARGET) {
         build().then(process.env.FULL_RELEASE === 'true' ? buildFull : buildLite);
         break;
     case 'debug':
-        build().then(buildDir)
+        build().then(buildDir);
+        break;
     default:
         build();
         break;
