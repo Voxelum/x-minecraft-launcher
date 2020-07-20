@@ -140,11 +140,6 @@
     },
     "missingJava": {
       "": "没有分配Java",
-      "switch": {
-        "": "切换到 Java 8",
-        "message": "启动器将使用您现在安装的 Java 8",
-        "disabled": "在电脑中没有检测到 Java，无法切换"
-      },
       "autoDownload": {
         "": "自动下载",
         "message": "启动器将从Mojang源下载并安装Java"
@@ -157,6 +152,11 @@
       "selectJava": {
         "": "手工选择Java的位置",
         "message": "也许只是启动器没找到你电脑里的Java,你可以手工选择一下"
+      },
+      "switch": {
+        "": "切换到 Java 8",
+        "disabled": "在电脑中没有检测到 Java，无法切换",
+        "message": "启动器将使用您现在安装的 Java 8"
       }
     },
     "missingLibraries": {
@@ -391,20 +391,20 @@
       "logs": "已经启动的游戏的日志文件夹",
       "mclogs": "此启动配置下的 Minecraft 的游戏日志",
       "modJar": "一个正常的 Mod Jar 文件",
-      "modManaged": "Curseforge 的 Mod Jar 文件",
       "modLite": "一个正常的 Liteloader Mod 文件",
+      "modManaged": "Curseforge 的 Mod Jar 文件",
       "mods": "Mods 文件夹，含有此整合包启用的所有 Mod",
+      "optionTxt": "Minecraft 原版游戏设置文件",
       "options": "常规的 Minecraft 游戏设置文件",
       "profile": "储存启动配置的具体 JSON 文件",
       "profileFolder": "某一个具体的启动配置文件夹，名称是其 UUID",
-      "optionTxt": "Minecraft 原版游戏设置文件",
-      "saves": "Minecraft 地图文件夹",
       "profiles": "保存负责版本分离的启动配置",
       "resourceJson": "某一个 Mod 或资源包的元数据",
       "resourcepack": "一个正常的资源包压缩文件",
       "resourcepacks": "资源包文件夹，含有此整合包启用的所有资源包",
       "resources": "保存已发现的 Mods/资源包的元数据",
       "root": "Minecraft 的数据目录",
+      "saves": "Minecraft 地图文件夹",
       "temp": "启动器临时文件夹，一般用来放下载文件",
       "user": "用户验证信息缓存",
       "version": "Minecraft 版本信息缓存",
@@ -590,10 +590,10 @@
       },
       "export": "导出整合包",
       "exportCurseforge": "导出为 Curseforge 整合包",
-      "name": "Mod包",
-      "profile": "文件名",
       "general": "基本信息",
-      "overrides": "整合包打包覆盖 (overrides)"
+      "name": "Mod包",
+      "overrides": "整合包打包覆盖 (overrides)",
+      "profile": "文件名"
     },
     "name": "名称",
     "nameHint": "名称便于以后识别",
@@ -710,14 +710,14 @@
     "deleteConfirm": "确认删除",
     "deleteHint": "该操作不可逆，你将永远失去这个存档的记录，你确定要刪除此存档吗？",
     "deleteTitle": "删除该存档",
-    "exportTitle": "导出存档",
-    "exportMessage": "将存档导出为 zip",
-    "importTitle": "导入存档",
-    "importMessage": "将 zip 存档导入",
     "detail": "显示更多信息",
     "export": "导出地图",
+    "exportMessage": "将存档导出为 zip",
+    "exportTitle": "导出存档",
     "hint": "将地图zip或文件夹拖入此处来导入",
     "import": "从文件导入",
+    "importMessage": "将 zip 存档导入",
+    "importTitle": "导入存档",
     "name": "地图存档 | 地图存档"
   },
   "setting": {
@@ -742,6 +742,10 @@
     "languageDescription": "当前显示的语言",
     "latestVersion": "最新版本",
     "location": "数据存储位置",
+    "migrateClean": "Delete Old Data",
+    "migrateDone": "结束数据迁移",
+    "migrateFailed": "数据迁移失败",
+    "migrateSuccess": "数据迁移成功",
     "name": "设置",
     "noUpdateAvailable": "目前没有可用更新",
     "particleMode": {
@@ -752,8 +756,10 @@
       "repulse": "击退"
     },
     "particleModeDescription": "选择当你点击粒子时的特效",
+    "postMigrating": "清理老数据中",
+    "reloadFailed": "数据迁移失败",
     "resolution": "Minecraft默认窗口大小",
-    "setRootCause": "如果你不勾选下面的“迁移数据”选项，你将会失去现在的所有数据（包括地图存档，资源包等）。",
+    "setRootCause": "请确保启动器在此过程中不被中断，不然您的数据可能丢失",
     "setRootDescription": "这将改变启动器识别的Minecraft根目录。",
     "setRootTitle": "迁移启动器到新的位置",
     "showParticle": "显示粒子",
