@@ -4,7 +4,7 @@ import { requireObject, requireString } from '@universal/util/assert';
 import { AddonInfo, File, getAddonDatabaseTimestamp, getAddonDescription, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions } from '@xmcl/curseforge';
 import { task } from '@xmcl/task';
 import { Agent } from 'https';
-import { basename } from 'path';
+import { basename, join } from 'path';
 import ResourceService from './ResourceService';
 import Service, { Inject, Singleton } from './Service';
 
@@ -123,7 +123,7 @@ export default class CurseForgeService extends Service {
         if (resource !== UNKNOWN_RESOURCE) {
             return resource.path;
         }
-        let destination = this.getPath('temp', basename(file.downloadUrl));
+        let destination = join(this.app.temporaryPath, basename(file.downloadUrl));
         try {
             let handle = this.submit(task('importResource', async (c) => {
                 c.update(0, 100);

@@ -12,10 +12,6 @@ export default class SettingService extends Service {
             allowPrerelease: data.allowPrerelease,
             apiSets: data.apiSets,
             apiSetsPreference: data.apiSetsPreference,
-            // defaultBackgroundImage: data.defaultBackgroundImage,
-            // defaultBlur: data.defaultBlur,
-            roots: data.roots,
-            primaryRoot: data.primaryRoot,
         });
     }
 
@@ -24,7 +20,6 @@ export default class SettingService extends Service {
         'allowPrerelease',
         'autoInstallOnAppQuit',
         'autoDownload',
-        // 'defaultBlur',
         'apiSetsPreference',
         'apiSets',
     )
@@ -38,10 +33,6 @@ export default class SettingService extends Service {
                 allowPrerelease: this.state.setting.allowPrerelease,
                 apiSets: this.state.setting.apiSets,
                 apiSetsPreference: this.state.setting.apiSetsPreference,
-                // defaultBackgroundImage: this.state.setting.defaultBackgroundImage,
-                // defaultBlur: this.state.setting.defaultBlur,
-                roots: this.state.setting.roots,
-                primaryRoot: this.state.setting.primaryRoot,
             },
             schema: SettingSchema,
         });

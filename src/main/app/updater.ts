@@ -72,7 +72,7 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
         if (!existsSync(elevatePath)) {
             throw new Error(`No elevate.exe found: ${elevatePath}`);
         }
-        let psPath = join(this.root, 'temp', 'AutoUpdate.ps1');
+        let psPath = join(this.appDataPath, 'AutoUpdate.ps1');
         let hasWriteAccess = await new Promise((resolve) => {
             open(appAsarPath, 'a', (e, fd) => {
                 if (e) {

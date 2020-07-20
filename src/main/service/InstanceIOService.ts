@@ -234,9 +234,9 @@ export default class InstanceIOService extends Service {
         }
 
         // copy assets, library and versions
-        await copyPassively(resolve(path, 'assets'), this.getGameAssetsPath('assets'));
-        await copyPassively(resolve(path, 'libraries'), this.getGameAssetsPath('libraries'));
-        await copyPassively(resolve(path, 'versions'), this.getGameAssetsPath('versions'));
+        await copyPassively(resolve(path, 'assets'), this.getPath('assets'));
+        await copyPassively(resolve(path, 'libraries'), this.getPath('libraries'));
+        await copyPassively(resolve(path, 'versions'), this.getPath('versions'));
 
         return true;
     }
@@ -282,9 +282,9 @@ export default class InstanceIOService extends Service {
         });
 
         // copy assets, library and versions
-        await copyPassively(resolve(srcDirectory, 'assets'), this.getGameAssetsPath('assets'));
-        await copyPassively(resolve(srcDirectory, 'libraries'), this.getGameAssetsPath('libraries'));
-        await copyPassively(resolve(srcDirectory, 'versions'), this.getGameAssetsPath('versions')); // TODO: check this
+        await copyPassively(resolve(srcDirectory, 'assets'), this.getPath('assets'));
+        await copyPassively(resolve(srcDirectory, 'libraries'), this.getPath('libraries'));
+        await copyPassively(resolve(srcDirectory, 'versions'), this.getPath('versions')); // TODO: check this
 
         if (!isDir) { await remove(srcDirectory); }
     }

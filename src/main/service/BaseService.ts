@@ -1,7 +1,13 @@
 import { copyPassively, exists } from '@main/util/fs';
+import { ensureDir } from '@xmcl/installer/util';
 import { Task } from '@xmcl/task';
+import { copy, copyFile, readJson, remove, unlink, writeJson } from 'fs-extra';
 import { join } from 'path';
 import Service, { Singleton } from './Service';
+
+export interface MigrateOptions {
+    destination: string;
+}
 
 export default class BaseService extends Service {
     async init() {
@@ -45,16 +51,9 @@ export default class BaseService extends Service {
 
     async quitAndInstall() {
         if (this.state.setting.updateStatus === 'ready') {
-            if (this.state.setting.updateInfo?.incremental) {
-                this.warn('Restart to install a asar update!');
-                await this.updateManager.quitAndInstallAsar();
-            } else {
-                this.warn('Restart to install a full update!');
-                this.updateManager.quitAndInstallFullUpdate();
-            }
-        } else {
-            this.warn('There is no update avaiable!');
+            await this.quitAndInstall();
         }
+        this.warn('There is no update avaiable!');
     }
 
     @Singleton()
@@ -88,4 +87,95 @@ export default class BaseService extends Service {
     quit = this.app.quit.bind(this.app);
 
     exit = this.app.exit;
+
+    private oldMigratedRoot = '';
+
+    async migrate(options: MigrateOptions) {
+        // TODO: not to hardcode
+
+        const source = this.app.gameDataPath;
+        const destination = options.destination;
+        await ensureDir(destination);
+
+        function onError(e: any) {
+            if (e.code === 'ENOENT') return;
+            throw e;
+        }
+
+        try {
+            await Promise.all([
+                copy(this.getPath('assets'), join(destination, 'assets')).catch(onError),
+                copy(this.getPath('libraries'), join(destination, 'libraries')).catch(onError),
+                copy(this.getPath('instances'), join(destination, 'instances')).catch(onError),
+                copy(this.getPath('versions'), join(destination, 'versions')).catch(onError),
+                copy(this.getPath('mods'), join(destination, 'mods')).catch(onError),
+                copy(this.getPath('resourcepacks'), join(destination, 'resourcepacks')).catch(onError),
+                copy(this.getPath('saves'), join(destination, 'saves')).catch(onError),
+                copy(this.getPath('modpacks'), join(destination, 'modpacks')).catch(onError),
+
+                copyFile(this.getPath('instances.json'), join(destination, 'instances.json')).catch(onError),
+                copyFile(this.getPath('minecraft-versions.json'), join(destination, 'minecraft-versions.json')).catch(onError),
+                copyFile(this.getPath('forge-versions.json'), join(destination, 'forge-versions.json')).catch(onError),
+                copyFile(this.getPath('lite-versions.json'), join(destination, 'lite-versions.json')).catch(onError),
+                copyFile(this.getPath('fabric-versions.json'), join(destination, 'fabric-versions.json')).catch(onError),
+                copyFile(this.getPath('authlib-injection.json'), join(destination, 'authlib-injection.json')).catch(onError),
+                copyFile(this.getPath('java.json'), join(destination, 'java.json')).catch(onError),
+                copyFile(this.getPath('setting.json'), join(destination, 'setting.json')).catch(onError),
+                copyFile(this.getPath('user.json'), join(destination, 'user.json')).catch(onError),
+            ]);
+
+            const content = await readJson(join(destination, 'instances.json'));
+            content.instances = content.instances.map((p: string) => (p.startsWith(source) ? (destination + p.substring(source.length)) : p));
+            content.instance = content.selectedInstance.startsWith(source) ? (destination + content.selectedInstance.substring(source.length)) : content.selectedInstance;
+            await writeJson(join(destination, 'instances.json'), content);
+        } catch (e) {
+            this.error('Fail to migrate the root! abort!');
+            this.error(e);
+            throw e;
+        }
+
+        try {
+            this.oldMigratedRoot = this.app.gameDataPath;
+            await this.app.migrateRoot(destination);
+            this.commit('root', destination);
+        } catch (e) {
+            this.oldMigratedRoot = '';
+            throw e;
+        }
+    }
+
+    async postMigrate() {
+        if (!this.oldMigratedRoot) {
+            this.warn('Cannot perform post migrate as the migration is not performed or failed');
+            return;
+        }
+        await this.serviceManager.dispose();
+
+        function onError(e: any) {
+            if (e.code === 'ENOENT') return;
+            throw e;
+        }
+
+        await Promise.all([
+            remove(join(this.oldMigratedRoot, 'assets')).catch(onError),
+            remove(join(this.oldMigratedRoot, 'libraries')).catch(onError),
+            remove(join(this.oldMigratedRoot, 'instances')).catch(onError),
+            remove(join(this.oldMigratedRoot, 'versions')).catch(onError),
+            remove(join(this.oldMigratedRoot, 'mods')).catch(onError),
+            remove(join(this.oldMigratedRoot, 'resourcepacks')).catch(onError),
+            remove(join(this.oldMigratedRoot, 'saves')).catch(onError),
+            remove(join(this.oldMigratedRoot, 'modpacks')).catch(onError),
+
+            unlink(join(this.oldMigratedRoot, 'instances.json')).catch(onError),
+            unlink(join(this.oldMigratedRoot, 'minecraft-versions.json')).catch(onError),
+            unlink(join(this.oldMigratedRoot, 'forge-versions.json')).catch(onError),
+            unlink(join(this.oldMigratedRoot, 'lite-versions.json')).catch(onError),
+            unlink(join(this.oldMigratedRoot, 'fabric-versions.json')).catch(onError),
+            unlink(join(this.oldMigratedRoot, 'authlib-injection.json')).catch(onError),
+            unlink(join(this.oldMigratedRoot, 'java.json')).catch(onError),
+            unlink(join(this.oldMigratedRoot, 'setting.json')).catch(onError),
+            unlink(join(this.oldMigratedRoot, 'user.json')).catch(onError),
+        ]);
+        this.app.relaunch();
+    }
 }

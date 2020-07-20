@@ -79,7 +79,7 @@ export class InstanceService extends Service {
     protected readonly ioService!: InstanceIOService;
 
     protected getPathUnder(...ps: string[]) {
-        return this.getGameAssetsPath(INSTANCES_FOLDER, ...ps);
+        return this.getPath(INSTANCES_FOLDER, ...ps);
     }
 
     @Singleton()
@@ -180,7 +180,7 @@ export class InstanceService extends Service {
             return;
         }
 
-        if (all.indexOf(instanceConfig.selectedInstance) !== -1) {
+        if (this.state.instance.all[instanceConfig.selectedInstance]) {
             await this.mountInstance(instanceConfig.selectedInstance);
         } else {
             await this.mountInstance(Object.keys(state.instance.all)[0]);

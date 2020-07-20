@@ -36,6 +36,8 @@ export interface Platform {
 export interface AppContext {
     openWindow(name: string, url: string, browserWindow: BrowserWindowConstructorOptions): BrowserWindow;
 
+    closeWindow(name: string): void;
+
     /**
      * Only for the app engine support dock
      */
@@ -79,9 +81,24 @@ export interface LauncherApp {
 
 export abstract class LauncherApp extends EventEmitter {
     /**
-     * Launcher root
+     * Launcher %APPDATA%/xmcl path
      */
-    readonly root: string;
+    readonly appDataPath: string;
+
+    /**
+     * Store Minecraft data
+     */
+    readonly gameDataPath: string;
+
+    /**
+     * The .minecraft folder in Windows or minecraft folder in linux/mac
+     */
+    readonly minecraftDataPath: string;
+
+    /**
+     * Path to temporary folder
+     */
+    readonly temporaryPath: string;
 
     /**
      * ref for if the game is launching and the launcher is paused
@@ -116,9 +133,15 @@ export abstract class LauncherApp extends EventEmitter {
 
     constructor() {
         super();
-        this.root = join(this.getPath('appData'), LAUNCHER_NAME);
+        const appData = this.getPath('appData');
+        this.appDataPath = join(appData, LAUNCHER_NAME);
+        this.gameDataPath = '';
+        this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft');
+        this.temporaryPath = '';
         this.controller = new LauncherAppController(this, this.getContext());
     }
+
+    abstract getLocale(): string;
 
     abstract getContext(): AppContext;
 
@@ -206,6 +229,7 @@ export abstract class LauncherApp extends EventEmitter {
      */
     abstract installUpdateAndQuit(): Promise<void>;
 
+    abstract relaunch(): void;
 
     protected log = (message: any, ...options: any[]) => { this.logManager.log(`[App] ${message}`, ...options); }
 
@@ -254,7 +278,7 @@ export abstract class LauncherApp extends EventEmitter {
 
     protected async loadManifest(manifest: AppManifest) {
         let { owner, repo } = manifest;
-        let asarPath = join(this.root, 'apps', `${owner}-${repo}.asar`);
+        let asarPath = join(this.appDataPath, 'apps', `${owner}-${repo}.asar`);
         if (!await exists(asarPath)) {
             await this.downloadApp(manifest);
         }
@@ -306,8 +330,8 @@ export abstract class LauncherApp extends EventEmitter {
         }
         let latest = await releaseFetcher.getLatestRelease();
 
-        let manifestPath = join(this.root, 'apps', `${owner}-${repo}.json`);
-        let asarPath = join(this.root, 'apps', `${owner}-${repo}.asar`);
+        let manifestPath = join(this.appDataPath, 'apps', `${owner}-${repo}.json`);
+        let asarPath = join(this.appDataPath, 'apps', `${owner}-${repo}.asar`);
 
         let task = Task.create('downloadApp', this.networkManager.downloadFileTask({
             url: latest.downloadUrl,
@@ -327,7 +351,6 @@ export abstract class LauncherApp extends EventEmitter {
     async start(): Promise<void> {
         this.log(process.cwd());
         this.log(process.argv);
-        await ensureDir(`${this.getPath('appData')}/xmcl`);
         await this.setup();
         await this.waitEngineReady();
         await this.onEngineReady();
@@ -336,9 +359,34 @@ export abstract class LauncherApp extends EventEmitter {
     }
 
     protected async setup() {
-        const sites = await readFile(join(this.root, 'sites')).then((b) => b.toString().split('\n')).catch(() => []);
-        this.trustedSites = sites;
+        this.trustedSites = [];
+        await ensureDir(this.appDataPath);
+        try {
+            (this.gameDataPath as any) = await readFile(join(this.appDataPath, 'root')).then((b) => b.toString().trim());
+        } catch (e) {
+            if (e.code === 'ENOENT') {
+                // first launch
+                await this.waitEngineReady();
+                (this.gameDataPath as any) = await this.controller.processFirstLaunch();
+                await writeFile(join(this.appDataPath, 'root'), this.gameDataPath);
+            } else {
+                (this.gameDataPath as any) = this.appDataPath;
+            }
+        }
+
+        try {
+            await Promise.all([ensureDir(this.gameDataPath), ensureDir(this.temporaryPath)]);
+        } catch {
+            (this.gameDataPath as any) = this.appDataPath;
+            await Promise.all([ensureDir(this.gameDataPath), ensureDir(this.temporaryPath)]);
+        }
+        (this.temporaryPath as any) = join(this.gameDataPath, 'temp');
         await Promise.all(this.managers.map(m => m.setup()));
+    }
+
+    async migrateRoot(newRoot: string) {
+        (this.gameDataPath as any) = newRoot;
+        await writeFile(join(this.appDataPath, 'root'), newRoot);
     }
 
     protected async onEngineReady() {

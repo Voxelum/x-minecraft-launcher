@@ -4,7 +4,7 @@ import { CurseforgeSource, ResourceSchema } from '@universal/store/modules/resou
 import { requireString } from '@universal/util/assert';
 import { Task, task } from '@xmcl/task';
 import { readFile, stat, writeFile } from 'fs-extra';
-import { extname, join } from 'path';
+import { extname, join, basename } from 'path';
 import Service from './Service';
 
 export type ImportTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save';
@@ -96,14 +96,6 @@ export default class ResourceService extends Service {
     }
 
     async load() {
-        if (await exists(this.getPath('resources'))) {
-            // legacy
-            const resources = await readdirEnsured(this.getPath('resources'));
-            this.commit('resources', await Promise.all(resources
-                .filter(file => !file.startsWith('.'))
-                .map(file => this.getPath('resources', file))
-                .map(file => this.getPersistence({ path: file, schema: ResourceSchema }))));
-        }
         const resources: Resource[] = [];
         await Promise.all(['mods', 'resourcepacks', 'saves', 'modpacks']
             .map(async (domain) => {
@@ -112,6 +104,7 @@ export default class ResourceService extends Service {
                 for (const file of files.filter(f => f.endsWith('.json'))) {
                     const filePath = join(path, file);
                     const read: ResourceSchema = await this.getPersistence({ path: filePath, schema: ResourceSchema });
+                    read.path = filePath.substring(0, filePath.length - '.json'.length) + read.ext;
                     resources.push(read);
                 }
             }));

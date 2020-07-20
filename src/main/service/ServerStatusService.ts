@@ -7,7 +7,7 @@ import Service, { Pure } from './Service';
 
 export default class ServerStatusService extends Service {
     async load() {
-        const protocolFile = this.getPath('protocol.json');
+        const protocolFile = this.getAppDataPath('protocol.json');
         if (await exists(protocolFile)) {
             const buf = await readFile(protocolFile);
             const object = JSON.parse(buf.toString());

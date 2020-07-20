@@ -19,6 +19,8 @@ export default class LauncherAppController {
 
     private loggerRef: BrowserWindow | undefined = undefined;
 
+    private setupRef: BrowserWindow | undefined = undefined;
+
     private i18n = createI18n({ en, 'zh-CN': zh }, 'en');
 
     private primary: BrowserWindow | undefined;
@@ -55,6 +57,20 @@ export default class LauncherAppController {
             transparent: true,
             hasShadow: false,
             maximizable: false,
+            icon: resolve(__static, 'apple-touch-icon.png'),
+        });
+    }
+
+    createSetupWindow() {
+        this.setupRef = this.context.openWindow('setup', `${baseURL}setup.html`, {
+            title: 'Setup XMCL',
+            width: 480,
+            height: 480,
+            frame: false,
+            transparent: true,
+            hasShadow: false,
+            maximizable: false,
+            vibrancy: 'sidebar', // or popover
             icon: resolve(__static, 'apple-touch-icon.png'),
         });
     }
@@ -146,7 +162,7 @@ export default class LauncherAppController {
         const { getters } = this.store;
         if (this.mainRef && this.mainRef.isVisible()) {
             this.mainRef.webContents.send('minecraft-window-ready');
-            
+
             const { hideLauncher } = getters.instance;
             if (hideLauncher) {
                 this.mainRef.hide();
@@ -190,7 +206,28 @@ export default class LauncherAppController {
         }
     }
 
-    engineReady() {
+    async processFirstLaunch(): Promise<string> {
+        this.createSetupWindow();
+        this.app.handle('preset', () => ({ locale: this.app.getLocale(), minecraftPath: this.app.minecraftDataPath, defaultPath: this.app.appDataPath }));
+
+        return new Promise<string>((resolve) => {
+            const fallback = () => {
+                resolve(this.app.appDataPath);
+            };
+            this.setupRef!.once('closed', fallback);
+
+            this.setupRef!.center();
+            this.setupRef!.focus();
+
+            this.app.handle('setup', (_, s) => {
+                resolve(s as string);
+                this.setupRef!.removeAllListeners();
+                this.context.closeWindow('setup');
+            });
+        });
+    }
+
+    async engineReady() {
         this.createMainWindow();
         this.setupTray();
         this.setupTask();
