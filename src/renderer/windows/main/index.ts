@@ -14,7 +14,7 @@ import VueObserveVisibility from 'vue-observe-visibility';
 import VueParticles from 'vue-particles';
 import Router from 'vue-router';
 import Vuetify from 'vuetify';
-import 'vuetify/dist/vuetify.css';
+import 'vuetify/dist/vuetify.min.css';
 import colors from 'vuetify/es5/util/colors';
 import Vuex from 'vuex';
 import './directives';
