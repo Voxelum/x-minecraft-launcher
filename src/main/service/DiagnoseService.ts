@@ -91,7 +91,7 @@ export default class DiagnoseService extends Service {
                         await this.installService.installFabric({ yarn, loader: fabricLoader });
                     }
 
-                    // TODO: check liteloader fabric
+                    // TODO: check liteloader
                 } else {
                     this.pushException({ type: 'fixVersionNoVersionMetadata', minecraft });
                 }

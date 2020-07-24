@@ -284,7 +284,7 @@ export default class InstanceIOService extends Service {
         // copy assets, library and versions
         await copyPassively(resolve(srcDirectory, 'assets'), this.getPath('assets'));
         await copyPassively(resolve(srcDirectory, 'libraries'), this.getPath('libraries'));
-        await copyPassively(resolve(srcDirectory, 'versions'), this.getPath('versions')); // TODO: check this
+        await copyPassively(resolve(srcDirectory, 'versions'), this.getPath('versions'));
 
         if (!isDir) { await remove(srcDirectory); }
     }

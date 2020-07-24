@@ -14,6 +14,7 @@ import SaveViewPage from './pages/SaveViewPage.vue';
 import SettingPage from './pages/SettingPage.vue';
 import UserPage from './pages/UserPage.vue';
 import VersionSettingPage from './pages/VersionSettingPage.vue';
+import MCWikiPage from './pages/MCWikiPage.vue';
 
 const router = new Router({
     routes: [
@@ -68,12 +69,17 @@ const router = new Router({
         {
             path: '/curseforge/:type',
             component: CurseforgeViewPage,
-            props: (route) => ({ search: route.query.search, type: route.path.split('/')[2] }),
+            props: (route) => ({ initialKeyword: route.query.search, type: route.path.split('/')[2] }),
         },
         {
             path: '/curseforge/:type/:id',
             component: CurseforgeProjectPage,
             props: true,
+        },
+        {
+            path: '/mcwiki',
+            component: MCWikiPage,
+            props: (route) => ({ path: route.query.path }),
         },
     ],
 });
@@ -82,8 +88,8 @@ router.beforeEach((to, from, next) => {
     const full = to.fullPath.substring(1);
     const { openInBrowser } = serviceProxy.BaseService;
     if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {
-        console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`);
         next(false);
+        console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`);
         if (full.startsWith('external')) {
             console.log(full.substring('external/'.length));
             openInBrowser(full.substring('external/'.length));

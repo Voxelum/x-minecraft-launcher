@@ -74,6 +74,7 @@ export default defineComponent({
       type: String,
       default: 'mc-mods',
     },
+    initialKeyword: String,
   },
   setup(props) {
     // const { categories } = useCurseforgeCategories();
@@ -93,10 +94,7 @@ export default defineComponent({
         id = 17;
         break;
     }
-    const preview = useCurseforgeSearch(id);
-    return {
-      ...preview,
-    };
+    return useCurseforgeSearch(id, props.initialKeyword);
   },
 });
 </script>

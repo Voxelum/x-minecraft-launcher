@@ -86,7 +86,7 @@ import { defineComponent, ref, Ref, computed, inject, watch } from '@vue/composi
 import { useInstanceVersionBase, useCompatible, useService, ModItem, useI18n } from '@/hooks';
 import { basename } from '@/util/basename';
 import unknownPack from '@/assets/unknown_pack.png';
-import { useContextMenu, ContextMenuItem, useCurseforgeRoute } from '../hooks';
+import { useContextMenu, ContextMenuItem, useCurseforgeRoute, useMcWikiRoute } from '../hooks';
 
 export interface Props {
   source: ModItem;
@@ -132,6 +132,7 @@ export default defineComponent<Props>({
     const isDraggingMod = inject('DraggingMod', ref(false));
     const hoveringMod = inject('HoveringMod', ref(''));
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute();
+    const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute(); 
 
     const { $t } = useI18n();
 
@@ -223,6 +224,14 @@ export default defineComponent<Props>({
           icon: 'search',
         });
       }
+      items.push({
+        text: $t('mod.searchOnMcWiki', { name: props.source.name }),
+        children: [],
+        onClick: () => {
+          searchMcWiki(props.source.name);
+        },
+        icon: 'search',
+      });
       open(e.clientX, e.clientY, items);
     }
 

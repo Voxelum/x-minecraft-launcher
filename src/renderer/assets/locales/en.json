@@ -834,6 +834,7 @@
     "info": "User Information",
     "insecureClient": "The Client is insecure! Please validate your identity to upload skin!",
     "invalidCredentials": "Invalid credentials. Invalid username or password.",
+    "noNetwork": "Invalid credentials. Invalid username or password.",
     "login": "Login",
     "logout": "Logout",
     "mojang": {

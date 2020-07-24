@@ -259,7 +259,7 @@ export function useLoginValidation(isOffline: Ref<boolean>) {
         data.usernameErrors = [];
         data.passwordErrors = [];
     }
-    function handleError(e: any) {
+    function handleError(e: LoginException) {
         const err = e as LoginException;
         if (err.type === 'loginInternetNotConnected') {
             // TODO: handle this case

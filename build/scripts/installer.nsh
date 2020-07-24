@@ -1,3 +1,5 @@
+!include "FileAssociation.nsh"
+
 !macro customInstall
   DeleteRegKey HKCR "xmcl"
   WriteRegStr HKCR "xmcl" "" "URL:xmcl"

@@ -56,7 +56,6 @@ export interface GeneralException extends ExceptionBase {
 
 export interface LoginException extends ExceptionBase {
     type: 'loginInternetNotConnected' | 'loginInvalidCredentials' | 'loginGeneral';
-    error: Error;
 }
 
 export interface CurseforgeModpackImportException extends ExceptionBase {
@@ -65,7 +64,7 @@ export interface CurseforgeModpackImportException extends ExceptionBase {
 }
 
 export interface LaunchException extends ExceptionBase {
-    type: 'launchInstanceEmpty' | 'launchIllegalAuth' | 'launchBlockedIssues' | 'launchGeneralException';
+    type: 'launchInstanceEmpty' | 'launchIllegalAuth' | 'launchBlockedIssues' | 'launchGeneralException' | 'launchNoVersionInstalled';
 }
 
 export interface IssueBlockedException extends ExceptionBase {
@@ -102,4 +101,9 @@ export interface UserNoProfilesException extends ExceptionBase {
 
 export function isFileNoFound(e: unknown) {
     return typeof e === 'object' && e !== null && ('code' in e && (e as any).code === 'ENOENT');
+}
+
+export function wrapError(e: Error, exception: Exceptions) {
+    Object.assign(e, exception);
+    return e;
 }

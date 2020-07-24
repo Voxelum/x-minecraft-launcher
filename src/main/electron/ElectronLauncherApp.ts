@@ -45,6 +45,7 @@ export default class ElectronLauncherApp extends LauncherApp {
                 normalizedOptions.webPreferences.nodeIntegration = IS_DEV; // enable node for webpack in dev
                 normalizedOptions.webPreferences.preload = join(__static, 'preload.js');
                 normalizedOptions.webPreferences.session = session.fromPartition(`persist:${name}`);
+                normalizedOptions.webPreferences.webviewTag = true;
                 // ops.webPreferences.enableRemoteModule = true;
                 // normalizedOptions.webPreferences.devTools = false;
 

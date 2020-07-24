@@ -3,7 +3,7 @@ import { fitMinecraftLauncherProfileData } from '@main/util/userData';
 import { MutationKeys } from '@universal/store';
 import { UserSchema } from '@universal/store/modules/user.schema';
 import { requireNonnull, requireObject, requireString } from '@universal/util/assert';
-import { Exception } from '@universal/util/exception';
+import { Exception, wrapError } from '@universal/util/exception';
 import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user';
 import { readFile, readJSON } from 'fs-extra';
 import { parse } from 'url';
@@ -511,15 +511,15 @@ export default class UserService extends Service {
                 clientToken: this.state.user.clientToken,
             }, usingAuthService).catch((e) => {
                 if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
-                    throw new Exception({ type: 'loginInternetNotConnected', error: e });
+                    throw wrapError(e, { type: 'loginInternetNotConnected' });
                 } else if (e.error === 'ForbiddenOperationException'
                     && e.errorMessage === 'Invalid credentials. Invalid username or password.') {
-                    throw new Exception({ type: 'loginInvalidCredentials', error: e });
+                    throw wrapError(e, { type: 'loginInvalidCredentials' });
                 } else if (e.error === 'ForbiddenOperationException'
                     && e.errorMessage === 'Invalid credential information.') {
-                    throw new Exception({ type: 'loginInvalidCredentials', error: e });
+                    throw wrapError(e, { type: 'loginInvalidCredentials' });
                 }
-                throw new Exception({ type: 'loginGeneral', error: e });
+                throw wrapError(e, { type: 'loginGeneral' });
             });
 
         // this.refreshedSkin = false;

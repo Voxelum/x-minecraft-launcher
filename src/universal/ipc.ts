@@ -3,18 +3,6 @@ import { TaskState } from './task';
 import { BuiltinNotification } from './util/notification';
 
 declare module 'electron' {
-    interface App extends NodeJS.EventEmitter {
-        on(channel: 'minecraft-window-ready', listener: () => void): this;
-        on(channel: 'minecraft-start', listener: () => void): this;
-        on(channel: 'minecraft-exit', listener: (exitStatus?: { code?: string; signal?: string; crashReport?: string; crashReportLocation?: string }) => void): this;
-        on(channel: 'minecraft-stdout', listener: (out: string) => void): this;
-        on(channel: 'minecraft-stderr', listener: (err: string) => void): this;
-
-        on(channel: 'reload', listener: () => void): this;
-
-        on(channel: 'task-successed', listener: (id: string) => void): this;
-        on(channel: 'task-failed', listener: (id: string, error: any) => void): this;
-    }
 
     interface IpcMain extends NodeJS.EventEmitter {
         on(channel: 'dispatch', listener: (event: Electron.IpcMainEvent, payload: { action: string; payload: any; option: any; id: number }) => void): this;
