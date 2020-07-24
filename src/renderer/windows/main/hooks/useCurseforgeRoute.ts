@@ -15,3 +15,13 @@ export function useCurseforgeRoute() {
         goProjectAndRoute,
     };
 }
+
+export function useMcWikiRoute() {
+    const { replace } = useRouter();
+    function searchProjectAndRoute(name: string) {
+        replace(`mcwiki?path=https://www.mcmod.cn/s?key=${name}`);
+    }
+    return {
+        searchProjectAndRoute,
+    };
+}

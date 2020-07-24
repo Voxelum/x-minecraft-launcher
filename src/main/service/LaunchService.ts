@@ -57,7 +57,6 @@ export default class LaunchService extends Service {
 
             this.commit('launchStatus', 'launching');
 
-            const showLog = instance.showLog;
             const minecraftFolder = new MinecraftFolder(instance.path);
 
             /**
@@ -65,7 +64,7 @@ export default class LaunchService extends Service {
              */
             let instanceVersion = this.getters.instanceVersion;
             if (instanceVersion.folder === 'unknown') {
-                throw new Error(); // TODO: this is an exception
+                throw new Exception({ type: 'launchNoVersionInstalled' });
             }
             const version = instanceVersion.folder;
 
@@ -120,7 +119,12 @@ export default class LaunchService extends Service {
             this.launchedProcess = process;
             this.commit('launchStatus', 'launched');
 
-            this.app.emit('minecraft-start', showLog);
+            this.app.emit('minecraft-start', { 
+                version: instanceVersion.folder,
+                minecraft: instanceVersion.minecraft,
+                forge: instanceVersion.forge,
+                fabric: instanceVersion.fabricLoader,
+            });
             let watcher = createMinecraftProcessWatcher(process);
 
             watcher.on('error', (err) => {

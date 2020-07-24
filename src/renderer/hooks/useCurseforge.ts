@@ -130,7 +130,7 @@ export function useCurseforgeCategories() {
 /**
  * Hook to returen the controller of curseforge preview page. Navigating the curseforge projects.
  */
-export function useCurseforgeSearch(sectionId: number) {
+export function useCurseforgeSearch(sectionId: number, initialSearch?: string) {
     const { searchProjects } = useService('CurseForgeService');
     const pageSize = 5;
     const data = reactive({
@@ -148,7 +148,7 @@ export function useCurseforgeSearch(sectionId: number) {
         keyword: undefined as undefined | string,
     });
     const index = computed(() => (data.page - 1) * pageSize);
-    const searchFilter = ref(undefined as undefined | string);
+    const searchFilter = ref(initialSearch);
     const refs = toRefs(data);
     async function refresh() {
         data.loading = true;

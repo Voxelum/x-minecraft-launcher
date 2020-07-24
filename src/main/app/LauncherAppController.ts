@@ -172,24 +172,6 @@ export default class LauncherAppController {
         if (this.loggerRef === undefined && getters.instance.showLog) {
             this.createLoggerWindow();
         }
-
-        // const click = () => {
-        //     if (!this.loggerRef) {
-        //         this.createLoggerWindow();
-        //     } else if (!this.loggerRef.isVisible()) {
-        //         this.loggerRef.show();
-        //      } else {
-        //         this.loggerRef.focus();
-        //     }
-        // };
-
-        // if (this.context.dock && this.context.buildMenuFromTemplate) {
-        //     this.context.dock.setMenu(this.context.buildMenuFromTemplate([{
-        //         label: 'Show Log',
-        //         type: 'normal',
-        //         click,
-        //     }]));
-        // }
     }
 
     onMinecraftExited(status: any) {

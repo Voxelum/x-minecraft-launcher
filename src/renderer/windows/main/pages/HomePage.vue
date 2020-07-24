@@ -208,6 +208,8 @@ function setupLaunch() {
             showLaunchBlockedDialog();
           } else if (e.type === 'launchGeneralException') {
             // TODO: support this
+          } else if (e.type === 'launchNoVersionInstalled') {
+            
           }
         });
       }

@@ -62,6 +62,14 @@
           <v-icon :size="14">$vuetify.icons.curseforge</v-icon>
         </v-list-tile-action>
       </v-list-tile>
+      <!-- <v-list-tile
+        replace
+        to="/mcwiki"
+      >
+        <v-list-tile-action style="padding-right: 2px;">
+          <v-icon>file</v-icon>
+        </v-list-tile-action>
+      </v-list-tile> -->
       <v-spacer />
     </v-list>
     <v-list

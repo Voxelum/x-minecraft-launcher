@@ -121,21 +121,21 @@ export default class InstallService extends Service {
                 option.assetsHost = `${api.url}/assets`;
                 option.mavenHost = `${api.url}/maven`;
                 option.assetsIndexUrl = (u) => {
-                    let url = new URL(u.assetIndex.url);
+                    const url = new URL(u.assetIndex.url);
                     const host = new URL(api.url).host;
                     url.host = host;
                     url.hostname = host;
                     return url.toString();
                 };
                 option.json = (u) => {
-                    let url = new URL(u.url);
+                    const url = new URL(u.url);
                     const host = new URL(api.url).host;
                     url.host = host;
                     url.hostname = host;
                     return url.toString();
                 };
                 option.client = (u) => {
-                    let url = new URL(u.downloads.client.url);
+                    const url = new URL(u.downloads.client.url);
                     const host = new URL(api.url).host;
                     url.host = host;
                     url.hostname = host;
@@ -295,7 +295,7 @@ export default class InstallService extends Service {
         if ('downloads' in libraries[0]) {
             resolved = Version.resolveLibraries(libraries);
         } else {
-            resolved = libraries as any; // TODO: typecheck
+            resolved = libraries as any;
         }
         let option = this.getInstallOptions();
         let task = Installer.installResolvedLibrariesTask(resolved, this.state.root, option);

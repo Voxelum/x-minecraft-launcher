@@ -250,10 +250,6 @@ export default class InstanceSavesService extends Service {
 
         requireString(saveName);
 
-        if (!this.state.instance.all[instancePath]) {
-            throw new Error(); // TODO: decorate error
-        }
-
         let savePath = join(instancePath, 'saves', saveName);
 
         if (await missing(savePath)) {

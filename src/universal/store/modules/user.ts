@@ -179,6 +179,7 @@ const mod: UserModule = {
         },
         profileServiceRemove(state, name) {
             // TODO: remove in vue3
+            
             remove(state.profileServices, name);
             delete state.profileServices[name];
         },

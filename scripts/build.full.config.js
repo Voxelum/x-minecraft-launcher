@@ -10,6 +10,11 @@ const config = {
         allowToChangeInstallationDirectory: true,
         perMachine: true,
     },
+    fileAssociations: [{
+        ext: ['xmcl'],
+        name: 'X Minecraft Launcher App',
+        role: 'Editor'
+    }],
     dmg: {
         contents: [
             {
@@ -59,13 +64,6 @@ const config = {
                     "ia32"
                 ]
             },
-            {
-                target: "portable",
-                arch: [
-                    "x64",
-                    "ia32"
-                ]
-            }
         ],
         files: [
             "node_modules/7zip-bin/**/*",
