@@ -5,7 +5,9 @@
       style="margin-right: 5px"
       :color="color"
       @click="onClick"
-    >{{ icon }}</v-icon>
+    >
+      {{ icon }}
+    </v-icon>
     <v-progress-circular
       v-else-if="!total || total === -1 || !showNumber"
       style="margin-right: 7px"

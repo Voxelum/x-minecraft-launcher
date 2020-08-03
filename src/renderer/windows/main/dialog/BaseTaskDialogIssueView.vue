@@ -47,19 +47,23 @@
               small
               label
               color="orange"
-            >{{ item.items.length }}</v-chip>
+            >
+              {{ item.items.length }}
+            </v-chip>
           </div>
           <div v-else style="padding: 5px 0px;">
             <div style="display: flex">
               <v-icon
                 :color="!item.optional ? 'red': 'orange'"
                 class="material-icons-outlined"
-              >{{ item.optional ? 'warning' : 'cancel' }}</v-icon>
+              >
+                {{ item.optional ? 'warning' : 'cancel' }}
+              </v-icon>
               <span
                 style="display: inline-block; overflow: hidden; max-width: 300px; text-overflow: ellipsis; white-space: nowrap;"
               >{{ $tc(`diagnosis.${item.id}`, 0, item.arguments) }}</span>
             </div>
-            <span v-if="item.arguments.file" class="tree-minor-label">{{item.arguments.file}}</span>
+            <span v-if="item.arguments.file" class="tree-minor-label">{{ item.arguments.file }}</span>
             <div v-if="item.expect" class="tree-minor-label">Expect: {{ item.expect }}</div>
             <div v-if="item.actual" class="tree-minor-label">Actual: {{ item.actual }}</div>
             <span

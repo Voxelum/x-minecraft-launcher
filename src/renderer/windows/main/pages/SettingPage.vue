@@ -54,14 +54,18 @@
                 flat
                 style="margin-right: 10px;"
                 @click="browseRootDir"
-              >{{ $t('setting.browseRoot') }}</v-btn>
+              >
+                {{ $t('setting.browseRoot') }}
+              </v-btn>
             </v-list-tile-action>
             <v-list-tile-action>
               <v-btn
                 outline
                 flat
                 @click="showRootDir"
-              >{{ $t('setting.showRoot') }}</v-btn>
+              >
+                {{ $t('setting.showRoot') }}
+              </v-btn>
             </v-list-tile-action>
           </v-list-tile>
           <v-list-tile>
@@ -110,7 +114,9 @@
                 :disabled="updateStatus === 'none'"
                 flat
                 @click="viewUpdateDetail"
-              >{{ updateStatus === 'none' ? $t('setting.alreadyLatest') : updateStatus === 'pending' ? $t('setting.updateToThisVersion') : $t('setting.installAndQuit') }}</v-btn>
+              >
+                {{ updateStatus === 'none' ? $t('setting.alreadyLatest') : updateStatus === 'pending' ? $t('setting.updateToThisVersion') : $t('setting.installAndQuit') }}
+              </v-btn>
             </v-list-tile-action>
           </v-list-tile>
           <!-- <v-list-tile avatar>
@@ -196,13 +202,17 @@
             flat
             large
             @click="doCancelApplyRoot"
-          >{{ $t('cancel') }}</v-btn>
+          >
+            {{ $t('cancel') }}
+          </v-btn>
           <v-spacer />
           <v-btn
             flat
             large
             @click="doApplyRoot()"
-          >{{ $t('setting.apply') }}</v-btn>
+          >
+            {{ $t('setting.apply') }}
+          </v-btn>
         </v-card-actions>
       </v-card>
       <v-card
@@ -246,7 +256,9 @@
             :loading="cleaningMigration"
             :disabled="cleaningMigration"
             @click="postMigrate"
-          >{{ $t('setting.migrateDone') }}</v-btn>
+          >
+            {{ $t('setting.migrateDone') }}
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

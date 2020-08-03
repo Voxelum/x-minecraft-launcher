@@ -33,7 +33,9 @@
           <v-chip
             label
             :color="item.type === 'RELEASE' ? 'green' : 'red'"
-          >{{ item.type }}</v-chip>
+          >
+            {{ item.type }}
+          </v-chip>
           <!-- <v-icon v-if="iconMapping[item.type]">{{iconMapping[item.type]}}</v-icon> -->
         </v-list-tile-action>
       </v-list-tile>

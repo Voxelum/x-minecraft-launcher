@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 
 export interface Release {
     title: string;

@@ -1,17 +1,17 @@
+import LauncherApp from '@main/app/LauncherApp';
 import { Managers } from '@main/manager';
+import LogManager from '@main/manager/LogManager';
+import NetworkManager from '@main/manager/NetworkManager';
+import ServiceManager from '@main/manager/ServiceManager';
+import StoreManager from '@main/manager/StoreManager';
+import TaskManager from '@main/manager/TaskManager';
 import { MutationKeys, RootCommit, RootGetters, RootState } from '@universal/store';
+import { Schema } from '@universal/store/Schema';
 import { Exception, Exceptions } from '@universal/util/exception';
 import { Task, TaskHandle } from '@xmcl/task';
-import NetworkManager from '@main/manager/NetworkManager';
-import LauncherApp from '@main/app/LauncherApp';
-import ServiceManager from '@main/manager/ServiceManager';
-import TaskManager from '@main/manager/TaskManager';
-import LogManager from '@main/manager/LogManager';
-import { createContext, runInContext } from 'vm';
-import { readFile, ensureFile, writeFile } from 'fs-extra';
 import Ajv from 'ajv';
-import Schema from '@universal/store/Schema';
-import StoreManager from '@main/manager/StoreManager';
+import { ensureFile, readFile, writeFile } from 'fs-extra';
+import { createContext, runInContext } from 'vm';
 
 export const INJECTIONS_SYMBOL = Symbol('__injections__');
 export const MUTATION_LISTENERS_SYMBOL = Symbol('__listeners__');

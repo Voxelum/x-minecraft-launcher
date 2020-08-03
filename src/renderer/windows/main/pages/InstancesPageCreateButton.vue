@@ -27,7 +27,9 @@
               <v-icon
                 dark
                 style="font-size: 28px; transition: all 0.2s ease;"
-              >add</v-icon>
+              >
+                add
+              </v-icon>
             </transition>
           </v-btn>
         </template>

@@ -37,7 +37,9 @@
           label
           color="amber"
           style="margin-left: 1px;"
-        >{{ levelMode }}</v-chip>
+        >
+          {{ levelMode }}
+        </v-chip>
         <v-chip
           v-if="source.cheat"
           small
@@ -45,14 +47,18 @@
           color="orange darken-1"
           label
           style="margin-left: 1px;"
-        >{{ $t('gamesetting.cheat') }}</v-chip>
+        >
+          {{ $t('gamesetting.cheat') }}
+        </v-chip>
         <v-chip
           small
           outline
           label
           color="lime"
           style="margin-left: 1px;"
-        >{{ source.gameVersion }}</v-chip>
+        >
+          {{ source.gameVersion }}
+        </v-chip>
         <!-- <div style="color: #bdbdbd; ">{{ source.description }}</div> -->
       </v-flex>
       <v-flex style="flex-grow: 0">

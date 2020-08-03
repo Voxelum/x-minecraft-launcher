@@ -23,7 +23,9 @@
                 <v-icon
                   :color="colors[item.level]"
                   left
-                >{{ icons[item.level] }}</v-icon>
+                >
+                  {{ icons[item.level] }}
+                </v-icon>
               </v-list-tile-avatar>
               <v-list-tile-content>
                 <v-list-tile-title v-html="item.title"></v-list-tile-title>

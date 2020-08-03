@@ -20,7 +20,9 @@
         v-if="source.type !== 'common'"
         label
         :color="source.type === 'recommended' ? 'green' : ''"
-      >{{ source.type }}</v-chip>
+      >
+        {{ source.type }}
+      </v-chip>
       <!-- <v-icon v-if="iconMapping[source.type]">{{iconMapping[source.type]}}</v-icon> -->
     </v-list-tile-action>
   </v-list-tile>

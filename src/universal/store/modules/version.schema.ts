@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import Schema from '../Schema';
+import { Schema } from '../Schema';
 
 interface MinecraftVersion {
     id: string;

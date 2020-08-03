@@ -1,7 +1,6 @@
-import unknownPack from '@/assets/unknown_pack.png';
 import { InstanceResource } from '@universal/store/modules/instance';
 import { FabricResource, ForgeResource, isModResource, LiteloaderResource, Resource } from '@universal/util/resource';
-import { onMounted, reactive, toRefs, computed, watch } from '@vue/composition-api';
+import { computed } from '@vue/composition-api';
 import { useService, useStore } from '.';
 import { useBusy } from './useSemaphore';
 

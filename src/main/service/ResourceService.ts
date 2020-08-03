@@ -1,10 +1,10 @@
-import { copyPassively, exists, readdirEnsured, sha1 } from '@main/util/fs';
-import { commitResourceOnDisk, createResourceBuilder, decorateBuilderFromMetadata, decorateBuilderFromStat, decorateBuilderSourceUrls, decorateBuilderWithPathAndHash, discardResourceOnDisk, getBuilderFromResource, getResourceFromBuilder, parseResource, Resource, ResourceBuilder, ResourceRegistryEntry, RESOURCE_ENTRY_FABRIC, RESOURCE_ENTRY_FORGE, RESOURCE_ENTRY_LITELOADER, RESOURCE_ENTRY_MODPACK, RESOURCE_ENTRY_RESOURCE_PACK, RESOURCE_ENTRY_SAVE, SourceInfomation, UNKNOWN_RESOURCE, getCurseforgeUrl } from '@main/util/resource';
+import { copyPassively, readdirEnsured, sha1 } from '@main/util/fs';
+import { commitResourceOnDisk, createResourceBuilder, decorateBuilderFromMetadata, decorateBuilderFromStat, decorateBuilderSourceUrls, decorateBuilderWithPathAndHash, discardResourceOnDisk, getBuilderFromResource, getCurseforgeUrl, getResourceFromBuilder, parseResource, Resource, ResourceBuilder, ResourceRegistryEntry, RESOURCE_ENTRY_FABRIC, RESOURCE_ENTRY_FORGE, RESOURCE_ENTRY_LITELOADER, RESOURCE_ENTRY_MODPACK, RESOURCE_ENTRY_RESOURCE_PACK, RESOURCE_ENTRY_SAVE, SourceInfomation, UNKNOWN_RESOURCE } from '@main/util/resource';
 import { CurseforgeSource, ResourceSchema } from '@universal/store/modules/resource.schema';
 import { requireString } from '@universal/util/assert';
 import { Task, task } from '@xmcl/task';
 import { readFile, stat, writeFile } from 'fs-extra';
-import { extname, join, basename } from 'path';
+import { extname, join } from 'path';
 import Service from './Service';
 
 export type ImportTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save';

@@ -3,7 +3,9 @@
     <v-toolbar color="error">
       <v-toolbar-title
         class="white--text"
-      >{{ isCrash ? $t('launch.crash') : $t('launch.failed.title') }}</v-toolbar-title>
+      >
+        {{ isCrash ? $t('launch.crash') : $t('launch.failed.title') }}
+      </v-toolbar-title>
       <v-spacer />
       <v-toolbar-items>
         <v-btn flat @click="openFolder">{{ isCrash ? $t('launch.openCrashReportFolder') : $t('launch.openLogFolder') }}</v-btn>

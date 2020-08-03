@@ -10,7 +10,9 @@
       v-if="instancesByTime[0].length !== 0"
       style="color: grey"
       xs12
-    >{{ $t('profile.today') }}</v-flex>
+    >
+      {{ $t('profile.today') }}
+    </v-flex>
     <v-flex
       v-for="instance in instancesByTime[0]"
       :key="instance.path"
@@ -27,7 +29,9 @@
       v-if="instancesByTime[1].length !== 0"
       style="color: grey"
       xs12
-    >{{ $t('profile.threeDay') }}</v-flex>
+    >
+      {{ $t('profile.threeDay') }}
+    </v-flex>
     <v-flex
       v-for="instance in instancesByTime[1]"
       :key="instance.path"
@@ -44,7 +48,9 @@
       v-if="instancesByTime[2].length !== 0"
       style="color: grey"
       xs12
-    >{{ $t('profile.older') }}</v-flex>
+    >
+      {{ $t('profile.older') }} 
+    </v-flex>
     <v-flex
       v-for="instance in instancesByTime[2]"
       :key="instance.path"
@@ -61,22 +67,9 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, onMounted, defineComponent, Ref, ref, onUnmounted } from '@vue/composition-api';
+import { computed, defineComponent } from '@vue/composition-api';
 import { Instance } from '@universal/store/modules/instance';
-import {
-  useI18n,
-  useNativeDialog,
-  useRouter,
-  useInstances,
-  useResourceOperation,
-  useCurseforgeImport,
-  useOperation,
-} from '@/hooks';
-import { Notify, useNotifier, useSearch, useSearchToggle } from '../hooks';
 import PreviewCard from './InstancesPagePreviewCard.vue';
-import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue';
-import AddServerStepper from './InstancesPageAddServerStepper.vue';
-import DeleteDialog from './InstancesPageDeleteDialog.vue';
 
 export interface Props {
   instances: Instance[];

@@ -8,7 +8,9 @@
       :editable="!modify"
       step="1"
       :complete="step > 1"
-    >{{ $t('user.service.typeOfService') }}</v-stepper-step>
+    >
+      {{ $t('user.service.typeOfService') }}
+    </v-stepper-step>
     <v-stepper-content step="1">
       <v-text-field
         v-model="name"
@@ -42,7 +44,9 @@
           flat
           style
           @click="$emit('cancel')"
-        >{{ $t('cancel') }}</v-btn>
+        >
+          {{ $t('cancel') }}
+        </v-btn>
         <v-spacer />
         <v-flex shrink>
           <v-btn
@@ -61,7 +65,9 @@
       step="2"
       :editable="step > 2 && enableAuthService"
       :complete="step > 2"
-    >{{ $t('user.service.authServiceDetail') }}</v-stepper-step>
+    >
+      {{ $t('user.service.authServiceDetail') }}
+    </v-stepper-step>
     <v-stepper-content step="2">
       <v-text-field
         v-for="type in authOrder"
@@ -77,7 +83,9 @@
           flat
           style
           @click="$emit('cancel')"
-        >{{ $t('cancel') }}</v-btn>
+        >
+          {{ $t('cancel') }}
+        </v-btn>
         <v-spacer />
         <v-flex shrink>
           <v-btn
@@ -103,7 +111,9 @@
       step="3"
       :complete="step > 3"
       :editable="step > 1 && enableProfileService"
-    >{{ $t('user.service.profileServiceDetail') }}</v-stepper-step>
+    >
+      {{ $t('user.service.profileServiceDetail') }}
+    </v-stepper-step>
     <v-stepper-content step="3">
       <v-text-field
         v-for="type in Object.keys(newProfileService)"
@@ -118,7 +128,9 @@
           flat
           style="margin-left: 0"
           @click="$emit('cancel')"
-        >{{ $t('cancel') }}</v-btn>
+        >
+          {{ $t('cancel') }}
+        </v-btn>
         <v-spacer />
         <v-flex shrink>
           <v-btn

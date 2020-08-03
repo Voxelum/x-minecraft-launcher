@@ -6,7 +6,9 @@
       </div>
       <div
         style="overflow: hidden; word-break: break-all;"
-      >{{ $t('mod.deletionHint', { mod: name }) }}</div>
+      >
+        {{ $t('mod.deletionHint', { mod: name }) }}
+      </div>
       <div style="overflow: hidden; word-break: break-all; color: #f44336; font-style: italic; font-weight: bold; padding: 5px 5px 0 0">{{ name }}</div>
     </v-card-title>
 
@@ -15,7 +17,9 @@
       <v-btn
         flat
         @click="cancel"
-      >{{ $t('no') }}</v-btn>
+      >
+        {{ $t('no') }}
+      </v-btn>
       <v-spacer />
       <v-btn
         flat

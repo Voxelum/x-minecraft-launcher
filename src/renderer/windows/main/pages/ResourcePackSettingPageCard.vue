@@ -15,10 +15,10 @@
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-layout
-          v-on="on"
           justify-center
           align-center
           fill-height
+          v-on="on"
         >
           <v-flex
             xs6
@@ -50,9 +50,9 @@
       </template>
       <span>
         {{ compatible ? $t('resourcepack.compatible', { format: pack.pack_format, version: mcversion }) : $t('resourcepack.incompatible', {
-        accept: pack.acceptedRange,
-        actual: mcversion,
-        format: pack.pack_format
+          accept: pack.acceptedRange,
+          actual: mcversion,
+          format: pack.pack_format
         }) }}
       </span>
     </v-tooltip>

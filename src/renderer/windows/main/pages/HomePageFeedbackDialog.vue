@@ -30,7 +30,9 @@
           <v-btn
             flat
             href="https://github.com/Voxelum/x-minecraft-launcher/issues/new"
-          >{{ $t('feedback.githubOpenIssue') }}</v-btn>
+          >
+            {{ $t('feedback.githubOpenIssue') }}
+          </v-btn>
         </v-list-tile-action>
       </v-list-tile>
       <v-list-tile avatar>
@@ -38,14 +40,18 @@
           <v-list-tile-title>{{ $t('feedback.qq') }}</v-list-tile-title>
           <v-list-tile-sub-title
             style="max-width: 80%"
-          >{{ $t('feedback.qqDescription', { number: 858391850 }) }}</v-list-tile-sub-title>
+          >
+            {{ $t('feedback.qqDescription', { number: 858391850 }) }}
+          </v-list-tile-sub-title>
         </v-list-tile-content>
 
         <v-list-tile-action>
           <v-btn
             flat
             href="https://jq.qq.com/?_wv=1027&k=5Py5zM1"
-          >{{ $t('feedback.qqEnterGroup') }}</v-btn>
+          >
+            {{ $t('feedback.qqEnterGroup') }}
+          </v-btn>
         </v-list-tile-action>
       </v-list-tile>
     </v-list>

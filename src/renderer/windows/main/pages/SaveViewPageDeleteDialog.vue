@@ -7,7 +7,9 @@
       <v-card-title
         class="headline"
         primary-title
-      >{{ $t('save.deleteTitle') }}</v-card-title>
+      >
+        {{ $t('save.deleteTitle') }}
+      </v-card-title>
 
       <v-card-text>
         {{ $t('save.deleteHint') }}
@@ -21,12 +23,16 @@
           color="red"
           flat
           @click="cancel"
-        >{{ $t('save.deleteCancel') }}</v-btn>
+        >
+          {{ $t('save.deleteCancel') }}
+        </v-btn>
         <v-btn
           color="primary"
           flat
           @click="operate"
-        >{{ $t('save.deleteConfirm') }}</v-btn>
+        >
+          {{ $t('save.deleteConfirm') }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

@@ -67,7 +67,7 @@ export default defineComponent<{ project: number; type: ProjectType }>({
         data.initialTemplate = filePath;
         data.isConfirmDialogShown = true;
       } else {
-          await installFile(file);
+        await installFile(file);
       }
     }
     async function download(file: File) {

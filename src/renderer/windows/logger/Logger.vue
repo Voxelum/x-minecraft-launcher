@@ -35,12 +35,16 @@
             dark
             outline
             label
-          >{{ l.time }}</v-chip>
+          >
+            {{ l.time }}
+          </v-chip>
           <v-chip
             dark
             outline
             label
-          >{{ l.src }}</v-chip>
+          >
+            {{ l.src }}
+          </v-chip>
           <v-list-tile-content>
             <v-list-tile-title v-text="l.content" />
           </v-list-tile-content>

@@ -8,7 +8,9 @@
     <v-list-tile-avatar>
       <v-icon
         v-if="statuses[source.id] !== 'loading'"
-      >{{ statuses[source.id] === 'remote' ? 'cloud' : 'folder' }}</v-icon>
+      >
+        {{ statuses[source.id] === 'remote' ? 'cloud' : 'folder' }}
+      </v-icon>
       <v-progress-circular
         v-else
         :width="2"
@@ -25,7 +27,9 @@
         :color="source.type === 'release' ? 'primary' : '' "
         label
         dark
-      >{{ source.type }}</v-chip>
+      >
+        {{ source.type }}
+      </v-chip>
     </v-list-tile-action>
   </v-list-tile>
 </template>

@@ -1,4 +1,4 @@
-import Schema from '../Schema';
+import { Schema } from '../Schema';
 
 /* eslint-disable import/export  */
 /* eslint-disable @typescript-eslint/no-var-requires */

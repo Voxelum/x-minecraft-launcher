@@ -1,2 +1,2 @@
-export default interface Schema<T> {
+export interface Schema<T> {
 }

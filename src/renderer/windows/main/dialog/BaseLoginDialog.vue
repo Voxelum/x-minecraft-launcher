@@ -84,7 +84,9 @@
             style="color: white"
             dark
             @click="login"
-          >{{ $t('user.login') }}</v-btn>
+          >
+            {{ $t('user.login') }}
+          </v-btn>
           <div style="margin-top: 25px;">
             <a
               style="padding-right: 10px; z-index: 20"

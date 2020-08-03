@@ -154,7 +154,7 @@ export default defineComponent({
       if (mod!.enabled) {
         removeResource(mod!.hash);
       } else {
-
+        // TODO: log this maybe?
       }
     });
 

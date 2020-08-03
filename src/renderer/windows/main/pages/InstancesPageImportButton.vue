@@ -23,7 +23,9 @@
             <v-icon
               dark
               style="font-size: 28px"
-            >save_alt</v-icon>
+            >
+              save_alt
+            </v-icon>
           </v-btn>
         </template>
         <v-btn
@@ -49,7 +51,9 @@
           <v-icon
             :size="12"
             style="padding-right: 2px;"
-          >$vuetify.icons.curseforge</v-icon>
+          >
+            $vuetify.icons.curseforge
+          </v-icon>
         </v-btn>
       </v-speed-dial>
     </template>

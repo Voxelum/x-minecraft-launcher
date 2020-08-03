@@ -60,12 +60,16 @@
           <v-btn
             flat
             @click="cancelDeleting()"
-          >{{ $t('no') }}</v-btn>
+          >
+            {{ $t('no') }}
+          </v-btn>
           <v-btn
             color="red darken-1"
             flat
             @click="comfireDeleting()"
-          >{{ $t('yes') }}</v-btn>
+          >
+            {{ $t('yes') }}
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -76,14 +80,18 @@
       <v-card dark>
         <v-card-title
           class="headline"
-        >{{ $t('version.reinstallTitle', { version: reinstallVersionId }) }}</v-card-title>
+        >
+          {{ $t('version.reinstallTitle', { version: reinstallVersionId }) }}
+        </v-card-title>
         <v-card-text>{{ $t('version.reinstallDescription') }}</v-card-text>
         <v-card-actions>
           <v-spacer />
           <v-btn
             flat
             @click="cancelReinstall()"
-          >{{ $t('no') }}</v-btn>
+          >
+            {{ $t('no') }}
+          </v-btn>
           <v-btn
             color="orange darken-1"
             flat
@@ -99,7 +107,9 @@
       <v-card dark>
         <v-card-title
           class="headline"
-        >{{ $t('version.reinstallTitle', { version: reinstallVersionId }) }}</v-card-title>
+        >
+          {{ $t('version.reinstallTitle', { version: reinstallVersionId }) }}
+        </v-card-title>
         <v-card-text>{{ $t('version.reinstallDescription') }}</v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -139,7 +149,9 @@
           large
           color="primary"
           @click="refreshVersions"
-        >{{ $t('version.refresh') }}</v-btn>
+        >
+          {{ $t('version.refresh') }}
+        </v-btn>
       </v-flex>
     </v-layout>
   </v-container>
