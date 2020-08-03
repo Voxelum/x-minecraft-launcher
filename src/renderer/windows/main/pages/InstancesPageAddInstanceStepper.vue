@@ -9,14 +9,18 @@
         :editable="notImporting"
         :complete="step > 0"
         step="0"
-      >{{ $t('profile.templateSetting') }}</v-stepper-step>
+      >
+        {{ $t('profile.templateSetting') }}
+      </v-stepper-step>
       <v-divider />
       <v-stepper-step
         :rules="[() => valid]"
         :editable="notImporting"
         :complete="step > 1"
         step="1"
-      >{{ $t('profile.baseSetting') }}</v-stepper-step>
+      >
+        {{ $t('profile.baseSetting') }}
+      </v-stepper-step>
       <v-divider />
       <v-stepper-step
         :editable="notImporting"
@@ -30,7 +34,9 @@
       <v-stepper-step
         :complete="step > 3"
         step="3"
-      >{{ $t('profile.templateSetting.importing') }}</v-stepper-step>
+      >
+        {{ $t('profile.templateSetting.importing') }}
+      </v-stepper-step>
     </v-stepper-header>
 
     <v-stepper-items>
@@ -81,12 +87,16 @@
             :diable="creating"
             flat
             @click="quit"
-          >{{ $t('cancel') }}</v-btn>
+          >
+            {{ $t('cancel') }}
+          </v-btn>
           <v-spacer />
           <v-btn
             flat
             @click="step = 1"
-          >{{ $t('next') }}</v-btn>
+          >
+            {{ $t('next') }}
+          </v-btn>
         </v-layout>
       </v-stepper-content>
       <v-stepper-content step="1">
@@ -171,18 +181,24 @@
             flat
             :disable="creating"
             @click="quit"
-          >{{ $t('cancel') }}</v-btn>
+          >
+            {{ $t('cancel') }}
+          </v-btn>
           <v-spacer />
           <v-btn
             flat
             @click="step = 2"
-          >{{ $t('next') }}</v-btn>
+          >
+            {{ $t('next') }}
+          </v-btn>
           <v-btn
             color="primary"
             :loading="creating"
             :disabled="!valid || name === '' || runtime.minecraft === ''"
             @click="doCreate"
-          >{{ $t('create') }}</v-btn>
+          >
+            {{ $t('create') }}
+          </v-btn>
         </v-layout>
       </v-stepper-content>
       <v-stepper-content step="2">
@@ -275,14 +291,18 @@
             flat
             :disabled="creating"
             @click="quit"
-          >{{ $t('cancel') }}</v-btn>
+          >
+            {{ $t('cancel') }}
+          </v-btn>
           <v-spacer />
           <v-btn
             color="primary"
             :loading="creating"
             :disabled="!valid || name === '' || runtime.minecraft === ''"
             @click="doCreate"
-          >{{ $t('create') }}</v-btn>
+          >
+            {{ $t('create') }}
+          </v-btn>
         </v-layout>
       </v-stepper-content>
       <v-stepper-content step="3">

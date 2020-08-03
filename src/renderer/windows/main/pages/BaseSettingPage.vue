@@ -61,7 +61,7 @@
         </v-flex>
 
         <!-- <v-flex d-flex xs6> -->
-          <!-- <v-btn outline large replace to="/server">
+        <!-- <v-btn outline large replace to="/server">
             {{ $tc('server.name', 2) }}
           </v-btn> -->
         <!-- </v-flex> -->

@@ -44,10 +44,14 @@
             >{{ $t(item.path, item.arguments || {}) }}</span>
             <div
               style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
-            >{{ item.time }}</div>
+            >
+              {{ item.time }}
+            </div>
             <div
               style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
-            >{{ item.message }}</div>
+            >
+              {{ item.message }}
+            </div>
           </div>
         </template>
       </v-treeview>

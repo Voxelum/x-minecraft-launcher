@@ -12,7 +12,9 @@
       <v-icon
         v-if="!item.file"
         :color="item.diff ? 'green lighten-2' : ''"
-      >{{ open ? 'folder_open' : 'folder' }}</v-icon>
+      >
+        {{ open ? 'folder_open' : 'folder' }}
+      </v-icon>
       <v-icon v-else :color="item.diff ? 'green lighten-2' : ''">{{ files[item.file] }}</v-icon>
     </template>
     <template v-slot:label="{ item }">

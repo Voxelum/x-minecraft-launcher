@@ -46,11 +46,15 @@
                     <div style="font-weight: 500;">{{ $t('curseforge.createdDate') }}</div>
                     <div
                       style="color: grey; padding-left: 5px"
-                    >{{ new Date(createdDate).toLocaleString() }}</div>
+                    >
+                      {{ new Date(createdDate).toLocaleString() }}
+                    </div>
                     <div style="font-weight: 500;">{{ $t('curseforge.lastUpdate') }}</div>
                     <div
                       style="color: grey; padding-left: 5px"
-                    >{{ new Date(lastUpdate).toLocaleString() }}</div>
+                    >
+                      {{ new Date(lastUpdate).toLocaleString() }}
+                    </div>
                     <div style="font-weight: 500;">{{ $t('curseforge.totalDownloads') }}</div>
                     <div style="color: grey; padding-left: 5px">{{ totalDownload }}</div>
                   </v-card-title>
@@ -65,7 +69,9 @@
                   <v-card-title
                     primary-title
                     style="font-weight: 500;"
-                  >{{ $t('curseforge.recentFiles') }}</v-card-title>
+                  >
+                    {{ $t('curseforge.recentFiles') }}
+                  </v-card-title>
                   <div style="max-height: 160px; min-height: 160px; overflow: auto">
                     <v-list>
                       <v-tooltip v-for="file in recentFiles" :key="file.id" top>
@@ -82,7 +88,9 @@
                             <v-list-tile-action>
                               <v-icon
                                 v-if="getFileStatus(file) !== 'downloading'"
-                              >{{ getFileStatus(file) === 'downloaded' ? 'dns' : 'cloud_download' }}</v-icon>
+                              >
+                                {{ getFileStatus(file) === 'downloaded' ? 'dns' : 'cloud_download' }}
+                              </v-icon>
                               <v-progress-circular v-else indeterminate :size="24" :width="2" />
                             </v-list-tile-action>
                           </v-list-tile>

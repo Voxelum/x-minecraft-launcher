@@ -17,7 +17,9 @@
         <v-btn
           flat
           @click="cancel"
-        >{{ $t('cancel') }}</v-btn>
+        >
+          {{ $t('cancel') }}
+        </v-btn>
         <v-spacer />
         <v-btn
           flat

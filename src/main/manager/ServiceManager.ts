@@ -20,11 +20,10 @@ import VersionService from '@main/service/VersionService';
 import { Client } from '@main/engineBridge';
 import { StaticStore } from '@universal/util/staticStore';
 import { aquire, isBusy, release } from '@universal/util/semaphore';
-import { Platform } from '@xmcl/core';
 import { Task, TaskHandle } from '@xmcl/task';
 import { EventEmitter } from 'events';
 import { join } from 'path';
-import { Manager, Managers } from '.';
+import { Manager } from '.';
 
 // eslint-disable-next-line @typescript-eslint/type-annotation-spacing
 type Constructor<T> = new () => T;

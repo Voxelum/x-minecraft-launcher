@@ -72,7 +72,9 @@
               :value="!security"
               style="cursor: pointer;"
               @click="isChallengesDialogShown = true"
-            >{{ $t('user.insecureClient') }}</v-alert>
+            >
+              {{ $t('user.insecureClient') }}
+            </v-alert>
           </v-flex>
           <v-flex style="height: 100%; overflow: auto">
             <user-list
@@ -143,7 +145,9 @@
         <v-card-title
           class="headline"
           primary-title
-        >{{ $t('user.account.removeTitle') }}</v-card-title>
+        >
+          {{ $t('user.account.removeTitle') }}
+        </v-card-title>
 
         <v-card-text>
           {{ $t('user.account.removeDescription') }}
@@ -158,12 +162,16 @@
             color="red"
             flat
             @click="isDeleteDialogShown=false"
-          >{{ $t('user.account.removeCancel') }}</v-btn>
+          >
+            {{ $t('user.account.removeCancel') }}
+          </v-btn>
           <v-btn
             color="primary"
             flat
             @click="confirmRemoveProfile(); isDeleteDialogShown=false"
-          >{{ $t('user.account.removeConfirm') }}</v-btn>
+          >
+            {{ $t('user.account.removeConfirm') }}
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

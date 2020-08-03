@@ -20,11 +20,15 @@
           <v-icon
             v-if="deleting"
             :key="0"
-          >delete</v-icon>
+          >
+            delete
+          </v-icon>
           <v-icon
             v-else
             :key="1"
-          >compare_arrows</v-icon>
+          >
+            compare_arrows
+          </v-icon>
         </v-btn>
       </v-fab-transition>
     </template>

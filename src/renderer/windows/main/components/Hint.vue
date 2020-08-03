@@ -14,7 +14,9 @@
         <v-icon
           :style="{ 'font-size' : `${size}px` }"
           style="display: block"
-        >{{ icon }}</v-icon>
+        >
+          {{ icon }}
+        </v-icon>
         {{ text }}
       </v-flex>
       <v-flex
@@ -26,7 +28,9 @@
           <v-icon
             :style="{ 'font-size' : `${size}px` }"
             style="display: block"
-          >{{ icon }}</v-icon>
+          >
+            {{ icon }}
+          </v-icon>
           {{ text }}
         </v-btn>
       </v-flex>

@@ -36,7 +36,9 @@
               flat
               style="margin-right: 10px;"
               @click="browse"
-            >{{ $t('browse') }}</v-btn>
+            >
+              {{ $t('browse') }}
+            </v-btn>
           </v-list-tile-action>
         </v-list-tile>
       </v-list>
@@ -52,7 +54,9 @@
           color="green"
           :loading="loading"
           @click="setup"
-        >{{ $t('confirm') }}</v-btn>
+        >
+          {{ $t('confirm') }}
+        </v-btn>
       </v-card-actions>
     </v-card>
     <v-card

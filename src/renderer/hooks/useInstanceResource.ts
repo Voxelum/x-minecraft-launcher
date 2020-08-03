@@ -83,7 +83,6 @@ export function useInstanceResourcePacks() {
             name: `${resource.name}${resource.ext}`,
             id: `file/${resource.name}${resource.ext}`,
             url: resource.source.uri,
-            // eslint-disable-next-line @typescript-eslint/camelcase
             pack_format: resource.metadata.pack_format,
             description: resource.metadata.description,
             acceptingRange: getters.getAcceptMinecraftRangeByFormat(getResourcepackFormat(resource.metadata)),
@@ -101,7 +100,6 @@ export function useInstanceResourcePacks() {
             name: resource.filePath,
             url: [resource.source.uri[0]],
             id: `file/${basename(resource.filePath)}`,
-            // eslint-disable-next-line @typescript-eslint/camelcase
             pack_format: -1,
             description: 'Unknown Pack',
             acceptingRange: '[*]',
@@ -118,7 +116,6 @@ export function useInstanceResourcePacks() {
                 icon: unknownPack,
                 name: 'Default',
                 description: 'The default look and feel of Minecraft',
-                // eslint-disable-next-line @typescript-eslint/camelcase
                 pack_format: 0,
                 id: 'vanilla',
                 url: [],
@@ -135,7 +132,6 @@ export function useInstanceResourcePacks() {
             acceptingRange: 'unknown',
             icon: unknownPack,
             description: '',
-            // eslint-disable-next-line @typescript-eslint/camelcase
             pack_format: -1,
             id: `file/${resourcePackName}`,
             url: [],

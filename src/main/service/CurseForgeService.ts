@@ -93,7 +93,7 @@ export default class CurseForgeService extends Service {
 
     fetchProjectFiles(projectId: number) {
         this.log(`Fetch project files: ${projectId}`);
-        return this.fetchOrGetFromCache(this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.userAgent }).then(files => files.sort((a,b) => new Date(b.fileDate) - new Date(a.fileDate) )));
+        return this.fetchOrGetFromCache(this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.userAgent }).then(files => files.sort((a, b) => new Date(b.fileDate) - new Date(a.fileDate))));
     }
 
     async searchProjects(searchOptions: SearchOptions) {

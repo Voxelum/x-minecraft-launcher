@@ -21,7 +21,7 @@
           >
             {{ $t('issue.name') }}
           </v-tab>
-           <v-tab
+          <v-tab
             :key="2"
           >
             {{ $t('notification.name') }}

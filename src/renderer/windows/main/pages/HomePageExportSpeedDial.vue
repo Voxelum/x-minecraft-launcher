@@ -35,7 +35,9 @@
           <v-icon
             :size="12"
             dark
-          >$vuetify.icons.curseforge</v-icon>
+          >
+            $vuetify.icons.curseforge
+          </v-icon>
         </v-btn>
       </v-speed-dial>
     </template>

@@ -1,7 +1,6 @@
 import { basename, extname } from 'path';
-import { unescape } from 'querystring';
 import { parse } from 'url';
-import { SourceInfomation, ResourceBuilder, ResourceHost, ResourceRegistryEntry } from '.';
+import { ResourceBuilder, ResourceHost, ResourceRegistryEntry, SourceInfomation } from '.';
 import { getSuggestedFilename } from '../fs';
 
 /**

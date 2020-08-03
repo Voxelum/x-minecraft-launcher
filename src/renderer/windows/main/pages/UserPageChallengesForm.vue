@@ -48,7 +48,9 @@
           :value="error"
           type="error"
           transition="scale-transition"
-        >{{ error ? error.errorMessage : '' }}</v-alert>
+        >
+          {{ error ? error.errorMessage : '' }}
+        </v-alert>
         <v-flex
           d-flex
           grow
@@ -82,7 +84,9 @@
                 <v-icon
                   left
                   dark
-                >check</v-icon>
+                >
+                  check
+                </v-icon>
                 {{ $t('user.submitChallenges') }}
               </v-btn>
             </v-flex>

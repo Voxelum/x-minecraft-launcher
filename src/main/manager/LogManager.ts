@@ -1,14 +1,13 @@
 import LauncherApp from '@main/app/LauncherApp';
 import { IS_DEV } from '@main/constant';
+import { gzip } from '@main/util/zip';
+import filenamify from 'filenamify';
 import { createWriteStream, WriteStream } from 'fs';
-import { ensureDir, copy, readFile, writeFile } from 'fs-extra';
-import { resolve, join } from 'path';
+import { ensureDir, readFile, writeFile } from 'fs-extra';
+import { join, resolve } from 'path';
 import { PassThrough, pipeline, Transform } from 'stream';
 import { format } from 'util';
 import { Manager } from '.';
-import { createGzip } from 'zlib';
-import filenamify from 'filenamify';
-import { gzip } from '@main/util/zip';
 
 function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, options) : format(message); }
 function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}\n`); } }); }

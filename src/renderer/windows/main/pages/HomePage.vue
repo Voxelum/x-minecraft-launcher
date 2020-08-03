@@ -8,19 +8,25 @@
       style="position: absolute; right: 0; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
       dark
       @click="quit"
-    >close</v-icon>
+    >
+      close
+    </v-icon>
     <v-icon
       v-ripple
       style="position: absolute; right: 44px; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
       dark
       @click="showFeedbackDialog"
-    >help_outline</v-icon>
+    >
+      help_outline
+    </v-icon>
     <v-icon
       v-ripple
       style="position: absolute; right: 88px; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
       dark
       @click="showInstanceFolder"
-    >folder</v-icon>
+    >
+      folder
+    </v-icon>
 
     <v-flex
       d-flex
@@ -133,7 +139,9 @@
       <v-icon
         v-if="launchStatus === 'ready'"
         right
-      >play_arrow</v-icon>
+      >
+        play_arrow
+      </v-icon>
       <v-progress-circular
         v-else
         class="v-icon--right"
@@ -209,7 +217,7 @@ function setupLaunch() {
           } else if (e.type === 'launchGeneralException') {
             // TODO: support this
           } else if (e.type === 'launchNoVersionInstalled') {
-            
+            // TODO: implement this
           }
         });
       }

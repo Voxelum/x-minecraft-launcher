@@ -59,7 +59,9 @@
       <v-avatar>
         <v-icon
           :style="{ color: ping < 100 ? 'green' : ping < 300 ? 'orange' : 'red' }"
-        >signal_cellular_alt</v-icon>
+        >
+          signal_cellular_alt
+        </v-icon>
       </v-avatar>
       {{ ping }} ms
     </v-chip>

@@ -4,7 +4,9 @@
       <v-chip
         label
         :color="getColor(source.releaseType)"
-      >{{ releases[source.releaseType] }}</v-chip>
+      >
+        {{ releases[source.releaseType] }}
+      </v-chip>
     </v-list-tile-avatar>
     <v-list-tile-content>
       <v-list-tile-title>{{ source.displayName }}</v-list-tile-title>
@@ -19,7 +21,9 @@
         :loading="getFileStatus(source) === 'downloading'"
         :disabled="getFileStatus(source) === 'downloaded'"
         @click="install(source)"
-      >{{ getFileStatus(source) === 'downloaded' ? $t('curseforge.installed') : $t('curseforge.install') }}</v-btn>
+      >
+        {{ getFileStatus(source) === 'downloaded' ? $t('curseforge.installed') : $t('curseforge.install') }}
+      </v-btn>
     </v-list-tile-action>
     <v-list-tile-action v-else>
       <v-btn
@@ -27,13 +31,17 @@
         :loading="getFileStatus(source) === 'downloading'"
         :disabled="getFileStatus(source) === 'downloaded'"
         @click="download(source)"
-      >{{ getFileStatus(source) === 'downloaded' ? $t('curseforge.downloaded') : $t('curseforge.downloadOnly') }}</v-btn>
+      >
+        {{ getFileStatus(source) === 'downloaded' ? $t('curseforge.downloaded') : $t('curseforge.downloadOnly') }}
+      </v-btn>
     </v-list-tile-action>
     <v-list-tile-action v-if="modpack">
       <v-btn
         flat
         @click="install(source)"
-      >{{ $t('curseforge.install') }}</v-btn>
+      >
+        {{ $t('curseforge.install') }}
+      </v-btn>
     </v-list-tile-action>
   </v-list-tile>
 </template>

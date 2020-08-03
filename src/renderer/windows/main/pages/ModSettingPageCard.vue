@@ -53,21 +53,27 @@
               label
               color="amber"
               style="margin-left: 1px;"
-            >{{ source.version }}</v-chip>
+            >
+              {{ source.version }}
+            </v-chip>
             <v-chip
               small
               outline
               color="orange darken-1"
               label
               style="margin-left: 1px;"
-            >{{ source.id }}</v-chip>
+            >
+              {{ source.id }}
+            </v-chip>
             <v-chip
               small
               outline
               label
               color="lime"
               style="margin-left: 1px;"
-            >{{ source.type }}</v-chip>
+            >
+              {{ source.type }}
+            </v-chip>
             <div style="color: #bdbdbd; ">{{ source.description }}</div>
           </v-flex>
           <v-flex style="flex-grow: 0">

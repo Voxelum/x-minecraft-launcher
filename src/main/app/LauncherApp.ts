@@ -15,7 +15,6 @@ import { ensureDir, readFile, writeFile, readJson } from 'fs-extra';
 import { EventEmitter } from 'keyv';
 import { join, extname } from 'path';
 import { parse } from 'url';
-import { Script } from 'vm';
 import { exists, isDirectory } from '@main/util/fs';
 
 export interface Platform {

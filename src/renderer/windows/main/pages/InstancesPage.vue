@@ -22,12 +22,16 @@
           v-if="draggingInstance.path === ''"
           :key="0"
           style="transition: all 0.2s ease;"
-        >refresh</v-icon>
+        >
+          refresh
+        </v-icon>
         <v-icon
           v-else
           :key="1"
           style="transition: all 0.2s ease;"
-        >delete</v-icon>
+        >
+          delete
+        </v-icon>
       </transition>
     </v-btn>
     <v-layout row>

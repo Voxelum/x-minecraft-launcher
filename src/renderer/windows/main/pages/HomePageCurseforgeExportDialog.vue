@@ -20,7 +20,7 @@
         </v-btn>
       </v-toolbar>
       <v-container grid-list-sm>
-        <v-subheader>{{$t('profile.modpack.general')}}</v-subheader>
+        <v-subheader>{{ $t('profile.modpack.general') }}</v-subheader>
         <v-container
           grid-list-md
           style="padding-top: 0px"
@@ -74,7 +74,7 @@
           </v-layout>
         </v-container>
         <v-layout>
-          <v-subheader>{{$t('profile.modpack.overrides')}}</v-subheader>
+          <v-subheader>{{ $t('profile.modpack.overrides') }}</v-subheader>
         </v-layout>
         <v-layout
           row
@@ -96,7 +96,9 @@
               <v-icon
                 v-if="item.children"
                 :color="selected ? 'accent' : ''"
-              >{{ open ? 'folder_open' : 'folder' }}</v-icon>
+              >
+                {{ open ? 'folder_open' : 'folder' }}
+              </v-icon>
               <v-icon v-else>insert_drive_file</v-icon>
             </template>
 
@@ -108,7 +110,9 @@
                 >{{ item.name }} </span>
                 <div
                   style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
-                >{{ item.description }}</div>
+                >
+                  {{ item.description }}
+                </div>
               </div>
             </template>
           </v-treeview>
@@ -118,14 +122,18 @@
             flat
             large
             @click="cancel"
-          >{{$t('cancel')}}</v-btn>
+          >
+            {{ $t('cancel') }}
+          </v-btn>
           <v-spacer></v-spacer>
           <v-btn
             flat
             color="primary"
             large
             @click="confirm"
-          >{{$t('profile.modpack.export')}}</v-btn>
+          >
+            {{ $t('profile.modpack.export') }}
+          </v-btn>
         </v-layout>
       </v-container>
     </v-card>

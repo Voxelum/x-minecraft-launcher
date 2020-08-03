@@ -17,11 +17,15 @@
       <v-icon
         v-if="deleting"
         :key="1"
-      >delete</v-icon>
+      >
+        delete
+      </v-icon>
       <v-icon
         v-else
         :key="2"
-      >save</v-icon>
+      >
+        save
+      </v-icon>
     </v-btn>
   </v-fab-transition>
 </template>

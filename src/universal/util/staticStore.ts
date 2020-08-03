@@ -23,7 +23,7 @@ function createMutations(state: any, mutations: Record<string, (payload?: any) =
         }
     }
 }
-function deepCopy(object: object) {
+function deepCopy<T>(object: T): T {
     return JSON.parse(JSON.stringify(object));
 }
 

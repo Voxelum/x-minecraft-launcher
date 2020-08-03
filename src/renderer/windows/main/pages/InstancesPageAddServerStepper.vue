@@ -6,7 +6,9 @@
         editable
         :complete="step > 1"
         step="1"
-      >{{ $t('profile.baseSetting') }}</v-stepper-step>
+      >
+        {{ $t('profile.baseSetting') }}
+      </v-stepper-step>
       <v-divider />
       <v-stepper-step editable :complete="step > 2" step="2">
         {{ $t('profile.advancedSetting') }}
@@ -123,13 +125,17 @@
             :loading="pinging"
             :disabled="!server.host || !server.port"
             @click="refresh"
-          >{{ $t('profile.server.ping') }}</v-btn>
+          >
+            {{ $t('profile.server.ping') }}
+          </v-btn>
           <v-btn
             :loading="creating"
             color="primary"
             :disabled="!valid || runtime.minecraft === ''"
             @click="doCreate"
-          >{{ $t('create') }}</v-btn>
+          >
+            {{ $t('create') }}
+          </v-btn>
         </v-layout>
       </v-stepper-content>
       <v-stepper-content step="2">
@@ -197,7 +203,9 @@
             color="primary"
             :disabled="!valid || runtime.minecraft === ''"
             @click="doCreate"
-          >{{ $t('create') }}</v-btn>
+          >
+            {{ $t('create') }}
+          </v-btn>
         </v-layout>
       </v-stepper-content>
     </v-stepper-items>

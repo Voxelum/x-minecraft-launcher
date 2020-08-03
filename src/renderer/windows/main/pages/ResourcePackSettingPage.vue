@@ -189,7 +189,9 @@
           <div>
             <h3
               class="headline mb-0"
-            >{{ $t('resourcepack.deletion', { pack: deletingPack ? deletingPack.name : '' }) }}</h3>
+            >
+              {{ $t('resourcepack.deletion', { pack: deletingPack ? deletingPack.name : '' }) }}
+            </h3>
             <div>{{ $t('resourcepack.deletionHint') }}</div>
           </div>
         </v-card-title>
@@ -199,7 +201,9 @@
           <v-btn
             flat
             @click="isDeletingPack = false; deletingPack = null"
-          >{{ $t('no') }}</v-btn>
+          >
+            {{ $t('no') }}
+          </v-btn>
           <v-spacer />
           <v-btn
             flat
