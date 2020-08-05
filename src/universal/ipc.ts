@@ -57,7 +57,7 @@ declare module 'electron' {
 
         on(channel: 'minecraft-window-ready', listener: (event: Electron.IpcRendererEvent) => void): this;
         on(channel: 'minecraft-start', listener: (event: Electron.IpcRendererEvent) => void): this;
-        on(channel: 'minecraft-exit', listener: (event: Electron.IpcRendererEvent, exitStatus: { code?: number; signal?: string; crashReport?: string; crashReportLocation?: string }) => void): this;
+        on(channel: 'minecraft-exit', listener: (event: Electron.IpcRendererEvent, exitStatus: { code?: number; signal?: string; crashReport?: string; crashReportLocation?: string; errorLog: string }) => void): this;
         on(channel: 'minecraft-stdout', listener: (event: Electron.IpcRendererEvent, out: string) => void): this;
         on(channel: 'minecraft-stderr', listener: (event: Electron.IpcRendererEvent, err: string) => void): this;
 

@@ -2,6 +2,7 @@
   <v-container
     grid-list-xs
     fill-height
+    class="resource-pack-page"
     style="overflow: auto;"
   >
     <v-layout
@@ -93,6 +94,7 @@
           <div
             v-else
             class="list"
+            style="overflow-x: hidden"
           >
             <transition-group
               name="transition-list"
@@ -144,6 +146,7 @@
           <div
             v-else
             class="list"
+            style="overflow-x: hidden"
           >
             <transition-group
               name="transition-list"
@@ -189,9 +192,7 @@
           <div>
             <h3
               class="headline mb-0"
-            >
-              {{ $t('resourcepack.deletion', { pack: deletingPack ? deletingPack.name : '' }) }}
-            </h3>
+            >{{ $t('resourcepack.deletion', { pack: deletingPack ? deletingPack.name : '' }) }}</h3>
             <div>{{ $t('resourcepack.deletionHint') }}</div>
           </div>
         </v-card-title>
@@ -201,9 +202,7 @@
           <v-btn
             flat
             @click="isDeletingPack = false; deletingPack = null"
-          >
-            {{ $t('no') }}
-          </v-btn>
+          >{{ $t('no') }}</v-btn>
           <v-spacer />
           <v-btn
             flat
@@ -298,5 +297,12 @@ export default defineComponent({
 <style>
 .card-list {
   background: transparent;
+}
+.resource-pack-page .list::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  /* remove scrollbar space */
+  /* background: transparent; */
+  /* optional: just make scrollbar invisible */
 }
 </style>

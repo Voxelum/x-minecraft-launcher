@@ -448,7 +448,8 @@
     "checkingProblems": "检测问题中",
     "crash": "游戏崩溃了！",
     "failed": {
-      "description": "没有找到崩溃报告，这里是游戏最新日志文件",
+      "description": "没有找到崩溃报告，这里是游戏错误日志和最新的日志文件",
+      "latest": "最新日志文件",
       "general": "启动失败",
       "generalText": "如果你反复出现同样的问题，请联系作者!",
       "illegalAuth": "用户数据为空",

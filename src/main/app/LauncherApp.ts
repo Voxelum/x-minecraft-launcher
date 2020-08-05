@@ -65,7 +65,7 @@ export interface LauncherApp {
     on(channel: 'store-ready', listener: () => void): this;
     on(channel: 'minecraft-window-ready', listener: () => void): this;
     on(channel: 'minecraft-start', listener: (launchOptions: { version: string; minecraft: string; forge: string; fabric: string }) => void): this;
-    on(channel: 'minecraft-exit', listener: (exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string }) => void): this;
+    on(channel: 'minecraft-exit', listener: (exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }) => void): this;
     on(channel: 'minecraft-stdout', listener: (out: string) => void): this;
     on(channel: 'minecraft-stderr', listener: (err: string) => void): this;
 
@@ -73,7 +73,7 @@ export interface LauncherApp {
     emit(channel: 'store-ready'): boolean;
     emit(channel: 'minecraft-window-ready', ...args: any[]): boolean;
     emit(channel: 'minecraft-start', launchOptions: { version: string; minecraft: string; forge: string; fabric: string }): boolean;
-    emit(channel: 'minecraft-exit', exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string }): boolean;
+    emit(channel: 'minecraft-exit', exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }): boolean;
     emit(channel: 'minecraft-stdout', out: string): boolean;
     emit(channel: 'minecraft-stderr', err: string): boolean;
 }
