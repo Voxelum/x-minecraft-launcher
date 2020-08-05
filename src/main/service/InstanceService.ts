@@ -409,14 +409,14 @@ export class InstanceService extends Service {
         }
 
         if ('vmOptions' in options && options.vmOptions) {
-            let diff = options.vmOptions.some((e, i) => e !== state.vmOptions[i]);
+            let diff = options.vmOptions.length !== state.vmOptions.length || options.vmOptions.some((e, i) => e !== state.vmOptions[i]);
             if (diff) {
                 result.vmOptions = options.vmOptions;
             }
         }
 
         if ('mcOptions' in options && options.mcOptions) {
-            let diff = options.mcOptions.some((e, i) => e !== state.mcOptions[i]);
+            let diff = options.mcOptions.length !== state.mcOptions.length || options.mcOptions.some((e, i) => e !== state.mcOptions[i]);
             if (diff) {
                 result.mcOptions = options.mcOptions;
             }

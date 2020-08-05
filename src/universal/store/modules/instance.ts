@@ -311,11 +311,11 @@ const mod: InstanceModule = {
                 }
             }
 
-            if ('minMemory' in settings && (typeof settings.minMemory === 'number')) {
-                inst.minMemory = settings.minMemory;
+            if ('minMemory' in settings) {
+                inst.minMemory = (typeof settings.minMemory === 'number') ? settings.minMemory : 0;
             }
-            if ('maxMemory' in settings && (typeof settings.maxMemory === 'number')) {
-                inst.maxMemory = settings.maxMemory;
+            if ('maxMemory' in settings) {
+                inst.maxMemory = (typeof settings.maxMemory === 'number') ? settings.maxMemory : 0;
             }
 
             if (settings.vmOptions instanceof Array && settings.vmOptions.every(r => typeof r === 'string')) {
