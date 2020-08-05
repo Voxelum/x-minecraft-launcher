@@ -1,10 +1,11 @@
 import { Exception } from '@universal/util/exception';
-import { createMinecraftProcessWatcher, launch, LaunchOption, MinecraftFolder, generateArguments } from '@xmcl/core';
+import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder } from '@xmcl/core';
 import { ChildProcess } from 'child_process';
-import ExternalAuthSkinService from './ExternalAuthSkinService';
+import { EOL } from 'os';
 import DiagnoseService from './DiagnoseService';
-import Service, { Inject } from './Service';
+import ExternalAuthSkinService from './ExternalAuthSkinService';
 import InstanceResourceService from './InstanceResourceService';
+import Service, { Inject } from './Service';
 
 export default class LaunchService extends Service {
     @Inject('DiagnoseService')
@@ -43,8 +44,8 @@ export default class LaunchService extends Service {
             gamePath: minecraftFolder.root,
             resourcePath: this.state.root,
             javaPath,
-            minMemory: instance.minMemory ? instance.minMemory : undefined,
-            maxMemory: instance.maxMemory ? instance.maxMemory : undefined,
+            minMemory: instance.minMemory && instance.minMemory > 0 ? instance.minMemory : undefined,
+            maxMemory: instance.maxMemory && instance.minMemory > 0 ? instance.maxMemory : undefined,
             version,
             extraExecOption: {
                 detached: true,
@@ -133,8 +134,8 @@ export default class LaunchService extends Service {
                 gamePath: minecraftFolder.root,
                 resourcePath: this.state.root,
                 javaPath,
-                minMemory: instance.minMemory ? instance.minMemory : undefined,
-                maxMemory: instance.maxMemory ? instance.maxMemory : undefined,
+                minMemory: instance.minMemory && instance.minMemory > 0 ? instance.minMemory : undefined,
+                maxMemory: instance.maxMemory && instance.minMemory > 0 ? instance.maxMemory : undefined,
                 version,
                 extraExecOption: {
                     detached: true,
@@ -171,7 +172,11 @@ export default class LaunchService extends Service {
                 fabric: instanceVersion.fabricLoader,
             });
             let watcher = createMinecraftProcessWatcher(process);
+            let errorLogs = [] as string[];
 
+            process.stderr?.on('data', (buf: any) => {
+                errorLogs.push(...buf.toString().split(EOL));
+            });
             watcher.on('error', (err) => {
                 this.pushException({ type: 'launchGeneralException', error: err });
                 this.commit('launchStatus', 'ready');
@@ -185,6 +190,7 @@ export default class LaunchService extends Service {
                     signal,
                     crashReport,
                     crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
+                    errorLog: errorLogs.join('\n'),
                 });
                 this.commit('launchStatus', 'ready');
                 this.launchedProcess = undefined;
