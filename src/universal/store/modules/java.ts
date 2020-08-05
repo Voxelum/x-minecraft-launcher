@@ -68,17 +68,9 @@ const mod: JavaModule = {
         javaRemove(state, java) {
             requireObject(java);
             requireString(java.path);
-            for (let i = 0; i < state.all.length; i++) {
-                const j = state.all[i];
-                if (j.path === java.path && j.version === java.version) {
-                    state.all.splice(i, 1);
 
-                    // TODO: remove in vue3
-                    remove(state.all, i);
-
-                    return;
-                }
-            }
+            // TODO: remove in vue3
+            state.all = state.all.filter(j => j.path !== java.path && j.version !== java.version);
         },
     },
 };

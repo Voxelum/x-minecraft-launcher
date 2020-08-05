@@ -1,4 +1,4 @@
-import { computed } from '@vue/composition-api';
+import { computed, reactive, toRef, toRefs, onMounted } from '@vue/composition-api';
 import { useStore } from './useStore';
 import { useService, useServiceOnly } from './useService';
 
@@ -21,5 +21,18 @@ export function useLaunch() {
         errorType,
         errors,
         ...useServiceOnly('LaunchService', 'launch'),
+    };
+}
+
+export function useLaunchPreview() {
+    const { generateArguments } = useService('LaunchService');
+    generateArguments();
+    const data = reactive({
+        preview: [] as string[],
+    });
+    const refresh = () => generateArguments().then((args) => { data.preview = args; });
+    return {
+        ...toRefs(data),
+        refresh,
     };
 }

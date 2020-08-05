@@ -1,5 +1,5 @@
 import { Exception } from '@universal/util/exception';
-import { createMinecraftProcessWatcher, launch, LaunchOption, MinecraftFolder } from '@xmcl/core';
+import { createMinecraftProcessWatcher, launch, LaunchOption, MinecraftFolder, generateArguments } from '@xmcl/core';
 import { ChildProcess } from 'child_process';
 import ExternalAuthSkinService from './ExternalAuthSkinService';
 import DiagnoseService from './DiagnoseService';
@@ -17,6 +17,49 @@ export default class LaunchService extends Service {
     private instanceResourceService!: InstanceResourceService;
 
     private launchedProcess: ChildProcess | undefined;
+
+    async generateArguments() {
+        const instance = this.getters.instance;
+        const user = this.getters.user;
+        const gameProfile = this.getters.gameProfile;
+
+        const minecraftFolder = new MinecraftFolder(instance.path);
+        const javaPath = this.getters.instanceJava.path || this.getters.defaultJava.path;
+
+        let instanceVersion = this.getters.instanceVersion;
+        if (instanceVersion.folder === 'unknown') {
+            throw new Exception({ type: 'launchNoVersionInstalled' });
+        }
+        const version = instanceVersion.folder;
+        const useAuthLib = user.authService !== 'mojang' && user.authService !== 'offline';
+
+        /**
+         * Build launch condition
+         */
+        const option: LaunchOption = {
+            gameProfile,
+            accessToken: user.accessToken,
+            properties: {},
+            gamePath: minecraftFolder.root,
+            resourcePath: this.state.root,
+            javaPath,
+            minMemory: instance.minMemory ? instance.minMemory : undefined,
+            maxMemory: instance.maxMemory ? instance.maxMemory : undefined,
+            version,
+            extraExecOption: {
+                detached: true,
+                cwd: minecraftFolder.root,
+            },
+            extraJVMArgs: instance.vmOptions,
+            extraMCArgs: instance.mcOptions,
+            yggdrasilAgent: useAuthLib ? {
+                jar: await this.externalAuthSkinService.installAuthlibInjection(),
+                server: this.getters.authService.hostName,
+            } : undefined,
+        };
+
+        return generateArguments(option);
+    }
 
     /**
      * Launch the current selected instance. This will return a boolean promise indeicate whether launch is success.
@@ -97,6 +140,8 @@ export default class LaunchService extends Service {
                     detached: true,
                     cwd: minecraftFolder.root,
                 },
+                extraJVMArgs: instance.vmOptions,
+                extraMCArgs: instance.mcOptions,
                 yggdrasilAgent: useAuthLib ? {
                     jar: await this.externalAuthSkinService.installAuthlibInjection(),
                     server: this.getters.authService.hostName,
@@ -119,7 +164,7 @@ export default class LaunchService extends Service {
             this.launchedProcess = process;
             this.commit('launchStatus', 'launched');
 
-            this.app.emit('minecraft-start', { 
+            this.app.emit('minecraft-start', {
                 version: instanceVersion.folder,
                 minecraft: instanceVersion.minecraft,
                 forge: instanceVersion.forge,
