@@ -419,11 +419,15 @@
     "autoAlloc": "自动分配",
     "browse": "浏览java可执行文件",
     "browser": "从文件导入 Java",
+    "refresh": "刷新本地 Java",
     "errorDownload": "自动下载Java失败，请检查你的网络连接。当然你也可以点击返回尝试别的方法。",
     "incompatibleJava": "不兼容的 Java",
     "incompatibleJavaHint": "当前 Java 版本无法运已选择的 Minecraft 版本",
+    "invalid": "无效的 Java 路径",
     "location": "Java 路径",
     "maxMemory": "最大内存",
+    "memory": "Java 内存",
+    "memoryHint": "这将影响您的游戏运行性能",
     "minMemory": "最小内存",
     "missing": "没有找到Java",
     "missingHint": "启动器在你的电脑上没有找到任何Java。你可以尝试：",
@@ -563,6 +567,7 @@
     "importCurseforge": "从 Curseforge 模组包导入",
     "importFolder": "从文件夹导入",
     "importZip": "从压缩包导入",
+    "launchArguments": "启动命令预览",
     "launchingDetail": "启动配置",
     "localVersion": "本地版本",
     "localVersionEmpty": "自动生成",
@@ -573,8 +578,7 @@
       "title": "日志或崩溃报告"
     },
     "mcOptions": "Minecraft 启动选项",
-    "mcOptionsCreateHint": "回车创建 Minecraft 启动参数",
-    "mcOptionsHint": "创建或选择 Minecraft 启动参数",
+    "mcOptionsHint": "额外的 Minecraft 启动参数",
     "modpack": {
       "add": "添加Mod包",
       "author": "署名",
@@ -657,8 +661,7 @@
     "versionHint": "这个游戏使用的Minecraft版本",
     "versionSetting": "版本管理",
     "vmOptions": "JVM 启动选项",
-    "vmOptionsCreateHint": "回车创建 JVM 启动选项",
-    "vmOptionsHint": "创建或者选择 JVM 启动选项"
+    "vmOptionsHint": "额外的 JVM 的启动参数"
   },
   "profile.modpack.author": "作者",
   "profile.modpack.description": "简介",
