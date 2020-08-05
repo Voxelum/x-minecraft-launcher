@@ -2,11 +2,11 @@
   <v-container
     grid-list-md
     fluid
-    style="z-index: 2"
+    style="z-index: 2; overflow: auto;"
   >
     <v-layout
       wrap
-      style="padding: 6px; 8px; overflow: auto; max-height: 95vh"
+      style="padding: 6px; 8px; max-height: 95vh"
       fill-height
     >
       <v-flex
