@@ -20,6 +20,20 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.8.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.7.0...v0.8.0)
+
+* chore: bump @xmcl/installer and others version ([fdfbf4b](https://github.com/voxelum/x-minecraft-launcher/commit/fdfbf4b))
+* chore: remove some packages ([f3d41bb](https://github.com/voxelum/x-minecraft-launcher/commit/f3d41bb))
+* fix: correctly modify the vm/mcOptions & java memory ([f4df0da](https://github.com/voxelum/x-minecraft-launcher/commit/f4df0da))
+* fix: display error log if game exit non 0 ([0b91fce](https://github.com/voxelum/x-minecraft-launcher/commit/0b91fce))
+* fix: improve advance setting page UI ([8e5d7e7](https://github.com/voxelum/x-minecraft-launcher/commit/8e5d7e7))
+* fix: wrong scrollbar location ([ffc9b8a](https://github.com/voxelum/x-minecraft-launcher/commit/ffc9b8a))
+* style: fix the linting style ([2184aa6](https://github.com/voxelum/x-minecraft-launcher/commit/2184aa6))
+* feat: support mcwiki stage 1 ([bca5581](https://github.com/voxelum/x-minecraft-launcher/commit/bca5581))
+
+
 ## [0.7.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.6.0...v0.7.0)
 
 * chore: bump eslint & @xmcl/installer ([a0f02e6](https://github.com/voxelum/x-minecraft-launcher/commit/a0f02e6))
