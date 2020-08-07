@@ -193,13 +193,31 @@ export function useInstanceTemplates() {
 
 export function useInstanceGameSetting() {
     const { state } = useStore();
-    const { loadInstanceGameSettings, edit } = useService('InstanceGameSettingService');
+    const { loadInstanceGameSettings, edit, showInFolder } = useService('InstanceGameSettingService');
     const refresh = () => loadInstanceGameSettings(state.instance.path);
-    onMounted(() => {
-        refresh();
-    });
+    const fancyGraphics = computed(() => state.instance.settings.fancyGraphics);
+    const renderClouds = computed(() => state.instance.settings.renderClouds);
+    const ao = computed(() => state.instance.settings.ao);
+    const entityShadows = computed(() => state.instance.settings.entityShadows);
+    const particles = computed(() => state.instance.settings.particles);
+    const mipmapLevels = computed(() => state.instance.settings.mipmapLevels);
+    const useVbo = computed(() => state.instance.settings.useVbo);
+    const fboEnable = computed(() => state.instance.settings.fboEnable);
+    const enableVsync = computed(() => state.instance.settings.enableVsync);
+    const anaglyph3d = computed(() => state.instance.settings.anaglyph3d);
+
     return {
-        settings: state.instance.settings,
+        fancyGraphics,
+        renderClouds,
+        ao,
+        entityShadows,
+        particles,
+        mipmapLevels,
+        useVbo,
+        fboEnable,
+        enableVsync,
+        anaglyph3d,
+        showInFolder,
         refreshing: useBusy('loadInstanceGameSettings'),
         refresh,
         commit(settings: GameSetting) {
