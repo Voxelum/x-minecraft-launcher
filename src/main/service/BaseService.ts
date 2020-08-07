@@ -12,6 +12,7 @@ export interface MigrateOptions {
 export default class BaseService extends Service {
     async init() {
         this.scanLocalMinecraft();
+        this.checkUpdate();
     }
 
     async scanLocalMinecraft() {
