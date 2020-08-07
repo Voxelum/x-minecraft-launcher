@@ -10,11 +10,11 @@ const config = {
         allowToChangeInstallationDirectory: true,
         perMachine: true,
     },
-    fileAssociations: [{
-        ext: ['xmcl'],
-        name: 'X Minecraft Launcher App',
-        role: 'Editor'
-    }],
+    // fileAssociations: [{
+    //     ext: ['xmcl'],
+    //     name: 'X Minecraft Launcher App',
+    //     role: 'Editor'
+    // }],
     dmg: {
         contents: [
             {
