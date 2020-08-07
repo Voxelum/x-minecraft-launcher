@@ -1,5 +1,6 @@
 
 import { BrowserWindow, Tray } from '@main/engineBridge';
+import BaseService from '@main/service/BaseService';
 import { createI18n } from '@main/util/i18n';
 import { TaskNotification } from '@universal/util/notification';
 import { StaticStore } from '@universal/util/staticStore';
@@ -22,8 +23,6 @@ export default class LauncherAppController {
     private setupRef: BrowserWindow | undefined = undefined;
 
     private i18n = createI18n({ en, 'zh-CN': zh }, 'en');
-
-    private primary: BrowserWindow | undefined;
 
     private tray: Tray | undefined;
 
@@ -78,7 +77,7 @@ export default class LauncherAppController {
     async requestOpenExternalUrl(url: string) {
         const { t: $t } = this.i18n;
         if (this.context.dialog) {
-            const result = await this.context.dialog.showMessageBox(this.primary!, {
+            const result = await this.context.dialog.showMessageBox(this.mainRef!, {
                 type: 'question',
                 title: $t('openUrl.title', { url }),
                 message: $t('openUrl.message', { url }),
@@ -97,8 +96,15 @@ export default class LauncherAppController {
         }
         const app = this.app;
         const dialog = this.context.dialog;
+        const service = this.app.serviceManager.getService(BaseService);
         return this.context.buildMenuFromTemplate([
-            { type: 'normal', label: $t('checkUpdate') },
+            {
+                type: 'normal', 
+                label: $t('checkUpdate'),
+                click() {
+                    service?.checkUpdate();
+                },
+            },
             { type: 'separator' },
             {
                 label: $t('showDiagnosis'),
@@ -139,14 +145,13 @@ export default class LauncherAppController {
     private setupTray() {
         if (!this.context.createTray) { return; }
         const tray = this.context.createTray(`${__static}/favicon@2x.png`);
-        tray.setContextMenu(this.createMenu());
         tray.on('click', () => {
-            const window = this.primary;
+            const window = this.mainRef;
             if (window && !window.isFocused()) {
                 window.focus();
             }
         }).on('double-click', () => {
-            const window = this.primary;
+            const window = this.mainRef;
             if (window) {
                 if (window.isVisible()) window.hide();
                 else window.show();
@@ -239,8 +244,9 @@ export default class LauncherAppController {
         const $t = this.i18n.t;
         const tray = this.tray;
         if (tray) {
+            tray.setContextMenu(this.createMenu());
             store.subscribe((m) => {
-                if (m.type === 'locale-change') {
+                if (m.type === 'locale') {
                     tray.setToolTip($t('title'));
                     tray.setContextMenu(this.createMenu());
                 }
