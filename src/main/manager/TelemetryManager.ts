@@ -4,8 +4,6 @@ import { Manager } from '.';
 
 
 export default class TelemetryManager extends Manager {
-    private client: TelemetryClient = defaultClient;
-
     setup() {
         if (IS_DEV) {
             return;
@@ -20,7 +18,7 @@ export default class TelemetryManager extends Manager {
             .start();
 
         this.app.on('minecraft-start', (options) => {
-            this.client.trackEvent({
+            defaultClient.trackEvent({
                 name: 'minecraft-start',
                 properties: options,
             });
@@ -29,11 +27,11 @@ export default class TelemetryManager extends Manager {
             const normalExit = code === 0;
             const crashed = crashReport.length > 0;
             if (normalExit) {
-                this.client.trackEvent({
+                defaultClient.trackEvent({
                     name: 'minecraft-exit',
                 });
             } else {
-                this.client.trackEvent({
+                defaultClient.trackEvent({
                     name: 'minecraft-exit',
                     properties: {
                         code,
