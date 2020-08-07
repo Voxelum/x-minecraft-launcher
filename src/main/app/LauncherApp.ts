@@ -6,6 +6,7 @@ import NetworkManager from '@main/manager/NetworkManager';
 import ServiceManager from '@main/manager/ServiceManager';
 import StoreManager from '@main/manager/StoreManager';
 import TaskManager from '@main/manager/TaskManager';
+import TelemetryManager from '@main/manager/TelemetryManager';
 import { GiteeReleaseFetcher, GithubReleaseFetcher, ReleaseFetcher } from '@main/util/release';
 import { UpdateInfo } from '@universal/store/modules/setting';
 import { StaticStore } from '@universal/util/staticStore';
@@ -120,6 +121,8 @@ export abstract class LauncherApp extends EventEmitter {
 
     readonly logManager = new LogManager(this);
 
+    readonly telemetryManager = new TelemetryManager(this);
+
     readonly platform: Platform = getPlatform();
 
     abstract readonly version: string;
@@ -128,7 +131,7 @@ export abstract class LauncherApp extends EventEmitter {
 
     get isParking(): boolean { return this.parking; }
 
-    protected managers = [this.logManager, this.networkManager, this.taskManager, this.storeManager, this.serviceManager];
+    protected managers = [this.logManager, this.networkManager, this.taskManager, this.storeManager, this.serviceManager, this.telemetryManager];
 
     constructor() {
         super();
