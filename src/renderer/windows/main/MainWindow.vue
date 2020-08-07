@@ -21,8 +21,10 @@
         style="padding: 0; background: transparent; max-height: 100vh;"
         fill-height
       >
-        <div class="main-body v-sheet">
-          <!-- <v-card class="main-body" color="grey darken-4"> -->
+        <div
+          class="main-body v-sheet"
+          :class="{ solid: !blurMainBody }"
+        >
           <img
             v-if="backgroundImage"
             :src="`file:///${backgroundImage}`"
@@ -60,6 +62,7 @@
 
 <script lang=ts>
 import '@/assets/common.css';
+
 import {
   onMounted,
   reactive,
@@ -76,9 +79,10 @@ import {
   useIpc,
   useRouter,
   useStore,
+  useBackgroundBlur,
 } from '@/hooks';
 import { provideTasks } from '@/providers/provideTaskProxy';
-import { provideDialog, provideNotifier, provideLoginDialog, provideContextMenu, provideSearchToggle, SEARCH_TEXT_SYMBOL, provideAsyncRoute } from './hooks';
+import { provideDialog, provideNotifier, provideContextMenu, provideSearchToggle, SEARCH_TEXT_SYMBOL, provideAsyncRoute } from './hooks';
 import LoginDialog from './dialog/BaseLoginDialog.vue';
 import TaskDialog from './dialog/BaseTaskDialog.vue';
 import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue';
@@ -98,6 +102,7 @@ export default defineComponent({
 
     const ipcRenderer = useIpc();
     const { particleMode, showParticle } = useParticle();
+    const { blurMainBody } = useBackgroundBlur();
     const { blur, backgroundImage } = useBackgroundImage();
     const { state } = useStore();
     const router = useRouter();
@@ -136,10 +141,10 @@ export default defineComponent({
 
     return {
       ...toRefs(data),
-      // searchBar,
       app,
       blur,
       backgroundImage,
+      blurMainBody,
       particleMode,
       showParticle,
       onHomePage,
@@ -169,7 +174,5 @@ img {
   max-width: 720px;
   width: 100%;
   border-radius: 0px 2px 2px 0;
-  background-color: #212121 !important;
-  border-color: #212121 !important;
 }
 </style>

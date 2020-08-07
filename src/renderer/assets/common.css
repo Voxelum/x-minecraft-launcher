@@ -131,12 +131,17 @@ p {
 .win32 .main-body {
     /* background-color: rgba(66, 66, 66, 0.68); */
     background-color: rgba(33, 33, 33, 0.78);
-    /* background-color: rgba(33, 33, 33, 0.7) !important; */
-    /* border-color: rgba(33, 33, 33, 0.7) !important; */
+    /* background-color: rgba(33, 33, 33, 0.7); */
+    /* border-color: rgba(33, 33, 33, 0.7); */
 }
 
 .win32 .loading-background {
     background-color: rgba(33, 33, 33, 0.78);
+}
+
+.main-body.solid {
+    background-color: #212121 !important;
+    border-color: #212121 !important;
 }
 
 /* Draggable card */

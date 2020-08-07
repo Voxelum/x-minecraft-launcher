@@ -15,3 +15,10 @@ export function useParticle() {
         particleMode,
     };
 }
+
+export function useBackgroundBlur() {
+    const blurMainBody = useLocalStorageCacheBool('blurMainBody', true);
+    return {
+        blurMainBody,
+    };
+}

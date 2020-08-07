@@ -152,6 +152,15 @@
           <v-subheader>{{ $t('setting.appearance') }}</v-subheader>
           <v-list-tile avatar>
             <v-list-tile-action>
+              <v-checkbox v-model="blurMainBody" />
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ $t('setting.blurMainBody') }}</v-list-tile-title>
+              <v-list-tile-sub-title>{{ $t('setting.blurMainBodyDescription') }}</v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile avatar>
+            <v-list-tile-action>
               <v-checkbox v-model="showParticle" />
             </v-list-tile-action>
             <v-list-tile-content>
@@ -267,7 +276,7 @@
 
 <script lang=ts>
 import { defineComponent, reactive, ref, toRefs, watch, Ref } from '@vue/composition-api';
-import { useStore, useI18n, useParticle, useSettings, useNativeDialog, useService, useLauncherVersion } from '@/hooks';
+import { useStore, useI18n, useParticle, useSettings, useNativeDialog, useService, useLauncherVersion, useBackgroundBlur } from '@/hooks';
 import localMapping from '@/assets/locales/index.json';
 
 import UpdateInfoDialog from './SettingPageUpdateInfoDialog.vue';
@@ -277,6 +286,7 @@ export default defineComponent({
   setup() {
     const dialog = useNativeDialog();
     const { showParticle, particleMode } = useParticle();
+    const { blurMainBody } = useBackgroundBlur();
     const { migrate, postMigrate } = useService('BaseService');
     const { state } = useStore();
     const settings = useSettings();
@@ -310,6 +320,7 @@ export default defineComponent({
       locales: settings.locales.value.map(l => ({ text: localMapping[l] ?? l, value: l })),
       showParticle,
       particleMode,
+      blurMainBody,
       particleModes,
       viewUpdateDetail() {
         data.viewingUpdateDetail = true;
