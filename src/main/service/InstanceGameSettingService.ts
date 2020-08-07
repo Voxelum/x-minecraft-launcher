@@ -1,8 +1,9 @@
-import { exists, FileStateWatcher } from '@main/util/fs';
+import { exists, missing } from '@main/util/fs';
 import { requireString } from '@universal/util/assert';
 import { compareRelease, compareSnapshot, isReleaseVersion, isSnapshotPreview } from '@universal/util/version';
 import { Frame, parse, stringify } from '@xmcl/gamesetting';
-import { readFile, writeFile } from 'fs-extra';
+import { readFile, writeFile, FSWatcher } from 'fs-extra';
+import watch from 'node-watch';
 import { join } from 'path';
 import Service, { MutationTrigger, Singleton } from './Service';
 
@@ -13,30 +14,53 @@ export interface EditGameSettingOptions extends Frame {
  * The service for game setting
  */
 export default class InstanceGameSettingService extends Service {
-    private watcher = new FileStateWatcher(false, () => true);
+    private watcher: FSWatcher | undefined;
+
+    private watchingInstance = '';
+
+    private dirty = false;
 
     async dispose() {
-        this.watcher.close();
+        this.watcher?.close();
+    }
+
+    async init() {
+        this.loadInstanceGameSettings(this.state.instance.path);
+    }
+
+    @MutationTrigger('instanceSelect')
+    protected async onInstance(payload: string) {
+        this.loadInstanceGameSettings(payload);
     }
 
     @Singleton()
     async loadInstanceGameSettings(path: string) {
         requireString(path);
 
-        if (!this.watcher.watch(path) && !this.watcher.getStateAndReset()) {
-            return;
+        if (this.watchingInstance !== path) {
+            this.log(`Start to watch instance options.txt in ${path}`);
+            this.watcher = watch(path, (event, file) => {
+                if (file.endsWith('options.txt')) {
+                    this.dirty = true;
+                }
+            });
+            this.watchingInstance = path;
+            this.dirty = true;
         }
-
-        try {
-            let optionsPath = join(path, 'options.txt');
-            let result = await readFile(optionsPath, 'utf-8').then(parse);
-            this.commit('instanceCache', { gamesettings: result });
-        } catch (e) {
-            if (!e.message.startsWith('ENOENT:')) {
-                this.warn(`An error ocurrs during parse game options of ${path}.`);
-                this.warn(e);
+        if (this.dirty) {
+            try {
+                let optionsPath = join(path, 'options.txt');
+                this.log(`Load instance options.txt ${optionsPath}`);
+                let result = await readFile(optionsPath, 'utf-8').then(parse);
+                this.commit('instanceCache', { gamesettings: result });
+            } catch (e) {
+                if (!e.message.startsWith('ENOENT:')) {
+                    this.warn(`An error ocurrs during parse game options of ${path}.`);
+                    this.warn(e);
+                }
+                this.commit('instanceCache', { gamesettings: { resourcePacks: [] } });
             }
-            this.commit('instanceCache', { gamesettings: { resourcePacks: [] } });
+            this.dirty = false;
         }
     }
 
@@ -54,7 +78,13 @@ export default class InstanceGameSettingService extends Service {
             }
             await writeFile(optionsTxtPath, stringify(content));
         } else {
-            await writeFile(optionsTxtPath, stringify(this.state.instance.settings));
+            const result: Record<string, unknown> = {};
+            for (const [key, value] of Object.entries(this.state.instance.settings)) {
+                if (typeof value !== 'undefined') {
+                    result[key] = value;
+                }
+            }
+            await writeFile(optionsTxtPath, stringify(result));
         }
 
         this.log(`Saved instance gamesettings ${this.state.instance.path}`);
@@ -89,6 +119,15 @@ export default class InstanceGameSettingService extends Service {
         if (Object.keys(result).length > 0) {
             this.log(`Edit gamesetting: ${JSON.stringify(result, null, 4)}`);
             this.commit('instanceGameSettings', result);
+        }
+    }
+
+    async showInFolder() {
+        const optionTxt = join(this.watchingInstance, 'options.txt');
+        if (await missing(optionTxt)) {
+            this.app.openDirectory(this.watchingInstance);
+        } else {
+            this.app.showItemInFolder(optionTxt);
         }
     }
 }

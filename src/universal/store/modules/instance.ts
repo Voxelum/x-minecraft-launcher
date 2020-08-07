@@ -358,6 +358,8 @@ const mod: InstanceModule = {
                 state.settings.fboEnable = settings.fboEnable;
                 state.settings.fullscreen = settings.fullscreen;
                 state.settings.renderDistance = settings.renderDistance;
+                state.settings.fancyGraphics = settings.fancyGraphics;
+                state.settings.renderClouds = settings.renderClouds;
             } else if ('serverInfos' in cache && cache.serverInfos instanceof Array) {
                 state.serverInfos = [...cache.serverInfos];
             }
@@ -369,11 +371,7 @@ const mod: InstanceModule = {
             }
             for (let [key, value] of Object.entries(settings)) {
                 if (key in container) {
-                    if (typeof value === typeof Reflect.get(container, key)) {
-                        container[key] = value;
-                        // TODO: remove in vue3
-                        set(container, key);
-                    }
+                    container[key] = value;
                 } else {
                     container[key] = value;
                     // TODO: remove in vue3
