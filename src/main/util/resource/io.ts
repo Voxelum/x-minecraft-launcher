@@ -46,5 +46,5 @@ export async function discardResourceOnDisk(resource: Readonly<Resource>, root: 
 
     await unlink(filePath);
     await unlink(metadataPath);
-    await unlink(iconPath).catch();
+    await unlink(iconPath).catch(() => { });
 }
