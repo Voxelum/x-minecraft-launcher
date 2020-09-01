@@ -267,7 +267,7 @@ export default defineComponent<Props>({
 }
 
 .unknown:hover {
-  background-color: #c24f11b6;
+  background-color: #bb724b;
 }
 .maybe:hover {
 }
