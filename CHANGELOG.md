@@ -22,6 +22,33 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.9.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.8.0...v0.9.0)
+
+* style: fix lint and reactivity ([d759cec](https://github.com/voxelum/x-minecraft-launcher/commit/d759cec))
+* refactor: change the unkown mod card color ([d882158](https://github.com/voxelum/x-minecraft-launcher/commit/d882158))
+* refactor: make curseforge log more clear ([6c9422d](https://github.com/voxelum/x-minecraft-launcher/commit/6c9422d))
+* fix: AddInstanceStepper scroll and forge selection ([3841eb1](https://github.com/voxelum/x-minecraft-launcher/commit/3841eb1))
+* fix: curseforge page loading UI ([50f9aed](https://github.com/voxelum/x-minecraft-launcher/commit/50f9aed))
+* fix: disable the extension to fix linux build ([bf15312](https://github.com/voxelum/x-minecraft-launcher/commit/bf15312))
+* fix: forge version list scroll on wrong place ([15e94e3](https://github.com/voxelum/x-minecraft-launcher/commit/15e94e3))
+* fix: game setting not load/save correctly ([0da1720](https://github.com/voxelum/x-minecraft-launcher/commit/0da1720))
+* fix: ignore resource icon path not found ([34c255d](https://github.com/voxelum/x-minecraft-launcher/commit/34c255d))
+* fix: instance page wrong scroll bar ([a0ab017](https://github.com/voxelum/x-minecraft-launcher/commit/a0ab017))
+* fix: make the background transparency selectable ([9a89ea8](https://github.com/voxelum/x-minecraft-launcher/commit/9a89ea8))
+* fix: not check update during dev ([347822d](https://github.com/voxelum/x-minecraft-launcher/commit/347822d))
+* fix: not route to version page twice ([df0d302](https://github.com/voxelum/x-minecraft-launcher/commit/df0d302))
+* fix: resourcepack display order ([5b7c7a9](https://github.com/voxelum/x-minecraft-launcher/commit/5b7c7a9))
+* fix: should check update at the beginning ([80f9e1b](https://github.com/voxelum/x-minecraft-launcher/commit/80f9e1b))
+* fix: tray click not show window ([8d33663](https://github.com/voxelum/x-minecraft-launcher/commit/8d33663))
+* fix: update the internal latest release ([f6dade7](https://github.com/voxelum/x-minecraft-launcher/commit/f6dade7))
+* feat: add export dialog for normal exporting ([52b1df3](https://github.com/voxelum/x-minecraft-launcher/commit/52b1df3))
+* feat: enable telemetry ([da42ba0](https://github.com/voxelum/x-minecraft-launcher/commit/da42ba0))
+* feat: new page for resource pack preview ([9d68ca5](https://github.com/voxelum/x-minecraft-launcher/commit/9d68ca5))
+* chore: bump core version ([22e3eb2](https://github.com/voxelum/x-minecraft-launcher/commit/22e3eb2))
+
+
 ## [0.8.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.7.0...v0.8.0)
 
 * chore: bump @xmcl/installer and others version ([fdfbf4b](https://github.com/voxelum/x-minecraft-launcher/commit/fdfbf4b))
