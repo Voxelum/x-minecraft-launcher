@@ -1,3 +1,4 @@
+import { IS_DEV } from '@main/constant';
 import { copyPassively, exists } from '@main/util/fs';
 import { ensureDir } from '@xmcl/installer/util';
 import { Task } from '@xmcl/task';
@@ -59,6 +60,7 @@ export default class BaseService extends Service {
 
     @Singleton()
     async checkUpdate() {
+        if (IS_DEV) return;
         let handle = this.submit(this.app.checkUpdateTask());
         try {
             this.log('Check update');
