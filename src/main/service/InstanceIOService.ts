@@ -1,4 +1,4 @@
-import { copyPassively, isDirectory, isFile, readdirIfPresent } from '@main/util/fs';
+import { copyPassively, isDirectory, isFile, readdirIfPresent, exists } from '@main/util/fs';
 import { getCurseforgeUrl } from '@main/util/resource';
 import { openCompressedStreamTask } from '@main/util/zip';
 import { createTemplate, InstanceConfig } from '@universal/store/modules/instance';
@@ -11,12 +11,14 @@ import { Task } from '@xmcl/task';
 import Unzip from '@xmcl/unzip';
 import { createReadStream, mkdtemp, readdir, readJson, remove, stat } from 'fs-extra';
 import { tmpdir } from 'os';
-import { basename, join, resolve, relative } from 'path';
+import { basename, join, relative, resolve } from 'path';
+import { Modpack } from './CurseForgeService';
 import InstanceResourceService from './InstanceResourceService';
 import InstanceService, { EditInstanceOptions } from './InstanceService';
 import ResourceService from './ResourceService';
 import Service, { Inject, Singleton } from './Service';
-import { Modpack } from './CurseForgeService';
+
+export interface InstanceFile { path: string; isDirectory: boolean; isResource: boolean }
 
 export interface ExportInstanceOptions {
     /**
@@ -27,10 +29,31 @@ export interface ExportInstanceOptions {
      * The dest path of the exported instance
      */
     destinationPath: string;
+
     /**
-     * The export mod of this operation
+     * Does this export include the libraries?
+     * @default true
      */
-    mode: 'full' | 'no-assets';
+    includeLibraries?: boolean;
+
+    /**
+     * Does this export includes assets?
+     * @default true
+     */
+    includeAssets?: boolean;
+
+    /**
+     * Does this export includes the minecraft version jar? (like <minecraft>/versions/1.14.4.jar).
+     * If this is false, then it will only export with version json.
+     * @default true
+     */
+    includeVersionJar?: boolean;
+
+    /**
+     * If this is present, it will only exports the file paths in this array.
+     * By default this is `undefined`, and it will export everything in the instance.
+     */
+    files?: string[];
 }
 
 export interface ExportCurseforgeModpackOptions {
@@ -85,47 +108,57 @@ export default class InstanceIOService extends Service {
     async exportInstance(options: ExportInstanceOptions) {
         requireObject(options);
 
-        let { src = this.state.instance.path, destinationPath: dest, mode = 'full' } = options;
+        const { src = this.state.instance.path, destinationPath: dest, includeAssets = true, includeLibraries = true, files, includeVersionJar = true } = options;
 
-        if (this.state.instance.all[src]) {
+        if (!this.state.instance.all[src]) {
             this.warn(`Cannot export unmanaged instance ${src}`);
             return;
         }
 
-        let root = this.state.root;
-        // let instanceObject = this.state.instance.all[src];
+        const root = this.state.root;
+        const from = src;
 
-        let from = src;
+        const { task, include, add, end } = openCompressedStreamTask(dest);
+        (task as any).name = 'profile.modpack.export';
+        const handle = this.submit(task);
 
-        let { task, include, add, end } = openCompressedStreamTask(from);
-        let handle = this.submit(task);
-        await include(from, from);
+        const version = await Version.parse(root, this.getters.instanceVersion.folder);
 
-        let defaultMcversion = this.state.instance.all[src].runtime.minecraft;
-
-        let parsedVersion = await Version.parse(root, defaultMcversion);
-        let verionsChain = parsedVersion.pathChain;
-
-        if (mode === 'full') {
-            let assetsJson = resolve(root, 'assets', 'indexes', `${parsedVersion.assets}.json`);
-            add(assetsJson, `assets/indexes/${parsedVersion.assets}.json`);
-            let objects = await readJson(assetsJson).then(manifest => manifest.objects);
-            for (let hash of Object.keys(objects).map(k => objects[k].hash)) {
-                add(resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`);
+        // add assets
+        if (includeAssets) {
+            const assetsJson = resolve(root, 'assets', 'indexes', `${version.assets}.json`);
+            await add(assetsJson, `assets/indexes/${version.assets}.json`);
+            const objects = await readJson(assetsJson).then(manifest => manifest.objects);
+            for (const hash of Object.keys(objects).map(k => objects[k].hash)) {
+                await add(resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`);
             }
         }
 
-        for (let versionPath of verionsChain) {
-            let versionId = basename(versionPath);
-            let versionFiles = await readdir(versionPath);
-            for (let versionFile of versionFiles) {
-                add(join(versionPath, versionFile), `versions/${versionId}/${versionFile}`);
+        // add version json and jar
+        const verionsChain = version.pathChain;
+        for (const versionPath of verionsChain) {
+            const versionId = basename(versionPath);
+            if (includeVersionJar && await exists(join(versionPath, `${versionId}.jar`))) {
+                await add(join(versionPath, `${versionId}.jar`), `versions/${versionId}/${versionId}.jar`);
+            }
+            await add(join(versionPath, `${versionId}.json`), `versions/${versionId}/${versionId}.json`);
+        }
+
+        // add libraries
+        if (includeLibraries) {
+            for (const lib of version.libraries) {
+                await add(resolve(root, 'libraries', lib.download.path),
+                    `libraries/${lib.download.path}`);
             }
         }
 
-        for (let lib of parsedVersion.libraries) {
-            add(resolve(root, 'libraries', lib.download.path),
-                `libraries/${lib.download.path}`);
+        // add misc files like config, log...
+        if (files) {
+            for (const file of files) {
+                await add(join(src, file), file);
+            }
+        } else {
+            await include(from, from);
         }
 
         end();
@@ -137,9 +170,9 @@ export default class InstanceIOService extends Service {
      * Scan all the files under the current instance.
      * It will hint if a mod resource is in curseforge
      */
-    async getInstanceFiles(): Promise<{ path: string; isDirectory: boolean; isResource: boolean }[]> {
+    async getInstanceFiles(): Promise<InstanceFile[]> {
         const path = this.state.instance.path;
-        const files = [] as { path: string; isDirectory: boolean; isResource: boolean }[];
+        const files = [] as InstanceFile[];
 
         const scan = async (p: string) => {
             const status = await stat(p);
