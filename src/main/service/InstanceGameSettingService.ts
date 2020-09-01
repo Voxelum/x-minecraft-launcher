@@ -72,7 +72,7 @@ export default class InstanceGameSettingService extends Service {
             let buf = await readFile(optionsTxtPath);
             let content = parse(buf.toString());
             for (let [key, value] of Object.entries(this.state.instance.settings)) {
-                if (key in content) {
+                if (key in content && typeof value !== 'undefined' && value !== null) {
                     (content as any)[key] = value;
                 }
             }
