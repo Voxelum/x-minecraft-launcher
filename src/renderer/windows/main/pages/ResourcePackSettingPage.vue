@@ -17,29 +17,12 @@
       >
         <v-toolbar-title>{{ $tc('resourcepack.name', 2) }}</v-toolbar-title>
         <v-spacer />
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              icon
-              v-on="on"
-            >
-              <!-- <v-icon>{{ filterInCompatible ? 'visibility' : 'visibility_off' }}</v-icon> -->
-            </v-btn>
-          </template>
-          <!-- {{ filterInCompatible ? $t('mod.showIncompatible') : $t('mod.hideIncompatible') }} -->
-        </v-tooltip>
-        <!-- <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              icon
-              v-on="on"
-              @click="toggle[0]()"
-            >
-              <v-icon>search</v-icon>
-            </v-btn>
-          </template>
-          {{ $t('filter') }}
-        </v-tooltip>-->
+        <!-- <v-tooltip bottom> -->
+        <!-- <template v-slot:activator="{ on }"> -->
+
+        <!-- </template> -->
+        <!-- {{ filterInCompatible ? $t('mod.showIncompatible') : $t('mod.hideIncompatible') }} -->
+        <!-- </v-tooltip> -->
         <v-flex xs5>
           <v-text-field
             v-model="filterText"
@@ -51,6 +34,15 @@
             hide-details
           />
         </v-flex>
+        <v-btn
+          icon
+          style="margin-top: 12px; margin-bottom: 0;"
+          @click="goPreview"
+        >
+          <span class="material-icons-outlined icon-image-preview">
+            preview
+          </span>
+        </v-btn>
       </v-toolbar>
 
       <!-- <v-flex
@@ -192,7 +184,9 @@
           <div>
             <h3
               class="headline mb-0"
-            >{{ $t('resourcepack.deletion', { pack: deletingPack ? deletingPack.name : '' }) }}</h3>
+            >
+              {{ $t('resourcepack.deletion', { pack: deletingPack ? deletingPack.name : '' }) }}
+            </h3>
             <div>{{ $t('resourcepack.deletionHint') }}</div>
           </div>
         </v-card-title>
@@ -202,7 +196,9 @@
           <v-btn
             flat
             @click="isDeletingPack = false; deletingPack = null"
-          >{{ $t('no') }}</v-btn>
+          >
+            {{ $t('no') }}
+          </v-btn>
           <v-spacer />
           <v-btn
             flat
@@ -226,6 +222,7 @@ import {
   useDragTransferList,
   useDropImport,
   ResourcePackItem,
+  useRouter,
 } from '@/hooks';
 import ResourcePackCard from './ResourcePackSettingPageCard.vue';
 
@@ -239,6 +236,7 @@ export default defineComponent({
     const leftList: Ref<null | Vue> = ref(null);
     const { enabled, disabled, add, remove, commit, insert } = useInstanceResourcePacks();
     const { removeResource } = useResourceOperation();
+    const { replace } = useRouter();
     const data = reactive({
       dragging: false,
       isDeletingPack: false,
@@ -277,6 +275,9 @@ export default defineComponent({
       const target = enabled.value.find(m => m.id === url) ?? disabled.value.find(m => m.id === url) ?? null;
       data.deletingPack = target;
     }
+    function goPreview() {
+      replace('/resource-pack-preview');
+    }
     return {
       ...toRefs(data),
       unselectedItems,
@@ -286,6 +287,7 @@ export default defineComponent({
       filterText,
       confirmDeletingPack,
       onDropDelete,
+      goPreview,
     };
   },
   // async mounted() {

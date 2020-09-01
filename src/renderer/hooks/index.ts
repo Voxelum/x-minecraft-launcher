@@ -27,3 +27,4 @@ export * from './useOperation';
 export * from './useDragDrop';
 export * from './useScroll';
 export * from './useSemaphore';
+export * from './useBlockModelPreview';

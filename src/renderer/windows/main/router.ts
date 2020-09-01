@@ -10,6 +10,7 @@ import HomePage from './pages/HomePage.vue';
 import InstancesPage from './pages/InstancesPage.vue';
 import ModSettingPage from './pages/ModSettingPage.vue';
 import ResourcePackSettingPage from './pages/ResourcePackSettingPage.vue';
+import ResourcePackPreviewPage from './pages/ResourcePackPreviewPage.vue';
 import SaveViewPage from './pages/SaveViewPage.vue';
 import SettingPage from './pages/SettingPage.vue';
 import UserPage from './pages/UserPage.vue';
@@ -57,6 +58,10 @@ const router = new Router({
         {
             path: '/resource-pack-setting',
             component: ResourcePackSettingPage,
+        },
+        {
+            path: '/resource-pack-preview',
+            component: ResourcePackPreviewPage,
         },
         {
             path: '/version-setting',
