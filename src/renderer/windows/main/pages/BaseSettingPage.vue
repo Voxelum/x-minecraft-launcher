@@ -11,7 +11,7 @@
         </v-flex>
         <v-flex d-flex xs6>
           <v-text-field outline hide-details dark readonly :value="version.minecraft"
-                        :label="$t('profile.version')" @click="goVersionPage" @focus="goVersionPage" />
+                        :label="$t('profile.version')" @focus="goVersionPage" />
         </v-flex>
         <v-flex v-if="!isServer" d-flex xs6>
           <v-text-field v-model="author" outline hide-details dark :label="$t('profile.modpack.author')"
