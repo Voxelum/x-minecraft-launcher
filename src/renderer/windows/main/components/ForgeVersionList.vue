@@ -1,5 +1,5 @@
 <template>
-  <v-list dark style="background-color: transparent; height: 100%">
+  <v-list dark style="background-color: transparent; height: 100%; overflow: auto;">
     <v-list-tile ripple @click="select({ version: '' })">
       <v-list-tile-avatar>
         <v-icon>close</v-icon>

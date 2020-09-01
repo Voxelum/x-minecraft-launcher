@@ -7,7 +7,7 @@
     max-height="300"
     :close-on-content-click="false"
     :disabled="disabled"
-    style="background-color: #303030"
+    style="background-color: #303030; overflow: hidden;"
   >
     <template v-slot:activator="{ on }">
       <slot :on="on" />
@@ -70,14 +70,17 @@ export default defineComponent({
     const data = reactive({
       opened: false,
       showBuggy: false,
-      recommendedAndLatestOnly: true,
+      recommendedAndLatestOnly: false,
       filterText: '',
     });
 
     function filterForge(version: ForgeVersion) {
       if (data.recommendedAndLatestOnly && version.type !== 'recommended' && version.type !== 'latest') return false;
       if (data.showBuggy && version.type !== 'buggy') return true;
-      return version.version.indexOf(data.filterText) !== -1;
+      if (data.filterText.length !== 0) {
+        return version.version.indexOf(data.filterText) !== -1;
+      }
+      return true;
     }
     const { statuses, versions: vers } = useForgeVersions(computed(() => props.minecraft));
     const versions = computed(() => vers.value.filter(filterForge));
