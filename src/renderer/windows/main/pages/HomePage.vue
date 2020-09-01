@@ -156,7 +156,11 @@
     />
     <game-exit-dialog />
     <feedback-dialog />
-    <curseforge-export-dialog v-model="isExportingCurseforge" />
+    <export-dialog
+      :value="isExportingCurseforge || isExportingModpack"
+      :is-curseforge="isExportingCurseforge"
+      @input="isExportingModpack = false; isExportingCurseforge = false"
+    />
   </v-layout>
 </template>
 
@@ -180,7 +184,7 @@ import LogDialog from './HomePageLogDialog.vue';
 import HomeHeader from './HomePageHeader.vue';
 import ProblemsBar from './HomePageProblemsBar.vue';
 import ServerStatusBar from './HomePageServerStatusBar.vue';
-import CurseforgeExportDialog from './HomePageCurseforgeExportDialog.vue';
+import ExportDialog from './HomePageExportDialog.vue';
 import ExportSpeedDial from './HomePageExportSpeedDial.vue';
 
 function setupLaunch() {
@@ -234,7 +238,7 @@ export default defineComponent({
     ServerStatusBar,
     GameExitDialog,
     FeedbackDialog,
-    CurseforgeExportDialog,
+    ExportDialog,
     ExportSpeedDial,
   },
   setup() {
@@ -242,25 +246,17 @@ export default defineComponent({
     const { showSaveDialog } = useNativeDialog();
     const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log');
     const { show: showFeedbackDialog } = useDialog('feedback');
-    const { refreshing, name, isServer, exportInstance: exportTo, refreshServerStatus, path } = useInstance();
+    const { refreshing, name, isServer, refreshServerStatus, path } = useInstance();
     const { openDirectory } = useService('BaseService');
     const { subscribeTask } = useNotifier();
     const { quit } = useQuit();
     const isExportingCurseforge = ref(false);
+    const isExportingModpack = ref(false);
     async function showExport(type: 'normal' | 'curseforge') {
       if (type === 'curseforge') {
         isExportingCurseforge.value = true;
       } else {
-        if (refreshing.value) return;
-        const { filePath } = await showSaveDialog({
-          title: $t('profile.export.title'),
-          filters: [{ name: 'zip', extensions: ['zip'] }],
-          message: $t('profile.export.message'),
-          defaultPath: `${name.value}.zip`,
-        });
-        if (filePath) {
-          subscribeTask(exportTo({ destinationPath: filePath, mode: 'full' }), $t('profile.export.title'));
-        }
+        isExportingModpack.value = true;
       }
     }
     function showInstanceFolder() {
@@ -280,6 +276,7 @@ export default defineComponent({
       quit,
 
       isExportingCurseforge,
+      isExportingModpack,
 
       ...setupLaunch(),
 
