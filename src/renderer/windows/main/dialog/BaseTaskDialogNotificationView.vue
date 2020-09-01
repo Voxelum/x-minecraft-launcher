@@ -14,9 +14,9 @@
           name="transition-list"
           tag="div"
         >
-          <template v-for="item in queue">
+          <template v-for="(item, index) in queue">
             <v-list-tile
-              :key="item.title"
+              :key="item.title + index"
               @click="onClick(item)"
             >
               <v-list-tile-avatar>
