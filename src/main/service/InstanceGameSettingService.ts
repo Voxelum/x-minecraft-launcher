@@ -108,9 +108,10 @@ export default class InstanceGameSettingService extends Service {
             if ((isReleaseVersion(mcversion) && compareRelease(mcversion, '1.13.0') >= 0)
                 || (isSnapshotPreview(mcversion) && compareSnapshot(mcversion, '17w43a') >= 0)) {
                 result.resourcePacks = gameSetting.resourcePacks
-                    .filter(r => r !== 'vanilla')
-                    .map(r => (!r.startsWith('file/') ? `file/${r}` : r));
-                result.resourcePacks.unshift('vanilla');
+                    .map(r => (r !== 'vanilla' && !r.startsWith('file/') ? `file/${r}` : r));
+                if (result.resourcePacks.every((p) => p !== 'vanilla')) {
+                    result.resourcePacks.unshift('vanilla');
+                }
             } else {
                 result.resourcePacks = gameSetting.resourcePacks.filter(r => r !== 'vanilla')
                     .map(r => (r.startsWith('file/') ? r.substring(5) : r));

@@ -128,6 +128,16 @@ export default class InstanceResourceService extends Service {
         await Promise.all(promises);
     }
 
+    async ensureResourcePacksDeployment() {
+        const allPacks = this.state.resource.domains.resourcepacks;
+        const deploiedPacks = this.state.instance.resourcepacks;
+
+        const toBeDeploiedPacks = allPacks.filter(p => !deploiedPacks.find((r) => r.hash === p.hash));
+        this.log(`Deploying ${toBeDeploiedPacks.length} resource packs`);
+
+        await this.deploy(toBeDeploiedPacks);
+    }
+
     async undeploy(resources: InstanceResource[]) {
         this.log(`Undeploy ${resources.length} to ${this.state.instance.path}`);
         await Promise.all(resources.map(r => unlink(r.filePath)));
