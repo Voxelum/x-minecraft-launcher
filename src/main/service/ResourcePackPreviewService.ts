@@ -96,9 +96,6 @@ export default class ResourcePackPreviewService extends Service {
                 resourcePacksPaths.unshift(this.getResourcePackPath('vanilla'));
             }
 
-            // reverse the resource pack paths to work
-            resourcePacksPaths.reverse();
-
             await this.instanceResourceService.ensureResourcePacksDeployment();
 
             this.log(`Load resource packs to preview: [${resourcePacks.join(', ')}]`);
