@@ -7,13 +7,17 @@
     <v-toolbar color="error">
       <v-toolbar-title
         class="white--text"
-      >{{ isCrash ? $t('launch.crash') : $t('launch.failed.title') }}</v-toolbar-title>
+      >
+        {{ isCrash ? $t('launch.crash') : $t('launch.failed.title') }}
+      </v-toolbar-title>
       <v-spacer />
       <v-toolbar-items>
         <v-btn
           flat
           @click="openFolder"
-        >{{ isCrash ? $t('launch.openCrashReportFolder') : $t('launch.openLogFolder') }}</v-btn>
+        >
+          {{ isCrash ? $t('launch.openCrashReportFolder') : $t('launch.openLogFolder') }}
+        </v-btn>
       </v-toolbar-items>
       <v-btn
         icon
@@ -26,7 +30,9 @@
       <v-card-text>
         <div
           style="padding: 10px"
-        >{{ isCrash ? $t(`launch.crash`) : $t(`launch.failed.description`) }}</div>
+        >
+          {{ isCrash ? $t(`launch.crash`) : $t(`launch.failed.description`) }}
+        </div>
         <v-textarea
           auto-grow
           autofocus
@@ -38,7 +44,9 @@
         />
         <div
           style="padding: 10px"
-        >{{ $t(`launch.failed.latest`) }}</div>
+        >
+          {{ $t(`launch.failed.latest`) }}
+        </div>
         <v-textarea
           auto-grow
           autofocus

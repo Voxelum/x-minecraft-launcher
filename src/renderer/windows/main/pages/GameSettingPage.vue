@@ -1,17 +1,50 @@
 <template>
-  <v-container grid-list-xs fill-height style="overflow: auto;">
-    <v-layout row wrap justify-start align-content-start>
-      <v-flex tag="h1" style="margin-bottom: 10px; padding: 6px; 8px;" class="white--text" xs12>
+  <v-container
+    grid-list-xs
+    fill-height
+    style="overflow: auto;"
+  >
+    <v-layout
+      row
+      wrap
+      justify-start
+      align-content-start
+    >
+      <v-flex
+        tag="h1"
+        style="margin-bottom: 10px; padding: 6px; 8px;"
+        class="white--text"
+        xs12
+      >
         <span class="headline">{{ $tc('gamesetting.name', 2) }}</span>
+        <v-spacer />
+        <v-btn
+          icon
+          @click="showInFolder"
+        >
+          <v-icon>folder</v-icon>
+        </v-btn>
       </v-flex>
-      <v-flex v-for="g in graphics" :key="g.name" d-flex xs6
-              @click="triggerGraphic(g)">
-        <v-btn dark outline>
+      <v-flex
+        v-for="g in graphics"
+        :key="g.name"
+        d-flex
+        xs6
+        @click="triggerGraphic(g)"
+      >
+        <v-btn
+          dark
+          outline
+        >
           {{ $t(`gamesetting.${g.name}.name`) + ' : ' }}
-          <transition name="scroll-y-transition" mode="out-in">
-            <span :key="g.val" style="padding-left: 5px">
-              {{ $t(`gamesetting.${g.name}.${g.val}`) }}
-            </span>
+          <transition
+            name="scroll-y-transition"
+            mode="out-in"
+          >
+            <span
+              :key="g.val"
+              style="padding-left: 5px"
+            >{{ $t(`gamesetting.${g.name}.${g.val}`) }}</span>
           </transition>
         </v-btn>
       </v-flex>
@@ -26,7 +59,7 @@ import { useAutoSaveLoad, useInstanceGameSetting } from '@/hooks';
 
 export default defineComponent({
   setup() {
-    const { refreshing, refresh, settings, commit } = useInstanceGameSetting();
+    const { refreshing, refresh, commit, showInFolder, ...settings } = useInstanceGameSetting();
     const data = reactive({
       graphics: [
         { name: 'fancyGraphics', options: [true, false], val: true },
@@ -47,7 +80,10 @@ export default defineComponent({
       refresh();
       const graphics = data.graphics;
       for (const setting of graphics) {
-        setting.val = Reflect.get(settings, setting.name).value;
+        const ref = Reflect.get(settings, setting.name);
+        if (ref) {
+          setting.val = ref.value ?? setting.val;
+        }
       }
     }
     function save() {
@@ -61,6 +97,7 @@ export default defineComponent({
     return {
       ...toRefs(data),
       refreshing,
+      showInFolder,
       triggerGraphic(g: Graphic) {
         const index = g.options.indexOf(g.val as never);
         const nextIndex = (index + 1) % g.options.length;

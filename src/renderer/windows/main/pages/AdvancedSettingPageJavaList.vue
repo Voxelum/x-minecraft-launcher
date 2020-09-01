@@ -16,7 +16,9 @@
           small
           :color="item.valid ? 'orange' : 'grey'"
           outline
-        >{{ item.majorVersion }}</v-chip>
+        >
+          {{ item.majorVersion }}
+        </v-chip>
       </v-list-tile-avatar>
       <v-list-tile-content>
         <v-list-tile-title v-if="item.valid">Java {{ item.version }}</v-list-tile-title>
