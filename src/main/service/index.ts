@@ -15,6 +15,7 @@ import InstanceIOService from './InstanceIOService';
 import InstanceGameSettingService from './InstanceGameSettingService';
 import InstanceSavesService from './InstanceSavesService';
 import InstanceResourceService from './InstanceResourceService';
+import ResourcePackPreviewService from './ResourcePackPreviewService';
 
 export interface BuiltinServices {
     ServerStatusService: ServerStatusService;
@@ -43,4 +44,5 @@ export interface BuiltinServices {
     InstanceGameSettingService: InstanceGameSettingService;
     InstanceSavesService: InstanceSavesService;
     InstanceResourceService: InstanceResourceService;
+    ResourcePackPreviewService: ResourcePackPreviewService;
 }

@@ -1,7 +1,8 @@
-import ExternalAuthSkinService from '@main/service/ExternalAuthSkinService';
+import { Client } from '@main/engineBridge';
 import BaseService from '@main/service/BaseService';
 import CurseForgeService from '@main/service/CurseForgeService';
 import DiagnoseService from '@main/service/DiagnoseService';
+import ExternalAuthSkinService from '@main/service/ExternalAuthSkinService';
 import InstallService from '@main/service/InstallService';
 import InstanceGameSettingService from '@main/service/InstanceGameSettingService';
 import InstanceIOService from '@main/service/InstanceIOService';
@@ -11,15 +12,15 @@ import InstanceSavesService from '@main/service/InstanceSavesService';
 import InstanceService from '@main/service/InstanceService';
 import JavaService from '@main/service/JavaService';
 import LaunchService from '@main/service/LaunchService';
+import ResourcePackPreviewService from '@main/service/ResourcePackPreviewService';
 import ResourceService from '@main/service/ResourceService';
 import ServerStatusService from '@main/service/ServerStatusService';
 import Service, { INJECTIONS_SYMBOL, MUTATION_LISTENERS_SYMBOL } from '@main/service/Service';
 import SettingService from '@main/service/SettingService';
 import UserService from '@main/service/UserService';
 import VersionService from '@main/service/VersionService';
-import { Client } from '@main/engineBridge';
-import { StaticStore } from '@universal/util/staticStore';
 import { aquire, isBusy, release } from '@universal/util/semaphore';
+import { StaticStore } from '@universal/util/staticStore';
 import { Task, TaskHandle } from '@xmcl/task';
 import { EventEmitter } from 'events';
 import { join } from 'path';
@@ -296,6 +297,7 @@ export default class ServiceManager extends Manager {
         this.registerService(InstanceLogService);
         this.registerService(InstanceIOService);
         this.registerService(InstanceResourceService);
+        this.registerService(ResourcePackPreviewService);
 
         this.setupServices();
         await this.loadServices();
