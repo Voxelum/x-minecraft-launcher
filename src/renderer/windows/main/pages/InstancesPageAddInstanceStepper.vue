@@ -40,7 +40,7 @@
     </v-stepper-header>
 
     <v-stepper-items>
-      <v-stepper-content step="0">
+      <v-stepper-content step="0" style="overflow: auto; max-height: 450px;">
         <v-container
           grid-list
           fill-height
@@ -265,7 +265,7 @@
               >
                 <forge-version-menu
                   :minecraft="runtime.minecraft"
-                  @input="runtime.forge = $event"
+                  @input="runtime.forge = $event.version"
                 >
                   <template v-slot="{ on }">
                     <v-text-field
