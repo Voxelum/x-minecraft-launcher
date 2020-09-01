@@ -1,8 +1,9 @@
 <template>
   <v-layout
+    class="invisible-scroll"
     row
     wrap
-    style="overflow: scroll; max-height: 88vh;"
+    style="overflow: scroll; max-height: 85vh;"
     justify-start
     fill-height
   >
@@ -49,7 +50,7 @@
       style="color: grey"
       xs12
     >
-      {{ $t('profile.older') }} 
+      {{ $t('profile.older') }}
     </v-flex>
     <v-flex
       v-for="instance in instancesByTime[2]"
