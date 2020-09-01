@@ -1,10 +1,26 @@
 <template>
-  <v-container grid-list-md fill-height>
-    <v-layout row wrap fill-height style="overflow: auto;">
-      <v-flex tag="h1" class="white--text" xs12>
+  <v-container
+    grid-list-md
+    fill-height
+    style="overflow: auto;"
+  >
+    <v-layout
+      row
+      wrap
+      fill-height
+    >
+      <v-flex
+        tag="h1"
+        class="white--text"
+        xs12
+      >
         <span class="headline">{{ $tc('curseforge.name', 2) }}</span>
       </v-flex>
-      <v-flex v-for="target in targets" :key="target" xs6>
+      <v-flex
+        v-for="target in targets"
+        :key="target"
+        xs6
+      >
         <v-card
           draggable="false"
           :ripple="ready"
@@ -14,7 +30,14 @@
           :disabled="!ready"
         >
           <v-responsive>
-            <v-img :src="images[target]" />
+            <v-img :src="images[target]">
+              <div v-if="!ready" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                <v-progress-circular
+                  indeterminate
+                  :size="100"
+                />
+              </div>
+            </v-img>
           </v-responsive>
           <v-card-title>
             <h2>{{ $t(`curseforge.${target}.name`) }}</h2>
