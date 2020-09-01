@@ -49,8 +49,9 @@ export function useInstanceResourcePacks() {
 
     const instanceResourcePacks = computed(() => state.instance.resourcepacks);
     /**
-     * The resource pack name array. Exactly the same format with the array in options.txt (gamesetting).
-     * It should be something like ['vanilla', 'file/pack.zip']
+     * The resource pack name array.
+     * It's the REVERSED version of the resourcePacks array in options.txt (gamesetting).
+     * It should be something like ['file/pack.zip', 'vanilla']
      */
     const enabledResourcePackNames: Ref<string[]> = ref([]);
     /**
@@ -80,8 +81,8 @@ export function useInstanceResourcePacks() {
         const icon = `${resource.path.substring(0, resource.path.length - resource.ext.length)}.png`;
         return {
             path: resource.path,
-            name: `${resource.name}${resource.ext}`,
-            id: `file/${resource.name}${resource.ext}`,
+            name: basename(resource.path),
+            id: `file/${basename(resource.path)}`,
             url: resource.source.uri,
             pack_format: resource.metadata.pack_format,
             description: resource.metadata.description,
@@ -179,7 +180,7 @@ export function useInstanceResourcePacks() {
      * Commit the change for current mods setting 
      */
     function commit() {
-        edit({ resourcePacks: enabledResourcePackNames.value });
+        edit({ resourcePacks: [...enabledResourcePackNames.value].reverse() });
     }
 
     const settingedResourcePacks = computed(() => state.instance.settings.resourcePacks);
@@ -188,14 +189,14 @@ export function useInstanceResourcePacks() {
         if (arr.indexOf('vanilla') === -1) {
             arr.unshift('vanilla');
         }
-        enabledResourcePackNames.value = arr;
+        enabledResourcePackNames.value = arr.reverse();
     });
     onMounted(() => {
         let arr = [...settingedResourcePacks.value];
         if (arr.indexOf('vanilla') === -1) {
             arr.unshift('vanilla');
         }
-        enabledResourcePackNames.value = arr;
+        enabledResourcePackNames.value = arr.reverse();
     });
 
     return {

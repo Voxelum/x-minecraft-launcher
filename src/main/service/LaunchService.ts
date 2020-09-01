@@ -116,12 +116,7 @@ export default class LaunchService extends Service {
 
             const javaPath = this.getters.instanceJava.path || this.getters.defaultJava.path;
 
-            const allPacks = this.state.resource.domains.resourcepacks;
-            const deploiedPacks = this.state.instance.resourcepacks;
-
-            const toBeDeploiedPacks = allPacks.filter(p => !deploiedPacks.find((r) => r.hash === p.hash));
-            this.log(`Deploying ${toBeDeploiedPacks.length} resource packs`);
-            await this.instanceResourceService.deploy(toBeDeploiedPacks);
+            await this.instanceResourceService.ensureResourcePacksDeployment();
             const useAuthLib = user.authService !== 'mojang' && user.authService !== 'offline';
 
             /**
@@ -210,6 +205,7 @@ export default class LaunchService extends Service {
             return true;
         } catch (e) {
             this.commit('launchStatus', 'ready');
+            this.error(e);
             throw new Exception({ type: 'launchGeneralException', error: e });
         }
     }
