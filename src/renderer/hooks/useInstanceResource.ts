@@ -185,14 +185,14 @@ export function useInstanceResourcePacks() {
 
     const settingedResourcePacks = computed(() => state.instance.settings.resourcePacks);
     watch(settingedResourcePacks, (packs) => {
-        let arr = [...packs];
+        let arr = [...packs.map((p) => ((p === 'vanilla' || p.startsWith('file/')) ? p : `file/${p}`))];
         if (arr.indexOf('vanilla') === -1) {
             arr.unshift('vanilla');
         }
         enabledResourcePackNames.value = arr.reverse();
     });
     onMounted(() => {
-        let arr = [...settingedResourcePacks.value];
+        let arr = [...settingedResourcePacks.value.map((p) => ((p === 'vanilla' || p.startsWith('file/')) ? p : `file/${p}`))];
         if (arr.indexOf('vanilla') === -1) {
             arr.unshift('vanilla');
         }
