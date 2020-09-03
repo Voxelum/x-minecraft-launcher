@@ -62,8 +62,28 @@ export default class ResourcePackPreviewService extends Service {
 
     private lock: Lock = new Lock();
 
+    private active = false;
+
+    async init() {
+        this.app.on('minecraft-start', () => {
+            if (this.active) {
+                this.lock.wait().then(() => {
+                    // deactivate once game started
+                    this.active = false;
+                    this.resourceManager.clear();
+                    this.cachedBlocks = undefined;
+                    this.cachedJsonVersion = undefined;
+                    this.modelLoader = new ModelLoader(this.resourceManager);
+                });
+            }
+        });
+    }
+
     @MutationTrigger('instanceGameSettings')
     protected onGameSettingChanged(setting: { resourcePacks: string[] }) {
+        if (!this.active) {
+            return;
+        }
         if (setting.resourcePacks) {
             this.updateResourcePacks(setting.resourcePacks);
         }
@@ -116,12 +136,23 @@ export default class ResourcePackPreviewService extends Service {
             } else {
                 this.log('The resource pack content not changed');
             }
+
             // re-order the list
             const copy = [...list];
             if (resourcePacksPaths.some((path, i) => path !== list[i].path)) {
                 for (let i = 0; i < resourcePacksPaths.length; i++) {
                     list[i] = copy.find((w) => w.path === resourcePacksPaths[i])!;
                 }
+            }
+            const toRemove = copy.filter((v) => resourcePacksPaths.indexOf(v.path) === -1);
+            // close redundent
+            for (const pack of toRemove) {
+                pack.source.fs.close();
+            }
+            this.log(`Release resource pack [${toRemove.join(', ')}]`);
+            // remove redundent
+            while (list.length > resourcePacksPaths.length) {
+                list.pop();
             }
         } finally {
             this.lock.release();
@@ -140,13 +171,15 @@ export default class ResourcePackPreviewService extends Service {
         return { model, textures };
     }
 
-    async listBlockStates(): Promise<BlockStateJson[]> {
+    async getBlockStates(): Promise<BlockStateJson[]> {
         const gameVersion = this.getters.instanceVersion.folder;
         if (this.cachedJsonVersion === gameVersion && this.cachedBlocks) {
             // cache hit
             this.log(`Use cached ${this.cachedBlocks.length} blockstates from ${gameVersion}.jar`);
             return this.cachedBlocks;
         }
+
+        this.active = true;
 
         if (this.resourceManager.list.length === 0) {
             // if no resource packs loaded, load it...
