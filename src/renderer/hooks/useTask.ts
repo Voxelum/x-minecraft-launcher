@@ -29,13 +29,13 @@ export function useTaskFromServiceCall(call: Ref<Readonly<Promise<any>>>) {
 
     let { tasks: tasksList } = proxy;
 
-    const task = computed(() => tasksList.value.find(() => getServiceCallTasks(call.value)?.value[0]));
-    const name = computed(() => task.value?.name);
-    const time = computed(() => task.value?.time);
-    const status = computed(() => task.value?.status);
-    const progress = computed(() => task.value?.progress);
-    const total = computed(() => task.value?.total);
-    const message = computed(() => task.value?.message);
+    const task = computed(() => tasksList.value.find(() => (call.value ? getServiceCallTasks(call.value)?.value[0] : undefined)));
+    const name = computed(() => task.value?.name ?? '');
+    const time = computed(() => task.value?.time ?? '');
+    const status = computed(() => task.value?.status ?? 'running');
+    const progress = computed(() => task.value?.progress ?? -1);
+    const total = computed(() => task.value?.total ?? -1);
+    const message = computed(() => task.value?.message ?? '');
 
     function wait() {
         // return dispatch('waitTask', taskHandle);
