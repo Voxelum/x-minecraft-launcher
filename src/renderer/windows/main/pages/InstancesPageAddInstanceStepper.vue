@@ -306,7 +306,7 @@
         </v-layout>
       </v-stepper-content>
       <v-stepper-content step="3">
-        <!-- <task-focus :value="importTask" /> -->
+        <task-focus :value="importTask" />
       </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
@@ -323,6 +323,7 @@ import {
   useInstanceTemplates,
   useCurseforgeImport,
   useInstanceCreation,
+  useInstances,
   useSelectedUser,
   useProfileId,
   useGameProfile,
@@ -405,6 +406,7 @@ export default defineComponent({
   setup(props, context) {
     const { $t } = useI18n();
     const { create, reset, use, ...creationData } = useInstanceCreation();
+    const { mountInstance } = useInstances();
     const router = useRouter();
     const staticData = {
       memoryRule: [(v: any) => Number.isInteger(v)],
@@ -471,7 +473,7 @@ export default defineComponent({
             importTask.value = importCurseforgeModpack({
               path: templates.value[data.template].path,
             });
-            await importTask.value;
+            await mountInstance(await importTask.value);
           } else {
             await create();
           }
