@@ -52,22 +52,15 @@
 <script lang=ts>
 import { defineComponent, reactive, toRefs } from '@vue/composition-api';
 import { useI18n } from '@/hooks';
+import { required } from '@/util/props';
 
-interface Props {
-  load(): void;
-  upload(): void;
-  save(): void;
-  security: boolean;
-  disabled: boolean;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   props: {
-    load: Function,
-    upload: Function,
-    save: Function,
-    disabled: Boolean,
-    security: Boolean,
+    load: required<() => void>(Function),
+    upload: required<() => void>(Function),
+    save: required<() => void>(Function),
+    disabled: required<boolean>(Boolean),
+    security: required<boolean>(Boolean),
   },
   setup() {
     const { $t } = useI18n();

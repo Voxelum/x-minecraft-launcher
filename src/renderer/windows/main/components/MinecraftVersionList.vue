@@ -15,17 +15,10 @@
 import { defineComponent, ref, Ref, onMounted } from '@vue/composition-api';
 import VirtualList from 'vue-virtual-scroll-list';
 import { Version } from '@xmcl/installer/minecraft';
+import { required } from '@/util/props';
 import Tile from './MinecraftVersionListTile.vue';
 
-interface Props {
-  showTime: boolean;
-  value: string;
-  statuses: Record<string, boolean>;
-  versions: Array<Version>;
-  select: (version: Version) => void;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   components: { VirtualList },
   props: {
     showTime: {
@@ -36,9 +29,9 @@ export default defineComponent<Props>({
       type: String,
       default: () => '',
     },
-    statuses: Object,
-    versions: Array,
-    select: Function,
+    statuses: required<Record<string, boolean>>(Object),
+    versions: required<Array<Version>>(Array),
+    select: required<(version: Version) => void>(Function),
   },
   setup(props) {
     const list: Ref<null | Vue> = ref(null);

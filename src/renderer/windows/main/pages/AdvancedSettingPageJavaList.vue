@@ -16,9 +16,7 @@
           small
           :color="item.valid ? 'orange' : 'grey'"
           outline
-        >
-          {{ item.majorVersion }}
-        </v-chip>
+        >{{ item.majorVersion }}</v-chip>
       </v-list-tile-avatar>
       <v-list-tile-content>
         <v-list-tile-title v-if="item.valid">Java {{ item.version }}</v-list-tile-title>
@@ -51,19 +49,17 @@ import {
   reactive,
   defineComponent,
   toRefs,
-  PropType,
 } from '@vue/composition-api';
 import { JavaRecord } from '@universal/store/modules/java';
 import { useService } from '@/hooks';
+import { required } from '@/util/props';
 
-interface Props {
-  items: JavaRecord[];
-  value: JavaRecord;
-  remove: (java: JavaRecord) => void;
-}
-
-export default defineComponent<Props>({
-  props: { items: Array, value: Object, remove: Function },
+export default defineComponent({
+  props: {
+    items: required<JavaRecord[]>(Array),
+    value: required<JavaRecord>(Object),
+    remove: required<(java: JavaRecord) => void>(Function),
+  },
   setup(props) {
     const { showItemInDirectory } = useService('BaseService');
     return { showItemInDirectory };

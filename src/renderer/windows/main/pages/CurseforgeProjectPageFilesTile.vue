@@ -49,19 +49,19 @@
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api';
 import {
-} from '@/hooks';
+  required,
+  withDefault,
+} from '@/util/props';
 import { File } from '@xmcl/curseforge';
 
-export interface Props {
-  source: File;
-  install: (file: File) => Promise<void>;
-  download?: (file: File) => Promise<void>;
-  getFileStatus: (file: File) => string;
-  modpack: boolean;
-}
-
-export default defineComponent<Props>({
-  props: { source: Object, getFileStatus: Function, install: Function, modpack: Boolean, download: Function },
+export default defineComponent({
+  props: {
+    source: required<File>(Object),
+    getFileStatus: required<(file: File) => string>(Function),
+    install: required<(file: File) => Promise<void>>(Function),
+    download: withDefault<(file: File) => Promise<void>>(Function, () => () => Promise.resolve()),
+    modpack: required(Boolean),
+  },
   setup() {
     const releases = ['', 'R', 'A', 'B'];
     function getColor(type: number) {

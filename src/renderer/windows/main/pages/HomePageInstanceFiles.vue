@@ -42,12 +42,8 @@
 import { reactive, toRefs, computed, onMounted, defineComponent, Ref, ref, onUnmounted, watch } from '@vue/composition-api';
 import { useInstance, useService, useI18n, useVersions, useLocalVersions, useNativeDialog, useInstanceVersion } from '@/hooks';
 import { InstanceFile } from '@main/service/InstanceIOService';
+import { required } from '@/util/props';
 import { useZipFilter } from '../hooks';
-
-interface Props {
-  items: InstanceFile[];
-  value: string[];
-}
 
 interface FileNode {
   name: string;
@@ -57,10 +53,10 @@ interface FileNode {
   children?: FileNode[];
 }
 
-export default defineComponent<Props>({
+export default defineComponent({
   props: {
-    items: Array,
-    value: Array,
+    items: required<InstanceFile[]>(Array),
+    value: required<string[]>(Array),
   },
   setup(props, context) {
     const { $t } = useI18n();

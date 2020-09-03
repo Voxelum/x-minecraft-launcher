@@ -50,7 +50,7 @@
       </template>
       <span>
         {{ compatible ? $t('resourcepack.compatible', { format: pack.pack_format, version: mcversion }) : $t('resourcepack.incompatible', {
-          accept: pack.acceptedRange,
+          accept: pack.acceptingRange,
           actual: mcversion,
           format: pack.pack_format
         }) }}
@@ -62,23 +62,13 @@
 <script lang=ts>
 import { defineComponent, reactive, ref, toRefs, Ref, computed } from '@vue/composition-api';
 import { useInstanceVersionBase, useCompatible, useDragTransferItem, ResourcePackItem, useI18n, useService } from '@/hooks';
+import { required } from '@/util/props';
 import { useContextMenu, ContextMenuItem, useCurseforgeRoute } from '../hooks';
 
-export interface Props {
-  pack: ResourcePackItem;
-  isSelected: boolean;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   props: {
-    pack: {
-      type: Object,
-      default: () => ({}),
-    },
-    isSelected: {
-      type: Boolean,
-      default: false,
-    },
+    pack: required<ResourcePackItem>(Object), 
+    isSelected: required<boolean>(Boolean),
   },
   setup(props, context) {
     const iconImage: Ref<any> = ref(null);

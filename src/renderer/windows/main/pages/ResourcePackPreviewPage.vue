@@ -53,11 +53,7 @@ import PreviewItem from './ResourcePackPreviewPageItem.vue';
 import Displayer from './ResourcePackPreviewPageDisplayer.vue';
 import { useSearch } from '../hooks';
 
-export interface Props {
-  value: boolean;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   components: { Displayer },
   props: { value: Boolean },
   setup() {

@@ -70,14 +70,11 @@
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api';
 import { Instance } from '@universal/store/modules/instance';
+import { required } from '@/util/props';
 import PreviewCard from './InstancesPagePreviewCard.vue';
 
-export interface Props {
-  instances: Instance[];
-}
-
-export default defineComponent<Props>({
-  props: { instances: Array },
+export default defineComponent({
+  props: { instances: required<Instance[]>(Array) },
   components: {
     PreviewCard,
   },

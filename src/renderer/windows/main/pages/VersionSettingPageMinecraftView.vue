@@ -29,16 +29,15 @@ import {
   useMinecraftVersions,
   useMinecraftVersionFilter,
 } from '@/hooks';
+import { required } from '@/util/props';
 import { Version as MinecraftVersion } from '@xmcl/installer/minecraft';
 
-interface Props {
-  select: (v: MinecraftVersion) => void;
-  filterText: string;
-  version: string;
-}
-
-export default defineComponent<Props>({
-  props: { select: Function, filterText: String, version: String },
+export default defineComponent({
+  props: { 
+    select: required<(v: MinecraftVersion) => void>(Function),
+    filterText: required<string>(String), 
+    version: required<string>(String),
+  },
   setup(props) {
     const { versions: vers, statuses, refreshing, refresh } = useMinecraftVersions();
     const { filter, showAlpha, acceptingRange } = useMinecraftVersionFilter(computed(() => props.filterText));

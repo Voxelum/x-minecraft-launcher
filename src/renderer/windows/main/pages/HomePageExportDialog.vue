@@ -146,12 +146,7 @@ import InstanceFiles from './HomePageInstanceFiles.vue';
 import ExportLocalVersionList from './HomePageExportLocalVersionList.vue';
 import { useZipFilter } from '../hooks';
 
-interface Props {
-  value: boolean;
-  isCurseforge: boolean;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   components: { InstanceFiles, ExportLocalVersionList },
   props: {
     value: Boolean,

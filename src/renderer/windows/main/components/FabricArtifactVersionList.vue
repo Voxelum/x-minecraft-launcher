@@ -21,24 +21,19 @@
 <script lang=ts>
 import { defineComponent, ref, onMounted } from '@vue/composition-api';
 import { FabricInstaller } from '@xmcl/installer';
+import { required } from '@/util/props';
 import VirtualList from 'vue-virtual-scroll-list';
 import Tile from './FabricArtifactVersionListTile.vue';
 
 type FabricArtifactVersion = FabricInstaller.FabricArtifactVersion;
 
-export interface Props {
-  statuses: {};
-  versions: FabricArtifactVersion[];
-  version: string;
-  select: (version: FabricArtifactVersion) => void;
-}
-export default defineComponent<Props>({
+export default defineComponent({
   components: { VirtualList },
   props: {
-    statuses: Object,
-    versions: Array,
-    version: String,
-    select: Function,
+    statuses: required<{}>(Object),
+    versions: required<FabricArtifactVersion[]>(Array),
+    version: required<string>(String),
+    select: required<(version: { version: string }) => void>(Function),
   },
   setup(props) {
     let list = ref<any>(null);
