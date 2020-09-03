@@ -1,4 +1,4 @@
-import { copyPassively, isDirectory, isFile, readdirIfPresent, exists } from '@main/util/fs';
+import { copyPassively, exists, isDirectory, isFile, readdirIfPresent } from '@main/util/fs';
 import { getCurseforgeUrl } from '@main/util/resource';
 import { openCompressedStreamTask } from '@main/util/zip';
 import { createTemplate, InstanceConfig } from '@universal/store/modules/instance';
@@ -9,7 +9,7 @@ import { Version } from '@xmcl/core';
 import { CurseforgeInstaller } from '@xmcl/installer';
 import { Task } from '@xmcl/task';
 import Unzip from '@xmcl/unzip';
-import { createReadStream, mkdtemp, readdir, readJson, remove, stat } from 'fs-extra';
+import { createReadStream, ensureDir, mkdtemp, readJson, remove, stat } from 'fs-extra';
 import { tmpdir } from 'os';
 import { basename, join, relative, resolve } from 'path';
 import { Modpack } from './CurseForgeService';
@@ -360,16 +360,19 @@ export default class InstanceIOService extends Service {
                 });
             }
 
+            // deploy existed resources
+            const filesToDeploy = manifest.files
+                .map((f) => this.resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID)))
+                .filter(isNonnull);
+            await ensureDir(join(instancePath, 'mods'));
+            await ensureDir(join(instancePath, 'resourcepacks'));
+            await this.instanceResourceService.deploy({ resources: filesToDeploy, path: instancePath });
+
             // filter out existed resources
             manifest.files = manifest.files.filter((f) => {
                 let resource = this.resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID));
                 return !resource;
             });
-
-            // deploy existed resources
-            let filesToDeploy = manifest.files.map((f) => this.resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID)))
-                .filter(isNonnull);
-            await this.instanceResourceService.deploy(filesToDeploy);
 
             let files: Array<{ path: string; projectID: number; fileID: number; url: string }> = [];
             let defaultQuery = CurseforgeInstaller.createDefaultCurseforgeQuery();
