@@ -58,14 +58,14 @@
                 two-line
               >
                 <v-list-tile
-                  v-for="(p, i) in templates"
+                  v-for="p in templates"
                   :key="p.path"
                   ripple
-                  @click="selectTemplate(i, p)"
+                  @click="selectTemplate(p)"
                 >
                   <v-list-tile-action>
                     <v-checkbox
-                      :value="template === i"
+                      :value="template === p"
                       readonly
                     />
                   </v-list-tile-action>
@@ -313,7 +313,7 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, onMounted, watch, defineComponent, ref, Ref } from '@vue/composition-api';
+import { reactive, toRefs, computed, onMounted, onUnmounted, watch, defineComponent, ref, Ref } from '@vue/composition-api';
 import { CurseforgeModpackResource } from '@universal/util/resource';
 import { InstanceSchema } from '@universal/store/modules/instance.schema';
 import {
@@ -330,6 +330,7 @@ import {
 } from '@/hooks';
 import { Java } from '@universal/store/modules/java';
 import { Modpack } from '@main/service/CurseForgeService';
+import { useSearch, useSearchToggles, useSearchToggle } from '../hooks';
 
 interface InstanceTemplate {
   type: 'instance';
@@ -352,6 +353,9 @@ interface ModpackTemplate {
 function setupTemplates() {
   const { $t } = useI18n();
   const { modpacks, instances } = useInstanceTemplates();
+  const { toggles } = useSearchToggles();
+  useSearchToggle(toggles[toggles.length - 1]!);
+  const { text } = useSearch();
   const getModpackVersion = (modpack: Modpack) => {
     let version = `Minecraft: ${modpack.minecraft.version}`;
     if (modpack.minecraft.modLoaders && modpack.minecraft.modLoaders.length > 0) {
@@ -374,7 +378,7 @@ function setupTemplates() {
   const templates = computed(() => [
     ...instances.value.map((instance) => ({
       type: 'instance',
-      title: instance.name,
+      title: instance.name || `Minecraft ${instance.runtime.minecraft}`,
       subTitle: getInstanceVersion(instance),
       path: instance.path,
       source: instance,
@@ -388,8 +392,22 @@ function setupTemplates() {
       source: modpack,
       action: $t('profile.templateSetting.modpack'),
     }) as ModpackTemplate),
-  ]);
-
+  ].filter((instance) => {
+    const searching = text.value.toLowerCase();
+    if (searching.length === 0) {
+      return true;
+    }
+    if (instance.title.toLowerCase().indexOf(searching) !== -1) {
+      return true;
+    }
+    if (instance.subTitle.toLowerCase().indexOf(searching) !== -1) {
+      return true;
+    }
+    return false;
+  }));
+  onUnmounted(() => {
+    text.value = '';
+  });
   return {
     templates,
   };
@@ -415,7 +433,7 @@ export default defineComponent({
       ],
     };
     const data = reactive({
-      template: -1,
+      template: undefined as undefined | InstanceTemplate | ModpackTemplate,
       creating: false,
 
       step: 1,
@@ -436,16 +454,16 @@ export default defineComponent({
     const ready = computed(() => data.valid && data.javaValid);
     const java = ref(undefined as undefined | Java);
 
-    function selectTemplate(index: number, template: InstanceTemplate | ModpackTemplate) {
+    function selectTemplate(template: InstanceTemplate | ModpackTemplate) {
       if (template.type === 'modpack') {
-        data.template = index;
+        data.template = template;
         const metadata = template.source.metadata;
         creationData.name.value = `${metadata.name} - ${metadata.version}`;
         creationData.runtime.value!.minecraft = metadata.minecraft.version;
         creationData.author.value = metadata.author;
         data.step = 1;
       } else {
-        data.template = index;
+        data.template = template;
         data.step = 1;
         use(template.source);
         creationData.author.value = name.value;
@@ -458,20 +476,20 @@ export default defineComponent({
     function init() {
       reset();
       data.step = 1;
-      data.template = props.initialTemplate ? templates.value.findIndex(m => m.path === props.initialTemplate) : -1;
-      if (data.template !== -1) {
-        selectTemplate(data.template, templates.value[data.template]);
+      const template = props.initialTemplate ? templates.value.find(m => m.path === props.initialTemplate) : undefined;
+      if (template) {
+        selectTemplate(template);
       }
       data.creating = false;
     }
     async function doCreate() {
       data.creating = true;
       try {
-        if (data.template !== -1) {
-          if (templates.value[data.template].type === 'modpack') {
+        if (data.template) {
+          if (data.template.type === 'modpack') {
             data.step = 3;
             importTask.value = importCurseforgeModpack({
-              path: templates.value[data.template].path,
+              path: data.template.path,
             });
             await mountInstance(await importTask.value);
           } else {
