@@ -4,7 +4,7 @@
       v-show="show"
       ref="self"
       v-model="text"
-      style="position: fixed; z-index: 2;"
+      style="position: fixed; z-index: 300;"
       :style="{ top: `${top}px`, right: `${right}px` }"
       solo
       append-icon="filter_list"
