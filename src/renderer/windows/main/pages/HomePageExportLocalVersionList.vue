@@ -56,11 +56,12 @@
 <script lang=ts>
 import { defineComponent, reactive, computed, toRefs, ref, watch } from '@vue/composition-api';
 import { useLocalVersions } from '@/hooks';
+import { required } from '@/util/props';
 import { LocalVersion } from '@universal/store/modules/version';
 
 export default defineComponent({
   props: {
-    value: Array,
+    value: required<LocalVersion[]>(Array),
   },
   setup(props, context) {
     const { localVersions, showVersionsDirectory, showVersionDirectory, refreshVersions } = useLocalVersions();

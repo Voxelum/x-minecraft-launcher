@@ -79,25 +79,15 @@
 import { defineComponent, computed, ref } from '@vue/composition-api';
 import { InstanceSaveMetadata } from '@universal/store/modules/instance';
 import unknownPack from '@/assets/unknown_pack.png';
+import { required } from '@/util/props';
 import { useI18n } from '@/hooks';
 
-export interface Props {
-  exportSave: (path: string) => void;
-  deleteSave: (path: string) => void;
-  source: InstanceSaveMetadata;
-}
 
-export default defineComponent<Props>({
+export default defineComponent({
   props: {
-    exportSave: {
-      type: Function,
-    },
-    deleteSave: {
-      type: Function,
-    },
-    source: {
-      type: Object,
-    },
+    exportSave: required<(path: string) => void>(Function),
+    // deleteSave: required<(path: string) => void>(Function),
+    source: required<InstanceSaveMetadata>(Object),
   },
   setup(props) {
     const { $t } = useI18n();

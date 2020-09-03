@@ -19,16 +19,12 @@
 
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api';
+import { required } from '@/util/props';
 
-export interface Props {
-  visible: boolean;
-  drop: (dropEvent: DragEvent) => void;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   props: {
-    visible: Boolean,
-    drop: Function,
+    visible: required<boolean>(Boolean),
+    drop: required<(dropEvent: DragEvent) => void>(Function),
   },
 });
 </script>

@@ -63,20 +63,14 @@
 
 <script lang=ts>
 import { defineComponent, ref } from '@vue/composition-api';
+import { required } from '@/util/props';
 
-export interface Props {
-  files: string[];
-  getFileContent(file: string): Promise<string>;
-  removeFile(file: string): Promise<void>;
-  showFile(file: string): void;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   props: {
-    files: Array,
-    getFileContent: Function,
-    removeFile: Function,
-    showFile: Function,
+    files: required<string[]>(Array),
+    getFileContent: required<(file: string) => Promise<string>>(Function),
+    removeFile: required<(file: string) => Promise<void>>(Function),
+    showFile: required<(file: string) => void>(Function),
   },
   setup(props) {
     const content = ref('');

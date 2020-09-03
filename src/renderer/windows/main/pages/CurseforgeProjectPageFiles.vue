@@ -41,12 +41,13 @@ import {
   useCurseforgeProjectFiles,
   useCurseforgeInstall,
 } from '@/hooks';
+import { required } from '@/util/props';
 import Tile from './CurseforgeProjectPageFilesTile.vue';
 import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue';
 
-export default defineComponent<{ project: number; type: ProjectType }>({
+export default defineComponent({
   components: { VirtualList, AddInstanceStepper },
-  props: { project: Number, type: String },
+  props: { project: required(Number), type: required<ProjectType>(String },
   setup(props) {
     const { files, loading, refresh } = useCurseforgeProjectFiles(props.project);
     const { install: installFile, getFileStatus, getFileResource } = useCurseforgeInstall(props.type, props.project);

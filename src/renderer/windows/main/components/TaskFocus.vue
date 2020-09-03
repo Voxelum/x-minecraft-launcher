@@ -25,13 +25,10 @@
 <script lang=ts>
 import { defineComponent, computed } from '@vue/composition-api';
 import { useTaskFromServiceCall } from '@/hooks';
+import { required } from '@/util/props';
 
-export interface Props {
-  promise: Promise<any>;
-}
-
-export default defineComponent<Props>({
-  props: { promise: Promise },
+export default defineComponent({
+  props: { promise: required<Promise<any>>(Promise) },
   setup(props) {
     return useTaskFromServiceCall(computed(() => props.promise));
   },

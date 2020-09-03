@@ -92,19 +92,12 @@ import { defineComponent, ref, Ref, computed, inject, watch } from '@vue/composi
 import { useInstanceVersionBase, useCompatible, useService, ModItem, useI18n } from '@/hooks';
 import { basename } from '@/util/basename';
 import unknownPack from '@/assets/unknown_pack.png';
+import { required } from '@/util/props';
 import { useContextMenu, ContextMenuItem, useCurseforgeRoute, useMcWikiRoute } from '../hooks';
 
-export interface Props {
-  source: ModItem;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   props: {
-    source: {
-      required: true,
-      type: Object,
-      default: () => ({}),
-    },
+    source: required<ModItem>(Object),
   },
   setup(props, context) {
     const { minecraft, forge } = useInstanceVersionBase();

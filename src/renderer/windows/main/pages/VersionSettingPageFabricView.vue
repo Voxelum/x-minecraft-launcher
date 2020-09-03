@@ -37,24 +37,17 @@ import { defineComponent, reactive, computed, toRefs } from '@vue/composition-ap
 import {
   useFabricVersions,
 } from '@/hooks';
+import { required } from '@/util/props';
 import { FabricArtifactVersion } from '@xmcl/installer/fabric';
 
-interface Props {
-  select: (v: { loader: string; yarn: string } | undefined) => void;
-  version: string;
-  minecraft: string;
-  filterText: string;
-  yarn: string;
-  loader: string;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   props: {
-    select: Function,
-    filterText: String,
-    minecraft: String,
-    loader: String,
-    yarn: String,
+    select: required<(v: { loader: string; yarn: string } | undefined) => void>(Function),
+    version: required<string>(String)
+    filterText: required<string>(String),
+    minecraft: required<string>(String),
+    loader: required<string>(String),
+    yarn: required<string>(String),
   },
   setup(props) {
     const data = reactive({

@@ -14,7 +14,7 @@
 import { defineComponent, reactive, toRefs, onMounted, computed, ref, watch, onUnmounted } from '@vue/composition-api';
 import { BlockModel } from '@xmcl/resourcepack';
 import { BlockModelFactory } from '@xmcl/model';
-
+import { required } from '@/util/props';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { Scene } from 'three/src/scenes/Scene';
 import { AmbientLight } from 'three/src/lights/AmbientLight';
@@ -22,11 +22,6 @@ import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Object3D } from 'three/src/core/Object3D';
 import { OrbitControls } from '../../../skin/OrbitControls';
-
-export interface Props {
-  value: { model: BlockModel.Resolved; textures: Record<string, { url: string }> };
-}
-
 
 function findRealTexturePath(model: BlockModel.Resolved, variantKey: string) {
   let texturePath = model.textures[variantKey] as string;
@@ -42,9 +37,13 @@ function findRealTexturePath(model: BlockModel.Resolved, variantKey: string) {
   return texturePath;
 }
 
-
-export default defineComponent<Props>({
-  props: { value: Object },
+export default defineComponent({
+  props: { 
+    value: required<{ 
+      model: BlockModel.Resolved; 
+      textures: Record<string, { url: string }> 
+    }>(Object),
+  },
   setup(props) {
     const canvas = ref(null);
     const data = {

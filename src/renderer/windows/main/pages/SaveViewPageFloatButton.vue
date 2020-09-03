@@ -20,11 +20,7 @@
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api';
 
-export interface Props {
-  visible: boolean;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   props: {
     visible: Boolean,
   },

@@ -34,20 +34,16 @@
 <script lang=ts>
 import { reactive, toRefs, watch, defineComponent } from '@vue/composition-api';
 import { useInstanceLogs } from '@/hooks';
+import { required } from '@/util/props';
 import TabItem from './HomePageLogDialogTab.vue';
 
-export interface Props {
-  value: boolean;
-  hide: () => void;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   components: {
     TabItem,
   },
   props: {
-    value: Boolean,
-    hide: Function,
+    value: required(Boolean),
+    hide: required<() => void>(Function),
   },
   setup(props) {
     const {

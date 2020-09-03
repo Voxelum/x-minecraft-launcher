@@ -78,20 +78,19 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import { UserProfile } from '@universal/store/modules/user.schema';
+import { required } from '@/util/props';
 
-interface Props {
-  select(profileId: string, userId: string): void;
-  users: UserProfile[];
-  userId: string;
-  profileId: string;
-}
-
-export default defineComponent<Props>({
-  props: { select: Function, userId: String, profileId: String, users: Array },
+export default defineComponent({
+  props: { 
+    select: required<(profileId: string, userId: string)=> void>(Function),
+    users: required<UserProfile[]>(Array),
+    userId: required<string>(String),
+    profileId: required<string>(String),
+  },
 });
 </script>
 
-<style >
+<style>
 .user-list
   .v-list__group__header--sub-group
   .v-list__group__header__prepend-icon {

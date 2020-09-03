@@ -40,12 +40,7 @@
 import { defineComponent, reactive, toRefs } from '@vue/composition-api';
 import { useI18n } from '@/hooks';
 
-interface Props {
-  visibled: boolean;
-  deleting: boolean;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   props: {
     visibled: Boolean,
     deleting: Boolean,

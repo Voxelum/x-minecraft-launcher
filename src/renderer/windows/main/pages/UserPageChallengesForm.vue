@@ -101,11 +101,7 @@
 import { defineComponent, watch, computed } from '@vue/composition-api';
 import { useUserSecurity } from '@/hooks';
 
-interface Props {
-  show: boolean;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   props: { show: Boolean },
   setup(props) {
     const { submit, challenges, error, security, refreshing, loading, check } = useUserSecurity();

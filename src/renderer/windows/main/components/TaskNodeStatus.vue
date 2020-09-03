@@ -27,17 +27,7 @@
 import { defineComponent, computed, ref } from '@vue/composition-api';
 import { TaskStatus } from '@universal/task';
 
-export interface Props {
-  status: TaskStatus;
-  showNumber: boolean;
-  hasChild: boolean;
-  uuid: string;
-  progress: number;
-  total: number;
-  message: string;
-}
-
-const component = defineComponent<Props>({
+const component = defineComponent({
   props: {
     status: {
       type: String,
@@ -53,6 +43,7 @@ const component = defineComponent<Props>({
     },
     uuid: {
       type: String,
+      required: true,
     },
     progress: {
       type: Number,

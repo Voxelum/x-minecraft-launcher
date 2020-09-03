@@ -60,22 +60,21 @@ import {
   useNativeDialog,
   useUserSecurityStatus,
 } from '@/hooks';
+import { required } from '@/util/props';
 import { useNotifier } from '../hooks';
 import ImportSkinUrlForm from './UserPageImportSkinUrlForm.vue';
 import SpeedDial from './UserPageSkinSpeedDial.vue';
 
-interface Props {
-  userId: string;
-  profileId: string;
-  name: string;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   components: {
     ImportSkinUrlForm,
     SpeedDial,
   },
-  props: { userId: String, profileId: String },
+  props: { 
+    userId: required<string>(String),
+    profileId: required<string>(String),
+    name: required<string>(String),
+  },
   setup(props) {
     const { $t } = useI18n();
     const { watcherTask } = useNotifier();

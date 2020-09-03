@@ -43,22 +43,17 @@
 import { defineComponent } from '@vue/composition-api';
 import { FabricInstaller } from '@xmcl/installer';
 import VirtualList from 'vue-virtual-scroll-list';
+import { required } from '@/util/props';
 
 type FabricArtifactVersion = FabricInstaller.FabricArtifactVersion;
 
-export interface Props {
-  statuses: {};
-  source: FabricArtifactVersion;
-  selected: string;
-  select: (version: FabricArtifactVersion) => void;
-}
-export default defineComponent<Props>({
+export default defineComponent({
   components: { VirtualList },
   props: {
-    statuses: Object,
-    source: Object,
-    selected: String,
-    select: Function,
+    statuses: required<{}>(Object),
+    source: required<FabricArtifactVersion>(Object),
+    selected: required<string>(String),
+    select: required<(version: FabricArtifactVersion) => void>(Function),
   },
 });
 

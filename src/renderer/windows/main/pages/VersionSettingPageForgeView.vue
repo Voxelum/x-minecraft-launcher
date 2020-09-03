@@ -29,20 +29,14 @@
 import { defineComponent, reactive, computed, toRefs, watch } from '@vue/composition-api';
 import { useForgeVersions } from '@/hooks';
 import { Version as ForgeVersion } from '@xmcl/installer/forge';
+import { required } from '@/util/props';
 
-interface Props {
-  select: (v: ForgeVersion | undefined) => void;
-  version: string;
-  minecraft: string;
-  filterText: string;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   props: {
-    select: Function,
-    filterText: String,
-    minecraft: String,
-    version: String,
+    select: required<(v: ForgeVersion | undefined) => void>(Function),
+    filterText: required<string>(String),
+    minecraft: required<string>(String),
+    version: required<string>(String),
   },
   setup(props) {
     const data = reactive({

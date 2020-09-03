@@ -15,7 +15,7 @@
         <v-checkbox v-for="(p, index) of instances" :key="index"
                     v-model="selected[index]"
                     hide-details
-                    :label="p.name"
+                    :label="p"
         />
       </v-card-text>
 
@@ -43,32 +43,14 @@
 
 <script lang=ts>
 import { defineComponent, ref } from '@vue/composition-api';
+import { required } from '@/util/props';
 
-export interface Props {
-  cancel: () => void;
-  operate: (instances: string[]) => void;
-  value: string;
-  instances: string[];
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   props: {
-    cancel: {
-      type: Function,
-      required: true,
-    },
-    operate: {
-      type: Function,
-      required: true,
-    },
-    value: {
-      type: String,
-      required: true,
-    },
-    instances: {
-      type: Array,
-      required: true,
-    },
+    cancel: required<() => void>(Function),
+    operate: required<(instances: string[]) => void>(Function),
+    value: required<string>(String),
+    instances: required<string[]>(Array),
   },
   setup(props) {
     const selected = ref(new Array<string>(props.instances.length));

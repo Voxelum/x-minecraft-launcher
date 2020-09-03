@@ -36,18 +36,13 @@
 
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api';
+import { required } from '@/util/props';
 
-export interface Props {
-  instance?: { id: string; name: string };
-  confirm: () => void;
-  cancel: () => void;
-}
-
-export default defineComponent<Props>({
+export default defineComponent({
   props: {
-    instance: Object,
-    confirm: Function,
-    cancel: Function,
+    instance: required<{ id: string; name: string }>(Object),
+    confirm: required<() => void>(Function),
+    cancel: required<() => void>(Function),
   },
 });
 </script>
