@@ -24,6 +24,26 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.10.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.9.0...v0.10.0)
+
+* fix: align all search bar behavior ([0df58ea](https://github.com/voxelum/x-minecraft-launcher/commit/0df58ea))
+* fix: data pollution on instance create ([3d75c2f](https://github.com/voxelum/x-minecraft-launcher/commit/3d75c2f))
+* fix: deploy existed resources to wrong instance ([d2b81a3](https://github.com/voxelum/x-minecraft-launcher/commit/d2b81a3))
+* fix: ensure the memory set correct and not crash game ([8d84805](https://github.com/voxelum/x-minecraft-launcher/commit/8d84805))
+* fix: mount on curseforge import instance ([3eb438c](https://github.com/voxelum/x-minecraft-launcher/commit/3eb438c))
+* fix: optimize the resource preview memory usage ([a13c272](https://github.com/voxelum/x-minecraft-launcher/commit/a13c272))
+* fix: remove mod twice and ui blocked ([e0b6baa](https://github.com/voxelum/x-minecraft-launcher/commit/e0b6baa))
+* fix: resource pack setting on older mc version ([cd2d00b](https://github.com/voxelum/x-minecraft-launcher/commit/cd2d00b))
+* fix: should not reverse packs priority with new core ([34e1de7](https://github.com/voxelum/x-minecraft-launcher/commit/34e1de7))
+* fix: should not save undefined value to the setting ([0f7180f](https://github.com/voxelum/x-minecraft-launcher/commit/0f7180f))
+* fix: task focus display ([b71199b](https://github.com/voxelum/x-minecraft-launcher/commit/b71199b))
+* feat: add simple filter to create instance template ([341f563](https://github.com/voxelum/x-minecraft-launcher/commit/341f563))
+* refactor: add option to deploy to set instance path ([582b692](https://github.com/voxelum/x-minecraft-launcher/commit/582b692))
+* refactor: correctly type the vue props ([90b5df9](https://github.com/voxelum/x-minecraft-launcher/commit/90b5df9))
+
+
 ## [0.9.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.8.0...v0.9.0)
 
 * style: fix lint and reactivity ([d759cec](https://github.com/voxelum/x-minecraft-launcher/commit/d759cec))
