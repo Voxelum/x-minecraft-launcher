@@ -367,7 +367,7 @@ export class InstanceService extends Service {
         let instancePath = options.instancePath || this.state.instance.path;
         let state = this.state.instance.all[instancePath];
 
-        let ignored = { runtime: true, deployments: true, server: true, vmOptions: true, mcOptions: true };
+        let ignored = { runtime: true, deployments: true, server: true, vmOptions: true, mcOptions: true, minMemory: true, maxMemory: true };
         let result: Record<string, any> = {};
         for (let key of Object.keys(options)) {
             if (key in ignored) {
@@ -377,6 +377,25 @@ export class InstanceService extends Service {
                 if ((state as any)[key] !== (options as any)[key]) {
                     result[key] = (options as any)[key];
                 }
+            }
+        }
+
+        if ('maxMemory' in options) {
+            if (typeof options.maxMemory === 'undefined') {
+                result.maxMemory = 0;
+            } else if (typeof options.maxMemory === 'number') {
+                result.maxMemory = result.maxMemory > 0 ? options.maxMemory : 0;
+            } else {
+                throw new Error(`Invalid Argument: Expect maxMemory to be number or undefined! Got ${typeof options.maxMemory}.`);
+            }
+        }
+        if ('minMemory' in options) {
+            if (typeof options.minMemory === 'undefined') {
+                result.minMemory = 0;
+            } else if (typeof options.minMemory === 'number') {
+                result.minMemory = result.minMemory > 0 ? options.minMemory : 0;
+            } else {
+                throw new Error(`Invalid Argument: Expect minMemory to be number or undefined! Got ${typeof options.maxMemory}.`);
             }
         }
 
