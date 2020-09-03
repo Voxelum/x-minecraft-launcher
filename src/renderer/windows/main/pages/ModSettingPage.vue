@@ -86,6 +86,7 @@
       :value="!!deletingMod"
       width="400"
       persistance
+      @input="deletingMod=$event"
     >
       <delete-view
         :confirm="confirmDelete"
@@ -151,11 +152,6 @@ export default defineComponent({
     const { text: filteredText } = useSearch();
     const { begin: beginDelete, cancel: cancelDelete, operate: confirmDelete, data: deletingMod } = useOperation<ModItem | undefined>(undefined, (mod) => {
       removeResource(mod!.hash);
-      if (mod!.enabled) {
-        removeResource(mod!.hash);
-      } else {
-        // TODO: log this maybe?
-      }
     });
 
     const mods = computed(() => [
