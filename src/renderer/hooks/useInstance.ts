@@ -149,12 +149,12 @@ export function useInstanceCreation() {
          */
         use(instance: InstanceConfig) {
             data.name = instance.name;
-            data.runtime = instance.runtime;
+            data.runtime = { ...instance.runtime };
             data.java = instance.java;
             data.showLog = instance.showLog;
             data.hideLauncher = instance.hideLauncher;
-            data.vmOptions = instance.vmOptions;
-            data.mcOptions = instance.mcOptions;
+            data.vmOptions = [...instance.vmOptions];
+            data.mcOptions = [...instance.mcOptions];
             data.maxMemory = instance.maxMemory;
             data.minMemory = instance.minMemory;
             data.author = instance.author;
@@ -163,7 +163,7 @@ export function useInstanceCreation() {
             data.icon = instance.icon;
             data.image = instance.image;
             data.blur = instance.blur;
-            data.server = instance.server;
+            data.server = instance.server ? { ...instance.server } : undefined;
         },
     };
 }
