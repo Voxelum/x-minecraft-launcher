@@ -6,6 +6,7 @@
       </v-flex>
       <v-flex xs5>
         <v-text-field
+          ref="searchBar"
           v-model="keyword"
           append-icon="search"
           hide-details
@@ -65,8 +66,9 @@
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent, ref } from '@vue/composition-api';
 import { useCurseforgeSearch } from '@/hooks';
+import { useSearchToggle } from '../hooks';
 
 export default defineComponent({
   props: {
@@ -78,6 +80,8 @@ export default defineComponent({
   },
   setup(props) {
     // const { categories } = useCurseforgeCategories();
+    const searchBar = ref<Vue | null>(null);
+    useSearchToggle(() => searchBar.value!.focus());
     let id: number;
     switch (props.type) {
       default:
@@ -94,7 +98,7 @@ export default defineComponent({
         id = 17;
         break;
     }
-    return useCurseforgeSearch(id, props.initialKeyword);
+    return { searchBar, ...useCurseforgeSearch(id, props.initialKeyword) };
   },
 });
 </script>

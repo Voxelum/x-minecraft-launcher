@@ -16,14 +16,13 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, inject, ref, onMounted, onUnmounted, Ref, nextTick } from '@vue/composition-api';
+import { defineComponent, inject, ref, Ref, nextTick } from '@vue/composition-api';
 import { useSearch, useSearchToggle } from '../hooks';
 
 export default defineComponent({
   setup() {
     const show = ref(false);
     const { text } = useSearch();
-    const { toggle } = useSearchToggle();
     const top = inject('search-top', ref(30));
     const right = inject('search-right', ref(30));
     const focused = ref(false);
@@ -44,12 +43,7 @@ export default defineComponent({
         });
       }
     }
-    onMounted(() => {
-      toggle.value.unshift(toggleBar);
-    });
-    onUnmounted(() => {
-      toggle.value.shift();
-    });
+    useSearchToggle(toggleBar);
     return {
       show,
       focused,

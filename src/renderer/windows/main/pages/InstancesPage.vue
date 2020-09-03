@@ -220,7 +220,6 @@ export default defineComponent({
     const { notify } = useNotifier();
     const { replace } = useRouter();
     const { text: filter } = useSearch();
-    const { toggle } = useSearchToggle();
 
     const filterElem = ref(null) as Ref<any>;
 
@@ -248,12 +247,7 @@ export default defineComponent({
       }
     }
 
-    onMounted(() => {
-      toggle.value.unshift(focusSearch);
-    });
-    onUnmounted(() => {
-      toggle.value.shift();
-    });
+    useSearchToggle(focusSearch);
 
     return {
       // drag instance to delete
