@@ -7,6 +7,14 @@ import { basename, join } from 'path';
 import ResourceService from './ResourceService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
 
+export interface DeployOptions {
+    resources: Resource[];
+    /**
+     * The instance path to deploy. This will be the current path by default.
+     */
+    path?: string;
+}
+
 export default class InstanceResourceService extends Service {
     @Inject('ResourceService')
     private resourceService!: ResourceService;
@@ -118,12 +126,12 @@ export default class InstanceResourceService extends Service {
         }
     }
 
-    async deploy(resources: Resource[]) {
+    async deploy({ resources, path = this.state.instance.path }: DeployOptions) {
         let promises: Promise<void>[] = [];
-        this.log(`Deploy ${resources.length} to ${this.state.instance.path}`);
+        this.log(`Deploy ${resources.length} to ${path}`);
         for (let resource of resources) {
-            let path = join(this.state.instance.path, resource.domain, basename(resource.path));
-            promises.push(link(resource.path, path).catch(() => copyFile(resource.path, path)));
+            const resourcePath = join(path, resource.domain, basename(resource.path));
+            promises.push(link(resource.path, resourcePath).catch(() => copyFile(resource.path, resourcePath)));
         }
         await Promise.all(promises);
     }
@@ -135,7 +143,7 @@ export default class InstanceResourceService extends Service {
         const toBeDeploiedPacks = allPacks.filter(p => !deploiedPacks.find((r) => r.hash === p.hash));
         this.log(`Deploying ${toBeDeploiedPacks.length} resource packs`);
 
-        await this.deploy(toBeDeploiedPacks);
+        await this.deploy({ resources: toBeDeploiedPacks });
     }
 
     async undeploy(resources: InstanceResource[]) {

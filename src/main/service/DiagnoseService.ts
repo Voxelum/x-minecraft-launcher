@@ -190,7 +190,7 @@ export default class DiagnoseService extends Service {
                         if (!resource) {
                             throw new Error('Cannot find custom skin loader event we try to download it!');
                         }
-                        await this.instanceResourceService.deploy([resource]);
+                        await this.instanceResourceService.deploy({ resources: [resource] });
                     }
                 } else {
                     if (!fabricLoader) {
@@ -207,7 +207,7 @@ export default class DiagnoseService extends Service {
                         if (!resource) {
                             throw new Error('Cannot find custom skin loader event we try to download it!');
                         }
-                        await this.instanceResourceService.deploy([resource]);
+                        await this.instanceResourceService.deploy({ resources: [resource] });
                     }
                 }
             },

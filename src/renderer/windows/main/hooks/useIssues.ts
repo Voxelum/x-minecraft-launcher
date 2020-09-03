@@ -34,7 +34,7 @@ export function useIssueHandler() {
     register('requireFabricAPI', () => {
         let fabric = resources.value.find((r) => r.type === 'fabric' && r.metadata.id === 'fabric');
         if (fabric) {
-            deploy([fabric]);
+            deploy({ resources: [fabric] });
         } else {
             replace('/curseforge/mc-mods/306612');
         }
