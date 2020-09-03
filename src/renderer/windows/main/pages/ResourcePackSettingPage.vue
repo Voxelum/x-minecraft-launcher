@@ -25,6 +25,7 @@
         <!-- </v-tooltip> -->
         <v-flex xs5>
           <v-text-field
+            ref="searchBar"
             v-model="filterText"
             color="primary"
             class="focus-solo"
@@ -225,18 +226,20 @@ import {
   useRouter,
 } from '@/hooks';
 import ResourcePackCard from './ResourcePackSettingPageCard.vue';
+import { useSearch, useSearchToggle } from '../hooks';
 
 export default defineComponent({
   components: {
     ResourcePackCard,
   },
   setup() {
-    const filterText = inject('filter-text', ref(''));
+    const { text: filterText } = useSearch();
     const rightList: Ref<null | Vue> = ref(null);
     const leftList: Ref<null | Vue> = ref(null);
     const { enabled, disabled, add, remove, commit, insert } = useInstanceResourcePacks();
     const { removeResource } = useResourceOperation();
     const { replace } = useRouter();
+    const searchBar: Ref<null | Vue> = ref(null);
     const data = reactive({
       dragging: false,
       isDeletingPack: false,
@@ -251,6 +254,7 @@ export default defineComponent({
       add,
       remove,
     );
+    useSearchToggle(() => searchBar.value?.focus());
     useDropImport(leftListElem, 'resourcepacks');
     useDropImport(rightListElem, 'resourcepacks');
 
@@ -288,6 +292,7 @@ export default defineComponent({
       confirmDeletingPack,
       onDropDelete,
       goPreview,
+      searchBar,
     };
   },
   // async mounted() {

@@ -5,25 +5,41 @@ export const SEARCH_TOGGLE_SYMBOL: InjectionKey<Ref<Array<(shown?: boolean) => v
 
 export function useSearch() {
     const text = inject(SEARCH_TEXT_SYMBOL, ref(''));
-
     return { text };
 }
 
-export function useSearchToggle() {
-    const toggle = inject(SEARCH_TOGGLE_SYMBOL, ref(() => { }));
-    return { toggle };
+export function useSearchToggles() {
+    const toggles = inject(SEARCH_TOGGLE_SYMBOL, ref([]));
+    const toggle = (shown?: boolean) => {
+        toggles.value[0]?.(shown);
+    };
+    return { toggles, toggle };
 }
 
-export function provideSearchToggle() {
-    const toggle = ref([(shown?: boolean) => { }]);
+export function useSearchToggle(func: (shown?: boolean) => void) {
+    const { toggles } = useSearchToggles();
+    onMounted(() => {
+        toggles.value.unshift(func);
+    });
+    onUnmounted(() => {
+        toggles.value.shift();
+    });
+}
+
+export function provideSearch() {
+    const toggles = ref([(shown?: boolean) => { }]);
+    const text = ref('');
+    const toggle = (shown?: boolean) => {
+        toggles.value[0]?.(shown);
+    };
     function handleKeydown(e: KeyboardEvent) {
         if (e.code === 'KeyF' && (e.ctrlKey || e.metaKey)) {
-            toggle.value[0]();
+            toggle();
         }
     }
     function handleKeyup(e: KeyboardEvent) {
         if (e.key === 'Escape') {
-            toggle.value[0](true);
+            toggle(true);
         }
     }
     onMounted(() => {
@@ -34,37 +50,7 @@ export function provideSearchToggle() {
         document.addEventListener('keyup', handleKeyup);
         document.addEventListener('keydown', handleKeydown);
     });
-    provide(SEARCH_TOGGLE_SYMBOL, toggle);
-    return { toggle };
+    provide(SEARCH_TEXT_SYMBOL, text);
+    provide(SEARCH_TOGGLE_SYMBOL, toggles);
+    return { toggle, text, toggles };
 }
-
-// export function provideSearch(elem: Ref<HTMLElement>) {
-//     const { shown } = useSearch();
-//     function handleKeydown(e: KeyboardEvent) {
-//         if (e.code === 'KeyF' && (e.ctrlKey || e.metaKey)) {
-//             if (show.value && !focused.value) {
-//                 Vue.nextTick(() => {
-//                     self.value.focus();
-//                 });
-//             } else {
-//                 show.value = !show.value;
-//                 Vue.nextTick(() => {
-//                     self.value.focus();
-//                 });
-//             }
-//         }
-//     }
-//     function handleKeyup(e: KeyboardEvent) {
-//         if (e.key === 'Escape') {
-//             show.value = false;
-//         }
-//     }
-//     onMounted(() => {
-//         document.addEventListener('keyup', handleKeyup);
-//         document.addEventListener('keydown', handleKeydown);
-//     });
-//     onUnmounted(() => {
-//         document.addEventListener('keyup', handleKeyup);
-//         document.addEventListener('keydown', handleKeydown);
-//     });
-// }

@@ -82,7 +82,7 @@ import {
   useBackgroundBlur,
 } from '@/hooks';
 import { provideTasks } from '@/providers/provideTaskProxy';
-import { provideDialog, provideNotifier, provideContextMenu, provideSearchToggle, SEARCH_TEXT_SYMBOL, provideAsyncRoute } from './hooks';
+import { provideDialog, provideNotifier, provideContextMenu, provideSearch, provideAsyncRoute } from './hooks';
 import LoginDialog from './dialog/BaseLoginDialog.vue';
 import TaskDialog from './dialog/BaseTaskDialog.vue';
 import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue';
@@ -96,8 +96,7 @@ export default defineComponent({
     provideTasks();
     provideAsyncRoute();
 
-    provide(SEARCH_TEXT_SYMBOL, ref(''));
-    provideSearchToggle();
+    const { text, toggle } = provideSearch();
     provideContextMenu();
 
     const ipcRenderer = useIpc();
@@ -111,6 +110,8 @@ export default defineComponent({
 
     router.afterEach((to) => {
       onHomePage.value = to.path === '/';
+      toggle(true);
+      text.value = '';
     });
 
     const data = reactive({

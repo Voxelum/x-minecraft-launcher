@@ -35,7 +35,7 @@
             <v-btn
               icon
               v-on="on"
-              @click="toggle[0]()"
+              @click="toggle()"
             >
               <v-icon>search</v-icon>
             </v-btn>
@@ -112,7 +112,7 @@ import {
 } from '@/hooks';
 import { isCompatible } from '@universal/util/version';
 import { useLocalStorageCacheBool } from '@/hooks/useCache';
-import { useSearchToggle, useSearch } from '../hooks';
+import { useSearchToggles, useSearch } from '../hooks';
 import ModCard from './ModSettingPageCard.vue';
 import DeleteView from './ModSettingPageDeleteView.vue';
 import FloatButton from './ModSettingPageFloatButton.vue';
@@ -147,7 +147,7 @@ export default defineComponent({
     const { importResource } = useResourceOperation();
     const { enabled, disabled, commit } = useInstanceMods();
     const { removeResource } = useResourceOperation();
-    const { toggle } = useSearchToggle();
+    const { toggle } = useSearchToggles();
     const { text: filteredText } = useSearch();
     const { begin: beginDelete, cancel: cancelDelete, operate: confirmDelete, data: deletingMod } = useOperation<ModItem | undefined>(undefined, (mod) => {
       removeResource(mod!.hash);
