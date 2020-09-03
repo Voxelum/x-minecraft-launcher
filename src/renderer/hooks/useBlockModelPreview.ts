@@ -3,7 +3,7 @@ import { reactive, computed, Ref, ref, watch } from '@vue/composition-api';
 import { useService } from './useService';
 
 export function useBlockModelPreview() {
-    const { listBlockStates, loadModel } = useService('ResourcePackPreviewService');
+    const { getBlockStates: listBlockStates, loadModel } = useService('ResourcePackPreviewService');
     return {
         listBlockStates,
         loadModel,
