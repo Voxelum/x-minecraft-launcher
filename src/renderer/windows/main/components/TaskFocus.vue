@@ -11,7 +11,7 @@
       fill-height
     >
       <v-progress-circular
-        :size="120"
+        :size="170"
         :width="15"
         :indeterminate="progress === -1"
         :value="progress / total * 100"
@@ -25,12 +25,12 @@
 <script lang=ts>
 import { defineComponent, computed } from '@vue/composition-api';
 import { useTaskFromServiceCall } from '@/hooks';
-import { required } from '@/util/props';
+import { optional } from '@/util/props';
 
 export default defineComponent({
-  props: { promise: required<Promise<any>>(Promise) },
+  props: { value: optional<Promise<any>>(Promise) },
   setup(props) {
-    return useTaskFromServiceCall(computed(() => props.promise));
+    return useTaskFromServiceCall(computed(() => props.value));
   },
 });
 </script>

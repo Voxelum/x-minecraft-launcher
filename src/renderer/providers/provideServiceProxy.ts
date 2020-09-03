@@ -5,7 +5,6 @@ import { SERVICES_KEY, ipcRenderer, SERVICES_SEMAPHORE_KEY } from '@/constant';
 import { release } from '@universal/util/semaphore';
 
 export function getServiceCallTasks(promise: Readonly<Promise<any>>): Ref<string[]> {
-    if (!promise) return { value: [] };
     return Reflect.get(promise, '__tasks__');
 }
 
