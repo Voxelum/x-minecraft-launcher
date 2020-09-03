@@ -156,7 +156,7 @@ export function useInstanceMods() {
         const disabled = items.filter(m => !m.enabled);
 
         return Promise.all([
-            deploy(enabled.map(m => m.resource)),
+            deploy({ resources: enabled.map(m => m.resource) }),
             undeploy(disabled.map(m => m.resource as InstanceResource)),
         ]);
     }
