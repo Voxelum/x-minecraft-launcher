@@ -152,6 +152,10 @@ p {
 
 /* Draggable card */
 
+*.selection-mode .draggable-card, .draggable-card.selected {
+    transform: scale(0.95);
+}
+
 .draggable-card.dragged {
     transform: scale(0.8);
 }

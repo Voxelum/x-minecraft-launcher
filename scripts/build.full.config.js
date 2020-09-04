@@ -9,6 +9,10 @@ const config = {
         oneClick: false,
         allowToChangeInstallationDirectory: true,
         perMachine: true,
+        differentialPackage: true
+    },
+    nsisWeb: {
+        appPackageUrl: "https://xmcl-release.azureedge.net/releases",
     },
     // fileAssociations: [{
     //     ext: ['xmcl'],
@@ -50,12 +54,14 @@ const config = {
     win: {
         icon: "build/icons/icon.ico",
         target: [
+            'nsis:ia32', 
+            'nsis:x64',
             {
-                target: "nsis",
+                target: "nsis-web",
                 arch: [
                     "x64",
                     "ia32"
-                ],
+                ]
             },
             {
                 target: "zip",
