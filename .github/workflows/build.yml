@@ -46,6 +46,11 @@ jobs:
       env:
         BUILD_NUMBER: ${{ steps.vars.outputs.build_number }}
         FULL_RELEASE: ${{ startsWith(github.event.commits[0].message, 'chore(release)') }}
+    - name: Upload Web Build
+      uses: actions/upload-artifact@v2
+      with:
+        name: build
+        path: build/nsis-web/*.*
     - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
@@ -139,6 +144,9 @@ jobs:
         prerelease: false
         body: ${{ steps.prepare_release.outputs.body }}
         asset_dir_path: ./build
+    - name: Update the latest-version.js
+      run: |
+        node --eval "console.log('const version = \"' + JSON.parse(require('fs').readFileSync('package.json').toString()).version + '\"')" > /build/latest-version.js
     - name: Upload to Azure
       uses: ci010/upload-blob-to-azure@master
       env:
