@@ -1,14 +1,14 @@
 import { createhDynamicThrottle as createDynamicThrottle } from '@main/util/trafficAgent';
 import { fitMinecraftLauncherProfileData } from '@main/util/userData';
+import { wrapError } from '@universal/entities/exception';
+import { UserSchema } from '@universal/entities/user.schema';
 import { MutationKeys } from '@universal/store';
-import { UserSchema } from '@universal/store/modules/user.schema';
 import { requireNonnull, requireObject, requireString } from '@universal/util/assert';
-import { Exception, wrapError } from '@universal/util/exception';
 import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user';
 import { readFile, readJSON } from 'fs-extra';
 import { parse } from 'url';
 import { v4 } from 'uuid';
-import Service, { DynamicSingleton, Singleton } from './Service';
+import Service, { Singleton } from './Service';
 
 export interface LauncherProfile {
     /**
@@ -195,6 +195,7 @@ export default class UserService extends Service {
     /**
      * Logout and clear current cache.
      */
+    @Singleton()
     async logout() {
         let user = this.getters.user;
         if (this.getters.accessTokenValid) {
@@ -254,6 +255,7 @@ export default class UserService extends Service {
     /**
      * Refresh the user auth status
      */
+    @Singleton()
     async refreshStatus() {
         let user = this.getters.user;
 
@@ -301,7 +303,7 @@ export default class UserService extends Service {
     /**
      * Refresh current skin status
      */
-    @DynamicSingleton(function (this: Service, o: RefreshSkinOptions = {}) {
+    @Singleton(function (this: Service, o: RefreshSkinOptions = {}) {
         let {
             gameProfileId = this.state.user.selectedUser.profile,
             userId = this.state.user.selectedUser.id,
@@ -430,6 +432,7 @@ export default class UserService extends Service {
     /**
      * Refresh the current user login status
      */
+    @Singleton()
     async refreshUser() {
         if (!this.getters.accessTokenValid) return;
         await this.refreshStatus().catch(_ => _);
@@ -462,6 +465,7 @@ export default class UserService extends Service {
         await this.refreshUser();
     }
 
+    @Singleton((id: string) => id)
     async removeUserProfile(userId: string) {
         requireString(userId);
         if (this.state.user.selectedUser.id === userId) {

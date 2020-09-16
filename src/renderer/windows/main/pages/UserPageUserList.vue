@@ -77,7 +77,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
-import { UserProfile } from '@universal/store/modules/user.schema';
+import { UserProfile } from '@universal/entities/user.schema';
 import { required } from '@/util/props';
 
 export default defineComponent({

@@ -1,4 +1,4 @@
-import { SettingSchema } from '@universal/store/modules/setting.schema';
+import { SettingSchema } from '@universal/entities/setting.schema';
 import Service, { MutationTrigger } from './Service';
 
 export default class SettingService extends Service {

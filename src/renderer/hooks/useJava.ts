@@ -1,4 +1,4 @@
-import { JavaRecord } from '@universal/store/modules/java';
+import { JavaRecord } from '@universal/entities/java';
 import { computed } from '@vue/composition-api';
 import { useService } from './useService';
 import { useStore } from './useStore';

@@ -139,7 +139,7 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, onMounted, defineComponent, Ref, ref, onUnmounted, watch } from '@vue/composition-api';
+import { reactive, toRefs, computed, onMounted, defineComponent, Ref, ref, onUnmounted, watch, nextTick } from '@vue/composition-api';
 import { useInstance, useService, useI18n, useVersions, useLocalVersions, useNativeDialog, useInstanceVersion } from '@/hooks';
 import { InstanceFile } from '@main/service/InstanceIOService';
 import InstanceFiles from './HomePageInstanceFiles.vue';
@@ -177,17 +177,20 @@ export default defineComponent({
       data.gameVersion = folder.value ? folder.value : '';
     }
     function refresh() {
+      if (data.refreshing) return;
       data.refreshing = true;
       getInstanceFiles().then((files) => {
-        data.files = files;
+        let selected = [] as string[];
         if (props.isCurseforge) {
-          data.selected = files.filter(p => p.path.startsWith('config') || p.path.startsWith('mods')).map(p => p.path);
+          selected = files.filter(p => p.path.startsWith('config') || p.path.startsWith('mods')).map(p => p.path);
         } else {
-          data.selected = files
+          selected = files
             .filter(file => !file.path.startsWith('logs'))
             .filter(file => !file.path.startsWith('resourcepacks'))
             .map(file => file.path);
         }
+        nextTick().then(() => { data.selected = selected; });
+        data.files = files;
       }).finally(() => { data.refreshing = false; });
     }
     function cancel() {

@@ -1,5 +1,5 @@
-import { Issue, IssueType } from '@universal/store/modules/diagnose';
-import { useService, useRouter, useInstanceMods, useResource } from '@/hooks';
+import { Issue, IssueType } from '@universal/entities/issue';
+import { useService, useRouter, useResource } from '@/hooks';
 import { useDialog } from '.';
 import { useJavaWizardDialog } from './useDialog';
 

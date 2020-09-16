@@ -2,7 +2,7 @@ import LauncherApp, { AppContext } from '@main/app/LauncherApp';
 import { BUILTIN_TRUSTED_SITES, IS_DEV } from '@main/constant';
 import { acrylic } from '@main/util/acrylic';
 import { isDirectory } from '@main/util/fs';
-import { UpdateInfo } from '@universal/store/modules/setting';
+import { UpdateInfo } from '@universal/entities/update';
 import { StaticStore } from '@universal/util/staticStore';
 import { Task } from '@xmcl/task';
 import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, session, shell, dialog, Tray, Menu, Notification } from 'electron';

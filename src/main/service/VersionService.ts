@@ -1,5 +1,5 @@
 import { FileStateWatcher, readdirEnsured } from '@main/util/fs';
-import { LocalVersion } from '@universal/store/modules/version';
+import { LocalVersion, resolveRuntimeVersion } from '@universal/entities/version';
 import { Version } from '@xmcl/core';
 import { remove } from 'fs-extra';
 import Service from './Service';
@@ -9,27 +9,9 @@ import Service from './Service';
  * The local version serivce maintains the installed versions on disk
  */
 export default class VersionService extends Service {
-    private runtimeDetectors: { [runtime: string]: (version: Version) => string } = {};
-
     private versionsWatcher = new FileStateWatcher([] as string[], (state, _, f) => [...new Set([...state, f])]);
 
     private versionLoaded = false;
-
-    registerVersionProvider(runtime: string, parser: (version: Version) => string) {
-        this.runtimeDetectors[runtime] = parser;
-    }
-
-    constructor() {
-        super();
-        this.registerVersionProvider('forge', (v) => v.libraries.find(l => l.name.startsWith('net.minecraftforge:forge:'))
-            ?.name.split(':')[2]?.split('-')?.[1] || '');
-        this.registerVersionProvider('liteloader', (v) => v.libraries.find(l => l.name.startsWith('com.mumfrey:liteloader:'))
-            ?.name.split(':')[2] || '');
-        this.registerVersionProvider('fabricLoader', (v) => v.libraries.find(l => l.name.startsWith('net.fabricmc:fabric-loader:'))
-            ?.name.split(':')[2] || '');
-        this.registerVersionProvider('yarn', (v) => v.libraries.find(l => l.name.startsWith('net.fabricmc:yarn:'))
-            ?.name.split(':')[2] || '');
-    }
 
     async dispose() {
         this.versionsWatcher.close();
@@ -43,20 +25,21 @@ export default class VersionService extends Service {
         this.versionsWatcher.watch(this.getPath('versions'));
     }
 
-    protected async parseVersion(versionFolder: string): Promise<LocalVersion> {
-        const resolved = await Version.parse(this.state.root, versionFolder);
+    public async resolveLocalVersion(versionFolder: string, root: string = this.state.root): Promise<LocalVersion> {
+        const resolved = await Version.parse(root, versionFolder);
         const minecraft = resolved.minecraftVersion;
-        const version: { [key: string]: string } = {
+        const version: LocalVersion = {
             id: resolved.id,
             minecraft,
             folder: versionFolder,
+            fabricLoader: '',
+            forge: '',
+            liteloader: '',
+            yarn: '',
         };
-        for (const [runtime, parser] of Object.entries(this.runtimeDetectors)) {
-            version[runtime] = parser(resolved);
-        }
-        return version as any as LocalVersion;
+        resolveRuntimeVersion(resolved, version);
+        return version;
     }
-
 
     async resolveVersionId() {
         let cur = this.getters.instanceVersion;
@@ -72,7 +55,7 @@ export default class VersionService extends Service {
      */
     async refreshVersion(versionFolder: string) {
         try {
-            const version = await this.parseVersion(versionFolder);
+            const version = await this.resolveLocalVersion(versionFolder);
             this.commit('localVersion', version);
         } catch (e) {
             this.commit('localVersionRemove', versionFolder);
@@ -101,7 +84,7 @@ export default class VersionService extends Service {
         let versions: LocalVersion[] = [];
         for (let versionId of files) {
             try {
-                versions.push(await this.parseVersion(versionId));
+                versions.push(await this.resolveLocalVersion(versionId));
             } catch (e) {
                 this.warn(`An error occured during refresh local version ${versionId}`);
                 this.warn(e);

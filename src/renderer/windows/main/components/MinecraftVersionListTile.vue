@@ -38,7 +38,7 @@
 import { defineComponent } from '@vue/composition-api';
 import VirtualList from 'vue-virtual-scroll-list';
 import { Version } from '@xmcl/installer/minecraft';
-import { Status } from '@universal/store/modules/version';
+import { Status } from '@universal/entities/version';
 
 export interface Props {
   showTime: boolean;

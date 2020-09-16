@@ -1,8 +1,9 @@
 import { computed, onMounted, reactive, toRefs } from '@vue/composition-api';
 import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions } from '@main/service/InstanceSavesService';
 import { CreateOption } from '@main/service/InstanceService';
-import { InstanceConfig } from '@universal/store/modules/instance';
-import { getExpectVersion } from '@universal/util/version';
+import { InstanceSchema as InstanceConfig } from '@universal/entities/instance.schema';
+import { getExpectVersion } from '@universal/entities/version';
+import { CurseforgeModpackResource, ModpackResource } from '@universal/entities/resource';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { useBusy } from './useSemaphore';
 import { useService, useServiceOnly } from './useService';
@@ -164,6 +165,28 @@ export function useInstanceCreation() {
             data.image = instance.image;
             data.blur = instance.blur;
             data.server = instance.server ? { ...instance.server } : undefined;
+        },
+
+        useModpack(resource: CurseforgeModpackResource | ModpackResource) {
+            if (resource.type === 'curseforge-modpack') {
+                const metadata = resource.metadata;
+                data.name = `${metadata.name} - ${metadata.version}`;
+                data.runtime.minecraft = metadata.minecraft.version;
+                if (metadata.minecraft.modLoaders.length > 0) {
+                    for (const loader of metadata.minecraft.modLoaders) {
+                        if (loader.id.startsWith('forge-')) {
+                            data.runtime.forge = loader.id.substring('forge-'.length);
+                        }
+                    }
+                }
+                data.author = metadata.author;
+            } else {
+                const metadata = resource.metadata;
+                data.name = resource.name;
+                data.runtime.minecraft = metadata.runtime.minecraft;
+                data.runtime.forge = metadata.runtime.forge;
+                data.runtime.fabricLoader = metadata.runtime.fabricLoader;
+            }
         },
     };
 }

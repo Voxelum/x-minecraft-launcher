@@ -1,22 +1,15 @@
 import { exists, missing, readdirEnsured } from '@main/util/fs';
-import { createTemplate } from '@universal/store/modules/instance';
-import { InstanceSchema, InstancesSchema, RuntimeVersions } from '@universal/store/modules/instance.schema';
+import { createTemplate } from '@universal/entities/instance';
+import { InstanceSchema, InstancesSchema, RuntimeVersions } from '@universal/entities/instance.schema';
+import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/entities/serverStatus';
+import { LATEST_RELEASE } from '@universal/entities/version';
 import { requireObject, requireString } from '@universal/util/assert';
-import latestRelease from '@universal/util/lasteRelease.json';
 import { assignShallow } from '@universal/util/object';
-import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/util/serverStatus';
 import { queryStatus, Status } from '@xmcl/client';
 import { readInfo, ServerInfo } from '@xmcl/server-info';
 import { ensureDir, readdir, readFile, remove } from 'fs-extra';
 import { join, resolve } from 'path';
 import { v4 } from 'uuid';
-import CurseForgeService from './CurseForgeService';
-import InstanceGameSettingService from './InstanceGameSettingService';
-import InstanceIOService from './InstanceIOService';
-import InstanceResourceService from './InstanceResourceService';
-import InstanceSavesService from './InstanceSavesService';
-import JavaService from './JavaService';
-import ResourceService from './ResourceService';
 import ServerStatusService from './ServerStatusService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
 
@@ -54,29 +47,8 @@ export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'deplo
  * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
  */
 export class InstanceService extends Service {
-    @Inject('JavaService')
-    protected readonly javaService!: JavaService;
-
     @Inject('ServerStatusService')
     protected readonly statusService!: ServerStatusService;
-
-    @Inject('ResourceService')
-    protected readonly resourceService!: ResourceService;
-
-    @Inject('CurseForgeService')
-    protected readonly curseforgeSerivce!: CurseForgeService;
-
-    @Inject('InstanceSavesService')
-    protected readonly saveService!: InstanceSavesService;
-
-    @Inject('InstanceResourceService')
-    protected readonly instResourceService!: InstanceResourceService;
-
-    @Inject('InstanceGameSettingService')
-    protected readonly gameService!: InstanceGameSettingService;
-
-    @Inject('InstanceIOService')
-    protected readonly ioService!: InstanceIOService;
 
     protected getPathUnder(...ps: string[]) {
         return this.getPath(INSTANCES_FOLDER, ...ps);
@@ -125,7 +97,7 @@ export class InstanceService extends Service {
 
         instance.path = path;
         instance.author = instance.author || getters.gameProfile?.name || '';
-        instance.runtime.minecraft = latestRelease.id;
+        instance.runtime.minecraft = LATEST_RELEASE.id;
 
         assignShallow(instance, option);
         if (option.runtime) {
@@ -275,7 +247,7 @@ export class InstanceService extends Service {
             instance.server = payload.server;
         }
 
-        instance.path = payload.path ?? this.getPathUnder(v4());
+        instance.path = payload.path || this.getPathUnder(v4());
         instance.runtime.minecraft = instance.runtime.minecraft || this.getters.minecraftRelease.id;
         instance.author = this.getters.gameProfile?.name ?? '';
         instance.creationDate = Date.now();

@@ -1,6 +1,5 @@
+import { LaunchStatus } from '@universal/entities/launch';
 import { ModuleOption } from '../root';
-
-export type LaunchStatus = 'ready' | 'checkingProblems' | 'launching' | 'launched' | 'minecraftReady';
 
 interface State {
     status: LaunchStatus;

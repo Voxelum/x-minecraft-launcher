@@ -79,7 +79,7 @@ import {
   useBusy,
   useResource,
 } from '@/hooks';
-import { SaveMetadata } from '@universal/store/modules/instance';
+import { SaveMetadata } from '@universal/entities/instance';
 
 export default defineComponent({
   props: {

@@ -77,7 +77,7 @@
 
 <script lang=ts>
 import { defineComponent, computed, ref } from '@vue/composition-api';
-import { InstanceSaveMetadata } from '@universal/store/modules/instance';
+import { InstanceSaveMetadata } from '@universal/entities/save';
 import unknownPack from '@/assets/unknown_pack.png';
 import { required } from '@/util/props';
 import { useI18n } from '@/hooks';

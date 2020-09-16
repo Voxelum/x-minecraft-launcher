@@ -1,5 +1,5 @@
+import { ForgeVersion, ForgeVersionList, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema } from '@universal/entities/version.schema';
 import { MutationKeys } from '@universal/store';
-import { VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema } from '@universal/store/modules/version.schema';
 import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core';
 import { FabricInstaller, ForgeInstaller, Installer, LiteLoaderInstaller } from '@xmcl/installer';
 import { LOADER_MAVEN_URL, YARN_MAVEN_URL } from '@xmcl/installer/fabric';
@@ -146,7 +146,7 @@ export default class InstallService extends Service {
         return option;
     }
 
-    private async getForgesFromBMCL(mcversion: string, currentForgeVersion: ForgeInstaller.VersionList) {
+    private async getForgesFromBMCL(mcversion: string, currentForgeVersion: ForgeVersionList) {
         interface BMCLForge {
             'branch': string; // '1.9';
             'build': string; // 1766;
@@ -173,7 +173,7 @@ export default class InstallService extends Service {
                 },
             rejectUnauthorized: false,
         });
-        function convert(v: BMCLForge): ForgeInstaller.Version {
+        function convert(v: BMCLForge): ForgeVersion {
             let installer = v.files.find(f => f.category === 'installer')!;
             let universal = v.files.find(f => f.category === 'universal')!;
             return {
@@ -187,7 +187,7 @@ export default class InstallService extends Service {
             return currentForgeVersion;
         }
         let forges: BMCLForge[] = JSON.parse(body);
-        let result: ForgeInstaller.VersionList = {
+        let result: ForgeVersionList = {
             mcversion,
             timestamp: headers['if-modified-since'] ?? forges[0]?.modified,
             versions: forges.map(convert),
@@ -244,7 +244,7 @@ export default class InstallService extends Service {
         let location = this.state.root;
         let resolvedVersion = await Version.parse(location, version);
         let local = this.state.version.local.find(v => v.folder === version);
-        await this.submit(Installer.installVersionTask('client', { id }, location)).wait();
+        await this.submit(Installer.installVersionTask('client', { id: local!.minecraft, url: '' }, location)).wait();
         if (local?.forge) {
             await this.submit(ForgeInstaller.installTask({ version: local.forge, mcversion: local.minecraft }, location)).wait();
         }
@@ -334,13 +334,13 @@ export default class InstallService extends Service {
 
         try {
             let currentForgeVersion = this.state.version.forge.find(f => f.mcversion === minecraftVersion)!;
-            let newForgeVersion: ForgeInstaller.VersionList = currentForgeVersion;
+            let newForgeVersion = currentForgeVersion;
             if (this.networkManager.isInGFW) {
                 this.log(`Update forge version list (BMCL) for Minecraft ${minecraftVersion}`);
                 newForgeVersion = await this.getForgesFromBMCL(mcversion, currentForgeVersion);
             } else {
                 this.log(`Update forge version list (ForgeOfficial) for Minecraft ${minecraftVersion}`);
-                newForgeVersion = await ForgeInstaller.getVersionList({ mcversion: minecraftVersion, original: currentForgeVersion });
+                newForgeVersion = await ForgeInstaller.getVersionList({ mcversion: minecraftVersion, original: currentForgeVersion as any }) as any;
             }
 
             if (newForgeVersion !== currentForgeVersion) {

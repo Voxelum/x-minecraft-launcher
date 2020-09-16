@@ -113,6 +113,7 @@ export default defineComponent({
       return result;
     }
     watch(() => props.items, () => {
+      console.log('rebuilt tree');
       data.files = Object.freeze(buildTree(props.items));
       data.opened = [];
     });

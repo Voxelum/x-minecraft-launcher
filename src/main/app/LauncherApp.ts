@@ -7,16 +7,16 @@ import ServiceManager from '@main/manager/ServiceManager';
 import StoreManager from '@main/manager/StoreManager';
 import TaskManager from '@main/manager/TaskManager';
 import TelemetryManager from '@main/manager/TelemetryManager';
+import { exists, isDirectory } from '@main/util/fs';
 import { GiteeReleaseFetcher, GithubReleaseFetcher, ReleaseFetcher } from '@main/util/release';
-import { UpdateInfo } from '@universal/store/modules/setting';
+import { UpdateInfo } from '@universal/entities/update';
 import { StaticStore } from '@universal/util/staticStore';
 import { getPlatform } from '@xmcl/core';
 import { Task } from '@xmcl/task';
-import { ensureDir, readFile, writeFile, readJson } from 'fs-extra';
+import { ensureDir, readFile, readJson, writeFile } from 'fs-extra';
 import { EventEmitter } from 'keyv';
-import { join, extname } from 'path';
+import { extname, join } from 'path';
 import { parse } from 'url';
-import { exists, isDirectory } from '@main/util/fs';
 
 export interface Platform {
     /**
@@ -80,6 +80,8 @@ export interface LauncherApp {
 }
 
 export abstract class LauncherApp extends EventEmitter {
+    static app: LauncherApp;
+
     /**
      * Launcher %APPDATA%/xmcl path
      */
@@ -141,6 +143,7 @@ export abstract class LauncherApp extends EventEmitter {
         this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft');
         this.temporaryPath = '';
         this.controller = new LauncherAppController(this, this.getContext());
+        LauncherApp.app = this;
     }
 
     abstract getLocale(): string;

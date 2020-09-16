@@ -8,10 +8,10 @@
         :key="item.id"
         ripple
         style="margin: 0px 0;"
-        @click.stop.prevent="selected[index] = !selected[index]; selected = [...selected];"
+        @click.stop.prevent="select(index)"
       >
         <v-list-tile-avatar>
-          <v-checkbox :value="selected[index]" @click.stop.prevent="selected[index] = !selected[index]; selected = [...selected]" />
+          <v-checkbox :value="selected[index]" @click.stop.prevent="select(index)" />
         </v-list-tile-avatar>
         <v-list-tile-title>{{ item.folder }}</v-list-tile-title>
         <v-list-tile-sub-title>{{ item.minecraft }}</v-list-tile-sub-title>
@@ -57,7 +57,7 @@
 import { defineComponent, reactive, computed, toRefs, ref, watch } from '@vue/composition-api';
 import { useLocalVersions } from '@/hooks';
 import { required } from '@/util/props';
-import { LocalVersion } from '@universal/store/modules/version';
+import { LocalVersion } from '@universal/entities/version';
 
 export default defineComponent({
   props: {
@@ -78,6 +78,10 @@ export default defineComponent({
     function openVersionDir(v: { folder: string }) {
       showVersionDirectory(v.folder);
     }
+    function select(index: number) {
+      selected.value[index] = !selected.value[index]; 
+      selected.value = [...selected.value];
+    }
 
     watch(selected, (set) => {
       context.emit('input', versions.value.filter((v, i) => set[i]).map((v) => v.folder));
@@ -90,6 +94,7 @@ export default defineComponent({
       browseVersoinsFolder,
       refreshVersions,
       selectVersion,
+      select,
     };
   },
 });

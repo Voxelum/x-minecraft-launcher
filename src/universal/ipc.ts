@@ -1,6 +1,6 @@
 import { MutationPayload } from 'vuex';
 import { TaskState } from './task';
-import { BuiltinNotification } from './util/notification';
+import { BuiltinNotification } from './entities/notification';
 
 declare module 'electron' {
 

@@ -1,4 +1,6 @@
-import { getCurseforgeSourceInfo, UNKNOWN_RESOURCE } from '@main/util/resource';
+import { getCurseforgeSourceInfo } from '@main/entities/resource';
+import { ProjectType } from '@universal/entities/curseforge';
+import { UNKNOWN_RESOURCE } from '@universal/entities/resource';
 import { TaskState } from '@universal/task';
 import { requireObject, requireString } from '@universal/util/assert';
 import { AddonInfo, File, getAddonDatabaseTimestamp, getAddonDescription, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions } from '@xmcl/curseforge';
@@ -7,33 +9,6 @@ import { Agent } from 'https';
 import { basename, join } from 'path';
 import ResourceService from './ResourceService';
 import Service, { Inject, Singleton } from './Service';
-
-export type ProjectType = 'mc-mods' | 'texture-packs' | 'worlds' | 'modpacks';
-
-/**
- * The modpack metadata structure
- */
-export interface Modpack {
-    manifestType: string;
-    manifestVersion: number;
-    minecraft: {
-        version: string;
-        libraries?: string;
-        modLoaders: {
-            id: string;
-            primary: boolean;
-        }[];
-    };
-    name: string;
-    version: string;
-    author: string;
-    files: {
-        projectID: number;
-        fileID: number;
-        required: boolean;
-    }[];
-    overrides: string;
-}
 
 export interface InstallFileOptions {
     file: File;
@@ -81,16 +56,19 @@ export default class CurseForgeService extends Service {
         }
     }
 
+    @Singleton((projectId: number) => projectId.toString())
     async fetchProject(projectId: number) {
         this.log(`Fetch project: ${projectId}`);
         return this.fetchOrGetFromCache('project', this.projectCache, projectId, () => getAddonInfo(projectId, { userAgent: this.userAgent }));
     }
 
+    @Singleton((projectId: number) => projectId.toString())
     fetchProjectDescription(projectId: number) {
         this.log(`Fetch project description: ${projectId}`);
         return this.fetchOrGetFromCache('project description', this.projectDescriptionCache, projectId, () => getAddonDescription(projectId, { userAgent: this.userAgent }));
     }
 
+    @Singleton((projectId: number) => projectId.toString())
     fetchProjectFiles(projectId: number) {
         this.log(`Fetch project files: ${projectId}`);
         return this.fetchOrGetFromCache('project files', this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.userAgent }).then(files => files.sort((a, b) => new Date(b.fileDate) - new Date(a.fileDate))));

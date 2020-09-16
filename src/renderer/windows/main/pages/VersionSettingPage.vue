@@ -77,7 +77,7 @@ import {
 } from '@/hooks';
 import { Version as ForgeVersion } from '@xmcl/installer/forge';
 import { Version as MinecraftVersion } from '@xmcl/installer/minecraft';
-import { LocalVersion } from '@universal/store/modules/version';
+import { LocalVersion } from '@universal/entities/version';
 import MinecraftView from './VersionSettingPageMinecraftView.vue';
 import ForgeView from './VersionSettingPageForgeView.vue';
 import FabricView from './VersionSettingPageFabricView.vue';

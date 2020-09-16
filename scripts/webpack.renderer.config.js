@@ -38,7 +38,8 @@ const whiteListedModules = [
  */
 const rendererConfig = {
     mode: process.env.NODE_ENV,
-    devtool: 'source-map',
+    // devtool: 'source-map',
+    devtool: '#eval-source-map',
     // devtool: '#cheap-module-eval-source-map',
     entry: {
         renderer: path.join(__dirname, '../src/renderer/windows/main/index.ts'),

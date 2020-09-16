@@ -1,4 +1,4 @@
-import { isCompatible } from '@universal/util/version';
+import { isCompatible } from '@universal/entities/version';
 import { computed, Ref } from '@vue/composition-api';
 import { useStore } from './useStore';
 

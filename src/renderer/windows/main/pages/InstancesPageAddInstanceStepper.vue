@@ -314,8 +314,8 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed, onMounted, onUnmounted, watch, defineComponent, ref, Ref } from '@vue/composition-api';
-import { CurseforgeModpackResource } from '@universal/util/resource';
-import { InstanceSchema } from '@universal/store/modules/instance.schema';
+import { CurseforgeModpackResource, ModpackResource } from '@universal/entities/resource';
+import { InstanceSchema } from '@universal/entities/instance.schema';
 import {
   useI18n,
   useJava,
@@ -328,8 +328,7 @@ import {
   useProfileId,
   useGameProfile,
 } from '@/hooks';
-import { Java } from '@universal/store/modules/java';
-import { Modpack } from '@main/service/CurseForgeService';
+import { Java } from '@universal/entities/java';
 import { useSearch, useSearchToggles, useSearchToggle } from '../hooks';
 
 interface InstanceTemplate {
@@ -347,21 +346,36 @@ interface ModpackTemplate {
   subTitle: string;
   path: string;
   action: string;
-  source: CurseforgeModpackResource;
+  source: CurseforgeModpackResource | ModpackResource;
 }
 
 function setupTemplates() {
   const { $t } = useI18n();
   const { modpacks, instances } = useInstanceTemplates();
   const { toggles } = useSearchToggles();
-  useSearchToggle(toggles[toggles.length - 1]!);
+  useSearchToggle(toggles.value[toggles.value.length - 1]!);
   const { text } = useSearch();
-  const getModpackVersion = (modpack: Modpack) => {
-    let version = `Minecraft: ${modpack.minecraft.version}`;
-    if (modpack.minecraft.modLoaders && modpack.minecraft.modLoaders.length > 0) {
-      for (let loader of modpack.minecraft.modLoaders) {
-        version += ` ${loader.id}`;
+  const getModpackVersion = (resource: CurseforgeModpackResource | ModpackResource) => {
+    if (resource.type === 'curseforge-modpack') {
+      const modpack = resource.metadata;
+      let version = `Minecraft: ${modpack.minecraft.version}`;
+      if (modpack.minecraft.modLoaders && modpack.minecraft.modLoaders.length > 0) {
+        for (let loader of modpack.minecraft.modLoaders) {
+          version += ` ${loader.id}`;
+        }
       }
+      return version;
+    }
+
+    let version = `Minecraft: ${resource.metadata.runtimes.minecraft}`;
+    if (resource.metadata.runtimes.forge) {
+      version += ` Forge ${resource.metadata.runtimes.forge}`;
+    }
+    if (resource.metadata.runtimes.liteloader) {
+      version += ` Liteloader ${resource.metadata.runtimes.liteloader}`;
+    }
+    if (resource.metadata.runtimes.fabricLoader) {
+      version += ` Fabric ${resource.metadata.runtimes.fabricLoader}`;
     }
     return version;
   };
@@ -386,8 +400,8 @@ function setupTemplates() {
     }) as InstanceTemplate),
     ...modpacks.value.map((modpack) => ({
       type: 'modpack',
-      title: `${modpack.metadata.name}-${modpack.metadata.version}`,
-      subTitle: getModpackVersion(modpack.metadata),
+      title: modpack.type === 'curseforge-modpack' ? `${modpack.metadata.name}-${modpack.metadata.version}` : modpack.name,
+      subTitle: getModpackVersion(modpack),
       path: modpack.path,
       source: modpack,
       action: $t('profile.templateSetting.modpack'),
@@ -423,7 +437,7 @@ export default defineComponent({
   },
   setup(props, context) {
     const { $t } = useI18n();
-    const { create, reset, use, ...creationData } = useInstanceCreation();
+    const { create, reset, use, useModpack, ...creationData } = useInstanceCreation();
     const { mountInstance } = useInstances();
     const router = useRouter();
     const staticData = {
@@ -435,10 +449,8 @@ export default defineComponent({
     const data = reactive({
       template: undefined as undefined | InstanceTemplate | ModpackTemplate,
       creating: false,
-
       step: 1,
       valid: false,
-
       javaValid: true,
     });
 
@@ -457,10 +469,7 @@ export default defineComponent({
     function selectTemplate(template: InstanceTemplate | ModpackTemplate) {
       if (template.type === 'modpack') {
         data.template = template;
-        const metadata = template.source.metadata;
-        creationData.name.value = `${metadata.name} - ${metadata.version}`;
-        creationData.runtime.value!.minecraft = metadata.minecraft.version;
-        creationData.author.value = metadata.author;
+        useModpack(template.source);
         data.step = 1;
       } else {
         data.template = template;
@@ -503,7 +512,7 @@ export default defineComponent({
         });
         init();
         router.replace('/');
-        data.template = -1;
+        data.template = undefined;
       } finally {
         data.creating = false;
       }

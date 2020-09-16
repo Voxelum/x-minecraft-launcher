@@ -1,10 +1,9 @@
+import { EMPTY_GAME_PROFILE, EMPTY_USER } from '@universal/entities/user';
 import { remove, set } from '@universal/util/middleware';
 import { assignShallow, toObjectReducer } from '@universal/util/object';
 import { GameProfile, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user';
+import { GameProfileAndTexture, UserProfile, UserSchema } from '../../entities/user.schema';
 import { ModuleOption } from '../root';
-import { GameProfileAndTexture, UserProfile, UserSchema } from './user.schema';
-
-export type UserGameProfile = Omit<UserProfile, 'profiles'> & GameProfileAndTexture & { userId: string; id: string };
 
 interface State extends UserSchema {
     // /**
@@ -67,9 +66,6 @@ interface Mutations {
 }
 
 export type UserModule = ModuleOption<State, Getters, Mutations, {}>;
-
-export const EMPTY_USER = Object.freeze({ id: '', username: '', profileService: '', authService: '', accessToken: '', profiles: [], properties: {} });
-export const EMPTY_GAME_PROFILE = Object.freeze({ id: '', name: '', textures: { SKIN: { url: '' } } });
 
 const mod: UserModule = {
     state: {

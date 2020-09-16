@@ -1,9 +1,7 @@
-import { Resource } from '@universal/util/resource';
+import { Resource } from '@universal/entities/resource';
 import { remove } from '@universal/util/middleware';
 import { Category } from '@xmcl/curseforge';
 import { ModuleOption } from '../root';
-
-export type ProjectType = 'mc-mods' | 'texture-packs' | 'worlds' | 'modpacks';
 
 interface State {
     downloading: { fileId: number; taskId: string }[];
@@ -13,13 +11,12 @@ interface State {
 
 interface Getters {
     isFileInstalled: (file: { id: number; href: string }) => boolean;
-    findFileInstalled: (file: { id: number; href: string }) => Resource<any> | undefined;
+    findFileInstalled: (file: { id: number; href: string }) => Resource | undefined;
 }
 
 interface Mutations {
     curseforgeDownloadFileStart: { fileId: number; taskId: string };
     curseforgeDownloadFileEnd: number;
-
     curseforgeCategories: { categories: Category[]; timestamp: string };
 }
 

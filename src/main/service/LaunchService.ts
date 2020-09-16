@@ -1,4 +1,4 @@
-import { Exception } from '@universal/util/exception';
+import { Exception } from '@universal/entities/exception';
 import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder } from '@xmcl/core';
 import { ChildProcess } from 'child_process';
 import { EOL } from 'os';

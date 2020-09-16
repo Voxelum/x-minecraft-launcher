@@ -1,9 +1,10 @@
 import { readdirIfPresent } from '@main/util/fs';
-import { Resource } from '@main/util/resource';
-import { InstanceResource } from '@universal/store/modules/instance';
+import { InstanceResource } from '@universal/entities/instance';
+import { Resource } from '@universal/entities/resource';
 import { copyFile, ensureDir, FSWatcher, link, unlink } from 'fs-extra';
 import watch from 'node-watch';
 import { basename, join } from 'path';
+import IOService from './IOService';
 import ResourceService from './ResourceService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
 
@@ -15,9 +16,15 @@ export interface DeployOptions {
     path?: string;
 }
 
+/**
+ * Provide the abilities to import mods and resource packs files to instance
+ */
 export default class InstanceResourceService extends Service {
     @Inject('ResourceService')
     private resourceService!: ResourceService;
+
+    @Inject('IOService')
+    private ioService!: IOService;
 
     private watchingMods = '';
 
@@ -28,17 +35,17 @@ export default class InstanceResourceService extends Service {
     private resourcepacksWatcher: FSWatcher | undefined;
 
     private async scan(domain: string) {
-        let instance = this.getters.instance;
-        let dir = join(instance.path, domain);
-        let files = await readdirIfPresent(dir);
+        const instance = this.getters.instance;
+        const dir = join(instance.path, domain);
+        const files = await readdirIfPresent(dir);
 
-        let fileArgs = files.filter((file) => !file.startsWith('.')).map((file) => ({
+        const fileArgs = files.filter((file) => !file.startsWith('.')).map((file) => ({
             path: join(dir, file),
             url: [] as string[],
             source: undefined,
             type: domain,
         }));
-        let resources = await Promise.all(fileArgs.map(async (arg) => {
+        const resources = await Promise.all(fileArgs.map(async (arg) => {
             let { resource, imported } = await this.resourceService.resolveResourceTask(arg).execute().wait();
             return { imported, resource: { ...resource, filePath: arg.path } };
         }));
@@ -130,8 +137,12 @@ export default class InstanceResourceService extends Service {
         let promises: Promise<void>[] = [];
         this.log(`Deploy ${resources.length} to ${path}`);
         for (let resource of resources) {
-            const resourcePath = join(path, resource.domain, basename(resource.path));
-            promises.push(link(resource.path, resourcePath).catch(() => copyFile(resource.path, resourcePath)));
+            if (resource.domain === 'modpacks') {
+                this.warn(`Skip to deploy ${resource.name} as it's a modpack`);
+            } else {
+                const resourcePath = join(path, resource.domain, basename(resource.path));
+                promises.push(link(resource.path, resourcePath).catch(() => copyFile(resource.path, resourcePath)));
+            }
         }
         await Promise.all(promises);
     }

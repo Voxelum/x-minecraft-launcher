@@ -24,7 +24,8 @@
           "modules": false
         }],
         "stage-0"
-      ]
+      ],
+      "sourceMaps": true
     },
     "web": {
       "presets": [
