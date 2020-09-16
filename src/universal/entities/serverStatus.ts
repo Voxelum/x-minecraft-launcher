@@ -1,4 +1,8 @@
-export const UNKNOWN_STATUS = Object.freeze({
+import type { Status as ServerStatus } from '@xmcl/client';
+
+export { ServerStatus };
+
+export const UNKNOWN_STATUS: ServerStatus = Object.freeze({
     version: {
         name: 'profile.server.unknown',
         protocol: -1,
@@ -12,7 +16,7 @@ export const UNKNOWN_STATUS = Object.freeze({
     ping: 0,
 });
 
-export const PINGING_STATUS = Object.freeze({
+export const PINGING_STATUS: ServerStatus = Object.freeze({
     version: {
         name: 'profile.server.ping',
         protocol: -1,
@@ -26,7 +30,7 @@ export const PINGING_STATUS = Object.freeze({
     ping: 0,
 });
 
-export function createFailureServerStatus(description: string) {
+export function createFailureServerStatus(description: string): ServerStatus {
     return Object.freeze({
         version: {
             name: 'profile.server.unknown',
@@ -41,6 +45,7 @@ export function createFailureServerStatus(description: string) {
         ping: -1,
     });
 }
+
 export function getHostAndPortFromIp(ip: string) {
     const [host, port] = ip.split(':');
     return { host, port: port ? Number.parseInt(port, 10) : 25565 };

@@ -1,6 +1,6 @@
 import { exists, missing } from '@main/util/fs';
 import { requireString } from '@universal/util/assert';
-import { compareRelease, compareSnapshot, isReleaseVersion, isSnapshotPreview } from '@universal/util/version';
+import { compareRelease, compareSnapshot, isReleaseVersion, isSnapshotPreview } from '@universal/entities/version';
 import { Frame, parse, stringify } from '@xmcl/gamesetting';
 import { readFile, writeFile, FSWatcher } from 'fs-extra';
 import watch from 'node-watch';

@@ -1,9 +1,9 @@
+import LauncherApp from '@main/app/LauncherApp';
 import { exists, missing } from '@main/util/fs';
-import { FabricResource } from '@main/util/resource';
-import { Issue, IssueReport } from '@universal/store/modules/diagnose';
-import { EMPTY_JAVA } from '@universal/store/modules/java';
-import { LocalVersion } from '@universal/store/modules/version';
-import { getExpectVersion, compareRelease } from '@universal/util/version';
+import { Issue, IssueReport } from '@universal/entities/issue';
+import { EMPTY_JAVA } from '@universal/entities/java';
+import { FabricResource } from '@universal/entities/resource';
+import { compareRelease, getExpectVersion, LocalVersion } from '@universal/entities/version';
 import { MinecraftFolder } from '@xmcl/core';
 import { Diagnosis, Installer } from '@xmcl/installer';
 import { InstallProfile } from '@xmcl/installer/minecraft';
@@ -15,13 +15,11 @@ import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
 import { basename, join, relative } from 'path';
 import ExternalAuthSkinService from './ExternalAuthSkinService';
 import InstallService from './InstallService';
+import InstanceResourceService from './InstanceResourceService';
 import InstanceService from './InstanceService';
 import JavaService from './JavaService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
 import VersionService from './VersionService';
-import InstanceIOService from './InstanceIOService';
-import InstanceResourceService from './InstanceResourceService';
-
 
 export interface Fix {
     match(issues: readonly Issue[]): boolean;
@@ -65,8 +63,8 @@ export default class DiagnoseService extends Service {
         });
     }
 
-    constructor() {
-        super();
+    constructor(app: LauncherApp) {
+        super(app);
         this.registerMatchedFix(['missingVersionJson', 'missingVersionJar', 'corruptedVersionJson', 'corruptedVersionJar'],
             async (issues) => {
                 const i = issues[0];

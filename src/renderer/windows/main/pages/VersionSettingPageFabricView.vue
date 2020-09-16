@@ -43,7 +43,7 @@ import { FabricArtifactVersion } from '@xmcl/installer/fabric';
 export default defineComponent({
   props: {
     select: required<(v: { loader: string; yarn: string } | undefined) => void>(Function),
-    version: required<string>(String)
+    version: required<string>(String),
     filterText: required<string>(String),
     minecraft: required<string>(String),
     loader: required<string>(String),

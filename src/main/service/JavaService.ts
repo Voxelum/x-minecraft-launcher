@@ -1,8 +1,8 @@
 import { missing, readdirIfPresent } from '@main/util/fs';
 import { unpack7z } from '@main/util/zip';
 import { MutationKeys } from '@universal/store';
-import { JavaRecord } from '@universal/store/modules/java';
-import { Java, JavaSchema } from '@universal/store/modules/java.schema';
+import { JavaRecord } from '@universal/entities/java';
+import { Java, JavaSchema } from '@universal/entities/java.schema';
 import { requireString } from '@universal/util/assert';
 import { downloadFileTask, JavaInstaller } from '@xmcl/installer';
 import { task } from '@xmcl/task';
@@ -19,8 +19,8 @@ export default class JavaService extends Service {
     }
 
     async load() {
-        let loaded: JavaSchema = await this.getPersistence({ path: this.getPath('java.json'), schema: JavaSchema });
-        let javas = loaded.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }));
+        const loaded: JavaSchema = await this.getPersistence({ path: this.getPath('java.json'), schema: JavaSchema });
+        const javas = loaded.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }));
         this.commit('javaUpdate', javas);
         this.log(`Loaded ${javas.length} java from cache.`);
         if (this.state.java.all.length === 0) {

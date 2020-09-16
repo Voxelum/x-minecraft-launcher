@@ -1,16 +1,10 @@
+import { EMPTY_JAVA, JavaRecord } from '@universal/entities/java';
 import { requireObject, requireString } from '@universal/util/assert';
-import { remove } from '@universal/util/middleware';
 import { ModuleOption } from '../root';
-import { Java } from './java.schema';
 
 type State = {
     all: JavaRecord[];
 };
-
-/**
- * A record of a java path
- */
-export type JavaRecord = Java & { valid: boolean };
 
 interface Getters {
     defaultJava: JavaRecord;
@@ -22,16 +16,6 @@ interface Mutations {
 }
 
 export type JavaModule = ModuleOption<State, Getters, Mutations, {}>;
-
-/**
- * Return when there is no java
- */
-export const EMPTY_JAVA: JavaRecord = {
-    version: '',
-    majorVersion: 0,
-    path: '',
-    valid: false,
-};
 
 const mod: JavaModule = {
     state: {
@@ -74,7 +58,5 @@ const mod: JavaModule = {
         },
     },
 };
-
-export { Java };
 
 export default mod;

@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Schema } from '../Schema';
+import { Schema } from './schema';
 
-interface MinecraftVersion {
+export interface MinecraftVersion {
     id: string;
     type: string;
     time: string;
     releaseTime: string;
     url: string;
 }
-interface ForgeDownload {
+export interface ForgeDownload {
     md5?: string;
     sha1: string;
     /**
@@ -16,7 +16,7 @@ interface ForgeDownload {
      */
     path: string;
 }
-interface ForgeVersion {
+export interface ForgeVersion {
     /**
      * The minecraft version
      */
@@ -40,6 +40,21 @@ interface ForgeVersion {
      */
     type: 'buggy' | 'recommended' | 'common' | 'latest';
 }
+export interface ForgeVersionList {
+    /**
+     * @default ""
+     */
+    timestamp: string;
+    /**
+     * @default []
+     */
+    versions: ForgeVersion[];
+    /**
+     * @default ""
+     */
+    mcversion: string;
+}
+
 interface LiteloaderVersionMeta {
     version: string;
     url: string;
@@ -81,20 +96,8 @@ export interface VersionMinecraftSchema {
      */
     versions: MinecraftVersion[];
 }
-export interface VersionForgeSchema extends Array<{
-    /**
-     * @default ""
-     */
-    timestamp: string;
-    /**
-     * @default []
-     */
-    versions: ForgeVersion[];
-    /**
-     * @default ""
-     */
-    mcversion: string;
-}> { }
+
+export interface VersionForgeSchema extends Array<ForgeVersionList> { }
 export interface VersionLiteloaderSchema {
     /**
      * @default ""

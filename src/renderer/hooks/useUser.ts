@@ -1,6 +1,6 @@
-import { EMPTY_GAME_PROFILE } from '@universal/store/modules/user';
-import { UserProfile } from '@universal/store/modules/user.schema';
-import { LoginException } from '@universal/util/exception';
+import { EMPTY_GAME_PROFILE } from '@universal/entities/user';
+import { UserProfile } from '@universal/entities/user.schema';
+import { LoginException } from '@universal/entities/exception';
 import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api';
 import { GameProfile } from '@xmcl/user';
 import { useI18n } from './useI18n';

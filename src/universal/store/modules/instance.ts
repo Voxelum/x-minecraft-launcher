@@ -1,45 +1,13 @@
-import { Resource } from '@main/util/resource';
+import { DEFAULT_PROFILE, Instance, InstanceResource } from '@universal/entities/instance';
+import { InstanceSchema } from '@universal/entities/instance.schema';
+import { JavaRecord } from '@universal/entities/java';
+import { InstanceSaveMetadata } from '@universal/entities/save';
+import { ServerStatus, UNKNOWN_STATUS } from '@universal/entities/serverStatus';
+import { LocalVersion } from '@universal/entities/version';
 import { remove, set } from '@universal/util/middleware';
-import { UNKNOWN_STATUS } from '@universal/util/serverStatus';
-import { Status as ServerStatus } from '@xmcl/client';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { ServerInfo } from '@xmcl/server-info';
-import { GameType } from '@xmcl/world';
 import { ModuleOption } from '../root';
-import { InstanceSchema } from './instance.schema';
-import { JavaRecord } from './java';
-import { LocalVersion } from './version';
-
-export interface InstanceSave {
-    path: string;
-    instanceName: string;
-    name: string;
-    icon: string;
-}
-
-export interface InstanceSaveMetadata extends InstanceSave {
-    levelName: string;
-    mode: GameType;
-    cheat: boolean;
-    gameVersion: string;
-    difficulty: number;
-    lastPlayed: number;
-}
-
-export { InstanceSchema as InstanceConfig };
-
-export interface Instance extends InstanceSchema {
-    path: string;
-
-    /**
-     * The server status
-     */
-    serverStatus: ServerStatus;
-}
-
-export interface InstanceResource extends Resource {
-    filePath: string;
-}
 
 interface State {
     /**
@@ -140,47 +108,6 @@ interface Mutations {
 }
 
 export type InstanceModule = ModuleOption<State, Getters, Mutations, {}>;
-
-export function createTemplate(): Instance {
-    const base: Instance = {
-        path: '',
-        name: '',
-
-        resolution: { width: 800, height: 400, fullscreen: false },
-        minMemory: 0,
-        maxMemory: 0,
-        vmOptions: [],
-        mcOptions: [],
-
-        url: '',
-        icon: '',
-
-        showLog: false,
-        hideLauncher: true,
-
-        runtime: {
-            minecraft: '',
-            forge: '',
-            liteloader: '',
-            fabricLoader: '',
-            yarn: '',
-        },
-        java: '',
-        image: '',
-        blur: 4,
-        server: null,
-
-        author: '',
-        description: '',
-
-        lastAccessDate: -1,
-        creationDate: -1,
-        serverStatus: UNKNOWN_STATUS,
-    };
-    return base;
-}
-
-const DEFAULT_PROFILE: InstanceSchema = createTemplate();
 
 const mod: InstanceModule = {
     state: {

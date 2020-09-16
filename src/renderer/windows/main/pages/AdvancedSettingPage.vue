@@ -171,7 +171,7 @@ import {
   toRefs,
   computed,
 } from '@vue/composition-api';
-import { JavaRecord } from '@universal/store/modules/java';
+import { JavaRecord } from '@universal/entities/java';
 import {
   useI18n,
   useAutoSaveLoad,

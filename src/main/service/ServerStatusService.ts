@@ -1,5 +1,5 @@
 import { exists } from '@main/util/fs';
-import { createFailureServerStatus } from '@universal/util/serverStatus';
+import { createFailureServerStatus } from '@universal/entities/serverStatus';
 import { queryStatus } from '@xmcl/client';
 import { readFile, readJSON } from 'fs-extra';
 import { join } from 'path';

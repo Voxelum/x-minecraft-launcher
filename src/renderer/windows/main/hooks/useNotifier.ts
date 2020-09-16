@@ -1,5 +1,5 @@
 import { useIpc, useI18n } from '@/hooks';
-import { BuiltinNotification, TaskNotification } from '@universal/util/notification';
+import { BuiltinNotification, TaskNotification } from '@universal/entities/notification';
 import { inject, InjectionKey, provide, Ref, ref, onMounted, onUnmounted, watch, reactive, toRefs, computed } from '@vue/composition-api';
 import { useDialog } from './useDialog';
 

@@ -1,5 +1,5 @@
-import { Resource } from '@universal/util/resource';
-import { Issue } from '@universal/store/modules/diagnose';
+import { Resource } from '@universal/entities/resource';
+import { Issue } from '@universal/entities/issue';
 
 export type Exceptions = UserNoProfilesException | CurseforgeModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException;
 

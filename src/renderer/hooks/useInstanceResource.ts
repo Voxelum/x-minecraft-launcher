@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import unknownPack from '@/assets/unknown_pack.png';
 import { basename } from '@/util/basename';
-import { InstanceResource } from '@universal/store/modules/instance';
-import { isResourcePackResource, Resource } from '@universal/util/resource';
+import { InstanceResource } from '@universal/entities/instance';
+import { isResourcePackResource, Resource } from '@universal/entities/resource';
 import { computed, onMounted, ref, Ref, watch } from '@vue/composition-api';
 import { PackMeta } from '@xmcl/resourcepack';
 import { useService, useStore } from '.';

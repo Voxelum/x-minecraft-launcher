@@ -172,7 +172,7 @@
 <script lang=ts>
 import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api';
 import { useLocalVersions } from '@/hooks';
-import { LocalVersion } from '../../../../universal/store/modules/version';
+import { LocalVersion } from '@universal/entities/version';
 
 export default defineComponent({
   props: {

@@ -1,7 +1,7 @@
-import { UserSchema } from '@universal/store/modules/user.schema';
 import { LauncherProfile } from '@main/service/UserService';
+import { UserSchema } from '@universal/entities/user.schema';
+import { AUTH_API_MOJANG, PROFILE_API_MOJANG } from '@xmcl/user';
 import { v4 } from 'uuid';
-import { PROFILE_API_MOJANG, AUTH_API_MOJANG } from '@xmcl/user';
 
 /**
  * Fit the user data from loaded user data and loaded launcher profile json

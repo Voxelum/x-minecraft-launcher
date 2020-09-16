@@ -1,6 +1,6 @@
 import { AUTHLIB_ORG_NAME } from '@main/constant';
 import { validateSha256 } from '@main/util/fs';
-import { IssueReport } from '@universal/store/modules/diagnose';
+import { IssueReport } from '@universal/entities/issue';
 import { LibraryInfo, MinecraftFolder, Version } from '@xmcl/core';
 import { Installer } from '@xmcl/installer';
 import { Task } from '@xmcl/task';

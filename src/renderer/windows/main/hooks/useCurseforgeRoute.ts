@@ -1,5 +1,5 @@
 import { useRouter } from '@/hooks';
-import { ProjectType } from '@universal/store/modules/curseforge';
+import { ProjectType } from '@universal/entities/curseforge';
 
 export function useCurseforgeRoute() {
     const { replace } = useRouter();

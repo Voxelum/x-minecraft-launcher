@@ -1,5 +1,3 @@
-export type Semaphore = 'instance' | 'install' | 'java' | 'diagnose' | 'refreshMinecraft' | 'refreshForge' | 'refreshLiteloader';
-
 export function aquire(semaphore: Record<string, number>, res: string | string[]) {
     const sem = res instanceof Array ? res : [res];
     for (const s of sem) {

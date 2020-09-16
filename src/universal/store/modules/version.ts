@@ -1,46 +1,7 @@
-import { Installer, LiteLoaderInstaller, ForgeInstaller, FabricInstaller } from '@xmcl/installer';
-import lastestRelease from '@universal/util/lasteRelease.json';
+import type { Installer, LiteLoaderInstaller, ForgeInstaller, FabricInstaller } from '@xmcl/installer';
+import { LATEST_RELEASE, LocalVersion } from '@universal/entities/version';
+import { ForgeVersionList, VersionFabricSchema, VersionForgeSchema } from '@universal/entities/version.schema';
 import { ModuleOption } from '../root';
-import { RuntimeVersions } from './instance.schema';
-import { VersionFabricSchema } from './version.schema';
-
-
-export type Status = 'remote' | 'local' | 'loading';
-
-export interface ForgeVersion {
-    /**
-     * The forge version string
-     */
-    version: string;
-    /**
-     * The target minecraft version
-     */
-    minecraft: string;
-    /**
-     * The type of this version
-     */
-    type: 'buggy' | 'recommended' | 'common' | 'latest';
-}
-
-/**
- * An interface to reference a resolved version in 
- * <minecraft folder>/versions/<version-id>/<version-id>.json
- * 
- * This is more lightweight than @xmcl/minecraft-launcher-core's Version by Version.parse.
- */
-export interface LocalVersion extends RuntimeVersions {
-    /**
-     * The ideal id this version, which is computed by 
-     * function universal/utils/versions.js#getExpectVersion
-     */
-    id?: string;
-    /**
-     * The real folder id of the version, which is the <verison-id> in
-     * 
-     * <minecraft folder>/versions/<version-id>/<version-id>.json
-     */
-    folder: string;
-}
 
 interface State {
     /**
@@ -54,7 +15,7 @@ interface State {
     /**
      * Forge version metadata dictionary. Helps to download.
      */
-    forge: ForgeInstaller.VersionList[];
+    forge: VersionForgeSchema;
     /**
      * Fabric version metadata dictionary. Helps to download.
      */
@@ -82,7 +43,7 @@ interface Mutations {
     localVersion: LocalVersion | { [runtime: string]: string };
     localVersionRemove: string;
     minecraftMetadata: Installer.VersionList;
-    forgeMetadata: ForgeInstaller.VersionList;
+    forgeMetadata: ForgeVersionList;
     liteloaderMetadata: LiteLoaderInstaller.VersionList;
     fabricYarnMetadata: { versions: FabricInstaller.FabricArtifactVersion[]; timestamp: string };
     fabricLoaderMetadata: { versions: FabricInstaller.FabricArtifactVersion[]; timestamp: string };
@@ -131,7 +92,7 @@ const mod: VersionModule = {
         /**
          * latest release
          */
-        minecraftRelease: state => state.minecraft.versions.find(v => v.id === state.minecraft.latest.release) || lastestRelease,
+        minecraftRelease: state => state.minecraft.versions.find(v => v.id === state.minecraft.latest.release) || LATEST_RELEASE,
 
         minecraftVersion: state => version => state.minecraft.versions.find(v => v.id === version),
     },

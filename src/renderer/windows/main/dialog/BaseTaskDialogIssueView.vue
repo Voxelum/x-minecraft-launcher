@@ -82,7 +82,7 @@
 <script lang=ts>
 import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api';
 import { useStore } from '@/hooks';
-import { Registry } from '@universal/store/modules/diagnose';
+import { Registry } from '@universal/entities/issue';
 
 interface IssueType {
   name: string;

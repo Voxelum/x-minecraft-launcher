@@ -1,4 +1,4 @@
-import { ProjectType } from '@main/service/CurseForgeService';
+import { ProjectType } from '@universal/entities/curseforge';
 import { computed, onMounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
 import { AddonInfo, Attachment, File } from '@xmcl/curseforge';
 import { useService } from './useService';

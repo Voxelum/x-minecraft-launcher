@@ -1,15 +1,15 @@
+import { Resource, ForgeResource, LiteloaderResource, FabricResource, ResourcePackResource, SaveResource, ModpackResource, CurseforgeModpackResource, UNKNOWN_RESOURCE, Resources } from '@universal/entities/resource';
 import { requireString } from '@universal/util/assert';
 import { remove } from '@universal/util/middleware';
-import { CurseforgeModpackResource, ForgeResource, LiteloaderResource, Resource, ResourcePackResource, SaveResource, UNKNOWN_RESOURCE, FabricResource } from '@universal/util/resource';
 import { ModuleOption } from '../root';
 
 interface State {
     domains: {
-        [domain: string]: Resource<any>[];
+        [domain: string]: Array<Resources>;
         mods: Array<ForgeResource | LiteloaderResource | FabricResource>;
-        resourcepacks: ResourcePackResource[];
-        saves: SaveResource[];
-        modpacks: CurseforgeModpackResource[];
+        resourcepacks: Array<ResourcePackResource>;
+        saves: Array<SaveResource>;
+        modpacks: Array<ModpackResource | CurseforgeModpackResource>;
     };
 }
 
@@ -22,9 +22,9 @@ interface Getters {
 }
 
 interface Mutations {
-    resource: Resource;
-    resources: Resource[];
-    resourceRemove: Resource;
+    resource: Resources;
+    resources: Resources[];
+    resourceRemove: Resources;
 }
 
 
@@ -46,7 +46,7 @@ const mod: ResourceModule = {
             for (const d of Object.keys(state.domains)) {
                 const res = state.domains[d];
                 for (const v of res) {
-                    const uris = v.source.uri;
+                    const uris = v.uri;
                     if (uris.some(u => u === url)) {
                         return v;
                     }
@@ -59,7 +59,7 @@ const mod: ResourceModule = {
         resource: (state, res) => {
             if (res.domain in state.domains) {
                 const domain = state.domains[res.domain];
-                domain.push(Object.freeze(res));
+                domain.push(Object.freeze(res) as any);
             } else {
                 throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`);
             }
@@ -68,7 +68,7 @@ const mod: ResourceModule = {
             for (const res of all) {
                 if (res.domain in state.domains) {
                     const domain = state.domains[res.domain];
-                    domain.push(Object.freeze(res));
+                    domain.push(Object.freeze(res) as any);
                 } else {
                     throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`);
                 }

@@ -2,7 +2,7 @@
 import { BrowserWindow, Tray } from '@main/engineBridge';
 import BaseService from '@main/service/BaseService';
 import { createI18n } from '@main/util/i18n';
-import { TaskNotification } from '@universal/util/notification';
+import { TaskNotification } from '@universal/entities/notification';
 import { StaticStore } from '@universal/util/staticStore';
 import { resolve } from 'path';
 import LauncherApp, { AppContext } from './LauncherApp';

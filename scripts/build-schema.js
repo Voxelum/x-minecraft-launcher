@@ -19,7 +19,7 @@ const compilerOptions = {
     esModuleInterop: true,
 };
 
-const dir = resolve(__dirname, '..', 'src/universal/store/modules');
+const dir = resolve(__dirname, '..', 'src/universal/entities');
 const files = fs.readdirSync(dir).filter(f => f.endsWith('.schema.ts')).map(f => join(dir, f));
 console.log('Generate json schema from these definition files:');
 files.map(f => f.substring(0, f.length - 3).replace(/\\/g, '/')).forEach(f => console.log(f));

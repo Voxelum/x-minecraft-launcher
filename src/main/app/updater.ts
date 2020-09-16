@@ -1,5 +1,5 @@
 import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '@main/constant';
-import { UpdateInfo as _UpdateInfo } from '@universal/store/modules/setting';
+import { UpdateInfo as _UpdateInfo } from '@universal/entities/update';
 import { Task } from '@xmcl/task';
 import { spawn } from 'child_process';
 import { autoUpdater, Provider, UpdateInfo, UpdaterSignal } from 'electron-updater';

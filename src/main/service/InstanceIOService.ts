@@ -1,22 +1,24 @@
+import { getCurseforgeUrl } from '@main/entities/resource';
 import { copyPassively, exists, isDirectory, isFile, readdirIfPresent } from '@main/util/fs';
-import { getCurseforgeUrl } from '@main/util/resource';
 import { openCompressedStreamTask } from '@main/util/zip';
-import { createTemplate, InstanceConfig } from '@universal/store/modules/instance';
-import { InstanceSchema } from '@universal/store/modules/instance.schema';
+import { CurseforgeModpackManifest } from '@universal/entities/curseforge';
+import { Exception } from '@universal/entities/exception';
+import { createTemplate } from '@universal/entities/instance';
+import { InstanceSchema, RuntimeVersions } from '@universal/entities/instance.schema';
 import { isNonnull, requireObject, requireString } from '@universal/util/assert';
-import { Exception } from '@universal/util/exception';
-import { Version } from '@xmcl/core';
+import { MinecraftFolder, Version } from '@xmcl/core';
 import { CurseforgeInstaller } from '@xmcl/installer';
 import { Task } from '@xmcl/task';
-import Unzip from '@xmcl/unzip';
-import { createReadStream, ensureDir, mkdtemp, readJson, remove, stat } from 'fs-extra';
+import { createExtractStream } from '@xmcl/unzip';
+import { createReadStream, ensureDir, mkdtemp, readdir, readJson, remove, stat } from 'fs-extra';
 import { tmpdir } from 'os';
 import { basename, join, relative, resolve } from 'path';
-import { Modpack } from './CurseForgeService';
 import InstanceResourceService from './InstanceResourceService';
 import InstanceService, { EditInstanceOptions } from './InstanceService';
 import ResourceService from './ResourceService';
 import Service, { Inject, Singleton } from './Service';
+import VersionService from './VersionService';
+
 
 export interface InstanceFile { path: string; isDirectory: boolean; isResource: boolean }
 
@@ -90,6 +92,9 @@ export interface ImportCurseforgeModpackOptions {
     instancePath?: string;
 }
 
+/**
+ * Provide the abilities to import/export instance from/to modpack
+ */
 export default class InstanceIOService extends Service {
     @Inject('ResourceService')
     private resourceService!: ResourceService;
@@ -99,6 +104,9 @@ export default class InstanceIOService extends Service {
 
     @Inject('InstanceResourceService')
     private instanceResourceService!: InstanceResourceService;
+
+    @Inject('VersionService')
+    private versionService!: VersionService;
 
     /**
      * Export current instance as a modpack. Can be either curseforge or normal full Minecraft
@@ -178,7 +186,7 @@ export default class InstanceIOService extends Service {
             const status = await stat(p);
             const ino = status.ino;
             const isDirectory = status.isDirectory();
-            const isResource = !!this.resourceService.getResourceByKey(ino)?.source.curseforge;
+            const isResource = !!this.resourceService.getResourceByKey(ino)?.curseforge;
             files.push({ isDirectory, path: relative(path, p).replace(/\\/g, '/'), isResource });
             if (isDirectory) {
                 let childs = await readdirIfPresent(p);
@@ -214,7 +222,7 @@ export default class InstanceIOService extends Service {
             id: `forge-${ganeVersionInstance?.forge}`,
             primary: true,
         }] : [];
-        const curseforgeConfig: Modpack = {
+        const curseforgeConfig: CurseforgeModpackManifest = {
             manifestType: 'minecraftModpack',
             manifestVersion: 1,
             minecraft: {
@@ -229,10 +237,10 @@ export default class InstanceIOService extends Service {
         };
 
         for (const mod of this.state.instance.mods) {
-            if (!mod.source.curseforge) {
+            if (!mod.curseforge) {
                 // add to override
             } else {
-                curseforgeConfig.files.push({ projectID: mod.source.curseforge.projectId, fileID: mod.source.curseforge.fileId, required: true });
+                curseforgeConfig.files.push({ projectID: mod.curseforge.projectId, fileID: mod.curseforge.fileId, required: true });
             }
         }
 
@@ -287,12 +295,12 @@ export default class InstanceIOService extends Service {
         if (!isDir) {
             srcDirectory = await mkdtemp(join(tmpdir(), 'launcher'));
             await createReadStream(location)
-                .pipe(Unzip.createExtractStream(srcDirectory))
+                .pipe(createExtractStream(srcDirectory))
                 .wait();
         }
 
         // check if this game contains the instance.json from us
-        let instanceTemplate: InstanceConfig;
+        let instanceTemplate: InstanceSchema;
 
         let instanceConfigPath = resolve(srcDirectory, 'instance.json');
         let isExportFromUs = await isFile(instanceConfigPath);
@@ -301,10 +309,22 @@ export default class InstanceIOService extends Service {
         } else {
             instanceTemplate = createTemplate();
             instanceTemplate.creationDate = Date.now();
+
+            const dir = new MinecraftFolder(srcDirectory);
+            const versions = await readdir(dir.versions);
+            const localVersion: RuntimeVersions = {} as any;
+            for (const ver of versions) {
+                Object.assign(localVersion, await this.versionService.resolveLocalVersion(ver, dir.root));
+            }
+            delete localVersion.id;
+            delete localVersion.folder;
+            instanceTemplate.runtime = localVersion;
         }
 
+
         // create instance
-        let instancePath = await this.instanceService.createInstance(instanceTemplate);
+        const instancePath = await this.instanceService.createInstance(instanceTemplate);
+
 
         // start copy from src to instance
         await copyPassively(srcDirectory, instancePath, (path) => {

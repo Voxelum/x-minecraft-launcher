@@ -1,14 +1,14 @@
-import { copyPassively, exists, isDirectory, isFile, missing, readdirIfPresent } from '@main/util/fs';
+import { findLevelRootOnPath, getInstanceSave, loadInstanceSaveMetadata } from '@main/entities/save';
+import { copyPassively, isFile, missing, readdirIfPresent } from '@main/util/fs';
 import { includeAllToZip, openCompressedStream, unpack7z } from '@main/util/zip';
-import { InstanceSave, InstanceSaveMetadata } from '@universal/store/modules/instance';
+import { Exception } from '@universal/entities/exception';
+import { InstanceSave } from '@universal/entities/save';
 import { requireObject, requireString } from '@universal/util/assert';
-import { Exception } from '@universal/util/exception';
-import { WorldReader } from '@xmcl/world';
 import { createHash } from 'crypto';
 import filenamify from 'filenamify';
 import { ensureDir, ensureFile, FSWatcher, readdir, remove } from 'fs-extra';
 import watch from 'node-watch';
-import { basename, join, resolve, extname } from 'path';
+import { basename, extname, join, resolve } from 'path';
 import { ZipFile } from 'yazl';
 import Service, { MutationTrigger, ServiceException, Singleton } from './Service';
 
@@ -88,33 +88,9 @@ export interface CloneSaveOptions {
     newSaveName?: string;
 }
 
-function getSaveMetadata(path: string, instanceName: string): InstanceSave {
-    return {
-        path,
-        instanceName,
-        name: basename(path),
-        icon: `file://${join(path, 'icon.png')}`,
-    };
-}
-
-async function loadSave(path: string, instanceName: string): Promise<InstanceSaveMetadata> {
-    const reader = await WorldReader.create(path);
-    const level = await reader.getLevelData();
-    return {
-        path,
-        instanceName,
-        mode: level.GameType,
-        name: basename(path),
-
-        levelName: level.LevelName,
-        icon: `file://${join(path, 'icon.png')}`,
-        gameVersion: level.Version.Name,
-        difficulty: level.Difficulty,
-        cheat: false,
-        lastPlayed: level.LastPlayed.toNumber(),
-    };
-}
-
+/**
+ * Provide the ability to preview saves data of an instance
+ */
 export default class InstanceSavesService extends Service {
     private watcher: FSWatcher | undefined;
 
@@ -133,6 +109,7 @@ export default class InstanceSavesService extends Service {
     /**
      * Load all registered instances' saves metadata
      */
+    @Singleton()
     async loadAllInstancesSaves() {
         let all: Array<InstanceSave> = [];
 
@@ -141,7 +118,7 @@ export default class InstanceSavesService extends Service {
             let saves = await readdirIfPresent(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
             let metadatas = saves
                 .map(s => resolve(saveRoot, s))
-                .map((p) => getSaveMetadata(p, instance.name));
+                .map((p) => getInstanceSave(p, instance.name));
             all.push(...metadatas);
         }
         return all;
@@ -178,7 +155,7 @@ export default class InstanceSavesService extends Service {
             let saves = await Promise.all(savePaths
                 .filter((d) => !d.startsWith('.'))
                 .map((d) => join(savesDir, d))
-                .map((p) => loadSave(p, this.getters.instance.name)));
+                .map((p) => loadInstanceSaveMetadata(p, this.getters.instance.name)));
 
             this.log(`Found ${saves.length} saves in instance ${path}`);
             this.commit('instanceSaves', saves);
@@ -192,7 +169,7 @@ export default class InstanceSavesService extends Service {
             let filePath = filename;
             if (event === 'update') {
                 if (this.state.instance.saves.every((s) => s.path !== filename)) {
-                    loadSave(filePath, this.getters.instance.name).then((save) => {
+                    loadInstanceSaveMetadata(filePath, this.getters.instance.name).then((save) => {
                         this.commit('instanceSaveAdd', save);
                     });
                 }
@@ -265,19 +242,6 @@ export default class InstanceSavesService extends Service {
      * If the instancePath is not presented in the options, it will use the current selected instancePath.
      */
     async importSave(options: ImportSaveOptions) {
-        /**
-         * Find the directory contains the level.dat 
-         */
-        async function findLevelDatRoot(dir: string): Promise<string | undefined> {
-            if (!(await isDirectory(dir))) return undefined;
-            if (await exists(join(dir, 'level.dat'))) return dir;
-            for (let subdir of await readdir(dir)) {
-                let result = await findLevelDatRoot(join(dir, subdir));
-                if (result) return result;
-            }
-            return undefined;
-        }
-
         let { source, instancePath, saveName } = options;
 
         requireString(source);
@@ -304,7 +268,7 @@ export default class InstanceSavesService extends Service {
         }
 
         // validate the source
-        let levelRoot = await findLevelDatRoot(sourceDir);
+        let levelRoot = await findLevelRootOnPath(sourceDir);
         if (!levelRoot) {
             throw new Exception({ type: 'instanceImportIllegalSave', path: source });
         }

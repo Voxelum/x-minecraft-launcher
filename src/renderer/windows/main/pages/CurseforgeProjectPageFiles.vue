@@ -35,7 +35,7 @@
 <script lang=ts>
 import VirtualList from 'vue-virtual-scroll-list';
 import { defineComponent, computed, inject, ref, reactive, toRefs } from '@vue/composition-api';
-import { ProjectType } from '@universal/store/modules/curseforge';
+import { ProjectType } from '@universal/entities/curseforge';
 import { File } from '@xmcl/curseforge';
 import {
   useCurseforgeProjectFiles,
@@ -47,7 +47,7 @@ import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue';
 
 export default defineComponent({
   components: { VirtualList, AddInstanceStepper },
-  props: { project: required(Number), type: required<ProjectType>(String },
+  props: { project: required(Number), type: required<ProjectType>(String) },
   setup(props) {
     const { files, loading, refresh } = useCurseforgeProjectFiles(props.project);
     const { install: installFile, getFileStatus, getFileResource } = useCurseforgeInstall(props.type, props.project);

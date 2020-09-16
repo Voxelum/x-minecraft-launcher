@@ -1,4 +1,4 @@
-import release from '@universal/util/lasteRelease.json';
+import { LATEST_RELEASE } from '@universal/entities/version';
 import { Task } from '@xmcl/task';
 import { existsSync } from 'fs';
 import { join } from 'path';
@@ -43,7 +43,7 @@ describe('InstanceService', () => {
             expect(config.author).toBe('username');
             expect(config.java).toEqual(mocks.getters.defaultJava);
             expect(config.deployments).toBeTruthy();
-            expect(config.version.minecraft).toEqual(release.id);
+            expect(config.version.minecraft).toEqual(LATEST_RELEASE.id);
             expect(config.blur).toEqual(4);
             expect(config.image).toEqual('');
         });
