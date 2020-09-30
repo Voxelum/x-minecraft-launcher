@@ -25,6 +25,8 @@ export interface Resource<T = unknown> extends Readonly<Omit<ResourceSchema, 'me
      */
     readonly ext: string;
 }
+
+
 export type ForgeResource = Resource<Forge.ModMetaData[]> & { readonly type: ResourceType.Forge };
 export type FabricResource = Resource<Fabric.ModMetadata> & { readonly type: ResourceType.Fabric };
 export type LiteloaderResource = Resource<LiteLoader.MetaData> & { readonly type: ResourceType.Liteloader };
@@ -33,6 +35,7 @@ export type CurseforgeModpackResource = Resource<CurseforgeModpackManifest> & { 
 export type ModpackResource = Resource<Modpack> & { readonly type: ResourceType.Modpack };
 export type SaveResource = Resource<LevelDataFrame> & { readonly type: ResourceType.Save };
 export type UnknownResource = Resource<unknown> & { readonly type: ResourceType.Unknown };
+export type ModResource = ForgeResource | FabricResource | LiteloaderResource;
 export type Resources = ForgeResource
     | FabricResource
     | LiteloaderResource
@@ -54,7 +57,7 @@ export function isResourcePackResource(resource: Resource): resource is Resource
     return resource.type === 'resourcepack';
 }
 
-export function isModResource(resource: Resource): resource is ForgeResource | FabricResource | LiteloaderResource {
+export function isModResource(resource: Resource): resource is ModResource {
     return resource.type === 'forge' || resource.type === 'fabric' || resource.type === 'liteloader';
 }
 

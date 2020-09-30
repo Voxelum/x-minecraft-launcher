@@ -1,5 +1,4 @@
 import { InstanceSchema } from './instance.schema';
-import { Resource } from './resource';
 import { ServerStatus, UNKNOWN_STATUS } from './serverStatus';
 
 export interface Instance extends InstanceSchema {
@@ -9,10 +8,6 @@ export interface Instance extends InstanceSchema {
      * The server status
      */
     serverStatus: ServerStatus;
-}
-
-export interface InstanceResource extends Resource {
-    filePath: string;
 }
 
 export const DEFAULT_PROFILE: InstanceSchema = Object.freeze(createTemplate());
