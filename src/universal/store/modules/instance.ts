@@ -1,6 +1,7 @@
-import { DEFAULT_PROFILE, Instance, InstanceResource } from '@universal/entities/instance';
+import { DEFAULT_PROFILE, Instance } from '@universal/entities/instance';
 import { InstanceSchema } from '@universal/entities/instance.schema';
 import { JavaRecord } from '@universal/entities/java';
+import { ModResource, ResourcePackResource } from '@universal/entities/resource';
 import { InstanceSaveMetadata } from '@universal/entities/save';
 import { ServerStatus, UNKNOWN_STATUS } from '@universal/entities/serverStatus';
 import { LocalVersion } from '@universal/entities/version';
@@ -32,9 +33,9 @@ interface State {
      */
     settings: GameSetting & { resourcePacks: Array<string> };
 
-    mods: InstanceResource[];
+    mods: ModResource[];
 
-    resourcepacks: InstanceResource[];
+    resourcepacks: ResourcePackResource[];
 }
 
 interface Getters {
@@ -98,13 +99,13 @@ interface Mutations {
     instanceSaveAdd: InstanceSaveMetadata;
     instanceSaveRemove: string;
 
-    instanceMods: InstanceResource[];
-    instanceModAdd: InstanceResource;
-    instanceModRemove: InstanceResource;
+    instanceMods: InstanceModResource[];
+    instanceModAdd: InstanceModResource;
+    instanceModRemove: InstanceModResource;
 
-    instanceResourcepacks: InstanceResource[];
-    instanceResourcepackAdd: InstanceResource;
-    instanceResourcepackRemove: InstanceResource;
+    instanceResourcepacks: InstanceResourcePackResource[];
+    instanceResourcepackAdd: InstanceResourcePackResource;
+    instanceResourcepackRemove: InstanceResourcePackResource;
 }
 
 export type InstanceModule = ModuleOption<State, Getters, Mutations, {}>;

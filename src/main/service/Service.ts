@@ -192,22 +192,22 @@ export default class Service implements Managers {
     /**
      * Return the path under the config root
      */
-    protected getAppDataPath: (...args: string[]) => string = (args) => join(this.app.appDataPath, ...args);
+    protected getAppDataPath: (...args: string[]) => string = (...args) => join(this.app.appDataPath, ...args);
 
     /**
      * Return the path under the temp root
      */
-    protected getTempPath: (...args: string[]) => string = (args) => join(this.app.temporaryPath, ...args);
+    protected getTempPath: (...args: string[]) => string = (...args) => join(this.app.temporaryPath, ...args);
 
     /**
      * Return the path under game libraries/assets root
      */
-    protected getPath: (...args: string[]) => string = (args) => join(this.app.gameDataPath, ...args);
+    protected getPath: (...args: string[]) => string = (...args) => join(this.app.gameDataPath, ...args);
 
     /**
      * Return the path under .minecraft folder
      */
-    protected getMinecraftPath: (...args: string[]) => string = (args) => join(this.app.minecraftDataPath, ...args);
+    protected getMinecraftPath: (...args: string[]) => string = (...args) => join(this.app.minecraftDataPath, ...args);
 
     /**
      * The path of .minecraft
@@ -298,16 +298,16 @@ export default class Service implements Managers {
             if (!valid) {
                 // this.warn('Try to remove those invalid keys. This might cause problem.');
                 // this.warn(originalString);
-                const context = createContext({ object });
-                if (validation.errors) {
-                    // this.warn(`Found invalid config file on ${path}.`);
-                    // validation.errors.forEach(e => this.warn(e));
-                    const cmd = validation.errors.filter(e => e.dataPath).map(e => `delete object${e.dataPath};`);
-                    if (cmd.length !== 0) {
-                        // this.log(cmd.join('\n'));
-                        runInContext(cmd.join('\n'), context);
-                    }
-                }
+                // const context = createContext({ object });
+                // if (validation.errors) {
+                //     // this.warn(`Found invalid config file on ${path}.`);
+                //     // validation.errors.forEach(e => this.warn(e));
+                //     const cmd = validation.errors.filter(e => e.dataPath).map(e => `delete object${e.dataPath};`);
+                //     if (cmd.length !== 0) {
+                //         // this.log(cmd.join('\n'));
+                //         runInContext(cmd.join('\n'), context);
+                //     }
+                // }
             }
         }
 

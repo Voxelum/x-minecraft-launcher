@@ -272,7 +272,7 @@ export function getResourceFromBuilder(builder: ResourceBuilder): Resource {
 export function getBuilderFromResource(resource: Resource): ResourceBuilder {
     return { ...resource };
 }
-export function mutateResource<T>(resource: Resource<T>, mutation: (builder: ResourceBuilder) => void): Resource<T> {
+export function mutateResource<T extends Resource<any>>(resource: T, mutation: (builder: ResourceBuilder) => void): T {
     const builder = getResourceFromBuilder(resource);
     mutation(builder);
     return getResourceFromBuilder(builder) as any;

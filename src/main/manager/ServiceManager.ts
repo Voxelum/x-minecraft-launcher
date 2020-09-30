@@ -11,6 +11,7 @@ import InstanceLogService from '@main/service/InstanceLogService';
 import InstanceResourceService from '@main/service/InstanceResourceService';
 import InstanceSavesService from '@main/service/InstanceSavesService';
 import InstanceService from '@main/service/InstanceService';
+import IOService from '@main/service/IOService';
 import JavaService from '@main/service/JavaService';
 import LaunchService from '@main/service/LaunchService';
 import ResourcePackPreviewService from '@main/service/ResourcePackPreviewService';
@@ -114,10 +115,10 @@ export default class ServiceManager extends Manager {
                 if (type in servMap) {
                     let success = Reflect.set(serv, field, servMap[type]);
                     if (!success) {
-                        throw new Error(`Cannot set service ${i} to ${Object.getPrototypeOf(serv)}`);
+                        throw new Error(`Cannot set service ${type} to ${Object.getPrototypeOf(serv)}`);
                     }
                 } else {
-                    throw new Error(`Cannot find service named ${i}! Which is required by ${Object.getPrototypeOf(serv).constructor.name}`);
+                    throw new Error(`Cannot find service named ${type}! Which is required by ${Object.getPrototypeOf(serv).constructor.name}`);
                 }
             }
 
@@ -281,6 +282,7 @@ export default class ServiceManager extends Manager {
         this.registerService(InstanceIOService);
         this.registerService(InstanceResourceService);
         this.registerService(ResourcePackPreviewService);
+        this.registerService(IOService);
 
         this.setupServices();
         await this.loadServices();

@@ -2,6 +2,7 @@ import { readResourceHeader } from '@main/entities/resource';
 import { pipeline, sha1, sha1ByPath } from '@main/util/fs';
 import { openCompressedStreamTask } from '@main/util/zip';
 import { Resource } from '@universal/entities/resource';
+import { ResourceDomain } from '@universal/entities/resource.schema';
 import { createHash } from 'crypto';
 import { FileType, stream as fileTypeByStream } from 'file-type';
 import { createReadStream, rename, stat, unlink, writeFile } from 'fs-extra';
@@ -16,12 +17,13 @@ export interface ReadFileMetadataOptions {
     hint?: ExpectFileType;
     size?: number;
 }
+
 export interface FileMetadata {
     /**
      * Where the file import from
      */
     path: string;
-    type: BuiltinType | 'modpack' | 'unknown';
+    type: ResourceDomain;
     fileType: FileType | 'unknown' | 'directory';
     existed: boolean;
     /**
@@ -61,10 +63,6 @@ export default class IOService extends Service {
                     end();
                     await task.execute().wait();
                     // zip and import
-                    this.resourceService.addResource({
-                        path: tempZipPath,
-
-                    });
                     await this.resourceService.importResource({ path: tempZipPath, type: resourceType });
                     await unlink(tempZipPath);
                 } else {

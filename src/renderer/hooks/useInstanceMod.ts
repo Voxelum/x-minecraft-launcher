@@ -1,4 +1,3 @@
-import { InstanceResource } from '@universal/entities/instance';
 import { FabricResource, ForgeResource, isModResource, LiteloaderResource, Resource } from '@universal/entities/resource';
 import { computed } from '@vue/composition-api';
 import { useService, useStore } from '.';
@@ -73,7 +72,7 @@ export function useInstanceMods() {
             acceptVersion: 'unknown',
             acceptLoaderVersion: 'unknown',
             type: 'forge',
-            url: resource.source.uri[0],
+            url: resource.uri[0],
             hash: resource.hash,
             tags: resource.tags,
             enabled: false,
@@ -124,23 +123,23 @@ export function useInstanceMods() {
         return modItem;
     }
 
-    function getModItemFromResource(resource: Resource | InstanceResource): ModItem {
+    function getModItemFromResource(resource: Resource): ModItem {
         if (isModResource(resource)) {
             return getModItemFromModResource(resource);
         }
         return {
-            path: 'filePath' in resource ? resource.filePath : resource.path,
-            id: 'filePath' in resource ? resource.filePath : resource.hash,
+            path: resource.path,
+            id: resource.hash,
             name: resource.path,
             version: '',
             description: '',
             icon: '',
             acceptVersion: '[*]',
             type: 'unknown',
-            url: resource.source.uri[0],
+            url: resource.uri[0],
             acceptLoaderVersion: '',
             hash: resource.hash,
-            tags: [],
+            tags: resource.tags,
             enabled: false,
             resource,
             subsequence: false,
@@ -157,7 +156,7 @@ export function useInstanceMods() {
 
         await Promise.all([
             deploy({ resources: enabled.map(m => m.resource) }),
-            undeploy(disabled.map(m => m.resource as InstanceResource)),
+            undeploy(disabled.map(m => m.resource)),
         ]);
     }
 

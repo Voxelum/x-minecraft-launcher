@@ -1,17 +1,16 @@
-import { createResourceBuilder, getBuilderFromResource, getResourceFromBuilder, importResource, mutateResource, readResourceHeader, removeResource, ResourceCache, SourceInformation } from '@main/entities/resource';
+import { importResource, mutateResource, readResourceHeader, removeResource, ResourceCache, SourceInformation } from '@main/entities/resource';
 import { fixResourceSchema } from '@main/util/dataFix';
-import { copyPassively, readdirEnsured, sha1, sha1ByPath } from '@main/util/fs';
+import { copyPassively, readdirEnsured, sha1ByPath } from '@main/util/fs';
 import { Resource, Resources, UNKNOWN_RESOURCE } from '@universal/entities/resource';
-import { CurseforgeInformation, ResourceSchema, ResourceType } from '@universal/entities/resource.schema';
+import { ResourceSchema } from '@universal/entities/resource.schema';
 import { requireString } from '@universal/util/assert';
 import { Task, task } from '@xmcl/task';
-import { FileType } from 'file-type';
-import { readFile, stat } from 'fs-extra';
-import { extname, isAbsolute, join } from 'path';
+import { stat } from 'fs-extra';
+import { extname, join } from 'path';
 import Service from './Service';
 
 export type ImportTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save';
-export type ImportOption = {
+export type ImportOptions = {
     /**
      * The real file path of the resource
      */
@@ -28,6 +27,18 @@ export type ImportOption = {
     url?: string[];
 
     background?: boolean;
+}
+export interface ImportMultipleFilesOptions {
+    files: Array<{
+        filePath: string;
+        url: string[];
+        source?: SourceInformation
+    }>;
+    background?: boolean;
+    /**
+     * The hint for the import file type
+     */
+    type?: ImportTypeHint;
 }
 export interface ParseFilesOptions {
     files: { path: string; hint?: ImportTypeHint; size?: number }[];
@@ -58,7 +69,7 @@ export default class ResourceService extends Service {
      * Query in memory resource by key.
      * The key can be `hash`, `url` or `ino` of the file.
      */
-    getResourceByKey(key: string | number): Resource | undefined {
+    getResourceByKey(key: string | number): Resources | undefined {
         return this.cache.get(key);
     }
 
@@ -104,10 +115,20 @@ export default class ResourceService extends Service {
 
                 fixResourceSchema(resourceData, this.getPath());
 
-                const resourceFilePath = this.getPath(resourceData.location + resourceData.ext);
+                console.log(resourceData);
+
+                const resourceFilePath = this.getPath(resourceData.location);
                 const { size, ino } = await stat(resourceFilePath);
                 const resource: Resource = Object.freeze({
-                    ...resourceData,
+                    location: resourceData.location,
+                    name: resourceData.name,
+                    domain: resourceData.domain,
+                    type: resourceData.type,
+                    metadata: resourceData.metadata,
+                    uri: resourceData.uri,
+                    date: resourceData.date,
+                    tags: resourceData.tags,
+                    hash: resourceData.hash,
                     path: resourceFilePath,
                     size,
                     ino,
@@ -119,31 +140,6 @@ export default class ResourceService extends Service {
             });
             this.loadPromises[domain] = promise;
         });
-    }
-
-    /**
-     * Touch a resource. If it's checksum not matched, it will re-import this resource.
-     */
-    async touchResource(resourceKey: string) {
-        let resource = this.normalizeResource(resourceKey);
-        if (resource === UNKNOWN_RESOURCE) {
-            return;
-        }
-        try {
-            let builder = getBuilderFromResource(resource);
-            builder.hash = await sha1ByPath(resource.path);
-            if (builder.hash !== resource.hash) {
-                const newResource = this.getResource(builder);
-                this.cache.discard(resource);
-                this.cache.put(newResource);
-                this.commit('resource', newResource);
-            }
-        } catch (e) {
-            this.cache.discard(resource);
-            await this.unpersistResource(resource);
-            this.commit('resourceRemove', resource);
-            this.error(e);
-        }
     }
 
     /**
@@ -180,37 +176,45 @@ export default class ResourceService extends Service {
     * @param urls The urls
     * @param source The source metadata
     */
-    async importResources(files: {
-        filePath: string;
-        url: string[];
-        source?: {
-            curseforge?: CurseforgeInformation;
-        };
-    }[], typeHint?: string) {
-        let resources = await Promise.all(files.map((f) => this.resolveResourceTask({ path: f.filePath, url: f.url, source: f.source, type: typeHint }).execute().wait()));
-        this.log(`Import ${files.length} resources. Imported ${resources.filter(r => r.imported).length} new resources, and ${resources.filter(r => !r.imported).length} resources existed.`);
-        for (let resource of resources) {
-            this.cache.put(resource.resource);
+    async importResources(options: ImportMultipleFilesOptions) {
+        const total = await Promise.all(options.files.map((f) => this.queryExistedResourceByPath(f.filePath)));
+        const existedCount = total.filter((r) => !!r).length;
+        const resources = await Promise.all(options.files
+            .filter((_, i) => !total[i])
+            .map((f) => this.resolveResourceTask({ path: f.filePath, url: f.url, source: f.source, type: options.type, background: options.background })
+                .execute().wait()));
+
+        this.log(`Import ${total.length} resources. Imported ${resources.length} new resources, and ${existedCount} resources existed.`);
+        for (const resource of resources) {
+            this.cache.put(resource);
         }
-        this.commit('resources', resources.map(r => r.resource));
+        this.commit('resources', resources);
+    }
+
+    addResource(resources: Resources[]) {
+        for (const resource of resources) {
+            this.cache.put(resource);
+        }
+        this.commit('resources', resources);
     }
 
     /**
      * Import the resource into the launcher.
      * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.
      */
-    async importResource(option: ImportOption) {
+    async importResource(option: ImportOptions) {
         requireString(option.path);
-        let task = this.resolveResourceTask(option);
-        let { resource, imported } = await (option.background ? task.execute().wait() : this.submit(task).wait());
-        if (imported) {
+        const existed = await this.queryExistedResourceByPath(option.path);
+        if (!existed) {
+            const task = this.resolveResourceTask(option);
+            const resource = await (option.background ? task.execute().wait() : this.submit(task).wait());
             this.log(`Import and cache newly added resource ${resource.path}`);
             this.cache.put(resource);
             this.commit('resource', resource);
-        } else if (!option.background) {
-            this.log(`Import existed resource ${resource.path}`);
+            return resource;
         }
-        return resource;
+        this.log(`Skip to import ${existed.path} as resource existed`);
+        return existed;
     }
 
     /**
@@ -229,42 +233,34 @@ export default class ResourceService extends Service {
         await Promise.all(promises);
     }
 
+    async queryExistedResourceByPath(path: string) {
+        let result: Resources | undefined;
+
+        const fileStat = await stat(path);
+
+        result = this.getResourceByKey(fileStat.ino);
+
+        if (!result) {
+            result = this.getResourceByKey(await sha1ByPath(path));
+        }
+
+        return result;
+    }
+
     // bridge from dry function to `this` context
 
     /**
      * Resolve resource task. This will not write the resource to the cache, but it will persist the resource to disk.  
      */
-    resolveResourceTask(importOption: ImportOption) {
+    resolveResourceTask(importOption: ImportOptions) {
         const resolve = async (context: Task.Context) => {
             const { path, source = {}, url = [], type } = importOption;
             context.update(0, 4, path);
-
-            const fileStat = await stat(path);
-            context.update(0, 1, path);
-
-            if (fileStat.isDirectory()) {
-                throw new Error(`Cannot import dictionary resource ${importOption.path}`);
-            }
-
-            let hash: string | undefined;
-            let resource: Resource | undefined;
-
-            resource = this.getResourceByKey(fileStat.ino);
-            if (!resource) {
-                hash = await sha1ByPath(path);
-                resource = this.getResourceByKey(hash);
-            }
-            context.update(2, 4, path);
-            // resource existed
-            if (resource) {
-                return { imported: false, resource };
-            }
-
             const resolved = await readResourceHeader(path, type);
             context.update(3, 4, path);
             const result = await importResource(path, source ?? {}, resolved, this.getPath());
             context.update(4, 4, path);
-            return { imported: true, resource: result };
+            return result as Resources;
         };
 
         return task('importResource', resolve);

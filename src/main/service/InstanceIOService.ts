@@ -410,13 +410,15 @@ export default class InstanceIOService extends Service {
                 },
             }).run(ctx);
 
-            await this.resourceService.importResources(files.map((f) => ({
-                filePath: f.path,
-                url: [f.url, getCurseforgeUrl(f.projectID, f.fileID)],
-                source: {
-                    curseforge: { projectId: f.projectID, fileId: f.fileID },
-                },
-            })));
+            await this.resourceService.importResources({
+                files: files.map((f) => ({
+                    filePath: f.path,
+                    url: [f.url, getCurseforgeUrl(f.projectID, f.fileID)],
+                    source: {
+                        curseforge: { projectId: f.projectID, fileId: f.fileID },
+                    },
+                })),
+            });
             return instancePath;
         });
         return this.submit(installCurseforgeModpack).wait();
