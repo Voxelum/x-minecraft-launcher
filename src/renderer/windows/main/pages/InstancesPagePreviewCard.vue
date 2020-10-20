@@ -11,7 +11,7 @@
     <v-img
       class="white--text favicon grey darken-2"
       height="100px"
-      :src="favicon || ''"
+      :src="image"
     >
       <v-container fill-height fluid>
         <v-layout fill-height row wrap>
@@ -40,8 +40,11 @@
       <v-list-tile class="grow">
         <v-list-tile-content style="overflow-x: auto; max-width: 275px; white-space: nowrap; display: block;">
           <v-chip v-if="instance.server" small label :selected="false" @click.stop>
+            <text-component :source="version.name" />
+          </v-chip>
+          <v-chip v-if="instance.server" small label :selected="false" @click.stop>
             <v-avatar>
-              <v-icon :style="{ color: ping < 100 ? 'green' : ping < 300 ? 'orange' : 'red' }">
+              <v-icon :style="{ color: ping < 0 ? 'grey' : ping < 100 ? 'green' : ping < 300 ? 'orange' : 'red' }">
                 signal_cellular_alt
               </v-icon>
             </v-avatar>
@@ -59,10 +62,7 @@
             </v-avatar>
             {{ instance.runtime.minecraft }}
           </v-chip>
-          <v-chip v-if="instance.server" small label :selected="false" @click.stop>
-            {{ version.name }}  
-          </v-chip>
-          <v-chip v-if="!instance.server" small label :selected="false" @click.stop>
+          <v-chip v-if="!instance.server && instance.author" small label :selected="false" @click.stop>
             <v-avatar>
               <v-icon>person</v-icon>
             </v-avatar>
@@ -75,9 +75,11 @@
 </template>
 <script lang=ts>
 import { defineComponent, reactive, toRefs, computed } from '@vue/composition-api';
+import unknownServer from '@/assets/unknown_server.png';
 import { useInstanceServerStatus } from '@/hooks';
 import { Instance } from '@universal/entities/instance';
 import { required } from '@/util/props';
+import { getBanner } from '@/util/banner';
 
 export default defineComponent({
   props: {
@@ -87,8 +89,20 @@ export default defineComponent({
     function onDragStart(event: DragEvent) {
       event.dataTransfer!.effectAllowed = 'move';
     }
+    const { favicon, ...status } = useInstanceServerStatus(props.instance.path);
+    const image = computed(() => {
+      if (favicon.value !== unknownServer) {
+        return favicon.value;
+      }
+      const banner = getBanner(props.instance.runtime.minecraft);
+      if (banner) {
+        return banner;
+      }
+      return unknownServer;
+    });
     return {
-      ...useInstanceServerStatus(props.instance.path),
+      image,
+      ...status,
       description: computed(() => props.instance.description),
       onDragStart,
     };
@@ -98,6 +112,6 @@ export default defineComponent({
 
 <style>
 .favicon .v-image__image {
-   filter: blur(10px);
+   filter: blur(2px);
 }
 </style>
