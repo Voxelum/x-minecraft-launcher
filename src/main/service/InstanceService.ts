@@ -5,7 +5,7 @@ import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/entities/server
 import { LATEST_RELEASE } from '@universal/entities/version';
 import { requireObject, requireString } from '@universal/util/assert';
 import { assignShallow } from '@universal/util/object';
-import { queryStatus, Status } from '@xmcl/client';
+import { Status } from '@xmcl/client';
 import { readInfo, ServerInfo } from '@xmcl/server-info';
 import { ensureDir, readdir, readFile, remove } from 'fs-extra';
 import { join, resolve } from 'path';
@@ -429,7 +429,7 @@ export class InstanceService extends Service {
             let { host, port } = prof.server;
             this.log(`Ping server ${host}:${port}`);
             this.commit('instanceStatus', PINGING_STATUS);
-            let status = await this.statusService.pingServer({ host, port });
+            const status = await this.statusService.pingServer({ host, port });
             this.commit('instanceStatus', status);
         }
     }
@@ -439,7 +439,7 @@ export class InstanceService extends Service {
      */
     async refreshServerStatusAll() {
         let all = Object.values(this.state.instance.all).filter(p => !!p.server);
-        let results = await Promise.all(all.map(async p => ({ [p.path]: await queryStatus(p.server!) })));
+        let results = await Promise.all(all.map(async p => ({ [p.path]: await this.statusService.pingServer(p.server!) })));
         this.commit('instancesStatus', results.reduce((a, b) => { Object.assign(a, b); return a; }, {}));
     }
 
