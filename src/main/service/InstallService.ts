@@ -285,7 +285,6 @@ export default class InstallService extends Service {
         }
     }
 
-
     /**
      * Install provided libraries.
      */

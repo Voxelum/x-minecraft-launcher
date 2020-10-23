@@ -67,7 +67,7 @@
           >
             <mod-card
               v-for="(item, index) in items"
-              :key="item.url"
+              :key="item.id"
               v-observe-visibility="(visible) => onVisible(visible, index)"
               class="list-item"
               :source="item"

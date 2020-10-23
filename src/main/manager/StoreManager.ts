@@ -33,6 +33,7 @@ export default class StoreManager extends Manager {
         this.store!.subscribe((mutation, state) => {
             this.checkPoint = state;
             this.checkPointId += 1; // record the total order
+            // broadcast commit
             this.app.broadcast('commit', mutation, this.checkPointId);
         });
     }
