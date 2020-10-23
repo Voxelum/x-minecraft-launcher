@@ -1,7 +1,7 @@
 import { Resource } from '@universal/entities/resource';
 import { Issue } from '@universal/entities/issue';
 
-export type Exceptions = UserNoProfilesException | CurseforgeModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException;
+export type Exceptions = PingServerException | UserNoProfilesException | CurseforgeModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException;
 
 export interface ExceptionBase {
     type: string;
@@ -97,6 +97,12 @@ export interface UserNoProfilesException extends ExceptionBase {
     authService: string;
     profileService: string;
     username: string;
+}
+
+export interface PingServerException extends ExceptionBase {
+    type: 'pingServerTimeout' | 'pingServerNotFound' | 'pingServerRefused';
+    host: string;
+    port: number
 }
 
 export function isFileNoFound(e: unknown) {

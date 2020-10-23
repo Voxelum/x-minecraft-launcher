@@ -1,6 +1,7 @@
-import { useIpc, useI18n } from '@/hooks';
+import { useI18n, useIpc } from '@/hooks';
+import { PingServerException } from '@universal/entities/exception';
 import { BuiltinNotification, TaskNotification } from '@universal/entities/notification';
-import { inject, InjectionKey, provide, Ref, ref, onMounted, onUnmounted, watch, reactive, toRefs, computed } from '@vue/composition-api';
+import { computed, inject, InjectionKey, onMounted, onUnmounted, provide, reactive, Ref, ref, toRefs, watch } from '@vue/composition-api';
 import { useDialog } from './useDialog';
 
 export type Level = 'success' | 'info' | 'warning' | 'error';
@@ -53,6 +54,21 @@ export function useNotificationHandler() {
         title: (n) => $t(n.name, n.arguments),
         body: (n) => $t('task.failBody', { name: $t(n.name) }),
         more: showTask,
+    });
+    register<PingServerException>('pingServerTimeout', {
+        level: 'error',
+        title: () => $t('profile.server.status.timeout'),
+        body: (e) => `${e.host}:${e.port}`,
+    });
+    register<PingServerException>('pingServerNotFound', {
+        level: 'error',
+        title: () => $t('profile.server.status.nohost'),
+        body: (e) => `${e.host}:${e.port}`,
+    });
+    register<PingServerException>('pingServerRefused', {
+        level: 'error',
+        title: () => $t('profile.server.status.refuse'),
+        body: (e) => `${e.host}:${e.port}`,
     });
 
     return registry;

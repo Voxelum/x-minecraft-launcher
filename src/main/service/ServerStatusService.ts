@@ -39,17 +39,21 @@ export default class ServerStatusService extends Service {
         const { host, port = 25565, protocol } = payload;
         this.log(`Ping server ${host}:${port} with protocol: ${protocol}`);
         try {
-            return queryStatus({ host, port }, { protocol });
+            const status = await queryStatus({ host, port }, { protocol });
+            return status;
         } catch (e) {
+            if (e.message === 'Connection timeout.') {
+                return createFailureServerStatus('profile.server.status.timeout');
+            }
             switch (e.code) {
                 case 'ETIMEOUT':
-                    return createFailureServerStatus('server.status.timeout');
+                    return createFailureServerStatus('profile.server.status.timeout');
                 case 'ENOTFOUND':
-                    return createFailureServerStatus('server.status.nohost');
+                    return createFailureServerStatus('profile.server.status.nohost');
                 case 'ECONNREFUSED':
-                    return createFailureServerStatus('server.status.refuse');
+                    return createFailureServerStatus('profile.server.status.refuse');
                 default:
-                    return createFailureServerStatus('server.status.ping');
+                    return createFailureServerStatus('profile.server.status.ping');
             }
         }
     }
