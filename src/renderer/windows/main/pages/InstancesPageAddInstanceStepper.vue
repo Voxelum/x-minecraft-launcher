@@ -367,15 +367,16 @@ function setupTemplates() {
       return version;
     }
 
-    let version = `Minecraft: ${resource.metadata.runtimes.minecraft}`;
-    if (resource.metadata.runtimes.forge) {
-      version += ` Forge ${resource.metadata.runtimes.forge}`;
+    const runtimes = resource.metadata.runtime ?? {};
+    let version = `Minecraft: ${runtimes.minecraft}`;
+    if (runtimes.forge) {
+      version += ` Forge ${runtimes.forge}`;
     }
-    if (resource.metadata.runtimes.liteloader) {
-      version += ` Liteloader ${resource.metadata.runtimes.liteloader}`;
+    if (runtimes.liteloader) {
+      version += ` Liteloader ${runtimes.liteloader}`;
     }
-    if (resource.metadata.runtimes.fabricLoader) {
-      version += ` Fabric ${resource.metadata.runtimes.fabricLoader}`;
+    if (runtimes.fabricLoader) {
+      version += ` Fabric ${runtimes.fabricLoader}`;
     }
     return version;
   };

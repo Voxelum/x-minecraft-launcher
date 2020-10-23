@@ -43,9 +43,9 @@ const mod: ResourceModule = {
     getters: {
         queryResource: state => (url) => {
             requireString(url);
-            for (const d of Object.keys(state.domains)) {
-                const res = state.domains[d];
-                for (const v of res) {
+            for (const domain of Object.keys(state.domains)) {
+                const resources = state.domains[domain];
+                for (const v of resources) {
                     const uris = v.uri;
                     if (uris.some(u => u === url)) {
                         return v;

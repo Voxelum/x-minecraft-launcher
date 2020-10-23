@@ -2,49 +2,54 @@
   <v-container grid-list-md fill-height style="z-index: 10; padding">
     <v-layout row wrap>
       <v-flex tag="h1" style="display: flex" class="white--text" xs12>
-        <span class="headline">{{ name || id }}</span>
+        <span style="flex-grow: 1">{{ name || id }}</span>
         <v-spacer />
-        <v-menu>
-          <template v-slot:activator="{ on }">
-            <v-btn flat v-on="on"> Install To Storage </v-btn>
-          </template>
-
-          <!-- TODO: implement this -->
-          <!-- <v-list>
-            <v-list-tile
-              v-for="(item, index) in items"
-              :key="index"
-              @click=""
-            >
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-            </v-list-tile>
-          </v-list> -->
-        </v-menu>
+        <dest-menu v-model="destination" style="flex-grow: 1" :from="from" />
       </v-flex>
       <v-flex xs12>
         <v-layout fill-height row>
           <v-flex xs8>
             <v-tabs v-model="tab" dark slider-color="yellow">
-              <v-tab>{{ $t('curseforge.project.description') }}</v-tab>
-              <v-tab>{{ $t('curseforge.project.files') }}</v-tab>
-              <v-tab>{{ $t('curseforge.project.images') }}</v-tab>
+              <v-tab>{{ $t("curseforge.project.description") }}</v-tab>
+              <v-tab>{{ $t("curseforge.project.files") }}</v-tab>
+              <v-tab>{{ $t("curseforge.project.images") }}</v-tab>
               <v-tab-item>
                 <project-description :project="projectId" />
               </v-tab-item>
               <v-tab-item>
-                <project-files :project="projectId" :type="type" />
+                <project-files :project="projectId" :type="type" :from="from" />
               </v-tab-item>
               <v-tab-item>
-                <v-card style="overflow: auto; max-width: 100%; max-height: 70vh; min-height: 70vh">
-                  <v-container v-if="false" fill-height style="min-height: 65vh;">
+                <v-card
+                  style="
+                    overflow: auto;
+                    max-width: 100%;
+                    max-height: 70vh;
+                    min-height: 70vh;
+                  "
+                >
+                  <v-container
+                    v-if="false"
+                    fill-height
+                    style="min-height: 65vh"
+                  >
                     <v-layout justify-center align-center fill-height>
                       <v-progress-circular indeterminate :size="100" />
                     </v-layout>
                   </v-container>
                   <v-container v-else fill-height grid-list-md>
                     <v-layout row wrap>
-                      <v-flex v-for="(img, index) in attachments" :key="index" d-flex>
-                        <v-card flat hover style="min-width: 100px;" @click="viewImage(img)">
+                      <v-flex
+                        v-for="(img, index) in attachments"
+                        :key="index"
+                        d-flex
+                      >
+                        <v-card
+                          flat
+                          hover
+                          style="min-width: 100px"
+                          @click="viewImage(img)"
+                        >
                           <v-img :src="img.url" />
                           <v-card-title>{{ img.title }}</v-card-title>
                         </v-card>
@@ -58,22 +63,26 @@
           <v-flex xs4 fill-height>
             <v-layout column>
               <v-flex xs6>
-                <v-card style="max-height: 214px; min-height: 214px;">
+                <v-card style="max-height: 214px; min-height: 214px">
                   <v-card-title style="display: block">
-                    <div style="font-weight: 500;">{{ $t('curseforge.createdDate') }}</div>
-                    <div
-                      style="color: grey; padding-left: 5px"
-                    >
+                    <div style="font-weight: 500">
+                      {{ $t("curseforge.createdDate") }}
+                    </div>
+                    <div style="color: grey; padding-left: 5px">
                       {{ new Date(createdDate).toLocaleString() }}
                     </div>
-                    <div style="font-weight: 500;">{{ $t('curseforge.lastUpdate') }}</div>
-                    <div
-                      style="color: grey; padding-left: 5px"
-                    >
+                    <div style="font-weight: 500">
+                      {{ $t("curseforge.lastUpdate") }}
+                    </div>
+                    <div style="color: grey; padding-left: 5px">
                       {{ new Date(lastUpdate).toLocaleString() }}
                     </div>
-                    <div style="font-weight: 500;">{{ $t('curseforge.totalDownloads') }}</div>
-                    <div style="color: grey; padding-left: 5px">{{ totalDownload }}</div>
+                    <div style="font-weight: 500">
+                      {{ $t("curseforge.totalDownloads") }}
+                    </div>
+                    <div style="color: grey; padding-left: 5px">
+                      {{ totalDownload }}
+                    </div>
                   </v-card-title>
                   <v-card-text>
                     <!-- <div style="font-weight: 500;">{{ $t('curseforge.license') }}</div> -->
@@ -82,14 +91,13 @@
                 </v-card>
               </v-flex>
               <v-flex xs6>
-                <v-card style="max-height: 232px; min-height: 232px;">
-                  <v-card-title
-                    primary-title
-                    style="font-weight: 500;"
-                  >
-                    {{ $t('curseforge.recentFiles') }}
+                <v-card style="max-height: 232px; min-height: 232px">
+                  <v-card-title primary-title style="font-weight: 500">
+                    {{ $t("curseforge.recentFiles") }}
                   </v-card-title>
-                  <div style="max-height: 160px; min-height: 160px; overflow: auto">
+                  <div
+                    style="max-height: 160px; min-height: 160px; overflow: auto"
+                  >
                     <v-list>
                       <v-tooltip v-for="file in recentFiles" :key="file.id" top>
                         <template v-slot:activator="{ on }">
@@ -99,16 +107,33 @@
                             v-on="on"
                           >
                             <v-list-tile-content>
-                              <v-list-tile-title>{{ file.displayName }}</v-list-tile-title>
-                              <v-list-tile-sub-title>{{ new Date(file.fileDate).toLocaleDateString() }}</v-list-tile-sub-title>
+                              <v-list-tile-title>
+                                {{
+                                  file.displayName
+                                }}
+                              </v-list-tile-title>
+                              <v-list-tile-sub-title>
+                                {{
+                                  new Date(file.fileDate).toLocaleDateString()
+                                }}
+                              </v-list-tile-sub-title>
                             </v-list-tile-content>
                             <v-list-tile-action>
                               <v-icon
                                 v-if="getFileStatus(file) !== 'downloading'"
                               >
-                                {{ getFileStatus(file) === 'downloaded' ? 'dns' : 'cloud_download' }}
+                                {{
+                                  getFileStatus(file) === "downloaded"
+                                    ? "dns"
+                                    : "cloud_download"
+                                }}
                               </v-icon>
-                              <v-progress-circular v-else indeterminate :size="24" :width="2" />
+                              <v-progress-circular
+                                v-else
+                                indeterminate
+                                :size="24"
+                                :width="2"
+                              />
                             </v-list-tile-action>
                           </v-list-tile>
                         </template>
@@ -130,14 +155,20 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs, watch, computed } from '@vue/composition-api';
+import { defineComponent, reactive, toRefs, watch, computed, ref } from '@vue/composition-api';
 import { File } from '@xmcl/curseforge';
 import {
   useCurseforgeProject,
   useCurseforgeInstall,
+  useService,
 } from '@/hooks';
 import ProjectDescription from './CurseforgeProjectPageDescription.vue';
+import DestMenu from './CurseforgeProjectPageDestMenu.vue';
 import ProjectFiles from './CurseforgeProjectPageFiles.vue';
+
+interface InstallOptions {
+  path?: string
+}
 
 export default defineComponent({
   props: {
@@ -150,12 +181,14 @@ export default defineComponent({
       required: true,
       default: '',
     },
+    from: String,
   },
-  components: { ProjectDescription, ProjectFiles },
+  components: { ProjectDescription, ProjectFiles, DestMenu },
   setup(props) {
     const projectId = computed(() => Number.parseInt(props.id, 10));
     const project = useCurseforgeProject(projectId.value);
     const { install: installFile, getFileStatus } = useCurseforgeInstall(props.type as any, projectId.value);
+    const destination = ref(props.from || '');
 
     const data = reactive({
       tab: 0,
@@ -170,7 +203,7 @@ export default defineComponent({
     }
     async function install(file: File) {
       if (getFileStatus(file) === 'downloaded') return;
-      await installFile(file);
+      await installFile(file, destination.value);
     }
     watch(dataRefs.tab, () => {
       switch (data.tab) {
@@ -190,6 +223,7 @@ export default defineComponent({
       ...toRefs(data),
       ...project,
       projectId,
+      destination,
     };
   },
 });
@@ -199,5 +233,9 @@ export default defineComponent({
 .v-image__image {
   background-repeat: no-repeat;
   background-position: center center;
+}
+
+.headline {
+  text-align: center;
 }
 </style>

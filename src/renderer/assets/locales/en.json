@@ -39,6 +39,8 @@
     "downloaded": "Downloaded",
     "gameversion": "Game Version",
     "install": "Install",
+    "installTo": "Install to {path}",
+    "installToStorage": "Install to Storage",
     "installed": "Installed",
     "lastUpdate": "Last Update Date",
     "license": "License",
@@ -62,12 +64,12 @@
     "search": "Search",
     "sortby": "Sort By",
     "texture-packs": {
-      "description": "View and download worlds from Curseforge",
+      "description": "View and download resource packs from Curseforge",
       "name": "Resource Packs"
     },
     "totalDownloads": "Total Downloads",
     "worlds": {
-      "description": "View and download mods from Curseforge",
+      "description": "View and download worlds from Curseforge",
       "name": "Worlds"
     }
   },
@@ -219,6 +221,7 @@
   },
   "fabric": {
     "disable": "Disable Fabric",
+    "noVersion": "No Fabric Version for Minecraft {version}",
     "showStableOnly": "Show Stable Only"
   },
   "feedback": {
