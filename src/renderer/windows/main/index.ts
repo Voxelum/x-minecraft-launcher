@@ -8,7 +8,7 @@ import provideVuexStore from '@/providers/provideVuexStore';
 import SkinView from '@/skin/SkinView.vue';
 import TextComponent from '@/TextComponent';
 import Vue from 'vue';
-import { h, provide, App, createApp } from '@/vue';
+import VueCompositionApi, { createApp, h, provide } from '@vue/composition-api';
 import VueI18n from 'vue-i18n';
 import VueObserveVisibility from 'vue-observe-visibility';
 import VueParticles from 'vue-particles';
@@ -28,7 +28,9 @@ import FabricIcon from './components/FabricIcon.vue';
 import MainWindow from './MainWindow.vue';
 import router from './router';
 
-function configApp(app: App) {
+Vue.use(VueCompositionApi);
+
+function configApp(app: ReturnType<typeof createApp>) {
     app.config.productionTip = false;
     app.use(VueI18n);
     app.use(Vuex);
@@ -68,7 +70,9 @@ function configApp(app: App) {
         app.component(name, comp);
     });
 }
+
 function startApp() {
+    configApp(Vue as any);
     const i18n = provideVueI18n('en', locales);
     const app = createApp({
         router,
@@ -94,9 +98,7 @@ function startApp() {
             return () => h(MainWindow);
         },
     });
-    app.$mount('#app');
+    app.mount('#app');
 }
 
-
-configApp(Vue);
 startApp();

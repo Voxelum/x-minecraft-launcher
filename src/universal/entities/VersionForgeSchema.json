@@ -3,6 +3,11 @@
     "additionalProperties": false,
     "patternProperties": {
         "^[0-9]+$": {
+            "$ref": "#/definitions/ForgeVersionList"
+        }
+    },
+    "definitions": {
+        "ForgeVersionList": {
             "type": "object",
             "properties": {
                 "timestamp": {
@@ -26,9 +31,7 @@
                 "timestamp",
                 "versions"
             ]
-        }
-    },
-    "definitions": {
+        },
         "ForgeVersion": {
             "type": "object",
             "properties": {

@@ -59,6 +59,11 @@ declare module '*.png' {
     export default value;
 }
 
+declare module '*.webp' {
+    const value: string;
+    export default value;
+}
+
 declare module 'vue-particles' {
     const module: import('vue').PluginObject<any>;
     export default module;
