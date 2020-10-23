@@ -127,8 +127,18 @@ function startElectron() {
 }
 
 function electronLog(data, color) {
+    const colorize = (line) => {
+        if (line.startsWith('[INFO]')) {
+            return chalk.green('[INFO]') + line.substring(6)
+        } else if (line.startsWith('[WARN]')) {
+            return chalk.yellow('[WARN]') + line.substring(6)
+        } if (line.startsWith('[ERROR]')) {
+            return chalk.red('[ERROR]') + line.substring(7)
+        }
+        return line
+    }
     data = data.toString().split(/\r?\n/);
-    console.log(data.filter(s => s.trim() !== '').join('\n'));
+    console.log(data.filter(s => s.trim() !== '').map(colorize).join('\n'));
 }
 
 function init() {
