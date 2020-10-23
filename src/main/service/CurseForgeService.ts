@@ -56,19 +56,19 @@ export default class CurseForgeService extends Service {
         }
     }
 
-    @Singleton((projectId: number) => projectId.toString())
+    @Singleton((projectId: number) => `cfproject-${projectId.toString()}`)
     async fetchProject(projectId: number) {
         this.log(`Fetch project: ${projectId}`);
         return this.fetchOrGetFromCache('project', this.projectCache, projectId, () => getAddonInfo(projectId, { userAgent: this.userAgent }));
     }
 
-    @Singleton((projectId: number) => projectId.toString())
+    @Singleton((projectId: number) => `cfdescription-${projectId.toString()}`)
     fetchProjectDescription(projectId: number) {
         this.log(`Fetch project description: ${projectId}`);
         return this.fetchOrGetFromCache('project description', this.projectDescriptionCache, projectId, () => getAddonDescription(projectId, { userAgent: this.userAgent }));
     }
 
-    @Singleton((projectId: number) => projectId.toString())
+    @Singleton((projectId: number) => `cffiles-${projectId.toString()}`)
     fetchProjectFiles(projectId: number) {
         this.log(`Fetch project files: ${projectId}`);
         return this.fetchOrGetFromCache('project files', this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.userAgent }).then(files => files.sort((a, b) => new Date(b.fileDate) - new Date(a.fileDate))));
@@ -101,7 +101,7 @@ export default class CurseForgeService extends Service {
         const resource = this.resourceService.getResource({ url: urls });
         if (resource !== UNKNOWN_RESOURCE) {
             this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`);
-            return resource.path;
+            return resource;
         }
         try {
             const destination = join(this.app.temporaryPath, basename(file.downloadUrl));
@@ -126,7 +126,7 @@ export default class CurseForgeService extends Service {
             this.commit('curseforgeDownloadFileStart', { fileId: file.id, taskId: (handle.root as TaskState).id });
             const result = await handle.wait();
             this.log(`Install curseforge file ${file.displayName}(${file.downloadUrl}) success!`);
-            return result.path;
+            return result;
         } finally {
             this.commit('curseforgeDownloadFileEnd', file.id);
         }

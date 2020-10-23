@@ -1,7 +1,7 @@
 import { DEFAULT_PROFILE, Instance } from '@universal/entities/instance';
 import { InstanceSchema } from '@universal/entities/instance.schema';
 import { JavaRecord } from '@universal/entities/java';
-import { ModResource, ResourcePackResource } from '@universal/entities/resource';
+import { ModResource, ResourcePackResource, Resources } from '@universal/entities/resource';
 import { InstanceSaveMetadata } from '@universal/entities/save';
 import { ServerStatus, UNKNOWN_STATUS } from '@universal/entities/serverStatus';
 import { LocalVersion } from '@universal/entities/version';
@@ -99,13 +99,13 @@ interface Mutations {
     instanceSaveAdd: InstanceSaveMetadata;
     instanceSaveRemove: string;
 
-    instanceMods: InstanceModResource[];
-    instanceModAdd: InstanceModResource;
-    instanceModRemove: InstanceModResource;
+    instanceMods: ModResource[];
+    instanceModAdd: ModResource[];
+    instanceModRemove: ModResource[];
 
-    instanceResourcepacks: InstanceResourcePackResource[];
-    instanceResourcepackAdd: InstanceResourcePackResource;
-    instanceResourcepackRemove: InstanceResourcePackResource;
+    instanceResourcepacks: ResourcePackResource[];
+    instanceResourcepackAdd: ResourcePackResource[];
+    instanceResourcepackRemove: ResourcePackResource[];
 }
 
 export type InstanceModule = ModuleOption<State, Getters, Mutations, {}>;
@@ -156,19 +156,23 @@ const mod: InstanceModule = {
     },
     mutations: {
         instanceModAdd(state, r) {
-            state.mods.push(r);
+            state.mods.push(...r);
         },
-        instanceModRemove(state, r) {
-            state.mods = state.mods.filter(m => m.hash !== r.hash);
+        instanceModRemove(state, res) {
+            for (const r of res) {
+                state.mods = state.mods.filter(m => m.hash !== r.hash);
+            }
         },
         instanceMods(state, resources) {
             state.mods = resources;
         },
         instanceResourcepackAdd(state, r) {
-            state.resourcepacks.push(r);
+            state.resourcepacks.push(...r);
         },
-        instanceResourcepackRemove(state, r) {
-            state.resourcepacks = state.resourcepacks.filter(p => p.hash !== r.hash);
+        instanceResourcepackRemove(state, res) {
+            for (const r of res) {
+                state.resourcepacks = state.resourcepacks.filter(p => p.hash !== r.hash);
+            }
         },
         instanceResourcepacks(state, resources) {
             state.resourcepacks = resources;

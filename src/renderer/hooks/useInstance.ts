@@ -12,6 +12,12 @@ import { useStore } from './useStore';
 import { useCurrentUser } from './useUser';
 import { useMinecraftVersions } from './useVersion';
 
+export function useInstanceBase() {
+    const { state } = useStore();
+    const path = computed(() => state.instance.path);
+    return { path };
+}
+
 /**
  * Use the general info of the instance
  */

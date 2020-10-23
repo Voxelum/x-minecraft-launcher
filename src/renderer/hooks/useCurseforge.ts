@@ -39,6 +39,7 @@ export function useCurseforgeProjectFiles(projectId: number) {
 
 export function useCurseforgeInstall(type: ProjectType, projectId: number) {
     const { installFile } = useService('CurseForgeService');
+    const { deploy } = useService('InstanceResourceService');
     const { state, getters } = useStore();
     function getFileStatus(file: File): 'downloading' | 'downloaded' | 'remote' {
         let res = getters.queryResource(file.downloadUrl);
@@ -51,8 +52,12 @@ export function useCurseforgeInstall(type: ProjectType, projectId: number) {
     function getFileResource(file: File) {
         return getters.queryResource(file.downloadUrl);
     }
-    async function install(file: File) {
-        return installFile({ file, type, projectId });
+    async function install(file: File, toInstance?: string) {
+        const resource = await installFile({ file, type, projectId });
+        if (toInstance) {
+            await deploy({ resources: [resource], path: toInstance });
+        }
+        return resource;
     }
 
     return { getFileStatus, install, getFileResource };
@@ -98,6 +103,7 @@ export function useCurseforgeProject(projectId: number) {
         try {
             const proj = await fetchProject(projectId);
             const { name, dateCreated, dateModified, downloadCount, latestFiles } = proj;
+            console.log(proj);
             data.name = name;
             data.createdDate = dateCreated;
             data.lastUpdate = dateModified;

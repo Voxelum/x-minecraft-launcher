@@ -79,7 +79,7 @@
             <div style="color: #bdbdbd; ">{{ source.description }}</div>
           </v-flex>
           <v-flex :key="3" style="flex-grow: 0" @click.stop @mousedown.stop>
-            <v-switch :value="enabled" @change="emitEnable"></v-switch>
+            <v-switch v-model="modEnableState"></v-switch>
           </v-flex>
         </transition-group>
       </template>
@@ -113,6 +113,15 @@ export default defineComponent({
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute();
     const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute(); 
     const { $t } = useI18n();
+
+    const modEnableState = computed({
+      get() {
+        return props.enabled;
+      },
+      set(e: boolean) {
+        context.emit('enable', e);
+      },
+    });
 
     const iconImage: Ref<HTMLImageElement | null> = ref(null);
     
@@ -213,9 +222,6 @@ export default defineComponent({
     function emitSelect() {
       context.emit('select');
     }
-    function emitEnable(event: any) {
-      context.emit('enable', event);
-    }
 
     return {
       iconImage,
@@ -228,7 +234,7 @@ export default defineComponent({
       mcCompatible,
       compatibleText,
       emitSelect,
-      emitEnable,
+      modEnableState,
     };
   },
 });

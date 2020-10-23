@@ -64,7 +64,7 @@ export function useInstanceMods() {
         const icon = `${resource.path.substring(0, resource.path.length - resource.ext.length)}.png`;
         let modItem: ModItem = {
             path: 'filePath' in resource ? (resource as any).filePath : resource.path,
-            id: resource.path,
+            id: '',
             name: resource.path,
             version: '',
             description: '',
@@ -100,9 +100,7 @@ export function useInstanceMods() {
             modItem.description = meta.description ?? '';
             modItem.acceptVersion = acceptVersion;
             modItem.acceptLoaderVersion = meta.loaderVersion ?? 'unknown';
-            return modItem;
-        }
-        if (resource.type === 'fabric') {
+        } else if (resource.type === 'fabric') {
             modItem.id = resource.metadata.id;
             modItem.version = resource.metadata.version;
             modItem.name = resource.metadata.name ?? resource.metadata.id;
@@ -110,15 +108,15 @@ export function useInstanceMods() {
             modItem.acceptVersion = '[*]';
             modItem.acceptLoaderVersion = '';
             modItem.type = 'fabric';
-            return modItem;
-        }
-        modItem.type = 'liteloader';
-        modItem.name = resource.metadata.name;
-        modItem.version = resource.metadata.version ?? '';
-        modItem.id = resource.metadata.name;
-        modItem.description = modItem.description ?? '';
-        if (resource.metadata.mcversion) {
-            modItem.acceptVersion = `[${resource.metadata.mcversion}]`;
+        } else {
+            modItem.type = 'liteloader';
+            modItem.name = resource.metadata.name;
+            modItem.version = resource.metadata.version ?? '';
+            modItem.id = `${resource.metadata.name}`;
+            modItem.description = modItem.description ?? '';
+            if (resource.metadata.mcversion) {
+                modItem.acceptVersion = `[${resource.metadata.mcversion}]`;
+            }
         }
         return modItem;
     }

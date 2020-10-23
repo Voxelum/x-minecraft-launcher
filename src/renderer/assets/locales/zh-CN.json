@@ -38,6 +38,8 @@
     "downloaded": "已下载",
     "gameversion": "游戏版本",
     "install": "安装",
+    "installTo": "安装到 {path}",
+    "installToStorage": "安装到库",
     "installed": "已安装",
     "lastUpdate": "上次更新日期",
     "license": "版权许可",
@@ -195,10 +197,10 @@
   },
   "downloadUpdate": "下载更新",
   "dropToImport": "将文件拖到这并导入为",
-  "unknownResource": "无法解析",
   "edit": "编辑",
   "fabric": {
     "disable": "不启用 Fabric",
+    "noVersion": "在 Minecraft {version} 下未找到任何 Fabric 版本",
     "showStableOnly": "只显示稳定版"
   },
   "feedback": {
@@ -802,6 +804,7 @@
     "start": "{name} 开始",
     "successed": "成功"
   },
+  "unknownResource": "无法解析",
   "user": {
     "accessToken": "访问令牌",
     "account": {

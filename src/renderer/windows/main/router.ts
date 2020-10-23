@@ -74,12 +74,12 @@ const router = new Router({
         {
             path: '/curseforge/:type',
             component: CurseforgeViewPage,
-            props: (route) => ({ initialKeyword: route.query.search, type: route.path.split('/')[2] }),
+            props: (route) => ({ initialKeyword: route.query.search, type: route.path.split('/')[2], from: route.query.from }),
         },
         {
             path: '/curseforge/:type/:id',
             component: CurseforgeProjectPage,
-            props: true,
+            props: (route) => ({ type: route.path.split('/')[2], id: route.path.split('/')[3], from: route.query.from }),
         },
         {
             path: '/mcwiki',

@@ -47,7 +47,7 @@ import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue';
 
 export default defineComponent({
   components: { VirtualList, AddInstanceStepper },
-  props: { project: required(Number), type: required<ProjectType>(String) },
+  props: { project: required(Number), type: required<ProjectType>(String), from: String },
   setup(props) {
     const { files, loading, refresh } = useCurseforgeProjectFiles(props.project);
     const { install: installFile, getFileStatus, getFileResource } = useCurseforgeInstall(props.type, props.project);
@@ -61,18 +61,19 @@ export default defineComponent({
       if (props.type === 'modpacks') {
         let filePath: string;
         if (stat === 'remote') {
-          filePath = await installFile(file);
+          const resource = await installFile(file);
+          filePath = resource.path;
         } else {
           filePath = getFileResource(file).path;
         }
         data.initialTemplate = filePath;
         data.isConfirmDialogShown = true;
       } else {
-        await installFile(file);
+        await installFile(file, props.from);
       }
     }
     async function download(file: File) {
-      await installFile(file);
+      await installFile(file, props.from);
     }
     return {
       ...toRefs(data),

@@ -3,19 +3,11 @@
     grid-list-xs
     fill-height
     class="resource-pack-page"
-    style="overflow: auto;"
+    style="overflow: auto"
   >
-    <v-layout
-      row
-      wrap
-    >
-      <v-toolbar
-        dark
-        flat
-        dense
-        color="transparent"
-      >
-        <v-toolbar-title>{{ $tc('resourcepack.name', 2) }}</v-toolbar-title>
+    <v-layout row wrap>
+      <v-toolbar dark flat dense color="transparent">
+        <v-toolbar-title>{{ $tc("resourcepack.name", 2) }}</v-toolbar-title>
         <v-spacer />
         <!-- <v-tooltip bottom> -->
         <!-- <template v-slot:activator="{ on }"> -->
@@ -35,9 +27,22 @@
             hide-details
           />
         </v-flex>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              icon
+              style="margin-top: 12px; margin-bottom: 0; margin-left: 15px"
+              v-on="on"
+              @click="goToCurseforge()"
+            >
+              <v-icon :size="14">$vuetify.icons.curseforge</v-icon>
+            </v-btn>
+          </template>
+          {{ $t(`curseforge.texture-packs.description`) }}
+        </v-tooltip>
         <v-btn
           icon
-          style="margin-top: 12px; margin-bottom: 0;"
+          style="margin-top: 12px; margin-bottom: 0"
           @click="goPreview"
         >
           <span class="material-icons-outlined icon-image-preview">
@@ -54,11 +59,7 @@
         <span class="headline">{{ $tc('resourcepack.name', 2) }}</span>
       </v-flex>
       -->
-      <v-flex
-        d-flex
-        xs6
-        style="padding-right: 5px"
-      >
+      <v-flex d-flex xs6 style="padding-right: 5px">
         <v-card
           ref="leftList"
           dark
@@ -68,14 +69,15 @@
           @drop="dragging = false"
         >
           <v-card-title
-            style="border-color: rgba(255,255,255,0.7);
+            style="
+              border-color: rgba(255, 255, 255, 0.7);
               border-style: solid;
-              border-width: 0 0 thin 0;"
+              border-width: 0 0 thin 0;
+            "
           >
-            <span
-              class="text-sm-center"
-              style="width: 100%; font-size: 16px;"
-            >{{ $t('resourcepack.unselected') }}</span>
+            <span class="text-sm-center" style="width: 100%; font-size: 16px">{{
+              $t("resourcepack.unselected")
+            }}</span>
           </v-card-title>
           <hint
             v-if="unselectedItems.length === 0"
@@ -84,15 +86,8 @@
             :absolute="true"
             style="height: 100%"
           />
-          <div
-            v-else
-            class="list"
-            style="overflow-x: hidden"
-          >
-            <transition-group
-              name="transition-list"
-              tag="div"
-            >
+          <div v-else class="list" style="overflow-x: hidden">
+            <transition-group name="transition-list" tag="div">
               <resource-pack-card
                 v-for="item in unselectedItems"
                 :key="item.id"
@@ -106,11 +101,7 @@
           </div>
         </v-card>
       </v-flex>
-      <v-flex
-        d-flex
-        xs6
-        style="padding-left: 5px"
-      >
+      <v-flex d-flex xs6 style="padding-left: 5px">
         <v-card
           ref="rightList"
           color="transparent"
@@ -120,14 +111,15 @@
           @drop="dragging = false"
         >
           <v-card-title
-            style="border-color: rgba(255,255,255,0.7);
+            style="
+              border-color: rgba(255, 255, 255, 0.7);
               border-style: solid;
-              border-width: 0 0 thin 0;"
+              border-width: 0 0 thin 0;
+            "
           >
-            <span
-              class="text-sm-center"
-              style="width: 100%; font-size: 16px;"
-            >{{ $t('resourcepack.selected') }}</span>
+            <span class="text-sm-center" style="width: 100%; font-size: 16px">{{
+              $t("resourcepack.selected")
+            }}</span>
           </v-card-title>
           <hint
             v-if="selectedItems.length === 0"
@@ -136,15 +128,8 @@
             :absolute="true"
             style="height: 100%"
           />
-          <div
-            v-else
-            class="list"
-            style="overflow-x: hidden"
-          >
-            <transition-group
-              name="transition-list"
-              tag="div"
-            >
+          <div v-else class="list" style="overflow-x: hidden">
+            <transition-group name="transition-list" tag="div">
               <resource-pack-card
                 v-for="item in selectedItems"
                 :key="item.id"
@@ -162,7 +147,7 @@
     <v-fab-transition>
       <v-btn
         v-if="dragging"
-        style="right: 40vw; bottom: 10px;"
+        style="right: 40vw; bottom: 10px"
         large
         absolute
         dark
@@ -175,20 +160,18 @@
         <v-icon>delete</v-icon>
       </v-btn>
     </v-fab-transition>
-    <v-dialog
-      :value="!!deletingPack"
-      width="400"
-      persistance
-    >
+    <v-dialog :value="!!deletingPack" width="400" persistance>
       <v-card>
         <v-card-title primary-title>
           <div>
-            <h3
-              class="headline mb-0"
-            >
-              {{ $t('resourcepack.deletion', { pack: deletingPack ? deletingPack.name : '' }) }}
+            <h3 class="headline mb-0">
+              {{
+                $t("resourcepack.deletion", {
+                  pack: deletingPack ? deletingPack.name : "",
+                })
+              }}
             </h3>
-            <div>{{ $t('resourcepack.deletionHint') }}</div>
+            <div>{{ $t("resourcepack.deletionHint") }}</div>
           </div>
         </v-card-title>
 
@@ -196,18 +179,17 @@
         <v-card-actions>
           <v-btn
             flat
-            @click="isDeletingPack = false; deletingPack = null"
+            @click="
+              isDeletingPack = false;
+              deletingPack = null;
+            "
           >
-            {{ $t('no') }}
+            {{ $t("no") }}
           </v-btn>
           <v-spacer />
-          <v-btn
-            flat
-            color="red"
-            @click="confirmDeletingPack"
-          >
+          <v-btn flat color="red" @click="confirmDeletingPack">
             <v-icon left>delete</v-icon>
-            {{ $t('yes') }}
+            {{ $t("yes") }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -224,6 +206,7 @@ import {
   useDropImport,
   ResourcePackItem,
   useRouter,
+  useInstanceBase,
 } from '@/hooks';
 import ResourcePackCard from './ResourcePackSettingPageCard.vue';
 import { useSearch, useSearchToggle } from '../hooks';
@@ -239,6 +222,7 @@ export default defineComponent({
     const { enabled, disabled, add, remove, commit, insert } = useInstanceResourcePacks();
     const { removeResource } = useResourceOperation();
     const { replace } = useRouter();
+    const { path } = useInstanceBase();
     const searchBar: Ref<null | Vue> = ref(null);
     const data = reactive({
       dragging: false,
@@ -282,6 +266,9 @@ export default defineComponent({
     function goPreview() {
       replace('/resource-pack-preview');
     }
+    function goToCurseforge() {
+      replace(`/curseforge/texture-packs?from=${path.value}`);
+    }
     return {
       ...toRefs(data),
       unselectedItems,
@@ -293,6 +280,7 @@ export default defineComponent({
       onDropDelete,
       goPreview,
       searchBar,
+      goToCurseforge,
     };
   },
   // async mounted() {
