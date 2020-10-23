@@ -1,8 +1,8 @@
-import { importResource, mutateResource, readResourceHeader, removeResource, ResourceCache, SourceInformation } from '@main/entities/resource';
+import { resolveAndPersist, mutateResource, readHeader, remove, ResourceCache, SourceInformation } from '@main/entities/resource';
 import { fixResourceSchema } from '@main/util/dataFix';
 import { copyPassively, readdirEnsured, sha1ByPath } from '@main/util/fs';
 import { Resource, Resources, UNKNOWN_RESOURCE } from '@universal/entities/resource';
-import { ResourceSchema } from '@universal/entities/resource.schema';
+import { ResourceSchema, ResourceType, ResourceDomain } from '@universal/entities/resource.schema';
 import { requireString } from '@universal/util/assert';
 import { Task, task } from '@xmcl/task';
 import { stat } from 'fs-extra';
@@ -27,10 +27,14 @@ export type ImportOptions = {
     url?: string[];
 
     background?: boolean;
+    /**
+     * Require the resource to be these specific domain
+     */
+    requiredDomain?: ResourceDomain;
 }
 export interface ImportMultipleFilesOptions {
     files: Array<{
-        filePath: string;
+        path: string;
         url: string[];
         source?: SourceInformation
     }>;
@@ -39,6 +43,10 @@ export interface ImportMultipleFilesOptions {
      * The hint for the import file type
      */
     type?: ImportTypeHint;
+    /**
+     * Require the resource to be these specific domain
+     */
+    fromDomain?: ResourceDomain;
 }
 export interface ParseFilesOptions {
     files: { path: string; hint?: ImportTypeHint; size?: number }[];
@@ -54,6 +62,12 @@ export interface AddResourceOptions {
     hash?: string;
     type?: ImportTypeHint;
     source?: SourceInformation;
+}
+
+class DomainMissMatchedError extends Error {
+    constructor(domain: string, path: string, type: string) {
+        super(`Non-${domain} resource at ${path} type=${type}`);
+    }
 }
 
 export default class ResourceService extends Service {
@@ -110,36 +124,51 @@ export default class ResourceService extends Service {
             const path = this.getPath(domain);
             const files = await readdirEnsured(path);
             const promise = Promise.all(files.filter(f => f.endsWith('.json')).map(async (file) => {
-                const filePath = join(path, file);
-                const resourceData = await this.getPersistence({ path: filePath, schema: ResourceSchema });
+                try {
+                    const filePath = join(path, file);
+                    const resourceData = await this.getPersistence({ path: filePath, schema: ResourceSchema });
 
-                fixResourceSchema(resourceData, this.getPath());
+                    fixResourceSchema(resourceData, this.getPath());
 
-                console.log(resourceData);
-
-                const resourceFilePath = this.getPath(resourceData.location);
-                const { size, ino } = await stat(resourceFilePath);
-                const resource: Resource = Object.freeze({
-                    location: resourceData.location,
-                    name: resourceData.name,
-                    domain: resourceData.domain,
-                    type: resourceData.type,
-                    metadata: resourceData.metadata,
-                    uri: resourceData.uri,
-                    date: resourceData.date,
-                    tags: resourceData.tags,
-                    hash: resourceData.hash,
-                    path: resourceFilePath,
-                    size,
-                    ino,
-                    ext: extname(resourceFilePath),
-                });
-                return resource as Resources;
+                    const resourceFilePath = this.getPath(resourceData.location) + resourceData.ext;
+                    const { size, ino } = await stat(resourceFilePath);
+                    const resource: Resource = Object.freeze({
+                        location: resourceData.location,
+                        name: resourceData.name,
+                        domain: resourceData.domain,
+                        type: resourceData.type,
+                        metadata: resourceData.metadata,
+                        uri: resourceData.uri,
+                        date: resourceData.date,
+                        tags: resourceData.tags,
+                        hash: resourceData.hash,
+                        path: resourceFilePath,
+                        size,
+                        ino,
+                        ext: extname(resourceFilePath),
+                    });
+                    return resource as Resources;
+                } catch (e) {
+                    this.error(`Cannot load resource ${file}`);
+                    this.error(e);
+                    return UNKNOWN_RESOURCE;
+                }
             })).then((resources) => {
-                this.commit('resources', resources);
+                this.commit('resources', resources.filter((r) => r !== UNKNOWN_RESOURCE));
+                for (const res of resources) {
+                    this.cache.put(res);
+                }
             });
             this.loadPromises[domain] = promise;
         });
+    }
+
+    whenModsReady() {
+        return this.loadPromises.mods;
+    }
+
+    whenResourcePacksReady() {
+        return this.loadPromises.resourcepacks;
     }
 
     /**
@@ -169,29 +198,53 @@ export default class ResourceService extends Service {
 
     /**
     * Import the resource from the same disk. This will parse the file and import it into our db by hardlink.
+    * If the file already existed, it will not re-import it again
     * 
     * The original file will not be modified.
     * 
     * @param path The path in the same disk
     * @param urls The urls
     * @param source The source metadata
+    * 
+    * @returns All import file in resource form. If the file cannot be parsed, it will be UNKNOWN_RESOURCE.
     */
     async importResources(options: ImportMultipleFilesOptions) {
-        const total = await Promise.all(options.files.map((f) => this.queryExistedResourceByPath(f.filePath)));
-        const existedCount = total.filter((r) => !!r).length;
-        const resources = await Promise.all(options.files
-            .filter((_, i) => !total[i])
-            .map((f) => this.resolveResourceTask({ path: f.filePath, url: f.url, source: f.source, type: options.type, background: options.background })
-                .execute().wait()));
+        const existedResources = await Promise.all(options.files.map((f) => this.queryExistedResourceByPath(f.path)));
+        const allResources = await Promise.all(options.files
+            .map(async (f, i) => {
+                const existed = existedResources[i];
+                if (existed) {
+                    return existed;
+                }
+                try {
+                    const result = await this.resolveResourceTask({ path: f.path, url: f.url, source: f.source, type: options.type, background: options.background, requiredDomain: options.fromDomain })
+                        .execute().wait();
+                    return result;
+                } catch (e) {
+                    if (e instanceof DomainMissMatchedError) {
+                        this.warn(e.message);
+                    } else {
+                        this.error(e);
+                    }
+                    return UNKNOWN_RESOURCE;
+                }
+            }));
 
-        this.log(`Import ${total.length} resources. Imported ${resources.length} new resources, and ${existedCount} resources existed.`);
-        for (const resource of resources) {
-            this.cache.put(resource);
+        const existedCount = existedResources.filter((r) => !!r).length;
+        const unknownCount = allResources.filter(r => r.type === ResourceType.Unknown).length;
+        const newCount = allResources.length - existedCount - unknownCount;
+
+        if (options.fromDomain) {
+            this.log(`Resolve ${existedResources.length} resources from /${options.fromDomain}. Imported ${newCount} new resources, ${existedCount} resources existed, and ${unknownCount} unknown resource.`);
+        } else {
+            this.log(`Resolve ${existedResources.length} resources. Imported ${newCount} new resources, ${existedCount} resources existed, and ${unknownCount} unknown resource.`);
         }
-        this.commit('resources', resources);
+        this.addResources(allResources.filter(r => r.type !== ResourceType.Unknown));
+
+        return allResources;
     }
 
-    addResource(resources: Resources[]) {
+    private addResources(resources: Resources[]) {
         for (const resource of resources) {
             this.cache.put(resource);
         }
@@ -241,7 +294,8 @@ export default class ResourceService extends Service {
         result = this.getResourceByKey(fileStat.ino);
 
         if (!result) {
-            result = this.getResourceByKey(await sha1ByPath(path));
+            const sha1 = await sha1ByPath(path);
+            result = this.getResourceByKey(sha1);
         }
 
         return result;
@@ -250,15 +304,22 @@ export default class ResourceService extends Service {
     // bridge from dry function to `this` context
 
     /**
-     * Resolve resource task. This will not write the resource to the cache, but it will persist the resource to disk.  
+     * Resolve resource task. This will not write the resource to the cache, but it will persist the resource to disk.
+     * @throws DomainMissMatchedError
      */
     resolveResourceTask(importOption: ImportOptions) {
         const resolve = async (context: Task.Context) => {
-            const { path, source = {}, url = [], type } = importOption;
+            const { path, source = {}, url = [], type, requiredDomain } = importOption;
             context.update(0, 4, path);
-            const resolved = await readResourceHeader(path, type);
+            const hash = await sha1ByPath(path);
+            const resolved = await readHeader(path, hash, type);
+            if (requiredDomain) {
+                if (resolved.domain !== requiredDomain) {
+                    throw new DomainMissMatchedError(resolved.domain, path, resolved.type);
+                }
+            }
             context.update(3, 4, path);
-            const result = await importResource(path, source ?? {}, resolved, this.getPath());
+            const result = await resolveAndPersist(path, source ?? {}, url, resolved, this.getPath());
             context.update(4, 4, path);
             return result as Resources;
         };
@@ -267,6 +328,6 @@ export default class ResourceService extends Service {
     }
 
     protected unpersistResource(resource: Resource) {
-        return removeResource(resource, this.getPath());
+        return remove(resource, this.getPath());
     }
 }

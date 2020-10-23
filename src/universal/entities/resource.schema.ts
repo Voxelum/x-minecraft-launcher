@@ -9,15 +9,24 @@ export interface CurseforgeInformation {
      */
     projectId: number;
     /**
-     * The file id
+     * The curseforge file id
      */
     fileId: number;
 }
 
 export interface GithubInformation {
+    /**
+     * The owner name. Either a username or an organization name
+     */
     owner: string;
+    /**
+     * The repo name
+     */
     repo: string;
-    release: string;
+    /**
+     * The release artifact id
+     */
+    artifact: string;
 }
 
 export enum ResourceType {
@@ -40,6 +49,10 @@ export enum ResourceDomain {
 }
 
 export interface ResourceSchema {
+    /**
+     * @deprecated
+     */
+    path?: string;
     /**
      * The resource file path relative to the data root directory
      */

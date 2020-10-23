@@ -28,6 +28,7 @@ export interface ResourceHeader {
     type: ResourceType;
     suggestedName: string;
     uri: string;
+    hash: string;
 }
 export interface ResourceParser<T> {
     type: ResourceType;
@@ -273,13 +274,16 @@ export function getBuilderFromResource(resource: Resource): ResourceBuilder {
     return { ...resource };
 }
 export function mutateResource<T extends Resource<any>>(resource: T, mutation: (builder: ResourceBuilder) => void): T {
-    const builder = getResourceFromBuilder(resource);
+    const builder = getBuilderFromResource(resource);
     mutation(builder);
     return getResourceFromBuilder(builder) as any;
 }
 
 export function getCurseforgeUrl(project: number, file: number): string {
     return `curseforge://id/${project}/${file}`;
+}
+export function getGithubUrl(owner: string, repo: string, release: string) {
+    return `https://api.github.com/repos/${owner}/${repo}/releases/assets/${release}`;
 }
 export function getCurseforgeSourceInfo(project: number, file: number): SourceInformation {
     return {
@@ -290,13 +294,13 @@ export function getCurseforgeSourceInfo(project: number, file: number): SourceIn
     };
 }
 
-export async function readResourceHeader(path: string, typeHint?: ImportTypeHint, parsers?: ResourceParser<any>[]): Promise<ResourceHeader> {
+export async function readHeader(path: string, hash: string, typeHint?: ImportTypeHint, parsers?: ResourceParser<any>[]): Promise<ResourceHeader> {
     parsers = parsers ?? RESOURCE_PARSERS;
 
     const ext = extname(path);
     const hint = typeHint || '';
     const chains: Array<ResourceParser<any>> = parsers
-        .filter((hint === '*' || hint === '') ? (r => r.ext === ext) : (r => r.domain === hint || r.type === hint))
+        .filter((hint === '*' || hint === '') ? (ext ? (r => r.ext === ext) : (() => true)) : (r => r.domain === hint || r.type === hint))
         .concat(UNKNOWN_ENTRY);
 
     let parser: ResourceParser<any> = UNKNOWN_ENTRY;
@@ -316,32 +320,45 @@ export async function readResourceHeader(path: string, typeHint?: ImportTypeHint
     }
 
     return {
+        hash,
         domain: parser.domain,
         type: parser.type,
         metadata,
         icon,
         suggestedName: parser.getSuggestedName(metadata) || basename(path, ext),
-        uri: parser.getUri(metadata, ''),
+        uri: parser.getUri(metadata, hash),
     };
 }
 
 /**
- * Import
+ * Resolve resource and persist to disk
  * @param path The resource file path to import 
  * @param source The source
  * @param resolved 
  * @param root 
  */
-export async function importResource(path: string, source: SourceInformation, resolved: ResourceHeader, root: string) {
-    const { domain, type, metadata, icon, suggestedName, uri } = resolved;
+export async function resolveAndPersist(path: string, source: SourceInformation, url: string[], resolved: ResourceHeader, root: string) {
+    const { domain, type, metadata, icon, suggestedName, uri, hash } = resolved;
 
     const builder = createResourceBuilder(source);
+    builder.name = suggestedName;
     builder.metadata = metadata;
     builder.domain = domain;
     builder.type = type;
     builder.icon = icon;
-    builder.uri.push(uri);
+    builder.uri.push(uri, ...url);
     builder.ext = extname(path);
+    builder.hash = hash;
+
+    if (source.curseforge) {
+        builder.uri.push(getCurseforgeUrl(source.curseforge.projectId, source.curseforge.fileId));
+        builder.curseforge = source.curseforge;
+    }
+
+    if (source.github) {
+        builder.uri.push(getGithubUrl(source.github.owner, source.github.repo, source.github.artifact));
+        builder.github = source.github;
+    }
 
     const name = filenamify(suggestedName, { replacement: '-' });
     const slice = builder.hash.slice(0, 6);
@@ -353,7 +370,6 @@ export async function importResource(path: string, source: SourceInformation, re
 
     await ensureFile(filePath);
     await linkOrCopy(path, filePath);
-    await writeFile(metadataPath, JSON.stringify(getResourceFromBuilder(builder), null, 4));
     if (builder.icon) {
         await writeFile(iconPath, builder.icon);
     }
@@ -362,15 +378,20 @@ export async function importResource(path: string, source: SourceInformation, re
 
     builder.location = location;
     builder.path = filePath;
+    builder.size = fileStatus.size;
     builder.ino = fileStatus.ino;
 
-    return getResourceFromBuilder(builder);
+    const resource = getResourceFromBuilder(builder);
+
+    await writeFile(metadataPath, JSON.stringify(resource, null, 4));
+
+    return resource;
 }
 
-export async function removeResource(resource: Readonly<Resource>, root: string) {
+export async function remove(resource: Readonly<Resource>, root: string) {
     let baseName = basename(resource.path, resource.ext);
 
-    let filePath = resource.path;
+    let filePath = join(root, resource.domain, `${baseName}${resource.ext}`);
     let metadataPath = join(root, resource.domain, `${baseName}.json`);
     let iconPath = join(root, resource.domain, `${baseName}.png`);
 
@@ -387,8 +408,10 @@ export class ResourceCache {
 
     put(resource: Resources) {
         this.cache[resource.hash] = resource;
-        for (let url of resource.uri) {
-            this.cache[url] = resource;
+        if (resource.uri) {
+            for (let url of resource.uri) {
+                this.cache[url] = resource;
+            }
         }
         this.cache[resource.ino] = resource;
         this.cache[resource.path] = resource;

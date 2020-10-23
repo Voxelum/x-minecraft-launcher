@@ -4,6 +4,7 @@ import { isModResource, isResourcePackResource, ModResource, Resource, ResourceP
 import { copyFile, ensureDir, FSWatcher, link, unlink } from 'fs-extra';
 import watch from 'node-watch';
 import { basename, join } from 'path';
+import { ResourceDomain, ResourceType } from '@universal/entities/resource.schema';
 import ResourceService from './ResourceService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
 
@@ -39,28 +40,13 @@ export default class InstanceResourceService extends Service {
             path: join(dir, file),
             url: [] as string[],
             source: undefined,
+        }));
+        const resources = await this.resourceService.importResources({
+            files: fileArgs,
+            fromDomain: ResourceDomain.Mods,
             type: 'mod',
-        }));
-        const resources: ModResource[] = [];
-        const existedResources: ModResource[] = [];
-        await Promise.all(fileArgs.map(async (options) => {
-            const existedResource = await this.resourceService.queryExistedResourceByPath(options.path);
-            if (!existedResource) {
-                const newResource = await this.resourceService.resolveResourceTask(options).execute().wait();
-                if (isModResource(newResource)) {
-                    resources.push(mutateResource(newResource, (r) => { r.path = options.path; }));
-                } else {
-                    this.error(`Non-mod resource found in /mods directory at ${options.path} type=${newResource.type}`);
-                }
-            } else if (isModResource(existedResource)) {
-                existedResources.push(existedResource);
-            } else {
-                this.error(`Non-mod resource found in /mods directory at ${options.path} type=${existedResource.type}`);
-            }
-        }));
-        this.resourceService.addResource(resources);
-        this.log(`Found ${resources.length} in instance /mods. ${resources.length} new resources and ${existedResources.length} existed resources.`);
-        return resources.concat(existedResources).map((r) => Object.freeze({ ...r, instancePath: instance.path }));
+        });
+        return resources.map((r, i) => mutateResource(r, (r) => { r.path = fileArgs[i].path; })).filter((r) => r.domain === ResourceDomain.Mods);
     }
 
     private async scanResourcepacks() {
@@ -72,28 +58,14 @@ export default class InstanceResourceService extends Service {
             path: join(dir, file),
             url: [] as string[],
             source: undefined,
+        }));
+
+        const resources = await this.resourceService.importResources({
+            files: fileArgs,
+            fromDomain: ResourceDomain.ResourcePacks,
             type: 'resourcepack',
-        }));
-        const resources: ResourcePackResource[] = [];
-        const existedResources: ResourcePackResource[] = [];
-        await Promise.all(fileArgs.map(async (options) => {
-            const existedResource = await this.resourceService.queryExistedResourceByPath(options.path);
-            if (!existedResource) {
-                const newResource = await this.resourceService.resolveResourceTask(options).execute().wait();
-                if (isResourcePackResource(newResource)) {
-                    resources.push(mutateResource(newResource, (r) => { r.path = options.path; }));
-                } else {
-                    this.error(`Non-resourcepack resource found in /resourcepacks directory at ${options.path} type=${newResource.type}`);
-                }
-            } else if (isResourcePackResource(existedResource)) {
-                existedResources.push(existedResource);
-            } else {
-                this.error(`Non-resourcepack resource found in /resourcepacks directory at ${options.path} type=${existedResource.type}`);
-            }
-        }));
-        this.resourceService.addResource(resources);
-        this.log(`Found ${resources.length} in instance /resourcepacks. ${resources.length} new resources and ${existedResources.length} existed resources.`);
-        return resources.concat(existedResources).map((r) => Object.freeze({ ...r, instancePath: instance.path }));
+        });
+        return resources.map((r, i) => mutateResource(r, (r) => { r.path = fileArgs[i].path; })).filter((r) => r.domain === ResourceDomain.ResourcePacks);
     }
 
     @MutationTrigger('instanceSelect')
@@ -129,6 +101,7 @@ export default class InstanceResourceService extends Service {
             }
             this.watchingMods = basePath;
             await ensureDir(basePath);
+            await this.resourceService.whenModsReady();
             this.commit('instanceMods', await this.scanMods());
             this.modsWatcher = watch(basePath, (event, name) => {
                 if (name.startsWith('.')) return;
@@ -136,7 +109,7 @@ export default class InstanceResourceService extends Service {
                 if (event === 'update') {
                     this.resourceService.importResource({ path: filePath, type: 'mods', background: true }).then((resource) => {
                         this.log(`Instace mod add ${filePath}`);
-                        this.commit('instanceModAdd', { ...resource, filePath });
+                        this.commit('instanceModAdd', mutateResource(resource, (r) => { r.path = filePath; }));
                     });
                 } else {
                     this.log(`Instace mod remove ${filePath}`);
@@ -157,6 +130,7 @@ export default class InstanceResourceService extends Service {
             }
             this.watchingResourcePack = basePath;
             await ensureDir(basePath);
+            await this.resourceService.whenResourcePacksReady();
             this.commit('instanceResourcepacks', await this.scanResourcepacks());
             this.resourcepacksWatcher = watch(basePath, (event, name) => {
                 if (name.startsWith('.')) return;

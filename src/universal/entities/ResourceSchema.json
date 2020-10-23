@@ -1,33 +1,28 @@
 {
     "type": "object",
     "properties": {
+        "path": {
+            "type": "string"
+        },
+        "location": {
+            "description": "The resource file path relative to the data root directory",
+            "type": "string"
+        },
+        "ext": {
+            "description": "The resource extension name",
+            "type": "string"
+        },
         "name": {
             "description": "The name of the resource",
             "type": "string"
-        },
-        "path": {
-            "description": "The resource file path",
-            "type": "string"
-        },
-        "ino": {
-            "description": "The ino of the file on disk",
-            "type": "number"
         },
         "hash": {
             "description": "The sha1 of the resource",
             "type": "string"
         },
-        "size": {
-            "description": "The size of the resource",
-            "type": "number"
-        },
-        "ext": {
-            "description": "The suggested ext of the resource",
-            "type": "string"
-        },
         "type": {
-            "description": "The resource type. Can be `forge`, `liteloader`, `resourcepack`, and etc.",
-            "type": "string"
+            "$ref": "#/definitions/ResourceType",
+            "description": "The resource type. Can be `forge`, `liteloader`, `resourcepack`, and etc."
         },
         "tags": {
             "description": "The custom tag on this resource",
@@ -38,8 +33,8 @@
             }
         },
         "domain": {
-            "description": "The domain of the resource. This decide where (which folder) the resource go",
-            "type": "string"
+            "$ref": "#/definitions/ResourceDomain",
+            "description": "The domain of the resource. This decide where (which folder) the resource go"
         },
         "metadata": {
             "description": "The resource specific metadata read from the file",
@@ -59,72 +54,84 @@
                 }
             ]
         },
-        "source": {
-            "$ref": "#/definitions/Source",
-            "description": "Where the resource imported from?"
+        "uri": {
+            "description": "The source uris.\n- For the forge mod, it will be the forge://<modid>/<version>\n- For the liteloader mod, it will be the liteloader://<name>/<version>\n- For the curseforge file, it will be the curseforge://<fileId>\n\nIf the source is remote resource, it might also contain the uri like https://host/paths",
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "date": {
+            "description": "The date of import",
+            "default": "",
+            "type": "string"
+        },
+        "github": {
+            "description": "The github info for this source. If this is imported from github release, it will present.",
+            "$ref": "#/definitions/GithubInformation"
+        },
+        "curseforge": {
+            "description": "The curseforge info for this source. If this is imported from curseforge, it will present.",
+            "$ref": "#/definitions/CurseforgeInformation"
         }
     },
     "required": [
+        "date",
         "domain",
         "ext",
         "hash",
-        "ino",
+        "location",
         "metadata",
         "name",
-        "path",
-        "size",
-        "source",
         "tags",
-        "type"
+        "type",
+        "uri"
     ],
     "definitions": {
-        "Source": {
+        "ResourceType": {
+            "enum": [
+                "curseforge-modpack",
+                "fabric",
+                "forge",
+                "liteloader",
+                "modpack",
+                "resourcepack",
+                "save",
+                "unknown"
+            ],
+            "type": "string"
+        },
+        "ResourceDomain": {
+            "enum": [
+                "modpacks",
+                "mods",
+                "resourcepacks",
+                "saves",
+                "unknowns"
+            ],
+            "type": "string"
+        },
+        "GithubInformation": {
             "type": "object",
             "properties": {
-                "uri": {
-                    "description": "The source uris.\n- For the forge mod, it will be the forge://<modid>/<version>\n- For the liteloader mod, it will be the liteloader://<name>/<version>\n- For the curseforge file, it will be the curseforge://<fileId>\n\nIf the source is remote resource, it might also contain the uri like https://host/paths",
-                    "default": [],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "date": {
-                    "description": "The date of import",
-                    "default": "",
+                "owner": {
                     "type": "string"
                 },
-                "github": {
-                    "description": "The github info for this source. If this is imported from github release, it will present.",
-                    "type": "object",
-                    "properties": {
-                        "owner": {
-                            "type": "string"
-                        },
-                        "repo": {
-                            "type": "string"
-                        },
-                        "release": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "owner",
-                        "release",
-                        "repo"
-                    ]
+                "repo": {
+                    "type": "string"
                 },
-                "curseforge": {
-                    "description": "The curseforge info for this source. If this is imported from curseforge, it will present.",
-                    "$ref": "#/definitions/CurseforgeSource"
+                "release": {
+                    "type": "string"
                 }
             },
             "required": [
-                "date",
-                "uri"
+                "owner",
+                "release",
+                "repo"
             ]
         },
-        "CurseforgeSource": {
+        "CurseforgeInformation": {
             "type": "object",
             "properties": {
                 "projectId": {

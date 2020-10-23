@@ -56,37 +56,7 @@
                   {{ $tc('profile.modpack.name', 0) }}
                 </v-card-text>
               </v-flex>
-              <v-flex
-                v-else
-                style="display: flex; flex-direction: column; height: 100%;"
-              >
-                <v-card-text class="headline font-weight-bold">即将导入</v-card-text>
-                <v-divider></v-divider>
-                <v-list style="overflow: auto">
-                  <file-list-tile
-                    v-for="file in previews"
-                    :key="file.name"
-                    :value="file"
-                    @remove="remove(file)"
-                  />
-                </v-list>
-                <v-spacer />
-                <v-divider></v-divider>
-                <v-card-actions>
-                  <v-btn large flat @click="cancel">{{ $t('cancel') }}</v-btn>
-                  <v-spacer />
-                  <v-btn
-                    large
-                    flat
-                    color="primary"
-                    :loading="loading"
-                    :disabled="disabled"
-                    @click="start"
-                  >
-                    {{ $t('profile.import.start') }}
-                  </v-btn>
-                </v-card-actions>
-              </v-flex>
+              <preview-view v-else :previews="previews" @cancel="cancel" />
             </v-layout>
           </v-card>
         </v-fade-transition>
@@ -96,14 +66,15 @@
 </template>
 
 <script lang=ts>
-import { useResourceOperation } from '@/hooks';
+import { useFileDrop } from '@/hooks';
 import { required } from '@/util/props';
-import { ParseFileResult } from '@main/service/ResourceService';
+import { FileMetadata } from '@main/service/IOService';
 import { Resource } from '@universal/entities/resource';
 import { defineComponent, computed, ref } from '@vue/composition-api';
-import FileListTile from './UniversalDropViewFileListTile.vue';
+import { ResourceDomain } from '@universal/entities/resource.schema';
+import PreviewView from './UniversalDropViewPreview.vue';
 
-export interface FilePreview extends ParseFileResult {
+export interface FilePreview extends FileMetadata {
   name: string;
   size: number;
   enabled: boolean;
@@ -112,20 +83,13 @@ export interface FilePreview extends ParseFileResult {
 
 export default defineComponent({
   components: {
-    FileListTile,
+    PreviewView,
   },
   setup() {
     const pending = ref(true);
     const inside = ref(false);
     const previews = ref([] as FilePreview[]);
-    const status = ref([] as boolean[]);
-    const { importResource, parseFileAsResource } = useResourceOperation();
-    const loading = computed(() => previews.value.some((v) => v.status === 'loading'));
-    const pendings = computed(() => previews.value.filter((v) => (v.status === 'idle' || v.status === 'failed')
-      && !v.existed
-      && (v.type !== 'directory' && v.type !== 'unknown')
-      && v.enabled));
-    const disabled = computed(() => pendings.value.length === 0);
+    const { readFilesMetadata } = useFileDrop();
     async function onDrop(event: DragEvent) {
       const files = [] as Array<File>;
       const dataTransfer = event.dataTransfer!;
@@ -137,7 +101,7 @@ export default defineComponent({
           }
         }
       }
-      const result = await parseFileAsResource({ files: files.map(f => ({ path: f.path })) });
+      const result = await readFilesMetadata(files.map(f => ({ path: f.path })));
       for (let i = 0; i < result.length; i++) {
         const r = result[i];
         const f = files[i];
@@ -145,39 +109,16 @@ export default defineComponent({
           ...r,
           name: f.name,
           size: f.size,
-          enabled: r.type !== 'unknown' && r.type !== 'directory',
+          enabled: r.type !== ResourceDomain.Unknown,
           status: r.existed ? 'saved' : 'idle',
         });
       }
       pending.value = false;
     }
-    function remove(file: FilePreview) {
-      previews.value = previews.value.filter((p) => p.path !== file.path);
-      if (previews.value.length === 0) {
-        cancel();
-      }
-    }
     function cancel() {
       pending.value = true;
       inside.value = false;
       previews.value = [];
-    }
-    function start() {
-      const promises = [] as Promise<any>[];
-      for (const preview of pendings.value) {
-        preview.status = 'loading';
-        const promise = importResource({ path: preview.path }).then(() => {
-          preview.status = 'saved';
-        }, (e) => {
-          console.log(`Failed to import resource ${preview.path}`);
-          console.log(e);
-          preview.status = 'failed';
-        });
-        promises.push(promise);
-      }
-      Promise.all(promises).then(() => {
-        cancel();
-      });
     }
     document.addEventListener('dragleave', (e) => {
       if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'all') {
@@ -199,11 +140,7 @@ export default defineComponent({
       inside,
       pending,
       previews,
-      remove,
       cancel,
-      start,
-      loading,
-      disabled,
     };
   },
 });

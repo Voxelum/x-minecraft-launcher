@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import unknownPack from '@/assets/unknown_pack.png';
 import { basename } from '@/util/basename';
-import { InstanceResource } from '@universal/entities/instance';
-import { isResourcePackResource, Resource } from '@universal/entities/resource';
+import { isResourcePackResource, Resource, Resources } from '@universal/entities/resource';
 import { computed, onMounted, ref, Ref, watch } from '@vue/composition-api';
 import { PackMeta } from '@xmcl/resourcepack';
 import { useService, useStore } from '.';
@@ -78,12 +77,12 @@ export function useInstanceResourcePacks() {
         return meta ? meta.format ?? meta.pack_format : 3;
     }
     function getResourcePackItem(resource: Resource<PackMeta.Pack>): ResourcePackItem {
-        const icon = `${resource.path.substring(0, resource.path.length - resource.ext.length)}.png`;
+        const icon = `${state.root}/${resource.location}.png`;
         return {
             path: resource.path,
             name: basename(resource.path),
             id: `file/${basename(resource.path)}`,
-            url: resource.source.uri,
+            url: resource.uri,
             pack_format: resource.metadata.pack_format,
             description: resource.metadata.description,
             acceptingRange: getters.getAcceptMinecraftRangeByFormat(getResourcepackFormat(resource.metadata)),
@@ -92,15 +91,15 @@ export function useInstanceResourcePacks() {
             resource: Object.freeze(resource),
         };
     }
-    function getResourcePackItemFromInstanceResource(resource: InstanceResource): ResourcePackItem {
+    function getResourcePackItemFromInstanceResource(resource: Resources): ResourcePackItem {
         if (resource && isResourcePackResource(resource)) {
             return getResourcePackItem(resource);
         }
         return {
             path: resource.path,
-            name: resource.filePath,
-            url: [resource.source.uri[0]],
-            id: `file/${basename(resource.filePath)}`,
+            name: resource.name,
+            url: [resource.uri[0]],
+            id: `file/${basename(resource.path)}`,
             pack_format: -1,
             description: 'Unknown Pack',
             acceptingRange: '[*]',
@@ -134,7 +133,7 @@ export function useInstanceResourcePacks() {
             icon: unknownPack,
             description: '',
             pack_format: -1,
-            id: `file/${resourcePackName}`,
+            id: resourcePackName.startsWith('file') ? resourcePackName : `file/${resourcePackName}`,
             url: [],
         };
     }

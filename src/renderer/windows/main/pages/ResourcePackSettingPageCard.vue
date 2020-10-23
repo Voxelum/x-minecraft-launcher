@@ -107,12 +107,12 @@ export default defineComponent({
         },
         icon: 'folder',
       }];
-      if (props.pack.resource && props.pack.resource.source.curseforge) {
+      if (props.pack.resource && props.pack.resource.curseforge) {
         menuItems.push({
           text: $t('resourcepack.showInCurseforge', { name: props.pack.name }),
           children: [],
           onClick: () => {
-            goProjectAndRoute(props.pack.resource!.source.curseforge!.projectId, 'texture-packs');
+            goProjectAndRoute(props.pack.resource!.curseforge!.projectId, 'texture-packs');
           },
           icon: '$vuetify.icons.curseforge',
         });

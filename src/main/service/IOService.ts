@@ -1,12 +1,15 @@
-import { readResourceHeader } from '@main/entities/resource';
-import { pipeline, sha1, sha1ByPath } from '@main/util/fs';
+import { readHeader } from '@main/entities/resource';
+import { pipeline, sha1ByPath } from '@main/util/fs';
 import { openCompressedStreamTask } from '@main/util/zip';
+import { Modpack } from '@universal/entities/modpack';
 import { Resource } from '@universal/entities/resource';
-import { ResourceDomain } from '@universal/entities/resource.schema';
+import { ResourceDomain, ResourceType } from '@universal/entities/resource.schema';
+import { extract } from '@xmcl/unzip';
 import { createHash } from 'crypto';
 import { FileType, stream as fileTypeByStream } from 'file-type';
-import { createReadStream, rename, stat, unlink, writeFile } from 'fs-extra';
+import { createReadStream, remove, stat, unlink } from 'fs-extra';
 import { basename, extname } from 'path';
+import InstanceIOService from './InstanceIOService';
 import ResourceService from './ResourceService';
 import Service, { Inject } from './Service';
 
@@ -18,12 +21,19 @@ export interface ReadFileMetadataOptions {
     size?: number;
 }
 
+export interface ImportFileOptions {
+    path: string;
+    hint?: ExpectFileType;
+    size?: number;
+}
+
 export interface FileMetadata {
     /**
      * Where the file import from
      */
     path: string;
-    type: ResourceDomain;
+    domain: ResourceDomain;
+    type: ResourceType;
     fileType: FileType | 'unknown' | 'directory';
     existed: boolean;
     /**
@@ -45,74 +55,67 @@ export default class IOService extends Service {
     @Inject('ResourceService')
     private resourceService!: ResourceService;
 
-    async importFile(options: FileMetadata): Promise<void> {
-        const { path, metadata, uri, displayName, type } = options;
+    @Inject('InstanceIOService')
+    private instanceIOService!: InstanceIOService;
 
-        const fileStat = await stat(path);
-        const hash = sha1ByPath(path);
+    /**
+     * Import the file 
+     * @param options 
+     */
+    async importFile(options: ImportFileOptions): Promise<void> {
+        const { fileType, domain, type, displayName, metadata, path, existed } = await this.readFileMetadata(options);
+        if (existed) return;
+        if (fileType === 'directory') {
+            if (domain === ResourceDomain.ResourcePacks || domain === ResourceDomain.Saves || type === ResourceType.CurseforgeModpack) {
+                const tempZipPath = `${this.getTempPath(displayName)}.zip`;
+                const { include, task, end } = openCompressedStreamTask(tempZipPath);
 
-        if (fileStat.isDirectory()) {
-            const { type: resourceType, suggestedName, uri, domain } = await readResourceHeader(path, type);
-            if (!this.resourceService.getResourceByKey(uri)) {
-                // resource not existed
-                if (domain === 'saves' || domain === 'resourcepacks' || domain === 'modpacks') {
-                    const tempZipPath = this.getTempPath(suggestedName);
-                    const { include, task, end } = openCompressedStreamTask(tempZipPath);
-
-                    await include('', path);
-                    end();
-                    await task.execute().wait();
-                    // zip and import
-                    await this.resourceService.importResource({ path: tempZipPath, type: resourceType });
-                    await unlink(tempZipPath);
-                } else {
-                    throw new Error(); // TODO: throw correct error
-                }
+                await include('', path);
+                end();
+                await task.execute().wait();
+                // zip and import
+                await this.resourceService.importResource({ path: tempZipPath, type });
+                await unlink(tempZipPath);
+            } if (domain === ResourceDomain.Modpacks && type === ResourceType.Modpack) {
+                const root = (metadata as Modpack).root;
+                await this.instanceIOService.importInstance(root);
+            } else {
+                throw new Error(); // TODO: throw correct error
             }
-        } else {
-            let resource: Resource | undefined = this.resourceService.getResourceByKey(fileStat.ino);
-            let hash: string | undefined;
-            let fileType: FileType | 'unknown' = 'unknown';
-
-            const ext = extname(path);
-            if (!resource) {
-                const readStream = await fileTypeByStream(createReadStream(path));
-                const hashStream = createHash('sha1').setEncoding('hex');
-                await pipeline(readStream, hashStream);
-                fileType = readStream.fileType?.ext ?? 'unknown';
-                hash = hashStream.digest('hex');
-                resource = this.resourceService.getResourceByKey(hash);
-            }
-            if (!resource && fileType === 'zip' || ext === '.jar') {
-                await this.resourceService.importResource({ path, type });
-            }
+        } else if (domain === ResourceDomain.Modpacks && type === ResourceType.Modpack) {
+            const tempDir = this.getTempPath(displayName);
+            await extract(path, tempDir);
+            await this.instanceIOService.importInstance(tempDir);
+            await remove(tempDir);
+        } else if (fileType === 'zip' || extname(path) === '.jar') {
+            await this.resourceService.importResource({ path, type });
         }
-
-        await rename(this.getTempPath(sha1(Buffer.from(path))), '');
     }
 
+    /**
+     * Read an external file metadata. This can be used before the file drop into the launcher.
+     */
     async readFileMetadata(options: ReadFileMetadataOptions): Promise<FileMetadata> {
         const { path, hint } = options;
         const fileStat = await stat(path);
         const result: FileMetadata = {
             path,
-            type: 'unknown',
+            type: ResourceType.Unknown,
+            domain: ResourceDomain.Unknown,
             fileType: 'unknown',
             displayName: basename(path),
             metadata: {},
             uri: '',
             existed: false,
         };
+
         if (fileStat.isDirectory()) {
-            const { type: resourceType, suggestedName, uri, metadata, icon } = await readResourceHeader(path, hint);
+            const { type: resourceType, suggestedName, uri, metadata, icon } = await readHeader(path, '', hint);
             result.displayName = suggestedName;
             result.existed = !!this.resourceService.getResourceByKey(uri);
             result.type = resourceType as any;
             result.metadata = metadata;
             result.uri = uri;
-
-            await writeFile(this.getTempPath(`${sha1(Buffer.from(path))}.png`), icon);
-            await writeFile(this.getTempPath(`${sha1(Buffer.from(path))}.json`), JSON.stringify(metadata));
         } else {
             let resource: Resource | undefined = this.resourceService.getResourceByKey(fileStat.ino);
             let hash: string | undefined;
@@ -127,30 +130,32 @@ export default class IOService extends Service {
                 hash = hashStream.digest('hex');
                 resource = this.resourceService.getResourceByKey(hash);
             }
+            if (!hash) {
+                hash = resource?.hash ?? await sha1ByPath(path);
+            }
             result.fileType = fileType;
             if (resource) {
                 // resource existed
                 result.displayName = resource.name;
                 result.existed = true;
-                result.type = resource.type as any;
+                result.type = resource.type;
+                result.domain = resource.domain;
                 result.metadata = resource.metadata;
                 result.uri = resource.uri[0];
             } else if (fileType === 'zip' || ext === '.jar' || ext === '.litemod') {
-                const { type: resourceType, suggestedName, uri, metadata, icon } = await readResourceHeader(path, hint);
+                const { type: resourceType, suggestedName, uri, metadata, icon, domain } = await readHeader(path, hash, hint);
                 result.displayName = suggestedName;
                 result.existed = !!this.resourceService.getResourceByKey(uri);
-                result.type = resourceType as any;
+                result.type = resourceType;
+                result.domain = domain;
                 result.metadata = metadata;
                 result.uri = uri;
-
-                await writeFile(this.getTempPath(`${sha1(Buffer.from(path))}.png`), icon);
-                await writeFile(this.getTempPath(`${sha1(Buffer.from(path))}.json`), JSON.stringify(metadata));
             }
         }
         return result;
     }
 
-    async parseFiles(options: ReadFileMetadataOptions[]): Promise<FileMetadata[]> {
+    async readFilesMetadata(options: ReadFileMetadataOptions[]): Promise<FileMetadata[]> {
         return Promise.all(options.map((file) => this.readFileMetadata(file)));
     }
 }
