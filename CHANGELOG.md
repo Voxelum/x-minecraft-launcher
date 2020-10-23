@@ -26,6 +26,28 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.11.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.10.0...v0.11.0)
+
+* chore: add webp bundle to webpack ([d471819](https://github.com/voxelum/x-minecraft-launcher/commit/d471819))
+* chore: build nsis web and upload ([a9c98e7](https://github.com/voxelum/x-minecraft-launcher/commit/a9c98e7))
+* chore: colorize the debug output ([dad0709](https://github.com/voxelum/x-minecraft-launcher/commit/dad0709))
+* chore: stop to build x32 and update web to nsis-web ([c59e2d5](https://github.com/voxelum/x-minecraft-launcher/commit/c59e2d5))
+* feat: add banner pic for instance profile ([58f3410](https://github.com/voxelum/x-minecraft-launcher/commit/58f3410))
+* feat: create universal drop view ([48c6fb0](https://github.com/voxelum/x-minecraft-launcher/commit/48c6fb0))
+* feat: support go to curseforge from setting page & direct download ([3340780](https://github.com/voxelum/x-minecraft-launcher/commit/3340780))
+* feat: support multi-selection on ModCard ([9c2f6f5](https://github.com/voxelum/x-minecraft-launcher/commit/9c2f6f5))
+* feat: support universal file drop ([4eff8bd](https://github.com/voxelum/x-minecraft-launcher/commit/4eff8bd))
+* feat: universal drop import ([5b2b8b4](https://github.com/voxelum/x-minecraft-launcher/commit/5b2b8b4))
+* refactor: clean code & update definition ([b661650](https://github.com/voxelum/x-minecraft-launcher/commit/b661650))
+* refactor: remove unused test ([89f062f](https://github.com/voxelum/x-minecraft-launcher/commit/89f062f))
+* refactor: update dependencies and fixup the services structure ([2c0e3bb](https://github.com/voxelum/x-minecraft-launcher/commit/2c0e3bb))
+* refactor: use webp instead of png for curseforge page ([f5c3fe7](https://github.com/voxelum/x-minecraft-launcher/commit/f5c3fe7))
+* fix: correctly response the server ping exception ([babb5a4](https://github.com/voxelum/x-minecraft-launcher/commit/babb5a4))
+* fix: formated string not localized in textcomponent ([59a9e7a](https://github.com/voxelum/x-minecraft-launcher/commit/59a9e7a))
+
+
 ## [0.10.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.9.0...v0.10.0)
 
 * fix: align all search bar behavior ([0df58ea](https://github.com/voxelum/x-minecraft-launcher/commit/0df58ea))
