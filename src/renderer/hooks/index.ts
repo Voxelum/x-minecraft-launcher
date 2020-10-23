@@ -28,3 +28,4 @@ export * from './useDragDrop';
 export * from './useScroll';
 export * from './useSemaphore';
 export * from './useBlockModelPreview';
+export * from './useFileDrop';

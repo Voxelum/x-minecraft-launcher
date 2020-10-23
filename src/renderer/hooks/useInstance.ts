@@ -1,9 +1,10 @@
-import { computed, onMounted, reactive, toRefs } from '@vue/composition-api';
 import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions } from '@main/service/InstanceSavesService';
 import { CreateOption } from '@main/service/InstanceService';
 import { InstanceSchema as InstanceConfig } from '@universal/entities/instance.schema';
-import { getExpectVersion } from '@universal/entities/version';
 import { CurseforgeModpackResource, ModpackResource } from '@universal/entities/resource';
+import { ResourceType } from '@universal/entities/resource.schema';
+import { getExpectVersion } from '@universal/entities/version';
+import { computed, reactive, toRefs } from '@vue/composition-api';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { useBusy } from './useSemaphore';
 import { useService, useServiceOnly } from './useService';
@@ -97,7 +98,6 @@ export function useInstanceCreation() {
         minMemory: undefined as undefined | number,
         author: gameProfile.value.name,
         description: '',
-        deployments: { mods: [], resourcepacks: [] },
         resolution: undefined as undefined | CreateOption['resolution'],
         url: '',
         icon: '',
@@ -136,7 +136,6 @@ export function useInstanceCreation() {
             data.minMemory = undefined;
             data.author = gameProfile.value.name;
             data.description = '';
-            data.deployments = { mods: [], resourcepacks: [] };
             data.resolution = undefined;
             data.url = '';
             data.icon = '';
@@ -168,7 +167,7 @@ export function useInstanceCreation() {
         },
 
         useModpack(resource: CurseforgeModpackResource | ModpackResource) {
-            if (resource.type === 'curseforge-modpack') {
+            if (resource.type === ResourceType.CurseforgeModpack) {
                 const metadata = resource.metadata;
                 data.name = `${metadata.name} - ${metadata.version}`;
                 data.runtime.minecraft = metadata.minecraft.version;

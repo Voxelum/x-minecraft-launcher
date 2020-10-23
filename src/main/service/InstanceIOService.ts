@@ -83,7 +83,18 @@ export interface ExportCurseforgeModpackOptions {
 
 export interface ImportCurseforgeModpackOptions {
     /**
-     * The path of modpack
+     * The path of curseforge modpack zip file
+     */
+    path: string;
+    /**
+     * The destination instance path. If this is empty, it will create a new instance.
+     */
+    instancePath?: string;
+}
+
+export interface ImportModpackOptions {
+    /**
+     * The path of modpack directory
      */
     path: string;
     /**
@@ -283,7 +294,7 @@ export default class InstanceIOService extends Service {
     }
 
     /**
-     * Import an instance from a game zip file. The zip file root must be the game directory, or it must contains the `.minecraft` directory.
+     * Import an instance from a game zip file or a game directory. The location root must be the game directory.
      * @param location The zip or directory path
      */
     async importInstance(location: string) {
@@ -319,12 +330,11 @@ export default class InstanceIOService extends Service {
             delete localVersion.id;
             delete localVersion.folder;
             instanceTemplate.runtime = localVersion;
+            instanceTemplate.name = basename(location);
         }
-
 
         // create instance
         const instancePath = await this.instanceService.createInstance(instanceTemplate);
-
 
         // start copy from src to instance
         await copyPassively(srcDirectory, instancePath, (path) => {
@@ -342,6 +352,10 @@ export default class InstanceIOService extends Service {
         if (!isDir) { await remove(srcDirectory); }
     }
 
+    /**
+     * Import the curseforge modpack zip file to the instance.
+     * @param options The options provide instance directory path and curseforge modpack zip path
+     */
     async importCurseforgeModpack(options: ImportCurseforgeModpackOptions) {
         let { path, instancePath } = options;
 
@@ -412,7 +426,7 @@ export default class InstanceIOService extends Service {
 
             await this.resourceService.importResources({
                 files: files.map((f) => ({
-                    filePath: f.path,
+                    path: f.path,
                     url: [f.url, getCurseforgeUrl(f.projectID, f.fileID)],
                     source: {
                         curseforge: { projectId: f.projectID, fileId: f.fileID },

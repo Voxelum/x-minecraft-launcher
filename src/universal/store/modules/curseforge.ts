@@ -32,10 +32,9 @@ const mod: CurseForgeModule = {
         isFileInstalled: (state, _, rt) => (file) => {
             /**
              */
-            const find = (m: { source: any }) => {
-                const source = m.source;
-                if ('curseforge' in source && typeof source.curseforge === 'object') {
-                    const s = source.curseforge;
+            const find = (m: Resource) => {
+                if ('curseforge' in m && typeof m.curseforge === 'object') {
+                    const s = m.curseforge;
                     if (s.href === file.href || s.fileId === file.id) return true;
                 }
                 return false;
@@ -50,8 +49,8 @@ const mod: CurseForgeModule = {
         findFileInstalled: (state, _, rt) => (file) => {
             /**
              */
-            const find = (m: { source: any }) => {
-                const source = m.source;
+            const find = (m: Resource) => {
+                const source = m;
                 if ('curseforge' in source && typeof source.curseforge === 'object') {
                     const s = source.curseforge;
                     if (s.href === file.href || s.fileId === file.id) return true;
