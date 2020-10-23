@@ -15,7 +15,7 @@ var zh = {
         },
         "author": "联系作者",
         'download-zip': "压缩包 (x64)",
-        'download-zip-32': "压缩包 (x32)",
+        'download-web': "在线安装包",
         'download-portable': "绿色版",
         'download-dmg': "DMG",
         'download-snap': "Snap",

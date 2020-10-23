@@ -7,7 +7,7 @@ const del = require('del');
 const { spawn } = require('child_process');
 const webpack = require('webpack');
 const Multispinner = require('multispinner');
-const { writeFileSync } = require('fs');
+const { writeFileSync, existsSync } = require('fs');
 const { join } = require('path');
 const { build: electronBuild } = require('electron-builder');
 
@@ -109,6 +109,14 @@ async function renameFiles(s) {
     for (let file of files) {
         if (file.indexOf(' ') !== -1) {
             await move(`build/${file}`, `build/${file.replace(/ /g, '-')}`)
+        }
+    }
+    if (existsSync('build/nsis-web')) {
+        let files = await readdir('build/nsis-web');
+        for (let file of files) {
+            if (file.indexOf(' ') !== -1) {
+                await move(`build/nsis-web/${file}`, `build/nsis-web/${file.replace(/ /g, '-')}`)
+            }
         }
     }
     return s;

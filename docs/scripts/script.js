@@ -72,6 +72,7 @@ function getGithubUrl(name) { return `https://github.com/Voxelum/x-minecraft-lau
 function getAzureUrl(name) { return `https://xmcl-release.azureedge.net/releases/${name}`; }
 
 function setupHrefByUrl(elem, azureUrl, githubUrl) {
+    window.
     $(elem).click((event) => {
         $(elem).addClass('loading');
         if (DOWNLOAD_SOURCE === 'auto') {
@@ -110,9 +111,9 @@ function buildFromGithub() {
             }
         }
 
-        setupHref('[win-zip-32]', a => a.name.endsWith('win.zip') && a.name.indexOf('ia32') !== -1);
+        setupHref('[win-web]', a => a.name.indexOf('Web-Setup') !== -1 && a.name.endsWith('.exe'));
         setupHref('[win-zip]', a => a.name.endsWith('win.zip') && a.name.indexOf('ia32') === -1);
-        setupHref('[win-setup]', a => a.name.indexOf('-Setup') !== -1 && a.name.endsWith('.exe'));
+        setupHref('[win-setup]', a => a.name.indexOf('-Setup') !== -1 && a.name.endsWith('.exe') && a.name.indexOf('Web') === -1);
         setupHref('[mac-zip]', a => a.name.endsWith('mac.zip'));
         setupHref('[dmg]', a => a.name.endsWith('.dmg'));
         setupHref('[deb]', a => a.name.endsWith('.deb'));
@@ -132,7 +133,7 @@ function buildByVersion() {
         setupHrefByUrl(elem, getAzureUrl(name), getGithubUrl(name));
     }
 
-    setupHref('[win-zip-32]', `xmcl-${version}-ia32-win.zip`);
+    setupHref('[win-web]', `xmcl-Web-Setup-${version}.exe`);
     setupHref('[win-zip]', `xmcl-${version}-win.zip`);
     setupHref('[win-setup]', `xmcl-Setup-${version}.exe`);
     setupHref('[mac-zip]', `xmcl-${version}-mac.zip`);

@@ -26,7 +26,6 @@ const config = {
                 target: "zip",
                 arch: [
                     "x64",
-                    "ia32"
                 ]
             },
         ],

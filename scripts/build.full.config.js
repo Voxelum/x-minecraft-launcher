@@ -54,20 +54,17 @@ const config = {
     win: {
         icon: "build/icons/icon.ico",
         target: [
-            'nsis:ia32', 
             'nsis:x64',
             {
                 target: "nsis-web",
                 arch: [
                     "x64",
-                    "ia32"
                 ]
             },
             {
                 target: "zip",
                 arch: [
                     "x64",
-                    "ia32"
                 ]
             },
         ],

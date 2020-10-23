@@ -16,7 +16,7 @@ var en = {
         },
         "author": "Contant Author",
         'download-zip': "Zip (64 bits)",
-        'download-zip-32': "Zip (32 bits)",
+        'download-web': "Web Installer",
         'download-portable': "Portable",
         'download-dmg': "DMG",
         'download-snap': "Snap",
