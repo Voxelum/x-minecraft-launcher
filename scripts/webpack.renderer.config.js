@@ -91,7 +91,7 @@ const rendererConfig = {
                 include: [path.join(__dirname, '../src/renderer'), path.join(__dirname, '../src/universal')],
             },
             {
-                test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+                test: /\.(png|jpe?g|gif|svg|webp)(\?.*)?$/,
                 use: {
                     loader: 'url-loader',
                     query: {
