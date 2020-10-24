@@ -10,12 +10,16 @@ const Multispinner = require('multispinner');
 const { writeFileSync, existsSync } = require('fs');
 const { join } = require('path');
 const { build: electronBuild } = require('electron-builder');
+const { createHash } = require('crypto');
+const { createReadStream } = require('fs');
+const { pipeline } = require('stream')
+const { promisify } = require('util')
 
 const liteConfig = require('./build.lite.config');
 const fullConfig = require('./build.full.config');
 const mainConfig = require('./webpack.main.config');
 const rendererConfig = require('./webpack.renderer.config');
-const { move, readdir } = require('fs-extra');
+const { move, readdir, writeFile, stat } = require('fs-extra');
 
 const doneLog = `${chalk.bgGreen.white(' DONE ')}  `;
 const errorLog = `${chalk.bgRed.white(' ERROR ')}  `;
@@ -104,26 +108,37 @@ function pack(config) {
     });
 }
 
-async function renameFiles(s) {
-    let files = await readdir('build');
-    for (let file of files) {
-        if (file.indexOf(' ') !== -1) {
-            await move(`build/${file}`, `build/${file.replace(/ /g, '-')}`)
+async function renameAndHashFiles(s) {
+    async function hashByPath(algorithm, path) {
+        let hash = createHash(algorithm).setEncoding("hex");
+        await promisify(pipeline)(createReadStream(path), hash);
+        return hash.read();
+    }
+    async function process(filePath) {
+        if (filePath.indexOf(' ') !== -1) {
+            await move(filePath, filePath.replace(/ /g, '-'));
+            filePath = filePath.replace(/ /g, '-');
+        }
+        if (!(await stat(filePath)).isDirectory() && !filePath.endsWith('.yml') && !filePath.endsWith('.yaml')) {
+            await writeFile(`${filePath}.sha256`, await hashByPath('sha256', filePath));
+            await writeFile(`${filePath}.sha1`, await hashByPath('sha1', filePath));
         }
     }
+    for (const file of await readdir('build')) {
+        const filePath = `build/${file}`;
+        await process(filePath);
+    }
     if (existsSync('build/nsis-web')) {
-        let files = await readdir('build/nsis-web');
-        for (let file of files) {
-            if (file.indexOf(' ') !== -1) {
-                await move(`build/nsis-web/${file}`, `build/nsis-web/${file.replace(/ /g, '-')}`)
-            }
+        for (const file of await readdir('build/nsis-web')) {
+            const filePath = `build/nsis-web/${file}`;
+            await process(filePath);
         }
     }
     return s;
 }
 
 function buildFull() {
-    return electronBuild({ publish: "never", config: fullConfig }).then(renameFiles).then((v) => {
+    return electronBuild({ publish: "never", config: fullConfig }).then(renameAndHashFiles).then((v) => {
         console.log(`${okayLog}${v.join(' ')}`);
     });
 }

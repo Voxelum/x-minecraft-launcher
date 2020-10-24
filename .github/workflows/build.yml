@@ -146,7 +146,7 @@ jobs:
         asset_dir_path: ./build
     - name: Update the latest-version.js
       run: |
-        node --eval "console.log('const version = \"' + JSON.parse(require('fs').readFileSync('package.json').toString()).version + '\"')" > /build/latest-version.js
+        node --eval "console.log('const version = \"' + JSON.parse(require('fs').readFileSync('package.json').toString()).version + '\"')" > build/latest-version.js
     - name: Upload to Azure
       uses: ci010/upload-blob-to-azure@master
       env:
