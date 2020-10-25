@@ -74,6 +74,14 @@ function configApp(app: ReturnType<typeof createApp>) {
 function startApp() {
     configApp(Vue as any);
     const i18n = provideVueI18n('en', locales);
+
+    // to prevent the universal drop activated on self element dragging
+    document.addEventListener('dragstart', (e) => {
+        if (e.dataTransfer?.effectAllowed === 'all') {
+            e.dataTransfer!.effectAllowed = 'none';
+        }
+    });
+
     const app = createApp({
         router,
         i18n,

@@ -1,7 +1,9 @@
 import Vue from 'vue';
 
 Vue.directive('draggable-card', (el) => {
-    el.addEventListener('dragstart', () => {
+    el.addEventListener('dragstart', (e) => {
+        console.log(e.dataTransfer?.effectAllowed);
+        e.dataTransfer!.effectAllowed = 'move';
         el.classList.add('dragged');
     });
     const removeClass = () => {
@@ -26,12 +28,14 @@ Vue.directive('selectable-card', (el) => {
 
 Vue.directive('data-transfer', (el, binding) => {
     el.addEventListener('dragstart', (e) => {
+        e.dataTransfer!.effectAllowed = 'move';
         e.dataTransfer!.setData(binding.arg!, binding.value);
     });
 });
 
 Vue.directive('data-transfer-image', (el, binding) => {
     el.addEventListener('dragstart', (e) => {
+        e.dataTransfer!.effectAllowed = 'move';
         e.dataTransfer!.setDragImage(binding.value, 0, 0);
     });
 });
