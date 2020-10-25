@@ -120,8 +120,13 @@ async function renameAndHashFiles(s) {
             filePath = filePath.replace(/ /g, '-');
         }
         if (!(await stat(filePath)).isDirectory() && !filePath.endsWith('.yml') && !filePath.endsWith('.yaml')) {
-            await writeFile(`${filePath}.sha256`, await hashByPath('sha256', filePath));
-            await writeFile(`${filePath}.sha1`, await hashByPath('sha1', filePath));
+            const sha256 = await hashByPath('sha256', filePath);
+            const sha1 = await hashByPath('sha1', filePath);
+            console.log(`checksum of ${filePath}`);
+            console.log(`sha1: ${sha1}`);
+            console.log(`sha256: ${sha256}`);
+            await writeFile(`${filePath}.sha256`, sha256);
+            await writeFile(`${filePath}.sha1`, sha1);
         }
     }
     for (const file of await readdir('build')) {
