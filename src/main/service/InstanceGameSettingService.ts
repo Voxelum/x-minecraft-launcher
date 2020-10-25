@@ -95,26 +95,30 @@ export default class InstanceGameSettingService extends Service {
      * @param gameSetting The game setting edit options
      */
     edit(gameSetting: EditGameSettingOptions) {
-        let current = this.state.instance.settings;
-        let result: Frame = {};
-        for (let key of Object.keys(gameSetting)) {
+        const current = this.state.instance.settings;
+        const result: Frame = {};
+        for (const key of Object.keys(gameSetting)) {
             if (key === 'resourcePacks') continue;
             if (key in current && (current as any)[key] !== (gameSetting as any)[key]) {
                 (result as any)[key] = (gameSetting as any)[key];
             }
         }
         if (gameSetting.resourcePacks) {
-            let mcversion = this.getters.instance.runtime.minecraft;
+            const mcversion = this.getters.instance.runtime.minecraft;
+            let resourcePacks: string[];
             if ((isReleaseVersion(mcversion) && compareRelease(mcversion, '1.13.0') >= 0)
                 || (isSnapshotPreview(mcversion) && compareSnapshot(mcversion, '17w43a') >= 0)) {
-                result.resourcePacks = gameSetting.resourcePacks
+                resourcePacks = gameSetting.resourcePacks
                     .map(r => (r !== 'vanilla' && !r.startsWith('file/') ? `file/${r}` : r));
-                if (result.resourcePacks.every((p) => p !== 'vanilla')) {
-                    result.resourcePacks.unshift('vanilla');
+                if (resourcePacks.every((p) => p !== 'vanilla')) {
+                    resourcePacks.unshift('vanilla');
                 }
             } else {
-                result.resourcePacks = gameSetting.resourcePacks.filter(r => r !== 'vanilla')
+                resourcePacks = gameSetting.resourcePacks.filter(r => r !== 'vanilla')
                     .map(r => (r.startsWith('file/') ? r.substring(5) : r));
+            }
+            if (result.resourcePacks?.length !== resourcePacks.length || result.resourcePacks?.some((p, i) => p !== resourcePacks[i])) {
+                result.resourcePacks = resourcePacks;
             }
         }
         if (Object.keys(result).length > 0) {
