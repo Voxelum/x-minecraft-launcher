@@ -7,7 +7,7 @@
     @drop="onDropToImport"
   >
     <v-layout column fill-height style="max-height: 100%">
-      <v-toolbar dark flat color="transparent">
+      <v-toolbar dark flat color="transparent" style="z-index: 10">
         <v-toolbar-title>{{ $tc("mod.name", 2) }}</v-toolbar-title>
         <v-spacer />
         <v-tooltip bottom>

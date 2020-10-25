@@ -6,7 +6,7 @@
     style="overflow: auto"
   >
     <v-layout row wrap>
-      <v-toolbar dark flat dense color="transparent">
+      <v-toolbar dark flat dense color="transparent" style="z-index: 10">
         <v-toolbar-title>{{ $tc("resourcepack.name", 2) }}</v-toolbar-title>
         <v-spacer />
         <!-- <v-tooltip bottom> -->
