@@ -43,7 +43,7 @@
             "request": "attach",
             "cwd": "${workspaceFolder}",
             "outFiles": [
-                "${workspaceFolder}/dist/*.js",
+                "${workspaceFolder}/dist/electron/*.js",
                 "${workspaceFolder}/src/**/*.js"
             ],
             "smartStep": true,

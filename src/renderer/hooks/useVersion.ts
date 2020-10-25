@@ -7,7 +7,7 @@ import { useStore } from './useStore';
 import { useBusy } from './useSemaphore';
 
 export function useVersions() {
-    return useServiceOnly('VersionService', 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory', 'reinstall');
+    return useServiceOnly('VersionService', 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory');
 }
 
 export function useLocalVersions() {

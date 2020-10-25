@@ -35,7 +35,7 @@ const mod: CurseForgeModule = {
             const find = (m: Resource) => {
                 if ('curseforge' in m && typeof m.curseforge === 'object') {
                     const s = m.curseforge;
-                    if (s.href === file.href || s.fileId === file.id) return true;
+                    if (s.fileId === file.id) return true;
                 }
                 return false;
             };
@@ -53,7 +53,7 @@ const mod: CurseForgeModule = {
                 const source = m;
                 if ('curseforge' in source && typeof source.curseforge === 'object') {
                     const s = source.curseforge;
-                    if (s.href === file.href || s.fileId === file.id) return true;
+                    if (s.fileId === file.id) return true;
                 }
                 return false;
             };

@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import got from 'got';
 
 export interface Release {
     title: string;

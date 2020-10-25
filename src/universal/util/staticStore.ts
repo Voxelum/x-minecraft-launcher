@@ -39,7 +39,7 @@ export interface StaticStore<T> {
 export function createStaticStore<T>(template: StoreOptions<T>): StaticStore<T> {
     let subscriptions: Listener[] = [];
 
-    let state = deepCopy(typeof template.state === 'object' ? template.state : template!.state());
+    let state = deepCopy(typeof template.state === 'object' ? template.state : (template as any).state());
     let getters: GetterTree<any, any> = {};
     let mutations: Record<string, (payload?: any) => any> = {};
     let subscribe: (fn: Listener) => void = (fn) => {

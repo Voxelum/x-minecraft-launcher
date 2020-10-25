@@ -12,7 +12,7 @@ type MutationRestriction<M extends MutationsDefinitions, S = {}> = {
     [key in keyof M]: (state: S, payload: M[key]) => void;
 }
 type GetterRestriction<G extends GetterDefinition, S = {}> = {
-    [key in keyof G]: (state: S, getters: G, rootState: RootState, rootGetters: RootGetters) => G[key];
+    [key in keyof G]: (state: S, getters: G, rootState: RootState, rootGetters: any) => G[key];
 }
 type ActionRestriction<A extends ActionDefinitions, S = {}, G = {}> = {
     [key in keyof A]: (context: { state: S; getters: G; commit: RootCommit; dispatch: RootDispatch; rootState: RootState; rootGetters: RootGetters }, payload: Parameters<A[key]>[0]) => Promise<ReturnType<A[key]>>;
