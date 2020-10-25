@@ -247,20 +247,21 @@ export default class InstanceIOService extends Service {
             overrides: 'overrides',
         };
 
-        for (const mod of this.state.instance.mods) {
-            if (!mod.curseforge) {
-                // add to override
-            } else {
-                curseforgeConfig.files.push({ projectID: mod.curseforge.projectId, fileID: mod.curseforge.fileId, required: true });
-            }
-        }
-
         const { task, add, addBuffer, addEmptyDirectory, end } = openCompressedStreamTask(destinationPath);
 
         addEmptyDirectory('overrides');
 
         for (let file of overrides) {
-            await add(join(instancePath, file), `overrides/${file}`);
+            if (file.startsWith('mods/')) {
+                const mod = this.state.instance.mods.find((i) => (i.location.replace('\\', '/') + i.ext) === file);
+                if (mod && mod.curseforge) {
+                    curseforgeConfig.files.push({ projectID: mod.curseforge.projectId, fileID: mod.curseforge.fileId, required: true });
+                } else {
+                    await add(join(instancePath, file), `overrides/${file}`);
+                }
+            } else {
+                await add(join(instancePath, file), `overrides/${file}`);
+            }
         }
 
         addBuffer(Buffer.from(JSON.stringify(curseforgeConfig)), 'manifest.json');
