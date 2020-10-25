@@ -1,4 +1,4 @@
-import { Resource, ForgeResource, LiteloaderResource, FabricResource, ResourcePackResource, SaveResource, ModpackResource, CurseforgeModpackResource, UNKNOWN_RESOURCE, Resources } from '@universal/entities/resource';
+import { CurseforgeModpackResource, FabricResource, ForgeResource, LiteloaderResource, ModpackResource, Resource, ResourcePackResource, Resources, SaveResource, UNKNOWN_RESOURCE } from '@universal/entities/resource';
 import { requireString } from '@universal/util/assert';
 import { remove } from '@universal/util/middleware';
 import { ModuleOption } from '../root';
@@ -24,7 +24,7 @@ interface Getters {
 interface Mutations {
     resource: Resources;
     resources: Resources[];
-    resourceRemove: Resources;
+    resourcesRemove: Resource[];
 }
 
 
@@ -74,19 +74,11 @@ const mod: ResourceModule = {
                 }
             }
         },
-        resourceRemove(state, resource) {
-            if (resource.domain in state.domains) {
-                const domain = state.domains[resource.domain];
-                const index = domain.findIndex(r => r.hash === resource.hash);
-                if (index === -1) {
-                    throw new Error(`Cannot find resouce ${resource.name}[${resource.hash}] in domain!`);
-                }
-                domain.splice(index, 1);
-
-                // TODO: remove in Vue3
-                remove(domain, index);
-            } else {
-                throw new Error(`Cannot remove resource for unknown domain [${resource.domain}]`);
+        resourcesRemove(state, resources) {
+            const removal = new Set(resources.map((r) => r.hash));
+            const domains = new Set(resources.map((r) => r.domain));
+            for (const domain of domains) {
+                state.domains[domain] = state.domains[domain].filter((r) => !removal.has(r.hash)) as any;
             }
         },
     },
