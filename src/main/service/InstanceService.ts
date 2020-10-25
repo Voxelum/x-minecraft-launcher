@@ -356,7 +356,7 @@ export class InstanceService extends Service {
             if (typeof options.maxMemory === 'undefined') {
                 result.maxMemory = 0;
             } else if (typeof options.maxMemory === 'number') {
-                result.maxMemory = result.maxMemory > 0 ? options.maxMemory : 0;
+                result.maxMemory = options.maxMemory > 0 ? options.maxMemory : 0;
             } else {
                 throw new Error(`Invalid Argument: Expect maxMemory to be number or undefined! Got ${typeof options.maxMemory}.`);
             }
@@ -365,7 +365,7 @@ export class InstanceService extends Service {
             if (typeof options.minMemory === 'undefined') {
                 result.minMemory = 0;
             } else if (typeof options.minMemory === 'number') {
-                result.minMemory = result.minMemory > 0 ? options.minMemory : 0;
+                result.minMemory = options.minMemory > 0 ? options.minMemory : 0;
             } else {
                 throw new Error(`Invalid Argument: Expect minMemory to be number or undefined! Got ${typeof options.maxMemory}.`);
             }
