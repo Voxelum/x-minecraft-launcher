@@ -81,6 +81,7 @@ export function useDropImportFile(
 export function useDragTransferItemMutable(elem: Ref<HTMLElement>, item: Ref<{ id: string; side: string }>) {
     let memo: HTMLElement;
     function onDragStart(e: DragEvent) {
+        e.dataTransfer!.effectAllowed = 'move';
         e.dataTransfer!.setData('side', item.value.side);
         e.dataTransfer!.setData('id', item.value.id);
     }
