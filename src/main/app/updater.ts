@@ -35,6 +35,7 @@ export function downloadAsarUpdateTask(this: ElectronLauncherApp) {
         let exePath = this.getPath('exe');
         let appPath = dirname(exePath);
         let updatePath = join(appPath, 'resources', 'update.asar.temp');
+        this.log(`Download asar update to ${updatePath}`);
         await this.networkManager.downloadFileTask({ destination: updatePath, url: uObject.toString() })(ctx);
     });
     return downloadUpdate;
@@ -55,6 +56,7 @@ export function downloadFullUpdateTask() {
 
 export async function quitAndInstallAsar(this: ElectronLauncherApp) {
     if (IS_DEV) {
+        this.log('Currently is development envrionment. Skip to install ASAR');
         return;
     }
     let exePath = process.argv[0];
@@ -63,13 +65,16 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
     let appAsarPath = join(appPath, 'resources', 'app.asar');
     let updateAsarPath = join(appPath, 'resources', 'update.asar.temp');
 
+    this.log(`Install asar on ${this.platform.name}`);
     if (this.platform.name === 'windows') {
         let elevatePath = join(appPath, 'resources', 'elevate.exe');
 
         if (!existsSync(updateAsarPath)) {
+            this.error(`No update found: ${updateAsarPath}`);
             throw new Error(`No update found: ${updateAsarPath}`);
         }
         if (!existsSync(elevatePath)) {
+            this.error(`No elevate.exe found: ${elevatePath}`);
             throw new Error(`No elevate.exe found: ${elevatePath}`);
         }
         let psPath = join(this.appDataPath, 'AutoUpdate.ps1');

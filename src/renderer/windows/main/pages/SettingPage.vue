@@ -112,7 +112,8 @@
               <v-btn
                 :loading="checkingUpdate"
                 :disabled="updateStatus === 'none'"
-                flat
+                :color="updateStatus !== 'none' ? 'primary' : ''"
+                :flat="updateStatus === 'none'"
                 @click="viewUpdateDetail"
               >
                 {{ updateStatus === 'none' ? $t('setting.alreadyLatest') : updateStatus === 'pending' ? $t('setting.updateToThisVersion') : $t('setting.installAndQuit') }}

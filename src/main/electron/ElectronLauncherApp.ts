@@ -158,9 +158,9 @@ export default class ElectronLauncherApp extends LauncherApp {
     downloadUpdateTask(): Task<void> {
         if (this.storeManager.store.state.setting.updateInfo) {
             if (this.storeManager.store.state.setting.updateInfo.incremental) {
-                return downloadFullUpdateTask();
+                return downloadAsarUpdateTask.bind(this)();
             }
-            return downloadAsarUpdateTask.bind(this)();
+            return downloadFullUpdateTask();
         }
         throw new Error('Please check update first!');
     }

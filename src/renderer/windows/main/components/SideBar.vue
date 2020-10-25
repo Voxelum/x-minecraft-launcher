@@ -106,7 +106,15 @@
         to="/setting"
       >
         <v-list-tile-action>
-          <v-icon dark>settings</v-icon>
+          <v-badge
+            right
+            :value="updateStatus !== 'none'"
+          >
+            <template v-slot:badge>
+              <span>{{ 1 }}</span>
+            </template>
+            <v-icon dark>settings</v-icon>
+          </v-badge>
         </v-list-tile-action>
       </v-list-tile>
     </v-list>
@@ -122,6 +130,7 @@ import {
 import {
   useRouter,
   useTaskCount,
+  useUpdateInfo,
 } from '@/hooks';
 import { useDialog, useAsyncRouteBeforeLeaves } from '../hooks';
 
@@ -129,6 +138,7 @@ export default defineComponent({
   setup() {
     const { activeTasksCount } = useTaskCount();
     const { show } = useDialog('task');
+    const { updateStatus } = useUpdateInfo();
     const beforeLeaves = useAsyncRouteBeforeLeaves();
 
     const router = useRouter();
@@ -162,6 +172,7 @@ export default defineComponent({
 
     return {
       ...toRefs(data),
+      updateStatus,
       activeTasksCount,
       showTaskDialog: show,
       goBack,

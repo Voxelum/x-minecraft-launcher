@@ -53,7 +53,7 @@ export default class BaseService extends Service {
 
     async quitAndInstall() {
         if (this.state.setting.updateStatus === 'ready') {
-            await this.quitAndInstall();
+            await this.app.installUpdateAndQuit();
         }
         this.warn('There is no update avaiable!');
     }
