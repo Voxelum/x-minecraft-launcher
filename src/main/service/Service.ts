@@ -8,6 +8,7 @@ import Ajv from 'ajv';
 import { ensureFile, readFile, writeFile } from 'fs-extra';
 import { join } from 'path';
 import { createContext, runInContext } from 'vm';
+import { WaitingQueue } from '@main/util/mutex';
 
 export const INJECTIONS_SYMBOL = Symbol('__injections__');
 export const MUTATION_LISTENERS_SYMBOL = Symbol('__listeners__');
@@ -54,6 +55,47 @@ export enum Policy {
 }
 
 const runningSingleton: Record<string, Promise<any>> = {};
+const waitingQueue: Record<string, WaitingQueue> = {};
+
+function getQueue(name: string) {
+    if (!(name in waitingQueue)) {
+        waitingQueue[name] = new WaitingQueue();
+    }
+    return waitingQueue[name];
+}
+
+export function Enqueue(queue: WaitingQueue) {
+    return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
+        const method = descriptor.value;
+        const func = function (this: Service, ...args: any[]) {
+            return queue.enqueue(async () => {
+                let isPromise = false;
+                try {
+                    const result = method.apply(this, args);
+                    if (result instanceof Promise) {
+                        isPromise = true;
+                        const promise = result.finally(() => {
+                            // for (const s of semiphores) {
+                            //     delete runningSingleton[s];
+                            // }
+                            // this.release(semiphores);
+                        });
+                        // for (const s of semiphores) {
+                        //     runningSingleton[s] = promise;
+                        // }
+                        return promise;
+                    }
+                    return result;
+                } finally {
+                    if (!isPromise) {
+                        // this.release(semiphores);
+                    }
+                }
+            });
+        };
+        descriptor.value = func;
+    };
+}
 
 /**
  * A service method decorator to make sure this service call should run in singleton -- no second call at the time.
@@ -106,39 +148,6 @@ export class ServiceException extends Error {
     constructor(readonly exception: Exceptions, message?: string) {
         super(message);
     }
-}
-
-
-class WaitingQueue {
-    private queue: Array<[Promise<void>, () => void]> = [];
-
-    async getAndWait(): Promise<void> {
-        let last: Promise<void> | undefined = this.queue[this.queue.length - 1]?.[0];
-        let r: () => void;
-        let p = new Promise<void>((resolve) => {
-            r = resolve;
-        });
-        // reserve your place in line
-        this.queue.push([p, r!]);
-        // wait last guy to finish
-        await last;
-    }
-
-    release(): void {
-        this.queue.shift()?.[1]();
-    }
-
-    isWaiting() {
-        return this.queue.length > 0;
-    }
-
-    async wait() {
-        await this.queue[this.queue.length - 1]?.[0];
-    }
-}
-
-class WaitingQueues {
-    queues: Record<string, WaitingQueue> = {};
 }
 
 /**

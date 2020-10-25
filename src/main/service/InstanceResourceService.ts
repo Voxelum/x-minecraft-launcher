@@ -3,11 +3,11 @@ import { readdirIfPresent } from '@main/util/fs';
 import { isModResource, isResourcePackResource, ModResource, Resource, ResourcePackResource } from '@universal/entities/resource';
 import { ResourceDomain } from '@universal/entities/resource.schema';
 import { copyFile, ensureDir, FSWatcher, link, unlink } from 'fs-extra';
+import debounce from 'lodash.debounce';
 import watch from 'node-watch';
 import { basename, join } from 'path';
 import ResourceService from './ResourceService';
 import Service, { Inject, MutationTrigger, Singleton } from './Service';
-import debounce from 'lodash.debounce';
 
 export interface DeployOptions {
     resources: Resource[];

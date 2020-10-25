@@ -7,7 +7,7 @@ export function useIssueHandler() {
     const { fix: fixIssue } = useService('DiagnoseService');
     const { replace } = useRouter();
     const { show: showJavaDialog, javaIssue } = useJavaWizardDialog();
-    const { show: showModDialog } = useDialog('download-missing-mods');
+    const { show: showModDialog } = useDialog('download-missing-mods' as any); // TODO: fix this
     const { deploy } = useService('InstanceResourceService');
     const { resources } = useResource('mods');
 

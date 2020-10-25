@@ -11,8 +11,9 @@ const { dependencies } = require('../package.json');
  */
 const mainConfig = {
     mode: process.env.NODE_ENV,
-    // devtool: 'source-map',
-    devtool: '#eval-source-map',
+    devtool: 'source-map',
+    // devtool: 'cheap-module-eval-source-map',
+    // devtool: '#eval-source-map',
     entry: {
         main: path.join(__dirname, '../src/main/main.ts'),
     },

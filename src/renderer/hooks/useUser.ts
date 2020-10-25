@@ -260,15 +260,15 @@ export function useLoginValidation(isOffline: Ref<boolean>) {
         data.passwordErrors = [];
     }
     function handleError(e: LoginException) {
-        const err = e as LoginException;
-        if (err.type === 'loginInternetNotConnected') {
+        if (e.type === 'loginInternetNotConnected') {
             // TODO: handle this case
-        } else if (err.type === 'loginInvalidCredentials') {
+        } else if (e.type === 'loginInvalidCredentials') {
             const msg = $t('user.invalidCredentials');
             data.usernameErrors = [msg];
             data.passwordErrors = [msg];
         } else {
-            data.usernameErrors = [e.message ?? e.errorMessage];
+            const err = e as any;
+            data.usernameErrors = [err.message ?? err.errorMessage];
             console.error(e);
         }
     }

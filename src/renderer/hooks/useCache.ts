@@ -28,7 +28,7 @@ export function useLocalStorageCache<T>(key: string, defaultValue: () => T, toSt
         return LOCAL_STORAGE_CACHE[key];
     }
     let result = localStorage.getItem(key);
-    let v: Ref<T> = ref(result !== null ? fromString(result) : defaultValue());
+    let v: Ref<T> = ref(result !== null ? fromString(result) : defaultValue()) as any;
     if (!result) {
         localStorage.setItem(key, toString(v.value));
     }

@@ -1,3 +1,4 @@
+import { Queue } from '@main/util/mutex';
 import { MinecraftFolder } from '@xmcl/core';
 import { ModelLoader, ResourceManager, ResourcePackWrapper } from '@xmcl/resource-manager';
 import { ResourcePack } from '@xmcl/resourcepack';
@@ -20,34 +21,6 @@ export interface NamedResourcePackWrapper extends ResourcePackWrapper {
     path: string;
 }
 
-class Lock {
-    private queue: Array<[Promise<void>, () => void]> = [];
-
-    async getAndWait(): Promise<void> {
-        let last: Promise<void> | undefined = this.queue[this.queue.length - 1]?.[0];
-        let r: () => void;
-        let p = new Promise<void>((resolve) => {
-            r = resolve;
-        });
-        // reserve your place in line
-        this.queue.push([p, r!]);
-        // wait last guy to finish
-        await last;
-    }
-
-    release(): void {
-        this.queue.shift()?.[1]();
-    }
-
-    isLocked() {
-        return this.queue.length > 0;
-    }
-
-    async wait() {
-        await this.queue[this.queue.length - 1]?.[0];
-    }
-}
-
 export default class ResourcePackPreviewService extends Service {
     @Inject('InstanceResourceService')
     private instanceResourceService!: InstanceResourceService;
@@ -60,14 +33,14 @@ export default class ResourcePackPreviewService extends Service {
 
     private cachedJsonVersion: string | undefined;
 
-    private lock: Lock = new Lock();
+    private queue = new Queue();
 
     private active = false;
 
     async init() {
         this.app.on('minecraft-start', () => {
             if (this.active) {
-                this.lock.wait().then(() => {
+                this.queue.waitUntilEmpty().then(() => {
                     // deactivate once game started
                     this.active = false;
                     this.resourceManager.clear();
@@ -106,7 +79,7 @@ export default class ResourcePackPreviewService extends Service {
     }
 
     protected async updateResourcePacks(resourcePacks: string[]) {
-        await this.lock.getAndWait();
+        const release = await this.queue.waitInline();
 
         try {
             const list = this.resourceManager.list as NamedResourcePackWrapper[];
@@ -155,7 +128,7 @@ export default class ResourcePackPreviewService extends Service {
                 list.pop();
             }
         } finally {
-            this.lock.release();
+            release();
         }
     }
 
@@ -183,10 +156,10 @@ export default class ResourcePackPreviewService extends Service {
 
         if (this.resourceManager.list.length === 0) {
             // if no resource packs loaded, load it...
-            if (!this.lock.isLocked()) {
+            if (!this.queue.isWaiting()) {
                 await this.updateResourcePacks(this.state.instance.settings?.resourcePacks ?? { resourcePacks: [] });
             } else {
-                await this.lock.wait();
+                await this.queue.waitUntilEmpty();
             }
         }
 

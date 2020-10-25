@@ -1,4 +1,4 @@
-import { defineComponent, createElement as h } from '@vue/composition-api';
+import { defineComponent, h } from '@vue/composition-api';
 
 const files = require.context('.', false, /\.vue$/);
 
@@ -28,6 +28,6 @@ const components = files.keys().map((key) => {
 export default defineComponent({
     components,
     setup() {
-        return () => h('div', { staticStyle: { 'z-index': 10 } }, components.map(c => h(c)));
+        return () => h('div', { staticStyle: { 'z-index': 10 } }, components.map((c: any) => h(c)));
     },
 });
