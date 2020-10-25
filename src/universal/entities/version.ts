@@ -51,7 +51,7 @@ export function resolveRuntimeVersion(partialVersion: Version, runtime: RuntimeV
     const fabricLoader = resolveFabricLoaderVersion(partialVersion);
     const yarn = resolveFabricYarnVersion(partialVersion);
 
-    runtime.minecraft = minecraft || runtime.minecraft;
+    runtime.minecraft = runtime.minecraft || minecraft;
     runtime.forge = forge || runtime.forge;
     runtime.liteloader = liteloader || runtime.liteloader;
     runtime.fabricLoader = fabricLoader || runtime.fabricLoader;
