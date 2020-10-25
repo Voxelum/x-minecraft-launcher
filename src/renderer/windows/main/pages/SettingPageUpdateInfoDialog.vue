@@ -1,6 +1,6 @@
 <template>
   <v-dialog :value="value" @input="$emit('input', $event)">
-    <v-card v-if="updateInfo" dark>
+    <v-card v-if="updateInfo" dark style="overflow: auto; max-height: 500px">
       <v-card-title style="display: block;">
         <h1>
           <a href="https://github.com/voxelum/x-minecraft-launcher/releases">
