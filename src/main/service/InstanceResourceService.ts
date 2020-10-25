@@ -203,6 +203,13 @@ export default class InstanceResourceService extends Service {
 
     async deploy({ resources, path = this.state.instance.path }: DeployOptions) {
         let promises: Promise<void>[] = [];
+        if (!path) {
+            path = this.state.instance.path;
+        }
+        if (!this.state.instance.all[path]) {
+            this.warn(`Cannot deploy to the instance ${path}, as it's not found!`);
+            path = this.state.instance.path;
+        }
         this.log(`Deploy ${resources.length} to ${path}`);
         for (let resource of resources) {
             if (resource.domain !== ResourceDomain.Mods && resource.domain !== ResourceDomain.ResourcePacks) {
