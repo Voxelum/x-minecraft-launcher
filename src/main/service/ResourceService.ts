@@ -6,6 +6,7 @@ import { ResourceSchema, ResourceType, ResourceDomain } from '@universal/entitie
 import { requireString } from '@universal/util/assert';
 import { Task, task } from '@xmcl/task';
 import { stat } from 'fs-extra';
+import debounce from 'lodash.debounce';
 import { extname, join } from 'path';
 import Service from './Service';
 
@@ -74,6 +75,20 @@ export default class ResourceService extends Service {
     private cache = new ResourceCache();
 
     private loadPromises: Record<string, Promise<void>> = {};
+
+    private resourceRemoveQueue: Resource[] = [];
+
+    private commitUpdate = debounce(async () => {
+        const queue = this.resourceRemoveQueue;
+        if (queue.length > 0) {
+            this.resourceRemoveQueue = [];
+            this.commit('resourcesRemove', queue);
+            for (const resource of queue) {
+                this.cache.discard(resource);
+                await this.unpersistResource(resource);
+            }
+        }
+    }, 500);
 
     protected normalizeResource(resource: string | Resources): Resources {
         return (typeof resource === 'string' ? this.cache.get(resource) : resource) ?? UNKNOWN_RESOURCE;
@@ -146,6 +161,8 @@ export default class ResourceService extends Service {
                         size,
                         ino,
                         ext: extname(resourceFilePath),
+                        curseforge: resourceData.curseforge,
+                        github: resourceData.github,
                     });
                     return resource as Resources;
                 } catch (e) {
@@ -176,12 +193,10 @@ export default class ResourceService extends Service {
      * @param resourceOrKey 
      */
     async removeResource(resourceOrKey: string | Resources) {
-        let resource = this.normalizeResource(resourceOrKey);
+        const resource = this.normalizeResource(resourceOrKey);
         if (resource === UNKNOWN_RESOURCE) return;
-
-        this.cache.discard(resource);
-        this.commit('resourceRemove', resource);
-        await this.unpersistResource(resource);
+        this.resourceRemoveQueue.push(resource);
+        await this.commitUpdate();
     }
 
     /**
