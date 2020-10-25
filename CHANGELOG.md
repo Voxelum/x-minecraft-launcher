@@ -28,6 +28,25 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.11.1](https://github.com/voxelum/x-minecraft-launcher/compare/v0.11.0...v0.11.1)
+
+* chore: build test production to nsis ([6bc804f](https://github.com/voxelum/x-minecraft-launcher/commit/6bc804f))
+* chore: print checksum of build ([5061734](https://github.com/voxelum/x-minecraft-launcher/commit/5061734))
+* fix: batch remove resource ([2cab6a2](https://github.com/voxelum/x-minecraft-launcher/commit/2cab6a2))
+* fix: cannot autoupdate on windows ([7314f46](https://github.com/voxelum/x-minecraft-launcher/commit/7314f46))
+* fix: cannot click on button when no resource on ModSettingPage & ResourcePackSettingPage ([31e6e59](https://github.com/voxelum/x-minecraft-launcher/commit/31e6e59))
+* fix: cannot set memory ([e1134ea](https://github.com/voxelum/x-minecraft-launcher/commit/e1134ea))
+* fix: deploy to non-existed instance ([15f21a8](https://github.com/voxelum/x-minecraft-launcher/commit/15f21a8))
+* fix: export curseforge files correctly ([c836d9c](https://github.com/voxelum/x-minecraft-launcher/commit/c836d9c))
+* fix: redundent resource pack commit ([1165c98](https://github.com/voxelum/x-minecraft-launcher/commit/1165c98))
+* fix: resolve wrong local version ([e6e4a2d](https://github.com/voxelum/x-minecraft-launcher/commit/e6e4a2d))
+* fix: universal drop activated on self element ([e0bf8c3](https://github.com/voxelum/x-minecraft-launcher/commit/e0bf8c3))
+* style: fix the lint style ([2dd0073](https://github.com/voxelum/x-minecraft-launcher/commit/2dd0073))
+* refactor: clean out ts error and debug attachment ([76d3e27](https://github.com/voxelum/x-minecraft-launcher/commit/76d3e27))
+
+
 ## [0.11.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.10.0...v0.11.0)
 
 * chore: add webp bundle to webpack ([d471819](https://github.com/voxelum/x-minecraft-launcher/commit/d471819))
