@@ -23,7 +23,7 @@ const config = {
         icon: "build/icons/icon.ico",
         target: [
             {
-                target: "zip",
+                target: "nsis",
                 arch: [
                     "x64",
                 ]
