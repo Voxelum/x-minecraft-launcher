@@ -25,9 +25,11 @@
               v-on="on"
               @click="filterInCompatible = !filterInCompatible"
             >
-              <v-icon>{{
-                filterInCompatible ? "visibility" : "visibility_off"
-              }}</v-icon>
+              <v-icon>
+                {{
+                  filterInCompatible ? "visibility" : "visibility_off"
+                }}
+              </v-icon>
             </v-btn>
           </template>
           {{
