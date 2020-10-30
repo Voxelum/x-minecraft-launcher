@@ -40,6 +40,9 @@ jobs:
     - name: Get Build Number
       uses: ./.github/actions/get-build-number
       id: vars
+    - name: Lint
+      run: |
+        npm run lint
     - name: Build
       run: |
         npm run build:production

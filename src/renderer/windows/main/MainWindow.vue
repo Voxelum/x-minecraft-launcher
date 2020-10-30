@@ -106,7 +106,7 @@ export default defineComponent({
     const { state } = useStore();
     const router = useRouter();
     const onHomePage = ref(router.currentRoute.path === '/');
-    const app: Ref<Vue | null> = ref(null);
+    const app: Ref<any> = ref(null);
 
     router.afterEach((to) => {
       onHomePage.value = to.path === '/';

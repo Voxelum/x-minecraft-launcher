@@ -24,7 +24,7 @@ const mainConfig = {
         rules: [
             {
                 test: /\.ts$/,
-                use: [
+                use: process.env.NODE_ENV === 'development' ? [
                     'cache-loader',
                     {
                         loader: 'thread-loader',
@@ -36,7 +36,7 @@ const mainConfig = {
                             // transpileOnly: true,
                         }
                     }
-                ],
+                ] : [{ loader: 'ts-loader', }],
                 exclude: /node_modules/,
                 include: [path.join(__dirname, '../src/main'), path.join(__dirname, '../src/universal')],
             },
