@@ -129,6 +129,12 @@ jobs:
       with:
         name: build
         path: build
+    - uses: ./.github/actions/generate-mcbbs-content
+    - name: Upload Mcbbs Content
+      uses: actions/upload-artifact@v2
+      with:
+        name: mcbbs
+        path: mcbbs
     - name: Prepare Release
       id: prepare_release
       uses: ./.github/actions/prepare-release
