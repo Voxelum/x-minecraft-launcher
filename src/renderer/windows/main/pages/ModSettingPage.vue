@@ -71,9 +71,8 @@
           >
             <mod-card
               v-for="(item, index) in items"
-              :key="item.path"
+              :key="item.hash"
               v-observe-visibility="(visible) => onVisible(visible, index)"
-              class="list-item"
               :source="item"
               :selection="isSelectionMode"
               :selected="isSelected(item)"
@@ -157,10 +156,10 @@ function setupDragMod(items: Ref<ModItem[]>, selectedMods: Ref<ModItem[]>, isSel
   }
   function onItemDragstart(event: DragEvent, mod: ModItem) {
     if (isSelectionMode.value && selectedMods.value.some(m => m.id === mod.id)) {
-      event.dataTransfer!.setData('mods', selectedMods.value.map(m => m.path).join(','));
+      event.dataTransfer!.setData('mods', selectedMods.value.map(m => m.hash).join(','));
       selectedMods.value.forEach((m) => { dragged[m.hash] = true; });
     } else {
-      event.dataTransfer!.setData('mod', mod.path);
+      event.dataTransfer!.setData('mod', mod.hash);
       dragged[mod.hash] = true;
     }
   }
@@ -182,10 +181,10 @@ function setupEnable(items: Ref<ModItem[]>, isSelectionMode: Ref<boolean>, selec
   function modifyMod(mod: ModItem, value: boolean) {
     value = !!value;
     const update = (oldValue: ModItem, newValue: boolean) => {
-      if (newValue !== oldValue.enabled && modifiedItems.value.every(i => i.path !== oldValue.path)) {
+      if (newValue !== oldValue.enabled && modifiedItems.value.every(i => i.hash !== oldValue.hash)) {
         modifiedItems.value.push({ ...oldValue, enabled: newValue });
-      } else if (newValue === oldValue.enabled && modifiedItems.value.some(i => i.path === oldValue.path)) {
-        modifiedItems.value = modifiedItems.value.filter((v) => v.path !== oldValue.path);
+      } else if (newValue === oldValue.enabled && modifiedItems.value.some(i => i.hash === oldValue.hash)) {
+        modifiedItems.value = modifiedItems.value.filter((v) => v.hash !== oldValue.hash);
       }
     };
     if (isSelectionMode.value && isSelected(mod)) {
@@ -197,19 +196,35 @@ function setupEnable(items: Ref<ModItem[]>, isSelectionMode: Ref<boolean>, selec
     }
   }
   function modifiedEnabled(mod: ModItem) {
-    const modified = modifiedItems.value.some((i) => i.path === mod.path);
+    const modified = modifiedItems.value.some((i) => i.hash === mod.hash);
     return (!modified && mod.enabled) || (modified && !mod.enabled);
   }
+  watch(items, (newValues) => {
+    if (saving.value) {
+      modifiedItems.value = [];
+    } else {
+      const mods = [] as ModItem[];
+      const enableds = new Set<string>();
+      for (const mod of newValues) {
+        if (mod.enabled) {
+          enableds.add(mod.hash);
+        }
+      }
+      for (const mod of modifiedItems.value) {
+        if (mod.enabled && !enableds.has(mod.hash)) {
+          mods.push(mod);
+        } else if (!mod.enabled && enableds.has(mod.hash)) {
+          mods.push(mod);
+        }
+      }
+      modifiedItems.value = mods;
+    }
+    saving.value = false;
+  });
   function save() {
     if (saving.value) return;
     saving.value = true;
-    commit(modifiedItems.value).finally(() => {
-      let handle = watch(items, () => {
-        modifiedItems.value = [];
-        saving.value = false;
-        handle();
-      });
-    });
+    commit(modifiedItems.value);
   }
   return { modifiedEnabled, modifyMod, isModified, saving, save };
 }
@@ -222,16 +237,16 @@ function setupDeletion(mods: Ref<ModItem[]>) {
     }
   });
   function onDropDelete(e: DragEvent) {
-    const path = e.dataTransfer!.getData('mod');
-    if (path) {
-      const target = mods.value.find(m => m.path === path);
+    const hash = e.dataTransfer!.getData('mod');
+    if (hash) {
+      const target = mods.value.find(m => m.hash === hash);
       if (target) {
         beginDelete([target]);
       }
     }
-    const paths = e.dataTransfer!.getData('mods');
-    if (paths) {
-      const toDeletes = paths.split(',').map((path) => mods.value.find(m => m.path === path)).filter(isNonnull);
+    const hashs = e.dataTransfer!.getData('mods');
+    if (hashs) {
+      const toDeletes = hashs.split(',').map((hash) => mods.value.find(m => m.hash === hash)).filter(isNonnull);
       if (toDeletes.length > 0) {
         beginDelete(toDeletes);
       }
@@ -340,15 +355,10 @@ export default defineComponent({
     });
     const { minecraft } = useInstanceVersionBase();
     const { importResource } = useResourceOperation();
-    const { enabled, disabled, commit } = useInstanceMods();
+    const { items: mods, commit } = useInstanceMods();
     const { toggle } = useSearchToggles();
     const { text: filteredText } = useSearch();
     const { path } = useInstanceBase();
-
-    const mods = computed(() => [
-      ...enabled.value,
-      ...disabled.value,
-    ]);
 
     function isCompatibleMod(mod: ModItem) {
       if (data.filterInCompatible) {
@@ -357,7 +367,7 @@ export default defineComponent({
       return true;
     }
     function group(list: ModItem[], mod: ModItem): ModItem[] {
-      if (list.find(v => v.path === mod.path)) return list;
+      if (list.find(v => v.hash === mod.hash)) return list;
       let existed = list.findIndex(v => v.id === mod.id && v.type === mod.type);
       if (existed !== -1) {
         list.splice(existed + 1, 0, mod);
@@ -371,6 +381,7 @@ export default defineComponent({
     const items = computed(() => filter(filteredText.value, mods.value, { extract: v => `${v.name} ${v.version} ${v.acceptVersion}` })
       .map((r) => r.original)
       .filter(isCompatibleMod)
+      .sort((a, b) => (a.enabled ? -1 : 1))
       .reduce(group, [])
       .filter((m, i) => i < data.visibleCount));
 

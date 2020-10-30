@@ -31,7 +31,7 @@ export default class InstanceResourceService extends Service {
     private watchingResourcePack = '';
 
     private resourcepacksWatcher: FSWatcher | undefined;
-    
+
     private addModQueue: ModResource[] = [];
 
     private removeModQueue: ModResource[] = [];
@@ -153,7 +153,7 @@ export default class InstanceResourceService extends Service {
                         this.removeModQueue.push(target);
                         this.commitUpdate();
                     } else {
-                        this.warn(`Cannot remove the mod ${filePath} as it's not found in /mods directory!`);
+                        this.warn(`Cannot remove the mod ${filePath} as it's not found in memory cache!`);
                     }
                 }
             });
@@ -193,7 +193,7 @@ export default class InstanceResourceService extends Service {
                         this.removeResourcePackQueue.push(target);
                         this.commitUpdate();
                     } else {
-                        this.warn(`Cannot remove the resource pack ${filePath} as it's not found in /resourcepacks directory!`);
+                        this.warn(`Cannot remove the resource pack ${filePath} as it's not found in memory cache!`);
                     }
                 }
             });
@@ -215,8 +215,9 @@ export default class InstanceResourceService extends Service {
             if (resource.domain !== ResourceDomain.Mods && resource.domain !== ResourceDomain.ResourcePacks) {
                 this.warn(`Skip to deploy ${resource.name} as it's not a mod or resourcepack`);
             } else {
-                const resourcePath = join(path, resource.domain, basename(resource.path));
-                promises.push(link(resource.path, resourcePath).catch(() => copyFile(resource.path, resourcePath)));
+                const src = join(this.state.root, resource.location + resource.ext);
+                const dest = join(path, resource.location + resource.ext);
+                promises.push(link(src, dest).catch(() => copyFile(src, dest)));
             }
         }
         await Promise.all(promises);
@@ -233,7 +234,17 @@ export default class InstanceResourceService extends Service {
     }
 
     async undeploy(resources: Resource[]) {
-        this.log(`Undeploy ${resources.length} to ${this.state.instance.path}`);
-        await Promise.all(resources.map(r => unlink(r.path)));
+        this.log(`Undeploy ${resources.length} from ${this.state.instance.path}`);
+        const promises: Promise<void>[] = [];
+        const path = this.state.instance.path;
+        for (const resource of resources) {
+            if (resource.domain !== ResourceDomain.Mods && resource.domain !== ResourceDomain.ResourcePacks) {
+                this.warn(`Skip to undeploy ${resource.name} as it's not a mod or resourcepack`);
+            } else {
+                const dest = join(path, resource.location + resource.ext);
+                promises.push(unlink(dest));
+            }
+        }
+        await Promise.all(promises);
     }
 }

@@ -1,5 +1,6 @@
-import { FabricResource, ForgeResource, isModResource, LiteloaderResource, Resource } from '@universal/entities/resource';
-import { computed } from '@vue/composition-api';
+import { FabricResource, ForgeResource, isModResource, LiteloaderResource, ModResource, Resource } from '@universal/entities/resource';
+import { isNonnull } from '@universal/util/assert';
+import { computed, watch } from '@vue/composition-api';
 import { useService, useStore } from '.';
 import { useBusy } from './useSemaphore';
 
@@ -45,11 +46,14 @@ export interface ModItem {
 
     enabled: boolean;
 
-    resource: Resource;
-
     subsequence: boolean;
 
     hide: boolean;
+
+    curseforge?: {
+        projectId: number;
+        fileId: number;
+    }
 }
 
 /**
@@ -60,8 +64,11 @@ export function useInstanceMods() {
     const { deploy, undeploy } = useService('InstanceResourceService');
     const loading = useBusy('mountModResources');
 
+    function getUrl(resource: Resource) {
+        return resource.uri.find(u => u.startsWith('http')) ?? '';
+    }
     function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource): ModItem {
-        const icon = `${resource.path.substring(0, resource.path.length - resource.ext.length)}.png`;
+        const icon = `${state.root}/${resource.location}.png`;
         let modItem: ModItem = {
             path: 'filePath' in resource ? (resource as any).filePath : resource.path,
             id: '',
@@ -72,13 +79,13 @@ export function useInstanceMods() {
             acceptVersion: 'unknown',
             acceptLoaderVersion: 'unknown',
             type: 'forge',
-            url: resource.uri[0],
+            url: getUrl(resource),
             hash: resource.hash,
             tags: resource.tags,
             enabled: false,
-            resource,
             subsequence: false,
             hide: false,
+            curseforge: resource.curseforge,
         };
         if (resource.type === 'forge') {
             if (!resource.metadata[0]) {
@@ -134,14 +141,14 @@ export function useInstanceMods() {
             icon: '',
             acceptVersion: '[*]',
             type: 'unknown',
-            url: resource.uri[0],
+            url: getUrl(resource),
             acceptLoaderVersion: '',
             hash: resource.hash,
             tags: resource.tags,
             enabled: false,
-            resource,
             subsequence: false,
             hide: false,
+            curseforge: resource.curseforge,
         };
     }
 
@@ -149,24 +156,37 @@ export function useInstanceMods() {
      * Commit the change for current mods setting
      */
     async function commit(items: ModItem[]) {
-        const enabled = items.filter(m => m.enabled);
-        const disabled = items.filter(m => !m.enabled);
+        const mods = state.resource.domains.mods;
+        const map = new Map<string, ModResource>();
+        for (const mod of mods) {
+            map.set(mod.hash, mod);
+        }
+        const enabled = items.filter(m => m.enabled).map((m) => map.get(m.hash)).filter(isNonnull);
+        const disabled = items.filter(m => !m.enabled).map((m) => map.get(m.hash)).filter(isNonnull);
 
         await Promise.all([
-            deploy({ resources: enabled.map(m => m.resource) }),
-            undeploy(disabled.map(m => m.resource)),
+            deploy({ resources: enabled }),
+            undeploy(disabled),
         ]);
     }
 
-    const enabled = computed(() => state.instance.mods.map(getModItemFromResource).map(m => { m.enabled = true; return m; }));
-    const enabledHash = computed(() => new Set(state.instance.mods.map(m => m.hash)));
-    const disabled = computed(() => state.resource.domains.mods
-        .map(getModItemFromResource)
-        .filter(mod => !enabledHash.value.has(mod.hash)));
+    const items = computed(() => {
+        const items = state.resource.domains.mods.map(getModItemFromResource);
+        const hashs = new Set(state.instance.mods.map(m => m.hash));
+        for (const item of items) {
+            if (hashs.has(item.hash)) {
+                item.enabled = true;
+            }
+        }
+        return items;
+    });
+
+    watch(items, () => {
+        console.log(items.value);
+    });
 
     return {
-        enabled,
-        disabled,
+        items,
         commit,
         loading,
     };
