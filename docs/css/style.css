@@ -61,3 +61,7 @@ body {
 .ui.dropdown .menu>.item {
     min-height: unset !important;
 }
+
+.ui.labeled.icon.button>.icon, .ui.labeled.icon.buttons>.button>.icon {
+    height: unset !important;
+}
