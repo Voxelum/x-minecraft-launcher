@@ -21,7 +21,7 @@
           </v-layout>
         </v-container>
         <v-flex v-for="proj in projects" :key="proj.id" d-flex xs12>
-          <v-card v-ripple hover exact replace :to="`/curseforge/${type}/${proj.id}?from=${from}`">
+          <v-card v-ripple hover exact replace :to="`/curseforge/${type}/${proj.id}?from=${from || ''}`">
             <v-layout fill-height align-center justify-center>
               <v-flex shrink>
                 <v-img :src="proj.attachments[0].thumbnailUrl" :width="64">
@@ -77,11 +77,14 @@ export default defineComponent({
       default: 'mc-mods',
     },
     initialKeyword: String,
-    from: String,
+    from: {
+      type: String,
+      default: '',
+    },
   },
   setup(props) {
     // const { categories } = useCurseforgeCategories();
-    const searchBar = ref<Vue | null>(null);
+    const searchBar = ref<HTMLElement | null>(null);
     useSearchToggle(() => searchBar.value!.focus());
     let id: number;
     switch (props.type) {
