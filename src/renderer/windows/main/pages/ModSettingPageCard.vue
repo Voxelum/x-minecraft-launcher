@@ -179,8 +179,8 @@ export default defineComponent({
         },
         icon: 'folder',
       }];
-      if (props.source.resource.uri.find(u => u.startsWith('http'))) {
-        let url = props.source.resource.uri.find(u => u.startsWith('http'))!;
+      if (props.source.url) {
+        let url = props.source.url;
         items.push({
           text: $t('mod.openLink', { url }),
           children: [],
@@ -190,12 +190,13 @@ export default defineComponent({
           icon: 'link',
         });
       }
-      if (props.source.resource.curseforge) {
+      if (props.source.curseforge) {
+        const curseforge = props.source.curseforge;
         items.push({
           text: $t('mod.showInCurseforge', { name: props.source.name }),
           children: [],
           onClick: () => {
-            goProjectAndRoute(props.source.resource.curseforge!.projectId, 'mc-mods');
+            goProjectAndRoute(curseforge.projectId, 'mc-mods');
           },
           icon: '$vuetify.icons.curseforge',
         });
