@@ -8,6 +8,7 @@
       v-for="user in users"
       :key="user.id"
       v-draggable-card
+      :value="user.id === userId"
       sub-group
       class="draggable-card"
       @dragstart="$emit('dragstart', $event)"
