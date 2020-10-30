@@ -14,6 +14,7 @@ const { createHash } = require('crypto');
 const { createReadStream } = require('fs');
 const { pipeline } = require('stream')
 const { promisify } = require('util')
+const { version } = require('../package.json')
 
 const liteConfig = require('./build.lite.config');
 const fullConfig = require('./build.full.config');
@@ -27,7 +28,7 @@ const okayLog = `${chalk.bgBlue.white(' OKAY ')}  `;
 const isCI = process.env.CI || false;
 
 function clean() {
-    del.sync(['build/*', '!build/icons', '!build/icons/icon.*', '!build/electron-publisher-customer.js']);
+    del.sync(['build/*', '!build/scripts', '!build/scripts/*', '!build/icons', '!build/icons/icon.*', '!build/electron-publisher-customer.js']);
     console.log(`\n${doneLog}\n`);
     process.exit();
 }
@@ -119,7 +120,7 @@ async function renameAndHashFiles(s) {
             await move(filePath, filePath.replace(/ /g, '-'));
             filePath = filePath.replace(/ /g, '-');
         }
-        if (!(await stat(filePath)).isDirectory() && !filePath.endsWith('.yml') && !filePath.endsWith('.yaml')) {
+        if (!(await stat(filePath)).isDirectory() && !filePath.endsWith('.yml') && !filePath.endsWith('.yaml') && !filePath.endsWith('.blockmap')) {
             const sha256 = await hashByPath('sha256', filePath);
             const sha1 = await hashByPath('sha1', filePath);
             console.log(`checksum of ${filePath}`);
@@ -143,6 +144,8 @@ async function renameAndHashFiles(s) {
 }
 
 function buildFull() {
+    const config = { ...fullConfig };
+    config.nsisWeb.appPackageUrl += `/x-minecraft-launcher-${version}-x64.nsis.7z`
     return electronBuild({ publish: "never", config: fullConfig }).then(renameAndHashFiles).then((v) => {
         console.log(`${okayLog}${v.join(' ')}`);
     });
