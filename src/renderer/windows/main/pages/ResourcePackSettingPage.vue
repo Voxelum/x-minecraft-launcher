@@ -217,13 +217,13 @@ export default defineComponent({
   },
   setup() {
     const { text: filterText } = useSearch();
-    const rightList: Ref<null | Vue> = ref(null);
-    const leftList: Ref<null | Vue> = ref(null);
+    const rightList: Ref<any> = ref(null);
+    const leftList: Ref<any> = ref(null);
     const { enabled, disabled, add, remove, commit, insert } = useInstanceResourcePacks();
     const { removeResource } = useResourceOperation();
     const { replace } = useRouter();
     const { path } = useInstanceBase();
-    const searchBar: Ref<null | Vue> = ref(null);
+    const searchBar: Ref<any> = ref(null);
     const data = reactive({
       dragging: false,
       isDeletingPack: false,

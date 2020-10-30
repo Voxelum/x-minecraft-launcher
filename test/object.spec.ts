@@ -1,4 +1,4 @@
-import { assignShallow } from './object';
+import { assignShallow } from '../src/universal/util/object';
 
 describe('#assignShallow', () => {
     test('should fitin primitive types', () => {

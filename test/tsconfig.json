@@ -1,11 +1,11 @@
 {
     "extends": "../tsconfig.json",
     "include": [
-        "../types/*",
         "../src/**/*",
         "../static/**/*",
         "unit/*",
-        "e2e/*"
+        "e2e/*",
+        "object.spec.ts"
     ],
     "exclude": ["node_modules"]
 }

@@ -34,7 +34,7 @@ export default defineComponent({
     select: required<(version: Version) => void>(Function),
   },
   setup(props) {
-    const list: Ref<null | Vue> = ref(null);
+    const list: Ref<any> = ref(null);
     onMounted(() => {
       let index = props.versions.findIndex(v => v.id === props.value);
       (list.value! as any).scrollToIndex(index);

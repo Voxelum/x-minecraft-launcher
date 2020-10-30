@@ -78,7 +78,7 @@ export default defineComponent({
     const { $t } = useI18n();
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute();
     const { showItemInDirectory } = useService('BaseService');
-    const card: Ref<Vue | null> = ref(null);
+    const card: Ref<any> = ref(null);
 
     useDragTransferItem(computed(() => card.value?.$el as HTMLElement), props.pack.id, props.isSelected ? 'right' : 'left');
 

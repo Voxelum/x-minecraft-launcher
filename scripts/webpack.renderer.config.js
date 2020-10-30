@@ -74,7 +74,7 @@ const rendererConfig = {
             },
             {
                 test: /\.ts$/,
-                use: [
+                use: process.env.NODE_ENV === 'development' ? [
                     'cache-loader',
                     {
                         loader: 'thread-loader',
@@ -86,7 +86,12 @@ const rendererConfig = {
                             happyPackMode: true
                         },
                     }
-                ],
+                ] : [{
+                    loader: 'ts-loader',
+                    options: {
+                        appendTsSuffixTo: [/\.vue$/],
+                    },
+                }],
                 exclude: /node_modules/,
                 include: [path.join(__dirname, '../src/renderer'), path.join(__dirname, '../src/universal')],
             },
