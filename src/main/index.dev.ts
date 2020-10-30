@@ -10,12 +10,11 @@
 // Set environment for development
 // process.env.NODE_ENV = 'development';
 
-// Install `electron-debug` with `devtron`
-require('electron-debug')({
-    showDevTools: true
-});
-
 import { autoUpdater } from 'electron-updater';
+
+require('electron').app.on('web-contents-created', (event, contents) => {
+    contents.openDevTools();
+})
 
 autoUpdater.setFeedURL({
     provider: 'github',
