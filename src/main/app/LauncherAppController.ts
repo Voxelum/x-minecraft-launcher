@@ -32,7 +32,7 @@ export default class LauncherAppController {
 
     createMainWindow() {
         this.mainRef = this.context.openWindow('main', `${baseURL}main.html`, {
-            title: 'XMCL',
+            title: 'KeyStone Launcher',
             width: 800,
             height: 580,
             resizable: false,
@@ -49,7 +49,7 @@ export default class LauncherAppController {
 
     createLoggerWindow() {
         this.loggerRef = this.context.openWindow('logger', `${baseURL}logger.html`, {
-            title: 'XMCL',
+            title: 'KeyStone Logger',
             width: 770,
             height: 580,
             frame: false,
