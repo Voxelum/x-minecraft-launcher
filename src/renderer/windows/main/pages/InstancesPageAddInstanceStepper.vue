@@ -328,7 +328,7 @@ import {
   useProfileId,
   useGameProfile,
 } from '@/hooks';
-import { Java } from '@universal/entities/java';
+import { JavaRecord } from '@universal/entities/java';
 import { useSearch, useSearchToggles, useSearchToggle } from '../hooks';
 
 interface InstanceTemplate {
@@ -465,7 +465,7 @@ export default defineComponent({
     const { templates } = setupTemplates();
     const { importCurseforgeModpack } = useCurseforgeImport();
     const ready = computed(() => data.valid && data.javaValid);
-    const java = ref(undefined as undefined | Java);
+    const java = ref(undefined as undefined | JavaRecord);
 
     function selectTemplate(template: InstanceTemplate | ModpackTemplate) {
       if (template.type === 'modpack') {

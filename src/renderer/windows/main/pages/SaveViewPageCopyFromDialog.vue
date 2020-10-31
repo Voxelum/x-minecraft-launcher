@@ -79,7 +79,7 @@ import {
   useBusy,
   useResource,
 } from '@/hooks';
-import { SaveMetadata } from '@universal/entities/instance';
+import { InstanceSave } from '@universal/entities/save';
 
 export default defineComponent({
   props: {
@@ -90,7 +90,7 @@ export default defineComponent({
   },
   setup(props, context) {
     const data = reactive({
-      loadedProfileSaves: [] as Array<SaveMetadata>,
+      loadedProfileSaves: [] as Array<InstanceSave>,
 
       profilesCopyFrom: [] as boolean[],
       resourcesCopyFrom: [] as boolean[],

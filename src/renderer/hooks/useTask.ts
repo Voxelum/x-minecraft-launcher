@@ -23,7 +23,7 @@ export function useTasks() {
     return { tasks, pause, resume, cancel };
 }
 
-export function useTaskFromServiceCall(call: Ref<Readonly<Promise<any>>>) {
+export function useTaskFromServiceCall(call: Ref<Readonly<Promise<any> | undefined>>) {
     const proxy = inject(TASK_PROXY);
     requireNonnull(proxy);
 

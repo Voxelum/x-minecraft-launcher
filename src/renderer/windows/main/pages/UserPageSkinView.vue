@@ -112,7 +112,7 @@ export default defineComponent({
       slim,
       modified,
       reset,
-      refresh: watcherTask(() => refresh(true), $t('user.refreshSkin')),
+      refresh: watcherTask(async () => refresh(), $t('user.refreshSkin')),
       save: watcherTask(save, $t('skin.upload')),
       pending,
       security,

@@ -74,7 +74,7 @@ export default defineComponent({
   },
   setup(props) {
     const { $tc, $t } = useI18n();
-    const disabled = computed(() => props.value.type === 'unknown' || props.value.type === 'directory'
+    const disabled = computed(() => props.value.type === 'unknown'
       || props.value.status !== 'idle');
   
     const icon = computed(() => iconMap[props.value.type] ?? 'device_unknown');

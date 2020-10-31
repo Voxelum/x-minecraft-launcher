@@ -85,7 +85,10 @@ export default defineComponent({
   setup(props) {
     // const { categories } = useCurseforgeCategories();
     const searchBar = ref<HTMLElement | null>(null);
-    useSearchToggle(() => searchBar.value!.focus());
+    useSearchToggle(() => { 
+      searchBar.value!.focus();
+      return true;
+    });
     let id: number;
     switch (props.type) {
       default:
