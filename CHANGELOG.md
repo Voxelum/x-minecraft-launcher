@@ -30,6 +30,24 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.11.2](https://github.com/voxelum/x-minecraft-launcher/compare/v0.11.1...v0.11.2)
+
+* refactor: correct the import ([7ef85a4](https://github.com/voxelum/x-minecraft-launcher/commit/7ef85a4))
+* refactor: remove unused type and move types to src ([517f30c](https://github.com/voxelum/x-minecraft-launcher/commit/517f30c))
+* fix: activate selected user ([ff1e98e](https://github.com/voxelum/x-minecraft-launcher/commit/ff1e98e))
+* fix: correct the launcher window name ([1e91b37](https://github.com/voxelum/x-minecraft-launcher/commit/1e91b37))
+* fix: correct the renderer process build ([c7609b0](https://github.com/voxelum/x-minecraft-launcher/commit/c7609b0))
+* fix: curseforge always download to instance ([670e41b](https://github.com/voxelum/x-minecraft-launcher/commit/670e41b))
+* fix: mods deployment and reactivity ([9c95e3d](https://github.com/voxelum/x-minecraft-launcher/commit/9c95e3d))
+* fix: remove the electron-debug ([e450b45](https://github.com/voxelum/x-minecraft-launcher/commit/e450b45))
+* docs: remove the artifact on download button ([442f525](https://github.com/voxelum/x-minecraft-launcher/commit/442f525))
+* chore: enable lint and typecheck on build ([1b137f3](https://github.com/voxelum/x-minecraft-launcher/commit/1b137f3))
+* chore: generate mcbbs checksum for build ([f767b9d](https://github.com/voxelum/x-minecraft-launcher/commit/f767b9d))
+* chore: point the web installer to azure ([21e4ea5](https://github.com/voxelum/x-minecraft-launcher/commit/21e4ea5))
+
+
 ## [0.11.1](https://github.com/voxelum/x-minecraft-launcher/compare/v0.11.0...v0.11.1)
 
 * chore: build test production to nsis ([6bc804f](https://github.com/voxelum/x-minecraft-launcher/commit/6bc804f))
