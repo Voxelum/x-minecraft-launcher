@@ -107,7 +107,7 @@ export default defineComponent({
     });
     ipcRenderer.invoke('preset').then(({ minecraftPath, defaultPath, locale }) => {
       data.fetching = false;
-      i18n.locale = locale;
+      i18n!.locale = locale;
       data.minecraftPath = minecraftPath;
       data.path = defaultPath;
       data.defaultPath = defaultPath;

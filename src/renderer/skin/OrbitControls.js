@@ -385,7 +385,7 @@ class OrbitControls extends EventDispatcher {
             }
         }
         function handleTouchStartPan(event) {
-            if (event.touches.length == 1) {
+            if (event.touches.length === 1) {
                 panStart.set(event.touches[0].pageX, event.touches[0].pageY);
             } else {
                 let x = 0.5 * (event.touches[0].pageX + event.touches[1].pageX);

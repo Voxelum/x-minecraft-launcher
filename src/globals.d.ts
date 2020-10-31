@@ -38,6 +38,14 @@ declare module 'universal/utils/packFormatMapping.json' {
     export = formatToRange;
 }
 
+declare module '@/assets/locales/index.json' {
+    type Locale = {
+        [range: string]: string;
+    };
+    const locale: Locale;
+    export = locale;
+}
+
 declare module 'vue-virtual-scroll-list' {
     import { Component } from 'vue';
     const component: Component<any, any, any, { size: number; remain: number }>;

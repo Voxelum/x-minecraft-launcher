@@ -28,8 +28,8 @@
 <script lang=ts>
 import { defineComponent, reactive, computed, toRefs, watch } from '@vue/composition-api';
 import { useForgeVersions } from '@/hooks';
-import { Version as ForgeVersion } from '@xmcl/installer/forge';
 import { required } from '@/util/props';
+import { ForgeVersion } from '@universal/entities/version.schema';
 
 export default defineComponent({
   props: {

@@ -17,6 +17,7 @@ export function useLocalVersions() {
     return {
         localVersions,
         ...useVersions(),
+        ...useServiceOnly('InstallService', 'reinstall'),
     };
 }
 
