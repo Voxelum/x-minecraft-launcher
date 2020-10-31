@@ -13,8 +13,8 @@ import { UpdateInfo } from '@universal/entities/update';
 import { StaticStore } from '@universal/util/staticStore';
 import { getPlatform } from '@xmcl/core';
 import { Task } from '@xmcl/task';
+import { EventEmitter } from 'events';
 import { ensureDir, readFile, readJson, writeFile } from 'fs-extra';
-import { EventEmitter } from 'keyv';
 import { extname, join } from 'path';
 import { parse } from 'url';
 
