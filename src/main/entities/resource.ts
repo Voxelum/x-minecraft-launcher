@@ -300,8 +300,13 @@ export async function readHeader(path: string, hash: string, typeHint?: ImportTy
     const ext = extname(path);
     const hint = typeHint || '';
     const chains: Array<ResourceParser<any>> = parsers
-        .filter((hint === '*' || hint === '') ? (ext ? (r => r.ext === ext) : (() => true)) : (r => r.domain === hint || r.type === hint))
-        .concat(UNKNOWN_ENTRY);
+        .filter((hint === '*' || hint === '') ? (ext ? (r => r.ext === ext) : (() => true)) : (r => r.domain === hint || r.type === hint));
+
+    if (ext === '.zip') {
+        chains.push(RESOURCE_PARSER_FORGE);
+    }
+
+    chains.push(UNKNOWN_ENTRY);
 
     let parser: ResourceParser<any> = UNKNOWN_ENTRY;
     let metadata: any;
