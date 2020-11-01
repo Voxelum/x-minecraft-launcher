@@ -7,14 +7,14 @@
       <v-flex xs5>
         <v-text-field
           ref="searchBar"
-          v-model="keyword"
+          v-model="currentKeyword"
           append-icon="search"
           hide-details
           :label="$t('curseforge.search')"
           @keydown.enter="search()"
         />
       </v-flex>
-      <v-flex style="overflow: auto; max-height: 60vh; min-height: 60vh;" xs12>
+      <v-flex style="overflow: auto; max-height: 75vh; min-height: 75vh;" xs12>
         <v-container v-if="loading" fill-height>
           <v-layout justify-center align-center fill-height>
             <v-progress-circular indeterminate :size="100" />
@@ -58,7 +58,7 @@
       </v-flex>
       <v-flex xs12 style="z-index: 2">
         <v-layout justify-center>
-          <v-pagination v-model="page" :length="pages" total-visible="8" />
+          <v-pagination v-model="currentPage" :length="pages" total-visible="8" />
         </v-layout>
       </v-flex>
     </v-layout>
@@ -66,46 +66,25 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, ref } from '@vue/composition-api';
+import { computed, defineComponent, ref } from '@vue/composition-api';
 import { useCurseforgeSearch } from '@/hooks';
+import { withDefault } from '@/util/props';
 import { useSearchToggle } from '../hooks';
 
 export default defineComponent({
   props: {
-    type: {
-      type: String,
-      default: 'mc-mods',
-    },
-    initialKeyword: String,
-    from: {
-      type: String,
-      default: '',
-    },
+    type: withDefault(String, () => 'mc-mods'),
+    keyword: withDefault(String, () => ''),
+    page: withDefault(Number, () => 1),
+    from: withDefault(String, () => ''),
   },
   setup(props) {
-    // const { categories } = useCurseforgeCategories();
     const searchBar = ref<HTMLElement | null>(null);
     useSearchToggle(() => { 
       searchBar.value!.focus();
       return true;
     });
-    let id: number;
-    switch (props.type) {
-      default:
-      case 'mc-mods':
-        id = 6;
-        break;
-      case 'modpacks':
-        id = 4471;
-        break;
-      case 'texture-packs':
-        id = 12;
-        break;
-      case 'worlds':
-        id = 17;
-        break;
-    }
-    return { searchBar, ...useCurseforgeSearch(id, props.initialKeyword) };
+    return { searchBar, ...useCurseforgeSearch(props.type, computed(() => props.page), computed(() => props.keyword)) };
   },
 });
 </script>
