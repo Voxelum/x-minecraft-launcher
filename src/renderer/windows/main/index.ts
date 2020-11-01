@@ -77,7 +77,7 @@ function startApp() {
 
     // to prevent the universal drop activated on self element dragging
     document.addEventListener('dragstart', (e) => {
-        if (e.dataTransfer?.effectAllowed === 'all') {
+        if (e.dataTransfer?.effectAllowed === 'uninitialized') {
             e.dataTransfer!.effectAllowed = 'none';
         }
     });
