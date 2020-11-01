@@ -3,7 +3,7 @@ import { copyPassively, isFile, missing, readdirIfPresent } from '@main/util/fs'
 import { includeAllToZip, openCompressedStream, unpack7z } from '@main/util/zip';
 import { Exception } from '@universal/entities/exception';
 import { InstanceSave } from '@universal/entities/save';
-import { requireObject, requireString } from '@universal/util/assert';
+import { isNonnull, requireObject, requireString } from '@universal/util/assert';
 import { createHash } from 'crypto';
 import filenamify from 'filenamify';
 import { ensureDir, ensureFile, FSWatcher, readdir, remove } from 'fs-extra';
@@ -151,14 +151,18 @@ export default class InstanceSavesService extends Service {
 
         await ensureDir(savesDir);
         try {
-            let savePaths = await readdir(savesDir);
-            let saves = await Promise.all(savePaths
+            const savePaths = await readdir(savesDir);
+            const saves = await Promise.all(savePaths
                 .filter((d) => !d.startsWith('.'))
                 .map((d) => join(savesDir, d))
-                .map((p) => loadInstanceSaveMetadata(p, this.getters.instance.name)));
+                .map((p) => loadInstanceSaveMetadata(p, this.getters.instance.name).catch((e) => {
+                    this.warn(`Parse save in ${p} failed. Skip it.`);
+                    this.warn(e);
+                    return undefined;
+                })));
 
             this.log(`Found ${saves.length} saves in instance ${path}`);
-            this.commit('instanceSaves', saves);
+            this.commit('instanceSaves', saves.filter(isNonnull));
         } catch (e) {
             throw new ServiceException({ type: 'fsError', ...e }, `An error ocurred during parsing the save of ${path}`);
         }
@@ -171,6 +175,10 @@ export default class InstanceSavesService extends Service {
                 if (this.state.instance.saves.every((s) => s.path !== filename)) {
                     loadInstanceSaveMetadata(filePath, this.getters.instance.name).then((save) => {
                         this.commit('instanceSaveAdd', save);
+                    }).catch((e) => {
+                        this.warn(`Parse save in ${filePath} failed. Skip it.`);
+                        this.warn(e);
+                        return undefined;
                     });
                 }
             } else if (this.state.instance.saves.some((s) => s.path === filename)) {
