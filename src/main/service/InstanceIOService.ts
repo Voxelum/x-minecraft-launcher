@@ -5,14 +5,15 @@ import { CurseforgeModpackManifest } from '@universal/entities/curseforge';
 import { Exception } from '@universal/entities/exception';
 import { createTemplate } from '@universal/entities/instance';
 import { InstanceSchema, RuntimeVersions } from '@universal/entities/instance.schema';
+import { UNKNOWN_RESOURCE } from '@universal/entities/resource';
 import { isNonnull, requireObject, requireString } from '@universal/util/assert';
 import { MinecraftFolder, Version } from '@xmcl/core';
 import { CurseforgeInstaller } from '@xmcl/installer';
 import { Task } from '@xmcl/task';
 import { createExtractStream } from '@xmcl/unzip';
-import { createReadStream, ensureDir, mkdtemp, readdir, readJson, remove, stat } from 'fs-extra';
+import { createReadStream, ensureDir, mkdtemp, readdir, readJson, remove, rename, stat } from 'fs-extra';
 import { tmpdir } from 'os';
-import { basename, join, relative, resolve } from 'path';
+import { basename, dirname, join, relative, resolve } from 'path';
 import InstanceResourceService from './InstanceResourceService';
 import InstanceService, { EditInstanceOptions } from './InstanceService';
 import ResourceService from './ResourceService';
@@ -401,16 +402,17 @@ export default class InstanceIOService extends Service {
                 .filter(isNonnull);
             await ensureDir(join(instancePath, 'mods'));
             await ensureDir(join(instancePath, 'resourcepacks'));
+            this.log(`Deploy ${filesToDeploy.length} existed resources from curseforge modpack!`);
             await this.instanceResourceService.deploy({ resources: filesToDeploy, path: instancePath });
 
             // filter out existed resources
-            manifest.files = manifest.files.filter((f) => {
-                let resource = this.resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID));
-                return !resource;
-            });
+            manifest.files = manifest.files.filter((f) => !this.resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID)));
 
             let files: Array<{ path: string; projectID: number; fileID: number; url: string }> = [];
             let defaultQuery = CurseforgeInstaller.createDefaultCurseforgeQuery();
+
+            this.log(`Install ${manifest.files.length} files from curseforge modpack!`);
+
             await CurseforgeInstaller.installCurseforgeModpackTask(path, instancePath, {
                 manifest,
                 async queryFileUrl(projectId: number, fileId: number) {
@@ -425,15 +427,29 @@ export default class InstanceIOService extends Service {
                 },
             }).run(ctx);
 
-            await this.resourceService.importResources({
-                files: files.map((f) => ({
-                    path: f.path,
-                    url: [f.url, getCurseforgeUrl(f.projectID, f.fileID)],
-                    source: {
-                        curseforge: { projectId: f.projectID, fileId: f.fileID },
-                    },
-                })),
-            });
+            if (manifest.files.length > 0) {
+                const resources = await this.resourceService.importResources({
+                    files: files.map((f) => ({
+                        path: f.path,
+                        url: [f.url, getCurseforgeUrl(f.projectID, f.fileID)],
+                        source: {
+                            curseforge: { projectId: f.projectID, fileId: f.fileID },
+                        },
+                    })),
+                });
+                const mapping: Record<string, string> = {};
+                for (const file of files) {
+                    mapping[`${file.projectID}:${file.fileID}`] = file.path;
+                }
+                // rename the resource to correct name
+                for (const res of resources.filter(r => r !== UNKNOWN_RESOURCE)) {
+                    const path = mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`];
+                    const realName = basename(res.location) + res.ext;
+                    const realPath = dirname(path) + realName;
+                    await rename(path, realPath);
+                }
+            }
+
             return instancePath;
         });
         return this.submit(installCurseforgeModpack).wait();
