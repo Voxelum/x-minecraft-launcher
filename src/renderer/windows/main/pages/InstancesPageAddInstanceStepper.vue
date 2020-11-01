@@ -306,7 +306,15 @@
         </v-layout>
       </v-stepper-content>
       <v-stepper-content step="3">
-        <task-focus :value="importTask" />
+        <task-focus v-if="!error" :value="importTask" />
+        <div v-else> {{ error }} </div>
+        <v-btn
+          flat
+          :disabled="creating"
+          @click="quit"
+        >
+          {{ $t('cancel') }}
+        </v-btn>
       </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
@@ -453,6 +461,7 @@ export default defineComponent({
       step: 1,
       valid: false,
       javaValid: true,
+      error: undefined as any,
     });
 
     const importTask: Ref<Promise<string> | null> = ref(null);
@@ -514,6 +523,8 @@ export default defineComponent({
         init();
         router.replace('/');
         data.template = undefined;
+      } catch (e) {
+        data.error = e;
       } finally {
         data.creating = false;
       }

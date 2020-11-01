@@ -53,8 +53,8 @@
             name="transition-list"
           >
             <save-view-page-preview-card
-              v-for="(s, index) of saves"
-              :key="index"
+              v-for="s of saves"
+              :key="s.path"
               :source="s"
               :delete-save="startDelete"
               :export-save="doExport"

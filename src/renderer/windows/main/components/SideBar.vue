@@ -142,12 +142,7 @@ export default defineComponent({
     const { show } = useDialog('task');
     const { updateStatus } = useUpdateInfo();
 
-    const data = reactive({
-      taskDialog: false,
-    });
-
     return {
-      ...toRefs(data),
       updateStatus,
       activeTasksCount,
       showTaskDialog: show,

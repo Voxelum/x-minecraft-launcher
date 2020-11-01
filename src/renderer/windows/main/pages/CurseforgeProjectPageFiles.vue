@@ -26,7 +26,7 @@
       :estimate-size="56"
       :extra-props="{ getFileStatus: getFileStatus, install: install, download: download, modpack: type === 'modpacks' }"
     ></virtual-list>
-    <v-dialog v-model="isConfirmDialogShown">
+    <v-dialog v-model="isConfirmDialogShown" persistent>
       <add-instance-stepper :show="isConfirmDialogShown" :initial-template="initialTemplate" @quit="isConfirmDialogShown = false" />
     </v-dialog>
   </v-card>

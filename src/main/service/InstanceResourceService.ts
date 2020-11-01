@@ -157,7 +157,7 @@ export default class InstanceResourceService extends Service {
                     }
                 }
             });
-            this.log(`Mount on instance mods: ${basePath}`);
+            this.log(`Mounted on instance mods: ${basePath}`);
         }
     }
 
@@ -197,7 +197,7 @@ export default class InstanceResourceService extends Service {
                     }
                 }
             });
-            this.log(`Mount on instance resource packs: ${basePath}`);
+            this.log(`Mounted on instance resource packs: ${basePath}`);
         }
     }
 
