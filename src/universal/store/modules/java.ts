@@ -22,7 +22,7 @@ const mod: JavaModule = {
         all: [],
     },
     getters: {
-        defaultJava: state => state.all.find(j => j.valid) || EMPTY_JAVA,
+        defaultJava: state => state.all.find(j => j.valid && j.majorVersion === 8) || state.all.find(j => j.valid) || EMPTY_JAVA,
         missingJava: state => state.all.length === 0,
     },
     mutations: {
