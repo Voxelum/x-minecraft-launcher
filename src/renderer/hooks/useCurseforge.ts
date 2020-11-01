@@ -4,6 +4,7 @@ import { AddonInfo, Attachment, File } from '@xmcl/curseforge';
 import { useService } from './useService';
 import { useStore } from './useStore';
 import { useBusy } from './useSemaphore';
+import { useRouter } from './useRouter';
 
 
 /**
@@ -136,11 +137,35 @@ export function useCurseforgeCategories() {
 /**
  * Hook to returen the controller of curseforge preview page. Navigating the curseforge projects.
  */
-export function useCurseforgeSearch(sectionId: number, initialSearch?: string) {
+export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Ref<string | undefined>) {
+    let sectionId: number;
+    switch (type) {
+        default:
+        case 'mc-mods':
+            sectionId = 6;
+            break;
+        case 'modpacks':
+            sectionId = 4471;
+            break;
+        case 'texture-packs':
+            sectionId = 12;
+            break;
+        case 'worlds':
+            sectionId = 17;
+            break;
+    }
+
+    const router = useRouter();
     const { searchProjects } = useService('CurseForgeService');
     const pageSize = 5;
+    const currentPage = computed({
+        get() { return page.value; },
+        set(v: number) {
+            const route = router.currentRoute;
+            router.push({ query: { ...route.query, page: v.toString() } });
+        },
+    });
     const data = reactive({
-        page: 1,
         pages: 5,
 
         gameVersion: undefined as undefined | string,
@@ -151,10 +176,9 @@ export function useCurseforgeSearch(sectionId: number, initialSearch?: string) {
 
         loading: false,
 
-        keyword: undefined as undefined | string,
+        currentKeyword: keyword.value,
     });
-    const index = computed(() => (data.page - 1) * pageSize);
-    const searchFilter = ref(initialSearch);
+    const index = computed(() => (currentPage.value - 1) * pageSize);
     const refs = toRefs(data);
     async function refresh() {
         data.loading = true;
@@ -165,9 +189,9 @@ export function useCurseforgeSearch(sectionId: number, initialSearch?: string) {
                 sectionId,
                 sort: data.sort,
                 gameVersion: data.gameVersion,
-                searchFilter: searchFilter.value,
+                searchFilter: keyword.value,
             });
-            if (data.page > data.pages / 2) {
+            if (currentPage.value > data.pages / 2) {
                 data.pages += 5;
             }
             projects.forEach(p => Object.freeze(p));
@@ -179,18 +203,20 @@ export function useCurseforgeSearch(sectionId: number, initialSearch?: string) {
     }
     async function search() {
         if (data.loading) return;
-        if (data.keyword === '') {
-            searchFilter.value = undefined;
+        const route = router.currentRoute;
+        if (data.currentKeyword === '') {
+            router.push({ query: { ...route.query, keyword: undefined } });
         } else {
-            searchFilter.value = data.keyword;
+            router.push({ query: { ...route.query, keyword: data.currentKeyword } });
         }
     }
-    watch([index, refs.sort, refs.gameVersion, searchFilter], () => refresh());
+    watch([index, refs.sort, refs.gameVersion, keyword], () => refresh());
     onMounted(() => {
         refresh();
     });
     return {
         ...refs,
+        currentPage,
         search,
         refresh,
     };
