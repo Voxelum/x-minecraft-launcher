@@ -232,9 +232,13 @@ export default class ResourceService extends Service {
                     return existed;
                 }
                 try {
-                    const result = await this.resolveResourceTask({ path: f.path, url: f.url, source: f.source, type: options.type, background: options.background, requiredDomain: options.fromDomain })
-                        .execute().wait();
-                    return result;
+                    const fileStats = await stat(f.path);
+                    if (!fileStats.isDirectory()) {
+                        const result = await this.resolveResourceTask({ path: f.path, url: f.url, source: f.source, type: options.type, background: options.background, requiredDomain: options.fromDomain })
+                            .execute().wait();
+                        return result;
+                    }
+                    return UNKNOWN_RESOURCE;
                 } catch (e) {
                     if (e instanceof DomainMissMatchedError) {
                         this.warn(e.message);
@@ -274,6 +278,10 @@ export default class ResourceService extends Service {
         requireString(option.path);
         const existed = await this.queryExistedResourceByPath(option.path);
         if (!existed) {
+            const fileStat = await stat(option.path);
+            if (fileStat.isDirectory()) {
+                return UNKNOWN_RESOURCE;
+            }
             const task = this.resolveResourceTask(option);
             const resource = await (option.background ? task.execute().wait() : this.submit(task).wait());
             this.log(`Import and cache newly added resource ${resource.path}`);
@@ -306,11 +314,13 @@ export default class ResourceService extends Service {
 
         const fileStat = await stat(path);
 
-        result = this.getResourceByKey(fileStat.ino);
-
-        if (!result) {
-            const sha1 = await sha1ByPath(path);
-            result = this.getResourceByKey(sha1);
+        if (!fileStat.isDirectory()) {
+            result = this.getResourceByKey(fileStat.ino);
+            
+            if (!result) {
+                const sha1 = await sha1ByPath(path);
+                result = this.getResourceByKey(sha1);
+            }
         }
 
         return result;
@@ -322,7 +332,7 @@ export default class ResourceService extends Service {
      * Resolve resource task. This will not write the resource to the cache, but it will persist the resource to disk.
      * @throws DomainMissMatchedError
      */
-    resolveResourceTask(importOption: ImportOptions) {
+    private resolveResourceTask(importOption: ImportOptions) {
         const resolve = async (context: Task.Context) => {
             const { path, source = {}, url = [], type, requiredDomain } = importOption;
             context.update(0, 4, path);
