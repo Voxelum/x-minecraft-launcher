@@ -38,6 +38,7 @@
     <v-list-tile-action v-if="modpack">
       <v-btn
         flat
+        :loading="getFileStatus(source) === 'downloading'"
         @click="install(source)"
       >
         {{ $t('curseforge.install') }}
