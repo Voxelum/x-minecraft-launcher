@@ -1,14 +1,11 @@
 <template>
   <v-navigation-drawer
     :value="true"
-    :mini-variant="mini"
+    :mini-variant="true"
     stateless
     dark
     style="border-radius: 2px 0 0 2px;"
     class="moveable sidebar"
-    @mouseenter="onEnterBar"
-    @mouseover="onHoverBar"
-    @mouseleave="onLeaveBar"
   >
     <v-toolbar
       flat
@@ -128,66 +125,32 @@ import {
   defineComponent,
 } from '@vue/composition-api';
 import {
+  provideRouterHistory,
   useRouter,
   useTaskCount,
   useUpdateInfo,
 } from '@/hooks';
-import { useDialog, useAsyncRouteBeforeLeaves } from '../hooks';
+import { required } from '@/util/props';
+import { useDialog } from '../hooks';
 
 export default defineComponent({
+  props: {
+    goBack: required<() => void>(Function),
+  },
   setup() {
     const { activeTasksCount } = useTaskCount();
     const { show } = useDialog('task');
     const { updateStatus } = useUpdateInfo();
-    const beforeLeaves = useAsyncRouteBeforeLeaves();
-
-    const router = useRouter();
-
-    const localHistory: string[] = [];
-    let startHoverTime = -1;
-    let timeTraveling = false;
 
     const data = reactive({
       taskDialog: false,
-      mini: true,
     });
-
-    router.afterEach((to, from) => {
-      if (!timeTraveling) localHistory.push(from.fullPath);
-    });
-    async function goBack() {
-      timeTraveling = true;
-      const before = localHistory.pop();
-      if (before) {
-        for (let hook = beforeLeaves.pop(); hook; hook = beforeLeaves.pop()) {
-          let result = hook();
-          if (result instanceof Promise) {
-            await result;
-          }
-        }
-        router.replace(before);
-      }
-      timeTraveling = false;
-    }
 
     return {
       ...toRefs(data),
       updateStatus,
       activeTasksCount,
       showTaskDialog: show,
-      goBack,
-      onEnterBar() {
-        startHoverTime = Date.now();
-      },
-      onHoverBar() {
-        if (Date.now() - startHoverTime > 1000) {
-          data.mini = true;
-        }
-      },
-      onLeaveBar() {
-        startHoverTime = -1;
-        data.mini = false;
-      },
     };
   },
 });

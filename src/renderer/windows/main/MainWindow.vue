@@ -17,7 +17,7 @@
       v-else
       fill-height
     >
-      <side-bar />
+      <side-bar :go-back="goBack" />
       <v-layout
         style="padding: 0; background: transparent; max-height: 100vh;"
         fill-height
@@ -80,9 +80,11 @@ import {
   useRouter,
   useStore,
   useBackgroundBlur,
+  provideAsyncRoute,
+  provideRouterHistory,
 } from '@/hooks';
 import { provideTasks } from '@/providers/provideTaskProxy';
-import { provideDialog, provideNotifier, provideContextMenu, provideSearch, provideAsyncRoute } from './hooks';
+import { provideDialog, provideNotifier, provideContextMenu, provideSearch } from './hooks';
 import LoginDialog from './dialog/BaseLoginDialog.vue';
 import TaskDialog from './dialog/BaseTaskDialog.vue';
 import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue';
@@ -95,6 +97,7 @@ export default defineComponent({
     provideNotifier();
     provideTasks();
     provideAsyncRoute();
+    const { goBack } = provideRouterHistory();
 
     const { text, toggle } = provideSearch();
     provideContextMenu();
@@ -150,6 +153,7 @@ export default defineComponent({
       particleMode,
       showParticle,
       onHomePage,
+      goBack,
     };
   },
 });
