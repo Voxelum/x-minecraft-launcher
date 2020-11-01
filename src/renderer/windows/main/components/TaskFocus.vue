@@ -16,7 +16,9 @@
         :indeterminate="progress === -1"
         :value="progress / total * 100"
       >
-        {{ $t(name) }}
+        <div style="text-align: center;">
+          {{ $t(name) }}
+        </div>
       </v-progress-circular>
     </v-layout>
   </v-container>
