@@ -32,6 +32,24 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.11.3](https://github.com/voxelum/x-minecraft-launcher/compare/v0.11.2...v0.11.3)
+
+* chore: lint the project for PR ([12ecff9](https://github.com/voxelum/x-minecraft-launcher/commit/12ecff9))
+* refactor: clean up code ([9f5d731](https://github.com/voxelum/x-minecraft-launcher/commit/9f5d731))
+* refactor: move the routing things out ([1237117](https://github.com/voxelum/x-minecraft-launcher/commit/1237117))
+* fix: correctly import save directory ([b0c9858](https://github.com/voxelum/x-minecraft-launcher/commit/b0c9858))
+* fix: curseforge routing save the page & keyword ([e1b570e](https://github.com/voxelum/x-minecraft-launcher/commit/e1b570e))
+* fix: internal element should not trigger universal drop ([2003901](https://github.com/voxelum/x-minecraft-launcher/commit/2003901))
+* fix: lock the curseforge install button when download ([f48f62e](https://github.com/voxelum/x-minecraft-launcher/commit/f48f62e))
+* fix: parse the ccc and nei and zip mod ([c42d94d](https://github.com/voxelum/x-minecraft-launcher/commit/c42d94d))
+* fix: rename the installed curseforge file correctly ([371f848](https://github.com/voxelum/x-minecraft-launcher/commit/371f848))
+* fix: skip to import directory resource ([1db6982](https://github.com/voxelum/x-minecraft-launcher/commit/1db6982))
+* fix: the task name placed on center ([9351e4e](https://github.com/voxelum/x-minecraft-launcher/commit/9351e4e))
+* fix: use java 8 as default java if possible ([bcc06b1](https://github.com/voxelum/x-minecraft-launcher/commit/bcc06b1))
+
+
 ## [0.11.2](https://github.com/voxelum/x-minecraft-launcher/compare/v0.11.1...v0.11.2)
 
 * refactor: correct the import ([7ef85a4](https://github.com/voxelum/x-minecraft-launcher/commit/7ef85a4))
