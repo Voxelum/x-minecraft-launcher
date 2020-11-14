@@ -2,7 +2,7 @@ import { readHeader } from '@main/entities/resource';
 import { pipeline, sha1ByPath } from '@main/util/fs';
 import { openCompressedStreamTask } from '@main/util/zip';
 import { Modpack } from '@universal/entities/modpack';
-import { Resource } from '@universal/entities/resource';
+import { Resource, Resources, UNKNOWN_RESOURCE } from '@universal/entities/resource';
 import { ResourceDomain, ResourceType } from '@universal/entities/resource.schema';
 import { extract } from '@xmcl/unzip';
 import { createHash } from 'crypto';
@@ -59,12 +59,15 @@ export default class IOService extends Service {
     private instanceIOService!: InstanceIOService;
 
     /**
-     * Import the file 
+     * Import the file to the launcher
      * @param options 
      */
-    async importFile(options: ImportFileOptions): Promise<void> {
-        const { fileType, domain, type, displayName, metadata, path, existed } = await this.readFileMetadata(options);
-        if (existed) return;
+    async importFile(options: ImportFileOptions): Promise<Resource> {
+        const { fileType, domain, type, uri, displayName, metadata, path, existed } = await this.readFileMetadata(options);
+        if (existed) {
+            return this.getters.queryResource(uri);
+        }
+        let result: Resource = UNKNOWN_RESOURCE;
         if (fileType === 'directory') {
             if (domain === ResourceDomain.ResourcePacks || domain === ResourceDomain.Saves || type === ResourceType.CurseforgeModpack) {
                 const tempZipPath = `${this.getTempPath(displayName)}.zip`;
@@ -74,7 +77,7 @@ export default class IOService extends Service {
                 end();
                 await task.execute().wait();
                 // zip and import
-                await this.resourceService.importResource({ path: tempZipPath, type });
+                result = await this.resourceService.importResource({ path: tempZipPath, type });
                 await unlink(tempZipPath);
             } if (domain === ResourceDomain.Modpacks && type === ResourceType.Modpack) {
                 const root = (metadata as Modpack).root;
@@ -88,8 +91,9 @@ export default class IOService extends Service {
             await this.instanceIOService.importInstance(tempDir);
             await remove(tempDir);
         } else if (fileType === 'zip' || extname(path) === '.jar') {
-            await this.resourceService.importResource({ path, type });
+            result = await this.resourceService.importResource({ path, type });
         }
+        return result;
     }
 
     /**

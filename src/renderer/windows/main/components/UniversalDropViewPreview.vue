@@ -17,9 +17,16 @@
     <v-card-actions>
       <v-btn large flat @click="cancel">{{ $t('cancel') }}</v-btn>
       <v-spacer />
+      <v-checkbox 
+        v-model="enableMods" 
+        style="flex-grow: 0; margin-top: 0; padding-top: 0;" 
+        :label="$t('enableModsAfterImport')"
+        hide-details
+      ></v-checkbox>
       <v-btn
         large
         flat
+        style="margin-left: 10px;"
         color="primary"
         :loading="loading"
         :disabled="disabled"
@@ -32,7 +39,7 @@
 </template>
 
 <script lang=ts>
-import { useFileDrop } from '@/hooks';
+import { useFileDrop, useService } from '@/hooks';
 import { required } from '@/util/props';
 import { FileMetadata } from '@main/service/IOService';
 import { Resource } from '@universal/entities/resource';
@@ -56,7 +63,9 @@ export default defineComponent({
   },
   setup(props, context) {
     const status = ref([] as boolean[]);
+    const enableMods = ref(true);
     const { importFile } = useFileDrop();
+    const { deploy } = useService('InstanceResourceService');
     const loading = computed(() => props.previews.some((v) => v.status === 'loading'));
     const pendings = computed(() => props.previews.filter((v) => (v.status === 'idle' || v.status === 'failed')
       && !v.existed
@@ -74,9 +83,13 @@ export default defineComponent({
     }
     function start() {
       const promises = [] as Promise<any>[];
+      const resourcesToDeploy = [] as Resource[];
       for (const preview of pendings.value) {
         preview.status = 'loading';
-        const promise = importFile(preview).then(() => {
+        const promise = importFile(preview).then((resource) => {
+          if (resource.domain === ResourceDomain.Mods && enableMods.value) {
+            resourcesToDeploy.push(resource);
+          }
           preview.status = 'saved';
         }, (e) => {
           console.log(`Failed to import resource ${preview.path}`);
@@ -85,11 +98,12 @@ export default defineComponent({
         });
         promises.push(promise);
       }
-      Promise.all(promises).then(() => {
-        cancel();
-      });
+      Promise.all(promises)
+        .then(() => deploy({ resources: resourcesToDeploy }))
+        .then(() => cancel());
     }
     return {
+      enableMods,
       remove,
       cancel,
       start,

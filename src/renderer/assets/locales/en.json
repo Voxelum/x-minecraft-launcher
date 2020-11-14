@@ -209,6 +209,7 @@
   "download": "Download",
   "downloadUpdate": "Downloading Update",
   "dropToImport": "Drop File(s) Here to Import as",
+  "enableModsAfterImport": "Enable Mods After Import",
   "edit": "Edit",
   "error": {
     "empty": "No error yet",
@@ -219,6 +220,7 @@
     "missingName": "Please name this profile!",
     "name": "Error | Errors"
   },
+  "existed": "Existed",
   "fabric": {
     "disable": "Disable Fabric",
     "noVersion": "No Fabric Version for Minecraft {version}",

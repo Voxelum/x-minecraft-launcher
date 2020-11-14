@@ -25,9 +25,11 @@
         @click.stop
       />
     </v-list-tile-content> -->
-
     <v-list-tile-action>
-      <v-chip label outline color="white">
+      <v-chip v-if="value.existed" label>
+        {{ $t('existed') }} {{ typeName }}
+      </v-chip>
+      <v-chip v-else label outline color="white">
         {{ typeName }}
       </v-chip>
     </v-list-tile-action>
@@ -37,7 +39,7 @@
         v-model="value.enabled"
         style="justify-content: flex-end"
         :disabled="disabled"
-        hidden-details
+        hide-details
       />
     </v-list-tile-action>
 
