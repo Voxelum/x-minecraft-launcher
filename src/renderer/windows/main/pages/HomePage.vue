@@ -1,11 +1,18 @@
 <template>
-  <v-layout
-    row
-    wrap
-  >
+  <v-layout class="home-page" row wrap>
     <v-icon
       v-ripple
-      style="position: absolute; right: 0; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
+      style="
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 2;
+        margin: 0;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 2px;
+        user-select: none;
+      "
       dark
       @click="quit"
     >
@@ -13,7 +20,17 @@
     </v-icon>
     <v-icon
       v-ripple
-      style="position: absolute; right: 44px; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
+      style="
+        position: absolute;
+        right: 44px;
+        top: 0;
+        z-index: 2;
+        margin: 0;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 2px;
+        user-select: none;
+      "
       dark
       @click="showFeedbackDialog"
     >
@@ -21,7 +38,17 @@
     </v-icon>
     <v-icon
       v-ripple
-      style="position: absolute; right: 88px; top: 0; z-index: 2; margin: 0; padding: 10px; cursor: pointer; border-radius: 2px; user-select: none;"
+      style="
+        position: absolute;
+        right: 88px;
+        top: 0;
+        z-index: 2;
+        margin: 0;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 2px;
+        user-select: none;
+      "
       dark
       @click="showInstanceFolder"
     >
@@ -36,40 +63,18 @@
       <home-header />
     </v-flex>
 
-    <v-flex
-      v-if="isServer"
-      d-flex
-      xs12
-      style="margin: 40px;"
-    >
+    <v-flex v-if="isServer" d-flex xs12 style="margin: 40px">
       <server-status-bar />
     </v-flex>
 
-    <v-tooltip top>
-      <template v-slot:activator="{ on }">
-        <v-btn
-          style="position: absolute; left: 20px; bottom: 10px; -webkit-user-drag: none"
-          flat
-          icon
-          dark
-          to="/base-setting"
-          v-on="on"
-        >
-          <v-icon dark>more_vert</v-icon>
-        </v-btn>
-      </template>
-      {{ $t('profile.setting') }}
-    </v-tooltip>
+    <more-speed-dial :refreshing="refreshing" />
 
-    <export-speed-dial
-      :refreshing="refreshing"
-      @show="showExport"
-    />
+    <export-speed-dial :refreshing="refreshing" @show="showExport" />
 
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-btn
-          style="position: absolute; left: 140px; bottom: 10px; "
+          style="position: absolute; left: 140px; bottom: 10px"
           flat
           icon
           dark
@@ -79,7 +84,7 @@
           <v-icon dark>subtitles</v-icon>
         </v-btn>
       </template>
-      {{ $t('profile.logsCrashes.title') }}
+      {{ $t("profile.logsCrashes.title") }}
     </v-tooltip>
 
     <problems-bar />
@@ -135,13 +140,8 @@
       class="launch-button"
       @click="launch"
     >
-      {{ $t('launch.launch') }}
-      <v-icon
-        v-if="launchStatus === 'ready'"
-        right
-      >
-        play_arrow
-      </v-icon>
+      {{ $t("launch.launch") }}
+      <v-icon v-if="launchStatus === 'ready'" right> play_arrow </v-icon>
       <v-progress-circular
         v-else
         class="v-icon--right"
@@ -150,16 +150,16 @@
         :width="2"
       />
     </v-btn>
-    <log-dialog
-      v-model="isLogDialogShown"
-      :hide="hideLogDialog"
-    />
+    <log-dialog v-model="isLogDialogShown" :hide="hideLogDialog" />
     <game-exit-dialog />
     <feedback-dialog />
     <export-dialog
       :value="isExportingCurseforge || isExportingModpack"
       :is-curseforge="isExportingCurseforge"
-      @input="isExportingModpack = false; isExportingCurseforge = false"
+      @input="
+        isExportingModpack = false;
+        isExportingCurseforge = false;
+      "
     />
   </v-layout>
 </template>
@@ -186,6 +186,7 @@ import ProblemsBar from './HomePageProblemsBar.vue';
 import ServerStatusBar from './HomePageServerStatusBar.vue';
 import ExportDialog from './HomePageExportDialog.vue';
 import ExportSpeedDial from './HomePageExportSpeedDial.vue';
+import MoreSpeedDial from './HomePageMoreSpeedDial.vue';
 
 function setupLaunch() {
   const { launch, status: launchStatus } = useLaunch();
@@ -228,6 +229,7 @@ export default defineComponent({
     FeedbackDialog,
     ExportDialog,
     ExportSpeedDial,
+    MoreSpeedDial,
   },
   setup() {
     const { $t } = useI18n();
@@ -331,5 +333,11 @@ export default defineComponent({
 .launch-speed-dial .v-speed-dial__list .v-btn {
   max-width: 159px;
   min-width: 159px;
+}
+.home-page .more-button {
+  position: absolute;
+  left: 20px;
+  bottom: 10px;
+  -webkit-user-drag: none;
 }
 </style>
