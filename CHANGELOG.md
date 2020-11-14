@@ -34,6 +34,22 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.11.4](https://github.com/voxelum/x-minecraft-launcher/compare/v0.11.3...v0.11.4)
+
+* docs: correct typo ([af18084](https://github.com/voxelum/x-minecraft-launcher/commit/af18084))
+* fix: align the homepage speed dial ([ff78524](https://github.com/voxelum/x-minecraft-launcher/commit/ff78524))
+* fix: download asar update to appData to fix autoupdate ([0ed1549](https://github.com/voxelum/x-minecraft-launcher/commit/0ed1549))
+* fix: forge local version not sorted and refreshed ([97bd5e6](https://github.com/voxelum/x-minecraft-launcher/commit/97bd5e6))
+* fix: install internal java to wrong position ([d947b4f](https://github.com/voxelum/x-minecraft-launcher/commit/d947b4f))
+* fix: java installation from tsinghua ([e8bba97](https://github.com/voxelum/x-minecraft-launcher/commit/e8bba97))
+* fix: mark the imported resource & enable resource after import ([f812924](https://github.com/voxelum/x-minecraft-launcher/commit/f812924))
+* fix: warn the color on uninstalled version ([ae809eb](https://github.com/voxelum/x-minecraft-launcher/commit/ae809eb))
+* refactor: clean up ([b813126](https://github.com/voxelum/x-minecraft-launcher/commit/b813126))
+* refactor: window size reactivity ([5a0b6b5](https://github.com/voxelum/x-minecraft-launcher/commit/5a0b6b5))
+
+
 ## [0.11.3](https://github.com/voxelum/x-minecraft-launcher/compare/v0.11.2...v0.11.3)
 
 * chore: lint the project for PR ([12ecff9](https://github.com/voxelum/x-minecraft-launcher/commit/12ecff9))
