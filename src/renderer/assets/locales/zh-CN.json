@@ -198,6 +198,8 @@
   "downloadUpdate": "下载更新",
   "dropToImport": "将文件拖到这并导入为",
   "edit": "编辑",
+  "enableModsAfterImport": "Mod 导入后自动启用",
+  "existed": "已导入过的",
   "fabric": {
     "disable": "不启用 Fabric",
     "noVersion": "在 Minecraft {version} 下未找到任何 Fabric 版本",
