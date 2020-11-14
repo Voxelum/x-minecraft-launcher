@@ -3,6 +3,7 @@ import { ProjectType } from '@universal/entities/curseforge';
 import { UNKNOWN_RESOURCE } from '@universal/entities/resource';
 import { TaskState } from '@universal/task';
 import { requireObject, requireString } from '@universal/util/assert';
+import { compareDate } from '@universal/util/object';
 import { AddonInfo, File, getAddonDatabaseTimestamp, getAddonDescription, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions } from '@xmcl/curseforge';
 import { task } from '@xmcl/task';
 import { Agent } from 'https';
@@ -71,7 +72,7 @@ export default class CurseForgeService extends Service {
     @Singleton((projectId: number) => `cffiles-${projectId.toString()}`)
     fetchProjectFiles(projectId: number) {
         this.log(`Fetch project files: ${projectId}`);
-        return this.fetchOrGetFromCache('project files', this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.userAgent }).then(files => files.sort((a, b) => (new Date(b.fileDate) as any) - (new Date(a.fileDate) as any))));
+        return this.fetchOrGetFromCache('project files', this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.userAgent }).then(files => files.sort((a, b) => compareDate(new Date(b.fileDate), new Date(a.fileDate)))));
     }
 
     async searchProjects(searchOptions: SearchOptions) {
