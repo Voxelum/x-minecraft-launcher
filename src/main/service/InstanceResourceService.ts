@@ -217,7 +217,11 @@ export default class InstanceResourceService extends Service {
             } else {
                 const src = join(this.state.root, resource.location + resource.ext);
                 const dest = join(path, resource.location + resource.ext);
-                promises.push(link(src, dest).catch(() => copyFile(src, dest)));
+                promises.push(link(src, dest).catch(() => copyFile(src, dest)).catch((e) => {
+                    this.error(`Cannot deploy the resource from ${src} to ${dest}`);
+                    this.error(e);
+                    throw e;
+                }));
             }
         }
         await Promise.all(promises);
