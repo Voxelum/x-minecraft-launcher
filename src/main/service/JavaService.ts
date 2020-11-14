@@ -8,7 +8,7 @@ import { requireString } from '@universal/util/assert';
 import { downloadFileTask, JavaInstaller } from '@xmcl/installer';
 import { task } from '@xmcl/task';
 import { extract } from '@xmcl/unzip';
-import { move, readdir, remove, unlink } from 'fs-extra';
+import { ensureFile, move, readdir, remove, unlink } from 'fs-extra';
 import { basename, dirname, join } from 'path';
 import Service, { Singleton } from './Service';
 
@@ -53,14 +53,15 @@ export default class JavaService extends Service {
      */
     @Singleton('java')
     async installDefaultJava() {
-        let task = this.networkManager.isInGFW ? this.installFromTsingHuaTask() : this.installFromMojangTask();
-        let handle = this.submit(task);
+        const task = this.networkManager.isInGFW ? this.installFromTsingHuaTask() : this.installFromMojangTask();
+        const handle = this.submit(task);
+        await ensureFile(this.getInternalJavaLocation());
         await handle.wait();
         await this.resolveJava(this.getInternalJavaLocation());
     }
 
     private installFromMojangTask() {
-        let dest = this.getInternalJavaLocation();
+        const dest = dirname(this.getInternalJavaLocation());
         return JavaInstaller.installJreFromMojangTask({
             destination: dest,
             unpackLZMA: unpack7z,
