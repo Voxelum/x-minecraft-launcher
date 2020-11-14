@@ -20,7 +20,7 @@
     <v-chip
       label
       class="pointer"
-      color="green"
+      :color="folder === 'unknown' ? 'orange' : 'green'"
       small
       :selected="false"
       @click="$router.replace('/version-setting')"
