@@ -177,7 +177,7 @@ img {
 
 <style scoped=true>
 .main-body {
-  max-width: 720px;
+  /* min-width: 720px; */
   width: 100%;
   border-radius: 0px 2px 2px 0;
 }

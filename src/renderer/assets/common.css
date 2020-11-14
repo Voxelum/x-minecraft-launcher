@@ -167,3 +167,14 @@ p {
 a {
     -webkit-user-drag: none;
 }
+
+@media only screen and (min-width: 1264px){
+    .container {
+        max-width: unset;
+    }
+}
+@media only screen and (min-width: 960px){
+    .container {
+        max-width: unset;
+    }
+}

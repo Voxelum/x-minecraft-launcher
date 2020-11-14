@@ -17,7 +17,8 @@
     <v-flex
       v-for="instance in instancesByTime[0]"
       :key="instance.path"
-      xs6
+      md4
+      sm6
       @dragstart="$emit('dragstart', instance)"
       @dragend="$emit('dragend')"
     >
@@ -36,6 +37,7 @@
     <v-flex
       v-for="instance in instancesByTime[1]"
       :key="instance.path"
+      md4
       xs6
       @dragstart="$emit('dragstart', instance)"
       @dragend="$emit('dragend')"
@@ -55,6 +57,7 @@
     <v-flex
       v-for="instance in instancesByTime[2]"
       :key="instance.path"
+      md4
       xs6
       @dragstart="$emit('dragstart', instance)"
       @dragend="$emit('dragend')"

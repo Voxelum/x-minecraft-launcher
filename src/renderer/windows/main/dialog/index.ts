@@ -2,7 +2,7 @@ import { defineComponent, h } from '@vue/composition-api';
 
 const files = require.context('.', false, /\.vue$/);
 
-const components = files.keys().map((key) => {
+const components = files.keys().filter(key => key.endsWith('.vue')).map((key) => {
     const name = key.replace(/(\.\/|\.vue)/g, '');
     const aCode = 'A'.charCodeAt(0);
     const zCode = 'Z'.charCodeAt(0);

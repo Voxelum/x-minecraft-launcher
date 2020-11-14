@@ -152,4 +152,7 @@ export default defineComponent({
 </script>
 
 <style>
+.sidebar {
+  min-width: 80px;
+}
 </style>
