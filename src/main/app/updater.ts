@@ -18,7 +18,7 @@ import ElectronLauncherApp from '../electron/ElectronLauncherApp';
     */
 export function downloadAsarUpdateTask(this: ElectronLauncherApp) {
     const downloadUpdate = Task.create('downloadUpdate', async (ctx: Task.Context) => {
-        let updateInfo = this.storeManager.store.state.setting.updateInfo;
+        const updateInfo = this.storeManager.store.state.setting.updateInfo;
 
         const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise);
         const files = provider.resolveFiles(updateInfo!);
@@ -32,9 +32,7 @@ export function downloadAsarUpdateTask(this: ElectronLauncherApp) {
             uObject.pathname = 'releases/app.asar';
         }
 
-        let exePath = this.getPath('exe');
-        let appPath = dirname(exePath);
-        let updatePath = join(appPath, 'resources', 'update.asar.temp');
+        const updatePath = join(this.appDataPath, 'update.asar');
         this.log(`Download asar update to ${updatePath}`);
         await this.networkManager.downloadFileTask({ destination: updatePath, url: uObject.toString() })(ctx);
     });
@@ -59,11 +57,11 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
         this.log('Currently is development envrionment. Skip to install ASAR');
         return;
     }
-    let exePath = process.argv[0];
-    let appPath = dirname(exePath);
+    const exePath = process.argv[0];
+    const appPath = dirname(exePath);
 
-    let appAsarPath = join(appPath, 'resources', 'app.asar');
-    let updateAsarPath = join(appPath, 'resources', 'update.asar.temp');
+    const appAsarPath = join(appPath, 'resources', 'app.asar');
+    const updateAsarPath = join(this.appDataPath, 'update.asar');
 
     this.log(`Install asar on ${this.platform.name}`);
     if (this.platform.name === 'windows') {
@@ -77,7 +75,7 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
             this.error(`No elevate.exe found: ${elevatePath}`);
             throw new Error(`No elevate.exe found: ${elevatePath}`);
         }
-        let psPath = join(this.appDataPath, 'AutoUpdate.ps1');
+        const psPath = join(this.appDataPath, 'AutoUpdate.ps1');
         let hasWriteAccess = await new Promise((resolve) => {
             open(appAsarPath, 'a', (e, fd) => {
                 if (e) {
