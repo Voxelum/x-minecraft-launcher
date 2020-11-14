@@ -1,11 +1,11 @@
 import { promises, createWriteStream, Stats } from 'fs';
-import { join, relative } from 'path';
+import { basename, dirname, join, relative } from 'path';
 import { ZipFile } from 'yazl';
 import { unpack } from '7zip-min';
 import { gunzip as _gunzip, gzip as _gzip } from 'zlib';
 import { promisify } from 'util';
 import { task } from '@xmcl/task';
-import { stat } from 'fs-extra';
+import { move, remove, stat, unlink } from 'fs-extra';
 
 export async function includeAllToZip(root: string, real: string, zip: ZipFile, addFileCb?: (fileStat: Stats) => void) {
     const relativePath = relative(root, real);
@@ -97,11 +97,8 @@ export function openCompressedStreamTask(dest: string) {
     };
 }
 
-export function unpack7z(pathToArchive: string, whereToUnpack: string) {
+export function unpack7z(archivePath: string, destinationDirectory: string) {
     return new Promise<void>((resolve, reject) => {
-        unpack(pathToArchive, whereToUnpack, (e) => { if (e) reject(e); else resolve(); });
+        unpack(archivePath, destinationDirectory, (e) => { if (e) reject(e); else resolve(); });
     });
-}
-export function unpackGarGz() {
-
 }

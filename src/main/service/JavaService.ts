@@ -1,21 +1,22 @@
+import { getTsingHuaAdpotOponJDKPageUrl, parseTsingHuaAdpotOpenJDKHotspotArchive } from '@main/entities/java';
 import { missing, readdirIfPresent } from '@main/util/fs';
 import { unpack7z } from '@main/util/zip';
-import { MutationKeys } from '@universal/store';
 import { JavaRecord } from '@universal/entities/java';
 import { Java, JavaSchema } from '@universal/entities/java.schema';
+import { MutationKeys } from '@universal/store';
 import { requireString } from '@universal/util/assert';
 import { downloadFileTask, JavaInstaller } from '@xmcl/installer';
 import { task } from '@xmcl/task';
 import { extract } from '@xmcl/unzip';
-import { move, remove, unlink } from 'fs-extra';
-import { join } from 'path';
+import { move, readdir, remove, unlink } from 'fs-extra';
+import { basename, dirname, join } from 'path';
 import Service, { Singleton } from './Service';
 
 export default class JavaService extends Service {
     private javaFile = this.app.platform.name === 'windows' ? 'javaw.exe' : 'java';
 
     getInternalJavaLocation() {
-        return join(this.state.root, 'jre', 'bin', this.javaFile);
+        return this.app.platform.name === 'osx' ? this.getPath(this.state.root, 'jre', 'Contents', 'Home', 'bin', 'java') : join(this.state.root, 'jre', 'bin', this.javaFile);
     }
 
     async load() {
@@ -69,50 +70,56 @@ export default class JavaService extends Service {
 
     private installFromTsingHuaTask() {
         return task('installJre', async (c) => {
-            let system = this.app.platform.name === 'osx' ? 'mac' as const : this.app.platform.name;
-            let arch = this.app.platform.arch === 'x64' ? '64' as const : '32' as const;
-            let list = (await this.networkManager.request.get('https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/filelist').text())
-                .split('\n')
-                .map(l => l.split('/').slice(5));
-            const zipFile = list
-                .find(l => l[0] === 'jre' && l[1] === `x${arch}` && l[2] === system && (l[3].endsWith('.zip') || l[3].endsWith('.tar.gz')));
-            if (!zipFile) {
-                throw new Error(`Cannot find jre for ${system} x${arch}`);
-            }
-            let sha256File = list.find(l => l[3] === `${zipFile[3]}.sha256.txt`);
-            let url = `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/${zipFile.join('/')}`;
-            let sha256Url = `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/${sha256File?.join('/')}`;
-            let sha256 = await this.networkManager.request(sha256Url).text().then((s) => s.split(' ')[0]).catch(e => '');
-            let dest = join(this.state.root, 'jre');
-            let tempZip = join(this.state.root, 'temp', 'java-temp');
-            let checksum = sha256 ? {
-                algorithm: 'sha256',
-                hash: sha256,
-            } : undefined;
+            const system = this.app.platform.name === 'osx' ? 'mac' as const : this.app.platform.name;
+            const arch = this.app.platform.arch === 'x64' ? '64' as const : '32' as const;
 
-            this.log(`Install jre for ${system} x${arch} from tsing hua mirror ${url}`);
+            const baseUrl = getTsingHuaAdpotOponJDKPageUrl(system, arch);
+            const htmlText = await this.networkManager.request.get(baseUrl).text();
+            const archiveInfo = parseTsingHuaAdpotOpenJDKHotspotArchive(htmlText, baseUrl);
+
+            if (!archiveInfo) {
+                throw new Error(`Cannot find jre from tsinghua mirror for ${system} x${arch}`);
+            }
+
+            const destination = join(this.state.root, 'jre');
+            const archivePath = this.getTempPath(archiveInfo.fileName);
+            const url = archiveInfo.url;
+
+            this.log(`Install jre for ${system} x${arch} from tsinghua mirror ${url}`);
             await c.execute(task('download', downloadFileTask({
-                destination: tempZip,
+                destination: archivePath,
                 url,
-                checksum,
             }, this.networkManager.getDownloaderOption())), 90);
 
             await c.execute(task('decompress', async () => {
                 if (system === 'windows') {
-                    await extract(tempZip, dest, {
+                    await extract(archivePath, destination, {
                         entryHandler(_, e) {
-                            return e.fileName.substring('jdk8u242-b08-jre'.length);
+                            const [firstDir] = e.fileName.split('/');
+                            if (firstDir.startsWith('jdk8u')) {
+                                return e.fileName.substring(firstDir.length);
+                            }
+                            return undefined;
                         },
                     });
+                    await unlink(archivePath);
                 } else {
-                    let tempTar = join(this.state.root, 'temp', 'java-temp.tar');
-                    await unpack7z(tempZip, tempTar);
-                    await unpack7z(tempTar, join(this.state.root, 'temp'));
-                    await move(join(this.state.root, 'temp', 'jdk8u242-b08-jre'), dest);
-                    await remove(join(this.state.root, 'temp', 'jdk8u242-b08-jre'));
-                    await unlink(tempTar);
+                    const tarPath = join(dirname(destination), basename(archivePath, '.gz'));
+                    // unpack gz tar to tar
+                    await unpack7z(archivePath, dirname(destination));
+
+                    const dirPath = join(dirname(destination), basename(archivePath, '.tar.gz'));
+                    // unpack tar to dir
+                    await unpack7z(tarPath, dirPath);
+
+                    const files = await readdir(dirPath);
+                    if (files[0] && files[0].startsWith('jdk8')) {
+                        await move(join(dirPath, files[0]), destination);
+                    } else {
+                        await move(dirPath, destination);
+                    }
+                    await Promise.all([remove(dirPath), unlink(tarPath), unlink(archivePath)]);
                 }
-                await unlink(tempZip);
             }), 10);
             this.log('Install jre for from tsing hua mirror success!');
         });
