@@ -115,7 +115,14 @@ const mod: VersionModule = {
             state.minecraft = Object.freeze(metadata);
         },
         forgeMetadata(state, metadata) {
-            state.forge.push(Object.freeze(metadata));
+            const existed = state.forge.find((version) => version.mcversion === metadata.mcversion);
+            if (existed) {
+                existed.timestamp = metadata.timestamp;
+                existed.versions = Object.freeze(metadata.versions) as any;
+            } else {
+                const result = { ...metadata, versions: Object.freeze(metadata.versions) };
+                state.forge.push(result as any);
+            }
         },
         liteloaderMetadata(state, metadata) {
             state.liteloader = Object.freeze(metadata);

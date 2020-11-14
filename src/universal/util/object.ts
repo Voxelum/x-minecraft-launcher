@@ -21,3 +21,9 @@ export function assignShallow(state: Record<string, any>, options: Record<string
 export function toObjectReducer<T extends { [k in K]: string }, K extends string>(key: K) {
     return (o: { [key: string]: T }, v: T) => { o[v[key]] = v; return o; };
 }
+
+export function compareDate(a: Date, b: Date) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return a - b;
+}

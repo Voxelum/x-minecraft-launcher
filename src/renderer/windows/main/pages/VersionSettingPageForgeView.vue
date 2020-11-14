@@ -30,6 +30,7 @@ import { defineComponent, reactive, computed, toRefs, watch } from '@vue/composi
 import { useForgeVersions } from '@/hooks';
 import { required } from '@/util/props';
 import { ForgeVersion } from '@universal/entities/version.schema';
+import { compareDate } from '@universal/util/object';
 
 export default defineComponent({
   props: {
@@ -51,7 +52,12 @@ export default defineComponent({
       return version.version.indexOf(props.filterText) !== -1;
     }
 
-    const versions = computed(() => vers.value.filter(filterForge));
+    const versions = computed(() => vers.value.filter(filterForge).sort((a, b) => {
+      if (a.date && b.date) {
+        return compareDate(new Date(b.date), new Date(a.date));
+      }
+      return b.version.localeCompare(a.version);
+    }));
    
     watch(versions, () => {
       if (versions.value.length === 0) {

@@ -1,5 +1,5 @@
 <template>
-  <v-list dark style="background-color: transparent; height: 100%; overflow: auto;">
+  <v-list dark style="background-color: transparent; height: 100%;">
     <v-list-tile ripple @click="select({ version: '' })">
       <v-list-tile-avatar>
         <v-icon>close</v-icon>
@@ -7,7 +7,7 @@
       {{ $t('forge.disable') }}
     </v-list-tile>
     <virtual-list
-      style="overflow-y: scroll; scrollbar-width: 0; height: 100%"
+      style="overflow-y: scroll; scrollbar-width: 0; height: 90%"
       :data-sources="items"
       :data-key="'version'"
       :data-component="Tile"
