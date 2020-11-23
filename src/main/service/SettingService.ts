@@ -6,7 +6,7 @@ export default class SettingService extends Service {
         const data: SettingSchema = await this.getPersistence({ path: this.getPath('setting.json'), schema: SettingSchema }) || {};
         this.commit('config', {
             locale: data.locale,
-            locales: ['en', 'zh-CN'],
+            locales: ['en', 'zh-CN', 'ru'],
             autoInstallOnAppQuit: data.autoInstallOnAppQuit,
             autoDownload: data.autoDownload,
             allowPrerelease: data.allowPrerelease,

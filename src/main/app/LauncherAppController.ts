@@ -8,6 +8,7 @@ import { resolve } from 'path';
 import LauncherApp, { AppContext } from './LauncherApp';
 import en from './locales/en.json';
 import zh from './locales/zh-CN.json';
+import ru from './locales/ru.json';
 
 const isDev = process.env.NODE_ENV === 'development';
 const baseURL = isDev
@@ -22,7 +23,7 @@ export default class LauncherAppController {
 
     private setupRef: BrowserWindow | undefined = undefined;
 
-    private i18n = createI18n({ en, 'zh-CN': zh }, 'en');
+    private i18n = createI18n({ en, 'zh-CN': zh, ru }, 'en');
 
     private tray: Tray | undefined;
 

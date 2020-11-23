@@ -1,0 +1,21 @@
+{
+  "checkUpdate": "Check Update",
+  "fabric": {
+    "noVersion": "Cannot load the fabric version list for Minecraft {version}"
+  },
+  "openUrl": {
+    "cancel": "Cancel",
+    "message": "The launcher want to open the {url} in your default browser. Do you allow this operation?",
+    "title": "Open in Browser",
+    "trust": "Trust this site and don't show next time",
+    "yes": "Yes"
+  },
+  "task": {
+    "success": "One Task Success",
+    "fail": "One Task Failed",
+    "continue": "View in Launcher"
+  },
+  "quit": "Quit",
+  "showDiagnosis": "Show Diagnose",
+  "title": "XMCL"
+}
