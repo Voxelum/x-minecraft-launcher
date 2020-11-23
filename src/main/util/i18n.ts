@@ -41,6 +41,7 @@ export function createI18n(i18nMap: { [local: string]: LocalizationData }, defau
             usingLocale = locale;
             usingData = i18nMap[locale];
         },
+        get locales() { return Object.keys(i18nMap); },
         get locale() { return usingLocale; },
     };
 }
