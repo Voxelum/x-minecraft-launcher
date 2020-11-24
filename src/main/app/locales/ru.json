@@ -1,21 +1,21 @@
 {
-  "checkUpdate": "Check Update",
+  "checkUpdate": "Проверить обновления",
   "fabric": {
-    "noVersion": "Cannot load the fabric version list for Minecraft {version}"
+    "noVersion": "Не удаётся загрузить список версий fabric для Minecraft {version}"
   },
   "openUrl": {
-    "cancel": "Cancel",
-    "message": "The launcher want to open the {url} in your default browser. Do you allow this operation?",
-    "title": "Open in Browser",
-    "trust": "Trust this site and don't show next time",
-    "yes": "Yes"
+    "cancel": "Отмена",
+    "message": "Лаунчер хочет открыть {url} в вашем браузере по умолчанию. Разрешить?",
+    "title": "Открыть в браузере",
+    "trust": "Доверять этому сайту и не показывать это предупреждение в следующий раз",
+    "yes": "Да"
   },
   "task": {
-    "success": "One Task Success",
-    "fail": "One Task Failed",
-    "continue": "View in Launcher"
+    "success": "Одна задача выполнена успешно",
+    "fail": "Одна задача не выполнена",
+    "continue": "Смотреть в лаунчере"
   },
-  "quit": "Quit",
-  "showDiagnosis": "Show Diagnose",
+  "quit": "Выход",
+  "showDiagnosis": "Показать диагностику",
   "title": "XMCL"
 }
