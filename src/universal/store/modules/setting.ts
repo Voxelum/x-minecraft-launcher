@@ -14,8 +14,9 @@ interface State extends SettingSchema {
 }
 
 interface Mutations {
-    config: SettingSchema & { locales: string[] };
+    config: SettingSchema;
     locale: string;
+    locales: string[];
     allowPrerelease: boolean;
     autoInstallOnAppQuit: boolean;
     updateStatus: 'ready' | 'none' | 'pending';
@@ -66,9 +67,11 @@ const mod: SettingModule = {
         locale(state, language) {
             state.locale = language;
         },
+        locales(state, languages) {
+            state.locales = languages;
+        },
         config(state, config) {
             state.locale = config.locale;
-            state.locales = config.locales;
             state.autoDownload = config.autoDownload || false;
             state.autoInstallOnAppQuit = config.autoDownload || false;
             state.allowPrerelease = config.allowPrerelease || false;

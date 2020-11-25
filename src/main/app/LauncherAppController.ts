@@ -6,9 +6,7 @@ import { TaskNotification } from '@universal/entities/notification';
 import { StaticStore } from '@universal/util/staticStore';
 import { resolve } from 'path';
 import LauncherApp, { AppContext } from './LauncherApp';
-import en from './locales/en.json';
-import zh from './locales/zh-CN.json';
-import ru from './locales/ru.json';
+import i18n from './locales';
 
 const isDev = process.env.NODE_ENV === 'development';
 const baseURL = isDev
@@ -23,7 +21,7 @@ export default class LauncherAppController {
 
     private setupRef: BrowserWindow | undefined = undefined;
 
-    private i18n = createI18n({ en, 'zh-CN': zh, ru }, 'en');
+    private i18n = i18n;
 
     private tray: Tray | undefined;
 
@@ -235,6 +233,7 @@ export default class LauncherAppController {
     async dataReady(store: StaticStore<any>): Promise<void> {
         this.mainRef!.show();
         this.store = store;
+        this.store.commit('locales', this.i18n.locales);
         this.store.subscribe((mutation) => {
             if (mutation.type === 'locale') {
                 this.i18n.use(mutation.payload);
