@@ -3,6 +3,7 @@
     v-model="step"
     non-linear
     vertical
+    style="max-height: 80vh; overflow-y: auto;"
   >
     <v-stepper-step
       :editable="!modify"
