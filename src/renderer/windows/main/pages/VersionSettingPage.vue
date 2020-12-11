@@ -75,8 +75,8 @@ import {
   useAutoSaveLoad,
   useInstance,
 } from '@/hooks';
-import { Version as ForgeVersion } from '@xmcl/installer/forge';
-import { Version as MinecraftVersion } from '@xmcl/installer/minecraft';
+import { ForgeVersion } from '@xmcl/installer';
+import { MinecraftVersion } from '@xmcl/installer';
 import { LocalVersion } from '@universal/entities/version';
 import MinecraftView from './VersionSettingPageMinecraftView.vue';
 import ForgeView from './VersionSettingPageForgeView.vue';

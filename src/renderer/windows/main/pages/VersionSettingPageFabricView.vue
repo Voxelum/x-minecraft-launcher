@@ -38,7 +38,7 @@ import {
   useFabricVersions,
 } from '@/hooks';
 import { required } from '@/util/props';
-import { FabricArtifactVersion } from '@xmcl/installer/fabric';
+import { FabricArtifactVersion } from '@xmcl/installer';
 
 export default defineComponent({
   props: {

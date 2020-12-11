@@ -19,7 +19,7 @@
 
 <script lang=ts>
 import { defineComponent, computed } from '@vue/composition-api';
-import { ForgeInstaller } from '@xmcl/installer';
+import { ForgeVersion } from '@xmcl/installer';
 import { required } from '@/util/props';
 import VirtualList from 'vue-virtual-scroll-list';
 import Tile from './ForgeVersionListTile.vue';
@@ -29,7 +29,7 @@ export type Status = 'loading' | 'folder' | 'cloud';
 export default defineComponent({
   components: { VirtualList },
   props: {
-    value: required<ForgeInstaller.Version[]>(Array),
+    value: required<ForgeVersion[]>(Array),
     status: required<Record<string, Status>>(Object),
     select: required<(version: { version: string }) => void>(Function),
     selected: required<string>(String),

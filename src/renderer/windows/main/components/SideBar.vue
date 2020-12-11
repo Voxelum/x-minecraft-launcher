@@ -85,10 +85,10 @@
         <v-list-tile-action>
           <v-badge
             right
-            :value="activeTasksCount !== 0"
+            :value="count !== 0"
           >
             <template v-slot:badge>
-              <span>{{ activeTasksCount }}</span>
+              <span>{{ count }}</span>
             </template>
             <v-icon dark>assignment</v-icon>
           </v-badge>
@@ -138,13 +138,13 @@ export default defineComponent({
     goBack: required<() => void>(Function),
   },
   setup() {
-    const { activeTasksCount } = useTaskCount();
+    const { count } = useTaskCount();
     const { show } = useDialog('task');
     const { updateStatus } = useUpdateInfo();
 
     return {
       updateStatus,
-      activeTasksCount,
+      count,
       showTaskDialog: show,
     };
   },

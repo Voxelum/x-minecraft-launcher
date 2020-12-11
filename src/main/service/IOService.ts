@@ -1,10 +1,11 @@
 import { readHeader } from '@main/entities/resource';
 import { pipeline, sha1ByPath } from '@main/util/fs';
-import { openCompressedStreamTask } from '@main/util/zip';
+import { ZipTask } from '@main/util/zip';
 import { Modpack } from '@universal/entities/modpack';
 import { Resource, Resources, UNKNOWN_RESOURCE } from '@universal/entities/resource';
 import { ResourceDomain, ResourceType } from '@universal/entities/resource.schema';
-import { extract } from '@xmcl/unzip';
+import { UnzipTask } from '@xmcl/installer';
+import { open, readAllEntries } from '@xmcl/unzip';
 import { createHash } from 'crypto';
 import { FileType, stream as fileTypeByStream } from 'file-type';
 import { createReadStream, remove, stat, unlink } from 'fs-extra';
@@ -71,11 +72,9 @@ export default class IOService extends Service {
         if (fileType === 'directory') {
             if (domain === ResourceDomain.ResourcePacks || domain === ResourceDomain.Saves || type === ResourceType.CurseforgeModpack) {
                 const tempZipPath = `${this.getTempPath(displayName)}.zip`;
-                const { include, task, end } = openCompressedStreamTask(tempZipPath);
-
-                await include('', path);
-                end();
-                await task.execute().wait();
+                const zipTask = new ZipTask(tempZipPath);
+                await zipTask.includeAs(path, '');
+                await zipTask.startAndWait();
                 // zip and import
                 result = await this.resourceService.importResource({ path: tempZipPath, type });
                 await unlink(tempZipPath);
@@ -87,7 +86,11 @@ export default class IOService extends Service {
             }
         } else if (domain === ResourceDomain.Modpacks && type === ResourceType.Modpack) {
             const tempDir = this.getTempPath(displayName);
-            await extract(path, tempDir);
+
+            const zip = await open(path);
+            const entries = await readAllEntries(zip);
+            await new UnzipTask(zip, entries, tempDir).startAndWait();
+
             await this.instanceIOService.importInstance(tempDir);
             await remove(tempDir);
         } else if (fileType === 'zip' || extname(path) === '.jar') {
@@ -147,7 +150,7 @@ export default class IOService extends Service {
                 result.metadata = resource.metadata;
                 result.uri = resource.uri[0];
             } else if (fileType === 'zip' || ext === '.jar' || ext === '.litemod') {
-                const { type: resourceType, suggestedName, uri, metadata, icon, domain } = await readHeader(path, hash, hint);
+                const { type: resourceType, suggestedName, uri, metadata, icon, domain } = await readHeader(path, hash ?? '', hint);
                 result.displayName = suggestedName;
                 result.existed = !!this.resourceService.getResourceByKey(uri);
                 result.type = resourceType;

@@ -1,4 +1,3 @@
-import { TaskHandle } from '@xmcl/task';
 import { reactive, provide, set, ref, Ref } from '@vue/composition-api';
 import { BuiltinServices } from '@main/service';
 import { SERVICES_KEY, ipcRenderer, SERVICES_SEMAPHORE_KEY } from '@/constant';

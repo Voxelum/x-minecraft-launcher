@@ -4,11 +4,10 @@ import { Issue, IssueReport } from '@universal/entities/issue';
 import { EMPTY_JAVA } from '@universal/entities/java';
 import { FabricResource } from '@universal/entities/resource';
 import { compareRelease, getExpectVersion, LocalVersion } from '@universal/entities/version';
-import { MinecraftFolder } from '@xmcl/core';
-import { Diagnosis, Installer } from '@xmcl/installer';
+import { diagnose, MinecraftFolder } from '@xmcl/core';
+import { diagnoseInstall, installByProfileTask } from '@xmcl/installer';
 import { InstallProfile } from '@xmcl/installer/minecraft';
-import { Forge } from '@xmcl/mod-parser';
-import { ModMetadata } from '@xmcl/mod-parser/fabric';
+import { Forge, Fabric } from '@xmcl/mod-parser';
 import { PackMeta } from '@xmcl/resourcepack';
 import { readJSON } from 'fs-extra';
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
@@ -156,8 +155,8 @@ export default class DiagnoseService extends Service {
 
         this.registerMatchedFix(['badInstall'],
             async (issues) => {
-                let task = Installer.installByProfileTask(issues[0].arguments.installProfile, this.state.root, { java: this.getters.defaultJava.path });
-                await this.submit(task).wait();
+                let task = installByProfileTask(issues[0].arguments.installProfile, this.state.root, { java: this.getters.defaultJava.path });
+                await this.submit(task);
             },
             'diagnoseVersion');
 
@@ -367,7 +366,7 @@ export default class DiagnoseService extends Service {
                     tree.requireFabric.push({});
                 }
                 for (let mod of fabricMods) {
-                    let fabMetadata = mod.metadata as ModMetadata;
+                    let fabMetadata = mod.metadata as Fabric.ModMetadata;
                     if (fabMetadata.depends) {
                         let fabApiVer = (fabMetadata.depends as any)['fabric-api-base'];
                         if (fabApiVer && !fabricMods.some(m => m.metadata.id === 'fabric')) {
@@ -624,7 +623,7 @@ export default class DiagnoseService extends Service {
                 this.log(`Diagnose for version ${targetVersion}`);
 
                 let location = this.state.root;
-                let gameReport = await Diagnosis.diagnose(targetVersion, location);
+                let gameReport = await diagnose(targetVersion, location);
 
                 for (let issue of gameReport.issues) {
                     if (issue.role === 'versionJson') {
@@ -664,7 +663,7 @@ export default class DiagnoseService extends Service {
                 let installProfilePath = join(root, 'install_profile.json');
                 if (await exists(installProfilePath)) {
                     let installProfile: InstallProfile = await readJSON(installProfilePath);
-                    let report = await Diagnosis.diagnoseInstall(installProfile, mcLocation.root);
+                    let report = await diagnoseInstall(installProfile, mcLocation.root);
                     let missedInstallProfileLibs: IssueReport['missingLibraries'] = [];
                     let corruptedInstallProfileLibs: IssueReport['corruptedLibraries'] = [];
                     let badInstall = false;

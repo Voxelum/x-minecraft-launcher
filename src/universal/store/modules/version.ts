@@ -1,4 +1,4 @@
-import type { Installer, LiteLoaderInstaller, ForgeInstaller, FabricInstaller } from '@xmcl/installer';
+import type { MinecraftVersionList, MinecraftVersion, LiteloaderVersionList, FabricArtifactVersion } from '@xmcl/installer';
 import { LATEST_RELEASE, LocalVersion } from '@universal/entities/version';
 import { ForgeVersionList, VersionFabricSchema, VersionForgeSchema } from '@universal/entities/version.schema';
 import { ModuleOption } from '../root';
@@ -11,7 +11,7 @@ interface State {
     /**
      * Minecraft version metadata list. Helps to download.
      */
-    minecraft: Installer.VersionList;
+    minecraft: MinecraftVersionList;
     /**
      * Forge version metadata dictionary. Helps to download.
      */
@@ -23,30 +23,30 @@ interface State {
     /**
      * Liteloader version metadata list. Helps to download.
      */
-    liteloader: LiteLoaderInstaller.VersionList;
+    liteloader: LiteloaderVersionList;
 }
 
 interface Getters {
     /**
      * Latest snapshot
      */
-    minecraftSnapshot: Installer.Version | undefined;
+    minecraftSnapshot: MinecraftVersion | undefined;
     /**
      * Latest release
      */
-    minecraftRelease: Installer.Version;
-    minecraftVersion: (mcversion: string) => Installer.Version | undefined;
+    minecraftRelease: MinecraftVersion;
+    minecraftVersion: (mcversion: string) => MinecraftVersion | undefined;
 }
 
 interface Mutations {
     localVersions: LocalVersion[];
     localVersion: LocalVersion | { [runtime: string]: string };
     localVersionRemove: string;
-    minecraftMetadata: Installer.VersionList;
+    minecraftMetadata: MinecraftVersionList;
     forgeMetadata: ForgeVersionList;
-    liteloaderMetadata: LiteLoaderInstaller.VersionList;
-    fabricYarnMetadata: { versions: FabricInstaller.FabricArtifactVersion[]; timestamp: string };
-    fabricLoaderMetadata: { versions: FabricInstaller.FabricArtifactVersion[]; timestamp: string };
+    liteloaderMetadata: LiteloaderVersionList;
+    fabricYarnMetadata: { versions: FabricArtifactVersion[]; timestamp: string };
+    fabricLoaderMetadata: { versions: FabricArtifactVersion[]; timestamp: string };
 }
 
 export type VersionModule = ModuleOption<State, Getters, Mutations, {}>;

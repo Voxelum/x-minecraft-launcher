@@ -1,10 +1,8 @@
 import { ForgeVersion, ForgeVersionList, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema } from '@universal/entities/version.schema';
 import { MutationKeys } from '@universal/store';
 import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core';
-import { FabricInstaller, ForgeInstaller, Installer, LiteLoaderInstaller } from '@xmcl/installer';
-import { LOADER_MAVEN_URL, YARN_MAVEN_URL } from '@xmcl/installer/fabric';
-import { installTask } from '@xmcl/installer/forge';
-import { Task } from '@xmcl/task';
+import { getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installFabricYarnAndLoader, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL } from '@xmcl/installer';
+import { task } from '@xmcl/task';
 import Service, { Inject, Singleton } from './Service';
 import VersionService from './VersionService';
 
@@ -95,9 +93,9 @@ export default class InstallService extends Service {
         return undefined;
     }
 
-    protected getForgeInstallOptions(): ForgeInstaller.Options {
-        let options: ForgeInstaller.Options = {
-            ...this.networkManager.getDownloaderOption(),
+    protected getForgeInstallOptions(): InstallForgeOptions {
+        let options: InstallForgeOptions = {
+            ...this.networkManager.getDownloadBaseOptions(),
             java: this.getters.defaultJava.path,
         };
         if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
@@ -109,10 +107,11 @@ export default class InstallService extends Service {
         return options;
     }
 
-    protected getInstallOptions(): Installer.Option {
-        let option: Installer.Option = {
+    protected getInstallOptions(): Options {
+        let option: Options = {
             assetsDownloadConcurrency: 16,
-            ...this.networkManager.getDownloaderOption(),
+            ...this.networkManager.getDownloadBaseOptions(),
+            side: 'client',
         };
 
         if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
@@ -207,7 +206,7 @@ export default class InstallService extends Service {
         this.log('Start to refresh minecraft version metadata.');
         const oldMetadata = this.state.version.minecraft;
         const remote = this.getMinecraftJsonManifestRemote();
-        const newMetadata = await Installer.getVersionList({ original: oldMetadata, remote });
+        const newMetadata = await getVersionList({ original: oldMetadata, remote });
         if (oldMetadata !== newMetadata) {
             this.log('Found new minecraft version metadata. Update it.');
             this.commit('minecraftMetadata', newMetadata);
@@ -226,7 +225,7 @@ export default class InstallService extends Service {
         const option = this.getInstallOptions();
         const location = this.state.root;
         const resolvedVersion = await Version.parse(location, version);
-        await this.submit(Installer.installAssetsTask(resolvedVersion, option)).wait();
+        await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'));
     }
 
     @Singleton('install')
@@ -234,8 +233,8 @@ export default class InstallService extends Service {
         const option = this.getInstallOptions();
         const location = this.state.root;
         const resolvedVersion = await Version.parse(location, version);
-        await this.submit(Installer.installLibrariesTask(resolvedVersion, option)).wait();
-        await this.submit(Installer.installAssetsTask(resolvedVersion, option)).wait();
+        await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries'));
+        await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'));
     }
 
     @Singleton('install')
@@ -244,15 +243,15 @@ export default class InstallService extends Service {
         let location = this.state.root;
         let resolvedVersion = await Version.parse(location, version);
         let local = this.state.version.local.find(v => v.folder === version);
-        await this.submit(Installer.installVersionTask('client', { id: local!.minecraft, url: '' }, location)).wait();
+        await this.submit(installVersionTask({ id: local!.minecraft, url: '' }, location).setName('installVersion'));
         if (local?.forge) {
-            await this.submit(ForgeInstaller.installTask({ version: local.forge, mcversion: local.minecraft }, location)).wait();
+            await this.submit(installForgeTask({ version: local.forge, mcversion: local.minecraft }, location).setName('installForge'));
         }
         if (local?.fabricLoader) {
             await this.installFabric({ yarn: local.yarn, loader: local.fabricLoader });
         }
-        await this.submit(Installer.installLibrariesTask(resolvedVersion, option)).wait();
-        await this.submit(Installer.installAssetsTask(resolvedVersion, option)).wait();
+        await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries'));
+        await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'));
     }
 
     /**
@@ -263,21 +262,21 @@ export default class InstallService extends Service {
     async installAssets(assets: { name: string; size: number; hash: string }[]) {
         let option = this.getInstallOptions();
         let location = this.state.root;
-        let task = Installer.installResolvedAssetsTask(assets, new MinecraftFolder(location), option);
-        await this.submit(task).wait();
+        let task = installResolvedAssetsTask(assets, new MinecraftFolder(location), option).setName('installAssets');
+        await this.submit(task);
     }
 
     /**
      * Download and install a minecract version
      */
     @Singleton('install')
-    async installMinecraft(meta: Installer.Version) {
+    async installMinecraft(meta: MinecraftVersion) {
         let id = meta.id;
 
         let option = this.getInstallOptions();
-        let task = Installer.installVersionTask('client', meta, this.state.root, option);
+        let task = installVersionTask(meta, this.state.root, option).setName('installVersion');
         try {
-            await this.submit(task).wait();
+            await this.submit(task);
             this.local.refreshVersions();
         } catch (e) {
             this.warn(`An error ocurred during download version ${id}`);
@@ -297,9 +296,9 @@ export default class InstallService extends Service {
             resolved = libraries as any;
         }
         let option = this.getInstallOptions();
-        let task = Installer.installResolvedLibrariesTask(resolved, this.state.root, option);
+        let task = installResolvedLibrariesTask(resolved, this.state.root, option).setName('installLibraries');
         try {
-            await this.submit(task).wait();
+            await this.submit(task);
         } catch (e) {
             this.warn('An error ocurred during install libraries:');
             this.warn(e);
@@ -339,7 +338,7 @@ export default class InstallService extends Service {
                 newForgeVersion = await this.getForgesFromBMCL(mcversion, currentForgeVersion);
             } else {
                 this.log(`Update forge version list (ForgeOfficial) for Minecraft ${minecraftVersion}`);
-                newForgeVersion = await ForgeInstaller.getVersionList({ mcversion: minecraftVersion, original: currentForgeVersion as any }) as any;
+                newForgeVersion = await getForgeVersionList({ mcversion: minecraftVersion, original: currentForgeVersion as any }) as any;
             }
 
             if (newForgeVersion !== currentForgeVersion) {
@@ -358,17 +357,16 @@ export default class InstallService extends Service {
      * Install forge by forge version metadata
      */
     @Singleton('install')
-    async installForge(meta: Parameters<typeof installTask>[0]) {
+    async installForge(meta: Parameters<typeof installForgeTask>[0]) {
         let options = this.getForgeInstallOptions();
-        let handle = this.submit(ForgeInstaller.installTask(meta, this.state.root, options));
         let version: string | undefined;
         try {
             this.log(`Start to install forge ${meta.version} on ${meta.mcversion}`);
-            version = await handle.wait();
+            version = await this.submit(installForgeTask(meta, this.state.root, options));
             this.local.refreshVersions();
             this.log(`Success to install forge ${meta.version} on ${meta.mcversion}`);
         } catch (err) {
-            this.warn(`An error ocurred during download version ${handle}`);
+            this.warn(`An error ocurred during download version ${meta.version}@${meta.mcversion}`);
             this.warn(err);
         }
         return version;
@@ -395,7 +393,7 @@ export default class InstallService extends Service {
         let [yarnModified, yarnDate] = await getIfModified(YARN_MAVEN_URL, this.state.version.fabric.yarnTimestamp);
 
         if (yarnModified) {
-            let versions = await FabricInstaller.getYarnArtifactList();
+            let versions = await getYarnArtifactList();
             this.commit('fabricYarnMetadata', { versions, timestamp: yarnDate });
             this.log(`Refreshed fabric yarn metadata at ${yarnDate}.`);
         }
@@ -403,7 +401,7 @@ export default class InstallService extends Service {
         let [loaderModified, loaderDate] = await getIfModified(LOADER_MAVEN_URL, this.state.version.fabric.loaderTimestamp);
 
         if (loaderModified) {
-            let versions = await FabricInstaller.getLoaderArtifactList();
+            let versions = await getLoaderArtifactList();
             this.commit('fabricLoaderMetadata', { versions, timestamp: loaderDate });
             this.log(`Refreshed fabric loader metadata at ${loaderDate}.`);
         }
@@ -419,8 +417,7 @@ export default class InstallService extends Service {
     async installFabric(versions: { yarn: string; loader: string }) {
         try {
             this.log(`Start to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`);
-            const handle = this.submit(Task.create('installFabric', () => FabricInstaller.install(versions.yarn, versions.loader, this.state.root)));
-            let result = await handle.wait();
+            const result = await this.submit(task('installFabric', () => installFabricYarnAndLoader(versions.yarn, versions.loader, this.state.root)));
             this.local.refreshVersions();
             this.log(`Success to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`);
             return result;
@@ -440,7 +437,7 @@ export default class InstallService extends Service {
         const option = this.state.version.liteloader.timestamp === '' ? undefined : {
             original: this.state.version.liteloader,
         };
-        const remoteList = await LiteLoaderInstaller.getVersionList(option);
+        const remoteList = await getLiteloaderVersionList(option);
         if (remoteList !== this.state.version.liteloader) {
             this.commit('liteloaderMetadata', remoteList);
         }
@@ -449,10 +446,9 @@ export default class InstallService extends Service {
     }
 
     @Singleton('install')
-    async installLiteloader(meta: LiteLoaderInstaller.Version) {
-        let task = this.submit(LiteLoaderInstaller.installTask(meta, this.state.root));
+    async installLiteloader(meta: LiteloaderVersion) {
         try {
-            await task.wait();
+            await this.submit(installLiteloaderTask(meta, this.state.root));
         } catch (err) {
             this.warn(err);
         } finally {

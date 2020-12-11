@@ -181,10 +181,6 @@ export function useInstanceMods() {
         return items;
     });
 
-    watch(items, () => {
-        console.log(items.value);
-    });
-
     return {
         items,
         commit,

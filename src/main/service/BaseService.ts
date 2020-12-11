@@ -1,8 +1,7 @@
 import { IS_DEV } from '@main/constant';
-import { copyPassively, exists } from '@main/util/fs';
-import { ensureDir } from '@xmcl/installer/util';
+import { copyPassively, exists, missing } from '@main/util/fs';
 import { Task } from '@xmcl/task';
-import { copy, copyFile, readJson, remove, unlink, writeJson } from 'fs-extra';
+import { copy, copyFile, ensureDir, readJson, remove, unlink, writeJson } from 'fs-extra';
 import { join } from 'path';
 import Service, { Singleton } from './Service';
 
@@ -12,24 +11,25 @@ export interface MigrateOptions {
 
 export default class BaseService extends Service {
     async init() {
-        this.scanLocalMinecraft();
+        if (this.state.version.local.length === 0) {
+            this.checkLocalMinecraftFiles();
+        }
         this.checkUpdate();
     }
 
-    async scanLocalMinecraft() {
+    /**
+     * Scan .minecraft folder and copy libraries/assets/versions files from it to launcher managed place.
+     *
+     * This will not replace the existed files
+     */
+    async checkLocalMinecraftFiles() {
         const mcPath = this.getMinecraftPath();
-        if (await exists(mcPath)) {
-            if (this.state.version.local.length === 0) {
-                this.log('Try to migrate the version from .minecraft');
-                await copyPassively(join(mcPath, 'libraries'), join(this.state.root, 'libraries'));
-                await copyPassively(join(mcPath, 'assets'), join(this.state.root, 'assets'));
-                await copyPassively(join(mcPath, 'versions'), join(this.state.root, 'versions'));
-            }
-        }
-    }
-
-    saveSites() {
-
+        if (await missing(mcPath)) return;
+        if (mcPath === this.state.root) return;
+        this.log('Try to migrate the version from .minecraft');
+        await copyPassively(join(mcPath, 'libraries'), join(this.state.root, 'libraries'));
+        await copyPassively(join(mcPath, 'assets'), join(this.state.root, 'assets'));
+        await copyPassively(join(mcPath, 'versions'), join(this.state.root, 'versions'));
     }
 
     /**
@@ -51,20 +51,26 @@ export default class BaseService extends Service {
      */
     openDirectory = this.app.openDirectory;
 
+    /**
+     * Quit and install the update once the update is ready
+     */
     async quitAndInstall() {
         if (this.state.setting.updateStatus === 'ready') {
             await this.app.installUpdateAndQuit();
+        } else {
+            this.warn('There is no update avaiable!');
         }
-        this.warn('There is no update avaiable!');
     }
 
+    /**
+     * Check launcher update.
+     */
     @Singleton()
     async checkUpdate() {
         if (IS_DEV) return;
-        let handle = this.submit(this.app.checkUpdateTask());
         try {
             this.log('Check update');
-            let info = await handle.wait();
+            const info = await this.submit(this.app.checkUpdateTask());
             this.commit('updateInfo', info);
         } catch (e) {
             this.error('Check update failed');
@@ -81,9 +87,7 @@ export default class BaseService extends Service {
         if (!this.state.setting.updateInfo) {
             throw new Error('Cannot download update if we don\'t check the version update!');
         }
-        let task: Task<void> = this.app.downloadUpdateTask();
-        let handle = this.submit(task);
-        await handle.wait();
+        await this.submit(this.app.downloadUpdateTask());
         this.commit('updateStatus', 'ready');
     }
 

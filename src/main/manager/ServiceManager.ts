@@ -23,7 +23,7 @@ import UserService from '@main/service/UserService';
 import VersionService from '@main/service/VersionService';
 import { aquire, isBusy, release } from '@universal/util/semaphore';
 import { StaticStore } from '@universal/util/staticStore';
-import { Task, TaskHandle } from '@xmcl/task';
+import { Task } from '@xmcl/task';
 import { EventEmitter } from 'events';
 import { Manager } from '.';
 
@@ -208,14 +208,14 @@ export default class ServiceManager extends Manager {
             this.error(`Cannot execute service call ${name} from service ${service}. The service not found.`);
         } else {
             if (name in serv) {
-                const tasks: TaskHandle<any, any>[] = [];
+                const tasks: Task<any>[] = [];
                 const sessionId = this.usedSession++;
                 const taskManager = this.app.taskManager;
                 const submit = (task: Task<any>) => {
-                    const handle = taskManager.submit(task);
-                    client.send(`session-${sessionId}`, handle.root.id);
-                    tasks.push(handle);
-                    return handle;
+                    const promise = taskManager.submit(task);
+                    client.send(`session-${sessionId}`, (task.context as any).uuid);
+                    tasks.push(task);
+                    return promise;
                 };
                 /**
                 * Create a proxy to this specific service call to record the tasks it submit
@@ -287,7 +287,7 @@ export default class ServiceManager extends Manager {
         this.setupServices();
         await this.loadServices();
         this.setupAutoSave(this.app.storeManager.store!);
-        this.app.emit('store-ready');
+        this.app.emit('store-ready', this.app.storeManager.store);
     }
 
     async engineReady() {

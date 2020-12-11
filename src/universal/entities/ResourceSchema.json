@@ -116,18 +116,21 @@
             "type": "object",
             "properties": {
                 "owner": {
+                    "description": "The owner name. Either a username or an organization name",
                     "type": "string"
                 },
                 "repo": {
+                    "description": "The repo name",
                     "type": "string"
                 },
-                "release": {
+                "artifact": {
+                    "description": "The release artifact id",
                     "type": "string"
                 }
             },
             "required": [
+                "artifact",
                 "owner",
-                "release",
                 "repo"
             ]
         },
@@ -139,7 +142,7 @@
                     "type": "number"
                 },
                 "fileId": {
-                    "description": "The file id",
+                    "description": "The curseforge file id",
                     "type": "number"
                 }
             },

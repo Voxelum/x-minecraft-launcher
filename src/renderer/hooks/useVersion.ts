@@ -1,7 +1,7 @@
 import { Status } from '@universal/entities/version';
 import { isNonnull } from '@universal/util/assert';
 import { computed, onMounted, onUnmounted, reactive, Ref, toRefs, watch } from '@vue/composition-api';
-import { Version as MinecraftVersion } from '@xmcl/installer/minecraft';
+import { MinecraftVersion } from '@xmcl/installer/minecraft';
 import { useService, useServiceOnly } from './useService';
 import { useStore } from './useStore';
 import { useBusy } from './useSemaphore';

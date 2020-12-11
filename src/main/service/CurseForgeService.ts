@@ -1,10 +1,10 @@
 import { getCurseforgeSourceInfo } from '@main/entities/resource';
 import { ProjectType } from '@universal/entities/curseforge';
 import { UNKNOWN_RESOURCE } from '@universal/entities/resource';
-import { TaskState } from '@universal/task';
 import { requireObject, requireString } from '@universal/util/assert';
 import { compareDate } from '@universal/util/object';
 import { AddonInfo, File, getAddonDatabaseTimestamp, getAddonDescription, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions } from '@xmcl/curseforge';
+import { DownloadTask } from '@xmcl/installer';
 import { task } from '@xmcl/task';
 import { Agent } from 'https';
 import { basename, join } from 'path';
@@ -104,28 +104,33 @@ export default class CurseForgeService extends Service {
             this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`);
             return resource;
         }
+        const resourceService = this.resourceService;
+        const networkManager = this.networkManager;
         try {
             const destination = join(this.app.temporaryPath, basename(file.downloadUrl));
-            const handle = this.submit(task('importResource', async (c) => {
-                c.update(0, 100);
+            const importResourceTask = task('importResource', async function () {
+                // c.update(0, 100);
 
-                await c.execute(task('download', this.networkManager.downloadFileTask({
+                await this.yield(new DownloadTask({
+                    ...networkManager.getDownloadBaseOptions(),
                     url: file.downloadUrl,
                     destination,
-                })), 80);
+                }).setName('download')/* , 80 */);
 
                 // TODO: add tag from addon info
                 // let addonInf = await this.fetchProject(projectId);
-                return c.execute(task('parsing', () => this.resourceService.importResource({
+                return this.yield(task('parsing', () => resourceService.importResource({
                     path: destination,
                     url: urls,
                     source: getCurseforgeSourceInfo(projectId, file.id),
                     type: typeHints[type],
-                })), 20);
-            }));
+                    background: true,
+                }))/* , 20 */);
+            });
 
-            this.commit('curseforgeDownloadFileStart', { fileId: file.id, taskId: (handle.root as TaskState).id });
-            const result = await handle.wait();
+            const promise = this.submit(importResourceTask);
+            this.commit('curseforgeDownloadFileStart', { fileId: file.id, taskId: this.taskManager.getTaskUUID(importResourceTask) });
+            const result = await promise;
             this.log(`Install curseforge file ${file.displayName}(${file.downloadUrl}) success!`);
             return result;
         } finally {

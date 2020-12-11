@@ -30,7 +30,7 @@ import {
   useMinecraftVersionFilter,
 } from '@/hooks';
 import { required } from '@/util/props';
-import { Version as MinecraftVersion } from '@xmcl/installer/minecraft';
+import { MinecraftVersion } from '@xmcl/installer';
 
 export default defineComponent({
   props: { 

@@ -1,7 +1,7 @@
 import { DEFAULT_PROFILE, Instance } from '@universal/entities/instance';
 import { InstanceSchema } from '@universal/entities/instance.schema';
 import { JavaRecord } from '@universal/entities/java';
-import { ModResource, ResourcePackResource, Resources } from '@universal/entities/resource';
+import { ModResource, ResourcePackResource } from '@universal/entities/resource';
 import { InstanceSaveMetadata } from '@universal/entities/save';
 import { ServerStatus, UNKNOWN_STATUS } from '@universal/entities/serverStatus';
 import { LocalVersion } from '@universal/entities/version';

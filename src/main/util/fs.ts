@@ -1,9 +1,8 @@
-import { checksum, pipeline } from '@xmcl/installer/util';
+import { checksum, pipeline } from '@xmcl/installer';
 import { access, constants, copyFile, ensureDir, FSWatcher, readdir, stat, watch, remove, unlink, ReadStream, readFile, readFileSync, link, copy } from 'fs-extra';
 import { resolve, join, extname } from 'path';
 import filenamify from 'filenamify';
 import { createHash } from 'crypto';
-import { finished } from 'stream';
 
 export { pipeline };
 

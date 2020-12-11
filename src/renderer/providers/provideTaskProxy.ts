@@ -1,25 +1,32 @@
 import { electron, TASK_PROXY } from '@/constant';
-import { TaskState } from '@universal/task';
-import { onMounted, onUnmounted, provide, reactive, Ref, ref, set } from '@vue/composition-api';
+import { TaskItem } from '@/entities/task';
+import { useI18n } from '@/hooks';
 import { TaskProxy } from '@/taskProxy';
+import { TaskBatchPayload, TaskPayload, TaskState } from '@universal/task';
+import { computed, onMounted, onUnmounted, provide, reactive, Ref, ref } from '@vue/composition-api';
 
 export function provideTasks() {
     const ipc = electron.ipcRenderer;
 
-    const idToNode: { [key: string]: TaskState } = {};
-    const tasks: Ref<TaskState[]> = ref(reactive([]));
-    const pause = (id: string) => {
-        ipc.invoke('task-operation', { type: 'pause', id });
+    const { $t } = useI18n();
+    const dictionary: Record<string, TaskItem> = {};
+    const nonReactiveChildren: Record<string, TaskItem[]> = {};
+    /**
+     * All the root tasks
+     */
+    const tasks: Ref<TaskItem[]> = ref(reactive([]));
+    const pause = (task: TaskItem) => {
+        ipc.invoke('task-operation', { type: 'pause', id: task.taskId });
     };
-    const resume = (id: string) => {
-        ipc.invoke('task-operation', { type: 'resume', id });
+    const resume = (task: TaskItem) => {
+        ipc.invoke('task-operation', { type: 'resume', id: task.taskId });
     };
-    const cancel = (id: string) => {
-        ipc.invoke('task-operation', { type: 'cancel', id });
+    const cancel = (task: TaskItem) => {
+        ipc.invoke('task-operation', { type: 'cancel', id: task.taskId });
     };
 
     const proxy: TaskProxy = ({
-        dictionary: idToNode,
+        dictionary,
         tasks,
         pause,
         resume,
@@ -30,97 +37,118 @@ export function provideTasks() {
 
     provide(TASK_PROXY, proxy);
 
-    function collectAllTaskState(tasks: TaskState[]) {
+    function getVisibleChildren(allChildren: Ref<TaskItem[]>) {
+        const cached = new Array<TaskItem>(10);
+        const children = computed(() => {
+            if (allChildren.value.length === 0) return undefined;
+            const successed = [];
+            const others = [];
+            for (const item of allChildren.value) {
+                if (item.state === TaskState.Successed) {
+                    successed.push(item);
+                } else {
+                    others.push(item);
+                }
+            }
+            const combined = others.concat(successed);
+            for (let i = 0; i < 10; i++) {
+                const elem = combined.shift();
+                if (elem) {
+                    cached[i] = elem;
+                } else {
+                    cached.length = i + 1;
+                    break;
+                }
+            }
+            return cached;
+        });
+        return children;
+    }
+
+    function convertPayloadToItem(payload: TaskPayload): TaskItem {
+        const allChildren = ref(payload.children.map(convertPayloadToItem));
+        const children = getVisibleChildren(allChildren);
+        return reactive({
+            id: `${payload.uuid}@${payload.id}`,
+            taskId: payload.uuid,
+            title: $t(payload.path, payload.param),
+            time: new Date(payload.time),
+            message: payload.to ?? payload.from ?? '',
+            throughput: 0,
+            state: payload.state,
+            progress: payload.progress,
+            total: payload.total,
+            children,
+            allChildren,
+        });
+    }
+
+    function mapTasksToDictionary(tasks?: TaskItem[]) {
+        if (!tasks || tasks.length === 0) return;
         for (const t of tasks) {
-            idToNode[t.id] = t;
-            if (t.children) {
-                collectAllTaskState(t.children);
-            }
+            dictionary[t.id] = t;
+            mapTasksToDictionary(t.children);
         }
     }
 
-    let parentMap: Record<string, string> = {};
-    let deferredTaskMap: Record<string, Array<TaskState>> = {};
-    function enqueueToChildren(parentTask: TaskState, newTask: TaskState) {
-        parentMap[newTask.id] = parentTask.id;
-        let sameGroup = parentTask.children.filter(t => t.name === newTask.name)
-            .filter(t => t.status === 'ready' || t.status === 'running');
-        if (sameGroup.length > 6) {
-            deferredTaskMap[parentTask.id] = deferredTaskMap[parentTask.id] ?? [];
-            deferredTaskMap[parentTask.id].push(newTask);
-        } else {
-            parentTask.children.push(newTask);
-        }
-    }
-    function dequeIfRemaining(oldTask: TaskState) {
-        let parent = parentMap[oldTask.id];
-        if (parent) {
-            let deferrendTasks = deferredTaskMap[parent];
-            if (deferrendTasks && deferrendTasks.length > 0) {
-                let parentTask = idToNode[parent];
-                let oneDeferred = deferrendTasks.pop();
-                let index = parentTask.children.findIndex(t => t.id === oldTask.id);
-                set(parentTask.children, index, oneDeferred);
-            }
-        }
-    }
-
-    const taskUpdateHandler = async (event: any, { childs, statuses, adds, updates }: {
-        adds: { id: string; node: TaskState }[];
-        childs: { id: string; node: TaskState }[];
-        updates: { [id: string]: { progress?: number; total?: number; message?: string; time?: string } };
-        statuses: { id: string; status: string }[];
-    }) => {
+    const taskUpdateHandler = async (event: any, { adds, updates }: TaskBatchPayload) => {
         if (syncing) {
             await syncing;
         }
         for (const add of adds) {
-            const { id, node } = add;
-            if (idToNode[id]) {
-                console.warn(`Skip for duplicated task ${id}`);
+            const { uuid, id, path, param, time, to, from, parentId } = add;
+            const localId = `${uuid}@${id}`;
+            const allChildren = ref([] as TaskItem[]);
+            const children = getVisibleChildren(allChildren);
+            const item = reactive({
+                taskId: uuid,
+                id: localId,
+                title: $t(path, param),
+                children,
+                time: new Date(time),
+                message: to ?? from ?? '',
+                throughput: 0,
+                state: TaskState.Running,
+                progress: 0,
+                total: -1,
+                parentId,
+                allChildren,
+            });
+            if (typeof parentId === 'number') {
+                const parentLocalId = `${uuid}@${parentId}`;
+                const parent = dictionary[parentLocalId];
+                parent.allChildren.unshift(item);
+            } else {
+                tasks.value.unshift(item);
+            }
+            if (dictionary[localId]) {
+                console.warn(`Skip for duplicated task ${localId}`);
                 continue;
             }
-            const local = reactive({ ...node, children: [] });
-            tasks.value.unshift(local);
-            idToNode[id] = local;
+            nonReactiveChildren[localId] = [];
+            dictionary[localId] = item;
         }
-        for (const child of childs) {
-            const { id, node } = child;
-            if (idToNode[node.id]) {
-                console.warn(`Skip for duplicated task ${node.id}`);
-                continue;
-            }
-            const local = reactive({ ...node, children: [] });
-            if (!idToNode[id]) {
-                throw new Error(`Cannot add child ${node.id} for parent ${id}.`);
-            } else {
-                enqueueToChildren(idToNode[id], local);
-                idToNode[node.id] = local;
-            }
-        }
-        for (const update of Object.keys(updates).map(k => ({ id: k, ...updates[k] }))) {
-            const { id, progress, total, message, time } = update;
-            const task = idToNode[id];
-            if (task) {
-                if (progress) task.progress = progress;
-                if (total) task.total = total;
-                if (message) task.message = message;
-                if (time) task.time = time || new Date().toLocaleTimeString();
-            } else {
-                console.log(`Cannot apply update for task ${id} as task not found.`);
-            }
-        }
-        for (const s of statuses) {
-            if (!s) { continue; }
-            const { id, status } = s;
-            const task = idToNode[id];
-            if (task) {
-                task.status = status as any;
-                if (task.status === 'successed') {
-                    dequeIfRemaining(task);
+        for (const update of updates) {
+            const { uuid, id, time, to, from, progress, total, chunkSize, state: status } = update;
+            const localId = `${uuid}@${id}`;
+            const item = dictionary[localId];
+            if (item) {
+                if (status) {
+                    item.state = status;
+                }
+                if (progress) {
+                    item.progress = progress;
+                }
+                if (total) {
+                    item.total = total;
+                }
+                item.time = new Date(time);
+                item.message = from || to || item.message;
+                if (chunkSize) {
+                    item.throughput += chunkSize;
                 }
             } else {
-                console.log(`Cannot update status for task ${id}.`);
+                console.log(`Cannot apply update for task ${localId} as task not found.`);
             }
         }
     };
@@ -129,10 +157,11 @@ export function provideTasks() {
         let _resolve: () => void;
         syncing = new Promise((resolve) => { _resolve = resolve; });
         ipc.on('task-update', taskUpdateHandler);
-        ipc.invoke('task-subscribe', true).then((t) => {
+        ipc.invoke('task-subscribe', true).then((payload) => {
+            const items = payload.map(convertPayloadToItem);
+            tasks.value = items;
+            mapTasksToDictionary(items);
             _resolve();
-            collectAllTaskState(t);
-            Object.values(t).forEach(ta => tasks.value.push(reactive(ta)));
         });
     });
     onUnmounted(() => {

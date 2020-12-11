@@ -6,15 +6,7 @@ import VueCompositionApi, { h, provide } from '@vue/composition-api';
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
 import 'vuetify/dist/vuetify.min.css';
-import VApp from 'vuetify/es5/components/VApp';
-import VBtn from 'vuetify/es5/components/VBtn';
-import VCard from 'vuetify/es5/components/VCard';
-import VGrid from 'vuetify/es5/components/VGrid';
-import VIcon from 'vuetify/es5/components/VIcon';
-import VDivider from 'vuetify/es5/components/VDivider';
-import VList from 'vuetify/es5/components/VList';
-import VProgressCircular from 'vuetify/es5/components/VProgressCircular';
-import Vuetify from 'vuetify/es5/components/Vuetify';
+import Vuetify from 'vuetify';
 import colors from 'vuetify/es5/util/colors';
 import Setup from './Setup.vue';
 
@@ -28,14 +20,14 @@ Vue.use(Vuetify, {
         accent: colors.green.accent3,
     },
     components: {
-        ...VCard.$_vuetify_subcomponents,
-        ...VList.$_vuetify_subcomponents,
-        ...VGrid.$_vuetify_subcomponents,
-        VProgressCircular,
-        VDivider,
-        VApp,
-        VBtn,
-        VIcon,
+        // ...VCard.$_vuetify_subcomponents,
+        // ...VList.$_vuetify_subcomponents,
+        // ...VGrid.$_vuetify_subcomponents,
+        // VProgressCircular,
+        // VDivider,
+        // VApp,
+        // VBtn,
+        // VIcon,
     },
 });
 

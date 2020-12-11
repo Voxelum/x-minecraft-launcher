@@ -14,7 +14,7 @@
 <script lang=ts>
 import { defineComponent, ref, Ref, onMounted } from '@vue/composition-api';
 import VirtualList from 'vue-virtual-scroll-list';
-import { Version } from '@xmcl/installer/minecraft';
+import { MinecraftVersion } from '@xmcl/installer';
 import { required } from '@/util/props';
 import Tile from './MinecraftVersionListTile.vue';
 
@@ -30,8 +30,8 @@ export default defineComponent({
       default: () => '',
     },
     statuses: required<Record<string, boolean>>(Object),
-    versions: required<Array<Version>>(Array),
-    select: required<(version: Version) => void>(Function),
+    versions: required<Array<MinecraftVersion>>(Array),
+    select: required<(version: MinecraftVersion) => void>(Function),
   },
   setup(props) {
     const list: Ref<any> = ref(null);

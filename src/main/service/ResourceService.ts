@@ -235,7 +235,7 @@ export default class ResourceService extends Service {
                     const fileStats = await stat(f.path);
                     if (!fileStats.isDirectory()) {
                         const result = await this.resolveResourceTask({ path: f.path, url: f.url, source: f.source, type: options.type, background: options.background, requiredDomain: options.fromDomain })
-                            .execute().wait();
+                            .startAndWait();
                         return result;
                     }
                     return UNKNOWN_RESOURCE;
@@ -283,7 +283,7 @@ export default class ResourceService extends Service {
                 return UNKNOWN_RESOURCE;
             }
             const task = this.resolveResourceTask(option);
-            const resource = await (option.background ? task.execute().wait() : this.submit(task).wait());
+            const resource = await (option.background ? task.startAndWait() : this.submit(task));
             this.log(`Import and cache newly added resource ${resource.path}`);
             this.cache.put(resource);
             this.commit('resource', resource);
@@ -316,7 +316,7 @@ export default class ResourceService extends Service {
 
         if (!fileStat.isDirectory()) {
             result = this.getResourceByKey(fileStat.ino);
-            
+
             if (!result) {
                 const sha1 = await sha1ByPath(path);
                 result = this.getResourceByKey(sha1);
@@ -333,9 +333,10 @@ export default class ResourceService extends Service {
      * @throws DomainMissMatchedError
      */
     private resolveResourceTask(importOption: ImportOptions) {
-        const resolve = async (context: Task.Context) => {
+        const root = this.getPath();
+        return task('importResource', async () => {
             const { path, source = {}, url = [], type, requiredDomain } = importOption;
-            context.update(0, 4, path);
+            // context.update(0, 4, path);
             const hash = await sha1ByPath(path);
             const resolved = await readHeader(path, hash, type);
             if (requiredDomain) {
@@ -343,13 +344,11 @@ export default class ResourceService extends Service {
                     throw new DomainMissMatchedError(resolved.domain, path, resolved.type);
                 }
             }
-            context.update(3, 4, path);
-            const result = await resolveAndPersist(path, source ?? {}, url, resolved, this.getPath());
-            context.update(4, 4, path);
+            // context.update(3, 4, path);
+            const result = await resolveAndPersist(path, source ?? {}, url, resolved, root);
+            // context.update(4, 4, path);
             return result as Resources;
-        };
-
-        return task('importResource', resolve);
+        });
     }
 
     protected unpersistResource(resource: Resource) {

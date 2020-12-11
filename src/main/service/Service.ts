@@ -3,7 +3,7 @@ import { Managers } from '@main/manager';
 import { Schema } from '@universal/entities/schema';
 import { MutationKeys, RootCommit, RootGetters, RootState } from '@universal/store';
 import { Exception, Exceptions } from '@universal/entities/exception';
-import { Task, TaskHandle } from '@xmcl/task';
+import { Task } from '@xmcl/task';
 import Ajv from 'ajv';
 import { ensureFile, readFile, writeFile } from 'fs-extra';
 import { join } from 'path';
@@ -179,7 +179,7 @@ export default class Service implements Managers {
      *  
      * @param task 
      */
-    protected submit<T>(task: Task<T>): TaskHandle<T, Task.State> {
+    protected submit<T>(task: Task<T>) {
         return this.taskManager.submit(task);
     }
 
@@ -218,6 +218,7 @@ export default class Service implements Managers {
      */
     protected getMinecraftPath: (...args: string[]) => string = (...args) => join(this.app.minecraftDataPath, ...args);
 
+
     /**
      * The path of .minecraft
      */
@@ -231,15 +232,15 @@ export default class Service implements Managers {
 
     async dispose(): Promise<void> { }
 
-    protected log(m: any, ...a: any[]) {
+    protected log = (m: any, ...a: any[]) => {
         this.logManager.log(`[${this.name}] ${m}`, ...a);
     }
 
-    protected error(m: any, ...a: any[]) {
+    protected error = (m: any, ...a: any[]) => {
         this.logManager.error(`[${this.name}] ${m}`, ...a);
     }
 
-    protected warn(m: any, ...a: any[]) {
+    protected warn = (m: any, ...a: any[]) => {
         this.logManager.warn(`[${this.name}] ${m}`, ...a);
     }
 

@@ -5,9 +5,9 @@ import { JavaRecord } from '@universal/entities/java';
 import { Java, JavaSchema } from '@universal/entities/java.schema';
 import { MutationKeys } from '@universal/store';
 import { requireString } from '@universal/util/assert';
-import { downloadFileTask, JavaInstaller } from '@xmcl/installer';
+import { DownloadTask, installJreFromMojangTask, resolveJava, scanLocalJava, UnzipTask } from '@xmcl/installer';
 import { task } from '@xmcl/task';
-import { extract } from '@xmcl/unzip';
+import { open, readAllEntries } from '@xmcl/unzip';
 import { ensureFile, move, readdir, remove, unlink } from 'fs-extra';
 import { basename, dirname, join } from 'path';
 import Service, { Singleton } from './Service';
@@ -54,57 +54,54 @@ export default class JavaService extends Service {
     @Singleton('java')
     async installDefaultJava() {
         const task = this.networkManager.isInGFW ? this.installFromTsingHuaTask() : this.installFromMojangTask();
-        const handle = this.submit(task);
         await ensureFile(this.getInternalJavaLocation());
-        await handle.wait();
+        await this.submit(task);
         await this.resolveJava(this.getInternalJavaLocation());
     }
 
     private installFromMojangTask() {
         const dest = dirname(this.getInternalJavaLocation());
-        return JavaInstaller.installJreFromMojangTask({
+        return installJreFromMojangTask({
             destination: dest,
             unpackLZMA: unpack7z,
-            ...this.networkManager.getDownloaderOption(),
+            ...this.networkManager.getDownloadBaseOptions(),
         });
     }
 
     private installFromTsingHuaTask() {
-        return task('installJre', async (c) => {
-            const system = this.app.platform.name === 'osx' ? 'mac' as const : this.app.platform.name;
-            const arch = this.app.platform.arch === 'x64' ? '64' as const : '32' as const;
+        const { app, networkManager, log, getTempPath, state } = this;
+        return task('installJre', async function () {
+            const system = app.platform.name === 'osx' ? 'mac' as const : app.platform.name;
+            const arch = app.platform.arch === 'x64' ? '64' as const : '32' as const;
 
             const baseUrl = getTsingHuaAdpotOponJDKPageUrl(system, arch);
-            const htmlText = await this.networkManager.request.get(baseUrl).text();
+            const htmlText = await networkManager.request.get(baseUrl).text();
             const archiveInfo = parseTsingHuaAdpotOpenJDKHotspotArchive(htmlText, baseUrl);
 
             if (!archiveInfo) {
                 throw new Error(`Cannot find jre from tsinghua mirror for ${system} x${arch}`);
             }
 
-            const destination = join(this.state.root, 'jre');
-            const archivePath = this.getTempPath(archiveInfo.fileName);
+            const destination = join(state.root, 'jre');
+            const archivePath = getTempPath(archiveInfo.fileName);
             const url = archiveInfo.url;
 
-            this.log(`Install jre for ${system} x${arch} from tsinghua mirror ${url}`);
-            await c.execute(task('download', downloadFileTask({
+            log(`Install jre for ${system} x${arch} from tsinghua mirror ${url}`);
+            await this.yield(new DownloadTask({
+                ...networkManager.getDownloadBaseOptions(),
                 destination: archivePath,
                 url,
-            }, this.networkManager.getDownloaderOption())), 90);
+            }).setName('download') /* , 90 */);
 
-            await c.execute(task('decompress', async () => {
-                if (system === 'windows') {
-                    await extract(archivePath, destination, {
-                        entryHandler(_, e) {
-                            const [firstDir] = e.fileName.split('/');
-                            if (firstDir.startsWith('jdk8u')) {
-                                return e.fileName.substring(firstDir.length);
-                            }
-                            return undefined;
-                        },
-                    });
-                    await unlink(archivePath);
-                } else {
+            if (system === 'windows') {
+                const zip = await open(archivePath);
+                const entries = await readAllEntries(zip);
+                await this.yield(new UnzipTask(zip, entries.filter(e => e.fileName.startsWith('jdk8u')), destination, (entry) => {
+                    const [first] = entry.fileName.split('/');
+                    return entry.fileName.substring(first.length);
+                }).setName('decompress'));
+            } else {
+                await this.yield(task('decompress', async () => {
                     const tarPath = join(dirname(destination), basename(archivePath, '.gz'));
                     // unpack gz tar to tar
                     await unpack7z(archivePath, dirname(destination));
@@ -120,9 +117,9 @@ export default class JavaService extends Service {
                         await move(dirPath, destination);
                     }
                     await Promise.all([remove(dirPath), unlink(tarPath), unlink(archivePath)]);
-                }
-            }), 10);
-            this.log('Install jre for from tsing hua mirror success!');
+                }));
+            }
+            log('Install jre for from tsing hua mirror success!');
         });
     }
 
@@ -132,14 +129,14 @@ export default class JavaService extends Service {
     async resolveJava(javaPath: string): Promise<undefined | Java> {
         requireString(javaPath);
 
-        let found = this.state.java.all.find(java => java.path === javaPath);
+        const found = this.state.java.all.find(java => java.path === javaPath);
         if (found) {
             return found;
         }
 
         if (await missing(javaPath)) return undefined;
 
-        let java = await JavaInstaller.resolveJava(javaPath);
+        const java = await resolveJava(javaPath);
         if (java) {
             this.commit('javaUpdate', { ...java, valid: true });
         }
@@ -159,7 +156,7 @@ export default class JavaService extends Service {
                 files = files.map(f => join('C:\\Program Files\\Java', f, 'bin', 'java.exe'));
                 commonLocations.push(...files);
             }
-            let javas = await JavaInstaller.scanLocalJava(commonLocations);
+            let javas = await scanLocalJava(commonLocations);
             let infos = javas.map(j => ({ ...j, valid: true }));
             this.log(`Found ${infos.length} java.`);
             this.commit('javaUpdate', infos);
@@ -167,7 +164,7 @@ export default class JavaService extends Service {
             this.log(`Re-validate cached ${this.state.java.all.length} java locations.`);
             let javas: JavaRecord[] = [];
             for (let i = 0; i < this.state.java.all.length; ++i) {
-                let result = await JavaInstaller.resolveJava(this.state.java.all[i].path);
+                let result = await resolveJava(this.state.java.all[i].path);
                 if (result) {
                     javas.push({ ...result, valid: true });
                 } else {

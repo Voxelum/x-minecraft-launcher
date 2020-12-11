@@ -30,8 +30,6 @@ const mod: CurseForgeModule = {
     },
     getters: {
         isFileInstalled: (state, _, rt) => (file) => {
-            /**
-             */
             const find = (m: Resource) => {
                 if ('curseforge' in m && typeof m.curseforge === 'object') {
                     const s = m.curseforge;
