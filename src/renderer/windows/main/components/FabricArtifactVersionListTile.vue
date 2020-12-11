@@ -41,16 +41,14 @@
 
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api';
-import { FabricInstaller } from '@xmcl/installer';
+import { FabricArtifactVersion } from '@xmcl/installer';
 import VirtualList from 'vue-virtual-scroll-list';
 import { required } from '@/util/props';
-
-type FabricArtifactVersion = FabricInstaller.FabricArtifactVersion;
 
 export default defineComponent({
   components: { VirtualList },
   props: {
-    statuses: required<{}>(Object),
+    statuses: required<Record<string, 'loading' | 'remote'>>(Object),
     source: required<FabricArtifactVersion>(Object),
     selected: required<string>(String),
     select: required<(version: FabricArtifactVersion) => void>(Function),

@@ -1,101 +1,98 @@
-import { promises, createWriteStream, Stats } from 'fs';
-import { basename, dirname, join, relative } from 'path';
-import { ZipFile } from 'yazl';
 import { unpack } from '7zip-min';
-import { gunzip as _gunzip, gzip as _gzip } from 'zlib';
+import { CancelledError, TaskLooped } from '@xmcl/task';
+import { createWriteStream, promises } from 'fs';
+import { ensureFile, stat } from 'fs-extra';
+import { join } from 'path';
+import { Writable } from 'stream';
 import { promisify } from 'util';
-import { task } from '@xmcl/task';
-import { move, remove, stat, unlink } from 'fs-extra';
-
-export async function includeAllToZip(root: string, real: string, zip: ZipFile, addFileCb?: (fileStat: Stats) => void) {
-    const relativePath = relative(root, real);
-    const stat = await promises.stat(real);
-    if (stat.isDirectory()) {
-        const files = await promises.readdir(real);
-        if (relativePath !== '') {
-            zip.addEmptyDirectory(relativePath);
-        }
-        await Promise.all(files.map(f => includeAllToZip(root, join(real, f), zip, addFileCb)));
-    } else if (stat.isFile()) {
-        if (addFileCb) {
-            addFileCb(stat);
-        }
-        zip.addFile(real, relativePath);
-    }
-}
+import { DirectoryOptions, Options, ReadStreamOptions, ZipFile } from 'yazl';
+import { gunzip as _gunzip, gzip as _gzip } from 'zlib';
+import { pipeline } from './fs';
 
 export const gunzip: (data: Buffer) => Promise<Buffer> = promisify(_gunzip);
 export const gzip: (data: Buffer) => Promise<Buffer> = promisify(_gzip);
 
-export function openCompressedStream(zip: ZipFile, dest: string) {
-    return new Promise<void>((resolve, reject) => {
-        zip.outputStream.pipe(createWriteStream(dest))
-            .on('close', () => { resolve(); })
-            .on('error', (e) => { reject(e); });
-    });
-}
+export class ZipTask extends TaskLooped<void> {
+    private writeStream: Writable | undefined;
 
-export function openCompressedStreamTask(dest: string) {
-    let update: () => void = () => { };
-    let zip: ZipFile = new ZipFile();
-    let total = 0;
-    let progress = 0;
-    let t = task('compress', async (ctx) => {
-        update = () => {
-            ctx.update(progress, total, dest);
-        };
-        ctx.setup(() => {
-
-        }, () => {
-
-        });
-        update();
-        return new Promise<void>((resolve, reject) => {
-            zip.outputStream.on('data', (chunk) => {
-                progress += chunk.length;
-                update();
-            });
-            zip.outputStream.pipe(createWriteStream(dest))
-                .on('close', () => { resolve(); })
-                .on('error', (e) => { reject(e); });
-        });
-    });
-
-    function include(root: string, real: string) {
-        return includeAllToZip(root, real, zip, (s) => {
-            total += s.size;
-            update();
-        });
+    constructor(readonly destination: string, readonly zipFile: ZipFile = new ZipFile()) {
+        super();
+        this._to = destination;
     }
-    async function add(filePath: string, metaPath: string) {
-        let fStat = await stat(filePath);
-        if (fStat.isDirectory()) {
-            return;
+
+    /**
+     * Include `realPath` as `zipPath` in to the zip file. The `realPath` is the directory
+     * @param realPath The real directory absolute path
+     * @param zipPath The relative zip path that the real path files will be zipped 
+     */
+    async includeAs(realPath: string, zipPath = '') {
+        const fstat = await stat(realPath);
+        if (fstat.isDirectory()) {
+            const files = await promises.readdir(realPath);
+            if (zipPath !== '') {
+                this.zipFile.addEmptyDirectory(zipPath);
+            }
+            await Promise.all(files.map(name => this.includeAs(join(realPath, name), `${zipPath}/${name}`)));
+        } else if (fstat.isFile()) {
+            this.zipFile.addFile(realPath, zipPath);
         }
-        total += fStat.size;
-        zip.addFile(filePath, metaPath);
-    }
-    function addBuffer(buffer: Buffer, metaPath: string) {
-        total += buffer.length;
-        zip.addBuffer(buffer, metaPath);
-    }
-    function addEmptyDirectory(metaPath: string) {
-        zip.addEmptyDirectory(metaPath);
     }
 
-    function end() {
-        zip.end();
-        update();
+    addFile(realPath: string, metadataPath: string, options?: Partial<Options>): void {
+        this.zipFile.addFile(realPath, metadataPath, options);
     }
-    return {
-        task: t,
-        include,
-        add,
-        addEmptyDirectory,
-        addBuffer,
-        end,
-    };
+
+    addReadStream(input: NodeJS.ReadableStream, metadataPath: string, options?: Partial<ReadStreamOptions>): void {
+        this.zipFile.addReadStream(input, metadataPath, options);
+    }
+
+    addBuffer(buffer: Buffer, metadataPath: string, options?: Partial<Options>): void {
+        this.zipFile.addBuffer(buffer, metadataPath, options);
+    }
+
+    addEmptyDirectory(metadataPath: string, options?: Partial<DirectoryOptions>): void {
+        this.zipFile.addEmptyDirectory(metadataPath, options);
+    }
+
+    protected async process(): Promise<[boolean, void | undefined]> {
+        if (!this.writeStream) {
+            await ensureFile(this.destination);
+            this.writeStream = createWriteStream(this.destination);
+        }
+        this.zipFile.outputStream.on('data', (buffer) => {
+            this._progress += buffer.length;
+            this.update(buffer.length);
+        });
+        const promise = pipeline(this.zipFile.outputStream, this.writeStream);
+        if (!(this.zipFile as any).ended) {
+            await new Promise((resolve) => {
+                this.zipFile.end({ forceZip64Format: false }, (...args: any[]) => {
+                    this._total = args[0];
+                    resolve();
+                });
+            });
+        }
+        await promise;
+        return [true, undefined];
+    }
+
+
+    protected async validate(): Promise<void> { }
+
+    protected shouldTolerant(e: any): boolean { return false; }
+
+    protected async abort(isCancelled: boolean): Promise<void> {
+        if (isCancelled) {
+            this.zipFile.outputStream.unpipe();
+            this.writeStream?.destroy(new CancelledError(undefined));
+        } else {
+            this.zipFile.outputStream.pause();
+        }
+    }
+
+    protected reset(): void { }
 }
+
 
 export function unpack7z(archivePath: string, destinationDirectory: string) {
     return new Promise<void>((resolve, reject) => {

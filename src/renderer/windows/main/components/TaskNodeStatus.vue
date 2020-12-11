@@ -1,7 +1,7 @@
 <template>
   <div @mouseenter="hover = true" @mouseleave="hover = false">
     <v-icon
-      v-if="status !== 'running' || hover"
+      v-if="item.state !== 1 || hover"
       style="margin-right: 5px"
       :color="color"
       @click="onClick"
@@ -9,7 +9,7 @@
       {{ icon }}
     </v-icon>
     <v-progress-circular
-      v-else-if="!total || total === -1 || !showNumber"
+      v-else-if="indeterminate || !showNumber"
       style="margin-right: 7px"
       class="mb-0"
       color="white"
@@ -17,91 +17,74 @@
       :size="20"
       :value="percentage"
       :width="3"
-      :indeterminate="!total || total === -1"
+      :indeterminate="indeterminate"
     />
     <span v-else style="margin-right: 7px">{{ percentage.toFixed(2) }} %</span>
   </div>
 </template>
 
 <script lang=ts>
+import { TaskItem } from '@/entities/task';
+import { required } from '@/util/props';
 import { defineComponent, computed, ref } from '@vue/composition-api';
-import { TaskStatus } from '@universal/task';
+import { TaskState } from '@universal/task';
 
-const component = defineComponent({
+export default defineComponent({
   props: {
-    status: {
-      type: String,
-      default: '',
-    },
+    item: required<TaskItem>(Object),
     showNumber: {
       type: Boolean,
       default: false,
-    },
-    hasChild: {
-      type: Boolean,
-      default: false,
-    },
-    uuid: {
-      type: String,
-      required: true,
-    },
-    progress: {
-      type: Number,
-      default: 0,
-    },
-    total: {
-      type: Number,
-      default: -1,
-    },
-    message: {
-      type: String,
-      default: '',
     },
   },
   setup(props, context) {
     const hover = ref(false);
     const color = computed(() => {
-      switch (props.status) {
-        case 'successed':
+      switch (props.item.state) {
+        case TaskState.Successed:
           return 'green';
-        case 'cancelled':
-        case 'running':
-        case 'paused':
+        case TaskState.Cancelled:
+        case TaskState.Running:
+        case TaskState.Paused:
           return 'white';
-        case 'failed':
+        case TaskState.Failed:
           return 'red';
         default:
           return 'white';
       }
     });
+    const indeterminate = computed(() => {
+      return !props.item.total || props.item.total === -1
+    });
     const icon = computed(() => {
       if (hover.value) {
-        if (props.status === 'running') {
+        if (props.item.state === TaskState.Running) {
           return 'pause';
         }
       }
-      switch (props.status) {
-        case 'successed':
-          return props.hasChild ? 'done_all' : 'check';
-        case 'cancelled':
+      switch (props.item.state) {
+        case TaskState.Successed:
+          return props.item.children.length > 0 ? 'done_all' : 'check';
+        case TaskState.Cancelled:
           return 'stop';
-        case 'failed':
+        case TaskState.Failed:
           return 'error_outline';
-        case 'paused':
+        case TaskState.Paused:
           return 'play_arrow';
         default:
           return 'device_unknown';
       }
     });
-    const percentage = computed(() => props.progress! / props.total! * 100);
+    const percentage = computed(() => props.item.progress! / props.item.total! * 100);
     const onClick = () => {
-      if (props.status === 'running') {
+        if (props.item.state === TaskState.Running) {
         context.emit('pause');
-      } else if (props.status === 'paused') {
+      } else if (props.item.state === TaskState.Paused) {
         context.emit('resume');
       }
     };
     return {
+      indeterminate,
       color,
       hover,
       icon,
@@ -110,8 +93,6 @@ const component = defineComponent({
     };
   },
 });
-
-export default component;
 </script>
 
 <style>

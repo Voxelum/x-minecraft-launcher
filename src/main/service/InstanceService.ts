@@ -352,16 +352,16 @@ export class InstanceService extends Service {
             }
         }
 
-        if ('maxMemory' in options) {
+        if ('maxMemory' in options && options.maxMemory !== state.maxMemory) {
             if (typeof options.maxMemory === 'undefined') {
                 result.maxMemory = 0;
-            } else if (typeof options.maxMemory === 'number') {
+            } else if (typeof options.maxMemory === 'number' && options.maxMemory) {
                 result.maxMemory = options.maxMemory > 0 ? options.maxMemory : 0;
             } else {
                 throw new Error(`Invalid Argument: Expect maxMemory to be number or undefined! Got ${typeof options.maxMemory}.`);
             }
         }
-        if ('minMemory' in options) {
+        if ('minMemory' in options && options.minMemory !== state.minMemory) {
             if (typeof options.minMemory === 'undefined') {
                 result.minMemory = 0;
             } else if (typeof options.minMemory === 'number') {

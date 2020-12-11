@@ -1,4 +1,3 @@
-import LauncherAppController from '@main/app/LauncherAppController';
 import { LAUNCHER_NAME } from '@main/constant';
 import { BrowserWindow, BrowserWindowConstructorOptions, Client, Dialog, Dock, Menu, MenuItem, MenuItemConstructorOptions, Notification, NotificationConstructorOptions, Tray } from '@main/engineBridge';
 import LogManager from '@main/manager/LogManager';
@@ -12,11 +11,13 @@ import { GiteeReleaseFetcher, GithubReleaseFetcher, ReleaseFetcher } from '@main
 import { UpdateInfo } from '@universal/entities/update';
 import { StaticStore } from '@universal/util/staticStore';
 import { getPlatform } from '@xmcl/core';
+import { DownloadTask } from '@xmcl/installer';
 import { Task } from '@xmcl/task';
 import { EventEmitter } from 'events';
 import { ensureDir, readFile, readJson, writeFile } from 'fs-extra';
 import { extname, join } from 'path';
 import { parse } from 'url';
+import { LauncherAppController } from './LauncherAppController';
 
 export interface Platform {
     /**
@@ -33,28 +34,6 @@ export interface Platform {
     arch: 'x86' | 'x64' | string;
 }
 
-export interface AppContext {
-    openWindow(name: string, url: string, browserWindow: BrowserWindowConstructorOptions): BrowserWindow;
-
-    closeWindow(name: string): void;
-
-    /**
-     * Only for the app engine support dock
-     */
-    dock?: Dock;
-
-    dialog?: Dialog;
-
-    /**
-     * Only for the app engine support tray
-     */
-    createTray?(image: string): Tray;
-
-    buildMenuFromTemplate?(template: Array<(MenuItemConstructorOptions) | (MenuItem)>): Menu;
-
-    createNotification?(options: NotificationConstructorOptions): Notification;
-}
-
 export interface AppManifest {
     type: 'github' | 'gitee' | ['github', 'gitee'];
     owner: string;
@@ -63,15 +42,29 @@ export interface AppManifest {
 
 export interface LauncherApp {
     on(channel: 'window-all-closed', listener: () => void): this;
-    on(channel: 'store-ready', listener: () => void): this;
+    on(channel: 'store-ready', listener: (store: StaticStore<any>) => void): this;
+    on(channel: 'engine-ready', listener: () => void): this;
     on(channel: 'minecraft-window-ready', listener: () => void): this;
     on(channel: 'minecraft-start', listener: (launchOptions: { version: string; minecraft: string; forge: string; fabric: string }) => void): this;
     on(channel: 'minecraft-exit', listener: (exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }) => void): this;
     on(channel: 'minecraft-stdout', listener: (out: string) => void): this;
     on(channel: 'minecraft-stderr', listener: (err: string) => void): this;
+    on(channel: 'microsoft-authorize-code', listener: (code: string) => void): this;
 
+    once(channel: 'window-all-closed', listener: () => void): this;
+    once(channel: 'store-ready', listener: (store: StaticStore<any>) => void): this;
+    once(channel: 'engine-ready', listener: () => void): this;
+    once(channel: 'minecraft-window-ready', listener: () => void): this;
+    once(channel: 'minecraft-start', listener: (launchOptions: { version: string; minecraft: string; forge: string; fabric: string }) => void): this;
+    once(channel: 'minecraft-exit', listener: (exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }) => void): this;
+    once(channel: 'minecraft-stdout', listener: (out: string) => void): this;
+    once(channel: 'minecraft-stderr', listener: (err: string) => void): this;
+    once(channel: 'microsoft-authorize-code', listener: (code: string) => void): this;
+
+    emit(channel: 'microsoft-authorize-code', code: string): this;
     emit(channel: 'window-all-closed'): boolean;
-    emit(channel: 'store-ready'): boolean;
+    emit(channel: 'engine-ready'): boolean;
+    emit(channel: 'store-ready', store: StaticStore<any>): boolean;
     emit(channel: 'minecraft-window-ready', ...args: any[]): boolean;
     emit(channel: 'minecraft-start', launchOptions: { version: string; minecraft: string; forge: string; fabric: string }): boolean;
     emit(channel: 'minecraft-exit', exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }): boolean;
@@ -107,10 +100,6 @@ export abstract class LauncherApp extends EventEmitter {
      */
     protected parking = false;
 
-    protected trustedSites: string[] = [];
-
-    protected controller: LauncherAppController;
-
     // properties
 
     readonly networkManager = new NetworkManager(this);
@@ -135,6 +124,8 @@ export abstract class LauncherApp extends EventEmitter {
 
     protected managers = [this.logManager, this.networkManager, this.taskManager, this.storeManager, this.serviceManager, this.telemetryManager];
 
+    protected controller: LauncherAppController;
+
     constructor() {
         super();
         const appData = this.getPath('appData');
@@ -142,13 +133,13 @@ export abstract class LauncherApp extends EventEmitter {
         this.gameDataPath = '';
         this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft');
         this.temporaryPath = '';
-        this.controller = new LauncherAppController(this, this.getContext());
+        this.controller = this.createController();
         LauncherApp.app = this;
     }
 
-    abstract getLocale(): string;
+    abstract createController(): LauncherAppController;
 
-    abstract getContext(): AppContext;
+    abstract getLocale(): string;
 
     /**
      * Broadcast a event with payload to client.
@@ -234,13 +225,15 @@ export abstract class LauncherApp extends EventEmitter {
      */
     abstract installUpdateAndQuit(): Promise<void>;
 
+    abstract gainMicrosoftAuthCode(): Promise<string>;
+
     abstract relaunch(): void;
 
-    protected log = (message: any, ...options: any[]) => { this.logManager.log(`[App] ${message}`, ...options); }
+    log = (message: any, ...options: any[]) => { this.logManager.log(`[App] ${message}`, ...options); }
 
-    protected warn = (message: any, ...options: any[]) => { this.logManager.warn(`[App] ${message}`, ...options); }
+    warn = (message: any, ...options: any[]) => { this.logManager.warn(`[App] ${message}`, ...options); }
 
-    protected error = (message: any, ...options: any[]) => { this.logManager.error(`[App] ${message}`, ...options); }
+    error = (message: any, ...options: any[]) => { this.logManager.error(`[App] ${message}`, ...options); }
 
     /**
      * Start an app from file path
@@ -326,24 +319,23 @@ export abstract class LauncherApp extends EventEmitter {
     }
 
     protected async downloadApp(manifest: AppManifest) {
-        let { owner, repo } = manifest;
+        const { owner, repo } = manifest;
         let releaseFetcher: ReleaseFetcher;
         if (manifest.type === 'gitee') {
             releaseFetcher = new GiteeReleaseFetcher(owner, repo);
         } else {
             releaseFetcher = new GithubReleaseFetcher(owner, repo);
         }
-        let latest = await releaseFetcher.getLatestRelease();
+        const latest = await releaseFetcher.getLatestRelease();
 
-        let manifestPath = join(this.appDataPath, 'apps', `${owner}-${repo}.json`);
-        let asarPath = join(this.appDataPath, 'apps', `${owner}-${repo}.asar`);
+        const manifestPath = join(this.appDataPath, 'apps', `${owner}-${repo}.json`);
+        const asarPath = join(this.appDataPath, 'apps', `${owner}-${repo}.asar`);
 
-        let task = Task.create('downloadApp', this.networkManager.downloadFileTask({
+        await this.taskManager.submit(new DownloadTask({
+            ...this.networkManager.getDownloadBaseOptions(),
             url: latest.downloadUrl,
             destination: asarPath,
-        }));
-        let handle = this.taskManager.submit(task);
-        await handle.wait();
+        }).setName('downloadApp'));
         await writeFile(manifestPath, JSON.stringify(manifest));
     }
 
@@ -354,8 +346,6 @@ export abstract class LauncherApp extends EventEmitter {
     // setup code
 
     async start(): Promise<void> {
-        this.log(process.cwd());
-        this.log(process.argv);
         await this.setup();
         await this.waitEngineReady();
         await this.onEngineReady();
@@ -364,7 +354,6 @@ export abstract class LauncherApp extends EventEmitter {
     }
 
     protected async setup() {
-        this.trustedSites = [];
         await ensureDir(this.appDataPath);
         try {
             (this.gameDataPath as any) = await readFile(join(this.appDataPath, 'root')).then((b) => b.toString().trim());
@@ -387,6 +376,8 @@ export abstract class LauncherApp extends EventEmitter {
         }
         (this.temporaryPath as any) = join(this.gameDataPath, 'temp');
         await Promise.all(this.managers.map(m => m.setup()));
+        this.log(process.cwd());
+        this.log(process.argv);
     }
 
     async migrateRoot(newRoot: string) {
@@ -403,7 +394,8 @@ export abstract class LauncherApp extends EventEmitter {
             .on('minecraft-start', () => { this.parking = true; })
             .on('minecraft-exit', () => { this.parking = false; });
 
-        this.controller!.engineReady();
+        this.emit('engine-ready');
+        await this.controller.engineReady();
 
         await Promise.all(this.managers.map(m => m.engineReady()));
     }
@@ -411,7 +403,7 @@ export abstract class LauncherApp extends EventEmitter {
     protected async onStoreReady(store: StaticStore<any>) {
         this.parking = true;
         await Promise.all(this.managers.map(m => m.storeReady(this.storeManager.store)));
-        await this.controller!.dataReady(store);
+        await this.controller.dataReady(store);
         this.log('App booted');
         this.parking = false;
     }

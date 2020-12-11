@@ -24,7 +24,7 @@ const mainConfig = {
         rules: [
             {
                 test: /\.ts$/,
-                use: process.env.NODE_ENV === 'development' ? [
+                use: /* process.env.NODE_ENV === 'development' */ true ? [
                     'cache-loader',
                     {
                         loader: 'thread-loader',

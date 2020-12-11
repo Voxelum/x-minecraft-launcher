@@ -1,56 +1,81 @@
 import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '@main/constant';
 import { UpdateInfo as _UpdateInfo } from '@universal/entities/update';
-import { Task } from '@xmcl/task';
+import { DownloadTask } from '@xmcl/installer';
+import { task, Task, TaskBase, TaskLooped } from '@xmcl/task';
 import { spawn } from 'child_process';
-import { autoUpdater, Provider, UpdateInfo, UpdaterSignal } from 'electron-updater';
+import { autoUpdater, CancellationToken, Provider, UpdateInfo, UpdaterSignal } from 'electron-updater';
 import { writeFile } from 'fs-extra';
 import { closeSync, existsSync, open, rename, unlink } from 'original-fs';
 import { basename, dirname, join } from 'path';
 import { SemVer } from 'semver';
 import { promisify } from 'util';
-import ElectronLauncherApp from '../electron/ElectronLauncherApp';
+import ElectronLauncherApp from './ElectronLauncherApp';
+
 
 /**
-    * Only download asar file update.
-    * 
-    * If the this update is not a full update but an incremental update,
-    * you can call this to download asar update
-    */
-export function downloadAsarUpdateTask(this: ElectronLauncherApp) {
-    const downloadUpdate = Task.create('downloadUpdate', async (ctx: Task.Context) => {
-        const updateInfo = this.storeManager.store.state.setting.updateInfo;
+ * Only download asar file update.
+ * 
+ * If the this update is not a full update but an incremental update,
+ * you can call this to download asar update
+ */
+export class DownloadAsarUpdateTask extends DownloadTask {
+    constructor(private updateInfo: UpdateInfo, private isInGFW: boolean, destination: string) {
+        super({ url: '', destination });
+    }
 
+    protected async process() {
         const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise);
-        const files = provider.resolveFiles(updateInfo!);
+        const files = provider.resolveFiles(this.updateInfo);
 
         const uObject = files[0].url;
         uObject.pathname = `${uObject.pathname.substring(0, uObject.pathname.lastIndexOf('/'))}app.asar`;
 
-        if (this.networkManager.isInGFW) {
+        if (this.isInGFW) {
             uObject.host = AZURE_CDN_HOST;
             uObject.hostname = AZURE_CDN_HOST;
             uObject.pathname = 'releases/app.asar';
         }
 
-        const updatePath = join(this.appDataPath, 'update.asar');
-        this.log(`Download asar update to ${updatePath}`);
-        await this.networkManager.downloadFileTask({ destination: updatePath, url: uObject.toString() })(ctx);
-    });
-    return downloadUpdate;
+        this.url = uObject.toString();
+
+        return super.process();
+    }
 }
+
+
 /**
  * Download the full update. This size can be larger as it carry the whole electron thing...
  */
-export function downloadFullUpdateTask() {
-    return Task.create('downloadUpdate', (ctx: Task.Context) => new Promise<void>((resolve, reject) => {
-        autoUpdater.downloadUpdate().catch(reject);
-        const signal = new UpdaterSignal(autoUpdater);
-        signal.updateDownloaded(() => resolve());
-        signal.progress((info) => { ctx.update(info.transferred, info.total); });
-        signal.updateCancelled(reject);
-        autoUpdater.on('error', reject);
-    }));
+export class DownloadFullUpdateTask extends TaskBase<void> {
+    private updateSignal = new UpdaterSignal(autoUpdater);
+
+    private cancellationToken = new CancellationToken();
+
+    protected async run(): Promise<void> {
+        this.updateSignal.progress((info) => {
+            this._progress = info.transferred;
+            this._total = info.total;
+            this.update(info.delta);
+        });
+        await autoUpdater.downloadUpdate(this.cancellationToken);
+    }
+
+    protected performCancel(): Promise<void> {
+        this.cancellationToken.cancel();
+        return new Promise((resolve) => {
+            autoUpdater.once('update-cancelled', resolve);
+        });
+    }
+
+    protected async performPause(): Promise<void> {
+        this.cancellationToken.cancel();
+    }
+
+    protected performResume(): void {
+        this.run();
+    }
 }
+
 
 export async function quitAndInstallAsar(this: ElectronLauncherApp) {
     if (IS_DEV) {
@@ -141,7 +166,7 @@ export function quitAndInstallFullUpdate() {
 let injectedUpdate = false;
 
 export function checkUpdateTask(this: ElectronLauncherApp): Task<_UpdateInfo> {
-    return Task.create('checkUpdate', async () => {
+    return task('checkUpdate', async () => {
         autoUpdater.once('update-available', () => {
             this.log('Update available and set status to pending');
             this.storeManager.store.commit('updateStatus', 'pending');

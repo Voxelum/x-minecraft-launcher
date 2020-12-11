@@ -67,7 +67,7 @@
 
 <script lang=ts>
 import { defineComponent, computed } from '@vue/composition-api';
-import { Version } from '@xmcl/installer/liteloader';
+import { LiteloaderVersion } from '@xmcl/installer';
 import { useInstanceVersionBase, useLiteloaderVersions } from '@/hooks';
 
 export default defineComponent({
@@ -89,7 +89,7 @@ export default defineComponent({
       versions,
       refresh,
       refreshing,
-      selectVersion(item: Version) {
+      selectVersion(item: LiteloaderVersion) {
         context.emit('value', item);
       },
     };

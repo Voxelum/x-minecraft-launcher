@@ -104,7 +104,6 @@ export function useCurseforgeProject(projectId: number) {
         try {
             const proj = await fetchProject(projectId);
             const { name, dateCreated, dateModified, downloadCount, latestFiles } = proj;
-            console.log(proj);
             data.name = name;
             data.createdDate = dateCreated;
             data.lastUpdate = dateModified;

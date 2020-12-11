@@ -14,21 +14,15 @@
         :open="opened"
         :items="all"
         activatable
-        item-key="id"
+        item-key="uuid"
         item-children="children"
-        item-text="localText"
       >
         <template v-slot:append="{ item }">
           <task-node-status
-            :has-child="item.children.length !== 0"
-            :status="item.status"
-            :progress="item.progress"
-            :total="item.total"
-            :message="item.message"
-            :uuid="item.id"
+            :item="item"
             :show-number="hovered[item.id]"
-            @pause="pause(item.id)"
-            @resume="resume(item.id)"
+            @pause="pause(item)"
+            @resume="resume(item)"
           />
         </template>
 
@@ -41,7 +35,7 @@
           >
             <span
               style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
-            >{{ $t(item.path, item.arguments || {}) }}</span>
+            >{{ item.title }}</span>
             <div
               style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
             >
@@ -61,8 +55,8 @@
 
 <script lang=ts>
 import { reactive, toRefs, defineComponent } from '@vue/composition-api';
-import { TaskState } from '@universal/task';
 import { useClipboard, useTasks } from '@/hooks';
+import { TaskItem } from '@/entities/task';
 
 export default defineComponent({
   setup() {
@@ -73,7 +67,7 @@ export default defineComponent({
       tree: [],
       opened: [],
       active: 0,
-      hovered: {},
+      hovered: {} as Record<string, boolean>,
     });
 
     return {
@@ -82,7 +76,7 @@ export default defineComponent({
       pause,
       resume,
       cancel,
-      onTaskClick(event: MouseEvent, item: TaskState) {
+      onTaskClick(event: MouseEvent, item: TaskItem) {
         clipboard.writeText(item.message || '');
       },
     };

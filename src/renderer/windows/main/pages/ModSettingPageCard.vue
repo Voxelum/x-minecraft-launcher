@@ -5,16 +5,16 @@
     hover
     :draggable="!enabled"
     :dark="!source.subsequence"
-    :class="{ 
+    :class="{
       grey: source.subsequence,
       'darken-2': source.subsequence,
       incompatible: compatible === false,
       maybe: compatible === 'maybe',
-      unknown: compatible === 'unknown', 
+      unknown: compatible === 'unknown',
       subsequence: source.subsequence,
-      dragged: dragged,
+      dragged: dragged
     }"
-    class="white--text draggable-card"
+    class="white--text draggable-card mod-card"
     style="margin-top: 10px; padding: 0 10px; transition-duration: 0.2s;"
     @dragstart="onDragStart"
     @dragend="$emit('dragend', $event)"
@@ -37,25 +37,18 @@
           <v-flex
             v-if="!source.subsequence"
             :key="1"
-            style="margin: 0 10px 0 0; min-height: 126px; max-height: 126px; max-width: 126px; min-width; 126px"
+            class="avatar"
           >
             <img
               ref="iconImage"
               v-fallback-img="unknownPack"
               :src="source.icon"
-              style="min-height: 126px; max-height: 126px; max-width: 126px; min-width; 126px"
               contain
             />
           </v-flex>
           <v-flex :key="2" style="padding: 10px 0; flex-grow: 1">
             <h3 v-if="!source.subsequence">{{ source.name }}</h3>
-            <v-chip
-              small
-              outline
-              label
-              color="amber"
-              style="margin-left: 1px;"
-            >
+            <v-chip small outline label color="amber" style="margin-left: 1px;">
               {{ source.version }}
             </v-chip>
             <v-chip
@@ -67,13 +60,7 @@
             >
               {{ source.id }}
             </v-chip>
-            <v-chip
-              small
-              outline
-              label
-              color="lime"
-              style="margin-left: 1px;"
-            >
+            <v-chip small outline label color="lime" style="margin-left: 1px;">
               {{ source.type }}
             </v-chip>
             <div style="color: #bdbdbd; ">{{ source.description }}</div>
@@ -111,7 +98,7 @@ export default defineComponent({
     const { open } = useContextMenu();
     const { openInBrowser, showItemInDirectory } = useService('BaseService');
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute();
-    const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute(); 
+    const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute();
     const { $t } = useI18n();
 
     const modEnableState = computed({
@@ -124,7 +111,7 @@ export default defineComponent({
     });
 
     const iconImage: Ref<HTMLImageElement | null> = ref(null);
-    
+
     const compatible = computed(() => {
       if (mcCompatible.value === true) {
         if (loaderCompatible.value === true) {
@@ -263,5 +250,12 @@ export default defineComponent({
 }
 .subsequence.incompatible.draggable-card:hover {
   background-color: #e65100 !important;
+}
+.mod-card .avatar {
+  min-height: 50px;
+  max-height: 50px;
+  max-width: 50px;
+  min-width: 50px;
+  margin: 0 10px 0 0;
 }
 </style>

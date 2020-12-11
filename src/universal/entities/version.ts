@@ -1,4 +1,3 @@
-import { Resource } from '@universal/entities/resource';
 import { requireNonnull } from '@universal/util/assert';
 import type { Version } from '@xmcl/core';
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';

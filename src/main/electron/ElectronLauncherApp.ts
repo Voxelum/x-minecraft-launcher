@@ -1,94 +1,23 @@
-import LauncherApp, { AppContext } from '@main/app/LauncherApp';
-import { BUILTIN_TRUSTED_SITES, IS_DEV } from '@main/constant';
-import { acrylic } from '@main/util/acrylic';
+import LauncherApp from '@main/app/LauncherApp';
+import { LauncherAppController } from '@main/app/LauncherAppController';
+import { BUILTIN_TRUSTED_SITES, CLIENT_ID, IS_DEV } from '@main/constant';
 import { isDirectory } from '@main/util/fs';
 import { UpdateInfo } from '@universal/entities/update';
 import { StaticStore } from '@universal/util/staticStore';
 import { Task } from '@xmcl/task';
-import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain, session, shell, dialog, Tray, Menu, Notification } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import { join } from 'path';
-import { checkUpdateTask as _checkUpdateTask, downloadAsarUpdateTask, downloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate } from '../app/updater';
+import { parse } from 'url';
+import Controller from './Controller';
+import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate } from './updater';
 
 export default class ElectronLauncherApp extends LauncherApp {
-    get version() { return app.getVersion(); }
-
-    getContext(): AppContext {
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        const self = this;
-        const isWin = this.platform.name === 'windows';
-        return {
-            dock: app.dock,
-            dialog,
-            createTray(image) {
-                return new Tray(image);
-            },
-            buildMenuFromTemplate(template) {
-                return Menu.buildFromTemplate(template);
-            },
-            createNotification(notificationOptions) {
-                return new Notification(notificationOptions);
-            },
-            closeWindow(name) {
-                const win = self.windows[name];
-                win.removeAllListeners();
-                win.close();
-                delete self.windows[name];
-            },
-            openWindow(name, url, options) {
-                const normalizedOptions: BrowserWindowConstructorOptions = {
-                    ...options,
-                };
-
-                if (!normalizedOptions.webPreferences) { normalizedOptions.webPreferences = {}; }
-                normalizedOptions.webPreferences.webSecurity = !IS_DEV; // disable security for loading local image
-                normalizedOptions.webPreferences.nodeIntegration = IS_DEV; // enable node for webpack in dev
-                normalizedOptions.webPreferences.preload = join(__static, 'preload.js');
-                normalizedOptions.webPreferences.session = session.fromPartition(`persist:${name}`);
-                normalizedOptions.webPreferences.webviewTag = true;
-                // ops.webPreferences.enableRemoteModule = true;
-                // normalizedOptions.webPreferences.devTools = false;
-
-                const ref = new BrowserWindow(normalizedOptions);
-
-                self.log(`Create window from ${url}`);
-                self.setupBrowserLogger(ref, name);
-
-                ref.loadURL(url);
-                ref.webContents.on('will-navigate', (event, url) => {
-                    event.preventDefault();
-                    if (!IS_DEV) {
-                        shell.openExternal(url);
-                    } else if (!url.startsWith('http://localhost')) {
-                        shell.openExternal(url);
-                    }
-                });
-                ref.on('ready-to-show', () => { self.log(`Window ${name} is ready to show!`); });
-                ref.on('close', () => { delete self.windows[name]; });
-
-                self.windows[name] = ref;
-
-                if (normalizedOptions.vibrancy && isWin) {
-                    setTimeout(() => {
-                        const id = ref!.webContents.getOSProcessId();
-                        self.log(`Set window Acrylic transparent ${id}`);
-                        acrylic(id).then((e) => {
-                            if (e) {
-                                self.log('Set window Acrylic success');
-                            } else {
-                                self.warn('Set window Acrylic failed');
-                            }
-                        }, (e) => {
-                            self.warn('Set window Acrylic failed');
-                            self.warn(e);
-                        });
-                    }, 100);
-                }
-
-                return ref;
-            },
-        };
+    createController(): LauncherAppController {
+        return new Controller(this);
     }
+
+    get version() { return app.getVersion(); }
 
     /**
      * A map to keep running browser
@@ -114,11 +43,10 @@ export default class ElectronLauncherApp extends LauncherApp {
      * @param payload The event payload to client
      */
     broadcast(channel: string, ...payload: any[]): void {
-        Object.values(this.windows).map(w => w.webContents).forEach(c => {
-            c.send(channel, ...payload);
+        BrowserWindow.getAllWindows().forEach(w => {
+            w.webContents.send(channel, ...payload);
         });
     }
-
 
     /**
      * A safe method that only open directory. If the `path` is a file, it won't execute it.
@@ -137,18 +65,18 @@ export default class ElectronLauncherApp extends LauncherApp {
      * @param url The pending url
      */
     async openInBrowser(url: string) {
-        if ([...BUILTIN_TRUSTED_SITES, ...this.trustedSites].indexOf(url) === -1) {
-            const result = await this.controller!.requestOpenExternalUrl(url);
-            if (result) {
-                this.trustedSites.push(url);
-                shell.openExternal(url);
-                return true;
-            }
-        } else {
-            shell.openExternal(url);
-            return true;
-        }
-        return false;
+        // if ([...BUILTIN_TRUSTED_SITES, ...this.trustedSites].indexOf(url) === -1) {
+        //     const result = await this.controller!.requestOpenExternalUrl(url);
+        //     if (result) {
+        //         this.trustedSites.push(url);
+        //         shell.openExternal(url);
+        //         return true;
+        //     }
+        // } else {
+        shell.openExternal(url);
+        return true;
+        // }
+        // return false;
     }
 
     checkUpdateTask(): Task<UpdateInfo> {
@@ -158,9 +86,11 @@ export default class ElectronLauncherApp extends LauncherApp {
     downloadUpdateTask(): Task<void> {
         if (this.storeManager.store.state.setting.updateInfo) {
             if (this.storeManager.store.state.setting.updateInfo.incremental) {
-                return downloadAsarUpdateTask.bind(this)();
+                const updatePath = join(this.appDataPath, 'update.asar');
+                return new DownloadAsarUpdateTask(this.storeManager.store.state.setting.updateInfo, this.networkManager.isInGFW, updatePath)
+                    .map(() => undefined);
             }
-            return downloadFullUpdateTask();
+            return new DownloadFullUpdateTask();
         }
         throw new Error('Please check update first!');
     }
@@ -199,6 +129,7 @@ export default class ElectronLauncherApp extends LauncherApp {
 
         if (!app.requestSingleInstanceLock()) {
             app.quit();
+            return;
         }
 
         if (!app.isDefaultProtocolClient('xmcl')) {
@@ -221,24 +152,45 @@ export default class ElectronLauncherApp extends LauncherApp {
 
         app.on('open-url', (event, url) => {
             event.preventDefault();
-            this.startFromUrl(url);
+            this.log(`open-url ${url}`);
         }).on('second-instance', (e, argv) => {
+            this.log(`second-instance ${JSON.stringify(argv)}`);
             if (process.platform === 'win32') {
+                this.log(`second-instance ${JSON.stringify(argv)}`);
                 // Keep only command line / deep linked arguments
-                this.startFromFilePath(argv[argv.length - 1]);
+                // this.startFromFilePath(argv[argv.length - 1]);
             }
         });
 
         await super.setup();
     }
 
-    protected async onEngineReady() {
-        app.allowRendererProcessReuse = true;
-        return super.onEngineReady();
-    }
-
     getLocale() {
         return app.getLocale();
+    }
+
+    async gainMicrosoftAuthCode(): Promise<string> {
+        await shell.openExternal(`https://login.live.com/oauth20_authorize.srf?client_id=${CLIENT_ID}&response_type=code&redirect_uri=xmcl://auth&scope=XboxLive.signin`);
+        return new Promise<string>((resolve) => {
+            this.once('microsoft-authorize-code', resolve);
+        });
+    }
+
+    protected async onEngineReady() {
+        app.allowRendererProcessReuse = true;
+        app.on('open-url', (event, url) => {
+            const parsed = parse(url, true);
+            if (parsed.protocol === 'xmcl:') {
+                switch (parsed.host) {
+                    case 'auth':
+                        this.emit('microsoft-authorize-code', parsed.query.code as string);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        return super.onEngineReady();
     }
 
     protected async onStoreReady(store: StaticStore<any>) {
@@ -269,17 +221,5 @@ export default class ElectronLauncherApp extends LauncherApp {
         this.storeManager.store.commit('version', [app.getVersion(), process.env.BUILD_NUMBER]);
 
         await super.onStoreReady(store);
-    }
-
-    private setupBrowserLogger(ref: BrowserWindow, name: string) {
-        const stream = this.logManager.openWindowLog(name);
-        const levels = ['INFO', 'WARN', 'ERROR'];
-        ref.webContents.on('console-message', (e, level, message, line, id) => {
-            stream.write(`[${levels[level]}] [${new Date().toUTCString()}] [${id}]: ${message}\n`);
-        });
-        ref.once('close', () => {
-            ref.webContents.removeAllListeners('console-message');
-            this.logManager.closeWindowLog(name);
-        });
     }
 }

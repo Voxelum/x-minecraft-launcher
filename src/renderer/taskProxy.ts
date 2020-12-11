@@ -1,12 +1,12 @@
-import { TaskState } from '@universal/task';
 import { Ref } from '@vue/composition-api';
+import { TaskItem } from './entities/task';
 
 export interface TaskProxy {
     dictionary: {
-        [key: string]: TaskState;
+        [key: string]: TaskItem;
     };
-    tasks: Ref<TaskState[]>;
-    pause: (id: string) => void;
-    resume: (id: string) => void;
-    cancel: (id: string) => void;
+    tasks: Ref<TaskItem[]>;
+    pause(item: TaskItem): void;
+    resume(item: TaskItem): void;
+    cancel(item: TaskItem): void;
 }

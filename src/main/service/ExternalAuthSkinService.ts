@@ -2,11 +2,9 @@ import { AUTHLIB_ORG_NAME } from '@main/constant';
 import { validateSha256 } from '@main/util/fs';
 import { IssueReport } from '@universal/entities/issue';
 import { LibraryInfo, MinecraftFolder, Version } from '@xmcl/core';
-import { Installer } from '@xmcl/installer';
-import { Task } from '@xmcl/task';
-import { createWriteStream, ensureFile, readJson, writeFile } from 'fs-extra';
+import { DownloadTask, installResolvedLibrariesTask } from '@xmcl/installer';
+import { ensureFile, readJson, writeFile } from 'fs-extra';
 import { join } from 'path';
-import { pipeline } from 'stream';
 import DiagnoseService from './DiagnoseService';
 import ResourceService from './ResourceService';
 import Service, { Inject } from './Service';
@@ -25,25 +23,11 @@ export default class ExternalAuthSkinService extends Service {
         const destination = type === 'forge'
             ? join(this.app.temporaryPath, 'CustomSkinLoader_Forge-14.12.jar')
             : join(this.app.temporaryPath, 'CustomSkinLoader_Fabric-14.12.jar');
-        const handle = this.submit(Task.create('downloadCustomSkinLoader', async (context) => {
-            const downloadStream = this.networkManager.request.stream(url, { followRedirect: true });
-            await ensureFile(destination);
-            const writeStream = createWriteStream(destination);
-            let progress = 0;
-            let total = 0;
-            downloadStream.on('data', (chunk) => {
-                progress += chunk.length;
-                context.update(progress, total, url);
-            });
-            downloadStream.on('response', (r) => {
-                total = Number.parseInt(r.headers['content-length'] as any, 10);
-            });
-            await new Promise((resolve, reject) => pipeline(downloadStream, writeStream, (e) => {
-                if (e) reject(e);
-                else resolve();
-            }));
-        }));
-        await handle.wait();
+        await ensureFile(destination);
+        await this.submit(new DownloadTask({
+            url,
+            destination,
+        }).setName('downloadCustomSkinLoader'));
         return this.resourceService.importResource({
             path: destination,
             type: 'mods',
@@ -79,7 +63,7 @@ export default class ExternalAuthSkinService extends Service {
                     },
                 },
             };
-            await this.submit(Task.create('installAuthlibInjector', Installer.installResolvedLibrariesTask(Version.resolveLibraries([authlib]), root).run)).wait();
+            await this.submit(installResolvedLibrariesTask(Version.resolveLibraries([authlib]), root).setName('installAuthlibInjector'));
             return mc.getLibraryByPath(info.path);
         };
 
@@ -99,7 +83,7 @@ export default class ExternalAuthSkinService extends Service {
             }
         }
 
-        let report: Partial<IssueReport> = {};
+        const report: Partial<IssueReport> = {};
         this.diagnoseService.diagnoseUser(report);
         this.diagnoseService.report(report);
 

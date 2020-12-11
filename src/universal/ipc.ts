@@ -1,6 +1,6 @@
 import { MutationPayload } from 'vuex';
-import { TaskState } from './task';
 import { BuiltinNotification } from './entities/notification';
+import { TaskBatchPayload, TaskPayload } from './task';
 
 declare module 'electron' {
 
@@ -35,9 +35,9 @@ declare module 'electron' {
         /**
          * Request for current task states. It will require the main process keep sending the 'task-update' event to the renderer.
          */
-        invoke(channel: 'task-subscribe', push?: boolean): Promise<TaskState[]>;
+        invoke(channel: 'task-subscribe', push?: boolean): Promise<TaskPayload[]>;
 
-        invoke(channel: 'task-unsubscribe'): Promise<TaskState[]>;
+        // invoke(channel: 'task-unsubscribe'): Promise<TaskState[]>;
         /**
          * Request an operation to a task.
          * You can cancel, pause, or resmue a task here.
@@ -63,12 +63,7 @@ declare module 'electron' {
 
         on(channel: 'notification', listener: (event: Electron.IpcRendererEvent, notification: BuiltinNotification) => void): this;
 
-        on(channel: 'task-update', listener: (event: Electron.IpcRendererEvent, update: {
-            adds: { id: string; node: TaskState }[];
-            childs: { id: string; node: TaskState }[];
-            updates: { [id: string]: { progress?: number; total?: number; message?: string; time?: string } };
-            statuses: { id: string; status: string }[];
-        }) => void): this;
+        on(channel: 'task-update', listener: (event: Electron.IpcRendererEvent, update: TaskBatchPayload) => void): this;
 
         on(channel: 'aquire', listener: (event: Electron.IpcRendererEvent, semphores: string[] | string) => void): this;
         on(channel: 'release', listener: (event: Electron.IpcRendererEvent, semphores: string[] | string) => void): this;

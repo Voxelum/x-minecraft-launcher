@@ -20,12 +20,10 @@
 
 <script lang=ts>
 import { defineComponent, ref, onMounted } from '@vue/composition-api';
-import { FabricInstaller } from '@xmcl/installer';
+import { FabricArtifactVersion } from '@xmcl/installer';
 import { required } from '@/util/props';
 import VirtualList from 'vue-virtual-scroll-list';
 import Tile from './FabricArtifactVersionListTile.vue';
-
-type FabricArtifactVersion = FabricInstaller.FabricArtifactVersion;
 
 export default defineComponent({
   components: { VirtualList },

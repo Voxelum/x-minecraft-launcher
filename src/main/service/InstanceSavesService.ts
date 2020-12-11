@@ -1,6 +1,6 @@
 import { findLevelRootOnPath, getInstanceSave, loadInstanceSaveMetadata } from '@main/entities/save';
 import { copyPassively, isFile, missing, readdirIfPresent } from '@main/util/fs';
-import { includeAllToZip, openCompressedStream, unpack7z } from '@main/util/zip';
+import { unpack7z, ZipTask } from '@main/util/zip';
 import { Exception } from '@universal/entities/exception';
 import { InstanceSave } from '@universal/entities/save';
 import { isNonnull, requireObject, requireString } from '@universal/util/assert';
@@ -324,11 +324,9 @@ export default class InstanceSavesService extends Service {
         } else {
             // compress to zip
             await ensureFile(destination);
-            let zipFile = new ZipFile();
-            let promise = openCompressedStream(zipFile, destination);
-            await includeAllToZip(source, destination, zipFile);
-            zipFile.end();
-            await promise;
+            const zipTask = new ZipTask(destination);
+            await zipTask.includeAs(source, '');
+            await zipTask.startAndWait();
         }
     }
 }

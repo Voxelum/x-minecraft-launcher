@@ -24,7 +24,7 @@
         <v-tooltip top>
           <template v-slot:activator="{ on }">
             <v-chip
-              :color="showAlpha ? 'green': ''"
+              :color="showAlpha ? 'green' : ''"
               icon
               dark
               label
@@ -34,7 +34,7 @@
               <v-icon v-on="on">bug_report</v-icon>
             </v-chip>
           </template>
-          {{ $t('version.showSnapshot') }}
+          {{ $t("version.showSnapshot") }}
         </v-tooltip>
       </template>
     </v-text-field>
@@ -51,19 +51,14 @@
 
 <script lang=ts>
 import { defineComponent, reactive, toRefs, computed } from '@vue/composition-api';
-import { Version as MinecraftVersion } from '@xmcl/installer/minecraft';
+import { MinecraftVersion } from '@xmcl/installer';
 import { useMinecraftVersions } from '@/hooks';
+import { withDefault } from '@/util/props';
 
 export default defineComponent({
   props: {
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    acceptRange: {
-      type: String,
-      default: '[*]',
-    },
+    disabled: withDefault(Boolean, () => false),
+    acceptRange: withDefault(String, () => '[*]'),
   },
   setup(props, context) {
     const data = reactive({

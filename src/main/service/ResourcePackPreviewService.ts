@@ -1,7 +1,6 @@
 import { Queue } from '@main/util/mutex';
 import { MinecraftFolder } from '@xmcl/core';
-import { ModelLoader, ResourceManager, ResourcePackWrapper } from '@xmcl/resource-manager';
-import { ResourcePack } from '@xmcl/resourcepack';
+import { ModelLoader, ResourceManager, ResourcePack, ResourcePackWrapper } from '@xmcl/resourcepack';
 import { join } from 'path';
 import InstanceResourceService from './InstanceResourceService';
 import Service, { Inject, MutationTrigger } from './Service';

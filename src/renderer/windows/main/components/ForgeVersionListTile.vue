@@ -1,12 +1,17 @@
 <template>
   <v-list-tile
     :key="source.version"
-    :class="{ grey: selected === source.version, 'darken-1' : selected === source.version }"
+    :class="{
+      grey: selected === source.version,
+      'darken-1': selected === source.version
+    }"
     ripple
     @click="select(source)"
   >
     <v-list-tile-avatar>
-      <v-icon v-if="source.status !== 'loading'">{{ source.status === 'remote' ? 'cloud' : 'folder' }}</v-icon>
+      <v-icon v-if="source.status !== 'loading'">{{
+        source.status === "remote" ? "cloud" : "folder"
+      }}</v-icon>
       <v-progress-circular v-else :width="2" :size="24" indeterminate />
     </v-list-tile-avatar>
 
@@ -29,20 +34,16 @@
 </template>
 
 <script lang=ts>
+import { required } from '@/util/props';
+import { Status } from '@universal/entities/version';
 import { defineComponent } from '@vue/composition-api';
-import { Version } from '@xmcl/installer/forge';
+import { ForgeVersion } from '@xmcl/installer';
 
-export interface Props {
-  source: Version;
-  select: (version: { version: string }) => void;
-  selected: string;
-}
-
-export default defineComponent<Props, {}>({
+export default defineComponent({
   props: {
-    source: Object,
-    select: Function,
-    selected: String,
+    source: required<ForgeVersion & { status: Status; date: string }>(Object),
+    select: required<(version: { version: string }) => void>(Function),
+    selected: required(String),
   },
 });
 </script>

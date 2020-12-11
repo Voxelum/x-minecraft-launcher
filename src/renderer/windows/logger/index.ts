@@ -7,16 +7,7 @@ import '@/assets/google.font.css';
 import Vue from 'vue';
 
 import 'vuetify/dist/vuetify.min.css';
-import Vuetify from 'vuetify/es5/components/Vuetify';
-import VCard from 'vuetify/es5/components/VCard';
-import VList from 'vuetify/es5/components/VList';
-import VChip from 'vuetify/es5/components/VChip';
-import VApp from 'vuetify/es5/components/VApp';
-import VBtn from 'vuetify/es5/components/VBtn';
-import VIcon from 'vuetify/es5/components/VIcon';
-import VGrid from 'vuetify/es5/components/VGrid';
-import VToolbar from 'vuetify/es5/components/VToolbar';
-
+import Vuetify from 'vuetify';
 import provideElectron from '@/providers/provideElectron';
 import Logger from './Logger.vue';
 
@@ -30,14 +21,6 @@ Vue.use(Vuetify, {
         accent: colors.green.accent3,
     },
     components: {
-        ...VCard.$_vuetify_subcomponents,
-        ...VList.$_vuetify_subcomponents,
-        ...VGrid.$_vuetify_subcomponents,
-        VChip,
-        VApp,
-        VBtn,
-        VIcon,
-        ...VToolbar.$_vuetify_subcomponents,
     },
 });
 

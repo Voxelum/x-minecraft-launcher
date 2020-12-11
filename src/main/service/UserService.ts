@@ -1,9 +1,11 @@
+import { CLIENT_ID } from '@main/constant';
 import { createhDynamicThrottle as createDynamicThrottle } from '@main/util/trafficAgent';
 import { fitMinecraftLauncherProfileData } from '@main/util/userData';
 import { wrapError } from '@universal/entities/exception';
 import { UserSchema } from '@universal/entities/user.schema';
 import { MutationKeys } from '@universal/store';
 import { requireNonnull, requireObject, requireString } from '@universal/util/assert';
+import { DownloadTask } from '@xmcl/installer';
 import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user';
 import { readFile, readJSON } from 'fs-extra';
 import { parse } from 'url';
@@ -190,6 +192,9 @@ export default class UserService extends Service {
                 profileId: user.selectedProfile,
             });
         }
+        this.app.on('microsoft-authorize-code', (code) => {
+            this.loginMicrosoftFromCode(code);
+        });
     }
 
     /**
@@ -426,7 +431,7 @@ export default class UserService extends Service {
         requireString(options.url);
         requireString(options.path);
         let { path, url } = options;
-        await this.networkManager.downloadFile({ url, destination: path });
+        await new DownloadTask({ url, destination: path, ...this.networkManager.getDownloadBaseOptions() }).startAndWait();
     }
 
     /**
@@ -480,6 +485,116 @@ export default class UserService extends Service {
             }
         }
         this.commit('userProfileRemove', userId);
+    }
+
+    @Singleton()
+    private async loginMicrosoftFromCode(code: string) {
+        interface OAuthTokenResponse {
+            token_type: string;
+            expires_in: number;
+            scope: string;
+            access_token: string;
+            refresh_token: string;
+            user_id: string;
+            foci: string;
+        }
+        interface XBoxResponse {
+            IssueInstant: string;
+            NotAfter: string;
+            Token: string;
+            DisplayClaims: {
+                xui: [
+                    {
+                        uhs: string
+                    }
+                ]
+            }
+        }
+        interface MinecraftAuthResponse {
+            username: string, // this is not the uuid of the account
+            roles: [],
+            access_token: string, // jwt, your good old minecraft access token
+            token_type: 'Bearer',
+            expires_in: number
+        }
+        interface MinecraftProfileResponse {
+            id: string, // the real uuid of the account, woo
+            name: string, // the mc user name of the account
+            skins: [{
+                id: string
+                state: 'ACTIVE' | string
+                url: string
+                variant: 'CLASSIC' | string
+                alias: 'STEVE' | string
+            }],
+            capes: []
+        }
+        interface MinecraftProfileErrorResponse {
+            path: '/minecraft/profile',
+            errorType: 'NOT_FOUND' | string,
+            error: string | 'NOT_FOUND',
+            errorMessage: string
+            developerMessage: string
+        }
+        const oauthResponse: OAuthTokenResponse = await this.networkManager.request.post('https://login.live.com/oauth20_token.srf', {
+            form: {
+                client_id: CLIENT_ID,
+                code,
+                grant_type: 'authorization_code',
+                redirect_uri: 'https://login.live.com/oauth20_desktop.srf',
+                scope: 'XboxLive.signin',
+            },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        }).json();
+
+        const accessToken = oauthResponse.access_token;
+
+        const xblResponse: XBoxResponse = await this.networkManager.request.post('https://user.auth.xboxlive.com/user/authenticate', {
+            json: {
+                Properties: {
+                    AuthMethod: 'RPS',
+                    SiteName: 'user.auth.xboxlive.com',
+                    RpsTicket: accessToken,
+                },
+                RelyingParty: 'http://auth.xboxlive.com',
+                TokenType: 'JWT',
+            },
+        }).json();
+
+        const xstsResponse: XBoxResponse = await this.networkManager.request.post('https://xsts.auth.xboxlive.com/xsts/authorize', {
+            json: {
+                Properties: {
+                    SandboxId: 'RETAIL',
+                    UserTokens: [xblResponse.Token],
+                },
+                RelyingParty: 'rp://api.minecraftservices.com/',
+                TokenType: 'JWT',
+            },
+        }).json();
+
+        const mcResponse: MinecraftAuthResponse = await this.networkManager.request.post('https://api.minecraftservices.com/authentication/login_with_xbox', {
+            json: {
+                identityToken: `XBL3.0 x=${xstsResponse.DisplayClaims.xui[0].uhs};${xstsResponse.Token}`,
+            },
+        }).json();
+
+        const profileResponse: MinecraftProfileResponse | MinecraftProfileErrorResponse = await this.networkManager.request.get('https://api.minecraftservices.com/minecraft/profile', {
+            headers: {
+                Authorization: mcResponse.access_token,
+            },
+        }).json();
+    }
+
+    @Singleton()
+    async loginMicrosoft() {
+        const code = await this.app.gainMicrosoftAuthCode();
+        return this.loginMicrosoftFromCode(code);
+    }
+
+    async getProfileFromToken() {
+
     }
 
     /**
