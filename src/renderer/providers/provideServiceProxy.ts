@@ -15,6 +15,9 @@ async function startSession(sessionId: number | undefined, tasks: Ref<Array<any>
     const { result, error } = await ipcRenderer.invoke('session', sessionId);
     ipcRenderer.removeListener(`session-${sessionId}`, listener);
     if (error) {
+        if (error.errorMessage) {
+            error.toString = () => error.errorMessage;
+        }
         return Promise.reject(error);
     }
     return result;

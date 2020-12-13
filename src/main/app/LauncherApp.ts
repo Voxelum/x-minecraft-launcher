@@ -1,5 +1,6 @@
 import { LAUNCHER_NAME } from '@main/constant';
-import { BrowserWindow, BrowserWindowConstructorOptions, Client, Dialog, Dock, Menu, MenuItem, MenuItemConstructorOptions, Notification, NotificationConstructorOptions, Tray } from '@main/engineBridge';
+import { Client } from '@main/engineBridge';
+import CredentialManager from '@main/manager/CredentialManager';
 import LogManager from '@main/manager/LogManager';
 import NetworkManager from '@main/manager/NetworkManager';
 import ServiceManager from '@main/manager/ServiceManager';
@@ -59,9 +60,9 @@ export interface LauncherApp {
     once(channel: 'minecraft-exit', listener: (exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }) => void): this;
     once(channel: 'minecraft-stdout', listener: (out: string) => void): this;
     once(channel: 'minecraft-stderr', listener: (err: string) => void): this;
-    once(channel: 'microsoft-authorize-code', listener: (code: string) => void): this;
+    once(channel: 'microsoft-authorize-code', listener: (error?: Error, code?: string) => void): this;
 
-    emit(channel: 'microsoft-authorize-code', code: string): this;
+    emit(channel: 'microsoft-authorize-code', error?: Error, code?: string): this;
     emit(channel: 'window-all-closed'): boolean;
     emit(channel: 'engine-ready'): boolean;
     emit(channel: 'store-ready', store: StaticStore<any>): boolean;
@@ -114,6 +115,8 @@ export abstract class LauncherApp extends EventEmitter {
 
     readonly telemetryManager = new TelemetryManager(this);
 
+    readonly credentialManager = new CredentialManager(this);
+
     readonly platform: Platform = getPlatform();
 
     abstract readonly version: string;
@@ -122,9 +125,9 @@ export abstract class LauncherApp extends EventEmitter {
 
     get isParking(): boolean { return this.parking; }
 
-    protected managers = [this.logManager, this.networkManager, this.taskManager, this.storeManager, this.serviceManager, this.telemetryManager];
+    protected managers = [this.logManager, this.networkManager, this.taskManager, this.storeManager, this.serviceManager, this.telemetryManager, this.credentialManager];
 
-    protected controller: LauncherAppController;
+    readonly controller: LauncherAppController;
 
     constructor() {
         super();
@@ -177,6 +180,12 @@ export abstract class LauncherApp extends EventEmitter {
     abstract showItemInFolder(path: string): void;
 
     /**
+     * Handle the url activate the app
+     * @param url The url input
+     */
+    abstract handleUrl(url: string): void;
+
+    /**
      * Quit the app gentally.
      */
     quit() {
@@ -197,7 +206,7 @@ export abstract class LauncherApp extends EventEmitter {
     /**
      * Get the system provided path
      */
-    abstract getPath(key: string): string;
+    abstract getPath(key: 'home' | 'appData' | 'userData' | 'cache' | 'temp' | 'exe' | 'module' | 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos' | 'logs' | 'pepperFlashSystemPlugin'): string;
 
     /**
      * Wait the engine ready
@@ -224,8 +233,6 @@ export abstract class LauncherApp extends EventEmitter {
      * Install update and quit the app.
      */
     abstract installUpdateAndQuit(): Promise<void>;
-
-    abstract gainMicrosoftAuthCode(): Promise<string>;
 
     abstract relaunch(): void;
 

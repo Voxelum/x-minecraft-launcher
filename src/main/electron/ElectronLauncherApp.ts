@@ -1,12 +1,13 @@
 import LauncherApp from '@main/app/LauncherApp';
 import { LauncherAppController } from '@main/app/LauncherAppController';
-import { BUILTIN_TRUSTED_SITES, CLIENT_ID, IS_DEV } from '@main/constant';
+import { client, IS_DEV } from '@main/constant';
 import { isDirectory } from '@main/util/fs';
 import { UpdateInfo } from '@universal/entities/update';
 import { StaticStore } from '@universal/util/staticStore';
 import { Task } from '@xmcl/task';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
+import { createServer } from 'http';
 import { join } from 'path';
 import { parse } from 'url';
 import Controller from './Controller';
@@ -30,8 +31,8 @@ export default class ElectronLauncherApp extends LauncherApp {
 
     exit = app.exit;
 
-    getPath(key: string) {
-        return app.getPath(key as any);
+    getPath(key: 'home' | 'appData' | 'userData' | 'cache' | 'temp' | 'exe' | 'module' | 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos' | 'logs' | 'pepperFlashSystemPlugin') {
+        return app.getPath(key);
     }
 
     handle = ipcMain.handle;
@@ -145,6 +146,18 @@ export default class ElectronLauncherApp extends LauncherApp {
             }
         }
 
+        if (IS_DEV) {
+            const server = createServer((message, response) => {
+                this.log(`Dev server recieve ${message.url}`);
+                this.handleUrl(message.url!);
+                response.statusCode = 200;
+                response.end();
+            });
+            server.listen(3000, () => {
+                this.log('Started development server!');
+            });
+        }
+
         // forward window-all-closed event
         app.on('window-all-closed', () => {
             this.emit('window-all-closed');
@@ -152,11 +165,13 @@ export default class ElectronLauncherApp extends LauncherApp {
 
         app.on('open-url', (event, url) => {
             event.preventDefault();
-            this.log(`open-url ${url}`);
+            this.handleUrl(url);
         }).on('second-instance', (e, argv) => {
-            this.log(`second-instance ${JSON.stringify(argv)}`);
             if (process.platform === 'win32') {
-                this.log(`second-instance ${JSON.stringify(argv)}`);
+                const last = argv[argv.length - 1];
+                if (last.startsWith('xmcl://')) {
+                    this.handleUrl(last);
+                }
                 // Keep only command line / deep linked arguments
                 // this.startFromFilePath(argv[argv.length - 1]);
             }
@@ -169,27 +184,20 @@ export default class ElectronLauncherApp extends LauncherApp {
         return app.getLocale();
     }
 
-    async gainMicrosoftAuthCode(): Promise<string> {
-        await shell.openExternal(`https://login.live.com/oauth20_authorize.srf?client_id=${CLIENT_ID}&response_type=code&redirect_uri=xmcl://auth&scope=XboxLive.signin`);
-        return new Promise<string>((resolve) => {
-            this.once('microsoft-authorize-code', resolve);
-        });
+    handleUrl(url: string) {
+        const parsed = parse(url, true);
+        if ((parsed.host === 'launcher' || IS_DEV) && parsed.pathname === '/auth') {
+            let error: Error | undefined;
+            if (parsed.query.error) {
+                error = new Error(unescape(parsed.query.error_description as string));
+                (error as any).error = parsed.query.error;
+            }
+            this.emit('microsoft-authorize-code', error, parsed.query.code as string);
+        }
     }
 
     protected async onEngineReady() {
         app.allowRendererProcessReuse = true;
-        app.on('open-url', (event, url) => {
-            const parsed = parse(url, true);
-            if (parsed.protocol === 'xmcl:') {
-                switch (parsed.host) {
-                    case 'auth':
-                        this.emit('microsoft-authorize-code', parsed.query.code as string);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
         return super.onEngineReady();
     }
 

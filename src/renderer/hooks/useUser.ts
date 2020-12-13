@@ -192,7 +192,7 @@ export function useSwitchUser() {
 
 export function useLogin() {
     const { state, commit } = useStore();
-    const authServices = computed(() => ['offline', ...Object.keys(state.user.authServices)]);
+    const authServices = computed(() => ['offline', 'microsoft', ...Object.keys(state.user.authServices)]);
     const profileServices = computed(() => Object.keys(state.user.profileServices));
     const { userId, profileId, userProfile } = useCurrentUser();
     const { username, authService, profileService } = useUserProfile(userProfile);

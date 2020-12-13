@@ -67,7 +67,7 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "description": "user id",
+                    "description": "User id. Also means the localId in new account_json",
                     "type": "string"
                 },
                 "username": {
@@ -75,11 +75,11 @@
                     "type": "string"
                 },
                 "profileService": {
-                    "description": "The used profile service id",
+                    "description": "The used profile service name",
                     "type": "string"
                 },
                 "authService": {
-                    "description": "The used auth service id",
+                    "description": "The used auth service name",
                     "type": "string"
                 },
                 "accessToken": {
@@ -95,6 +95,10 @@
                 },
                 "selectedProfile": {
                     "description": "Selected profile uuid",
+                    "type": "string"
+                },
+                "avatar": {
+                    "description": "The avatar uri. This can be base64 data uri.",
                     "type": "string"
                 }
             },

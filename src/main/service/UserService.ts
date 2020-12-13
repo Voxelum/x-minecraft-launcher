@@ -1,8 +1,8 @@
-import { CLIENT_ID } from '@main/constant';
+import { aquireXBoxToken, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '@main/entities/user';
 import { createhDynamicThrottle as createDynamicThrottle } from '@main/util/trafficAgent';
 import { fitMinecraftLauncherProfileData } from '@main/util/userData';
-import { wrapError } from '@universal/entities/exception';
-import { UserSchema } from '@universal/entities/user.schema';
+import { Exception, wrapError } from '@universal/entities/exception';
+import { GameProfileAndTexture, UserSchema } from '@universal/entities/user.schema';
 import { MutationKeys } from '@universal/store';
 import { requireNonnull, requireObject, requireString } from '@universal/util/assert';
 import { DownloadTask } from '@xmcl/installer';
@@ -12,6 +12,14 @@ import { parse } from 'url';
 import { v4 } from 'uuid';
 import Service, { Singleton } from './Service';
 
+export interface LoginMicrosoftOptions {
+    /**
+     * The authorization code. If not present, it will try to get the auth code.
+     */
+    oauthCode?: string;
+
+    microsoftEmailAddress?: string;
+}
 export interface LauncherProfile {
     /**
      * All the launcher profiles and their configurations.
@@ -192,9 +200,6 @@ export default class UserService extends Service {
                 profileId: user.selectedProfile,
             });
         }
-        this.app.on('microsoft-authorize-code', (code) => {
-            this.loginMicrosoftFromCode(code);
-        });
     }
 
     /**
@@ -280,7 +285,7 @@ export default class UserService extends Service {
                 return;
             }
             try {
-                let result = await refresh({
+                const result = await refresh({
                     accessToken: user.accessToken,
                     clientToken: this.state.user.clientToken,
                 }, this.getters.authService);
@@ -488,113 +493,50 @@ export default class UserService extends Service {
     }
 
     @Singleton()
-    private async loginMicrosoftFromCode(code: string) {
-        interface OAuthTokenResponse {
-            token_type: string;
-            expires_in: number;
-            scope: string;
-            access_token: string;
-            refresh_token: string;
-            user_id: string;
-            foci: string;
-        }
-        interface XBoxResponse {
-            IssueInstant: string;
-            NotAfter: string;
-            Token: string;
-            DisplayClaims: {
-                xui: [
-                    {
-                        uhs: string
-                    }
-                ]
-            }
-        }
-        interface MinecraftAuthResponse {
-            username: string, // this is not the uuid of the account
-            roles: [],
-            access_token: string, // jwt, your good old minecraft access token
-            token_type: 'Bearer',
-            expires_in: number
-        }
-        interface MinecraftProfileResponse {
-            id: string, // the real uuid of the account, woo
-            name: string, // the mc user name of the account
-            skins: [{
-                id: string
-                state: 'ACTIVE' | string
-                url: string
-                variant: 'CLASSIC' | string
-                alias: 'STEVE' | string
-            }],
-            capes: []
-        }
-        interface MinecraftProfileErrorResponse {
-            path: '/minecraft/profile',
-            errorType: 'NOT_FOUND' | string,
-            error: string | 'NOT_FOUND',
-            errorMessage: string
-            developerMessage: string
-        }
-        const oauthResponse: OAuthTokenResponse = await this.networkManager.request.post('https://login.live.com/oauth20_token.srf', {
-            form: {
-                client_id: CLIENT_ID,
-                code,
-                grant_type: 'authorization_code',
-                redirect_uri: 'https://login.live.com/oauth20_desktop.srf',
-                scope: 'XboxLive.signin',
-            },
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-        }).json();
+    async loginMicrosoft(options: LoginMicrosoftOptions) {
+        const { oauthCode, microsoftEmailAddress } = options;
 
-        const accessToken = oauthResponse.access_token;
+        const req = this.app.networkManager.request;
+        const tokenResult = await this.credentialManager.aquireMicrosoftToken({ username: microsoftEmailAddress, code: oauthCode });
+        const oauthAccessToken = tokenResult!.accessToken;
+        const { xstsResponse, xboxGameProfile } = await aquireXBoxToken(req, oauthAccessToken);
 
-        const xblResponse: XBoxResponse = await this.networkManager.request.post('https://user.auth.xboxlive.com/user/authenticate', {
-            json: {
-                Properties: {
-                    AuthMethod: 'RPS',
-                    SiteName: 'user.auth.xboxlive.com',
-                    RpsTicket: accessToken,
+        const mcResponse = await loginMinecraftWithXBox(req, xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token);
+
+        const ownershipResponse = await checkGameOwnership(req, mcResponse.access_token);
+        const ownGame = ownershipResponse.items.length > 0;
+
+        if (ownGame) {
+            const gameProfileResponse = await getGameProfile(req, mcResponse.access_token);
+            const gameProfiles: GameProfileAndTexture[] = [{
+                id: gameProfileResponse.id,
+                name: gameProfileResponse.name,
+                textures: {
+                    SKIN: {
+                        url: gameProfileResponse.skins[0].url,
+                        metadata: { model: gameProfileResponse.skins[0].variant === 'CLASSIC' ? 'steve' : 'slim' },
+                    },
+                    CAPE: gameProfileResponse.capes.length > 0 ? {
+                        url: gameProfileResponse.capes[0].url,
+                    } : undefined,
                 },
-                RelyingParty: 'http://auth.xboxlive.com',
-                TokenType: 'JWT',
-            },
-        }).json();
+            }];
+            return {
+                userId: mcResponse.username,
+                accessToken: mcResponse.access_token,
+                gameProfiles,
+                selectedProfile: gameProfiles[0],
+                avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value,
+            };
+        }
 
-        const xstsResponse: XBoxResponse = await this.networkManager.request.post('https://xsts.auth.xboxlive.com/xsts/authorize', {
-            json: {
-                Properties: {
-                    SandboxId: 'RETAIL',
-                    UserTokens: [xblResponse.Token],
-                },
-                RelyingParty: 'rp://api.minecraftservices.com/',
-                TokenType: 'JWT',
-            },
-        }).json();
-
-        const mcResponse: MinecraftAuthResponse = await this.networkManager.request.post('https://api.minecraftservices.com/authentication/login_with_xbox', {
-            json: {
-                identityToken: `XBL3.0 x=${xstsResponse.DisplayClaims.xui[0].uhs};${xstsResponse.Token}`,
-            },
-        }).json();
-
-        const profileResponse: MinecraftProfileResponse | MinecraftProfileErrorResponse = await this.networkManager.request.get('https://api.minecraftservices.com/minecraft/profile', {
-            headers: {
-                Authorization: mcResponse.access_token,
-            },
-        }).json();
-    }
-
-    @Singleton()
-    async loginMicrosoft() {
-        const code = await this.app.gainMicrosoftAuthCode();
-        return this.loginMicrosoftFromCode(code);
-    }
-
-    async getProfileFromToken() {
-
+        return {
+            userId: mcResponse.username,
+            accessToken: mcResponse.access_token,
+            gameProfiles: [],
+            selectedProfile: undefined,
+            avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value,
+        };
     }
 
     /**
@@ -615,66 +557,89 @@ export default class UserService extends Service {
         let usingAuthService = this.state.user.authServices[authService];
         password = password ?? '';
 
-        if (authService !== 'offline' && !usingAuthService) {
+        if (authService !== 'offline' && authService !== 'microsoft' && !usingAuthService) {
             throw new Error(`Cannot find auth service named ${authService}`);
         }
 
         this.log(`Try login username: ${username} ${password ? 'with password' : 'without password'} to auth ${authService} and profile ${profileService}`);
 
-        let result = authService === 'offline'
-            ? offline(username)
-            : await login({
+        let userId: string;
+        let accessToken: string;
+        let availableProfiles: GameProfile[];
+        let selectedProfile: GameProfile | undefined;
+        let avatar: string | undefined;
+
+        if (authService === 'offline') {
+            const result = offline(username);
+            userId = result.user!.id;
+            accessToken = result.accessToken;
+            availableProfiles = result.availableProfiles;
+            selectedProfile = result.selectedProfile;
+        } else if (authService === 'microsoft') {
+            const result = await this.loginMicrosoft({ microsoftEmailAddress: username });
+            userId = result.userId;
+            accessToken = result.accessToken;
+            availableProfiles = result.gameProfiles;
+            selectedProfile = result.selectedProfile;
+            avatar = result.avatar;
+        } else {
+            const result = await login({
                 username,
                 password,
                 requestUser: true,
                 clientToken: this.state.user.clientToken,
             }, usingAuthService).catch((e) => {
                 if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
-                    throw wrapError(e, { type: 'loginInternetNotConnected' });
+                    throw Exception.from(e, { type: 'loginInternetNotConnected' });
                 } else if (e.error === 'ForbiddenOperationException'
                     && e.errorMessage === 'Invalid credentials. Invalid username or password.') {
-                    throw wrapError(e, { type: 'loginInvalidCredentials' });
+                    throw Exception.from(e, { type: 'loginInvalidCredentials' });
                 } else if (e.error === 'ForbiddenOperationException'
                     && e.errorMessage === 'Invalid credential information.') {
-                    throw wrapError(e, { type: 'loginInvalidCredentials' });
+                    throw Exception.from(e, { type: 'loginInvalidCredentials' });
                 }
-                throw wrapError(e, { type: 'loginGeneral' });
+                throw Exception.from(e, { type: 'loginGeneral' });
             });
+            userId = result.user!.id;
+            accessToken = result.accessToken;
+            availableProfiles = result.availableProfiles;
+            selectedProfile = result.selectedProfile;
+        }
 
         // this.refreshedSkin = false;
 
-        if (!this.state.user.users[result.user!.id]) {
-            this.log(`New user added ${result.user!.id}`);
+        if (!this.state.user.users[userId]) {
+            this.log(`New user added ${userId}`);
 
             this.commit('userProfileAdd', {
-                id: result.user!.id || '',
-                accessToken: result.accessToken,
-                profiles: result.availableProfiles,
+                id: userId,
+                accessToken,
+                profiles: availableProfiles,
 
                 username,
                 profileService,
                 authService,
 
-                selectedProfile: result.selectedProfile ? result.selectedProfile.id : '',
+                selectedProfile: selectedProfile ? selectedProfile.id : '',
+                avatar,
             });
         } else {
-            this.log(`Found existed user ${result.user!.id}. Update the profiles of it`);
+            this.log(`Found existed user ${userId}. Update the profiles of it`);
             this.commit('userProfileUpdate', {
-                id: result.user!.id,
-                accessToken: result.accessToken,
-                profiles: result.availableProfiles,
-                selectedProfile: result.selectedProfile ? result.selectedProfile.id : '',
+                id: userId,
+                accessToken,
+                profiles: availableProfiles,
+                selectedProfile: selectedProfile ? selectedProfile.id : '',
             });
         }
-        if (!this.state.user.selectedUser.id || (options.selectProfile && result.selectedProfile)) {
-            this.log(`Select the game profile ${result.selectedProfile.id} in user ${result.user!.id}`);
+        if ((!this.state.user.selectedUser.id || options.selectProfile) && selectedProfile) {
+            this.log(`Select the game profile ${selectedProfile.id} in user ${userId}`);
             this.commit('userGameProfileSelect', {
-                profileId: result.selectedProfile.id,
-                userId: result.user!.id,
+                profileId: selectedProfile.id,
+                userId,
             });
         } else {
             this.log(`No game profiles found for user ${username} in ${authService}, ${profileService} services.`);
-            this.pushException({ type: 'userNoProfiles', authService, profileService, username });
         }
     }
 }

@@ -1,22 +1,17 @@
 <template>
-  <v-dialog
-    v-model="isShown"
-    width="500"
-    :persistent="persistent"
-  >
-    <v-card style="padding-bottom: 25px;">
-      <v-flex
-        text-xs-center
-        pa-4
-        class="green"
-      >
+  <v-dialog v-model="isShown" width="500" :persistent="persistent">
+    <v-card class="login-card">
+      <v-flex text-xs-center pa-4 class="green">
         <v-icon style="font-size: 50px">person_pin</v-icon>
       </v-flex>
-      <v-card-text style="padding-left: 50px; padding-right: 50px; padding-bottom: 0px;">
-        <v-form
-          ref="form"
-          v-model="isFormValid"
-        >
+      <hint
+        v-if="showDropHint"
+        icon="save_alt"
+        :text="$t('user.dropHint')"
+        style="height: 350px"
+      ></hint>
+      <v-card-text v-if="!showDropHint">
+        <v-form ref="form" v-model="isFormValid">
           <v-layout>
             <v-flex xs6>
               <v-select
@@ -60,9 +55,9 @@
             prepend-icon="lock"
             type="password"
             required
-            :label="$t(`user.${isOffline ? 'offline' : 'mojang'}.password`)"
+            :label="passwordLabel"
             :rules="passwordRules"
-            :disabled="isOffline"
+            :disabled="isOffline || isMicrosoft"
             :error="!!passwordErrors.length"
             :error-messages="passwordErrors"
             @input="passwordErrors = []"
@@ -70,11 +65,11 @@
           />
         </v-form>
       </v-card-text>
-      <v-card-actions style="padding-left: 40px; padding-right: 40px;">
-        <v-flex
-          text-xs-center
-          style="z-index: 1;"
-        >
+      <v-card-actions
+        v-if="!showDropHint"
+        style="padding-left: 40px; padding-right: 40px"
+      >
+        <v-flex text-xs-center style="z-index: 1">
           <v-btn
             block
             :loading="logining"
@@ -85,19 +80,20 @@
             dark
             @click="login"
           >
-            {{ $t('user.login') }}
+            {{ $t("user.login") }}
           </v-btn>
-          <div style="margin-top: 25px;">
+          <div style="margin-top: 25px">
             <a
               style="padding-right: 10px; z-index: 20"
               href="https://my.minecraft.net/en-us/password/forgot/"
-            >{{ $t('user.forgetPassword') }}</a>
+              >{{ $t("user.forgetPassword") }}</a
+            >
             <a
               style="z-index: 20"
               href="https://my.minecraft.net/en-us/store/minecraft/#register"
             >
-              {{ $t('user.signupDescription') }}
-              {{ $t('user.signup') }}
+              {{ $t("user.signupDescription") }}
+              {{ $t("user.signup") }}
             </a>
           </div>
         </v-flex>
@@ -110,11 +106,14 @@
 import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref } from '@vue/composition-api';
 import { useLogin, useLoginValidation, useI18n } from '@/hooks';
 import { useLoginDialog } from '../hooks/index';
+import Hint from '../components/Hint.vue';
 
 export default defineComponent({
+  components: { Hint },
   setup(props, context) {
     const { hide, isShown, show } = useLoginDialog();
     const { $te, $t } = useI18n();
+    const inside = ref(false);
     const {
       username,
       password,
@@ -143,12 +142,19 @@ export default defineComponent({
       reset: resetError,
       handleError,
     } = useLoginValidation(isOffline);
+    const isMicrosoft = computed(() => authService.value.value === 'microsoft');
     const persistent = computed(() => !logined.value);
     const data = reactive({
       isFormValid: true,
     });
     const accountInput: Ref<any> = ref(null);
     const form: Ref<any> = ref(null);
+    const passwordLabel = computed(() => {
+      return $te(`user.${authService.value.value}.password`)
+        ? $t(`user.${authService.value.value}.password`)
+        : $t(`user.${isOffline.value ? 'offline' : 'mojang'}.password`);
+    });
+    const showDropHint = computed(() => isMicrosoft.value && inside.value && logining.value);
 
     async function _login() {
       resetError();
@@ -185,8 +191,18 @@ export default defineComponent({
         }
       });
     });
-    const _profileServices = computed(() => profileServices.value.map((a) => ({ value: a, text: $te(`user.${a}.name`) ? $t(`user.${a}.name`) : a })));
-    const _authServices = computed(() => authServices.value.map((a) => ({ value: a, text: $te(`user.${a}.name`) ? $t(`user.${a}.name`) : a })));
+
+    document.addEventListener('dragleave', (e) => {
+      if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'copyLink') {
+        inside.value = false;
+      }
+    });
+    document.addEventListener('dragenter', (e) => {
+      if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'copyLink') {
+        inside.value = true;
+      }
+    });
+
     return {
       ...toRefs(data),
       logining,
@@ -203,6 +219,7 @@ export default defineComponent({
       profileServices: _profileServices,
       authServices: _authServices,
       isOffline,
+      isMicrosoft,
 
       selectedProfile,
 
@@ -222,6 +239,8 @@ export default defineComponent({
 
       accountInput,
       form,
+      showDropHint,
+      passwordLabel,
     };
   },
 });
@@ -236,5 +255,15 @@ export default defineComponent({
 }
 .input-group--text-field label {
   top: 5px;
+}
+
+.login-card {
+  padding-bottom: 25px;
+}
+
+.login-card .v-card__text {
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-bottom: 0px;
 }
 </style>
