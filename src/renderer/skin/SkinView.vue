@@ -22,7 +22,7 @@ import { OrbitControls } from './OrbitControls';
 function useSkinModel(url: Ref<string>, slim: Ref<boolean>) {
   const model = PlayerModel.create();
   const steve = defaultSkin;
-  model.setSkin(steve, false);
+  model.setSkin(url.value || steve, false);
   onMounted(() => {
     (model.playerObject3d as unknown as Object3D).translateY(-0.5);
   });

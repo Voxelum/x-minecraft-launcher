@@ -14,7 +14,7 @@ export interface GameProfileAndTexture extends GameProfile {
 
 export interface UserProfile {
     /**
-     * user id
+     * User id. Also means the localId in new account_json
      */
     id: string;
     /**
@@ -23,12 +23,12 @@ export interface UserProfile {
     username: string;
 
     /**
-     * The used profile service id
+     * The used profile service name
      */
     profileService: string;
 
     /**
-     * The used auth service id
+     * The used auth service name
      */
     authService: string;
 
@@ -46,6 +46,11 @@ export interface UserProfile {
      * Selected profile uuid
      */
     selectedProfile: string;
+
+    /**
+     * The avatar uri. This can be base64 data uri.
+     */
+    avatar?: string;
 }
 
 export interface UserSchema {

@@ -30,7 +30,7 @@ export default class Controller implements LauncherAppController {
     private store!: StaticStore<any>;
 
     constructor(protected app: LauncherApp) { }
-
+   
     private setupBrowserLogger(ref: BrowserWindow, name: string) {
         const stream = this.app.logManager.openWindowLog(name);
         const levels = ['INFO', 'WARN', 'ERROR'];
@@ -66,9 +66,13 @@ export default class Controller implements LauncherAppController {
     createMainWindow() {
         const browser = new BrowserWindow({
             title: 'KeyStone Launcher',
+            minWidth: 800,
+            minHeight: 580,
             width: 800,
             height: 580,
-            resizable: false,
+            maxWidth: 1600,
+            maxHeight: 1060,
+            resizable: true,
             frame: false,
             transparent: true,
             hasShadow: false,
@@ -149,6 +153,14 @@ export default class Controller implements LauncherAppController {
         browser.show();
 
         this.setupRef = browser;
+    }
+
+    requireFocus(): void {
+        if (this.mainWin) {
+            this.mainWin.focus();
+        } else if (this.loggerWin) {
+            this.loggerWin.focus();
+        }
     }
 
     async requestOpenExternalUrl(url: string) {

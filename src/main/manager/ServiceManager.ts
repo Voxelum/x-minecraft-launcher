@@ -179,7 +179,7 @@ export default class ServiceManager extends Manager {
                     this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`);
                     this.warn(e);
                     this.warn(e.stack);
-                    return { error: e };
+                    return { error: { object: e, errorMessage: e.toString() } };
                 });
             }
             return { result: r };

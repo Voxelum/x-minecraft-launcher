@@ -1,7 +1,7 @@
 import { Resource } from '@universal/entities/resource';
 import { Issue } from '@universal/entities/issue';
 
-export type Exceptions = PingServerException | UserNoProfilesException | CurseforgeModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException;
+export type Exceptions = MinecraftProfileError | PingServerException | UserNoProfilesException | CurseforgeModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException;
 
 export interface ExceptionBase {
     type: string;
@@ -14,6 +14,10 @@ export class Exception extends Error implements ExceptionBase {
         super(message);
         this.type = exception.type;
         Object.assign(this, exception);
+    }
+
+    static from(error: Error, exception: Exceptions): Exception {
+        return Object.assign(error, exception) as Exception;
     }
 }
 
@@ -103,6 +107,15 @@ export interface PingServerException extends ExceptionBase {
     type: 'pingServerTimeout' | 'pingServerNotFound' | 'pingServerRefused';
     host: string;
     port: number
+}
+
+export interface MinecraftProfileError extends ExceptionBase {
+    type: 'fetchMinecraftProfileFailed';
+    path: '/minecraft/profile';
+    errorType: 'NOT_FOUND' | string;
+    error: string | 'NOT_FOUND';
+    errorMessage: string;
+    developerMessage: string;
 }
 
 export function isFileNoFound(e: unknown) {

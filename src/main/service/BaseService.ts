@@ -32,6 +32,10 @@ export default class BaseService extends Service {
         await copyPassively(join(mcPath, 'versions'), join(this.state.root, 'versions'));
     }
 
+    async handleUrl(url: string) {
+        this.app.handleUrl(url);
+    }
+
     /**
      * Try to open a url in default browser. It will popup a message dialog to let user know.
      * If user does not trust the url, it won't open the site.

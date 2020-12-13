@@ -846,6 +846,7 @@
     "authService": "Authorize Service",
     "birth": "Registered Birthday",
     "challenges": "Answer questions below to verify your identity",
+    "dropHint": "Drop the link with authcode here to manually login",
     "email": "Email Address",
     "forgetChallenges": "I have forgot these questions and I want to change them",
     "forgetPassword": "Forget Password?",
@@ -856,6 +857,11 @@
     "invalidCredentials": "Invalid credentials. Invalid username or password.",
     "login": "Login",
     "logout": "Logout",
+    "microsoft": {
+      "account": "Microsoft Account",
+      "name": "Microsoft",
+      "password": "Enter Password in Browser"
+    },
     "mojang": {
       "account": "Email Address",
       "name": "Mojang",

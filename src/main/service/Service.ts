@@ -172,6 +172,8 @@ export default class Service implements Managers {
 
     get storeManager() { return this.app.storeManager; }
 
+    get credentialManager() { return this.app.credentialManager; }
+
     /**
      * Submit a task into the task manager. 
      * 
