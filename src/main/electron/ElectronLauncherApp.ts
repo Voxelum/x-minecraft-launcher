@@ -214,7 +214,7 @@ export default class ElectronLauncherApp extends LauncherApp {
             }
         });
 
-        if (!store.state.locale) {
+        if (!store.state.setting.locale) {
             store.commit('locale', app.getLocale());
         }
 
