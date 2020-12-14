@@ -1,6 +1,6 @@
 <template>
   <v-container
-    grid-list-md
+    grid-list-xl
     fill-height
     style="overflow: auto;"
   >

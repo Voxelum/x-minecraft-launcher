@@ -55,7 +55,7 @@
         <hint
           v-if="items.length === 0"
           icon="save_alt"
-          :text="$t('mod.hint')"
+          :text="$t('mod.dropHint')"
           :absolute="true"
           style="height: 100%"
         />
@@ -368,8 +368,11 @@ export default defineComponent({
     }
     function group(list: ModItem[], mod: ModItem): ModItem[] {
       if (list.find(v => v.hash === mod.hash)) return list;
-      let existed = list.findIndex(v => v.id === mod.id && v.type === mod.type);
+      const existed = list.findIndex(v => v.id === mod.id && v.type === mod.type);
       if (existed !== -1) {
+        console.log('found existed:');
+        console.log(list[existed]);
+        console.log(mod);
         list.splice(existed + 1, 0, mod);
         mod.subsequence = true;
       } else {

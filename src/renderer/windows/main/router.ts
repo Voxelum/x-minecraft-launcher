@@ -1,6 +1,5 @@
 import { serviceProxy } from '@/providers/provideServiceProxy';
 import Router from 'vue-router';
-import AdvancedSettingPage from './pages/AdvancedSettingPage.vue';
 import BaseSettingPage from './pages/BaseSettingPage.vue';
 import CurseforgePage from './pages/CurseforgePage.vue';
 import CurseforgeProjectPage from './pages/CurseforgeProjectPage.vue';
@@ -42,10 +41,6 @@ const router = new Router({
         {
             path: '/base-setting',
             component: BaseSettingPage,
-        },
-        {
-            path: '/advanced-setting',
-            component: AdvancedSettingPage,
         },
         {
             path: '/mod-setting',
@@ -99,7 +94,6 @@ router.beforeEach((to, from, next) => {
             console.log(full.substring('external/'.length));
             openInBrowser(full.substring('external/'.length));
         } else {
-            console.log(full);
             openInBrowser(full);
         }
     } else {

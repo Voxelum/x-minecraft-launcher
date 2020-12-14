@@ -209,8 +209,8 @@
   "download": "Download",
   "downloadUpdate": "Downloading Update",
   "dropToImport": "Drop File(s) Here to Import as",
-  "enableModsAfterImport": "Enable Mods After Import",
   "edit": "Edit",
+  "enableModsAfterImport": "Enable Mods After Import",
   "error": {
     "empty": "No error yet",
     "installJava": "Cannot found any JRE. Please install at least one!",
@@ -380,10 +380,7 @@
   "installForge": {
     "": "Install Forge",
     "downloadInstaller": "Download Installer",
-    "downloadJar": "Download Forge Jar",
-    "installForgeJar": "Install Forge Jar",
-    "installForgeJson": "Install Forge JSON file",
-    "installLibraries": {
+    "libraries": {
       "": "Download Libraries",
       "library": "Install Library {lib}"
     },
@@ -495,7 +492,8 @@
     "localhost": "Localhost",
     "openCrashReportFolder": "Open Crash Report Folder",
     "openLogFolder": "Open Log Folder",
-    "showLog": "Show Minecraft Log"
+    "showLog": "Show Minecraft Log",
+    "showLogHint": "This will popup a window to stream Minecraft log after game started"
   },
   "launcher": {
     "checkUpdate": "Check Update",
@@ -532,9 +530,10 @@
     "deletion": "Deleting Mod",
     "deletionHint": "You will lose this mod & its metadata forever. Are you sure you want to delete it? | You will lose these mod & these metadata forever. Are you sure you want to do that?",
     "deletionRestHint": "And {rest} more Mods...",
+    "dropHint": "Drop mod's .jar/.litemod here to import.",
     "export": "Export Mod",
     "hideIncompatible": "Hide Incompatible Mods",
-    "hint": "Drop mod's .jar/.litemod here to import.",
+    "hint": "Enable or disable the Mods of this launch profile",
     "import": "Import Mod",
     "incompatible": "Incompatible Mod.",
     "missing": {
@@ -610,12 +609,14 @@
     "modpack": {
       "add": "Add Modpack",
       "author": "Author Name",
+      "authorHint": "This might be used to sign on exported modpack (Curseforge)",
       "create": "Create a New Modpack",
       "delete": {
         "description": "This will delete all the data about this modpack. Are you sure to do this?",
         "name": "Delete the modpack"
       },
       "description": "Description",
+      "descriptionHint": "General description for you modpack. Might be used for exporting as curseforge modpack.",
       "edit": "Edit Modpack Info",
       "error": {
         "requirename": "Name is required! Please come up a modpack name!"
@@ -687,6 +688,7 @@
     "threeDay": "In Three Days",
     "today": "Today",
     "url": "URL",
+    "urlHint": "The home page url of your modpack",
     "version": "Selected Version",
     "versionHint": "The Minecraft version of this game",
     "versionSetting": "Version Setting",
@@ -712,8 +714,9 @@
     },
     "deletion": "Deleting {pack}",
     "deletionHint": "You will lose the data and metadata of this resource pack. You are sure to do this?",
+    "dropHint": "Drop Resource Pack's folder/zip here to import.",
     "export": "Export Resource Pack",
-    "hint": "Drop Resource Pack's folder/zip here to import.",
+    "hint": "Enable or disable resource packs to this launch profile",
     "import": "Import Resource Pack",
     "incompatible": "Incompatible Resource Pack format({format}). Fitin {accept}. Current {actual}.",
     "name": "Resource Pack | Resource Packs",
@@ -745,10 +748,11 @@
     "deleteHint": "This operation cannot be revert. You will lose this save data forever. Are you sure to delete this save?",
     "deleteTitle": "Delete the Save",
     "detail": "More Info",
+    "dropHint": "Drag save zip here to Import",
     "export": "Export Save",
     "exportMessage": "Export the Save as zip",
     "exportTitle": "Export the Save",
-    "hint": "Drag save zip here to Import",
+    "hint": "View and modify the saves of this launch profile",
     "import": "Import Save",
     "importMessage": "Import a Save from zip",
     "importTitle": "Import a Save",

@@ -6,12 +6,10 @@
     :draggable="!enabled"
     :dark="!source.subsequence"
     :class="{
-      grey: source.subsequence,
-      'darken-2': source.subsequence,
       incompatible: compatible === false,
       maybe: compatible === 'maybe',
       unknown: compatible === 'unknown',
-      subsequence: source.subsequence,
+      subsequence: source.subsequence === true,
       dragged: dragged
     }"
     class="white--text draggable-card mod-card"
@@ -29,16 +27,11 @@
           name="transition-list"
           tag="div"
           style="user-select: none"
-          v-on="on"
         >
           <v-flex v-if="selection" :key="0" style="flex-grow: 0">
             <v-checkbox :value="selected"></v-checkbox>
           </v-flex>
-          <v-flex
-            v-if="!source.subsequence"
-            :key="1"
-            class="avatar"
-          >
+          <v-flex v-if="!source.subsequence" :key="1" class="avatar">
             <img
               ref="iconImage"
               v-fallback-img="unknownPack"
@@ -46,7 +39,7 @@
               contain
             />
           </v-flex>
-          <v-flex :key="2" style="padding: 10px 0; flex-grow: 1">
+          <v-flex :key="2" style="padding: 10px 0; flex-grow: 1" v-on="on">
             <h3 v-if="!source.subsequence">{{ source.name }}</h3>
             <v-chip small outline label color="amber" style="margin-left: 1px;">
               {{ source.version }}
@@ -247,6 +240,13 @@ export default defineComponent({
 }
 .incompatible.draggable-card:hover {
   background-color: #e65100;
+}
+.subsequence.draggable-card {
+  background-color: #616161;
+  border-color: #616161;
+}
+.subsequence.draggable-card:hover {
+  background-color: #388e3c;
 }
 .subsequence.incompatible.draggable-card:hover {
   background-color: #e65100 !important;
