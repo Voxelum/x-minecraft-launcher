@@ -82,7 +82,7 @@
           <hint
             v-if="unselectedItems.length === 0"
             icon="save_alt"
-            :text="$t('resourcepack.hint')"
+            :text="$t('resourcepack.dropHint')"
             :absolute="true"
             style="height: 100%"
           />
@@ -124,7 +124,7 @@
           <hint
             v-if="selectedItems.length === 0"
             icon="save_alt"
-            :text="$t('resourcepack.hint')"
+            :text="$t('resourcepack.dropHint')"
             :absolute="true"
             style="height: 100%"
           />

@@ -16,21 +16,11 @@
             :loading="refreshing"
             v-on="on"
             @click="$emit('show', 'normal')"
+            @mouseenter="enter($tc('profile.setting'))"
           >
             <v-icon dark>more_vert</v-icon>
           </v-btn>
         </template>
-        <v-btn
-          flat
-          icon
-          dark
-          :loading="refreshing"
-          to="/advanced-setting"
-          v-on="on"
-          @mouseenter="enter($t('profile.launchingDetail'))"
-        >
-          <v-icon dark>settings_applications</v-icon>
-        </v-btn>
         <v-btn
           flat
           icon
@@ -82,7 +72,7 @@ export default defineComponent({
   },
   setup() {
     const { $t } = useI18n();
-    const data = reactive({ text: $t('profile.modpack.export') });
+    const data = reactive({ text: $t('profile.setting') });
     const enter = (text: string) => {
       setTimeout(() => { data.text = text; }, 100);
     };

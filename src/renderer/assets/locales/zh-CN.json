@@ -360,10 +360,7 @@
   "installForge": {
     "": "安装 Forge",
     "downloadInstaller": "下载 Forge 安装器",
-    "downloadJar": "下载 Forge Jar 文件",
-    "installForgeJar": "安装 Forge Jar 文件",
-    "installForgeJson": "安装 Forge Json 文件",
-    "installLibraries": {
+    "libraries": {
       "": "安装依赖库",
       "library": "检查库"
     },
@@ -474,7 +471,8 @@
     "localhost": "本地服务器",
     "openCrashReportFolder": "打开崩溃日志文件夹",
     "openLogFolder": "打开日志文件夹",
-    "showLog": "Minecraft启动后显示日志"
+    "showLog": "Minecraft启动后显示日志",
+    "showLogHint": "游戏开启后将弹出一个显示 Minecraft 日志的窗口"
   },
   "launch.hideLauncher": "Minecraft 启动后隐藏启动器",
   "launch.showLog": "Minecraft 启动后显示日志",
@@ -513,9 +511,10 @@
     "deletion": "删除 Mod",
     "deletionHint": "你将移除这个 Mod 的文件和信息。你确定吗？| 你将移除这些 Mod 的文件和信息。你确定吗？",
     "deletionRestHint": "等 {rest} 个模组……",
+    "dropHint": "将Mod的jar文件拖入此处来导入",
     "export": "导出 Mod",
     "hideIncompatible": "隐藏不兼容 Mods",
-    "hint": "将Mod的jar文件拖入此处来导入",
+    "hint": "调整此启动配置所使用的的 Mod ",
     "import": "导入 Mod",
     "incompatible": "不兼容当前版本。",
     "missing": {
@@ -593,12 +592,14 @@
     "modpack": {
       "add": "添加Mod包",
       "author": "署名",
+      "authorHint": "在导出成各种整合包时使用",
       "create": "创建新Mod包",
       "delete": {
         "description": "将删除Mod包里所有数据，继续执行吗",
         "name": "删除Mod包"
       },
       "description": "游戏简介",
+      "descriptionHint": "通用的 modpack 简介。在导出成 curseforge 整合包或者其他格式时会使用",
       "edit": "编辑Mod包信息",
       "error": {
         "requirename": "名称不能为空！请随便编一个名字"
@@ -696,8 +697,9 @@
     },
     "deletion": "移除 {pack}",
     "deletionHint": "你将永远失去该资源包的数据以及相关信息，你进行此操作吗？",
+    "dropHint": "将资源包zip或文件夹拖入此处导入",
     "export": "导出资源包",
-    "hint": "将资源包zip或文件夹拖入此处导入",
+    "hint": "调整本启动配置使用的资源包",
     "import": "导入资源包",
     "incompatible": "不兼容的资源包格式({format})。适用范围 {accept}。当前版本 {actual}。",
     "name": "资源包 | 资源包",
@@ -729,10 +731,11 @@
     "deleteHint": "该操作不可逆，你将永远失去这个存档的记录，你确定要刪除此存档吗？",
     "deleteTitle": "删除该存档",
     "detail": "显示更多信息",
+    "dropHint": "将地图zip或文件夹拖入此处来导入",
     "export": "导出地图",
     "exportMessage": "将存档导出为 zip",
     "exportTitle": "导出存档",
-    "hint": "将地图zip或文件夹拖入此处来导入",
+    "hint": "浏览或修改此配置的存档",
     "import": "从文件导入",
     "importMessage": "将 zip 存档导入",
     "importTitle": "导入存档",

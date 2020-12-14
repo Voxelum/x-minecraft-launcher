@@ -1,87 +1,263 @@
 <template>
-  <v-form ref="form" v-model="valid" lazy-validation>
-    <v-container grid-list-xs fill-height style="overflow: auto;">
-      <v-layout row wrap justify-start align-start>
-        <v-flex tag="h1" class="white--text" xs12>
-          <span class="headline">{{ $t('profile.setting') }}</span>
-        </v-flex>
-        <v-flex d-flex xs6>
-          <v-text-field v-model="name" outline hide-details dark :label="$t('profile.name')"
-                        :placeholder="`Minecraft ${version.minecraft}`" />
-        </v-flex>
-        <v-flex d-flex xs6>
-          <v-text-field outline hide-details dark readonly :value="version.minecraft"
-                        :label="$t('profile.version')" @focus="goVersionPage" />
-        </v-flex>
-        <v-flex v-if="!isServer" d-flex xs6>
-          <v-text-field v-model="author" outline hide-details dark :label="$t('profile.modpack.author')"
-                        :placeholder="username" required />
-        </v-flex>
-        <v-flex v-if="isServer" d-flex xs6>
-          <v-text-field v-model="host" outline hide-details dark :label="$t('profile.server.host')" placeholder="www.whatever.com"
-                        required />
-        </v-flex>
-        <v-flex v-if="isServer" d-flex xs6>
-          <v-text-field v-model="port" outline hide-details dark :label="$t('profile.server.port')" placeholder="25565"
-                        required />
-        </v-flex>
-        <v-flex v-if="!isServer" d-flex xs6>
-          <v-text-field v-model="url" outline hide-details dark :label="$t('profile.url')" placeholder="www.whatever.com"
-                        required />
-        </v-flex>
-        <v-flex v-if="!isServer" d-flex xs12>
-          <v-text-field v-model="description" outline hide-details dark :label="$t('profile.modpack.description')" />
-        </v-flex>
+  <v-container fill-height style="overflow: auto;">
+    <v-layout wrap fill-height>
+      <v-flex d-flex xs12 tag="h2" class="white--text headline">
+        {{ $t("profile.setting") }}
+        <!-- <span class="headline"></span> -->
+      </v-flex>
+      <v-flex d-flex xs12>
+        <v-list
+          class="base-settings"
+          two-line
+          subheader
+          style="background: transparent; width: 100%"
+        >
+          <v-subheader style="padding-right: 2px">
+            {{ $t("setting.general") }}
+          </v-subheader>
+          <v-list-tile>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ $t("profile.name") }}</v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ $t("profile.nameHint") }}
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-text-field
+                v-model="name"
+                small
+                hide-details
+                dark
+                :placeholder="`Minecraft ${version.minecraft}`"
+              />
+            </v-list-tile-action>
+          </v-list-tile>
+          <v-list-tile class="selected-version" replace to="/version-setting">
+            <v-list-tile-content>
+              <v-list-tile-title>{{ $t("profile.version") }}</v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ $t("profile.versionHint") }}
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <!-- <v-layout > -->
+            <v-list-tile-action style="margin-right: 15px; display: flex; flex-grow: 1; flex-direction: row; align-item: center; justify-content: flex-end; align-items: center">
+              <v-chip color="green" large outline label>
+                {{ version.minecraft }}
+              </v-chip>
+              <v-chip v-if="version.forge" color="orange" large outline label>
+                Forge {{ version.forge }}
+              </v-chip>
+              <v-chip v-if="version.fabricLoader" large outline label color="yellow">
+                Fabric {{ version.fabricLoader }}
+              </v-chip>
+            </v-list-tile-action>
+            <v-list-tile-action>
+              <v-btn icon>
+                <v-icon>arrow_right</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+            <!-- </v-layout> -->
+          </v-list-tile>
 
-        <!-- <v-flex d-flex xs6>
-          <v-btn outline large replace to="/game-setting">
-            {{ $tc('gamesetting.name', 2) }}
-          </v-btn>
-        </v-flex> -->
-        <v-flex d-flex xs6>
-          <v-btn outline large replace to="/advanced-setting">
-            {{ $t('profile.launchingDetail') }}
-          </v-btn>
-        </v-flex>
-        <v-flex d-flex xs6>
-          <v-btn outline large replace to="/resource-pack-setting">
-            {{ $tc('resourcepack.name', 2) }}
-          </v-btn>
-        </v-flex>
-        <v-flex d-flex xs6>
-          <v-btn outline large replace to="/mod-setting">
-            {{ $tc('mod.name', 2) }}
-          </v-btn>
-        </v-flex>
+          <v-list-tile replace to="/resource-pack-setting" avatar>
+            <v-list-tile-action>
+              <v-icon>palette</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{ $tc("resourcepack.name", 2) }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ $t("resourcepack.hint") }}
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-btn icon>
+                <v-icon>arrow_right</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
 
-        <v-flex d-flex xs6>
-          <v-btn outline large replace to="/save">
-            {{ $tc('save.name', 2) }}
-          </v-btn>
-        </v-flex>
+          <v-list-tile replace to="/mod-setting" avatar>
+            <v-list-tile-action>
+              <v-icon>extensions</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{ $tc("mod.name", 2) }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ $t("mod.hint") }}
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-btn icon>
+                <v-icon>arrow_right</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
 
-        <!-- <v-flex d-flex xs6> -->
-        <!-- <v-btn outline large replace to="/server">
-            {{ $tc('server.name', 2) }}
-          </v-btn> -->
-        <!-- </v-flex> -->
+          <v-list-tile replace to="/save" avatar>
+            <v-list-tile-action>
+              <v-icon>map</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{ $tc("save.name", 2) }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ $t("save.hint") }}
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-btn icon>
+                <v-icon>arrow_right</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
 
-        <v-flex d-flex xs6>
-          <v-checkbox v-model="hideLauncher" hide-details dark :label="$t('launch.hideLauncher')" />
-        </v-flex>
-        <v-flex d-flex xs6>
-          <v-checkbox v-model="showLog" hide-details dark :label="$t('launch.showLog')" />
-        </v-flex>
-      </v-layout>
-    </v-container>
-  </v-form>
+          <v-list-tile avatar @click="hideLauncher = !hideLauncher">
+            <v-list-tile-action>
+              <v-checkbox v-model="hideLauncher" hide-details />
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{
+                  $t("launch.hideLauncher")
+                }}
+              </v-list-tile-title>
+              <!-- <v-list-tile-sub-title>
+                {{ $t("launch.hideLauncher") }}
+              </v-list-tile-sub-title> -->
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile avatar @click="showLog = !showLog">
+            <v-list-tile-action>
+              <v-checkbox v-model="showLog" hide-details />
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ $t("launch.showLog") }}</v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ $t("launch.showLogHint") }}
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-subheader style="padding-right: 2px">
+            {{ $tc("profile.modpack.name", 1) }}
+          </v-subheader>
+          <v-list-tile v-if="!isServer">
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{ $t("profile.modpack.author") }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ $t("profile.modpack.authorHint") }}
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action style="flex-grow: 0">
+              <v-text-field
+                v-model="author"
+                hide-details
+                dark
+                :placeholder="username"
+                required
+              />
+            </v-list-tile-action>
+          </v-list-tile>
+
+          <!-- <v-list-tile v-if="!isServer">
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{ $t("profile.url") }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ $t("profile.url") }}
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action style="width: 50%">
+              <v-text-field
+                v-model="url"
+                hide-details
+                placeholder="www.whatever.com"
+              />
+            </v-list-tile-action>
+          </v-list-tile> -->
+          <v-list-tile v-if="!isServer" style="margin-top: 5px">
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{ $t("profile.modpack.description") }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title style="height: 50px">
+                <v-text-field
+                  v-model="description"
+                  style="padding-top: unset; margin-top: unset; margin-bottom: 5px;"
+                  hide-details
+                  :placeholder="$t('profile.modpack.descriptionHint')"
+                />
+                <!-- {{ $t("profile.modpack.descriptionHint") }} -->
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <!-- <v-list-tile-action style="width: 50%">
+              <v-text-field v-model="description" hide-details />
+            </v-list-tile-action> -->
+          </v-list-tile>
+
+          <v-subheader v-if="isServer" style="padding-right: 2px">
+            {{ $tc("profile.server", 1) }}
+          </v-subheader>
+          <v-list-tile v-if="isServer">
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{ $t("profile.server.host") }}
+              </v-list-tile-title>
+              <!-- <v-list-tile-sub-title>
+                {{ $t("java.memoryHint") }}
+              </v-list-tile-sub-title> -->
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-text-field
+                v-model="host"
+                hide-details
+                dark
+                placeholder="www.whatever.com"
+                required
+              />
+            </v-list-tile-action>
+          </v-list-tile>
+          <v-list-tile v-if="isServer">
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{ $t("profile.server.port") }}
+              </v-list-tile-title>
+              <!-- <v-list-tile-sub-title> -->
+              <!-- {{ $t("java.memoryHint") }} -->
+              <!-- </v-list-tile-sub-title> -->
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-text-field
+                v-model="port"
+                hide-details
+                dark
+                placeholder="25565"
+                required
+              />
+            </v-list-tile-action>
+          </v-list-tile>
+        </v-list>
+      </v-flex>
+      <launch-view style="margin-bottom: 10px" />
+    </v-layout>
+  </v-container>
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent } from '@vue/composition-api';
-import { useInstance, useAutoSaveLoad, useRouter, useCurrentUser, useSelectedUser, useProfileId, useGameProfile } from '@/hooks';
+import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api';
+import { useInstance, useAutoSaveLoad, useRouter, useCurrentUser, useSelectedUser, useProfileId, useGameProfile, useLocalVersions } from '@/hooks';
+import LaunchView from './BaseSettingPageLaunchView.vue';
 
 export default defineComponent({
+  components: { LaunchView },
   setup() {
     const {
       runtime,
@@ -167,7 +343,6 @@ export default defineComponent({
     }
     return {
       ...toRefs(data),
-
       username,
       isServer,
       version: runtime,
@@ -192,4 +367,14 @@ export default defineComponent({
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.base-settings .v-text-field--box input,
+.v-text-field--full-width input,
+.v-text-field--outline input {
+  margin-top: 0;
+}
+
+/* .base-settings .v-list__tile__content {
+  flex-grow: 1;
+  max-width: 40%;
+} */
 </style>

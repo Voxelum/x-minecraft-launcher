@@ -46,7 +46,7 @@
             v-if="saves.length === 0"
             style="flex-grow: 1; height: 100%;"
             icon="map"
-            :text="$t('save.hint')"
+            :text="$t('save.dropHint')"
           />
           <transition-group
             tag="div"
