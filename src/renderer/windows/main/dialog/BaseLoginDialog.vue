@@ -38,10 +38,15 @@
           <v-combobox
             ref="accountInput"
             v-model="username"
+            :items="history"
             dark
             prepend-icon="person"
             required
-            :label="$t(`user.${isOffline ? 'offline' : 'mojang'}.account`)"
+            :label="
+              $te(`user.${authService.value}.account`)
+                ? $t(`user.${authService.value}.account`)
+                : $t(`user.${isOffline ? 'offline' : 'mojang'}.account`)
+            "
             :rules="usernameRules"
             :error="!!usernameErrors.length"
             :error-messages="usernameErrors"
@@ -103,7 +108,7 @@
 </template>
 
 <script lang=ts>
-import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref } from '@vue/composition-api';
+import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref, nextTick } from '@vue/composition-api';
 import { useLogin, useLoginValidation, useI18n } from '@/hooks';
 import { useLoginDialog } from '../hooks/index';
 import Hint from '../components/Hint.vue';
@@ -130,10 +135,11 @@ export default defineComponent({
       remove,
       reset,
 
+      history,
       profileServices,
       authServices,
     } = useLogin();
-    const isOffline = computed(() => authService.value === 'offline');
+    const isOffline = computed(() => authService.value.value === 'offline');
     const {
       usernameRules,
       usernameErrors,
@@ -159,7 +165,7 @@ export default defineComponent({
     async function _login() {
       resetError();
       accountInput.value.blur();
-      await context.root.$nextTick(); // wait a tick to make sure username updated.
+      await nextTick(); // wait a tick to make sure username updated.
       try {
         await login();
         hide();
@@ -186,8 +192,8 @@ export default defineComponent({
       });
       watch([authService, profileService], () => {
         form.value.resetValidation();
-        if (authService.value !== profileService.value && profileService.value === '') {
-          profileService.value = profileServices.value.find(p => p === authService.value) ?? 'mojang';
+        if (authService.value !== profileService.value && profileService.value.value === '') {
+          profileService.value = profileServices.value.find(p => p === authService.value) ?? profileServices.value.find(p => p.value === 'mojang')!;
         }
       });
     });
@@ -208,16 +214,10 @@ export default defineComponent({
       logining,
       username,
       password,
-      authService: computed<{ value: string; text: string }>({
-        get() { return _authServices.value.find(a => a.value === authService.value)!; },
-        set(v) { authService.value = v as any as string; },
-      }),
-      profileService: computed<{ value: string; text: string }>({
-        get() { return _profileServices.value.find(a => a.value === profileService.value)!; },
-        set(v) { profileService.value = v as any as string; },
-      }),
-      profileServices: _profileServices,
-      authServices: _authServices,
+      authService,
+      profileService,
+      profileServices,
+      authServices,
       isOffline,
       isMicrosoft,
 
@@ -238,6 +238,7 @@ export default defineComponent({
       persistent,
 
       accountInput,
+      history,
       form,
       showDropHint,
       passwordLabel,
