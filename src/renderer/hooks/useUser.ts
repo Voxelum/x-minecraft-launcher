@@ -1,9 +1,10 @@
+import { LoginException } from '@universal/entities/exception';
 import { EMPTY_GAME_PROFILE } from '@universal/entities/user';
 import { UserProfile } from '@universal/entities/user.schema';
-import { LoginException } from '@universal/entities/exception';
 import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api';
 import { GameProfile } from '@xmcl/user';
 import { useI18n } from './useI18n';
+import { useSelectedServices } from './useLoginAccounts';
 import { useBusy } from './useSemaphore';
 import { useServiceOnly } from './useService';
 import { useStore } from './useStore';
@@ -190,36 +191,54 @@ export function useSwitchUser() {
     };
 }
 
+interface ServiceItem {
+    text: string;
+    value: string;
+}
+
 export function useLogin() {
     const { state, commit } = useStore();
-    const authServices = computed(() => ['offline', 'microsoft', ...Object.keys(state.user.authServices)]);
-    const profileServices = computed(() => Object.keys(state.user.profileServices));
+    const { $te, $t } = useI18n();
+    const authServices: Ref<ServiceItem[]> = computed(() => ['microsoft', ...Object.keys(state.user.authServices), 'offline']
+        .map((a) => ({ value: a, text: $te(`user.${a}.name`) ? $t(`user.${a}.name`) : a })));
+    const profileServices: Ref<ServiceItem[]> = computed(() => Object.keys(state.user.profileServices)
+        .map((a) => ({ value: a, text: $te(`user.${a}.name`) ? $t(`user.${a}.name`) : a })));
     const { userId, profileId, userProfile } = useCurrentUser();
-    const { username, authService, profileService } = useUserProfile(userProfile);
+    const { username } = useUserProfile(userProfile);
     const { logined } = useUserProfileStatus(userProfile);
-    // const { authService, profileService, profileId, id } = useCurrentUser();
     const { login } = useServiceOnly('UserService', 'login', 'switchUserProfile');
-    function remove(userId: string) {
-        commit('userProfileRemove', userId);
-    }
+    const { profileService, authService, history } = useSelectedServices();
+
+    const _authService = computed<ServiceItem>({
+        get() { return authServices.value.find(a => a.value === authService.value)!; },
+        set(v) { authService.value = v as any as string; },
+    });
+    const _profileService = computed<ServiceItem>({
+        get() { return profileServices.value.find(a => a.value === profileService.value)!; },
+        set(v) { profileService.value = v as any as string; },
+    });
+
     const data = reactive({
         logining: false,
         username: '',
         password: '',
-        authService: authService.value.name || 'mojang',
-        profileService: profileService.value.name || 'mojang',
         selectProfile: true,
     });
     async function _login() {
         data.logining = true;
-        await login(data).finally(() => { data.logining = false; });
+        const index = history.value.indexOf(data.username);
+        if (index === -1) {
+            history.value.unshift(data.username);
+        }
+        await login({ ...data, authService: authService.value, profileService: profileService.value }).finally(() => { data.logining = false; });
+    }
+    function remove(userId: string) {
+        commit('userProfileRemove', userId);
     }
     function reset() {
         data.logining = false;
         data.username = username.value;
         data.password = '';
-        data.authService = authService.value.name || 'mojang';
-        data.profileService = profileService.value.name || 'mojang';
     }
     onMounted(() => {
         reset();
@@ -230,6 +249,9 @@ export function useLogin() {
         login: _login,
         reset,
         remove,
+        authService: _authService,
+        profileService: _profileService,
+        history,
 
         selectedProfile: profileId,
         selectedUser: userId,
