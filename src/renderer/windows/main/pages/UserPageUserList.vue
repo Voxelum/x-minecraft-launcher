@@ -44,7 +44,7 @@
       <template
         v-if="
           Object.keys(user.profiles).length === 0 &&
-          user.authService === 'microsoft'
+            user.authService === 'microsoft'
         "
       >
         <v-card color="orange">

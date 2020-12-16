@@ -17,9 +17,11 @@
     </v-list-tile-avatar>
 
     <v-list-tile-title>{{ source.id }}</v-list-tile-title>
-    <v-list-tile-sub-title v-if="showTime">{{
-      source.releaseTime
-    }}</v-list-tile-sub-title>
+    <v-list-tile-sub-title v-if="showTime">
+      {{
+        source.releaseTime
+      }}
+    </v-list-tile-sub-title>
 
     <v-list-tile-action style="justify-content: flex-end;">
       <v-chip :color="source.type === 'release' ? 'primary' : ''" label dark>

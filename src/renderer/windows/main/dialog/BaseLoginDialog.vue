@@ -1,6 +1,6 @@
 <template>
-  <v-dialog v-model="isShown" width="500" :persistent="persistent">
-    <v-card class="login-card">
+  <v-dialog v-model="isShown" width="500" :persistent="persistent" @dragover.prevent>
+    <v-card class="login-card" @dragover.prevent @drop="onDrop">
       <v-flex text-xs-center pa-4 class="green">
         <v-icon style="font-size: 50px">person_pin</v-icon>
       </v-flex>
@@ -91,7 +91,7 @@
             <a
               style="padding-right: 10px; z-index: 20"
               href="https://my.minecraft.net/en-us/password/forgot/"
-              >{{ $t("user.forgetPassword") }}</a
+            >{{ $t("user.forgetPassword") }}</a
             >
             <a
               style="z-index: 20"
@@ -109,7 +109,7 @@
 
 <script lang=ts>
 import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref, nextTick } from '@vue/composition-api';
-import { useLogin, useLoginValidation, useI18n } from '@/hooks';
+import { useLogin, useLoginValidation, useI18n, useService } from '@/hooks';
 import { useLoginDialog } from '../hooks/index';
 import Hint from '../components/Hint.vue';
 
@@ -155,11 +155,9 @@ export default defineComponent({
     });
     const accountInput: Ref<any> = ref(null);
     const form: Ref<any> = ref(null);
-    const passwordLabel = computed(() => {
-      return $te(`user.${authService.value.value}.password`)
-        ? $t(`user.${authService.value.value}.password`)
-        : $t(`user.${isOffline.value ? 'offline' : 'mojang'}.password`);
-    });
+    const passwordLabel = computed(() => ($te(`user.${authService.value.value}.password`)
+      ? $t(`user.${authService.value.value}.password`)
+      : $t(`user.${isOffline.value ? 'offline' : 'mojang'}.password`)));
     const showDropHint = computed(() => isMicrosoft.value && inside.value && logining.value);
 
     async function _login() {
@@ -176,7 +174,6 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      reset();
       if (!logined.value) {
         show();
       }
@@ -208,6 +205,14 @@ export default defineComponent({
         inside.value = true;
       }
     });
+    const { handleUrl } = useService('BaseService');
+    const onDrop = (e: DragEvent) => {
+      const url = e.dataTransfer?.getData('xmcl/url');
+      if (url) {
+        handleUrl(url);
+      }
+      inside.value = false;
+    };
 
     return {
       ...toRefs(data),
@@ -242,6 +247,7 @@ export default defineComponent({
       form,
       showDropHint,
       passwordLabel,
+      onDrop,
     };
   },
 });
