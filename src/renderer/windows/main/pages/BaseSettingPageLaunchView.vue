@@ -31,9 +31,11 @@
           <v-list-tile>
             <v-list-tile-content>
               <v-list-tile-title>{{ $t("java.location") }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{
-                java ? java.path : $t("java.locationPlaceHolder")
-              }}</v-list-tile-sub-title>
+              <v-list-tile-sub-title>
+                {{
+                  java ? java.path : $t("java.locationPlaceHolder")
+                }}
+              </v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
         </template>
@@ -45,9 +47,11 @@
         </v-list-tile-action>
         <v-list-tile-content>
           <v-list-tile-title>{{ $t("java.memory") }}</v-list-tile-title>
-          <v-list-tile-sub-title>{{
-            $t("java.memoryHint")
-          }}</v-list-tile-sub-title>
+          <v-list-tile-sub-title>
+            {{
+              $t("java.memoryHint")
+            }}
+          </v-list-tile-sub-title>
         </v-list-tile-content>
         <v-list-tile-action style="width: 20%; margin-right: 10px">
           <v-text-field
@@ -111,12 +115,16 @@
           </v-icon>
         </v-list-tile-action>
         <v-list-tile-content>
-          <v-list-tile-title>{{
-            $t("profile.launchArguments")
-          }}</v-list-tile-title>
-          <v-list-tile-sub-title>{{
-            java ? java.path : $t("java.locationPlaceHolder")
-          }}</v-list-tile-sub-title>
+          <v-list-tile-title>
+            {{
+              $t("profile.launchArguments")
+            }}
+          </v-list-tile-title>
+          <v-list-tile-sub-title>
+            {{
+              java ? java.path : $t("java.locationPlaceHolder")
+            }}
+          </v-list-tile-sub-title>
         </v-list-tile-content>
 
         <v-list-tile-action>
@@ -133,9 +141,11 @@
     </v-list>
     <v-dialog v-model="isPreviewShown" :width="500" style="overflow: hidden">
       <v-card>
-        <v-toolbar color="primary">{{
-          $t("profile.launchArguments")
-        }}</v-toolbar>
+        <v-toolbar color="primary">
+          {{
+            $t("profile.launchArguments")
+          }}
+        </v-toolbar>
         <v-textarea
           hide-details
           readonly
@@ -228,7 +238,7 @@ export default defineComponent({
         .then(refresh)
         .then(() => {
           notify({ level: 'success', title: $t('copy.success') });
-          board.writeText(command.value)
+          board.writeText(command.value);
         });
     }
     useAutoSaveLoad(save, load);

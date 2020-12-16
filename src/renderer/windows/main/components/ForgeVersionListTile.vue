@@ -9,9 +9,11 @@
     @click="select(source)"
   >
     <v-list-tile-avatar>
-      <v-icon v-if="source.status !== 'loading'">{{
-        source.status === "remote" ? "cloud" : "folder"
-      }}</v-icon>
+      <v-icon v-if="source.status !== 'loading'">
+        {{
+          source.status === "remote" ? "cloud" : "folder"
+        }}
+      </v-icon>
       <v-progress-circular v-else :width="2" :size="24" indeterminate />
     </v-list-tile-avatar>
 

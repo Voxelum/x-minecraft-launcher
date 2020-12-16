@@ -53,9 +53,7 @@ export default defineComponent({
           return 'white';
       }
     });
-    const indeterminate = computed(() => {
-      return !props.item.total || props.item.total === -1
-    });
+    const indeterminate = computed(() => !props.item.total || props.item.total === -1);
     const icon = computed(() => {
       if (hover.value) {
         if (props.item.state === TaskState.Running) {
@@ -77,7 +75,7 @@ export default defineComponent({
     });
     const percentage = computed(() => props.item.progress! / props.item.total! * 100);
     const onClick = () => {
-        if (props.item.state === TaskState.Running) {
+      if (props.item.state === TaskState.Running) {
         context.emit('pause');
       } else if (props.item.state === TaskState.Paused) {
         context.emit('resume');
