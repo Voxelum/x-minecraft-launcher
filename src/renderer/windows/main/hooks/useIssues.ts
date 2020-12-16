@@ -18,7 +18,7 @@ export function useIssueHandler() {
     }
 
     register('missingModsOnServer', showModDialog);
-    register('unkownMod', () => replace('/mod-setting'));
+    register('unknownMod', () => replace('/mod-setting'));
     register('incompatibleMod', () => replace('/mod-setting'));
     register('incompatibleResourcePack', () => replace('/resource-pack-setting'));
     register('incompatibleJava', () => {
