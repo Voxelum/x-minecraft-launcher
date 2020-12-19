@@ -1,7 +1,7 @@
 import LauncherApp from '@main/app/LauncherApp';
 import { Client } from '@main/engineBridge';
 import { TaskEventEmitter, createTaskPusher, mapTaskToTaskPayload } from '@main/entities/task';
-import { CancelledError, Task, TaskContext, TaskLooped, TaskState } from '@xmcl/task';
+import { CancelledError, task, Task, TaskContext, TaskLooped, TaskState } from '@xmcl/task';
 import { EventEmitter } from 'events';
 import { v4 } from 'uuid';
 import { Manager } from '.';
@@ -37,6 +37,13 @@ export default class TaskManager extends Manager {
             },
             onFailed(task: Task<any>, error: any) {
                 emitter.emit('fail', uid, task, error);
+                let errorMessage: string;
+                if (error instanceof Error) {
+                    errorMessage = error.toString();
+                } else {
+                    errorMessage = JSON.stringify(error, null, 4);
+                }
+                Reflect.set(task, 'error', errorMessage);
             },
             onSuccessed(task: Task<any>, result: any) {
                 emitter.emit('success', uid, task);
@@ -124,7 +131,18 @@ export default class TaskManager extends Manager {
             protected reset(): void {
             }
         }
-        // this.submit(new SampleTask(10).setName('test1'));
+        this.submit(task('a', async function () {
+            const first = (new SampleTask(10).setName('test1'));
+            const sec = (new SampleTask(10).setName('test2'));
+            const failed = (task('failed', async () => {
+                await new Promise((resolve) => setTimeout(resolve, 5000));
+                throw new Error('wtf');
+            }));
+            await this.all([first, sec, failed], {
+                throwErrorImmediately: true,
+                getErrorMessage() { return 'failed~' },
+            });
+        }));
         // this.submit(Task.create('test', (c) => {
         //     c.execute(Task.create('a', (ctx) => {
         //         let progress = 0;

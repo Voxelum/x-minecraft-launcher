@@ -16,6 +16,7 @@ export interface TaskPayload extends TaskPayloadBase {
     progress: number;
     total: number;
     state: TaskState;
+    error?: string;
 }
 
 export interface TaskPayloadBase {
@@ -63,6 +64,8 @@ export interface TaskUpdatePayload extends TaskPayloadBase {
      * The task to (destination)
      */
     to?: string;
+
+    error?: string;
 
     progress?: number;
 

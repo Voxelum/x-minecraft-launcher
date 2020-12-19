@@ -56,7 +56,7 @@ export function provideTasks() {
                 if (elem) {
                     cached[i] = elem;
                 } else {
-                    cached.length = i + 1;
+                    cached.length = i;
                     break;
                 }
             }
@@ -68,12 +68,13 @@ export function provideTasks() {
     function convertPayloadToItem(payload: TaskPayload): TaskItem {
         const allChildren = ref(payload.children.map(convertPayloadToItem));
         const children = getVisibleChildren(allChildren);
+        console.log(payload);
         return reactive({
             id: `${payload.uuid}@${payload.id}`,
             taskId: payload.uuid,
             title: $t(payload.path, payload.param),
             time: new Date(payload.time),
-            message: payload.to ?? payload.from ?? '',
+            message: payload.error ?? payload.from ?? payload.to ?? '',
             throughput: 0,
             state: payload.state,
             progress: payload.progress,
@@ -106,7 +107,7 @@ export function provideTasks() {
                 title: $t(path, param),
                 children,
                 time: new Date(time),
-                message: to ?? from ?? '',
+                message: from ?? to ?? '',
                 throughput: 0,
                 state: TaskState.Running,
                 progress: 0,
@@ -129,12 +130,12 @@ export function provideTasks() {
             dictionary[localId] = item;
         }
         for (const update of updates) {
-            const { uuid, id, time, to, from, progress, total, chunkSize, state: status } = update;
+            const { uuid, id, time, to, from, progress, total, chunkSize, state, error } = update;
             const localId = `${uuid}@${id}`;
             const item = dictionary[localId];
             if (item) {
-                if (status) {
-                    item.state = status;
+                if (state) {
+                    item.state = state;
                 }
                 if (progress) {
                     item.progress = progress;
@@ -143,7 +144,7 @@ export function provideTasks() {
                     item.total = total;
                 }
                 item.time = new Date(time);
-                item.message = from || to || item.message;
+                item.message = error || from || to || item.message;
                 if (chunkSize) {
                     item.throughput += chunkSize;
                 }

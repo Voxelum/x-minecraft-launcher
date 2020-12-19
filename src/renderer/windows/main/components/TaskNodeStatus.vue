@@ -62,7 +62,7 @@ export default defineComponent({
       }
       switch (props.item.state) {
         case TaskState.Successed:
-          return props.item.children.length > 0 ? 'done_all' : 'check';
+          return props.item.children && props.item.children.length > 0 ? 'done_all' : 'check';
         case TaskState.Cancelled:
           return 'stop';
         case TaskState.Failed:
