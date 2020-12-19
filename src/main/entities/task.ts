@@ -1,4 +1,4 @@
-import { TaskAddedPayload, TaskBatchPayload, TaskPayload } from '@universal/task';
+import { TaskAddedPayload, TaskBatchPayload, TaskPayload, TaskUpdatePayload } from '@universal/task';
 import { Task, TaskGroup, TaskState } from '@xmcl/task';
 import { EventEmitter } from 'events';
 
@@ -19,19 +19,6 @@ export interface TaskMonitor {
     destroy(): void;
 }
 
-interface PartialUpdate {
-    progress?: number;
-    total?: number;
-    chunkSize?: number;
-    from?: string;
-    to?: string;
-    state?: TaskState;
-    message?: string;
-    uuid: string;
-    id: number;
-    time: number;
-}
-
 export function mapTaskToTaskPayload(uuid: string, task: Task<any>): TaskPayload {
     return {
         id: task.id,
@@ -44,6 +31,7 @@ export function mapTaskToTaskPayload(uuid: string, task: Task<any>): TaskPayload
         from: task.from ?? '',
         state: task.state,
         time: Date.now(),
+        error: Reflect.get(task, 'error'),
         children: task instanceof TaskGroup ? (task as any).children.map((c: Task) => mapTaskToTaskPayload(uuid, c)) : [],
     };
 }
@@ -56,12 +44,12 @@ export function createTaskMonitor(
     onEventQueued: (total: number) => void = () => { },
 ): TaskMonitor {
     let adds: TaskAddedPayload[] = [];
-    let updates: Record<string, PartialUpdate> = {};
+    let updates: Record<string, TaskUpdatePayload> = {};
 
     function notify() {
         onEventQueued(adds.length + Object.keys(updates).length);
     }
-    function getUpdate(uuid: string, task: Task<any>): PartialUpdate {
+    function getUpdate(uuid: string, task: Task<any>): TaskUpdatePayload {
         const uuidWithId = `${uuid}@${task.id}`;
         if (uuidWithId in updates) {
             return updates[uuidWithId];
@@ -86,7 +74,7 @@ export function createTaskMonitor(
         } else {
             errorMessage = JSON.stringify(error, null, 4);
         }
-        partial.message = errorMessage;
+        partial.error = errorMessage;
         partial.state = task.state;
         notify();
     }
@@ -94,7 +82,8 @@ export function createTaskMonitor(
         const partial = getUpdate(uuid, task);
         partial.progress = task.progress;
         partial.total = task.total;
-        partial.message = task.from || task.to || partial.message;
+        partial.from = task.from;
+        partial.to = task.to;
         if (typeof size === 'number') {
             if (partial.chunkSize) {
                 partial.chunkSize += size;
