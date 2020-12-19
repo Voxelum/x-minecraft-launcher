@@ -1,7 +1,7 @@
 import { ForgeVersion, ForgeVersionList, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema } from '@universal/entities/version.schema';
 import { MutationKeys } from '@universal/store';
 import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core';
-import { getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installFabricYarnAndLoader, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL } from '@xmcl/installer';
+import { installFabric, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installFabricYarnAndLoader, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL, getFabricLoaderArtifact } from '@xmcl/installer';
 import { task } from '@xmcl/task';
 import Service, { Inject, Singleton } from './Service';
 import VersionService from './VersionService';
@@ -248,7 +248,7 @@ export default class InstallService extends Service {
             await this.submit(installForgeTask({ version: local.forge, mcversion: local.minecraft }, location).setName('installForge'));
         }
         if (local?.fabricLoader) {
-            await this.installFabric({ yarn: local.yarn, loader: local.fabricLoader });
+            await this.installFabric({ minecraft: local.minecraft, loader: local.fabricLoader });
         }
         await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries'));
         await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'));
@@ -414,10 +414,13 @@ export default class InstallService extends Service {
      * @param versions The fabric versions
      */
     @Singleton('install')
-    async installFabric(versions: { yarn: string; loader: string }) {
+    async installFabric(versions: { yarn?: string; loader: string; minecraft: string }) {
         try {
             this.log(`Start to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`);
-            const result = await this.submit(task('installFabric', () => installFabricYarnAndLoader(versions.yarn, versions.loader, this.state.root)));
+            const result = await this.submit(task('installFabric', async () => {
+                const artifact = await getFabricLoaderArtifact(versions.minecraft, versions.loader);
+                return installFabric(artifact, this.getPath(), { side: 'client' });
+            }));
             this.local.refreshVersions();
             this.log(`Success to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`);
             return result;

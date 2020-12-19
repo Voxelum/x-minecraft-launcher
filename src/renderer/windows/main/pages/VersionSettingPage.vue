@@ -139,12 +139,13 @@ export default defineComponent({
         data.forge = '';
       } else {
         data.forge = v.version;
+        data.loader = '';
       }
     }
-    function setFabric(version?: { loader: string; yarn: string }) {
+    function setFabric(version?: string) {
       if (version) {
-        data.loader = version.loader;
-        data.yarn = version.yarn;
+        data.loader = version;
+        data.forge = '';
       } else {
         data.loader = '';
         data.yarn = '';
