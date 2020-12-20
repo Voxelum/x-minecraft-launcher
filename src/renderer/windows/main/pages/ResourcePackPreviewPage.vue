@@ -89,7 +89,6 @@ export default defineComponent({
         },
       })).sort((a, b) => a.name.localeCompare(b.name));
     }).finally(() => {
-      console.log('done');
       loading.value = false;
     });
     function filterItem(r: BlockStateJson) {

@@ -86,8 +86,8 @@ export default defineComponent({
   },
   setup(props, context) {
     const { minecraft, forge } = useInstanceVersionBase();
-    const { compatible: mcCompatible } = useCompatible(computed(() => props.source.acceptVersion), minecraft, true);
-    const { compatible: loaderCompatible } = useCompatible(computed(() => props.source.acceptLoaderVersion), forge, false);
+    const { compatible: mcCompatible } = useCompatible(computed(() => props.source.dependencies.minecraft), minecraft, true);
+    const { compatible: loaderCompatible } = useCompatible(computed(() => props.source.dependencies.forge ?? ''), forge, false);
     const { open } = useContextMenu();
     const { openInBrowser, showItemInDirectory } = useService('BaseService');
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute();
@@ -122,8 +122,15 @@ export default defineComponent({
     });
 
     const compatibleText = computed(() => {
-      let acceptVersionText = $t('mod.acceptVersion', { version: props.source.acceptVersion, loaderVersion: props.source.acceptLoaderVersion });
-      let compatibleText = compatible.value === 'unknown'
+      const deps = props.source.dependencies;
+      let acceptVersionText = $t('mod.acceptVersion', { version: deps.minecraft });
+      if (deps.forge) {
+        acceptVersionText += `, Forge ${deps.forge}`;
+      }
+      if (deps.fabricLoader) {
+        acceptVersionText += `, FabricLoader ${deps.fabricLoader}`;
+      }
+      const compatibleText = compatible.value === 'unknown'
         ? $t('mod.nocompatible')
         : compatible.value
           ? $t('mod.compatible')
