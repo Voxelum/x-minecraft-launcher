@@ -44,6 +44,7 @@ import {
 import { required } from '@/util/props';
 import Tile from './CurseforgeProjectPageFilesTile.vue';
 import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue';
+import { useSearch } from '../hooks';
 
 export default defineComponent({
   components: { VirtualList, AddInstanceStepper },
@@ -51,7 +52,7 @@ export default defineComponent({
   setup(props) {
     const { files, loading, refresh } = useCurseforgeProjectFiles(props.project);
     const { install: installFile, getFileStatus, getFileResource } = useCurseforgeInstall(props.type, props.project);
-    const text = inject('search-text', ref(''));
+    const { text } = useSearch();
     const data = reactive({
       isConfirmDialogShown: false,
       initialTemplate: '',
