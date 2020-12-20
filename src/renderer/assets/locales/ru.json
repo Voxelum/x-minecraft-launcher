@@ -348,7 +348,7 @@
   "importSave": "Импортировать сохранение",
   "installAssets": {
     "": "Установить файлы Asset",
-    "assets": "Установить Asset {hash}",
+    "asset": "Установить Asset {hash}",
     "assetsJson": "Проверить индекс файл Assets"
   },
   "installAuthlibInjector": "Установить authlib-injector",
@@ -523,7 +523,7 @@
     "version": "Версия Minecraft"
   },
   "mod": {
-    "acceptVersion": "Принять Minecraft {version} с загрузчиком {loaderVersion}",
+    "acceptVersion": "Принять Minecraft {version}",
     "backToAllMods": "Вернуться ко всем модам",
     "compatible": "Совместимый мод.",
     "deletion": "Удаление мода",

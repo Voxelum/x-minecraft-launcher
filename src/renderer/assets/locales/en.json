@@ -348,7 +348,7 @@
   "importSave": "Import Save",
   "installAssets": {
     "": "Install Asset Files",
-    "assets": "Install Asset {hash}",
+    "asset": "Install Asset {hash}",
     "assetsJson": "Check Assets Index File"
   },
   "installAuthlibInjector": "Install authlib-injector",
@@ -524,7 +524,7 @@
     "version": "Minecraft Version"
   },
   "mod": {
-    "acceptVersion": "Accept Minecraft {version} with loader {loaderVersion}",
+    "acceptVersion": "Accept Minecraft {version}",
     "backToAllMods": "Back to All Mods",
     "compatible": "Compatible Mod.",
     "deletion": "Deleting Mod",

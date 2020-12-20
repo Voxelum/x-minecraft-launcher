@@ -1,6 +1,7 @@
 <template>
   <v-card 
     v-draggable-card
+    v-ripple
     color="grey darken-3 draggable-card"
     hover
     dark

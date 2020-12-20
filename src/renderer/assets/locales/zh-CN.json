@@ -328,7 +328,7 @@
   "importSave": "导入存档",
   "installAssets": {
     "": "下载游戏资源文件",
-    "assets": "下载资源文件%{hash}",
+    "asset": "下载资源文件%{hash}",
     "assetsJson": "下载资源文件目录"
   },
   "installAuthlibInjector": "安装 authlib-injector",
@@ -505,7 +505,7 @@
     "version": "Minecraft 版本"
   },
   "mod": {
-    "acceptVersion": "需要 Minecraft {version} 和 Forge {loaderVersion}",
+    "acceptVersion": "需要 Minecraft {version}",
     "backToAllMods": "返回所有 Mods",
     "compatible": "可用于当前版本。",
     "deletion": "删除 Mod",
