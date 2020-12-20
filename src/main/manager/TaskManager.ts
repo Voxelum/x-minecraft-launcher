@@ -131,18 +131,18 @@ export default class TaskManager extends Manager {
             protected reset(): void {
             }
         }
-        this.submit(task('a', async function () {
-            const first = (new SampleTask(10).setName('test1'));
-            const sec = (new SampleTask(10).setName('test2'));
-            const failed = (task('failed', async () => {
-                await new Promise((resolve) => setTimeout(resolve, 5000));
-                throw new Error('wtf');
-            }));
-            await this.all([first, sec, failed], {
-                throwErrorImmediately: true,
-                getErrorMessage() { return 'failed~' },
-            });
-        }));
+        // this.submit(task('a', async function () {
+        //     const first = (new SampleTask(10).setName('test1'));
+        //     const sec = (new SampleTask(10).setName('test2'));
+        //     const failed = (task('failed', async () => {
+        //         await new Promise((resolve) => setTimeout(resolve, 5000));
+        //         throw new Error('wtf');
+        //     }));
+        //     await this.all([first, sec, failed], {
+        //         throwErrorImmediately: true,
+        //         getErrorMessage() { return 'failed~' },
+        //     });
+        // }));
         // this.submit(Task.create('test', (c) => {
         //     c.execute(Task.create('a', (ctx) => {
         //         let progress = 0;

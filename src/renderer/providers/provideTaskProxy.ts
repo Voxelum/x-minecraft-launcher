@@ -5,12 +5,62 @@ import { TaskProxy } from '@/taskProxy';
 import { TaskBatchPayload, TaskPayload, TaskState } from '@universal/task';
 import { computed, onMounted, onUnmounted, provide, reactive, Ref, ref } from '@vue/composition-api';
 
+class ChildrenWatcer {
+    readonly cached: Array<TaskItem> = new Array(10);
+
+    readonly childrens: Array<TaskItem> = [];
+
+    public dirty = false;
+
+    constructor(private target: Ref<TaskItem[]>, init?: TaskItem[]) {
+        if (init) {
+            this.childrens = init;
+            this.dirty = true;
+            this.update();
+        }
+    }
+
+    addChild(item: TaskItem) {
+        this.childrens.unshift(item);
+        this.dirty = true;
+    }
+
+    update() {
+        if (!this.dirty) {
+            return;
+        }
+        const successed = [];
+        const others = [];
+        const children = this.childrens;
+        const cached = this.cached;
+
+        for (const item of children) {
+            if (item.state === TaskState.Successed) {
+                successed.push(item);
+            } else {
+                others.push(item);
+            }
+        }
+        const combined = others.concat(successed);
+        for (let i = 0; i < this.cached.length; i++) {
+            const elem = combined.shift();
+            if (elem) {
+                cached[i] = elem;
+            } else {
+                cached.length = i;
+                break;
+            }
+        }
+        this.target.value = cached;
+    }
+}
+
 export function provideTasks() {
     const ipc = electron.ipcRenderer;
 
     const { $t } = useI18n();
     const dictionary: Record<string, TaskItem> = {};
-    const nonReactiveChildren: Record<string, TaskItem[]> = {};
+    const watchers: Record<string, ChildrenWatcer> = {};
     /**
      * All the root tasks
      */
@@ -37,40 +87,13 @@ export function provideTasks() {
 
     provide(TASK_PROXY, proxy);
 
-    function getVisibleChildren(allChildren: Ref<TaskItem[]>) {
-        const cached = new Array<TaskItem>(10);
-        const children = computed(() => {
-            if (allChildren.value.length === 0) return undefined;
-            const successed = [];
-            const others = [];
-            for (const item of allChildren.value) {
-                if (item.state === TaskState.Successed) {
-                    successed.push(item);
-                } else {
-                    others.push(item);
-                }
-            }
-            const combined = others.concat(successed);
-            for (let i = 0; i < 10; i++) {
-                const elem = combined.shift();
-                if (elem) {
-                    cached[i] = elem;
-                } else {
-                    cached.length = i;
-                    break;
-                }
-            }
-            return cached;
-        });
-        return children;
-    }
-
-    function convertPayloadToItem(payload: TaskPayload): TaskItem {
-        const allChildren = ref(payload.children.map(convertPayloadToItem));
-        const children = getVisibleChildren(allChildren);
-        console.log(payload);
-        return reactive({
-            id: `${payload.uuid}@${payload.id}`,
+    function mapAndRecordTaskItem(payload: TaskPayload): TaskItem {
+        const children = ref([]);
+        const watcher = new ChildrenWatcer(children, payload.children.map(mapAndRecordTaskItem));
+        const localId = `${payload.uuid}@${payload.id}`;
+        watchers[localId] = watcher;
+        const item = reactive({
+            id: localId,
             taskId: payload.uuid,
             title: $t(payload.path, payload.param),
             time: new Date(payload.time),
@@ -80,16 +103,9 @@ export function provideTasks() {
             progress: payload.progress,
             total: payload.total,
             children,
-            allChildren,
         });
-    }
-
-    function mapTasksToDictionary(tasks?: TaskItem[]) {
-        if (!tasks || tasks.length === 0) return;
-        for (const t of tasks) {
-            dictionary[t.id] = t;
-            mapTasksToDictionary(t.children);
-        }
+        dictionary[localId] = item;
+        return item;
     }
 
     const taskUpdateHandler = async (event: any, { adds, updates }: TaskBatchPayload) => {
@@ -99,8 +115,8 @@ export function provideTasks() {
         for (const add of adds) {
             const { uuid, id, path, param, time, to, from, parentId } = add;
             const localId = `${uuid}@${id}`;
-            const allChildren = ref([] as TaskItem[]);
-            const children = getVisibleChildren(allChildren);
+            const children = ref([] as TaskItem[]);
+            const watcher = new ChildrenWatcer(children);
             const item = reactive({
                 taskId: uuid,
                 id: localId,
@@ -113,20 +129,21 @@ export function provideTasks() {
                 progress: 0,
                 total: -1,
                 parentId,
-                allChildren,
             });
             if (typeof parentId === 'number') {
                 const parentLocalId = `${uuid}@${parentId}`;
-                const parent = dictionary[parentLocalId];
-                parent.allChildren.unshift(item);
+                const parentWatcher = watchers[parentLocalId];
+                console.log(`add ${item.title} to ${dictionary[parentLocalId].title}`);
+                parentWatcher.addChild(item);
             } else {
+                console.log(`add ${item.title}`);
                 tasks.value.unshift(item);
             }
             if (dictionary[localId]) {
-                console.warn(`Skip for duplicated task ${localId}`);
+                console.warn(`Skip for duplicated task ${localId} ${item.title}`);
                 continue;
             }
-            nonReactiveChildren[localId] = [];
+            watchers[localId] = watcher;
             dictionary[localId] = item;
         }
         for (const update of updates) {
@@ -134,13 +151,13 @@ export function provideTasks() {
             const localId = `${uuid}@${id}`;
             const item = dictionary[localId];
             if (item) {
-                if (state) {
+                if (state !== undefined) {
                     item.state = state;
                 }
-                if (progress) {
+                if (progress !== undefined) {
                     item.progress = progress;
                 }
-                if (total) {
+                if (total !== undefined) {
                     item.total = total;
                 }
                 item.time = new Date(time);
@@ -152,6 +169,7 @@ export function provideTasks() {
                 console.log(`Cannot apply update for task ${localId} as task not found.`);
             }
         }
+        Object.values(watchers).forEach((v) => v.update());
     };
 
     onMounted(() => {
@@ -159,9 +177,7 @@ export function provideTasks() {
         syncing = new Promise((resolve) => { _resolve = resolve; });
         ipc.on('task-update', taskUpdateHandler);
         ipc.invoke('task-subscribe', true).then((payload) => {
-            const items = payload.map(convertPayloadToItem);
-            tasks.value = items;
-            mapTasksToDictionary(items);
+            tasks.value = payload.map(mapAndRecordTaskItem);
             _resolve();
         });
     });
