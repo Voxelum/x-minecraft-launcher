@@ -1,6 +1,5 @@
 import { FileStateWatcher, readdirEnsured } from '@main/util/fs';
-import { LocalVersion, resolveRuntimeVersion } from '@universal/entities/version';
-import { Version } from '@xmcl/core';
+import { ResolvedVersion, Version } from '@xmcl/core';
 import { remove } from 'fs-extra';
 import Service from './Service';
 
@@ -25,28 +24,17 @@ export default class VersionService extends Service {
         this.versionsWatcher.watch(this.getPath('versions'));
     }
 
-    public async resolveLocalVersion(versionFolder: string, root: string = this.state.root): Promise<LocalVersion> {
+    public async resolveLocalVersion(versionFolder: string, root: string = this.state.root): Promise<ResolvedVersion> {
         const resolved = await Version.parse(root, versionFolder);
-        const minecraft = resolved.minecraftVersion;
-        const version: LocalVersion = {
-            id: resolved.id,
-            minecraft,
-            folder: versionFolder,
-            fabricLoader: '',
-            forge: '',
-            liteloader: '',
-            yarn: '',
-        };
-        resolveRuntimeVersion(resolved, version);
-        return version;
+        return resolved;
     }
 
     async resolveVersionId() {
         let cur = this.getters.instanceVersion;
-        if (cur.folder === 'unknown') {
+        if (!cur.id) {
             await this.refreshVersions(true);
         }
-        return cur.folder;
+        return cur.id;
     }
 
     /**
@@ -56,6 +44,7 @@ export default class VersionService extends Service {
     async refreshVersion(versionFolder: string) {
         try {
             const version = await this.resolveLocalVersion(versionFolder);
+            this.log(`Refresh local version ${versionFolder}`);
             this.commit('localVersion', version);
         } catch (e) {
             this.commit('localVersionRemove', versionFolder);
@@ -81,10 +70,11 @@ export default class VersionService extends Service {
 
         files = files.filter(f => !f.startsWith('.'));
 
-        let versions: LocalVersion[] = [];
-        for (let versionId of files) {
+        const versions: ResolvedVersion[] = [];
+        for (const versionId of files) {
             try {
-                versions.push(await this.resolveLocalVersion(versionId));
+                const version = await this.resolveLocalVersion(versionId);
+                versions.push(version);
             } catch (e) {
                 this.warn(`An error occured during refresh local version ${versionId}`);
                 this.warn(e);
@@ -93,7 +83,7 @@ export default class VersionService extends Service {
 
         if (versions.length !== 0) {
             if (patch) {
-                for (let version of versions) {
+                for (const version of versions) {
                     this.commit('localVersion', version);
                 }
             } else {
@@ -111,7 +101,7 @@ export default class VersionService extends Service {
     async deleteVersion(version: string) {
         const path = this.getPath('versions', version);
         await remove(path);
-        this.commit('localVersions', this.state.version.local.filter(v => v.folder !== version));
+        this.commit('localVersions', this.state.version.local.filter(v => v.id !== version));
     }
 
     async showVersionsDirectory() {

@@ -38,6 +38,7 @@ export function provideSearch() {
     function handleKeyup(e: KeyboardEvent) {
         if (e.key === 'Escape') {
             if (toggle(true)) {
+                text.value = '';
                 e.preventDefault();
                 e.stopImmediatePropagation();
             }

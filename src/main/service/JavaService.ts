@@ -1,3 +1,4 @@
+import LauncherApp from '@main/app/LauncherApp';
 import { getTsingHuaAdpotOponJDKPageUrl, parseTsingHuaAdpotOpenJDKHotspotArchive } from '@main/entities/java';
 import { missing, readdirIfPresent } from '@main/util/fs';
 import { unpack7z } from '@main/util/zip';
@@ -15,37 +16,29 @@ import Service, { Singleton } from './Service';
 export default class JavaService extends Service {
     private javaFile = this.app.platform.name === 'windows' ? 'javaw.exe' : 'java';
 
-    getInternalJavaLocation() {
-        return this.app.platform.name === 'osx' ? this.getPath(this.state.root, 'jre', 'Contents', 'Home', 'bin', 'java') : join(this.state.root, 'jre', 'bin', this.javaFile);
+    constructor(app: LauncherApp) {
+        super(app);
+        this.persistManager.registerStoreJsonSerializable(this.getPath('java.json'), JavaSchema,
+            (v) => {
+                const valid = v.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }));
+                this.log(`Loaded ${valid.length} java from cache.`);
+                this.commit('javaUpdate', valid);
+            },
+            () => this.state.java,
+            ['javaUpdate', 'javaRemove']);
     }
 
-    async load() {
-        const loaded: JavaSchema = await this.getPersistence({ path: this.getPath('java.json'), schema: JavaSchema });
-        const javas = loaded.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }));
-        this.commit('javaUpdate', javas);
-        this.log(`Loaded ${javas.length} java from cache.`);
-        if (this.state.java.all.length === 0) {
-            await this.refreshLocalJava();
-        }
+    get internalJavaLocation() {
+        return this.app.platform.name === 'osx' ? this.getPath(this.state.root, 'jre', 'Contents', 'Home', 'bin', 'java') : join(this.state.root, 'jre', 'bin', this.javaFile);
     }
 
     async init() {
         const { state } = this;
-        let local = this.getInternalJavaLocation();
+        let local = this.internalJavaLocation;
         if (!state.java.all.map(j => j.path).some(p => p === local)) {
             this.resolveJava(local);
         }
         this.refreshLocalJava();
-    }
-
-    async save({ mutation }: { mutation: MutationKeys }) {
-        switch (mutation) {
-            case 'javaUpdate':
-            case 'javaRemove':
-                this.setPersistence({ path: this.getPath('java.json'), data: this.state.java, schema: JavaSchema });
-                break;
-            default:
-        }
     }
 
     /**
@@ -54,13 +47,13 @@ export default class JavaService extends Service {
     @Singleton('java')
     async installDefaultJava() {
         const task = this.networkManager.isInGFW ? this.installFromTsingHuaTask() : this.installFromMojangTask();
-        await ensureFile(this.getInternalJavaLocation());
+        await ensureFile(this.internalJavaLocation);
         await this.submit(task);
-        await this.resolveJava(this.getInternalJavaLocation());
+        await this.resolveJava(this.internalJavaLocation);
     }
 
     private installFromMojangTask() {
-        const dest = dirname(this.getInternalJavaLocation());
+        const dest = dirname(this.internalJavaLocation);
         return installJreFromMojangTask({
             destination: dest,
             unpackLZMA: unpack7z,

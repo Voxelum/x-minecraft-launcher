@@ -63,7 +63,7 @@ export default class ResourcePackPreviewService extends Service {
 
     protected getResourcePackPath(pack: string) {
         if (pack === 'vanilla') {
-            const version = this.getters.instanceVersion.folder;
+            const version = this.getters.instanceVersion.minecraftVersion;
             const jarPath = new MinecraftFolder(this.state.root).getVersionJar(version);
             return jarPath;
         }
@@ -144,7 +144,7 @@ export default class ResourcePackPreviewService extends Service {
     }
 
     async getBlockStates(): Promise<BlockStateJson[]> {
-        const gameVersion = this.getters.instanceVersion.folder;
+        const gameVersion = this.getters.instanceVersion.id;
         if (this.cachedJsonVersion === gameVersion && this.cachedBlocks) {
             // cache hit
             this.log(`Use cached ${this.cachedBlocks.length} blockstates from ${gameVersion}.jar`);

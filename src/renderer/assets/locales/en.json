@@ -377,6 +377,12 @@
   "installFabric": {
     "": "Install Fabric"
   },
+  "installOptifine": {
+    "": "Install Optifine",
+    "download": "Download Optifine Universal",
+    "json": "Generate Json",
+    "jar": "Generate Jar"
+  },
   "installForge": {
     "": "Install Forge",
     "downloadInstaller": "Download Installer",
@@ -565,6 +571,9 @@
     "name:": "Notification"
   },
   "ok": "OK",
+  "optifine": {
+    "disable": "Disable Optifine"
+  },
   "optional": "Optional",
   "popular": "Popularity",
   "profile": {

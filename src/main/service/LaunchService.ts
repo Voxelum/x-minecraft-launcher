@@ -1,5 +1,5 @@
 import { Exception } from '@universal/entities/exception';
-import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder } from '@xmcl/core';
+import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder, Version } from '@xmcl/core';
 import { ChildProcess } from 'child_process';
 import { EOL } from 'os';
 import DiagnoseService from './DiagnoseService';
@@ -27,11 +27,11 @@ export default class LaunchService extends Service {
         const minecraftFolder = new MinecraftFolder(instance.path);
         const javaPath = this.getters.instanceJava.path || this.getters.defaultJava.path;
 
-        let instanceVersion = this.getters.instanceVersion;
-        if (instanceVersion.folder === 'unknown') {
+        const instanceVersion = this.getters.instanceVersion;
+        if (!instanceVersion.id) {
             throw new Exception({ type: 'launchNoVersionInstalled' });
         }
-        const version = instanceVersion.folder;
+        const version = instanceVersion.id;
         const useAuthLib = user.authService !== 'mojang' && user.authService !== 'offline';
 
         /**
@@ -103,14 +103,12 @@ export default class LaunchService extends Service {
 
             const minecraftFolder = new MinecraftFolder(instance.path);
 
-            /**
-             * real version name
-             */
-            let instanceVersion = this.getters.instanceVersion;
-            if (instanceVersion.folder === 'unknown') {
+
+            let version = this.getters.instanceVersion;
+            if (!version.id) {
                 throw new Exception({ type: 'launchNoVersionInstalled' });
             }
-            const version = instanceVersion.folder;
+            version = await Version.parse(version.minecraftDirectory, version.id);
 
             this.log(`Will launch with ${version} version.`);
 
@@ -161,10 +159,10 @@ export default class LaunchService extends Service {
             this.commit('launchStatus', 'launched');
 
             this.app.emit('minecraft-start', {
-                version: instanceVersion.folder,
-                minecraft: instanceVersion.minecraft,
-                forge: instanceVersion.forge,
-                fabric: instanceVersion.fabricLoader,
+                version: version.id,
+                minecraft: version.minecraftVersion,
+                forge: instance.runtime.forge ?? '',
+                fabricLoader: instance.runtime.fabricLoader ?? '',
             });
             let watcher = createMinecraftProcessWatcher(process);
             let errorLogs = [] as string[];

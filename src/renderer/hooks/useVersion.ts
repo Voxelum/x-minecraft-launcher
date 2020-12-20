@@ -1,10 +1,10 @@
-import { Status } from '@universal/entities/version';
+import { isFabricLoaderLibrary, isForgeLibrary, Status } from '@universal/entities/version';
 import { isNonnull } from '@universal/util/assert';
 import { computed, onMounted, onUnmounted, reactive, Ref, toRefs, watch } from '@vue/composition-api';
 import { MinecraftVersion } from '@xmcl/installer';
+import { useBusy } from './useSemaphore';
 import { useService, useServiceOnly } from './useService';
 import { useStore } from './useStore';
-import { useBusy } from './useSemaphore';
 
 export function useVersions() {
     return useServiceOnly('VersionService', 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory');
@@ -13,10 +13,15 @@ export function useVersions() {
 export function useLocalVersions() {
     const { state } = useStore();
     const localVersions = computed(() => state.version.local);
+    const versions = useVersions();
+
+    onMounted(() => {
+        versions.refreshVersions();
+    });
 
     return {
         localVersions,
-        ...useVersions(),
+        ...versions,
         ...useServiceOnly('InstallService', 'reinstall'),
     };
 }
@@ -32,7 +37,7 @@ export function useMinecraftVersions() {
     const statuses = computed(() => {
         const localVersions: { [k: string]: boolean } = {};
         state.version.local.forEach((ver) => {
-            if (ver.minecraft) localVersions[ver.minecraft] = true;
+            if (ver.minecraftVersion) localVersions[ver.minecraftVersion] = true;
         });
         const statusMap: { [key: string]: Status } = {};
         for (const ver of state.version.minecraft.versions) {
@@ -82,7 +87,8 @@ export function useFabricVersions() {
         const statusMap: { [key: string]: Status } = {};
         const locals: { [k: string]: boolean } = {};
         state.version.local.forEach((ver) => {
-            if (ver.fabricLoader) locals[ver.fabricLoader] = true;
+            const lib = ver.libraries.find(isFabricLoaderLibrary);
+            if (lib) locals[lib.version] = true;
         });
         state.version.fabric.loaders.forEach((v) => {
             statusMap[v.version] = locals[v.version] ? 'local' : 'remote';
@@ -92,9 +98,9 @@ export function useFabricVersions() {
     const yarnStatus = computed(() => {
         const statusMap: { [key: string]: Status } = {};
         const locals: { [k: string]: boolean } = {};
-        state.version.local.forEach((ver) => {
-            if (ver.yarn) locals[ver.yarn] = true;
-        });
+        // state.version.local.forEach((ver) => {
+        //     if (ver.yarn) locals[ver.yarn] = true;
+        // });
         state.version.fabric.yarns.forEach((v) => {
             statusMap[v.version] = locals[v.version] ? 'local' : 'remote';
         });
@@ -138,7 +144,8 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
         const statusMap: { [key: string]: Status } = {};
         const localForgeVersion: { [k: string]: boolean } = {};
         state.version.local.forEach((ver) => {
-            if (ver.forge) localForgeVersion[ver.forge] = true;
+            const lib = ver.libraries.find(isForgeLibrary);
+            if (lib) localForgeVersion[lib.version] = true;
         });
         state.version.forge.forEach((container) => {
             container.versions.forEach((version) => {
@@ -148,16 +155,12 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
         return statusMap;
     });
 
-    let handle = () => { };
     onMounted(() => {
-        handle = watch(minecraftVersion, () => {
+        watch(minecraftVersion, () => {
             if (versions.value.length === 0) {
                 refreshForge({ mcversion: minecraftVersion.value });
             }
         });
-    });
-    onUnmounted(() => {
-        handle();
     });
 
     function refresh() {
@@ -180,20 +183,38 @@ export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
 
     const versions = computed(() => Object.values(state.version.liteloader.versions[minecraftVersion.value] || {}).filter(isNonnull));
     const refreshing = useBusy('refreshLiteloader');
-    let handle = () => { };
     onMounted(() => {
-        handle = watch(minecraftVersion, () => {
+        watch(minecraftVersion, () => {
             if (!versions.value) {
                 refreshLiteloader();
             }
         });
     });
-    onUnmounted(() => {
-        handle();
-    });
 
     function refresh() {
         return refreshLiteloader();
+    }
+
+    return {
+        versions,
+        refresh,
+        refreshing,
+    };
+}
+
+export function useOptifineVersions(minecraftVersion: Ref<string>) {
+    const { state } = useStore();
+    const { refreshOptifine } = useService('InstallService');
+
+    const versions = computed(() => state.version.optifine.versions.filter(v => v.mcversion === minecraftVersion.value));
+    const refreshing = useBusy('refreshOptifine');
+
+    watch(minecraftVersion, () => {
+        refreshOptifine();
+    });
+
+    function refresh() {
+        return refreshOptifine();
     }
 
     return {

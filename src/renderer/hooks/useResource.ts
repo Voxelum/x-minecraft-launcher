@@ -6,8 +6,10 @@ import { useServiceOnly } from './useService';
 import { useStore } from './useStore';
 
 export function useResourceOperation() {
+    const { parseAndImportResourceIfAbsent, removeResource } = useServiceOnly('ResourceService', 'parseAndImportResourceIfAbsent', 'removeResource');
     return {
-        ...useServiceOnly('ResourceService', 'importResource', 'removeResource'),
+        removeResource,
+        importResource: parseAndImportResourceIfAbsent,
     };
 }
 

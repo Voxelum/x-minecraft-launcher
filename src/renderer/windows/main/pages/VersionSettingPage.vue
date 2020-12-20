@@ -1,13 +1,19 @@
 <template>
   <v-container grid-list-xs fill-height>
     <v-layout row wrap>
-      <v-flex tag="h1" style="margin-bottom: 10px;" class="white--text" xs6>
-        <span class="headline">{{ $t('profile.versionSetting') }}</span>
+      <v-flex tag="h1" style="margin-bottom: 10px" class="white--text" xs6>
+        <span class="headline">{{ $t("profile.versionSetting") }}</span>
       </v-flex>
       <v-flex xs12>
-        <v-tabs v-model="active" mandatory color="transparent" dark :slider-color="barColor">
+        <v-tabs
+          v-model="active"
+          mandatory
+          color="transparent"
+          dark
+          :slider-color="barColor"
+        >
           <v-tab>
-            <div class="version-tab">{{ $t('version.locals') }}</div>
+            <div class="version-tab">{{ $t("version.locals") }}</div>
           </v-tab>
           <v-tab>
             <div class="version-tab">
@@ -18,13 +24,19 @@
           <v-tab>
             <div class="version-tab">
               Forge
-              <div class="subtitle">{{ forge || $t('version.unset') }}</div>
+              <div class="subtitle">{{ forge || $t("version.unset") }}</div>
             </div>
           </v-tab>
           <v-tab>
             <div class="version-tab">
               Fabric
-              <div class="subtitle">{{ loader || $t('version.unset') }}</div>
+              <div class="subtitle">{{ loader || $t("version.unset") }}</div>
+            </div>
+          </v-tab>
+          <v-tab>
+            <div class="version-tab">
+              Optifine
+              <div class="subtitle">{{ optifine || $t("version.unset") }}</div>
             </div>
           </v-tab>
         </v-tabs>
@@ -44,9 +56,13 @@
             />
           </v-tab-item>
           <v-tab-item style="height: 100%" @mousewheel.stop>
-            <minecraft-view :filter-text="filterText" :version="minecraft" :select="setMinecraft" />
+            <minecraft-view
+              :filter-text="filterText"
+              :version="minecraft"
+              :select="setMinecraft"
+            />
           </v-tab-item>
-          <v-tab-item style="height: 100%;" @mousewheel.stop>
+          <v-tab-item style="height: 100%" @mousewheel.stop>
             <forge-view
               :filter-text="filterText"
               :version="forge"
@@ -63,6 +79,14 @@
               :minecraft="minecraft"
             />
           </v-tab-item>
+          <v-tab-item style="height: 100%" @mousewheel.stop>
+            <optifine-view
+              :filter-text="filterText"
+              :version="optifineVersion"
+              :select="setOptifine"
+              :minecraft="minecraft"
+            />
+          </v-tab-item>
         </v-tabs-items>
       </v-flex>
     </v-layout>
@@ -76,14 +100,17 @@ import {
   useInstance,
 } from '@/hooks';
 import type { ForgeVersion, MinecraftVersion } from '@xmcl/installer';
-import { LocalVersion } from '@universal/entities/version';
+import type { ResolvedVersion } from '@xmcl/core';
+import { OptifineVersion } from '@universal/entities/version.schema';
+import { EMPTY_VERSION, isForgeLibrary, isFabricLoaderLibrary, isOptifineLibrary, filterForgeVersion, filterOptfineVersion } from '@universal/entities/version';
 import MinecraftView from './VersionSettingPageMinecraftView.vue';
 import ForgeView from './VersionSettingPageForgeView.vue';
 import FabricView from './VersionSettingPageFabricView.vue';
+import OptifineView from './VersionSettingPageOptifineView.vue';
 
 export default defineComponent({
   components: {
-    MinecraftView, ForgeView, FabricView,
+    MinecraftView, ForgeView, FabricView, OptifineView,
   },
   setup() {
     const filterText = ref('');
@@ -94,19 +121,22 @@ export default defineComponent({
       forge: '',
       loader: '',
       yarn: '',
+      optifine: '',
+
+      folder: '',
 
       // unused
       liteloader: '',
     });
 
-    const { editInstance: edit, runtime } = useInstance();
-    const localVersion = computed(() => ({
-      minecraft: data.minecraft,
-      forge: data.forge,
-      liteloader: data.liteloader,
-      fabricLoader: data.loader,
-      yarn: data.yarn,
-    }));
+    const optifine = computed(() => {
+      const index = data.optifine.lastIndexOf('_');
+      const type = data.optifine.substring(0, index);
+      const patch = data.optifine.substring(index + 1, data.optifine.length);
+      return { type, patch };
+    });
+
+    const { editInstance: edit, runtime, version } = useInstance();
     const barColor = computed(() => {
       switch (data.active) {
         case 0: return 'white';
@@ -118,12 +148,20 @@ export default defineComponent({
       }
     });
 
-    function setLocalVersion(v: LocalVersion) {
-      data.minecraft = v.minecraft;
-      data.forge = v.forge;
-      data.liteloader = v.liteloader;
-      data.loader = v.fabricLoader;
-      data.yarn = v.yarn;
+    const localVersion = computed(() => {
+      return EMPTY_VERSION;
+    });
+    function setLocalVersion(v: ResolvedVersion) {
+      console.log(v);
+      console.log(v.libraries.map(v => v.name));
+      console.log(v.libraries.find(isForgeLibrary));
+      data.minecraft = v.minecraftVersion;
+      data.forge = filterForgeVersion(v.libraries.find(isForgeLibrary)?.version ?? '');
+      data.liteloader = '';
+      data.loader = v.libraries.find(isFabricLoaderLibrary)?.version ?? '';
+      data.optifine = filterOptfineVersion(v.libraries.find(isOptifineLibrary)?.version ?? '');
+      data.yarn = '';
+      data.folder = v.id ?? '';
     }
     function setMinecraft(v: MinecraftVersion) {
       if (data.minecraft !== v.id) {
@@ -132,6 +170,16 @@ export default defineComponent({
         data.liteloader = '';
         data.loader = '';
         data.yarn = '';
+        data.optifine = '';
+        data.folder = '';
+      }
+    }
+    function setOptifine(v: OptifineVersion | undefined) {
+      if (!v) {
+        data.optifine = '';
+      } else {
+        data.optifine = `${v.type}_${v.patch}`;
+        data.folder = '';
       }
     }
     function setForge(v: ForgeVersion | undefined) {
@@ -139,6 +187,7 @@ export default defineComponent({
         data.forge = '';
       } else {
         data.forge = v.version;
+        data.folder = '';
         data.loader = '';
       }
     }
@@ -148,26 +197,31 @@ export default defineComponent({
         data.forge = '';
       } else {
         data.loader = '';
+        data.folder = '';
         data.yarn = '';
       }
     }
     function save() {
       edit({
+        version: data.folder,
         runtime: {
           minecraft: data.minecraft,
           forge: data.forge,
           fabricLoader: data.loader,
           yarn: data.yarn,
           liteloader: data.liteloader,
+          optifine: data.optifine,
         },
       });
     }
     async function load() {
-      const { forge, minecraft, liteloader, fabricLoader, yarn } = runtime.value;
+      const { forge, minecraft, liteloader, fabricLoader, yarn, optifine } = runtime.value;
+      data.folder = version.value;
       data.minecraft = minecraft;
-      data.forge = forge;
-      data.yarn = yarn;
-      data.loader = fabricLoader;
+      data.forge = forge ?? '';
+      data.yarn = yarn ?? '';
+      data.loader = fabricLoader ?? '';
+      data.optifine = optifine ?? '';
     }
 
     useAutoSaveLoad(save, load);
@@ -178,10 +232,12 @@ export default defineComponent({
       setMinecraft,
       setForge,
       setFabric,
+      setOptifine,
       setLocalVersion,
 
       localVersion,
       filterText,
+      optifineVersion: optifine,
 
       barColor,
     };

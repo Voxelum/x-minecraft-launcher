@@ -35,10 +35,10 @@ export function createTemplate(): Instance {
             liteloader: '',
             fabricLoader: '',
             yarn: '',
+            optifine: '',
         },
         java: '',
-        image: '',
-        blur: 4,
+        version: '',
         server: null,
 
         author: '',

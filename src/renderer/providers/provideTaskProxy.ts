@@ -133,10 +133,8 @@ export function provideTasks() {
             if (typeof parentId === 'number') {
                 const parentLocalId = `${uuid}@${parentId}`;
                 const parentWatcher = watchers[parentLocalId];
-                console.log(`add ${item.title} to ${dictionary[parentLocalId].title}`);
                 parentWatcher.addChild(item);
             } else {
-                console.log(`add ${item.title}`);
                 tasks.value.unshift(item);
             }
             if (dictionary[localId]) {

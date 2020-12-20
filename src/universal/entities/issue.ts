@@ -1,6 +1,6 @@
 import type { ResolvedLibrary } from '@xmcl/core';
 import type { InstallProfile } from '@xmcl/installer';
-import { LocalVersion } from './version';
+import { RuntimeVersions } from './instance.schema';
 
 export interface Issue {
     id: string;
@@ -17,14 +17,14 @@ export type IssueReport = {
 export type IssueType = keyof IssueRegistry;
 
 export interface IssueRegistry {
-    missingVersionJar: Registry<{ version: string } & LocalVersion>;
-    missingVersionJson: Registry<{ version: string } & LocalVersion>;
+    missingVersionJar: Registry<{ version: string } & RuntimeVersions>;
+    missingVersionJson: Registry<{ version: string } & RuntimeVersions>;
     missingLibraries: Registry<ResolvedLibrary>;
     missingAssetsIndex: Registry<{ version: string }>;
     missingAssets: Registry<{ version: string; hash: string; name: string; size: number }>;
 
-    corruptedVersionJar: Registry<{ version: string } & LocalVersion, true, true>;
-    corruptedVersionJson: Registry<{ version: string } & LocalVersion, true, true>;
+    corruptedVersionJar: Registry<{ version: string } & RuntimeVersions, true, true>;
+    corruptedVersionJson: Registry<{ version: string } & RuntimeVersions, true, true>;
     corruptedLibraries: Registry<ResolvedLibrary, true, true>;
     corruptedAssetsIndex: Registry<{ version: string }, true, true>;
     corruptedAssets: Registry<{ version: string; hash: string; name: string; size: number }, true, true>;
@@ -41,7 +41,7 @@ export interface IssueRegistry {
     missingCustomSkinLoader: Registry<{ target: 'forge' | 'fabric'; skinService: string; noVersionSelected: boolean; missingJar: boolean }, true, true>;
     missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
 
-    missingVersion: Registry<{ forge: string; minecraft: string; yarn: string; fabricLoader: string; version: string }>;
+    missingVersion: Registry<{ version: string } & RuntimeVersions>;
 
     requireForge: Registry<{}, false, true>;
     requireFabric: Registry<{}, false, true>;

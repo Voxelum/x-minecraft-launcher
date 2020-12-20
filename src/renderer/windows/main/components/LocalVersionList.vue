@@ -21,8 +21,8 @@
             <v-icon>folder</v-icon>
           </v-btn>
         </v-list-tile-avatar>
-        <v-list-tile-title>{{ item.folder }}</v-list-tile-title>
-        <v-list-tile-sub-title>{{ item.minecraft }}</v-list-tile-sub-title>
+        <v-list-tile-title>{{ item.id }}</v-list-tile-title>
+        <v-list-tile-sub-title>{{ item.minecraftVersion }}</v-list-tile-sub-title>
         <v-list-tile-action style="flex-direction: row; justify-content: flex-end;">
           <v-btn
             style="cursor: pointer"
@@ -103,36 +103,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog
-      v-model="reinstallVersion"
-      max-width="390"
-    >
-      <v-card dark>
-        <v-card-title
-          class="headline"
-        >
-          {{ $t('version.reinstallTitle', { version: reinstallVersionId }) }}
-        </v-card-title>
-        <v-card-text>{{ $t('version.reinstallDescription') }}</v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            flat
-            @click="cancelReinstall()"
-          >
-            {{ $t('no') }}
-          </v-btn>
-          <v-btn
-            color="orange darken-1"
-            flat
-            @click="comfireReinstall()"
-          >
-            <v-icon left>build</v-icon>
-            {{ $t('yes') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-list>
   <v-container
     v-else
@@ -172,18 +142,13 @@
 <script lang=ts>
 import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api';
 import { useLocalVersions } from '@/hooks';
-import { LocalVersion } from '@universal/entities/version';
+import type { ResolvedVersion } from '@xmcl/core';
+import { required, withDefault } from '@/util/props';
 
 export default defineComponent({
   props: {
-    filterText: {
-      type: String,
-      default: '',
-    },
-    value: {
-      type: Object,
-      default: () => { },
-    },
+    filterText: withDefault(String, () => ''),
+    value: required<ResolvedVersion>(Object),
   },
   setup(props, context) {
     const data = reactive({
@@ -194,32 +159,28 @@ export default defineComponent({
       reinstallVersionId: '',
     });
     const { localVersions, deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions, reinstall } = useLocalVersions();
-    const versions = computed(() => localVersions.value.filter(v => v.folder.indexOf(props.filterText) !== -1));
+    const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1));
 
-    function isSelected(v: LocalVersion) {
+    function isSelected(v: ResolvedVersion) {
       if (!props.value) return false;
-      return props.value.minecraft === v.minecraft
-        && props.value.forge === v.forge
-        && props.value.liteloader === v.liteloader
-        && props.value.yarn === v.yarn
-        && props.value.fabricLoader === v.fabricLoader;
+      return v === props.value;
     }
-    function selectVersion(v: LocalVersion) {
+    function selectVersion(v: ResolvedVersion) {
       context.emit('input', v);
     }
     function browseVersoinsFolder() {
       showVersionsDirectory();
     }
-    function openVersionDir(v: { folder: string }) {
-      showVersionDirectory(v.folder);
+    function openVersionDir(v: ResolvedVersion) {
+      showVersionDirectory(v.id);
     }
-    function startDelete(v: { folder: string }) {
+    function startDelete(v: ResolvedVersion) {
       data.deletingVersion = true;
-      data.deletingVersionId = v.folder;
+      data.deletingVersionId = v.id;
     }
-    function startReinstall(v: { folder: string }) {
+    function startReinstall(v: ResolvedVersion) {
       data.reinstallVersion = true;
-      data.reinstallVersionId = v.folder;
+      data.reinstallVersionId = v.id;
     }
     function comfireDeleting() {
       deleteVersion(data.deletingVersionId);

@@ -28,7 +28,7 @@ export default class ExternalAuthSkinService extends Service {
             url,
             destination,
         }).setName('downloadCustomSkinLoader'));
-        return this.resourceService.importResource({
+        return this.resourceService.parseAndImportResourceIfAbsent({
             path: destination,
             type: 'mods',
         });
