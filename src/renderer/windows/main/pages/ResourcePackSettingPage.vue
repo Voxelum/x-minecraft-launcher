@@ -27,11 +27,18 @@
             hide-details
           />
         </v-flex>
+        <v-btn
+          style="margin-top: 12px; margin-bottom: 0; margin-left: 15px"
+          icon
+          @click="showFolder()"
+        >
+          <v-icon>folder</v-icon>
+        </v-btn>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-btn
               icon
-              style="margin-top: 12px; margin-bottom: 0; margin-left: 15px"
+              style="margin-top: 12px; margin-bottom: 0;"
               v-on="on"
               @click="goToCurseforge()"
             >
@@ -206,6 +213,7 @@ import {
   useDropImport,
   ResourcePackItem,
   useRouter,
+  useService,
   useInstanceBase,
 } from '@/hooks';
 import ResourcePackCard from './ResourcePackSettingPageCard.vue';
@@ -223,6 +231,7 @@ export default defineComponent({
     const { removeResource } = useResourceOperation();
     const { replace } = useRouter();
     const { path } = useInstanceBase();
+    const { openDirectory } = useService('BaseService');
     const searchBar: Ref<any> = ref(null);
     const data = reactive({
       dragging: false,
@@ -269,6 +278,9 @@ export default defineComponent({
     function goToCurseforge() {
       replace(`/curseforge/texture-packs?from=${path.value}`);
     }
+    function showFolder() {
+      openDirectory(path.value + '/resourcepacks');
+    }
     return {
       ...toRefs(data),
       unselectedItems,
@@ -281,6 +293,7 @@ export default defineComponent({
       goPreview,
       searchBar,
       goToCurseforge,
+      showFolder,
     };
   },
   // async mounted() {
