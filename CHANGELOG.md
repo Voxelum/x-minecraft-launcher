@@ -36,6 +36,35 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.12.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.11.4...v0.12.0)
+
+* style: clean up the lint ([99b0b86](https://github.com/voxelum/x-minecraft-launcher/commit/99b0b86))
+* style: fix compile and lint issue ([723d97a](https://github.com/voxelum/x-minecraft-launcher/commit/723d97a))
+* chore: bump dependencies ([4517c4f](https://github.com/voxelum/x-minecraft-launcher/commit/4517c4f))
+* chore: update lock & enable strict compile ([d8dcd49](https://github.com/voxelum/x-minecraft-launcher/commit/d8dcd49))
+* chore: use create-pull-request@v3 to fix build break ([cd5624a](https://github.com/voxelum/x-minecraft-launcher/commit/cd5624a))
+* refactor: adapt to new core ([20541a7](https://github.com/voxelum/x-minecraft-launcher/commit/20541a7))
+* refactor: normalize mod resource schema ([781d8d5](https://github.com/voxelum/x-minecraft-launcher/commit/781d8d5))
+* refactor: update to new launcher core ([5f1148b](https://github.com/voxelum/x-minecraft-launcher/commit/5f1148b))
+* fix: adjust UI display on mods and install ([bfa1cac](https://github.com/voxelum/x-minecraft-launcher/commit/bfa1cac))
+* fix: correctly propagate the task error message ([888e13f](https://github.com/voxelum/x-minecraft-launcher/commit/888e13f))
+* fix: filtering in curseforge file list ([ab81f79](https://github.com/voxelum/x-minecraft-launcher/commit/ab81f79))
+* fix: locale reset once the app is restarted ([8351ce7](https://github.com/voxelum/x-minecraft-launcher/commit/8351ce7))
+* fix: make adding user service scrollable (#118) ([7c78090](https://github.com/voxelum/x-minecraft-launcher/commit/7c78090)), closes [#118](https://github.com/voxelum/x-minecraft-launcher/issues/118)
+* fix: show fabric install correctly ([bb9afcd](https://github.com/voxelum/x-minecraft-launcher/commit/bb9afcd))
+* fix: task perf issue on massive task ([89d53cd](https://github.com/voxelum/x-minecraft-launcher/commit/89d53cd))
+* fix: unknown mod redirect ([150b1d5](https://github.com/voxelum/x-minecraft-launcher/commit/150b1d5))
+* feat: add button to show mods/resourcepacks folder ([cc98d5b](https://github.com/voxelum/x-minecraft-launcher/commit/cc98d5b))
+* feat: cache login options ([e12c091](https://github.com/voxelum/x-minecraft-launcher/commit/e12c091))
+* feat: make main window resizeable ([9ddaec0](https://github.com/voxelum/x-minecraft-launcher/commit/9ddaec0))
+* feat: new BaseSetting UI ([505d867](https://github.com/voxelum/x-minecraft-launcher/commit/505d867))
+* feat: support microsoft login ([410540d](https://github.com/voxelum/x-minecraft-launcher/commit/410540d))
+* feat: track window size ([d9be934](https://github.com/voxelum/x-minecraft-launcher/commit/d9be934))
+* feat(locale): add ru support ([c4266db](https://github.com/voxelum/x-minecraft-launcher/commit/c4266db))
+
+
 ## [0.11.4](https://github.com/voxelum/x-minecraft-launcher/compare/v0.11.3...v0.11.4)
 
 * docs: correct typo ([af18084](https://github.com/voxelum/x-minecraft-launcher/commit/af18084))
