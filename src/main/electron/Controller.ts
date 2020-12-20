@@ -3,9 +3,11 @@ import { LauncherAppController } from '@main/app/LauncherAppController';
 import { IS_DEV } from '@main/constant';
 import BaseService from '@main/service/BaseService';
 import { acrylic } from '@main/util/acrylic';
+import { trackWindowSize } from '@main/util/windowSizeTracker';
 import { TaskNotification } from '@universal/entities/notification';
 import { StaticStore } from '@universal/util/staticStore';
 import { app, BrowserWindow, dialog, Menu, session, Tray, Notification } from 'electron';
+import { readJSON } from 'fs-extra';
 import { join, resolve } from 'path';
 import LauncherApp from '../app/LauncherApp';
 import i18n from './locales';
@@ -30,7 +32,7 @@ export default class Controller implements LauncherAppController {
     private store!: StaticStore<any>;
 
     constructor(protected app: LauncherApp) { }
-   
+
     private setupBrowserLogger(ref: BrowserWindow, name: string) {
         const stream = this.app.logManager.openWindowLog(name);
         const levels = ['INFO', 'WARN', 'ERROR'];
@@ -63,13 +65,31 @@ export default class Controller implements LauncherAppController {
         }
     }
 
-    createMainWindow() {
+    async createMainWindow() {
+        const configPath = join(this.app.appDataPath, 'main-window-config.json');
+        const configData = await readJSON(configPath).catch(() => ({
+            width: -1,
+            height: -1,
+            x: null,
+            y: null,
+        }));
+        const config = {
+            width: typeof configData.width === 'number' ? configData.width as number : -1,
+            height: typeof configData.height === 'number' ? configData.height as number : -1,
+            x: typeof configData.x === 'number' ? configData.x as number : null,
+            y: typeof configData.y === 'number' ? configData.y as number : null,
+        };
+
         const browser = new BrowserWindow({
             title: 'KeyStone Launcher',
             minWidth: 800,
             minHeight: 580,
             maxWidth: 1200,
             maxHeight: 870,
+            width: config.width > 0 ? config.width : undefined,
+            height: config.height > 0 ? config.height : undefined,
+            // x: config.x !== null ? config.x : undefined,
+            // y: config.x !== null ? config.x : undefined,
             resizable: true,
             frame: false,
             transparent: true,
@@ -91,6 +111,8 @@ export default class Controller implements LauncherAppController {
 
         this.setupBrowserLogger(browser, 'main');
         this.setWindowArcry(browser);
+
+        trackWindowSize(browser, config, configPath);
 
         browser.loadURL(`${baseURL}main.html`);
         browser.show();
@@ -295,7 +317,7 @@ export default class Controller implements LauncherAppController {
     }
 
     async engineReady() {
-        this.createMainWindow();
+        await this.createMainWindow();
         this.setupTray();
         this.setupTask();
 
