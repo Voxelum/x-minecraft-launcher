@@ -1,10 +1,14 @@
-import { checksum, pipeline } from '@xmcl/installer';
+import { checksum } from '@xmcl/core';
 import { access, constants, copyFile, ensureDir, FSWatcher, readdir, stat, watch, remove, unlink, ReadStream, readFile, readFileSync, link, copy } from 'fs-extra';
 import { resolve, join, extname } from 'path';
 import filenamify from 'filenamify';
 import { createHash } from 'crypto';
+import { pipeline } from 'stream';
+import { promisify } from 'util';
 
-export { pipeline };
+const pip = promisify(pipeline);
+
+export { pip as pipeline };
 
 export function missing(file: string) {
     return access(file, constants.F_OK).then(() => false, () => true);
