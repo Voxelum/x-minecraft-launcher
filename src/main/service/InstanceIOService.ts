@@ -259,6 +259,8 @@ export default class InstanceIOService extends Service {
             }
         }
 
+        this.log(`Export instance ${instancePath} to curseforge ${JSON.stringify(curseforgeConfig, null, 4)}`);
+
         zipTask.addBuffer(Buffer.from(JSON.stringify(curseforgeConfig)), 'manifest.json');
 
         await this.submit(zipTask);

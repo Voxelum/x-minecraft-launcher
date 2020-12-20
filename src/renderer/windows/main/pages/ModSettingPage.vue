@@ -10,12 +10,12 @@
       <v-toolbar dark flat color="transparent" style="z-index: 10">
         <v-toolbar-title>{{ $tc("mod.name", 2) }}</v-toolbar-title>
         <v-spacer />
-         <!-- <v-tooltip bottom>
+        <!-- <v-tooltip bottom>
           <template v-slot:activator="{ on }"> -->
-          <v-btn icon @click="showModsFolder()">
-            <v-icon>folder</v-icon>
-          </v-btn>
-          <!-- </template>
+        <v-btn icon @click="showModsFolder()">
+          <v-icon>folder</v-icon>
+        </v-btn>
+        <!-- </template>
           {{ $t(`curseforge.mc-mods.description`) }}
         </v-tooltip> -->
         <v-tooltip bottom>
@@ -419,7 +419,7 @@ export default defineComponent({
       replace(`/curseforge/mc-mods?from=${path.value}`);
     }
     function showModsFolder() {
-      openDirectory(path.value + '/mods');
+      openDirectory(`${path.value}/mods`);
     }
     return {
       ...toRefs(data),
