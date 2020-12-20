@@ -15,7 +15,6 @@ export interface TaskItem {
     taskId: string;
 
     children: TaskItem[] | undefined;
-    allChildren: TaskItem[];
 
     time: Date;
 

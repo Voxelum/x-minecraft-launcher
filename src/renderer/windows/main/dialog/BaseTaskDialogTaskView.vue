@@ -14,7 +14,7 @@
         :open="opened"
         :items="all"
         activatable
-        item-key="uuid"
+        item-key="id"
         item-children="children"
       >
         <template v-slot:append="{ item }">
