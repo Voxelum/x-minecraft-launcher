@@ -1,11 +1,12 @@
-import type { Fabric, Forge, LiteLoader } from '@xmcl/mod-parser';
+import type { FabricModMetadata, ForgeModMetadata as _ForgeModMetadata, LiteloaderModMetadata } from '@xmcl/mod-parser';
 import type { PackMeta } from '@xmcl/resourcepack';
 import type { LevelDataFrame } from '@xmcl/world';
 import { CurseforgeModpackManifest } from './curseforge';
+import { ForgeModCommonMetadata } from './mod';
 import { Modpack } from './modpack';
 import { ResourceDomain, ResourceSchema, ResourceType } from './resource.schema';
 
-export interface Resource<T = unknown> extends Readonly<Omit<ResourceSchema, 'metadata'>> {
+export interface Resource<T = unknown> extends Readonly<Omit<ResourceSchema, 'metadata' | 'version'>> {
     /**
      * The real path of the resource
      */
@@ -26,10 +27,9 @@ export interface Resource<T = unknown> extends Readonly<Omit<ResourceSchema, 'me
     readonly ext: string;
 }
 
-
-export type ForgeResource = Resource<Forge.ModMetaData[]> & { readonly type: ResourceType.Forge };
-export type FabricResource = Resource<Fabric.ModMetadata> & { readonly type: ResourceType.Fabric };
-export type LiteloaderResource = Resource<LiteLoader.MetaData> & { readonly type: ResourceType.Liteloader };
+export type ForgeResource = Resource<ForgeModCommonMetadata> & { readonly type: ResourceType.Forge };
+export type FabricResource = Resource<FabricModMetadata> & { readonly type: ResourceType.Fabric };
+export type LiteloaderResource = Resource<LiteloaderModMetadata> & { readonly type: ResourceType.Liteloader };
 export type ResourcePackResource = Resource<PackMeta.Pack> & { readonly type: ResourceType.ResourcePack };
 export type CurseforgeModpackResource = Resource<CurseforgeModpackManifest> & { readonly type: ResourceType.CurseforgeModpack };
 export type ModpackResource = Resource<Modpack> & { readonly type: ResourceType.Modpack };

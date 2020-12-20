@@ -45,7 +45,7 @@ export interface FileMetadata {
      * Metadata of the file
      */
     metadata: any;
-    uri: string;
+    uri: string[];
 }
 
 export interface FileCommitImportOptions {
@@ -66,7 +66,12 @@ export default class IOService extends Service {
     async importFile(options: ImportFileOptions): Promise<Resource> {
         const { fileType, domain, type, uri, displayName, metadata, path, existed } = await this.readFileMetadata(options);
         if (existed) {
-            return this.getters.queryResource(uri);
+            for (const u of uri) {
+                const r = this.getters.queryResource(u);
+                if (r) {
+                    return r;
+                }
+            }
         }
         let result: Resource = UNKNOWN_RESOURCE;
         if (fileType === 'directory') {
@@ -112,14 +117,14 @@ export default class IOService extends Service {
             fileType: 'unknown',
             displayName: basename(path),
             metadata: {},
-            uri: '',
+            uri: [],
             existed: false,
         };
 
         if (fileStat.isDirectory()) {
             const { type: resourceType, suggestedName, uri, metadata, icon } = await readHeader(path, '', hint);
             result.displayName = suggestedName;
-            result.existed = !!this.resourceService.getResourceByKey(uri);
+            result.existed = uri.some(key => !!this.resourceService.getResourceByKey(key));
             result.type = resourceType as any;
             result.metadata = metadata;
             result.uri = uri;
@@ -148,11 +153,11 @@ export default class IOService extends Service {
                 result.type = resource.type;
                 result.domain = resource.domain;
                 result.metadata = resource.metadata;
-                result.uri = resource.uri[0];
+                result.uri = resource.uri;
             } else if (fileType === 'zip' || ext === '.jar' || ext === '.litemod') {
                 const { type: resourceType, suggestedName, uri, metadata, icon, domain } = await readHeader(path, hash ?? '', hint);
                 result.displayName = suggestedName;
-                result.existed = !!this.resourceService.getResourceByKey(uri);
+                result.existed = uri.some(u => !!this.resourceService.getResourceByKey(u));
                 result.type = resourceType;
                 result.domain = domain;
                 result.metadata = metadata;

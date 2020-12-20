@@ -2,12 +2,13 @@ import LauncherApp from '@main/app/LauncherApp';
 import { exists, missing } from '@main/util/fs';
 import { Issue, IssueReport } from '@universal/entities/issue';
 import { EMPTY_JAVA } from '@universal/entities/java';
+import { ForgeModCommonMetadata } from '@universal/entities/mod';
 import { FabricResource } from '@universal/entities/resource';
 import { compareRelease, getExpectVersion, LocalVersion } from '@universal/entities/version';
 import { diagnose, MinecraftFolder } from '@xmcl/core';
 import { diagnoseInstall, installByProfileTask } from '@xmcl/installer';
 import { InstallProfile } from '@xmcl/installer/minecraft';
-import { Forge, Fabric } from '@xmcl/mod-parser';
+import { FabricModMetadata } from '@xmcl/mod-parser';
 import { PackMeta } from '@xmcl/resourcepack';
 import { readJSON } from 'fs-extra';
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
@@ -67,7 +68,7 @@ export default class DiagnoseService extends Service {
         this.registerMatchedFix(['missingVersionJson', 'missingVersionJar', 'corruptedVersionJson', 'corruptedVersionJar'],
             async (issues) => {
                 const i = issues[0];
-                const { minecraft, forge, fabricLoader, yarn } = i.arguments! as LocalVersion;
+                const { minecraft, forge, fabricLoader } = i.arguments! as LocalVersion;
                 const metadata = this.state.version.minecraft.versions.find(v => v.id === minecraft);
                 if (metadata) {
                     await this.installService.installMinecraft(metadata);
@@ -84,8 +85,8 @@ export default class DiagnoseService extends Service {
                             this.pushException({ type: 'fixVersionNoForgeVersionMetadata', minecraft, forge });
                         }
                     }
-                    if (fabricLoader && yarn) {
-                        await this.installService.installFabric({ yarn, loader: fabricLoader });
+                    if (fabricLoader) {
+                        await this.installService.installFabric({ loader: fabricLoader, minecraft });
                     }
 
                     // TODO: check liteloader
@@ -121,7 +122,7 @@ export default class DiagnoseService extends Service {
                         targetVersion = await this.installService.installForge(forgeVer);
                     }
                 } else if (fabricLoader) {
-                    targetVersion = await this.installService.installFabric({ yarn, loader: fabricLoader });
+                    targetVersion = await this.installService.installFabric({ minecraft, loader: fabricLoader });
                 }
                 if (targetVersion) {
                     await this.installService.installDependencies(targetVersion);
@@ -332,26 +333,17 @@ export default class DiagnoseService extends Service {
                 requireFabric: [],
                 requireFabricAPI: [],
             };
-            let forgeMods = mods.filter(m => !!m && m.type === 'forge');
-            for (let mod of forgeMods) {
-                let metadatas = mod.metadata as Forge.ModMetaData[];
-                for (let meta of metadatas) {
-                    let acceptVersion = meta.acceptedMinecraftVersions;
-                    if (!acceptVersion) {
-                        if (!meta.mcversion) {
-                            tree.unknownMod.push({ name: mod.name, actual: mcversion });
-                            continue;
-                        }
-                        acceptVersion = pattern.test(meta.mcversion) ? meta.mcversion : `[${meta.mcversion}]`;
-                    }
-                    if (!acceptVersion) {
-                        tree.unknownMod.push({ name: mod.name, actual: mcversion });
-                        continue;
-                    }
-                    let range = VersionRange.createFromVersionSpec(acceptVersion);
-                    if (range && !range.containsVersion(resolvedMcVersion)) {
-                        tree.incompatibleMod.push({ name: mod.name, accepted: acceptVersion, actual: mcversion });
-                    }
+            const forgeMods = mods.filter(m => !!m && m.type === 'forge');
+            for (const mod of forgeMods) {
+                const meta = mod.metadata as ForgeModCommonMetadata;
+                const acceptVersion = meta.acceptMinecraft;
+                if (!acceptVersion) {
+                    tree.unknownMod.push({ name: mod.name, actual: mcversion });
+                    continue;
+                }
+                const range = VersionRange.createFromVersionSpec(acceptVersion);
+                if (range && !range.containsVersion(resolvedMcVersion)) {
+                    tree.incompatibleMod.push({ name: mod.name, accepted: acceptVersion, actual: mcversion });
                 }
             }
             if (forgeMods.length > 0) {
@@ -362,13 +354,13 @@ export default class DiagnoseService extends Service {
 
             let fabricMods = mods.filter(m => m.type === 'fabric') as FabricResource[];
             if (fabricMods.length > 0) {
-                if (!version.fabricLoader || !version.yarn) {
+                if (!version.fabricLoader) {
                     tree.requireFabric.push({});
                 }
                 for (let mod of fabricMods) {
-                    let fabMetadata = mod.metadata as Fabric.ModMetadata;
+                    let fabMetadata = mod.metadata as FabricModMetadata;
                     if (fabMetadata.depends) {
-                        let fabApiVer = (fabMetadata.depends as any)['fabric-api-base'];
+                        let fabApiVer = (fabMetadata.depends as any).fabric;
                         if (fabApiVer && !fabricMods.some(m => m.metadata.id === 'fabric')) {
                             tree.requireFabricAPI.push({ version: fabApiVer, name: mod.name });
                         }
