@@ -1,6 +1,6 @@
 import LauncherApp from '@main/app/LauncherApp';
 import { LauncherAppController } from '@main/app/LauncherAppController';
-import { client, IS_DEV } from '@main/constant';
+import { IS_DEV } from '@main/constant';
 import { isDirectory } from '@main/util/fs';
 import { UpdateInfo } from '@universal/entities/update';
 import { StaticStore } from '@universal/util/staticStore';

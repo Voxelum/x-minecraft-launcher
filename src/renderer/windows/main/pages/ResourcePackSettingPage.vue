@@ -279,7 +279,7 @@ export default defineComponent({
       replace(`/curseforge/texture-packs?from=${path.value}`);
     }
     function showFolder() {
-      openDirectory(path.value + '/resourcepacks');
+      openDirectory(`${path.value}/resourcepacks`);
     }
     return {
       ...toRefs(data),

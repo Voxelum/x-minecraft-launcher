@@ -1,5 +1,5 @@
 import type { ResolvedLibrary } from '@xmcl/core';
-import type { InstallProfile } from '@xmcl/installer/minecraft';
+import type { InstallProfile } from '@xmcl/installer';
 import { LocalVersion } from './version';
 
 export interface Issue {

@@ -1,5 +1,5 @@
+import { ForgeModCommonMetadata } from '@universal/entities/mod';
 import { computed, Ref, ref, nextTick } from '@vue/composition-api';
-import { Forge } from '@xmcl/mod-parser';
 import { useStore } from './useStore';
 
 export type ModStatus = 'existed' | 'absent' | 'founded' | 'not-found' | 'loading' | 'downloading' | 'unknown';
@@ -9,7 +9,7 @@ interface MissingMod {
     version: string;
     status: ModStatus;
     task: string;
-    info?: Forge.ModMetaData & { projectId: string; fileId: string };
+    info?: ForgeModCommonMetadata & { projectId: string; fileId: string };
 }
 
 export function useMissingMods(modList: Ref<{ modid: string; version: string }[]>) {
