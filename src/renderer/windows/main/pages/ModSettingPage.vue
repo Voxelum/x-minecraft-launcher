@@ -10,6 +10,14 @@
       <v-toolbar dark flat color="transparent" style="z-index: 10">
         <v-toolbar-title>{{ $tc("mod.name", 2) }}</v-toolbar-title>
         <v-spacer />
+         <!-- <v-tooltip bottom>
+          <template v-slot:activator="{ on }"> -->
+          <v-btn icon @click="showModsFolder()">
+            <v-icon>folder</v-icon>
+          </v-btn>
+          <!-- </template>
+          {{ $t(`curseforge.mc-mods.description`) }}
+        </v-tooltip> -->
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-btn icon v-on="on" @click="goToCurseforgeMods()">
@@ -125,6 +133,7 @@ import {
   useDrop,
   useInstanceBase,
   useRouter,
+  useService,
 } from '@/hooks';
 import { useLocalStorageCacheBool } from '@/hooks/useCache';
 import { filter } from 'fuzzy';
@@ -359,10 +368,11 @@ export default defineComponent({
     const { toggle } = useSearchToggles();
     const { text: filteredText } = useSearch();
     const { path } = useInstanceBase();
+    const { openDirectory } = useService('BaseService');
 
     function isCompatibleMod(mod: ModItem) {
       if (data.filterInCompatible) {
-        return isCompatible(mod.acceptVersion, minecraft.value);
+        return isCompatible(mod.dependencies.minecraft, minecraft.value);
       }
       return true;
     }
@@ -370,9 +380,6 @@ export default defineComponent({
       if (list.find(v => v.hash === mod.hash)) return list;
       const existed = list.findIndex(v => v.id === mod.id && v.type === mod.type);
       if (existed !== -1) {
-        console.log('found existed:');
-        console.log(list[existed]);
-        console.log(mod);
         list.splice(existed + 1, 0, mod);
         mod.subsequence = true;
       } else {
@@ -381,7 +388,7 @@ export default defineComponent({
       }
       return list;
     }
-    const items = computed(() => filter(filteredText.value, mods.value, { extract: v => `${v.name} ${v.version} ${v.acceptVersion}` })
+    const items = computed(() => filter(filteredText.value, mods.value, { extract: v => `${v.name} ${v.version} ${v.dependencies.minecraft}` })
       .map((r) => r.original)
       .filter(isCompatibleMod)
       .sort((a, b) => (a.enabled ? -1 : 1))
@@ -411,12 +418,16 @@ export default defineComponent({
     function goToCurseforgeMods() {
       replace(`/curseforge/mc-mods?from=${path.value}`);
     }
+    function showModsFolder() {
+      openDirectory(path.value + '/mods');
+    }
     return {
       ...toRefs(data),
       ...setupDragMod(items, selectedMods, isSelectionMode),
       ...setupEnable(items, isSelectionMode, selectedMods, isSelected, commit),
       ...setupDeletion(mods),
 
+      showModsFolder,
       goToCurseforgeMods,
       onVisible,
 
