@@ -462,6 +462,8 @@ export class InstanceService extends Service {
                 liteloader: '',
                 fabricLoader: '',
                 yarn: '',
+                optifinePatch: '',
+                optifineType: '',
             };
             if (info.status.modinfo && info.status.modinfo.type === 'FML') {
                 // TODO: handle mod server

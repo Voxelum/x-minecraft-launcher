@@ -1,3 +1,4 @@
+import { OptifineVersion } from '@universal/entities/optifine';
 import { ForgeVersion, ForgeVersionList, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema } from '@universal/entities/version.schema';
 import { MutationKeys } from '@universal/store';
 import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core';
@@ -18,6 +19,8 @@ export default class InstallService extends Service {
     private refreshedFabric = false;
 
     private refreshedLiteloader = false;
+
+    private refreshedOptifine = false;
 
     private refreshedForge: Record<string, boolean> = {};
 
@@ -457,5 +460,37 @@ export default class InstallService extends Service {
         } finally {
             this.local.refreshVersions();
         }
+    }
+
+    @Singleton()
+    async refreshOptifine(force = false) {
+        if (!force && this.refreshedOptifine) {
+            return;
+        }
+
+        this.log('Start to refresh optifine metadata');
+
+        const headers = this.state.version.optifine.timestamp === '' ? undefined : {
+            'If-Modified-Since': this.state.version.optifine.timestamp,
+        };
+
+        const response = await this.networkManager.request.get('https://bmclapi2.bangbang93.com/optifine/versionList', {
+            headers,
+            rejectUnauthorized: false,
+        });
+        if (response.statusCode === 304) {
+            this.log('Not found new optifine version metadata. Use cache.');
+        } else if (response.statusCode >= 200 && response.statusCode < 300) {
+            const time = response.headers['last-modified']!;
+            const versions: OptifineVersion[] = JSON.parse(response.body);
+
+            this.commit('optifineMetadata', {
+                timestamp: time,
+                versions,
+            });
+            this.log('Found new optifine version metadata. Update it.');
+        }
+
+        this.refreshedOptifine = true;
     }
 }

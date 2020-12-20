@@ -1,6 +1,7 @@
-import type { MinecraftVersionList, MinecraftVersion, LiteloaderVersionList, FabricArtifactVersion } from '@xmcl/installer';
+import { OptifineVersionList } from '@universal/entities/optifine';
 import { LATEST_RELEASE, LocalVersion } from '@universal/entities/version';
 import { ForgeVersionList, VersionFabricSchema, VersionForgeSchema } from '@universal/entities/version.schema';
+import type { FabricArtifactVersion, LiteloaderVersionList, MinecraftVersion, MinecraftVersionList } from '@xmcl/installer';
 import { ModuleOption } from '../root';
 
 interface State {
@@ -24,6 +25,10 @@ interface State {
      * Liteloader version metadata list. Helps to download.
      */
     liteloader: LiteloaderVersionList;
+    /**
+     * The optifine version list
+     */
+    optifine: OptifineVersionList;
 }
 
 interface Getters {
@@ -43,6 +48,7 @@ interface Mutations {
     localVersion: LocalVersion | { [runtime: string]: string };
     localVersionRemove: string;
     minecraftMetadata: MinecraftVersionList;
+    optifineMetadata: OptifineVersionList;
     forgeMetadata: ForgeVersionList;
     liteloaderMetadata: LiteloaderVersionList;
     fabricYarnMetadata: { versions: FabricArtifactVersion[]; timestamp: string };
@@ -82,6 +88,10 @@ const mod: VersionModule = {
             loaderTimestamp: '',
             yarns: [],
             loaders: [],
+        },
+        optifine: {
+            timestamp: '',
+            versions: [],
         },
     },
     getters: {
@@ -134,6 +144,10 @@ const mod: VersionModule = {
         fabricLoaderMetadata(state, { versions, timestamp }) {
             state.fabric.loaderTimestamp = timestamp;
             state.fabric.loaders = Object.seal(versions);
+        },
+        optifineMetadata(state, { versions, timestamp }) {
+            state.optifine.versions = versions;
+            state.optifine.timestamp = timestamp;
         },
     },
 };

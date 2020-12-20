@@ -2,9 +2,9 @@ import { Status } from '@universal/entities/version';
 import { isNonnull } from '@universal/util/assert';
 import { computed, onMounted, onUnmounted, reactive, Ref, toRefs, watch } from '@vue/composition-api';
 import { MinecraftVersion } from '@xmcl/installer';
+import { useBusy } from './useSemaphore';
 import { useService, useServiceOnly } from './useService';
 import { useStore } from './useStore';
-import { useBusy } from './useSemaphore';
 
 export function useVersions() {
     return useServiceOnly('VersionService', 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory');
@@ -148,16 +148,12 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
         return statusMap;
     });
 
-    let handle = () => { };
     onMounted(() => {
-        handle = watch(minecraftVersion, () => {
+        watch(minecraftVersion, () => {
             if (versions.value.length === 0) {
                 refreshForge({ mcversion: minecraftVersion.value });
             }
         });
-    });
-    onUnmounted(() => {
-        handle();
     });
 
     function refresh() {
@@ -180,20 +176,38 @@ export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
 
     const versions = computed(() => Object.values(state.version.liteloader.versions[minecraftVersion.value] || {}).filter(isNonnull));
     const refreshing = useBusy('refreshLiteloader');
-    let handle = () => { };
     onMounted(() => {
-        handle = watch(minecraftVersion, () => {
+        watch(minecraftVersion, () => {
             if (!versions.value) {
                 refreshLiteloader();
             }
         });
     });
-    onUnmounted(() => {
-        handle();
-    });
 
     function refresh() {
         return refreshLiteloader();
+    }
+
+    return {
+        versions,
+        refresh,
+        refreshing,
+    };
+}
+
+export function useOptifineVersions(minecraftVersion: Ref<string>) {
+    const { state } = useStore();
+    const { refreshOptifine } = useService('InstallService');
+
+    const versions = computed(() => state.version.optifine.versions.filter(v => v.mcversion === minecraftVersion.value));
+    const refreshing = useBusy('refreshOptifine');
+
+    watch(minecraftVersion, () => {
+        refreshOptifine();
+    });
+
+    function refresh() {
+        return refreshOptifine();
     }
 
     return {

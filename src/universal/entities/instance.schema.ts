@@ -28,6 +28,9 @@ export interface RuntimeVersions {
      */
     yarn: string;
 
+    optifineType: string | undefined;
+    optifinePatch: string | undefined;
+
     [id: string]: string | undefined;
 }
 
