@@ -48,7 +48,7 @@ export interface ForgeVersionList {
     /**
      * @default []
      */
-    versions: ForgeVersion[];
+    versions: readonly ForgeVersion[];
     /**
      * @default ""
      */
@@ -155,7 +155,34 @@ export interface VersionFabricSchema {
     loaders: FabricArtifactVersion[];
 }
 
+export interface OptifineVersion {
+    /**
+     * The minecraft version
+     */
+    mcversion: string;
+    /**
+     * The type of the optifine like HD_U
+     */
+    type: string;
+    /**
+     * The patch of the optifine
+     */
+    patch: string;
+}
+
+export interface VersionOptifineSchema {
+    /**
+     * @default []
+     */
+    versions: OptifineVersion[];
+    /**
+     * @default ""
+     */
+    etag: string;
+}
+
 export const VersionMinecraftSchema: Schema<VersionMinecraftSchema> = require('./VersionMinecraftSchema.json');
 export const VersionForgeSchema: Schema<VersionForgeSchema> = require('./VersionForgeSchema.json');
 export const VersionLiteloaderSchema: Schema<VersionLiteloaderSchema> = require('./VersionLiteloaderSchema.json');
 export const VersionFabricSchema: Schema<VersionFabricSchema> = require('./VersionFabricSchema.json');
+export const VersionOptifineSchema: Schema<VersionOptifineSchema> = require('./VersionOptifineSchema.json');

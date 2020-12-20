@@ -134,11 +134,19 @@ export default class InstanceIOService extends Service {
             return;
         }
 
+        const version = this.getters.instanceVersion;
+
+        if (version.id === '') {
+            // TODO: throw
+            this.warn(`Cannot export instance ${src} as its version is not installed!`);
+            return;
+        } 
+
+
         const root = this.state.root;
         const from = src;
 
         const zipTask = new ZipTask(dest).setName('profile.modpack.export');
-        const version = await Version.parse(root, this.getters.instanceVersion.folder);
 
         // add assets
         if (includeAssets) {
@@ -222,17 +230,17 @@ export default class InstanceIOService extends Service {
             return;
         }
 
-        const ganeVersionInstance = this.state.version.local.find(v => v.folder === gameVersion);
+        const ganeVersionInstance = this.state.version.local.find(v => v.id === gameVersion);
         const instance = this.state.instance.all[instancePath];
-        const modLoaders = ganeVersionInstance?.forge ? [{
-            id: `forge-${ganeVersionInstance?.forge}`,
+        const modLoaders = instance.runtime.forge ? [{
+            id: `forge-${instance.runtime.forge}`,
             primary: true,
         }] : [];
         const curseforgeConfig: CurseforgeModpackManifest = {
             manifestType: 'minecraftModpack',
             manifestVersion: 1,
             minecraft: {
-                version: ganeVersionInstance?.minecraft ?? instance.runtime.minecraft,
+                version: ganeVersionInstance?.minecraftVersion ?? instance.runtime.minecraft,
                 modLoaders,
             },
             name: options.name ?? name,

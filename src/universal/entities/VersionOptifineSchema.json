@@ -1,0 +1,43 @@
+{
+    "type": "object",
+    "properties": {
+        "versions": {
+            "default": [],
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/OptifineVersion"
+            }
+        },
+        "etag": {
+            "default": "",
+            "type": "string"
+        }
+    },
+    "required": [
+        "etag",
+        "versions"
+    ],
+    "definitions": {
+        "OptifineVersion": {
+            "type": "object",
+            "properties": {
+                "mcversion": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "patch": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "mcversion",
+                "patch",
+                "type"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false
+}

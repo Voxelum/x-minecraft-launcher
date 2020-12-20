@@ -39,16 +39,25 @@ p {
     transition: transform 0.7s;
 }
 
-::-webkit-scrollbar-thumb {
-    background: #888;
+::-webkit-scrollbar {
+    width: 12px;
+    cursor: pointer;
+    background: transparent;
+    /* optional: just make scrollbar invisible */
 }
 
-::-webkit-scrollbar {
-    width: 2px;
-    height: 2px;
-    /* remove scrollbar space */
-    /* background: transparent; */
-    /* optional: just make scrollbar invisible */
+::-webkit-scrollbar-thumb {
+    width: 8px;
+    cursor: pointer;
+    background: rgba(155, 155, 155, 0.5);
+    transition: all 1s;
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    width: 12px;
+    background: rgba(192, 192, 192, 0.8);
+    transition: all 1s;
 }
 
 .invisible-scroll::-webkit-scrollbar {
@@ -168,12 +177,13 @@ a {
     -webkit-user-drag: none;
 }
 
-@media only screen and (min-width: 1264px){
+@media only screen and (min-width: 1264px) {
     .container {
         max-width: unset;
     }
 }
-@media only screen and (min-width: 960px){
+
+@media only screen and (min-width: 960px) {
     .container {
         max-width: unset;
     }

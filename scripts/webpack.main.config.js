@@ -16,6 +16,7 @@ const mainConfig = {
     // devtool: '#eval-source-map',
     entry: {
         main: path.join(__dirname, '../src/main/main.ts'),
+        worker: path.join(__dirname, '../src/main/worker/index.ts'),
     },
     externals: [
         ...Object.keys(dependencies || {}),

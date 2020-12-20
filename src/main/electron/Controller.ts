@@ -12,8 +12,7 @@ import { join, resolve } from 'path';
 import LauncherApp from '../app/LauncherApp';
 import i18n from './locales';
 
-const isDev = process.env.NODE_ENV === 'development';
-const baseURL = isDev
+const baseURL = IS_DEV
     ? 'http://localhost:9080/'
     : `file://${__dirname}/`;
 

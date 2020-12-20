@@ -33,6 +33,9 @@
         >
           {{ isCrash ? $t(`launch.crash`) : $t(`launch.failed.description`) }}
         </div>
+        <p>
+          {{errorLog}}
+        </p>
         <v-textarea
           auto-grow
           autofocus
@@ -40,7 +43,7 @@
           readonly
           hide-details
           :value="errorLog"
-          style="margin: 8px; line-height: 30px"
+          style="margin: 8px; line-height: 30px;"
         />
         <div
           style="padding: 10px"
@@ -98,6 +101,7 @@ export default defineComponent({
     }
     ipc.on('minecraft-exit', (event, { code, signal, crashReport, crashReportLocation, errorLog }) => {
       if (code !== 0) {
+        console.log(errorLog);
         data.errorLog = errorLog;
         if (crashReportLocation) {
           data.crashReportLocation = crashReportLocation;

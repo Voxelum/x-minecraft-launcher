@@ -13,12 +13,6 @@ export interface JavaSchema {
      * @default []
      */
     all: Java[];
-    /**
-     * @TJS-type integer
-     * @minimum 0
-     * @default 0
-     */
-    default: number;
 }
 
 export const JavaSchema: Schema<JavaSchema> = require('./JavaSchema.json');

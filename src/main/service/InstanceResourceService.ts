@@ -1,6 +1,6 @@
 import { mutateResource } from '@main/entities/resource';
 import { readdirIfPresent } from '@main/util/fs';
-import { isModResource, isResourcePackResource, ModResource, Resource, ResourcePackResource } from '@universal/entities/resource';
+import { isModResource, isResourcePackResource, ModResource, Resource, ResourcePackResource, Resources } from '@universal/entities/resource';
 import { ResourceDomain } from '@universal/entities/resource.schema';
 import { copyFile, ensureDir, FSWatcher, link, unlink } from 'fs-extra';
 import debounce from 'lodash.debounce';
@@ -32,13 +32,13 @@ export default class InstanceResourceService extends Service {
 
     private resourcepacksWatcher: FSWatcher | undefined;
 
-    private addModQueue: ModResource[] = [];
+    private addModQueue: Resources[] = [];
 
-    private removeModQueue: ModResource[] = [];
+    private removeModQueue: Resources[] = [];
 
-    private addResourcePackQueue: ResourcePackResource[] = [];
+    private addResourcePackQueue: Resources[] = [];
 
-    private removeResourcePackQueue: ResourcePackResource[] = [];
+    private removeResourcePackQueue: Resources[] = [];
 
     private commitUpdate = debounce(() => {
         if (this.addModQueue.length > 0) {
@@ -137,14 +137,14 @@ export default class InstanceResourceService extends Service {
                 if (name.startsWith('.')) return;
                 let filePath = name;
                 if (event === 'update') {
-                    this.resourceService.importResource({ path: filePath, type: 'mods', background: true }).then((resource) => {
+                    this.resourceService.parseAndImportResourceIfAbsent({ path: filePath, type: 'mods', background: true }).then((resource) => {
                         if (isModResource(resource)) {
                             this.log(`Instace mod add ${filePath}`);
-                            this.addModQueue.push(mutateResource(resource, (r) => { r.path = filePath; }));
-                            this.commitUpdate();
                         } else {
                             this.warn(`Non mod resource added in /mods directory! ${filePath}`);
                         }
+                        this.addModQueue.push(mutateResource(resource, (r) => { r.path = filePath; }));
+                        this.commitUpdate();
                     });
                 } else {
                     const target = this.state.instance.mods.find(r => r.path === filePath);
@@ -177,7 +177,7 @@ export default class InstanceResourceService extends Service {
                 if (name.startsWith('.')) return;
                 let filePath = name;
                 if (event === 'update') {
-                    this.resourceService.importResource({ path: filePath, type: 'resourcepacks' }).then((resource) => {
+                    this.resourceService.parseAndImportResourceIfAbsent({ path: filePath, type: 'resourcepacks' }).then((resource) => {
                         if (isResourcePackResource(resource)) {
                             this.log(`Instace resource pack add ${filePath}`);
                             this.addResourcePackQueue.push(mutateResource(resource, (r) => { r.path = filePath; }));

@@ -81,7 +81,7 @@ export default class IOService extends Service {
                 await zipTask.includeAs(path, '');
                 await zipTask.startAndWait();
                 // zip and import
-                result = await this.resourceService.importResource({ path: tempZipPath, type });
+                result = await this.resourceService.parseAndImportResourceIfAbsent({ path: tempZipPath, type });
                 await unlink(tempZipPath);
             } if (domain === ResourceDomain.Modpacks && type === ResourceType.Modpack) {
                 const root = (metadata as Modpack).root;
@@ -99,7 +99,7 @@ export default class IOService extends Service {
             await this.instanceIOService.importInstance(tempDir);
             await remove(tempDir);
         } else if (fileType === 'zip' || extname(path) === '.jar') {
-            result = await this.resourceService.importResource({ path, type });
+            result = await this.resourceService.parseAndImportResourceIfAbsent({ path, type });
         }
         return result;
     }

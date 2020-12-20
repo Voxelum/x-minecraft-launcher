@@ -32,18 +32,13 @@
           @click="onClick(l)"
         >
           <v-chip
+            v-for="t in l.tags"
+            :key="t"
             dark
             outline
             label
           >
-            {{ l.time }}
-          </v-chip>
-          <v-chip
-            dark
-            outline
-            label
-          >
-            {{ l.src }}
+            {{ t }}
           </v-chip>
           <v-list-tile-content>
             <v-list-tile-title v-text="l.content" />
@@ -57,37 +52,17 @@
 <script lang=ts>
 import { defineComponent, reactive, toRefs } from '@vue/composition-api';
 import { useClipboard, useIpc } from '@/hooks';
-
-interface Log {
-  time?: string;
-  raw: string;
-  content?: string;
-  src?: string;
-}
+import { parseLog, Log } from './log';
 
 export default defineComponent({
   setup() {
-    const pattern = /^\[(.+)\] \[(.+)\]: (.+)/;
     const clipboard = useClipboard();
     const ipcRenderer = useIpc();
     const data = reactive({
       logs: [] as Log[],
     });
     function accept(log: string) {
-      const matched = pattern.exec(log);
-      if (matched) {
-        const [full, time, src, content] = matched;
-        data.logs.push({
-          time,
-          src,
-          content,
-          raw: log,
-        });
-      } else {
-        data.logs.push({
-          raw: log,
-        });
-      }
+      data.logs.push(parseLog(log));
     }
     ipcRenderer.on('minecraft-stdout', (event, str) => {
       accept(str);

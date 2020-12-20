@@ -1,3 +1,4 @@
+import LauncherApp from '@main/app/LauncherApp';
 import { aquireXBoxToken, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '@main/entities/user';
 import { createhDynamicThrottle as createDynamicThrottle } from '@main/util/trafficAgent';
 import { fitMinecraftLauncherProfileData } from '@main/util/userData';
@@ -142,53 +143,45 @@ export default class UserService extends Service {
 
     private validate = createDynamicThrottle(validate, ({ accessToken }, api) => (api ?? AUTH_API_MOJANG).hostName, 2400);
 
-    async save({ mutation }: { mutation: MutationKeys }) {
-        switch (mutation) {
-            case 'userProfileAdd':
-            case 'userProfileRemove':
-            case 'userProfileUpdate':
-            case 'userGameProfileSelect':
-            case 'authService':
-            case 'profileService':
-            case 'userInvalidate':
-            case 'authServiceRemove':
-            case 'profileServiceRemove':
-                await this.setPersistence({
-                    path: this.getPath('user.json'),
-                    data: { ...this.state.user },
-                    schema: UserSchema,
-                });
-                break;
-            default:
-        }
+    constructor(app: LauncherApp) {
+        super(app);
+        this.persistManager.registerStoreJsonSerializable(this.getPath('user.json'), UserSchema,
+            async (data) => {
+                const result: UserSchema = {
+                    authServices: {},
+                    profileServices: {},
+                    users: {},
+                    selectedUser: {
+                        id: '',
+                        profile: '',
+                    },
+                    clientToken: '',
+                };
+                const mcdb = await this.getMinecraftAuthDb();
+                fitMinecraftLauncherProfileData(result, data, mcdb);
+                this.log(`Load ${Object.keys(result.users).length} users`);
+                if (!result.clientToken) {
+                    result.clientToken = v4().replace(/-/g, '');
+                }
+                this.commit('userSnapshot', result);
+            },
+            () => this.state.user,
+            [
+                'userProfileAdd',
+                'userProfileRemove',
+                'userProfileUpdate',
+                'userGameProfileSelect',
+                'authService',
+                'profileService',
+                'userInvalidate',
+                'authServiceRemove',
+                'profileServiceRemove',
+            ]);
     }
 
     async getMinecraftAuthDb() {
-        let data: LauncherProfile = await readJSON(this.getMinecraftPath('launcher_profile.json')).catch(() => ({}));
+        const data: LauncherProfile = await readJSON(this.getMinecraftPath('launcher_profile.json')).catch(() => ({}));
         return data;
-    }
-
-    async load() {
-        let data = await this.getPersistence({ path: this.getPath('user.json'), schema: UserSchema });
-        let result: UserSchema = {
-            authServices: {},
-            profileServices: {},
-            users: {},
-            selectedUser: {
-                id: '',
-                profile: '',
-            },
-            clientToken: '',
-        };
-        let mcdb = await this.getMinecraftAuthDb();
-        fitMinecraftLauncherProfileData(result, data, mcdb);
-
-        this.log(`Load ${Object.keys(result.users).length} users`);
-
-        if (!result.clientToken) {
-            result.clientToken = v4().replace(/-/g, '');
-        }
-        this.commit('userSnapshot', result);
     }
 
     async init() {

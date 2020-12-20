@@ -187,7 +187,7 @@ export const RESOURCE_PARSER_SAVE: ResourceParser<LevelDataFrame> = ({
     parseMetadata: async fs => {
         let root = await findLevelRoot(fs, '');
         if (!root) throw new Error();
-        return deserialize(await fs.readFile(`${root}level.dat`));
+        return deserialize(await fs.readFile(fs.join(root, 'level.dat')));
     },
     getSuggestedName: meta => meta.LevelName,
     getUri: (_, hash) => [`save://${hash}`],

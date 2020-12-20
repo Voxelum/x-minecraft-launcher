@@ -5,6 +5,7 @@ import filenamify from 'filenamify';
 import { createHash } from 'crypto';
 import { pipeline } from 'stream';
 import { promisify } from 'util';
+import { Schema } from '@universal/entities/schema';
 
 const pip = promisify(pipeline);
 

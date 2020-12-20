@@ -233,7 +233,11 @@ function setupEnable(items: Ref<ModItem[]>, isSelectionMode: Ref<boolean>, selec
   function save() {
     if (saving.value) return;
     saving.value = true;
-    commit(modifiedItems.value);
+    commit(modifiedItems.value).catch((e) => {
+      console.error('Cannot save the mods setting:');
+      console.error(e);
+      saving.value = false;
+    });
   }
   return { modifiedEnabled, modifyMod, isModified, saving, save };
 }
@@ -371,6 +375,9 @@ export default defineComponent({
     const { openDirectory } = useService('BaseService');
 
     function isCompatibleMod(mod: ModItem) {
+      if (mod.enabled) {
+        return true;
+      }
       if (data.filterInCompatible) {
         return isCompatible(mod.dependencies.minecraft, minecraft.value);
       }

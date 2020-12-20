@@ -111,12 +111,12 @@ export default class InstanceSavesService extends Service {
      */
     @Singleton()
     async loadAllInstancesSaves() {
-        let all: Array<InstanceSave> = [];
+        const all: Array<InstanceSave> = [];
 
-        for (let instance of this.getters.instances) {
-            let saveRoot = join(instance.path, 'saves');
-            let saves = await readdirIfPresent(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
-            let metadatas = saves
+        for (const instance of this.getters.instances) {
+            const saveRoot = join(instance.path, 'saves');
+            const saves = await readdirIfPresent(saveRoot).then(a => a.filter(s => !s.startsWith('.')));
+            const metadatas = saves
                 .map(s => resolve(saveRoot, s))
                 .map((p) => getInstanceSave(p, instance.name));
             all.push(...metadatas);

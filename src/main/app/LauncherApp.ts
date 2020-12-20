@@ -3,12 +3,15 @@ import { Client } from '@main/engineBridge';
 import CredentialManager from '@main/manager/CredentialManager';
 import LogManager from '@main/manager/LogManager';
 import NetworkManager from '@main/manager/NetworkManager';
+import PersistManager from '@main/manager/PersistManager';
 import ServiceManager from '@main/manager/ServiceManager';
 import StoreManager from '@main/manager/StoreManager';
 import TaskManager from '@main/manager/TaskManager';
 import TelemetryManager from '@main/manager/TelemetryManager';
+import WorkerManager from '@main/manager/WorkerManager';
 import { exists, isDirectory } from '@main/util/fs';
 import { GiteeReleaseFetcher, GithubReleaseFetcher, ReleaseFetcher } from '@main/util/release';
+import { RuntimeVersions } from '@universal/entities/instance.schema';
 import { UpdateInfo } from '@universal/entities/update';
 import { StaticStore } from '@universal/util/staticStore';
 import { getPlatform } from '@xmcl/core';
@@ -46,7 +49,7 @@ export interface LauncherApp {
     on(channel: 'store-ready', listener: (store: StaticStore<any>) => void): this;
     on(channel: 'engine-ready', listener: () => void): this;
     on(channel: 'minecraft-window-ready', listener: () => void): this;
-    on(channel: 'minecraft-start', listener: (launchOptions: { version: string; minecraft: string; forge: string; fabric: string }) => void): this;
+    on(channel: 'minecraft-start', listener: (launchOptions: { version: string; } & RuntimeVersions) => void): this;
     on(channel: 'minecraft-exit', listener: (exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }) => void): this;
     on(channel: 'minecraft-stdout', listener: (out: string) => void): this;
     on(channel: 'minecraft-stderr', listener: (err: string) => void): this;
@@ -56,7 +59,7 @@ export interface LauncherApp {
     once(channel: 'store-ready', listener: (store: StaticStore<any>) => void): this;
     once(channel: 'engine-ready', listener: () => void): this;
     once(channel: 'minecraft-window-ready', listener: () => void): this;
-    once(channel: 'minecraft-start', listener: (launchOptions: { version: string; minecraft: string; forge: string; fabric: string }) => void): this;
+    once(channel: 'minecraft-start', listener: (launchOptions: { version: string; } & RuntimeVersions) => void): this;
     once(channel: 'minecraft-exit', listener: (exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }) => void): this;
     once(channel: 'minecraft-stdout', listener: (out: string) => void): this;
     once(channel: 'minecraft-stderr', listener: (err: string) => void): this;
@@ -67,7 +70,7 @@ export interface LauncherApp {
     emit(channel: 'engine-ready'): boolean;
     emit(channel: 'store-ready', store: StaticStore<any>): boolean;
     emit(channel: 'minecraft-window-ready', ...args: any[]): boolean;
-    emit(channel: 'minecraft-start', launchOptions: { version: string; minecraft: string; forge: string; fabric: string }): boolean;
+    emit(channel: 'minecraft-start', launchOptions: { version: string; } & RuntimeVersions): boolean;
     emit(channel: 'minecraft-exit', exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }): boolean;
     emit(channel: 'minecraft-stdout', out: string): boolean;
     emit(channel: 'minecraft-stderr', err: string): boolean;
@@ -116,6 +119,10 @@ export abstract class LauncherApp extends EventEmitter {
     readonly telemetryManager = new TelemetryManager(this);
 
     readonly credentialManager = new CredentialManager(this);
+    
+    readonly workerManager = new WorkerManager(this);
+
+    readonly persistManager = new PersistManager(this);
 
     readonly platform: Platform = getPlatform();
 
@@ -125,7 +132,7 @@ export abstract class LauncherApp extends EventEmitter {
 
     get isParking(): boolean { return this.parking; }
 
-    protected managers = [this.logManager, this.networkManager, this.taskManager, this.storeManager, this.serviceManager, this.telemetryManager, this.credentialManager];
+    protected managers = [this.logManager, this.networkManager, this.taskManager, this.storeManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager];
 
     readonly controller: LauncherAppController;
 

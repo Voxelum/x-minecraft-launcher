@@ -50,7 +50,7 @@ export function normalizeForgeModMetadata(metadata: ForgeModMetadata): ForgeModC
         result.name = modInfo.displayName;
         result.version = modInfo.version;
         result.description = modInfo.description ?? '';
-        result.acceptMinecraft = modInfo.dependencies.find((d) => d.modId === 'minecraft')?.versionRange || annotation.acceptedMinecraftVersions || '';
+        result.acceptMinecraft = modInfo.dependencies.find((d) => d.modId === 'minecraft')?.versionRange || annotation?.acceptedMinecraftVersions || '';
         result.acceptForge = modInfo.dependencies.find((d) => d.modId === 'forge')?.versionRange ?? '[*]';
         result.authors = modInfo.authors ? [modInfo.authors] : [];
         result.logoFile = modInfo.logoFile;
@@ -58,11 +58,11 @@ export function normalizeForgeModMetadata(metadata: ForgeModMetadata): ForgeModC
         const modInfo = metadata.mcmodInfo[0];
         const annotation = metadata.modAnnotations[0];
 
-        result.modid = annotation.modid || modInfo.modid;
-        result.name = annotation.name || modInfo.name || modInfo.modid;
-        result.version = annotation.version || modInfo.version;
+        result.modid = annotation?.modid || modInfo.modid;
+        result.name = annotation?.name || modInfo.name || modInfo.modid;
+        result.version = annotation?.version || modInfo.version;
         result.description = modInfo.description ?? '';
-        result.acceptMinecraft = annotation.acceptedMinecraftVersions || (modInfo.mcversion ? `[${modInfo.mcversion}]` : '');
+        result.acceptMinecraft = annotation?.acceptedMinecraftVersions || (modInfo.mcversion ? `[${modInfo.mcversion}]` : '');
         result.acceptForge = '[*]';
         result.authors = modInfo.authorList;
         result.logoFile = modInfo.logoFile;

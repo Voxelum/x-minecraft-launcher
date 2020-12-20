@@ -253,7 +253,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api';
-import { useInstance, useAutoSaveLoad, useRouter, useCurrentUser, useSelectedUser, useProfileId, useGameProfile, useLocalVersions } from '@/hooks';
+import { useInstance, useAutoSaveLoad, useRouter, useCurrentUser, useSelectedUser, useProfileId, useGameProfile } from '@/hooks';
 import LaunchView from './BaseSettingPageLaunchView.vue';
 
 export default defineComponent({
