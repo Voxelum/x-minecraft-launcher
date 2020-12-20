@@ -37,7 +37,7 @@ const mod: ResourceModule = {
             resourcepacks: [],
             saves: [],
             modpacks: [],
-            unknown: [],
+            unknowns: [],
         },
     },
     getters: {

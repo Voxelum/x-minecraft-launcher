@@ -50,6 +50,10 @@ export enum ResourceDomain {
 
 export interface ResourceSchema {
     /**
+     * @default 0
+     */
+    version: number;
+    /**
      * @deprecated
      */
     path?: string;

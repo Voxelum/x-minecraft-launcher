@@ -1,6 +1,7 @@
-import { FabricResource, ForgeResource, isModResource, LiteloaderResource, ModResource, Resource } from '@universal/entities/resource';
+import { FabricResource, ForgeResource, isModResource, LiteloaderResource, ModResource, Resource, Resources } from '@universal/entities/resource';
 import { isNonnull } from '@universal/util/assert';
-import { computed, watch } from '@vue/composition-api';
+import { computed } from '@vue/composition-api';
+import { FabricModMetadata } from '@xmcl/mod-parser';
 import { useService, useStore } from '.';
 import { useBusy } from './useSemaphore';
 
@@ -32,9 +33,11 @@ export interface ModItem {
 
     tags: string[];
 
-    acceptVersion: string;
-
-    acceptLoaderVersion: string;
+    dependencies: {
+        minecraft: string;
+        fabricLoader?: string;
+        forge?: string;
+    };
 
     hash: string;
     /**
@@ -67,7 +70,7 @@ export function useInstanceMods() {
     function getUrl(resource: Resource) {
         return resource.uri.find(u => u.startsWith('http')) ?? '';
     }
-    function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource): ModItem {
+    function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource | Resources): ModItem {
         const icon = `${state.root}/${resource.location}.png`;
         let modItem: ModItem = {
             path: 'filePath' in resource ? (resource as any).filePath : resource.path,
@@ -76,8 +79,6 @@ export function useInstanceMods() {
             version: '',
             description: '',
             icon,
-            acceptVersion: 'unknown',
-            acceptLoaderVersion: 'unknown',
             type: 'forge',
             url: getUrl(resource),
             hash: resource.hash,
@@ -86,44 +87,40 @@ export function useInstanceMods() {
             subsequence: false,
             hide: false,
             curseforge: resource.curseforge,
+            dependencies: {
+                minecraft: '',
+            },
         };
         if (resource.type === 'forge') {
-            if (!resource.metadata[0]) {
-                modItem.type = 'forge';
-                return modItem;
-            }
-            let meta = resource.metadata[0];
-            let acceptVersion: string;
-            if (meta.acceptedMinecraftVersions) {
-                acceptVersion = meta.acceptedMinecraftVersions;
-            } else if (meta.loaderVersion) {
-                acceptVersion = '[1.15,)';
-            } else {
-                acceptVersion = 'unknown';
-            }
+            const meta = resource.metadata;
+            modItem.type = 'forge';
             modItem.id = meta.modid;
-            modItem.name = meta.displayName ?? meta.name ?? meta.modid;
+            modItem.name = meta.name;
             modItem.version = meta.version;
-            modItem.description = meta.description ?? '';
-            modItem.acceptVersion = acceptVersion;
-            modItem.acceptLoaderVersion = meta.loaderVersion ?? 'unknown';
+            modItem.description = meta.description;
+            modItem.dependencies.minecraft = meta.acceptMinecraft;
+            modItem.dependencies.forge = meta.acceptForge;
         } else if (resource.type === 'fabric') {
+            modItem.type = 'fabric';
             modItem.id = resource.metadata.id;
             modItem.version = resource.metadata.version;
             modItem.name = resource.metadata.name ?? resource.metadata.id;
             modItem.description = resource.metadata.description ?? '';
-            modItem.acceptVersion = '[*]';
-            modItem.acceptLoaderVersion = '';
-            modItem.type = 'fabric';
-        } else {
+            const fab = resource.metadata as FabricModMetadata;
+            modItem.dependencies.minecraft = (fab.depends?.minecraft as string) ? `[${(fab.depends?.minecraft as string)}]` : '';
+            modItem.dependencies.fabricLoader = fab.depends?.fabricloader as string ?? '';
+        } else if (resource.type === 'liteloader') {
             modItem.type = 'liteloader';
             modItem.name = resource.metadata.name;
             modItem.version = resource.metadata.version ?? '';
             modItem.id = `${resource.metadata.name}`;
             modItem.description = modItem.description ?? '';
             if (resource.metadata.mcversion) {
-                modItem.acceptVersion = `[${resource.metadata.mcversion}]`;
+                modItem.dependencies.minecraft = `[${resource.metadata.mcversion}]`;
             }
+        } else {
+            modItem.type = 'unknown';
+            modItem.name = resource.location;
         }
         return modItem;
     }
@@ -139,16 +136,15 @@ export function useInstanceMods() {
             version: '',
             description: '',
             icon: '',
-            acceptVersion: '[*]',
             type: 'unknown',
             url: getUrl(resource),
-            acceptLoaderVersion: '',
             hash: resource.hash,
             tags: resource.tags,
             enabled: false,
             subsequence: false,
             hide: false,
             curseforge: resource.curseforge,
+            dependencies: { minecraft: '[*]' },
         };
     }
 

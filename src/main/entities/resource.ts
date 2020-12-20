@@ -2,11 +2,12 @@ import { ImportTypeHint } from '@main/service/ResourceService';
 import { linkOrCopy } from '@main/util/fs';
 import { CurseforgeModpackManifest } from '@universal/entities/curseforge';
 import { RuntimeVersions } from '@universal/entities/instance.schema';
+import { ForgeModCommonMetadata, normalizeForgeModMetadata } from '@universal/entities/mod';
 import { Resource, Resources } from '@universal/entities/resource';
 import { CurseforgeInformation, GithubInformation, ResourceDomain, ResourceSchema, ResourceType } from '@universal/entities/resource.schema';
 import { resolveRuntimeVersion } from '@universal/entities/version';
 import { Version } from '@xmcl/core';
-import { Fabric, Forge, LiteLoader } from '@xmcl/mod-parser';
+import { FabricModMetadata, LiteloaderModMetadata, readFabricMod, readForgeMod, readLiteloaderMod } from '@xmcl/mod-parser';
 import { deserialize } from '@xmcl/nbt';
 import { PackMeta, readIcon, readPackMeta } from '@xmcl/resourcepack';
 import { FileSystem, openFileSystem } from '@xmcl/system';
@@ -27,7 +28,7 @@ export interface ResourceHeader {
     domain: ResourceDomain;
     type: ResourceType;
     suggestedName: string;
-    uri: string;
+    uri: string[];
     hash: string;
 }
 export interface ResourceParser<T> {
@@ -40,11 +41,11 @@ export interface ResourceParser<T> {
     /**
      * Get ideal uri for this resource
      */
-    getUri: (metadata: T, hash: string) => string;
+    getUri: (metadata: T, hash: string) => string[];
 }
 
 
-export interface ResourceBuilder extends Omit<ResourceSchema, 'metadata'> {
+export interface ResourceBuilder extends Omit<ResourceSchema, 'metadata' | 'version'> {
     icon?: Uint8Array;
     path: string;
 
@@ -72,41 +73,58 @@ export const UNKNOWN_ENTRY: ResourceParser<unknown> = {
     parseIcon: () => Promise.resolve(undefined),
     parseMetadata: () => Promise.resolve({}),
     getSuggestedName: () => '',
-    getUri: () => '',
+    getUri: () => [],
 };
-export const RESOURCE_PARSER_FORGE: ResourceParser<Forge.ModMetaData[]> = ({
+export const RESOURCE_PARSER_FORGE: ResourceParser<ForgeModCommonMetadata> = ({
     type: ResourceType.Forge,
     domain: ResourceDomain.Mods,
     ext: '.jar',
     parseIcon: async (meta, fs) => {
-        if (!meta[0] || !meta[0].logoFile) { return undefined; }
-        return fs.readFile(meta[0].logoFile);
+        if (meta.logoFile) {
+            return fs.readFile(meta.logoFile);
+        }
+        return undefined;
     },
-    parseMetadata: fs => Forge.readModMetaData(fs),
+    parseMetadata: fs => readForgeMod(fs).then(normalizeForgeModMetadata),
     getSuggestedName: (meta) => {
-        let name = '';
-        if (meta && meta.length > 0) {
-            let metadata = meta[0];
-            if (typeof metadata.name === 'string' || typeof metadata.modid === 'string') {
-                name += (metadata.name || metadata.modid);
-                if (typeof metadata.mcversion === 'string') {
-                    name += `-${metadata.mcversion}`;
-                }
-                if (typeof metadata.version === 'string') {
-                    name += `-${metadata.version}`;
-                }
-            }
+        let name = `${meta.name || meta.modid}`;
+        if (meta.version) {
+            name += `- ${meta.version}`;
         }
         return name;
     },
-    getUri: meta => (meta[0] ? `forge://${meta[0].modid}/${meta[0].version}` : ''),
+    getUri: meta => {
+        const urls: string[] = [];
+        for (const m of meta.mcmodInfo) {
+            urls.push(`forge://${m.modid}/${m.version}`);
+        }
+        for (const m of meta.modsToml) {
+            urls.push(`forge://${m.modid}/${m.version}`);
+        }
+        for (const m of meta.modAnnotations) {
+            if (m.modid && m.version) {
+                const uri = `forge://${m.modid}/${m.version}`;
+                if (urls.indexOf(uri) === -1) {
+                    urls.push(uri);
+                }
+            }
+        }
+        if (meta.manifestMetadata && meta.manifestMetadata.modid && meta.manifestMetadata.version) {
+            const m = meta.manifestMetadata;
+            const uri = `forge://${m.modid}/${m.version}`;
+            if (urls.indexOf(uri) === -1) {
+                urls.push(uri);
+            }
+        }
+        return urls;
+    },
 });
-export const RESOURCE_PARSER_LITELOADER: ResourceParser<LiteLoader.MetaData> = ({
+export const RESOURCE_PARSER_LITELOADER: ResourceParser<LiteloaderModMetadata> = ({
     type: ResourceType.Liteloader,
     domain: ResourceDomain.Mods,
     ext: '.litemod',
     parseIcon: async () => undefined,
-    parseMetadata: fs => LiteLoader.readModMetaData(fs),
+    parseMetadata: fs => readLiteloaderMod(fs),
     getSuggestedName: (meta) => {
         let name = '';
         if (typeof meta.name === 'string') {
@@ -123,9 +141,9 @@ export const RESOURCE_PARSER_LITELOADER: ResourceParser<LiteLoader.MetaData> = (
         }
         return name;
     },
-    getUri: meta => `liteloader://${meta.name}/${meta.version}`,
+    getUri: meta => [`liteloader://${meta.name}/${meta.version}`],
 });
-export const RESOURCE_PARSER_FABRIC: ResourceParser<Fabric.ModMetadata> = ({
+export const RESOURCE_PARSER_FABRIC: ResourceParser<FabricModMetadata> = ({
     type: ResourceType.Fabric,
     domain: ResourceDomain.Mods,
     ext: '.jar',
@@ -135,7 +153,7 @@ export const RESOURCE_PARSER_FABRIC: ResourceParser<Fabric.ModMetadata> = ({
         }
         return Promise.resolve(undefined);
     },
-    parseMetadata: async fs => Fabric.readModMetaData(fs),
+    parseMetadata: async fs => readFabricMod(fs),
     getSuggestedName: (meta) => {
         let name = '';
         if (typeof meta.name === 'string') {
@@ -150,7 +168,7 @@ export const RESOURCE_PARSER_FABRIC: ResourceParser<Fabric.ModMetadata> = ({
         }
         return name;
     },
-    getUri: meta => `fabric://${meta.id}/${meta.version}`,
+    getUri: meta => [`fabric://${meta.id}/${meta.version}`],
 });
 export const RESOURCE_PARSER_RESOURCE_PACK: ResourceParser<PackMeta.Pack> = ({
     type: ResourceType.ResourcePack,
@@ -159,7 +177,7 @@ export const RESOURCE_PARSER_RESOURCE_PACK: ResourceParser<PackMeta.Pack> = ({
     parseIcon: async (meta, fs) => readIcon(fs),
     parseMetadata: fs => readPackMeta(fs),
     getSuggestedName: () => '',
-    getUri: (_, hash) => `resourcepack://${hash}`,
+    getUri: (_, hash) => [`resourcepack://${hash}`],
 });
 export const RESOURCE_PARSER_SAVE: ResourceParser<LevelDataFrame> = ({
     type: ResourceType.Save,
@@ -172,7 +190,7 @@ export const RESOURCE_PARSER_SAVE: ResourceParser<LevelDataFrame> = ({
         return deserialize(await fs.readFile(`${root}level.dat`));
     },
     getSuggestedName: meta => meta.LevelName,
-    getUri: (_, hash) => `save://${hash}`,
+    getUri: (_, hash) => [`save://${hash}`],
 });
 export const RESOURCE_PARSER_MODPACK: ResourceParser<CurseforgeModpackManifest> = ({
     type: ResourceType.CurseforgeModpack,
@@ -181,7 +199,7 @@ export const RESOURCE_PARSER_MODPACK: ResourceParser<CurseforgeModpackManifest> 
     parseIcon: () => Promise.resolve(undefined),
     parseMetadata: fs => fs.readFile('manifest.json', 'utf-8').then(JSON.parse),
     getSuggestedName: () => '',
-    getUri: (_, hash) => `modpack://${hash}`,
+    getUri: (_, hash) => [`modpack://${hash}`],
 });
 export const RESOURCE_PARSER_COMMON_MODPACK: ResourceParser<{ root: string; runtime: RuntimeVersions }> = ({
     type: ResourceType.Modpack,
@@ -230,7 +248,7 @@ export const RESOURCE_PARSER_COMMON_MODPACK: ResourceParser<{ root: string; runt
         return { root, runtime };
     },
     getSuggestedName: () => '',
-    getUri: (_, hash) => `modpack://${hash}`,
+    getUri: (_, hash) => [`modpack://${hash}`],
 });
 export const RESOURCE_PARSERS = [
     RESOURCE_PARSER_COMMON_MODPACK,
@@ -351,7 +369,7 @@ export async function resolveAndPersist(path: string, source: SourceInformation,
     builder.domain = domain;
     builder.type = type;
     builder.icon = icon;
-    builder.uri.push(uri, ...url);
+    builder.uri.push(...uri, ...url);
     builder.ext = extname(path);
     builder.hash = hash;
 

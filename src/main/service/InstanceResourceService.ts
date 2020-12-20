@@ -72,7 +72,7 @@ export default class InstanceResourceService extends Service {
         const resources = await this.resourceService.importResources({
             files: fileArgs,
             fromDomain: ResourceDomain.Mods,
-            type: 'mod',
+            type: 'mods',
         });
         return resources.map((r, i) => mutateResource(r, (r) => { r.path = fileArgs[i].path; }))
             .filter(isModResource);

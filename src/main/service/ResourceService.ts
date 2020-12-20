@@ -143,7 +143,7 @@ export default class ResourceService extends Service {
                     const filePath = join(path, file);
                     const resourceData = await this.getPersistence({ path: filePath, schema: ResourceSchema });
 
-                    fixResourceSchema(resourceData, this.getPath());
+                    await fixResourceSchema(filePath, resourceData, this.getPath());
 
                     const resourceFilePath = this.getPath(resourceData.location) + resourceData.ext;
                     const { size, ino } = await stat(resourceFilePath);
@@ -173,7 +173,9 @@ export default class ResourceService extends Service {
             })).then((resources) => {
                 this.commit('resources', resources.filter((r) => r !== UNKNOWN_RESOURCE));
                 for (const res of resources) {
-                    this.cache.put(res);
+                    if (res.type !== ResourceType.Unknown) {
+                        this.cache.put(res);
+                    }
                 }
             });
             this.loadPromises[domain] = promise;
