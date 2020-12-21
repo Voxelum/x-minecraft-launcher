@@ -19,16 +19,6 @@ Vue.use(Vuetify, {
         // secondary: colors.green,
         accent: colors.green.accent3,
     },
-    components: {
-        // ...VCard.$_vuetify_subcomponents,
-        // ...VList.$_vuetify_subcomponents,
-        // ...VGrid.$_vuetify_subcomponents,
-        // VProgressCircular,
-        // VDivider,
-        // VApp,
-        // VBtn,
-        // VIcon,
-    },
 });
 
 Vue.use(VueI18n);

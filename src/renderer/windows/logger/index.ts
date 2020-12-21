@@ -20,8 +20,6 @@ Vue.use(Vuetify, {
         // secondary: colors.green,
         accent: colors.green.accent3,
     },
-    components: {
-    },
 });
 
 const vue = new Vue({
