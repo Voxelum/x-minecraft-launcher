@@ -38,6 +38,14 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.12.1](https://github.com/voxelum/x-minecraft-launcher/compare/v0.12.0...v0.12.1)
+
+* fix: respect resource packs to export cf ([bf0a121](https://github.com/voxelum/x-minecraft-launcher/commit/bf0a121))
+* fix: wrong vuetify bundling ([70462f0](https://github.com/voxelum/x-minecraft-launcher/commit/70462f0))
+
+
 ## [0.12.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.11.4...v0.12.0)
 
 * style: clean up the lint ([99b0b86](https://github.com/voxelum/x-minecraft-launcher/commit/99b0b86))
