@@ -254,6 +254,13 @@ export default class InstanceIOService extends Service {
                 } else {
                     zipTask.addFile(join(instancePath, file), `overrides/${file}`);
                 }
+            } else if (file.startsWith('resourcepacks/')) {
+                const resourcepack = this.state.instance.resourcepacks.find((i) => (i.location.replace('\\', '/') + i.ext) === file);
+                if (resourcepack && resourcepack.curseforge) {
+                    curseforgeConfig.files.push({ projectID: resourcepack.curseforge.projectId, fileID: resourcepack.curseforge.fileId, required: true });
+                } else {
+                    zipTask.addFile(join(instancePath, file), `overrides/${file}`);
+                }
             } else {
                 zipTask.addFile(join(instancePath, file), `overrides/${file}`);
             }
