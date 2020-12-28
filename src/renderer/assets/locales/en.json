@@ -565,6 +565,9 @@
     "name:": "Notification"
   },
   "ok": "OK",
+  "optifine": {
+    "disable": "Disable Optifine"
+  },
   "optional": "Optional",
   "popular": "Popularity",
   "profile": {

@@ -130,6 +130,16 @@ const mod: InstanceModule = {
         instance: state => state.all[state.path] || DEFAULT_PROFILE,
         instanceVersion: (state, getters, rootState) => {
             const current = state.all[state.path] || DEFAULT_PROFILE;
+            const folder = current.version;
+            if (folder) {
+                // actual version
+                const localVersion = rootState.version.local.find(v => v.folder === folder);
+                return localVersion || {
+                    ...current.runtime,
+                    folder,
+                };
+            }
+            // compute version
             const requirements = ['minecraft', 'forge', 'fabricLoader', 'yarn', 'liteloader']
                 .filter(k => current.runtime[k]);
 
@@ -138,8 +148,8 @@ const mod: InstanceModule = {
 
             return localVersion || {
                 ...current.runtime,
-                folder: 'unknown',
-            } as any;
+                folder: '',
+            };
         },
         instanceJava: (state, getters, rootState, rootGetter) => {
             const javaPath = getters.instance.java;
@@ -212,6 +222,7 @@ const mod: InstanceModule = {
 
             inst.author = settings.author || inst.author;
             inst.description = settings.description || inst.description;
+            inst.version = typeof settings.version === 'string' ? settings.version : inst.version;  
 
             if (settings.server) {
                 if (inst.server) {
@@ -266,13 +277,6 @@ const mod: InstanceModule = {
             }
             if (typeof settings.hideLauncher === 'boolean') {
                 inst.hideLauncher = settings.hideLauncher;
-            }
-
-            if (typeof settings.image === 'string') {
-                inst.image = settings.image;
-            }
-            if (typeof settings.blur === 'number') {
-                inst.blur = settings.blur;
             }
         },
         instanceCache(state, cache) {

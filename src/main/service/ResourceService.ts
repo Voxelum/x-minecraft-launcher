@@ -143,7 +143,7 @@ export default class ResourceService extends Service {
                     const filePath = join(path, file);
                     const resourceData = await this.getPersistence({ path: filePath, schema: ResourceSchema });
 
-                    await fixResourceSchema(filePath, resourceData, this.getPath());
+                    await fixResourceSchema({ log: this.log, warn: this.warn, error: this.error }, filePath, resourceData, this.getPath());
 
                     const resourceFilePath = this.getPath(resourceData.location) + resourceData.ext;
                     const { size, ino } = await stat(resourceFilePath);
@@ -167,7 +167,11 @@ export default class ResourceService extends Service {
                     return resource as Resources;
                 } catch (e) {
                     this.error(`Cannot load resource ${file}`);
-                    this.error(e);
+                    if (e.stack) {
+                        this.error(e.stack);
+                    } else {
+                        this.error(e);
+                    }
                     return UNKNOWN_RESOURCE;
                 }
             })).then((resources) => {

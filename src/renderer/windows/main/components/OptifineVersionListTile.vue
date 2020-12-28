@@ -1,7 +1,11 @@
 <template>
   <v-list-tile
     :key="source.type"
-    :class="{ grey: selected.type === source.type && selected.patch === source.patch, 'darken-1': selected.patch === source.patch && selected.type === source.type }"
+    :class="{
+      grey: selected.type === source.type && selected.patch === source.patch,
+      'darken-1':
+        selected.patch === source.patch && selected.type === source.type
+    }"
     ripple
     @click="select(source)"
   >
@@ -19,7 +23,7 @@
       /> -->
     </v-list-tile-avatar>
 
-    <v-list-tile-title>{{ source.filename }}</v-list-tile-title>
+    <v-list-tile-title>{{ source.type }}_{{ source.patch }}</v-list-tile-title>
   </v-list-tile>
 </template>
 

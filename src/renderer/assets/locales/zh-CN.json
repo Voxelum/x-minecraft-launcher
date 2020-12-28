@@ -548,6 +548,9 @@
     "name": "通知"
   },
   "ok": "好的",
+  "optifine": {
+    "disable": "不启用 Optifine"
+  },
   "optional": "可选的",
   "popular": "热度",
   "profile": {

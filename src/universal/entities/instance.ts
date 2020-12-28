@@ -37,8 +37,7 @@ export function createTemplate(): Instance {
             yarn: '',
         },
         java: '',
-        image: '',
-        blur: 4,
+        version: '',
         server: null,
 
         author: '',

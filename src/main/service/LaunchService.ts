@@ -28,7 +28,7 @@ export default class LaunchService extends Service {
         const javaPath = this.getters.instanceJava.path || this.getters.defaultJava.path;
 
         let instanceVersion = this.getters.instanceVersion;
-        if (instanceVersion.folder === 'unknown') {
+        if (!instanceVersion.folder) {
             throw new Exception({ type: 'launchNoVersionInstalled' });
         }
         const version = instanceVersion.folder;
@@ -107,7 +107,7 @@ export default class LaunchService extends Service {
              * real version name
              */
             let instanceVersion = this.getters.instanceVersion;
-            if (instanceVersion.folder === 'unknown') {
+            if (!instanceVersion.folder) {
                 throw new Exception({ type: 'launchNoVersionInstalled' });
             }
             const version = instanceVersion.folder;

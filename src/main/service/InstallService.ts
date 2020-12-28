@@ -1,8 +1,7 @@
-import { OptifineVersion } from '@universal/entities/optifine';
-import { ForgeVersion, ForgeVersionList, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema } from '@universal/entities/version.schema';
+import { ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '@universal/entities/version.schema';
 import { MutationKeys } from '@universal/store';
 import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core';
-import { installFabric, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installFabricYarnAndLoader, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL, getFabricLoaderArtifact } from '@xmcl/installer';
+import { getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL } from '@xmcl/installer';
 import { task } from '@xmcl/task';
 import Service, { Inject, Singleton } from './Service';
 import VersionService from './VersionService';
@@ -25,11 +24,12 @@ export default class InstallService extends Service {
     private refreshedForge: Record<string, boolean> = {};
 
     async load() {
-        const [mc, forge, liteloader, fabric] = await Promise.all([
+        const [mc, forge, liteloader, fabric, optifine] = await Promise.all([
             this.getPersistence({ path: this.getPath('minecraft-versions.json'), schema: VersionMinecraftSchema }),
             this.getPersistence({ path: this.getPath('forge-versions.json'), schema: VersionForgeSchema }),
             this.getPersistence({ path: this.getPath('lite-versions.json'), schema: VersionLiteloaderSchema }),
             this.getPersistence({ path: this.getPath('fabric-versions.json'), schema: VersionFabricSchema }),
+            this.getPersistence({ path: this.getPath('optifine-versions.json'), schema: VersionOptifineSchema }),
         ]);
         if (typeof mc === 'object') {
             this.commit('minecraftMetadata', mc);
@@ -45,6 +45,9 @@ export default class InstallService extends Service {
         if (fabric) {
             this.commit('fabricLoaderMetadata', { versions: fabric.loaders, timestamp: fabric.loaderTimestamp });
             this.commit('fabricYarnMetadata', { versions: fabric.yarns, timestamp: fabric.yarnTimestamp });
+        }
+        if (optifine) {
+            this.commit('optifineMetadata', optifine);
         }
     }
 
@@ -77,6 +80,13 @@ export default class InstallService extends Service {
                     path: this.getPath('fabric-versions.json'),
                     data: this.state.version.fabric,
                     schema: VersionFabricSchema,
+                });
+                break;
+            case 'optifineMetadata':
+                await this.setPersistence({
+                    path: this.getPath('optifine-versions.json'),
+                    data: this.state.version.optifine,
+                    schema: VersionOptifineSchema,
                 });
                 break;
             default:
@@ -470,8 +480,8 @@ export default class InstallService extends Service {
 
         this.log('Start to refresh optifine metadata');
 
-        const headers = this.state.version.optifine.timestamp === '' ? undefined : {
-            'If-Modified-Since': this.state.version.optifine.timestamp,
+        const headers = this.state.version.optifine.etag === '' ? undefined : {
+            'If-None-Match': this.state.version.optifine.etag,
         };
 
         const response = await this.networkManager.request.get('https://bmclapi2.bangbang93.com/optifine/versionList', {
@@ -481,11 +491,11 @@ export default class InstallService extends Service {
         if (response.statusCode === 304) {
             this.log('Not found new optifine version metadata. Use cache.');
         } else if (response.statusCode >= 200 && response.statusCode < 300) {
-            const time = response.headers['last-modified']!;
+            const etag = response.headers.etag as string;
             const versions: OptifineVersion[] = JSON.parse(response.body);
 
             this.commit('optifineMetadata', {
-                timestamp: time,
+                etag,
                 versions,
             });
             this.log('Found new optifine version metadata. Update it.');

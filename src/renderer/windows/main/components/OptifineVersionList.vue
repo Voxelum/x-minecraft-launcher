@@ -11,7 +11,7 @@
       <v-list-tile-avatar>
         <v-icon>close</v-icon>
       </v-list-tile-avatar>
-      {{ $t("fabric.disable") }}
+      {{ $t("optifine.disable") }}
     </v-list-tile>
     <virtual-list
       ref="list"
@@ -28,9 +28,9 @@
 <script lang=ts>
 import { defineComponent, ref, onMounted } from '@vue/composition-api';
 import { required } from '@/util/props';
+import { OptifineVersion } from '@universal/entities/optifine';
 import VirtualList from 'vue-virtual-scroll-list';
 import Tile from './OptifineVersionListTile.vue';
-import { OptifineVersion } from '@universal/entities/optifine';
 
 export default defineComponent({
   components: { VirtualList },
@@ -43,7 +43,7 @@ export default defineComponent({
   setup(props) {
     let list = ref<any>(null);
     onMounted(() => {
-      let index = props.versions.findIndex(v => v.type === props.version.type && props.version.patch === props.version.patch);
+      let index = props.versions.findIndex(v => v.type === props.version.type && v.patch === props.version.patch);
       (list.value! as any).scrollToIndex(index);
     });
     return {

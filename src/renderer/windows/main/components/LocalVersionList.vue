@@ -173,17 +173,12 @@
 import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api';
 import { useLocalVersions } from '@/hooks';
 import { LocalVersion } from '@universal/entities/version';
+import { required, withDefault } from '@/util/props';
 
 export default defineComponent({
   props: {
-    filterText: {
-      type: String,
-      default: '',
-    },
-    value: {
-      type: Object,
-      default: () => { },
-    },
+    filterText: withDefault(String, () => ''),
+    value: required<LocalVersion>(Object),
   },
   setup(props, context) {
     const data = reactive({
@@ -198,11 +193,15 @@ export default defineComponent({
 
     function isSelected(v: LocalVersion) {
       if (!props.value) return false;
+      if (props.value.folder) {
+        return v.folder === props.value.folder;
+      }
       return props.value.minecraft === v.minecraft
         && props.value.forge === v.forge
         && props.value.liteloader === v.liteloader
         && props.value.yarn === v.yarn
-        && props.value.fabricLoader === v.fabricLoader;
+        && props.value.fabricLoader === v.fabricLoader
+        && props.value.optifine === v.optifine;
     }
     function selectVersion(v: LocalVersion) {
       context.emit('input', v);

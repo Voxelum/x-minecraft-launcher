@@ -608,7 +608,7 @@ export default class DiagnoseService extends Service {
                 badInstall: [],
             };
 
-            if (targetVersion === 'unknown') {
+            if (!targetVersion) {
                 tree.missingVersion.push({ ...currentVersion, version: getExpectVersion(currentVersion.minecraft, currentVersion.forge, currentVersion.liteloader, currentVersion.fabricLoader) });
             } else {
                 this.log(`Diagnose for version ${targetVersion}`);

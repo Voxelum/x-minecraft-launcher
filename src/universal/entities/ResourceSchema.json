@@ -1,6 +1,10 @@
 {
     "type": "object",
     "properties": {
+        "version": {
+            "default": 0,
+            "type": "number"
+        },
         "path": {
             "type": "string"
         },
@@ -86,7 +90,8 @@
         "name",
         "tags",
         "type",
-        "uri"
+        "uri",
+        "version"
     ],
     "definitions": {
         "ResourceType": {

@@ -375,6 +375,9 @@ export default defineComponent({
     const { openDirectory } = useService('BaseService');
 
     function isCompatibleMod(mod: ModItem) {
+      if (mod.enabled) {
+        return true;
+      }
       if (data.filterInCompatible) {
         return isCompatible(mod.dependencies.minecraft, minecraft.value);
       }

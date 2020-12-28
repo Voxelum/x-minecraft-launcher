@@ -13,23 +13,24 @@ export interface RuntimeVersions {
      * Forge version of this version. e.g. 14.23.5.2838
      * @default ""
      */
-    forge: string;
+    forge?: string;
     /**
      * @default ""
      */
-    liteloader: string;
+    liteloader?: string;
     /**
      * Fabric loader version, e.g. 0.7.2+build.175
      * @default ""
      */
-    fabricLoader: string;
+    fabricLoader?: string;
     /**
      * Fabric yarn version, e.g. 1.15.1+build.14
      */
-    yarn: string;
-
-    optifineType: string | undefined;
-    optifinePatch: string | undefined;
+    yarn?: string;
+    /**
+     * Optifine version e.g. HD_U_F1_pre6 or HD_U_E6
+     */
+    optifine?: string;
 
     [id: string]: string | undefined;
 }
@@ -40,19 +41,16 @@ export interface InstanceSchema {
      * @default ""
      */
     name: string;
-
     /**
      * The author of this instance
      * @default ""
      */
     author: string;
-
     /**
      * The description of this instance
      * @default ""
      */
     description: string;
-
     /**
      * Should show a logger window after Minecraft launched
      * @default false
@@ -63,7 +61,11 @@ export interface InstanceSchema {
      * @default true
      */
     hideLauncher: boolean;
-
+    /**
+     * The target version id to launch. It will be computed from "runtime"
+     * @default ""
+     */
+    version: string;
     /**
      * The runtime version requirement of the profile.
      * 
@@ -71,7 +73,6 @@ export interface InstanceSchema {
      * @default { "minecraft": "", "forge": "", "liteloader": "" }
      */
     runtime: RuntimeVersions;
-
     /**
      * The java path on the disk
     * @default ""
@@ -104,16 +105,6 @@ export interface InstanceSchema {
      * @default ""
      */
     icon: string;
-
-    /**
-     * @default ""
-     */
-    image: string;
-    /**
-     * @default 0
-     */
-    blur: number;
-
     /**
      * @default 0
      */

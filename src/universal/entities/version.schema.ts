@@ -155,7 +155,25 @@ export interface VersionFabricSchema {
     loaders: FabricArtifactVersion[];
 }
 
+export interface OptifineVersion {
+    mcversion: string;
+    type: string;
+    patch: string;
+}
+
+export interface VersionOptifineSchema {
+    /**
+     * @default []
+     */
+    versions: OptifineVersion[];
+    /**
+     * @default ""
+     */
+    etag: string;
+}
+
 export const VersionMinecraftSchema: Schema<VersionMinecraftSchema> = require('./VersionMinecraftSchema.json');
 export const VersionForgeSchema: Schema<VersionForgeSchema> = require('./VersionForgeSchema.json');
 export const VersionLiteloaderSchema: Schema<VersionLiteloaderSchema> = require('./VersionLiteloaderSchema.json');
 export const VersionFabricSchema: Schema<VersionFabricSchema> = require('./VersionFabricSchema.json');
+export const VersionOptifineSchema: Schema<VersionOptifineSchema> = require('./VersionOptifineSchema.json');

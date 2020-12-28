@@ -1,6 +1,6 @@
 import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions } from '@main/service/InstanceSavesService';
 import { CreateOption } from '@main/service/InstanceService';
-import { InstanceSchema as InstanceConfig } from '@universal/entities/instance.schema';
+import { InstanceSchema as InstanceConfig, RuntimeVersions } from '@universal/entities/instance.schema';
 import { CurseforgeModpackResource, ModpackResource } from '@universal/entities/resource';
 import { ResourceType } from '@universal/entities/resource.schema';
 import { getExpectVersion } from '@universal/entities/version';
@@ -39,11 +39,10 @@ export function useInstance() {
     const mcOptions = computed(() => getters.instance.mcOptions);
     const url = computed(() => getters.instance.url);
     const icon = computed(() => getters.instance.icon);
-    const image = computed(() => getters.instance.image);
-    const blur = computed(() => getters.instance.blur);
     const lastAccessDate = computed(() => getters.instance.lastAccessDate);
     const creationDate = computed(() => getters.instance.creationDate);
     const server = computed(() => getters.instance.server);
+    const version = computed(() => getters.instance.version);
     return {
         path,
         name,
@@ -52,6 +51,7 @@ export function useInstance() {
         showLog,
         hideLauncher,
         runtime,
+        version,
         java,
         resolution,
         minMemory,
@@ -60,8 +60,6 @@ export function useInstance() {
         mcOptions,
         url,
         icon,
-        image,
-        blur,
         lastAccessDate,
         creationDate,
         server,
@@ -94,7 +92,7 @@ export function useInstanceCreation() {
     const { release } = useMinecraftVersions();
     const data = reactive({
         name: '',
-        runtime: { forge: '', minecraft: release.value?.id || '', liteloader: '', fabricLoader: '', yarn: '' },
+        runtime: { forge: '', minecraft: release.value?.id || '', liteloader: '', fabricLoader: '', yarn: '' } as RuntimeVersions,
         java: '',
         showLog: false,
         hideLauncher: true,
@@ -277,7 +275,7 @@ export function useInstanceVersion() {
     const { getters } = useStore();
 
 
-    const folder = computed(() => getters.instanceVersion.folder);
+    const folder = computed(() => getters.instanceVersion.folder || 'unknown');
     const id = computed(() => getExpectVersion(
         getters.instance.runtime.minecraft,
         getters.instance.runtime.forge,

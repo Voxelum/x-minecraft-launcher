@@ -1,5 +1,6 @@
 import type { ResolvedLibrary } from '@xmcl/core';
 import type { InstallProfile } from '@xmcl/installer';
+import { RuntimeVersions } from './instance.schema';
 import { LocalVersion } from './version';
 
 export interface Issue {
@@ -41,7 +42,7 @@ export interface IssueRegistry {
     missingCustomSkinLoader: Registry<{ target: 'forge' | 'fabric'; skinService: string; noVersionSelected: boolean; missingJar: boolean }, true, true>;
     missingModsOnServer: Registry<{ modid: string; version: string }, false, false>;
 
-    missingVersion: Registry<{ forge: string; minecraft: string; yarn: string; fabricLoader: string; version: string }>;
+    missingVersion: Registry<{ version: string } & RuntimeVersions>;
 
     requireForge: Registry<{}, false, true>;
     requireFabric: Registry<{}, false, true>;

@@ -13,10 +13,15 @@ export function useVersions() {
 export function useLocalVersions() {
     const { state } = useStore();
     const localVersions = computed(() => state.version.local);
+    const versions = useVersions();
+
+    onMounted(() => {
+        versions.refreshVersions();
+    });
 
     return {
         localVersions,
-        ...useVersions(),
+        ...versions,
         ...useServiceOnly('InstallService', 'reinstall'),
     };
 }

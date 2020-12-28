@@ -43,7 +43,7 @@ export default class VersionService extends Service {
 
     async resolveVersionId() {
         let cur = this.getters.instanceVersion;
-        if (cur.folder === 'unknown') {
+        if (!cur.folder) {
             await this.refreshVersions(true);
         }
         return cur.folder;

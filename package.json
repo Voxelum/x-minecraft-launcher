@@ -36,7 +36,7 @@
         "@xmcl/forge-site-parser": "^2.0.5",
         "@xmcl/gamesetting": "^2.0.2",
         "@xmcl/installer": "^3.0.0",
-        "@xmcl/mod-parser": "^3.0.1",
+        "@xmcl/mod-parser": "^3.1.0",
         "@xmcl/model": "^1.0.16",
         "@xmcl/nbt": "^2.0.3",
         "@xmcl/resourcepack": "^1.1.0",
