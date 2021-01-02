@@ -15,20 +15,14 @@
 import { defineComponent, ref, Ref, onMounted } from '@vue/composition-api';
 import VirtualList from 'vue-virtual-scroll-list';
 import { MinecraftVersion } from '@xmcl/installer';
-import { required } from '@/util/props';
+import { required, withDefault } from '@/util/props';
 import Tile from './MinecraftVersionListTile.vue';
 
 export default defineComponent({
   components: { VirtualList },
   props: {
-    showTime: {
-      type: Boolean,
-      default: true,
-    },
-    value: {
-      type: String,
-      default: () => '',
-    },
+    showTime: withDefault(Boolean, () => true),
+    value: withDefault(String, () => ''),
     statuses: required<Record<string, boolean>>(Object),
     versions: required<Array<MinecraftVersion>>(Array),
     select: required<(version: MinecraftVersion) => void>(Function),

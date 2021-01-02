@@ -6,6 +6,7 @@ import { InstanceSaveMetadata } from '@universal/entities/save';
 import { ServerStatus, UNKNOWN_STATUS } from '@universal/entities/serverStatus';
 import { LocalVersion } from '@universal/entities/version';
 import { remove, set } from '@universal/util/middleware';
+import { LibraryInfo } from '@xmcl/core';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { ServerInfo } from '@xmcl/server-info';
 import { ModuleOption } from '../root';
@@ -36,6 +37,8 @@ interface State {
     mods: ModResource[];
 
     resourcepacks: ResourcePackResource[];
+
+    libraries: LibraryInfo[];
 }
 
 interface Getters {
@@ -49,7 +52,7 @@ interface Getters {
     instance: Instance;
     /**
      * The selected instance mapped local version.
-     * If there is no local version matced, it will return a local version with folder equal to `"unknown"`.
+     * If there is no local version matced, it will return a local version with id equal to `""`.
      */
     instanceVersion: LocalVersion;
     /**
@@ -123,6 +126,7 @@ const mod: InstanceModule = {
 
         mods: [],
         resourcepacks: [],
+        libraries: [],
     },
     getters: {
         instances: state => Object.keys(state.all).map(k => state.all[k]),
@@ -133,10 +137,10 @@ const mod: InstanceModule = {
             const folder = current.version;
             if (folder) {
                 // actual version
-                const localVersion = rootState.version.local.find(v => v.folder === folder);
+                const localVersion = rootState.version.local.find(v => v.id === folder);
                 return localVersion || {
                     ...current.runtime,
-                    folder,
+                    id: folder,
                 };
             }
             // compute version
@@ -148,7 +152,7 @@ const mod: InstanceModule = {
 
             return localVersion || {
                 ...current.runtime,
-                folder: '',
+                id: '',
             };
         },
         instanceJava: (state, getters, rootState, rootGetter) => {

@@ -255,7 +255,7 @@ export default class InstallService extends Service {
         let option = this.getInstallOptions();
         let location = this.state.root;
         let resolvedVersion = await Version.parse(location, version);
-        let local = this.state.version.local.find(v => v.folder === version);
+        let local = this.state.version.local.find(v => v.id === version);
         await this.submit(installVersionTask({ id: local!.minecraft, url: '' }, location).setName('installVersion'));
         if (local?.forge) {
             await this.submit(installForgeTask({ version: local.forge, mcversion: local.minecraft }, location).setName('installForge'));

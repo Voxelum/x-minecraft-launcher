@@ -138,7 +138,7 @@ export default class InstanceIOService extends Service {
         const from = src;
 
         const zipTask = new ZipTask(dest).setName('profile.modpack.export');
-        const version = await Version.parse(root, this.getters.instanceVersion.folder);
+        const version = await Version.parse(root, this.getters.instanceVersion.id);
 
         // add assets
         if (includeAssets) {
@@ -222,7 +222,7 @@ export default class InstanceIOService extends Service {
             return;
         }
 
-        const ganeVersionInstance = this.state.version.local.find(v => v.folder === gameVersion);
+        const ganeVersionInstance = this.state.version.local.find(v => v.id === gameVersion);
         const instance = this.state.instance.all[instancePath];
         const modLoaders = ganeVersionInstance?.forge ? [{
             id: `forge-${ganeVersionInstance?.forge}`,

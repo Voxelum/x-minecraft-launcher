@@ -1,5 +1,5 @@
 import { LATEST_RELEASE, LocalVersion } from '@universal/entities/version';
-import { ForgeVersionList, VersionFabricSchema, VersionForgeSchema, VersionOptifineSchema } from '@universal/entities/version.schema';
+import { ForgeVersionList, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '@universal/entities/version.schema';
 import type { FabricArtifactVersion, LiteloaderVersionList, MinecraftVersion, MinecraftVersionList } from '@xmcl/installer';
 import { ModuleOption } from '../root';
 
@@ -11,7 +11,7 @@ interface State {
     /**
      * Minecraft version metadata list. Helps to download.
      */
-    minecraft: MinecraftVersionList;
+    minecraft: VersionMinecraftSchema;
     /**
      * Forge version metadata dictionary. Helps to download.
      */
@@ -23,7 +23,7 @@ interface State {
     /**
      * Liteloader version metadata list. Helps to download.
      */
-    liteloader: LiteloaderVersionList;
+    liteloader: VersionLiteloaderSchema;
     /**
      * The optifine version list
      */
@@ -110,15 +110,16 @@ const mod: VersionModule = {
             state.local = local;
         },
         localVersion(state, local) {
-            const found = state.local.find(l => l.folder === local.folder);
+            const found = state.local.find(l => l.id === local.id);
             if (found) {
                 Object.assign(found, local);
             } else {
                 state.local.push(local as any);
+                state.local = state.local.sort((a, b) => a.id.localeCompare(b.id));
             }
         },
         localVersionRemove(state, folder) {
-            state.local = state.local.filter((v => v.folder === folder));
+            state.local = state.local.filter((v => v.id === folder));
         },
         minecraftMetadata(state, metadata) {
             state.minecraft = Object.freeze(metadata);

@@ -570,7 +570,7 @@ export default class DiagnoseService extends Service {
             }
             await this.versionService.refreshVersions();
             let currentVersion = { ...this.getters.instanceVersion };
-            let targetVersion = currentVersion.folder;
+            let targetVersion = currentVersion.id;
             let mcversion = currentVersion.minecraft;
 
             let mcLocation = MinecraftFolder.from(this.state.root);

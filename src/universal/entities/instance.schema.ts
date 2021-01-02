@@ -31,8 +31,6 @@ export interface RuntimeVersions {
      * Optifine version e.g. HD_U_F1_pre6 or HD_U_E6
      */
     optifine?: string;
-
-    [id: string]: string | undefined;
 }
 
 export interface InstanceSchema {

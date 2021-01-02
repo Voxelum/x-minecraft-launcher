@@ -28,10 +28,10 @@ export default class LaunchService extends Service {
         const javaPath = this.getters.instanceJava.path || this.getters.defaultJava.path;
 
         let instanceVersion = this.getters.instanceVersion;
-        if (!instanceVersion.folder) {
+        if (!instanceVersion.id) {
             throw new Exception({ type: 'launchNoVersionInstalled' });
         }
-        const version = instanceVersion.folder;
+        const version = instanceVersion.id;
         const useAuthLib = user.authService !== 'mojang' && user.authService !== 'offline';
 
         /**
@@ -107,10 +107,10 @@ export default class LaunchService extends Service {
              * real version name
              */
             let instanceVersion = this.getters.instanceVersion;
-            if (!instanceVersion.folder) {
+            if (!instanceVersion.id) {
                 throw new Exception({ type: 'launchNoVersionInstalled' });
             }
-            const version = instanceVersion.folder;
+            const version = instanceVersion.id;
 
             this.log(`Will launch with ${version} version.`);
 
@@ -161,7 +161,7 @@ export default class LaunchService extends Service {
             this.commit('launchStatus', 'launched');
 
             this.app.emit('minecraft-start', {
-                version: instanceVersion.folder,
+                version: instanceVersion.id,
                 minecraft: instanceVersion.minecraft,
                 forge: instanceVersion.forge,
                 fabric: instanceVersion.fabricLoader,

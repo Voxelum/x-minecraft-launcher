@@ -28,7 +28,7 @@
 <script lang=ts>
 import { defineComponent, ref, onMounted } from '@vue/composition-api';
 import { required } from '@/util/props';
-import { OptifineVersion } from '@universal/entities/optifine';
+import { OptifineVersion } from '@universal/entities/version.schema';
 import VirtualList from 'vue-virtual-scroll-list';
 import Tile from './OptifineVersionListTile.vue';
 

@@ -13,16 +13,11 @@ export type Status = 'remote' | 'local' | 'loading';
  */
 export interface LocalVersion extends RuntimeVersions {
     /**
-     * The ideal id this version, which is computed by 
-     * function universal/utils/versions.js#getExpectVersion
-     */
-    id?: string;
-    /**
      * The real folder id of the version, which is the <verison-id> in
      * 
      * <minecraft folder>/versions/<version-id>/<version-id>.json
      */
-    folder: string;
+    id: string;
 }
 
 export interface PartialVersionResolver {
@@ -42,6 +37,12 @@ export const resolveFabricYarnVersion: PartialVersionResolver = (v) => v.librari
     ?.name.split(':')[2] || '';
 
 export const resolveMinecraftVersion: PartialVersionResolver = (v) => (v.inheritsFrom ? '' : v.id);
+
+export interface LibrariesRecord {
+    org: string;
+    name: string;
+    version: string;
+}
 
 export function resolveRuntimeVersion(partialVersion: Version, runtime: RuntimeVersions) {
     const minecraft = resolveMinecraftVersion(partialVersion);

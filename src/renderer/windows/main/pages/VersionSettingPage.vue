@@ -101,7 +101,7 @@ import {
 } from '@/hooks';
 import type { ForgeVersion, MinecraftVersion } from '@xmcl/installer';
 import { LocalVersion } from '@universal/entities/version';
-import { OptifineVersion } from '@universal/entities/optifine';
+import { OptifineVersion } from '@universal/entities/version.schema';
 import MinecraftView from './VersionSettingPageMinecraftView.vue';
 import ForgeView from './VersionSettingPageForgeView.vue';
 import FabricView from './VersionSettingPageFabricView.vue';

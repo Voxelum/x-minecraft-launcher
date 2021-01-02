@@ -33,6 +33,9 @@
         >
           {{ isCrash ? $t(`launch.crash`) : $t(`launch.failed.description`) }}
         </div>
+        <p>
+          {{errorLog}}
+        </p>
         <v-textarea
           auto-grow
           autofocus

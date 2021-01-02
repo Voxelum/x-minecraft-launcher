@@ -31,7 +31,7 @@
 import { defineComponent } from '@vue/composition-api';
 import VirtualList from 'vue-virtual-scroll-list';
 import { required } from '@/util/props';
-import { OptifineVersion } from '@universal/entities/optifine';
+import { OptifineVersion } from '@universal/entities/version.schema';
 
 export default defineComponent({
   components: { VirtualList },

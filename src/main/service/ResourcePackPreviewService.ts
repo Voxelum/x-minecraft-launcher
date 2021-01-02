@@ -144,7 +144,7 @@ export default class ResourcePackPreviewService extends Service {
     }
 
     async getBlockStates(): Promise<BlockStateJson[]> {
-        const gameVersion = this.getters.instanceVersion.folder;
+        const gameVersion = this.getters.instanceVersion.id;
         if (this.cachedJsonVersion === gameVersion && this.cachedBlocks) {
             // cache hit
             this.log(`Use cached ${this.cachedBlocks.length} blockstates from ${gameVersion}.jar`);
