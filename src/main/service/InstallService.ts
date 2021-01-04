@@ -1,3 +1,4 @@
+import { isFabricLoaderLibrary, isForgeLibrary } from '@universal/entities/version';
 import { ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '@universal/entities/version.schema';
 import { MutationKeys } from '@universal/store';
 import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core';
@@ -107,7 +108,7 @@ export default class InstallService extends Service {
     }
 
     protected getForgeInstallOptions(): InstallForgeOptions {
-        let options: InstallForgeOptions = {
+        const options: InstallForgeOptions = {
             ...this.networkManager.getDownloadBaseOptions(),
             java: this.getters.defaultJava.path,
         };
@@ -121,7 +122,7 @@ export default class InstallService extends Service {
     }
 
     protected getInstallOptions(): Options {
-        let option: Options = {
+        const option: Options = {
             assetsDownloadConcurrency: 16,
             ...this.networkManager.getDownloadBaseOptions(),
             side: 'client',
@@ -172,7 +173,7 @@ export default class InstallService extends Service {
             }[];
         }
 
-        let { body, statusCode, headers } = await this.networkManager.request({
+        const { body, statusCode, headers } = await this.networkManager.request({
             method: 'GET',
             url: `https://bmclapi2.bangbang93.com/forge/minecraft/${mcversion}`,
             headers: currentForgeVersion && currentForgeVersion.timestamp
@@ -198,8 +199,8 @@ export default class InstallService extends Service {
         if (statusCode === 304) {
             return currentForgeVersion;
         }
-        let forges: BMCLForge[] = JSON.parse(body);
-        let result: ForgeVersionList = {
+        const forges: BMCLForge[] = JSON.parse(body);
+        const result: ForgeVersionList = {
             mcversion,
             timestamp: headers['if-modified-since'] ?? forges[0]?.modified,
             versions: forges.map(convert),
@@ -252,19 +253,23 @@ export default class InstallService extends Service {
 
     @Singleton('install')
     async reinstall(version: string) {
-        let option = this.getInstallOptions();
-        let location = this.state.root;
-        let resolvedVersion = await Version.parse(location, version);
-        let local = this.state.version.local.find(v => v.id === version);
-        await this.submit(installVersionTask({ id: local!.minecraft, url: '' }, location).setName('installVersion'));
-        if (local?.forge) {
-            await this.submit(installForgeTask({ version: local.forge, mcversion: local.minecraft }, location).setName('installForge'));
+        const option = this.getInstallOptions();
+        const location = this.state.root;
+        const local = this.state.version.local.find(v => v.id === version);
+        if (!local) {
+            throw new Error(`Cannot reinstall ${version} as it's not found!`);
         }
-        if (local?.fabricLoader) {
-            await this.installFabric({ minecraft: local.minecraft, loader: local.fabricLoader });
+        await this.submit(installVersionTask({ id: local.minecraftVersion, url: '' }, location).setName('installVersion'));
+        const forgeLib = local.libraries.find(isForgeLibrary);
+        if (forgeLib) {
+            await this.submit(installForgeTask({ version: forgeLib.version, mcversion: local.minecraftVersion }, location).setName('installForge'));
         }
-        await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries'));
-        await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'));
+        const fabLib = local.libraries.find(isFabricLoaderLibrary);
+        if (fabLib) {
+            await this.installFabric({ minecraft: local.minecraftVersion, loader: fabLib.version });
+        }
+        await this.submit(installLibrariesTask(local, option).setName('installLibraries'));
+        await this.submit(installAssetsTask(local, option).setName('installAssets'));
     }
 
     /**
@@ -273,9 +278,9 @@ export default class InstallService extends Service {
      */
     @Singleton('install')
     async installAssets(assets: { name: string; size: number; hash: string }[]) {
-        let option = this.getInstallOptions();
-        let location = this.state.root;
-        let task = installResolvedAssetsTask(assets, new MinecraftFolder(location), option).setName('installAssets');
+        const option = this.getInstallOptions();
+        const location = this.state.root;
+        const task = installResolvedAssetsTask(assets, new MinecraftFolder(location), option).setName('installAssets');
         await this.submit(task);
     }
 
@@ -284,10 +289,10 @@ export default class InstallService extends Service {
      */
     @Singleton('install')
     async installMinecraft(meta: MinecraftVersion) {
-        let id = meta.id;
+        const id = meta.id;
 
-        let option = this.getInstallOptions();
-        let task = installVersionTask(meta, this.state.root, option).setName('installVersion');
+        const option = this.getInstallOptions();
+        const task = installVersionTask(meta, this.state.root, option).setName('installVersion');
         try {
             await this.submit(task);
             this.local.refreshVersions();
@@ -308,8 +313,8 @@ export default class InstallService extends Service {
         } else {
             resolved = libraries as any;
         }
-        let option = this.getInstallOptions();
-        let task = installResolvedLibrariesTask(resolved, this.state.root, option).setName('installLibraries');
+        const option = this.getInstallOptions();
+        const task = installResolvedLibrariesTask(resolved, this.state.root, option).setName('installLibraries');
         try {
             await this.submit(task);
         } catch (e) {
@@ -344,7 +349,8 @@ export default class InstallService extends Service {
         }
 
         try {
-            let currentForgeVersion = this.state.version.forge.find(f => f.mcversion === minecraftVersion)!;
+            const currentForgeVersion = this.state.version.forge.find(f => f.mcversion === minecraftVersion)!;
+
             let newForgeVersion = currentForgeVersion;
             if (this.networkManager.isInGFW) {
                 this.log(`Update forge version list (BMCL) for Minecraft ${minecraftVersion}`);
@@ -371,7 +377,8 @@ export default class InstallService extends Service {
      */
     @Singleton('install')
     async installForge(meta: Parameters<typeof installForgeTask>[0]) {
-        let options = this.getForgeInstallOptions();
+        const options = this.getForgeInstallOptions();
+
         let version: string | undefined;
         try {
             this.log(`Start to install forge ${meta.version} on ${meta.mcversion}`);
@@ -382,6 +389,7 @@ export default class InstallService extends Service {
             this.warn(`An error ocurred during download version ${meta.version}@${meta.mcversion}`);
             this.warn(err);
         }
+
         return version;
     }
 
@@ -403,7 +411,7 @@ export default class InstallService extends Service {
             return [statusCode === 200, headers['last-modified'] ?? timestamp] as const;
         };
 
-        let [yarnModified, yarnDate] = await getIfModified(YARN_MAVEN_URL, this.state.version.fabric.yarnTimestamp);
+        const [yarnModified, yarnDate] = await getIfModified(YARN_MAVEN_URL, this.state.version.fabric.yarnTimestamp);
 
         if (yarnModified) {
             let versions = await getYarnArtifactList();
@@ -411,7 +419,7 @@ export default class InstallService extends Service {
             this.log(`Refreshed fabric yarn metadata at ${yarnDate}.`);
         }
 
-        let [loaderModified, loaderDate] = await getIfModified(LOADER_MAVEN_URL, this.state.version.fabric.loaderTimestamp);
+        const [loaderModified, loaderDate] = await getIfModified(LOADER_MAVEN_URL, this.state.version.fabric.loaderTimestamp);
 
         if (loaderModified) {
             let versions = await getLoaderArtifactList();
@@ -488,6 +496,7 @@ export default class InstallService extends Service {
             headers,
             rejectUnauthorized: false,
         });
+
         if (response.statusCode === 304) {
             this.log('Not found new optifine version metadata. Use cache.');
         } else if (response.statusCode >= 200 && response.statusCode < 300) {

@@ -1,10 +1,11 @@
 import LauncherApp from '@main/app/LauncherApp';
 import { exists, missing } from '@main/util/fs';
+import { RuntimeVersions } from '@universal/entities/instance.schema';
 import { Issue, IssueReport } from '@universal/entities/issue';
 import { EMPTY_JAVA } from '@universal/entities/java';
 import { ForgeModCommonMetadata } from '@universal/entities/mod';
 import { FabricResource } from '@universal/entities/resource';
-import { compareRelease, getExpectVersion, LocalVersion } from '@universal/entities/version';
+import { compareRelease, getExpectVersion } from '@universal/entities/version';
 import { diagnose, MinecraftFolder } from '@xmcl/core';
 import { diagnoseInstall, installByProfileTask, InstallProfile } from '@xmcl/installer';
 import { FabricModMetadata } from '@xmcl/mod-parser';
@@ -67,7 +68,7 @@ export default class DiagnoseService extends Service {
         this.registerMatchedFix(['missingVersionJson', 'missingVersionJar', 'corruptedVersionJson', 'corruptedVersionJar'],
             async (issues) => {
                 const i = issues[0];
-                const { minecraft, forge, fabricLoader } = i.arguments! as LocalVersion;
+                const { minecraft, forge, fabricLoader } = i.arguments! as RuntimeVersions;
                 const metadata = this.state.version.minecraft.versions.find(v => v.id === minecraft);
                 if (metadata) {
                     await this.installService.installMinecraft(metadata);
@@ -100,7 +101,7 @@ export default class DiagnoseService extends Service {
                 if (!issues[0].arguments) return;
                 let { minecraft, forge, fabricLoader, yarn } = issues[0].arguments;
                 let targetVersion: string | undefined;
-                if (minecraft && this.state.version.local.every(v => v.minecraft !== minecraft)) {
+                if (minecraft && this.state.version.local.every(v => v.minecraftVersion !== minecraft)) {
                     if (this.state.version.minecraft.versions.length === 0) {
                         await this.installService.refreshMinecraft();
                     }
@@ -562,18 +563,20 @@ export default class DiagnoseService extends Service {
     async diagnoseVersion(report: Partial<IssueReport>) {
         this.aquire('diagnose');
         try {
-            let id = this.state.instance.path;
-            let selected = this.state.instance.all[id];
+            const id = this.state.instance.path;
+            const selected = this.state.instance.all[id];
             if (!selected) {
                 this.error(`No profile selected! ${id}`);
                 return;
             }
             await this.versionService.refreshVersions();
-            let currentVersion = { ...this.getters.instanceVersion };
-            let targetVersion = currentVersion.id;
-            let mcversion = currentVersion.minecraft;
+            const runtime = selected.runtime;
+            const currentVersion = this.getters.instanceVersion;
 
-            let mcLocation = MinecraftFolder.from(this.state.root);
+            const targetVersion = currentVersion.id;
+            const mcversion = runtime.minecraft;
+
+            const mcLocation = MinecraftFolder.from(currentVersion.minecraftDirectory);
 
             type VersionReport = Pick<IssueReport,
                 'missingVersionJar' |
@@ -609,7 +612,7 @@ export default class DiagnoseService extends Service {
             };
 
             if (!targetVersion) {
-                tree.missingVersion.push({ ...currentVersion, version: getExpectVersion(currentVersion.minecraft, currentVersion.forge, currentVersion.liteloader, currentVersion.fabricLoader) });
+                tree.missingVersion.push({ ...runtime, version: getExpectVersion(runtime.minecraft, runtime.forge, runtime.liteloader, runtime.fabricLoader) });
             } else {
                 this.log(`Diagnose for version ${targetVersion}`);
 
@@ -619,15 +622,15 @@ export default class DiagnoseService extends Service {
                 for (let issue of gameReport.issues) {
                     if (issue.role === 'versionJson') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedVersionJson.push({ version: issue.version, ...currentVersion, file: relative(location, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
+                            tree.corruptedVersionJson.push({ version: issue.version, ...runtime, file: relative(location, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
                         } else {
-                            tree.missingVersionJson.push({ version: issue.version, ...currentVersion, file: relative(location, issue.file) });
+                            tree.missingVersionJson.push({ version: issue.version, ...runtime, file: relative(location, issue.file) });
                         }
                     } else if (issue.role === 'minecraftJar') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedVersionJar.push({ version: issue.version, ...currentVersion, file: relative(location, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
+                            tree.corruptedVersionJar.push({ version: issue.version, ...runtime, file: relative(location, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
                         } else {
-                            tree.missingVersionJar.push({ version: issue.version, ...currentVersion, file: relative(location, issue.file) });
+                            tree.missingVersionJar.push({ version: issue.version, ...runtime, file: relative(location, issue.file) });
                         }
                     } else if (issue.role === 'assetIndex') {
                         if (issue.type === 'corrupted') {
@@ -637,9 +640,9 @@ export default class DiagnoseService extends Service {
                         }
                     } else if (issue.role === 'asset') {
                         if (issue.type === 'corrupted') {
-                            tree.corruptedAssets.push({ ...issue.asset, version: currentVersion.minecraft, hash: issue.asset.hash, file: relative(location, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
+                            tree.corruptedAssets.push({ ...issue.asset, version: runtime.minecraft, hash: issue.asset.hash, file: relative(location, issue.file), actual: issue.receivedChecksum, expect: issue.expectedChecksum });
                         } else {
-                            tree.missingAssets.push({ ...issue.asset, version: currentVersion.minecraft, hash: issue.asset.hash, file: relative(location, issue.file) });
+                            tree.missingAssets.push({ ...issue.asset, version: runtime.minecraft, hash: issue.asset.hash, file: relative(location, issue.file) });
                         }
                     } else if (issue.role === 'library') {
                         if (issue.type === 'corrupted') {

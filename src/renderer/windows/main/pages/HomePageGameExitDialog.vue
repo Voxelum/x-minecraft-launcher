@@ -101,7 +101,7 @@ export default defineComponent({
     }
     ipc.on('minecraft-exit', (event, { code, signal, crashReport, crashReportLocation, errorLog }) => {
       if (code !== 0) {
-        console.log(errorLog)
+        console.log(errorLog);
         data.errorLog = errorLog;
         if (crashReportLocation) {
           data.crashReportLocation = crashReportLocation;

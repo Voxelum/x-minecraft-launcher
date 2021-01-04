@@ -40,7 +40,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed, onMounted, defineComponent, Ref, ref, onUnmounted, watch } from '@vue/composition-api';
-import { useInstance, useService, useI18n, useVersions, useLocalVersions, useNativeDialog, useInstanceVersion } from '@/hooks';
+import { useInstance, useService, useI18n, useVersions, useNativeDialog, useInstanceVersion } from '@/hooks';
 import { InstanceFile } from '@main/service/InstanceIOService';
 import { required } from '@/util/props';
 import { useZipFilter } from '../hooks';

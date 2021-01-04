@@ -1,7 +1,6 @@
 import type { ResolvedLibrary } from '@xmcl/core';
 import type { InstallProfile } from '@xmcl/installer';
 import { RuntimeVersions } from './instance.schema';
-import { LocalVersion } from './version';
 
 export interface Issue {
     id: string;
@@ -18,14 +17,14 @@ export type IssueReport = {
 export type IssueType = keyof IssueRegistry;
 
 export interface IssueRegistry {
-    missingVersionJar: Registry<{ version: string } & LocalVersion>;
-    missingVersionJson: Registry<{ version: string } & LocalVersion>;
+    missingVersionJar: Registry<{ version: string } & RuntimeVersions>;
+    missingVersionJson: Registry<{ version: string } & RuntimeVersions>;
     missingLibraries: Registry<ResolvedLibrary>;
     missingAssetsIndex: Registry<{ version: string }>;
     missingAssets: Registry<{ version: string; hash: string; name: string; size: number }>;
 
-    corruptedVersionJar: Registry<{ version: string } & LocalVersion, true, true>;
-    corruptedVersionJson: Registry<{ version: string } & LocalVersion, true, true>;
+    corruptedVersionJar: Registry<{ version: string } & RuntimeVersions, true, true>;
+    corruptedVersionJson: Registry<{ version: string } & RuntimeVersions, true, true>;
     corruptedLibraries: Registry<ResolvedLibrary, true, true>;
     corruptedAssetsIndex: Registry<{ version: string }, true, true>;
     corruptedAssets: Registry<{ version: string; hash: string; name: string; size: number }, true, true>;

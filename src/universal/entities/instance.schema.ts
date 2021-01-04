@@ -25,12 +25,16 @@ export interface RuntimeVersions {
     fabricLoader?: string;
     /**
      * Fabric yarn version, e.g. 1.15.1+build.14
+     * @default ""
      */
     yarn?: string;
     /**
      * Optifine version e.g. HD_U_F1_pre6 or HD_U_E6
+     * @default ""
      */
     optifine?: string;
+
+    [id: string]: undefined | string;
 }
 
 export interface InstanceSchema {

@@ -172,13 +172,13 @@
 <script lang=ts>
 import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api';
 import { useLocalVersions } from '@/hooks';
-import { LocalVersion } from '@universal/entities/version';
+import type { ResolvedVersion } from '@xmcl/core';
 import { required, withDefault } from '@/util/props';
 
 export default defineComponent({
   props: {
     filterText: withDefault(String, () => ''),
-    value: required<LocalVersion>(Object),
+    value: required<ResolvedVersion>(Object),
   },
   setup(props, context) {
     const data = reactive({
@@ -189,21 +189,13 @@ export default defineComponent({
       reinstallVersionId: '',
     });
     const { localVersions, deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions, reinstall } = useLocalVersions();
-    const versions = computed(() => localVersions.value.filter(v => v.folder.indexOf(props.filterText) !== -1));
+    const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1));
 
-    function isSelected(v: LocalVersion) {
+    function isSelected(v: ResolvedVersion) {
       if (!props.value) return false;
-      if (props.value.folder) {
-        return v.folder === props.value.folder;
-      }
-      return props.value.minecraft === v.minecraft
-        && props.value.forge === v.forge
-        && props.value.liteloader === v.liteloader
-        && props.value.yarn === v.yarn
-        && props.value.fabricLoader === v.fabricLoader
-        && props.value.optifine === v.optifine;
+      return v === props.value;
     }
-    function selectVersion(v: LocalVersion) {
+    function selectVersion(v: ResolvedVersion) {
       context.emit('input', v);
     }
     function browseVersoinsFolder() {

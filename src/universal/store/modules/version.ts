@@ -1,5 +1,6 @@
-import { LATEST_RELEASE, LocalVersion } from '@universal/entities/version';
+import { LATEST_RELEASE } from '@universal/entities/version';
 import { ForgeVersionList, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '@universal/entities/version.schema';
+import { ResolvedVersion } from '@xmcl/core';
 import type { FabricArtifactVersion, LiteloaderVersionList, MinecraftVersion, MinecraftVersionList } from '@xmcl/installer';
 import { ModuleOption } from '../root';
 
@@ -7,7 +8,7 @@ interface State {
     /**
      * All the local versions installed in the disk
      */
-    local: LocalVersion[];
+    local: ResolvedVersion[];
     /**
      * Minecraft version metadata list. Helps to download.
      */
@@ -43,8 +44,8 @@ interface Getters {
 }
 
 interface Mutations {
-    localVersions: LocalVersion[];
-    localVersion: LocalVersion | { [runtime: string]: string };
+    localVersions: ResolvedVersion[];
+    localVersion: ResolvedVersion;
     localVersionRemove: string;
     minecraftMetadata: MinecraftVersionList;
     optifineMetadata: VersionOptifineSchema;

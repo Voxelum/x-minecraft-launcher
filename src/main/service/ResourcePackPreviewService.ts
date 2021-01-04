@@ -63,7 +63,7 @@ export default class ResourcePackPreviewService extends Service {
 
     protected getResourcePackPath(pack: string) {
         if (pack === 'vanilla') {
-            const version = this.getters.instanceVersion.minecraft;
+            const version = this.getters.instanceVersion.minecraftVersion;
             const jarPath = new MinecraftFolder(this.state.root).getVersionJar(version);
             return jarPath;
         }

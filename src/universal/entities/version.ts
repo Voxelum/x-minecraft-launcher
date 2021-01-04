@@ -1,25 +1,9 @@
 import { requireNonnull } from '@universal/util/assert';
-import type { Version } from '@xmcl/core';
+import type { LibraryInfo, ResolvedVersion, Version } from '@xmcl/core';
 import { ArtifactVersion, VersionRange } from 'maven-artifact-version';
 import { RuntimeVersions } from './instance.schema';
 
 export type Status = 'remote' | 'local' | 'loading';
-
-/**
- * An interface to reference a resolved version in 
- * <minecraft folder>/versions/<version-id>/<version-id>.json
- * 
- * This is more lightweight than @xmcl/minecraft-launcher-core's Version by Version.parse.
- */
-export interface LocalVersion extends RuntimeVersions {
-    /**
-     * The real folder id of the version, which is the <verison-id> in
-     * 
-     * <minecraft folder>/versions/<version-id>/<version-id>.json
-     */
-    id: string;
-}
-
 export interface PartialVersionResolver {
     (version: Version): string;
 }
@@ -38,6 +22,31 @@ export const resolveFabricYarnVersion: PartialVersionResolver = (v) => v.librari
 
 export const resolveMinecraftVersion: PartialVersionResolver = (v) => (v.inheritsFrom ? '' : v.id);
 
+export function isForgeLibrary(lib: LibraryInfo) {
+    return lib.groupId === 'net.minecraftforge' && lib.artifactId === 'forge';
+}
+
+export function isFabricLoaderLibrary(lib: LibraryInfo) {
+    return lib.groupId === 'net.fabricmc' && lib.artifactId === 'fabric-loader';
+}
+
+export const EMPTY_VERSION: ResolvedVersion = Object.freeze({
+    minecraftVersion: '',
+    minimumLauncherVersion: 0,
+    id: '',
+    libraries: [],
+    mainClass: '',
+    minecraftDirectory: '',
+    arguments: { game: [], jvm: [] },
+    assetIndex: { totalSize: 0, sha1: '', url: '', size: 0, id: '' },
+    assets: '',
+    downloads: { client: { sha1: '', url: '', size: 0 }, server: { sha1: '', url: '', size: 0 } },
+    releaseTime: '',
+    time: '',
+    type: '',
+    pathChain: [],
+    inheritances: [],
+});
 export interface LibrariesRecord {
     org: string;
     name: string;
@@ -86,6 +95,38 @@ export function isBetaVersion(version: string) {
 }
 export function isAlphaVersion(version: string) {
     return version.match(/^a[0-9]+\.[0-9]+(\.[0-9])?(_[0-9]+)?$/g);
+}
+
+export function isVersionMatched(version: ResolvedVersion, runtime: RuntimeVersions) {
+    // compute version
+    if (version.minecraftVersion !== runtime.minecraft) {
+        return false;
+    }
+    if (runtime.forge && !version.libraries.find(isForgeLibrary)) {
+        // require forge but not forge
+        return false;
+    }
+    if (runtime.fabricLoader && !version.libraries.find(isFabricLoaderLibrary)) {
+        return false;
+    }
+
+    return true;
+}
+
+export function getResolvedVersion(versions: ResolvedVersion[], runtime: RuntimeVersions, id: string): ResolvedVersion {
+    let localVersion: ResolvedVersion | undefined;
+
+    localVersion = versions.find(v => v.id === id);
+    if (localVersion) {
+        return localVersion;
+    }
+
+    localVersion = versions.find(ver => isVersionMatched(ver, runtime));
+    if (localVersion) {
+        return localVersion;
+    }
+
+    return EMPTY_VERSION;
 }
 
 export function getMinecraftVersionFormat(version: string): 'release' | 'snapshot' | 'beta' | 'alpha' | 'unknown' {

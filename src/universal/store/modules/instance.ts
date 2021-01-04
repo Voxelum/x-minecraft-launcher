@@ -4,9 +4,9 @@ import { JavaRecord } from '@universal/entities/java';
 import { ModResource, ResourcePackResource } from '@universal/entities/resource';
 import { InstanceSaveMetadata } from '@universal/entities/save';
 import { ServerStatus, UNKNOWN_STATUS } from '@universal/entities/serverStatus';
-import { LocalVersion } from '@universal/entities/version';
+import { EMPTY_VERSION } from '@universal/entities/version';
 import { remove, set } from '@universal/util/middleware';
-import { LibraryInfo } from '@xmcl/core';
+import { ResolvedVersion } from '@xmcl/core';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
 import { ServerInfo } from '@xmcl/server-info';
 import { ModuleOption } from '../root';
@@ -37,8 +37,6 @@ interface State {
     mods: ModResource[];
 
     resourcepacks: ResourcePackResource[];
-
-    libraries: LibraryInfo[];
 }
 
 interface Getters {
@@ -54,7 +52,7 @@ interface Getters {
      * The selected instance mapped local version.
      * If there is no local version matced, it will return a local version with id equal to `""`.
      */
-    instanceVersion: LocalVersion;
+    instanceVersion: ResolvedVersion;
     /**
      * The selected instance mapped local java.
      * If there is no matching java for current instance, it will return the `DEFAULT_JAVA`
@@ -126,7 +124,6 @@ const mod: InstanceModule = {
 
         mods: [],
         resourcepacks: [],
-        libraries: [],
     },
     getters: {
         instances: state => Object.keys(state.all).map(k => state.all[k]),
@@ -138,22 +135,12 @@ const mod: InstanceModule = {
             if (folder) {
                 // actual version
                 const localVersion = rootState.version.local.find(v => v.id === folder);
-                return localVersion || {
-                    ...current.runtime,
-                    id: folder,
-                };
+                if (localVersion) {
+                    return localVersion;
+                }
             }
-            // compute version
-            const requirements = ['minecraft', 'forge', 'fabricLoader', 'yarn', 'liteloader']
-                .filter(k => current.runtime[k]);
 
-            const localVersion = rootState.version.local.find(loc => requirements
-                .every(name => loc[name] === current.runtime[name]));
-
-            return localVersion || {
-                ...current.runtime,
-                id: '',
-            };
+            return EMPTY_VERSION;
         },
         instanceJava: (state, getters, rootState, rootGetter) => {
             const javaPath = getters.instance.java;
@@ -226,7 +213,7 @@ const mod: InstanceModule = {
 
             inst.author = settings.author || inst.author;
             inst.description = settings.description || inst.description;
-            inst.version = typeof settings.version === 'string' ? settings.version : inst.version;  
+            inst.version = typeof settings.version === 'string' ? settings.version : inst.version;
 
             if (settings.server) {
                 if (inst.server) {

@@ -1,5 +1,4 @@
 import { FileStateWatcher, readdirEnsured } from '@main/util/fs';
-import { LocalVersion, resolveRuntimeVersion } from '@universal/entities/version';
 import { ResolvedVersion, Version } from '@xmcl/core';
 import { remove } from 'fs-extra';
 import Service from './Service';
@@ -25,20 +24,9 @@ export default class VersionService extends Service {
         this.versionsWatcher.watch(this.getPath('versions'));
     }
 
-    public async resolveLocalVersion(versionFolder: string, root: string = this.state.root): Promise<[ResolvedVersion, LocalVersion]> {
+    public async resolveLocalVersion(versionFolder: string, root: string = this.state.root): Promise<ResolvedVersion> {
         const resolved = await Version.parse(root, versionFolder);
-        const minecraft = resolved.minecraftVersion;
-        const version: LocalVersion = {
-            id: resolved.id,
-            minecraft,
-            id: versionFolder,
-            fabricLoader: '',
-            forge: '',
-            liteloader: '',
-            yarn: '',
-        };
-        resolveRuntimeVersion(resolved, version);
-        return [resolved, version];
+        return resolved;
     }
 
     async resolveVersionId() {
@@ -55,7 +43,7 @@ export default class VersionService extends Service {
      */
     async refreshVersion(versionFolder: string) {
         try {
-            const [resolved, version] = await this.resolveLocalVersion(versionFolder);
+            const version = await this.resolveLocalVersion(versionFolder);
             this.log(`Refresh local version ${versionFolder}`);
             this.commit('localVersion', version);
         } catch (e) {
@@ -82,10 +70,10 @@ export default class VersionService extends Service {
 
         files = files.filter(f => !f.startsWith('.'));
 
-        let versions: LocalVersion[] = [];
-        for (let versionId of files) {
+        const versions: ResolvedVersion[] = [];
+        for (const versionId of files) {
             try {
-                const [resolved, version] = await this.resolveLocalVersion(versionId);
+                const version = await this.resolveLocalVersion(versionId);
                 versions.push(version);
             } catch (e) {
                 this.warn(`An error occured during refresh local version ${versionId}`);
@@ -95,7 +83,7 @@ export default class VersionService extends Service {
 
         if (versions.length !== 0) {
             if (patch) {
-                for (let version of versions) {
+                for (const version of versions) {
                     this.commit('localVersion', version);
                 }
             } else {

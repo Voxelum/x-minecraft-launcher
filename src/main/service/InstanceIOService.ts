@@ -134,11 +134,19 @@ export default class InstanceIOService extends Service {
             return;
         }
 
+        const version = this.getters.instanceVersion;
+
+        if (version.id === '') {
+            // TODO: throw
+            this.warn(`Cannot export instance ${src} as its version is not installed!`);
+            return;
+        } 
+
+
         const root = this.state.root;
         const from = src;
 
         const zipTask = new ZipTask(dest).setName('profile.modpack.export');
-        const version = await Version.parse(root, this.getters.instanceVersion.id);
 
         // add assets
         if (includeAssets) {

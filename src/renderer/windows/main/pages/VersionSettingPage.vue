@@ -100,12 +100,13 @@ import {
   useInstance,
 } from '@/hooks';
 import type { ForgeVersion, MinecraftVersion } from '@xmcl/installer';
-import { LocalVersion } from '@universal/entities/version';
+import type { ResolvedVersion } from '@xmcl/core';
 import { OptifineVersion } from '@universal/entities/version.schema';
 import MinecraftView from './VersionSettingPageMinecraftView.vue';
 import ForgeView from './VersionSettingPageForgeView.vue';
 import FabricView from './VersionSettingPageFabricView.vue';
 import OptifineView from './VersionSettingPageOptifineView.vue';
+import { EMPTY_VERSION } from '@universal/entities/version';
 
 export default defineComponent({
   components: {
@@ -136,14 +137,6 @@ export default defineComponent({
     });
 
     const { editInstance: edit, runtime, version } = useInstance();
-    const localVersion = computed(() => ({
-      minecraft: data.minecraft,
-      forge: data.forge,
-      liteloader: data.liteloader,
-      fabricLoader: data.loader,
-      yarn: data.yarn,
-      folder: data.folder,
-    }));
     const barColor = computed(() => {
       switch (data.active) {
         case 0: return 'white';
@@ -155,13 +148,17 @@ export default defineComponent({
       }
     });
 
-    function setLocalVersion(v: LocalVersion) {
+    const localVersion = computed(() => {
+      
+      return EMPTY_VERSION;
+    });
+    function setLocalVersion(v: ResolvedVersion) {
       data.minecraft = v.minecraft;
       data.forge = v.forge ?? '';
       data.liteloader = v.liteloader ?? '';
       data.loader = v.fabricLoader ?? '';
       data.yarn = v.yarn ?? '';
-      data.folder = v.folder ?? '';
+      data.folder = v.id ?? '';
     }
     function setMinecraft(v: MinecraftVersion) {
       if (data.minecraft !== v.id) {
