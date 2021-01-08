@@ -1,4 +1,4 @@
-import { Status } from '@universal/entities/version';
+import { isFabricLoaderLibrary, isForgeLibrary, Status } from '@universal/entities/version';
 import { isNonnull } from '@universal/util/assert';
 import { computed, onMounted, onUnmounted, reactive, Ref, toRefs, watch } from '@vue/composition-api';
 import { MinecraftVersion } from '@xmcl/installer';
@@ -37,7 +37,7 @@ export function useMinecraftVersions() {
     const statuses = computed(() => {
         const localVersions: { [k: string]: boolean } = {};
         state.version.local.forEach((ver) => {
-            if (ver.minecraft) localVersions[ver.minecraft] = true;
+            if (ver.minecraftVersion) localVersions[ver.minecraftVersion] = true;
         });
         const statusMap: { [key: string]: Status } = {};
         for (const ver of state.version.minecraft.versions) {
@@ -87,7 +87,8 @@ export function useFabricVersions() {
         const statusMap: { [key: string]: Status } = {};
         const locals: { [k: string]: boolean } = {};
         state.version.local.forEach((ver) => {
-            if (ver.fabricLoader) locals[ver.fabricLoader] = true;
+            const lib = ver.libraries.find(isFabricLoaderLibrary);
+            if (lib) locals[lib.version] = true;
         });
         state.version.fabric.loaders.forEach((v) => {
             statusMap[v.version] = locals[v.version] ? 'local' : 'remote';
@@ -97,9 +98,9 @@ export function useFabricVersions() {
     const yarnStatus = computed(() => {
         const statusMap: { [key: string]: Status } = {};
         const locals: { [k: string]: boolean } = {};
-        state.version.local.forEach((ver) => {
-            if (ver.yarn) locals[ver.yarn] = true;
-        });
+        // state.version.local.forEach((ver) => {
+        //     if (ver.yarn) locals[ver.yarn] = true;
+        // });
         state.version.fabric.yarns.forEach((v) => {
             statusMap[v.version] = locals[v.version] ? 'local' : 'remote';
         });
@@ -143,7 +144,8 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
         const statusMap: { [key: string]: Status } = {};
         const localForgeVersion: { [k: string]: boolean } = {};
         state.version.local.forEach((ver) => {
-            if (ver.forge) localForgeVersion[ver.forge] = true;
+            const lib = ver.libraries.find(isForgeLibrary);
+            if (lib) localForgeVersion[lib.version] = true;
         });
         state.version.forge.forEach((container) => {
             container.versions.forEach((version) => {

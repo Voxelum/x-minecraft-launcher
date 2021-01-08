@@ -20,17 +20,15 @@ export async function fixResourceSchema({ log, warn }: Logger, filePath: string,
         schema.date = source.date;
     }
 
-    if (RESOURCE_FILE_VERSION !== schema.version) {
+    if (schema.type === 'forge' && RESOURCE_FILE_VERSION !== schema.version) {
         // fix forge metadata
         log(`Fix ${filePath} file version: ${schema.version} -> ${RESOURCE_FILE_VERSION}`);
-        if (schema.type === 'forge') {
-            const fs = await openFileSystem(join(dataRoot, schema.location + schema.ext));
-            const data = await RESOURCE_PARSER_FORGE.parseMetadata(fs);
-            fs.close();
-            schema.metadata = data;
-            schema.version = RESOURCE_FILE_VERSION;
-            log(`Reparsed ${filePath} as forge mod`);
-            await writeJSON(filePath, schema);
-        }
+        const fs = await openFileSystem(join(dataRoot, schema.location + schema.ext));
+        const data = await RESOURCE_PARSER_FORGE.parseMetadata(fs);
+        fs.close();
+        schema.metadata = data;
+        schema.version = RESOURCE_FILE_VERSION;
+        log(`Reparsed ${filePath} as forge mod`);
+        await writeJSON(filePath, schema);
     }
 }

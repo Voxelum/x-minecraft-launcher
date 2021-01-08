@@ -119,7 +119,7 @@ export default class CurseForgeService extends Service {
 
                 // TODO: add tag from addon info
                 // let addonInf = await this.fetchProject(projectId);
-                return this.yield(task('parsing', () => resourceService.importResource({
+                return this.yield(task('parsing', () => resourceService.parseAndImportResourceIfAbsent({
                     path: destination,
                     url: urls,
                     source: getCurseforgeSourceInfo(projectId, file.id),

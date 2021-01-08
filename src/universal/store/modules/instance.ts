@@ -1,10 +1,10 @@
 import { DEFAULT_PROFILE, Instance } from '@universal/entities/instance';
 import { InstanceSchema } from '@universal/entities/instance.schema';
 import { JavaRecord } from '@universal/entities/java';
-import { ModResource, ResourcePackResource } from '@universal/entities/resource';
+import { ModResource, ResourcePackResource, Resources } from '@universal/entities/resource';
 import { InstanceSaveMetadata } from '@universal/entities/save';
 import { ServerStatus, UNKNOWN_STATUS } from '@universal/entities/serverStatus';
-import { EMPTY_VERSION } from '@universal/entities/version';
+import { EMPTY_VERSION, getResolvedVersion } from '@universal/entities/version';
 import { remove, set } from '@universal/util/middleware';
 import { ResolvedVersion } from '@xmcl/core';
 import { Frame as GameSetting } from '@xmcl/gamesetting';
@@ -33,10 +33,12 @@ interface State {
      * The game setting of current selected instance
      */
     settings: GameSetting & { resourcePacks: Array<string> };
+    /**
+     * The instance 
+     */
+    mods: Resources[];
 
-    mods: ModResource[];
-
-    resourcepacks: ResourcePackResource[];
+    resourcepacks: Resources[];
 }
 
 interface Getters {
@@ -100,13 +102,13 @@ interface Mutations {
     instanceSaveAdd: InstanceSaveMetadata;
     instanceSaveRemove: string;
 
-    instanceMods: ModResource[];
-    instanceModAdd: ModResource[];
-    instanceModRemove: ModResource[];
+    instanceMods: Resources[];
+    instanceModAdd: Resources[];
+    instanceModRemove: Resources[];
 
-    instanceResourcepacks: ResourcePackResource[];
-    instanceResourcepackAdd: ResourcePackResource[];
-    instanceResourcepackRemove: ResourcePackResource[];
+    instanceResourcepacks: Resources[];
+    instanceResourcepackAdd: Resources[];
+    instanceResourcepackRemove: Resources[];
 }
 
 export type InstanceModule = ModuleOption<State, Getters, Mutations, {}>;
@@ -131,16 +133,7 @@ const mod: InstanceModule = {
         instance: state => state.all[state.path] || DEFAULT_PROFILE,
         instanceVersion: (state, getters, rootState) => {
             const current = state.all[state.path] || DEFAULT_PROFILE;
-            const folder = current.version;
-            if (folder) {
-                // actual version
-                const localVersion = rootState.version.local.find(v => v.id === folder);
-                if (localVersion) {
-                    return localVersion;
-                }
-            }
-
-            return EMPTY_VERSION;
+            return getResolvedVersion(rootState.version.local, current.runtime, current.version);
         },
         instanceJava: (state, getters, rootState, rootGetter) => {
             const javaPath = getters.instance.java;

@@ -21,8 +21,8 @@
             <v-icon>folder</v-icon>
           </v-btn>
         </v-list-tile-avatar>
-        <v-list-tile-title>{{ item.folder }}</v-list-tile-title>
-        <v-list-tile-sub-title>{{ item.minecraft }}</v-list-tile-sub-title>
+        <v-list-tile-title>{{ item.id }}</v-list-tile-title>
+        <v-list-tile-sub-title>{{ item.minecraftVersion }}</v-list-tile-sub-title>
         <v-list-tile-action style="flex-direction: row; justify-content: flex-end;">
           <v-btn
             style="cursor: pointer"
@@ -201,16 +201,16 @@ export default defineComponent({
     function browseVersoinsFolder() {
       showVersionsDirectory();
     }
-    function openVersionDir(v: { folder: string }) {
-      showVersionDirectory(v.folder);
+    function openVersionDir(v: ResolvedVersion) {
+      showVersionDirectory(v.id);
     }
-    function startDelete(v: { folder: string }) {
+    function startDelete(v: ResolvedVersion) {
       data.deletingVersion = true;
-      data.deletingVersionId = v.folder;
+      data.deletingVersionId = v.id;
     }
-    function startReinstall(v: { folder: string }) {
+    function startReinstall(v: ResolvedVersion) {
       data.reinstallVersion = true;
-      data.reinstallVersionId = v.folder;
+      data.reinstallVersionId = v.id;
     }
     function comfireDeleting() {
       deleteVersion(data.deletingVersionId);

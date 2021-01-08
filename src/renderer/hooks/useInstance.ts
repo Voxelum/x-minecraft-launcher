@@ -165,8 +165,6 @@ export function useInstanceCreation() {
             data.description = instance.description;
             data.url = instance.url;
             data.icon = instance.icon;
-            data.image = instance.image;
-            data.blur = instance.blur;
             data.server = instance.server ? { ...instance.server } : undefined;
         },
 

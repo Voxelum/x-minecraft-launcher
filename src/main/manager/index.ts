@@ -1,10 +1,5 @@
 import LauncherApp from '@main/app/LauncherApp';
 import { StaticStore } from '@universal/util/staticStore';
-import LogManager from './LogManager';
-import NetworkManager from './NetworkManager';
-import ServiceManager from './ServiceManager';
-import StoreManager from './StoreManager';
-import TaskManager from './TaskManager';
 
 export abstract class Manager {
     constructor(protected app: LauncherApp) { }
@@ -28,11 +23,4 @@ export abstract class Manager {
     warn(m: any, ...args: any[]) { this.app.logManager.warn(`[${this.name}] ${m}`, ...args); }
 
     error(m: any, ...args: any[]) { this.app.logManager.error(`[${this.name}] ${m}`, ...args); }
-}
-export interface Managers {
-    networkManager: NetworkManager;
-    serviceManager: ServiceManager;
-    taskManager: TaskManager;
-    logManager: LogManager;
-    storeManager: StoreManager;
 }

@@ -1,17 +1,17 @@
-import { resolveAndPersist, mutateResource, readHeader, remove, ResourceCache, SourceInformation } from '@main/entities/resource';
+import { mutateResource, remove, resolveAndPersist, ResourceCache, SourceInformation } from '@main/entities/resource';
 import { fixResourceSchema } from '@main/util/dataFix';
-import { copyPassively, readdirEnsured, sha1ByPath } from '@main/util/fs';
+import { copyPassively, readdirEnsured } from '@main/util/fs';
 import { Resource, Resources, UNKNOWN_RESOURCE } from '@universal/entities/resource';
-import { ResourceSchema, ResourceType, ResourceDomain } from '@universal/entities/resource.schema';
+import { ResourceDomain, ResourceSchema, ResourceType } from '@universal/entities/resource.schema';
 import { requireString } from '@universal/util/assert';
-import { Task, task } from '@xmcl/task';
+import { task } from '@xmcl/task';
 import { stat } from 'fs-extra';
 import debounce from 'lodash.debounce';
 import { extname, join } from 'path';
 import Service from './Service';
 
 export type ImportTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save';
-export type ImportOptions = {
+export type ParseOptions = {
     /**
      * The real file path of the resource
      */
@@ -160,7 +160,7 @@ export default class ResourceService extends Service {
                         path: resourceFilePath,
                         size,
                         ino,
-                        ext: extname(resourceFilePath),
+                        ext: resourceData.ext,
                         curseforge: resourceData.curseforge,
                         github: resourceData.github,
                     });
@@ -280,7 +280,7 @@ export default class ResourceService extends Service {
      * Import the resource into the launcher.
      * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.
      */
-    async importResource(option: ImportOptions) {
+    async parseAndImportResourceIfAbsent(option: ParseOptions) {
         requireString(option.path);
         const existed = await this.queryExistedResourceByPath(option.path);
         if (!existed) {
@@ -324,7 +324,7 @@ export default class ResourceService extends Service {
             result = this.getResourceByKey(fileStat.ino);
 
             if (!result) {
-                const sha1 = await sha1ByPath(path);
+                const sha1 = await this.worker().checksum(path, 'sha1');
                 result = this.getResourceByKey(sha1);
             }
         }
@@ -338,13 +338,13 @@ export default class ResourceService extends Service {
      * Resolve resource task. This will not write the resource to the cache, but it will persist the resource to disk.
      * @throws DomainMissMatchedError
      */
-    private resolveResourceTask(importOption: ImportOptions) {
+    private resolveResourceTask(importOption: ParseOptions) {
         const root = this.getPath();
         return task('importResource', async () => {
             const { path, source = {}, url = [], type, requiredDomain } = importOption;
             // context.update(0, 4, path);
-            const hash = await sha1ByPath(path);
-            const resolved = await readHeader(path, hash, type);
+            const hash = await this.worker().checksum(path, 'sha1');
+            const resolved = await this.worker().readResourceHeader(path, hash, type ?? '*');
             if (requiredDomain) {
                 if (resolved.domain !== requiredDomain) {
                     throw new DomainMissMatchedError(resolved.domain, path, resolved.type);

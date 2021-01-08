@@ -232,15 +232,15 @@ export default class InstanceIOService extends Service {
 
         const ganeVersionInstance = this.state.version.local.find(v => v.id === gameVersion);
         const instance = this.state.instance.all[instancePath];
-        const modLoaders = ganeVersionInstance?.forge ? [{
-            id: `forge-${ganeVersionInstance?.forge}`,
+        const modLoaders = instance.runtime.forge ? [{
+            id: `forge-${instance.runtime.forge}`,
             primary: true,
         }] : [];
         const curseforgeConfig: CurseforgeModpackManifest = {
             manifestType: 'minecraftModpack',
             manifestVersion: 1,
             minecraft: {
-                version: ganeVersionInstance?.minecraft ?? instance.runtime.minecraft,
+                version: ganeVersionInstance?.minecraftVersion ?? instance.runtime.minecraft,
                 modLoaders,
             },
             name: options.name ?? name,

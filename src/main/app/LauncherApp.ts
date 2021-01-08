@@ -7,6 +7,7 @@ import ServiceManager from '@main/manager/ServiceManager';
 import StoreManager from '@main/manager/StoreManager';
 import TaskManager from '@main/manager/TaskManager';
 import TelemetryManager from '@main/manager/TelemetryManager';
+import WorkerManager from '@main/manager/WorkerManager';
 import { exists, isDirectory } from '@main/util/fs';
 import { GiteeReleaseFetcher, GithubReleaseFetcher, ReleaseFetcher } from '@main/util/release';
 import { RuntimeVersions } from '@universal/entities/instance.schema';
@@ -117,6 +118,8 @@ export abstract class LauncherApp extends EventEmitter {
     readonly telemetryManager = new TelemetryManager(this);
 
     readonly credentialManager = new CredentialManager(this);
+    
+    readonly workerManager = new WorkerManager(this);
 
     readonly platform: Platform = getPlatform();
 
@@ -126,7 +129,7 @@ export abstract class LauncherApp extends EventEmitter {
 
     get isParking(): boolean { return this.parking; }
 
-    protected managers = [this.logManager, this.networkManager, this.taskManager, this.storeManager, this.serviceManager, this.telemetryManager, this.credentialManager];
+    protected managers = [this.logManager, this.networkManager, this.taskManager, this.storeManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager];
 
     readonly controller: LauncherAppController;
 

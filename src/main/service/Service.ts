@@ -1,5 +1,4 @@
 import LauncherApp from '@main/app/LauncherApp';
-import { Managers } from '@main/manager';
 import { Schema } from '@universal/entities/schema';
 import { MutationKeys, RootCommit, RootGetters, RootState } from '@universal/store';
 import { Exception, Exceptions } from '@universal/entities/exception';
@@ -155,7 +154,7 @@ export class ServiceException extends Error {
  * 
  * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied 
  */
-export default class Service implements Managers {
+export default class Service {
     readonly name: string;
 
     constructor(readonly app: LauncherApp) {
@@ -174,6 +173,8 @@ export default class Service implements Managers {
 
     get credentialManager() { return this.app.credentialManager; }
 
+    get workerManager() { return this.app.workerManager; }
+
     /**
      * Submit a task into the task manager. 
      * 
@@ -183,6 +184,13 @@ export default class Service implements Managers {
      */
     protected submit<T>(task: Task<T>) {
         return this.taskManager.submit(task);
+    }
+
+    /**
+     * Get a worker for the code run another thread
+     */
+    protected worker() {
+        return this.workerManager.getWorker();
     }
 
     /**

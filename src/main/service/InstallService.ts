@@ -110,6 +110,7 @@ export default class InstallService extends Service {
     protected getForgeInstallOptions(): InstallForgeOptions {
         const options: InstallForgeOptions = {
             ...this.networkManager.getDownloadBaseOptions(),
+            overwriteWhen: 'checksumNotMatch',
             java: this.getters.defaultJava.path,
         };
         if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
@@ -125,6 +126,7 @@ export default class InstallService extends Service {
         const option: Options = {
             assetsDownloadConcurrency: 16,
             ...this.networkManager.getDownloadBaseOptions(),
+            overwriteWhen: 'checksumNotMatch',
             side: 'client',
         };
 
