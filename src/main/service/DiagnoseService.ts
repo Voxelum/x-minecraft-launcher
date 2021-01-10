@@ -5,7 +5,7 @@ import { Issue, IssueReport } from '@universal/entities/issue';
 import { EMPTY_JAVA } from '@universal/entities/java';
 import { ForgeModCommonMetadata } from '@universal/entities/mod';
 import { FabricResource } from '@universal/entities/resource';
-import { compareRelease, getExpectVersion } from '@universal/entities/version';
+import { compareRelease, getExpectVersion, isSameForgeVersion, parseOptifineVersion } from '@universal/entities/version';
 import { diagnose, MinecraftFolder } from '@xmcl/core';
 import { diagnoseInstall, installByProfileTask, InstallProfile } from '@xmcl/installer';
 import { FabricModMetadata } from '@xmcl/mod-parser';
@@ -99,7 +99,7 @@ export default class DiagnoseService extends Service {
         this.registerMatchedFix(['missingVersion'],
             async (issues) => {
                 if (!issues[0].arguments) return;
-                let { minecraft, forge, fabricLoader, yarn } = issues[0].arguments;
+                let { minecraft, forge, fabricLoader, optifine } = issues[0].arguments;
                 let targetVersion: string | undefined;
                 if (minecraft && this.state.version.local.every(v => v.minecraftVersion !== minecraft)) {
                     if (this.state.version.minecraft.versions.length === 0) {
@@ -112,10 +112,12 @@ export default class DiagnoseService extends Service {
                     targetVersion = metadata?.id;
                 }
                 if (forge) {
-                    if (!this.state.version.forge[minecraft]) {
+                    let forges = this.state.version.forge.find(v => v.mcversion === minecraft);
+                    if (!forges) {
                         await this.installService.refreshForge({ mcversion: minecraft });
                     }
-                    let forgeVer = this.state.version.forge[minecraft]?.versions.find(v => v.version === forge);
+                    forges = this.state.version.forge.find(v => v.mcversion === minecraft);
+                    let forgeVer = forges?.versions.find(v => isSameForgeVersion(v.version, forge));
                     if (!forgeVer) {
                         targetVersion = await this.installService.installForge({ mcversion: minecraft, version: forge });
                     } else {
@@ -123,6 +125,11 @@ export default class DiagnoseService extends Service {
                     }
                 } else if (fabricLoader) {
                     targetVersion = await this.installService.installFabric({ minecraft, loader: fabricLoader });
+                }
+                if (optifine) {
+                    const { patch, type } = parseOptifineVersion(optifine);
+                    const id = await this.installService.installOptifine({ mcversion: minecraft, patch, type, inhrenitFrom: targetVersion });
+                    targetVersion = id;
                 }
                 if (targetVersion) {
                     await this.installService.installDependencies(targetVersion);
@@ -612,7 +619,7 @@ export default class DiagnoseService extends Service {
             };
 
             if (!targetVersion) {
-                tree.missingVersion.push({ ...runtime, version: getExpectVersion(runtime.minecraft, runtime.forge, runtime.liteloader, runtime.fabricLoader) });
+                tree.missingVersion.push({ ...runtime, version: getExpectVersion(runtime) });
             } else {
                 this.log(`Diagnose for version ${targetVersion}`);
 

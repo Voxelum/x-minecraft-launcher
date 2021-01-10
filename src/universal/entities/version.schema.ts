@@ -156,8 +156,17 @@ export interface VersionFabricSchema {
 }
 
 export interface OptifineVersion {
+    /**
+     * The minecraft version
+     */
     mcversion: string;
+    /**
+     * The type of the optifine like HD_U
+     */
     type: string;
+    /**
+     * The patch of the optifine
+     */
     patch: string;
 }
 

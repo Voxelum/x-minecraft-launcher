@@ -357,6 +357,12 @@
   "installFabric": {
     "": "安装 Fabric"
   },
+  "installOptifine": {
+    "": "安装 Optifine",
+    "download": "下载 Optifine Universal",
+    "json": "生成 Json",
+    "jar": "生成 Optifine Jar"
+  },
   "installForge": {
     "": "安装 Forge",
     "downloadInstaller": "下载 Forge 安装器",

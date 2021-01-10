@@ -274,11 +274,7 @@ export function useInstanceVersion() {
 
 
     const folder = computed(() => getters.instanceVersion.id || 'unknown');
-    const id = computed(() => getExpectVersion(
-        getters.instance.runtime.minecraft,
-        getters.instance.runtime.forge,
-        getters.instance.runtime.liteloader,
-    ));
+    const id = computed(() => getExpectVersion(getters.instance.runtime));
 
     return {
         ...useInstanceVersionBase(),

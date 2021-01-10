@@ -35,6 +35,7 @@ export function createTemplate(): Instance {
             liteloader: '',
             fabricLoader: '',
             yarn: '',
+            optifine: '',
         },
         java: '',
         version: '',

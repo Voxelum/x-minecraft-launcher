@@ -1,5 +1,5 @@
 import { Exception } from '@universal/entities/exception';
-import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder } from '@xmcl/core';
+import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder, Version } from '@xmcl/core';
 import { ChildProcess } from 'child_process';
 import { EOL } from 'os';
 import DiagnoseService from './DiagnoseService';
@@ -103,13 +103,12 @@ export default class LaunchService extends Service {
 
             const minecraftFolder = new MinecraftFolder(instance.path);
 
-            /**
-             * real version name
-             */
-            const version = this.getters.instanceVersion;
+
+            let version = this.getters.instanceVersion;
             if (!version.id) {
                 throw new Exception({ type: 'launchNoVersionInstalled' });
             }
+            version = await Version.parse(version.minecraftDirectory, version.id);
 
             this.log(`Will launch with ${version} version.`);
 

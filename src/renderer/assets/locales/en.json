@@ -377,6 +377,12 @@
   "installFabric": {
     "": "Install Fabric"
   },
+  "installOptifine": {
+    "": "Install Optifine",
+    "download": "Download Optifine Universal",
+    "json": "Generate Json",
+    "jar": "Generate Jar"
+  },
   "installForge": {
     "": "Install Forge",
     "downloadInstaller": "Download Installer",

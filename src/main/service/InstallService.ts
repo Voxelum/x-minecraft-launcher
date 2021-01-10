@@ -1,11 +1,16 @@
-import { isFabricLoaderLibrary, isForgeLibrary } from '@universal/entities/version';
+import { compareRelease, getExpectVersion, isFabricLoaderLibrary, isForgeLibrary } from '@universal/entities/version';
 import { ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '@universal/entities/version.schema';
 import { MutationKeys } from '@universal/store';
 import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core';
-import { getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL } from '@xmcl/installer';
+import { DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL, generateOptifineVersion } from '@xmcl/installer';
 import { task } from '@xmcl/task';
+import { ensureFile, readJSON, writeFile } from 'fs-extra';
 import Service, { Inject, Singleton } from './Service';
 import VersionService from './VersionService';
+
+export interface InstallOptifineOptions extends OptifineVersion {
+    inhrenitFrom?: string;
+}
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -452,6 +457,62 @@ export default class InstallService extends Service {
             this.warn(e);
         }
         return undefined;
+    }
+
+    @Singleton('install')
+    async installOptifine(options: InstallOptifineOptions) {
+        const minecraft = new MinecraftFolder(this.getPath());
+        const optifineVersion = `${options.type}_${options.patch}`;
+        const version = `${options.mcversion}_${optifineVersion}`;
+        const path = new MinecraftFolder(this.getPath()).getLibraryByPath(`/optifine/OptiFine/${version}/OptiFine-${version}-universal.jar`);
+        const downloadOptions = this.networkManager.getDownloadBaseOptions();
+
+        this.log(`Install optifine ${version} on ${options.inhrenitFrom ?? options.mcversion}`);
+
+        let installFromForge = false;
+        if (options.inhrenitFrom === options.mcversion) {
+            options.inhrenitFrom = undefined;
+        }
+        if (options.inhrenitFrom) {
+            const from = await Version.parse(minecraft, options.inhrenitFrom);
+            if (from.libraries.some(isForgeLibrary)) {
+                installFromForge = true;
+                // install over forge
+            } else if (from.libraries.some(isFabricLoaderLibrary)) {
+                this.warn('Installing optifine over a fabric! This might not work!');
+            }
+        }
+
+        const java = this.getters.defaultJava.valid ? this.getters.defaultJava.path : undefined;
+
+        const id = await this.submit(task('installOptifine', async function () {
+            await this.yield(new DownloadTask({
+                ...downloadOptions,
+                url: `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
+                destination: path,
+            }).setName('download'));
+            let id: string = await this.concat(installOptifineTask(path, minecraft, { java }));
+
+            if (options.inhrenitFrom) {
+                const parentJson: Version = await readJSON(minecraft.getVersionJson(options.inhrenitFrom));
+                const json: Version = await readJSON(minecraft.getVersionJson(id));
+                json.inheritsFrom = options.inhrenitFrom;
+                json.id = `${options.inhrenitFrom}-Optifine-${version}`;
+                if (installFromForge) {
+                    json.arguments!.game = ['--tweakClass', 'optifine.OptiFineForgeTweaker'];
+                    json.mainClass = parentJson.mainClass;
+                }
+                const dest = minecraft.getVersionJson(json.id);
+                await ensureFile(dest);
+                await writeFile(dest, JSON.stringify(json, null, 4));
+                id = json.id;
+            }
+            return id;
+        }));
+
+        this.log(`Succeed to install optifine ${version} on ${options.inhrenitFrom ?? options.mcversion}. ${id}`);
+
+        return id;
     }
 
     @Singleton()

@@ -8,8 +8,8 @@ export interface PartialVersionResolver {
     (version: Version): string;
 }
 
-export const resolveForgeVersion: PartialVersionResolver = (v) => v.libraries.find(l => l.name.startsWith('net.minecraftforge:forge:'))
-    ?.name.split(':')[2]?.split('-')?.[1] || '';
+export const resolveForgeVersion: PartialVersionResolver = (v) => filterForgeVersion(v.libraries.find(l => l.name.startsWith('net.minecraftforge:forge:'))
+    ?.name.split(':')[2]?.split('-')?.[1] || '');
 
 export const resolveLiteloaderVersion: PartialVersionResolver = (v) => v.libraries.find(l => l.name.startsWith('com.mumfrey:liteloader:'))
     ?.name.split(':')[2] || '';
@@ -29,6 +29,20 @@ export function isForgeLibrary(lib: LibraryInfo) {
 export function isFabricLoaderLibrary(lib: LibraryInfo) {
     return lib.groupId === 'net.fabricmc' && lib.artifactId === 'fabric-loader';
 }
+export function isOptifineLibrary(lib: LibraryInfo) {
+    return lib.groupId === 'optifine' && lib.artifactId === 'Optifine';
+}
+
+export function filterForgeVersion(forgeVersion: string) {
+    if (!forgeVersion) return forgeVersion;
+    const idx = forgeVersion.indexOf('-');
+    return forgeVersion.substring(idx + 1);
+}
+export function filterOptfineVersion(optifineVersion: string) {
+    if (!optifineVersion) return optifineVersion;
+    const idx = optifineVersion.indexOf('_');
+    return optifineVersion.substring(idx + 1);
+} 
 
 export const EMPTY_VERSION: ResolvedVersion = Object.freeze({
     minecraftVersion: '',
@@ -74,12 +88,19 @@ export function isCompatible(range: string, version: string) {
     return vRange.containsVersion(ArtifactVersion.of(version));
 }
 
-export function getExpectVersion(minecraft: string, forge?: string, liteloader?: string, fabric?: string) {
+export function getExpectVersion({ minecraft, forge, liteloader, fabricLoader: fabric, optifine }: RuntimeVersions) {
     let expectedId = minecraft;
     if (typeof forge === 'string' && forge.length > 0) expectedId += `-forge${forge}`;
     if (typeof liteloader === 'string' && liteloader.length > 0) expectedId += `-liteloader${liteloader}`;
     if (typeof fabric === 'string' && fabric.length > 0) expectedId += `-fabric${fabric}`;
+    if (typeof optifine === 'string' && optifine.length > 0) expectedId += `-optifine_${optifine}`;
     return expectedId;
+}
+export function parseOptifineVersion(version: string): { type: string; patch: string } {
+    const index = version.lastIndexOf('_');
+    const type = version.substring(0, index);
+    const patch = version.substr(index + 1);
+    return { type, patch };
 }
 
 export function isReleaseVersion(version: string) {
@@ -96,17 +117,37 @@ export function isBetaVersion(version: string) {
 export function isAlphaVersion(version: string) {
     return version.match(/^a[0-9]+\.[0-9]+(\.[0-9])?(_[0-9]+)?$/g);
 }
+export function isSameForgeVersion(forgeVersion: string, version: string) {
+    const i = version.indexOf('-');
+    if (i === -1) {
+        return forgeVersion === version;
+    }
+    return forgeVersion === version.substring(i + 1);
+}
+export function isSameOptifineVersion(optifineVersion: string, version: string) {
+    const i = version.indexOf('-');
+    if (i === -1) {
+        return optifineVersion === version;
+    }
+    return optifineVersion === version.substring(i + 1);
+}
 
 export function isVersionMatched(version: ResolvedVersion, runtime: RuntimeVersions) {
     // compute version
     if (version.minecraftVersion !== runtime.minecraft) {
         return false;
     }
-    if (runtime.forge && !version.libraries.find(isForgeLibrary)) {
+    let lib = version.libraries.find(isForgeLibrary);
+    if (runtime.forge && !isSameForgeVersion(runtime.forge, lib?.version ?? '')) {
         // require forge but not forge
         return false;
     }
-    if (runtime.fabricLoader && !version.libraries.find(isFabricLoaderLibrary)) {
+    lib = version.libraries.find(isFabricLoaderLibrary);
+    if (runtime.fabricLoader && lib?.version !== runtime.fabricLoader) {
+        return false;
+    }
+    lib = version.libraries.find(isOptifineLibrary);
+    if (runtime.optifine && isSameOptifineVersion(runtime.optifine, lib?.version ?? '')) {
         return false;
     }
 

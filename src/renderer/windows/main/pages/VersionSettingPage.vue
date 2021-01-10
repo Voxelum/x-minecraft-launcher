@@ -102,7 +102,7 @@ import {
 import type { ForgeVersion, MinecraftVersion } from '@xmcl/installer';
 import type { ResolvedVersion } from '@xmcl/core';
 import { OptifineVersion } from '@universal/entities/version.schema';
-import { EMPTY_VERSION, isForgeLibrary, isFabricLoaderLibrary } from '@universal/entities/version';
+import { EMPTY_VERSION, isForgeLibrary, isFabricLoaderLibrary, isOptifineLibrary, filterForgeVersion, filterOptfineVersion } from '@universal/entities/version';
 import MinecraftView from './VersionSettingPageMinecraftView.vue';
 import ForgeView from './VersionSettingPageForgeView.vue';
 import FabricView from './VersionSettingPageFabricView.vue';
@@ -149,14 +149,17 @@ export default defineComponent({
     });
 
     const localVersion = computed(() => {
-
       return EMPTY_VERSION;
     });
     function setLocalVersion(v: ResolvedVersion) {
+      console.log(v);
+      console.log(v.libraries.map(v => v.name));
+      console.log(v.libraries.find(isForgeLibrary));
       data.minecraft = v.minecraftVersion;
-      data.forge = v.libraries.find(isForgeLibrary)?.version ?? '';
-      data.liteloader =  '';
+      data.forge = filterForgeVersion(v.libraries.find(isForgeLibrary)?.version ?? '');
+      data.liteloader = '';
       data.loader = v.libraries.find(isFabricLoaderLibrary)?.version ?? '';
+      data.optifine = filterOptfineVersion(v.libraries.find(isOptifineLibrary)?.version ?? '');
       data.yarn = '';
       data.folder = v.id ?? '';
     }
