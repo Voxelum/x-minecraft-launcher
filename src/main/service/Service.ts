@@ -175,6 +175,8 @@ export default class Service {
 
     get workerManager() { return this.app.workerManager; }
 
+    get persistManager() { return this.app.persistManager; }
+
     /**
      * Submit a task into the task manager. 
      * 

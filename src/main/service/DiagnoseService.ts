@@ -27,6 +27,9 @@ export interface Fix {
     recheck: string;
 }
 
+/**
+ * This is the service provides the diagnose service for current launch profile
+ */
 export default class DiagnoseService extends Service {
     @Inject('VersionService')
     private versionService!: VersionService;

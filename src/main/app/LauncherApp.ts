@@ -3,6 +3,7 @@ import { Client } from '@main/engineBridge';
 import CredentialManager from '@main/manager/CredentialManager';
 import LogManager from '@main/manager/LogManager';
 import NetworkManager from '@main/manager/NetworkManager';
+import PersistManager from '@main/manager/PersistManager';
 import ServiceManager from '@main/manager/ServiceManager';
 import StoreManager from '@main/manager/StoreManager';
 import TaskManager from '@main/manager/TaskManager';
@@ -120,6 +121,8 @@ export abstract class LauncherApp extends EventEmitter {
     readonly credentialManager = new CredentialManager(this);
     
     readonly workerManager = new WorkerManager(this);
+
+    readonly persistManager = new PersistManager(this);
 
     readonly platform: Platform = getPlatform();
 

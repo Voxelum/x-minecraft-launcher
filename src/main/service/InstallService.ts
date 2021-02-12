@@ -1,3 +1,5 @@
+import LauncherApp from '@main/app/LauncherApp';
+import { JSONPersister } from '@main/util/persistance';
 import { compareRelease, getExpectVersion, isFabricLoaderLibrary, isForgeLibrary } from '@universal/entities/version';
 import { ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '@universal/entities/version.schema';
 import { MutationKeys } from '@universal/store';
@@ -5,7 +7,7 @@ import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core';
 import { DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL, generateOptifineVersion } from '@xmcl/installer';
 import { task } from '@xmcl/task';
 import { ensureFile, readJSON, writeFile } from 'fs-extra';
-import Service, { Inject, Singleton } from './Service';
+import Service, { Inject, MutationTrigger, Singleton } from './Service';
 import VersionService from './VersionService';
 
 export interface InstallOptifineOptions extends OptifineVersion {
@@ -29,9 +31,23 @@ export default class InstallService extends Service {
 
     private refreshedForge: Record<string, boolean> = {};
 
+    private minecraftVersionsJson = new JSONPersister(this.getPath('minecraft-versions.json'), VersionMinecraftSchema, this);
+
+    private forgeVersionsJson = new JSONPersister(this.getPath('forge-versions.json'), VersionForgeSchema, this);
+
+    private liteloaderVersionsJson = new JSONPersister(this.getPath('lite-versions.json'), VersionLiteloaderSchema, this);
+
+    private fabricVersionsJson = new JSONPersister(this.getPath('fabric-versions.json'), VersionFabricSchema, this);
+
+    private optifineVersionsJson = new JSONPersister(this.getPath('optifine-versions.json'), VersionOptifineSchema, this);
+
+    constructor(app: LauncherApp) {
+        super(app);
+    }
+
     async load() {
         const [mc, forge, liteloader, fabric, optifine] = await Promise.all([
-            this.getPersistence({ path: this.getPath('minecraft-versions.json'), schema: VersionMinecraftSchema }),
+            this.minecraftVersionsJson.read(),
             this.getPersistence({ path: this.getPath('forge-versions.json'), schema: VersionForgeSchema }),
             this.getPersistence({ path: this.getPath('lite-versions.json'), schema: VersionLiteloaderSchema }),
             this.getPersistence({ path: this.getPath('fabric-versions.json'), schema: VersionFabricSchema }),
@@ -57,14 +73,19 @@ export default class InstallService extends Service {
         }
     }
 
+    @MutationTrigger('minecraftMetadata')
+    private onSaveMinecraftMetadata() {
+        this.minecraftVersionsJson.write(this.state.version.minecraft);
+    }
+
+    @MutationTrigger('forgeMetadata')
+    private onSaveForgeMetadata() {
+    }
+
     async save({ mutation }: { mutation: MutationKeys }) {
         switch (mutation) {
             case 'minecraftMetadata':
-                await this.setPersistence({
-                    path: this.getPath('minecraft-versions.json'),
-                    data: this.state.version.minecraft,
-                    schema: VersionMinecraftSchema,
-                });
+                this.minecraftVersionsJson.write(this.state.version.minecraft);
                 break;
             case 'forgeMetadata':
                 await this.setPersistence({

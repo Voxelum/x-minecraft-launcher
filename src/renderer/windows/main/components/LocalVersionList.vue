@@ -103,36 +103,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog
-      v-model="reinstallVersion"
-      max-width="390"
-    >
-      <v-card dark>
-        <v-card-title
-          class="headline"
-        >
-          {{ $t('version.reinstallTitle', { version: reinstallVersionId }) }}
-        </v-card-title>
-        <v-card-text>{{ $t('version.reinstallDescription') }}</v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            flat
-            @click="cancelReinstall()"
-          >
-            {{ $t('no') }}
-          </v-btn>
-          <v-btn
-            color="orange darken-1"
-            flat
-            @click="comfireReinstall()"
-          >
-            <v-icon left>build</v-icon>
-            {{ $t('yes') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-list>
   <v-container
     v-else
