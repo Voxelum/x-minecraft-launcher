@@ -231,29 +231,28 @@ export default class ResourceService extends Service {
     */
     async importResources(options: ImportMultipleFilesOptions) {
         const existedResources = await Promise.all(options.files.map((f) => this.queryExistedResourceByPath(f.path)));
-        const allResources = await Promise.all(options.files
-            .map(async (f, i) => {
-                const existed = existedResources[i];
-                if (existed) {
-                    return existed;
+        const allResources = await Promise.all(options.files.map(async (f, i) => {
+            const existed = existedResources[i];
+            if (existed) {
+                return existed;
+            }
+            try {
+                const fileStats = await stat(f.path);
+                if (!fileStats.isDirectory()) {
+                    const result = await this.resolveResourceTask({ path: f.path, url: f.url, source: f.source, type: options.type, background: options.background, requiredDomain: options.fromDomain })
+                        .startAndWait();
+                    return result;
                 }
-                try {
-                    const fileStats = await stat(f.path);
-                    if (!fileStats.isDirectory()) {
-                        const result = await this.resolveResourceTask({ path: f.path, url: f.url, source: f.source, type: options.type, background: options.background, requiredDomain: options.fromDomain })
-                            .startAndWait();
-                        return result;
-                    }
-                    return UNKNOWN_RESOURCE;
-                } catch (e) {
-                    if (e instanceof DomainMissMatchedError) {
-                        this.warn(e.message);
-                    } else {
-                        this.error(e);
-                    }
-                    return UNKNOWN_RESOURCE;
+                return UNKNOWN_RESOURCE;
+            } catch (e) {
+                if (e instanceof DomainMissMatchedError) {
+                    this.warn(e.message);
+                } else {
+                    this.error(e);
                 }
-            }));
+                return UNKNOWN_RESOURCE;
+            }
+        }));
 
         const existedCount = existedResources.filter((r) => !!r).length;
         const unknownCount = allResources.filter(r => r.type === ResourceType.Unknown).length;

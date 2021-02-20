@@ -1,4 +1,7 @@
+import LauncherApp from '@main/app/LauncherApp';
 import { exists, missing, readdirEnsured } from '@main/util/fs';
+import { MappedFile, RelativeMappedFile } from '@main/util/persistance';
+import { BufferJsonSerializer, jsonSerializer, serverDatSerializer } from '@main/util/serialize';
 import { createTemplate } from '@universal/entities/instance';
 import { InstanceSchema, InstancesSchema, RuntimeVersions } from '@universal/entities/instance.schema';
 import { getHostAndPortFromIp, PINGING_STATUS } from '@universal/entities/serverStatus';
@@ -11,7 +14,7 @@ import { ensureDir, readdir, readFile, remove } from 'fs-extra';
 import { join, resolve } from 'path';
 import { v4 } from 'uuid';
 import ServerStatusService from './ServerStatusService';
-import Service, { Inject, MutationTrigger, Singleton } from './Service';
+import Service, { Inject, Singleton } from './Service';
 
 const INSTANCES_FOLDER = 'instances';
 const INSTANCE_JSON = 'instance.json';
@@ -50,6 +53,34 @@ export class InstanceService extends Service {
     @Inject('ServerStatusService')
     protected readonly statusService!: ServerStatusService;
 
+    protected readonly serverDatPersistancer = serverDatSerializer();
+
+    protected readonly instanceSerialzier = jsonSerializer(InstanceSchema);
+
+    protected readonly instancesFile = new MappedFile<InstancesSchema>(this.getPath(INSTANCES_JSON), new BufferJsonSerializer(InstancesSchema))
+        .setSaveSource(() => ({ instances: Object.keys(this.state.instance.all), selectedInstance: this.state.instance.path }));
+
+    protected readonly instanceFile = new RelativeMappedFile<InstanceSchema>(INSTANCES_JSON, new BufferJsonSerializer(InstanceSchema));
+
+    constructor(app: LauncherApp) {
+        super(app);
+
+        this.subscribeMutation('instanceAdd', async (payload: InstanceSchema & { path: string }) => {
+            await this.instanceFile.saveTo(payload.path, payload);
+            await this.instancesFile.save();
+            this.log(`Saved new instance ${payload.path}`);
+        }).subscribeMutation('instanceRemove', async () => {
+            await this.instancesFile.save();
+        }).subscribeMutation('instance', async () => {
+            const inst = this.state.instance.all[this.state.instance.path];
+            await this.instanceFile.saveTo(inst.path, inst);
+        }).subscribeMutation('instanceSelect', async (path: string) => {
+            await this.instanceFile.saveTo(path, this.state.instance.all[path]);
+            await this.instancesFile.save();
+            this.log(`Saved instance selection ${path}`);
+        });
+    }
+
     protected getPathUnder(...ps: string[]) {
         return this.getPath(INSTANCES_FOLDER, ...ps);
     }
@@ -58,9 +89,9 @@ export class InstanceService extends Service {
     async loadInstanceServerData(path: string) {
         requireString(path);
 
-        let { commit } = this;
+        const { commit } = this;
         try {
-            let serversPath = join(path, 'servers.dat');
+            const serversPath = join(path, 'servers.dat');
             if (await exists(serversPath)) {
                 let serverDat = await readFile(serversPath);
                 let infos = await readInfo(serverDat);
@@ -77,23 +108,17 @@ export class InstanceService extends Service {
     async loadInstance(path: string) {
         requireString(path);
 
-        let { commit, getters } = this;
-
-        let jsonPath = join(path, INSTANCE_JSON);
-        if (await missing(jsonPath)) {
-            this.warn(`Cannot load instance ${path}`);
-            return false;
-        }
+        const { commit, getters } = this;
 
         let option: InstanceSchema;
         try {
-            option = await this.getPersistence({ path: jsonPath, schema: InstanceSchema });
+            option = await this.instanceFile.readTo(path);
         } catch (e) {
             this.warn(`Cannot load instance json ${path}`);
             return false;
         }
 
-        let instance = createTemplate();
+        const instance = createTemplate();
 
         instance.path = path;
         instance.author = instance.author || getters.gameProfile?.name || '';
@@ -120,8 +145,8 @@ export class InstanceService extends Service {
     }
 
     async init() {
-        let { getters } = this;
-        let instances = getters.instances;
+        const { getters } = this;
+        const instances = getters.instances;
         if (instances.length === 0) {
             this.log('Cannot find any instances, try to init one default modpack.');
             await this.createAndMount({});
@@ -131,16 +156,13 @@ export class InstanceService extends Service {
     async load() {
         const uuidExp = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}){1}/;
 
-        let { state } = this;
-        let [managed, instanceConfig] = await Promise.all([
-            readdirEnsured(this.getPathUnder()),
-            this.getPersistence({ path: this.getPath(INSTANCES_JSON), schema: InstancesSchema }),
-        ]);
-        managed = managed.map(p => this.getPathUnder(p)).filter(f => uuidExp.test(f));
+        const { state } = this;
+        const instanceConfig = await this.instancesFile.read();
+        const managed = (await readdirEnsured(this.getPathUnder())).map(p => this.getPathUnder(p)).filter(f => uuidExp.test(f));
 
         this.log(`Found ${managed.length} managed instances and ${instanceConfig.instances.length} external instances.`);
 
-        let all = [...new Set([...instanceConfig.instances, ...managed])];
+        const all = [...new Set([...instanceConfig.instances, ...managed])];
 
         if (all.length === 0) {
             return;
@@ -159,63 +181,15 @@ export class InstanceService extends Service {
         }
     }
 
-    @MutationTrigger('instanceAdd')
-    async saveNewInstance(payload: InstanceSchema & { path: string }) {
-        await this.setPersistence({
-            path: join(payload.path, INSTANCE_JSON),
-            data: payload,
-            schema: InstanceSchema,
-        });
-        await this.setPersistence({
-            path: this.getPath(INSTANCES_JSON),
-            data: { instances: Object.keys(this.state.instance.all), selectedInstance: this.state.instance.path },
-            schema: InstancesSchema,
-        });
-        this.log(`Saved new instance ${payload.path}`);
-    }
-
-    @MutationTrigger('instanceRemove')
-    async saveInstanceRemoved() {
-        await this.setPersistence({
-            path: this.getPath(INSTANCES_JSON),
-            data: { instances: Object.keys(this.state.instance.all), selectedInstance: this.state.instance.path },
-            schema: InstancesSchema,
-        });
-    }
-
-    @MutationTrigger('instance')
-    async saveInstance() {
-        await this.setPersistence({
-            path: join(this.state.instance.path, INSTANCE_JSON),
-            data: this.state.instance.all[this.state.instance.path],
-            schema: InstanceSchema,
-        });
-        this.log(`Saved instance ${this.state.instance.path}`);
-    }
-
-    @MutationTrigger('instanceSelect')
-    async saveInstanceSelect(path: string) {
-        await Promise.all([this.setPersistence({
-            path: this.getPath(INSTANCES_JSON),
-            data: { selectedInstance: path, instances: Object.keys(this.state.instance.all) },
-            schema: InstancesSchema,
-        }), this.setPersistence({
-            path: join(path, INSTANCE_JSON),
-            data: this.state.instance.all[path],
-            schema: InstanceSchema,
-        })]);
-        this.log(`Saved instance selection ${path}`);
-    }
-
     /**
      * Return the instance's screenshots urls.
      * 
      * If the provided path is not a instance, it will return empty array.
      */
     async listInstanceScreenshots(path: string) {
-        let screenshots = join(path, 'screenshots');
+        const screenshots = join(path, 'screenshots');
         try {
-            let files = await readdir(screenshots);
+            const files = await readdir(screenshots);
             return files.map(f => `file://${screenshots}/${f}`);
         } catch (e) {
             return [];
@@ -230,7 +204,7 @@ export class InstanceService extends Service {
     async createInstance(payload: CreateOption): Promise<string> {
         requireObject(payload);
 
-        let instance = createTemplate();
+        const instance = createTemplate();
 
         assignShallow(instance, payload);
         if (payload.runtime) {
@@ -272,7 +246,7 @@ export class InstanceService extends Service {
     async createAndMount(payload: CreateOption): Promise<string> {
         requireObject(payload);
 
-        let path = await this.createInstance(payload);
+        const path = await this.createInstance(payload);
         await this.mountInstance(path);
         return path;
     }
@@ -287,7 +261,7 @@ export class InstanceService extends Service {
 
         if (path === this.state.instance.path) { return; }
 
-        let missed = await missing(path);
+        const missed = await missing(path);
         if (missed) {
             this.log(`Cannot mount instance ${path}, either the directory not exist or the launcher has no permission.`);
             return;
@@ -309,7 +283,7 @@ export class InstanceService extends Service {
 
         // if the instance is selected now
         if (this.state.instance.path === path) {
-            let restPath = Object.keys(this.state.instance.all).filter(p => p !== path);
+            const restPath = Object.keys(this.state.instance.all).filter(p => p !== path);
             // if only one instance left
             if (restPath.length === 0) {
                 // then create and select a new one
@@ -322,8 +296,8 @@ export class InstanceService extends Service {
 
         this.commit('instanceRemove', path);
 
-        let managed = resolve(path).startsWith(resolve(this.getPathUnder()));
-        let instanceDirectory = path;
+        const managed = resolve(path).startsWith(resolve(this.getPathUnder()));
+        const instanceDirectory = path;
         if (managed && await exists(instanceDirectory)) {
             await remove(instanceDirectory);
         }
@@ -336,11 +310,11 @@ export class InstanceService extends Service {
     async editInstance(options: EditInstanceOptions) {
         requireObject(options);
 
-        let instancePath = options.instancePath || this.state.instance.path;
-        let state = this.state.instance.all[instancePath];
+        const instancePath = options.instancePath || this.state.instance.path;
+        const state = this.state.instance.all[instancePath];
 
-        let ignored = { runtime: true, deployments: true, server: true, vmOptions: true, mcOptions: true, minMemory: true, maxMemory: true };
-        let result: Record<string, any> = {};
+        const ignored = { runtime: true, deployments: true, server: true, vmOptions: true, mcOptions: true, minMemory: true, maxMemory: true };
+        const result: Record<string, any> = {};
         for (let key of Object.keys(options)) {
             if (key in ignored) {
                 continue;
@@ -424,9 +398,9 @@ export class InstanceService extends Service {
     */
     @Singleton()
     async refreshServerStatus() {
-        let prof = this.getters.instance;
+        const prof = this.getters.instance;
         if (prof.server) {
-            let { host, port } = prof.server;
+            const { host, port } = prof.server;
             this.log(`Ping server ${host}:${port}`);
             this.commit('instanceStatus', PINGING_STATUS);
             const status = await this.statusService.pingServer({ host, port });
@@ -438,8 +412,8 @@ export class InstanceService extends Service {
      * Refresh all instance server status if present
      */
     async refreshServerStatusAll() {
-        let all = Object.values(this.state.instance.all).filter(p => !!p.server);
-        let results = await Promise.all(all.map(async p => ({ [p.path]: await this.statusService.pingServer(p.server!) })));
+        const all = Object.values(this.state.instance.all).filter(p => !!p.server);
+        const results = await Promise.all(all.map(async p => ({ [p.path]: await this.statusService.pingServer(p.server!) })));
         this.commit('instancesStatus', results.reduce((a, b) => { Object.assign(a, b); return a; }, {}));
     }
 

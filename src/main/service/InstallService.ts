@@ -31,96 +31,21 @@ export default class InstallService extends Service {
 
     private refreshedForge: Record<string, boolean> = {};
 
-    private minecraftVersionsJson = new JSONPersister(this.getPath('minecraft-versions.json'), VersionMinecraftSchema, this);
-
-    private forgeVersionsJson = new JSONPersister(this.getPath('forge-versions.json'), VersionForgeSchema, this);
-
-    private liteloaderVersionsJson = new JSONPersister(this.getPath('lite-versions.json'), VersionLiteloaderSchema, this);
-
-    private fabricVersionsJson = new JSONPersister(this.getPath('fabric-versions.json'), VersionFabricSchema, this);
-
-    private optifineVersionsJson = new JSONPersister(this.getPath('optifine-versions.json'), VersionOptifineSchema, this);
-
     constructor(app: LauncherApp) {
         super(app);
-    }
-
-    async load() {
-        const [mc, forge, liteloader, fabric, optifine] = await Promise.all([
-            this.minecraftVersionsJson.read(),
-            this.getPersistence({ path: this.getPath('forge-versions.json'), schema: VersionForgeSchema }),
-            this.getPersistence({ path: this.getPath('lite-versions.json'), schema: VersionLiteloaderSchema }),
-            this.getPersistence({ path: this.getPath('fabric-versions.json'), schema: VersionFabricSchema }),
-            this.getPersistence({ path: this.getPath('optifine-versions.json'), schema: VersionOptifineSchema }),
-        ]);
-        if (typeof mc === 'object') {
-            this.commit('minecraftMetadata', mc);
-        }
-        if (typeof forge === 'object') {
-            for (const value of Object.values(forge!)) {
-                this.commit('forgeMetadata', value);
-            }
-        }
-        if (liteloader) {
-            this.commit('liteloaderMetadata', liteloader);
-        }
-        if (fabric) {
-            this.commit('fabricLoaderMetadata', { versions: fabric.loaders, timestamp: fabric.loaderTimestamp });
-            this.commit('fabricYarnMetadata', { versions: fabric.yarns, timestamp: fabric.yarnTimestamp });
-        }
-        if (optifine) {
-            this.commit('optifineMetadata', optifine);
-        }
-    }
-
-    @MutationTrigger('minecraftMetadata')
-    private onSaveMinecraftMetadata() {
-        this.minecraftVersionsJson.write(this.state.version.minecraft);
-    }
-
-    @MutationTrigger('forgeMetadata')
-    private onSaveForgeMetadata() {
-    }
-
-    async save({ mutation }: { mutation: MutationKeys }) {
-        switch (mutation) {
-            case 'minecraftMetadata':
-                this.minecraftVersionsJson.write(this.state.version.minecraft);
-                break;
-            case 'forgeMetadata':
-                await this.setPersistence({
-                    path: this.getPath('forge-versions.json'),
-                    data: this.state.version.forge,
-                    schema: VersionForgeSchema,
-                });
-                break;
-            case 'liteloaderMetadata':
-                await this.setPersistence({
-                    path: this.getPath('lite-versions.json'),
-                    data: this.state.version.liteloader,
-                    schema: VersionLiteloaderSchema,
-                });
-                break;
-            case 'fabricLoaderMetadata':
-            case 'fabricYarnMetadata':
-                await this.setPersistence({
-                    path: this.getPath('fabric-versions.json'),
-                    data: this.state.version.fabric,
-                    schema: VersionFabricSchema,
-                });
-                break;
-            case 'optifineMetadata':
-                await this.setPersistence({
-                    path: this.getPath('optifine-versions.json'),
-                    data: this.state.version.optifine,
-                    schema: VersionOptifineSchema,
-                });
-                break;
-            default:
-        }
-    }
-
-    async init() {
+        this.persistManager.registerStoreJsonSerializable(this.getPath('minecraft-versions.json'), VersionMinecraftSchema,
+            (v) => this.commit('minecraftMetadata', v), () => this.state.version.minecraft, ['minecraftMetadata']);
+        this.persistManager.registerStoreJsonSerializable(this.getPath('forge-versions.json'), VersionForgeSchema,
+            (v) => v.forEach(val => this.commit('forgeMetadata', val)), () => this.state.version.forge, ['forgeMetadata']);
+        this.persistManager.registerStoreJsonSerializable(this.getPath('lite-versions.json'), VersionLiteloaderSchema,
+            (v) => this.commit('liteloaderMetadata', v), () => this.state.version.liteloader, ['liteloaderMetadata']);
+        this.persistManager.registerStoreJsonSerializable(this.getPath('fabric-versions.json'), VersionFabricSchema,
+            (v) => {
+                this.commit('fabricLoaderMetadata', { versions: v.loaders, timestamp: v.loaderTimestamp });
+                this.commit('fabricYarnMetadata', { versions: v.yarns, timestamp: v.yarnTimestamp });
+            }, () => this.state.version.fabric, ['fabricLoaderMetadata', 'fabricYarnMetadata']);
+        this.persistManager.registerStoreJsonSerializable(this.getPath('optifine-versions.json'), VersionOptifineSchema,
+            (v) => this.commit('optifineMetadata', v), () => this.state.version.optifine, ['optifineMetadata']);
     }
 
     protected getMinecraftJsonManifestRemote() {

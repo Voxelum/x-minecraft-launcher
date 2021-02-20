@@ -1,70 +1,68 @@
-import { Logger } from '@main/manager/LogManager';
-import { Schema } from '@universal/entities/schema';
-import Ajv from 'ajv';
 import { ensureFile, readFile, writeFile } from 'fs-extra';
-import { createContext, runInContext } from 'vm';
+import { join } from 'path';
+import { Serializer } from './serialize';
 
-export class JSONPersister<T> {
-    constructor(
-        readonly path: string,
-        readonly schema: Schema<T>,
-        readonly commit: () => void,
-        readonly logger: Logger,
-    ) { }
+export class FileIOHandler<T> {
+    private saveSource: (() => T) | undefined
 
-    async write(data: T) {
-        const deepCopy = JSON.parse(JSON.stringify(data));
-        const schemaObject = this.schema;
-        const path = this.path;
-        const ajv = new Ajv({ useDefaults: true, removeAdditional: true });
-        const validation = ajv.compile(schemaObject);
-        const valid = validation(deepCopy);
-        if (!valid) {
-            const context = createContext({ object: deepCopy });
-            if (validation.errors) {
-                let message = `Error to persist to the disk path "${path}" with datatype ${typeof data}:\n`;
-                validation.errors.forEach(e => {
-                    message += `- ${e.keyword} error @[${e.dataPath}:${e.schemaPath}]: ${e.message}\n`;
-                });
-                const cmd = validation.errors.map(e => `delete object${e.dataPath};`);
-                this.logger.log(message);
-                this.logger.log(cmd.join('\n'));
-                runInContext(cmd.join('\n'), context);
-            }
-        }
+    constructor(readonly serializer: Serializer<Buffer, T>) { }
+
+    setSaveSource(source: () => T) {
+        this.saveSource = source;
+        return this;
+    }
+
+    async writeTo(path: string, data: T): Promise<void> {
         await ensureFile(path);
-        await writeFile(path, JSON.stringify(deepCopy, null, 4), { encoding: 'utf-8' });
+        await writeFile(path, await this.serializer.serialize(data));
+    }
+
+    async readTo(path: string): Promise<T> {
+        return this.serializer.deserialize(await readFile(path));
+    }
+
+    async saveTo(path: string, value?: T): Promise<void> {
+        if (!value) {
+            if (!this.saveSource) throw new Error(`Cannot save ${path} if the default save source is not set!`);
+            await this.writeTo(path, this.saveSource());
+        } else {
+            await this.writeTo(path, value);
+        }
+    }
+}
+
+export class RelativeMappedFile<T> extends FileIOHandler<T> {
+    constructor(readonly relativePath: string, serializer: Serializer<Buffer, T>) {
+        super(serializer);
+    }
+
+    async writeTo(root: string, data: T): Promise<void> {
+        return super.writeTo(join(root, this.relativePath), data);
+    }
+
+    async readTo(root: string): Promise<T> {
+        return super.readTo(join(root, this.relativePath));
+    }
+
+    async saveTo(root: string, value?: T): Promise<void> {
+        return super.saveTo(root, value);
+    }
+}
+
+export class MappedFile<T> extends FileIOHandler<T> {
+    constructor(readonly path: string, serializer: Serializer<Buffer, T>) {
+        super(serializer);
+    }
+
+    async write(data: T): Promise<void> {
+        return this.writeTo(this.path, data);
     }
 
     async read(): Promise<T> {
-        const { path, schema } = this;
-        const originalString = await readFile(path).then(b => b.toString(), () => '{}');
-        let object;
-        try {
-            object = JSON.parse(originalString);
-        } catch (e) {
-            object = {};
-        }
-        if (object) {
-            const schemaObject = schema;
-            const ajv = new Ajv({ useDefaults: true, removeAdditional: true });
-            const validation = ajv.compile(schemaObject);
-            const valid = validation(object);
-            if (!valid) {
-                // this.warn('Try to remove those invalid keys. This might cause problem.');
-                // this.warn(originalString);
-                // const context = createContext({ object });
-                // if (validation.errors) {
-                //     // this.warn(`Found invalid config file on ${path}.`);
-                //     // validation.errors.forEach(e => this.warn(e));
-                //     const cmd = validation.errors.filter(e => e.dataPath).map(e => `delete object${e.dataPath};`);
-                //     if (cmd.length !== 0) {
-                //         // this.log(cmd.join('\n'));
-                //         runInContext(cmd.join('\n'), context);
-                //     }
-                // }
-            }
-        }
-        return object;
+        return this.readTo(this.path);
+    }
+
+    async save(value?: T): Promise<void> {
+        return this.saveTo(this.path, value);
     }
 }

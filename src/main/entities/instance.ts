@@ -1,5 +1,8 @@
 import { exists } from '@main/util/fs';
 import { ZipTask } from '@main/util/zip';
+import { Instance } from '@universal/entities/instance';
+import { InstanceSchema } from '@universal/entities/instance.schema';
+import { LATEST_RELEASE } from '@universal/entities/version';
 import { MinecraftFolder, ResolvedVersion } from '@xmcl/core';
 import { readJson } from 'fs-extra';
 

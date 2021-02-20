@@ -129,10 +129,10 @@ const mod: VersionModule = {
             const existed = state.forge.find((version) => version.mcversion === metadata.mcversion);
             if (existed) {
                 existed.timestamp = metadata.timestamp;
-                existed.versions = Object.freeze(metadata.versions) as any;
+                existed.versions = Object.freeze(metadata.versions);
             } else {
                 const result = { ...metadata, versions: Object.freeze(metadata.versions) };
-                state.forge.push(result as any);
+                state.forge.push(result);
             }
         },
         liteloaderMetadata(state, metadata) {

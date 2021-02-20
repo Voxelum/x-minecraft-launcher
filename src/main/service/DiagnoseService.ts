@@ -754,11 +754,11 @@ export default class DiagnoseService extends Service {
     async fixNoJava() {
         this.aquire('diagnose');
         try {
-            let internalLocation = this.javaService.getInternalJavaLocation();
+            let internalLocation = this.javaService.internalJavaLocation;
             if (!this.state.java.all.find(j => j.path === internalLocation)) {
                 await this.javaService.installDefaultJava();
             }
-            await this.instanceService.editInstance({ java: this.javaService.getInternalJavaLocation() });
+            await this.instanceService.editInstance({ java: this.javaService.internalJavaLocation });
         } finally {
             this.release('diagnose');
         }

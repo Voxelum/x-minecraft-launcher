@@ -1,6 +1,5 @@
 import { IS_DEV } from '@main/constant';
-import { copyPassively, exists, missing } from '@main/util/fs';
-import { Task } from '@xmcl/task';
+import { copyPassively, missing } from '@main/util/fs';
 import { copy, copyFile, ensureDir, readJson, remove, unlink, writeJson } from 'fs-extra';
 import { join } from 'path';
 import Service, { Singleton } from './Service';

@@ -48,7 +48,7 @@ export interface ForgeVersionList {
     /**
      * @default []
      */
-    versions: ForgeVersion[];
+    versions: readonly ForgeVersion[];
     /**
      * @default ""
      */
