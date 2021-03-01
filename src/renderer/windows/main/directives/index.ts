@@ -1,3 +1,3 @@
-import './draggableCard';
-import './fallbackImage';
-import './longPress';
+import './draggableCard'
+import './fallbackImage'
+import './longPress'

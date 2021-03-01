@@ -14,7 +14,7 @@
 import { defineComponent, reactive, toRefs, onMounted, computed, ref, watch, onUnmounted } from '@vue/composition-api';
 import { BlockModel } from '@xmcl/resourcepack';
 import { BlockModelFactory } from '@xmcl/model';
-import { required } from '@/util/props';
+import { required } from '/@/util/props';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { Scene } from 'three/src/scenes/Scene';
 import { AmbientLight } from 'three/src/lights/AmbientLight';

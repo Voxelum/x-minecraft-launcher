@@ -1,68 +1,69 @@
-import { ensureFile, readFile, writeFile } from 'fs-extra';
-import { join } from 'path';
-import { Serializer } from './serialize';
+import { ensureFile, readFile } from 'fs-extra'
+import { writeFile } from 'atomically'
+import { join } from 'path'
+import { Serializer } from './serialize'
 
 export class FileIOHandler<T> {
-    private saveSource: (() => T) | undefined
+  private saveSource: (() => T) | undefined
 
-    constructor(readonly serializer: Serializer<Buffer, T>) { }
+  constructor(readonly serializer: Serializer<Buffer, T>) { }
 
-    setSaveSource(source: () => T) {
-        this.saveSource = source;
-        return this;
+  setSaveSource(source: () => T) {
+    this.saveSource = source
+    return this
+  }
+
+  async writeTo(path: string, data: T): Promise<void> {
+    await ensureFile(path)
+    await writeFile(path, await this.serializer.serialize(data))
+  }
+
+  async readTo(path: string): Promise<T> {
+    return this.serializer.deserialize(await readFile(path))
+  }
+
+  async saveTo(path: string, value?: T): Promise<void> {
+    if (!value) {
+      if (!this.saveSource) throw new Error(`Cannot save ${path} if the default save source is not set!`)
+      await this.writeTo(path, this.saveSource())
+    } else {
+      await this.writeTo(path, value)
     }
-
-    async writeTo(path: string, data: T): Promise<void> {
-        await ensureFile(path);
-        await writeFile(path, await this.serializer.serialize(data));
-    }
-
-    async readTo(path: string): Promise<T> {
-        return this.serializer.deserialize(await readFile(path));
-    }
-
-    async saveTo(path: string, value?: T): Promise<void> {
-        if (!value) {
-            if (!this.saveSource) throw new Error(`Cannot save ${path} if the default save source is not set!`);
-            await this.writeTo(path, this.saveSource());
-        } else {
-            await this.writeTo(path, value);
-        }
-    }
+  }
 }
 
 export class RelativeMappedFile<T> extends FileIOHandler<T> {
-    constructor(readonly relativePath: string, serializer: Serializer<Buffer, T>) {
-        super(serializer);
-    }
+  constructor(readonly relativePath: string, serializer: Serializer<Buffer, T>) {
+    super(serializer)
+  }
 
-    async writeTo(root: string, data: T): Promise<void> {
-        return super.writeTo(join(root, this.relativePath), data);
-    }
+  async writeTo(root: string, data: T): Promise<void> {
+    return super.writeTo(join(root, this.relativePath), data)
+  }
 
-    async readTo(root: string): Promise<T> {
-        return super.readTo(join(root, this.relativePath));
-    }
+  async readTo(root: string): Promise<T> {
+    return super.readTo(join(root, this.relativePath))
+  }
 
-    async saveTo(root: string, value?: T): Promise<void> {
-        return super.saveTo(root, value);
-    }
+  async saveTo(root: string, value?: T): Promise<void> {
+    return super.saveTo(root, value)
+  }
 }
 
 export class MappedFile<T> extends FileIOHandler<T> {
-    constructor(readonly path: string, serializer: Serializer<Buffer, T>) {
-        super(serializer);
-    }
+  constructor(readonly path: string, serializer: Serializer<Buffer, T>) {
+    super(serializer)
+  }
 
-    async write(data: T): Promise<void> {
-        return this.writeTo(this.path, data);
-    }
+  async write(data: T): Promise<void> {
+    return this.writeTo(this.path, data)
+  }
 
-    async read(): Promise<T> {
-        return this.readTo(this.path);
-    }
+  async read(): Promise<T> {
+    return this.readTo(this.path)
+  }
 
-    async save(value?: T): Promise<void> {
-        return this.saveTo(this.path, value);
-    }
+  async save(value?: T): Promise<void> {
+    return this.saveTo(this.path, value)
+  }
 }

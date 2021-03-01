@@ -44,7 +44,7 @@
 
 <script lang=ts>
 import { defineComponent, computed } from '@vue/composition-api';
-// import { useDialogSelf } from '@/hooks';
+// import { useDialogSelf } from '/@/hooks';
 
 export default defineComponent({
   setup() {

@@ -95,7 +95,7 @@ import {
   useResourceOperation,
   useCurseforgeImport,
   useOperation,
-} from '@/hooks';
+} from '/@/hooks';
 import { Notify, useNotifier, useSearch, useSearchToggle } from '../hooks';
 import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue';
 import AddServerStepper from './InstancesPageAddServerStepper.vue';

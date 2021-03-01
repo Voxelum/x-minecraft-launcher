@@ -15,7 +15,7 @@
 import { defineComponent } from '@vue/composition-api';
 import {
   useCurseforgeProjectDescription,
-} from '@/hooks';
+} from '/@/hooks';
 
 export default defineComponent<{ project: number }>({
   props: { project: Number },

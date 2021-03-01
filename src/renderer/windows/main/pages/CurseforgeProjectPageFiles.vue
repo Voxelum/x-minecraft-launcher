@@ -35,13 +35,13 @@
 <script lang=ts>
 import VirtualList from 'vue-virtual-scroll-list';
 import { defineComponent, computed, inject, ref, reactive, toRefs } from '@vue/composition-api';
-import { ProjectType } from '@universal/entities/curseforge';
+import { ProjectType } from '/@shared/entities/curseforge';
 import { File } from '@xmcl/curseforge';
 import {
   useCurseforgeProjectFiles,
   useCurseforgeInstall,
-} from '@/hooks';
-import { required } from '@/util/props';
+} from '/@/hooks';
+import { required } from '/@/util/props';
 import Tile from './CurseforgeProjectPageFilesTile.vue';
 import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue';
 import { useSearch } from '../hooks';

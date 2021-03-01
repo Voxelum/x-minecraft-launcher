@@ -22,9 +22,9 @@
 
 <script lang=ts>
 import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api';
-import { useOptifineVersions } from '@/hooks';
-import { required } from '@/util/props';
-import { OptifineVersion } from '@universal/entities/version.schema';
+import { useOptifineVersions } from '/@/hooks';
+import { required } from '/@/util/props';
+import { OptifineVersion } from '/@shared/entities/version.schema';
 
 export default defineComponent({
   props: {

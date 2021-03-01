@@ -1,27 +1,27 @@
-import { LAUNCHER_NAME } from '@main/constant';
-import { Client } from '@main/engineBridge';
-import CredentialManager from '@main/manager/CredentialManager';
-import LogManager from '@main/manager/LogManager';
-import NetworkManager from '@main/manager/NetworkManager';
-import PersistManager from '@main/manager/PersistManager';
-import ServiceManager from '@main/manager/ServiceManager';
-import StoreManager from '@main/manager/StoreManager';
-import TaskManager from '@main/manager/TaskManager';
-import TelemetryManager from '@main/manager/TelemetryManager';
-import WorkerManager from '@main/manager/WorkerManager';
-import { exists, isDirectory } from '@main/util/fs';
-import { GiteeReleaseFetcher, GithubReleaseFetcher, ReleaseFetcher } from '@main/util/release';
-import { RuntimeVersions } from '@universal/entities/instance.schema';
-import { UpdateInfo } from '@universal/entities/update';
-import { StaticStore } from '@universal/util/staticStore';
-import { getPlatform } from '@xmcl/core';
-import { DownloadTask } from '@xmcl/installer';
-import { Task } from '@xmcl/task';
-import { EventEmitter } from 'events';
-import { ensureDir, readFile, readJson, writeFile } from 'fs-extra';
-import { extname, join } from 'path';
-import { parse } from 'url';
-import { LauncherAppController } from './LauncherAppController';
+import { LAUNCHER_NAME } from '/@main/constant'
+import { Client } from '/@main/engineBridge'
+import CredentialManager from '/@main/manager/CredentialManager'
+import LogManager from '/@main/manager/LogManager'
+import NetworkManager from '/@main/manager/NetworkManager'
+import PersistManager from '/@main/manager/PersistManager'
+import ServiceManager from '/@main/manager/ServiceManager'
+import StoreManager from '/@main/manager/StoreManager'
+import TaskManager from '/@main/manager/TaskManager'
+import TelemetryManager from '/@main/manager/TelemetryManager'
+import WorkerManager from '/@main/manager/WorkerManager'
+import { exists, isDirectory } from '/@main/util/fs'
+import { GiteeReleaseFetcher, GithubReleaseFetcher, ReleaseFetcher } from '/@main/util/release'
+import { RuntimeVersions } from '/@shared/entities/instance.schema'
+import { UpdateInfo } from '/@shared/entities/update'
+import { StaticStore } from '/@shared/util/staticStore'
+import { getPlatform } from '@xmcl/core'
+import { DownloadTask } from '@xmcl/installer'
+import { Task } from '@xmcl/task'
+import { EventEmitter } from 'events'
+import { ensureDir, readFile, readJson, writeFile } from 'fs-extra'
+import { extname, join } from 'path'
+import { parse } from 'url'
+import { LauncherAppController } from './LauncherAppController'
 
 export interface Platform {
     /**
@@ -119,7 +119,7 @@ export abstract class LauncherApp extends EventEmitter {
     readonly telemetryManager = new TelemetryManager(this);
 
     readonly credentialManager = new CredentialManager(this);
-    
+
     readonly workerManager = new WorkerManager(this);
 
     readonly persistManager = new PersistManager(this);
@@ -130,21 +130,21 @@ export abstract class LauncherApp extends EventEmitter {
 
     readonly build: number = Number.parseInt(process.env.BUILD_NUMBER ?? '0', 10);
 
-    get isParking(): boolean { return this.parking; }
+    get isParking (): boolean { return this.parking }
 
     protected managers = [this.logManager, this.networkManager, this.taskManager, this.storeManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager];
 
     readonly controller: LauncherAppController;
 
-    constructor() {
-        super();
-        const appData = this.getPath('appData');
-        this.appDataPath = join(appData, LAUNCHER_NAME);
-        this.gameDataPath = '';
-        this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft');
-        this.temporaryPath = '';
-        this.controller = this.createController();
-        LauncherApp.app = this;
+    constructor () {
+      super()
+      const appData = this.getPath('appData')
+      this.appDataPath = join(appData, LAUNCHER_NAME)
+      this.gameDataPath = ''
+      this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft')
+      this.temporaryPath = ''
+      this.controller = this.createController()
+      LauncherApp.app = this
     }
 
     abstract createController(): LauncherAppController;
@@ -161,7 +161,7 @@ export abstract class LauncherApp extends EventEmitter {
 
     /**
      * Handle a event from client
-     * 
+     *
      * @param channel The  event channel to listen
      * @param handler The listener callback will be called during this event recieved
      */
@@ -195,9 +195,9 @@ export abstract class LauncherApp extends EventEmitter {
     /**
      * Quit the app gentally.
      */
-    quit() {
-        Promise.all(this.managers.map(m => m.beforeQuit()))
-            .then(() => this.quitApp());
+    quit () {
+      Promise.all(this.managers.map(m => m.beforeQuit()))
+        .then(() => this.quitApp())
     }
 
     /**
@@ -243,58 +243,58 @@ export abstract class LauncherApp extends EventEmitter {
 
     abstract relaunch(): void;
 
-    log = (message: any, ...options: any[]) => { this.logManager.log(`[App] ${message}`, ...options); }
+    log = (message: any, ...options: any[]) => { this.logManager.log(`[App] ${message}`, ...options) }
 
-    warn = (message: any, ...options: any[]) => { this.logManager.warn(`[App] ${message}`, ...options); }
+    warn = (message: any, ...options: any[]) => { this.logManager.warn(`[App] ${message}`, ...options) }
 
-    error = (message: any, ...options: any[]) => { this.logManager.error(`[App] ${message}`, ...options); }
+    error = (message: any, ...options: any[]) => { this.logManager.error(`[App] ${message}`, ...options) }
 
     /**
      * Start an app from file path
      * @param path The path of json
      */
-    protected async startFromFilePath(path: string) {
-        const ext = extname(path);
-        if (ext === '.xmclm') {
-            const manifest: AppManifest = await readJson(path);
-            await this.loadManifest(manifest);
-        } else if (ext === '.xmclapp') {
-            await this.bootApp(path);
-        } else if (await isDirectory(path)) {
-            await this.bootApp(path);
-        }
+    protected async startFromFilePath (path: string) {
+      const ext = extname(path)
+      if (ext === '.xmclm') {
+        const manifest: AppManifest = await readJson(path)
+        await this.loadManifest(manifest)
+      } else if (ext === '.xmclapp') {
+        await this.bootApp(path)
+      } else if (await isDirectory(path)) {
+        await this.bootApp(path)
+      }
     }
 
     /**
      * Launch app from url request
-     * @param url 
+     * @param url
      */
-    protected async startFromUrl(url: string) {
-        function parseUrl(url: string): AppManifest {
-            let { host, path } = parse(url);
-            if (!path) throw new SyntaxError();
-            if (host === 'github.com') {
-                let [owner, repo] = path.split('/');
-                return { type: 'github' as const, owner, repo };
-            }
-            if (host === 'gitee.com') {
-                let [owner, repo] = path.split('/');
-                return { type: 'gitee' as const, owner, repo };
-            }
-            throw new SyntaxError();
+    protected async startFromUrl (url: string) {
+      function parseUrl (url: string): AppManifest {
+        const { host, path } = parse(url)
+        if (!path) throw new SyntaxError()
+        if (host === 'github.com') {
+          const [owner, repo] = path.split('/')
+          return { type: 'github' as const, owner, repo }
         }
+        if (host === 'gitee.com') {
+          const [owner, repo] = path.split('/')
+          return { type: 'gitee' as const, owner, repo }
+        }
+        throw new SyntaxError()
+      }
 
-        this.log(`Handle url request ${url}`);
-        return this.loadManifest(parseUrl(url));
+      this.log(`Handle url request ${url}`)
+      return this.loadManifest(parseUrl(url))
     }
 
-    protected async loadManifest(manifest: AppManifest) {
-        let { owner, repo } = manifest;
-        let asarPath = join(this.appDataPath, 'apps', `${owner}-${repo}.asar`);
-        if (!await exists(asarPath)) {
-            await this.downloadApp(manifest);
-        }
-        await this.bootApp(asarPath);
+    protected async loadManifest (manifest: AppManifest) {
+      const { owner, repo } = manifest
+      const asarPath = join(this.appDataPath, 'apps', `${owner}-${repo}.asar`)
+      if (!await exists(asarPath)) {
+        await this.downloadApp(manifest)
+      }
+      await this.bootApp(asarPath)
     }
 
     // phase code
@@ -303,124 +303,124 @@ export abstract class LauncherApp extends EventEmitter {
      * Boot the app on the path
      * @param appRoot App root path
      */
-    protected async bootApp(appRoot: string) {
-        // let indexPath = join(asarPath, 'index.js');
-        // let buf = await readFile(indexPath);
+    protected async bootApp (appRoot: string) {
+      // let indexPath = join(asarPath, 'index.js');
+      // let buf = await readFile(indexPath);
 
-        // const coreModule = {
-        //     getResource(path: string) {
-        //         return readFile(join(asarPath, path));
-        //     },
-        // };
+      // const coreModule = {
+      //     getResource(path: string) {
+      //         return readFile(join(asarPath, path));
+      //     },
+      // };
 
-        // const script = new Script(buf.toString());
-        // const context = {
-        //     module: {
-        //         exports: {
-        //             default: undefined,
-        //         },
-        //     },
-        //     require: (name: string) => {
-        //         if (name === 'xmcl-launcher') {
-        //             return coreModule;
-        //         }
-        //         return this.getModule(name);
-        //     },
-        //     console,
-        // };
+      // const script = new Script(buf.toString());
+      // const context = {
+      //     module: {
+      //         exports: {
+      //             default: undefined,
+      //         },
+      //     },
+      //     require: (name: string) => {
+      //         if (name === 'xmcl-launcher') {
+      //             return coreModule;
+      //         }
+      //         return this.getModule(name);
+      //     },
+      //     console,
+      // };
 
-        // script.runInNewContext(context);
+      // script.runInNewContext(context);
     }
 
-    protected async downloadApp(manifest: AppManifest) {
-        const { owner, repo } = manifest;
-        let releaseFetcher: ReleaseFetcher;
-        if (manifest.type === 'gitee') {
-            releaseFetcher = new GiteeReleaseFetcher(owner, repo);
-        } else {
-            releaseFetcher = new GithubReleaseFetcher(owner, repo);
-        }
-        const latest = await releaseFetcher.getLatestRelease();
+    protected async downloadApp (manifest: AppManifest) {
+      const { owner, repo } = manifest
+      let releaseFetcher: ReleaseFetcher
+      if (manifest.type === 'gitee') {
+        releaseFetcher = new GiteeReleaseFetcher(owner, repo)
+      } else {
+        releaseFetcher = new GithubReleaseFetcher(owner, repo)
+      }
+      const latest = await releaseFetcher.getLatestRelease()
 
-        const manifestPath = join(this.appDataPath, 'apps', `${owner}-${repo}.json`);
-        const asarPath = join(this.appDataPath, 'apps', `${owner}-${repo}.asar`);
+      const manifestPath = join(this.appDataPath, 'apps', `${owner}-${repo}.json`)
+      const asarPath = join(this.appDataPath, 'apps', `${owner}-${repo}.asar`)
 
-        await this.taskManager.submit(new DownloadTask({
-            ...this.networkManager.getDownloadBaseOptions(),
-            url: latest.downloadUrl,
-            destination: asarPath,
-        }).setName('downloadApp'));
-        await writeFile(manifestPath, JSON.stringify(manifest));
+      await this.taskManager.submit(new DownloadTask({
+        ...this.networkManager.getDownloadBaseOptions(),
+        url: latest.downloadUrl,
+        destination: asarPath
+      }).setName('downloadApp'))
+      await writeFile(manifestPath, JSON.stringify(manifest))
     }
 
     readonly storeReadyPromise = new Promise((resolve) => {
-        this.on('store-ready', resolve);
+      this.on('store-ready', resolve)
     });
 
     // setup code
 
-    async start(): Promise<void> {
-        await this.setup();
-        await this.waitEngineReady();
-        await this.onEngineReady();
-        await this.storeReadyPromise;
-        await this.onStoreReady(this.storeManager.store);
+    async start (): Promise<void> {
+      await this.setup()
+      await this.waitEngineReady()
+      await this.onEngineReady()
+      await this.storeReadyPromise
+      await this.onStoreReady(this.storeManager.store)
     }
 
-    protected async setup() {
-        await ensureDir(this.appDataPath);
-        try {
-            (this.gameDataPath as any) = await readFile(join(this.appDataPath, 'root')).then((b) => b.toString().trim());
-        } catch (e) {
-            if (e.code === 'ENOENT') {
-                // first launch
-                await this.waitEngineReady();
-                (this.gameDataPath as any) = await this.controller.processFirstLaunch();
-                await writeFile(join(this.appDataPath, 'root'), this.gameDataPath);
-            } else {
-                (this.gameDataPath as any) = this.appDataPath;
-            }
+    protected async setup () {
+      await ensureDir(this.appDataPath)
+      try {
+        (this.gameDataPath as any) = await readFile(join(this.appDataPath, 'root')).then((b) => b.toString().trim())
+      } catch (e) {
+        if (e.code === 'ENOENT') {
+          // first launch
+          await this.waitEngineReady();
+          (this.gameDataPath as any) = await this.controller.processFirstLaunch()
+          await writeFile(join(this.appDataPath, 'root'), this.gameDataPath)
+        } else {
+          (this.gameDataPath as any) = this.appDataPath
         }
+      }
 
-        try {
-            await Promise.all([ensureDir(this.gameDataPath), ensureDir(this.temporaryPath)]);
-        } catch {
-            (this.gameDataPath as any) = this.appDataPath;
-            await Promise.all([ensureDir(this.gameDataPath), ensureDir(this.temporaryPath)]);
-        }
-        (this.temporaryPath as any) = join(this.gameDataPath, 'temp');
-        await Promise.all(this.managers.map(m => m.setup()));
-        this.log(process.cwd());
-        this.log(process.argv);
+      try {
+        await Promise.all([ensureDir(this.gameDataPath), ensureDir(this.temporaryPath)])
+      } catch {
+        (this.gameDataPath as any) = this.appDataPath
+        await Promise.all([ensureDir(this.gameDataPath), ensureDir(this.temporaryPath)])
+      }
+      (this.temporaryPath as any) = join(this.gameDataPath, 'temp')
+      await Promise.all(this.managers.map(m => m.setup()))
+      this.log(process.cwd())
+      this.log(process.argv)
     }
 
-    async migrateRoot(newRoot: string) {
-        (this.gameDataPath as any) = newRoot;
-        await writeFile(join(this.appDataPath, 'root'), newRoot);
+    async migrateRoot (newRoot: string) {
+      (this.gameDataPath as any) = newRoot
+      await writeFile(join(this.appDataPath, 'root'), newRoot)
     }
 
-    protected async onEngineReady() {
-        this
-            .on('window-all-closed', () => {
-                if (this.parking) return;
-                if (process.platform !== 'darwin') { this.quitApp(); }
-            })
-            .on('minecraft-start', () => { this.parking = true; })
-            .on('minecraft-exit', () => { this.parking = false; });
+    protected async onEngineReady () {
+      this
+        .on('window-all-closed', () => {
+          if (this.parking) return
+          if (process.platform !== 'darwin') { this.quitApp() }
+        })
+        .on('minecraft-start', () => { this.parking = true })
+        .on('minecraft-exit', () => { this.parking = false })
 
-        this.emit('engine-ready');
-        await this.controller.engineReady();
+      this.emit('engine-ready')
+      await this.controller.engineReady()
 
-        await Promise.all(this.managers.map(m => m.engineReady()));
+      await Promise.all(this.managers.map(m => m.engineReady()))
     }
 
-    protected async onStoreReady(store: StaticStore<any>) {
-        this.parking = true;
-        await Promise.all(this.managers.map(m => m.storeReady(this.storeManager.store)));
-        await this.controller.dataReady(store);
-        this.log('App booted');
-        this.parking = false;
+    protected async onStoreReady (store: StaticStore<any>) {
+      this.parking = true
+      await Promise.all(this.managers.map(m => m.storeReady(this.storeManager.store)))
+      await this.controller.dataReady(store)
+      this.log('App booted')
+      this.parking = false
     }
 }
 
-export default LauncherApp;
+export default LauncherApp

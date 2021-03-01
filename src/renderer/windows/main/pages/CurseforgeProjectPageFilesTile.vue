@@ -52,7 +52,7 @@ import { defineComponent } from '@vue/composition-api';
 import {
   required,
   withDefault,
-} from '@/util/props';
+} from '/@/util/props';
 import { File } from '@xmcl/curseforge';
 
 export default defineComponent({

@@ -129,8 +129,8 @@ import {
   useRouter,
   useTaskCount,
   useUpdateInfo,
-} from '@/hooks';
-import { required } from '@/util/props';
+} from '/@/hooks';
+import { required } from '/@/util/props';
 import { useDialog } from '../hooks';
 
 export default defineComponent({

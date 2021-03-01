@@ -81,8 +81,8 @@
 
 <script lang=ts>
 import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api';
-import { useStore } from '@/hooks';
-import { Registry } from '@universal/entities/issue';
+import { useStore } from '/@/hooks';
+import { Registry } from '/@shared/entities/issue';
 
 interface IssueType {
   name: string;

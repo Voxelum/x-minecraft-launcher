@@ -51,7 +51,7 @@
 
 <script lang=ts>
 import { defineComponent, reactive, toRefs } from '@vue/composition-api';
-import { useClipboard, useIpc } from '@/hooks';
+import { useClipboard, useIpc } from '/@/hooks';
 import { parseLog, Log } from './log';
 
 export default defineComponent({

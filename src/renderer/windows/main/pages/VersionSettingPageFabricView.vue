@@ -27,8 +27,8 @@
 import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api';
 import {
   useFabricVersions,
-} from '@/hooks';
-import { required } from '@/util/props';
+} from '/@/hooks';
+import { required } from '/@/util/props';
 import { FabricArtifactVersion } from '@xmcl/installer';
 
 export default defineComponent({

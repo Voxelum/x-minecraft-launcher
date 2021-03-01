@@ -141,9 +141,9 @@
 
 <script lang=ts>
 import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api';
-import { useLocalVersions } from '@/hooks';
+import { useLocalVersions } from '/@/hooks';
 import type { ResolvedVersion } from '@xmcl/core';
-import { required, withDefault } from '@/util/props';
+import { required, withDefault } from '/@/util/props';
 
 export default defineComponent({
   props: {

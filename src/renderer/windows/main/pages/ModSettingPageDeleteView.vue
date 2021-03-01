@@ -43,8 +43,8 @@
 
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api';
-import { required } from '@/util/props';
-import { ModItem } from '@/hooks';
+import { required } from '/@/util/props';
+import { ModItem } from '/@/hooks';
 
 export default defineComponent({
   props: {

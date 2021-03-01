@@ -109,7 +109,7 @@
 
 <script lang=ts>
 import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref, nextTick } from '@vue/composition-api';
-import { useLogin, useLoginValidation, useI18n, useService } from '@/hooks';
+import { useLogin, useLoginValidation, useI18n, useService } from '/@/hooks';
 import { useLoginDialog } from '../hooks/index';
 import Hint from '../components/Hint.vue';
 

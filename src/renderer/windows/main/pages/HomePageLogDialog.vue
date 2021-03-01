@@ -33,8 +33,8 @@
 
 <script lang=ts>
 import { reactive, toRefs, watch, defineComponent } from '@vue/composition-api';
-import { useInstanceLogs } from '@/hooks';
-import { required } from '@/util/props';
+import { useInstanceLogs } from '/@/hooks';
+import { required } from '/@/util/props';
 import TabItem from './HomePageLogDialogTab.vue';
 
 export default defineComponent({

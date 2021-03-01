@@ -52,8 +52,8 @@
 <script lang=ts>
 import { defineComponent, reactive, toRefs, computed } from '@vue/composition-api';
 import { MinecraftVersion } from '@xmcl/installer';
-import { useMinecraftVersions } from '@/hooks';
-import { withDefault } from '@/util/props';
+import { useMinecraftVersions } from '/@/hooks';
+import { withDefault } from '/@/util/props';
 
 export default defineComponent({
   props: {

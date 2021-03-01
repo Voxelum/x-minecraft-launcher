@@ -24,10 +24,10 @@
 </template>
 
 <script lang=ts>
-import { TaskItem } from '@/entities/task';
-import { required } from '@/util/props';
+import { TaskItem } from '/@/entities/task';
+import { required } from '/@/util/props';
 import { defineComponent, computed, ref } from '@vue/composition-api';
-import { TaskState } from '@universal/task';
+import { TaskState } from '/@shared/task';
 
 export default defineComponent({
   props: {

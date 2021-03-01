@@ -47,7 +47,7 @@
 <script lang=ts>
 import { defineComponent, reactive, toRefs, ref, Ref, computed, onMounted, inject, watch } from '@vue/composition-api';
 import { BlockModel } from '@xmcl/resourcepack';
-import { useBlockModelPreview, useBlockStateModels } from '@/hooks';
+import { useBlockModelPreview, useBlockStateModels } from '/@/hooks';
 import { BlockStateJson } from '@main/service/ResourcePackPreviewService';
 import PreviewItem from './ResourcePackPreviewPageItem.vue';
 import Displayer from './ResourcePackPreviewPageDisplayer.vue';

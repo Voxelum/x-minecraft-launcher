@@ -15,7 +15,7 @@
 import { defineComponent, ref, Ref, onMounted } from '@vue/composition-api';
 import VirtualList from 'vue-virtual-scroll-list';
 import { MinecraftVersion } from '@xmcl/installer';
-import { required, withDefault } from '@/util/props';
+import { required, withDefault } from '/@/util/props';
 import Tile from './MinecraftVersionListTile.vue';
 
 export default defineComponent({

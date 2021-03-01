@@ -66,12 +66,12 @@
 </template>
 
 <script lang=ts>
-import { useFileDrop } from '@/hooks';
-import { required } from '@/util/props';
+import { useFileDrop } from '/@/hooks';
+import { required } from '/@/util/props';
 import { FileMetadata } from '@main/service/IOService';
-import { Resource } from '@universal/entities/resource';
+import { Resource } from '/@shared/entities/resource';
 import { defineComponent, computed, ref } from '@vue/composition-api';
-import { ResourceDomain, ResourceType } from '@universal/entities/resource.schema';
+import { ResourceDomain, ResourceType } from '/@shared/entities/resource.schema';
 import PreviewView from './UniversalDropViewPreview.vue';
 
 export interface FilePreview extends FileMetadata {

@@ -40,7 +40,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, defineComponent } from '@vue/composition-api';
-import { useI18n } from '@/hooks';
+import { useI18n } from '/@/hooks';
 
 // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
 const URL_PATTERN = new RegExp('^(https?:\\/\\/)?' // protocol

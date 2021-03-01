@@ -150,7 +150,7 @@
 
 <script lang=ts>
 import { defineComponent, reactive, toRefs, onMounted, watch, nextTick } from '@vue/composition-api';
-import { useStore, useI18n } from '@/hooks';
+import { useStore, useI18n } from '/@/hooks';
 
 const HTTP_EXP = /(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
 export default defineComponent({
