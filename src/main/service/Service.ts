@@ -1,49 +1,49 @@
-import LauncherApp from '@main/app/LauncherApp';
-import { Schema } from '@universal/entities/schema';
-import { MutationKeys, RootCommit, RootGetters, RootState } from '@universal/store';
-import { Exception, Exceptions } from '@universal/entities/exception';
-import { Task } from '@xmcl/task';
-import Ajv from 'ajv';
-import { ensureFile, readFile, writeFile } from 'fs-extra';
-import { join } from 'path';
-import { createContext, runInContext } from 'vm';
-import { WaitingQueue } from '@main/util/mutex';
+import LauncherApp from '/@main/app/LauncherApp'
+import { Schema } from '/@shared/entities/schema'
+import { MutationKeys, RootCommit, RootGetters, RootState } from '/@shared/store'
+import { Exception, Exceptions } from '/@shared/entities/exception'
+import { Task } from '@xmcl/task'
+import Ajv from 'ajv'
+import { ensureFile, readFile, writeFile } from 'fs-extra'
+import { join } from 'path'
+import { createContext, runInContext } from 'vm'
+import { WaitingQueue } from '/@main/util/mutex'
 
-export const INJECTIONS_SYMBOL = Symbol('__injections__');
-export const MUTATION_LISTENERS_SYMBOL = Symbol('__listeners__');
-export const PURE_SYMBOL = Symbol('__pure__');
+export const INJECTIONS_SYMBOL = Symbol('__injections__')
+export const MUTATION_LISTENERS_SYMBOL = Symbol('__listeners__')
+export const PURE_SYMBOL = Symbol('__pure__')
 
-export function Inject(type: string) {
-    return function (target: any, propertyKey: string) {
-        if (!Reflect.has(target, INJECTIONS_SYMBOL)) {
-            Reflect.set(target, INJECTIONS_SYMBOL, []);
-        }
-        if (!type) {
-            throw new Error(`Inject recieved type: ${type}!`);
-        } else {
-            Reflect.get(target, INJECTIONS_SYMBOL).push({ type, field: propertyKey });
-        }
-    };
+export function Inject (type: string) {
+  return function (target: any, propertyKey: string) {
+    if (!Reflect.has(target, INJECTIONS_SYMBOL)) {
+      Reflect.set(target, INJECTIONS_SYMBOL, [])
+    }
+    if (!type) {
+      throw new Error(`Inject recieved type: ${type}!`)
+    } else {
+      Reflect.get(target, INJECTIONS_SYMBOL).push({ type, field: propertyKey })
+    }
+  }
 }
 
 /**
  * Fire on certain store mutation committed.
  * @param keys The mutations name
  */
-export function MutationTrigger(...keys: MutationKeys[]) {
-    return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
-        if (!Reflect.has(target, MUTATION_LISTENERS_SYMBOL)) {
-            Reflect.set(target, MUTATION_LISTENERS_SYMBOL, []);
-        }
-        if (!keys || keys.length === 0) {
-            throw new Error('Must listen at least one mutation!');
-        } else {
-            Reflect.get(target, MUTATION_LISTENERS_SYMBOL).push(...keys.map(k => ({
-                event: k,
-                listener: descriptor.value,
-            })));
-        }
-    };
+export function MutationTrigger (...keys: MutationKeys[]) {
+  return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
+    if (!Reflect.has(target, MUTATION_LISTENERS_SYMBOL)) {
+      Reflect.set(target, MUTATION_LISTENERS_SYMBOL, [])
+    }
+    if (!keys || keys.length === 0) {
+      throw new Error('Must listen at least one mutation!')
+    } else {
+      Reflect.get(target, MUTATION_LISTENERS_SYMBOL).push(...keys.map(k => ({
+        event: k,
+        listener: descriptor.value
+      })))
+    }
+  }
 }
 
 export type KeySerializer = (this: Service, ...params: any[]) => string;
@@ -53,162 +53,162 @@ export enum Policy {
     Wait = 'wait'
 }
 
-const runningSingleton: Record<string, Promise<any>> = {};
-const waitingQueue: Record<string, WaitingQueue> = {};
+const runningSingleton: Record<string, Promise<any>> = {}
+const waitingQueue: Record<string, WaitingQueue> = {}
 
-function getQueue(name: string) {
-    if (!(name in waitingQueue)) {
-        waitingQueue[name] = new WaitingQueue();
-    }
-    return waitingQueue[name];
+function getQueue (name: string) {
+  if (!(name in waitingQueue)) {
+    waitingQueue[name] = new WaitingQueue()
+  }
+  return waitingQueue[name]
 }
 
-export function Enqueue(queue: WaitingQueue) {
-    return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
-        const method = descriptor.value;
-        const func = function (this: Service, ...args: any[]) {
-            return queue.enqueue(async () => {
-                let isPromise = false;
-                try {
-                    const result = method.apply(this, args);
-                    if (result instanceof Promise) {
-                        isPromise = true;
-                        const promise = result.finally(() => {
-                            // for (const s of semiphores) {
-                            //     delete runningSingleton[s];
-                            // }
-                            // this.release(semiphores);
-                        });
-                        // for (const s of semiphores) {
-                        //     runningSingleton[s] = promise;
-                        // }
-                        return promise;
-                    }
-                    return result;
-                } finally {
-                    if (!isPromise) {
-                        // this.release(semiphores);
-                    }
-                }
-            });
-        };
-        descriptor.value = func;
-    };
+export function Enqueue (queue: WaitingQueue) {
+  return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
+    const method = descriptor.value
+    const func = function (this: Service, ...args: any[]) {
+      return queue.enqueue(async () => {
+        let isPromise = false
+        try {
+          const result = method.apply(this, args)
+          if (result instanceof Promise) {
+            isPromise = true
+            const promise = result.finally(() => {
+              // for (const s of semiphores) {
+              //     delete runningSingleton[s];
+              // }
+              // this.release(semiphores);
+            })
+            // for (const s of semiphores) {
+            //     runningSingleton[s] = promise;
+            // }
+            return promise
+          }
+          return result
+        } finally {
+          if (!isPromise) {
+            // this.release(semiphores);
+          }
+        }
+      })
+    }
+    descriptor.value = func
+  }
 }
 
 /**
  * A service method decorator to make sure this service call should run in singleton -- no second call at the time.
  * The later call will wait the first call end and return the first call result.
  */
-export function Singleton(...keys: (string | KeySerializer)[]) {
-    return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
-        const method = descriptor.value;
-        const func = function (this: Service, ...args: any[]) {
-            const semiphores: string[] = [propertyKey, ...keys.map((k => (typeof k === 'string' ? k : k.bind(this)(...args))))];
-            if (semiphores.some((key) => this.isBusy(key))) {
-                return runningSingleton[semiphores[0]];
+export function Singleton (...keys: (string | KeySerializer)[]) {
+  return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
+    const method = descriptor.value
+    const func = function (this: Service, ...args: any[]) {
+      const semiphores: string[] = [propertyKey, ...keys.map(k => (typeof k === 'string' ? k : k.bind(this)(...args)))]
+      if (semiphores.some((key) => this.isBusy(key))) {
+        return runningSingleton[semiphores[0]]
+      }
+      this.aquire(semiphores)
+      let isPromise = false
+      try {
+        const result = method.apply(this, args)
+        if (result instanceof Promise) {
+          isPromise = true
+          const promise = result.finally(() => {
+            for (const s of semiphores) {
+              delete runningSingleton[s]
             }
-            this.aquire(semiphores);
-            let isPromise = false;
-            try {
-                const result = method.apply(this, args);
-                if (result instanceof Promise) {
-                    isPromise = true;
-                    const promise = result.finally(() => {
-                        for (const s of semiphores) {
-                            delete runningSingleton[s];
-                        }
-                        this.release(semiphores);
-                    });
-                    for (const s of semiphores) {
-                        runningSingleton[s] = promise;
-                    }
-                    return promise;
-                }
-                return result;
-            } finally {
-                if (!isPromise) {
-                    this.release(semiphores);
-                }
-            }
-        };
-        descriptor.value = func;
-    };
+            this.release(semiphores)
+          })
+          for (const s of semiphores) {
+            runningSingleton[s] = promise
+          }
+          return promise
+        }
+        return result
+      } finally {
+        if (!isPromise) {
+          this.release(semiphores)
+        }
+      }
+    }
+    descriptor.value = func
+  }
 }
 
-export function Pure() {
-    return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
-        let func = Reflect.get(target, propertyKey);
-        Reflect.set(func, PURE_SYMBOL, true);
-    };
+export function Pure () {
+  return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
+    const func = Reflect.get(target, propertyKey)
+    Reflect.set(func, PURE_SYMBOL, true)
+  }
 }
 
 export class ServiceException extends Error {
-    constructor(readonly exception: Exceptions, message?: string) {
-        super(message);
-    }
+  constructor (readonly exception: Exceptions, message?: string) {
+    super(message)
+  }
 }
 
 /**
  * The base class of a service.
- * 
- * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied 
+ *
+ * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied
  */
 export default class Service {
     readonly name: string;
 
-    constructor(readonly app: LauncherApp) {
-        this.name = Object.getPrototypeOf(this).constructor.name;
+    constructor (readonly app: LauncherApp) {
+      this.name = Object.getPrototypeOf(this).constructor.name
     }
 
-    get networkManager() { return this.app.networkManager; }
+    get networkManager () { return this.app.networkManager }
 
-    get serviceManager() { return this.app.serviceManager; }
+    get serviceManager () { return this.app.serviceManager }
 
-    get taskManager() { return this.app.taskManager; }
+    get taskManager () { return this.app.taskManager }
 
-    get logManager() { return this.app.logManager; }
+    get logManager () { return this.app.logManager }
 
-    get storeManager() { return this.app.storeManager; }
+    get storeManager () { return this.app.storeManager }
 
-    get credentialManager() { return this.app.credentialManager; }
+    get credentialManager () { return this.app.credentialManager }
 
-    get workerManager() { return this.app.workerManager; }
+    get workerManager () { return this.app.workerManager }
 
-    get persistManager() { return this.app.persistManager; }
+    get persistManager () { return this.app.persistManager }
 
     /**
-     * Submit a task into the task manager. 
-     * 
+     * Submit a task into the task manager.
+     *
      * The lifecycle of the service call will fit with the task life-cycle automatically.
-     *  
-     * @param task 
+     *
+     * @param task
      */
-    protected submit<T>(task: Task<T>) {
-        return this.taskManager.submit(task);
+    protected submit<T> (task: Task<T>) {
+      return this.taskManager.submit(task)
     }
 
     /**
      * Get a worker for the code run another thread
      */
-    protected worker() {
-        return this.workerManager.getWorker();
+    protected worker () {
+      return this.workerManager.getWorker()
     }
 
     /**
      * The managed state
      */
-    get state(): RootState { return this.storeManager.store.state; }
+    get state (): RootState { return this.storeManager.store.state }
 
     /**
      * The managed getter
      */
-    get getters(): RootGetters { return this.storeManager.store.getters as any; }
+    get getters (): RootGetters { return this.storeManager.store.getters as any }
 
     /**
      * The commit method
      */
-    get commit(): RootCommit { return this.storeManager.store.commit; }
+    get commit (): RootCommit { return this.storeManager.store.commit }
 
     /**
      * Return the path under the config root
@@ -230,55 +230,54 @@ export default class Service {
      */
     protected getMinecraftPath: (...args: string[]) => string = (...args) => join(this.app.minecraftDataPath, ...args);
 
-
     /**
      * The path of .minecraft
      */
-    protected get minecraftPath() { return this.app.minecraftDataPath; }
+    protected get minecraftPath () { return this.app.minecraftDataPath }
 
-    async save(payload: { mutation: MutationKeys; payload: any }): Promise<void> { }
+    async save (payload: { mutation: MutationKeys; payload: any }): Promise<void> { }
 
-    async load(): Promise<void> { }
+    async load (): Promise<void> { }
 
-    async init(): Promise<void> { }
+    async init (): Promise<void> { }
 
-    async dispose(): Promise<void> { }
+    async dispose (): Promise<void> { }
 
     log = (m: any, ...a: any[]) => {
-        this.logManager.log(`[${this.name}] ${m}`, ...a);
+      this.logManager.log(`[${this.name}] ${m}`, ...a)
     }
 
     error = (m: any, ...a: any[]) => {
-        this.logManager.error(`[${this.name}] ${m}`, ...a);
+      this.logManager.error(`[${this.name}] ${m}`, ...a)
     }
 
     warn = (m: any, ...a: any[]) => {
-        this.logManager.warn(`[${this.name}] ${m}`, ...a);
+      this.logManager.warn(`[${this.name}] ${m}`, ...a)
     }
 
-    protected isBusy(key: string) {
-        return this.serviceManager.isBusy(key);
+    protected isBusy (key: string) {
+      return this.serviceManager.isBusy(key)
     }
 
-    protected aquire(key: string | string[]) {
-        this.serviceManager.aquire(key);
+    protected aquire (key: string | string[]) {
+      this.serviceManager.aquire(key)
     }
 
-    protected release(key: string | string[]) {
-        this.serviceManager.release(key);
+    protected release (key: string | string[]) {
+      this.serviceManager.release(key)
     }
 
-    protected precondition(issue: string) {
-        if (this.getters.isIssueActive(issue)) {
-            throw new Exception({ type: 'issueBlocked', issues: [] });
-        }
+    protected precondition (issue: string) {
+      if (this.getters.isIssueActive(issue)) {
+        throw new Exception({ type: 'issueBlocked', issues: [] })
+      }
     }
 
-    protected pushException(e: Exceptions) {
-        this.app.broadcast('notification', e);
+    protected pushException (e: Exceptions) {
+      this.app.broadcast('notification', e)
     }
 
-    subscribeMutation<T>(key: MutationKeys, listener: (payload: T) => void) {
-        return this;
+    subscribeMutation<T> (key: MutationKeys, listener: (payload: T) => void) {
+      return this
     }
 }

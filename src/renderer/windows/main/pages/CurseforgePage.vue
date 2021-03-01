@@ -51,11 +51,11 @@
 
 <script lang=ts>
 import { defineComponent, computed } from '@vue/composition-api';
-import resourcepack from '@/assets/curseforge_resourcepack.webp';
-import mods from '@/assets/curseforge_mods.webp';
-import modpack from '@/assets/curseforge_modpack.webp';
-import worlds from '@/assets/curseforge_worlds.webp';
-import { useNetworkStatus, useCurseforgeCategories } from '@/hooks';
+import resourcepack from '/@/assets/curseforge_resourcepack.webp';
+import mods from '/@/assets/curseforge_mods.webp';
+import modpack from '/@/assets/curseforge_modpack.webp';
+import worlds from '/@/assets/curseforge_worlds.webp';
+import { useNetworkStatus, useCurseforgeCategories } from '/@/hooks';
 
 export default defineComponent({
   setup() {

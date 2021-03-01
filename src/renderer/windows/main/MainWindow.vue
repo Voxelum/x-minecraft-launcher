@@ -61,7 +61,7 @@
 </template>
 
 <script lang=ts>
-import '@/assets/common.css';
+import '/@/assets/common.css';
 
 import {
   onMounted,
@@ -82,8 +82,8 @@ import {
   useBackgroundBlur,
   provideAsyncRoute,
   provideRouterHistory,
-} from '@/hooks';
-import { provideTasks } from '@/providers/provideTaskProxy';
+} from '/@/hooks';
+import { provideTasks } from '/@/providers/provideTaskProxy';
 import { provideDialog, provideNotifier, provideContextMenu, provideSearch } from './hooks';
 import LoginDialog from './dialog/BaseLoginDialog.vue';
 import TaskDialog from './dialog/BaseTaskDialog.vue';

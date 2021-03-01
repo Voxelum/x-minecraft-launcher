@@ -1,8 +1,8 @@
-import Service from './Service';
+import Service from './Service'
 
 export default class NewsService extends Service {
-    async fetchMojangNews() {
-        const { body } = await this.networkManager.request('https://launchermeta.mojang.com/mc/news.json').json();
-        return body;
-    }
+  async fetchMojangNews () {
+    const { body } = await this.networkManager.request('https://launchermeta.mojang.com/mc/news.json').json()
+    return body
+  }
 }

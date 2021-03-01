@@ -1,15 +1,14 @@
-import { IS_DEV } from '@main/constant';
-import { CPUWorker, WorkerProxy } from '@main/entities/worker';
-import { Worker } from 'worker_threads';
-import { Manager } from '.';
+import { Manager } from '.'
+import createWorker from '../workers/index?worker'
+import { CPUWorker, WorkerProxy } from '/@main/entities/worker'
 
 export default class WorkerManager extends Manager {
-    private worker: WorkerProxy | undefined;
+  private worker: WorkerProxy | undefined;
 
-    getWorker(): CPUWorker {
-        if (!this.worker) {
-            this.worker = new WorkerProxy(new Worker(`${__dirname}/worker.js`));
-        }
-        return this.worker;
+  getWorker(): CPUWorker {
+    if (!this.worker) {
+      this.worker = new WorkerProxy(createWorker())
     }
+    return this.worker
+  }
 }

@@ -11,7 +11,7 @@
 <script lang=ts>
 import { reactive, onUnmounted, watch, toRefs, ref, onMounted, defineComponent, Ref, computed } from '@vue/composition-api';
 import { PlayerModel } from '@xmcl/model';
-import defaultSkin from '@/assets/steve_skin.png';
+import defaultSkin from '/@/assets/steve_skin.png';
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
 import { Scene } from 'three/src/scenes/Scene';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';

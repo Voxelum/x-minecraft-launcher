@@ -1,6 +1,6 @@
-import { Worker } from 'worker_threads';
-import { ImportTypeHint } from '@main/service/ResourceService';
-import { ResourceHeader } from './resource';
+import { Worker } from 'worker_threads'
+import { ImportTypeHint } from '/@main/service/ResourceService'
+import { ResourceHeader } from './resource'
 
 export interface WorkPayload {
     type: string;
@@ -37,33 +37,33 @@ export interface CPUWorker {
 }
 
 export class WorkerProxy implements CPUWorker {
-    constructor(private worker: Worker) { }
+  constructor (private worker: Worker) { }
 
     private counter = 0;
 
-    private post<T>(payload: WorkPayloads) {
-        this.worker.postMessage(payload);
-        return new Promise<T>((resolve, reject) => {
-            const handler = (resp: WorkerResponse) => {
-                const { error, result, id } = resp;
-                if (id === payload.id) {
-                    this.worker?.removeListener('message', handler);
-                    if (error) {
-                        reject(error);
-                    } else {
-                        resolve(result);
-                    }
-                }
-            };
-            this.worker!.on('message', handler);
-        });
+    private post<T> (payload: WorkPayloads) {
+      this.worker.postMessage(payload)
+      return new Promise<T>((resolve, reject) => {
+        const handler = (resp: WorkerResponse) => {
+          const { error, result, id } = resp
+          if (id === payload.id) {
+            this.worker?.removeListener('message', handler)
+            if (error) {
+              reject(error)
+            } else {
+              resolve(result)
+            }
+          }
+        }
+            this.worker!.on('message', handler)
+      })
     }
 
-    checksum(path: string, algorithm: string): Promise<string> {
-        return this.post({ type: 'checksum', path, algorithm, id: this.counter++ });
+    checksum (path: string, algorithm: string): Promise<string> {
+      return this.post({ type: 'checksum', path, algorithm, id: this.counter++ })
     }
 
-    readResourceHeader(path: string, hash: string, hint: string): Promise<ResourceHeader> {
-        return this.post({ type: 'readResourceHeader', path, hash, hint, id: this.counter++ });
+    readResourceHeader (path: string, hash: string, hint: string): Promise<ResourceHeader> {
+      return this.post({ type: 'readResourceHeader', path, hash, hint, id: this.counter++ })
     }
 }

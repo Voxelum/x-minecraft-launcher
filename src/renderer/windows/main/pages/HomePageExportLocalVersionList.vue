@@ -55,9 +55,9 @@
 
 <script lang=ts>
 import { defineComponent, reactive, computed, toRefs, ref, watch } from '@vue/composition-api';
-import { useLocalVersions } from '@/hooks';
-import { required } from '@/util/props';
-import { LocalVersion } from '@universal/entities/version';
+import { useLocalVersions } from '/@/hooks';
+import { required } from '/@/util/props';
+import { LocalVersion } from '/@shared/entities/version';
 
 export default defineComponent({
   props: {

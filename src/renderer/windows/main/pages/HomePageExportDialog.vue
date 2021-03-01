@@ -140,7 +140,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed, onMounted, defineComponent, Ref, ref, onUnmounted, watch, nextTick } from '@vue/composition-api';
-import { useInstance, useService, useI18n, useVersions, useLocalVersions, useNativeDialog, useInstanceVersion } from '@/hooks';
+import { useInstance, useService, useI18n, useVersions, useLocalVersions, useNativeDialog, useInstanceVersion } from '/@/hooks';
 import { InstanceFile } from '@main/service/InstanceIOService';
 import InstanceFiles from './HomePageInstanceFiles.vue';
 import ExportLocalVersionList from './HomePageExportLocalVersionList.vue';

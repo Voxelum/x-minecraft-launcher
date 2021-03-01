@@ -99,7 +99,7 @@
 
 <script lang=ts>
 import { defineComponent, watch, computed } from '@vue/composition-api';
-import { useUserSecurity } from '@/hooks';
+import { useUserSecurity } from '/@/hooks';
 
 export default defineComponent({
   props: { show: Boolean },

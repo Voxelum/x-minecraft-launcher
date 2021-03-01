@@ -277,8 +277,8 @@
 
 <script lang=ts>
 import { defineComponent, reactive, ref, toRefs, watch, Ref } from '@vue/composition-api';
-import { useStore, useI18n, useParticle, useSettings, useNativeDialog, useService, useLauncherVersion, useBackgroundBlur } from '@/hooks';
-import localMapping from '@/assets/locales/index.json';
+import { useStore, useI18n, useParticle, useSettings, useNativeDialog, useService, useLauncherVersion, useBackgroundBlur } from '/@/hooks';
+import localMapping from '/@/assets/locales/index.json';
 
 import UpdateInfoDialog from './SettingPageUpdateInfoDialog.vue';
 

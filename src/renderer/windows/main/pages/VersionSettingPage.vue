@@ -98,11 +98,11 @@ import { defineComponent, reactive, computed, ref, toRefs } from '@vue/compositi
 import {
   useAutoSaveLoad,
   useInstance,
-} from '@/hooks';
+} from '/@/hooks';
 import type { ForgeVersion, MinecraftVersion } from '@xmcl/installer';
 import type { ResolvedVersion } from '@xmcl/core';
-import { OptifineVersion } from '@universal/entities/version.schema';
-import { EMPTY_VERSION, isForgeLibrary, isFabricLoaderLibrary, isOptifineLibrary, filterForgeVersion, filterOptfineVersion } from '@universal/entities/version';
+import { OptifineVersion } from '/@shared/entities/version.schema';
+import { EMPTY_VERSION, isForgeLibrary, isFabricLoaderLibrary, isOptifineLibrary, filterForgeVersion, filterOptfineVersion } from '/@shared/entities/version';
 import MinecraftView from './VersionSettingPageMinecraftView.vue';
 import ForgeView from './VersionSettingPageForgeView.vue';
 import FabricView from './VersionSettingPageFabricView.vue';

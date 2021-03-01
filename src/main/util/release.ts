@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import got from 'got';
+import got from 'got'
 
 export interface Release {
     title: string;
@@ -48,45 +48,45 @@ interface ReleaseJson {
     }>;
 }
 
-function convertRelease(r: ReleaseJson): Release {
-    let asarAsset = r.assets.find((a) => a.name === 'app.asar');
-    if (!asarAsset) {
-        throw new Error();
-    }
-    return {
-        title: r.name,
-        version: r.tag_name,
-        body: r.body,
-        downloadUrl: asarAsset.browser_download_url,
-        downloadCount: asarAsset.download_count,
-        size: asarAsset.size,
-    };
+function convertRelease (r: ReleaseJson): Release {
+  const asarAsset = r.assets.find((a) => a.name === 'app.asar')
+  if (!asarAsset) {
+    throw new Error()
+  }
+  return {
+    title: r.name,
+    version: r.tag_name,
+    body: r.body,
+    downloadUrl: asarAsset.browser_download_url,
+    downloadCount: asarAsset.download_count,
+    size: asarAsset.size
+  }
 }
 
 export class GithubReleaseFetcher implements ReleaseFetcher {
-    constructor(readonly owner: string, readonly repo: string) { }
+  constructor (readonly owner: string, readonly repo: string) { }
 
-    async getLatestRelease() {
-        let r: ReleaseJson = await got(`https://api.github.com/repos/${this.owner}/${this.repo}/releases/latest`).json();
-        return convertRelease(r);
-    }
+  async getLatestRelease () {
+    const r: ReleaseJson = await got(`https://api.github.com/repos/${this.owner}/${this.repo}/releases/latest`).json()
+    return convertRelease(r)
+  }
 
-    async listReleases() {
-        let r: ReleaseJson[] = await got(`https://api.github.com/repos/${this.owner}/${this.repo}/releases`).json();
-        return r.map(convertRelease);
-    }
+  async listReleases () {
+    const r: ReleaseJson[] = await got(`https://api.github.com/repos/${this.owner}/${this.repo}/releases`).json()
+    return r.map(convertRelease)
+  }
 }
 
 export class GiteeReleaseFetcher implements ReleaseFetcher {
-    constructor(readonly owner: string, readonly repo: string) { }
+  constructor (readonly owner: string, readonly repo: string) { }
 
-    async getLatestRelease() {
-        let r: ReleaseJson = await got(`https://gitee.com/api/v5/repos/${this.owner}/${this.repo}/releases/latest`).json();
-        return convertRelease(r);
-    }
+  async getLatestRelease () {
+    const r: ReleaseJson = await got(`https://gitee.com/api/v5/repos/${this.owner}/${this.repo}/releases/latest`).json()
+    return convertRelease(r)
+  }
 
-    async listReleases() {
-        let r: ReleaseJson[] = await got(`https://gitee.com/api/v5/repos/${this.owner}/${this.repo}/releases`).json();
-        return r.map(convertRelease);
-    }
+  async listReleases () {
+    const r: ReleaseJson[] = await got(`https://gitee.com/api/v5/repos/${this.owner}/${this.repo}/releases`).json()
+    return r.map(convertRelease)
+  }
 }

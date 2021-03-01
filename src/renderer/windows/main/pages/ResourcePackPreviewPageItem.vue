@@ -10,7 +10,7 @@
 <script lang=ts>
 import { defineComponent, reactive, toRefs, onMounted, computed } from '@vue/composition-api';
 import { BlockStateJson } from '@main/service/ResourcePackPreviewService';
-import { required } from '@/util/props';
+import { required } from '/@/util/props';
 
 export default defineComponent({
   props: { source: required< BlockStateJson & { onClick(): void }>(Object) },

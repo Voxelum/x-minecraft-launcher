@@ -29,7 +29,7 @@
 
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api';
-import { useLaunch, useIssues } from '@/hooks';
+import { useLaunch, useIssues } from '/@/hooks';
 import { useDialog } from '../hooks';
 
 export default defineComponent({

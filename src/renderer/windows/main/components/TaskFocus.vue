@@ -26,8 +26,8 @@
 
 <script lang=ts>
 import { defineComponent, computed } from '@vue/composition-api';
-import { useTaskFromServiceCall } from '@/hooks';
-import { optional } from '@/util/props';
+import { useTaskFromServiceCall } from '/@/hooks';
+import { optional } from '/@/util/props';
 
 export default defineComponent({
   props: { value: optional<Promise<any>>(Promise) },

@@ -31,7 +31,7 @@
 
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api';
-import { useIssues } from '@/hooks';
+import { useIssues } from '/@/hooks';
 import { useIssueHandler } from '../hooks';
 
 export default defineComponent({

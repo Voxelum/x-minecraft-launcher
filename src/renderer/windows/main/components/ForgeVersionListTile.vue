@@ -36,8 +36,8 @@
 </template>
 
 <script lang=ts>
-import { required } from '@/util/props';
-import { Status } from '@universal/entities/version';
+import { required } from '/@/util/props';
+import { Status } from '/@shared/entities/version';
 import { defineComponent } from '@vue/composition-api';
 import { ForgeVersion } from '@xmcl/installer';
 

@@ -5,4 +5,4 @@ export interface Client {
     send(channel: string, ...payload: any[]): void;
 }
 
-export type { Dialog, Notification, NotificationAction, NotificationConstructorOptions, BrowserView, BrowserWindow, BrowserWindowConstructorOptions, Dock, Tray, Menu, MenuItem, MenuItemConstructorOptions } from 'electron';
+export type { Dialog, Notification, NotificationAction, NotificationConstructorOptions, BrowserView, BrowserWindow, BrowserWindowConstructorOptions, Dock, Tray, Menu, MenuItem, MenuItemConstructorOptions } from 'electron'

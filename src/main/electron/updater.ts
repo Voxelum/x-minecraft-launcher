@@ -1,47 +1,45 @@
-import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '@main/constant';
-import { UpdateInfo as _UpdateInfo } from '@universal/entities/update';
-import { DownloadTask } from '@xmcl/installer';
-import { task, Task, TaskBase, TaskLooped } from '@xmcl/task';
-import { spawn } from 'child_process';
-import { autoUpdater, CancellationToken, Provider, UpdateInfo, UpdaterSignal } from 'electron-updater';
-import { writeFile } from 'fs-extra';
-import { closeSync, existsSync, open, rename, unlink } from 'original-fs';
-import { basename, dirname, join } from 'path';
-import { SemVer } from 'semver';
-import { promisify } from 'util';
-import ElectronLauncherApp from './ElectronLauncherApp';
-
+import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '/@main/constant'
+import { UpdateInfo as _UpdateInfo } from '/@shared/entities/update'
+import { DownloadTask } from '@xmcl/installer'
+import { task, Task, TaskBase, TaskLooped } from '@xmcl/task'
+import { spawn } from 'child_process'
+import { autoUpdater, CancellationToken, Provider, UpdateInfo, UpdaterSignal } from 'electron-updater'
+import { writeFile } from 'fs-extra'
+import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
+import { basename, dirname, join } from 'path'
+import { SemVer } from 'semver'
+import { promisify } from 'util'
+import ElectronLauncherApp from './ElectronLauncherApp'
 
 /**
  * Only download asar file update.
- * 
+ *
  * If the this update is not a full update but an incremental update,
  * you can call this to download asar update
  */
 export class DownloadAsarUpdateTask extends DownloadTask {
-    constructor(private updateInfo: UpdateInfo, private isInGFW: boolean, destination: string) {
-        super({ url: '', destination });
+  constructor (private updateInfo: UpdateInfo, private isInGFW: boolean, destination: string) {
+    super({ url: '', destination })
+  }
+
+  protected async process () {
+    const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise)
+    const files = provider.resolveFiles(this.updateInfo)
+
+    const uObject = files[0].url
+    uObject.pathname = `${uObject.pathname.substring(0, uObject.pathname.lastIndexOf('/'))}app.asar`
+
+    if (this.isInGFW) {
+      uObject.host = AZURE_CDN_HOST
+      uObject.hostname = AZURE_CDN_HOST
+      uObject.pathname = 'releases/app.asar'
     }
 
-    protected async process() {
-        const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise);
-        const files = provider.resolveFiles(this.updateInfo);
+    this.url = uObject.toString()
 
-        const uObject = files[0].url;
-        uObject.pathname = `${uObject.pathname.substring(0, uObject.pathname.lastIndexOf('/'))}app.asar`;
-
-        if (this.isInGFW) {
-            uObject.host = AZURE_CDN_HOST;
-            uObject.hostname = AZURE_CDN_HOST;
-            uObject.pathname = 'releases/app.asar';
-        }
-
-        this.url = uObject.toString();
-
-        return super.process();
-    }
+    return super.process()
+  }
 }
-
 
 /**
  * Download the full update. This size can be larger as it carry the whole electron thing...
@@ -51,152 +49,150 @@ export class DownloadFullUpdateTask extends TaskBase<void> {
 
     private cancellationToken = new CancellationToken();
 
-    protected async run(): Promise<void> {
-        this.updateSignal.progress((info) => {
-            this._progress = info.transferred;
-            this._total = info.total;
-            this.update(info.delta);
-        });
-        await autoUpdater.downloadUpdate(this.cancellationToken);
+    protected async run (): Promise<void> {
+      this.updateSignal.progress((info) => {
+        this._progress = info.transferred
+        this._total = info.total
+        this.update(info.delta)
+      })
+      await autoUpdater.downloadUpdate(this.cancellationToken)
     }
 
-    protected performCancel(): Promise<void> {
-        this.cancellationToken.cancel();
-        return new Promise((resolve) => {
-            autoUpdater.once('update-cancelled', resolve);
-        });
+    protected performCancel (): Promise<void> {
+      this.cancellationToken.cancel()
+      return new Promise((resolve) => {
+        autoUpdater.once('update-cancelled', resolve)
+      })
     }
 
-    protected async performPause(): Promise<void> {
-        this.cancellationToken.cancel();
+    protected async performPause (): Promise<void> {
+      this.cancellationToken.cancel()
     }
 
-    protected performResume(): void {
-        this.run();
+    protected performResume (): void {
+      this.run()
     }
 }
 
+export async function quitAndInstallAsar (this: ElectronLauncherApp) {
+  if (IS_DEV) {
+    this.log('Currently is development envrionment. Skip to install ASAR')
+    return
+  }
+  const exePath = process.argv[0]
+  const appPath = dirname(exePath)
 
-export async function quitAndInstallAsar(this: ElectronLauncherApp) {
-    if (IS_DEV) {
-        this.log('Currently is development envrionment. Skip to install ASAR');
-        return;
+  const appAsarPath = join(appPath, 'resources', 'app.asar')
+  const updateAsarPath = join(this.appDataPath, 'update.asar')
+
+  this.log(`Install asar on ${this.platform.name}`)
+  if (this.platform.name === 'windows') {
+    const elevatePath = join(appPath, 'resources', 'elevate.exe')
+
+    if (!existsSync(updateAsarPath)) {
+      this.error(`No update found: ${updateAsarPath}`)
+      throw new Error(`No update found: ${updateAsarPath}`)
     }
-    const exePath = process.argv[0];
-    const appPath = dirname(exePath);
-
-    const appAsarPath = join(appPath, 'resources', 'app.asar');
-    const updateAsarPath = join(this.appDataPath, 'update.asar');
-
-    this.log(`Install asar on ${this.platform.name}`);
-    if (this.platform.name === 'windows') {
-        let elevatePath = join(appPath, 'resources', 'elevate.exe');
-
-        if (!existsSync(updateAsarPath)) {
-            this.error(`No update found: ${updateAsarPath}`);
-            throw new Error(`No update found: ${updateAsarPath}`);
+    if (!existsSync(elevatePath)) {
+      this.error(`No elevate.exe found: ${elevatePath}`)
+      throw new Error(`No elevate.exe found: ${elevatePath}`)
+    }
+    const psPath = join(this.appDataPath, 'AutoUpdate.ps1')
+    let hasWriteAccess = await new Promise((resolve) => {
+      open(appAsarPath, 'a', (e, fd) => {
+        if (e) {
+          resolve(false)
+        } else {
+          closeSync(fd)
+          resolve(true)
         }
-        if (!existsSync(elevatePath)) {
-            this.error(`No elevate.exe found: ${elevatePath}`);
-            throw new Error(`No elevate.exe found: ${elevatePath}`);
-        }
-        const psPath = join(this.appDataPath, 'AutoUpdate.ps1');
-        let hasWriteAccess = await new Promise((resolve) => {
-            open(appAsarPath, 'a', (e, fd) => {
-                if (e) {
-                    resolve(false);
-                } else {
-                    closeSync(fd);
-                    resolve(true);
-                }
-            });
-        });
+      })
+    })
 
-        // force elevation for now
-        hasWriteAccess = false;
+    // force elevation for now
+    hasWriteAccess = false
 
-        this.log(hasWriteAccess ? `Process has write access to ${appAsarPath}` : `Process does not have write access to ${appAsarPath}`);
-        let startProcessCmd = `Start-Process -FilePath "${process.argv[0]}"`;
-        if (process.argv.slice(1).length > 0) {
-            startProcessCmd += ` -ArgumentList ${process.argv.slice(1).map((s) => `"${s}"`).join(', ')}`;
-        }
-        startProcessCmd += ` -WorkingDirectory ${process.cwd()}`;
-        await writeFile(psPath, [
-            'Start-Sleep -s 3',
+    this.log(hasWriteAccess ? `Process has write access to ${appAsarPath}` : `Process does not have write access to ${appAsarPath}`)
+    let startProcessCmd = `Start-Process -FilePath "${process.argv[0]}"`
+    if (process.argv.slice(1).length > 0) {
+      startProcessCmd += ` -ArgumentList ${process.argv.slice(1).map((s) => `"${s}"`).join(', ')}`
+    }
+    startProcessCmd += ` -WorkingDirectory ${process.cwd()}`
+    await writeFile(psPath, [
+      'Start-Sleep -s 3',
             `Copy-Item -Path "${updateAsarPath}" -Destination "${appAsarPath}"`,
             `Remove-Item -Path "${updateAsarPath}"`,
-            startProcessCmd,
-        ].join('\r\n'));
+            startProcessCmd
+    ].join('\r\n'))
 
-        let args = [
-            'powershell.exe',
-            '-ExecutionPolicy',
-            'RemoteSigned',
-            '-File',
-            `"${psPath}"`,
-        ];
-        if (!hasWriteAccess) {
-            args.unshift(elevatePath);
-        }
-        this.log(`Install from windows: ${args.join(' ')}`);
-        this.log(`Relaunch the process by: ${startProcessCmd}`);
-
-        spawn(args[0], args.slice(1), {
-            detached: true,
-        }).on('error', (e) => {
-            this.error(e);
-        }).on('exit', (code, s) => {
-            this.log(`Update process exit ${code}`);
-        }).unref();
-    } else {
-        await promisify(unlink)(appAsarPath);
-        await promisify(rename)(updateAsarPath, appAsarPath);
+    const args = [
+      'powershell.exe',
+      '-ExecutionPolicy',
+      'RemoteSigned',
+      '-File',
+            `"${psPath}"`
+    ]
+    if (!hasWriteAccess) {
+      args.unshift(elevatePath)
     }
-    this.quitApp();
+    this.log(`Install from windows: ${args.join(' ')}`)
+    this.log(`Relaunch the process by: ${startProcessCmd}`)
+
+    spawn(args[0], args.slice(1), {
+      detached: true
+    }).on('error', (e) => {
+      this.error(e)
+    }).on('exit', (code, s) => {
+      this.log(`Update process exit ${code}`)
+    }).unref()
+  } else {
+    await promisify(unlink)(appAsarPath)
+    await promisify(rename)(updateAsarPath, appAsarPath)
+  }
+  this.quitApp()
 }
 
-
-export function quitAndInstallFullUpdate() {
-    if (IS_DEV) {
-        return;
-    }
-    autoUpdater.quitAndInstall();
+export function quitAndInstallFullUpdate () {
+  if (IS_DEV) {
+    return
+  }
+  autoUpdater.quitAndInstall()
 }
 
-let injectedUpdate = false;
+let injectedUpdate = false
 
-export function checkUpdateTask(this: ElectronLauncherApp): Task<_UpdateInfo> {
-    return task('checkUpdate', async () => {
-        autoUpdater.once('update-available', () => {
-            this.log('Update available and set status to pending');
-            this.storeManager.store.commit('updateStatus', 'pending');
-        });
-        const info = await autoUpdater.checkForUpdates();
+export function checkUpdateTask (this: ElectronLauncherApp): Task<_UpdateInfo> {
+  return task('checkUpdate', async () => {
+    autoUpdater.once('update-available', () => {
+      this.log('Update available and set status to pending')
+      this.storeManager.store.commit('updateStatus', 'pending')
+    })
+    const info = await autoUpdater.checkForUpdates()
 
-        if (this.networkManager.isInGFW && !injectedUpdate) {
-            injectedUpdate = true;
-            const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise);
-            const originalResolve = provider.resolveFiles;
-            provider.resolveFiles = (function (this: Provider<UpdateInfo>, inf: UpdateInfo) {
-                let result = originalResolve.bind(provider)(inf);
-                result.forEach((i) => {
-                    let pathname = i.url.pathname;
-                    (i as any).url = new URL(`${AZURE_CDN}/${basename(pathname)}`);
-                });
-                return result;
-            });
-        }
+    if (this.networkManager.isInGFW && !injectedUpdate) {
+      injectedUpdate = true
+      const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise)
+      const originalResolve = provider.resolveFiles
+      provider.resolveFiles = function (this: Provider<UpdateInfo>, inf: UpdateInfo) {
+        const result = originalResolve.bind(provider)(inf)
+        result.forEach((i) => {
+          const pathname = i.url.pathname;
+          (i as any).url = new URL(`${AZURE_CDN}/${basename(pathname)}`)
+        })
+        return result
+      }
+    }
 
-        let updateInfo: _UpdateInfo = info.updateInfo as _UpdateInfo;
+    const updateInfo: _UpdateInfo = info.updateInfo as _UpdateInfo
 
-        updateInfo.incremental = false;
-        let currentVersion = autoUpdater.currentVersion;
-        let newVersion = new SemVer(updateInfo.version);
+    updateInfo.incremental = false
+    const currentVersion = autoUpdater.currentVersion
+    const newVersion = new SemVer(updateInfo.version)
 
-        if (newVersion.major === currentVersion.major) {
-            updateInfo.incremental = true;
-        }
+    if (newVersion.major === currentVersion.major) {
+      updateInfo.incremental = true
+    }
 
-        return updateInfo;
-    });
+    return updateInfo
+  })
 }

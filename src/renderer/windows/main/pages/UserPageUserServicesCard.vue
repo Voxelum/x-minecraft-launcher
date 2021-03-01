@@ -64,7 +64,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed, defineComponent } from '@vue/composition-api';
-import { useStore } from '@/hooks';
+import { useStore } from '/@/hooks';
 import StepperUserService from './UserPageUserServiceStepper.vue';
 
 interface Service {

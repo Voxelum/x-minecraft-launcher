@@ -1,4 +1,4 @@
-import { Camera, Vector3 } from 'three';
+import { Camera, Vector3 } from 'three'
 
 export declare class OrbitControls {
     public target: Vector3

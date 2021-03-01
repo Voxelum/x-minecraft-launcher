@@ -66,7 +66,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, defineComponent } from '@vue/composition-api';
-import { useIpc, useInstanceLogs, useService } from '@/hooks';
+import { useIpc, useInstanceLogs, useService } from '/@/hooks';
 
 export default defineComponent({
   setup() {

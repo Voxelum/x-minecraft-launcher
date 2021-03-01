@@ -14,7 +14,7 @@
 <script lang=ts>
 import { defineComponent, computed, ref, Ref, onMounted } from '@vue/composition-api';
 import { WebviewTag } from 'electron';
-import { useRouter } from '@/hooks';
+import { useRouter } from '/@/hooks';
 
 export default defineComponent({
   props: {

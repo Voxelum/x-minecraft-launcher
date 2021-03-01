@@ -52,8 +52,8 @@
 
 <script lang=ts>
 import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api';
-import { useForgeVersions } from '@/hooks';
-import { ForgeVersion } from '@universal/entities/version.schema';
+import { useForgeVersions } from '/@/hooks';
+import { ForgeVersion } from '/@shared/entities/version.schema';
 
 export default defineComponent({
   props: {

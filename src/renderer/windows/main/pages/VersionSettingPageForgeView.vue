@@ -27,10 +27,10 @@
 
 <script lang=ts>
 import { defineComponent, reactive, computed, toRefs, watch } from '@vue/composition-api';
-import { useForgeVersions } from '@/hooks';
-import { required } from '@/util/props';
-import { ForgeVersion } from '@universal/entities/version.schema';
-import { compareDate } from '@universal/util/object';
+import { useForgeVersions } from '/@/hooks';
+import { required } from '/@/util/props';
+import { ForgeVersion } from '/@shared/entities/version.schema';
+import { compareDate } from '/@shared/util/object';
 
 export default defineComponent({
   props: {

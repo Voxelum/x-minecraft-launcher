@@ -189,7 +189,7 @@ import {
   useGameProfile,
   useProfileId,
   useStore,
-} from '@/hooks';
+} from '/@/hooks';
 import { useLoginDialog, useDialog } from '../hooks';
 import ChallengesForm from './UserPageChallengesForm.vue';
 import PageSkinView from './UserPageSkinView.vue';

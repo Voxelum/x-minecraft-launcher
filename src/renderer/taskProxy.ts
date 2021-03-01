@@ -1,5 +1,5 @@
-import { Ref } from '@vue/composition-api';
-import { TaskItem } from './entities/task';
+import { Ref } from '@vue/composition-api'
+import { TaskItem } from './entities/task'
 
 export interface TaskProxy {
     dictionary: {

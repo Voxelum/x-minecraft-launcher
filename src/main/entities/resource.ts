@@ -1,21 +1,21 @@
-import { ImportTypeHint } from '@main/service/ResourceService';
-import { linkOrCopy } from '@main/util/fs';
-import { CurseforgeModpackManifest } from '@universal/entities/curseforge';
-import { RuntimeVersions } from '@universal/entities/instance.schema';
-import { ForgeModCommonMetadata, normalizeForgeModMetadata } from '@universal/entities/mod';
-import { Resource, Resources } from '@universal/entities/resource';
-import { CurseforgeInformation, GithubInformation, ResourceDomain, ResourceSchema, ResourceType } from '@universal/entities/resource.schema';
-import { resolveRuntimeVersion } from '@universal/entities/version';
-import { Version } from '@xmcl/core';
-import { FabricModMetadata, LiteloaderModMetadata, readFabricMod, readForgeMod, readLiteloaderMod } from '@xmcl/mod-parser';
-import { deserialize } from '@xmcl/nbt';
-import { PackMeta, readIcon, readPackMeta } from '@xmcl/resourcepack';
-import { FileSystem, openFileSystem } from '@xmcl/system';
-import { LevelDataFrame } from '@xmcl/world';
-import filenamify from 'filenamify';
-import { ensureFile, stat, unlink, writeFile } from 'fs-extra';
-import { basename, extname, join } from 'path';
-import { findLevelRoot } from './save';
+import { ImportTypeHint } from '/@main/service/ResourceService'
+import { linkOrCopy } from '/@main/util/fs'
+import { CurseforgeModpackManifest } from '/@shared/entities/curseforge'
+import { RuntimeVersions } from '/@shared/entities/instance.schema'
+import { ForgeModCommonMetadata, normalizeForgeModMetadata } from '/@shared/entities/mod'
+import { Resource, Resources } from '/@shared/entities/resource'
+import { CurseforgeInformation, GithubInformation, ResourceDomain, ResourceSchema, ResourceType } from '/@shared/entities/resource.schema'
+import { resolveRuntimeVersion } from '/@shared/entities/version'
+import { Version } from '@xmcl/core'
+import { FabricModMetadata, LiteloaderModMetadata, readFabricMod, readForgeMod, readLiteloaderMod } from '@xmcl/mod-parser'
+import { deserialize } from '@xmcl/nbt'
+import { PackMeta, readIcon, readPackMeta } from '@xmcl/resourcepack'
+import { FileSystem, openFileSystem } from '@xmcl/system'
+import { LevelDataFrame } from '@xmcl/world'
+import filenamify from 'filenamify'
+import { ensureFile, stat, unlink, writeFile } from 'fs-extra'
+import { basename, extname, join } from 'path'
+import { findLevelRoot } from './save'
 
 export type SourceInformation = {
     github?: GithubInformation;
@@ -44,7 +44,6 @@ export interface ResourceParser<T> {
     getUri: (metadata: T, hash: string) => string[];
 }
 
-
 export interface ResourceBuilder extends Omit<ResourceSchema, 'metadata' | 'version'> {
     icon?: Uint8Array;
     path: string;
@@ -67,392 +66,391 @@ export interface ResourceBuilder extends Omit<ResourceSchema, 'metadata' | 'vers
 // resource entries
 
 export const UNKNOWN_ENTRY: ResourceParser<unknown> = {
-    type: ResourceType.Unknown,
-    domain: ResourceDomain.Unknown,
-    ext: '*',
-    parseIcon: () => Promise.resolve(undefined),
-    parseMetadata: () => Promise.resolve({}),
-    getSuggestedName: () => '',
-    getUri: () => [],
-};
+  type: ResourceType.Unknown,
+  domain: ResourceDomain.Unknown,
+  ext: '*',
+  parseIcon: () => Promise.resolve(undefined),
+  parseMetadata: () => Promise.resolve({}),
+  getSuggestedName: () => '',
+  getUri: () => []
+}
 export const RESOURCE_PARSER_FORGE: ResourceParser<ForgeModCommonMetadata> = ({
-    type: ResourceType.Forge,
-    domain: ResourceDomain.Mods,
-    ext: '.jar',
-    parseIcon: async (meta, fs) => {
-        if (meta.logoFile) {
-            return fs.readFile(meta.logoFile);
+  type: ResourceType.Forge,
+  domain: ResourceDomain.Mods,
+  ext: '.jar',
+  parseIcon: async (meta, fs) => {
+    if (meta.logoFile) {
+      return fs.readFile(meta.logoFile)
+    }
+    return undefined
+  },
+  parseMetadata: fs => readForgeMod(fs).then(normalizeForgeModMetadata),
+  getSuggestedName: (meta) => {
+    let name = `${meta.name || meta.modid}`
+    if (meta.version) {
+      name += `- ${meta.version}`
+    }
+    return name
+  },
+  getUri: meta => {
+    const urls: string[] = []
+    for (const m of meta.mcmodInfo) {
+      urls.push(`forge://${m.modid}/${m.version}`)
+    }
+    for (const m of meta.modsToml) {
+      urls.push(`forge://${m.modid}/${m.version}`)
+    }
+    for (const m of meta.modAnnotations) {
+      if (m.modid && m.version) {
+        const uri = `forge://${m.modid}/${m.version}`
+        if (urls.indexOf(uri) === -1) {
+          urls.push(uri)
         }
-        return undefined;
-    },
-    parseMetadata: fs => readForgeMod(fs).then(normalizeForgeModMetadata),
-    getSuggestedName: (meta) => {
-        let name = `${meta.name || meta.modid}`;
-        if (meta.version) {
-            name += `- ${meta.version}`;
-        }
-        return name;
-    },
-    getUri: meta => {
-        const urls: string[] = [];
-        for (const m of meta.mcmodInfo) {
-            urls.push(`forge://${m.modid}/${m.version}`);
-        }
-        for (const m of meta.modsToml) {
-            urls.push(`forge://${m.modid}/${m.version}`);
-        }
-        for (const m of meta.modAnnotations) {
-            if (m.modid && m.version) {
-                const uri = `forge://${m.modid}/${m.version}`;
-                if (urls.indexOf(uri) === -1) {
-                    urls.push(uri);
-                }
-            }
-        }
-        if (meta.manifestMetadata && meta.manifestMetadata.modid && meta.manifestMetadata.version) {
-            const m = meta.manifestMetadata;
-            const uri = `forge://${m.modid}/${m.version}`;
-            if (urls.indexOf(uri) === -1) {
-                urls.push(uri);
-            }
-        }
-        return urls;
-    },
-});
+      }
+    }
+    if (meta.manifestMetadata && meta.manifestMetadata.modid && meta.manifestMetadata.version) {
+      const m = meta.manifestMetadata
+      const uri = `forge://${m.modid}/${m.version}`
+      if (urls.indexOf(uri) === -1) {
+        urls.push(uri)
+      }
+    }
+    return urls
+  }
+})
 export const RESOURCE_PARSER_LITELOADER: ResourceParser<LiteloaderModMetadata> = ({
-    type: ResourceType.Liteloader,
-    domain: ResourceDomain.Mods,
-    ext: '.litemod',
-    parseIcon: async () => undefined,
-    parseMetadata: fs => readLiteloaderMod(fs),
-    getSuggestedName: (meta) => {
-        let name = '';
-        if (typeof meta.name === 'string') {
-            name += meta.name;
-        }
-        if (typeof meta.mcversion === 'string') {
-            name += `-${meta.mcversion}`;
-        }
-        if (typeof meta.version === 'string') {
-            name += `-${meta.version}`;
-        }
-        if (typeof meta.revision === 'string' || typeof meta.revision === 'number') {
-            name += `-${meta.revision}`;
-        }
-        return name;
-    },
-    getUri: meta => [`liteloader://${meta.name}/${meta.version}`],
-});
+  type: ResourceType.Liteloader,
+  domain: ResourceDomain.Mods,
+  ext: '.litemod',
+  parseIcon: async () => undefined,
+  parseMetadata: fs => readLiteloaderMod(fs),
+  getSuggestedName: (meta) => {
+    let name = ''
+    if (typeof meta.name === 'string') {
+      name += meta.name
+    }
+    if (typeof meta.mcversion === 'string') {
+      name += `-${meta.mcversion}`
+    }
+    if (typeof meta.version === 'string') {
+      name += `-${meta.version}`
+    }
+    if (typeof meta.revision === 'string' || typeof meta.revision === 'number') {
+      name += `-${meta.revision}`
+    }
+    return name
+  },
+  getUri: meta => [`liteloader://${meta.name}/${meta.version}`]
+})
 export const RESOURCE_PARSER_FABRIC: ResourceParser<FabricModMetadata> = ({
-    type: ResourceType.Fabric,
-    domain: ResourceDomain.Mods,
-    ext: '.jar',
-    parseIcon: async (meta, fs) => {
-        if (meta.icon) {
-            return fs.readFile(meta.icon);
-        }
-        return Promise.resolve(undefined);
-    },
-    parseMetadata: async fs => readFabricMod(fs),
-    getSuggestedName: (meta) => {
-        let name = '';
-        if (typeof meta.name === 'string') {
-            name += meta.name;
-        } else if (typeof meta.id === 'string') {
-            name += meta.id;
-        }
-        if (typeof meta.version === 'string') {
-            name += `-${meta.version}`;
-        } else {
-            name += '-0.0.0';
-        }
-        return name;
-    },
-    getUri: meta => [`fabric://${meta.id}/${meta.version}`],
-});
+  type: ResourceType.Fabric,
+  domain: ResourceDomain.Mods,
+  ext: '.jar',
+  parseIcon: async (meta, fs) => {
+    if (meta.icon) {
+      return fs.readFile(meta.icon)
+    }
+    return Promise.resolve(undefined)
+  },
+  parseMetadata: async fs => readFabricMod(fs),
+  getSuggestedName: (meta) => {
+    let name = ''
+    if (typeof meta.name === 'string') {
+      name += meta.name
+    } else if (typeof meta.id === 'string') {
+      name += meta.id
+    }
+    if (typeof meta.version === 'string') {
+      name += `-${meta.version}`
+    } else {
+      name += '-0.0.0'
+    }
+    return name
+  },
+  getUri: meta => [`fabric://${meta.id}/${meta.version}`]
+})
 export const RESOURCE_PARSER_RESOURCE_PACK: ResourceParser<PackMeta.Pack> = ({
-    type: ResourceType.ResourcePack,
-    domain: ResourceDomain.ResourcePacks,
-    ext: '.zip',
-    parseIcon: async (meta, fs) => readIcon(fs),
-    parseMetadata: fs => readPackMeta(fs),
-    getSuggestedName: () => '',
-    getUri: (_, hash) => [`resourcepack://${hash}`],
-});
+  type: ResourceType.ResourcePack,
+  domain: ResourceDomain.ResourcePacks,
+  ext: '.zip',
+  parseIcon: async (meta, fs) => readIcon(fs),
+  parseMetadata: fs => readPackMeta(fs),
+  getSuggestedName: () => '',
+  getUri: (_, hash) => [`resourcepack://${hash}`]
+})
 export const RESOURCE_PARSER_SAVE: ResourceParser<LevelDataFrame> = ({
-    type: ResourceType.Save,
-    domain: ResourceDomain.Saves,
-    ext: '.zip',
-    parseIcon: async (meta, fs) => fs.readFile('icon.png'),
-    parseMetadata: async fs => {
-        let root = await findLevelRoot(fs, '');
-        if (!root) throw new Error();
-        return deserialize(await fs.readFile(fs.join(root, 'level.dat')));
-    },
-    getSuggestedName: meta => meta.LevelName,
-    getUri: (_, hash) => [`save://${hash}`],
-});
+  type: ResourceType.Save,
+  domain: ResourceDomain.Saves,
+  ext: '.zip',
+  parseIcon: async (meta, fs) => fs.readFile('icon.png'),
+  parseMetadata: async fs => {
+    const root = await findLevelRoot(fs, '')
+    if (!root) throw new Error()
+    return deserialize(await fs.readFile(fs.join(root, 'level.dat')))
+  },
+  getSuggestedName: meta => meta.LevelName,
+  getUri: (_, hash) => [`save://${hash}`]
+})
 export const RESOURCE_PARSER_MODPACK: ResourceParser<CurseforgeModpackManifest> = ({
-    type: ResourceType.CurseforgeModpack,
-    domain: ResourceDomain.Modpacks,
-    ext: '.zip',
-    parseIcon: () => Promise.resolve(undefined),
-    parseMetadata: fs => fs.readFile('manifest.json', 'utf-8').then(JSON.parse),
-    getSuggestedName: () => '',
-    getUri: (_, hash) => [`modpack://${hash}`],
-});
+  type: ResourceType.CurseforgeModpack,
+  domain: ResourceDomain.Modpacks,
+  ext: '.zip',
+  parseIcon: () => Promise.resolve(undefined),
+  parseMetadata: fs => fs.readFile('manifest.json', 'utf-8').then(JSON.parse),
+  getSuggestedName: () => '',
+  getUri: (_, hash) => [`modpack://${hash}`]
+})
 export const RESOURCE_PARSER_COMMON_MODPACK: ResourceParser<{ root: string; runtime: RuntimeVersions }> = ({
-    type: ResourceType.Modpack,
-    domain: ResourceDomain.Modpacks,
-    ext: '.zip',
-    parseIcon: () => Promise.resolve(undefined),
-    parseMetadata: async (fs) => {
-        const findRoot = async () => {
-            if (await fs.isDirectory('./versions')
-                && await fs.isDirectory('./mods')) {
-                return '';
-            }
-            if (await fs.isDirectory('.minecraft')) {
-                return '.minecraft';
-            }
-            const files = await fs.listFiles('');
-            for (const file of files) {
-                if (await fs.isDirectory(file)) {
-                    if (await fs.isDirectory(fs.join(file, 'versions'))
-                        && await fs.isDirectory(fs.join(file, 'mods'))) {
-                        return file;
-                    }
-                    if (await fs.isDirectory(fs.join(file, '.minecraft'))) {
-                        return fs.join(file, '.minecraft');
-                    }
-                }
-            }
-            throw new Error();
-        };
-        const root = await findRoot();
-        const versions = await fs.listFiles(fs.join(root, 'versions'));
-        const runtime: RuntimeVersions = {
-            minecraft: '',
-            fabricLoader: '',
-            forge: '',
-            liteloader: '',
-            yarn: '',
-        };
-        for (const version of versions) {
-            const json = await fs.readFile(fs.join(fs.join(root, 'versions', version, `${version}.json`)), 'utf-8');
-            const partialVersion = Version.normalizeVersionJson(json, '');
-
-            resolveRuntimeVersion(partialVersion, runtime);
+  type: ResourceType.Modpack,
+  domain: ResourceDomain.Modpacks,
+  ext: '.zip',
+  parseIcon: () => Promise.resolve(undefined),
+  parseMetadata: async (fs) => {
+    const findRoot = async () => {
+      if (await fs.isDirectory('./versions') &&
+                await fs.isDirectory('./mods')) {
+        return ''
+      }
+      if (await fs.isDirectory('.minecraft')) {
+        return '.minecraft'
+      }
+      const files = await fs.listFiles('')
+      for (const file of files) {
+        if (await fs.isDirectory(file)) {
+          if (await fs.isDirectory(fs.join(file, 'versions')) &&
+                        await fs.isDirectory(fs.join(file, 'mods'))) {
+            return file
+          }
+          if (await fs.isDirectory(fs.join(file, '.minecraft'))) {
+            return fs.join(file, '.minecraft')
+          }
         }
+      }
+      throw new Error()
+    }
+    const root = await findRoot()
+    const versions = await fs.listFiles(fs.join(root, 'versions'))
+    const runtime: RuntimeVersions = {
+      minecraft: '',
+      fabricLoader: '',
+      forge: '',
+      liteloader: '',
+      yarn: ''
+    }
+    for (const version of versions) {
+      const json = await fs.readFile(fs.join(fs.join(root, 'versions', version, `${version}.json`)), 'utf-8')
+      const partialVersion = Version.normalizeVersionJson(json, '')
 
-        return { root, runtime };
-    },
-    getSuggestedName: () => '',
-    getUri: (_, hash) => [`modpack://${hash}`],
-});
+      resolveRuntimeVersion(partialVersion, runtime)
+    }
+
+    return { root, runtime }
+  },
+  getSuggestedName: () => '',
+  getUri: (_, hash) => [`modpack://${hash}`]
+})
 export const RESOURCE_PARSERS = [
-    RESOURCE_PARSER_COMMON_MODPACK,
-    RESOURCE_PARSER_FORGE,
-    RESOURCE_PARSER_FABRIC,
-    RESOURCE_PARSER_LITELOADER,
-    RESOURCE_PARSER_RESOURCE_PACK,
-    RESOURCE_PARSER_SAVE,
-    RESOURCE_PARSER_MODPACK,
-];
+  RESOURCE_PARSER_COMMON_MODPACK,
+  RESOURCE_PARSER_FORGE,
+  RESOURCE_PARSER_FABRIC,
+  RESOURCE_PARSER_LITELOADER,
+  RESOURCE_PARSER_RESOURCE_PACK,
+  RESOURCE_PARSER_SAVE,
+  RESOURCE_PARSER_MODPACK
+]
 
 // resource functions
 
 /**
  * Create a resource builder from source.
  */
-export function createResourceBuilder(source: SourceInformation = {}): ResourceBuilder {
-    return {
-        name: '',
-        location: '',
-        path: '',
-        hash: '',
-        ext: '',
-        domain: ResourceDomain.Unknown,
-        type: ResourceType.Unknown,
-        metadata: {},
-        ino: 0,
-        tags: [],
-        size: 0,
-        uri: [],
-        date: new Date().toJSON(),
-        ...source,
-    };
+export function createResourceBuilder (source: SourceInformation = {}): ResourceBuilder {
+  return {
+    name: '',
+    location: '',
+    path: '',
+    hash: '',
+    ext: '',
+    domain: ResourceDomain.Unknown,
+    type: ResourceType.Unknown,
+    metadata: {},
+    ino: 0,
+    tags: [],
+    size: 0,
+    uri: [],
+    date: new Date().toJSON(),
+    ...source
+  }
 }
-export function getResourceFromBuilder(builder: ResourceBuilder): Resource {
-    const res = { ...builder };
-    delete res.icon;
-    return Object.freeze(res);
+export function getResourceFromBuilder (builder: ResourceBuilder): Resource {
+  const res = { ...builder }
+  delete res.icon
+  return Object.freeze(res)
 }
-export function getBuilderFromResource(resource: Resource): ResourceBuilder {
-    return { ...resource };
+export function getBuilderFromResource (resource: Resource): ResourceBuilder {
+  return { ...resource }
 }
-export function mutateResource<T extends Resource<any>>(resource: T, mutation: (builder: ResourceBuilder) => void): T {
-    const builder = getBuilderFromResource(resource);
-    mutation(builder);
-    return getResourceFromBuilder(builder) as any;
-}
-
-export function getCurseforgeUrl(project: number, file: number): string {
-    return `curseforge://id/${project}/${file}`;
-}
-export function getGithubUrl(owner: string, repo: string, release: string) {
-    return `https://api.github.com/repos/${owner}/${repo}/releases/assets/${release}`;
-}
-export function getCurseforgeSourceInfo(project: number, file: number): SourceInformation {
-    return {
-        curseforge: {
-            projectId: project,
-            fileId: file,
-        },
-    };
+export function mutateResource<T extends Resource<any>> (resource: T, mutation: (builder: ResourceBuilder) => void): T {
+  const builder = getBuilderFromResource(resource)
+  mutation(builder)
+  return getResourceFromBuilder(builder) as any
 }
 
-export async function readHeader(path: string, hash: string, typeHint?: ImportTypeHint, parsers?: ResourceParser<any>[]): Promise<ResourceHeader> {
-    parsers = parsers ?? RESOURCE_PARSERS;
-
-    const ext = extname(path);
-    const hint = typeHint || '';
-    const chains: Array<ResourceParser<any>> = parsers
-        .filter((hint === '*' || hint === '') ? (ext ? (r => r.ext === ext) : (() => true)) : (r => r.domain === hint || r.type === hint));
-
-    if (ext === '.zip') {
-        chains.push(RESOURCE_PARSER_FORGE);
+export function getCurseforgeUrl (project: number, file: number): string {
+  return `curseforge://id/${project}/${file}`
+}
+export function getGithubUrl (owner: string, repo: string, release: string) {
+  return `https://api.github.com/repos/${owner}/${repo}/releases/assets/${release}`
+}
+export function getCurseforgeSourceInfo (project: number, file: number): SourceInformation {
+  return {
+    curseforge: {
+      projectId: project,
+      fileId: file
     }
+  }
+}
 
-    chains.push(UNKNOWN_ENTRY);
+export async function readHeader (path: string, hash: string, typeHint?: ImportTypeHint, parsers?: ResourceParser<any>[]): Promise<ResourceHeader> {
+  parsers = parsers ?? RESOURCE_PARSERS
 
-    let parser: ResourceParser<any> = UNKNOWN_ENTRY;
-    let metadata: any;
-    let icon: Uint8Array | undefined;
-    let fs = await openFileSystem(path);
+  const ext = extname(path)
+  const hint = typeHint || ''
+  const chains: Array<ResourceParser<any>> = parsers
+    .filter((hint === '*' || hint === '') ? (ext ? r => r.ext === ext : () => true) : r => r.domain === hint || r.type === hint)
 
-    for (const p of chains) {
-        try {
-            metadata = await p.parseMetadata(fs);
-            icon = await p.parseIcon(metadata, fs).catch(() => undefined);
-            parser = p;
-            break;
-        } catch (e) {
-            // skip
-        }
+  if (ext === '.zip') {
+    chains.push(RESOURCE_PARSER_FORGE)
+  }
+
+  chains.push(UNKNOWN_ENTRY)
+
+  let parser: ResourceParser<any> = UNKNOWN_ENTRY
+  let metadata: any
+  let icon: Uint8Array | undefined
+  const fs = await openFileSystem(path)
+
+  for (const p of chains) {
+    try {
+      metadata = await p.parseMetadata(fs)
+      icon = await p.parseIcon(metadata, fs).catch(() => undefined)
+      parser = p
+      break
+    } catch (e) {
+      // skip
     }
+  }
 
-    return {
-        hash,
-        domain: parser.domain,
-        type: parser.type,
-        metadata,
-        icon,
-        suggestedName: parser.getSuggestedName(metadata) || basename(path, ext),
-        uri: parser.getUri(metadata, hash),
-    };
+  return {
+    hash,
+    domain: parser.domain,
+    type: parser.type,
+    metadata,
+    icon,
+    suggestedName: parser.getSuggestedName(metadata) || basename(path, ext),
+    uri: parser.getUri(metadata, hash)
+  }
 }
 
 /**
  * Resolve resource and persist to disk
- * @param path The resource file path to import 
+ * @param path The resource file path to import
  * @param source The source
- * @param resolved 
- * @param root 
+ * @param resolved
+ * @param root
  */
-export async function resolveAndPersist(path: string, source: SourceInformation, url: string[], resolved: ResourceHeader, root: string) {
-    const { domain, type, metadata, icon, suggestedName, uri, hash } = resolved;
+export async function resolveAndPersist (path: string, source: SourceInformation, url: string[], resolved: ResourceHeader, root: string) {
+  const { domain, type, metadata, icon, suggestedName, uri, hash } = resolved
 
-    const builder = createResourceBuilder(source);
-    builder.name = suggestedName;
-    builder.metadata = metadata;
-    builder.domain = domain;
-    builder.type = type;
-    builder.icon = icon;
-    builder.uri.push(...uri, ...url);
-    builder.ext = extname(path);
-    builder.hash = hash;
+  const builder = createResourceBuilder(source)
+  builder.name = suggestedName
+  builder.metadata = metadata
+  builder.domain = domain
+  builder.type = type
+  builder.icon = icon
+  builder.uri.push(...uri, ...url)
+  builder.ext = extname(path)
+  builder.hash = hash
 
-    if (source.curseforge) {
-        builder.uri.push(getCurseforgeUrl(source.curseforge.projectId, source.curseforge.fileId));
-        builder.curseforge = source.curseforge;
-    }
+  if (source.curseforge) {
+    builder.uri.push(getCurseforgeUrl(source.curseforge.projectId, source.curseforge.fileId))
+    builder.curseforge = source.curseforge
+  }
 
-    if (source.github) {
-        builder.uri.push(getGithubUrl(source.github.owner, source.github.repo, source.github.artifact));
-        builder.github = source.github;
-    }
+  if (source.github) {
+    builder.uri.push(getGithubUrl(source.github.owner, source.github.repo, source.github.artifact))
+    builder.github = source.github
+  }
 
-    const name = filenamify(suggestedName, { replacement: '-' });
-    const slice = builder.hash.slice(0, 6);
+  const name = filenamify(suggestedName, { replacement: '-' })
+  const slice = builder.hash.slice(0, 6)
 
-    const location = join(builder.domain, `${name}.${slice}`);
-    const filePath = join(root, `${location}${builder.ext}`);
-    const metadataPath = join(root, `${location}.json`);
-    const iconPath = join(root, `${location}.png`);
+  const location = join(builder.domain, `${name}.${slice}`)
+  const filePath = join(root, `${location}${builder.ext}`)
+  const metadataPath = join(root, `${location}.json`)
+  const iconPath = join(root, `${location}.png`)
 
-    await ensureFile(filePath);
-    await linkOrCopy(path, filePath);
-    if (builder.icon) {
-        await writeFile(iconPath, builder.icon);
-    }
+  await ensureFile(filePath)
+  await linkOrCopy(path, filePath)
+  if (builder.icon) {
+    await writeFile(iconPath, builder.icon)
+  }
 
-    const fileStatus = await stat(filePath);
+  const fileStatus = await stat(filePath)
 
-    builder.location = location;
-    builder.path = filePath;
-    builder.size = fileStatus.size;
-    builder.ino = fileStatus.ino;
+  builder.location = location
+  builder.path = filePath
+  builder.size = fileStatus.size
+  builder.ino = fileStatus.ino
 
-    const resource = getResourceFromBuilder(builder);
+  const resource = getResourceFromBuilder(builder)
 
-    await writeFile(metadataPath, JSON.stringify(resource, null, 4));
+  await writeFile(metadataPath, JSON.stringify(resource, null, 4))
 
-    return resource;
+  return resource
 }
 
-export async function remove(resource: Readonly<Resource>, root: string) {
-    let baseName = basename(resource.path, resource.ext);
+export async function remove (resource: Readonly<Resource>, root: string) {
+  const baseName = basename(resource.path, resource.ext)
 
-    let filePath = join(root, resource.domain, `${baseName}${resource.ext}`);
-    let metadataPath = join(root, resource.domain, `${baseName}.json`);
-    let iconPath = join(root, resource.domain, `${baseName}.png`);
+  const filePath = join(root, resource.domain, `${baseName}${resource.ext}`)
+  const metadataPath = join(root, resource.domain, `${baseName}.json`)
+  const iconPath = join(root, resource.domain, `${baseName}.png`)
 
-    await unlink(filePath);
-    await unlink(metadataPath);
-    await unlink(iconPath).catch(() => { });
+  await unlink(filePath)
+  await unlink(metadataPath)
+  await unlink(iconPath).catch(() => { })
 }
-
 
 // resource class
 
 export class ResourceCache {
     private cache: Record<string, Resources> = {};
 
-    put(resource: Resources) {
-        this.cache[resource.hash] = resource;
-        if (resource.uri) {
-            for (let url of resource.uri) {
-                this.cache[url] = resource;
-            }
+    put (resource: Resources) {
+      this.cache[resource.hash] = resource
+      if (resource.uri) {
+        for (const url of resource.uri) {
+          this.cache[url] = resource
         }
-        this.cache[resource.ino] = resource;
-        this.cache[resource.path] = resource;
-        if (resource.curseforge) {
-            this.cache[getCurseforgeUrl(resource.curseforge.projectId, resource.curseforge.fileId)] = resource;
-        }
+      }
+      this.cache[resource.ino] = resource
+      this.cache[resource.path] = resource
+      if (resource.curseforge) {
+        this.cache[getCurseforgeUrl(resource.curseforge.projectId, resource.curseforge.fileId)] = resource
+      }
     }
 
-    discard(resource: Resource) {
-        delete this.cache[resource.hash];
-        for (let url of resource.uri) {
-            delete this.cache[url];
-        }
-        delete this.cache[resource.ino];
-        delete this.cache[resource.path];
+    discard (resource: Resource) {
+      delete this.cache[resource.hash]
+      for (const url of resource.uri) {
+        delete this.cache[url]
+      }
+      delete this.cache[resource.ino]
+      delete this.cache[resource.path]
     }
 
-    get(key: string | number) {
-        return this.cache[key];
+    get (key: string | number) {
+      return this.cache[key]
     }
 }

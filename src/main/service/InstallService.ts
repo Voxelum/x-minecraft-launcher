@@ -1,14 +1,12 @@
-import LauncherApp from '@main/app/LauncherApp';
-import { JSONPersister } from '@main/util/persistance';
-import { compareRelease, getExpectVersion, isFabricLoaderLibrary, isForgeLibrary } from '@universal/entities/version';
-import { ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '@universal/entities/version.schema';
-import { MutationKeys } from '@universal/store';
-import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core';
-import { DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL, generateOptifineVersion } from '@xmcl/installer';
-import { task } from '@xmcl/task';
-import { ensureFile, readJSON, writeFile } from 'fs-extra';
-import Service, { Inject, MutationTrigger, Singleton } from './Service';
-import VersionService from './VersionService';
+import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
+import { DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL } from '@xmcl/installer'
+import { task } from '@xmcl/task'
+import { ensureFile, readJSON, writeFile } from 'fs-extra'
+import Service, { Inject, Singleton } from './Service'
+import VersionService from './VersionService'
+import LauncherApp from '/@main/app/LauncherApp'
+import { isFabricLoaderLibrary, isForgeLibrary } from '/@shared/entities/version'
+import { ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '/@shared/entities/version.schema'
 
 export interface InstallOptifineOptions extends OptifineVersion {
     inhrenitFrom?: string;
@@ -31,88 +29,88 @@ export default class InstallService extends Service {
 
     private refreshedForge: Record<string, boolean> = {};
 
-    constructor(app: LauncherApp) {
-        super(app);
-        this.persistManager.registerStoreJsonSerializable(this.getPath('minecraft-versions.json'), VersionMinecraftSchema,
-            (v) => this.commit('minecraftMetadata', v), () => this.state.version.minecraft, ['minecraftMetadata']);
-        this.persistManager.registerStoreJsonSerializable(this.getPath('forge-versions.json'), VersionForgeSchema,
-            (v) => v.forEach(val => this.commit('forgeMetadata', val)), () => this.state.version.forge, ['forgeMetadata']);
-        this.persistManager.registerStoreJsonSerializable(this.getPath('lite-versions.json'), VersionLiteloaderSchema,
-            (v) => this.commit('liteloaderMetadata', v), () => this.state.version.liteloader, ['liteloaderMetadata']);
-        this.persistManager.registerStoreJsonSerializable(this.getPath('fabric-versions.json'), VersionFabricSchema,
-            (v) => {
-                this.commit('fabricLoaderMetadata', { versions: v.loaders, timestamp: v.loaderTimestamp });
-                this.commit('fabricYarnMetadata', { versions: v.yarns, timestamp: v.yarnTimestamp });
-            }, () => this.state.version.fabric, ['fabricLoaderMetadata', 'fabricYarnMetadata']);
-        this.persistManager.registerStoreJsonSerializable(this.getPath('optifine-versions.json'), VersionOptifineSchema,
-            (v) => this.commit('optifineMetadata', v), () => this.state.version.optifine, ['optifineMetadata']);
+    constructor (app: LauncherApp) {
+      super(app)
+      this.persistManager.registerStoreJsonSerializable(this.getPath('minecraft-versions.json'), VersionMinecraftSchema,
+        (v) => this.commit('minecraftMetadata', v), () => this.state.version.minecraft, ['minecraftMetadata'])
+      this.persistManager.registerStoreJsonSerializable(this.getPath('forge-versions.json'), VersionForgeSchema,
+        (v) => v.forEach(val => this.commit('forgeMetadata', val)), () => this.state.version.forge, ['forgeMetadata'])
+      this.persistManager.registerStoreJsonSerializable(this.getPath('lite-versions.json'), VersionLiteloaderSchema,
+        (v) => this.commit('liteloaderMetadata', v), () => this.state.version.liteloader, ['liteloaderMetadata'])
+      this.persistManager.registerStoreJsonSerializable(this.getPath('fabric-versions.json'), VersionFabricSchema,
+        (v) => {
+          this.commit('fabricLoaderMetadata', { versions: v.loaders, timestamp: v.loaderTimestamp })
+          this.commit('fabricYarnMetadata', { versions: v.yarns, timestamp: v.yarnTimestamp })
+        }, () => this.state.version.fabric, ['fabricLoaderMetadata', 'fabricYarnMetadata'])
+      this.persistManager.registerStoreJsonSerializable(this.getPath('optifine-versions.json'), VersionOptifineSchema,
+        (v) => this.commit('optifineMetadata', v), () => this.state.version.optifine, ['optifineMetadata'])
     }
 
-    protected getMinecraftJsonManifestRemote() {
-        if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
-            const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference);
-            if (api) {
-                return `${api.url}/mc/game/version_manifest.json`;
-            }
+    protected getMinecraftJsonManifestRemote () {
+      if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
+        const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference)
+        if (api) {
+          return `${api.url}/mc/game/version_manifest.json`
         }
-        return undefined;
+      }
+      return undefined
     }
 
-    protected getForgeInstallOptions(): InstallForgeOptions {
-        const options: InstallForgeOptions = {
-            ...this.networkManager.getDownloadBaseOptions(),
-            overwriteWhen: 'checksumNotMatch',
-            java: this.getters.defaultJava.path,
-        };
-        if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
-            const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference);
-            if (api) {
-                options.mavenHost = [`${api.url}/maven`];
-            }
+    protected getForgeInstallOptions (): InstallForgeOptions {
+      const options: InstallForgeOptions = {
+        ...this.networkManager.getDownloadBaseOptions(),
+        overwriteWhen: 'checksumNotMatch',
+        java: this.getters.defaultJava.path
+      }
+      if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
+        const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference)
+        if (api) {
+          options.mavenHost = [`${api.url}/maven`]
         }
-        return options;
+      }
+      return options
     }
 
-    protected getInstallOptions(): Options {
-        const option: Options = {
-            assetsDownloadConcurrency: 16,
-            ...this.networkManager.getDownloadBaseOptions(),
-            overwriteWhen: 'checksumNotMatch',
-            side: 'client',
-        };
+    protected getInstallOptions (): Options {
+      const option: Options = {
+        assetsDownloadConcurrency: 16,
+        ...this.networkManager.getDownloadBaseOptions(),
+        overwriteWhen: 'checksumNotMatch',
+        side: 'client'
+      }
 
-        if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
-            const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference);
-            if (api) {
-                option.assetsHost = `${api.url}/assets`;
-                option.mavenHost = `${api.url}/maven`;
-                option.assetsIndexUrl = (u) => {
-                    const url = new URL(u.assetIndex.url);
-                    const host = new URL(api.url).host;
-                    url.host = host;
-                    url.hostname = host;
-                    return url.toString();
-                };
-                option.json = (u) => {
-                    const url = new URL(u.url);
-                    const host = new URL(api.url).host;
-                    url.host = host;
-                    url.hostname = host;
-                    return url.toString();
-                };
-                option.client = (u) => {
-                    const url = new URL(u.downloads.client.url);
-                    const host = new URL(api.url).host;
-                    url.host = host;
-                    url.hostname = host;
-                    return url.toString();
-                };
-            }
+      if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
+        const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference)
+        if (api) {
+          option.assetsHost = `${api.url}/assets`
+          option.mavenHost = `${api.url}/maven`
+          option.assetsIndexUrl = (u) => {
+            const url = new URL(u.assetIndex.url)
+            const host = new URL(api.url).host
+            url.host = host
+            url.hostname = host
+            return url.toString()
+          }
+          option.json = (u) => {
+            const url = new URL(u.url)
+            const host = new URL(api.url).host
+            url.host = host
+            url.hostname = host
+            return url.toString()
+          }
+          option.client = (u) => {
+            const url = new URL(u.downloads.client.url)
+            const host = new URL(api.url).host
+            url.host = host
+            url.hostname = host
+            return url.toString()
+          }
         }
-        return option;
+      }
+      return option
     }
 
-    private async getForgesFromBMCL(mcversion: string, currentForgeVersion: ForgeVersionList) {
+    private async getForgesFromBMCL (mcversion: string, currentForgeVersion: ForgeVersionList) {
         interface BMCLForge {
             'branch': string; // '1.9';
             'build': string; // 1766;
@@ -127,60 +125,60 @@ export default class InstallService extends Service {
         }
 
         const { body, statusCode, headers } = await this.networkManager.request({
-            method: 'GET',
-            url: `https://bmclapi2.bangbang93.com/forge/minecraft/${mcversion}`,
-            headers: currentForgeVersion && currentForgeVersion.timestamp
-                ? {
-                    'If-Modified-Since': currentForgeVersion.timestamp,
-                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
-                }
-                : {
-                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
-                },
-            rejectUnauthorized: false,
-        });
-        function convert(v: BMCLForge): ForgeVersion {
-            let installer = v.files.find(f => f.category === 'installer')!;
-            let universal = v.files.find(f => f.category === 'universal')!;
-            return {
-                mcversion: v.mcversion,
-                version: v.version,
-                type: 'common',
-                date: v.modified,
-            } as any;
+          method: 'GET',
+          url: `https://bmclapi2.bangbang93.com/forge/minecraft/${mcversion}`,
+          headers: currentForgeVersion && currentForgeVersion.timestamp
+            ? {
+              'If-Modified-Since': currentForgeVersion.timestamp,
+              'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45'
+            }
+            : {
+              'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45'
+            },
+          rejectUnauthorized: false
+        })
+        function convert (v: BMCLForge): ForgeVersion {
+          const installer = v.files.find(f => f.category === 'installer')!
+          const universal = v.files.find(f => f.category === 'universal')!
+          return {
+            mcversion: v.mcversion,
+            version: v.version,
+            type: 'common',
+            date: v.modified
+          } as any
         }
         if (statusCode === 304) {
-            return currentForgeVersion;
+          return currentForgeVersion
         }
-        const forges: BMCLForge[] = JSON.parse(body);
+        const forges: BMCLForge[] = JSON.parse(body)
         const result: ForgeVersionList = {
-            mcversion,
-            timestamp: headers['if-modified-since'] ?? forges[0]?.modified,
-            versions: forges.map(convert),
-        };
-        return result;
+          mcversion,
+          timestamp: headers['if-modified-since'] ?? forges[0]?.modified,
+          versions: forges.map(convert)
+        }
+        return result
     }
 
     /**
      * Request minecraft version list and cache in to store and disk.
      */
     @Singleton()
-    async refreshMinecraft(force = false) {
-        if (!force && this.refreshedMinecraft) {
-            this.log('Skip to refresh Minecraft metadata. Use cache.');
-            return;
-        }
-        this.log('Start to refresh minecraft version metadata.');
-        const oldMetadata = this.state.version.minecraft;
-        const remote = this.getMinecraftJsonManifestRemote();
-        const newMetadata = await getVersionList({ original: oldMetadata, remote });
-        if (oldMetadata !== newMetadata) {
-            this.log('Found new minecraft version metadata. Update it.');
-            this.commit('minecraftMetadata', newMetadata);
-        } else {
-            this.log('Not found new Minecraft version metadata. Use cache.');
-        }
-        this.refreshedMinecraft = true;
+    async refreshMinecraft (force = false) {
+      if (!force && this.refreshedMinecraft) {
+        this.log('Skip to refresh Minecraft metadata. Use cache.')
+        return
+      }
+      this.log('Start to refresh minecraft version metadata.')
+      const oldMetadata = this.state.version.minecraft
+      const remote = this.getMinecraftJsonManifestRemote()
+      const newMetadata = await getVersionList({ original: oldMetadata, remote })
+      if (oldMetadata !== newMetadata) {
+        this.log('Found new minecraft version metadata. Update it.')
+        this.commit('minecraftMetadata', newMetadata)
+      } else {
+        this.log('Not found new Minecraft version metadata. Use cache.')
+      }
+      this.refreshedMinecraft = true
     }
 
     /**
@@ -188,41 +186,41 @@ export default class InstallService extends Service {
      * @param version The local version id
      */
     @Singleton('install')
-    async installAssetsAll(version: string) {
-        const option = this.getInstallOptions();
-        const location = this.state.root;
-        const resolvedVersion = await Version.parse(location, version);
-        await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'));
+    async installAssetsAll (version: string) {
+      const option = this.getInstallOptions()
+      const location = this.state.root
+      const resolvedVersion = await Version.parse(location, version)
+      await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
     }
 
     @Singleton('install')
-    async installDependencies(version: string) {
-        const option = this.getInstallOptions();
-        const location = this.state.root;
-        const resolvedVersion = await Version.parse(location, version);
-        await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries'));
-        await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'));
+    async installDependencies (version: string) {
+      const option = this.getInstallOptions()
+      const location = this.state.root
+      const resolvedVersion = await Version.parse(location, version)
+      await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries'))
+      await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
     }
 
     @Singleton('install')
-    async reinstall(version: string) {
-        const option = this.getInstallOptions();
-        const location = this.state.root;
-        const local = this.state.version.local.find(v => v.id === version);
-        if (!local) {
-            throw new Error(`Cannot reinstall ${version} as it's not found!`);
-        }
-        await this.submit(installVersionTask({ id: local.minecraftVersion, url: '' }, location).setName('installVersion'));
-        const forgeLib = local.libraries.find(isForgeLibrary);
-        if (forgeLib) {
-            await this.submit(installForgeTask({ version: forgeLib.version, mcversion: local.minecraftVersion }, location).setName('installForge'));
-        }
-        const fabLib = local.libraries.find(isFabricLoaderLibrary);
-        if (fabLib) {
-            await this.installFabric({ minecraft: local.minecraftVersion, loader: fabLib.version });
-        }
-        await this.submit(installLibrariesTask(local, option).setName('installLibraries'));
-        await this.submit(installAssetsTask(local, option).setName('installAssets'));
+    async reinstall (version: string) {
+      const option = this.getInstallOptions()
+      const location = this.state.root
+      const local = this.state.version.local.find(v => v.id === version)
+      if (!local) {
+        throw new Error(`Cannot reinstall ${version} as it's not found!`)
+      }
+      await this.submit(installVersionTask({ id: local.minecraftVersion, url: '' }, location).setName('installVersion'))
+      const forgeLib = local.libraries.find(isForgeLibrary)
+      if (forgeLib) {
+        await this.submit(installForgeTask({ version: forgeLib.version, mcversion: local.minecraftVersion }, location).setName('installForge'))
+      }
+      const fabLib = local.libraries.find(isFabricLoaderLibrary)
+      if (fabLib) {
+        await this.installFabric({ minecraft: local.minecraftVersion, loader: fabLib.version })
+      }
+      await this.submit(installLibrariesTask(local, option).setName('installLibraries'))
+      await this.submit(installAssetsTask(local, option).setName('installAssets'))
     }
 
     /**
@@ -230,157 +228,157 @@ export default class InstallService extends Service {
      * @param version The local version id
      */
     @Singleton('install')
-    async installAssets(assets: { name: string; size: number; hash: string }[]) {
-        const option = this.getInstallOptions();
-        const location = this.state.root;
-        const task = installResolvedAssetsTask(assets, new MinecraftFolder(location), option).setName('installAssets');
-        await this.submit(task);
+    async installAssets (assets: { name: string; size: number; hash: string }[]) {
+      const option = this.getInstallOptions()
+      const location = this.state.root
+      const task = installResolvedAssetsTask(assets, new MinecraftFolder(location), option).setName('installAssets')
+      await this.submit(task)
     }
 
     /**
      * Download and install a minecract version
      */
     @Singleton('install')
-    async installMinecraft(meta: MinecraftVersion) {
-        const id = meta.id;
+    async installMinecraft (meta: MinecraftVersion) {
+      const id = meta.id
 
-        const option = this.getInstallOptions();
-        const task = installVersionTask(meta, this.state.root, option).setName('installVersion');
-        try {
-            await this.submit(task);
-            this.local.refreshVersions();
-        } catch (e) {
-            this.warn(`An error ocurred during download version ${id}`);
-            this.warn(e);
-        }
+      const option = this.getInstallOptions()
+      const task = installVersionTask(meta, this.state.root, option).setName('installVersion')
+      try {
+        await this.submit(task)
+        this.local.refreshVersions()
+      } catch (e) {
+        this.warn(`An error ocurred during download version ${id}`)
+        this.warn(e)
+      }
     }
 
     /**
      * Install provided libraries.
      */
     @Singleton('install')
-    async installLibraries({ libraries }: { libraries: (Version.Library | ResolvedLibrary)[] }) {
-        let resolved: ResolvedLibrary[];
-        if ('downloads' in libraries[0]) {
-            resolved = Version.resolveLibraries(libraries);
-        } else {
-            resolved = libraries as any;
-        }
-        const option = this.getInstallOptions();
-        const task = installResolvedLibrariesTask(resolved, this.state.root, option).setName('installLibraries');
-        try {
-            await this.submit(task);
-        } catch (e) {
-            this.warn('An error ocurred during install libraries:');
-            this.warn(e);
-        }
+    async installLibraries ({ libraries }: { libraries: (Version.Library | ResolvedLibrary)[] }) {
+      let resolved: ResolvedLibrary[]
+      if ('downloads' in libraries[0]) {
+        resolved = Version.resolveLibraries(libraries)
+      } else {
+        resolved = libraries as any
+      }
+      const option = this.getInstallOptions()
+      const task = installResolvedLibrariesTask(resolved, this.state.root, option).setName('installLibraries')
+      try {
+        await this.submit(task)
+      } catch (e) {
+        this.warn('An error ocurred during install libraries:')
+        this.warn(e)
+      }
     }
 
     /**
-    * Refresh forge remote versions cache from forge websites 
+    * Refresh forge remote versions cache from forge websites
     */
     @Singleton()
-    async refreshForge(options: { force?: boolean; mcversion?: string } = {}) {
-        let { mcversion, force } = options;
+    async refreshForge (options: { force?: boolean; mcversion?: string } = {}) {
+      let { mcversion, force } = options
 
-        mcversion = mcversion || this.getters.instance.runtime.minecraft;
+      mcversion = mcversion || this.getters.instance.runtime.minecraft
 
-        if (!force && this.refreshedForge[mcversion]) {
-            this.log(`Skip to refresh forge metadata from ${mcversion}. Use cache.`);
-            return;
+      if (!force && this.refreshedForge[mcversion]) {
+        this.log(`Skip to refresh forge metadata from ${mcversion}. Use cache.`)
+        return
+      }
+      this.refreshedForge[mcversion] = true
+
+      let minecraftVersion = mcversion
+      if (!minecraftVersion) {
+        const prof = this.state.instance.all[this.state.instance.path]
+        if (!prof) {
+          this.log('The instance refreshing is not ready. Break forge versions list update.')
+          return
         }
-        this.refreshedForge[mcversion] = true;
+        minecraftVersion = prof.runtime.minecraft
+      }
 
-        let minecraftVersion = mcversion;
-        if (!minecraftVersion) {
-            const prof = this.state.instance.all[this.state.instance.path];
-            if (!prof) {
-                this.log('The instance refreshing is not ready. Break forge versions list update.');
-                return;
-            }
-            minecraftVersion = prof.runtime.minecraft;
+      try {
+        const currentForgeVersion = this.state.version.forge.find(f => f.mcversion === minecraftVersion)!
+
+        let newForgeVersion = currentForgeVersion
+        if (this.networkManager.isInGFW) {
+          this.log(`Update forge version list (BMCL) for Minecraft ${minecraftVersion}`)
+          newForgeVersion = await this.getForgesFromBMCL(mcversion, currentForgeVersion)
+        } else {
+          this.log(`Update forge version list (ForgeOfficial) for Minecraft ${minecraftVersion}`)
+          newForgeVersion = await getForgeVersionList({ mcversion: minecraftVersion, original: currentForgeVersion as any }) as any
         }
 
-        try {
-            const currentForgeVersion = this.state.version.forge.find(f => f.mcversion === minecraftVersion)!;
-
-            let newForgeVersion = currentForgeVersion;
-            if (this.networkManager.isInGFW) {
-                this.log(`Update forge version list (BMCL) for Minecraft ${minecraftVersion}`);
-                newForgeVersion = await this.getForgesFromBMCL(mcversion, currentForgeVersion);
-            } else {
-                this.log(`Update forge version list (ForgeOfficial) for Minecraft ${minecraftVersion}`);
-                newForgeVersion = await getForgeVersionList({ mcversion: minecraftVersion, original: currentForgeVersion as any }) as any;
-            }
-
-            if (newForgeVersion !== currentForgeVersion) {
-                this.log('Found new forge versions list. Update it');
-                this.commit('forgeMetadata', newForgeVersion);
-            } else {
-                this.log('No new forge version metadata found. Skip.');
-            }
-        } catch (e) {
-            this.error(`Fail to fetch forge info of ${minecraftVersion}`);
-            this.error(e);
+        if (newForgeVersion !== currentForgeVersion) {
+          this.log('Found new forge versions list. Update it')
+          this.commit('forgeMetadata', newForgeVersion)
+        } else {
+          this.log('No new forge version metadata found. Skip.')
         }
+      } catch (e) {
+        this.error(`Fail to fetch forge info of ${minecraftVersion}`)
+        this.error(e)
+      }
     }
 
     /**
      * Install forge by forge version metadata
      */
     @Singleton('install')
-    async installForge(meta: Parameters<typeof installForgeTask>[0]) {
-        const options = this.getForgeInstallOptions();
+    async installForge (meta: Parameters<typeof installForgeTask>[0]) {
+      const options = this.getForgeInstallOptions()
 
-        let version: string | undefined;
-        try {
-            this.log(`Start to install forge ${meta.version} on ${meta.mcversion}`);
-            version = await this.submit(installForgeTask(meta, this.state.root, options));
-            this.local.refreshVersions();
-            this.log(`Success to install forge ${meta.version} on ${meta.mcversion}`);
-        } catch (err) {
-            this.warn(`An error ocurred during download version ${meta.version}@${meta.mcversion}`);
-            this.warn(err);
-        }
+      let version: string | undefined
+      try {
+        this.log(`Start to install forge ${meta.version} on ${meta.mcversion}`)
+        version = await this.submit(installForgeTask(meta, this.state.root, options))
+        this.local.refreshVersions()
+        this.log(`Success to install forge ${meta.version} on ${meta.mcversion}`)
+      } catch (err) {
+        this.warn(`An error ocurred during download version ${meta.version}@${meta.mcversion}`)
+        this.warn(err)
+      }
 
-        return version;
+      return version
     }
 
     /**
-     * 
+     *
      * @param force shouls the version be refresh regardless if we have already refreshed fabric version.
      */
     @Singleton()
-    async refreshFabric(force = false) {
-        if (!force && this.refreshedFabric) {
-            this.log('Skip to refresh fabric metadata. Use cache.');
-            return;
-        }
+    async refreshFabric (force = false) {
+      if (!force && this.refreshedFabric) {
+        this.log('Skip to refresh fabric metadata. Use cache.')
+        return
+      }
 
-        this.log('Start to refresh fabric metadata');
+      this.log('Start to refresh fabric metadata')
 
-        const getIfModified = async (url: string, timestamp: string) => {
-            let { statusCode, headers } = await this.networkManager.request.head(url, { headers: { 'if-modified-since': timestamp } });
-            return [statusCode === 200, headers['last-modified'] ?? timestamp] as const;
-        };
+      const getIfModified = async (url: string, timestamp: string) => {
+        const { statusCode, headers } = await this.networkManager.request.head(url, { headers: { 'if-modified-since': timestamp } })
+        return [statusCode === 200, headers['last-modified'] ?? timestamp] as const
+      }
 
-        const [yarnModified, yarnDate] = await getIfModified(YARN_MAVEN_URL, this.state.version.fabric.yarnTimestamp);
+      const [yarnModified, yarnDate] = await getIfModified(YARN_MAVEN_URL, this.state.version.fabric.yarnTimestamp)
 
-        if (yarnModified) {
-            let versions = await getYarnArtifactList();
-            this.commit('fabricYarnMetadata', { versions, timestamp: yarnDate });
-            this.log(`Refreshed fabric yarn metadata at ${yarnDate}.`);
-        }
+      if (yarnModified) {
+        const versions = await getYarnArtifactList()
+        this.commit('fabricYarnMetadata', { versions, timestamp: yarnDate })
+        this.log(`Refreshed fabric yarn metadata at ${yarnDate}.`)
+      }
 
-        const [loaderModified, loaderDate] = await getIfModified(LOADER_MAVEN_URL, this.state.version.fabric.loaderTimestamp);
+      const [loaderModified, loaderDate] = await getIfModified(LOADER_MAVEN_URL, this.state.version.fabric.loaderTimestamp)
 
-        if (loaderModified) {
-            let versions = await getLoaderArtifactList();
-            this.commit('fabricLoaderMetadata', { versions, timestamp: loaderDate });
-            this.log(`Refreshed fabric loader metadata at ${loaderDate}.`);
-        }
+      if (loaderModified) {
+        const versions = await getLoaderArtifactList()
+        this.commit('fabricLoaderMetadata', { versions, timestamp: loaderDate })
+        this.log(`Refreshed fabric loader metadata at ${loaderDate}.`)
+      }
 
-        this.refreshedFabric = true;
+      this.refreshedFabric = true
     }
 
     /**
@@ -388,137 +386,137 @@ export default class InstallService extends Service {
      * @param versions The fabric versions
      */
     @Singleton('install')
-    async installFabric(versions: { yarn?: string; loader: string; minecraft: string }) {
-        try {
-            this.log(`Start to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`);
-            const result = await this.submit(task('installFabric', async () => {
-                const artifact = await getFabricLoaderArtifact(versions.minecraft, versions.loader);
-                return installFabric(artifact, this.getPath(), { side: 'client' });
-            }));
-            this.local.refreshVersions();
-            this.log(`Success to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`);
-            return result;
-        } catch (e) {
-            this.warn(`An error ocurred during install fabric yarn-${versions.yarn}, loader-${versions.loader}`);
-            this.warn(e);
-        }
-        return undefined;
+    async installFabric (versions: { yarn?: string; loader: string; minecraft: string }) {
+      try {
+        this.log(`Start to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`)
+        const result = await this.submit(task('installFabric', async () => {
+          const artifact = await getFabricLoaderArtifact(versions.minecraft, versions.loader)
+          return installFabric(artifact, this.getPath(), { side: 'client' })
+        }))
+        this.local.refreshVersions()
+        this.log(`Success to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`)
+        return result
+      } catch (e) {
+        this.warn(`An error ocurred during install fabric yarn-${versions.yarn}, loader-${versions.loader}`)
+        this.warn(e)
+      }
+      return undefined
     }
 
     @Singleton('install')
-    async installOptifine(options: InstallOptifineOptions) {
-        const minecraft = new MinecraftFolder(this.getPath());
-        const optifineVersion = `${options.type}_${options.patch}`;
-        const version = `${options.mcversion}_${optifineVersion}`;
-        const path = new MinecraftFolder(this.getPath()).getLibraryByPath(`/optifine/OptiFine/${version}/OptiFine-${version}-universal.jar`);
-        const downloadOptions = this.networkManager.getDownloadBaseOptions();
+    async installOptifine (options: InstallOptifineOptions) {
+      const minecraft = new MinecraftFolder(this.getPath())
+      const optifineVersion = `${options.type}_${options.patch}`
+      const version = `${options.mcversion}_${optifineVersion}`
+      const path = new MinecraftFolder(this.getPath()).getLibraryByPath(`/optifine/OptiFine/${version}/OptiFine-${version}-universal.jar`)
+      const downloadOptions = this.networkManager.getDownloadBaseOptions()
 
-        this.log(`Install optifine ${version} on ${options.inhrenitFrom ?? options.mcversion}`);
+      this.log(`Install optifine ${version} on ${options.inhrenitFrom ?? options.mcversion}`)
 
-        let installFromForge = false;
-        if (options.inhrenitFrom === options.mcversion) {
-            options.inhrenitFrom = undefined;
+      let installFromForge = false
+      if (options.inhrenitFrom === options.mcversion) {
+        options.inhrenitFrom = undefined
+      }
+      if (options.inhrenitFrom) {
+        const from = await Version.parse(minecraft, options.inhrenitFrom)
+        if (from.libraries.some(isForgeLibrary)) {
+          installFromForge = true
+          // install over forge
+        } else if (from.libraries.some(isFabricLoaderLibrary)) {
+          this.warn('Installing optifine over a fabric! This might not work!')
         }
+      }
+
+      const java = this.getters.defaultJava.valid ? this.getters.defaultJava.path : undefined
+
+      const id = await this.submit(task('installOptifine', async function () {
+        await this.yield(new DownloadTask({
+          ...downloadOptions,
+          url: `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
+          destination: path
+        }).setName('download'))
+        let id: string = await this.concat(installOptifineTask(path, minecraft, { java }))
+
         if (options.inhrenitFrom) {
-            const from = await Version.parse(minecraft, options.inhrenitFrom);
-            if (from.libraries.some(isForgeLibrary)) {
-                installFromForge = true;
-                // install over forge
-            } else if (from.libraries.some(isFabricLoaderLibrary)) {
-                this.warn('Installing optifine over a fabric! This might not work!');
-            }
+          const parentJson: Version = await readJSON(minecraft.getVersionJson(options.inhrenitFrom))
+          const json: Version = await readJSON(minecraft.getVersionJson(id))
+          json.inheritsFrom = options.inhrenitFrom
+          json.id = `${options.inhrenitFrom}-Optifine-${version}`
+          if (installFromForge) {
+                    json.arguments!.game = ['--tweakClass', 'optifine.OptiFineForgeTweaker']
+                    json.mainClass = parentJson.mainClass
+          }
+          const dest = minecraft.getVersionJson(json.id)
+          await ensureFile(dest)
+          await writeFile(dest, JSON.stringify(json, null, 4))
+          id = json.id
         }
+        return id
+      }))
 
-        const java = this.getters.defaultJava.valid ? this.getters.defaultJava.path : undefined;
+      this.log(`Succeed to install optifine ${version} on ${options.inhrenitFrom ?? options.mcversion}. ${id}`)
 
-        const id = await this.submit(task('installOptifine', async function () {
-            await this.yield(new DownloadTask({
-                ...downloadOptions,
-                url: `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
-                destination: path,
-            }).setName('download'));
-            let id: string = await this.concat(installOptifineTask(path, minecraft, { java }));
-
-            if (options.inhrenitFrom) {
-                const parentJson: Version = await readJSON(minecraft.getVersionJson(options.inhrenitFrom));
-                const json: Version = await readJSON(minecraft.getVersionJson(id));
-                json.inheritsFrom = options.inhrenitFrom;
-                json.id = `${options.inhrenitFrom}-Optifine-${version}`;
-                if (installFromForge) {
-                    json.arguments!.game = ['--tweakClass', 'optifine.OptiFineForgeTweaker'];
-                    json.mainClass = parentJson.mainClass;
-                }
-                const dest = minecraft.getVersionJson(json.id);
-                await ensureFile(dest);
-                await writeFile(dest, JSON.stringify(json, null, 4));
-                id = json.id;
-            }
-            return id;
-        }));
-
-        this.log(`Succeed to install optifine ${version} on ${options.inhrenitFrom ?? options.mcversion}. ${id}`);
-
-        return id;
+      return id
     }
 
     @Singleton()
-    async refreshLiteloader(force = false) {
-        if (!force && this.refreshedLiteloader) {
-            return;
-        }
+    async refreshLiteloader (force = false) {
+      if (!force && this.refreshedLiteloader) {
+        return
+      }
 
-        const option = this.state.version.liteloader.timestamp === '' ? undefined : {
-            original: this.state.version.liteloader,
-        };
-        const remoteList = await getLiteloaderVersionList(option);
-        if (remoteList !== this.state.version.liteloader) {
-            this.commit('liteloaderMetadata', remoteList);
-        }
+      const option = this.state.version.liteloader.timestamp === '' ? undefined : {
+        original: this.state.version.liteloader
+      }
+      const remoteList = await getLiteloaderVersionList(option)
+      if (remoteList !== this.state.version.liteloader) {
+        this.commit('liteloaderMetadata', remoteList)
+      }
 
-        this.refreshedLiteloader = true;
+      this.refreshedLiteloader = true
     }
 
     @Singleton('install')
-    async installLiteloader(meta: LiteloaderVersion) {
-        try {
-            await this.submit(installLiteloaderTask(meta, this.state.root));
-        } catch (err) {
-            this.warn(err);
-        } finally {
-            this.local.refreshVersions();
-        }
+    async installLiteloader (meta: LiteloaderVersion) {
+      try {
+        await this.submit(installLiteloaderTask(meta, this.state.root))
+      } catch (err) {
+        this.warn(err)
+      } finally {
+        this.local.refreshVersions()
+      }
     }
 
     @Singleton()
-    async refreshOptifine(force = false) {
-        if (!force && this.refreshedOptifine) {
-            return;
-        }
+    async refreshOptifine (force = false) {
+      if (!force && this.refreshedOptifine) {
+        return
+      }
 
-        this.log('Start to refresh optifine metadata');
+      this.log('Start to refresh optifine metadata')
 
-        const headers = this.state.version.optifine.etag === '' ? undefined : {
-            'If-None-Match': this.state.version.optifine.etag,
-        };
+      const headers = this.state.version.optifine.etag === '' ? undefined : {
+        'If-None-Match': this.state.version.optifine.etag
+      }
 
-        const response = await this.networkManager.request.get('https://bmclapi2.bangbang93.com/optifine/versionList', {
-            headers,
-            rejectUnauthorized: false,
-        });
+      const response = await this.networkManager.request.get('https://bmclapi2.bangbang93.com/optifine/versionList', {
+        headers,
+        rejectUnauthorized: false
+      })
 
-        if (response.statusCode === 304) {
-            this.log('Not found new optifine version metadata. Use cache.');
-        } else if (response.statusCode >= 200 && response.statusCode < 300) {
-            const etag = response.headers.etag as string;
-            const versions: OptifineVersion[] = JSON.parse(response.body);
+      if (response.statusCode === 304) {
+        this.log('Not found new optifine version metadata. Use cache.')
+      } else if (response.statusCode >= 200 && response.statusCode < 300) {
+        const etag = response.headers.etag as string
+        const versions: OptifineVersion[] = JSON.parse(response.body)
 
-            this.commit('optifineMetadata', {
-                etag,
-                versions,
-            });
-            this.log('Found new optifine version metadata. Update it.');
-        }
+        this.commit('optifineMetadata', {
+          etag,
+          versions
+        })
+        this.log('Found new optifine version metadata. Update it.')
+      }
 
-        this.refreshedOptifine = true;
+      this.refreshedOptifine = true
     }
 }

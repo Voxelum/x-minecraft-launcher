@@ -68,7 +68,7 @@
 <script lang=ts>
 import { defineComponent, computed } from '@vue/composition-api';
 import { LiteloaderVersion } from '@xmcl/installer';
-import { useInstanceVersionBase, useLiteloaderVersions } from '@/hooks';
+import { useInstanceVersionBase, useLiteloaderVersions } from '/@/hooks';
 
 export default defineComponent({
   props: {

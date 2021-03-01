@@ -71,9 +71,9 @@
 
 <script lang=ts>
 import { defineComponent, ref, Ref, computed, inject, watch } from '@vue/composition-api';
-import { useInstanceVersionBase, useCompatible, useService, ModItem, useI18n } from '@/hooks';
-import unknownPack from '@/assets/unknown_pack.png';
-import { required } from '@/util/props';
+import { useInstanceVersionBase, useCompatible, useService, ModItem, useI18n } from '/@/hooks';
+import unknownPack from '/@/assets/unknown_pack.png';
+import { required } from '/@/util/props';
 import { useContextMenu, ContextMenuItem, useCurseforgeRoute, useMcWikiRoute } from '../hooks';
 
 export default defineComponent({

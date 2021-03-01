@@ -215,7 +215,7 @@ import {
   useRouter,
   useService,
   useInstanceBase,
-} from '@/hooks';
+} from '/@/hooks';
 import ResourcePackCard from './ResourcePackSettingPageCard.vue';
 import { useSearch, useSearchToggle } from '../hooks';
 

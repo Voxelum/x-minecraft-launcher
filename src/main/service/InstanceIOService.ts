@@ -1,24 +1,24 @@
-import { getCurseforgeUrl } from '@main/entities/resource';
-import { copyPassively, exists, isDirectory, isFile, readdirIfPresent } from '@main/util/fs';
-import { ZipTask } from '@main/util/zip';
-import { CurseforgeModpackManifest } from '@universal/entities/curseforge';
-import { Exception } from '@universal/entities/exception';
-import { createTemplate } from '@universal/entities/instance';
-import { InstanceSchema, RuntimeVersions } from '@universal/entities/instance.schema';
-import { UNKNOWN_RESOURCE } from '@universal/entities/resource';
-import { isNonnull, requireObject, requireString } from '@universal/util/assert';
-import { MinecraftFolder, Version } from '@xmcl/core';
-import { createDefaultCurseforgeQuery, installCurseforgeModpackTask, readManifestTask, UnzipTask } from '@xmcl/installer';
-import { task } from '@xmcl/task';
-import { open, readAllEntries } from '@xmcl/unzip';
-import { ensureDir, mkdtemp, readdir, readJson, remove, rename, stat } from 'fs-extra';
-import { tmpdir } from 'os';
-import { basename, dirname, join, relative, resolve } from 'path';
-import InstanceResourceService from './InstanceResourceService';
-import InstanceService, { EditInstanceOptions } from './InstanceService';
-import ResourceService from './ResourceService';
-import Service, { Inject, Singleton } from './Service';
-import VersionService from './VersionService';
+import { getCurseforgeUrl } from '/@main/entities/resource'
+import { copyPassively, exists, isDirectory, isFile, readdirIfPresent } from '/@main/util/fs'
+import { ZipTask } from '/@main/util/zip'
+import { CurseforgeModpackManifest } from '/@shared/entities/curseforge'
+import { Exception } from '/@shared/entities/exception'
+import { createTemplate } from '/@shared/entities/instance'
+import { InstanceSchema, RuntimeVersions } from '/@shared/entities/instance.schema'
+import { UNKNOWN_RESOURCE } from '/@shared/entities/resource'
+import { isNonnull, requireObject, requireString } from '/@shared/util/assert'
+import { MinecraftFolder, Version } from '@xmcl/core'
+import { createDefaultCurseforgeQuery, installCurseforgeModpackTask, readManifestTask, UnzipTask } from '@xmcl/installer'
+import { task } from '@xmcl/task'
+import { open, readAllEntries } from '@xmcl/unzip'
+import { ensureDir, mkdtemp, readdir, readJson, remove, rename, stat } from 'fs-extra'
+import { tmpdir } from 'os'
+import { basename, dirname, join, relative, resolve } from 'path'
+import InstanceResourceService from './InstanceResourceService'
+import InstanceService, { EditInstanceOptions } from './InstanceService'
+import ResourceService from './ResourceService'
+import Service, { Inject, Singleton } from './Service'
+import VersionService from './VersionService'
 
 export interface InstanceFile { path: string; isDirectory: boolean; isResource: boolean }
 
@@ -124,344 +124,343 @@ export default class InstanceIOService extends Service {
      * @param options The export instance options
      */
     @Singleton('instance')
-    async exportInstance(options: ExportInstanceOptions) {
-        requireObject(options);
+    async exportInstance (options: ExportInstanceOptions) {
+      requireObject(options)
 
-        const { src = this.state.instance.path, destinationPath: dest, includeAssets = true, includeLibraries = true, files, includeVersionJar = true } = options;
+      const { src = this.state.instance.path, destinationPath: dest, includeAssets = true, includeLibraries = true, files, includeVersionJar = true } = options
 
-        if (!this.state.instance.all[src]) {
-            this.warn(`Cannot export unmanaged instance ${src}`);
-            return;
+      if (!this.state.instance.all[src]) {
+        this.warn(`Cannot export unmanaged instance ${src}`)
+        return
+      }
+
+      const version = this.getters.instanceVersion
+
+      if (version.id === '') {
+        // TODO: throw
+        this.warn(`Cannot export instance ${src} as its version is not installed!`)
+        return
+      }
+
+      const root = this.state.root
+      const from = src
+
+      const zipTask = new ZipTask(dest).setName('profile.modpack.export')
+
+      // add assets
+      if (includeAssets) {
+        const assetsJson = resolve(root, 'assets', 'indexes', `${version.assets}.json`)
+        zipTask.addFile(assetsJson, `assets/indexes/${version.assets}.json`)
+        const objects = await readJson(assetsJson).then(manifest => manifest.objects)
+        for (const hash of Object.keys(objects).map(k => objects[k].hash)) {
+          zipTask.addFile(resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`)
         }
+      }
 
-        const version = this.getters.instanceVersion;
-
-        if (version.id === '') {
-            // TODO: throw
-            this.warn(`Cannot export instance ${src} as its version is not installed!`);
-            return;
-        } 
-
-
-        const root = this.state.root;
-        const from = src;
-
-        const zipTask = new ZipTask(dest).setName('profile.modpack.export');
-
-        // add assets
-        if (includeAssets) {
-            const assetsJson = resolve(root, 'assets', 'indexes', `${version.assets}.json`);
-            zipTask.addFile(assetsJson, `assets/indexes/${version.assets}.json`);
-            const objects = await readJson(assetsJson).then(manifest => manifest.objects);
-            for (const hash of Object.keys(objects).map(k => objects[k].hash)) {
-                zipTask.addFile(resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`);
-            }
+      // add version json and jar
+      const verionsChain = version.pathChain
+      for (const versionPath of verionsChain) {
+        const versionId = basename(versionPath)
+        if (includeVersionJar && await exists(join(versionPath, `${versionId}.jar`))) {
+          zipTask.addFile(join(versionPath, `${versionId}.jar`), `versions/${versionId}/${versionId}.jar`)
         }
+        zipTask.addFile(join(versionPath, `${versionId}.json`), `versions/${versionId}/${versionId}.json`)
+      }
 
-        // add version json and jar
-        const verionsChain = version.pathChain;
-        for (const versionPath of verionsChain) {
-            const versionId = basename(versionPath);
-            if (includeVersionJar && await exists(join(versionPath, `${versionId}.jar`))) {
-                zipTask.addFile(join(versionPath, `${versionId}.jar`), `versions/${versionId}/${versionId}.jar`);
-            }
-            zipTask.addFile(join(versionPath, `${versionId}.json`), `versions/${versionId}/${versionId}.json`);
+      // add libraries
+      if (includeLibraries) {
+        for (const lib of version.libraries) {
+          zipTask.addFile(resolve(root, 'libraries', lib.download.path),
+                    `libraries/${lib.download.path}`)
         }
+      }
 
-        // add libraries
-        if (includeLibraries) {
-            for (const lib of version.libraries) {
-                zipTask.addFile(resolve(root, 'libraries', lib.download.path),
-                    `libraries/${lib.download.path}`);
-            }
+      // add misc files like config, log...
+      if (files) {
+        for (const file of files) {
+          zipTask.addFile(join(src, file), file)
         }
+      } else {
+        await zipTask.includeAs(from, '')
+      }
 
-        // add misc files like config, log...
-        if (files) {
-            for (const file of files) {
-                zipTask.addFile(join(src, file), file);
-            }
-        } else {
-            await zipTask.includeAs(from, '');
-        }
-
-        await this.submit(zipTask);
+      await this.submit(zipTask)
     }
 
     /**
      * Scan all the files under the current instance.
      * It will hint if a mod resource is in curseforge
      */
-    async getInstanceFiles(): Promise<InstanceFile[]> {
-        const path = this.state.instance.path;
-        const files = [] as InstanceFile[];
+    async getInstanceFiles (): Promise<InstanceFile[]> {
+      const path = this.state.instance.path
+      const files = [] as InstanceFile[]
 
-        const scan = async (p: string) => {
-            const status = await stat(p);
-            const ino = status.ino;
-            const isDirectory = status.isDirectory();
-            const isResource = !!this.resourceService.getResourceByKey(ino)?.curseforge;
-            files.push({ isDirectory, path: relative(path, p).replace(/\\/g, '/'), isResource });
-            if (isDirectory) {
-                let childs = await readdirIfPresent(p);
-                for (let child of childs) {
-                    await scan(join(p, child));
-                }
-            }
-        };
+      const scan = async (p: string) => {
+        const status = await stat(p)
+        const ino = status.ino
+        const isDirectory = status.isDirectory()
+        const isResource = !!this.resourceService.getResourceByKey(ino)?.curseforge
+        files.push({ isDirectory, path: relative(path, p).replace(/\\/g, '/'), isResource })
+        if (isDirectory) {
+          const childs = await readdirIfPresent(p)
+          for (const child of childs) {
+            await scan(join(p, child))
+          }
+        }
+      }
 
-        await scan(path);
-        files.shift();
+      await scan(path)
+      files.shift()
 
-        return files;
+      return files
     }
 
     /**
      * Export the instance as an curseforge modpack
      * @param options The curseforge modpack export options
      */
-    async exportCurseforge(options: ExportCurseforgeModpackOptions) {
-        requireObject(options);
+    async exportCurseforge (options: ExportCurseforgeModpackOptions) {
+      requireObject(options)
 
-        let { instancePath = this.state.instance.path, destinationPath, overrides, name, version, gameVersion, author } = options;
+      const { instancePath = this.state.instance.path, destinationPath, overrides, name, version, gameVersion, author } = options
 
-        if (!this.state.instance.all[instancePath]) {
-            this.warn(`Cannot export unmanaged instance ${instancePath}`);
-            return;
+      if (!this.state.instance.all[instancePath]) {
+        this.warn(`Cannot export unmanaged instance ${instancePath}`)
+        return
+      }
+
+      const ganeVersionInstance = this.state.version.local.find(v => v.id === gameVersion)
+      const instance = this.state.instance.all[instancePath]
+      const modLoaders = instance.runtime.forge ? [{
+        id: `forge-${instance.runtime.forge}`,
+        primary: true
+      }] : []
+      const curseforgeConfig: CurseforgeModpackManifest = {
+        manifestType: 'minecraftModpack',
+        manifestVersion: 1,
+        minecraft: {
+          version: ganeVersionInstance?.minecraftVersion ?? instance.runtime.minecraft,
+          modLoaders
+        },
+        name: options.name ?? name,
+        version,
+        author: author ?? instance.author,
+        files: [],
+        overrides: 'overrides'
+      }
+
+      const zipTask = new ZipTask(destinationPath)
+
+      zipTask.addEmptyDirectory('overrides')
+
+      for (const file of overrides) {
+        if (file.startsWith('mods/')) {
+          const mod = this.state.instance.mods.find((i) => (i.location.replace('\\', '/') + i.ext) === file)
+          if (mod && mod.curseforge) {
+            curseforgeConfig.files.push({ projectID: mod.curseforge.projectId, fileID: mod.curseforge.fileId, required: true })
+          } else {
+            zipTask.addFile(join(instancePath, file), `overrides/${file}`)
+          }
+        } else if (file.startsWith('resourcepacks/')) {
+          const resourcepack = this.state.instance.resourcepacks.find((i) => (i.location.replace('\\', '/') + i.ext) === file)
+          if (resourcepack && resourcepack.curseforge) {
+            curseforgeConfig.files.push({ projectID: resourcepack.curseforge.projectId, fileID: resourcepack.curseforge.fileId, required: true })
+          } else {
+            zipTask.addFile(join(instancePath, file), `overrides/${file}`)
+          }
+        } else {
+          zipTask.addFile(join(instancePath, file), `overrides/${file}`)
         }
+      }
 
-        const ganeVersionInstance = this.state.version.local.find(v => v.id === gameVersion);
-        const instance = this.state.instance.all[instancePath];
-        const modLoaders = instance.runtime.forge ? [{
-            id: `forge-${instance.runtime.forge}`,
-            primary: true,
-        }] : [];
-        const curseforgeConfig: CurseforgeModpackManifest = {
-            manifestType: 'minecraftModpack',
-            manifestVersion: 1,
-            minecraft: {
-                version: ganeVersionInstance?.minecraftVersion ?? instance.runtime.minecraft,
-                modLoaders,
-            },
-            name: options.name ?? name,
-            version,
-            author: author ?? instance.author,
-            files: [],
-            overrides: 'overrides',
-        };
+      this.log(`Export instance ${instancePath} to curseforge ${JSON.stringify(curseforgeConfig, null, 4)}`)
 
-        const zipTask = new ZipTask(destinationPath);
+      zipTask.addBuffer(Buffer.from(JSON.stringify(curseforgeConfig)), 'manifest.json')
 
-        zipTask.addEmptyDirectory('overrides');
-
-        for (let file of overrides) {
-            if (file.startsWith('mods/')) {
-                const mod = this.state.instance.mods.find((i) => (i.location.replace('\\', '/') + i.ext) === file);
-                if (mod && mod.curseforge) {
-                    curseforgeConfig.files.push({ projectID: mod.curseforge.projectId, fileID: mod.curseforge.fileId, required: true });
-                } else {
-                    zipTask.addFile(join(instancePath, file), `overrides/${file}`);
-                }
-            } else if (file.startsWith('resourcepacks/')) {
-                const resourcepack = this.state.instance.resourcepacks.find((i) => (i.location.replace('\\', '/') + i.ext) === file);
-                if (resourcepack && resourcepack.curseforge) {
-                    curseforgeConfig.files.push({ projectID: resourcepack.curseforge.projectId, fileID: resourcepack.curseforge.fileId, required: true });
-                } else {
-                    zipTask.addFile(join(instancePath, file), `overrides/${file}`);
-                }
-            } else {
-                zipTask.addFile(join(instancePath, file), `overrides/${file}`);
-            }
-        }
-
-        this.log(`Export instance ${instancePath} to curseforge ${JSON.stringify(curseforgeConfig, null, 4)}`);
-
-        zipTask.addBuffer(Buffer.from(JSON.stringify(curseforgeConfig)), 'manifest.json');
-
-        await this.submit(zipTask);
+      await this.submit(zipTask)
     }
 
     /**
      * Link a existed instance on you disk.
-     * @param path 
+     * @param path
      */
-    async linkInstance(path: string) {
-        if (this.state.instance.all[path]) {
-            this.log(`Skip to link already managed instance ${path}`);
-            return false;
-        }
-        let loaded = await this.instanceService.loadInstance(path);
-        if (!loaded) {
-            await this.instanceService.createInstance({ path });
-        }
+    async linkInstance (path: string) {
+      if (this.state.instance.all[path]) {
+        this.log(`Skip to link already managed instance ${path}`)
+        return false
+      }
+      const loaded = await this.instanceService.loadInstance(path)
+      if (!loaded) {
+        await this.instanceService.createInstance({ path })
+      }
 
-        // copy assets, library and versions
-        await copyPassively(resolve(path, 'assets'), this.getPath('assets'));
-        await copyPassively(resolve(path, 'libraries'), this.getPath('libraries'));
-        await copyPassively(resolve(path, 'versions'), this.getPath('versions'));
+      // copy assets, library and versions
+      await copyPassively(resolve(path, 'assets'), this.getPath('assets'))
+      await copyPassively(resolve(path, 'libraries'), this.getPath('libraries'))
+      await copyPassively(resolve(path, 'versions'), this.getPath('versions'))
 
-        return true;
+      return true
     }
 
     /**
      * Import an instance from a game zip file or a game directory. The location root must be the game directory.
      * @param location The zip or directory path
      */
-    async importInstance(location: string) {
-        requireString(location);
+    async importInstance (location: string) {
+      requireString(location)
 
-        const isDir = await isDirectory(location);
+      const isDir = await isDirectory(location)
 
-        let srcDirectory = location;
-        if (!isDir) {
-            srcDirectory = await mkdtemp(join(tmpdir(), 'launcher'));
-            const zipFile = await open(location);
-            const entries = await readAllEntries(zipFile);
-            const unzipTask = new UnzipTask(zipFile, entries, srcDirectory);
-            await unzipTask.startAndWait();
+      let srcDirectory = location
+      if (!isDir) {
+        srcDirectory = await mkdtemp(join(tmpdir(), 'launcher'))
+        const zipFile = await open(location)
+        const entries = await readAllEntries(zipFile)
+        const unzipTask = new UnzipTask(zipFile, entries, srcDirectory)
+        await unzipTask.startAndWait()
+      }
+
+      // check if this game contains the instance.json from us
+      let instanceTemplate: InstanceSchema
+
+      const instanceConfigPath = resolve(srcDirectory, 'instance.json')
+      const isExportFromUs = await isFile(instanceConfigPath)
+      if (isExportFromUs) {
+        instanceTemplate = await this.getPersistence({ path: instanceConfigPath, schema: InstanceSchema })
+      } else {
+        instanceTemplate = createTemplate()
+        instanceTemplate.creationDate = Date.now()
+
+        const dir = new MinecraftFolder(srcDirectory)
+        const versions = await readdir(dir.versions)
+        const localVersion: RuntimeVersions = {} as any
+        for (const ver of versions) {
+          Object.assign(localVersion, await this.versionService.resolveLocalVersion(ver, dir.root))
         }
+        delete localVersion.id
+        delete localVersion.folder
+        instanceTemplate.runtime = localVersion
+        instanceTemplate.name = basename(location)
+      }
 
-        // check if this game contains the instance.json from us
-        let instanceTemplate: InstanceSchema;
+      // create instance
+      const instancePath = await this.instanceService.createInstance(instanceTemplate)
 
-        let instanceConfigPath = resolve(srcDirectory, 'instance.json');
-        let isExportFromUs = await isFile(instanceConfigPath);
-        if (isExportFromUs) {
-            instanceTemplate = await this.getPersistence({ path: instanceConfigPath, schema: InstanceSchema });
-        } else {
-            instanceTemplate = createTemplate();
-            instanceTemplate.creationDate = Date.now();
+      // start copy from src to instance
+      await copyPassively(srcDirectory, instancePath, (path) => {
+        if (path.endsWith('/versions')) return false
+        if (path.endsWith('/assets')) return false
+        if (path.endsWith('/libraries')) return false
+        return true
+      })
 
-            const dir = new MinecraftFolder(srcDirectory);
-            const versions = await readdir(dir.versions);
-            const localVersion: RuntimeVersions = {} as any;
-            for (const ver of versions) {
-                Object.assign(localVersion, await this.versionService.resolveLocalVersion(ver, dir.root));
-            }
-            delete localVersion.id;
-            delete localVersion.folder;
-            instanceTemplate.runtime = localVersion;
-            instanceTemplate.name = basename(location);
-        }
+      // copy assets, library and versions
+      await copyPassively(resolve(srcDirectory, 'assets'), this.getPath('assets'))
+      await copyPassively(resolve(srcDirectory, 'libraries'), this.getPath('libraries'))
+      await copyPassively(resolve(srcDirectory, 'versions'), this.getPath('versions'))
 
-        // create instance
-        const instancePath = await this.instanceService.createInstance(instanceTemplate);
-
-        // start copy from src to instance
-        await copyPassively(srcDirectory, instancePath, (path) => {
-            if (path.endsWith('/versions')) return false;
-            if (path.endsWith('/assets')) return false;
-            if (path.endsWith('/libraries')) return false;
-            return true;
-        });
-
-        // copy assets, library and versions
-        await copyPassively(resolve(srcDirectory, 'assets'), this.getPath('assets'));
-        await copyPassively(resolve(srcDirectory, 'libraries'), this.getPath('libraries'));
-        await copyPassively(resolve(srcDirectory, 'versions'), this.getPath('versions'));
-
-        if (!isDir) { await remove(srcDirectory); }
+      if (!isDir) { await remove(srcDirectory) }
     }
 
     /**
      * Import the curseforge modpack zip file to the instance.
      * @param options The options provide instance directory path and curseforge modpack zip path
      */
-    async importCurseforgeModpack(options: ImportCurseforgeModpackOptions) {
-        let { path, instancePath } = options;
+    async importCurseforgeModpack (options: ImportCurseforgeModpackOptions) {
+      let { path, instancePath } = options
 
-        if (!await isFile(path)) {
-            throw new Exception({ type: 'requireCurseforgeModpackAFile', path }, `Cannot import curseforge modpack ${path}, since it's not a file!`);
+      if (!await isFile(path)) {
+        throw new Exception({ type: 'requireCurseforgeModpackAFile', path }, `Cannot import curseforge modpack ${path}, since it's not a file!`)
+      }
+
+      this.log(`Import curseforge modpack by path ${path}`)
+      const { instanceResourceService, log, resourceService, instanceService } = this
+      const installCurseforgeModpack = task('installCurseforgeModpack', async function () {
+        const manifest = await this.yield(readManifestTask(path)).catch(() => {
+          throw new Exception({ type: 'invalidCurseforgeModpack', path })
+        })
+
+        const forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'))
+
+        const config: EditInstanceOptions = {
+          runtime: {
+            minecraft: manifest.minecraft.version,
+            forge: forgeId ? forgeId.id.substring(6) : '',
+            liteloader: '',
+            fabricLoader: '',
+            yarn: ''
+          }
         }
 
-        this.log(`Import curseforge modpack by path ${path}`);
-        const { instanceResourceService, log, resourceService, instanceService } = this;
-        const installCurseforgeModpack = task('installCurseforgeModpack', async function () {
-            let manifest = await this.yield(readManifestTask(path)).catch(() => {
-                throw new Exception({ type: 'invalidCurseforgeModpack', path });
-            });
+        if (instancePath) {
+          await instanceService.editInstance({
+            instancePath,
+            ...config
+          })
+        } else {
+          instancePath = await instanceService.createInstance({
+            name: manifest.name,
+            author: manifest.author,
+            ...config
+          })
+        }
 
-            let forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'));
+        // deploy existed resources
+        const filesToDeploy = manifest.files
+          .map((f) => resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID)))
+          .filter(isNonnull)
+        await ensureDir(join(instancePath, 'mods'))
+        await ensureDir(join(instancePath, 'resourcepacks'))
+        log(`Deploy ${filesToDeploy.length} existed resources from curseforge modpack!`)
+        await instanceResourceService.deploy({ resources: filesToDeploy, path: instancePath })
 
-            let config: EditInstanceOptions = {
-                runtime: {
-                    minecraft: manifest.minecraft.version,
-                    forge: forgeId ? forgeId.id.substring(6) : '',
-                    liteloader: '',
-                    fabricLoader: '',
-                    yarn: '',
-                },
-            };
+        // filter out existed resources
+        manifest.files = manifest.files.filter((f) => !resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID)))
 
-            if (instancePath) {
-                await instanceService.editInstance({
-                    instancePath,
-                    ...config,
-                });
-            } else {
-                instancePath = await instanceService.createInstance({
-                    name: manifest.name,
-                    author: manifest.author,
-                    ...config,
-                });
-            }
+        const files: Array<{ path: string; projectID: number; fileID: number; url: string }> = []
+        const defaultQuery = createDefaultCurseforgeQuery()
 
-            // deploy existed resources
-            const filesToDeploy = manifest.files
-                .map((f) => resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID)))
-                .filter(isNonnull);
-            await ensureDir(join(instancePath, 'mods'));
-            await ensureDir(join(instancePath, 'resourcepacks'));
-            log(`Deploy ${filesToDeploy.length} existed resources from curseforge modpack!`);
-            await instanceResourceService.deploy({ resources: filesToDeploy, path: instancePath });
+        log(`Install ${manifest.files.length} files from curseforge modpack!`)
 
-            // filter out existed resources
-            manifest.files = manifest.files.filter((f) => !resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID)));
+        await this.concat(installCurseforgeModpackTask(path, instancePath, {
+          manifest,
+          async queryFileUrl (projectId: number, fileId: number) {
+            const result = await defaultQuery(projectId, fileId)
+            files.push({ path: '', projectID: projectId, fileID: fileId, url: result })
+            return result
+          },
+          filePathResolver (p, f, m, u) {
+            const path = m.getMod(basename(u))
+                    files.find(fi => fi.fileID === f)!.path = path
+                    return path
+          }
+        }))
 
-            let files: Array<{ path: string; projectID: number; fileID: number; url: string }> = [];
-            let defaultQuery = createDefaultCurseforgeQuery();
+        if (manifest.files.length > 0) {
+          const resources = await resourceService.importResources({
+            files: files.map((f) => ({
+              path: f.path,
+              url: [f.url, getCurseforgeUrl(f.projectID, f.fileID)],
+              source: {
+                curseforge: { projectId: f.projectID, fileId: f.fileID }
+              }
+            }))
+          })
+          const mapping: Record<string, string> = {}
+          for (const file of files) {
+            mapping[`${file.projectID}:${file.fileID}`] = file.path
+          }
+          // rename the resource to correct name
+          for (const res of resources.filter(r => r !== UNKNOWN_RESOURCE)) {
+            const path = mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`]
+            const realName = basename(res.location) + res.ext
+            const realPath = dirname(path) + realName
+            await rename(path, realPath)
+          }
+        }
 
-            log(`Install ${manifest.files.length} files from curseforge modpack!`);
-
-            await this.concat(installCurseforgeModpackTask(path, instancePath, {
-                manifest,
-                async queryFileUrl(projectId: number, fileId: number) {
-                    let result = await defaultQuery(projectId, fileId);
-                    files.push({ path: '', projectID: projectId, fileID: fileId, url: result });
-                    return result;
-                },
-                filePathResolver(p, f, m, u) {
-                    let path = m.getMod(basename(u));
-                    files.find(fi => fi.fileID === f)!.path = path;
-                    return path;
-                },
-            }));
-
-            if (manifest.files.length > 0) {
-                const resources = await resourceService.importResources({
-                    files: files.map((f) => ({
-                        path: f.path,
-                        url: [f.url, getCurseforgeUrl(f.projectID, f.fileID)],
-                        source: {
-                            curseforge: { projectId: f.projectID, fileId: f.fileID },
-                        },
-                    })),
-                });
-                const mapping: Record<string, string> = {};
-                for (const file of files) {
-                    mapping[`${file.projectID}:${file.fileID}`] = file.path;
-                }
-                // rename the resource to correct name
-                for (const res of resources.filter(r => r !== UNKNOWN_RESOURCE)) {
-                    const path = mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`];
-                    const realName = basename(res.location) + res.ext;
-                    const realPath = dirname(path) + realName;
-                    await rename(path, realPath);
-                }
-            }
-
-            return instancePath;
-        });
-        return this.submit(installCurseforgeModpack);
+        return instancePath
+      })
+      return this.submit(installCurseforgeModpack)
     }
 }

@@ -55,7 +55,7 @@
 
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api';
-import { useUpdateInfo } from '@/hooks';
+import { useUpdateInfo } from '/@/hooks';
 
 export default defineComponent({
   props: {

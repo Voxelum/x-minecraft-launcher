@@ -74,7 +74,7 @@ import {
   useInstance,
   useInstanceServerStatus,
   useInstanceVersion,
-} from '@/hooks';
+} from '/@/hooks';
 
 export default defineComponent({
   setup() {

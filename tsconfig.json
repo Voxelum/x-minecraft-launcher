@@ -11,7 +11,7 @@
         "experimentalDecorators": true,
         "paths": {
             "@universal/*": [
-                "src/universal/*"
+                "src/shared/*"
             ],
             "@main/*": [
                 "src/main/*"
