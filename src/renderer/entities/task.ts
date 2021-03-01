@@ -1,4 +1,4 @@
-import type { TaskState } from '@universal/task';
+import type { TaskState } from '/@shared/task'
 
 /**
  * The task item represent a sub task

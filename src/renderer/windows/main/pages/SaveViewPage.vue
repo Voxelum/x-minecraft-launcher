@@ -93,7 +93,7 @@ import {
   useInstances,
   useOperation,
   useDrop,
-} from '@/hooks';
+} from '/@/hooks';
 import SaveViewPageCopyFromDialog from './SaveViewPageCopyFromDialog.vue';
 import SaveViewPageCopyToDialog from './SaveViewPageCopyToDialog.vue';
 import SaveViewPageDeleteDialog from './SaveViewPageDeleteDialog.vue';

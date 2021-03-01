@@ -166,7 +166,7 @@
 
 <script lang=ts>
 import { defineComponent, onMounted, ref } from '@vue/composition-api';
-import { LaunchException } from '@universal/entities/exception';
+import { LaunchException } from '/@shared/entities/exception';
 import {
   useI18n,
   useLaunch,
@@ -175,7 +175,7 @@ import {
   useJava,
   useQuit,
   useService,
-} from '@/hooks';
+} from '/@/hooks';
 import { useDialog, useNotifier, useJavaWizardDialog } from '../hooks';
 import GameExitDialog from './HomePageGameExitDialog.vue';
 import LaunchBlockedDialog from './HomePageLaunchBlockedDialog.vue';

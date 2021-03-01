@@ -49,7 +49,7 @@
 
 <script lang=ts>
 import { reactive, computed, toRefs, defineComponent } from '@vue/composition-api';
-import { useI18n, useStore, useJava, useNativeDialog, useServiceOnly, useInstance } from '@/hooks';
+import { useI18n, useStore, useJava, useNativeDialog, useServiceOnly, useInstance } from '/@/hooks';
 import { useJavaWizardDialog, useNotifier } from '../hooks';
 
 export default defineComponent({

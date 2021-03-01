@@ -6,7 +6,6 @@
     "assert": true,
     "expect": true,
     "should": true,
-    "__static": true
   },
   "extends": "../.eslintrc.json",
   "rules": {

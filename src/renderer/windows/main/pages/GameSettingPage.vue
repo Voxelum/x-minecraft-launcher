@@ -55,7 +55,7 @@
 <script lang=ts>
 import { Frame } from '@xmcl/gamesetting';
 import { defineComponent, reactive, toRefs } from '@vue/composition-api';
-import { useAutoSaveLoad, useInstanceGameSetting } from '@/hooks';
+import { useAutoSaveLoad, useInstanceGameSetting } from '/@/hooks';
 
 export default defineComponent({
   setup() {

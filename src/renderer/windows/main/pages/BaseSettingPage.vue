@@ -1,5 +1,5 @@
 <template>
-  <v-container fill-height style="overflow: auto;">
+  <v-container fill-height style="overflow: auto">
     <v-layout wrap fill-height>
       <v-flex d-flex xs12 tag="h2" class="white--text headline">
         {{ $t("profile.setting") }}
@@ -10,7 +10,7 @@
           class="base-settings"
           two-line
           subheader
-          style="background: transparent; width: 100%"
+          style="background: transparent width: 100%"
         >
           <v-subheader style="padding-right: 2px">
             {{ $t("setting.general") }}
@@ -40,7 +40,7 @@
               </v-list-tile-sub-title>
             </v-list-tile-content>
             <!-- <v-layout > -->
-            <v-list-tile-action style="margin-right: 15px; display: flex; flex-grow: 1; flex-direction: row; align-item: center; justify-content: flex-end; align-items: center">
+            <v-list-tile-action style="margin-right: 15px display: flex flex-grow: 1 flex-direction: row align-item: center justify-content: flex-end align-items: center">
               <v-chip color="green" large outline label>
                 {{ version.minecraft }}
               </v-chip>
@@ -191,7 +191,7 @@
               <v-list-tile-sub-title style="height: 50px">
                 <v-text-field
                   v-model="description"
-                  style="padding-top: unset; margin-top: unset; margin-bottom: 5px;"
+                  style="padding-top: unset margin-top: unset margin-bottom: 5px"
                   hide-details
                   :placeholder="$t('profile.modpack.descriptionHint')"
                 />
@@ -252,9 +252,9 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api';
-import { useInstance, useAutoSaveLoad, useRouter, useCurrentUser, useSelectedUser, useProfileId, useGameProfile } from '@/hooks';
-import LaunchView from './BaseSettingPageLaunchView.vue';
+import { defineComponent, reactive, toRefs } from '@vue/composition-api'
+import LaunchView from './BaseSettingPageLaunchView.vue'
+import { useAutoSaveLoad, useGameProfile, useInstance, useProfileId, useRouter, useSelectedUser } from '/@/hooks'
 
 export default defineComponent({
   components: { LaunchView },
@@ -270,22 +270,22 @@ export default defineComponent({
       description,
       server,
       editInstance: edit,
-    } = useInstance();
-    const router = useRouter();
-    const { userId, profileId } = useSelectedUser();
-    const { gameProfile } = useProfileId(userId, profileId);
-    const { name: username } = useGameProfile(gameProfile);
+    } = useInstance()
+    const router = useRouter()
+    const { userId, profileId } = useSelectedUser()
+    const { gameProfile } = useProfileId(userId, profileId)
+    const { name: username } = useGameProfile(gameProfile)
     const data: {
-      active: number;
-      valid: boolean;
-      hideLauncher: boolean;
-      showLog: boolean;
-      name: string;
-      host: string;
-      port: string;
-      author: string;
-      description: string;
-      url: string;
+      active: number
+      valid: boolean
+      hideLauncher: boolean
+      showLog: boolean
+      name: string
+      host: string
+      port: string
+      author: string
+      description: string
+      url: string
     } = reactive({
       active: 0,
       valid: true,
@@ -299,7 +299,7 @@ export default defineComponent({
       author: '',
       description: '',
       url: '',
-    });
+    })
 
     function save() {
       const payload = {
@@ -307,13 +307,13 @@ export default defineComponent({
         hideLauncher: data.hideLauncher,
         url: data.url,
         showLog: data.showLog,
-      };
+      }
       if (!isServer.value) {
         edit({
           ...payload,
           author: data.author,
           description: data.description,
-        });
+        })
       } else {
         edit({
           ...payload,
@@ -321,25 +321,25 @@ export default defineComponent({
             host: data.host,
             port: Number.parseInt(data.port, 10),
           },
-        });
+        })
       }
     }
     function load() {
-      data.name = name.value;
-      data.hideLauncher = hideLauncher.value;
-      data.url = url.value;
-      data.showLog = showLog.value;
-      data.author = author.value;
-      data.description = description?.value || '';
+      data.name = name.value
+      data.hideLauncher = hideLauncher.value
+      data.url = url.value
+      data.showLog = showLog.value
+      data.author = author.value
+      data.description = description?.value || ''
       if (server.value) {
-        data.host = server.value.host;
-        data.port = server.value.port?.toString() || '';
+        data.host = server.value.host
+        data.port = server.value.port?.toString() || ''
       }
     }
-    useAutoSaveLoad(save, load);
+    useAutoSaveLoad(save, load)
 
     function goVersionPage() {
-      router.replace('/version-setting');
+      router.replace('/version-setting')
     }
     return {
       ...toRefs(data),
@@ -347,34 +347,34 @@ export default defineComponent({
       isServer,
       version: runtime,
       goVersionPage,
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped=true>
 .flex {
-  padding: 6px 8px !important;
+  padding: 6px 8px !important
 }
 .v-btn {
-  margin: 0;
+  margin: 0
 }
 </style>
 <style>
 .local-version .v-select__selection--comma {
-  max-width: 100px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  max-width: 100px
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
 }
 .base-settings .v-text-field--box input,
 .v-text-field--full-width input,
 .v-text-field--outline input {
-  margin-top: 0;
+  margin-top: 0
 }
 
 /* .base-settings .v-list__tile__content {
-  flex-grow: 1;
-  max-width: 40%;
+  flex-grow: 1
+  max-width: 40%
 } */
 </style>

@@ -161,7 +161,7 @@ import {
   useCurseforgeProject,
   useCurseforgeInstall,
   useService,
-} from '@/hooks';
+} from '/@/hooks';
 import ProjectDescription from './CurseforgeProjectPageDescription.vue';
 import DestMenu from './CurseforgeProjectPageDestMenu.vue';
 import ProjectFiles from './CurseforgeProjectPageFiles.vue';

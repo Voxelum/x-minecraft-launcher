@@ -19,7 +19,7 @@
 
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api';
-import { required } from '@/util/props';
+import { required } from '/@/util/props';
 
 export default defineComponent({
   props: {

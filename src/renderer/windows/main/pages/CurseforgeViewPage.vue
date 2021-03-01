@@ -67,8 +67,8 @@
 
 <script lang=ts>
 import { computed, defineComponent, ref } from '@vue/composition-api';
-import { useCurseforgeSearch } from '@/hooks';
-import { withDefault } from '@/util/props';
+import { useCurseforgeSearch } from '/@/hooks';
+import { withDefault } from '/@/util/props';
 import { useSearchToggle } from '../hooks';
 
 export default defineComponent({

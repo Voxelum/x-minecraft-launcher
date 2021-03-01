@@ -28,8 +28,8 @@ import { defineComponent, computed } from '@vue/composition-api';
 import {
   useMinecraftVersions,
   useMinecraftVersionFilter,
-} from '@/hooks';
-import { required } from '@/util/props';
+} from '/@/hooks';
+import { required } from '/@/util/props';
 import { MinecraftVersion } from '@xmcl/installer';
 
 export default defineComponent({

@@ -55,8 +55,8 @@
 
 <script lang=ts>
 import { reactive, toRefs, defineComponent } from '@vue/composition-api';
-import { useClipboard, useTasks } from '@/hooks';
-import { TaskItem } from '@/entities/task';
+import { useClipboard, useTasks } from '/@/hooks';
+import { TaskItem } from '/@/entities/task';
 
 export default defineComponent({
   setup() {

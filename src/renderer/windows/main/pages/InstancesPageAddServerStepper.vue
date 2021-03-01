@@ -214,7 +214,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, ref, Ref, computed, onMounted, watch, defineComponent } from '@vue/composition-api';
-import { useJava, useI18n, useServer, useRouter, useInstanceCreation } from '@/hooks';
+import { useJava, useI18n, useServer, useRouter, useInstanceCreation } from '/@/hooks';
 
 export default defineComponent({
   props: {

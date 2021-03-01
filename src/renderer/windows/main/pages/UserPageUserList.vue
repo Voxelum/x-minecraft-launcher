@@ -97,9 +97,9 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
-import { UserProfile } from '@universal/entities/user.schema';
-import { required } from '@/util/props';
-import { useService } from '@/hooks';
+import { UserProfile } from '/@shared/entities/user.schema';
+import { required } from '/@/util/props';
+import { useService } from '/@/hooks';
 
 export default defineComponent({
   props: {

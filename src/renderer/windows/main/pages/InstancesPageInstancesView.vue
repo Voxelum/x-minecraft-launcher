@@ -72,8 +72,8 @@
 
 <script lang=ts>
 import { computed, defineComponent, Ref } from '@vue/composition-api';
-import { Instance } from '@universal/entities/instance';
-import { required } from '@/util/props';
+import { Instance } from '/@shared/entities/instance';
+import { required } from '/@/util/props';
 import PreviewCard from './InstancesPagePreviewCard.vue';
 
 export default defineComponent({

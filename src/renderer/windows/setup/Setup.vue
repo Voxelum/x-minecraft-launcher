@@ -89,8 +89,8 @@
 
 <script lang=ts>
 import { defineComponent, reactive, toRefs, inject } from '@vue/composition-api';
-import { useIpc, useNativeDialog, useI18n } from '@/hooks';
-import { I18N_KEY } from '@/constant';
+import { useIpc, useNativeDialog, useI18n } from '/@/hooks';
+import { I18N_KEY } from '/@/constant';
 
 export default defineComponent({
   setup() {

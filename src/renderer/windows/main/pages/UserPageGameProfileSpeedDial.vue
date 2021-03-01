@@ -38,7 +38,7 @@
 
 <script lang=ts>
 import { defineComponent, reactive, toRefs } from '@vue/composition-api';
-import { useI18n } from '@/hooks';
+import { useI18n } from '/@/hooks';
 
 export default defineComponent({
   props: {

@@ -3,7 +3,6 @@
         "typescript",
         "vue"
     ],
-    "eslint.enable": true,
     "files.eol": "\n",
     "files.exclude": {
         "**/.git": true,
@@ -13,13 +12,13 @@
         "**/.DS_Store": true,
         "**/node_modules": true
     },
-    "vetur.useWorkspaceDependencies": true,
     "vetur.format.defaultFormatter.js": "vscode-typescript",
     "vetur.format.defaultFormatter.ts": "vscode-typescript",
     "vetur.format.enable": true,
     "vetur.validation.template": true,
     "vetur.validation.script": true,
     "vetur.experimental.templateInterpolationService": true,
+    "editor.tabSize": 2,
     "vetur.format.defaultFormatterOptions": {
         "vscode-typescript": {
             "indent_size": 2

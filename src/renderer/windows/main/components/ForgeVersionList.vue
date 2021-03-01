@@ -20,7 +20,7 @@
 <script lang=ts>
 import { defineComponent, computed } from '@vue/composition-api';
 import { ForgeVersion } from '@xmcl/installer';
-import { required } from '@/util/props';
+import { required } from '/@/util/props';
 import VirtualList from 'vue-virtual-scroll-list';
 import Tile from './ForgeVersionListTile.vue';
 

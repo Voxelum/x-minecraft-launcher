@@ -61,8 +61,8 @@
 
 <script lang=ts>
 import { defineComponent, reactive, ref, toRefs, Ref, computed } from '@vue/composition-api';
-import { useInstanceVersionBase, useCompatible, useDragTransferItem, ResourcePackItem, useI18n, useService } from '@/hooks';
-import { required } from '@/util/props';
+import { useInstanceVersionBase, useCompatible, useDragTransferItem, ResourcePackItem, useI18n, useService } from '/@/hooks';
+import { required } from '/@/util/props';
 import { useContextMenu, ContextMenuItem, useCurseforgeRoute } from '../hooks';
 
 export default defineComponent({

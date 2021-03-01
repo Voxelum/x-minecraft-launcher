@@ -55,9 +55,9 @@
 </template>
 
 <script lang=ts>
-import { required } from '@/util/props';
+import { required } from '/@/util/props';
 import { defineComponent, computed, ref } from '@vue/composition-api';
-import { useI18n } from '@/hooks';
+import { useI18n } from '/@/hooks';
 import { FilePreview } from './UniversalDropView.vue';
 
 const iconMap: Record<string, string> = {

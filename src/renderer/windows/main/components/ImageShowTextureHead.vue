@@ -17,7 +17,7 @@
 
 <script lang=ts>
 import { defineComponent, reactive, ref, toRefs, computed, Ref } from '@vue/composition-api';
-import steve from '@/assets/steve_skin.png';
+import steve from '/@/assets/steve_skin.png';
 
 export default defineComponent({
   props: {

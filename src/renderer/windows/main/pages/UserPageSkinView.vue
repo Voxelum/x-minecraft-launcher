@@ -59,8 +59,8 @@ import {
   useUserSkin,
   useNativeDialog,
   useUserSecurityStatus,
-} from '@/hooks';
-import { required } from '@/util/props';
+} from '/@/hooks';
+import { required } from '/@/util/props';
 import { useNotifier } from '../hooks';
 import ImportSkinUrlForm from './UserPageImportSkinUrlForm.vue';
 import SpeedDial from './UserPageSkinSpeedDial.vue';

@@ -76,11 +76,11 @@
 </template>
 <script lang=ts>
 import { defineComponent, reactive, toRefs, computed } from '@vue/composition-api';
-import unknownServer from '@/assets/unknown_server.png';
-import { useInstanceServerStatus } from '@/hooks';
-import { Instance } from '@universal/entities/instance';
-import { required } from '@/util/props';
-import { getBanner } from '@/util/banner';
+import unknownServer from '/@/assets/unknown_server.png';
+import { useInstanceServerStatus } from '/@/hooks';
+import { Instance } from '/@shared/entities/instance';
+import { required } from '/@/util/props';
+import { getBanner } from '/@/util/banner';
 
 export default defineComponent({
   props: {

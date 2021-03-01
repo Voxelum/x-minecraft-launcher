@@ -16,7 +16,7 @@
 
 <script lang=ts>
 import { onMounted, defineComponent } from '@vue/composition-api';
-import { useInstanceServerStatus, useBusy } from '@/hooks';
+import { useInstanceServerStatus, useBusy } from '/@/hooks';
 
 export default defineComponent({
   setup() {

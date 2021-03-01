@@ -78,8 +78,8 @@ import {
   useInstanceSaves,
   useBusy,
   useResource,
-} from '@/hooks';
-import { InstanceSave } from '@universal/entities/save';
+} from '/@/hooks';
+import { InstanceSave } from '/@shared/entities/save';
 
 export default defineComponent({
   props: {

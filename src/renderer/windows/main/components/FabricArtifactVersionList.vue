@@ -21,7 +21,7 @@
 <script lang=ts>
 import { defineComponent, ref, onMounted } from '@vue/composition-api';
 import { FabricArtifactVersion } from '@xmcl/installer';
-import { required } from '@/util/props';
+import { required } from '/@/util/props';
 import VirtualList from 'vue-virtual-scroll-list';
 import Tile from './FabricArtifactVersionListTile.vue';
 

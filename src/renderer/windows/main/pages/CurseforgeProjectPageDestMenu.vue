@@ -36,8 +36,8 @@
 </template>
 
 <script lang=ts>
-import { useI18n, useInstances } from '@/hooks';
-import { basename } from '@/util/basename';
+import { useI18n, useInstances } from '/@/hooks';
+import { basename } from '/@/util/basename';
 import { defineComponent, computed, inject, ref, reactive, toRefs, Ref } from '@vue/composition-api';
 
 interface Item {

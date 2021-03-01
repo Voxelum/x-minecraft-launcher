@@ -120,8 +120,8 @@
 <script lang=ts>
 import VirtualList from 'vue-virtual-scroll-list';
 import { defineComponent, reactive, toRefs, computed, ref, Ref, provide, watch, onMounted, onUnmounted, set, nextTick } from '@vue/composition-api';
-import { ForgeResource, LiteloaderResource } from '@universal/entities/resource';
-import { isCompatible } from '@universal/entities/version';
+import { ForgeResource, LiteloaderResource } from '/@shared/entities/resource';
+import { isCompatible } from '/@shared/entities/version';
 import {
   useInstanceMods,
   useResourceOperation,
@@ -134,10 +134,10 @@ import {
   useInstanceBase,
   useRouter,
   useService,
-} from '@/hooks';
-import { useLocalStorageCacheBool } from '@/hooks/useCache';
+} from '/@/hooks';
+import { useLocalStorageCacheBool } from '/@/hooks/useCache';
 import { filter } from 'fuzzy';
-import { isNonnull } from '@universal/util/assert';
+import { isNonnull } from '/@shared/util/assert';
 import { useSearchToggles, useSearch } from '../hooks';
 import ModCard from './ModSettingPageCard.vue';
 import DeleteView from './ModSettingPageDeleteView.vue';

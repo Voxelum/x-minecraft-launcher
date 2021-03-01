@@ -166,7 +166,7 @@ import {
   toRefs,
   computed,
 } from '@vue/composition-api';
-import { JavaRecord } from '@universal/entities/java';
+import { JavaRecord } from '/@shared/entities/java';
 import {
   useI18n,
   useAutoSaveLoad,
@@ -175,7 +175,7 @@ import {
   useJava,
   useLaunchPreview,
   useClipboard,
-} from '@/hooks';
+} from '/@/hooks';
 import JavaList from './BaseSettingPageJavaList.vue';
 import { useNotifier } from '../hooks';
 

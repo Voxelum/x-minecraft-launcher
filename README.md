@@ -92,7 +92,7 @@ Please open issue there if you identify any issue related to it.
 
 - Create a new file for hook in `src/renderer/hooks` folder, and export the hook throw `src/renderer/hooks/index.ts`
   - Wrap vuex operation in your hook
-- Import your hook by `import { yourHook } from '@/hooks'` in your vue file
+- Import your hook by `import { yourHook } from '/@/hooks'` in your vue file
 - Use hook in vue file without directly access of vuex
 
 ### Dev with VSCode debugger 

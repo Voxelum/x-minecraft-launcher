@@ -322,8 +322,8 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed, onMounted, onUnmounted, watch, defineComponent, ref, Ref } from '@vue/composition-api';
-import { CurseforgeModpackResource, ModpackResource } from '@universal/entities/resource';
-import { InstanceSchema } from '@universal/entities/instance.schema';
+import { CurseforgeModpackResource, ModpackResource } from '/@shared/entities/resource';
+import { InstanceSchema } from '/@shared/entities/instance.schema';
 import {
   useI18n,
   useJava,
@@ -335,8 +335,8 @@ import {
   useSelectedUser,
   useProfileId,
   useGameProfile,
-} from '@/hooks';
-import { JavaRecord } from '@universal/entities/java';
+} from '/@/hooks';
+import { JavaRecord } from '/@shared/entities/java';
 import { useSearch, useSearchToggles, useSearchToggle } from '../hooks';
 
 interface InstanceTemplate {

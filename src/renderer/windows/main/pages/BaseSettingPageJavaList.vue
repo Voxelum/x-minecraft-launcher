@@ -52,9 +52,9 @@ import {
   defineComponent,
   toRefs,
 } from '@vue/composition-api';
-import { JavaRecord } from '@universal/entities/java';
-import { useService } from '@/hooks';
-import { required } from '@/util/props';
+import { JavaRecord } from '/@shared/entities/java';
+import { useService } from '/@/hooks';
+import { required } from '/@/util/props';
 
 export default defineComponent({
   props: {
