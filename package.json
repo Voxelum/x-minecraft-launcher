@@ -63,7 +63,7 @@
         "node-powershell": "^4.0.0",
         "node-watch": "^0.6.4",
         "original-fs": "^1.1.0",
-        "three": "^0.115.0",
+        "three": "^0.125.0",
         "uuid": "^7.0.3",
         "vue": "^2.6.11",
         "vue-i18n": "^7.8.1",
