@@ -39,9 +39,6 @@ interface Getters {
    */
   isServiceCompatible: boolean;
 
-  authServices: string[]; // TODO: remove
-  profileServices: string[]; // TODO: remove
-
   authService: YggdrasilAuthAPI;
   profileService: ProfileServiceAPI;
 }
@@ -122,9 +119,6 @@ const mod: UserModule = {
     accessTokenValid: (_, getters) => getters.user.accessToken !== '',
     offline: (_, getters) => getters.user.authService === 'offline',
 
-    authServices: state => ['offline', ...Object.keys(state.authServices)],
-    profileServices: state => Object.keys(state.profileServices),
-
     isServiceCompatible: (_, getters) => getters.user.authService === getters.user.profileService,
 
     authService: (state, getters) => state.authServices[getters.user.authService],
@@ -175,7 +169,6 @@ const mod: UserModule = {
     },
     profileServiceRemove(state, name) {
       // TODO: remove in vue3
-
       remove(state.profileServices, name)
       delete state.profileServices[name]
     },
@@ -247,4 +240,3 @@ const mod: UserModule = {
 }
 
 export default mod
-h

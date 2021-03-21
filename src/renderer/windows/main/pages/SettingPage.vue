@@ -276,11 +276,10 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, ref, toRefs, watch, Ref } from '@vue/composition-api';
-import { useStore, useI18n, useParticle, useSettings, useNativeDialog, useService, useLauncherVersion, useBackgroundBlur } from '/@/hooks';
-import localMapping from '/@/assets/locales/index.json';
-
+import { defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
 import UpdateInfoDialog from './SettingPageUpdateInfoDialog.vue';
+import localMapping from '/@/assets/locales/index.json';
+import { useBackgroundBlur, useI18n, useLauncherVersion, useNativeDialog, useParticle, useService, useSettings, useStore } from '/@/hooks';
 
 export default defineComponent({
   components: { UpdateInfoDialog },

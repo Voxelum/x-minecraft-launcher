@@ -5,132 +5,137 @@ import { Frame, parse, stringify } from '@xmcl/gamesetting'
 import { readFile, writeFile, FSWatcher } from 'fs-extra'
 import watch from 'node-watch'
 import { join } from 'path'
-import Service, { MutationTrigger, Singleton } from './Service'
+import AbstractService, { Subscribe, Singleton, Service } from './Service'
 
 export type EditGameSettingOptions = Frame
 
 /**
  * The service for game setting
  */
-export default class InstanceGameSettingService extends Service {
-    private watcher: FSWatcher | undefined;
+@Service
+export default class InstanceGameSettingService extends AbstractService {
+  private watcher: FSWatcher | undefined
 
-    private watchingInstance = '';
+  private watchingInstance = ''
 
-    private dirty = false;
+  private dirty = false;
 
-    async dispose () {
-      this.watcher?.close()
+  async dispose() {
+    this.watcher?.close()
+  }
+
+  @Subscribe('instanceSelect')
+  protected async onInstance(payload: string) {
+    this.loadInstanceGameSettings(payload)
+  }
+
+  @Singleton()
+  async refresh() {
+    if (this.watchingInstance) {
+      this.loadInstanceGameSettings(this.watchingInstance)
     }
+  }
 
-    async init () {
-      this.loadInstanceGameSettings(this.state.instance.path)
-    }
+  @Singleton()
+  private async loadInstanceGameSettings(path: string) {
+    requireString(path)
 
-    @MutationTrigger('instanceSelect')
-    protected async onInstance (payload: string) {
-      this.loadInstanceGameSettings(payload)
-    }
-
-    @Singleton()
-    async loadInstanceGameSettings (path: string) {
-      requireString(path)
-
-      if (this.watchingInstance !== path) {
-        this.log(`Start to watch instance options.txt in ${path}`)
-        this.watcher = watch(path, (event, file) => {
-          if (file.endsWith('options.txt')) {
-            this.dirty = true
-          }
-        })
-        this.watchingInstance = path
-        this.dirty = true
-      }
-      if (this.dirty) {
-        try {
-          const optionsPath = join(path, 'options.txt')
-          this.log(`Load instance options.txt ${optionsPath}`)
-          const result = await readFile(optionsPath, 'utf-8').then(parse)
-          this.commit('instanceCache', { gamesettings: result })
-        } catch (e) {
-          if (!e.message.startsWith('ENOENT:')) {
-            this.warn(`An error ocurrs during parse game options of ${path}.`)
-            this.warn(e)
-          }
-          this.commit('instanceCache', { gamesettings: { resourcePacks: [] } })
+    if (this.watchingInstance !== path) {
+      this.log(`Start to watch instance options.txt in ${path}`)
+      this.watcher = watch(path, (event, file) => {
+        if (file.endsWith('options.txt')) {
+          this.dirty = true
         }
-        this.dirty = false
+      })
+      this.watchingInstance = path
+      this.dirty = true
+    }
+    if (this.dirty) {
+      try {
+        const optionsPath = join(path, 'options.txt')
+        this.log(`Load instance options.txt ${optionsPath}`)
+        const result = await readFile(optionsPath, 'utf-8').then(parse)
+        this.commit('instanceGameSettingsLoad', result)
+      } catch (e) {
+        if (!e.message.startsWith('ENOENT:')) {
+          this.warn(`An error ocurrs during parse game options of ${path}.`)
+          this.warn(e)
+        }
+        this.commit('instanceGameSettingsLoad', { resourcePacks: [] })
       }
+      this.dirty = false
+    }
+  }
+
+  @Subscribe('instanceGameSettings')
+  async saveInstanceGameSetting() {
+    const optionsTxtPath = join(this.state.instance.path, 'options.txt')
+    if (await exists(optionsTxtPath)) {
+      const buf = await readFile(optionsTxtPath)
+      const content = parse(buf.toString())
+      for (const [key, value] of Object.entries(this.state.instanceGameSetting)) {
+        if (key in content && typeof value !== 'undefined' && value !== null) {
+          (content as any)[key] = value
+        }
+      }
+      await writeFile(optionsTxtPath, stringify(content))
+    } else {
+      const result: Record<string, unknown> = {}
+      for (const [key, value] of Object.entries(this.state.instanceGameSetting)) {
+        if (typeof value !== 'undefined') {
+          result[key] = value
+        }
+      }
+      await writeFile(optionsTxtPath, stringify(result))
     }
 
-    @MutationTrigger('instanceGameSettings')
-    async saveInstanceGameSetting () {
-      const optionsTxtPath = join(this.state.instance.path, 'options.txt')
-      if (await exists(optionsTxtPath)) {
-        const buf = await readFile(optionsTxtPath)
-        const content = parse(buf.toString())
-        for (const [key, value] of Object.entries(this.state.instance.settings)) {
-          if (key in content && typeof value !== 'undefined' && value !== null) {
-            (content as any)[key] = value
-          }
+    this.log(`Saved instance gamesettings ${this.state.instance.path}`)
+  }
+
+  /**
+   * Edit the game setting of current instance
+   * @param gameSetting The game setting edit options
+   */
+  edit(gameSetting: EditGameSettingOptions) {
+    const current = this.state.instanceGameSetting
+    const result: Frame = {}
+    for (const key of Object.keys(gameSetting)) {
+      if (key === 'resourcePacks') continue
+      if (key in current && (current as any)[key] !== (gameSetting as any)[key]) {
+        (result as any)[key] = (gameSetting as any)[key]
+      }
+    }
+    // resourcePacks:["vanilla","file/§lDefault§r..§l3D§r..Low§0§o.zip"]
+    if (gameSetting.resourcePacks) {
+      const mcversion = this.getters.instance.runtime.minecraft
+      let resourcePacks: string[]
+      if ((isReleaseVersion(mcversion) && compareRelease(mcversion, '1.13.0') >= 0) ||
+        (isSnapshotPreview(mcversion) && compareSnapshot(mcversion, '17w43a') >= 0)) {
+        resourcePacks = gameSetting.resourcePacks
+          .map(r => (r !== 'vanilla' && !r.startsWith('file/') ? `file/${r}` : r))
+        if (resourcePacks.every((p) => p !== 'vanilla')) {
+          resourcePacks.unshift('vanilla')
         }
-        await writeFile(optionsTxtPath, stringify(content))
       } else {
-        const result: Record<string, unknown> = {}
-        for (const [key, value] of Object.entries(this.state.instance.settings)) {
-          if (typeof value !== 'undefined') {
-            result[key] = value
-          }
-        }
-        await writeFile(optionsTxtPath, stringify(result))
+        resourcePacks = gameSetting.resourcePacks.filter(r => r !== 'vanilla')
+          .map(r => (r.startsWith('file/') ? r.substring(5) : r))
       }
-
-      this.log(`Saved instance gamesettings ${this.state.instance.path}`)
-    }
-
-    /**
-     * Edit the game setting of current instance
-     * @param gameSetting The game setting edit options
-     */
-    edit (gameSetting: EditGameSettingOptions) {
-      const current = this.state.instance.settings
-      const result: Frame = {}
-      for (const key of Object.keys(gameSetting)) {
-        if (key === 'resourcePacks') continue
-        if (key in current && (current as any)[key] !== (gameSetting as any)[key]) {
-          (result as any)[key] = (gameSetting as any)[key]
-        }
-      }
-      if (gameSetting.resourcePacks) {
-        const mcversion = this.getters.instance.runtime.minecraft
-        let resourcePacks: string[]
-        if ((isReleaseVersion(mcversion) && compareRelease(mcversion, '1.13.0') >= 0) ||
-                (isSnapshotPreview(mcversion) && compareSnapshot(mcversion, '17w43a') >= 0)) {
-          resourcePacks = gameSetting.resourcePacks
-            .map(r => (r !== 'vanilla' && !r.startsWith('file/') ? `file/${r}` : r))
-          if (resourcePacks.every((p) => p !== 'vanilla')) {
-            resourcePacks.unshift('vanilla')
-          }
-        } else {
-          resourcePacks = gameSetting.resourcePacks.filter(r => r !== 'vanilla')
-            .map(r => (r.startsWith('file/') ? r.substring(5) : r))
-        }
-        if (result.resourcePacks?.length !== resourcePacks.length || result.resourcePacks?.some((p, i) => p !== resourcePacks[i])) {
-          result.resourcePacks = resourcePacks
-        }
-      }
-      if (Object.keys(result).length > 0) {
-        this.log(`Edit gamesetting: ${JSON.stringify(result, null, 4)}`)
-        this.commit('instanceGameSettings', result)
+      if (result.resourcePacks?.length !== resourcePacks.length || result.resourcePacks?.some((p, i) => p !== resourcePacks[i])) {
+        result.resourcePacks = resourcePacks
       }
     }
-
-    async showInFolder () {
-      const optionTxt = join(this.watchingInstance, 'options.txt')
-      if (await missing(optionTxt)) {
-        this.app.openDirectory(this.watchingInstance)
-      } else {
-        this.app.showItemInFolder(optionTxt)
-      }
+    if (Object.keys(result).length > 0) {
+      this.log(`Edit gamesetting: ${JSON.stringify(result, null, 4)}`)
+      this.commit('instanceGameSettings', result)
     }
+  }
+
+  async showInFolder() {
+    const optionTxt = join(this.watchingInstance, 'options.txt')
+    if (await missing(optionTxt)) {
+      this.app.openDirectory(this.watchingInstance)
+    } else {
+      this.app.showItemInFolder(optionTxt)
+    }
+  }
 }

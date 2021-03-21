@@ -1,52 +1,38 @@
-import LauncherApp from '/@main/app/LauncherApp'
-import { Schema } from '/@shared/entities/schema'
-import { MutationKeys, RootCommit, RootGetters, RootState } from '/@shared/store'
-import { Exception, Exceptions } from '/@shared/entities/exception'
 import { Task } from '@xmcl/task'
-import Ajv from 'ajv'
-import { ensureFile, readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
-import { createContext, runInContext } from 'vm'
+import LauncherApp from '/@main/app/LauncherApp'
 import { WaitingQueue } from '/@main/util/mutex'
+import { Exceptions } from '/@shared/entities/exception'
+import { MutationKeys, RootCommit, RootGetters, RootState } from '/@shared/store'
+import 'reflect-metadata'
 
-export const INJECTIONS_SYMBOL = Symbol('__injections__')
-export const MUTATION_LISTENERS_SYMBOL = Symbol('__listeners__')
 export const PURE_SYMBOL = Symbol('__pure__')
 
-export function Inject(type: string) {
-  return function (target: any, propertyKey: string) {
-    if (!Reflect.has(target, INJECTIONS_SYMBOL)) {
-      Reflect.set(target, INJECTIONS_SYMBOL, [])
-    }
-    if (!type) {
-      throw new Error(`Inject recieved type: ${type}!`)
-    } else {
-      Reflect.get(target, INJECTIONS_SYMBOL).push({ type, field: propertyKey })
-    }
-  }
+export type ServiceConstructor = {
+  new(...args: any[]): AbstractService;
+}
+
+export const registeredServices: ServiceConstructor[] = []
+
+export function Service(target: ServiceConstructor) {
+  registeredServices.push(target)
 }
 
 /**
  * Fire on certain store mutation committed.
  * @param keys The mutations name
  */
-export function MutationTrigger(...keys: MutationKeys[]) {
-  return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
-    if (!Reflect.has(target, MUTATION_LISTENERS_SYMBOL)) {
-      Reflect.set(target, MUTATION_LISTENERS_SYMBOL, [])
-    }
+export function Subscribe(...keys: MutationKeys[]) {
+  return function (target: AbstractService, propertyKey: string, descriptor: PropertyDescriptor) {
     if (!keys || keys.length === 0) {
       throw new Error('Must listen at least one mutation!')
     } else {
-      Reflect.get(target, MUTATION_LISTENERS_SYMBOL).push(...keys.map(k => ({
-        event: k,
-        listener: descriptor.value
-      })))
+      target.app.storeManager.subscribeAll(keys, descriptor.value)
     }
   }
 }
 
-export type KeySerializer = (this: Service, ...params: any[]) => string;
+export type KeySerializer = (this: AbstractService, ...params: any[]) => string;
 
 export enum Policy {
   Skip = 'skip',
@@ -64,9 +50,9 @@ function getQueue(name: string) {
 }
 
 export function Enqueue(queue: WaitingQueue) {
-  return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (target: AbstractService, propertyKey: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value
-    const func = function (this: Service, ...args: any[]) {
+    const func = function (this: AbstractService, ...args: any[]) {
       return queue.enqueue(async () => {
         let isPromise = false
         try {
@@ -101,9 +87,9 @@ export function Enqueue(queue: WaitingQueue) {
  * The later call will wait the first call end and return the first call result.
  */
 export function Singleton(...keys: (string | KeySerializer)[]) {
-  return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (target: AbstractService, propertyKey: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value
-    const func = function (this: Service, ...args: any[]) {
+    const func = function (this: AbstractService, ...args: any[]) {
       const semiphores: string[] = [propertyKey, ...keys.map(k => (typeof k === 'string' ? k : k.bind(this)(...args)))]
       if (semiphores.some((key) => this.isBusy(key))) {
         return runningSingleton[semiphores[0]]
@@ -137,7 +123,7 @@ export function Singleton(...keys: (string | KeySerializer)[]) {
 }
 
 export function Pure() {
-  return function (target: Service, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (target: AbstractService, propertyKey: string, descriptor: PropertyDescriptor) {
     const func = Reflect.get(target, propertyKey)
     Reflect.set(func, PURE_SYMBOL, true)
   }
@@ -154,7 +140,7 @@ export class ServiceException extends Error {
  *
  * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied
  */
-export default class Service {
+export default abstract class AbstractService {
   readonly name: string;
 
   constructor(readonly app: LauncherApp) {
@@ -235,11 +221,10 @@ export default class Service {
    */
   protected get minecraftPath() { return this.app.minecraftDataPath }
 
-  async save(payload: { mutation: MutationKeys; payload: any }): Promise<void> { }
-
-  async load(): Promise<void> { }
-
-  async init(): Promise<void> { }
+  /**
+   * The load the service. It should load the basic data of the server. You cannot access other services from here.
+   */
+  async initialize(): Promise<void> { }
 
   async dispose(): Promise<void> { }
 
@@ -265,12 +250,6 @@ export default class Service {
 
   protected release(key: string | string[]) {
     this.serviceManager.release(key)
-  }
-
-  protected precondition(issue: string) {
-    if (this.getters.isIssueActive(issue)) {
-      throw new Exception({ type: 'issueBlocked', issues: [] })
-    }
   }
 
   protected pushException(e: Exceptions) {

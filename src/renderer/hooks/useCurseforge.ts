@@ -10,7 +10,7 @@ import { useRouter } from './useRouter'
  * Hook to view the curseforge project downloadable files.
  * @param projectId The project id
  */
-export function useCurseforgeProjectFiles (projectId: number) {
+export function useCurseforgeProjectFiles(projectId: number) {
   const { fetchProjectFiles } = useService('CurseForgeService')
   const { getters } = useStore()
   const data = reactive({
@@ -18,7 +18,7 @@ export function useCurseforgeProjectFiles (projectId: number) {
     loading: false
   })
   const status = computed(() => data.files.map(file => getters.isFileInstalled({ id: file.id, href: file.downloadUrl })))
-  async function refresh () {
+  async function refresh() {
     data.loading = true
     try {
       const f = await fetchProjectFiles(projectId)
@@ -37,22 +37,22 @@ export function useCurseforgeProjectFiles (projectId: number) {
   }
 }
 
-export function useCurseforgeInstall (type: ProjectType, projectId: number) {
+export function useCurseforgeInstall(type: ProjectType, projectId: number) {
   const { installFile } = useService('CurseForgeService')
   const { deploy } = useService('InstanceResourceService')
   const { state, getters } = useStore()
-  function getFileStatus (file: File): 'downloading' | 'downloaded' | 'remote' {
+  function getFileStatus(file: File): 'downloading' | 'downloaded' | 'remote' {
     const res = getters.queryResource(file.downloadUrl)
-    if (res.type !== 'unknown') {
+    if (res) {
       return 'downloaded'
     }
     const downloading = state.curseforge.downloading.find((f) => f.fileId === file.id)
     return downloading ? 'downloading' : 'remote'
   }
-  function getFileResource (file: File) {
+  function getFileResource(file: File) {
     return getters.queryResource(file.downloadUrl)
   }
-  async function install (file: File, toInstance?: string) {
+  async function install(file: File, toInstance?: string) {
     const resource = await installFile({ file, type, projectId })
     if (toInstance) {
       await deploy({ resources: [resource], path: toInstance })
@@ -63,13 +63,13 @@ export function useCurseforgeInstall (type: ProjectType, projectId: number) {
   return { getFileStatus, install, getFileResource }
 }
 
-export function useCurseforgeProjectDescription (projectId: number) {
+export function useCurseforgeProjectDescription(projectId: number) {
   const { fetchProjectDescription } = useService('CurseForgeService')
   const data = reactive({
     description: '',
     loading: false
   })
-  async function refresh () {
+  async function refresh() {
     data.loading = true
     try {
       const des = await fetchProjectDescription(projectId)
@@ -87,7 +87,7 @@ export function useCurseforgeProjectDescription (projectId: number) {
  * Hook to view the front page of the curseforge project.
  * @param id The project id
  */
-export function useCurseforgeProject (projectId: number) {
+export function useCurseforgeProject(projectId: number) {
   const { fetchProject } = useService('CurseForgeService')
   const recentFiles: Ref<File[]> = ref([])
   const data = reactive({
@@ -98,7 +98,7 @@ export function useCurseforgeProject (projectId: number) {
     attachments: [] as Attachment[],
     refreshingProject: false
   })
-  async function refresh () {
+  async function refresh() {
     data.refreshingProject = true
     try {
       const proj = await fetchProject(projectId)
@@ -121,7 +121,7 @@ export function useCurseforgeProject (projectId: number) {
   }
 }
 
-export function useCurseforgeCategories () {
+export function useCurseforgeCategories() {
   const { loadCategories } = useService('CurseForgeService')
   const { state } = useStore()
   const categories = computed(() => state.curseforge.categories)
@@ -135,7 +135,7 @@ export function useCurseforgeCategories () {
 /**
  * Hook to returen the controller of curseforge preview page. Navigating the curseforge projects.
  */
-export function useCurseforgeSearch (type: string, page: Ref<number>, keyword: Ref<string | undefined>) {
+export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Ref<string | undefined>) {
   let sectionId: number
   switch (type) {
     default:
@@ -157,8 +157,8 @@ export function useCurseforgeSearch (type: string, page: Ref<number>, keyword: R
   const { searchProjects } = useService('CurseForgeService')
   const pageSize = 5
   const currentPage = computed({
-    get () { return page.value },
-    set (v: number) {
+    get() { return page.value },
+    set(v: number) {
       const route = router.currentRoute
       router.push({ query: { ...route.query, page: v.toString() } })
     }
@@ -178,7 +178,7 @@ export function useCurseforgeSearch (type: string, page: Ref<number>, keyword: R
   })
   const index = computed(() => (currentPage.value - 1) * pageSize)
   const refs = toRefs(data)
-  async function refresh () {
+  async function refresh() {
     data.loading = true
     try {
       const projects = await searchProjects({
@@ -199,7 +199,7 @@ export function useCurseforgeSearch (type: string, page: Ref<number>, keyword: R
       data.loading = false
     }
   }
-  async function search () {
+  async function search() {
     if (data.loading) return
     const route = router.currentRoute
     if (data.currentKeyword === '') {

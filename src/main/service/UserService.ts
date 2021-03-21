@@ -1,19 +1,18 @@
+import { DownloadTask } from '@xmcl/installer'
+import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user'
+import { readFile, readJSON } from 'fs-extra'
+import { URL } from 'url'
+import { v4 } from 'uuid'
+import { MappedFile } from '../util/persistance'
+import { BufferJsonSerializer } from '../util/serialize'
+import AbstractService, { Service, Singleton } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { aquireXBoxToken, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '/@main/entities/user'
 import { createhDynamicThrottle as createDynamicThrottle } from '/@main/util/trafficAgent'
 import { fitMinecraftLauncherProfileData } from '/@main/util/userData'
-import { Exception, wrapError } from '/@shared/entities/exception'
+import { Exception } from '/@shared/entities/exception'
 import { GameProfileAndTexture, UserSchema } from '/@shared/entities/user.schema'
-import { MutationKeys } from '/@shared/store'
 import { requireNonnull, requireObject, requireString } from '/@shared/util/assert'
-import { DownloadTask } from '@xmcl/installer'
-import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user'
-import { readFile, readJSON } from 'fs-extra'
-import { parse } from 'url'
-import { v4 } from 'uuid'
-import Service, { Singleton } from './Service'
-import { BufferJsonSerializer } from '../util/serialize'
-import { MappedFile } from '../util/persistance'
 
 export interface LoginMicrosoftOptions {
   /**
@@ -138,7 +137,8 @@ export interface UploadSkinOptions {
   slim: boolean;
 }
 
-export default class UserService extends Service {
+@Service
+export default class UserService extends AbstractService {
   private refreshSkinRecord: Record<string, boolean> = {};
 
   private lookup = createDynamicThrottle(lookup, (uuid, options = {}) => (options.api ?? PROFILE_API_MOJANG).profile, 2400);
@@ -162,46 +162,28 @@ export default class UserService extends Service {
     ], async () => {
       await this.userFile.write(this.state.user)
     })
-    this.persistManager.registerStoreJsonSerializable(this.getPath('user.json'), UserSchema,
-      async (data) => {
-        const result: UserSchema = {
-          authServices: {},
-          profileServices: {},
-          users: {},
-          selectedUser: {
-            id: '',
-            profile: ''
-          },
-          clientToken: ''
-        }
-        const mcdb = await this.getMinecraftAuthDb()
-        fitMinecraftLauncherProfileData(result, data, mcdb)
-        this.log(`Load ${Object.keys(result.users).length} users`)
-        if (!result.clientToken) {
-          result.clientToken = v4().replace(/-/g, '')
-        }
-        this.commit('userSnapshot', result)
+  }
+
+  async initialize() {
+    const data = await this.userFile.read()
+    const result: UserSchema = {
+      authServices: {},
+      profileServices: {},
+      users: {},
+      selectedUser: {
+        id: '',
+        profile: ''
       },
-      () => this.state.user,
-      [
-        'userProfileAdd',
-        'userProfileRemove',
-        'userProfileUpdate',
-        'userGameProfileSelect',
-        'authService',
-        'profileService',
-        'userInvalidate',
-        'authServiceRemove',
-        'profileServiceRemove'
-      ])
-  }
+      clientToken: ''
+    }
+    const mcdb = await this.getMinecraftAuthDb()
+    fitMinecraftLauncherProfileData(result, data, mcdb)
+    this.log(`Load ${Object.keys(result.users).length} users`)
+    if (!result.clientToken) {
+      result.clientToken = v4().replace(/-/g, '')
+    }
+    this.commit('userSnapshot', result)
 
-  async getMinecraftAuthDb() {
-    const data: LauncherProfile = await readJSON(this.getMinecraftPath('launcher_profile.json')).catch(() => ({}))
-    return data
-  }
-
-  async init() {
     this.refreshUser()
     if (this.state.user.selectedUser.id === '' && Object.keys(this.state.user.users).length > 0) {
       const [userId, user] = Object.entries(this.state.user.users)[0]
@@ -210,6 +192,11 @@ export default class UserService extends Service {
         profileId: user.selectedProfile
       })
     }
+  }
+
+  async getMinecraftAuthDb() {
+    const data: LauncherProfile = await readJSON(this.getMinecraftPath('launcher_profile.json')).catch(() => ({}))
+    return data
   }
 
   /**
@@ -322,7 +309,7 @@ export default class UserService extends Service {
   /**
    * Refresh current skin status
    */
-  @Singleton(function (this: Service, o: RefreshSkinOptions = {}) {
+  @Singleton(function (this: AbstractService, o: RefreshSkinOptions = {}) {
     const {
       gameProfileId = this.state.user.selectedUser.profile,
       userId = this.state.user.selectedUser.id
@@ -411,12 +398,12 @@ export default class UserService extends Service {
     const user = this.state.user.users[userId]
     const gameProfile = user.profiles[gameProfileId]
 
-    const parsedUrl = parse(url)
+    const { protocol } = new URL(url)
     let data: Buffer | undefined
     let skinUrl = ''
-    if (parsedUrl.protocol === 'file:') {
+    if (protocol === 'file:') {
       data = await readFile(url)
-    } else if (parsedUrl.protocol === 'https:' || parsedUrl.protocol === 'http:') {
+    } else if (protocol === 'https:' || protocol === 'http:') {
       skinUrl = url
     } else {
       throw new Error('Unknown url protocol! Require a file or http/https protocol!')

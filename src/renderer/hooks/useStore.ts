@@ -1,6 +1,6 @@
+import { inject } from '@vue/composition-api'
 import { STORE_KEY } from '/@/constant'
 import { RootCommit, Store } from '/@shared/store'
-import { computed, inject } from '@vue/composition-api'
 
 export function useStore (): Store {
   const repo = inject(STORE_KEY)

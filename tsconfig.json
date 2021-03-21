@@ -8,6 +8,7 @@
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "esModuleInterop": true,
+        "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "paths": {
             "@universal/*": [

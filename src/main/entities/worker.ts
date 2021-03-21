@@ -1,69 +1,76 @@
 import { Worker } from 'worker_threads'
 import { ImportTypeHint } from '/@main/service/ResourceService'
-import { ResourceHeader } from './resource'
+import { FileType } from 'file-type'
+import { Resource } from '/@shared/entities/resource.schema'
 
 export interface WorkPayload {
-    type: string;
-    id: number;
+  type: string
+  id: number
 }
 
-export interface ChecksumWorkPayload extends WorkPayload {
-    type: 'checksum';
-    algorithm: string;
-    path: string;
+export interface ChecksumWorkPayload {
+  algorithm: string
+  path: string
 }
 
-export interface ReadResourceWorkPayload extends WorkPayload {
-    type: 'readResourceHeader';
-    path: string;
-    hash: string;
-    hint: ImportTypeHint;
+export interface ResolveResourceWorkPayload {
+  path: string
+  hash: string
+  hint: ImportTypeHint
 }
 
-export type WorkPayloads = ChecksumWorkPayload | ReadResourceWorkPayload;
+export type WorkPayloads = ChecksumWorkPayload | ResolveResourceWorkPayload
 
 export interface WorkerResponse {
-    id: number;
-    error?: Error;
-    result?: any;
+  id: number
+  error?: Error
+  result?: any
 }
 
 /**
  * The worker for cpu busy work
  */
 export interface CPUWorker {
-    checksum(path: string, algorithm: string): Promise<string>;
-    readResourceHeader(path: string, hash: string, hint: ImportTypeHint): Promise<ResourceHeader>
+  checksum(payload: ChecksumWorkPayload): Promise<string>
+  checksumAndFileType(payload: ChecksumWorkPayload): Promise<[string, FileType | 'unknown']>
+  resolveResource(payload: ResolveResourceWorkPayload): Promise<[Resource, Uint8Array | undefined]>
 }
 
-export class WorkerProxy implements CPUWorker {
-  constructor (private worker: Worker) { }
+export class WorkerAgent implements CPUWorker {
+  constructor(private worker: Worker) { }
+  private counter = 0
 
-    private counter = 0;
-
-    private post<T> (payload: WorkPayloads) {
-      this.worker.postMessage(payload)
-      return new Promise<T>((resolve, reject) => {
-        const handler = (resp: WorkerResponse) => {
-          const { error, result, id } = resp
-          if (id === payload.id) {
-            this.worker?.removeListener('message', handler)
-            if (error) {
-              reject(error)
-            } else {
-              resolve(result)
-            }
+  private post<T>(payload: WorkPayload) {
+    this.worker.postMessage(payload)
+    return new Promise<T>((resolve, reject) => {
+      const handler = (resp: WorkerResponse) => {
+        const { error, result, id } = resp
+        if (id === payload.id) {
+          this.worker?.removeListener('message', handler)
+          if (error) {
+            reject(error)
+          } else {
+            resolve(result)
           }
         }
-            this.worker!.on('message', handler)
-      })
-    }
+      }
+      this.worker!.on('message', handler)
+    })
+  }
 
-    checksum (path: string, algorithm: string): Promise<string> {
-      return this.post({ type: 'checksum', path, algorithm, id: this.counter++ })
-    }
+  submit<T extends keyof CPUWorker>(work: T, payload: Parameters<CPUWorker[T]>[0]): ReturnType<CPUWorker[T]> {
+    throw this.post({ type: work, id: this.counter++, ...payload })
+  }
 
-    readResourceHeader (path: string, hash: string, hint: string): Promise<ResourceHeader> {
-      return this.post({ type: 'readResourceHeader', path, hash, hint, id: this.counter++ })
-    }
+  checksum(payload: ChecksumWorkPayload): Promise<string> {
+    return this.submit('checksum', payload)
+  }
+
+  checksumAndFileType(payload: ChecksumWorkPayload): Promise<[string, FileType | 'unknown']> {
+    return this.submit('checksumAndFileType', payload)
+  }
+
+  resolveResource(payload: ResolveResourceWorkPayload): Promise<[Resource<unknown>, Uint8Array | undefined]> {
+    return this.submit('resolveResource', payload)
+  }
 }

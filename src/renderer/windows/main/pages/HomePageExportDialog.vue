@@ -23,7 +23,7 @@
       </v-toolbar>
       <v-container
         grid-list-sm
-        style="overflow: auto; max-height: 450px;"
+        style="overflow: auto max-height: 450px"
       >
         <v-subheader>{{ $t('profile.modpack.general') }}</v-subheader>
         <v-container
@@ -108,7 +108,7 @@
         </v-layout>
         <v-layout
           row
-          style="padding: 5px; margin-bottom: 5px;"
+          style="padding: 5px margin-bottom: 5px"
         >
           <instance-files
             v-model="selected"
@@ -139,12 +139,12 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, onMounted, defineComponent, Ref, ref, onUnmounted, watch, nextTick } from '@vue/composition-api';
-import { useInstance, useService, useI18n, useVersions, useLocalVersions, useNativeDialog, useInstanceVersion } from '/@/hooks';
-import { InstanceFile } from '@main/service/InstanceIOService';
-import InstanceFiles from './HomePageInstanceFiles.vue';
-import ExportLocalVersionList from './HomePageExportLocalVersionList.vue';
-import { useZipFilter } from '../hooks';
+import { InstanceFile } from '/@main/service/InstanceIOService'
+import { computed, defineComponent, nextTick, reactive, toRefs, watch } from '@vue/composition-api'
+import { useZipFilter } from '../hooks'
+import ExportLocalVersionList from './HomePageExportLocalVersionList.vue'
+import InstanceFiles from './HomePageInstanceFiles.vue'
+import { useI18n, useInstance, useInstanceVersion, useLocalVersions, useNativeDialog, useService } from '/@/hooks'
 
 export default defineComponent({
   components: { InstanceFiles, ExportLocalVersionList },
@@ -153,13 +153,14 @@ export default defineComponent({
     isCurseforge: Boolean,
   },
   setup(props, context) {
-    const { name, author } = useInstance();
-    const { getInstanceFiles, exportCurseforge, exportInstance } = useService('InstanceIOService');
-    const { showSaveDialog } = useNativeDialog();
-    const { localVersions } = useLocalVersions();
-    const { folder } = useInstanceVersion();
-    const { $t } = useI18n();
-    const zipFilter = useZipFilter();
+    const { name, author } = useInstance()
+    const { getInstanceFiles, exportInstance } = useService('InstanceIOService')
+    const { exportCurseforgeModpack } = useService('InstanceCurseforgeIOService')
+    const { showSaveDialog } = useNativeDialog()
+    const { localVersions } = useLocalVersions()
+    const { folder } = useInstanceVersion()
+    const { $t } = useI18n()
+    const zipFilter = useZipFilter()
     const data = reactive({
       name: name.value,
       author: author.value,
@@ -171,81 +172,81 @@ export default defineComponent({
       files: [] as InstanceFile[],
       includeLibraries: true,
       includeAssets: true,
-    });
+    })
     function reset() {
-      data.selected = [];
-      data.gameVersion = folder.value ? folder.value : '';
+      data.selected = []
+      data.gameVersion = folder.value ? folder.value : ''
     }
     function refresh() {
-      if (data.refreshing) return;
-      data.refreshing = true;
+      if (data.refreshing) return
+      data.refreshing = true
       getInstanceFiles().then((files) => {
-        let selected = [] as string[];
+        let selected = [] as string[]
         if (props.isCurseforge) {
-          selected = files.filter(p => p.path.startsWith('config') || p.path.startsWith('mods')).map(p => p.path);
+          selected = files.filter(p => p.path.startsWith('config') || p.path.startsWith('mods')).map(p => p.path)
         } else {
           selected = files
             .filter(file => !file.path.startsWith('logs'))
             .filter(file => !file.path.startsWith('resourcepacks'))
-            .map(file => file.path);
+            .map(file => file.path)
         }
-        nextTick().then(() => { data.selected = selected; });
-        data.files = files;
-      }).finally(() => { data.refreshing = false; });
+        nextTick().then(() => { data.selected = selected })
+        data.files = files
+      }).finally(() => { data.refreshing = false })
     }
     function cancel() {
-      context.emit('input', false);
+      context.emit('input', false)
     }
     async function confirm() {
-      data.exporting = true;
+      data.exporting = true
       const { filePath } = await showSaveDialog({
         title: $t('profile.modpack.export'),
         defaultPath: `${data.name}-${data.version}`,
         filters: [zipFilter],
-      });
+      })
       if (filePath) {
         if (props.isCurseforge) {
           try {
-            const overrides = data.selected.filter(p => !!data.files.find(f => f.path === p && !f.isDirectory));
-            await exportCurseforge({
+            const overrides = data.selected.filter(p => !!data.files.find(f => f.path === p && !f.isDirectory))
+            await exportCurseforgeModpack({
               overrides,
               name: data.name,
               author: data.author,
               version: data.version,
               gameVersion: data.gameVersion,
               destinationPath: filePath,
-            });
+            })
           } catch (e) {
-            console.error(e);
+            console.error(e)
           }
         } else {
-          const files = data.selected.filter(p => !!data.files.find(f => f.path === p && !f.isDirectory));
+          const files = data.selected.filter(p => !!data.files.find(f => f.path === p && !f.isDirectory))
           await exportInstance({ 
             destinationPath: filePath, 
             includeLibraries: data.includeLibraries,
             includeAssets: data.includeAssets,
             files,
-          });
+          })
         }
       }
 
-      data.exporting = false;
+      data.exporting = false
     }
     watch(() => props.value, () => {
       if (props.value) {
-        reset();
-        refresh();
+        reset()
+        refresh()
       }
-    });
+    })
     return {
       localVersions: computed(() => localVersions.value.map((v) => v.folder)),
       ...toRefs(data),
       cancel,
       confirm,
       refresh,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

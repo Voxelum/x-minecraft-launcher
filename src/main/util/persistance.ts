@@ -1,4 +1,5 @@
-import { ensureFile, readFile, writeFile } from 'fs-extra'
+import { ensureFile, readFile } from 'fs-extra'
+import { writeFile } from 'atomically'
 import { join } from 'path'
 import { Serializer } from './serialize'
 

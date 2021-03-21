@@ -1,9 +1,12 @@
-import { StaticStore, createStaticStore } from '/@shared/util/staticStore'
-import storeTemplate, { MutationKeys, MutationPayload, RootCommit, RootState } from '/@shared/store'
+import { EventEmitter } from 'events'
 import { Manager } from '.'
+import storeTemplate, { ModuleOption, MutationKeys, MutationPayload, RootState } from '/@shared/store'
+import { createStaticStore, StaticStore } from '/@shared/util/staticStore'
 
 export default class StoreManager extends Manager {
   public store: StaticStore<RootState> = createStaticStore(storeTemplate) as any;
+
+  private eventbus = new EventEmitter()
 
   /**
    * The total order of the current store state.
@@ -44,6 +47,9 @@ export default class StoreManager extends Manager {
     this.app.handle('sync', (_, id) => this.app.storeReadyPromise.then(() => this.sync(id)))
     this.store!.commit('root', this.app.gameDataPath)
     this.setupAutoSync()
+    this.store.subscribe((mutation) => {
+      this.eventbus.emit(mutation.type, mutation.payload)
+    })
   }
 
   engineReady() {
@@ -53,10 +59,18 @@ export default class StoreManager extends Manager {
   }
 
   subscribe<T extends MutationKeys>(key: T, listener: (payload: MutationPayload<T>) => void) {
+    this.eventbus.addListener(key, listener)
     return this
   }
 
   subscribeAll(events: MutationKeys[], listener: () => void) {
+    for (const e of events) {
+      this.eventbus.addListener(e, listener)
+    }
     return this
+  }
+
+  register<T>(template: ModuleOption<T, any, any, any>, loader?: () => Promise<T>) {
+
   }
 }

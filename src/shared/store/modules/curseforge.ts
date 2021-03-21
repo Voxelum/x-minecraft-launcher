@@ -1,4 +1,4 @@
-import { Resource } from '/@shared/entities/resource'
+import { PersistedResource } from '/@shared/entities/resource'
 import { remove } from '/@shared/util/middleware'
 import { Category } from '@xmcl/curseforge'
 import { ModuleOption } from '../root'
@@ -11,7 +11,7 @@ interface State {
 
 interface Getters {
     isFileInstalled: (file: { id: number; href: string }) => boolean;
-    findFileInstalled: (file: { id: number; href: string }) => Resource | undefined;
+    findFileInstalled: (file: { id: number; href: string }) => PersistedResource | undefined;
 }
 
 interface Mutations {
@@ -30,7 +30,7 @@ const mod: CurseForgeModule = {
   },
   getters: {
     isFileInstalled: (state, _, rt) => (file) => {
-      const find = (m: Resource) => {
+      const find = (m: PersistedResource) => {
         if ('curseforge' in m && typeof m.curseforge === 'object') {
           const s = m.curseforge
           if (s.fileId === file.id) return true
@@ -47,7 +47,7 @@ const mod: CurseForgeModule = {
     findFileInstalled: (state, _, rt) => (file) => {
       /**
              */
-      const find = (m: Resource) => {
+      const find = (m: PersistedResource) => {
         const source = m
         if ('curseforge' in source && typeof source.curseforge === 'object') {
           const s = source.curseforge

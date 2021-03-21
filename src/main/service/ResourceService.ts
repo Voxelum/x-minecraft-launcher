@@ -1,362 +1,399 @@
-import { mutateResource, remove, resolveAndPersist, ResourceCache, SourceInformation } from '/@main/entities/resource'
-import { fixResourceSchema } from '/@main/util/dataFix'
-import { copyPassively, readdirEnsured } from '/@main/util/fs'
-import { Resource, Resources, UNKNOWN_RESOURCE } from '/@shared/entities/resource'
-import { ResourceDomain, ResourceSchema, ResourceType } from '/@shared/entities/resource.schema'
-import { requireString } from '/@shared/util/assert'
 import { task } from '@xmcl/task'
 import { stat } from 'fs-extra'
 import debounce from 'lodash.debounce'
-import { extname, join } from 'path'
-import Service from './Service'
+import { join } from 'path'
+import { RelativeMappedFile } from '../util/persistance'
+import { BufferJsonSerializer } from '../util/serialize'
+import AbstractService, { Service } from './Service'
+import { mutateResource, persistResource, remove, ResourceCache, SourceInformation } from '/@main/entities/resource'
+import { fixResourceSchema } from '/@main/util/dataFix'
+import { copyPassively, isDirectory, readdirEnsured } from '/@main/util/fs'
+import { AnyPersistedResource, AnyResource, isPersistedResource, PersistedResource } from '/@shared/entities/resource'
+import { PersistedResourceSchema, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
+import { isNonnull, isNullOrUndefine, requireString } from '/@shared/util/assert'
 
-export type ImportTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save';
-export type ParseOptions = {
-    /**
-     * The real file path of the resource
-     */
-    path: string;
-    /**
-     * The hint for the import file type
-     */
-    type?: ImportTypeHint;
-    /**
-     * The extra info you want to provide to the source of the resource
-     */
-    source?: SourceInformation;
+export type ImportTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save'
 
-    url?: string[];
+export interface ParseFileOptions {
+  /**
+   * The real file path of the resource
+   */
+  path: string
+  /**
+   * The hint for the import file type
+   */
+  type?: ImportTypeHint
+  /**
+   * The extra info you want to provide to the source of the resource
+   */
+  source?: SourceInformation
+  /**
+   * The file urls
+   */
+  url?: string[]
+}
 
-    background?: boolean;
-    /**
+export interface ImportFileOptions extends ParseFileOptions {
+  /**
      * Require the resource to be these specific domain
      */
-    requiredDomain?: ResourceDomain;
+  restrictToDomain?: ResourceDomain
+  /**
+   * Is import file task in background?
+   */
+  background?: boolean
 }
-export interface ImportMultipleFilesOptions {
-    files: Array<{
-        path: string;
-        url: string[];
-        source?: SourceInformation
-    }>;
-    background?: boolean;
-    /**
-     * The hint for the import file type
-     */
-    type?: ImportTypeHint;
-    /**
-     * Require the resource to be these specific domain
-     */
-    fromDomain?: ResourceDomain;
-}
+
 export interface ParseFilesOptions {
-    files: { path: string; hint?: ImportTypeHint; size?: number }[];
+  files: Array<ParseFileOptions>
+  /**
+   * The hint for the import file type
+   */
+  type?: ImportTypeHint
 }
+
+export interface ImportFilesOptions extends ParseFilesOptions {
+  /**
+   * Is import file task in background?
+   */
+  background?: boolean
+  /**
+   * Require the resource to be these specific domain
+   */
+  restrictToDomain?: ResourceDomain
+}
+
 export interface Query {
-    hash?: string;
-    url?: string | string[];
-    ino?: number;
+  hash?: string
+  url?: string | string[]
+  ino?: number
 }
 
 export interface AddResourceOptions {
-    path: string;
-    hash?: string;
-    type?: ImportTypeHint;
-    source?: SourceInformation;
+  path: string
+  hash?: string
+  type?: ImportTypeHint
+  source?: SourceInformation
 }
 
 class DomainMissMatchedError extends Error {
-  constructor (domain: string, path: string, type: string) {
+  constructor(domain: string, path: string, type: string) {
     super(`Non-${domain} resource at ${path} type=${type}`)
   }
 }
 
-export default class ResourceService extends Service {
-    private cache = new ResourceCache();
+@Service
+export default class ResourceService extends AbstractService {
+  private cache = new ResourceCache()
 
-    private loadPromises: Record<string, Promise<void>> = {};
+  private loadPromises: Record<string, Promise<void>> = {}
 
-    private resourceRemoveQueue: Resource[] = [];
+  private resourceRemoveQueue: AnyPersistedResource[] = []
 
-    private commitUpdate = debounce(async () => {
-      const queue = this.resourceRemoveQueue
-      if (queue.length > 0) {
-        this.resourceRemoveQueue = []
-        this.commit('resourcesRemove', queue)
-        for (const resource of queue) {
-          this.cache.discard(resource)
-          await this.unpersistResource(resource)
-        }
+  private resourceFile = new RelativeMappedFile<PersistedResourceSchema>('', new BufferJsonSerializer(PersistedResourceSchema))
+
+  private commitUpdate = debounce(async () => {
+    const queue = this.resourceRemoveQueue
+    if (queue.length > 0) {
+      this.resourceRemoveQueue = []
+      this.commit('resourcesRemove', queue)
+      for (const resource of queue) {
+        this.cache.discard(resource)
+        await this.unpersistResource(resource)
       }
-    }, 500);
-
-    protected normalizeResource (resource: string | Resources): Resources {
-      return (typeof resource === 'string' ? this.cache.get(resource) : resource) ?? UNKNOWN_RESOURCE
     }
+  }, 500)
 
-    /**
-     * Query in memory resource by key.
-     * The key can be `hash`, `url` or `ino` of the file.
-     */
-    getResourceByKey (key: string | number): Resources | undefined {
-      return this.cache.get(key)
+  protected normalizeResource(resource: string | AnyPersistedResource | AnyResource): AnyPersistedResource | undefined {
+    if (typeof resource === 'string') {
+      return this.cache.get(resource)
     }
-
-    isResourceInCache (key: string | number) {
-      return !!this.cache.get(key)
+    if (isPersistedResource(resource)) {
+      return resource
     }
+    return this.cache.get(resource.hash)
+  }
 
-    /**
-     * Query resource in memory by the resource query
-     * @param query The resource query.
-     */
-    getResource (query: Query) {
-      let res: Resource
-      if (query.hash) {
-        res = this.cache.get(query.hash)
+  /**
+   * Query in memory resource by key.
+   * The key can be `hash`, `url` or `ino` of the file.
+   */
+  getResourceByKey(key: string | number): AnyPersistedResource | undefined {
+    return this.cache.get(key)
+  }
+
+  isResourceInCache(key: string | number) {
+    return !!this.cache.get(key)
+  }
+
+  /**
+   * Query resource in memory by the resource query
+   * @param query The resource query.
+   */
+  getResource(query: Query) {
+    let res: PersistedResource | undefined
+    if (query.hash) {
+      res = this.cache.get(query.hash)
+      if (res) return res
+    }
+    if (query.url) {
+      if (typeof query.url === 'string') {
+        res = this.cache.get(query.url)
         if (res) return res
-      }
-      if (query.url) {
-        if (typeof query.url === 'string') {
-          res = this.cache.get(query.url)
-          if (res) return res
-        } else {
-          for (const u of query.url) {
-            res = this.cache.get(u)
-            if (res) return res
-          }
-        }
-      }
-      if (query.ino) {
-        res = this.cache.get(query.ino)
-        if (res) return res
-      }
-      return UNKNOWN_RESOURCE
-    }
-
-    async load () {
-      ['mods', 'resourcepacks', 'saves', 'modpacks'].map(async (domain) => {
-        const path = this.getPath(domain)
-        const files = await readdirEnsured(path)
-        const promise = Promise.all(files.filter(f => f.endsWith('.json')).map(async (file) => {
-          try {
-            const filePath = join(path, file)
-            const resourceData = await this.getPersistence({ path: filePath, schema: ResourceSchema })
-
-            await fixResourceSchema({ log: this.log, warn: this.warn, error: this.error }, filePath, resourceData, this.getPath())
-
-            const resourceFilePath = this.getPath(resourceData.location) + resourceData.ext
-            const { size, ino } = await stat(resourceFilePath)
-            const resource: Resource = Object.freeze({
-              location: resourceData.location,
-              name: resourceData.name,
-              domain: resourceData.domain,
-              type: resourceData.type,
-              metadata: resourceData.metadata,
-              uri: resourceData.uri,
-              date: resourceData.date,
-              tags: resourceData.tags,
-              hash: resourceData.hash,
-              path: resourceFilePath,
-              size,
-              ino,
-              ext: resourceData.ext,
-              curseforge: resourceData.curseforge,
-              github: resourceData.github
-            })
-            return resource as Resources
-          } catch (e) {
-            this.error(`Cannot load resource ${file}`)
-            if (e.stack) {
-              this.error(e.stack)
-            } else {
-              this.error(e)
-            }
-            return UNKNOWN_RESOURCE
-          }
-        })).then((resources) => {
-          this.commit('resources', resources.filter((r) => r !== UNKNOWN_RESOURCE))
-          for (const res of resources) {
-            if (res.type !== ResourceType.Unknown) {
-              this.cache.put(res)
-            }
-          }
-        })
-        this.loadPromises[domain] = promise
-      })
-    }
-
-    whenModsReady () {
-      return this.loadPromises.mods
-    }
-
-    whenResourcePacksReady () {
-      return this.loadPromises.resourcepacks
-    }
-
-    /**
-     * Remove a resource from the launcher
-     * @param resourceOrKey
-     */
-    async removeResource (resourceOrKey: string | Resources) {
-      const resource = this.normalizeResource(resourceOrKey)
-      if (resource === UNKNOWN_RESOURCE) return
-      this.resourceRemoveQueue.push(resource)
-      await this.commitUpdate()
-    }
-
-    /**
-     * Rename resource, this majorly affect displayed name.
-     */
-    async renameResource (option: { resource: string | Resources; name: string }) {
-      const resource = this.normalizeResource(option.resource)
-      if (resource === UNKNOWN_RESOURCE) return
-      const result = mutateResource<any>(resource, (r) => { r.name = option.name })
-      this.cache.discard(resource)
-      this.cache.put(result)
-      this.commit('resource', result)
-    }
-
-    /**
-    * Import the resource from the same disk. This will parse the file and import it into our db by hardlink.
-    * If the file already existed, it will not re-import it again
-    *
-    * The original file will not be modified.
-    *
-    * @param path The path in the same disk
-    * @param urls The urls
-    * @param source The source metadata
-    *
-    * @returns All import file in resource form. If the file cannot be parsed, it will be UNKNOWN_RESOURCE.
-    */
-    async importResources (options: ImportMultipleFilesOptions) {
-      const existedResources = await Promise.all(options.files.map((f) => this.queryExistedResourceByPath(f.path)))
-      const allResources = await Promise.all(options.files.map(async (f, i) => {
-        const existed = existedResources[i]
-        if (existed) {
-          return existed
-        }
-        try {
-          const fileStats = await stat(f.path)
-          if (!fileStats.isDirectory()) {
-            const result = await this.resolveResourceTask({ path: f.path, url: f.url, source: f.source, type: options.type, background: options.background, requiredDomain: options.fromDomain })
-              .startAndWait()
-            return result
-          }
-          return UNKNOWN_RESOURCE
-        } catch (e) {
-          if (e instanceof DomainMissMatchedError) {
-            this.warn(e.message)
-          } else {
-            this.error(e)
-          }
-          return UNKNOWN_RESOURCE
-        }
-      }))
-
-      const existedCount = existedResources.filter((r) => !!r).length
-      const unknownCount = allResources.filter(r => r.type === ResourceType.Unknown).length
-      const newCount = allResources.length - existedCount - unknownCount
-
-      if (options.fromDomain) {
-        this.log(`Resolve ${existedResources.length} resources from /${options.fromDomain}. Imported ${newCount} new resources, ${existedCount} resources existed, and ${unknownCount} unknown resource.`)
       } else {
-        this.log(`Resolve ${existedResources.length} resources. Imported ${newCount} new resources, ${existedCount} resources existed, and ${unknownCount} unknown resource.`)
-      }
-      this.addResources(allResources.filter(r => r.type !== ResourceType.Unknown))
-
-      return allResources
-    }
-
-    private addResources (resources: Resources[]) {
-      for (const resource of resources) {
-        this.cache.put(resource)
-      }
-      this.commit('resources', resources)
-    }
-
-    /**
-     * Import the resource into the launcher.
-     * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.
-     */
-    async parseAndImportResourceIfAbsent (option: ParseOptions) {
-      requireString(option.path)
-      const existed = await this.queryExistedResourceByPath(option.path)
-      if (!existed) {
-        const fileStat = await stat(option.path)
-        if (fileStat.isDirectory()) {
-          return UNKNOWN_RESOURCE
+        for (const u of query.url) {
+          res = this.cache.get(u)
+          if (res) return res
         }
-        const task = this.resolveResourceTask(option)
-        const resource = await (option.background ? task.startAndWait() : this.submit(task))
-        this.log(`Import and cache newly added resource ${resource.path}`)
-        this.cache.put(resource)
-        this.commit('resource', resource)
-        return resource
       }
-      this.log(`Skip to import ${existed.path} as resource existed`)
+    }
+    if (query.ino) {
+      res = this.cache.get(query.ino)
+      if (res) return res
+    }
+    return undefined
+  }
+
+  private async loadDomain(domain: string) {
+    const path = this.getPath(domain)
+    const files = await readdirEnsured(path)
+    const result: PersistedResource[] = []
+    const processFile = async (file: string) => {
+      try {
+        const filePath = join(path, file)
+        const resourceData = await this.resourceFile.readTo(filePath)
+
+        await fixResourceSchema({ log: this.log, warn: this.warn, error: this.error }, filePath, resourceData, this.getPath())
+
+        const resourceFilePath = this.getPath(resourceData.location) + resourceData.ext
+        const { size, ino } = await stat(resourceFilePath)
+        const resource = Object.freeze({
+          location: resourceData.location,
+          name: resourceData.name,
+          domain: resourceData.domain,
+          type: resourceData.type,
+          metadata: resourceData.metadata,
+          fileType: resourceData.fileType,
+          uri: resourceData.uri,
+          date: resourceData.date,
+          tags: resourceData.tags,
+          hash: resourceData.hash,
+          path: resourceFilePath,
+          size,
+          ino,
+          ext: resourceData.ext,
+          curseforge: resourceData.curseforge,
+          github: resourceData.github
+        })
+        result.push(resource)
+      } catch (e) {
+        this.error(`Cannot load resource ${file}`)
+        if (e.stack) {
+          this.error(e.stack)
+        } else {
+          this.error(e)
+        }
+        return undefined
+      }
+    }
+    await Promise.all(files.map(processFile))
+    this.commitResources(result)
+  }
+
+  async initialize() {
+    for (const domain of ['mods', 'resourcepacks', 'saves', 'modpacks']) {
+      this.loadPromises[domain] = this.loadDomain(domain)
+    }
+  }
+
+  whenModsReady() {
+    return this.loadPromises.mods
+  }
+
+  whenResourcePacksReady() {
+    return this.loadPromises.resourcepacks
+  }
+
+  /**
+   * Remove a resource from the launcher
+   * @param resourceOrKey
+   */
+  async removeResource(resourceOrKey: string | AnyPersistedResource) {
+    const resource = this.normalizeResource(resourceOrKey)
+    if (!resource) return
+    this.resourceRemoveQueue.push(resource)
+    await this.commitUpdate()
+  }
+
+  /**
+   * Rename resource, this majorly affect displayed name.
+   */
+  async renameResource(option: { resource: string | AnyPersistedResource; name: string }) {
+    const resource = this.normalizeResource(option.resource)
+    if (!resource) return
+    const result = mutateResource<any>(resource, (r) => { r.name = option.name })
+    this.cache.discard(resource)
+    this.cache.put(result)
+    this.commit('resource', result)
+  }
+
+  async parseFiles() {
+
+  }
+
+  /**
+  * Import the resource from the same disk. This will parse the file and import it into our db by hardlink.
+  * If the file already existed, it will not re-import it again
+  *
+  * The original file will not be modified.
+  *
+  * @param options The options to import the resources
+  *
+  * @returns All import file in resource form. If the file cannot be parsed, it will be UNKNOWN_RESOURCE.
+  */
+  async importFiles(options: ImportFilesOptions) {
+    const existedResources = (await Promise.all(options.files.map((f) => this.queryExistedResourceByPath(f.path)))).filter(isNonnull)
+
+    const allResources = await Promise.all(options.files.map(async (f, i) => {
+      const existed = existedResources[i]
+      if (existed) {
+        return existed
+      }
+      try {
+        const fstat = await stat(f.path)
+        if (fstat.isDirectory()) {
+          throw new Error(`Cannot import ${f.path} as it's a directory!`)
+        }
+        const task = this.importFileTask({
+          path: f.path,
+          url: f.url,
+          source: f.source,
+          type: f.type ?? options.type,
+          background: options.background,
+          restrictToDomain: options.restrictToDomain
+        })
+        return options.background ? task.startAndWait() : this.submit(task)
+      } catch (e) {
+        if (e instanceof DomainMissMatchedError) {
+          this.warn(e.message)
+        } else {
+          this.error(e)
+        }
+        return undefined
+      }
+    }))
+
+    const existedCount = existedResources.filter((r) => !!r).length
+    const unknownCount = allResources.filter(isNullOrUndefine).length
+    const newCount = allResources.length - existedCount - unknownCount
+
+    if (options.restrictToDomain) {
+      this.log(`Resolve ${existedResources.length} resources from /${options.restrictToDomain}. Imported ${newCount} new resources, ${existedCount} resources existed, and ${unknownCount} unknown resource.`)
+    } else {
+      this.log(`Resolve ${existedResources.length} resources. Imported ${newCount} new resources, ${existedCount} resources existed, and ${unknownCount} unknown resource.`)
+    }
+    this.commitResources(allResources.filter(isNonnull))
+
+    return allResources
+  }
+
+  async parserFile(options: ParseFileOptions): Promise<AnyResource> {
+    const { path } = options
+    const existed = await this.queryExistedResourceByPath(path)
+    if (existed) {
       return existed
     }
+    const [resource] = await this.resolveResource(options)
+    return resource as AnyResource
+  }
 
-    /**
-     * Export the resources into target directory. This will simply copy the resource out.
-     */
-    async exportResource (payload: { resources: (string | Resources)[]; targetDirectory: string }) {
-      const { resources, targetDirectory } = payload
+  /**
+   * Import the resource into the launcher.
+   * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.
+   */
+  async importFile(options: ImportFileOptions) {
+    requireString(options.path)
+    const existed = await this.queryExistedResourceByPath(options.path)
+    if (existed) {
+      this.log(`Skip to import ${options.path} as resource existed in ${existed.path}`)
+      return existed
+    }
+    if (await isDirectory(options.path)) {
+      throw new Error(`Cannot import ${options.path} as it's a directory!`)
+    }
+    const task = this.importFileTask(options)
+    const resource = await (options.background ? task.startAndWait() : this.submit(task))
+    this.log(`Import and cache newly added resource ${resource.path}`)
+    this.cache.put(resource)
+    this.commit('resource', resource)
+    return resource
+  }
 
-      const promises = [] as Array<Promise<any>>
-      for (const resource of resources) {
-        const res: Resource<any> = this.normalizeResource(resource)
-        if (res === UNKNOWN_RESOURCE) throw new Error(`Cannot find the resource ${resource}`)
+  /**
+   * Export the resources into target directory. This will simply copy the resource out.
+   */
+  async exportResource(payload: { resources: (string | AnyResource)[]; targetDirectory: string }) {
+    const { resources, targetDirectory } = payload
 
-        promises.push(copyPassively(res.path, join(targetDirectory, res.name + res.ext)))
+    const promises = [] as Array<Promise<any>>
+    for (const resource of resources) {
+      const res = this.normalizeResource(resource)
+      if (!res) throw new Error(`Cannot find the resource ${resource}`)
+      promises.push(copyPassively(res.path, join(targetDirectory, res.name + res.ext)))
+    }
+    await Promise.all(promises)
+  }
+
+  async queryExistedResourceByPath(path: string) {
+    let result: AnyPersistedResource | undefined
+
+    const fileStat = await stat(path)
+
+    if (!fileStat.isDirectory()) {
+      result = this.getResourceByKey(fileStat.ino)
+
+      if (!result) {
+        const sha1 = await this.worker().checksum({ path, algorithm: 'sha1' })
+        result = this.getResourceByKey(sha1)
       }
-      await Promise.all(promises)
     }
 
-    async queryExistedResourceByPath (path: string) {
-      let result: Resources | undefined
+    return result
+  }
 
-      const fileStat = await stat(path)
+  // bridge from dry function to `this` context
 
-      if (!fileStat.isDirectory()) {
-        result = this.getResourceByKey(fileStat.ino)
+  private commitResources(resources: PersistedResource[]) {
+    for (const resource of resources) {
+      this.cache.put(resource as any)
+    }
+    this.commit('resources', resources as any)
+  }
 
-        if (!result) {
-          const sha1 = await this.worker().checksum(path, 'sha1')
-          result = this.getResourceByKey(sha1)
-        }
+  private async resolveResource(options: ParseFileOptions) {
+    const { path, type } = options
+    const hash = await this.worker().checksum({ path, algorithm: 'sha1' })
+    const [resolved, icon] = await this.worker().resolveResource({ path, hash, hint: type ?? '*' })
+    return [resolved, icon] as const
+  }
+
+  /**
+   * Resolve resource task. This will not write the resource to the cache, but it will persist the resource to disk.
+   * @throws DomainMissMatchedError
+   */
+  private importFileTask(options: ImportFileOptions) {
+    const root = this.getPath()
+    return task('importResource', async () => {
+      const [resolved, icon] = await this.resolveResource(options)
+      if (options.restrictToDomain && resolved.domain !== options.restrictToDomain) {
+        throw new DomainMissMatchedError(resolved.domain, resolved.path, resolved.type)
       }
+      const result = await persistResource(resolved, root, options.source ?? {}, options.url ?? [], icon)
+      return result as AnyPersistedResource
+    })
+  }
 
-      return result
-    }
-
-    // bridge from dry function to `this` context
-
-    /**
-     * Resolve resource task. This will not write the resource to the cache, but it will persist the resource to disk.
-     * @throws DomainMissMatchedError
-     */
-    private resolveResourceTask (importOption: ParseOptions) {
-      const root = this.getPath()
-      return task('importResource', async () => {
-        const { path, source = {}, url = [], type, requiredDomain } = importOption
-        // context.update(0, 4, path);
-        const hash = await this.worker().checksum(path, 'sha1')
-        const resolved = await this.worker().readResourceHeader(path, hash, type ?? '*')
-        if (requiredDomain) {
-          if (resolved.domain !== requiredDomain) {
-            throw new DomainMissMatchedError(resolved.domain, path, resolved.type)
-          }
-        }
-        // context.update(3, 4, path);
-        const result = await resolveAndPersist(path, source ?? {}, url, resolved, root)
-        // context.update(4, 4, path);
-        return result as Resources
-      })
-    }
-
-    protected unpersistResource (resource: Resource) {
-      return remove(resource, this.getPath())
-    }
+  protected unpersistResource(resource: PersistedResource) {
+    return remove(resource, this.getPath())
+  }
 }

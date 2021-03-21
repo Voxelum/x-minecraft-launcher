@@ -3,8 +3,9 @@ import { readInfo, ServerInfo } from '@xmcl/server-info'
 import { ensureDir, readdir, readFile, remove } from 'fs-extra'
 import { join, resolve } from 'path'
 import { v4 } from 'uuid'
+import DiagnoseService from './DiagnoseService'
 import ServerStatusService from './ServerStatusService'
-import Service, { Inject, Singleton } from './Service'
+import AbstractService, { Service, Singleton, Subscribe } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { exists, missing, readdirEnsured } from '/@main/util/fs'
 import { MappedFile, RelativeMappedFile } from '/@main/util/persistance'
@@ -17,9 +18,9 @@ import { requireObject, requireString } from '/@shared/util/assert'
 import { assignShallow } from '/@shared/util/object'
 
 const INSTANCES_FOLDER = 'instances'
-const INSTANCE_JSON = 'instance.json'
 const INSTANCES_JSON = 'instances.json'
 
+// eslint-disable-next-line no-undef
 export type CreateOption = DeepPartial<Omit<InstanceSchema, 'id' | 'lastAccessDate' | 'creationDate'> & { path: string }>;
 
 export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'deployments' | 'runtime' | 'server'>> {
@@ -49,20 +50,16 @@ export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'deplo
 /**
  * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
  */
-export class InstanceService extends Service {
-  @Inject('ServerStatusService')
-  protected readonly statusService!: ServerStatusService;
-
-  protected readonly serverDatPersistancer = serverDatSerializer();
-
-  // protected readonly instanceSerialzier = jsonSerializer(InstanceSchema);
-
+@Service
+export class InstanceService extends AbstractService {
   protected readonly instancesFile = new MappedFile<InstancesSchema>(this.getPath(INSTANCES_JSON), new BufferJsonSerializer(InstancesSchema))
     .setSaveSource(() => ({ instances: Object.keys(this.state.instance.all), selectedInstance: this.state.instance.path }));
 
   protected readonly instanceFile = new RelativeMappedFile<InstanceSchema>(INSTANCES_JSON, new BufferJsonSerializer(InstanceSchema));
 
-  constructor(app: LauncherApp) {
+  constructor(app: LauncherApp,
+    diagnoseService: DiagnoseService,
+    protected readonly statusService: ServerStatusService) {
     super(app)
 
     this.storeManager
@@ -83,29 +80,20 @@ export class InstanceService extends Service {
         await this.instancesFile.save()
         this.log(`Saved instance selection ${path}`)
       })
+
+    diagnoseService.registerMatchedFix(['invalidJava'], () => {
+      this.editInstance({ java: this.getters.defaultJava.path })
+    })
   }
 
   protected getPathUnder(...ps: string[]) {
     return this.getPath(INSTANCES_FOLDER, ...ps)
   }
 
-  @Singleton()
-  async loadInstanceServerData(path: string) {
-    requireString(path)
-
-    const { commit } = this
-    try {
-      const serversPath = join(path, 'servers.dat')
-      if (await exists(serversPath)) {
-        const serverDat = await readFile(serversPath)
-        const infos = await readInfo(serverDat)
-        this.log('Loaded server infos.')
-        commit('instanceServerInfos', infos)
-      }
-      this.log('No server data found in instance.')
-    } catch (e) {
-      this.warn(`An error occured during loading server infos of ${path}`)
-      this.error(e)
+  @Subscribe('javaUpdate')
+  private async onJavaUpdate() {
+    if (!this.getters.instanceJava.valid) {
+      await this.editInstance({ java: this.getters.defaultJava.path })
     }
   }
 
@@ -148,16 +136,7 @@ export class InstanceService extends Service {
     return true
   }
 
-  async init() {
-    const { getters } = this
-    const instances = getters.instances
-    if (instances.length === 0) {
-      this.log('Cannot find any instances, try to init one default modpack.')
-      await this.createAndMount({})
-    }
-  }
-
-  async load() {
+  async initialize() {
     const uuidExp = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}){1}/
 
     const { state } = this
@@ -168,20 +147,17 @@ export class InstanceService extends Service {
 
     const all = [...new Set([...instanceConfig.instances, ...managed])]
 
-    if (all.length === 0) {
-      return
-    }
-
     await Promise.all(all.map(path => this.loadInstance(path)))
 
     if (Object.keys(state.instance.all).length === 0) {
-      return
-    }
-
-    if (this.state.instance.all[instanceConfig.selectedInstance]) {
-      await this.mountInstance(instanceConfig.selectedInstance)
+      this.log('Cannot find any instances, try to init one default modpack.')
+      await this.createAndMount({})
     } else {
-      await this.mountInstance(Object.keys(state.instance.all)[0])
+      if (this.state.instance.all[instanceConfig.selectedInstance]) {
+        await this.mountInstance(instanceConfig.selectedInstance)
+      } else {
+        await this.mountInstance(Object.keys(state.instance.all)[0])
+      }
     }
   }
 
@@ -300,10 +276,9 @@ export class InstanceService extends Service {
 
     this.commit('instanceRemove', path)
 
-    const managed = resolve(path).startsWith(resolve(this.getPathUnder()))
-    const instanceDirectory = path
-    if (managed && await exists(instanceDirectory)) {
-      await remove(instanceDirectory)
+    const isManaged = resolve(path).startsWith(resolve(this.getPathUnder()))
+    if (isManaged && await exists(path)) {
+      await remove(path)
     }
   }
 
@@ -453,6 +428,5 @@ export class InstanceService extends Service {
     })
   }
 }
-// resourcePacks:["vanilla","file/§lDefault§r..§l3D§r..Low§0§o.zip"]
 
 export default InstanceService

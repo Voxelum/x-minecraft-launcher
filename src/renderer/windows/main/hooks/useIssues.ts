@@ -1,19 +1,19 @@
-import { Issue, IssueType } from '/@shared/entities/issue'
-import { useService, useRouter, useResource } from '/@/hooks'
 import { useDialog } from '.'
 import { useJavaWizardDialog } from './useDialog'
+import { useModResource, useRouter, useService } from '/@/hooks'
+import { Issue, IssueType } from '/@shared/entities/issue'
 
-export function useIssueHandler () {
+export function useIssueHandler() {
   const { fix: fixIssue } = useService('DiagnoseService')
   const { replace } = useRouter()
   const { show: showJavaDialog, javaIssue } = useJavaWizardDialog()
   const { show: showModDialog } = useDialog('download-missing-mods' as any) // TODO: fix this
   const { deploy } = useService('InstanceResourceService')
-  const { resources } = useResource('mods')
+  const { resources } = useModResource()
 
   const handlerRegistry: Record<string, () => void> = {}
 
-  function register (issue: IssueType, f: () => void) {
+  function register(issue: IssueType, f: () => void) {
     handlerRegistry[issue] = f
   }
 
@@ -40,7 +40,7 @@ export function useIssueHandler () {
     }
   })
 
-  function fix (issue: Issue, issues: readonly Issue[]) {
+  function fix(issue: Issue, issues: readonly Issue[]) {
     console.log(`Fix issue ${issue.id}`)
     const handler = handlerRegistry[issue.id]
     if (handler) {

@@ -12,7 +12,7 @@ import { useStore } from './useStore'
 import { useCurrentUser } from './useUser'
 import { useMinecraftVersions } from './useVersion'
 
-export function useInstanceBase () {
+export function useInstanceBase() {
   const { state } = useStore()
   const path = computed(() => state.instance.path)
   return { path }
@@ -21,7 +21,7 @@ export function useInstanceBase () {
 /**
  * Use the general info of the instance
  */
-export function useInstance () {
+export function useInstance() {
   const { getters, state } = useStore()
 
   const path = computed(() => state.instance.path)
@@ -73,7 +73,7 @@ export function useInstance () {
 /**
  * Hook of a view of all instances & some deletion/selection functions
  */
-export function useInstances () {
+export function useInstances() {
   const { getters } = useStore()
   return {
     instances: computed(() => getters.instances),
@@ -86,7 +86,7 @@ export function useInstances () {
 /**
  * Hook to create a general instance
  */
-export function useInstanceCreation () {
+export function useInstanceCreation() {
   const { gameProfile } = useCurrentUser()
   const { createAndMount: createAndSelect } = useService('InstanceService')
   const { release } = useMinecraftVersions()
@@ -116,13 +116,13 @@ export function useInstanceCreation () {
     /**
          * Commit this creation. It will create and select the instance.
          */
-    create () {
+    create() {
       return createAndSelect(data)
     },
     /**
          * Reset the change
          */
-    reset () {
+    reset() {
       data.name = ''
       data.runtime = {
         minecraft: release.value?.id || '',
@@ -151,7 +151,7 @@ export function useInstanceCreation () {
          * Use the same configuration as the input instance
          * @param instance The instance will be copied
          */
-    use (instance: InstanceConfig) {
+    use(instance: InstanceConfig) {
       data.name = instance.name
       data.runtime = { ...instance.runtime }
       data.java = instance.java
@@ -168,7 +168,7 @@ export function useInstanceCreation () {
       data.server = instance.server ? { ...instance.server } : undefined
     },
 
-    useModpack (resource: CurseforgeModpackResource | ModpackResource) {
+    useModpack(resource: CurseforgeModpackResource | ModpackResource) {
       if (resource.type === ResourceType.CurseforgeModpack) {
         const metadata = resource.metadata
         data.name = `${metadata.name} - ${metadata.version}`
@@ -192,7 +192,7 @@ export function useInstanceCreation () {
   }
 }
 
-export function useInstanceVersionBase () {
+export function useInstanceVersionBase() {
   const { getters } = useStore()
   const minecraft = computed(() => getters.instance.runtime.minecraft)
   const forge = computed(() => getters.instance.runtime.forge)
@@ -206,28 +206,28 @@ export function useInstanceVersionBase () {
   }
 }
 
-export function useInstanceTemplates () {
+export function useInstanceTemplates() {
   const { getters, state } = useStore()
   return {
     instances: computed(() => getters.instances),
-    modpacks: computed(() => state.resource.domains.modpacks)
+    modpacks: computed(() => state.resource.modpacks)
   }
 }
 
-export function useInstanceGameSetting () {
+export function useInstanceGameSetting() {
   const { state } = useStore()
-  const { loadInstanceGameSettings, edit, showInFolder } = useService('InstanceGameSettingService')
-  const refresh = () => loadInstanceGameSettings(state.instance.path)
-  const fancyGraphics = computed(() => state.instance.settings.fancyGraphics)
-  const renderClouds = computed(() => state.instance.settings.renderClouds)
-  const ao = computed(() => state.instance.settings.ao)
-  const entityShadows = computed(() => state.instance.settings.entityShadows)
-  const particles = computed(() => state.instance.settings.particles)
-  const mipmapLevels = computed(() => state.instance.settings.mipmapLevels)
-  const useVbo = computed(() => state.instance.settings.useVbo)
-  const fboEnable = computed(() => state.instance.settings.fboEnable)
-  const enableVsync = computed(() => state.instance.settings.enableVsync)
-  const anaglyph3d = computed(() => state.instance.settings.anaglyph3d)
+  const { refresh: _refresh, edit, showInFolder } = useService('InstanceGameSettingService')
+  const refresh = () => _refresh()
+  const fancyGraphics = computed(() => state.instanceGameSetting.fancyGraphics)
+  const renderClouds = computed(() => state.instanceGameSetting.renderClouds)
+  const ao = computed(() => state.instanceGameSetting.ao)
+  const entityShadows = computed(() => state.instanceGameSetting.entityShadows)
+  const particles = computed(() => state.instanceGameSetting.particles)
+  const mipmapLevels = computed(() => state.instanceGameSetting.mipmapLevels)
+  const useVbo = computed(() => state.instanceGameSetting.useVbo)
+  const fboEnable = computed(() => state.instanceGameSetting.fboEnable)
+  const enableVsync = computed(() => state.instanceGameSetting.enableVsync)
+  const anaglyph3d = computed(() => state.instanceGameSetting.anaglyph3d)
 
   return {
     fancyGraphics,
@@ -243,13 +243,13 @@ export function useInstanceGameSetting () {
     showInFolder,
     refreshing: useBusy('loadInstanceGameSettings'),
     refresh,
-    commit (settings: GameSetting) {
+    commit(settings: GameSetting) {
       edit(settings)
     }
   }
 }
 
-export function useInstanceSaves () {
+export function useInstanceSaves() {
   const { state } = useStore()
   const { cloneSave, deleteSave, exportSave, loadAllInstancesSaves, importSave, mountInstanceSaves } = useService('InstanceSavesService')
   const refresh = () => mountInstanceSaves(state.instance.path)
@@ -261,14 +261,14 @@ export function useInstanceSaves () {
     loadAllInstancesSaves,
     importSave: (options: ImportSaveOptions) => importSave(options).finally(refresh),
     path: computed(() => state.instance.path),
-    saves: computed(() => state.instance.saves)
+    saves: computed(() => state.instanceSave.saves)
   }
 }
 
 /**
  * Use references of all the version info of this instance
  */
-export function useInstanceVersion () {
+export function useInstanceVersion() {
   const { getters } = useStore()
 
   const folder = computed(() => getters.instanceVersion.id || 'unknown')
@@ -281,7 +281,7 @@ export function useInstanceVersion () {
   }
 }
 
-export function useInstanceLogs () {
+export function useInstanceLogs() {
   const { state } = useStore()
   return {
     path: computed(() => state.instance.path),

@@ -39,11 +39,10 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, onMounted, defineComponent, Ref, ref, onUnmounted, watch } from '@vue/composition-api';
-import { useInstance, useService, useI18n, useVersions, useNativeDialog, useInstanceVersion } from '/@/hooks';
-import { InstanceFile } from '@main/service/InstanceIOService';
+import { defineComponent, reactive, toRefs, watch } from '@vue/composition-api';
+import { useI18n } from '/@/hooks';
 import { required } from '/@/util/props';
-import { useZipFilter } from '../hooks';
+import { InstanceFile } from '/@main/service/InstanceIOService';
 
 interface FileNode {
   name: string;

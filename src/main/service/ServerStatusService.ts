@@ -5,10 +5,11 @@ import { readFile, readJSON } from 'fs-extra'
 import protocolPath from '/@static/protocol.json'
 import mcProtocolPath from '/@static/mc-protocol.json'
 import { join } from 'path'
-import Service, { Pure } from './Service'
+import AbstractService, { Pure, Service } from './Service'
 
-export default class ServerStatusService extends Service {
-  async load () {
+@Service
+export default class ServerStatusService extends AbstractService {
+  async initialize() {
     const protocolFile = this.getAppDataPath('protocol.json')
     if (await exists(protocolFile)) {
       const buf = await readFile(protocolFile)
@@ -36,8 +37,8 @@ export default class ServerStatusService extends Service {
     }
   }
 
-    @Pure()
-  async pingServer (payload: { host: string; port?: number; protocol?: number }) {
+  @Pure()
+  async pingServer(payload: { host: string; port?: number; protocol?: number }) {
     const { host, port = 25565, protocol } = payload
     this.log(`Ping server ${host}:${port} with protocol: ${protocol}`)
     try {
@@ -60,13 +61,13 @@ export default class ServerStatusService extends Service {
     }
   }
 
-    @Pure()
-    async pingServers () {
-      const version = this.getters.instanceProtocolVersion
-      if (this.state.instance.serverInfos.length > 0) {
-        const results = await Promise.all(this.state.instance.serverInfos.map(s => queryStatus({ host: s.ip, port: 25565 }, { protocol: version })))
-        return results.map((r, i) => ({ status: r, ...this.state.instance.serverInfos[i] }))
-      }
-      return []
+  @Pure()
+  async pingServers() {
+    const version = this.getters.instanceProtocolVersion
+    if (this.state.instanceServerInfo.serverInfos.length > 0) {
+      const results = await Promise.all(this.state.instanceServerInfo.serverInfos.map(s => queryStatus({ host: s.ip, port: 25565 }, { protocol: version })))
+      return results.map((r, i) => ({ status: r, ...this.state.instanceServerInfo.serverInfos[i] }))
     }
+    return []
+  }
 }

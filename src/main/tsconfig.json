@@ -17,13 +17,15 @@
       ]
     },
     "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
   "include": [
     "../shared/**/*",
-    "."
+    ".",
+    "node_modules/reflect-metadata/Reflect.d.ts"
   ],
   "exclude": [
     "node_modules"

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import unknownPack from '/@/assets/unknown_pack.png'
 import { basename } from '/@/util/basename'
 import { isResourcePackResource, Resource, Resources } from '/@shared/entities/resource'
@@ -8,45 +7,45 @@ import { useService, useStore } from '.'
 import { useBusy } from './useSemaphore'
 
 export interface ResourcePackItem extends PackMeta.Pack {
-    /**
-     * The resource pack file path
-     */
-    path: string;
-    /**
-     * The display name of the resource pack
-     */
-    name: string;
-    /**
-     * The id in resourcepack array in gamesetting file
-     */
-    id: string;
-    /**
-     * The url of the resourcepack
-     */
-    url: string[];
-    acceptingRange: string;
-    /**
-     * Icon url
-     */
-    icon: string;
+  /**
+   * The resource pack file path
+   */
+  path: string;
+  /**
+   * The display name of the resource pack
+   */
+  name: string;
+  /**
+   * The id in resourcepack array in gamesetting file
+   */
+  id: string;
+  /**
+   * The url of the resourcepack
+   */
+  url: string[];
+  acceptingRange: string;
+  /**
+   * Icon url
+   */
+  icon: string;
 
-    /**
-     * The resource associate with the resourcepack item.
-     * If it's undefined. Then this resource cannot be found.
-     */
-    resource?: Resource;
+  /**
+   * The resource associate with the resourcepack item.
+   * If it's undefined. Then this resource cannot be found.
+   */
+  resource?: Resource;
 }
 
 /**
  * The hook return a reactive resource pack array.
  */
-export function useInstanceResourcePacks () {
+export function useInstanceResourcePacks() {
   const { state, getters } = useStore()
   const { edit } = useService('InstanceGameSettingService')
 
   const loading = useBusy('mountResourcepacks')
 
-  const instanceResourcePacks = computed(() => state.instance.resourcepacks)
+  const instanceResourcePacks = computed(() => state.instanceResource.resourcepacks)
   /**
      * The resource pack name array.
      * It's the REVERSED version of the resourcePacks array in options.txt (gamesetting).
@@ -58,7 +57,7 @@ export function useInstanceResourcePacks () {
      */
   const enabled = computed(() => enabledResourcePackNames.value.map(getResourcePackItemFromGameSettingName))
   const storage = computed(() => instanceResourcePacks.value.map(getResourcePackItemFromInstanceResource)
-    .concat(state.resource.domains.resourcepacks
+    .concat(state.resource.resourcepacks
       .filter(r => instanceResourcePacks.value.every(p => p.hash !== r.hash))
       .map(getResourcePackItem)))
   /**
@@ -67,16 +66,16 @@ export function useInstanceResourcePacks () {
   const disabled = computed(() => storage.value.filter((item) => enabledResourcePackNames.value.indexOf(item.id) === -1))
 
   const modified = computed(() => {
-    if (enabledResourcePackNames.value.length !== state.instance.settings.resourcePacks.length) {
+    if (enabledResourcePackNames.value.length !== state.instanceGameSetting.resourcePacks.length) {
       return true
     }
-    return enabledResourcePackNames.value.every((v, i) => state.instance.settings.resourcePacks[i] !== v)
+    return enabledResourcePackNames.value.every((v, i) => state.instanceGameSetting.resourcePacks[i] !== v)
   })
 
-  function getResourcepackFormat (meta: any) {
+  function getResourcepackFormat(meta: any) {
     return meta ? meta.format ?? meta.pack_format : 3
   }
-  function getResourcePackItem (resource: Resource<PackMeta.Pack>): ResourcePackItem {
+  function getResourcePackItem(resource: Resource<PackMeta.Pack>): ResourcePackItem {
     const icon = `${state.root}/${resource.location}.png`
     return {
       path: resource.path,
@@ -91,7 +90,7 @@ export function useInstanceResourcePacks () {
       resource: Object.freeze(resource)
     }
   }
-  function getResourcePackItemFromInstanceResource (resource: Resources): ResourcePackItem {
+  function getResourcePackItemFromInstanceResource(resource: Resources): ResourcePackItem {
     if (resource && isResourcePackResource(resource)) {
       return getResourcePackItem(resource)
     }
@@ -108,7 +107,7 @@ export function useInstanceResourcePacks () {
       resource: Object.freeze(resource)
     }
   }
-  function getResourcePackItemFromGameSettingName (resourcePackName: string): ResourcePackItem {
+  function getResourcePackItemFromGameSettingName(resourcePackName: string): ResourcePackItem {
     if (resourcePackName === 'vanilla') {
       return {
         path: '',
@@ -141,7 +140,7 @@ export function useInstanceResourcePacks () {
   /**
      * Add a new resource to the enabled list
      */
-  function add (id: string, to?: string) {
+  function add(id: string, to?: string) {
     if (typeof to === 'undefined') {
       const found = disabled.value.find(m => m.id === id)
       if (found) {
@@ -161,14 +160,14 @@ export function useInstanceResourcePacks () {
   /**
      * Remove a resource from enabled list
      */
-  function remove (id: string) {
+  function remove(id: string) {
     if (id === 'vanilla') {
       return
     }
     enabledResourcePackNames.value = enabledResourcePackNames.value.filter((name) => name !== id)
   }
 
-  function insert (from: string, to: string) {
+  function insert(from: string, to: string) {
     const packs = enabledResourcePackNames.value
     const temp = packs.splice(packs.findIndex(p => p === from), 1)
     packs.splice(packs.findIndex(p => p === to), 0, ...temp)
@@ -178,11 +177,11 @@ export function useInstanceResourcePacks () {
   /**
      * Commit the change for current mods setting
      */
-  function commit () {
+  function commit() {
     edit({ resourcePacks: [...enabledResourcePackNames.value].reverse() })
   }
 
-  const settingedResourcePacks = computed(() => state.instance.settings.resourcePacks)
+  const settingedResourcePacks = computed(() => state.instanceGameSetting.resourcePacks)
   watch(settingedResourcePacks, (packs) => {
     const arr = [...packs.map((p) => ((p === 'vanilla' || p.startsWith('file/')) ? p : `file/${p}`))]
     if (arr.indexOf('vanilla') === -1) {

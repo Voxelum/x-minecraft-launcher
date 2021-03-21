@@ -9,132 +9,137 @@ import { task } from '@xmcl/task'
 import { Agent } from 'https'
 import { basename, join } from 'path'
 import ResourceService from './ResourceService'
-import Service, { Inject, Singleton } from './Service'
+import AbstractService, { Service, Singleton } from './Service'
+import LauncherApp from '../app/LauncherApp'
 
 export interface InstallFileOptions {
-    file: File;
-    projectId: number;
-    type: ProjectType;
+  file: File;
+  projectId: number;
+  type: ProjectType;
 }
 
-export default class CurseForgeService extends Service {
-    @Inject('ResourceService')
-    private resourceService!: ResourceService;
+@Service
+export default class CurseForgeService extends AbstractService {
+  private userAgent: Agent = new Agent({ keepAlive: true });
 
-    private userAgent: Agent = new Agent({ keepAlive: true });
+  private projectTimestamp = '';
 
-    private projectTimestamp = '';
+  private projectCache: Record<number, AddonInfo> = {};
 
-    private projectCache: Record<number, AddonInfo> = {};
+  private projectDescriptionCache: Record<number, string> = {};
 
-    private projectDescriptionCache: Record<number, string> = {};
+  private projectFilesCache: Record<number, File[]> = {};
 
-    private projectFilesCache: Record<number, File[]> = {};
+  private searchProjectCache: Record<string, AddonInfo[]> = {};
 
-    private searchProjectCache: Record<string, AddonInfo[]> = {};
+  constructor(app: LauncherApp,
+    private resourceService: ResourceService
+  ) {
+    super(app)
+  }
 
-    private async fetchOrGetFromCache<K extends string | number, V> (cacheName: string, cache: Record<K, V>, key: K, query: () => Promise<V>) {
-      const timestamp = await getAddonDatabaseTimestamp({ userAgent: this.userAgent })
-      if (!cache[key] || new Date(timestamp) > new Date(this.projectTimestamp)) {
-        const value = await query()
-        this.projectTimestamp = timestamp
-        cache[key] = value
-        this.log(`Cache missed for ${key} in ${cacheName}`)
-        return value
-      }
-      this.log(`Cache hit for ${key} in ${cacheName}`)
-      return cache[key]
+  private async fetchOrGetFromCache<K extends string | number, V>(cacheName: string, cache: Record<K, V>, key: K, query: () => Promise<V>) {
+    const timestamp = await getAddonDatabaseTimestamp({ userAgent: this.userAgent })
+    if (!cache[key] || new Date(timestamp) > new Date(this.projectTimestamp)) {
+      const value = await query()
+      this.projectTimestamp = timestamp
+      cache[key] = value
+      this.log(`Cache missed for ${key} in ${cacheName}`)
+      return value
     }
+    this.log(`Cache hit for ${key} in ${cacheName}`)
+    return cache[key]
+  }
 
-    @Singleton()
-    async loadCategories () {
-      const timestamp = await getCategoryTimestamp({ userAgent: this.userAgent })
-      if (this.state.curseforge.categories.length === 0 ||
-            new Date(timestamp) > new Date(this.state.curseforge.categoriesTimestamp)) {
-        let cats = await getCategories({ userAgent: this.userAgent })
-        cats = cats.filter((c) => c.rootGameCategoryId === null && c.gameId === 432)
-        this.commit('curseforgeCategories', { categories: cats, timestamp })
-      }
+  @Singleton()
+  async loadCategories() {
+    const timestamp = await getCategoryTimestamp({ userAgent: this.userAgent })
+    if (this.state.curseforge.categories.length === 0 ||
+      new Date(timestamp) > new Date(this.state.curseforge.categoriesTimestamp)) {
+      let cats = await getCategories({ userAgent: this.userAgent })
+      cats = cats.filter((c) => c.rootGameCategoryId === null && c.gameId === 432)
+      this.commit('curseforgeCategories', { categories: cats, timestamp })
     }
+  }
 
-    @Singleton((projectId: number) => `cfproject-${projectId.toString()}`)
-    async fetchProject (projectId: number) {
-      this.log(`Fetch project: ${projectId}`)
-      return this.fetchOrGetFromCache('project', this.projectCache, projectId, () => getAddonInfo(projectId, { userAgent: this.userAgent }))
+  @Singleton((projectId: number) => `cfproject-${projectId.toString()}`)
+  async fetchProject(projectId: number) {
+    this.log(`Fetch project: ${projectId}`)
+    return this.fetchOrGetFromCache('project', this.projectCache, projectId, () => getAddonInfo(projectId, { userAgent: this.userAgent }))
+  }
+
+  @Singleton((projectId: number) => `cfdescription-${projectId.toString()}`)
+  fetchProjectDescription(projectId: number) {
+    this.log(`Fetch project description: ${projectId}`)
+    return this.fetchOrGetFromCache('project description', this.projectDescriptionCache, projectId, () => getAddonDescription(projectId, { userAgent: this.userAgent }))
+  }
+
+  @Singleton((projectId: number) => `cffiles-${projectId.toString()}`)
+  fetchProjectFiles(projectId: number) {
+    this.log(`Fetch project files: ${projectId}`)
+    return this.fetchOrGetFromCache('project files', this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.userAgent }).then(files => files.sort((a, b) => compareDate(new Date(b.fileDate), new Date(a.fileDate)))))
+  }
+
+  async searchProjects(searchOptions: SearchOptions) {
+    this.log(`Search project: section=${searchOptions.sectionId}, category=${searchOptions.categoryId}, keyword=${searchOptions.searchFilter}`)
+    const addons = await this.fetchOrGetFromCache('project search', this.searchProjectCache, JSON.stringify(searchOptions), () => searchAddons(searchOptions, { userAgent: this.userAgent }))
+    for (const addon of addons) {
+      this.projectCache[addon.id] = addon
     }
+    return addons
+  }
 
-    @Singleton((projectId: number) => `cfdescription-${projectId.toString()}`)
-    fetchProjectDescription (projectId: number) {
-      this.log(`Fetch project description: ${projectId}`)
-      return this.fetchOrGetFromCache('project description', this.projectDescriptionCache, projectId, () => getAddonDescription(projectId, { userAgent: this.userAgent }))
+  fetchFeaturedProjects(getOptions: GetFeaturedAddonOptions) {
+    return getFeaturedAddons(getOptions, { userAgent: this.userAgent })
+  }
+
+  async installFile({ file, type, projectId }: InstallFileOptions) {
+    requireString(type)
+    requireObject(file)
+    const typeHints: Record<ProjectType, string> = {
+      'mc-mods': 'mods',
+      'texture-packs': 'resourcepack',
+      worlds: 'save',
+      modpacks: 'curseforge-modpack'
     }
-
-    @Singleton((projectId: number) => `cffiles-${projectId.toString()}`)
-    fetchProjectFiles (projectId: number) {
-      this.log(`Fetch project files: ${projectId}`)
-      return this.fetchOrGetFromCache('project files', this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.userAgent }).then(files => files.sort((a, b) => compareDate(new Date(b.fileDate), new Date(a.fileDate)))))
+    const urls = [file.downloadUrl, `curseforge://${projectId}/${file.id}`]
+    this.log(`Try install file ${file.displayName}(${file.downloadUrl}) in type ${type}`)
+    const resource = this.resourceService.getResource({ url: urls })
+    if (resource !== UNKNOWN_RESOURCE) {
+      this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`)
+      return resource
     }
+    const resourceService = this.resourceService
+    const networkManager = this.networkManager
+    try {
+      const destination = join(this.app.temporaryPath, basename(file.downloadUrl))
+      const importResourceTask = task('importResource', async function () {
+        // c.update(0, 100);
 
-    async searchProjects (searchOptions: SearchOptions) {
-      this.log(`Search project: section=${searchOptions.sectionId}, category=${searchOptions.categoryId}, keyword=${searchOptions.searchFilter}`)
-      const addons = await this.fetchOrGetFromCache('project search', this.searchProjectCache, JSON.stringify(searchOptions), () => searchAddons(searchOptions, { userAgent: this.userAgent }))
-      for (const addon of addons) {
-        this.projectCache[addon.id] = addon
-      }
-      return addons
+        await this.yield(new DownloadTask({
+          ...networkManager.getDownloadBaseOptions(),
+          url: file.downloadUrl,
+          destination
+        }).setName('download')/* , 80 */)
+
+        // TODO: add tag from addon info
+        // let addonInf = await this.fetchProject(projectId);
+        return this.yield(task('parsing', () => resourceService.importFile({
+          path: destination,
+          url: urls,
+          source: getCurseforgeSourceInfo(projectId, file.id),
+          type: typeHints[type],
+          background: true
+        }))/* , 20 */)
+      })
+
+      const promise = this.submit(importResourceTask)
+      this.commit('curseforgeDownloadFileStart', { fileId: file.id, taskId: this.taskManager.getTaskUUID(importResourceTask) })
+      const result = await promise
+      this.log(`Install curseforge file ${file.displayName}(${file.downloadUrl}) success!`)
+      return result
+    } finally {
+      this.commit('curseforgeDownloadFileEnd', file.id)
     }
-
-    fetchFeaturedProjects (getOptions: GetFeaturedAddonOptions) {
-      return getFeaturedAddons(getOptions, { userAgent: this.userAgent })
-    }
-
-    async installFile ({ file, type, projectId }: InstallFileOptions) {
-      requireString(type)
-      requireObject(file)
-      const typeHints: Record<ProjectType, string> = {
-        'mc-mods': 'mods',
-        'texture-packs': 'resourcepack',
-        worlds: 'save',
-        modpacks: 'curseforge-modpack'
-      }
-      const urls = [file.downloadUrl, `curseforge://${projectId}/${file.id}`]
-      this.log(`Try install file ${file.displayName}(${file.downloadUrl}) in type ${type}`)
-      const resource = this.resourceService.getResource({ url: urls })
-      if (resource !== UNKNOWN_RESOURCE) {
-        this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`)
-        return resource
-      }
-      const resourceService = this.resourceService
-      const networkManager = this.networkManager
-      try {
-        const destination = join(this.app.temporaryPath, basename(file.downloadUrl))
-        const importResourceTask = task('importResource', async function () {
-          // c.update(0, 100);
-
-          await this.yield(new DownloadTask({
-            ...networkManager.getDownloadBaseOptions(),
-            url: file.downloadUrl,
-            destination
-          }).setName('download')/* , 80 */)
-
-          // TODO: add tag from addon info
-          // let addonInf = await this.fetchProject(projectId);
-          return this.yield(task('parsing', () => resourceService.parseAndImportResourceIfAbsent({
-            path: destination,
-            url: urls,
-            source: getCurseforgeSourceInfo(projectId, file.id),
-            type: typeHints[type],
-            background: true
-          }))/* , 20 */)
-        })
-
-        const promise = this.submit(importResourceTask)
-        this.commit('curseforgeDownloadFileStart', { fileId: file.id, taskId: this.taskManager.getTaskUUID(importResourceTask) })
-        const result = await promise
-        this.log(`Install curseforge file ${file.displayName}(${file.downloadUrl}) success!`)
-        return result
-      } finally {
-        this.commit('curseforgeDownloadFileEnd', file.id)
-      }
-    }
+  }
 }

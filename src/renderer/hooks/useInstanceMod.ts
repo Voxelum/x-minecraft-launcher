@@ -1,76 +1,76 @@
-import { FabricResource, ForgeResource, isModResource, LiteloaderResource, ModResource, Resource, Resources } from '/@shared/entities/resource'
-import { isNonnull } from '/@shared/util/assert'
 import { computed } from '@vue/composition-api'
 import { FabricModMetadata } from '@xmcl/mod-parser'
 import { useService, useStore } from '.'
 import { useBusy } from './useSemaphore'
+import { FabricResource, ForgeResource, isModResource, LiteloaderResource, ModResource, Resource, Resources } from '/@shared/entities/resource'
+import { isNonnull } from '/@shared/util/assert'
 
 /**
  * Contains some basic info of mod to display in UI.
  */
 export interface ModItem {
-    /**
-     * Path on disk
-     */
-    path: string;
-    /**
-     * The mod id
-     */
-    id: string;
-    /**
-     * Mod display name
-     */
-    name: string;
-    /**
-     * Mod version
-     */
-    version: string;
-    description: string;
-    /**
-     * Mod icon url
-     */
-    icon: string;
+  /**
+   * Path on disk
+   */
+  path: string;
+  /**
+   * The mod id
+   */
+  id: string;
+  /**
+   * Mod display name
+   */
+  name: string;
+  /**
+   * Mod version
+   */
+  version: string;
+  description: string;
+  /**
+   * Mod icon url
+   */
+  icon: string;
 
-    tags: string[];
+  tags: string[];
 
-    dependencies: {
-        minecraft: string;
-        fabricLoader?: string;
-        forge?: string;
-    };
+  dependencies: {
+    minecraft: string;
+    fabricLoader?: string;
+    forge?: string;
+  };
 
-    hash: string;
-    /**
-     * The universal location of the mod
-     */
-    url: string;
+  hash: string;
+  /**
+   * The universal location of the mod
+   */
+  url: string;
 
-    type: 'fabric' | 'forge' | 'liteloader' | 'unknown';
+  type: 'fabric' | 'forge' | 'liteloader' | 'unknown';
 
-    enabled: boolean;
+  enabled: boolean;
 
-    subsequence: boolean;
+  subsequence: boolean;
 
-    hide: boolean;
+  hide: boolean;
 
-    curseforge?: {
-        projectId: number;
-        fileId: number;
-    }
+  curseforge?: {
+    projectId: number;
+    fileId: number;
+  }
 }
 
 /**
  * Open read/write for current instance mods
  */
-export function useInstanceMods () {
+export function useInstanceMods() {
   const { state } = useStore()
   const { deploy, undeploy } = useService('InstanceResourceService')
   const loading = useBusy('mountModResources')
 
-  function getUrl (resource: Resource) {
+  function getUrl(resource: Resource) {
     return resource.uri.find(u => u.startsWith('http')) ?? ''
   }
-  function getModItemFromModResource (resource: ForgeResource | FabricResource | LiteloaderResource | Resources): ModItem {
+  function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource | Resources): ModItem {
     const icon = `${state.root}/${resource.location}.png`
     const modItem: ModItem = {
       path: 'filePath' in resource ? (resource as any).filePath : resource.path,
@@ -125,7 +125,7 @@ export function useInstanceMods () {
     return modItem
   }
 
-  function getModItemFromResource (resource: Resource): ModItem {
+  function getModItemFromResource(resource: Resource): ModItem {
     if (isModResource(resource)) {
       return getModItemFromModResource(resource)
     }
@@ -151,8 +151,8 @@ export function useInstanceMods () {
   /**
      * Commit the change for current mods setting
      */
-  async function commit (items: ModItem[]) {
-    const mods = state.resource.domains.mods
+  async function commit(items: ModItem[]) {
+    const mods = state.resource.mods
     const map = new Map<string, ModResource>()
     for (const mod of mods) {
       map.set(mod.hash, mod)
@@ -167,8 +167,8 @@ export function useInstanceMods () {
   }
 
   const items = computed(() => {
-    const items = state.resource.domains.mods.map(getModItemFromResource)
-    const hashs = new Set(state.instance.mods.map(m => m.hash))
+    const items = state.resource.mods.map(getModItemFromResource)
+    const hashs = new Set(state.instanceResource.mods.map(m => m.hash))
     for (const item of items) {
       if (hashs.has(item.hash)) {
         item.enabled = true

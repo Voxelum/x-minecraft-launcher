@@ -1,4 +1,4 @@
-import { Resource } from '/@shared/entities/resource'
+import { PersistedResource } from '/@shared/entities/resource'
 import { Issue } from '/@shared/entities/issue'
 
 export type Exceptions = MinecraftProfileError | PingServerException | UserNoProfilesException | CurseforgeModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException;
@@ -50,7 +50,7 @@ export interface InstanceCopySaveException extends ExceptionBase {
 
 export interface ResourceException extends ExceptionBase {
     type: 'deployLinkResourceOccupied';
-    resource: Resource<any>;
+    resource: PersistedResource<any>;
 }
 
 export interface GeneralException extends ExceptionBase {

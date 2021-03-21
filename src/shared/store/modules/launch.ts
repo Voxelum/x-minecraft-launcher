@@ -2,16 +2,16 @@ import { LaunchStatus } from '/@shared/entities/launch'
 import { ModuleOption } from '../root'
 
 interface State {
-    status: LaunchStatus;
-    errorType: string;
-    errors: any[];
+    status: LaunchStatus
+    errorType: string
+    errors: any[]
 }
 interface Mutations {
-    launchStatus: LaunchStatus;
-    launchErrors: { type: string; content: any[] };
+    launchStatus: LaunchStatus
+    launchErrors: { type: string; content: any[] }
 }
 
-export type LauncherModule = ModuleOption<State, {}, Mutations, {}>;
+export type LauncherModule = ModuleOption<State, {}, Mutations, {}>
 
 const mod: LauncherModule = {
   state: {
