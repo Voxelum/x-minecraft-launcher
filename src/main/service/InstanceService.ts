@@ -65,20 +65,24 @@ export class InstanceService extends Service {
   constructor(app: LauncherApp) {
     super(app)
 
-    this.subscribeMutation('instanceAdd', async (payload: InstanceSchema & { path: string }) => {
-      await this.instanceFile.saveTo(payload.path, payload)
-      await this.instancesFile.save()
-      this.log(`Saved new instance ${payload.path}`)
-    }).subscribeMutation('instanceRemove', async () => {
-      await this.instancesFile.save()
-    }).subscribeMutation('instance', async () => {
-      const inst = this.state.instance.all[this.state.instance.path]
-      await this.instanceFile.saveTo(inst.path, inst)
-    }).subscribeMutation('instanceSelect', async (path: string) => {
-      await this.instanceFile.saveTo(path, this.state.instance.all[path])
-      await this.instancesFile.save()
-      this.log(`Saved instance selection ${path}`)
-    })
+    this.storeManager
+      .subscribe('instanceAdd', async (payload) => {
+        await this.instanceFile.saveTo(payload.path, payload)
+        await this.instancesFile.save()
+        this.log(`Saved new instance ${payload.path}`)
+      })
+      .subscribe('instanceRemove', async () => {
+        await this.instancesFile.save()
+      })
+      .subscribe('instance', async () => {
+        const inst = this.state.instance.all[this.state.instance.path]
+        await this.instanceFile.saveTo(inst.path, inst)
+      })
+      .subscribe('instanceSelect', async (path) => {
+        await this.instanceFile.saveTo(path, this.state.instance.all[path])
+        await this.instancesFile.save()
+        this.log(`Saved instance selection ${path}`)
+      })
   }
 
   protected getPathUnder(...ps: string[]) {

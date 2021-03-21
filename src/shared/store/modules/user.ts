@@ -6,63 +6,63 @@ import { GameProfileAndTexture, UserProfile, UserSchema } from '../../entities/u
 import { ModuleOption } from '../root'
 
 interface State extends UserSchema {
-    // /**
-    //  * The mojang user info
-    //  */
-    // mojangInfo: MojangAccount | null;
-    /**
-     * If this is true, user can get the skin data from mojang, else user has to answer the challenge to continue.
-     */
-    mojangSecurity: boolean;
+  // /**
+  //  * The mojang user info
+  //  */
+  // mojangInfo: MojangAccount | null;
+  /**
+   * If this is true, user can get the skin data from mojang, else user has to answer the challenge to continue.
+   */
+  mojangSecurity: boolean;
 }
 
 interface Getters {
-    /**
-     * Current selected user profile
-     */
-    user: UserProfile;
-    /**
-     * Current selected user's game profile
-     */
-    gameProfile: GameProfileAndTexture;
+  /**
+   * Current selected user profile
+   */
+  user: UserProfile;
+  /**
+   * Current selected user's game profile
+   */
+  gameProfile: GameProfileAndTexture;
 
-    /**
-     * Does user access token existed or valid? Does user logined? This include the case that user logins as offline mode.
-     */
-    accessTokenValid: boolean;
-    /**
-     * If current mode is offline mode
-     */
-    offline: boolean;
-    /**
-     * Is the auth service & profile service are the same
-     */
-    isServiceCompatible: boolean;
+  /**
+   * Does user access token existed or valid? Does user logined? This include the case that user logins as offline mode.
+   */
+  accessTokenValid: boolean;
+  /**
+   * If current mode is offline mode
+   */
+  offline: boolean;
+  /**
+   * Is the auth service & profile service are the same
+   */
+  isServiceCompatible: boolean;
 
-    authServices: string[]; // TODO: remove
-    profileServices: string[]; // TODO: remove
+  authServices: string[]; // TODO: remove
+  profileServices: string[]; // TODO: remove
 
-    authService: YggdrasilAuthAPI;
-    profileService: ProfileServiceAPI;
+  authService: YggdrasilAuthAPI;
+  profileService: ProfileServiceAPI;
 }
 interface Mutations {
-    userSnapshot: UserSchema;
+  userSnapshot: UserSchema;
 
-    userInvalidate: void;
+  userInvalidate: void;
 
-    gameProfile: { userId: string; profile: (GameProfileAndTexture | GameProfile) };
-    userProfileAdd: Omit<UserProfile, 'profiles'> & { id: string; profiles: (GameProfileAndTexture | GameProfile)[] };
-    userProfileUpdate: { id: string; accessToken: string; profiles: (GameProfileAndTexture | GameProfile)[]; selectedProfile?: string };
-    userProfileRemove: string;
+  gameProfile: { userId: string; profile: (GameProfileAndTexture | GameProfile) };
+  userProfileAdd: Omit<UserProfile, 'profiles'> & { id: string; profiles: (GameProfileAndTexture | GameProfile)[] };
+  userProfileUpdate: { id: string; accessToken: string; profiles: (GameProfileAndTexture | GameProfile)[]; selectedProfile?: string };
+  userProfileRemove: string;
 
-    userGameProfileSelect: { userId: string; profileId: string };
+  userGameProfileSelect: { userId: string; profileId: string };
 
-    authService: { name: string; api: YggdrasilAuthAPI };
-    authServiceRemove: string;
-    profileService: { name: string; api: ProfileServiceAPI };
-    profileServiceRemove: string;
+  authService: { name: string; api: YggdrasilAuthAPI };
+  authServiceRemove: string;
+  profileService: { name: string; api: ProfileServiceAPI };
+  profileServiceRemove: string;
 
-    userSecurity: boolean;
+  userSecurity: boolean;
 }
 
 export type UserModule = ModuleOption<State, Getters, Mutations, {}>;
@@ -131,7 +131,7 @@ const mod: UserModule = {
     profileService: (state, getters) => state.profileServices[getters.user.profileService]
   },
   mutations: {
-    userSnapshot (state, snapshot) {
+    userSnapshot(state, snapshot) {
       state.clientToken = snapshot.clientToken
       assignShallow(state.selectedUser, snapshot.selectedUser)
 
@@ -145,10 +145,10 @@ const mod: UserModule = {
         state.profileServices = { ...state.profileServices, ...snapshot.profileServices }
       }
     },
-    userSecurity (state, sec) {
+    userSecurity(state, sec) {
       state.mojangSecurity = sec
     },
-    gameProfile (state, { profile, userId }) {
+    gameProfile(state, { profile, userId }) {
       const userProfile = state.users[userId]
       if (profile.id in userProfile.profiles) {
         const instance = { textures: { SKIN: { url: '' } }, ...profile }
@@ -163,23 +163,23 @@ const mod: UserModule = {
         }
       }
     },
-    userInvalidate (state) {
+    userInvalidate(state) {
       if (state.users[state.selectedUser.id].authService !== 'offline') {
         state.users[state.selectedUser.id].accessToken = ''
       }
     },
-    authServiceRemove (state, name) {
+    authServiceRemove(state, name) {
       // TODO: remove in vue3
       remove(state.authServices, name)
       delete state.authServices[name]
     },
-    profileServiceRemove (state, name) {
+    profileServiceRemove(state, name) {
       // TODO: remove in vue3
 
       remove(state.profileServices, name)
       delete state.profileServices[name]
     },
-    userProfileRemove (state, userId) {
+    userProfileRemove(state, userId) {
       if (state.selectedUser.id === userId) {
         state.selectedUser.id = ''
         state.selectedUser.profile = ''
@@ -189,7 +189,7 @@ const mod: UserModule = {
       remove(state.users, userId)
       delete state.users[userId]
     },
-    userProfileAdd (state, profile) {
+    userProfileAdd(state, profile) {
       const value = {
         ...profile,
         profiles: profile.profiles
@@ -201,7 +201,7 @@ const mod: UserModule = {
       set(state.users, profile.id)
       state.users[profile.id] = value
     },
-    userProfileUpdate (state, profile) {
+    userProfileUpdate(state, profile) {
       const user = state.users[profile.id]
       user.accessToken = profile.accessToken
       profile.profiles.forEach((p) => {
@@ -221,11 +221,11 @@ const mod: UserModule = {
         user.selectedProfile = profile.selectedProfile
       }
     },
-    userGameProfileSelect (state, { userId, profileId }) {
+    userGameProfileSelect(state, { userId, profileId }) {
       state.selectedUser.id = userId
       state.selectedUser.profile = profileId
     },
-    authService (state, { name, api }) {
+    authService(state, { name, api }) {
       if (name in state.authServices) {
         state.authServices[name] = api
       } else {
@@ -234,7 +234,7 @@ const mod: UserModule = {
         state.authServices[name] = api
       }
     },
-    profileService (state, { name, api }) {
+    profileService(state, { name, api }) {
       if (name in state.profileServices) {
         state.profileServices[name] = api
       } else {
@@ -247,3 +247,4 @@ const mod: UserModule = {
 }
 
 export default mod
+h

@@ -1,5 +1,5 @@
 import { StaticStore, createStaticStore } from '/@shared/util/staticStore'
-import storeTemplate, { RootState } from '/@shared/store'
+import storeTemplate, { MutationKeys, MutationPayload, RootCommit, RootState } from '/@shared/store'
 import { Manager } from '.'
 
 export default class StoreManager extends Manager {
@@ -50,5 +50,13 @@ export default class StoreManager extends Manager {
     this.app.handle('commit', (event, type, payload) => {
       this.store!.commit(type, payload)
     })
+  }
+
+  subscribe<T extends MutationKeys>(key: T, listener: (payload: MutationPayload<T>) => void) {
+    return this
+  }
+
+  subscribeAll(events: MutationKeys[], listener: () => void) {
+    return this
   }
 }
