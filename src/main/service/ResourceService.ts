@@ -1,16 +1,18 @@
 import { task } from '@xmcl/task'
+import { FileExtension } from 'file-type'
 import { stat } from 'fs-extra'
 import debounce from 'lodash.debounce'
 import { join } from 'path'
 import { RelativeMappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
 import AbstractService, { Service } from './Service'
-import { mutateResource, persistResource, remove, ResourceCache, SourceInformation } from '/@main/entities/resource'
+import { FileStat, mutateResource, persistResource, readFileStat, remove, ResourceCache, SourceInformation } from '/@main/entities/resource'
 import { fixResourceSchema } from '/@main/util/dataFix'
-import { copyPassively, isDirectory, readdirEnsured } from '/@main/util/fs'
+import { copyPassively, FileType, readdirEnsured } from '/@main/util/fs'
+import { Exception } from '/@shared/entities/exception'
 import { AnyPersistedResource, AnyResource, isPersistedResource, PersistedResource } from '/@shared/entities/resource'
 import { PersistedResourceSchema, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
-import { isNonnull, isNullOrUndefine, requireString } from '/@shared/util/assert'
+import { isNonnull, requireString } from '/@shared/util/assert'
 
 export type ImportTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save'
 
@@ -33,10 +35,16 @@ export interface ParseFileOptions {
   url?: string[]
 }
 
+interface ParseResourceContext {
+  stat?: FileStat
+  sha1?: string
+  fileType?: FileType
+}
+
 export interface ImportFileOptions extends ParseFileOptions {
   /**
-     * Require the resource to be these specific domain
-     */
+   * Require the resource to be these specific domain
+   */
   restrictToDomain?: ResourceDomain
   /**
    * Is import file task in background?
@@ -53,6 +61,8 @@ export interface ParseFilesOptions {
 }
 
 export interface ImportFilesOptions extends ParseFilesOptions {
+  files: Array<ParseFileOptions & { restrictToDomain?: ResourceDomain }>
+
   /**
    * Is import file task in background?
    */
@@ -76,10 +86,14 @@ export interface AddResourceOptions {
   source?: SourceInformation
 }
 
-class DomainMissMatchedError extends Error {
-  constructor(domain: string, path: string, type: string) {
-    super(`Non-${domain} resource at ${path} type=${type}`)
-  }
+export interface SetResourceTagsOptions {
+  resource: AnyResource | string
+  tags: string[]
+}
+
+export interface RenameResourceOptions {
+  resource: AnyResource | string
+  name: string
 }
 
 @Service
@@ -167,7 +181,7 @@ export default class ResourceService extends AbstractService {
 
         const resourceFilePath = this.getPath(resourceData.location) + resourceData.ext
         const { size, ino } = await stat(resourceFilePath)
-        const resource = Object.freeze({
+        const resource: PersistedResource<any> = Object.freeze({
           location: resourceData.location,
           name: resourceData.name,
           domain: resourceData.domain,
@@ -193,7 +207,6 @@ export default class ResourceService extends AbstractService {
         } else {
           this.error(e)
         }
-        return undefined
       }
     }
     await Promise.all(files.map(processFile))
@@ -201,7 +214,7 @@ export default class ResourceService extends AbstractService {
   }
 
   async initialize() {
-    for (const domain of ['mods', 'resourcepacks', 'saves', 'modpacks']) {
+    for (const domain of ['mods', 'resourcepacks', 'saves', 'modpacks', 'unknown']) {
       this.loadPromises[domain] = this.loadDomain(domain)
     }
   }
@@ -220,7 +233,12 @@ export default class ResourceService extends AbstractService {
    */
   async removeResource(resourceOrKey: string | AnyPersistedResource) {
     const resource = this.normalizeResource(resourceOrKey)
-    if (!resource) return
+    if (!resource) {
+      throw new Exception({
+        type: 'resourceNotFoundException',
+        resource: resourceOrKey as string
+      })
+    }
     this.resourceRemoveQueue.push(resource)
     await this.commitUpdate()
   }
@@ -228,17 +246,86 @@ export default class ResourceService extends AbstractService {
   /**
    * Rename resource, this majorly affect displayed name.
    */
-  async renameResource(option: { resource: string | AnyPersistedResource; name: string }) {
-    const resource = this.normalizeResource(option.resource)
-    if (!resource) return
-    const result = mutateResource<any>(resource, (r) => { r.name = option.name })
+  async renameResource(options: RenameResourceOptions) {
+    const resource = this.normalizeResource(options.resource)
+    if (!resource) {
+      throw new Exception({
+        type: 'resourceNotFoundException',
+        resource: options.resource as string
+      })
+    }
+    const result = mutateResource<PersistedResource<any>>(resource, (r) => { r.name = options.name })
     this.cache.discard(resource)
     this.cache.put(result)
     this.commit('resource', result)
+    await this.resourceFile.writeTo(this.getPath(result.location + '.json'), { ...result, version: 1 })
   }
 
-  async parseFiles() {
+  /**
+   * Set the resource tags.
+   */
+  async setResourceTags(options: SetResourceTagsOptions) {
+    const resource = this.normalizeResource(options.resource)
+    if (!resource) {
+      throw new Exception({
+        type: 'resourceNotFoundException',
+        resource: options.resource as string
+      })
+    }
+    const result = mutateResource<PersistedResource<any>>(resource, (r) => { r.tags = options.tags })
+    this.cache.discard(resource)
+    this.cache.put(result)
+    this.commit('resource', result)
+    await this.resourceFile.writeTo(this.getPath(result.location + '.json'), { ...result, version: 1 })
+  }
 
+  /**
+   * Parse a single file as a resource and return the resource object
+   * @param options The parse file option
+   */
+  async parseFile(options: ParseFileOptions): Promise<AnyResource> {
+    const { path } = options
+    const context: ParseResourceContext = {}
+    const existed = await this.queryExistedResourceByPath(path, context)
+    if (existed) {
+      return existed
+    }
+    const [resource] = await this.resolveResource(options, context)
+    return resource as AnyResource
+  }
+
+  /**
+   * Parse multiple files and return corresponding resources
+   * @param options The parse multiple files options
+   */
+  async parseFiles(options: ParseFilesOptions) {
+    return Promise.all(options.files.map((f) => this.parseFile({
+      path: f.path,
+      source: f.source,
+      type: f.type ?? options.type,
+      url: f.url
+    })))
+  }
+
+  /**
+   * Import the resource into the launcher.
+   * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.
+   */
+  async importFile(options: ImportFileOptions) {
+    requireString(options.path)
+    const context: ParseResourceContext = {}
+    const existed = await this.queryExistedResourceByPath(options.path, context)
+    if (existed) {
+      this.log(`Skip to import ${options.path} as resource existed in ${existed.path}`)
+      return existed
+    }
+    const task = this.importFileTask(options, context)
+    const resource = await (options.background ? task.startAndWait() : this.submit(task))
+
+    this.log(`Import and cache newly added resource ${resource.path} -> ${resource.domain}`)
+    this.cache.put(resource)
+    this.commit('resource', resource)
+    return resource
   }
 
   /**
@@ -252,128 +339,134 @@ export default class ResourceService extends AbstractService {
   * @returns All import file in resource form. If the file cannot be parsed, it will be UNKNOWN_RESOURCE.
   */
   async importFiles(options: ImportFilesOptions) {
-    const existedResources = (await Promise.all(options.files.map((f) => this.queryExistedResourceByPath(f.path)))).filter(isNonnull)
-
-    const allResources = await Promise.all(options.files.map(async (f, i) => {
-      const existed = existedResources[i]
+    const existedResources: AnyPersistedResource[] = []
+    const newResources: AnyPersistedResource[] = []
+    const errors: any[] = []
+    await Promise.all(options.files.map(async (f) => {
+      const context: ParseResourceContext = {}
+      const existed = await this.queryExistedResourceByPath(f.path, context)
       if (existed) {
-        return existed
-      }
-      try {
-        const fstat = await stat(f.path)
-        if (fstat.isDirectory()) {
-          throw new Error(`Cannot import ${f.path} as it's a directory!`)
+        this.log(`Skip to import ${f.path} as resource existed in ${existed.path}`)
+        existedResources.push(existed)
+      } else {
+        try {
+          const task = this.importFileTask({
+            path: f.path,
+            url: f.url,
+            source: f.source,
+            type: f.type ?? options.type,
+            background: options.background,
+            restrictToDomain: options.restrictToDomain
+          }, context)
+          const result = await (options.background ? task.startAndWait() : this.submit(task))
+          this.log(`Import and cache newly added resource ${result.path} -> ${result.domain}`)
+          newResources.push(result)
+        } catch (e) {
+          errors.push(e)
         }
-        const task = this.importFileTask({
-          path: f.path,
-          url: f.url,
-          source: f.source,
-          type: f.type ?? options.type,
-          background: options.background,
-          restrictToDomain: options.restrictToDomain
-        })
-        return options.background ? task.startAndWait() : this.submit(task)
-      } catch (e) {
-        if (e instanceof DomainMissMatchedError) {
-          this.warn(e.message)
-        } else {
-          this.error(e)
-        }
-        return undefined
       }
     }))
 
-    const existedCount = existedResources.filter((r) => !!r).length
-    const unknownCount = allResources.filter(isNullOrUndefine).length
-    const newCount = allResources.length - existedCount - unknownCount
+    const existedCount = existedResources.length
+    const unknownCount = newResources.filter(r => r.type === ResourceType.Unknown).length
+    const newCount = newResources.length
 
     if (options.restrictToDomain) {
       this.log(`Resolve ${existedResources.length} resources from /${options.restrictToDomain}. Imported ${newCount} new resources, ${existedCount} resources existed, and ${unknownCount} unknown resource.`)
     } else {
       this.log(`Resolve ${existedResources.length} resources. Imported ${newCount} new resources, ${existedCount} resources existed, and ${unknownCount} unknown resource.`)
     }
-    this.commitResources(allResources.filter(isNonnull))
+    this.commitResources(newResources.filter(isNonnull))
 
-    return allResources
-  }
-
-  async parserFile(options: ParseFileOptions): Promise<AnyResource> {
-    const { path } = options
-    const existed = await this.queryExistedResourceByPath(path)
-    if (existed) {
-      return existed
-    }
-    const [resource] = await this.resolveResource(options)
-    return resource as AnyResource
-  }
-
-  /**
-   * Import the resource into the launcher.
-   * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.
-   */
-  async importFile(options: ImportFileOptions) {
-    requireString(options.path)
-    const existed = await this.queryExistedResourceByPath(options.path)
-    if (existed) {
-      this.log(`Skip to import ${options.path} as resource existed in ${existed.path}`)
-      return existed
-    }
-    if (await isDirectory(options.path)) {
-      throw new Error(`Cannot import ${options.path} as it's a directory!`)
-    }
-    const task = this.importFileTask(options)
-    const resource = await (options.background ? task.startAndWait() : this.submit(task))
-    this.log(`Import and cache newly added resource ${resource.path}`)
-    this.cache.put(resource)
-    this.commit('resource', resource)
-    return resource
+    return newResources
   }
 
   /**
    * Export the resources into target directory. This will simply copy the resource out.
+   * If a resource is not found, the export process will be abort. This is not a transaction process.
    */
   async exportResource(payload: { resources: (string | AnyResource)[]; targetDirectory: string }) {
     const { resources, targetDirectory } = payload
 
     const promises = [] as Array<Promise<any>>
-    for (const resource of resources) {
-      const res = this.normalizeResource(resource)
-      if (!res) throw new Error(`Cannot find the resource ${resource}`)
-      promises.push(copyPassively(res.path, join(targetDirectory, res.name + res.ext)))
+    for (const r of resources) {
+      const resource = this.normalizeResource(r)
+      if (!resource) {
+        throw new Exception({
+          type: 'resourceNotFoundException',
+          resource: r
+        })
+      }
+      promises.push(copyPassively(resource.path, join(targetDirectory, resource.name + resource.ext)))
     }
     await Promise.all(promises)
   }
 
-  async queryExistedResourceByPath(path: string) {
+  // helper methods
+
+  protected async queryExistedResourceByPath(path: string, context: ParseResourceContext) {
     let result: AnyPersistedResource | undefined
 
-    const fileStat = await stat(path)
+    let stats = context?.stat
+    if (!stats) {
+      stats = await readFileStat(path)
+      if (context) {
+        context.stat = stats
+      }
+    }
 
-    if (!fileStat.isDirectory()) {
-      result = this.getResourceByKey(fileStat.ino)
+    if (!stats.isDirectory) {
+      result = this.getResourceByKey(stats.ino)
 
       if (!result) {
-        const sha1 = await this.worker().checksum({ path, algorithm: 'sha1' })
-        result = this.getResourceByKey(sha1)
+        if (context?.sha1) {
+          result = this.getResourceByKey(context.sha1)
+        } else {
+          const [sha1, fileType] = await this.worker().checksumAndFileType({ path, algorithm: 'sha1' })
+          if (context) {
+            context.sha1 = sha1
+            context.fileType = fileType
+          }
+          result = this.getResourceByKey(sha1)
+        }
       }
+    } else {
+      context.sha1 = ''
+      context.fileType = 'directory'
     }
 
     return result
   }
 
-  // bridge from dry function to `this` context
-
-  private commitResources(resources: PersistedResource[]) {
-    for (const resource of resources) {
-      this.cache.put(resource as any)
-    }
-    this.commit('resources', resources as any)
-  }
-
-  private async resolveResource(options: ParseFileOptions) {
+  private async resolveResource(options: ParseFileOptions, context: ParseResourceContext) {
     const { path, type } = options
-    const hash = await this.worker().checksum({ path, algorithm: 'sha1' })
-    const [resolved, icon] = await this.worker().resolveResource({ path, hash, hint: type ?? '*' })
+    let sha1 = context?.sha1
+    let fileType = context?.fileType
+    let stat = context?.stat
+    if (!stat) {
+      stat = await readFileStat(path)
+    }
+    if (stat.isDirectory) {
+      fileType = 'directory'
+      sha1 = ''
+    } else {
+      if (!sha1 && !fileType) {
+        [sha1, fileType] = await this.worker().checksumAndFileType({ algorithm: 'sha1', path })
+      }
+      if (!sha1) {
+        sha1 = await this.worker().checksum({ algorithm: 'sha1', path })
+      }
+      if (!fileType) {
+        fileType = await this.worker().fileType({ path })
+      }
+    }
+    const [resolved, icon] = await this.worker().resolveResource({
+      path,
+      sha1,
+      fileType,
+      stat,
+      hint: type ?? '*'
+    })
     return [resolved, icon] as const
   }
 
@@ -381,16 +474,39 @@ export default class ResourceService extends AbstractService {
    * Resolve resource task. This will not write the resource to the cache, but it will persist the resource to disk.
    * @throws DomainMissMatchedError
    */
-  private importFileTask(options: ImportFileOptions) {
+  private importFileTask(options: ImportFileOptions, context: ParseResourceContext) {
     const root = this.getPath()
     return task('importResource', async () => {
-      const [resolved, icon] = await this.resolveResource(options)
-      if (options.restrictToDomain && resolved.domain !== options.restrictToDomain) {
-        throw new DomainMissMatchedError(resolved.domain, resolved.path, resolved.type)
+      if (!context.stat) {
+        context.stat = await readFileStat(options.path)
       }
+      if (context.stat.isDirectory) {
+        throw new Exception({
+          type: 'resourceImportDirectoryException',
+          path: options.path
+        })
+      }
+      const [resolved, icon] = await this.resolveResource(options, context)
+      if (options.restrictToDomain && resolved.domain !== options.restrictToDomain) {
+        throw new Exception({
+          type: 'resourceDomainMissmatched',
+          path: options.path,
+          expectedDomain: options.restrictToDomain,
+          actualDomain: resolved.domain,
+          actualType: resolved.type
+        }, `Non-${options.restrictToDomain} resource at ${options.path} type=${resolved.type}`)
+      }
+
       const result = await persistResource(resolved, root, options.source ?? {}, options.url ?? [], icon)
       return result as AnyPersistedResource
     })
+  }
+
+  private commitResources(resources: PersistedResource[]) {
+    for (const resource of resources) {
+      this.cache.put(resource as any)
+    }
+    this.commit('resources', resources as any)
   }
 
   protected unpersistResource(resource: PersistedResource) {

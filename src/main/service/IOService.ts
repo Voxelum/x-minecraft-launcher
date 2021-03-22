@@ -10,7 +10,7 @@ import AbstractService, { Service } from './Service'
 import { resolveResource } from '/@main/entities/resource'
 import { ZipTask } from '/@main/util/zip'
 import { Modpack } from '/@shared/entities/modpack'
-import { PersistedResource, UNKNOWN_RESOURCE } from '/@shared/entities/resource'
+import { PersistedResource, NO_RESOURCE } from '/@shared/entities/resource'
 import { ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
 
 export type ExpectFileType = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save';
@@ -75,7 +75,7 @@ export default class IOService extends AbstractService {
         }
       }
     }
-    let result: PersistedResource = UNKNOWN_RESOURCE
+    let result: PersistedResource = NO_RESOURCE
     if (fileType === 'directory') {
       if (domain === ResourceDomain.ResourcePacks || domain === ResourceDomain.Saves || type === ResourceType.CurseforgeModpack) {
         const tempZipPath = `${this.getTempPath(displayName)}.zip`

@@ -52,7 +52,7 @@
         "applicationinsights": "^1.8.2",
         "atomically": "^1.7.0",
         "electron-updater": "^4.2.4",
-        "file-type": "^12.4.2",
+        "file-type": "^16.3.0",
         "filenamify": "^4.1.0",
         "fs-extra": "^9.0.0",
         "got": "^10.7.0",

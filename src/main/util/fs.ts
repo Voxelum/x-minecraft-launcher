@@ -1,15 +1,17 @@
 import { checksum } from '@xmcl/core'
-import { access, constants, copyFile, ensureDir, FSWatcher, readdir, stat, watch, remove, unlink, ReadStream, readFile, readFileSync, link, copy } from 'fs-extra'
-import { resolve, join, extname } from 'path'
-import filenamify from 'filenamify'
 import { createHash } from 'crypto'
+import { fromFile } from 'file-type'
+import { FileExtension } from 'file-type/core'
+import filenamify from 'filenamify'
+import { access, constants, copy, copyFile, ensureDir, FSWatcher, link, readdir, stat, unlink, watch } from 'fs-extra'
+import { extname, join, resolve } from 'path'
 import { pipeline } from 'stream'
 import { promisify } from 'util'
-import { Schema } from '/@shared/entities/schema'
 
 const pip = promisify(pipeline)
 
 export { pip as pipeline }
+export { checksum }
 
 export function missing(file: string) {
   return access(file, constants.F_OK).then(() => false, () => true)
@@ -38,7 +40,6 @@ export async function readdirEnsured(path: string) {
 export function validateSha256(path: string, sha256: string) {
   return checksum(path, 'sha256').then(s => s === sha256, () => false)
 }
-export { checksum }
 /**
  * This copy will not replace existed files.
  */
@@ -117,4 +118,11 @@ export function swapExt(path: string, ext: string) {
 
 export function linkOrCopy(from: string, to: string) {
   return link(from, to).catch(() => copy(from, to))
+}
+
+export type FileType = FileExtension | 'unknown' | 'directory'
+
+export async function fileType(path: string): Promise<FileType> {
+  const result = await fromFile(path)
+  return result?.ext ?? 'unknown'
 }

@@ -1,6 +1,7 @@
 import { Worker } from 'worker_threads'
+import { FileType } from '../util/fs'
+import { FileStat } from './resource'
 import { ImportTypeHint } from '/@main/service/ResourceService'
-import { FileType } from 'file-type'
 import { Resource } from '/@shared/entities/resource.schema'
 
 export interface WorkPayload {
@@ -13,13 +14,17 @@ export interface ChecksumWorkPayload {
   path: string
 }
 
-export interface ResolveResourceWorkPayload {
+export interface FileTypePayload {
   path: string
-  hash: string
-  hint: ImportTypeHint
 }
 
-export type WorkPayloads = ChecksumWorkPayload | ResolveResourceWorkPayload
+export interface ResolveResourceWorkPayload {
+  path: string
+  sha1: string
+  fileType: FileType
+  stat: FileStat
+  hint: ImportTypeHint
+}
 
 export interface WorkerResponse {
   id: number
@@ -32,7 +37,8 @@ export interface WorkerResponse {
  */
 export interface CPUWorker {
   checksum(payload: ChecksumWorkPayload): Promise<string>
-  checksumAndFileType(payload: ChecksumWorkPayload): Promise<[string, FileType | 'unknown']>
+  fileType(payload: FileTypePayload): Promise<FileType>
+  checksumAndFileType(payload: ChecksumWorkPayload): Promise<[string, FileType]>
   resolveResource(payload: ResolveResourceWorkPayload): Promise<[Resource, Uint8Array | undefined]>
 }
 
@@ -66,7 +72,11 @@ export class WorkerAgent implements CPUWorker {
     return this.submit('checksum', payload)
   }
 
-  checksumAndFileType(payload: ChecksumWorkPayload): Promise<[string, FileType | 'unknown']> {
+  fileType(payload: FileTypePayload): Promise<FileType> {
+    throw this.submit('fileType', payload)
+  }
+
+  checksumAndFileType(payload: ChecksumWorkPayload): Promise<[string, FileType]> {
     return this.submit('checksumAndFileType', payload)
   }
 

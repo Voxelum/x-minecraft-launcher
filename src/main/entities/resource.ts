@@ -5,32 +5,47 @@ import { PackMeta, readIcon, readPackMeta } from '@xmcl/resourcepack'
 import { FileSystem, openFileSystem } from '@xmcl/system'
 import { LevelDataFrame } from '@xmcl/world'
 import filenamify from 'filenamify'
-import { ensureFile, stat, unlink, writeFile } from 'fs-extra'
+import { ensureFile, stat, Stats, unlink, writeFile } from 'fs-extra'
 import { basename, extname, join } from 'path'
 import { findLevelRoot } from './save'
 import { ImportTypeHint } from '/@main/service/ResourceService'
-import { linkOrCopy } from '/@main/util/fs'
+import { FileType, linkOrCopy } from '/@main/util/fs'
 import { CurseforgeModpackManifest } from '/@shared/entities/curseforge'
 import { RuntimeVersions } from '/@shared/entities/instance.schema'
 import { ForgeModCommonMetadata, normalizeForgeModMetadata } from '/@shared/entities/mod'
 import { AnyPersistedResource, AnyResource, PersistedResource } from '/@shared/entities/resource'
-import { CurseforgeInformation, GithubInformation, PersistedResourceSchema, ResourceDomain, ResourceType, Resource } from '/@shared/entities/resource.schema'
+import { CurseforgeInformation, GithubInformation, PersistedResourceSchema, Resource, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
 import { resolveRuntimeVersion } from '/@shared/entities/version'
 
 export type SourceInformation = {
   github?: GithubInformation;
   curseforge?: CurseforgeInformation;
-};
+}
 
-// export interface ResourceHeader {
-//   metadata: unknown;
-//   icon?: Uint8Array;
-//   domain: ResourceDomain;
-//   type: ResourceType;
-//   suggestedName: string;
-//   uri: string[];
-//   hash: string;
-// }
+export interface FileStat extends Omit<Stats, 'isFile' | 'isDirectory' | 'isBlockDevice' | 'isCharacterDevice' | 'isSymbolicLink' | 'isFIFO' | 'isSocket'> {
+  isFile: boolean;
+  isDirectory: boolean;
+  isBlockDevice: boolean;
+  isCharacterDevice: boolean;
+  isSymbolicLink: boolean;
+  isFIFO: boolean;
+  isSocket: boolean;
+}
+
+export async function readFileStat(path: string): Promise<FileStat> {
+  const result = await stat(path)
+  return {
+    ...result,
+    isFile: result.isFile(),
+    isDirectory: result.isDirectory(),
+    isBlockDevice: result.isBlockDevice(),
+    isCharacterDevice: result.isCharacterDevice(),
+    isSymbolicLink: result.isSymbolicLink(),
+    isFIFO: result.isFIFO(),
+    isSocket: result.isSocket()
+  }
+}
+
 export interface ResourceParser<T> {
   type: ResourceType;
   domain: ResourceDomain;
@@ -41,7 +56,7 @@ export interface ResourceParser<T> {
   /**
    * Get ideal uri for this resource
    */
-  getUri: (metadata: T, hash: string) => string[];
+  getUri: (metadata: T) => string[];
 }
 
 export interface PersistedResourceBuilder extends Omit<PersistedResourceSchema, 'metadata' | 'version'> {
@@ -176,7 +191,7 @@ export const RESOURCE_PARSER_RESOURCE_PACK: ResourceParser<PackMeta.Pack> = ({
   parseIcon: async (meta, fs) => readIcon(fs),
   parseMetadata: fs => readPackMeta(fs),
   getSuggestedName: () => '',
-  getUri: (_, hash) => [`sha1:///${hash}`]
+  getUri: (_) => []
 })
 export const RESOURCE_PARSER_SAVE: ResourceParser<LevelDataFrame> = ({
   type: ResourceType.Save,
@@ -189,7 +204,7 @@ export const RESOURCE_PARSER_SAVE: ResourceParser<LevelDataFrame> = ({
     return deserialize(await fs.readFile(fs.join(root, 'level.dat')))
   },
   getSuggestedName: meta => meta.LevelName,
-  getUri: (_, hash) => [`sha1:///${hash}`]
+  getUri: (_) => []
 })
 export const RESOURCE_PARSER_MODPACK: ResourceParser<CurseforgeModpackManifest> = ({
   type: ResourceType.CurseforgeModpack,
@@ -198,7 +213,7 @@ export const RESOURCE_PARSER_MODPACK: ResourceParser<CurseforgeModpackManifest> 
   parseIcon: () => Promise.resolve(undefined),
   parseMetadata: fs => fs.readFile('manifest.json', 'utf-8').then(JSON.parse),
   getSuggestedName: () => '',
-  getUri: (man, hash) => [`sha1:///${hash}`, `curseforge://name/${man.name}/${man.version}`]
+  getUri: (man) => [`curseforge://name/${man.name}/${man.version}`]
 })
 export const RESOURCE_PARSER_COMMON_MODPACK: ResourceParser<{ root: string; runtime: RuntimeVersions }> = ({
   type: ResourceType.Modpack,
@@ -247,7 +262,7 @@ export const RESOURCE_PARSER_COMMON_MODPACK: ResourceParser<{ root: string; runt
     return { root, runtime }
   },
   getSuggestedName: () => '',
-  getUri: (_, hash) => [`sha1:///${hash}`]
+  getUri: (_) => []
 })
 export const RESOURCE_PARSERS = [
   RESOURCE_PARSER_COMMON_MODPACK,
@@ -273,6 +288,7 @@ export function createPersistedResourceBuilder(source: SourceInformation = {}): 
     ext: '',
     domain: ResourceDomain.Unknown,
     type: ResourceType.Unknown,
+    fileType: 'unknown',
     metadata: {},
     ino: 0,
     tags: [],
@@ -311,7 +327,7 @@ export function getCurseforgeSourceInfo(project: number, file: number): SourceIn
   }
 }
 
-export async function resolveResourceWithParser(path: string, hash: string, parsers: ResourceParser<any>[]): Promise<[AnyResource, Uint8Array | undefined]> {
+export async function resolveResourceWithParser(path: string, fileType: FileType, sha1: string, stat: FileStat, parsers: ResourceParser<any>[]): Promise<[AnyResource, Uint8Array | undefined]> {
   const ext = extname(path)
   let parser: ResourceParser<any> = UNKNOWN_ENTRY
   let metadata: any
@@ -329,18 +345,18 @@ export async function resolveResourceWithParser(path: string, hash: string, pars
     }
   }
 
-  const { ino, size } = await stat(path)
   return [{
     path,
     name: parser.getSuggestedName(metadata) || basename(path, ext),
-    ino,
-    size,
+    ino: stat.ino,
+    size: stat.size,
     ext: extname(path),
-    hash,
+    hash: sha1,
     domain: parser.domain,
     type: parser.type,
+    fileType,
     metadata,
-    uri: parser.getUri(metadata, hash)
+    uri: parser.getUri(metadata)
   }, icon]
 }
 
@@ -359,8 +375,8 @@ export function getRecommendedResourceParsers(path: string, typeHint?: ImportTyp
   return chains
 }
 
-export function resolveResource(path: string, hash: string, typeHint?: ImportTypeHint) {
-  return resolveResourceWithParser(path, hash, getRecommendedResourceParsers(path, typeHint))
+export function resolveResource(path: string, fileType: FileType, sha1: string, stat: FileStat, typeHint?: ImportTypeHint) {
+  return resolveResourceWithParser(path, fileType, sha1, stat, getRecommendedResourceParsers(path, typeHint))
 }
 
 /**
