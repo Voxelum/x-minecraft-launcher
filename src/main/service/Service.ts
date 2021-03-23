@@ -5,17 +5,21 @@ import { WaitingQueue } from '/@main/util/mutex'
 import { Exceptions } from '/@shared/entities/exception'
 import { MutationKeys, RootCommit, RootGetters, RootState } from '/@shared/store'
 import 'reflect-metadata'
+import { ServiceKey } from '/@shared/services/Service'
 
 export const PURE_SYMBOL = Symbol('__pure__')
 
-export type ServiceConstructor = {
-  new(...args: any[]): AbstractService;
+export type ServiceConstructor<T extends AbstractService = any> = {
+  new(...args: any[]): T;
 }
 
 export const registeredServices: ServiceConstructor[] = []
 
-export function Service(target: ServiceConstructor) {
-  registeredServices.push(target)
+export function Service<T extends AbstractService>(key: ServiceKey<T>) {
+  return (target: ServiceConstructor<T>) => {
+    Reflect.defineMetadata('service:key', key, target)
+    registeredServices.push(target)
+  }
 }
 
 /**

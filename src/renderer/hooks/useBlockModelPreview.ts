@@ -1,9 +1,9 @@
-import { BlockStateJson } from '/@main/service/ResourcePackPreviewService'
-import { reactive, computed, Ref, ref, watch } from '@vue/composition-api'
+import { computed, Ref, ref, watch } from '@vue/composition-api'
 import { useService } from './useService'
+import { BlockStateJson, ResourcePackPreviewServiceKey } from '/@shared/services/ResourcePackPreviewService'
 
 export function useBlockModelPreview () {
-  const { getBlockStates: listBlockStates, loadModel } = useService('ResourcePackPreviewService')
+  const { getBlockStates: listBlockStates, loadModel } = useService(ResourcePackPreviewServiceKey)
   return {
     listBlockStates,
     loadModel

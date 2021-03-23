@@ -12,16 +12,13 @@ import LauncherApp from '/@main/app/LauncherApp'
 import { RuntimeVersions } from '/@shared/entities/instance.schema'
 import { isFabricLoaderLibrary, isForgeLibrary, isSameForgeVersion, parseOptifineVersion } from '/@shared/entities/version'
 import { ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '/@shared/entities/version.schema'
-
-export interface InstallOptifineOptions extends OptifineVersion {
-  inhrenitFrom?: string;
-}
+import { InstallServiceKey, InstallOptifineOptions, InstallService as IInstallService } from '/@shared/services/InstallService'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
  */
-@Service
-export default class InstallService extends AbstractService {
+@Service(InstallServiceKey)
+export default class InstallService extends AbstractService implements IInstallService {
   private refreshedMinecraft = false;
   private refreshedFabric = false;
   private refreshedLiteloader = false;
@@ -125,7 +122,7 @@ export default class InstallService extends AbstractService {
       diagnoseService.diagnoseVersion.bind(diagnoseService))
 
     diagnoseService.registerMatchedFix(['missingAssetsIndex', 'corruptedAssetsIndex'],
-      (issues) => this.installAssetsAll(issues[0].arguments.version),
+      (issues) => this.installAssetsForVersion(issues[0].arguments.version),
       diagnoseService.diagnoseVersion.bind(diagnoseService))
 
     diagnoseService.registerMatchedFix(['missingAssets', 'corruptedAssets'],
@@ -321,11 +318,11 @@ export default class InstallService extends AbstractService {
   }
 
   /**
-   * Install assets to the version
+   * Install assets which defined in this version asset.json. If this version is not present, this will throw error！
    * @param version The local version id
    */
   @Singleton('install')
-  async installAssetsAll(version: string) {
+  async installAssetsForVersion(version: string) {
     const option = this.getInstallOptions()
     const location = this.state.root
     const resolvedVersion = await Version.parse(location, version)
@@ -341,6 +338,10 @@ export default class InstallService extends AbstractService {
     await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
   }
 
+  /**
+   * If you think a version is corrupted, you can try to reinstall this version
+   * @param version The version to reinstall
+   */
   @Singleton('install')
   async reinstall(version: string) {
     const option = this.getInstallOptions()
@@ -393,7 +394,7 @@ export default class InstallService extends AbstractService {
   }
 
   /**
-   * Install provided libraries.
+   * Install provided libraries to game.
    */
   @Singleton('install')
   async installLibraries({ libraries }: { libraries: (Version.Library | ResolvedLibrary)[] }) {
@@ -414,7 +415,7 @@ export default class InstallService extends AbstractService {
   }
 
   /**
-  * Refresh forge remote versions cache from forge websites
+  * Refresh forge remote versions cache from forge websites or BMCL API
   */
   @Singleton()
   async refreshForge(options: { force?: boolean; mcversion?: string } = {}) {
@@ -484,7 +485,7 @@ export default class InstallService extends AbstractService {
   }
 
   /**
-   *
+   * Refresh fabric version list in the store.
    * @param force shouls the version be refresh regardless if we have already refreshed fabric version.
    */
   @Singleton()
@@ -521,7 +522,7 @@ export default class InstallService extends AbstractService {
   }
 
   /**
-   * Install fabric to the game
+   * Install fabric to the minecraft
    * @param versions The fabric versions
    */
   @Singleton('install')
@@ -542,6 +543,45 @@ export default class InstallService extends AbstractService {
     return undefined
   }
 
+  /**
+   * Refresh optifine version list from BMCL API
+   */
+  @Singleton()
+  async refreshOptifine(force = false) {
+    if (!force && this.refreshedOptifine) {
+      return
+    }
+
+    this.log('Start to refresh optifine metadata')
+
+    const headers = this.state.version.optifine.etag === '' ? undefined : {
+      'If-None-Match': this.state.version.optifine.etag
+    }
+
+    const response = await this.networkManager.request.get('https://bmclapi2.bangbang93.com/optifine/versionList', {
+      headers,
+      rejectUnauthorized: false
+    })
+
+    if (response.statusCode === 304) {
+      this.log('Not found new optifine version metadata. Use cache.')
+    } else if (response.statusCode >= 200 && response.statusCode < 300) {
+      const etag = response.headers.etag as string
+      const versions: OptifineVersion[] = JSON.parse(response.body)
+
+      this.commit('optifineMetadata', {
+        etag,
+        versions
+      })
+      this.log('Found new optifine version metadata. Update it.')
+    }
+
+    this.refreshedOptifine = true
+  }
+
+  /**
+   * Install the optifine to the minecraft
+   */
   @Singleton('install')
   async installOptifine(options: InstallOptifineOptions) {
     const minecraft = new MinecraftFolder(this.getPath())
@@ -598,6 +638,9 @@ export default class InstallService extends AbstractService {
     return id
   }
 
+  /**
+   * Refresh the listloader version list from its github
+   */
   @Singleton()
   async refreshLiteloader(force = false) {
     if (!force && this.refreshedLiteloader) {
@@ -615,6 +658,9 @@ export default class InstallService extends AbstractService {
     this.refreshedLiteloader = true
   }
 
+  /**
+   * Install a specific liteloader version
+   */
   @Singleton('install')
   async installLiteloader(meta: LiteloaderVersion) {
     try {
@@ -624,38 +670,5 @@ export default class InstallService extends AbstractService {
     } finally {
       this.local.refreshVersions()
     }
-  }
-
-  @Singleton()
-  async refreshOptifine(force = false) {
-    if (!force && this.refreshedOptifine) {
-      return
-    }
-
-    this.log('Start to refresh optifine metadata')
-
-    const headers = this.state.version.optifine.etag === '' ? undefined : {
-      'If-None-Match': this.state.version.optifine.etag
-    }
-
-    const response = await this.networkManager.request.get('https://bmclapi2.bangbang93.com/optifine/versionList', {
-      headers,
-      rejectUnauthorized: false
-    })
-
-    if (response.statusCode === 304) {
-      this.log('Not found new optifine version metadata. Use cache.')
-    } else if (response.statusCode >= 200 && response.statusCode < 300) {
-      const etag = response.headers.etag as string
-      const versions: OptifineVersion[] = JSON.parse(response.body)
-
-      this.commit('optifineMetadata', {
-        etag,
-        versions
-      })
-      this.log('Found new optifine version metadata. Update it.')
-    }
-
-    this.refreshedOptifine = true
   }
 }

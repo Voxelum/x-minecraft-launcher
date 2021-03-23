@@ -1,12 +1,14 @@
 import { computed } from '@vue/composition-api'
 import { useServiceOnly } from './useService'
 import { useStore } from './useStore'
+import { InstanceCurseforgeIOServiceKey } from '/@shared/services/InstanceCurseforgeIOServic'
+import { ResourceServiceKey } from '/@shared/services/ResourceService'
 
 export function useResourceOperation() {
-  const { parseAndImportResourceIfAbsent, removeResource } = useServiceOnly('ResourceService', 'parseAndImportResourceIfAbsent', 'removeResource')
+  const { importFile, removeResource } = useServiceOnly(ResourceServiceKey, 'importFile', 'removeResource')
   return {
     removeResource,
-    importResource: parseAndImportResourceIfAbsent
+    importResource: importFile
   }
 }
 
@@ -27,5 +29,5 @@ export function useResourcePackResource() {
 }
 
 export function useCurseforgeImport() {
-  return useServiceOnly('InstanceCurseforgeIOService', 'importCurseforgeModpack')
+  return useServiceOnly(InstanceCurseforgeIOServiceKey, 'importCurseforgeModpack')
 }

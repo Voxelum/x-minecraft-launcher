@@ -1,14 +1,14 @@
-import { exists } from '/@main/util/fs'
-import { createFailureServerStatus } from '/@shared/entities/serverStatus'
 import { queryStatus } from '@xmcl/client'
 import { readFile, readJSON } from 'fs-extra'
-import protocolPath from '/@static/protocol.json'
-import mcProtocolPath from '/@static/mc-protocol.json'
-import { join } from 'path'
 import AbstractService, { Pure, Service } from './Service'
+import { exists } from '/@main/util/fs'
+import { createFailureServerStatus } from '/@shared/entities/serverStatus'
+import { ServerStatusService as IServerStatusService, ServerStatusServiceKey } from '/@shared/services/ServerStatusService'
+import mcProtocolPath from '/@static/mc-protocol.json'
+import protocolPath from '/@static/protocol.json'
 
-@Service
-export default class ServerStatusService extends AbstractService {
+@Service(ServerStatusServiceKey)
+export default class ServerStatusService extends AbstractService implements IServerStatusService {
   async initialize() {
     const protocolFile = this.getAppDataPath('protocol.json')
     if (await exists(protocolFile)) {

@@ -5,9 +5,11 @@ import { MinecraftVersion } from '@xmcl/installer'
 import { useBusy } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
 import { useStore } from './useStore'
+import { InstallServiceKey } from '/@shared/services/InstallService'
+import { VersionServiceKey } from '/@shared/services/VersionService'
 
 export function useVersions () {
-  return useServiceOnly('VersionService', 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory')
+  return useServiceOnly(VersionServiceKey, 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory')
 }
 
 export function useLocalVersions () {
@@ -22,13 +24,13 @@ export function useLocalVersions () {
   return {
     localVersions,
     ...versions,
-    ...useServiceOnly('InstallService', 'reinstall')
+    ...useServiceOnly(InstallServiceKey, 'reinstall')
   }
 }
 
 export function useMinecraftVersions () {
   const { state } = useStore()
-  const { refreshMinecraft } = useService('InstallService')
+  const { refreshMinecraft } = useService(InstallServiceKey)
   const refreshing = useBusy('refreshMinecraft')
   const versions = computed(() => state.version.minecraft.versions)
   const release = computed(() => state.version.minecraft.versions.find(v => v.id === state.version.minecraft.latest.release))
@@ -80,7 +82,7 @@ export function useMinecraftVersionFilter (filterText: Ref<string>) {
 
 export function useFabricVersions () {
   const { state } = useStore()
-  const { refreshFabric } = useService('InstallService')
+  const { refreshFabric } = useService(InstallServiceKey)
   const loaderVersions = computed(() => state.version.fabric.loaders ?? [])
   const yarnVersions = computed(() => state.version.fabric.yarns ?? [])
   const loaderStatus = computed(() => {
@@ -126,7 +128,7 @@ export function useFabricVersions () {
 
 export function useForgeVersions (minecraftVersion: Ref<string>) {
   const { state } = useStore()
-  const { refreshForge } = useService('InstallService')
+  const { refreshForge } = useService(InstallServiceKey)
   const versions = computed(() => state.version.forge.find(v => v.mcversion === minecraftVersion.value)?.versions ?? [])
   const refreshing = useBusy('refreshForge')
 
@@ -179,7 +181,7 @@ export function useForgeVersions (minecraftVersion: Ref<string>) {
 
 export function useLiteloaderVersions (minecraftVersion: Ref<string>) {
   const { state } = useStore()
-  const { refreshLiteloader } = useService('InstallService')
+  const { refreshLiteloader } = useService(InstallServiceKey)
 
   const versions = computed(() => Object.values(state.version.liteloader.versions[minecraftVersion.value] || {}).filter(isNonnull))
   const refreshing = useBusy('refreshLiteloader')
@@ -204,7 +206,7 @@ export function useLiteloaderVersions (minecraftVersion: Ref<string>) {
 
 export function useOptifineVersions (minecraftVersion: Ref<string>) {
   const { state } = useStore()
-  const { refreshOptifine } = useService('InstallService')
+  const { refreshOptifine } = useService(InstallServiceKey)
 
   const versions = computed(() => state.version.optifine.versions.filter(v => v.mcversion === minecraftVersion.value))
   const refreshing = useBusy('refreshOptifine')

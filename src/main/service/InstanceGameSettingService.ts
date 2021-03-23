@@ -1,19 +1,18 @@
-import { exists, missing } from '/@main/util/fs'
-import { requireString } from '/@shared/util/assert'
-import { compareRelease, compareSnapshot, isReleaseVersion, isSnapshotPreview } from '/@shared/entities/version'
 import { Frame, parse, stringify } from '@xmcl/gamesetting'
-import { readFile, writeFile, FSWatcher } from 'fs-extra'
+import { FSWatcher, readFile, writeFile } from 'fs-extra'
 import watch from 'node-watch'
 import { join } from 'path'
-import AbstractService, { Subscribe, Singleton, Service } from './Service'
-
-export type EditGameSettingOptions = Frame
+import AbstractService, { Service, Singleton, Subscribe } from './Service'
+import { exists, missing } from '/@main/util/fs'
+import { compareRelease, compareSnapshot, isReleaseVersion, isSnapshotPreview } from '/@shared/entities/version'
+import { EditGameSettingOptions, InstanceGameSettingService as IInstanceGameSettingService, InstanceGameSettingServiceKey } from '/@shared/services/InstanceGameSettingService'
+import { requireString } from '/@shared/util/assert'
 
 /**
  * The service for game setting
  */
-@Service
-export default class InstanceGameSettingService extends AbstractService {
+@Service(InstanceGameSettingServiceKey)
+export default class InstanceGameSettingService extends AbstractService implements IInstanceGameSettingService {
   private watcher: FSWatcher | undefined
 
   private watchingInstance = ''

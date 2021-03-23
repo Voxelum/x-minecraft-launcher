@@ -1,8 +1,7 @@
-import { isCompatible } from '/@shared/entities/version'
 import { computed, Ref } from '@vue/composition-api'
-import { useStore } from './useStore'
+import { isCompatible } from '/@shared/entities/version'
 
-export function useCompatible (acceptedRange: Ref<string>, version: Ref<string>, strict = true) {
+export function useCompatible(acceptedRange: Ref<string>, version: Ref<string>, strict = true) {
   const compatible = computed(() => (acceptedRange.value !== 'unknown'
     ? version.value === '' && !strict
       ? true
@@ -11,7 +10,7 @@ export function useCompatible (acceptedRange: Ref<string>, version: Ref<string>,
   return { compatible }
 }
 
-export function useCompatibleWithLoader (acceptedRange: Ref<string>,
+export function useCompatibleWithLoader(acceptedRange: Ref<string>,
   loaderRange: Ref<string>,
   mcVersion: Ref<string>,
   forgeVersion: Ref<string>) {
@@ -25,6 +24,6 @@ export function useCompatibleWithLoader (acceptedRange: Ref<string>,
   return { compatible }
 }
 
-export function useIsCompatible () {
+export function useIsCompatible() {
   return { isCompatible }
 }

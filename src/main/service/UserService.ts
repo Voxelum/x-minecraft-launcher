@@ -12,16 +12,13 @@ import { createhDynamicThrottle as createDynamicThrottle } from '/@main/util/tra
 import { fitMinecraftLauncherProfileData } from '/@main/util/userData'
 import { Exception } from '/@shared/entities/exception'
 import { GameProfileAndTexture, UserSchema } from '/@shared/entities/user.schema'
+import {
+  LoginMicrosoftOptions, LoginOptions,
+  RefreshSkinOptions,
+  UploadSkinOptions, UserService as IUserService, UserServiceKey
+} from '/@shared/services/UserService'
 import { requireNonnull, requireObject, requireString } from '/@shared/util/assert'
 
-export interface LoginMicrosoftOptions {
-  /**
-   * The authorization code. If not present, it will try to get the auth code.
-   */
-  oauthCode?: string;
-
-  microsoftEmailAddress?: string;
-}
 export interface LauncherProfile {
   /**
    * All the launcher profiles and their configurations.
@@ -88,57 +85,8 @@ export interface LauncherProfile {
   };
 }
 
-export interface LoginOptions {
-  /**
-   * The user username. Can be email or other thing the auth service want.
-   */
-  username: string;
-  /**
-   * The password. Maybe empty string.
-   */
-  password?: string;
-  /**
-   * The auth service name, like mojang.
-   */
-  authService?: string;
-  /**
-   * The profile serivce name, like mojang
-   */
-  profileService?: string;
-
-  /**
-   * Select selected profile after login
-   */
-  selectProfile?: boolean;
-}
-
-export interface RefreshSkinOptions {
-  gameProfileId?: string;
-  userId?: string;
-  force?: boolean;
-}
-
-export interface UploadSkinOptions {
-  /**
-   * The game profile id of this skin
-   */
-  gameProfileId?: string;
-  /**
-   * The user id of this skin
-   */
-  userId?: string;
-  /**
-   * The skin url. Can be either a http/https url or a file: protocol url.
-   */
-  url: string;
-  /**
-   * If the skin is using slim model.
-   */
-  slim: boolean;
-}
-
-@Service
-export default class UserService extends AbstractService {
+@Service(UserServiceKey)
+export default class UserService extends AbstractService implements IUserService {
   private refreshSkinRecord: Record<string, boolean> = {};
 
   private lookup = createDynamicThrottle(lookup, (uuid, options = {}) => (options.api ?? PROFILE_API_MOJANG).profile, 2400);

@@ -8,6 +8,7 @@ import { useSelectedServices } from './useLoginAccounts'
 import { useBusy } from './useSemaphore'
 import { useServiceOnly } from './useService'
 import { useStore } from './useStore'
+import { UserServiceKey } from '/@shared/services/UserService'
 
 export function useGameProfile (gameProfile: Ref<GameProfile>) {
   const name = computed(() => gameProfile.value.name)
@@ -87,13 +88,13 @@ export function useCurrentUser () {
     profileId,
     userProfile,
     gameProfile,
-    ...useServiceOnly('UserService', 'refreshStatus', 'switchUserProfile', 'logout', 'refreshSkin')
+    ...useServiceOnly(UserServiceKey, 'refreshStatus', 'switchUserProfile', 'logout', 'refreshSkin')
   }
 }
 
 export function useUserSkin (userId: Ref<string>, gameProfileId: Ref<string>) {
   const { state } = useStore()
-  const { refreshSkin, uploadSkin, saveSkin } = useServiceOnly('UserService', 'refreshSkin', 'uploadSkin', 'saveSkin')
+  const { refreshSkin, uploadSkin, saveSkin } = useServiceOnly(UserServiceKey, 'refreshSkin', 'uploadSkin', 'saveSkin')
   const data = reactive({
     url: '',
     slim: false,
@@ -163,7 +164,7 @@ export function useSwitchUser () {
     userId: userId.value
   })
   const modified = computed(() => data.profileId !== profileId.value || data.userId !== userId.value)
-  const { switchUserProfile, removeUserProfile } = useServiceOnly('UserService', 'switchUserProfile', 'removeUserProfile')
+  const { switchUserProfile, removeUserProfile } = useServiceOnly(UserServiceKey, 'switchUserProfile', 'removeUserProfile')
   function commit () {
     return switchUserProfile({ profileId: data.profileId, userId: data.userId })
   }
@@ -204,7 +205,7 @@ export function useLogin () {
   const { userId, profileId, userProfile } = useCurrentUser()
   const { username } = useUserProfile(userProfile)
   const { logined } = useUserProfileStatus(userProfile)
-  const { login } = useServiceOnly('UserService', 'login', 'switchUserProfile')
+  const { login } = useServiceOnly(UserServiceKey, 'login', 'switchUserProfile')
   const { profileService, authService, history } = useSelectedServices()
 
   const _authService = computed<ServiceItem>({
@@ -324,7 +325,7 @@ export function useUserSecurity () {
     }
 
     const { security, refreshing } = useUserSecurityStatus()
-    const { getChallenges, checkLocation, submitChallenges } = useServiceOnly('UserService', 'getChallenges', 'checkLocation', 'submitChallenges')
+    const { getChallenges, checkLocation, submitChallenges } = useServiceOnly(UserServiceKey, 'getChallenges', 'checkLocation', 'submitChallenges')
     const data = reactive({
       loading: false,
       challenges: [] as MojangChallenge[],

@@ -1,9 +1,9 @@
 import { checksum } from '@xmcl/core'
 import { createHash } from 'crypto'
-import { FileExtension, fromFile, stream } from 'file-type'
+import { FileExtension, stream } from 'file-type'
 import { createReadStream } from 'fs'
 import { MessagePort, parentPort } from 'worker_threads'
-import { pipeline, fileType } from '../util/fs'
+import { fileType, pipeline } from '../util/fs'
 import { resolveResource } from '/@main/entities/resource'
 import { ChecksumWorkPayload, CPUWorker, ResolveResourceWorkPayload, WorkPayload } from '/@main/entities/worker'
 

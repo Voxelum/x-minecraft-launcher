@@ -13,11 +13,12 @@ import { missing, readdirIfPresent } from '/@main/util/fs'
 import { unpack7z } from '/@main/util/zip'
 import { JavaRecord } from '/@shared/entities/java'
 import { Java, JavaSchema } from '/@shared/entities/java.schema'
+import { JavaServiceKey, JavaService as IJavaService } from '/@shared/services/JavaService'
 import java from '/@shared/store/modules/java'
 import { requireString } from '/@shared/util/assert'
 
-@Service
-export default class JavaService extends AbstractService {
+@Service(JavaServiceKey)
+export default class JavaService extends AbstractService implements IJavaService {
   protected readonly config = new MappedFile<JavaSchema>(this.getPath('java.json'), new BufferJsonSerializer(JavaSchema));
 
   private readonly internalJavaLocation = this.app.platform.name === 'osx'

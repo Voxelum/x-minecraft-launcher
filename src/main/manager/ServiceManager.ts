@@ -3,6 +3,7 @@ import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { Client } from '/@main/engineBridge'
 import AbstractService, { registeredServices, ServiceConstructor } from '/@main/service/Service'
+import { toRecord } from '/@shared/util/object'
 import { aquire, isBusy, release } from '/@shared/util/semaphore'
 
 interface ServiceCallSession {
@@ -32,7 +33,7 @@ function createProxyForService<T>(): [T, (v: T) => void] {
 }
 
 export default class ServiceManager extends Manager {
-  private registeredServices: ServiceConstructor[] = [...registeredServices]
+  private registeredServices: Record<string, ServiceConstructor> = toRecord(registeredServices, (s) => Reflect.getMetadata('service:key', s))
 
   private services: AbstractService[] = []
 
@@ -44,11 +45,11 @@ export default class ServiceManager extends Manager {
 
   private semaphore: Record<string, number> = {}
 
-  getService<T extends typeof AbstractService>(service: T): InstanceType<T> | undefined {
+  getService<T extends ServiceConstructor>(service: T): InstanceType<T> | undefined {
     return this.activeServices.get(Object.getPrototypeOf(service).constructor) as any
   }
 
-  protected registerService(s: ServiceConstructor) { this.registeredServices.push(s) }
+  protected registerService(s: ServiceConstructor) { this.registeredServices[s.name] = s }
 
   /**
    * Aquire and boradcast the key is in used.
@@ -113,7 +114,7 @@ export default class ServiceManager extends Manager {
       return serv
     }
 
-    for (const ServiceConstructor of [...this.registeredServices]) {
+    for (const ServiceConstructor of [...Object.values(this.registeredServices)]) {
       discoverService(ServiceConstructor)
     }
   }
@@ -183,7 +184,7 @@ export default class ServiceManager extends Manager {
    * @returns The service call session id
    */
   prepareServiceCall(client: Client, service: string, name: string, payload: any): number | undefined {
-    const serv = this.activeServices[service]
+    const serv = this.activeServices.get(this.registeredServices[service])
     if (!serv) {
       this.error(`Cannot execute service call ${name} from service ${service}. The service not found.`)
     } else {

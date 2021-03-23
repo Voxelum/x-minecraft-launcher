@@ -1,6 +1,6 @@
 import { Status } from '@xmcl/client'
-import { readInfo, ServerInfo } from '@xmcl/server-info'
-import { ensureDir, readdir, readFile, remove } from 'fs-extra'
+import { ServerInfo } from '@xmcl/server-info'
+import { ensureDir, readdir, remove } from 'fs-extra'
 import { join, resolve } from 'path'
 import { v4 } from 'uuid'
 import DiagnoseService from './DiagnoseService'
@@ -9,49 +9,23 @@ import AbstractService, { Service, Singleton, Subscribe } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { exists, missing, readdirEnsured } from '/@main/util/fs'
 import { MappedFile, RelativeMappedFile } from '/@main/util/persistance'
-import { BufferJsonSerializer, serverDatSerializer } from '/@main/util/serialize'
+import { BufferJsonSerializer } from '/@main/util/serialize'
 import { createTemplate } from '/@shared/entities/instance'
 import { InstanceSchema, InstancesSchema, RuntimeVersions } from '/@shared/entities/instance.schema'
 import { getHostAndPortFromIp, PINGING_STATUS } from '/@shared/entities/serverStatus'
 import { LATEST_RELEASE } from '/@shared/entities/version'
+import { CreateOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceServiceKey } from '/@shared/services/InstanceService'
 import { requireObject, requireString } from '/@shared/util/assert'
 import { assignShallow } from '/@shared/util/object'
 
 const INSTANCES_FOLDER = 'instances'
 const INSTANCES_JSON = 'instances.json'
 
-// eslint-disable-next-line no-undef
-export type CreateOption = DeepPartial<Omit<InstanceSchema, 'id' | 'lastAccessDate' | 'creationDate'> & { path: string }>;
-
-export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'deployments' | 'runtime' | 'server'>> {
-  deployments?: Record<string, string[]>;
-
-  runtime?: Partial<RuntimeVersions>;
-
-  /**
-   * If this is undefined, it will disable the server of this instance
-   */
-  server?: {
-    /**
-     * The host of the server (ip)
-     */
-    host: string;
-    /**
-     * The port of the server
-     */
-    port?: number;
-  } | null;
-  /**
-   * The target instance path. If this is absent, it will use the selected instance.
-   */
-  instancePath?: string;
-}
-
 /**
  * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
  */
-@Service
-export class InstanceService extends AbstractService {
+@Service(InstanceServiceKey)
+export class InstanceService extends AbstractService implements IInstanceService {
   protected readonly instancesFile = new MappedFile<InstancesSchema>(this.getPath(INSTANCES_JSON), new BufferJsonSerializer(InstancesSchema))
     .setSaveSource(() => ({ instances: Object.keys(this.state.instance.all), selectedInstance: this.state.instance.path }));
 

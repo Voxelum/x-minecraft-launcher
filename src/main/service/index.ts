@@ -22,15 +22,7 @@ export interface BuiltinServices {
     ServerStatusService: ServerStatusService
     InstanceService: InstanceService
     DiagnoseService: DiagnoseService
-    /**
-     * A stateless service to request curseforge website.
-     * The launcher backend will cache the curseforge data neither in memory or in disk.
-     */
     CurseForgeService: CurseForgeService
-    /**
-     * Resource service to manage the mod, resource pack, saves, modpack resources.
-     * It maintain a preview for resources in memory
-     */
     ResourceService: ResourceService
     VersionService: VersionService
     InstallService: InstallService
