@@ -3,6 +3,8 @@ import { computed, reactive, Ref, ref, toRefs } from '@vue/composition-api'
 import { useI18n } from './useI18n'
 import { useService } from './useService'
 import { useStore } from './useStore'
+import { InstanceServiceKey } from '/@shared/services/InstanceService'
+import { ServerStatusServiceKey } from '/@shared/services/ServerStatusService'
 
 export function useSeverStatusAcceptVersion (protocol: Ref<number>) {
   const { getters } = useStore()
@@ -14,7 +16,7 @@ export function useInstanceServerStatus (instancePath?: string) {
 
   const status = computed(() => state.instance.all[instancePath ?? state.instance.path].serverStatus)
   const acceptingVersion = useSeverStatusAcceptVersion(computed(() => status.value.version.protocol))
-  const { refreshServerStatus } = useService('InstanceService')
+  const { refreshServerStatus } = useService(InstanceServiceKey)
 
   return {
     acceptingVersion,
@@ -28,7 +30,7 @@ export function useInstanceServerStatus (instancePath?: string) {
 }
 
 export function useServer (serverRef: Ref<{ host: string; port?: number }>, protocol: Ref<number | undefined>) {
-  const { pingServer } = useService('ServerStatusService')
+  const { pingServer } = useService(ServerStatusServiceKey)
   const { $t } = useI18n()
   const status = reactive({
     version: {

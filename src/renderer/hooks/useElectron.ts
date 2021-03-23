@@ -3,6 +3,7 @@ import { requireNonnull } from '/@shared/util/assert'
 import { inject } from '@vue/composition-api'
 import { Clipboard, Dialog, IpcRenderer } from 'electron'
 import { useServiceOnly } from './useService'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 /**
  * Use electron native dialog
@@ -32,5 +33,5 @@ export function useClipboard (): Clipboard {
 }
 
 export function useQuit () {
-  return useServiceOnly('BaseService', 'quit', 'exit')
+  return useServiceOnly(BaseServiceKey, 'quit', 'exit')
 }

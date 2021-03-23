@@ -4,13 +4,14 @@ import { join } from 'path'
 import AbstractService, { Service, Singleton, Subscribe } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { exists } from '/@main/util/fs'
+import { InstanceServerInfoService as IInstanceServerInfoService, InstanceServerInfoServiceKey } from '/@shared/services/InstanceServerInfoService'
 import { requireString } from '/@shared/util/assert'
 
 /**
  * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
  */
-@Service
-export class InstanceServerInfoService extends AbstractService {
+@Service(InstanceServerInfoServiceKey)
+export class InstanceServerInfoService extends AbstractService implements IInstanceServerInfoService {
   constructor(app: LauncherApp) {
     super(app)
 

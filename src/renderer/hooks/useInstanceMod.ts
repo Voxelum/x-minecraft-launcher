@@ -2,7 +2,9 @@ import { computed } from '@vue/composition-api'
 import { FabricModMetadata } from '@xmcl/mod-parser'
 import { useService, useStore } from '.'
 import { useBusy } from './useSemaphore'
-import { FabricResource, ForgeResource, isModResource, LiteloaderResource, ModResource, Resource, Resources } from '/@shared/entities/resource'
+import { AnyResource, FabricResource, ForgeResource, isModResource, LiteloaderResource, ModResource } from '/@shared/entities/resource'
+import { Resource } from '/@shared/entities/resource.schema'
+import { InstanceResourceServiceKey } from '/@shared/services/InstanceResourceService'
 import { isNonnull } from '/@shared/util/assert'
 
 /**
@@ -64,13 +66,13 @@ export interface ModItem {
  */
 export function useInstanceMods() {
   const { state } = useStore()
-  const { deploy, undeploy } = useService('InstanceResourceService')
+  const { deploy, undeploy } = useService(InstanceResourceServiceKey)
   const loading = useBusy('mountModResources')
 
   function getUrl(resource: Resource) {
     return resource.uri.find(u => u.startsWith('http')) ?? ''
   }
-  function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource | Resources): ModItem {
+  function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource | AnyResource): ModItem {
     const icon = `${state.root}/${resource.location}.png`
     const modItem: ModItem = {
       path: 'filePath' in resource ? (resource as any).filePath : resource.path,

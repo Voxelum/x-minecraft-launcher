@@ -1,13 +1,11 @@
-import { reactive, provide, set, ref, Ref } from '@vue/composition-api'
-import { BuiltinServices } from '/@main/service'
-import { SERVICES_KEY, ipcRenderer, SERVICES_SEMAPHORE_KEY } from '/@/constant'
-import { release } from '/@shared/util/semaphore'
+import { provide, reactive, ref, Ref, set } from '@vue/composition-api'
+import { ipcRenderer, SERVICES_KEY, SERVICES_SEMAPHORE_KEY } from '/@/constant'
 
-export function getServiceCallTasks (promise: Readonly<Promise<any>>): Ref<string[]> {
+export function getServiceCallTasks(promise: Readonly<Promise<any>>): Ref<string[]> {
   return Reflect.get(promise, '__tasks__')
 }
 
-async function startSession (sessionId: number | undefined, tasks: Ref<Array<any>>) {
+async function startSession(sessionId: number | undefined, tasks: Ref<Array<any>>) {
   const listener = (event: any, task: string) => {
     tasks.value.push(task)
   }
@@ -23,9 +21,9 @@ async function startSession (sessionId: number | undefined, tasks: Ref<Array<any
   return result
 }
 
-function proxyService (seriv: string) {
+function getServiceProxy(seriv: string) {
   return new Proxy({} as any, {
-    get (_, functionName) {
+    get(_, functionName) {
       const func = function (payload: any) {
         const tasks = ref([])
         const promise = ipcRenderer.invoke('service-call', seriv, functionName as string, payload).then((r: any) => {
@@ -43,12 +41,8 @@ function proxyService (seriv: string) {
   })
 }
 
-export const serviceProxy: BuiltinServices = new Proxy({} as any, {
-  get (_, serviceName) { return proxyService(serviceName as string) }
-})
-
-export default function provideServiceProxy () {
-  provide(SERVICES_KEY, serviceProxy)
+export default function provideServiceProxy() {
+  provide(SERVICES_KEY, getServiceProxy as any)
   const semaphore: Record<string, number> = reactive({})
   ipcRenderer.on('aquire', (e, res) => {
     const sem = res instanceof Array ? res : [res]
@@ -71,5 +65,5 @@ export default function provideServiceProxy () {
     }
   })
   provide(SERVICES_SEMAPHORE_KEY, semaphore)
-  return serviceProxy
+  return getServiceProxy
 }

@@ -20,3 +20,4 @@ static/semantic
 *.log
 *.bin
 /temp
+/definitions

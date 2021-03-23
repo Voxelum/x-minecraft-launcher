@@ -37,10 +37,10 @@ const mod: CurseForgeModule = {
         }
         return false
       }
-      if (rt.resource.domains.mods.find(find)) return true
-      if (rt.resource.domains.resourcepacks.find(find)) return true
-      if (rt.resource.domains.modpacks.find(find)) return true
-      if (rt.resource.domains.saves.find(find)) return true
+      if (rt.resource.mods.find(find)) return true
+      if (rt.resource.resourcepacks.find(find)) return true
+      if (rt.resource.modpacks.find(find)) return true
+      if (rt.resource.saves.find(find)) return true
 
       return false
     },
@@ -57,10 +57,10 @@ const mod: CurseForgeModule = {
       }
       let result
       /* eslint-disable no-cond-assign */
-      if (result = rt.resource.domains.mods.find(find)) return result
-      if (result = rt.resource.domains.resourcepacks.find(find)) return result
-      if (result = rt.resource.domains.modpacks.find(find)) return result
-      if (result = rt.resource.domains.saves.find(find)) return result
+      if (result = rt.resource.mods.find(find)) return result
+      if (result = rt.resource.resourcepacks.find(find)) return result
+      if (result = rt.resource.modpacks.find(find)) return result
+      if (result = rt.resource.saves.find(find)) return result
       /* eslint-enable no-cond-assign */
 
       return undefined

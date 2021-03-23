@@ -7,9 +7,10 @@ import ExternalAuthSkinService from './ExternalAuthSkinService'
 import InstanceResourceService from './InstanceResourceService'
 import AbstractService, { Service } from './Service'
 import LauncherApp from '../app/LauncherApp'
+import { LaunchServiceKey, LaunchService as ILaunchService } from '/@shared/services/LaunchService'
 
-@Service
-export default class LaunchService extends AbstractService {
+@Service(LaunchServiceKey)
+export default class LaunchService extends AbstractService implements ILaunchService {
   constructor(app: LauncherApp,
     private diagnoseService: DiagnoseService,
     private externalAuthSkinService: ExternalAuthSkinService,

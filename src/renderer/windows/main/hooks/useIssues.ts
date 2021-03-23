@@ -2,13 +2,15 @@ import { useDialog } from '.'
 import { useJavaWizardDialog } from './useDialog'
 import { useModResource, useRouter, useService } from '/@/hooks'
 import { Issue, IssueType } from '/@shared/entities/issue'
+import { DiagnoseServiceKey } from '/@shared/services/DiagnoseService'
+import { InstanceResourceServiceKey } from '/@shared/services/InstanceResourceService'
 
 export function useIssueHandler() {
-  const { fix: fixIssue } = useService('DiagnoseService')
+  const { fix: fixIssue } = useService(DiagnoseServiceKey)
   const { replace } = useRouter()
   const { show: showJavaDialog, javaIssue } = useJavaWizardDialog()
   const { show: showModDialog } = useDialog('download-missing-mods' as any) // TODO: fix this
-  const { deploy } = useService('InstanceResourceService')
+  const { deploy } = useService(InstanceResourceServiceKey)
   const { resources } = useModResource()
 
   const handlerRegistry: Record<string, () => void> = {}

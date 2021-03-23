@@ -1,8 +1,8 @@
 import { Worker } from 'worker_threads'
 import { FileType } from '../util/fs'
 import { FileStat } from './resource'
-import { ImportTypeHint } from '/@main/service/ResourceService'
 import { Resource } from '/@shared/entities/resource.schema'
+import { FileTypeHint } from '/@shared/services/ResourceService'
 
 export interface WorkPayload {
   type: string
@@ -23,7 +23,7 @@ export interface ResolveResourceWorkPayload {
   sha1: string
   fileType: FileType
   stat: FileStat
-  hint: ImportTypeHint
+  hint: FileTypeHint
 }
 
 export interface WorkerResponse {

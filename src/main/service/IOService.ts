@@ -1,6 +1,7 @@
 import { UnzipTask } from '@xmcl/installer'
 import { open, readAllEntries } from '@xmcl/unzip'
-import { FileType } from 'file-type'
+import { FileExtension } from 'file-type/core'
+// import { FileType } from 'file-type'
 import { remove, stat, unlink } from 'fs-extra'
 import { basename, extname } from 'path'
 import LauncherApp from '../app/LauncherApp'
@@ -34,7 +35,7 @@ export interface FileMetadata {
   path: string;
   domain: ResourceDomain;
   type: ResourceType;
-  fileType: FileType | 'unknown' | 'directory';
+  fileType: FileExtension | 'unknown' | 'directory';
   existed: boolean;
   /**
    * Suggested display name
@@ -75,7 +76,7 @@ export default class IOService extends AbstractService {
         }
       }
     }
-    let result: PersistedResource = NO_RESOURCE
+    let result!: PersistedResource
     if (fileType === 'directory') {
       if (domain === ResourceDomain.ResourcePacks || domain === ResourceDomain.Saves || type === ResourceType.CurseforgeModpack) {
         const tempZipPath = `${this.getTempPath(displayName)}.zip`
@@ -124,22 +125,22 @@ export default class IOService extends AbstractService {
     }
 
     if (fileStat.isDirectory()) {
-      const [{ type: resourceType, name: suggestedName, uri, metadata }, icon] = await this.worker().resolveResource({ path, hash: '', hint: hint ?? '' })
-      result.displayName = suggestedName
-      result.existed = uri.some(key => !!this.resourceService.getResourceByKey(key))
-      result.type = resourceType as any
-      result.metadata = metadata
-      result.uri = uri
+      // const [{ type: resourceType, name: suggestedName, uri, metadata }, icon] = await this.worker().resolveResource({ path, hash: '', hint: hint ?? '' })
+      // result.displayName = suggestedName
+      // result.existed = uri.some(key => !!this.resourceService.getResourceByKey(key))
+      // result.type = resourceType as any
+      // result.metadata = metadata
+      // result.uri = uri
     } else {
       let resource: PersistedResource | undefined = this.resourceService.getResourceByKey(fileStat.ino)
       let hash: string | undefined
-      let fileType: FileType | 'unknown' = 'unknown'
+      let fileType: FileExtension | 'unknown' = 'unknown'
 
       const ext = extname(path)
       if (!resource) {
         const result = await this.worker().checksumAndFileType({ path, algorithm: 'sha1' })
         hash = result[0]
-        fileType = result[1]
+        fileType = result[1] as any
         resource = this.resourceService.getResourceByKey(hash)
       }
       if (!hash) {
@@ -155,13 +156,13 @@ export default class IOService extends AbstractService {
         result.metadata = resource.metadata
         result.uri = resource.uri
       } else if (fileType === 'zip' || ext === '.jar' || ext === '.litemod') {
-        const { type: resourceType, suggestedName, uri, metadata, icon, domain } = await resolveResource(path, hash ?? '', hint)
-        result.displayName = suggestedName
-        result.existed = uri.some(u => !!this.resourceService.getResourceByKey(u))
-        result.type = resourceType
-        result.domain = domain
-        result.metadata = metadata
-        result.uri = uri
+        // const { type: resourceType, suggestedName, uri, metadata, icon, domain } = await resolveResource(path, hash ?? '', hint)
+        // result.displayName = suggestedName
+        // result.existed = uri.some(u => !!this.resourceService.getResourceByKey(u))
+        // result.type = resourceType
+        // result.domain = domain
+        // result.metadata = metadata
+        // result.uri = uri
       }
     }
     return result

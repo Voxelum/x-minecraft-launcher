@@ -1,10 +1,11 @@
 import unknownPack from '/@/assets/unknown_pack.png'
 import { basename } from '/@/util/basename'
-import { isResourcePackResource, Resource, Resources } from '/@shared/entities/resource'
+import { isResourcePackResource, PersistedResource } from '/@shared/entities/resource'
 import { computed, onMounted, ref, Ref, watch } from '@vue/composition-api'
 import { PackMeta } from '@xmcl/resourcepack'
 import { useService, useStore } from '.'
 import { useBusy } from './useSemaphore'
+import { InstanceGameSettingServiceKey } from '/@shared/services/InstanceGameSettingService'
 
 export interface ResourcePackItem extends PackMeta.Pack {
   /**
@@ -33,7 +34,7 @@ export interface ResourcePackItem extends PackMeta.Pack {
    * The resource associate with the resourcepack item.
    * If it's undefined. Then this resource cannot be found.
    */
-  resource?: Resource;
+  resource?: PersistedResource<PackMeta.Pack>;
 }
 
 /**
@@ -41,7 +42,7 @@ export interface ResourcePackItem extends PackMeta.Pack {
  */
 export function useInstanceResourcePacks() {
   const { state, getters } = useStore()
-  const { edit } = useService('InstanceGameSettingService')
+  const { edit } = useService(InstanceGameSettingServiceKey)
 
   const loading = useBusy('mountResourcepacks')
 
@@ -75,7 +76,7 @@ export function useInstanceResourcePacks() {
   function getResourcepackFormat(meta: any) {
     return meta ? meta.format ?? meta.pack_format : 3
   }
-  function getResourcePackItem(resource: Resource<PackMeta.Pack>): ResourcePackItem {
+  function getResourcePackItem(resource: PersistedResource<PackMeta.Pack>): ResourcePackItem {
     const icon = `${state.root}/${resource.location}.png`
     return {
       path: resource.path,

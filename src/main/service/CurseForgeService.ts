@@ -1,25 +1,19 @@
-import { getCurseforgeSourceInfo } from '/@main/entities/resource'
-import { ProjectType } from '/@shared/entities/curseforge'
-import { UNKNOWN_RESOURCE } from '/@shared/entities/resource'
-import { requireObject, requireString } from '/@shared/util/assert'
-import { compareDate } from '/@shared/util/object'
 import { AddonInfo, File, getAddonDatabaseTimestamp, getAddonDescription, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
 import { task } from '@xmcl/task'
 import { Agent } from 'https'
 import { basename, join } from 'path'
+import LauncherApp from '../app/LauncherApp'
 import ResourceService from './ResourceService'
 import AbstractService, { Service, Singleton } from './Service'
-import LauncherApp from '../app/LauncherApp'
+import { getCurseforgeSourceInfo } from '/@main/entities/resource'
+import { ProjectType } from '/@shared/entities/curseforge'
+import { CurseForgeServiceKey, CurseForgeService as ICurseForgeService, InstallFileOptions } from '/@shared/services/CurseForgeService'
+import { requireObject, requireString } from '/@shared/util/assert'
+import { compareDate } from '/@shared/util/object'
 
-export interface InstallFileOptions {
-  file: File;
-  projectId: number;
-  type: ProjectType;
-}
-
-@Service
-export default class CurseForgeService extends AbstractService {
+@Service(CurseForgeServiceKey)
+export default class CurseForgeService extends AbstractService implements ICurseForgeService {
   private userAgent: Agent = new Agent({ keepAlive: true });
 
   private projectTimestamp = '';
@@ -105,7 +99,7 @@ export default class CurseForgeService extends AbstractService {
     const urls = [file.downloadUrl, `curseforge://${projectId}/${file.id}`]
     this.log(`Try install file ${file.displayName}(${file.downloadUrl}) in type ${type}`)
     const resource = this.resourceService.getResource({ url: urls })
-    if (resource !== UNKNOWN_RESOURCE) {
+    if (resource) {
       this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`)
       return resource
     }

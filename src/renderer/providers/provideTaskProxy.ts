@@ -1,62 +1,62 @@
-import { electron, TASK_PROXY } from '/@/constant'
+import { onMounted, onUnmounted, provide, reactive, Ref, ref } from '@vue/composition-api'
+import { ipcRenderer, TASK_PROXY } from '/@/constant'
 import { TaskItem } from '/@/entities/task'
 import { useI18n } from '/@/hooks'
 import { TaskProxy } from '/@/taskProxy'
 import { TaskBatchPayload, TaskPayload, TaskState } from '/@shared/task'
-import { computed, onMounted, onUnmounted, provide, reactive, Ref, ref } from '@vue/composition-api'
 
 class ChildrenWatcer {
-    readonly cached: Array<TaskItem> = new Array(10);
+  readonly cached: Array<TaskItem> = new Array(10);
 
-    readonly childrens: Array<TaskItem> = [];
+  readonly childrens: Array<TaskItem> = [];
 
-    public dirty = false;
+  public dirty = false;
 
-    constructor (private target: Ref<TaskItem[]>, init?: TaskItem[]) {
-      if (init) {
-        this.childrens = init
-        this.dirty = true
-        this.update()
-      }
-    }
-
-    addChild (item: TaskItem) {
-      this.childrens.unshift(item)
+  constructor(private target: Ref<TaskItem[]>, init?: TaskItem[]) {
+    if (init) {
+      this.childrens = init
       this.dirty = true
+      this.update()
     }
+  }
 
-    update () {
-      if (!this.dirty) {
-        return
-      }
-      const successed = []
-      const others = []
-      const children = this.childrens
-      const cached = this.cached
+  addChild(item: TaskItem) {
+    this.childrens.unshift(item)
+    this.dirty = true
+  }
 
-      for (const item of children) {
-        if (item.state === TaskState.Successed) {
-          successed.push(item)
-        } else {
-          others.push(item)
-        }
-      }
-      const combined = others.concat(successed)
-      for (let i = 0; i < this.cached.length; i++) {
-        const elem = combined.shift()
-        if (elem) {
-          cached[i] = elem
-        } else {
-          cached.length = i
-          break
-        }
-      }
-      this.target.value = cached
+  update() {
+    if (!this.dirty) {
+      return
     }
+    const successed = []
+    const others = []
+    const children = this.childrens
+    const cached = this.cached
+
+    for (const item of children) {
+      if (item.state === TaskState.Successed) {
+        successed.push(item)
+      } else {
+        others.push(item)
+      }
+    }
+    const combined = others.concat(successed)
+    for (let i = 0; i < this.cached.length; i++) {
+      const elem = combined.shift()
+      if (elem) {
+        cached[i] = elem
+      } else {
+        cached.length = i
+        break
+      }
+    }
+    this.target.value = cached
+  }
 }
 
-export function provideTasks () {
-  const ipc = electron.ipcRenderer
+export function provideTasks() {
+  const ipc = ipcRenderer
 
   const { $t } = useI18n()
   const dictionary: Record<string, TaskItem> = {}
@@ -87,7 +87,7 @@ export function provideTasks () {
 
   provide(TASK_PROXY, proxy)
 
-  function mapAndRecordTaskItem (payload: TaskPayload): TaskItem {
+  function mapAndRecordTaskItem(payload: TaskPayload): TaskItem {
     const children = ref([])
     const watcher = new ChildrenWatcer(children, payload.children.map(mapAndRecordTaskItem))
     const localId = `${payload.uuid}@${payload.id}`
