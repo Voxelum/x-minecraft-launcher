@@ -1,12 +1,9 @@
-import { exists } from '/@main/util/fs'
-import { ZipTask } from '/@main/util/zip'
-import { Instance } from '/@shared/entities/instance'
-import { InstanceSchema } from '/@shared/entities/instance.schema'
-import { LATEST_RELEASE } from '/@shared/entities/version'
 import { MinecraftFolder, ResolvedVersion } from '@xmcl/core'
 import { readJson } from 'fs-extra'
+import { exists } from '/@main/util/fs'
+import { ZipTask } from '/@main/util/zip'
 
-export async function addFilesToZipFromVersion (zipTask: ZipTask, version: ResolvedVersion, includeAssets: boolean, includeLibraries: boolean, includeVersionJar: boolean) {
+export async function addFilesToZipFromVersion(zipTask: ZipTask, version: ResolvedVersion, includeAssets: boolean, includeLibraries: boolean, includeVersionJar: boolean) {
   const dir = new MinecraftFolder(version.minecraftDirectory)
 
   // add assets

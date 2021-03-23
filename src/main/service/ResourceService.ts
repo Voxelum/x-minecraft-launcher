@@ -1,76 +1,23 @@
 import { task } from '@xmcl/task'
-import { FileExtension } from 'file-type'
 import { stat } from 'fs-extra'
 import debounce from 'lodash.debounce'
 import { join } from 'path'
 import { RelativeMappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
 import AbstractService, { Service } from './Service'
-import { FileStat, mutateResource, persistResource, readFileStat, remove, ResourceCache, SourceInformation } from '/@main/entities/resource'
+import { FileStat, mutateResource, persistResource, readFileStat, remove, ResourceCache } from '/@main/entities/resource'
 import { fixResourceSchema } from '/@main/util/dataFix'
 import { copyPassively, FileType, readdirEnsured } from '/@main/util/fs'
 import { Exception } from '/@shared/entities/exception'
 import { AnyPersistedResource, AnyResource, isPersistedResource, PersistedResource } from '/@shared/entities/resource'
-import { PersistedResourceSchema, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
+import { PersistedResourceSchema, ResourceType } from '/@shared/entities/resource.schema'
+import { ImportFileOptions, ImportFilesOptions, ParseFileOptions, ParseFilesOptions, RenameResourceOptions, ResourceService as IResourceService, ResourceServiceKey, SetResourceTagsOptions } from '/@shared/services/ResourceService'
 import { isNonnull, requireString } from '/@shared/util/assert'
-
-export type ImportTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save'
-
-export interface ParseFileOptions {
-  /**
-   * The real file path of the resource
-   */
-  path: string
-  /**
-   * The hint for the import file type
-   */
-  type?: ImportTypeHint
-  /**
-   * The extra info you want to provide to the source of the resource
-   */
-  source?: SourceInformation
-  /**
-   * The file urls
-   */
-  url?: string[]
-}
 
 interface ParseResourceContext {
   stat?: FileStat
   sha1?: string
   fileType?: FileType
-}
-
-export interface ImportFileOptions extends ParseFileOptions {
-  /**
-   * Require the resource to be these specific domain
-   */
-  restrictToDomain?: ResourceDomain
-  /**
-   * Is import file task in background?
-   */
-  background?: boolean
-}
-
-export interface ParseFilesOptions {
-  files: Array<ParseFileOptions>
-  /**
-   * The hint for the import file type
-   */
-  type?: ImportTypeHint
-}
-
-export interface ImportFilesOptions extends ParseFilesOptions {
-  files: Array<ParseFileOptions & { restrictToDomain?: ResourceDomain }>
-
-  /**
-   * Is import file task in background?
-   */
-  background?: boolean
-  /**
-   * Require the resource to be these specific domain
-   */
-  restrictToDomain?: ResourceDomain
 }
 
 export interface Query {
@@ -79,25 +26,8 @@ export interface Query {
   ino?: number
 }
 
-export interface AddResourceOptions {
-  path: string
-  hash?: string
-  type?: ImportTypeHint
-  source?: SourceInformation
-}
-
-export interface SetResourceTagsOptions {
-  resource: AnyResource | string
-  tags: string[]
-}
-
-export interface RenameResourceOptions {
-  resource: AnyResource | string
-  name: string
-}
-
-@Service
-export default class ResourceService extends AbstractService {
+@Service(ResourceServiceKey)
+export default class ResourceService extends AbstractService implements IResourceService {
   private cache = new ResourceCache()
 
   private loadPromises: Record<string, Promise<void>> = {}

@@ -5,24 +5,14 @@ import { join } from 'path'
 import InstanceResourceService from './InstanceResourceService'
 import AbstractService, { Service, Subscribe } from './Service'
 import LauncherApp from '../app/LauncherApp'
+import { ResourcePackPreviewServiceKey, ResourcePackPreviewService as IResourcePackPreviewService, BlockStateJson } from '/@shared/services/ResourcePackPreviewService'
 
-export interface BlockStateJson {
-  name: string;
-  variants: {
-    [variant: string]: {
-      model: string;
-    } | Array<{
-      model: string;
-    }>;
-  };
-}
-
-export interface NamedResourcePackWrapper extends ResourcePackWrapper {
+interface NamedResourcePackWrapper extends ResourcePackWrapper {
   path: string;
 }
 
-@Service
-export default class ResourcePackPreviewService extends AbstractService {
+@Service(ResourcePackPreviewServiceKey)
+export default class ResourcePackPreviewService extends AbstractService implements IResourcePackPreviewService {
   private resourceManager = new ResourceManager();
 
   private modelLoader = new ModelLoader(this.resourceManager);

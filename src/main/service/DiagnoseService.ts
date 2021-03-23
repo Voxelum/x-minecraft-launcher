@@ -14,6 +14,7 @@ import { EMPTY_JAVA } from '/@shared/entities/java'
 import { ForgeModCommonMetadata } from '/@shared/entities/mod'
 import { FabricResource } from '/@shared/entities/resource'
 import { compareRelease, getExpectVersion } from '/@shared/entities/version'
+import { DiagnoseServiceKey, DiagnoseService as IDiagnoseService } from '/@shared/services/DiagnoseService'
 import { parseVersion, VersionRange } from '/@shared/util/mavenVersion'
 
 export type DiagnoseFunction = (report: Partial<IssueReport>) => Promise<void>
@@ -26,8 +27,8 @@ export interface Fix {
 /**
  * This is the service provides the diagnose service for current launch profile
  */
-@Service
-export default class DiagnoseService extends AbstractService {
+@Service(DiagnoseServiceKey)
+export default class DiagnoseService extends AbstractService implements IDiagnoseService {
   private fixes: Fix[] = [];
 
   constructor(

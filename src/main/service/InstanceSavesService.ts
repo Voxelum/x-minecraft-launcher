@@ -9,89 +9,17 @@ import { copyPassively, isFile, missing, readdirIfPresent } from '/@main/util/fs
 import { unpack7z, ZipTask } from '/@main/util/zip'
 import { Exception } from '/@shared/entities/exception'
 import { InstanceSave } from '/@shared/entities/save'
+import {
+  CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
+  ImportSaveOptions, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey
+} from '/@shared/services/InstanceSavesService'
 import { isNonnull, requireObject, requireString } from '/@shared/util/assert'
-
-export interface ExportSaveOptions {
-  /**
-   * The instance directory path, e.g. the path of .minecraft folder.
-   *
-   * This will be the active instance by default.
-   */
-  instancePath?: string;
-  /**
-   * The save folder name to export.
-   */
-  saveName: string;
-  /**
-   * The destination full file path.
-   */
-  destination: string;
-  /**
-   * Should export as zip
-   * @default true
-   */
-  zip?: boolean;
-}
-
-export interface ImportSaveOptions {
-  /**
-   * The source path of the zip or folder of the save to import
-   */
-  source: string;
-  /**
-   * The destination instance directory path, e.g. the path of .minecraft folder.
-   *
-   * This will be the active instance by default.
-   */
-  instancePath?: string;
-  /**
-   * The destination save folder name will be imported into.
-   *
-   * It will be the basename of the source file path if this is not present.
-   */
-  saveName?: string;
-}
-
-export interface DeleteSaveOptions {
-  /**
-   * The save name will be deleted
-   */
-  saveName: string;
-
-  /**
-   * The instance path of this save. If this is not presented, it will use selected instance.
-   */
-  instancePath?: string;
-}
-
-export interface CloneSaveOptions {
-  /**
-   * The source instance path. If it is not presented, it will use selected instance.
-   */
-  srcInstancePath?: string;
-
-  /**
-   * The destination instance path. If it is not presented, it will use selected instance.
-   */
-  destInstancePath?: string | string[];
-
-  /**
-   * The save name to clone
-   */
-  saveName: string;
-
-  /**
-   * The new save name.
-   * @default Generated name from the `saveName`
-   */
-  newSaveName?: string;
-}
 
 /**
  * Provide the ability to preview saves data of an instance
  */
-@Service
-export default class InstanceSavesService extends AbstractService {
+@Service(InstanceSavesServiceKey)
+export default class InstanceSavesService extends AbstractService implements IInstanceSavesService {
   private watcher: FSWatcher | undefined;
 
   private watching = '';

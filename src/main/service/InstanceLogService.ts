@@ -1,15 +1,16 @@
-import { decode, guessEncodingByBuffer, UTF8 } from '/@main/util/encoding'
-import { readdirIfPresent } from '/@main/util/fs'
-import { gunzip } from '/@main/util/zip'
 import { readFile, remove } from 'fs-extra'
 import { isAbsolute, join } from 'path'
 import AbstractService, { Service, Singleton } from './Service'
+import { decode, guessEncodingByBuffer, UTF8 } from '/@main/util/encoding'
+import { readdirIfPresent } from '/@main/util/fs'
+import { gunzip } from '/@main/util/zip'
+import { InstanceLogService as IInstanceLogService, InstanceLogServiceKey } from '/@shared/services/InstanceLogService'
 
 /**
  * Provide the ability to list/read/remove log and crash reports of a instance.
  */
-@Service
-export default class InstanceLogService extends AbstractService {
+@Service(InstanceLogServiceKey)
+export default class InstanceLogService extends AbstractService implements IInstanceLogService {
   /**
    * List the log in current instances
    */

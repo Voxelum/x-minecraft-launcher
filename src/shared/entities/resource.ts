@@ -4,7 +4,7 @@ import type { LevelDataFrame } from '@xmcl/world'
 import { CurseforgeModpackManifest } from './curseforge'
 import { ForgeModCommonMetadata } from './mod'
 import { Modpack } from './modpack'
-import { ResourceDomain, PersistedResourceSchema, Resource, ResourceType } from './resource.schema'
+import { ResourceDomain, PersistedResourceSchema, Resource, ResourceType, GithubInformation, CurseforgeInformation } from './resource.schema'
 
 export interface PersistedResource<T = unknown> extends Readonly<Omit<PersistedResourceSchema, 'metadata' | 'version'>> {
   /**
@@ -88,8 +88,15 @@ export const NO_RESOURCE: UnknownResource = Object.freeze({
   hash: '',
   ext: '',
   path: '',
+  uri: [],
+  fileType: 'unknown',
   name: ''
 })
+
+export interface SourceInformation {
+  github?: GithubInformation
+  curseforge?: CurseforgeInformation
+}
 
 export function isPersistedResource(resource: AnyResource): resource is AnyPersistedResource {
   const r = resource as any

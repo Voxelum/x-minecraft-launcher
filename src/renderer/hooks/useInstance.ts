@@ -1,9 +1,3 @@
-import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions } from '/@main/service/InstanceSavesService'
-import { CreateOption } from '/@main/service/InstanceService'
-import { InstanceSchema as InstanceConfig, RuntimeVersions } from '/@shared/entities/instance.schema'
-import { CurseforgeModpackResource, ModpackResource } from '/@shared/entities/resource'
-import { ResourceType } from '/@shared/entities/resource.schema'
-import { getExpectVersion } from '/@shared/entities/version'
 import { computed, reactive, toRefs } from '@vue/composition-api'
 import { Frame as GameSetting } from '@xmcl/gamesetting'
 import { useBusy } from './useSemaphore'
@@ -11,6 +5,14 @@ import { useService, useServiceOnly } from './useService'
 import { useStore } from './useStore'
 import { useCurrentUser } from './useUser'
 import { useMinecraftVersions } from './useVersion'
+import { InstanceSchema as InstanceConfig, RuntimeVersions } from '/@shared/entities/instance.schema'
+import { CurseforgeModpackResource, ModpackResource } from '/@shared/entities/resource'
+import { ResourceType } from '/@shared/entities/resource.schema'
+import { getExpectVersion } from '/@shared/entities/version'
+import { InstanceIOServiceKey } from '/@shared/services/InstanceIOService'
+import { InstanceLogServiceKey } from '/@shared/services/InstanceLogService'
+import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions } from '/@shared/services/InstanceSavesService'
+import { CreateOption, InstanceServiceKey } from '/@shared/services/InstanceService'
 
 export function useInstanceBase() {
   const { state } = useStore()
@@ -65,8 +67,8 @@ export function useInstance() {
     server,
     isServer: computed(() => getters.instance.server !== null),
     refreshing: computed(() => state.semaphore.instance > 0),
-    ...useServiceOnly('InstanceService', 'editInstance', 'refreshServerStatus'),
-    ...useServiceOnly('InstanceIOService', 'exportInstance')
+    ...useServiceOnly(InstanceServiceKey, 'editInstance', 'refreshServerStatus'),
+    ...useServiceOnly(InstanceIOServiceKey, 'exportInstance')
   }
 }
 
@@ -78,8 +80,8 @@ export function useInstances() {
   return {
     instances: computed(() => getters.instances),
 
-    ...useServiceOnly('InstanceService', 'mountInstance', 'deleteInstance', 'refreshServerStatusAll'),
-    ...useServiceOnly('InstanceIOService', 'importInstance', 'linkInstance')
+    ...useServiceOnly(InstanceServiceKey, 'mountInstance', 'deleteInstance', 'refreshServerStatusAll'),
+    ...useServiceOnly(InstanceIOServiceKey, 'importInstance', 'linkInstance')
   }
 }
 
@@ -88,7 +90,7 @@ export function useInstances() {
  */
 export function useInstanceCreation() {
   const { gameProfile } = useCurrentUser()
-  const { createAndMount: createAndSelect } = useService('InstanceService')
+  const { createAndMount: createAndSelect } = useService(InstanceServiceKey)
   const { release } = useMinecraftVersions()
   const data = reactive({
     name: '',
@@ -285,6 +287,6 @@ export function useInstanceLogs() {
   const { state } = useStore()
   return {
     path: computed(() => state.instance.path),
-    ...useServiceOnly('InstanceLogService', 'getCrashReportContent', 'getLogContent', 'listCrashReports', 'listLogs', 'removeCrashReport', 'removeLog', 'showCrash', 'showLog')
+    ...useServiceOnly(InstanceLogServiceKey, 'getCrashReportContent', 'getLogContent', 'listCrashReports', 'listLogs', 'removeCrashReport', 'removeLog', 'showCrash', 'showLog')
   }
 }

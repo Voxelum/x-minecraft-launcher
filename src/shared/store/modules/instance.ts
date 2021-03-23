@@ -3,7 +3,6 @@ import { ModuleOption } from '../root'
 import { DEFAULT_PROFILE, Instance } from '/@shared/entities/instance'
 import { InstanceSchema } from '/@shared/entities/instance.schema'
 import { JavaRecord } from '/@shared/entities/java'
-import { AnyResource } from '/@shared/entities/resource'
 import { ServerStatus, UNKNOWN_STATUS } from '/@shared/entities/serverStatus'
 import { getResolvedVersion } from '/@shared/entities/version'
 import { remove, set } from '/@shared/util/middleware'
@@ -69,10 +68,7 @@ export type InstanceModule = ModuleOption<State, Getters, Mutations, {}>
 const mod: InstanceModule = {
   state: {
     all: {},
-    path: '',
-
-    mods: [],
-    resourcepacks: []
+    path: ''
   },
   getters: {
     instances: state => Object.keys(state.all).map(k => state.all[k]),
@@ -96,28 +92,6 @@ const mod: InstanceModule = {
     }
   },
   mutations: {
-    instanceModAdd(state, r) {
-      state.mods.push(...r)
-    },
-    instanceModRemove(state, res) {
-      for (const r of res) {
-        state.mods = state.mods.filter(m => m.hash !== r.hash)
-      }
-    },
-    instanceMods(state, resources) {
-      state.mods = resources
-    },
-    instanceResourcepackAdd(state, r) {
-      state.resourcepacks.push(...r)
-    },
-    instanceResourcepackRemove(state, res) {
-      for (const r of res) {
-        state.resourcepacks = state.resourcepacks.filter(p => p.hash !== r.hash)
-      }
-    },
-    instanceResourcepacks(state, resources) {
-      state.resourcepacks = resources
-    },
     instanceAdd(state, instance) {
       /**
        * Prevent the case that hot reload keep the vuex state

@@ -4,7 +4,7 @@ import { ensureDir, rename } from 'fs-extra'
 import { basename, dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import InstanceResourceService from './InstanceResourceService'
-import InstanceService, { EditInstanceOptions } from './InstanceService'
+import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
 import AbstractService, { Service } from './Service'
 import { getCurseforgeUrl } from '/@main/entities/resource'
@@ -12,48 +12,16 @@ import { isFile } from '/@main/util/fs'
 import { ZipTask } from '/@main/util/zip'
 import { CurseforgeModpackManifest } from '/@shared/entities/curseforge'
 import { Exception } from '/@shared/entities/exception'
-import { UNKNOWN_RESOURCE } from '/@shared/entities/resource'
+import { NO_RESOURCE } from '/@shared/entities/resource'
+import { ExportCurseforgeModpackOptions, ImportCurseforgeModpackOptions, InstanceCurseforgeIOService as IInstanceCurseforgeIOService, InstanceCurseforgeIOServiceKey } from '/@shared/services/InstanceCurseforgeIOServic'
+import { EditInstanceOptions } from '/@shared/services/InstanceService'
 import { isNonnull, requireObject } from '/@shared/util/assert'
-
-export interface ExportCurseforgeModpackOptions {
-  /**
-   * An list of files should be included in overrides
-   */
-  overrides: string[];
-  /**
-   * The instance path to be exported
-   */
-  instancePath?: string;
-  /**
-  * The dest path of the exported instance
-  */
-  destinationPath: string;
-
-  name: string;
-
-  version: string;
-
-  author: string;
-
-  gameVersion: string;
-}
-
-export interface ImportCurseforgeModpackOptions {
-  /**
-   * The path of curseforge modpack zip file
-   */
-  path: string;
-  /**
-   * The destination instance path. If this is empty, it will create a new instance.
-   */
-  instancePath?: string;
-}
 
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
-@Service
-export default class InstanceCurseforgeIOService extends AbstractService {
+@Service(InstanceCurseforgeIOServiceKey)
+export default class InstanceCurseforgeIOService extends AbstractService implements IInstanceCurseforgeIOService {
   constructor(app: LauncherApp,
     private resourceService: ResourceService,
     private instanceService: InstanceService,
@@ -100,25 +68,25 @@ export default class InstanceCurseforgeIOService extends AbstractService {
 
     zipTask.addEmptyDirectory('overrides')
 
-    for (const file of overrides) {
-      if (file.startsWith('mods/')) {
-        const mod = this.state.instanceResource.mods.find((i) => (i.location.replace('\\', '/') + i.ext) === file)
-        if (mod && mod.curseforge) {
-          curseforgeConfig.files.push({ projectID: mod.curseforge.projectId, fileID: mod.curseforge.fileId, required: true })
-        } else {
-          zipTask.addFile(join(instancePath, file), `overrides/${file}`)
-        }
-      } else if (file.startsWith('resourcepacks/')) {
-        const resourcepack = this.state.instanceResource.resourcepacks.find((i) => (i.location.replace('\\', '/') + i.ext) === file)
-        if (resourcepack && resourcepack.curseforge) {
-          curseforgeConfig.files.push({ projectID: resourcepack.curseforge.projectId, fileID: resourcepack.curseforge.fileId, required: true })
-        } else {
-          zipTask.addFile(join(instancePath, file), `overrides/${file}`)
-        }
-      } else {
-        zipTask.addFile(join(instancePath, file), `overrides/${file}`)
-      }
-    }
+    // for (const file of overrides) {
+    //   if (file.startsWith('mods/')) {
+    //     const mod = this.state.instanceResource.mods.find((i) => (i.location.replace('\\', '/') + i.ext) === file)
+    //     if (mod && mod.curseforge) {
+    //       curseforgeConfig.files.push({ projectID: mod.curseforge.projectId, fileID: mod.curseforge.fileId, required: true })
+    //     } else {
+    //       zipTask.addFile(join(instancePath, file), `overrides/${file}`)
+    //     }
+    //   } else if (file.startsWith('resourcepacks/')) {
+    //     const resourcepack = this.state.instanceResource.resourcepacks.find((i) => (i.location.replace('\\', '/') + i.ext) === file)
+    //     if (resourcepack && resourcepack.curseforge) {
+    //       curseforgeConfig.files.push({ projectID: resourcepack.curseforge.projectId, fileID: resourcepack.curseforge.fileId, required: true })
+    //     } else {
+    //       zipTask.addFile(join(instancePath, file), `overrides/${file}`)
+    //     }
+    //   } else {
+    //     zipTask.addFile(join(instancePath, file), `overrides/${file}`)
+    //   }
+    // }
 
     this.log(`Export instance ${instancePath} to curseforge ${JSON.stringify(curseforgeConfig, null, 4)}`)
 
@@ -216,7 +184,7 @@ export default class InstanceCurseforgeIOService extends AbstractService {
           mapping[`${file.projectID}:${file.fileID}`] = file.path
         }
         // rename the resource to correct name
-        for (const res of resources.filter(r => r !== UNKNOWN_RESOURCE)) {
+        for (const res of resources.filter(r => r !== NO_RESOURCE)) {
           const path = mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`]
           const realName = basename(res.location) + res.ext
           const realPath = dirname(path) + realName

@@ -1,12 +1,13 @@
-import { computed, reactive, toRef, toRefs, onMounted } from '@vue/composition-api'
-import { useStore } from './useStore'
+import { computed, reactive, toRefs } from '@vue/composition-api'
 import { useService, useServiceOnly } from './useService'
+import { useStore } from './useStore'
+import { LaunchServiceKey } from '/@shared/services/LaunchService'
 
-export function useLaunchEvent () {
+export function useLaunchEvent() {
 
 }
 
-export function useLaunch () {
+export function useLaunch() {
   const { state } = useStore()
   const status = computed(() => state.launch.status)
   const errorType = computed(() => state.launch.errorType)
@@ -20,12 +21,12 @@ export function useLaunch () {
     status,
     errorType,
     errors,
-    ...useServiceOnly('LaunchService', 'launch')
+    ...useServiceOnly(LaunchServiceKey, 'launch')
   }
 }
 
-export function useLaunchPreview () {
-  const { generateArguments } = useService('LaunchService')
+export function useLaunchPreview() {
+  const { generateArguments } = useService(LaunchServiceKey)
   const data = reactive({
     preview: [] as string[]
   })

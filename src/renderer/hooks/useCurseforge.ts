@@ -1,17 +1,19 @@
-import { ProjectType } from '/@shared/entities/curseforge'
 import { computed, onMounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import { AddonInfo, Attachment, File } from '@xmcl/curseforge'
+import { useRouter } from './useRouter'
+import { useBusy } from './useSemaphore'
 import { useService } from './useService'
 import { useStore } from './useStore'
-import { useBusy } from './useSemaphore'
-import { useRouter } from './useRouter'
+import { ProjectType } from '/@shared/entities/curseforge'
+import { CurseForgeServiceKey } from '/@shared/services/CurseForgeService'
+import { InstanceResourceServiceKey } from '/@shared/services/InstanceResourceService'
 
 /**
  * Hook to view the curseforge project downloadable files.
  * @param projectId The project id
  */
 export function useCurseforgeProjectFiles(projectId: number) {
-  const { fetchProjectFiles } = useService('CurseForgeService')
+  const { fetchProjectFiles } = useService(CurseForgeServiceKey)
   const { getters } = useStore()
   const data = reactive({
     files: [] as readonly File[],
@@ -38,8 +40,8 @@ export function useCurseforgeProjectFiles(projectId: number) {
 }
 
 export function useCurseforgeInstall(type: ProjectType, projectId: number) {
-  const { installFile } = useService('CurseForgeService')
-  const { deploy } = useService('InstanceResourceService')
+  const { installFile } = useService(CurseForgeServiceKey)
+  const { deploy } = useService(InstanceResourceServiceKey)
   const { state, getters } = useStore()
   function getFileStatus(file: File): 'downloading' | 'downloaded' | 'remote' {
     const res = getters.queryResource(file.downloadUrl)
@@ -64,7 +66,7 @@ export function useCurseforgeInstall(type: ProjectType, projectId: number) {
 }
 
 export function useCurseforgeProjectDescription(projectId: number) {
-  const { fetchProjectDescription } = useService('CurseForgeService')
+  const { fetchProjectDescription } = useService(CurseForgeServiceKey)
   const data = reactive({
     description: '',
     loading: false
@@ -88,7 +90,7 @@ export function useCurseforgeProjectDescription(projectId: number) {
  * @param id The project id
  */
 export function useCurseforgeProject(projectId: number) {
-  const { fetchProject } = useService('CurseForgeService')
+  const { fetchProject } = useService(CurseForgeServiceKey)
   const recentFiles: Ref<File[]> = ref([])
   const data = reactive({
     name: '',
@@ -122,7 +124,7 @@ export function useCurseforgeProject(projectId: number) {
 }
 
 export function useCurseforgeCategories() {
-  const { loadCategories } = useService('CurseForgeService')
+  const { loadCategories } = useService(CurseForgeServiceKey)
   const { state } = useStore()
   const categories = computed(() => state.curseforge.categories)
   const refreshing = useBusy('loadCategories')
@@ -154,7 +156,7 @@ export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Re
   }
 
   const router = useRouter()
-  const { searchProjects } = useService('CurseForgeService')
+  const { searchProjects } = useService(CurseForgeServiceKey)
   const pageSize = 5
   const currentPage = computed({
     get() { return page.value },

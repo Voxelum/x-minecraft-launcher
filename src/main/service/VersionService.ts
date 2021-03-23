@@ -3,12 +3,13 @@ import { remove } from 'fs-extra'
 import { join } from 'path'
 import AbstractService, { Service } from './Service'
 import { copyPassively, FileStateWatcher, missing, readdirEnsured } from '/@main/util/fs'
+import { VersionServiceKey, VersionService as IVersionService } from '/@shared/services/VersionService'
 
 /**
  * The local version serivce maintains the installed versions on disk
  */
-@Service
-export default class VersionService extends AbstractService {
+@Service(VersionServiceKey)
+export default class VersionService extends AbstractService implements IVersionService {
   private versionsWatcher = new FileStateWatcher([] as string[], (state, _, f) => [...new Set([...state, f])]);
 
   private versionLoaded = false;

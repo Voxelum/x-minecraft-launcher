@@ -3,6 +3,7 @@ import { UpdateInfo } from 'electron-updater'
 import { useStore } from './useStore'
 import { useServiceOnly } from './useService'
 import { useBusy } from './useSemaphore'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export function useSettings () {
   const { state, commit } = useStore()
@@ -34,7 +35,7 @@ export function useSettings () {
   const updateInfo: Ref<UpdateInfo> = computed(() => state.setting.updateInfo || {}) as any
 
   return {
-    ...useServiceOnly('BaseService', 'checkUpdate'),
+    ...useServiceOnly(BaseServiceKey, 'checkUpdate'),
     locales,
     selectedLocale,
     allowPrerelease,
@@ -70,6 +71,6 @@ export function useUpdateInfo () {
     downloadingUpdate,
     updateInfo,
     updateStatus,
-    ...useServiceOnly('BaseService', 'downloadUpdate', 'quitAndInstall', 'checkUpdate')
+    ...useServiceOnly(BaseServiceKey, 'downloadUpdate', 'quitAndInstall', 'checkUpdate')
   }
 }

@@ -6,13 +6,11 @@ import { BufferJsonSerializer } from '../util/serialize'
 import AbstractService, { Service, Singleton } from './Service'
 import { IS_DEV } from '/@main/constant'
 import { SettingSchema } from '/@shared/entities/setting.schema'
+import { BaseService as IBaseService, BaseServiceKey, MigrateOptions } from '/@shared/services/BaseService'
 import settings from '/@shared/store/modules/setting'
-export interface MigrateOptions {
-  destination: string;
-}
 
-@Service
-export default class BaseService extends AbstractService {
+@Service(BaseServiceKey)
+export default class BaseService extends AbstractService implements IBaseService {
   private settingFile = new MappedFile<SettingSchema>(this.getPath('setting.json'), new BufferJsonSerializer(SettingSchema))
 
   constructor(app: LauncherApp) {

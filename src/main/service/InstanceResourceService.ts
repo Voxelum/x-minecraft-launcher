@@ -1,28 +1,21 @@
-import { mutateResource } from '/@main/entities/resource'
-import { readdirIfPresent } from '/@main/util/fs'
-import { isModResource, isResourcePackResource, ModResource, PersistedResource, ResourcePackResource, AnyResource } from '/@shared/entities/resource'
-import { ResourceDomain } from '/@shared/entities/resource.schema'
 import { copyFile, ensureDir, FSWatcher, link, unlink } from 'fs-extra'
 import debounce from 'lodash.debounce'
 import watch from 'node-watch'
-import { basename, join } from 'path'
-import ResourceService from './ResourceService'
-import AbstractService, { Service, Subscribe, Singleton } from './Service'
+import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
-
-export interface DeployOptions {
-  resources: PersistedResource[];
-  /**
-   * The instance path to deploy. This will be the current path by default.
-   */
-  path?: string;
-}
+import ResourceService from './ResourceService'
+import AbstractService, { Service, Singleton, Subscribe } from './Service'
+import { mutateResource } from '/@main/entities/resource'
+import { readdirIfPresent } from '/@main/util/fs'
+import { AnyResource, isModResource, isResourcePackResource, PersistedResource } from '/@shared/entities/resource'
+import { ResourceDomain } from '/@shared/entities/resource.schema'
+import { DeployOptions, InstanceResourceService as IInstanceResourceService, InstanceResourceServiceKey } from '/@shared/services/InstanceResourceService'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
  */
-@Service
-export default class InstanceResourceService extends AbstractService {
+@Service(InstanceResourceServiceKey)
+export default class InstanceResourceService extends AbstractService implements IInstanceResourceService {
   private watchingMods = '';
 
   private modsWatcher: FSWatcher | undefined;
@@ -77,7 +70,7 @@ export default class InstanceResourceService extends AbstractService {
     }))
     const resources = await this.resourceService.importFiles({
       files: fileArgs,
-      restrictDomain: ResourceDomain.Mods,
+      restrictToDomain: ResourceDomain.Mods,
       type: 'mods'
     })
     return resources.map((r, i) => mutateResource(r, (r) => { r.path = fileArgs[i].path }))
@@ -97,7 +90,7 @@ export default class InstanceResourceService extends AbstractService {
 
     const resources = await this.resourceService.importFiles({
       files: fileArgs,
-      restrictDomain: ResourceDomain.ResourcePacks,
+      restrictToDomain: ResourceDomain.ResourcePacks,
       type: 'resourcepack'
     })
     return resources.map((r, i) => mutateResource(r, (r) => { r.path = fileArgs[i].path }))

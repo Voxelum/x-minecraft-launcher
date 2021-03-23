@@ -8,19 +8,14 @@ import filenamify from 'filenamify'
 import { ensureFile, stat, Stats, unlink, writeFile } from 'fs-extra'
 import { basename, extname, join } from 'path'
 import { findLevelRoot } from './save'
-import { ImportTypeHint } from '/@main/service/ResourceService'
 import { FileType, linkOrCopy } from '/@main/util/fs'
 import { CurseforgeModpackManifest } from '/@shared/entities/curseforge'
 import { RuntimeVersions } from '/@shared/entities/instance.schema'
 import { ForgeModCommonMetadata, normalizeForgeModMetadata } from '/@shared/entities/mod'
-import { AnyPersistedResource, AnyResource, PersistedResource } from '/@shared/entities/resource'
+import { AnyPersistedResource, AnyResource, PersistedResource, SourceInformation } from '/@shared/entities/resource'
 import { CurseforgeInformation, GithubInformation, PersistedResourceSchema, Resource, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
 import { resolveRuntimeVersion } from '/@shared/entities/version'
-
-export type SourceInformation = {
-  github?: GithubInformation;
-  curseforge?: CurseforgeInformation;
-}
+import { FileTypeHint } from '/@shared/services/ResourceService'
 
 export interface FileStat extends Omit<Stats, 'isFile' | 'isDirectory' | 'isBlockDevice' | 'isCharacterDevice' | 'isSymbolicLink' | 'isFIFO' | 'isSocket'> {
   isFile: boolean;
@@ -360,7 +355,7 @@ export async function resolveResourceWithParser(path: string, fileType: FileType
   }, icon]
 }
 
-export function getRecommendedResourceParsers(path: string, typeHint?: ImportTypeHint) {
+export function getRecommendedResourceParsers(path: string, typeHint?: FileTypeHint) {
   const ext = extname(path)
   const hint = typeHint || ''
   const filterFunc: (r: ResourceParser<any>) => boolean = (hint === '*' || hint === '')
@@ -375,7 +370,7 @@ export function getRecommendedResourceParsers(path: string, typeHint?: ImportTyp
   return chains
 }
 
-export function resolveResource(path: string, fileType: FileType, sha1: string, stat: FileStat, typeHint?: ImportTypeHint) {
+export function resolveResource(path: string, fileType: FileType, sha1: string, stat: FileStat, typeHint?: FileTypeHint) {
   return resolveResourceWithParser(path, fileType, sha1, stat, getRecommendedResourceParsers(path, typeHint))
 }
 
