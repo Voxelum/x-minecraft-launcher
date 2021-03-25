@@ -18,13 +18,13 @@
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api';
-import { required } from '/@/util/props';
+import { defineComponent } from '@vue/composition-api'
+import { required } from '/@/util/props'
 
 export default defineComponent({
   props: {
     visible: required<boolean>(Boolean),
     drop: required<(dropEvent: DragEvent) => void>(Function),
   },
-});
+})
 </script>

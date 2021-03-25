@@ -13,56 +13,56 @@ interface State extends UserSchema {
   /**
    * If this is true, user can get the skin data from mojang, else user has to answer the challenge to continue.
    */
-  mojangSecurity: boolean;
+  mojangSecurity: boolean
 }
 
 interface Getters {
   /**
    * Current selected user profile
    */
-  user: UserProfile;
+  user: UserProfile
   /**
    * Current selected user's game profile
    */
-  gameProfile: GameProfileAndTexture;
+  gameProfile: GameProfileAndTexture
 
   /**
    * Does user access token existed or valid? Does user logined? This include the case that user logins as offline mode.
    */
-  accessTokenValid: boolean;
+  accessTokenValid: boolean
   /**
    * If current mode is offline mode
    */
-  offline: boolean;
+  offline: boolean
   /**
    * Is the auth service & profile service are the same
    */
-  isServiceCompatible: boolean;
+  isServiceCompatible: boolean
 
-  authService: YggdrasilAuthAPI;
-  profileService: ProfileServiceAPI;
+  authService: YggdrasilAuthAPI
+  profileService: ProfileServiceAPI
 }
 interface Mutations {
-  userSnapshot: UserSchema;
+  userSnapshot: UserSchema
 
-  userInvalidate: void;
+  userInvalidate: void
 
-  gameProfile: { userId: string; profile: (GameProfileAndTexture | GameProfile) };
-  userProfileAdd: Omit<UserProfile, 'profiles'> & { id: string; profiles: (GameProfileAndTexture | GameProfile)[] };
-  userProfileUpdate: { id: string; accessToken: string; profiles: (GameProfileAndTexture | GameProfile)[]; selectedProfile?: string };
-  userProfileRemove: string;
+  gameProfile: { userId: string; profile: (GameProfileAndTexture | GameProfile) }
+  userProfileAdd: Omit<UserProfile, 'profiles'> & { id: string; profiles: (GameProfileAndTexture | GameProfile)[] }
+  userProfileUpdate: { id: string; accessToken: string; profiles: (GameProfileAndTexture | GameProfile)[]; selectedProfile?: string }
+  userProfileRemove: string
 
-  userGameProfileSelect: { userId: string; profileId: string };
+  userGameProfileSelect: { userId: string; profileId: string }
 
-  authService: { name: string; api: YggdrasilAuthAPI };
-  authServiceRemove: string;
-  profileService: { name: string; api: ProfileServiceAPI };
-  profileServiceRemove: string;
+  authService: { name: string; api: YggdrasilAuthAPI }
+  authServiceRemove: string
+  profileService: { name: string; api: ProfileServiceAPI }
+  profileServiceRemove: string
 
-  userSecurity: boolean;
+  userSecurity: boolean
 }
 
-export type UserModule = ModuleOption<State, Getters, Mutations, {}>;
+export type UserModule = ModuleOption<State, Getters, Mutations, {}>
 
 const mod: UserModule = {
   state: {
@@ -70,7 +70,7 @@ const mod: UserModule = {
     users: {},
     selectedUser: {
       id: '',
-      profile: ''
+      profile: '',
     },
 
     clientToken: '',
@@ -83,8 +83,8 @@ const mod: UserModule = {
         refresh: '/refresh',
         validate: '/validate',
         invalidate: '/invalidate',
-        signout: '/signout'
-      }
+        signout: '/signout',
+      },
     },
     profileServices: {
       mojang: {
@@ -107,10 +107,10 @@ const mod: UserModule = {
         // eslint-disable-next-line no-template-curly-in-string
         profile: 'https://sessionserver.mojang.com/session/minecraft/profile/${uuid}',
         // eslint-disable-next-line no-template-curly-in-string
-        profileByName: 'https://api.mojang.com/users/profiles/minecraft/${name}'
-      }
+        profileByName: 'https://api.mojang.com/users/profiles/minecraft/${name}',
+      },
     },
-    mojangSecurity: false
+    mojangSecurity: false,
   },
   getters: {
     user: state => state.users[state.selectedUser.id] || EMPTY_USER,
@@ -122,7 +122,7 @@ const mod: UserModule = {
     isServiceCompatible: (_, getters) => getters.user.authService === getters.user.profileService,
 
     authService: (state, getters) => state.authServices[getters.user.authService],
-    profileService: (state, getters) => state.profileServices[getters.user.profileService]
+    profileService: (state, getters) => state.profileServices[getters.user.profileService],
   },
   mutations: {
     userSnapshot(state, snapshot) {
@@ -153,7 +153,7 @@ const mod: UserModule = {
       } else {
         userProfile.profiles[profile.id] = {
           textures: { SKIN: { url: '' } },
-          ...profile
+          ...profile,
         }
       }
     },
@@ -188,7 +188,7 @@ const mod: UserModule = {
         profiles: profile.profiles
           .map(p => ({ ...p, textures: { SKIN: { url: '' } } }))
           .reduce(toObjectReducer<GameProfileAndTexture, 'id'>('id'), {}),
-        selectedProfile: profile.selectedProfile
+        selectedProfile: profile.selectedProfile,
       }
       // TODO: remove in vue3
       set(state.users, profile.id)
@@ -201,12 +201,12 @@ const mod: UserModule = {
         if (user.profiles[p.id]) {
           user.profiles[p.id] = {
             ...user.profiles[p.id],
-            ...p
+            ...p,
           }
         } else {
           user.profiles[p.id] = {
             textures: { SKIN: { url: '' } },
-            ...p
+            ...p,
           }
         }
       })
@@ -235,8 +235,8 @@ const mod: UserModule = {
         set(state.profileServices, name)
         state.profileServices[name] = api
       }
-    }
-  }
+    },
+  },
 }
 
 export default mod

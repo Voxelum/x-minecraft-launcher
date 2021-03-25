@@ -6,10 +6,14 @@
     @click="tryEnable"
   >
     <v-list-tile-avatar>
-      <v-icon :size="30">{{ icon }}</v-icon>
+      <v-icon :size="30">
+        {{ icon }}
+      </v-icon>
     </v-list-tile-avatar>
     <v-list-tile-content style="">
-      <v-list-tile-title :style="{ 'text-decoration': disabled ? 'line-through' : 'none' }">{{ value.name }}</v-list-tile-title>
+      <v-list-tile-title :style="{ 'text-decoration': disabled ? 'line-through' : 'none' }">
+        {{ value.name }}
+      </v-list-tile-title>
       <v-list-tile-sub-title>
         {{ value.size }} bytes
       </v-list-tile-sub-title>
@@ -26,10 +30,18 @@
       />
     </v-list-tile-content> -->
     <v-list-tile-action>
-      <v-chip v-if="value.existed" label>
+      <v-chip
+        v-if="value.existed"
+        label
+      >
         {{ $t('existed') }} {{ typeName }}
       </v-chip>
-      <v-chip v-else label outline color="white">
+      <v-chip
+        v-else
+        label
+        outline
+        color="white"
+      >
         {{ typeName }}
       </v-chip>
     </v-list-tile-action>
@@ -44,21 +56,39 @@
     </v-list-tile-action>
 
     <v-list-tile-action>
-      <v-btn v-if="value.status === 'idle'" icon>
-        <v-icon color="red" @click="$emit('remove')">close</v-icon>
+      <v-btn
+        v-if="value.status === 'idle'"
+        icon
+      >
+        <v-icon
+          color="red"
+          @click="$emit('remove')"
+        >
+          close
+        </v-icon>
       </v-btn>
-      <v-progress-circular v-else-if="value.status === 'loading'" indeterminate />
-      <v-icon v-else-if="value.status === 'saved'" color="green"> check </v-icon>
-      <v-icon v-else> error_outline </v-icon>
+      <v-progress-circular
+        v-else-if="value.status === 'loading'"
+        indeterminate
+      />
+      <v-icon
+        v-else-if="value.status === 'saved'"
+        color="green"
+      >
+        check
+      </v-icon>
+      <v-icon v-else>
+        error_outline
+      </v-icon>
     </v-list-tile-action>
   </v-list-tile>
 </template>
 
 <script lang=ts>
-import { required } from '/@/util/props';
-import { defineComponent, computed, ref } from '@vue/composition-api';
-import { useI18n } from '/@/hooks';
-import { FilePreview } from './UniversalDropView.vue';
+import { required } from '/@/util/props'
+import { defineComponent, computed, ref } from '@vue/composition-api'
+import { useI18n } from '/@/hooks'
+import { FilePreview } from './UniversalDropView.vue'
 
 const iconMap: Record<string, string> = {
   forge: '$vuetify.icons.package',
@@ -68,38 +98,38 @@ const iconMap: Record<string, string> = {
   'curseforge-modpack': '$vuetify.icons.curseforge',
   modpack: '$vuetify.icons.package',
   save: '$vuetify.icons.zip',
-};
+}
 
 export default defineComponent({
   props: {
     value: required<FilePreview>(Object),
   },
   setup(props) {
-    const { $tc, $t } = useI18n();
-    const disabled = computed(() => props.value.type === 'unknown'
-      || props.value.status !== 'idle');
-  
-    const icon = computed(() => iconMap[props.value.type] ?? 'device_unknown');
+    const { $tc, $t } = useI18n()
+    const disabled = computed(() => props.value.type === 'unknown' ||
+      props.value.status !== 'idle')
+
+    const icon = computed(() => iconMap[props.value.type] ?? 'device_unknown')
     const tryEnable = () => {
       if (!disabled.value) {
-        props.value.enabled = !props.value.enabled;
+        props.value.enabled = !props.value.enabled
       }
-    };
+    }
     const typeName = computed(() => {
       switch (props.value.type) {
-        case 'forge': return 'Forge Mod';
-        case 'fabric': return 'Fabric Mod';
-        case 'resourcepack': return $tc('resourcepack.name', 0);
-        case 'modpack': return $tc('profile.modpack.name', 0);
-        case 'save': return $t('curseforge.worlds.name');
-        case 'curseforge-modpack': return $t('curseforge.modpacks.name');
+        case 'forge': return 'Forge Mod'
+        case 'fabric': return 'Fabric Mod'
+        case 'resourcepack': return $tc('resourcepack.name', 0)
+        case 'modpack': return $tc('profile.modpack.name', 0)
+        case 'save': return $t('curseforge.worlds.name')
+        case 'curseforge-modpack': return $t('curseforge.modpacks.name')
         default:
-        case 'unknown': return $t('unknownResource');
+        case 'unknown': return $t('unknownResource')
       }
-    });
-    return { disabled, tryEnable, icon, typeName };
+    })
+    return { disabled, tryEnable, icon, typeName }
   },
-});
+})
 </script>
 
 <style>

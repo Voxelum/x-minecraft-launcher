@@ -9,7 +9,7 @@
     :disabled="disabled"
     style="background-color: #303030; overflow: hidden;"
   >
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <slot :on="on" />
     </template>
     <v-text-field
@@ -21,9 +21,9 @@
       dark
       hide-details
     >
-      <template v-slot:prepend>
+      <template #prepend>
         <v-tooltip top>
-          <template v-slot:activator="{ on }">
+          <template #activator="{ on }">
             <v-chip
               :color="recommendedAndLatestOnly ? 'green': ''"
               icon
@@ -32,7 +32,9 @@
               style="margin: 0px; height: 48px; border-radius: 0;"
               @click="recommendedAndLatestOnly = !recommendedAndLatestOnly"
             >
-              <v-icon v-on="on">bug_report</v-icon>
+              <v-icon v-on="on">
+                bug_report
+              </v-icon>
             </v-chip>
           </template>
           {{ $t('version.showSnapshot') }}
@@ -51,9 +53,9 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api';
-import { useForgeVersions } from '/@/hooks';
-import { ForgeVersion } from '/@shared/entities/version.schema';
+import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api'
+import { useForgeVersions } from '/@/hooks'
+import { ForgeVersion } from '/@shared/entities/version.schema'
 
 export default defineComponent({
   props: {
@@ -72,31 +74,31 @@ export default defineComponent({
       showBuggy: false,
       recommendedAndLatestOnly: false,
       filterText: '',
-    });
+    })
 
     function filterForge(version: ForgeVersion) {
-      if (data.recommendedAndLatestOnly && version.type !== 'recommended' && version.type !== 'latest') return false;
-      if (data.showBuggy && version.type !== 'buggy') return true;
+      if (data.recommendedAndLatestOnly && version.type !== 'recommended' && version.type !== 'latest') return false
+      if (data.showBuggy && version.type !== 'buggy') return true
       if (data.filterText.length !== 0) {
-        return version.version.indexOf(data.filterText) !== -1;
+        return version.version.indexOf(data.filterText) !== -1
       }
-      return true;
+      return true
     }
-    const { statuses, versions: vers } = useForgeVersions(computed(() => props.minecraft));
-    const versions = computed(() => vers.value.filter(filterForge));
+    const { statuses, versions: vers } = useForgeVersions(computed(() => props.minecraft))
+    const versions = computed(() => vers.value.filter(filterForge))
 
     function selectVersion(item: any) {
-      context.emit('input', item);
-      data.opened = false;
+      context.emit('input', item)
+      data.opened = false
     }
     return {
       ...toRefs(data),
       versions,
       status: statuses,
       select: selectVersion,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

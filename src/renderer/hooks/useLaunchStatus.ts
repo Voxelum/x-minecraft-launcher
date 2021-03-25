@@ -21,14 +21,14 @@ export function useLaunch() {
     status,
     errorType,
     errors,
-    ...useServiceOnly(LaunchServiceKey, 'launch')
+    ...useServiceOnly(LaunchServiceKey, 'launch'),
   }
 }
 
 export function useLaunchPreview() {
   const { generateArguments } = useService(LaunchServiceKey)
   const data = reactive({
-    preview: [] as string[]
+    preview: [] as string[],
   })
   const wrapIfSpace = (s: string) => (s.indexOf(' ') !== -1 ? `"${s}"` : s)
   const refresh = () => generateArguments().then((args) => { data.preview = args })
@@ -36,6 +36,6 @@ export function useLaunchPreview() {
   return {
     command,
     ...toRefs(data),
-    refresh
+    refresh,
   }
 }

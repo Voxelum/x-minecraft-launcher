@@ -17,8 +17,8 @@ Vue.use(Vuetify, {
   theme: {
     primary: colors.green,
     // secondary: colors.green,
-    accent: colors.green.accent3
-  }
+    accent: colors.green.accent3,
+  },
 })
 
 Vue.use(VueI18n)
@@ -32,20 +32,20 @@ const i18n = new VueI18n({
       defaultPath: 'Default Path',
       path: 'Current Path',
       browse: 'Browse',
-      confirm: 'Start'
+      confirm: 'Start',
     },
     'zh-CN': {
       title: '欢迎使用 KeyStone UI。在开始前，需要您先设置游戏数据存储目录',
       defaultPath: '默认位置',
       path: '当前位置',
       browse: '浏览',
-      confirm: '开始'
-    }
+      confirm: '开始',
+    },
   },
   missing: () => {
     // handle translation missing
   },
-  silentTranslationWarn: true
+  silentTranslationWarn: true,
 })
 const vue = new Vue({
   i18n,
@@ -53,7 +53,7 @@ const vue = new Vue({
     provideElectron()
     provide(I18N_KEY, i18n)
     return () => h(Setup)
-  }
+  },
 })
 
 vue.$mount('#app')

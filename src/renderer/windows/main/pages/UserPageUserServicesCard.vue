@@ -63,14 +63,14 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, defineComponent } from '@vue/composition-api';
-import { useStore } from '/@/hooks';
-import StepperUserService from './UserPageUserServiceStepper.vue';
+import { reactive, toRefs, computed, defineComponent } from '@vue/composition-api'
+import { useStore } from '/@/hooks'
+import StepperUserService from './UserPageUserServiceStepper.vue'
 
 interface Service {
-  text: string;
-  value: string;
-  body: any;
+  text: string
+  value: string
+  body: any
 }
 
 export default defineComponent({
@@ -78,7 +78,7 @@ export default defineComponent({
     StepperUserService,
   },
   setup() {
-    const { state, commit } = useStore();
+    const { state, commit } = useStore()
     const data = reactive({
       editingService: -1,
       addingService: false,
@@ -88,18 +88,18 @@ export default defineComponent({
 
       newAuthServiceName: '',
       newAuthServiceHost: '',
-    });
+    })
 
     const services = computed(() => {
-      const keys = [];
+      const keys = []
       for (const k of Object.keys(state.user.authServices)) {
         if (keys.indexOf(k) === -1) {
-          keys.push(k);
+          keys.push(k)
         }
       }
       for (const k of Object.keys(state.user.profileServices)) {
         if (keys.indexOf(k) === -1) {
-          keys.push(k);
+          keys.push(k)
         }
       }
       return keys.map(name => ({
@@ -109,27 +109,27 @@ export default defineComponent({
           ...(state.user.authServices[name] || {}),
           ...(state.user.profileServices[name] || {}),
         },
-      }));
-    });
+      }))
+    })
 
     return {
       ...toRefs(data),
       services,
       remove(s: Service) {
-        commit('authServiceRemove', s.value);
-        commit('profileServiceRemove', s.value);
+        commit('authServiceRemove', s.value)
+        commit('profileServiceRemove', s.value)
       },
       newOrEdit(s?: Service) {
         if (s) {
-          data.loading = s.value;
+          data.loading = s.value
         } else {
-          data.loading = '';
+          data.loading = ''
         }
-        data.addingService = true;
+        data.addingService = true
       },
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

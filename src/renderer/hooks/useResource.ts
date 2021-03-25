@@ -8,7 +8,15 @@ export function useResourceOperation() {
   const { importFile, removeResource } = useServiceOnly(ResourceServiceKey, 'importFile', 'removeResource')
   return {
     removeResource,
-    importResource: importFile
+    importResource: importFile,
+  }
+}
+
+export function useSaveResource() {
+  const { state } = useStore()
+  return {
+    ...useResourceOperation(),
+    resources: computed(() => state.resource.saves),
   }
 }
 
@@ -16,7 +24,7 @@ export function useModResource() {
   const { state } = useStore()
   return {
     ...useResourceOperation(),
-    resources: computed(() => state.resource.mods)
+    resources: computed(() => state.resource.mods),
   }
 }
 
@@ -24,7 +32,7 @@ export function useResourcePackResource() {
   const { state } = useStore()
   return {
     ...useResourceOperation(),
-    resources: computed(() => state.resource.resourcepacks)
+    resources: computed(() => state.resource.resourcepacks),
   }
 }
 

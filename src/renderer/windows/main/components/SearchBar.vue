@@ -15,38 +15,38 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, inject, ref, Ref, nextTick, watch } from '@vue/composition-api';
-import { useSearch, useSearchToggle } from '../hooks';
+import { defineComponent, inject, ref, Ref, nextTick, watch } from '@vue/composition-api'
+import { useSearch, useSearchToggle } from '../hooks'
 
 export default defineComponent({
   setup() {
-    const show = ref(false);
-    const { text } = useSearch();
-    const top = inject('search-top', ref(30));
-    const right = inject('search-right', ref(30));
-    const focused = ref(false);
-    const self: Ref<any> = ref(null);
+    const show = ref(false)
+    const { text } = useSearch()
+    const top = inject('search-top', ref(30))
+    const right = inject('search-right', ref(30))
+    const focused = ref(false)
+    const self: Ref<any> = ref(null)
     function toggleBar(force?: boolean) {
       if (force) {
         if (show.value) {
-          show.value = false;
-          return true;
-        } 
-        return false;
+          show.value = false
+          return true
+        }
+        return false
       }
       if (show.value && !focused.value) {
         nextTick(() => {
-          self.value?.focus();
-        });
-        return true;
-      } 
-      show.value = !show.value;
+          self.value?.focus()
+        })
+        return true
+      }
+      show.value = !show.value
       nextTick(() => {
-        self.value?.focus();
-      });
-      return true;
+        self.value?.focus()
+      })
+      return true
     }
-    useSearchToggle(toggleBar);
+    useSearchToggle(toggleBar)
     return {
       show,
       focused,
@@ -54,9 +54,9 @@ export default defineComponent({
       text,
       top,
       right,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

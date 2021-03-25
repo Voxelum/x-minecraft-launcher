@@ -6,13 +6,13 @@ export function useBlockModelPreview () {
   const { getBlockStates: listBlockStates, loadModel } = useService(ResourcePackPreviewServiceKey)
   return {
     listBlockStates,
-    loadModel
+    loadModel,
   }
 }
 
 export function useBlockStateModels (blockState: Ref<BlockStateJson | undefined>) {
   watch(blockState, () => {
-    const variants: { name: string, value: string, items: string[] }[] = []
+    const variants: { name: string; value: string; items: string[] }[] = []
     if (!blockState.value || !blockState.value.variants) return
     for (const key of Object.keys(blockState.value.variants)) {
       if (key === '') { continue }
@@ -29,12 +29,12 @@ export function useBlockStateModels (blockState: Ref<BlockStateJson | undefined>
     }
     selects.value = variants
   })
-  const selects: Ref<{ name: string, value: string, items: string[] }[]> = ref([])
+  const selects: Ref<{ name: string; value: string; items: string[] }[]> = ref([])
   const selectedKey = computed(() => selects.value.map(({ name, value }) => `${name}=${value}`).join(','))
   const selected = computed(() => blockState.value?.variants?.[selectedKey.value])
 
   return {
     selects,
-    selected
+    selected,
   }
 }

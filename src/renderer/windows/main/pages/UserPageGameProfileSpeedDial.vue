@@ -3,7 +3,7 @@
     :close-delay="0"
     left
   >
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <v-fab-transition>
         <v-btn
           v-if="visibled"
@@ -37,8 +37,8 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs } from '@vue/composition-api';
-import { useI18n } from '/@/hooks';
+import { defineComponent, reactive, toRefs } from '@vue/composition-api'
+import { useI18n } from '/@/hooks'
 
 export default defineComponent({
   props: {
@@ -46,25 +46,25 @@ export default defineComponent({
     deleting: Boolean,
   },
   setup() {
-    const { $t } = useI18n();
+    const { $t } = useI18n()
     const data = reactive({
       fab: false,
       hoverTextOnEdit: '',
-    });
+    })
     return {
       ...toRefs(data),
       enterEditBtn() {
-        data.hoverTextOnEdit = $t('user.skinImportFile');
+        data.hoverTextOnEdit = $t('user.skinImportFile')
       },
       enterLinkBtn() {
-        data.hoverTextOnEdit = $t('user.skinImportLink');
+        data.hoverTextOnEdit = $t('user.skinImportLink')
       },
       enterSaveBtn() {
-        data.hoverTextOnEdit = $t('user.skinSave');
+        data.hoverTextOnEdit = $t('user.skinSave')
       },
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

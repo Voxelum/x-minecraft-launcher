@@ -22,14 +22,18 @@
           flat
           @click="showCopyFromDialog"
         >
-          <v-icon left>input</v-icon>
+          <v-icon left>
+            input
+          </v-icon>
           {{ $t('save.copyFrom.title') }}
         </v-btn>
         <v-btn
           flat
           @click="doImport"
         >
-          <v-icon left>move_to_inbox</v-icon>
+          <v-icon left>
+            move_to_inbox
+          </v-icon>
           {{ $t('save.import') }}
         </v-btn>
       </v-toolbar>
@@ -85,7 +89,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from '@vue/composition-api';
+import { defineComponent, computed, ref } from '@vue/composition-api'
 import {
   useInstanceSaves,
   useNativeDialog,
@@ -93,12 +97,12 @@ import {
   useInstances,
   useOperation,
   useDrop,
-} from '/@/hooks';
-import SaveViewPageCopyFromDialog from './SaveViewPageCopyFromDialog.vue';
-import SaveViewPageCopyToDialog from './SaveViewPageCopyToDialog.vue';
-import SaveViewPageDeleteDialog from './SaveViewPageDeleteDialog.vue';
-import SaveViewPagePreviewCard from './SaveViewPagePreviewCard.vue';
-import SaveViewPageFloatButton from './SaveViewPageFloatButton.vue';
+} from '/@/hooks'
+import SaveViewPageCopyFromDialog from './SaveViewPageCopyFromDialog.vue'
+import SaveViewPageCopyToDialog from './SaveViewPageCopyToDialog.vue'
+import SaveViewPageDeleteDialog from './SaveViewPageDeleteDialog.vue'
+import SaveViewPagePreviewCard from './SaveViewPagePreviewCard.vue'
+import SaveViewPageFloatButton from './SaveViewPageFloatButton.vue'
 
 export default defineComponent({
   components: {
@@ -109,32 +113,32 @@ export default defineComponent({
     SaveViewPageFloatButton,
   },
   setup() {
-    const { saves, deleteSave, importSave, exportSave, cloneSave: copySave } = useInstanceSaves();
-    const { instances } = useInstances();
-    const { showSaveDialog, showOpenDialog } = useNativeDialog();
-    const { $t } = useI18n();
+    const { saves, deleteSave, importSave, exportSave, cloneSave: copySave } = useInstanceSaves()
+    const { instances } = useInstances()
+    const { showSaveDialog, showOpenDialog } = useNativeDialog()
+    const { $t } = useI18n()
     const {
       data: deleting,
       operate: doDelete,
       begin: startDelete,
       cancel: cancelDelete,
-    } = useOperation('', (save) => deleteSave({ saveName: save }));
+    } = useOperation('', (save) => deleteSave({ saveName: save }))
     const {
       data: copying,
       begin: startCopy,
       operate: doCopy,
       cancel: cancelCopy,
     } = useOperation<string, string[]>('', (save, instances) => {
-      copySave({ saveName: save, destInstancePath: instances });
-    });
-    const dragging = ref(false);
-    const { onDrop } = useDrop((file) => importSave({ source: file.path }));
-    const isCopyFromDialogShown = ref(false);
+      copySave({ saveName: save, destInstancePath: instances })
+    })
+    const dragging = ref(false)
+    const { onDrop } = useDrop((file) => importSave({ source: file.path }))
+    const isCopyFromDialogShown = ref(false)
     function onDropSave(e: DragEvent) {
-      if (!e.dataTransfer) return;
-      if (e.dataTransfer.files.length === 0) return;
+      if (!e.dataTransfer) return
+      if (e.dataTransfer.files.length === 0) return
       for (let i = 0; i < e.dataTransfer.files.length; ++i) {
-        importSave({ source: e.dataTransfer.files.item(i)!.path });
+        importSave({ source: e.dataTransfer.files.item(i)!.path })
       }
     }
 
@@ -143,7 +147,7 @@ export default defineComponent({
       instances: computed(() => instances.value.map(i => i.path)),
 
       isCopyFromDialogShown,
-      showCopyFromDialog() { isCopyFromDialogShown.value = true; },
+      showCopyFromDialog() { isCopyFromDialogShown.value = true },
 
       onDrop,
 
@@ -166,9 +170,9 @@ export default defineComponent({
           title: $t('save.importTitle'),
           message: $t('save.importMessage'),
           filters: [{ extensions: ['zip'], name: 'zip' }],
-        });
+        })
         for (const file of filePaths) {
-          importSave({ source: file });
+          importSave({ source: file })
         }
       },
       async doExport(name: string) {
@@ -177,14 +181,14 @@ export default defineComponent({
           message: $t('save.exportMessage'),
           filters: [{ extensions: ['zip'], name: 'zip' }],
           defaultPath: `${name}.zip`,
-        });
+        })
         if (filePath) {
-          exportSave({ destination: filePath, zip: true, saveName: name });
+          exportSave({ destination: filePath, zip: true, saveName: name })
         }
       },
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

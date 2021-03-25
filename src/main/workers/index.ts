@@ -15,10 +15,10 @@ const handlers: CPUWorker = {
   fileType: (m) => fileType(m.path),
   checksum: (m: ChecksumWorkPayload) => checksum(m.path, m.algorithm),
   checksumAndFileType: (m: ChecksumWorkPayload) => checksumAndFileType(m.path, m.algorithm),
-  resolveResource: (m: ResolveResourceWorkPayload) => resolveResource(m.path, m.fileType, m.sha1, m.stat, m.hint)
+  resolveResource: (m: ResolveResourceWorkPayload) => resolveResource(m.path, m.fileType, m.sha1, m.stat, m.hint),
 }
 
-async function checksumAndFileType(path: string, algorithm: string): Promise<[string, FileExtension | 'unknown']> {
+async function checksumAndFileType(path: string, algorithm: string): Promise<[string, FileExtension | 'unknown' ]> {
   const readStream = await stream(createReadStream(path))
   const hashStream = createHash(algorithm).setEncoding('hex')
   await pipeline(readStream, hashStream)

@@ -195,12 +195,14 @@
         dark
       >
         <v-card-title>
-          <h2 style="display: block; min-width: 100%">{{ $t('setting.setRootTitle') }}</h2>
+          <h2 style="display: block; min-width: 100%">
+            {{ $t('setting.setRootTitle') }}
+          </h2>
           <v-text-field
             :value="rootLocation"
             readonly
             hide-details
-          ></v-text-field>
+          />
         </v-card-title>
         <v-card-text>
           <p>{{ $t('setting.setRootDescription') }}</p>
@@ -234,7 +236,11 @@
         </v-card-title>
         <v-spacer />
         <div style="display: flex;width: 100; justify-content: center">
-          <v-progress-circular :size="100" color="white" indeterminate />
+          <v-progress-circular
+            :size="100"
+            color="white"
+            indeterminate
+          />
         </div>
       </v-card>
       <v-card
@@ -242,12 +248,20 @@
         dark
       >
         <v-card-title>
-          <h2 v-if="migrateError">{{ $t('setting.migrateFailed') }}</h2>
-          <h2 v-else-if="!cleaningMigration">{{ $t('setting.migrateSuccess') }}</h2>
-          <h2 v-else>{{ $t('setting.postMigrating') }}</h2>
+          <h2 v-if="migrateError">
+            {{ $t('setting.migrateFailed') }}
+          </h2>
+          <h2 v-else-if="!cleaningMigration">
+            {{ $t('setting.migrateSuccess') }}
+          </h2>
+          <h2 v-else>
+            {{ $t('setting.postMigrating') }}
+          </h2>
         </v-card-title>
         <v-spacer />
-        <v-card-text v-if="migrateError">{{ migrateError }}</v-card-text>
+        <v-card-text v-if="migrateError">
+          {{ migrateError }}
+        </v-card-text>
         <v-divider />
         <v-card-actions v-if="!migrateError">
           <v-checkbox
@@ -276,24 +290,24 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api';
-import UpdateInfoDialog from './SettingPageUpdateInfoDialog.vue';
-import localMapping from '/@/assets/locales/index.json';
-import { useBackgroundBlur, useI18n, useLauncherVersion, useNativeDialog, useParticle, useService, useSettings, useStore } from '/@/hooks';
+import { defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
+import UpdateInfoDialog from './SettingPageUpdateInfoDialog.vue'
+import localMapping from '/@/assets/locales/index.json'
+import { useBackgroundBlur, useI18n, useLauncherVersion, useNativeDialog, useParticle, useService, useSettings, useStore } from '/@/hooks'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export default defineComponent({
   components: { UpdateInfoDialog },
   setup() {
-    const dialog = useNativeDialog();
-    const { showParticle, particleMode } = useParticle();
-    const { blurMainBody } = useBackgroundBlur();
-    const { migrate, postMigrate } = useService('BaseService');
-    const { state } = useStore();
-    const settings = useSettings();
-    const { $t } = useI18n();
-    const { openDirectory } = useService('BaseService');
+    const dialog = useNativeDialog()
+    const { showParticle, particleMode } = useParticle()
+    const { blurMainBody } = useBackgroundBlur()
+    const { migrate, postMigrate, openDirectory } = useService(BaseServiceKey)
+    const { state } = useStore()
+    const settings = useSettings()
+    const { $t } = useI18n()
     const data = reactive({
-      rootLocation: state.root,
+      rootLocation: state.base.root,
 
       clearData: false,
       migrateData: false,
@@ -305,13 +319,13 @@ export default defineComponent({
       migrateError: undefined as undefined | Error,
 
       viewingUpdateDetail: false,
-    });
+    })
 
-    const { version, build } = useLauncherVersion();
-    const particleModes: Ref<{ value: string; text: string }[]> = ref(['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) })));
+    const { version, build } = useLauncherVersion()
+    const particleModes: Ref<{ value: string; text: string }[]> = ref(['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) })))
     watch(settings.selectedLocale, () => {
-      particleModes.value = ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) }));
-    });
+      particleModes.value = ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) }))
+    })
     return {
       ...toRefs(data),
       ...settings,
@@ -323,48 +337,48 @@ export default defineComponent({
       blurMainBody,
       particleModes,
       viewUpdateDetail() {
-        data.viewingUpdateDetail = true;
+        data.viewingUpdateDetail = true
       },
       showRootDir() {
-        openDirectory(data.rootLocation);
+        openDirectory(data.rootLocation)
       },
       async browseRootDir() {
         const { filePaths } = await dialog.showOpenDialog({
           title: $t('setting.selectRootDirectory'),
           defaultPath: data.rootLocation,
           properties: ['openDirectory', 'createDirectory'],
-        });
+        })
         if (filePaths && filePaths.length !== 0) {
-          data.rootLocation = filePaths[0];
-          data.migrateDialog = true;
+          data.rootLocation = filePaths[0]
+          data.migrateDialog = true
         }
       },
       doCancelApplyRoot() {
-        data.migrateDialog = false;
-        data.rootLocation = state.root;
+        data.migrateDialog = false
+        data.rootLocation = state.base.root
       },
       doApplyRoot() {
-        data.migrateState = 1;
+        data.migrateState = 1
         migrate({ destination: data.rootLocation })
           .catch((e) => {
-            data.migrateError = e;
+            data.migrateError = e
           })
           .finally(() => {
-            data.migrateState = 2;
-          });
+            data.migrateState = 2
+          })
       },
       postMigrate() {
         if (data.clearData) {
-          data.cleaningMigration = true;
+          data.cleaningMigration = true
           postMigrate().finally(() => {
-            data.migrateDialog = false;
-            data.cleaningMigration = false;
-          });
+            data.migrateDialog = false
+            data.cleaningMigration = false
+          })
         } else {
-          data.migrateDialog = false;
+          data.migrateDialog = false
         }
       },
-    };
+    }
   },
-});
+})
 </script>

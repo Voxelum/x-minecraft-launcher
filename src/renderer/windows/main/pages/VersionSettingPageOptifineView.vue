@@ -21,10 +21,10 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api';
-import { useOptifineVersions } from '/@/hooks';
-import { required } from '/@/util/props';
-import { OptifineVersion } from '/@shared/entities/version.schema';
+import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api'
+import { useOptifineVersions } from '/@/hooks'
+import { required } from '/@/util/props'
+import { OptifineVersion } from '/@shared/entities/version.schema'
 
 export default defineComponent({
   props: {
@@ -34,7 +34,7 @@ export default defineComponent({
     version: required<OptifineVersion>(Object),
   },
   setup(props) {
-    const { versions } = useOptifineVersions(computed(() => props.minecraft));
+    const { versions } = useOptifineVersions(computed(() => props.minecraft))
     // const loaderVersions = computed(() => lv.value.filter((v) => {
     //   if (data.showStableOnly && !v.stable) {
     //     return false;
@@ -55,9 +55,9 @@ export default defineComponent({
 
     return {
       versions,
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped=true>

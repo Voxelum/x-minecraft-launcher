@@ -2,9 +2,9 @@ import { computed, inject, InjectionKey, provide, Ref, ref } from '@vue/composit
 import { useI18n } from '/@/hooks'
 
 export type DialogNames = 'task' | 'java-wizard' | 'login' | 'detail' | ''
-    | 'user-service'
-    | 'log' | 'feedback'
-    | 'launch-status' | 'launch-blocked';
+| 'user-service'
+| 'log' | 'feedback'
+| 'launch-status' | 'launch-blocked'
 
 export const DIALOG_SYMBOL: InjectionKey<Ref<DialogNames>> = Symbol('ShowingDialog')
 export const DIALOG_LOGIN_SWITCH_USER: InjectionKey<Ref<boolean>> = Symbol('SwitchingUser')
@@ -14,7 +14,7 @@ export function useZipFilter () {
   const { $t } = useI18n()
   const zipFilter: Electron.FileFilter = {
     extensions: ['zip'],
-    name: $t('zip')
+    name: $t('zip'),
   }
   return zipFilter
 }
@@ -33,7 +33,7 @@ export function useDialog (dialogName: DialogNames = '') {
   if (!shownDialog) throw new Error('This should not happened')
   const isShown = computed({
     get: () => shownDialog.value === dialogName,
-    set: (v: boolean) => { shownDialog.value = v ? dialogName : '' }
+    set: (v: boolean) => { shownDialog.value = v ? dialogName : '' },
   })
   function hide () {
     if (shownDialog.value === dialogName) {
@@ -49,7 +49,7 @@ export function useDialog (dialogName: DialogNames = '') {
     dialog: shownDialog,
     show,
     hide,
-    isShown
+    isShown,
   }
 }
 
@@ -59,7 +59,7 @@ export function useSingleDialog (isShown = ref(false)) {
   return {
     isShown,
     show,
-    hide
+    hide,
   }
 }
 

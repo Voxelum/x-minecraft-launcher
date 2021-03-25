@@ -1,25 +1,25 @@
-import { Exception } from '/@shared/entities/exception'
 import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder, Version } from '@xmcl/core'
 import { ChildProcess } from 'child_process'
 import { EOL } from 'os'
+import LauncherApp from '../app/LauncherApp'
 import DiagnoseService from './DiagnoseService'
 import ExternalAuthSkinService from './ExternalAuthSkinService'
 import InstanceResourceService from './InstanceResourceService'
-import AbstractService, { Service } from './Service'
-import LauncherApp from '../app/LauncherApp'
-import { LaunchServiceKey, LaunchService as ILaunchService } from '/@shared/services/LaunchService'
+import AbstractService, { ExportService, Inject } from './Service'
+import { Exception } from '/@shared/entities/exception'
+import { LaunchService as ILaunchService, LaunchServiceKey } from '/@shared/services/LaunchService'
 
-@Service(LaunchServiceKey)
+@ExportService(LaunchServiceKey)
 export default class LaunchService extends AbstractService implements ILaunchService {
   constructor(app: LauncherApp,
-    private diagnoseService: DiagnoseService,
-    private externalAuthSkinService: ExternalAuthSkinService,
-    private instanceResourceService: InstanceResourceService
+    @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
+    @Inject(ExternalAuthSkinService) private externalAuthSkinService: ExternalAuthSkinService,
+    @Inject(InstanceResourceService) private instanceResourceService: InstanceResourceService,
   ) {
     super(app)
   }
 
-  private launchedProcess: ChildProcess | undefined;
+  private launchedProcess: ChildProcess | undefined
 
   async generateArguments() {
     const instance = this.getters.instance
@@ -44,21 +44,21 @@ export default class LaunchService extends AbstractService implements ILaunchSer
       accessToken: user.accessToken,
       properties: {},
       gamePath: minecraftFolder.root,
-      resourcePath: this.state.root,
+      resourcePath: this.getPath(),
       javaPath,
       minMemory: instance.minMemory && instance.minMemory > 0 ? instance.minMemory : undefined,
       maxMemory: instance.maxMemory && instance.maxMemory > 0 ? instance.maxMemory : undefined,
       version,
       extraExecOption: {
         detached: true,
-        cwd: minecraftFolder.root
+        cwd: minecraftFolder.root,
       },
       extraJVMArgs: instance.vmOptions,
       extraMCArgs: instance.mcOptions,
       yggdrasilAgent: useAuthLib ? {
         jar: await this.externalAuthSkinService.installAuthlibInjection(),
-        server: this.getters.authService.hostName
-      } : undefined
+        server: this.getters.authService.hostName,
+      } : undefined,
     }
 
     return generateArguments(option)
@@ -126,28 +126,28 @@ export default class LaunchService extends AbstractService implements ILaunchSer
         accessToken: user.accessToken,
         properties: {},
         gamePath: minecraftFolder.root,
-        resourcePath: this.state.root,
+        resourcePath: this.getPath(),
         javaPath,
         minMemory: instance.minMemory > 0 ? instance.minMemory : undefined,
         maxMemory: instance.maxMemory > 0 ? instance.maxMemory : undefined,
         version,
         extraExecOption: {
           detached: true,
-          cwd: minecraftFolder.root
+          cwd: minecraftFolder.root,
         },
         extraJVMArgs: instance.vmOptions,
         extraMCArgs: instance.mcOptions,
         yggdrasilAgent: useAuthLib ? {
           jar: await this.externalAuthSkinService.installAuthlibInjection(),
-          server: this.getters.authService.hostName
-        } : undefined
+          server: this.getters.authService.hostName,
+        } : undefined,
       }
 
       if ('server' in instance && instance.server?.host) {
         this.log('Launching a server')
         option.server = {
           ip: instance.server?.host,
-          port: instance.server?.port
+          port: instance.server?.port,
         }
       }
 
@@ -163,7 +163,7 @@ export default class LaunchService extends AbstractService implements ILaunchSer
         version: version.id,
         minecraft: version.minecraftVersion,
         forge: instance.runtime.forge ?? '',
-        fabricLoader: instance.runtime.fabricLoader ?? ''
+        fabricLoader: instance.runtime.fabricLoader ?? '',
       })
       const watcher = createMinecraftProcessWatcher(process)
       const errorLogs = [] as string[]
@@ -184,7 +184,7 @@ export default class LaunchService extends AbstractService implements ILaunchSer
           signal,
           crashReport,
           crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
-          errorLog: errorLogs.join('\n')
+          errorLog: errorLogs.join('\n'),
         })
         this.commit('launchStatus', 'ready')
         this.launchedProcess = undefined

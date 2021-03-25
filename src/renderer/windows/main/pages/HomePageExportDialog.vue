@@ -10,8 +10,12 @@
         tabs
         color="green darken"
       >
-        <v-toolbar-title v-if="isCurseforge">{{ $t('profile.modpack.exportCurseforge') }}</v-toolbar-title>
-        <v-toolbar-title v-else>{{ $t('profile.modpack.export') }}</v-toolbar-title>
+        <v-toolbar-title v-if="isCurseforge">
+          {{ $t('profile.modpack.exportCurseforge') }}
+        </v-toolbar-title>
+        <v-toolbar-title v-else>
+          {{ $t('profile.modpack.export') }}
+        </v-toolbar-title>
 
         <v-spacer />
         <v-btn
@@ -103,8 +107,12 @@
         </v-container>
 
         <v-layout>
-          <v-subheader v-if="isCurseforge">{{ $t('profile.modpack.overrides') }}</v-subheader>
-          <v-subheader v-else>{{ $t('profile.modpack.includes') }}</v-subheader>
+          <v-subheader v-if="isCurseforge">
+            {{ $t('profile.modpack.overrides') }}
+          </v-subheader>
+          <v-subheader v-else>
+            {{ $t('profile.modpack.includes') }}
+          </v-subheader>
         </v-layout>
         <v-layout
           row
@@ -123,7 +131,7 @@
           >
             {{ $t('cancel') }}
           </v-btn>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-btn
             flat
             color="primary"
@@ -139,23 +147,23 @@
 </template>
 
 <script lang=ts>
-import { InstanceFile } from '/@main/service/InstanceIOService'
 import { computed, defineComponent, nextTick, reactive, toRefs, watch } from '@vue/composition-api'
 import { useZipFilter } from '../hooks'
-import ExportLocalVersionList from './HomePageExportLocalVersionList.vue'
 import InstanceFiles from './HomePageInstanceFiles.vue'
 import { useI18n, useInstance, useInstanceVersion, useLocalVersions, useNativeDialog, useService } from '/@/hooks'
+import { InstanceCurseforgeIOServiceKey } from '/@shared/services/InstanceCurseforgeIOServic'
+import { InstanceFile, InstanceIOServiceKey } from '/@shared/services/InstanceIOService'
 
 export default defineComponent({
-  components: { InstanceFiles, ExportLocalVersionList },
+  components: { InstanceFiles },
   props: {
     value: Boolean,
     isCurseforge: Boolean,
   },
   setup(props, context) {
     const { name, author } = useInstance()
-    const { getInstanceFiles, exportInstance } = useService('InstanceIOService')
-    const { exportCurseforgeModpack } = useService('InstanceCurseforgeIOService')
+    const { getInstanceFiles, exportInstance } = useService(InstanceIOServiceKey)
+    const { exportCurseforgeModpack } = useService(InstanceCurseforgeIOServiceKey)
     const { showSaveDialog } = useNativeDialog()
     const { localVersions } = useLocalVersions()
     const { folder } = useInstanceVersion()
@@ -221,8 +229,8 @@ export default defineComponent({
           }
         } else {
           const files = data.selected.filter(p => !!data.files.find(f => f.path === p && !f.isDirectory))
-          await exportInstance({ 
-            destinationPath: filePath, 
+          await exportInstance({
+            destinationPath: filePath,
             includeLibraries: data.includeLibraries,
             includeAssets: data.includeAssets,
             files,
@@ -239,7 +247,7 @@ export default defineComponent({
       }
     })
     return {
-      localVersions: computed(() => localVersions.value.map((v) => v.folder)),
+      localVersions: computed(() => localVersions.value.map((v) => v.id)),
       ...toRefs(data),
       cancel,
       confirm,

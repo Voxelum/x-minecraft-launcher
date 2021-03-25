@@ -28,8 +28,8 @@
                 </v-icon>
               </v-list-tile-avatar>
               <v-list-tile-content>
-                <v-list-tile-title v-html="item.title"></v-list-tile-title>
-                <v-list-tile-sub-title v-html="item.body"></v-list-tile-sub-title>
+                <v-list-tile-title v-html="item.title" />
+                <v-list-tile-sub-title v-html="item.body" />
               </v-list-tile-content>
             </v-list-tile>
           </template>
@@ -40,14 +40,14 @@
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api';
-import { useNotificationQueue, LocalNotification } from '../hooks';
+import { defineComponent } from '@vue/composition-api'
+import { useNotificationQueue, LocalNotification } from '../hooks'
 
 export default defineComponent({
   setup() {
-    const queue = useNotificationQueue();
+    const queue = useNotificationQueue()
     function onClick(not: LocalNotification) {
-      queue.value = queue.value.filter(q => q !== not);
+      queue.value = queue.value.filter(q => q !== not)
     }
     return {
       queue,
@@ -64,9 +64,9 @@ export default defineComponent({
         warning: 'orange',
       },
       onClick,
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped=true>

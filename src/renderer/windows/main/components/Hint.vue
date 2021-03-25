@@ -1,5 +1,8 @@
 <template>
-  <v-container :class="{ 'absoluted': absolute }" @click="$emit('click', $event)">
+  <v-container
+    :class="{ 'absoluted': absolute }"
+    @click="$emit('click', $event)"
+  >
     <v-layout
       align-center
       justify-center
@@ -39,7 +42,7 @@
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent } from '@vue/composition-api'
 
 export default defineComponent({
   props: {
@@ -64,7 +67,7 @@ export default defineComponent({
       default: false,
     },
   },
-});
+})
 </script>
 
 <style>

@@ -1,25 +1,53 @@
 import { Task } from '@xmcl/task'
 import { join } from 'path'
+import 'reflect-metadata'
 import LauncherApp from '/@main/app/LauncherApp'
 import { WaitingQueue } from '/@main/util/mutex'
 import { Exceptions } from '/@shared/entities/exception'
-import { MutationKeys, RootCommit, RootGetters, RootState } from '/@shared/store'
-import 'reflect-metadata'
 import { ServiceKey } from '/@shared/services/Service'
+import { MutationKeys, RootCommit, RootGetters, RootState } from '/@shared/store'
 
 export const PURE_SYMBOL = Symbol('__pure__')
 
 export type ServiceConstructor<T extends AbstractService = any> = {
-  new(...args: any[]): T;
+  new(...args: any[]): T
 }
 
-export const registeredServices: ServiceConstructor[] = []
+export function Inject<T extends AbstractService>(con: ServiceConstructor<T>) {
+  return (target: object, key: string, index: number) => {
+    if (Reflect.hasMetadata('service:params', target)) {
+      // console.log(`Inject ${key} ${index} <- ${target}`)
+      Reflect.getMetadata('service:params', target)[index] = con
+    } else {
+      const arr: any[] = []
+      Reflect.defineMetadata('service:params', arr, target)
+      arr[index] = con
+    }
+  }
+}
 
-export function Service<T extends AbstractService>(key: ServiceKey<T>) {
+/**
+ * Export a service .
+ * @param key The service key representing it
+ */
+export function ExportService<T extends AbstractService>(key: ServiceKey<T>) {
   return (target: ServiceConstructor<T>) => {
     Reflect.defineMetadata('service:key', key, target)
-    registeredServices.push(target)
   }
+}
+
+/**
+ * Mark a service method is internal and should not be called by renderer process remotely.
+ */
+export function internal(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  let internal: string[]
+  if (Reflect.hasMetadata('service:internal', target)) {
+    internal = Reflect.getMetadata('service:internal', target)
+  } else {
+    internal = []
+    Reflect.defineMetadata('service:internal', internal, target)
+  }
+  internal.push(propertyKey)
 }
 
 /**
@@ -31,16 +59,20 @@ export function Subscribe(...keys: MutationKeys[]) {
     if (!keys || keys.length === 0) {
       throw new Error('Must listen at least one mutation!')
     } else {
-      target.app.storeManager.subscribeAll(keys, descriptor.value)
+      if (!Reflect.hasMetadata('service:subscribe', target)) {
+        Reflect.defineMetadata('service:subscribe', [], target)
+      }
+      const sub = Reflect.getMetadata('service:subscribe', target) as any[]
+      sub.push({ mutations: keys, handler: descriptor.value })
     }
   }
 }
 
-export type KeySerializer = (this: AbstractService, ...params: any[]) => string;
+export type KeySerializer = (this: AbstractService, ...params: any[]) => string
 
 export enum Policy {
   Skip = 'skip',
-  Wait = 'wait'
+  Wait = 'wait',
 }
 
 const runningSingleton: Record<string, Promise<any>> = {}
@@ -145,7 +177,7 @@ export class ServiceException extends Error {
  * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied
  */
 export default abstract class AbstractService {
-  readonly name: string;
+  readonly name: string
 
   constructor(readonly app: LauncherApp) {
     this.name = Object.getPrototypeOf(this).constructor.name
@@ -164,8 +196,6 @@ export default abstract class AbstractService {
   get credentialManager() { return this.app.credentialManager }
 
   get workerManager() { return this.app.workerManager }
-
-  get persistManager() { return this.app.persistManager }
 
   /**
    * Submit a task into the task manager.
@@ -203,22 +233,22 @@ export default abstract class AbstractService {
   /**
    * Return the path under the config root
    */
-  protected getAppDataPath: (...args: string[]) => string = (...args) => join(this.app.appDataPath, ...args);
+  protected getAppDataPath: (...args: string[]) => string = (...args) => join(this.app.appDataPath, ...args)
 
   /**
    * Return the path under the temp root
    */
-  protected getTempPath: (...args: string[]) => string = (...args) => join(this.app.temporaryPath, ...args);
+  protected getTempPath: (...args: string[]) => string = (...args) => join(this.app.temporaryPath, ...args)
 
   /**
    * Return the path under game libraries/assets root
    */
-  protected getPath: (...args: string[]) => string = (...args) => join(this.app.gameDataPath, ...args);
+  protected getPath: (...args: string[]) => string = (...args) => join(this.app.gameDataPath, ...args)
 
   /**
    * Return the path under .minecraft folder
    */
-  protected getMinecraftPath: (...args: string[]) => string = (...args) => join(this.app.minecraftDataPath, ...args);
+  protected getMinecraftPath: (...args: string[]) => string = (...args) => join(this.app.minecraftDataPath, ...args)
 
   /**
    * The path of .minecraft

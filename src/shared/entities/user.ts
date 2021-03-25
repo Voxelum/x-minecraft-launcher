@@ -1,8 +1,8 @@
 import { GameProfileAndTexture, UserProfile } from './user.schema'
 
 export interface UserGameProfile extends Omit<UserProfile, 'profiles'>, GameProfileAndTexture {
-    userId: string;
-    id: string;
+  userId: string
+  id: string
 }
 
 export const EMPTY_USER = Object.freeze({ id: '', username: '', profileService: '', authService: '', accessToken: '', profiles: [], properties: {} })
@@ -12,65 +12,65 @@ export const EMPTY_GAME_PROFILE = Object.freeze({ id: '', name: '', textures: { 
  * Minecraft new .minecraft/launcher_accounts.json
  */
 export interface LauncherAccountsJsonSchema {
-    /**
+  /**
      * All accounts dictionary
      */
-    accounts: {
-        [localId: string]: {
-            accessToken: string;
-            /**
+  accounts: {
+    [localId: string]: {
+      accessToken: string
+      /**
              * Date string like 2020-12-10T09:54:52Z
              */
-            accessTokenExpiresAt: string;
-            /**
+      accessTokenExpiresAt: string
+      /**
              * Avatar url, can be data uri
              */
-            avatar?: string;
+      avatar?: string
 
-            eligibleForMigration: boolean;
-            hasMultipleProfiles: boolean;
-            legacy: boolean;
+      eligibleForMigration: boolean
+      hasMultipleProfiles: boolean
+      legacy: boolean
 
-            /**
+      /**
              * uuid mapping to this from `accounts` object
              */
-            localId: string;
+      localId: string
 
-            /**
+      /**
              * Only present in a mojang account
              */
-            minecraftProfile?: {
-                /**
+      minecraftProfile?: {
+        /**
                  * user profile id
                  */
-                id: string;
-                /**
+        id: string
+        /**
                  * user display name
                  */
-                name: string;
-            };
+        name: string
+      }
 
-            persistent: boolean;
-            /**
+      persistent: boolean
+      /**
              * - For legacy mojang account. This is the account uuid.
              * - For xbox, not very sure its usage
              */
-            remoteId: string;
-            type: 'Mojang' | 'Xbox';
-            userProperites: any[];
-            /**
+      remoteId: string
+      type: 'Mojang' | 'Xbox'
+      userProperites: any[]
+      /**
              * - For Xbox account, this should also be the user display name.
              * - For legacy mojang account, this should be the email.
              */
-            username: string;
-        };
-    };
-    /**
+      username: string
+    }
+  }
+  /**
      * The active account local id
      */
-    activeAccountLocalId: string;
-    /**
+  activeAccountLocalId: string
+  /**
      * The client token
      */
-    mojangClientToken: string;
+  mojangClientToken: string
 }

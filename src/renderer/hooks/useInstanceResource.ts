@@ -1,40 +1,41 @@
 import unknownPack from '/@/assets/unknown_pack.png'
 import { basename } from '/@/util/basename'
-import { isResourcePackResource, PersistedResource } from '/@shared/entities/resource'
+import { AnyResource, isPersistedResource, isResourcePackResource, PersistedResource } from '/@shared/entities/resource'
 import { computed, onMounted, ref, Ref, watch } from '@vue/composition-api'
 import { PackMeta } from '@xmcl/resourcepack'
 import { useService, useStore } from '.'
 import { useBusy } from './useSemaphore'
 import { InstanceGameSettingServiceKey } from '/@shared/services/InstanceGameSettingService'
+import { Resource } from '/@shared/entities/resource.schema'
 
 export interface ResourcePackItem extends PackMeta.Pack {
   /**
    * The resource pack file path
    */
-  path: string;
+  path: string
   /**
    * The display name of the resource pack
    */
-  name: string;
+  name: string
   /**
    * The id in resourcepack array in gamesetting file
    */
-  id: string;
+  id: string
   /**
    * The url of the resourcepack
    */
-  url: string[];
-  acceptingRange: string;
+  url: string[]
+  acceptingRange: string
   /**
    * Icon url
    */
-  icon: string;
+  icon: string
 
   /**
    * The resource associate with the resourcepack item.
    * If it's undefined. Then this resource cannot be found.
    */
-  resource?: PersistedResource<PackMeta.Pack>;
+  resource?: AnyResource
 }
 
 /**
@@ -76,11 +77,11 @@ export function useInstanceResourcePacks() {
   function getResourcepackFormat(meta: any) {
     return meta ? meta.format ?? meta.pack_format : 3
   }
-  function getResourcePackItem(resource: PersistedResource<PackMeta.Pack>): ResourcePackItem {
-    const icon = `${state.root}/${resource.location}.png`
+  function getResourcePackItem(resource: Resource<PackMeta.Pack>): ResourcePackItem {
+    const icon = isPersistedResource(resource) ? `dataroot:///${resource.location}.png` : ''
     return {
       path: resource.path,
-      name: basename(resource.path),
+      name: resource.name,
       id: `file/${basename(resource.path)}`,
       url: resource.uri,
       pack_format: resource.metadata.pack_format,
@@ -88,10 +89,10 @@ export function useInstanceResourcePacks() {
       acceptingRange: getters.getAcceptMinecraftRangeByFormat(getResourcepackFormat(resource.metadata)),
       icon,
 
-      resource: Object.freeze(resource)
+      resource: Object.freeze(resource),
     }
   }
-  function getResourcePackItemFromInstanceResource(resource: Resources): ResourcePackItem {
+  function getResourcePackItemFromInstanceResource(resource: AnyResource): ResourcePackItem {
     if (resource && isResourcePackResource(resource)) {
       return getResourcePackItem(resource)
     }
@@ -105,7 +106,7 @@ export function useInstanceResourcePacks() {
       acceptingRange: '[*]',
       icon: unknownPack,
 
-      resource: Object.freeze(resource)
+      resource: Object.freeze(resource),
     }
   }
   function getResourcePackItemFromGameSettingName(resourcePackName: string): ResourcePackItem {
@@ -118,7 +119,7 @@ export function useInstanceResourcePacks() {
         description: 'The default look and feel of Minecraft',
         pack_format: 0,
         id: 'vanilla',
-        url: []
+        url: [],
       }
     }
     const foundedItem = storage.value.find((p) => p.id === resourcePackName || p.id === `file/${resourcePackName}`)
@@ -134,7 +135,7 @@ export function useInstanceResourcePacks() {
       description: '',
       pack_format: -1,
       id: resourcePackName.startsWith('file') ? resourcePackName : `file/${resourcePackName}`,
-      url: []
+      url: [],
     }
   }
 
@@ -206,6 +207,6 @@ export function useInstanceResourcePacks() {
     remove,
     commit,
     insert,
-    loading
+    loading,
   }
 }

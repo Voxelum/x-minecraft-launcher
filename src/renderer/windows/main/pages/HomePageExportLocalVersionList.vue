@@ -11,7 +11,10 @@
         @click.stop.prevent="select(index)"
       >
         <v-list-tile-avatar>
-          <v-checkbox :value="selected[index]" @click.stop.prevent="select(index)" />
+          <v-checkbox
+            :value="selected[index]"
+            @click.stop.prevent="select(index)"
+          />
         </v-list-tile-avatar>
         <v-list-tile-title>{{ item.folder }}</v-list-tile-title>
         <v-list-tile-sub-title>{{ item.minecraft }}</v-list-tile-sub-title>
@@ -38,7 +41,9 @@
           color="primary"
           @click="browseVersoinsFolder"
         >
-          <v-icon left>folder</v-icon>
+          <v-icon left>
+            folder
+          </v-icon>
           {{ $t('version.noLocalVersion') }}
         </v-btn>
         <v-btn
@@ -54,38 +59,38 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, computed, toRefs, ref, watch } from '@vue/composition-api';
-import { useLocalVersions } from '/@/hooks';
-import { required } from '/@/util/props';
-import { LocalVersion } from '/@shared/entities/version';
+import { defineComponent, reactive, computed, toRefs, ref, watch } from '@vue/composition-api'
+import { useLocalVersions } from '/@/hooks'
+import { required } from '/@/util/props'
+import { LocalVersion } from '/@shared/entities/version'
 
 export default defineComponent({
   props: {
     value: required<LocalVersion[]>(Array),
   },
   setup(props, context) {
-    const { localVersions, showVersionsDirectory, showVersionDirectory, refreshVersions } = useLocalVersions();
-    const versions = localVersions;
+    const { localVersions, showVersionsDirectory, showVersionDirectory, refreshVersions } = useLocalVersions()
+    const versions = localVersions
 
-    const selected = ref([] as boolean[]);
+    const selected = ref([] as boolean[])
 
     function selectVersion(v: LocalVersion) {
-      context.emit('input', v);
+      context.emit('input', v)
     }
     function browseVersoinsFolder() {
-      showVersionsDirectory();
+      showVersionsDirectory()
     }
     function openVersionDir(v: { folder: string }) {
-      showVersionDirectory(v.folder);
+      showVersionDirectory(v.folder)
     }
     function select(index: number) {
-      selected.value[index] = !selected.value[index]; 
-      selected.value = [...selected.value];
+      selected.value[index] = !selected.value[index]
+      selected.value = [...selected.value]
     }
 
     watch(selected, (set) => {
-      context.emit('input', versions.value.filter((v, i) => set[i]).map((v) => v.folder));
-    });
+      context.emit('input', versions.value.filter((v, i) => set[i]).map((v) => v.folder))
+    })
 
     return {
       selected,
@@ -95,9 +100,9 @@ export default defineComponent({
       refreshVersions,
       selectVersion,
       select,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

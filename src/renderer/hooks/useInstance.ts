@@ -1,6 +1,6 @@
 import { computed, reactive, toRefs } from '@vue/composition-api'
 import { Frame as GameSetting } from '@xmcl/gamesetting'
-import { useBusy } from './useSemaphore'
+import { useBusy, useSemaphore } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
 import { useStore } from './useStore'
 import { useCurrentUser } from './useUser'
@@ -9,9 +9,10 @@ import { InstanceSchema as InstanceConfig, RuntimeVersions } from '/@shared/enti
 import { CurseforgeModpackResource, ModpackResource } from '/@shared/entities/resource'
 import { ResourceType } from '/@shared/entities/resource.schema'
 import { getExpectVersion } from '/@shared/entities/version'
+import { InstanceGameSettingServiceKey } from '/@shared/services/InstanceGameSettingService'
 import { InstanceIOServiceKey } from '/@shared/services/InstanceIOService'
 import { InstanceLogServiceKey } from '/@shared/services/InstanceLogService'
-import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions } from '/@shared/services/InstanceSavesService'
+import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions, InstanceSavesServiceKey } from '/@shared/services/InstanceSavesService'
 import { CreateOption, InstanceServiceKey } from '/@shared/services/InstanceService'
 
 export function useInstanceBase() {
@@ -66,9 +67,9 @@ export function useInstance() {
     creationDate,
     server,
     isServer: computed(() => getters.instance.server !== null),
-    refreshing: computed(() => state.semaphore.instance > 0),
+    refreshing: computed(() => useSemaphore('instance').value !== 0),
     ...useServiceOnly(InstanceServiceKey, 'editInstance', 'refreshServerStatus'),
-    ...useServiceOnly(InstanceIOServiceKey, 'exportInstance')
+    ...useServiceOnly(InstanceIOServiceKey, 'exportInstance'),
   }
 }
 
@@ -81,7 +82,7 @@ export function useInstances() {
     instances: computed(() => getters.instances),
 
     ...useServiceOnly(InstanceServiceKey, 'mountInstance', 'deleteInstance', 'refreshServerStatusAll'),
-    ...useServiceOnly(InstanceIOServiceKey, 'importInstance', 'linkInstance')
+    ...useServiceOnly(InstanceIOServiceKey, 'importInstance', 'linkInstance'),
   }
 }
 
@@ -109,21 +110,21 @@ export function useInstanceCreation() {
     icon: '',
     image: '',
     blur: 4,
-    server: null as undefined | CreateOption['server']
+    server: null as undefined | CreateOption['server'],
   })
   const refs = toRefs(data)
   const required: Required<typeof refs> = toRefs(data) as any
   return {
     ...required,
     /**
-         * Commit this creation. It will create and select the instance.
-         */
+     * Commit this creation. It will create and select the instance.
+     */
     create() {
       return createAndSelect(data)
     },
     /**
-         * Reset the change
-         */
+     * Reset the change
+     */
     reset() {
       data.name = ''
       data.runtime = {
@@ -131,7 +132,7 @@ export function useInstanceCreation() {
         forge: '',
         liteloader: '',
         fabricLoader: '',
-        yarn: ''
+        yarn: '',
       }
       data.java = ''
       data.showLog = false
@@ -190,7 +191,7 @@ export function useInstanceCreation() {
         data.runtime.forge = metadata.runtime.forge
         data.runtime.fabricLoader = metadata.runtime.fabricLoader
       }
-    }
+    },
   }
 }
 
@@ -204,7 +205,7 @@ export function useInstanceVersionBase() {
     minecraft,
     forge,
     fabricLoader,
-    yarn
+    yarn,
   }
 }
 
@@ -212,13 +213,13 @@ export function useInstanceTemplates() {
   const { getters, state } = useStore()
   return {
     instances: computed(() => getters.instances),
-    modpacks: computed(() => state.resource.modpacks)
+    modpacks: computed(() => state.resource.modpacks),
   }
 }
 
 export function useInstanceGameSetting() {
   const { state } = useStore()
-  const { refresh: _refresh, edit, showInFolder } = useService('InstanceGameSettingService')
+  const { refresh: _refresh, edit, showInFolder } = useService(InstanceGameSettingServiceKey)
   const refresh = () => _refresh()
   const fancyGraphics = computed(() => state.instanceGameSetting.fancyGraphics)
   const renderClouds = computed(() => state.instanceGameSetting.renderClouds)
@@ -247,23 +248,23 @@ export function useInstanceGameSetting() {
     refresh,
     commit(settings: GameSetting) {
       edit(settings)
-    }
+    },
   }
 }
 
 export function useInstanceSaves() {
   const { state } = useStore()
-  const { cloneSave, deleteSave, exportSave, loadAllInstancesSaves, importSave, mountInstanceSaves } = useService('InstanceSavesService')
+  const { cloneSave, deleteSave, exportSave, readAllInstancesSaves, importSave, mountInstanceSaves } = useService(InstanceSavesServiceKey)
   const refresh = () => mountInstanceSaves(state.instance.path)
   return {
     refresh,
     cloneSave: (options: CloneSaveOptions) => cloneSave(options).finally(refresh),
     deleteSave: (options: DeleteSaveOptions) => deleteSave(options).finally(refresh),
     exportSave,
-    loadAllInstancesSaves,
+    readAllInstancesSaves,
     importSave: (options: ImportSaveOptions) => importSave(options).finally(refresh),
     path: computed(() => state.instance.path),
-    saves: computed(() => state.instanceSave.saves)
+    saves: computed(() => state.instanceSave.saves),
   }
 }
 
@@ -279,7 +280,7 @@ export function useInstanceVersion() {
   return {
     ...useInstanceVersionBase(),
     id,
-    folder
+    folder,
   }
 }
 
@@ -287,6 +288,6 @@ export function useInstanceLogs() {
   const { state } = useStore()
   return {
     path: computed(() => state.instance.path),
-    ...useServiceOnly(InstanceLogServiceKey, 'getCrashReportContent', 'getLogContent', 'listCrashReports', 'listLogs', 'removeCrashReport', 'removeLog', 'showCrash', 'showLog')
+    ...useServiceOnly(InstanceLogServiceKey, 'getCrashReportContent', 'getLogContent', 'listCrashReports', 'listLogs', 'removeCrashReport', 'removeLog', 'showCrash', 'showLog'),
   }
 }

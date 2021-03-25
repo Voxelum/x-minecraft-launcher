@@ -12,7 +12,7 @@ export function useCurseforgeRoute () {
 
   return {
     searchProjectAndRoute,
-    goProjectAndRoute
+    goProjectAndRoute,
   }
 }
 
@@ -22,6 +22,6 @@ export function useMcWikiRoute () {
     replace(`mcwiki?path=https://www.mcmod.cn/s?key=${name}`)
   }
   return {
-    searchProjectAndRoute
+    searchProjectAndRoute,
   }
 }

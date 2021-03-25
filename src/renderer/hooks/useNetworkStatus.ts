@@ -15,6 +15,6 @@ export function useNetworkStatus () {
     window.removeEventListener('offline', updateStatus)
   })
   return {
-    online
+    online,
   }
 }

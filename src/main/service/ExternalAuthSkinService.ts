@@ -7,16 +7,16 @@ import { ensureFile, readJson, writeFile } from 'fs-extra'
 import { join } from 'path'
 import DiagnoseService from './DiagnoseService'
 import ResourceService from './ResourceService'
-import AbstractService, { Service } from './Service'
+import AbstractService, { ExportService, Inject } from './Service'
 import LauncherApp from '../app/LauncherApp'
 import { ExternalAuthSkinServiceKey, ExternalAuthSkinService as IExternalAuthSkinService } from '/@shared/services/ExternalAuthSkinService'
 
-@Service(ExternalAuthSkinServiceKey)
+@ExportService(ExternalAuthSkinServiceKey)
 export default class ExternalAuthSkinService extends AbstractService implements IExternalAuthSkinService {
   constructor(
     app: LauncherApp,
-    private diagnoseService: DiagnoseService,
-    private resourceService: ResourceService
+    @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
+    @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app)
     diagnoseService.registerMatchedFix(['missingAuthlibInjector'],
@@ -80,18 +80,18 @@ export default class ExternalAuthSkinService extends AbstractService implements 
     await ensureFile(destination)
     await this.submit(new DownloadTask({
       url,
-      destination
+      destination,
     }).setName('downloadCustomSkinLoader'))
     return this.resourceService.importFile({
       path: destination,
-      type: 'mods'
+      type: 'mods',
     })
   }
 
   async installAuthlibInjection(): Promise<string> {
     const jsonPath = this.getPath('authlib-injection.json')
-    const mc = new MinecraftFolder(this.state.root)
-    const root = this.state.root
+    const root = this.getPath()
+    const mc = new MinecraftFolder(root)
 
     const download = async (content: any) => {
       const name = `${AUTHLIB_ORG_NAME}:${content.version}`
@@ -103,9 +103,9 @@ export default class ExternalAuthSkinService extends AbstractService implements 
             sha1: '',
             size: -1,
             path: info.path,
-            url: content.download_url
-          }
-        }
+            url: content.download_url,
+          },
+        },
       }
       await this.submit(installResolvedLibrariesTask(Version.resolveLibraries([authlib]), root).setName('installAuthlibInjector'))
       return mc.getLibraryByPath(info.path)

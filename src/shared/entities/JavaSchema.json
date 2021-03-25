@@ -7,16 +7,10 @@
             "items": {
                 "$ref": "#/definitions/Java"
             }
-        },
-        "default": {
-            "type": "integer",
-            "minimum": 0,
-            "default": 0
         }
     },
     "required": [
-        "all",
-        "default"
+        "all"
     ],
     "definitions": {
         "Java": {

@@ -19,7 +19,7 @@ interface Getters {
   queryResource(uri: string): AnyPersistedResource | undefined
 }
 
-interface Mutations {
+export interface Mutations {
   resource: AnyPersistedResource
   resources: AnyPersistedResource[]
   resourcesRemove: AnyPersistedResource[]
@@ -33,7 +33,7 @@ const mod: ResourceModule = {
     resourcepacks: [],
     saves: [],
     modpacks: [],
-    unknowns: []
+    unknowns: [],
   },
   getters: {
     queryResource: state => (url) => {
@@ -48,7 +48,7 @@ const mod: ResourceModule = {
         }
       }
       return undefined
-    }
+    },
   },
   mutations: {
     resource: (state, res) => {
@@ -75,8 +75,8 @@ const mod: ResourceModule = {
       for (const domain of domains) {
         state[domain] = (state[domain] as PersistedResource[]).filter((r) => !removal.has(r.hash)) as any
       }
-    }
-  }
+    },
+  },
 }
 
 export default mod

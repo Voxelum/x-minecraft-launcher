@@ -6,7 +6,7 @@ import { URL } from 'url'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
 import DiagnoseService from './DiagnoseService'
-import AbstractService, { Service, Singleton } from './Service'
+import AbstractService, { ExportService, Inject, Singleton } from './Service'
 import VersionService from './VersionService'
 import LauncherApp from '/@main/app/LauncherApp'
 import { RuntimeVersions } from '/@shared/entities/instance.schema'
@@ -17,37 +17,25 @@ import { InstallServiceKey, InstallOptifineOptions, InstallService as IInstallSe
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
  */
-@Service(InstallServiceKey)
+@ExportService(InstallServiceKey)
 export default class InstallService extends AbstractService implements IInstallService {
-  private refreshedMinecraft = false;
-  private refreshedFabric = false;
-  private refreshedLiteloader = false;
-  private refreshedOptifine = false;
-  private refreshedForge: Record<string, boolean> = {};
+  private refreshedMinecraft = false
+  private refreshedFabric = false
+  private refreshedLiteloader = false
+  private refreshedOptifine = false
+  private refreshedForge: Record<string, boolean> = {}
 
-  private minecraftVersionJson = new MappedFile<VersionMinecraftSchema>(this.getPath('minecraft-version.json'), new BufferJsonSerializer(VersionMinecraftSchema))
+  private minecraftVersionJson = new MappedFile<VersionMinecraftSchema>(this.getPath('minecraft-versions.json'), new BufferJsonSerializer(VersionMinecraftSchema))
   private forgeVersionJson = new MappedFile<VersionForgeSchema>(this.getPath('forge-versions.json'), new BufferJsonSerializer(VersionForgeSchema))
   private liteloaderVersionJson = new MappedFile<VersionLiteloaderSchema>(this.getPath('lite-versions.json'), new BufferJsonSerializer(VersionLiteloaderSchema))
   private fabricVersionJson = new MappedFile<VersionFabricSchema>(this.getPath('fabric-versions.json'), new BufferJsonSerializer(VersionFabricSchema))
   private optifineVersionJson = new MappedFile<VersionOptifineSchema>(this.getPath('optifine-versions.json'), new BufferJsonSerializer(VersionOptifineSchema))
 
   constructor(app: LauncherApp,
-    private local: VersionService,
-    diagnoseService: DiagnoseService
+    @Inject(VersionService) private local: VersionService,
+    @Inject(DiagnoseService) diagnoseService: DiagnoseService,
   ) {
     super(app)
-
-    this.storeManager.subscribe('minecraftMetadata', () => {
-      this.minecraftVersionJson.write(this.state.version.minecraft)
-    }).subscribe('forgeMetadata', () => {
-      this.forgeVersionJson.write(this.state.version.forge)
-    }).subscribe('liteloaderMetadata', () => {
-      this.liteloaderVersionJson.write(this.state.version.liteloader)
-    }).subscribeAll(['fabricLoaderMetadata', 'fabricYarnMetadata'], () => {
-      this.fabricVersionJson.write(this.state.version.fabric)
-    }).subscribe('optifineMetadata', () => {
-      this.optifineVersionJson.write(this.state.version.optifine)
-    })
 
     diagnoseService.registerMatchedFix(['missingVersionJson', 'missingVersionJar', 'corruptedVersionJson', 'corruptedVersionJar'],
       async (issues) => {
@@ -129,7 +117,7 @@ export default class InstallService extends AbstractService implements IInstallS
       (issues) => {
         const assets = [
           ...issues.filter(i => i.multi).map(i => i.arguments.values).reduce((a, b) => [...a, ...b], []),
-          ...issues.filter(i => !i.multi).map(i => i.arguments)
+          ...issues.filter(i => !i.multi).map(i => i.arguments),
         ]
         return this.installAssets(assets)
       },
@@ -139,7 +127,7 @@ export default class InstallService extends AbstractService implements IInstallS
       async (issues) => {
         const libs = [
           ...issues.filter(i => i.multi).map(i => i.arguments.values).reduce((a, b) => [...a, ...b], []),
-          ...issues.filter(i => !i.multi).map(i => i.arguments)
+          ...issues.filter(i => !i.multi).map(i => i.arguments),
         ]
         return this.installLibraries({ libraries: libs })
       },
@@ -147,7 +135,7 @@ export default class InstallService extends AbstractService implements IInstallS
 
     diagnoseService.registerMatchedFix(['badInstall'],
       async (issues) => {
-        const task = installByProfileTask(issues[0].arguments.installProfile, this.state.root, { java: this.getters.defaultJava.path })
+        const task = installByProfileTask(issues[0].arguments.installProfile, this.getPath(), { java: this.getters.defaultJava.path })
         await this.submit(task)
       },
       diagnoseService.diagnoseVersion.bind(diagnoseService))
@@ -159,7 +147,7 @@ export default class InstallService extends AbstractService implements IInstallS
       this.forgeVersionJson.read(),
       this.liteloaderVersionJson.read(),
       this.fabricVersionJson.read(),
-      this.optifineVersionJson.read()
+      this.optifineVersionJson.read(),
     ])
 
     if (typeof mc === 'object') {
@@ -180,11 +168,23 @@ export default class InstallService extends AbstractService implements IInstallS
     if (optifine) {
       this.commit('optifineMetadata', optifine)
     }
+
+    this.storeManager.subscribe('minecraftMetadata', () => {
+      this.minecraftVersionJson.write(this.state.version.minecraft)
+    }).subscribe('forgeMetadata', () => {
+      this.forgeVersionJson.write(this.state.version.forge)
+    }).subscribe('liteloaderMetadata', () => {
+      this.liteloaderVersionJson.write(this.state.version.liteloader)
+    }).subscribeAll(['fabricLoaderMetadata', 'fabricYarnMetadata'], () => {
+      this.fabricVersionJson.write(this.state.version.fabric)
+    }).subscribe('optifineMetadata', () => {
+      this.optifineVersionJson.write(this.state.version.optifine)
+    })
   }
 
   protected getMinecraftJsonManifestRemote() {
-    if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
-      const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference)
+    if (this.networkManager.isInGFW && this.state.base.apiSetsPreference !== 'mojang') {
+      const api = this.state.base.apiSets.find(a => a.name === this.state.base.apiSetsPreference)
       if (api) {
         return `${api.url}/mc/game/version_manifest.json`
       }
@@ -196,10 +196,10 @@ export default class InstallService extends AbstractService implements IInstallS
     const options: InstallForgeOptions = {
       ...this.networkManager.getDownloadBaseOptions(),
       overwriteWhen: 'checksumNotMatch',
-      java: this.getters.defaultJava.path
+      java: this.getters.defaultJava.path,
     }
-    if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
-      const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference)
+    if (this.networkManager.isInGFW && this.state.base.apiSetsPreference !== 'mojang') {
+      const api = this.state.base.apiSets.find(a => a.name === this.state.base.apiSetsPreference)
       if (api) {
         options.mavenHost = [`${api.url}/maven`]
       }
@@ -212,11 +212,11 @@ export default class InstallService extends AbstractService implements IInstallS
       assetsDownloadConcurrency: 16,
       ...this.networkManager.getDownloadBaseOptions(),
       overwriteWhen: 'checksumNotMatch',
-      side: 'client'
+      side: 'client',
     }
 
-    if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
-      const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference)
+    if (this.networkManager.isInGFW && this.state.base.apiSetsPreference !== 'mojang') {
+      const api = this.state.base.apiSets.find(a => a.name === this.state.base.apiSetsPreference)
       if (api) {
         option.assetsHost = `${api.url}/assets`
         option.mavenHost = `${api.url}/maven`
@@ -248,16 +248,16 @@ export default class InstallService extends AbstractService implements IInstallS
 
   private async getForgesFromBMCL(mcversion: string, currentForgeVersion: ForgeVersionList) {
     interface BMCLForge {
-      'branch': string; // '1.9';
-      'build': string; // 1766;
-      'mcversion': string; // '1.9';
-      'modified': string; // '2016-03-18T07:44:28.000Z';
-      'version': string; // '12.16.0.1766';
+      'branch': string // '1.9';
+      'build': string // 1766;
+      'mcversion': string // '1.9';
+      'modified': string // '2016-03-18T07:44:28.000Z';
+      'version': string // '12.16.0.1766';
       files: {
-        format: 'zip' | 'jar'; // zip
-        category: 'universal' | 'mdk' | 'installer';
-        hash: string;
-      }[];
+        format: 'zip' | 'jar' // zip
+        category: 'universal' | 'mdk' | 'installer'
+        hash: string
+      }[]
     }
 
     const { body, statusCode, headers } = await this.networkManager.request({
@@ -266,12 +266,12 @@ export default class InstallService extends AbstractService implements IInstallS
       headers: currentForgeVersion && currentForgeVersion.timestamp
         ? {
           'If-Modified-Since': currentForgeVersion.timestamp,
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45'
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
         }
         : {
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45'
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
         },
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
     })
     function convert(v: BMCLForge): ForgeVersion {
       const installer = v.files.find(f => f.category === 'installer')!
@@ -280,7 +280,7 @@ export default class InstallService extends AbstractService implements IInstallS
         mcversion: v.mcversion,
         version: v.version,
         type: 'common',
-        date: v.modified
+        date: v.modified,
       } as any
     }
     if (statusCode === 304) {
@@ -290,7 +290,7 @@ export default class InstallService extends AbstractService implements IInstallS
     const result: ForgeVersionList = {
       mcversion,
       timestamp: headers['if-modified-since'] ?? forges[0]?.modified,
-      versions: forges.map(convert)
+      versions: forges.map(convert),
     }
     return result
   }
@@ -324,7 +324,7 @@ export default class InstallService extends AbstractService implements IInstallS
   @Singleton('install')
   async installAssetsForVersion(version: string) {
     const option = this.getInstallOptions()
-    const location = this.state.root
+    const location = this.getPath()
     const resolvedVersion = await Version.parse(location, version)
     await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
   }
@@ -332,7 +332,7 @@ export default class InstallService extends AbstractService implements IInstallS
   @Singleton('install')
   async installDependencies(version: string) {
     const option = this.getInstallOptions()
-    const location = this.state.root
+    const location = this.getPath()
     const resolvedVersion = await Version.parse(location, version)
     await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries'))
     await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
@@ -345,7 +345,7 @@ export default class InstallService extends AbstractService implements IInstallS
   @Singleton('install')
   async reinstall(version: string) {
     const option = this.getInstallOptions()
-    const location = this.state.root
+    const location = this.getPath()
     const local = this.state.version.local.find(v => v.id === version)
     if (!local) {
       throw new Error(`Cannot reinstall ${version} as it's not found!`)
@@ -370,7 +370,7 @@ export default class InstallService extends AbstractService implements IInstallS
   @Singleton('install')
   async installAssets(assets: { name: string; size: number; hash: string }[]) {
     const option = this.getInstallOptions()
-    const location = this.state.root
+    const location = this.getPath()
     const task = installResolvedAssetsTask(assets, new MinecraftFolder(location), option).setName('installAssets')
     await this.submit(task)
   }
@@ -383,7 +383,7 @@ export default class InstallService extends AbstractService implements IInstallS
     const id = meta.id
 
     const option = this.getInstallOptions()
-    const task = installVersionTask(meta, this.state.root, option).setName('installVersion')
+    const task = installVersionTask(meta, this.getPath(), option).setName('installVersion')
     try {
       await this.submit(task)
       this.local.refreshVersions()
@@ -405,7 +405,7 @@ export default class InstallService extends AbstractService implements IInstallS
       resolved = libraries as any
     }
     const option = this.getInstallOptions()
-    const task = installResolvedLibrariesTask(resolved, this.state.root, option).setName('installLibraries')
+    const task = installResolvedLibrariesTask(resolved, this.getPath(), option).setName('installLibraries')
     try {
       await this.submit(task)
     } catch (e) {
@@ -473,7 +473,7 @@ export default class InstallService extends AbstractService implements IInstallS
     let version: string | undefined
     try {
       this.log(`Start to install forge ${meta.version} on ${meta.mcversion}`)
-      version = await this.submit(installForgeTask(meta, this.state.root, options))
+      version = await this.submit(installForgeTask(meta, this.getPath(), options))
       this.local.refreshVersions()
       this.log(`Success to install forge ${meta.version} on ${meta.mcversion}`)
     } catch (err) {
@@ -555,12 +555,12 @@ export default class InstallService extends AbstractService implements IInstallS
     this.log('Start to refresh optifine metadata')
 
     const headers = this.state.version.optifine.etag === '' ? undefined : {
-      'If-None-Match': this.state.version.optifine.etag
+      'If-None-Match': this.state.version.optifine.etag,
     }
 
     const response = await this.networkManager.request.get('https://bmclapi2.bangbang93.com/optifine/versionList', {
       headers,
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
     })
 
     if (response.statusCode === 304) {
@@ -571,7 +571,7 @@ export default class InstallService extends AbstractService implements IInstallS
 
       this.commit('optifineMetadata', {
         etag,
-        versions
+        versions,
       })
       this.log('Found new optifine version metadata. Update it.')
     }
@@ -612,7 +612,7 @@ export default class InstallService extends AbstractService implements IInstallS
       await this.yield(new DownloadTask({
         ...downloadOptions,
         url: `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
-        destination: path
+        destination: path,
       }).setName('download'))
       let id: string = await this.concat(installOptifineTask(path, minecraft, { java }))
 
@@ -648,7 +648,7 @@ export default class InstallService extends AbstractService implements IInstallS
     }
 
     const option = this.state.version.liteloader.timestamp === '' ? undefined : {
-      original: this.state.version.liteloader
+      original: this.state.version.liteloader,
     }
     const remoteList = await getLiteloaderVersionList(option)
     if (remoteList !== this.state.version.liteloader) {
@@ -664,7 +664,7 @@ export default class InstallService extends AbstractService implements IInstallS
   @Singleton('install')
   async installLiteloader(meta: LiteloaderVersion) {
     try {
-      await this.submit(installLiteloaderTask(meta, this.state.root))
+      await this.submit(installLiteloaderTask(meta, this.getPath()))
     } catch (err) {
       this.warn(err)
     } finally {

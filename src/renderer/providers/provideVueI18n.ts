@@ -8,7 +8,7 @@ export default function provideVueI18n (locale: string, messages: VueI18n.Locale
     missing: () => {
       // handle translation missing
     },
-    silentTranslationWarn: true
+    silentTranslationWarn: true,
   })
   const { _t, _tc } = i18n
   i18n._t = function (k: string, v: any, l: any, h: any, ...args: any[]) {

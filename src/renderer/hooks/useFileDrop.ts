@@ -1,10 +1,13 @@
 import { useService } from './useService'
+import { ImportServiceKey } from '/@shared/services/ImportService'
+import { ResourceServiceKey } from '/@shared/services/ResourceService'
 
 export function useFileDrop() {
-  const { importFile, readFileMetadata, readFilesMetadata } = useService('IOService')
+  const { importFile } = useService(ImportServiceKey)
+  const { parseFile, parseFiles } = useService(ResourceServiceKey)
   return {
     importFile,
-    readFileMetadata,
-    readFilesMetadata
+    parseFile,
+    parseFiles,
   } as const
 }

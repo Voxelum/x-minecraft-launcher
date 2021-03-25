@@ -16,6 +16,6 @@ export function useOperation<T, A = void> (defaultValue: T, operation: (value: T
       } else {
         data.value = defaultValue
       }
-    }
+    },
   }
 }

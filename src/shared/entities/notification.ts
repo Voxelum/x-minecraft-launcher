@@ -1,13 +1,13 @@
 import { Exceptions } from './exception'
 
 export interface NotificationBase {
-    type: string;
+  type: string
 }
 
 export interface TaskNotification extends NotificationBase {
-    type: 'taskStart' | 'taskFinish' | 'taskFail';
-    name: string; // the task path
-    arguments?: Record<string, unknown>;
+  type: 'taskStart' | 'taskFinish' | 'taskFail'
+  name: string // the task path
+  arguments?: Record<string, unknown>
 }
 
-export type BuiltinNotification = Exceptions | TaskNotification;
+export type BuiltinNotification = Exceptions | TaskNotification

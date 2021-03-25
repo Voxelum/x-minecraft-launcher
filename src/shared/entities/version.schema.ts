@@ -15,181 +15,181 @@ export const VersionFabricSchema: Schema<VersionFabricSchema> = _VersionFabricSc
 export const VersionOptifineSchema: Schema<VersionOptifineSchema> = _VersionOptifineSchema
 
 export interface MinecraftVersion {
-    id: string;
-    type: string;
-    time: string;
-    releaseTime: string;
-    url: string;
+  id: string
+  type: string
+  time: string
+  releaseTime: string
+  url: string
 }
 export interface ForgeDownload {
-    md5?: string;
-    sha1: string;
-    /**
+  md5?: string
+  sha1: string
+  /**
      * The url path to concat with forge maven
      */
-    path: string;
+  path: string
 }
 export interface ForgeVersion {
-    /**
+  /**
      * The minecraft version
      */
-    mcversion: string;
-    /**
+  mcversion: string
+  /**
      * The forge version (without minecraft version)
      */
-    version: string;
-    date: string;
-    installer: ForgeDownload;
-    universal: ForgeDownload;
-    /**
+  version: string
+  date: string
+  installer: ForgeDownload
+  universal: ForgeDownload
+  /**
      * The changelog info
      */
-    changelog?: ForgeDownload;
-    mdk?: ForgeDownload;
-    source?: ForgeDownload;
-    launcher?: ForgeDownload;
-    /**
+  changelog?: ForgeDownload
+  mdk?: ForgeDownload
+  source?: ForgeDownload
+  launcher?: ForgeDownload
+  /**
      * The type of the forge release. The `common` means the normal release.
      */
-    type: 'buggy' | 'recommended' | 'common' | 'latest';
+  type: 'buggy' | 'recommended' | 'common' | 'latest'
 }
 export interface ForgeVersionList {
-    /**
+  /**
      * @default ""
      */
-    timestamp: string;
-    /**
+  timestamp: string
+  /**
      * @default []
      */
-    versions: readonly ForgeVersion[];
-    /**
+  versions: readonly ForgeVersion[]
+  /**
      * @default ""
      */
-    mcversion: string;
+  mcversion: string
 }
 
 interface LiteloaderVersionMeta {
-    version: string;
-    url: string;
-    file: string;
-    mcversion: string;
-    type: 'RELEASE' | 'SNAPSHOT';
-    md5: string;
-    timestamp: string;
-    libraries: Array<{
-        name: string;
-        url?: string;
-    }>;
-    tweakClass: string;
+  version: string
+  url: string
+  file: string
+  mcversion: string
+  type: 'RELEASE' | 'SNAPSHOT'
+  md5: string
+  timestamp: string
+  libraries: Array<{
+    name: string
+    url?: string
+  }>
+  tweakClass: string
 }
 
 export interface VersionMinecraftSchema {
-    /**
+  /**
      * @default ""
      */
-    timestamp: string;
-    /**
+  timestamp: string
+  /**
      * @default { "snapshot": "", "release": "" }
      */
-    latest: {
-        /**
+  latest: {
+    /**
          * Snapshot version id of the Minecraft
          * @default ""
          */
-        snapshot: string;
-        /**
+    snapshot: string
+    /**
          * Release version id of the Minecraft, like 1.14.2
          * @default ""
          */
-        release: string;
-    };
-    /**
+    release: string
+  }
+  /**
      * All the vesrsion list
      * @default []
      */
-    versions: MinecraftVersion[];
+  versions: MinecraftVersion[]
 }
 
 export type VersionForgeSchema = Array<ForgeVersionList>
 export interface VersionLiteloaderSchema {
-    /**
+  /**
      * @default ""
      */
-    timestamp: string;
-    /**
+  timestamp: string
+  /**
      * @default {}
      */
-    meta: {
-        description: string;
-        authors: string;
-        url: string;
-        updated: string;
-        updatedTime: number;
-    };
-    /**
+  meta: {
+    description: string
+    authors: string
+    url: string
+    updated: string
+    updatedTime: number
+  }
+  /**
      * @default {}
      */
-    versions: {
-        [version: string]: {
-            snapshot?: LiteloaderVersionMeta;
-            release?: LiteloaderVersionMeta;
-        };
-    };
+  versions: {
+    [version: string]: {
+      snapshot?: LiteloaderVersionMeta
+      release?: LiteloaderVersionMeta
+    }
+  }
 }
 
 interface FabricArtifactVersion {
-    gameVersion?: string;
-    separator?: string;
-    build?: number;
-    maven: string;
-    version: string;
-    stable: boolean;
+  gameVersion?: string
+  separator?: string
+  build?: number
+  maven: string
+  version: string
+  stable: boolean
 }
 
 export interface VersionFabricSchema {
-    /**
+  /**
      * @default ""
      */
-    yarnTimestamp: string;
+  yarnTimestamp: string
 
-    /**
+  /**
      * @default ""
      */
-    loaderTimestamp: string;
+  loaderTimestamp: string
 
-    /**
+  /**
      * @default []
      */
-    yarns: FabricArtifactVersion[];
+  yarns: FabricArtifactVersion[]
 
-    /**
+  /**
      * @default []
      */
-    loaders: FabricArtifactVersion[];
+  loaders: FabricArtifactVersion[]
 }
 
 export interface OptifineVersion {
-    /**
+  /**
      * The minecraft version
      */
-    mcversion: string;
-    /**
+  mcversion: string
+  /**
      * The type of the optifine like HD_U
      */
-    type: string;
-    /**
+  type: string
+  /**
      * The patch of the optifine
      */
-    patch: string;
+  patch: string
 }
 
 export interface VersionOptifineSchema {
-    /**
+  /**
      * @default []
      */
-    versions: OptifineVersion[];
-    /**
+  versions: OptifineVersion[]
+  /**
      * @default ""
      */
-    etag: string;
+  etag: string
 }

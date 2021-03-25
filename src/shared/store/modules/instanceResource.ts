@@ -15,7 +15,7 @@ interface State {
 interface Getters {
 }
 
-interface Mutations {
+export interface Mutations {
   instanceMods: AnyResource[]
   instanceModAdd: AnyResource[]
   instanceModRemove: AnyResource[]
@@ -30,7 +30,7 @@ export type InstanceResourceModule = ModuleOption<State, Getters, Mutations, {}>
 const mod: InstanceResourceModule = {
   state: {
     mods: [],
-    resourcepacks: []
+    resourcepacks: [],
   },
   getters: {
   },
@@ -54,8 +54,8 @@ const mod: InstanceResourceModule = {
     },
     instanceResourcepacks(state, resources) {
       state.resourcepacks = resources
-    }
-  }
+    },
+  },
 }
 
 export default mod

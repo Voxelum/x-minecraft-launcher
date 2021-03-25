@@ -7,7 +7,7 @@ import { basename, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
-import AbstractService, { Service, Singleton } from './Service'
+import AbstractService, { ExportService, Inject, Singleton } from './Service'
 import VersionService from './VersionService'
 import { copyPassively, exists, isDirectory, isFile, readdirIfPresent } from '/@main/util/fs'
 import { ZipTask } from '/@main/util/zip'
@@ -19,12 +19,12 @@ import { requireObject, requireString } from '/@shared/util/assert'
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
-@Service(InstanceIOServiceKey)
+@ExportService(InstanceIOServiceKey)
 export default class InstanceIOService extends AbstractService implements IInstanceIOService {
   constructor(app: LauncherApp,
-    private resourceService: ResourceService,
-    private instanceService: InstanceService,
-    private versionService: VersionService
+    @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(InstanceService) private instanceService: InstanceService,
+    @Inject(VersionService) private versionService: VersionService,
   ) {
     super(app)
   }
@@ -52,7 +52,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
       return
     }
 
-    const root = this.state.root
+    const root = this.getPath()
     const from = src
 
     const zipTask = new ZipTask(dest).setName('profile.modpack.export')

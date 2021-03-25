@@ -1,16 +1,29 @@
 <template>
-  <v-container fill-height style="overflow: auto">
-    <v-layout wrap fill-height>
-      <v-flex d-flex xs12 tag="h2" class="white--text headline">
+  <v-container
+    fill-height
+    style="overflow: auto"
+  >
+    <v-layout
+      wrap
+      fill-height
+    >
+      <v-flex
+        d-flex
+        xs12
+        tag="h2"
+        class="white--text headline"
+      >
         {{ $t("profile.setting") }}
         <!-- <span class="headline"></span> -->
       </v-flex>
-      <v-flex d-flex xs12>
+      <v-flex
+        d-flex
+        xs12
+      >
         <v-list
           class="base-settings"
           two-line
           subheader
-          style="background: transparent width: 100%"
         >
           <v-subheader style="padding-right: 2px">
             {{ $t("setting.general") }}
@@ -32,7 +45,11 @@
               />
             </v-list-tile-action>
           </v-list-tile>
-          <v-list-tile class="selected-version" replace to="/version-setting">
+          <v-list-tile
+            class="selected-version"
+            replace
+            to="/version-setting"
+          >
             <v-list-tile-content>
               <v-list-tile-title>{{ $t("profile.version") }}</v-list-tile-title>
               <v-list-tile-sub-title>
@@ -40,14 +57,31 @@
               </v-list-tile-sub-title>
             </v-list-tile-content>
             <!-- <v-layout > -->
-            <v-list-tile-action style="margin-right: 15px display: flex flex-grow: 1 flex-direction: row align-item: center justify-content: flex-end align-items: center">
-              <v-chip color="green" large outline label>
+            <v-list-tile-action style="margin-right: 15px; display: flex; flex-grow: 1; flex-direction: row; align-item: center; justify-content: flex-end; align-items: center">
+              <v-chip
+                color="green"
+                large
+                outline
+                label
+              >
                 {{ version.minecraft }}
               </v-chip>
-              <v-chip v-if="version.forge" color="orange" large outline label>
+              <v-chip
+                v-if="version.forge"
+                color="orange"
+                large
+                outline
+                label
+              >
                 Forge {{ version.forge }}
               </v-chip>
-              <v-chip v-if="version.fabricLoader" large outline label color="yellow">
+              <v-chip
+                v-if="version.fabricLoader"
+                large
+                outline
+                label
+                color="yellow"
+              >
                 Fabric {{ version.fabricLoader }}
               </v-chip>
             </v-list-tile-action>
@@ -59,7 +93,11 @@
             <!-- </v-layout> -->
           </v-list-tile>
 
-          <v-list-tile replace to="/resource-pack-setting" avatar>
+          <v-list-tile
+            replace
+            to="/resource-pack-setting"
+            avatar
+          >
             <v-list-tile-action>
               <v-icon>palette</v-icon>
             </v-list-tile-action>
@@ -78,7 +116,11 @@
             </v-list-tile-action>
           </v-list-tile>
 
-          <v-list-tile replace to="/mod-setting" avatar>
+          <v-list-tile
+            replace
+            to="/mod-setting"
+            avatar
+          >
             <v-list-tile-action>
               <v-icon>extensions</v-icon>
             </v-list-tile-action>
@@ -97,7 +139,11 @@
             </v-list-tile-action>
           </v-list-tile>
 
-          <v-list-tile replace to="/save" avatar>
+          <v-list-tile
+            replace
+            to="/save"
+            avatar
+          >
             <v-list-tile-action>
               <v-icon>map</v-icon>
             </v-list-tile-action>
@@ -116,9 +162,15 @@
             </v-list-tile-action>
           </v-list-tile>
 
-          <v-list-tile avatar @click="hideLauncher = !hideLauncher">
+          <v-list-tile
+            avatar
+            @click="hideLauncher = !hideLauncher"
+          >
             <v-list-tile-action>
-              <v-checkbox v-model="hideLauncher" hide-details />
+              <v-checkbox
+                v-model="hideLauncher"
+                hide-details
+              />
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>
@@ -131,9 +183,15 @@
               </v-list-tile-sub-title> -->
             </v-list-tile-content>
           </v-list-tile>
-          <v-list-tile avatar @click="showLog = !showLog">
+          <v-list-tile
+            avatar
+            @click="showLog = !showLog"
+          >
             <v-list-tile-action>
-              <v-checkbox v-model="showLog" hide-details />
+              <v-checkbox
+                v-model="showLog"
+                hide-details
+              />
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>{{ $t("launch.showLog") }}</v-list-tile-title>
@@ -183,7 +241,10 @@
               />
             </v-list-tile-action>
           </v-list-tile> -->
-          <v-list-tile v-if="!isServer" style="margin-top: 5px">
+          <v-list-tile
+            v-if="!isServer"
+            style="margin-top: 5px"
+          >
             <v-list-tile-content>
               <v-list-tile-title>
                 {{ $t("profile.modpack.description") }}
@@ -203,7 +264,10 @@
             </v-list-tile-action> -->
           </v-list-tile>
 
-          <v-subheader v-if="isServer" style="padding-right: 2px">
+          <v-subheader
+            v-if="isServer"
+            style="padding-right: 2px"
+          >
             {{ $tc("profile.server", 1) }}
           </v-subheader>
           <v-list-tile v-if="isServer">
@@ -362,10 +426,14 @@ export default defineComponent({
 </style>
 <style>
 .local-version .v-select__selection--comma {
-  max-width: 100px
-  white-space: nowrap
-  overflow: hidden
-  text-overflow: ellipsis
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.base-settings {
+  background: transparent !important;
+  width: 100%;
 }
 .base-settings .v-text-field--box input,
 .v-text-field--full-width input,

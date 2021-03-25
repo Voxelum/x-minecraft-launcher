@@ -1,15 +1,15 @@
 import { isNonnull } from '/@shared/util/assert'
 
 export interface TsingHuaJreTarget {
-    fileName: string
-    /**
+  fileName: string
+  /**
      * Url to download
      */
-    url: string;
-    /**
+  url: string
+  /**
      * The sha256 url of the download
      */
-    sha256Url?: string;
+  sha256Url?: string
 }
 
 export function parseTsingHuaAdoptOpenJDKFileList (fileList: string[], os: 'linux' | 'windows' | 'unknown' | 'mac', arch: '32' | '64'): TsingHuaJreTarget | undefined {
@@ -23,7 +23,7 @@ export function parseTsingHuaAdoptOpenJDKFileList (fileList: string[], os: 'linu
     return {
       fileName: zipFile[zipFile.length - 1],
       url: `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/${zipFile.join('/')}`,
-      sha256Url: sha256File ? `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/${sha256File?.join('/')}` : undefined
+      sha256Url: sha256File ? `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/${sha256File?.join('/')}` : undefined,
     }
   }
   return undefined
@@ -41,7 +41,7 @@ export function parseTsingHuaAdpotOpenJDKHotspotArchive (pageText: string, baseU
   if (target) {
     return {
       fileName: target,
-      url: `${baseUrl}${target}`
+      url: `${baseUrl}${target}`,
     }
   }
 

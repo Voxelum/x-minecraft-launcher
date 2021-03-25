@@ -1,13 +1,14 @@
 import { TextComponent, render, RenderNode, fromFormattedString } from '@xmcl/text-component'
 import { defineComponent, h } from '@vue/composition-api'
 import { useI18n } from './hooks'
+import { optional } from './util/props'
 
 export default defineComponent({
   props: {
     source: [String, Object],
-    localized: String,
+    localized: optional(String),
     args: { type: Object, default: () => { Object.create(null) } },
-    styled: { type: String, default: 'true' }
+    styled: { type: String, default: 'true' },
   },
   setup (props) {
     const { $t } = useI18n()
@@ -24,5 +25,5 @@ export default defineComponent({
       }
       return generate(hint)
     }
-  }
+  },
 })

@@ -6,6 +6,6 @@ export function useBackgroundImage () {
   const backgroundImage = computed(() => null)
   return {
     blur,
-    backgroundImage
+    backgroundImage,
   }
 }

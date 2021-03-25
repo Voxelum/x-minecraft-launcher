@@ -44,15 +44,15 @@ const config = {
     target: [
       // disable build for x32 by default
       // 'nsis:ia32',
-      'nsis:x64',
+      // 'nsis:x64',
       // uncomment to generate web installer
       // electron-builder can use either web or offline installer to auto update
-      // {
-      //   target: 'nsis-web',
-      //   arch: [
-      //     'x64',
-      //   ]
-      // },
+      {
+        target: 'nsis-web',
+        arch: [
+          'x64',
+        ]
+      },
       {
         target: 'zip',
         arch: [

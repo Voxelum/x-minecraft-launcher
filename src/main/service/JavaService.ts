@@ -6,20 +6,19 @@ import { basename, dirname, join } from 'path'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
 import DiagnoseService from './DiagnoseService'
-import AbstractService, { Service, Singleton } from './Service'
+import AbstractService, { ExportService, Inject, Singleton } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { getTsingHuaAdpotOponJDKPageUrl, parseTsingHuaAdpotOpenJDKHotspotArchive } from '/@main/entities/java'
 import { missing, readdirIfPresent } from '/@main/util/fs'
 import { unpack7z } from '/@main/util/zip'
 import { JavaRecord } from '/@shared/entities/java'
 import { Java, JavaSchema } from '/@shared/entities/java.schema'
-import { JavaServiceKey, JavaService as IJavaService } from '/@shared/services/JavaService'
-import java from '/@shared/store/modules/java'
+import { JavaService as IJavaService, JavaServiceKey } from '/@shared/services/JavaService'
 import { requireString } from '/@shared/util/assert'
 
-@Service(JavaServiceKey)
+@ExportService(JavaServiceKey)
 export default class JavaService extends AbstractService implements IJavaService {
-  protected readonly config = new MappedFile<JavaSchema>(this.getPath('java.json'), new BufferJsonSerializer(JavaSchema));
+  protected readonly config = new MappedFile<JavaSchema>(this.getPath('java.json'), new BufferJsonSerializer(JavaSchema))
 
   private readonly internalJavaLocation = this.app.platform.name === 'osx'
     ? this.getPath('jre', 'Contents', 'Home', 'bin', 'java')
@@ -27,13 +26,8 @@ export default class JavaService extends AbstractService implements IJavaService
       this.app.platform.name === 'windows' ? 'javaw.exe' : 'java')
 
   constructor(app: LauncherApp,
-    diagnoseService: DiagnoseService) {
+    @Inject(DiagnoseService) diagnoseService: DiagnoseService) {
     super(app)
-
-    this.storeManager.register(java)
-    this.storeManager.subscribeAll(['javaUpdate', 'javaRemove'], () => {
-      this.config.write(this.state.java)
-    })
 
     diagnoseService.registerMatchedFix(['missingJava'], () => {
       this.installDefaultJava()
@@ -51,6 +45,10 @@ export default class JavaService extends AbstractService implements IJavaService
       this.resolveJava(local)
     }
     this.refreshLocalJava()
+
+    this.storeManager.subscribeAll(['javaUpdate', 'javaRemove'], () => {
+      this.config.write(this.state.java)
+    })
   }
 
   /**
@@ -72,12 +70,12 @@ export default class JavaService extends AbstractService implements IJavaService
     return installJreFromMojangTask({
       destination: dest,
       unpackLZMA: unpack7z,
-      ...this.networkManager.getDownloadBaseOptions()
+      ...this.networkManager.getDownloadBaseOptions(),
     })
   }
 
   private installFromTsingHuaTask() {
-    const { app, networkManager, log, getTempPath, state } = this
+    const { app, networkManager, log, getTempPath, state, getPath } = this
     return task('installJre', async function () {
       const system = app.platform.name === 'osx' ? 'mac' as const : app.platform.name
       const arch = app.platform.arch === 'x64' ? '64' as const : '32' as const
@@ -90,7 +88,7 @@ export default class JavaService extends AbstractService implements IJavaService
         throw new Error(`Cannot find jre from tsinghua mirror for ${system} x${arch}`)
       }
 
-      const destination = join(state.root, 'jre')
+      const destination = getPath('jre')
       const archivePath = getTempPath(archiveInfo.fileName)
       const url = archiveInfo.url
 
@@ -98,7 +96,7 @@ export default class JavaService extends AbstractService implements IJavaService
       await this.yield(new DownloadTask({
         ...networkManager.getDownloadBaseOptions(),
         destination: archivePath,
-        url
+        url,
       }).setName('download') /* , 90 */)
 
       if (system === 'windows') {

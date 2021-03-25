@@ -26,7 +26,9 @@
           color="red"
           @click="confirm"
         >
-          <v-icon left>delete</v-icon>
+          <v-icon left>
+            delete
+          </v-icon>
           {{ $t('yes') }}
         </v-btn>
       </v-card-actions>
@@ -35,8 +37,8 @@
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api';
-import { required } from '/@/util/props';
+import { defineComponent } from '@vue/composition-api'
+import { required } from '/@/util/props'
 
 export default defineComponent({
   props: {
@@ -44,7 +46,7 @@ export default defineComponent({
     confirm: required<() => void>(Function),
     cancel: required<() => void>(Function),
   },
-});
+})
 </script>
 
 <style>

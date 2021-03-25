@@ -2,50 +2,50 @@
 import got from 'got'
 
 export interface Release {
-    title: string;
-    /**
+  title: string
+  /**
      * The new version
      */
-    version: string;
-    /**
+  version: string
+  /**
      * The asar download url
      */
-    downloadUrl: string;
-    /**
+  downloadUrl: string
+  /**
      * The update body text
      */
-    body: string;
+  body: string
 
-    size?: number;
+  size?: number
 
-    downloadCount?: number;
+  downloadCount?: number
 }
 
 export interface ReleaseFetcher {
-    listReleases(): Promise<Release[]>;
-    getLatestRelease(): Promise<Release>;
+  listReleases(): Promise<Release[]>
+  getLatestRelease(): Promise<Release>
 }
 
 /**
  * Shared release definition between github and gitee
  */
 interface ReleaseJson {
-    name: string;
-    tag_name: string;
-    prerelease: boolean;
-    body: string;
-    assets: Array<{
-        browser_download_url: string;
-        name: string;
-        /**
+  name: string
+  tag_name: string
+  prerelease: boolean
+  body: string
+  assets: Array<{
+    browser_download_url: string
+    name: string
+    /**
          * no size for gitee
          */
-        size?: number;
-        /**
+    size?: number
+    /**
          * no download_count for gitee
          */
-        download_count?: number;
-    }>;
+    download_count?: number
+  }>
 }
 
 function convertRelease (r: ReleaseJson): Release {
@@ -59,7 +59,7 @@ function convertRelease (r: ReleaseJson): Release {
     body: r.body,
     downloadUrl: asarAsset.browser_download_url,
     downloadCount: asarAsset.download_count,
-    size: asarAsset.size
+    size: asarAsset.size,
   }
 }
 

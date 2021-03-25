@@ -1,5 +1,9 @@
 <template>
-  <v-dialog :value="value" width="500" persistent>
+  <v-dialog
+    :value="value"
+    width="500"
+    persistent
+  >
     <v-card>
       <v-card-title
         class="headline"
@@ -12,10 +16,12 @@
       </v-card-text>
 
       <v-card-text>
-        <v-checkbox v-for="(p, index) of instances" :key="index"
-                    v-model="selected[index]"
-                    hide-details
-                    :label="p"
+        <v-checkbox
+          v-for="(p, index) of instances"
+          :key="index"
+          v-model="selected[index]"
+          hide-details
+          :label="p"
         />
       </v-card-text>
 
@@ -42,8 +48,8 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, ref } from '@vue/composition-api';
-import { required } from '/@/util/props';
+import { defineComponent, ref } from '@vue/composition-api'
+import { required } from '/@/util/props'
 
 export default defineComponent({
   props: {
@@ -53,16 +59,16 @@ export default defineComponent({
     instances: required<string[]>(Array),
   },
   setup(props) {
-    const selected = ref(new Array<string>(props.instances.length));
+    const selected = ref(new Array<string>(props.instances.length))
     return {
       selected,
       doOperation() {
-        const func = props.operate;
-        func(props.instances.filter((_, index) => selected.value[index]));
+        const func = props.operate
+        func(props.instances.filter((_, index) => selected.value[index]))
       },
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

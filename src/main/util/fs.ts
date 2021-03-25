@@ -66,11 +66,11 @@ export async function clearDirectoryNarrow(dir: string) {
 }
 
 export class FileStateWatcher<T> {
-  private watcher: FSWatcher | undefined;
+  private watcher: FSWatcher | undefined
 
-  private state: T;
+  private state: T
 
-  private watching: string | undefined;
+  private watching: string | undefined
 
   // eslint-disable-next-line no-useless-constructor
   constructor(private defaultState: T, private handler: (state: T, event: string, file: string) => T) {

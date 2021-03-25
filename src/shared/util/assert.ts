@@ -1,7 +1,7 @@
 export function isNullOrUndefine(object: any): object is undefined {
   return object === undefined || object === null
 }
-export function isNonnull<T>(object: T | undefined | null): object is T {
+export function isNonnull<T >(object: T | undefined | null): object is T {
   return object !== undefined && object !== null
 }
 export function requireNumber(object: any, message: string) {

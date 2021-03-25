@@ -4,11 +4,11 @@ import { CLIENT_ID, IS_DEV } from '/@main/constant'
 import { Manager } from '.'
 
 export default class CredentialManager extends Manager {
-  readonly oauth: PublicClientApplication;
+  readonly oauth: PublicClientApplication
 
-  readonly scopes: string[];
+  readonly scopes: string[]
 
-  private microsoftAccount: Record<string, AccountInfo> = {};
+  private microsoftAccount: Record<string, AccountInfo> = {}
 
   // private accountInfoPath = '';
 
@@ -17,10 +17,10 @@ export default class CredentialManager extends Manager {
     this.oauth = new PublicClientApplication({
       auth: {
         authority: 'https://login.microsoftonline.com/consumers/',
-        clientId: CLIENT_ID
+        clientId: CLIENT_ID,
       },
       cache: {
-      }
+      },
     })
     this.scopes = ['XboxLive.signin', 'XboxLive.offline_access']
   }
@@ -49,7 +49,7 @@ export default class CredentialManager extends Manager {
       const url = await this.oauth.getAuthCodeUrl({
         redirectUri,
         scopes,
-        loginHint: username
+        loginHint: username,
       })
       await this.app.openInBrowser(url)
       code = await new Promise<string>((resolve, reject) => {

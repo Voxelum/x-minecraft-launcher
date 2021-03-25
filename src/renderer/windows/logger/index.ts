@@ -18,15 +18,15 @@ Vue.use(Vuetify, {
   theme: {
     primary: colors.green,
     // secondary: colors.green,
-    accent: colors.green.accent3
-  }
+    accent: colors.green.accent3,
+  },
 })
 
 const vue = new Vue({
   setup () {
     provideElectron()
     return () => h(Logger)
-  }
+  },
 })
 
 vue.$mount('#app')

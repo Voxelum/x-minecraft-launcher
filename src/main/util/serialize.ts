@@ -4,8 +4,8 @@ import { createContext, runInContext } from 'vm'
 import Ajv from 'ajv'
 
 export interface Serializer<D, T> {
-    serialize(value: T): D | Promise<D>
-    deserialize(data: D): T | Promise<T>
+  serialize(value: T): D | Promise<D>
+  deserialize(data: D): T | Promise<T>
 }
 
 export function pipe<A, B, C> (serialzerIn: Serializer<A, B>, serialzerOut: Serializer<B, C>): Serializer<A, C> {
@@ -15,14 +15,14 @@ export function pipe<A, B, C> (serialzerIn: Serializer<A, B>, serialzerOut: Seri
     },
     async deserialize (data) {
       return serialzerOut.deserialize(await serialzerIn.deserialize(data))
-    }
+    },
   }
 }
 
 export function serverDatSerializer (): Serializer<Uint8Array, ServerInfo[]> {
   return {
     serialize (value) { return writeInfo(value) },
-    async deserialize (buff) { return readInfo(buff) }
+    async deserialize (buff) { return readInfo(buff) },
   }
 }
 

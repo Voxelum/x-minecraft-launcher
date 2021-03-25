@@ -1,15 +1,38 @@
 <template>
-  <v-container grid-list-md fill-height style="z-index: 10; padding">
-    <v-layout row wrap>
-      <v-flex tag="h1" style="display: flex" class="white--text" xs12>
+  <v-container
+    grid-list-md
+    fill-height
+    style="z-index: 10; padding"
+  >
+    <v-layout
+      row
+      wrap
+    >
+      <v-flex
+        tag="h1"
+        style="display: flex"
+        class="white--text"
+        xs12
+      >
         <span style="flex-grow: 1">{{ name || id }}</span>
         <v-spacer />
-        <dest-menu v-model="destination" style="flex-grow: 1" :from="from" />
+        <dest-menu
+          v-model="destination"
+          style="flex-grow: 1"
+          :from="from"
+        />
       </v-flex>
       <v-flex xs12>
-        <v-layout fill-height row>
+        <v-layout
+          fill-height
+          row
+        >
           <v-flex xs8>
-            <v-tabs v-model="tab" dark slider-color="yellow">
+            <v-tabs
+              v-model="tab"
+              dark
+              slider-color="yellow"
+            >
               <v-tab>{{ $t("curseforge.project.description") }}</v-tab>
               <v-tab>{{ $t("curseforge.project.files") }}</v-tab>
               <v-tab>{{ $t("curseforge.project.images") }}</v-tab>
@@ -17,7 +40,11 @@
                 <project-description :project="projectId" />
               </v-tab-item>
               <v-tab-item>
-                <project-files :project="projectId" :type="type" :from="from" />
+                <project-files
+                  :project="projectId"
+                  :type="type"
+                  :from="from"
+                />
               </v-tab-item>
               <v-tab-item>
                 <v-card
@@ -33,12 +60,26 @@
                     fill-height
                     style="min-height: 65vh"
                   >
-                    <v-layout justify-center align-center fill-height>
-                      <v-progress-circular indeterminate :size="100" />
+                    <v-layout
+                      justify-center
+                      align-center
+                      fill-height
+                    >
+                      <v-progress-circular
+                        indeterminate
+                        :size="100"
+                      />
                     </v-layout>
                   </v-container>
-                  <v-container v-else fill-height grid-list-md>
-                    <v-layout row wrap>
+                  <v-container
+                    v-else
+                    fill-height
+                    grid-list-md
+                  >
+                    <v-layout
+                      row
+                      wrap
+                    >
                       <v-flex
                         v-for="(img, index) in attachments"
                         :key="index"
@@ -60,7 +101,10 @@
               </v-tab-item>
             </v-tabs>
           </v-flex>
-          <v-flex xs4 fill-height>
+          <v-flex
+            xs4
+            fill-height
+          >
             <v-layout column>
               <v-flex xs6>
                 <v-card style="max-height: 214px; min-height: 214px">
@@ -92,15 +136,22 @@
               </v-flex>
               <v-flex xs6>
                 <v-card style="max-height: 232px; min-height: 232px">
-                  <v-card-title primary-title style="font-weight: 500">
+                  <v-card-title
+                    primary-title
+                    style="font-weight: 500"
+                  >
                     {{ $t("curseforge.recentFiles") }}
                   </v-card-title>
                   <div
                     style="max-height: 160px; min-height: 160px; overflow: auto"
                   >
                     <v-list>
-                      <v-tooltip v-for="file in recentFiles" :key="file.id" top>
-                        <template v-slot:activator="{ on }">
+                      <v-tooltip
+                        v-for="file in recentFiles"
+                        :key="file.id"
+                        top
+                      >
+                        <template #activator="{ on }">
                           <v-list-tile
                             :v-ripple="getFileStatus(file) === 'remote'"
                             @click="install(file)"
@@ -155,22 +206,23 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs, watch, computed, ref } from '@vue/composition-api';
-import { File } from '@xmcl/curseforge';
+import { defineComponent, reactive, toRefs, watch, computed, ref } from '@vue/composition-api'
+import { File } from '@xmcl/curseforge'
 import {
   useCurseforgeProject,
   useCurseforgeInstall,
   useService,
-} from '/@/hooks';
-import ProjectDescription from './CurseforgeProjectPageDescription.vue';
-import DestMenu from './CurseforgeProjectPageDestMenu.vue';
-import ProjectFiles from './CurseforgeProjectPageFiles.vue';
+} from '/@/hooks'
+import ProjectDescription from './CurseforgeProjectPageDescription.vue'
+import DestMenu from './CurseforgeProjectPageDestMenu.vue'
+import ProjectFiles from './CurseforgeProjectPageFiles.vue'
 
 interface InstallOptions {
   path?: string
 }
 
 export default defineComponent({
+  components: { ProjectDescription, ProjectFiles, DestMenu },
   props: {
     type: {
       type: String,
@@ -183,39 +235,38 @@ export default defineComponent({
     },
     from: String,
   },
-  components: { ProjectDescription, ProjectFiles, DestMenu },
   setup(props) {
-    const projectId = computed(() => Number.parseInt(props.id, 10));
-    const project = useCurseforgeProject(projectId.value);
-    const { install: installFile, getFileStatus } = useCurseforgeInstall(props.type as any, projectId.value);
-    const destination = ref(props.from || '');
+    const projectId = computed(() => Number.parseInt(props.id, 10))
+    const project = useCurseforgeProject(projectId.value)
+    const { install: installFile, getFileStatus } = useCurseforgeInstall(props.type as any, projectId.value)
+    const destination = ref(props.from || '')
 
     const data = reactive({
       tab: 0,
       viewingImage: false,
       viewedImage: '',
-    });
-    const dataRefs = toRefs(data);
+    })
+    const dataRefs = toRefs(data)
 
     function viewImage(image: any) {
-      data.viewingImage = true;
-      data.viewedImage = image.url;
+      data.viewingImage = true
+      data.viewedImage = image.url
     }
     async function install(file: File) {
-      if (getFileStatus(file) === 'downloaded') return;
-      await installFile(file, destination.value);
+      if (getFileStatus(file) === 'downloaded') return
+      await installFile(file, destination.value)
     }
     watch(dataRefs.tab, () => {
       switch (data.tab) {
         case 1:
           // projectFiles.refreshFiles();
-          break;
+          break
         case 2:
           // projectImages.refreshImages();
-          break;
+          break
         default:
       }
-    });
+    })
     return {
       viewImage,
       install,
@@ -224,9 +275,9 @@ export default defineComponent({
       ...project,
       projectId,
       destination,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

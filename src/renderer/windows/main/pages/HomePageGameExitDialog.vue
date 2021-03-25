@@ -34,7 +34,7 @@
           {{ isCrash ? $t(`launch.crash`) : $t(`launch.failed.description`) }}
         </div>
         <p>
-          {{errorLog}}
+          {{ errorLog }}
         </p>
         <v-textarea
           auto-grow
@@ -65,21 +65,22 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent } from '@vue/composition-api';
-import { useIpc, useInstanceLogs, useService } from '/@/hooks';
+import { reactive, toRefs, defineComponent } from '@vue/composition-api'
+import { useIpc, useInstanceLogs, useService } from '/@/hooks'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export default defineComponent({
   setup() {
-    const ipc = useIpc();
+    const ipc = useIpc()
     const data = reactive({
       isShown: false,
       log: '',
       isCrash: false,
       crashReportLocation: '',
       errorLog: '',
-    });
-    const { getLogContent, getCrashReportContent, showLog } = useInstanceLogs();
-    const { showItemInDirectory } = useService('BaseService');
+    })
+    const { getLogContent, getCrashReportContent, showLog } = useInstanceLogs()
+    const { showItemInDirectory } = useService(BaseServiceKey)
     function decorate(log: string) {
       // let lines = log.split('\n');
       // let result: string[] = [];
@@ -87,43 +88,43 @@ export default defineComponent({
       //   result.push(lines[i].trim(), ' ');
       // }
       // return result.join('\n');
-      return log;
+      return log
     }
     async function displayLog() {
-      let log = await getLogContent('latest.log');
-      data.log = decorate(log);
-      data.isShown = true;
+      const log = await getLogContent('latest.log')
+      data.log = decorate(log)
+      data.isShown = true
     }
     async function displayCrash() {
-      let log = await getCrashReportContent(data.crashReportLocation);
-      data.log = decorate(log);
-      data.isShown = true;
+      const log = await getCrashReportContent(data.crashReportLocation)
+      data.log = decorate(log)
+      data.isShown = true
     }
     ipc.on('minecraft-exit', (event, { code, signal, crashReport, crashReportLocation, errorLog }) => {
       if (code !== 0) {
-        console.log(errorLog);
-        data.errorLog = errorLog;
+        console.log(errorLog)
+        data.errorLog = errorLog
         if (crashReportLocation) {
-          data.crashReportLocation = crashReportLocation;
-          data.isCrash = true;
-          displayCrash();
+          data.crashReportLocation = crashReportLocation
+          data.isCrash = true
+          displayCrash()
         } else {
-          displayLog();
+          displayLog()
         }
       }
-    });
+    })
     return {
       ...toRefs(data),
       openFolder() {
         if (data.isCrash) {
-          showItemInDirectory(data.crashReportLocation);
+          showItemInDirectory(data.crashReportLocation)
         } else {
-          showLog('latest.log');
+          showLog('latest.log')
         }
       },
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

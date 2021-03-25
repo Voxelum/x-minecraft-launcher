@@ -1,13 +1,13 @@
 import { queryStatus } from '@xmcl/client'
 import { readFile, readJSON } from 'fs-extra'
-import AbstractService, { Pure, Service } from './Service'
+import AbstractService, { Pure, ExportService } from './Service'
 import { exists } from '/@main/util/fs'
 import { createFailureServerStatus } from '/@shared/entities/serverStatus'
 import { ServerStatusService as IServerStatusService, ServerStatusServiceKey } from '/@shared/services/ServerStatusService'
 import mcProtocolPath from '/@static/mc-protocol.json'
 import protocolPath from '/@static/protocol.json'
 
-@Service(ServerStatusServiceKey)
+@ExportService(ServerStatusServiceKey)
 export default class ServerStatusService extends AbstractService implements IServerStatusService {
   async initialize() {
     const protocolFile = this.getAppDataPath('protocol.json')
@@ -24,7 +24,7 @@ export default class ServerStatusService extends AbstractService implements ISer
       }
       this.commit('protocolMapping', {
         protocol: object.protocol,
-        mcversion: mcversionMapping
+        mcversion: mcversionMapping,
       })
     } else {
       const rev = await readJSON(protocolPath)
@@ -32,7 +32,7 @@ export default class ServerStatusService extends AbstractService implements ISer
 
       this.commit('protocolMapping', {
         protocol: forward,
-        mcversion: rev
+        mcversion: rev,
       })
     }
   }

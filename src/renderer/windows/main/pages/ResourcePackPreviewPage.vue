@@ -4,7 +4,10 @@
     fill-height
     class="resource-pack-preview-page"
   >
-    <v-layout v-if="!loading" style="height: 100%">
+    <v-layout
+      v-if="!loading"
+      style="height: 100%"
+    >
       <v-flex
         style="height: 100%"
         xs4
@@ -45,57 +48,57 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs, ref, Ref, computed, onMounted, inject, watch } from '@vue/composition-api';
-import { BlockModel } from '@xmcl/resourcepack';
-import { useBlockModelPreview, useBlockStateModels } from '/@/hooks';
-import { BlockStateJson } from '@main/service/ResourcePackPreviewService';
-import PreviewItem from './ResourcePackPreviewPageItem.vue';
-import Displayer from './ResourcePackPreviewPageDisplayer.vue';
-import { useSearch } from '../hooks';
+import { defineComponent, reactive, toRefs, ref, Ref, computed, onMounted, inject, watch } from '@vue/composition-api'
+import { BlockModel } from '@xmcl/resourcepack'
+import { useBlockModelPreview, useBlockStateModels } from '/@/hooks'
+import { BlockStateJson } from '@main/service/ResourcePackPreviewService'
+import PreviewItem from './ResourcePackPreviewPageItem.vue'
+import Displayer from './ResourcePackPreviewPageDisplayer.vue'
+import { useSearch } from '../hooks'
 
 export default defineComponent({
   components: { Displayer },
   props: { value: Boolean },
   setup() {
-    const { text } = useSearch();
-    const { listBlockStates, loadModel } = useBlockModelPreview();
-    const loading = ref(true);
-    let current: any;
+    const { text } = useSearch()
+    const { listBlockStates, loadModel } = useBlockModelPreview()
+    const loading = ref(true)
+    let current: any
     const data = reactive({
       models: [] as BlockStateJson[],
       displayed: undefined as undefined | { model: BlockModel.Resolved; textures: Record<string, { url: string }> },
-    });
-    const block: Ref<BlockStateJson | undefined> = ref(undefined);
-    const { selects, selected } = useBlockStateModels(block);
+    })
+    const block: Ref<BlockStateJson | undefined> = ref(undefined)
+    const { selects, selected } = useBlockStateModels(block)
     watch(selected, (path, last) => {
       if (path && path !== last) {
-        let model: string;
+        let model: string
         if (path instanceof Array) {
-          model = path[0].model;
+          model = path[0].model
         } else {
-          model = path.model;
+          model = path.model
         }
         loadModel(model).then((m) => {
-          data.displayed = Object.freeze(m);
-        });
+          data.displayed = Object.freeze(m)
+        })
       }
-    });
-    loading.value = true;
+    })
+    loading.value = true
     listBlockStates().then((json) => {
       data.models = json.map(j => Object.freeze({
         ...j,
         onClick() {
-          block.value = j;
+          block.value = j
         },
-      })).sort((a, b) => a.name.localeCompare(b.name));
+      })).sort((a, b) => a.name.localeCompare(b.name))
     }).finally(() => {
-      loading.value = false;
-    });
+      loading.value = false
+    })
     function filterItem(r: BlockStateJson) {
-      if (!text.value) return true;
-      return r.name.toLowerCase().indexOf(text.value.toLowerCase()) !== -1;
+      if (!text.value) return true
+      return r.name.toLowerCase().indexOf(text.value.toLowerCase()) !== -1
     }
-    const items = computed(() => data.models.filter(filterItem));
+    const items = computed(() => data.models.filter(filterItem))
     return {
       ...toRefs(data),
       loading,
@@ -103,7 +106,7 @@ export default defineComponent({
       selects,
       listBlockStates,
       PreviewItem,
-    };
+    }
   },
-});
+})
 </script>

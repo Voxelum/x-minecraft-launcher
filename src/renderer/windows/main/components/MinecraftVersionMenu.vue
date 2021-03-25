@@ -8,7 +8,7 @@
     :close-on-content-click="false"
     :disabled="disabled"
   >
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <slot :on="on" />
     </template>
     <v-text-field
@@ -20,9 +20,9 @@
       dark
       hide-details
     >
-      <template v-slot:prepend>
+      <template #prepend>
         <v-tooltip top>
-          <template v-slot:activator="{ on }">
+          <template #activator="{ on }">
             <v-chip
               :color="showAlpha ? 'green' : ''"
               icon
@@ -31,7 +31,9 @@
               style="margin: 0px; height: 48px; border-radius: 0;"
               @click="showAlpha = !showAlpha"
             >
-              <v-icon v-on="on">bug_report</v-icon>
+              <v-icon v-on="on">
+                bug_report
+              </v-icon>
             </v-chip>
           </template>
           {{ $t("version.showSnapshot") }}
@@ -50,10 +52,10 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs, computed } from '@vue/composition-api';
-import { MinecraftVersion } from '@xmcl/installer';
-import { useMinecraftVersions } from '/@/hooks';
-import { withDefault } from '/@/util/props';
+import { defineComponent, reactive, toRefs, computed } from '@vue/composition-api'
+import { MinecraftVersion } from '@xmcl/installer'
+import { useMinecraftVersions } from '/@/hooks'
+import { withDefault } from '/@/util/props'
 
 export default defineComponent({
   props: {
@@ -65,23 +67,23 @@ export default defineComponent({
       opened: false,
       showAlpha: false,
       filterText: '',
-    });
-    const { versions, statuses, refreshing } = useMinecraftVersions();
+    })
+    const { versions, statuses, refreshing } = useMinecraftVersions()
     function filterMinecraft(v: MinecraftVersion) {
-      if (!data.showAlpha && v.type !== 'release') return false;
-      return v.id.indexOf(data.filterText) !== -1;
+      if (!data.showAlpha && v.type !== 'release') return false
+      return v.id.indexOf(data.filterText) !== -1
     }
     function selectVersion(item: { id: string }) {
-      context.emit('input', item.id);
-      data.opened = false;
+      context.emit('input', item.id)
+      data.opened = false
     }
     return {
       ...toRefs(data),
       versions: computed(() => versions.value.filter(filterMinecraft)),
       selectVersion,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

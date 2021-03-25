@@ -43,6 +43,6 @@ export function useTaskFromServiceCall (call: Ref<Readonly<Promise<any> | undefi
     total,
     message,
     status,
-    wait
+    wait,
   }
 }

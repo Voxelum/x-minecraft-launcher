@@ -2,7 +2,7 @@ import { Ref, watch, onUnmounted, ref, onMounted } from '@vue/composition-api'
 
 export function useDraggableElem (
   elem: Ref<HTMLElement | null>,
-  dragging = ref(false)
+  dragging = ref(false),
 ) {
   function onMouseDown () {
     dragging.value = true
@@ -21,12 +21,12 @@ export function useDraggableElem (
     e.removeEventListener('dragend', onDragEnd)
   })
   return {
-    dragging
+    dragging,
   }
 }
 
 export function useDrop (
-  callback: (file: File) => void
+  callback: (file: File) => void,
 ) {
   function onDrop (event: DragEvent) {
     if (!event.dataTransfer) return
@@ -43,7 +43,7 @@ export function useDrop (
 
 export function useDropElem (
   elem: Ref<HTMLElement | null>,
-  callback: (file: File) => void
+  callback: (file: File) => void,
 ) {
   function onDrop (event: DragEvent) {
     if (!event.dataTransfer) return

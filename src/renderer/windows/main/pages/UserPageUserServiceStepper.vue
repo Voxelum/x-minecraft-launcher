@@ -57,7 +57,9 @@
             @click.native="step = 2"
           >
             {{ $t('next') }}
-            <v-icon right>arrow_right</v-icon>
+            <v-icon right>
+              arrow_right
+            </v-icon>
           </v-btn>
         </v-flex>
       </v-layout>
@@ -95,7 +97,9 @@
             @click.native="finish"
           >
             {{ $t('finish') }}
-            <v-icon right>check</v-icon>
+            <v-icon right>
+              check
+            </v-icon>
           </v-btn>
           <v-btn
             flat
@@ -103,7 +107,9 @@
             @click.native="step = 3"
           >
             {{ $t('next') }}
-            <v-icon right>arrow_right</v-icon>
+            <v-icon right>
+              arrow_right
+            </v-icon>
           </v-btn>
         </v-flex>
       </v-layout>
@@ -140,7 +146,9 @@
             @click.native="finish"
           >
             {{ $t('finish') }}
-            <v-icon right>check</v-icon>
+            <v-icon right>
+              check
+            </v-icon>
           </v-btn>
         </v-flex>
       </v-layout>
@@ -149,10 +157,10 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs, onMounted, watch, nextTick } from '@vue/composition-api';
-import { useStore, useI18n } from '/@/hooks';
+import { defineComponent, reactive, toRefs, onMounted, watch, nextTick } from '@vue/composition-api'
+import { useStore, useI18n } from '/@/hooks'
 
-const HTTP_EXP = /(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
+const HTTP_EXP = /(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/
 export default defineComponent({
   props: {
     modify: {
@@ -161,16 +169,16 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    const { state, commit } = useStore();
-    const { $t } = useI18n();
+    const { state, commit } = useStore()
+    const { $t } = useI18n()
     const urlRules = [
       (value: string) => !!HTTP_EXP.test(value) || $t('user.service.invalidUrl'),
-    ];
+    ]
     const nameRules = [
       (value: string) => !!value || $t('user.service.requireName'),
       (value: string) => !state.user.authServices[value] || $t('user.service.duplicatedName'),
-    ];
-    const authOrder = ['hostName', 'authenticate', 'refresh', 'validate', 'invalidate', 'signout'];
+    ]
+    const authOrder = ['hostName', 'authenticate', 'refresh', 'validate', 'invalidate', 'signout']
     const data = reactive({
       name: '',
       step: 0,
@@ -196,70 +204,70 @@ export default defineComponent({
         profileByName: '',
         texture: '',
       },
-    });
-    const dataRefs = toRefs(data);
+    })
+    const dataRefs = toRefs(data)
     onMounted(() => {
       watch(dataRefs.step, () => {
         if (data.step > 1) {
-          if (data.newAuth.hostName === ''
-            && data.newAuth.authenticate === ''
-            && data.newAuth.refresh === ''
-            && data.newAuth.validate === ''
-            && data.newAuth.invalidate === ''
-            && data.newAuth.signout === '') {
+          if (data.newAuth.hostName === '' &&
+            data.newAuth.authenticate === '' &&
+            data.newAuth.refresh === '' &&
+            data.newAuth.validate === '' &&
+            data.newAuth.invalidate === '' &&
+            data.newAuth.signout === '') {
             if (!data.baseUrl.startsWith('http://') && !data.baseUrl.startsWith('https://')) {
-              data.baseUrl = `http://${data.baseUrl}`;
+              data.baseUrl = `http://${data.baseUrl}`
             }
-            data.newAuth.hostName = `${data.baseUrl}`;
+            data.newAuth.hostName = `${data.baseUrl}`
             if (data.template === 0) {
-              data.newAuth.authenticate = '/authenticate';
-              data.newAuth.refresh = '/refresh';
-              data.newAuth.validate = '/validate';
-              data.newAuth.invalidate = '/invalidate';
-              data.newAuth.signout = '/signout';
+              data.newAuth.authenticate = '/authenticate'
+              data.newAuth.refresh = '/refresh'
+              data.newAuth.validate = '/validate'
+              data.newAuth.invalidate = '/invalidate'
+              data.newAuth.signout = '/signout'
             } else {
-              data.newAuth.authenticate = '/authserver/authenticate';
-              data.newAuth.refresh = '/authserver/refresh';
-              data.newAuth.validate = '/authserver/validate';
-              data.newAuth.invalidate = '/authserver/invalidate';
-              data.newAuth.signout = '/authserver/signout';
+              data.newAuth.authenticate = '/authserver/authenticate'
+              data.newAuth.refresh = '/authserver/refresh'
+              data.newAuth.validate = '/authserver/validate'
+              data.newAuth.invalidate = '/authserver/invalidate'
+              data.newAuth.signout = '/authserver/signout'
             }
           }
 
-          if (data.newProfileService.profile === ''
-            && data.newProfileService.profileByName === ''
-            && data.newProfileService.texture === '') {
+          if (data.newProfileService.profile === '' &&
+            data.newProfileService.profileByName === '' &&
+            data.newProfileService.texture === '') {
             if (data.template === 0) {
-              data.newProfileService.profile = `${data.baseUrl}/session/minecraft/profile/\${uuid}`;
+              data.newProfileService.profile = `${data.baseUrl}/session/minecraft/profile/\${uuid}`
             } else {
-              data.newProfileService.profile = `${data.baseUrl}/sessionserver/session/minecraft/profile/\${uuid}`;
+              data.newProfileService.profile = `${data.baseUrl}/sessionserver/session/minecraft/profile/\${uuid}`
             }
-            data.newProfileService.profileByName = `${data.baseUrl}/users/profiles/minecraft/\${name}`;
-            data.newProfileService.texture = `${data.baseUrl}/user/profile/\${uuid}/\${type}`;
+            data.newProfileService.profileByName = `${data.baseUrl}/users/profiles/minecraft/\${name}`
+            data.newProfileService.texture = `${data.baseUrl}/user/profile/\${uuid}/\${type}`
           }
         }
-      });
+      })
       if (props.modify !== '') {
-        const authSeriv = state.user.authServices[props.modify];
+        const authSeriv = state.user.authServices[props.modify]
         if (authSeriv) {
-          data.newAuth = { ...authSeriv };
+          data.newAuth = { ...authSeriv }
         }
-        const profSeriv = state.user.profileServices[props.modify];
+        const profSeriv = state.user.profileServices[props.modify]
         if (profSeriv) {
-          data.newProfileService = { ...profSeriv };
-          delete (data.newProfileService as any).publicKey;
+          data.newProfileService = { ...profSeriv }
+          delete (data.newProfileService as any).publicKey
         }
-        data.enableProfileService = !!profSeriv;
-        data.enableAuthService = !!authSeriv;
+        data.enableProfileService = !!profSeriv
+        data.enableAuthService = !!authSeriv
 
-        data.name = props.modify;
+        data.name = props.modify
 
         nextTick().then(() => {
-          data.step = 2;
-        });
+          data.step = 2
+        })
       } else {
-        data.enableProfileService = true;
-        data.enableAuthService = true;
+        data.enableProfileService = true
+        data.enableAuthService = true
         data.newAuth = {
           hostName: '',
           authenticate: '',
@@ -267,36 +275,36 @@ export default defineComponent({
           validate: '',
           invalidate: '',
           signout: '',
-        };
+        }
         data.newProfileService = {
           profile: '',
           profileByName: '',
           texture: '',
-        };
+        }
         nextTick().then(() => {
-          data.step = 1;
-        });
+          data.step = 1
+        })
       }
-    });
+    })
     return {
       ...dataRefs,
       authOrder,
       urlRules,
       nameRules,
       finish() {
-        commit('authService', { name: data.name, api: data.newAuth });
-        commit('profileService', { name: data.name, api: data.newProfileService });
+        commit('authService', { name: data.name, api: data.newAuth })
+        commit('profileService', { name: data.name, api: data.newProfileService })
 
-        context.emit('cancel');
+        context.emit('cancel')
       },
       onKeyPress() {
         if (!data.baseUrlError) {
-          data.step = 2;
+          data.step = 2
         }
       },
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

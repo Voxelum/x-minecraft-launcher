@@ -4,29 +4,29 @@ import { Category } from '@xmcl/curseforge'
 import { ModuleOption } from '../root'
 
 interface State {
-    downloading: { fileId: number; taskId: string }[];
-    categories: Category[];
-    categoriesTimestamp: string;
+  downloading: { fileId: number; taskId: string }[]
+  categories: Category[]
+  categoriesTimestamp: string
 }
 
 interface Getters {
-    isFileInstalled: (file: { id: number; href: string }) => boolean;
-    findFileInstalled: (file: { id: number; href: string }) => PersistedResource | undefined;
+  isFileInstalled: (file: { id: number; href: string }) => boolean
+  findFileInstalled: (file: { id: number; href: string }) => PersistedResource | undefined
 }
 
 interface Mutations {
-    curseforgeDownloadFileStart: { fileId: number; taskId: string };
-    curseforgeDownloadFileEnd: number;
-    curseforgeCategories: { categories: Category[]; timestamp: string };
+  curseforgeDownloadFileStart: { fileId: number; taskId: string }
+  curseforgeDownloadFileEnd: number
+  curseforgeCategories: { categories: Category[]; timestamp: string }
 }
 
-export type CurseForgeModule = ModuleOption<State, Getters, Mutations, {}>;
+export type CurseForgeModule = ModuleOption<State, Getters, Mutations, {}>
 
 const mod: CurseForgeModule = {
   state: {
     downloading: [],
     categories: [],
-    categoriesTimestamp: ''
+    categoriesTimestamp: '',
   },
   getters: {
     isFileInstalled: (state, _, rt) => (file) => {
@@ -64,7 +64,7 @@ const mod: CurseForgeModule = {
       /* eslint-enable no-cond-assign */
 
       return undefined
-    }
+    },
   },
   mutations: {
     curseforgeDownloadFileStart (state, { fileId, taskId }) {
@@ -81,8 +81,8 @@ const mod: CurseForgeModule = {
     curseforgeCategories (state, { categories, timestamp }) {
       state.categories = categories
       state.categoriesTimestamp = timestamp
-    }
-  }
+    },
+  },
 }
 
 export default mod

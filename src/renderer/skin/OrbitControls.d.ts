@@ -1,29 +1,29 @@
 import { Camera, Vector3 } from 'three'
 
 export declare class OrbitControls {
-    public target: Vector3
+  public target: Vector3
 
-    public enablePan: boolean
+  public enablePan: boolean
 
-    public enableKeys: boolean
+  public enableKeys: boolean
 
-    public maxDistance: number
+  public maxDistance: number
 
-    public minDistance: number
+  public minDistance: number
 
-    public autoRotate: boolean
+  public autoRotate: boolean
 
-    public autoRotateSpeed: number
+  public autoRotateSpeed: number
 
-    public zoomSpeed: number
+  public zoomSpeed: number
 
-    public enableDamping: boolean
+  public enableDamping: boolean
 
-    public dampingFactor: number
+  public dampingFactor: number
 
-    public rotateSpeed: number
+  public rotateSpeed: number
 
-    constructor(camera: Camera, domElement: Element);
+  constructor(camera: Camera, domElement: Element);
 
-    update(): void
+  update(): void
 }

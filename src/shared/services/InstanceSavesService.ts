@@ -6,107 +6,111 @@ export interface ExportSaveOptions {
    *
    * This will be the active instance by default.
    */
-  instancePath?: string;
+  instancePath?: string
   /**
    * The save folder name to export.
    */
-  saveName: string;
+  saveName: string
   /**
    * The destination full file path.
    */
-  destination: string;
+  destination: string
   /**
    * Should export as zip
    * @default true
    */
-  zip?: boolean;
+  zip?: boolean
 }
 export interface ImportSaveOptions {
   /**
    * The source path of the zip or folder of the save to import
    */
-  source: string;
+  source: string
   /**
    * The destination instance directory path, e.g. the path of .minecraft folder.
    *
    * This will be the active instance by default.
    */
-  instancePath?: string;
+  instancePath?: string
   /**
    * The destination save folder name will be imported into.
    *
    * It will be the basename of the source file path if this is not present.
    */
-  saveName?: string;
+  saveName?: string
 }
 export interface DeleteSaveOptions {
   /**
    * The save name will be deleted
    */
-  saveName: string;
+  saveName: string
   /**
    * The instance path of this save. If this is not presented, it will use selected instance.
    */
-  instancePath?: string;
+  instancePath?: string
 }
 export interface CloneSaveOptions {
   /**
    * The source instance path. If it is not presented, it will use selected instance.
    */
-  srcInstancePath?: string;
+  srcInstancePath?: string
   /**
    * The destination instance path. If it is not presented, it will use selected instance.
    */
-  destInstancePath?: string | string[];
+  destInstancePath?: string | string[]
   /**
    * The save name to clone
    */
-  saveName: string;
+  saveName: string
   /**
    * The new save name.
    * @default Generated name from the `saveName`
    */
-  newSaveName?: string;
+  newSaveName?: string
 }
 /**
  * Provide the ability to preview saves data of an instance
  */
 export interface InstanceSavesService {
   /**
-   * Load all registered instances' saves metadata
+   * Read all registered instances' saves metadata
    */
-  loadAllInstancesSaves(): Promise<InstanceSave[]>;
+  readAllInstancesSaves(): Promise<InstanceSave[]>
+  /**
+   * Return the instance's screenshots urls.
+   *
+   * If the provided path is not a instance, it will return empty array.
+   */
+  getScreenshotUrls(path?: string): Promise<string[]>
   /**
    * Mount and load instances saves
    * @param path
    */
-  mountInstanceSaves(path: string): Promise<void>;
+  mountInstanceSaves(path: string): Promise<void>
   /**
    * Clone a save under an instance to one or multiple instances.
    *
    * @param options
    */
-  cloneSave(options: CloneSaveOptions): Promise<void>;
+  cloneSave(options: CloneSaveOptions): Promise<void>
   /**
    * Delete a save in a specific instance.
-   *
-   * @param options
    */
-  deleteSave(options: DeleteSaveOptions): Promise<void>;
+  deleteSave(options: DeleteSaveOptions): Promise<void>
   /**
    * Import a zip or folder save to the target instance.
    *
    * If the instancePath is not presented in the options, it will use the current selected instancePath.
+   *
+   * @returns The imported save path
    */
-  importSave(options: ImportSaveOptions): Promise<string>;
+  importSave(options: ImportSaveOptions): Promise<string>
   /**
    * Export a save from a managed instance to an external location.
    *
    * You can choose export the save to zip or a folder.
-   *
-   * @param options
    */
-  exportSave(options: ExportSaveOptions): Promise<void>;
+  exportSave(options: ExportSaveOptions): Promise<void>
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'

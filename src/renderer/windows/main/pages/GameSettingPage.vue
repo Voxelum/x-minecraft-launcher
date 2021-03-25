@@ -53,13 +53,13 @@
 </template>
 
 <script lang=ts>
-import { Frame } from '@xmcl/gamesetting';
-import { defineComponent, reactive, toRefs } from '@vue/composition-api';
-import { useAutoSaveLoad, useInstanceGameSetting } from '/@/hooks';
+import { Frame } from '@xmcl/gamesetting'
+import { defineComponent, reactive, toRefs } from '@vue/composition-api'
+import { useAutoSaveLoad, useInstanceGameSetting } from '/@/hooks'
 
 export default defineComponent({
   setup() {
-    const { refreshing, refresh, commit, showInFolder, ...settings } = useInstanceGameSetting();
+    const { refreshing, refresh, commit, showInFolder, ...settings } = useInstanceGameSetting()
     const data = reactive({
       graphics: [
         { name: 'fancyGraphics', options: [true, false], val: true },
@@ -73,37 +73,37 @@ export default defineComponent({
         { name: 'enableVsync', options: [true, false], val: true },
         { name: 'anaglyph3d', options: [true, false], val: false },
       ],
-    });
-    type Graphic = typeof data['graphics'][number];
+    })
+    type Graphic = typeof data['graphics'][number]
 
     async function load() {
-      refresh();
-      const graphics = data.graphics;
+      refresh()
+      const graphics = data.graphics
       for (const setting of graphics) {
-        const ref = Reflect.get(settings, setting.name);
+        const ref = Reflect.get(settings, setting.name)
         if (ref) {
-          setting.val = ref.value ?? setting.val;
+          setting.val = ref.value ?? setting.val
         }
       }
     }
     function save() {
-      const result: Frame = {};
+      const result: Frame = {}
       for (const setting of data.graphics) {
-        result[setting.name as keyof Frame] = setting.val as any;
+        result[setting.name as keyof Frame] = setting.val as any
       }
-      commit(result);
+      commit(result)
     }
-    useAutoSaveLoad(save, load);
+    useAutoSaveLoad(save, load)
     return {
       ...toRefs(data),
       refreshing,
       showInFolder,
       triggerGraphic(g: Graphic) {
-        const index = g.options.indexOf(g.val as never);
-        const nextIndex = (index + 1) % g.options.length;
-        g.val = g.options[nextIndex] as any;
+        const index = g.options.indexOf(g.val as never)
+        const nextIndex = (index + 1) % g.options.length
+        g.val = g.options[nextIndex] as any
       },
-    };
+    }
   },
-});
+})
 </script>

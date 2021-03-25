@@ -1,4 +1,4 @@
-type Primitive = number | string;
+type Primitive = number | string
 export function isPrimitiveArrayEqual(a: Primitive[], b: Primitive[]): boolean {
   if (a instanceof Array && b instanceof Array) {
     if (a.length !== b.length) return false
@@ -18,7 +18,7 @@ export function assignShallow(state: Record<string, any>, options: Record<string
     }
   }
 }
-export function toObjectReducer<T extends { [k in K]: string }, K extends string>(key: K) {
+export function toObjectReducer<T extends { [k in K]: string }, K extends string >(key: K) {
   return (o: { [key: string]: T }, v: T) => { o[v[key]] = v; return o }
 }
 
@@ -28,10 +28,19 @@ export function compareDate(a: Date, b: Date) {
   return a - b
 }
 
-export function toRecord<T, K extends string | symbol | number>(array: T[], key: (v: T) => K) {
+export function toRecord<T, K extends string | symbol | number >(array: T[], key: (v: T) => K) {
   const result: Record<K, T> = {} as any
   for (const i of array) {
     result[key(i)] = i
   }
   return result
 }
+
+// From https://github.com/andnp/SimplyTyped/blob/master/src/types/objects.ts
+export type DeepPartial<T > = Partial<{
+  [k in keyof T]:
+  T[k] extends unknown[] ? Array<DeepPartial<T[k][number]>> :
+    T[k] extends Function ? T[k] :
+      T[k] extends object ? DeepPartial<T[k]> :
+        T[k];
+}>

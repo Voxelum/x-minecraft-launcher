@@ -5,9 +5,13 @@ import instance from './instance'
 import java from './java'
 import launch from './launch'
 import resource from './resource'
-import setting from './setting'
+import base from './base'
 import user from './user'
 import version from './version'
+import instanceGameSetting from './instanceGameSetting'
+import instanceResource from './instanceResource'
+import instanceSave from './instanceSave'
+import instanceServerInfo from './instanceServerInfo'
 
 export const modules = {
   client,
@@ -17,9 +21,13 @@ export const modules = {
   java,
   launch,
   resource,
-  setting,
+  base,
   user,
-  version
+  version,
+  instanceGameSetting,
+  instanceResource,
+  instanceSave,
+  instanceServerInfo,
 }
 
 export default modules

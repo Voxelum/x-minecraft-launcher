@@ -7,13 +7,13 @@ export const JavaSchema: Schema<JavaSchema> = _JavaSchema
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 export interface Java {
-    path: string;
-    version: string;
-    majorVersion: number;
+  path: string
+  version: string
+  majorVersion: number
 }
 export interface JavaSchema {
-    /**
+  /**
      * @default []
      */
-    all: Java[];
+  all: Java[]
 }

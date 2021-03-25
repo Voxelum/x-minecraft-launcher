@@ -3,7 +3,7 @@ import { parseVersion, VersionRange } from '../util/mavenVersion'
 import { RuntimeVersions } from './instance.schema'
 import { requireNonnull } from '/@shared/util/assert'
 
-export type Status = 'remote' | 'local' | 'loading';
+export type Status = 'remote' | 'local' | 'loading'
 export interface PartialVersionResolver {
   (version: Version): string
 }
@@ -59,12 +59,12 @@ export const EMPTY_VERSION: ResolvedVersion = Object.freeze({
   time: '',
   type: '',
   pathChain: [],
-  inheritances: []
+  inheritances: [],
 })
 export interface LibrariesRecord {
-  org: string;
-  name: string;
-  version: string;
+  org: string
+  name: string
+  version: string
 }
 
 export function resolveRuntimeVersion(partialVersion: Version, runtime: RuntimeVersions) {
@@ -215,5 +215,5 @@ export const LATEST_RELEASE = {
   type: 'release',
   url: 'https://launchermeta.mojang.com/v1/packages/c847788ace47090745ba174a13eff17a95221c81/1.16.2.json',
   time: '2020-08-24T14:58:49+00:00',
-  releaseTime: '2020-08-11T10:13:46+00:00'
+  releaseTime: '2020-08-11T10:13:46+00:00',
 }
