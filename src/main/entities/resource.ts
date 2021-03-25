@@ -1,30 +1,29 @@
 import { Version } from '@xmcl/core'
 import { FabricModMetadata, LiteloaderModMetadata, readFabricMod, readForgeMod, readLiteloaderMod } from '@xmcl/mod-parser'
-import { deserialize } from '@xmcl/nbt'
 import { PackMeta, readIcon, readPackMeta } from '@xmcl/resourcepack'
 import { FileSystem, openFileSystem } from '@xmcl/system'
-import { LevelDataFrame } from '@xmcl/world'
 import filenamify from 'filenamify'
 import { ensureFile, stat, Stats, unlink, writeFile } from 'fs-extra'
 import { basename, extname, join } from 'path'
-import { findLevelRoot } from './save'
+import { findLevelRootDirectory, readResourceSaveMetadata } from './save'
 import { FileType, linkOrCopy } from '/@main/util/fs'
 import { CurseforgeModpackManifest } from '/@shared/entities/curseforge'
 import { RuntimeVersions } from '/@shared/entities/instance.schema'
 import { ForgeModCommonMetadata, normalizeForgeModMetadata } from '/@shared/entities/mod'
 import { AnyPersistedResource, AnyResource, PersistedResource, SourceInformation } from '/@shared/entities/resource'
-import { CurseforgeInformation, GithubInformation, PersistedResourceSchema, Resource, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
+import { PersistedResourceSchema, Resource, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
+import { ResourceSaveMetadata } from '/@shared/entities/save'
 import { resolveRuntimeVersion } from '/@shared/entities/version'
 import { FileTypeHint } from '/@shared/services/ResourceService'
 
 export interface FileStat extends Omit<Stats, 'isFile' | 'isDirectory' | 'isBlockDevice' | 'isCharacterDevice' | 'isSymbolicLink' | 'isFIFO' | 'isSocket'> {
-  isFile: boolean;
-  isDirectory: boolean;
-  isBlockDevice: boolean;
-  isCharacterDevice: boolean;
-  isSymbolicLink: boolean;
-  isFIFO: boolean;
-  isSocket: boolean;
+  isFile: boolean
+  isDirectory: boolean
+  isBlockDevice: boolean
+  isCharacterDevice: boolean
+  isSymbolicLink: boolean
+  isFIFO: boolean
+  isSocket: boolean
 }
 
 export async function readFileStat(path: string): Promise<FileStat> {
@@ -37,40 +36,40 @@ export async function readFileStat(path: string): Promise<FileStat> {
     isCharacterDevice: result.isCharacterDevice(),
     isSymbolicLink: result.isSymbolicLink(),
     isFIFO: result.isFIFO(),
-    isSocket: result.isSocket()
+    isSocket: result.isSocket(),
   }
 }
 
 export interface ResourceParser<T> {
-  type: ResourceType;
-  domain: ResourceDomain;
-  ext: string;
-  parseIcon: (metadata: T, data: FileSystem) => Promise<Uint8Array | undefined>;
-  parseMetadata: (data: FileSystem) => Promise<T>;
-  getSuggestedName: (metadata: T) => string;
+  type: ResourceType
+  domain: ResourceDomain
+  ext: string
+  parseIcon: (metadata: T, data: FileSystem) => Promise<Uint8Array | undefined>
+  parseMetadata: (data: FileSystem) => Promise<T>
+  getSuggestedName: (metadata: T) => string
   /**
    * Get ideal uri for this resource
    */
-  getUri: (metadata: T) => string[];
+  getUri: (metadata: T) => string[]
 }
 
 export interface PersistedResourceBuilder extends Omit<PersistedResourceSchema, 'metadata' | 'version'> {
-  icon?: Uint8Array;
-  path: string;
+  icon?: Uint8Array
+  path: string
 
-  metadata: unknown;
+  metadata: unknown
   /**
    * The ino of the file on disk
    */
-  ino: number;
+  ino: number
   /**
    * The size of the resource
    */
-  size: number;
+  size: number
   /**
    * The suggested ext of the resource
    */
-  ext: string;
+  ext: string
 }
 
 // resource entries
@@ -82,7 +81,7 @@ export const UNKNOWN_ENTRY: ResourceParser<unknown> = {
   parseIcon: () => Promise.resolve(undefined),
   parseMetadata: () => Promise.resolve({}),
   getSuggestedName: () => '',
-  getUri: () => []
+  getUri: () => [],
 }
 export const RESOURCE_PARSER_FORGE: ResourceParser<ForgeModCommonMetadata> = ({
   type: ResourceType.Forge,
@@ -126,7 +125,7 @@ export const RESOURCE_PARSER_FORGE: ResourceParser<ForgeModCommonMetadata> = ({
       }
     }
     return urls
-  }
+  },
 })
 export const RESOURCE_PARSER_LITELOADER: ResourceParser<LiteloaderModMetadata> = ({
   type: ResourceType.Liteloader,
@@ -150,7 +149,7 @@ export const RESOURCE_PARSER_LITELOADER: ResourceParser<LiteloaderModMetadata> =
     }
     return name
   },
-  getUri: meta => [`liteloader:///${meta.name}/${meta.version}`]
+  getUri: meta => [`liteloader:///${meta.name}/${meta.version}`],
 })
 export const RESOURCE_PARSER_FABRIC: ResourceParser<FabricModMetadata> = ({
   type: ResourceType.Fabric,
@@ -177,7 +176,7 @@ export const RESOURCE_PARSER_FABRIC: ResourceParser<FabricModMetadata> = ({
     }
     return name
   },
-  getUri: meta => [`fabric:///${meta.id}/${meta.version}`]
+  getUri: meta => [`fabric:///${meta.id}/${meta.version}`],
 })
 export const RESOURCE_PARSER_RESOURCE_PACK: ResourceParser<PackMeta.Pack> = ({
   type: ResourceType.ResourcePack,
@@ -186,20 +185,20 @@ export const RESOURCE_PARSER_RESOURCE_PACK: ResourceParser<PackMeta.Pack> = ({
   parseIcon: async (meta, fs) => readIcon(fs),
   parseMetadata: fs => readPackMeta(fs),
   getSuggestedName: () => '',
-  getUri: (_) => []
+  getUri: (_) => [],
 })
-export const RESOURCE_PARSER_SAVE: ResourceParser<LevelDataFrame> = ({
+export const RESOURCE_PARSER_SAVE: ResourceParser<ResourceSaveMetadata> = ({
   type: ResourceType.Save,
   domain: ResourceDomain.Saves,
   ext: '.zip',
   parseIcon: async (meta, fs) => fs.readFile('icon.png'),
   parseMetadata: async fs => {
-    const root = await findLevelRoot(fs, '')
+    const root = await findLevelRootDirectory(fs, '')
     if (!root) throw new Error()
-    return deserialize(await fs.readFile(fs.join(root, 'level.dat')))
+    return readResourceSaveMetadata(fs, root)
   },
-  getSuggestedName: meta => meta.LevelName,
-  getUri: (_) => []
+  getSuggestedName: meta => meta.levelName,
+  getUri: (_) => [],
 })
 export const RESOURCE_PARSER_MODPACK: ResourceParser<CurseforgeModpackManifest> = ({
   type: ResourceType.CurseforgeModpack,
@@ -208,7 +207,7 @@ export const RESOURCE_PARSER_MODPACK: ResourceParser<CurseforgeModpackManifest> 
   parseIcon: () => Promise.resolve(undefined),
   parseMetadata: fs => fs.readFile('manifest.json', 'utf-8').then(JSON.parse),
   getSuggestedName: () => '',
-  getUri: (man) => [`curseforge://name/${man.name}/${man.version}`]
+  getUri: (man) => [`curseforge://name/${man.name}/${man.version}`],
 })
 export const RESOURCE_PARSER_COMMON_MODPACK: ResourceParser<{ root: string; runtime: RuntimeVersions }> = ({
   type: ResourceType.Modpack,
@@ -245,7 +244,7 @@ export const RESOURCE_PARSER_COMMON_MODPACK: ResourceParser<{ root: string; runt
       fabricLoader: '',
       forge: '',
       liteloader: '',
-      yarn: ''
+      yarn: '',
     }
     for (const version of versions) {
       const json = await fs.readFile(fs.join(fs.join(root, 'versions', version, `${version}.json`)), 'utf-8')
@@ -257,7 +256,7 @@ export const RESOURCE_PARSER_COMMON_MODPACK: ResourceParser<{ root: string; runt
     return { root, runtime }
   },
   getSuggestedName: () => '',
-  getUri: (_) => []
+  getUri: (_) => [],
 })
 export const RESOURCE_PARSERS = [
   RESOURCE_PARSER_COMMON_MODPACK,
@@ -266,7 +265,7 @@ export const RESOURCE_PARSERS = [
   RESOURCE_PARSER_LITELOADER,
   RESOURCE_PARSER_RESOURCE_PACK,
   RESOURCE_PARSER_SAVE,
-  RESOURCE_PARSER_MODPACK
+  RESOURCE_PARSER_MODPACK,
 ]
 
 // resource functions
@@ -290,7 +289,7 @@ export function createPersistedResourceBuilder(source: SourceInformation = {}): 
     size: 0,
     uri: [],
     date: new Date().toJSON(),
-    ...source
+    ...source,
   }
 }
 export function getResourceFromBuilder(builder: PersistedResourceBuilder): PersistedResource {
@@ -317,8 +316,8 @@ export function getCurseforgeSourceInfo(project: number, file: number): SourceIn
   return {
     curseforge: {
       projectId: project,
-      fileId: file
-    }
+      fileId: file,
+    },
   }
 }
 
@@ -339,10 +338,13 @@ export async function resolveResourceWithParser(path: string, fileType: FileType
       // skip
     }
   }
+  const slice = sha1.slice(0, 6)
+  const name = parser.getSuggestedName(metadata) || basename(path, ext)
 
   return [{
     path,
-    name: parser.getSuggestedName(metadata) || basename(path, ext),
+    location: join(parser.domain, `${name}.${slice}`),
+    name,
     ino: stat.ino,
     size: stat.size,
     ext: extname(path),
@@ -351,7 +353,7 @@ export async function resolveResourceWithParser(path: string, fileType: FileType
     type: parser.type,
     fileType,
     metadata,
-    uri: parser.getUri(metadata)
+    uri: parser.getUri(metadata),
   }, icon]
 }
 
@@ -446,7 +448,7 @@ export async function remove(resource: Readonly<PersistedResource>, root: string
 // resource class
 
 export class ResourceCache {
-  private cache: Record<string, AnyPersistedResource | undefined> = {};
+  private cache: Record<string, AnyPersistedResource | undefined> = {}
 
   put(resource: AnyPersistedResource) {
     this.cache[resource.hash] = resource

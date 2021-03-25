@@ -3,10 +3,10 @@ import { writeJSON } from 'fs-extra'
 import debounce from 'lodash.debounce'
 
 export interface WindowsTransform {
-    width: number;
-    height: number;
-    x: number | null;
-    y: number | null;
+  width: number
+  height: number
+  x: number | null
+  y: number | null
 }
 
 export function trackWindowSize (browserWindow: BrowserWindow, config: WindowsTransform, configPath: string) {

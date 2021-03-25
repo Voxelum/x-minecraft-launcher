@@ -21,7 +21,7 @@ const dic = Object.freeze({
   v19,
   v18,
   v17,
-  v16
+  v16,
 })
 
 export function getBanner (version: string) {

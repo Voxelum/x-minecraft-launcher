@@ -13,7 +13,9 @@
 
       <v-card-text>
         {{ $t('save.deleteHint') }}
-        <div style="color: grey">{{ value }}</div>
+        <div style="color: grey">
+          {{ value }}
+        </div>
       </v-card-text>
 
       <v-divider />
@@ -39,7 +41,7 @@
 </template>
 
 <script>
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent } from '@vue/composition-api'
 
 export default defineComponent({
   props: {
@@ -53,7 +55,7 @@ export default defineComponent({
       type: String,
     },
   },
-});
+})
 </script>
 
 <style>

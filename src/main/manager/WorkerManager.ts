@@ -1,9 +1,9 @@
 import { Manager } from '.'
 import createWorker from '../workers/index?worker'
-import { CPUWorker, WorkerAgent } from '/@main/entities/worker'
+import { WorkerAgent } from '/@main/entities/worker'
 
 export default class WorkerManager extends Manager {
-  private worker: WorkerAgent | undefined;
+  private worker: WorkerAgent | undefined
 
   getWorker(): WorkerAgent {
     if (!this.worker) {

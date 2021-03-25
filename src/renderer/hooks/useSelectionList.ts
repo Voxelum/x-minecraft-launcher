@@ -14,7 +14,7 @@ export function useProgressiveLoad () {
   }
   return {
     onItemVisibile,
-    filter
+    filter,
   }
 }
 
@@ -23,7 +23,7 @@ export function useProgressiveLoad () {
  */
 export function useDropImport (
   elem: Ref<HTMLElement | null | undefined>,
-  importHint?: string
+  importHint?: string,
 ) {
   const { importResource: importUnknownResource } = useResourceOperation()
   function onDrop (event: DragEvent) {
@@ -54,7 +54,7 @@ export function useDropImport (
  */
 export function useDropImportFile (
   elem: Ref<HTMLElement | null>,
-  handler: (file: File) => void
+  handler: (file: File) => void,
 ) {
   function onDrop (event: DragEvent) {
     if (!event.dataTransfer) return
@@ -81,9 +81,9 @@ export function useDropImportFile (
 export function useDragTransferItemMutable (elem: Ref<HTMLElement>, item: Ref<{ id: string; side: string }>) {
   let memo: HTMLElement
   function onDragStart (e: DragEvent) {
-        e.dataTransfer!.effectAllowed = 'move'
-        e.dataTransfer!.setData('side', item.value.side)
-        e.dataTransfer!.setData('id', item.value.id)
+    e.dataTransfer!.effectAllowed = 'move'
+    e.dataTransfer!.setData('side', item.value.side)
+    e.dataTransfer!.setData('id', item.value.id)
   }
   function setup () {
     const element = elem.value
@@ -106,8 +106,8 @@ export function useDragTransferItemMutable (elem: Ref<HTMLElement>, item: Ref<{ 
 export function useDragTransferItem (elem: Ref<HTMLElement>, id: string, side: string) {
   let memo: HTMLElement
   function onDragStart (e: DragEvent) {
-        e.dataTransfer!.setData('side', side)
-        e.dataTransfer!.setData('id', id)
+    e.dataTransfer!.setData('side', side)
+    e.dataTransfer!.setData('id', id)
   }
   onMounted(() => {
     const element = elem.value
@@ -142,7 +142,7 @@ export function useDragTransferList (
   right: Ref<null | HTMLElement>,
   insert: (from: string, to: string) => void,
   add: (id: string, to?: string) => void,
-  remove: (id: string) => void
+  remove: (id: string) => void,
 ) {
   function handleDrop (event: DragEvent, left: boolean) {
     event.preventDefault()
@@ -182,22 +182,22 @@ export function useDragTransferList (
   onMounted(() => {
     leftRef = left.value!
     rightRef = right.value!
-        left.value!.addEventListener('drop', onDropLeft)
-        left.value!.addEventListener('dragover', onDragOver)
-        left.value!.addEventListener('wheel', onMouseWheel)
+    left.value!.addEventListener('drop', onDropLeft)
+    left.value!.addEventListener('dragover', onDragOver)
+    left.value!.addEventListener('wheel', onMouseWheel)
 
-        right.value!.addEventListener('drop', onDropRight)
-        right.value!.addEventListener('dragover', onDragOver)
-        right.value!.addEventListener('wheel', onMouseWheel)
+    right.value!.addEventListener('drop', onDropRight)
+    right.value!.addEventListener('dragover', onDragOver)
+    right.value!.addEventListener('wheel', onMouseWheel)
   })
 
   onUnmounted(() => {
-        leftRef!.removeEventListener('drop', onDropLeft)
-        leftRef!.removeEventListener('dragover', onDragOver)
-        leftRef!.removeEventListener('wheel', onMouseWheel)
+    leftRef!.removeEventListener('drop', onDropLeft)
+    leftRef!.removeEventListener('dragover', onDragOver)
+    leftRef!.removeEventListener('wheel', onMouseWheel)
 
-        rightRef!.removeEventListener('drop', onDropRight)
-        rightRef!.removeEventListener('dragover', onDragOver)
-        rightRef!.removeEventListener('wheel', onMouseWheel)
+    rightRef!.removeEventListener('drop', onDropRight)
+    rightRef!.removeEventListener('dragover', onDragOver)
+    rightRef!.removeEventListener('wheel', onMouseWheel)
   })
 }

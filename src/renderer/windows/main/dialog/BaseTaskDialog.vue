@@ -1,12 +1,26 @@
 <template>
-  <v-dialog v-model="isShown" persistent hide-overlay width="500" style="max-height: 100%" class="task-dialog">
-    <v-toolbar dark tabs color="grey darken-3">
+  <v-dialog
+    v-model="isShown"
+    persistent
+    hide-overlay
+    width="500"
+    style="max-height: 100%"
+    class="task-dialog"
+  >
+    <v-toolbar
+      dark
+      tabs
+      color="grey darken-3"
+    >
       <v-toolbar-title>{{ $t('task.manager') }}</v-toolbar-title>
       <v-spacer />
-      <v-btn icon @click="hide">
+      <v-btn
+        icon
+        @click="hide"
+      >
         <v-icon>arrow_drop_down</v-icon>
       </v-btn>
-      <template v-slot:extension>
+      <template #extension>
         <v-tabs
           v-model="tabs"
           centered
@@ -50,11 +64,11 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent } from '@vue/composition-api';
-import { useDialog } from '../hooks';
-import TaskView from './BaseTaskDialogTaskView.vue';
-import IssueView from './BaseTaskDialogIssueView.vue';
-import NotificationView from './BaseTaskDialogNotificationView.vue';
+import { reactive, toRefs, defineComponent } from '@vue/composition-api'
+import { useDialog } from '../hooks'
+import TaskView from './BaseTaskDialogTaskView.vue'
+import IssueView from './BaseTaskDialogIssueView.vue'
+import NotificationView from './BaseTaskDialogNotificationView.vue'
 
 export default defineComponent({
   components: { TaskView, IssueView, NotificationView },
@@ -65,19 +79,19 @@ export default defineComponent({
     },
   },
   setup() {
-    const { hide, isShown } = useDialog('task');
+    const { hide, isShown } = useDialog('task')
 
     const data = reactive({
       tabs: 0,
-    });
+    })
 
     return {
       ...toRefs(data),
       isShown,
       hide,
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped=true>

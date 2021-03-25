@@ -1,7 +1,7 @@
 import throttle from 'lodash.throttle'
 import { DebouncedFunc } from 'lodash'
 
-export function createhDynamicThrottle<T extends (...args: any[]) => any>(f: T, keyExtractor: (...param: Parameters<T>) => string, time: number): T {
+export function createhDynamicThrottle<T extends (...args: any[]) => any >(f: T, keyExtractor: (...param: Parameters<T>) => string, time: number): T {
   const memos: Record<string, DebouncedFunc<T>> = {}
   const result: T = (((...params: any[]) => {
     const key = keyExtractor(...params as any)

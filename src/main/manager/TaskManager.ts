@@ -7,19 +7,19 @@ import { v4 } from 'uuid'
 import { Manager } from '.'
 
 export default class TaskManager extends Manager {
-  readonly emitter: TaskEventEmitter = new EventEmitter();
+  readonly emitter: TaskEventEmitter = new EventEmitter()
 
-  private pushers: Map<Client, () => void> = new Map();
+  private pushers: Map<Client, () => void> = new Map()
 
   /**
    * All root tasks
    */
-  private tasks: Task<any>[] = [];
+  private tasks: Task<any>[] = []
 
   /**
    * The dictionary for all root tasks
    */
-  readonly record: Record<string, Task> = {};
+  readonly record: Record<string, Task> = {}
 
   constructor(app: LauncherApp) {
     super(app)
@@ -56,7 +56,7 @@ export default class TaskManager extends Manager {
       },
       onCancelled(task: Task<any>) {
         emitter.emit('cancel', uid, task)
-      }
+      },
     }
     return context
   }
@@ -71,7 +71,7 @@ export default class TaskManager extends Manager {
   /**
    * Submit a task to run
    */
-  submit<T>(task: Task<T>): Promise<T> {
+  submit<T >(task: Task<T>): Promise<T> {
     const uid = v4()
     const listener = this.createTaskListener(uid)
     this.record[uid] = task
@@ -90,14 +90,14 @@ export default class TaskManager extends Manager {
 
   storeReady() {
     class SampleTask extends TaskLooped<void> {
-      private handle!: NodeJS.Timeout;
+      private handle!: NodeJS.Timeout
 
       constructor(total: number) {
         super()
         this._total = total
       }
 
-      protected process(): Promise<[boolean, void | undefined]> {
+      protected process(): Promise<[boolean, void | undefined ]> {
         return new Promise((resolve, reject) => {
           this.handle = setInterval(() => {
             if (this.isRunning) {

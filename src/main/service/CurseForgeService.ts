@@ -5,29 +5,29 @@ import { Agent } from 'https'
 import { basename, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import ResourceService from './ResourceService'
-import AbstractService, { Service, Singleton } from './Service'
+import AbstractService, { ExportService, Inject, Singleton } from './Service'
 import { getCurseforgeSourceInfo } from '/@main/entities/resource'
 import { ProjectType } from '/@shared/entities/curseforge'
-import { CurseForgeServiceKey, CurseForgeService as ICurseForgeService, InstallFileOptions } from '/@shared/services/CurseForgeService'
+import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, InstallFileOptions } from '/@shared/services/CurseForgeService'
 import { requireObject, requireString } from '/@shared/util/assert'
 import { compareDate } from '/@shared/util/object'
 
-@Service(CurseForgeServiceKey)
+@ExportService(CurseForgeServiceKey)
 export default class CurseForgeService extends AbstractService implements ICurseForgeService {
-  private userAgent: Agent = new Agent({ keepAlive: true });
+  private userAgent: Agent = new Agent({ keepAlive: true })
 
-  private projectTimestamp = '';
+  private projectTimestamp = ''
 
-  private projectCache: Record<number, AddonInfo> = {};
+  private projectCache: Record<number, AddonInfo> = {}
 
-  private projectDescriptionCache: Record<number, string> = {};
+  private projectDescriptionCache: Record<number, string> = {}
 
-  private projectFilesCache: Record<number, File[]> = {};
+  private projectFilesCache: Record<number, File[]> = {}
 
-  private searchProjectCache: Record<string, AddonInfo[]> = {};
+  private searchProjectCache: Record<string, AddonInfo[]> = {}
 
   constructor(app: LauncherApp,
-    private resourceService: ResourceService
+    @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app)
   }
@@ -94,7 +94,7 @@ export default class CurseForgeService extends AbstractService implements ICurse
       'mc-mods': 'mods',
       'texture-packs': 'resourcepack',
       worlds: 'save',
-      modpacks: 'curseforge-modpack'
+      modpacks: 'curseforge-modpack',
     }
     const urls = [file.downloadUrl, `curseforge://${projectId}/${file.id}`]
     this.log(`Try install file ${file.displayName}(${file.downloadUrl}) in type ${type}`)
@@ -108,12 +108,10 @@ export default class CurseForgeService extends AbstractService implements ICurse
     try {
       const destination = join(this.app.temporaryPath, basename(file.downloadUrl))
       const importResourceTask = task('importResource', async function () {
-        // c.update(0, 100);
-
         await this.yield(new DownloadTask({
           ...networkManager.getDownloadBaseOptions(),
           url: file.downloadUrl,
-          destination
+          destination,
         }).setName('download')/* , 80 */)
 
         // TODO: add tag from addon info
@@ -123,7 +121,7 @@ export default class CurseForgeService extends AbstractService implements ICurse
           url: urls,
           source: getCurseforgeSourceInfo(projectId, file.id),
           type: typeHints[type],
-          background: true
+          background: true,
         }))/* , 20 */)
       })
 

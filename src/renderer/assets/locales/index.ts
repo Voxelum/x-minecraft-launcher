@@ -6,7 +6,7 @@ import ru from './ru.json'
 const locales = {
   en,
   ru,
-  'zh-CN': zhCN
+  'zh-CN': zhCN,
 }
 
 export default locales

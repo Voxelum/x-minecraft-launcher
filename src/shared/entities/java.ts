@@ -4,7 +4,7 @@ import { Java } from './java.schema'
  * A record of a java path
  */
 export interface JavaRecord extends Java {
-    valid: boolean
+  valid: boolean
 }
 
 /**
@@ -14,5 +14,5 @@ export const EMPTY_JAVA: JavaRecord = {
   version: '',
   majorVersion: 0,
   path: '',
-  valid: false
+  valid: false,
 }

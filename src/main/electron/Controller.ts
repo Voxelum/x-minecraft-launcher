@@ -5,31 +5,31 @@ import BaseService from '/@main/service/BaseService'
 import { acrylic } from '/@main/util/acrylic'
 import { trackWindowSize } from '/@main/util/windowSizeTracker'
 import { TaskNotification } from '/@shared/entities/notification'
-import { StaticStore } from '/@shared/util/staticStore'
+import { StaticStore } from '../util/staticStore'
 import { app, BrowserWindow, dialog, ProcessMemoryInfo, Menu, session, Tray, Notification } from 'electron'
 import { readJSON } from 'fs-extra'
 import { join, resolve } from 'path'
 import indexPreload from '/@preload/index'
-import mainWinUrl from '/@renderer/index'
-import loggerWinUrl from '/@renderer/logger'
-import setupWinUrl from '/@renderer/setup'
+import mainWinUrl from '/@renderer/index.html'
+import loggerWinUrl from '/@renderer/logger.html'
+import setupWinUrl from '/@renderer/setup.html'
 import LauncherApp from '../app/LauncherApp'
 import favcon2XPath from '/@static/favicon@2x.png'
 import iconPath from '/@static/apple-touch-icon.png'
 import i18n from './locales'
 
 export default class Controller implements LauncherAppController {
-  private mainWin: BrowserWindow | undefined = undefined;
+  private mainWin: BrowserWindow | undefined = undefined
 
-  private loggerWin: BrowserWindow | undefined = undefined;
+  private loggerWin: BrowserWindow | undefined = undefined
 
-  private setupRef: BrowserWindow | undefined = undefined;
+  private setupRef: BrowserWindow | undefined = undefined
 
-  private i18n = i18n;
+  private i18n = i18n
 
-  private tray: Tray | undefined;
+  private tray: Tray | undefined
 
-  private store!: StaticStore<any>;
+  private store!: StaticStore<any>
 
   constructor(protected app: LauncherApp) { }
 
@@ -71,14 +71,21 @@ export default class Controller implements LauncherAppController {
       width: -1,
       height: -1,
       x: null,
-      y: null
+      y: null,
     }))
     const config = {
       width: typeof configData.width === 'number' ? configData.width as number : -1,
       height: typeof configData.height === 'number' ? configData.height as number : -1,
       x: typeof configData.x === 'number' ? configData.x as number : null,
-      y: typeof configData.y === 'number' ? configData.y as number : null
+      y: typeof configData.y === 'number' ? configData.y as number : null,
     }
+
+    const sess = session.fromPartition('persist:main')
+
+    sess.protocol.registerFileProtocol('dataroot', (req, callback) => {
+      const pathname = decodeURIComponent(req.url.replace('dataroot:///', ''))
+      callback(join(this.app.appDataPath, pathname))
+    })
 
     const browser = new BrowserWindow({
       title: 'KeyStone Launcher',
@@ -98,12 +105,12 @@ export default class Controller implements LauncherAppController {
       vibrancy: 'sidebar', // or popover
       icon: iconPath,
       webPreferences: {
-        webSecurity: !IS_DEV, // disable security for loading local image
+        // webSecurity: !IS_DEV, // disable security for loading local image
         nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
-        session: session.fromPartition('persist:main'),
-        webviewTag: true
-      }
+        session: sess,
+        webviewTag: true,
+      },
     })
 
     browser.on('ready-to-show', () => { this.app.log('Main Window is ready to show!') })
@@ -134,8 +141,8 @@ export default class Controller implements LauncherAppController {
         webSecurity: !IS_DEV, // disable security for loading local image
         nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
-        session: session.fromPartition('persist:logger')
-      }
+        session: session.fromPartition('persist:logger'),
+      },
     })
 
     this.setupBrowserLogger(browser, 'logger')
@@ -162,8 +169,8 @@ export default class Controller implements LauncherAppController {
         webSecurity: !IS_DEV, // disable security for loading local image
         nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
-        session: session.fromPartition('persist:setup')
-      }
+        session: session.fromPartition('persist:setup'),
+      },
     })
 
     this.setupBrowserLogger(browser, 'setup')
@@ -190,7 +197,7 @@ export default class Controller implements LauncherAppController {
       title: $t('openUrl.title', { url }),
       message: $t('openUrl.message', { url }),
       checkboxLabel: $t('openUrl.trust'),
-      buttons: [$t('openUrl.cancel'), $t('openUrl.yes')]
+      buttons: [$t('openUrl.cancel'), $t('openUrl.yes')],
     })
     return result.response === 1
   }
@@ -198,14 +205,14 @@ export default class Controller implements LauncherAppController {
   private createMenu() {
     const { t: $t } = this.i18n
     const app = this.app
-    const service = this.app.serviceManager.getService(BaseService)
+    const service = this.app.getRegisteredObject(BaseService)
     return Menu.buildFromTemplate([
       {
         type: 'normal',
         label: $t('checkUpdate'),
         click() {
           service?.checkUpdate()
-        }
+        },
       },
       { type: 'separator' },
       {
@@ -223,15 +230,15 @@ export default class Controller implements LauncherAppController {
               `CPU: ${cpuPercentage}%`,
               `Private Memory: ${m.private}KB`,
               `Shared Memory: ${m.shared}KB`,
-              `Physically Memory: ${m.residentSet}KB`
+              `Physically Memory: ${m.residentSet}KB`,
             ]
             dialog.showMessageBox({
               type: 'info',
               title: 'Diagnosis Info',
-              message: `${messages.join('\n')}`
+              message: `${messages.join('\n')}`,
             })
           })
-        }
+        },
       },
       { type: 'separator' },
       {
@@ -239,8 +246,8 @@ export default class Controller implements LauncherAppController {
         type: 'normal',
         click() {
           app.quit()
-        }
-      }
+        },
+      },
     ])
   }
 
@@ -342,7 +349,7 @@ export default class Controller implements LauncherAppController {
         this.i18n.use(mutation.payload)
       }
     })
-    this.i18n.use(this.store.state.setting.locale)
+    this.i18n.use(this.store.state.base.locale)
 
     const $t = this.i18n.t
     const tray = this.tray
@@ -396,7 +403,7 @@ export default class Controller implements LauncherAppController {
       const notification = new Notification({
         title: n.type === 'taskFinish' ? $t('task.success') : $t('task.fail'),
         body: $t('task.continue'),
-        icon: iconPath
+        icon: iconPath,
       })
       notification.show()
       notification.on('click', () => {

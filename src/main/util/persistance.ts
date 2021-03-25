@@ -3,7 +3,7 @@ import { writeFile } from 'atomically'
 import { join } from 'path'
 import { Serializer } from './serialize'
 
-export class FileIOHandler<T> {
+export class FileIOHandler<T > {
   private saveSource: (() => T) | undefined
 
   constructor(readonly serializer: Serializer<Buffer, T>) { }
@@ -32,7 +32,7 @@ export class FileIOHandler<T> {
   }
 }
 
-export class RelativeMappedFile<T> extends FileIOHandler<T> {
+export class RelativeMappedFile<T > extends FileIOHandler<T> {
   constructor(readonly relativePath: string, serializer: Serializer<Buffer, T>) {
     super(serializer)
   }
@@ -50,7 +50,7 @@ export class RelativeMappedFile<T> extends FileIOHandler<T> {
   }
 }
 
-export class MappedFile<T> extends FileIOHandler<T> {
+export class MappedFile<T > extends FileIOHandler<T> {
   constructor(readonly path: string, serializer: Serializer<Buffer, T>) {
     super(serializer)
   }

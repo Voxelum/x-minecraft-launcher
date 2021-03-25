@@ -13,7 +13,10 @@
         Otherwise, you will have to download it by yourself. (You can use curseforge.) -->
       </v-card-text>
       <v-list>
-        <v-list-tile v-for="item in items" :key="`${item.modid}:${item.version}`">
+        <v-list-tile
+          v-for="item in items"
+          :key="`${item.modid}:${item.version}`"
+        >
           <v-list-tile-content>
             <v-list-tile-title>{{ item.modid }}</v-list-tile-title>
             <v-list-tile-title>{{ item.version }}</v-list-tile-title>
@@ -23,18 +26,26 @@
               {{ $t(`mod.missing.${item.status}`) }}
               <v-icon>{{ icons[item.status] }}</v-icon>
             </v-chip>
-            <v-progress-circular :width="2"
-                                 :size="20" 
-                                 indeterminate />
+            <v-progress-circular
+              :width="2"
+              :size="20"
+              indeterminate
+            />
           </v-list-tile-action>
         </v-list-tile>
       </v-list>
       <v-card-actions>
-        <v-btn flat @click="checkAvailabilities">
+        <v-btn
+          flat
+          @click="checkAvailabilities"
+        >
           {{ $t('mod.missing.checkAvailabilities') }}
         </v-btn>
         <v-spacer />
-        <v-btn flat :disabled="!canDownload">
+        <v-btn
+          flat
+          :disabled="!canDownload"
+        >
           {{ $t('mod.missing.downloadAll') }}
         </v-btn>
       </v-card-actions>
@@ -43,7 +54,7 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, computed } from '@vue/composition-api';
+import { defineComponent, computed } from '@vue/composition-api'
 // import { useDialogSelf } from '/@/hooks';
 
 export default defineComponent({
@@ -78,7 +89,7 @@ export default defineComponent({
     //   isShown,
     // };
   },
-});
+})
 </script>
 
 <style>

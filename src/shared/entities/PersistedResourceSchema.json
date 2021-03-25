@@ -1,4 +1,5 @@
 {
+    "description": "Reprensent a persisted resource",
     "type": "object",
     "properties": {
         "version": {
@@ -6,10 +7,6 @@
             "type": "number"
         },
         "path": {
-            "type": "string"
-        },
-        "location": {
-            "description": "The resource file path relative to the data root directory",
             "type": "string"
         },
         "ext": {
@@ -59,7 +56,7 @@
             ]
         },
         "uri": {
-            "description": "The source uris.\n- For the forge mod, it will be the forge://<modid>/<version>\n- For the liteloader mod, it will be the liteloader://<name>/<version>\n- For the curseforge file, it will be the curseforge://<fileId>\n\nIf the source is remote resource, it might also contain the uri like https://host/paths",
+            "description": "The source uris.\n- For the forge mod, it will be the forge:///<modid>/<version>\n- For the liteloader mod, it will be the liteloader:///<name>/<version>\n- For the curseforge file, it will be the curseforge:///<fileId>\n\nIf the source is remote resource, it might also contain the uri like https://host/paths",
             "default": [],
             "type": "array",
             "items": {
@@ -78,16 +75,35 @@
         "curseforge": {
             "description": "The curseforge info for this source. If this is imported from curseforge, it will present.",
             "$ref": "#/definitions/CurseforgeInformation"
+        },
+        "location": {
+            "description": "The resource file path relative to the .minecraft without extension",
+            "type": "string"
+        },
+        "ino": {
+            "description": "The ino of the file on disk",
+            "type": "number"
+        },
+        "size": {
+            "description": "The size of the resource",
+            "type": "number"
+        },
+        "fileType": {
+            "description": "The file type",
+            "type": "string"
         }
     },
     "required": [
         "date",
         "domain",
         "ext",
+        "fileType",
         "hash",
+        "ino",
         "location",
         "metadata",
         "name",
+        "size",
         "tags",
         "type",
         "uri",

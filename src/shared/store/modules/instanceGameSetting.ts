@@ -14,15 +14,15 @@ interface Mutations {
    * Update the game settings in options.txt
    * @param payload The new game settings.
    */
-  instanceGameSettings: GameSetting;
-  instanceGameSettingsLoad: GameSetting;
+  instanceGameSettings: GameSetting
+  instanceGameSettingsLoad: GameSetting
 }
 
-export type InstanceGameSettingModule = ModuleOption<State, Getters, Mutations, {}>;
+export type InstanceGameSettingModule = ModuleOption<State, Getters, Mutations, {}>
 
 const mod: InstanceGameSettingModule = {
   state: {
-    resourcePacks: []
+    resourcePacks: [],
   },
   getters: {
   },
@@ -57,8 +57,8 @@ const mod: InstanceGameSettingModule = {
           set(container, key)
         }
       }
-    }
-  }
+    },
+  },
 }
 
 export default mod

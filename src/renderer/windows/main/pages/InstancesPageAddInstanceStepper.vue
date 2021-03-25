@@ -40,7 +40,10 @@
     </v-stepper-header>
 
     <v-stepper-items>
-      <v-stepper-content step="0" style="overflow: auto; max-height: 450px;">
+      <v-stepper-content
+        step="0"
+        style="overflow: auto; max-height: 450px;"
+      >
         <v-container
           grid-list
           fill-height
@@ -146,7 +149,7 @@
                 xs4
               >
                 <minecraft-version-menu @input="runtime.minecraft = $event">
-                  <template v-slot="{ on }">
+                  <template #default="{ on }">
                     <v-text-field
                       v-model="runtime.minecraft"
                       dark
@@ -267,7 +270,7 @@
                   :minecraft="runtime.minecraft"
                   @input="runtime.forge = $event.version"
                 >
-                  <template v-slot="{ on }">
+                  <template #default="{ on }">
                     <v-text-field
                       v-model="runtime.forge"
                       dark
@@ -306,8 +309,13 @@
         </v-layout>
       </v-stepper-content>
       <v-stepper-content step="3">
-        <task-focus v-if="!error" :value="importTask" />
-        <div v-else> {{ error }} </div>
+        <task-focus
+          v-if="!error"
+          :value="importTask"
+        />
+        <div v-else>
+          {{ error }}
+        </div>
         <v-btn
           flat
           :disabled="creating"
@@ -321,9 +329,9 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, onMounted, onUnmounted, watch, defineComponent, ref, Ref } from '@vue/composition-api';
-import { CurseforgeModpackResource, ModpackResource } from '/@shared/entities/resource';
-import { InstanceSchema } from '/@shared/entities/instance.schema';
+import { reactive, toRefs, computed, onMounted, onUnmounted, watch, defineComponent, ref, Ref } from '@vue/composition-api'
+import { CurseforgeModpackResource, ModpackResource } from '/@shared/entities/resource'
+import { InstanceSchema } from '/@shared/entities/instance.schema'
 import {
   useI18n,
   useJava,
@@ -335,69 +343,69 @@ import {
   useSelectedUser,
   useProfileId,
   useGameProfile,
-} from '/@/hooks';
-import { JavaRecord } from '/@shared/entities/java';
-import { useSearch, useSearchToggles, useSearchToggle } from '../hooks';
+} from '/@/hooks'
+import { JavaRecord } from '/@shared/entities/java'
+import { useSearch, useSearchToggles, useSearchToggle } from '../hooks'
 
 interface InstanceTemplate {
-  type: 'instance';
-  title: string;
-  subTitle: string;
-  path: string;
-  action: string;
-  source: InstanceSchema;
+  type: 'instance'
+  title: string
+  subTitle: string
+  path: string
+  action: string
+  source: InstanceSchema
 }
 
 interface ModpackTemplate {
-  type: 'modpack';
-  title: string;
-  subTitle: string;
-  path: string;
-  action: string;
-  source: CurseforgeModpackResource | ModpackResource;
+  type: 'modpack'
+  title: string
+  subTitle: string
+  path: string
+  action: string
+  source: CurseforgeModpackResource | ModpackResource
 }
 
 function setupTemplates() {
-  const { $t } = useI18n();
-  const { modpacks, instances } = useInstanceTemplates();
-  const { toggles } = useSearchToggles();
-  useSearchToggle(toggles.value[toggles.value.length - 1]!);
-  const { text } = useSearch();
+  const { $t } = useI18n()
+  const { modpacks, instances } = useInstanceTemplates()
+  const { toggles } = useSearchToggles()
+  useSearchToggle(toggles.value[toggles.value.length - 1]!)
+  const { text } = useSearch()
   const getModpackVersion = (resource: CurseforgeModpackResource | ModpackResource) => {
     if (resource.type === 'curseforge-modpack') {
-      const modpack = resource.metadata;
-      let version = `Minecraft: ${modpack.minecraft.version}`;
+      const modpack = resource.metadata
+      let version = `Minecraft: ${modpack.minecraft.version}`
       if (modpack.minecraft.modLoaders && modpack.minecraft.modLoaders.length > 0) {
-        for (let loader of modpack.minecraft.modLoaders) {
-          version += ` ${loader.id}`;
+        for (const loader of modpack.minecraft.modLoaders) {
+          version += ` ${loader.id}`
         }
       }
-      return version;
+      return version
     }
 
-    const runtimes = resource.metadata.runtime ?? {};
-    let version = `Minecraft: ${runtimes.minecraft}`;
+    const runtimes = resource.metadata.runtime ?? {}
+    let version = `Minecraft: ${runtimes.minecraft}`
     if (runtimes.forge) {
-      version += ` Forge ${runtimes.forge}`;
+      version += ` Forge ${runtimes.forge}`
     }
     if (runtimes.liteloader) {
-      version += ` Liteloader ${runtimes.liteloader}`;
+      version += ` Liteloader ${runtimes.liteloader}`
     }
     if (runtimes.fabricLoader) {
-      version += ` Fabric ${runtimes.fabricLoader}`;
+      version += ` Fabric ${runtimes.fabricLoader}`
     }
-    return version;
-  };
+    return version
+  }
   const getInstanceVersion = (inst: InstanceSchema) => {
-    let version = `Minecraft: ${inst.runtime.minecraft}`;
+    let version = `Minecraft: ${inst.runtime.minecraft}`
     if (inst.runtime.forge) {
-      version += ` Forge: ${inst.runtime.forge}`;
+      version += ` Forge: ${inst.runtime.forge}`
     }
     if (inst.runtime.fabricLoader) {
-      version += ` Fabric: ${inst.runtime.fabricLoader}`;
+      version += ` Fabric: ${inst.runtime.fabricLoader}`
     }
-    return version;
-  };
+    return version
+  }
   const templates = computed(() => [
     ...instances.value.map((instance) => ({
       type: 'instance',
@@ -416,24 +424,24 @@ function setupTemplates() {
       action: $t('profile.templateSetting.modpack'),
     }) as ModpackTemplate),
   ].filter((instance) => {
-    const searching = text.value.toLowerCase();
+    const searching = text.value.toLowerCase()
     if (searching.length === 0) {
-      return true;
+      return true
     }
     if (instance.title.toLowerCase().indexOf(searching) !== -1) {
-      return true;
+      return true
     }
     if (instance.subTitle.toLowerCase().indexOf(searching) !== -1) {
-      return true;
+      return true
     }
-    return false;
-  }));
+    return false
+  }))
   onUnmounted(() => {
-    text.value = '';
-  });
+    text.value = ''
+  })
   return {
     templates,
-  };
+  }
 }
 
 export default defineComponent({
@@ -445,16 +453,16 @@ export default defineComponent({
     initialTemplate: String,
   },
   setup(props, context) {
-    const { $t } = useI18n();
-    const { create, reset, use, useModpack, ...creationData } = useInstanceCreation();
-    const { mountInstance } = useInstances();
-    const router = useRouter();
+    const { $t } = useI18n()
+    const { create, reset, use, useModpack, ...creationData } = useInstanceCreation()
+    const { mountInstance } = useInstances()
+    const router = useRouter()
     const staticData = {
       memoryRule: [(v: any) => Number.isInteger(v)],
       nameRules: [
         (v: any) => !!v || $t('profile.requireName'),
       ],
-    };
+    }
     const data = reactive({
       template: undefined as undefined | InstanceTemplate | ModpackTemplate,
       creating: false,
@@ -462,79 +470,79 @@ export default defineComponent({
       valid: false,
       javaValid: true,
       error: undefined as any,
-    });
+    })
 
-    const importTask: Ref<Promise<string> | null> = ref(null);
-    const notImporting = computed(() => importTask.value === null);
+    const importTask: Ref<Promise<string> | null> = ref(null)
+    const notImporting = computed(() => importTask.value === null)
 
-    const { userId, profileId } = useSelectedUser();
-    const { gameProfile } = useProfileId(userId, profileId);
-    const { name } = useGameProfile(gameProfile);
-    const { all: javas } = useJava();
-    const { templates } = setupTemplates();
-    const { importCurseforgeModpack } = useCurseforgeImport();
-    const ready = computed(() => data.valid && data.javaValid);
-    const java = ref(undefined as undefined | JavaRecord);
+    const { userId, profileId } = useSelectedUser()
+    const { gameProfile } = useProfileId(userId, profileId)
+    const { name } = useGameProfile(gameProfile)
+    const { all: javas } = useJava()
+    const { templates } = setupTemplates()
+    const { importCurseforgeModpack } = useCurseforgeImport()
+    const ready = computed(() => data.valid && data.javaValid)
+    const java = ref(undefined as undefined | JavaRecord)
 
     function selectTemplate(template: InstanceTemplate | ModpackTemplate) {
       if (template.type === 'modpack') {
-        data.template = template;
-        useModpack(template.source);
-        data.step = 1;
+        data.template = template
+        useModpack(template.source)
+        data.step = 1
       } else {
-        data.template = template;
-        data.step = 1;
-        use(template.source);
-        creationData.author.value = name.value;
+        data.template = template
+        data.step = 1
+        use(template.source)
+        creationData.author.value = name.value
       }
     }
     function quit() {
-      if (data.creating) return;
-      context.emit('quit');
+      if (data.creating) return
+      context.emit('quit')
     }
     function init() {
-      reset();
-      data.step = 1;
-      const template = props.initialTemplate ? templates.value.find(m => m.path === props.initialTemplate) : undefined;
+      reset()
+      data.step = 1
+      const template = props.initialTemplate ? templates.value.find(m => m.path === props.initialTemplate) : undefined
       if (template) {
-        selectTemplate(template);
+        selectTemplate(template)
       }
-      data.creating = false;
+      data.creating = false
     }
     async function doCreate() {
-      data.creating = true;
+      data.creating = true
       try {
         if (data.template) {
           if (data.template.type === 'modpack') {
-            data.step = 3;
+            data.step = 3
             importTask.value = importCurseforgeModpack({
               path: data.template.path,
-            });
-            await mountInstance(await importTask.value);
+            })
+            await mountInstance(await importTask.value)
           } else {
-            await create();
+            await create()
           }
         } else {
-          await create();
+          await create()
         }
         await new Promise((resolve) => {
-          setTimeout(resolve, 1000);
-        });
-        init();
-        router.replace('/');
-        data.template = undefined;
+          setTimeout(resolve, 1000)
+        })
+        init()
+        router.replace('/')
+        data.template = undefined
       } catch (e) {
-        data.error = e;
+        data.error = e
       } finally {
-        data.creating = false;
+        data.creating = false
       }
     }
     onMounted(() => {
       watch(computed(() => props.show), (v) => {
-        if (!v) return;
-        init();
-      });
-    });
+        if (!v) return
+        init()
+      })
+    })
     return {
       ...toRefs(data),
       ...staticData,
@@ -548,9 +556,9 @@ export default defineComponent({
       doCreate,
       ready,
       templates,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

@@ -4,11 +4,12 @@ import { inject } from '@vue/composition-api'
 import { Clipboard, Dialog, IpcRenderer } from 'electron'
 import { useServiceOnly } from './useService'
 import { BaseServiceKey } from '/@shared/services/BaseService'
+import { IPCRendererProtocol } from '/@shared/ipc'
 
 /**
  * Use electron native dialog
  */
-export function useNativeDialog (): Dialog {
+export function useNativeDialog(): Dialog {
   const dialog = inject(REMOTE_DIALOG_KEY)
   requireNonnull(dialog)
   return dialog
@@ -17,21 +18,21 @@ export function useNativeDialog (): Dialog {
 /**
  * Use electron ipc renderer
  */
-export function useIpc (): IpcRenderer {
+export function useIpc(): IpcRenderer {
   const ipc = inject(IPC_KEY)
   requireNonnull(ipc)
-  return ipc
+  return ipc as any
 }
 
 /**
  * Use electron clipboard
  */
-export function useClipboard (): Clipboard {
+export function useClipboard(): Clipboard {
   const board = inject(ELECTRON_CLIPBOARD)
   requireNonnull(board)
   return board
 }
 
-export function useQuit () {
+export function useQuit() {
   return useServiceOnly(BaseServiceKey, 'quit', 'exit')
 }

@@ -5,7 +5,7 @@ import { URL } from 'url'
 import { v4 } from 'uuid'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
-import AbstractService, { Service, Singleton } from './Service'
+import AbstractService, { ExportService, Singleton } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { aquireXBoxToken, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '/@main/entities/user'
 import { createhDynamicThrottle as createDynamicThrottle } from '/@main/util/trafficAgent'
@@ -15,7 +15,7 @@ import { GameProfileAndTexture, UserSchema } from '/@shared/entities/user.schema
 import {
   LoginMicrosoftOptions, LoginOptions,
   RefreshSkinOptions,
-  UploadSkinOptions, UserService as IUserService, UserServiceKey
+  UploadSkinOptions, UserService as IUserService, UserServiceKey,
 } from '/@shared/services/UserService'
 import { requireNonnull, requireObject, requireString } from '/@shared/util/assert'
 
@@ -25,33 +25,33 @@ export interface LauncherProfile {
    */
   profiles: {
     [name: string]: {
-      name: string;
+      name: string
       /**
        * The profile type.
        * Types are custom (manually created by the user),
        * latest-release (uses the latest stable release),
        * and latest-snapshot (uses the latest build of Minecraft).
        */
-      type: string;
-      gameDir: string;
-      javaDir: string;
-      javaArgs: string;
+      type: string
+      gameDir: string
+      javaDir: string
+      javaArgs: string
       /**
        * The version ID that the profile targets. Version IDs are determined in the version.json in every directory in ~/versions
        */
-      lastVersionId: string;
+      lastVersionId: string
       /**
        * An Base64-encoded image which represents the icon of the profile in the profiles menu.
        */
-      icon: string;
-      created: string;
+      icon: string
+      created: string
       /**
        * An ISO 8601 formatted date which represents the last time the profile was used.
        */
-      lastUsed: string;
-    };
-  };
-  clientToken: string;
+      lastUsed: string
+    }
+  }
+  clientToken: string
   /**
    * All the logged in accounts.
    * Every account in this key contains a UUID-hashed map (which is used to save the selected user)
@@ -59,17 +59,17 @@ export interface LauncherProfile {
    */
   authenticationDatabase: {
     [uuid: string]: {
-      accessToken: string;
-      username: string;
+      accessToken: string
+      username: string
       profiles: {
         [uuid: string]: {
-          displayName: string;
-        };
-      };
-      properties: object[];
-    };
-  };
-  settings: {};
+          displayName: string
+        }
+      }
+      properties: object[]
+    }
+  }
+  settings: {}
   /**
    * Contains the UUID-hashed account and the UUID of the currently selected user
    */
@@ -77,21 +77,21 @@ export interface LauncherProfile {
     /**
      * The UUID-hashed key of the currently selected account
      */
-    account: string;
+    account: string
     /**
      * The UUID of the currently selected player
      */
-    profile: string;
-  };
+    profile: string
+  }
 }
 
-@Service(UserServiceKey)
+@ExportService(UserServiceKey)
 export default class UserService extends AbstractService implements IUserService {
-  private refreshSkinRecord: Record<string, boolean> = {};
+  private refreshSkinRecord: Record<string, boolean> = {}
 
-  private lookup = createDynamicThrottle(lookup, (uuid, options = {}) => (options.api ?? PROFILE_API_MOJANG).profile, 2400);
+  private lookup = createDynamicThrottle(lookup, (uuid, options = {}) => (options.api ?? PROFILE_API_MOJANG).profile, 2400)
 
-  private validate = createDynamicThrottle(validate, ({ accessToken }, api) => (api ?? AUTH_API_MOJANG).hostName, 2400);
+  private validate = createDynamicThrottle(validate, ({ accessToken }, api) => (api ?? AUTH_API_MOJANG).hostName, 2400)
 
   private userFile = new MappedFile<UserSchema>(this.getPath('user.json'), new BufferJsonSerializer(UserSchema))
 
@@ -106,7 +106,7 @@ export default class UserService extends AbstractService implements IUserService
       'profileService',
       'userInvalidate',
       'authServiceRemove',
-      'profileServiceRemove'
+      'profileServiceRemove',
     ], async () => {
       await this.userFile.write(this.state.user)
     })
@@ -120,9 +120,9 @@ export default class UserService extends AbstractService implements IUserService
       users: {},
       selectedUser: {
         id: '',
-        profile: ''
+        profile: '',
       },
-      clientToken: ''
+      clientToken: '',
     }
     const mcdb = await this.getMinecraftAuthDb()
     fitMinecraftLauncherProfileData(result, data, mcdb)
@@ -137,7 +137,7 @@ export default class UserService extends AbstractService implements IUserService
       const [userId, user] = Object.entries(this.state.user.users)[0]
       this.switchUserProfile({
         userId,
-        profileId: user.selectedProfile
+        profileId: user.selectedProfile,
       })
     }
   }
@@ -157,7 +157,7 @@ export default class UserService extends AbstractService implements IUserService
       if (user.authService !== 'offline') {
         await invalidate({
           accessToken: user.accessToken,
-          clientToken: this.state.user.clientToken
+          clientToken: this.state.user.clientToken,
         }, this.getters.authService)
       }
     }
@@ -217,7 +217,7 @@ export default class UserService extends AbstractService implements IUserService
     if (!this.getters.offline) {
       const valid = await this.validate({
         accessToken: user.accessToken,
-        clientToken: this.state.user.clientToken
+        clientToken: this.state.user.clientToken,
       }, this.getters.authService).catch((e) => {
         this.error(e)
         return false
@@ -232,7 +232,7 @@ export default class UserService extends AbstractService implements IUserService
       try {
         const result = await refresh({
           accessToken: user.accessToken,
-          clientToken: this.state.user.clientToken
+          clientToken: this.state.user.clientToken,
         }, this.getters.authService)
         this.log(`Refreshed user access token for user: ${user.id}`)
         this.commit('userProfileUpdate', {
@@ -241,7 +241,7 @@ export default class UserService extends AbstractService implements IUserService
           // profiles: result.availableProfiles,
           profiles: [],
 
-          selectedProfile: undefined
+          selectedProfile: undefined,
         })
         this.checkLocation()
       } catch (e) {
@@ -260,7 +260,7 @@ export default class UserService extends AbstractService implements IUserService
   @Singleton(function (this: AbstractService, o: RefreshSkinOptions = {}) {
     const {
       gameProfileId = this.state.user.selectedUser.profile,
-      userId = this.state.user.selectedUser.id
+      userId = this.state.user.selectedUser.id,
     } = o ?? {}
     return `${userId}[${gameProfileId}]`
   })
@@ -268,7 +268,7 @@ export default class UserService extends AbstractService implements IUserService
     const {
       gameProfileId = this.state.user.selectedUser.profile,
       userId = this.state.user.selectedUser.id,
-      force
+      force,
     } = refreshSkinOptions ?? {}
     const user = this.state.user.users[userId]
     const gameProfile = user.profiles[gameProfileId]
@@ -313,8 +313,8 @@ export default class UserService extends AbstractService implements IUserService
           userId: user.id,
           profile: {
             ...gameProfile,
-            textures: { ...(textures?.textures || {}), SKIN: skin }
-          }
+            textures: { ...(textures?.textures || {}), SKIN: skin },
+          },
         })
       } else {
         this.log(`The user ${gameProfile.name} in ${user.profileService} does not have skin!`)
@@ -341,7 +341,7 @@ export default class UserService extends AbstractService implements IUserService
       gameProfileId = this.state.user.selectedUser.profile,
       userId = this.state.user.selectedUser.id,
       url,
-      slim
+      slim,
     } = options
     const user = this.state.user.users[userId]
     const gameProfile = user.profiles[gameProfileId]
@@ -364,11 +364,11 @@ export default class UserService extends AbstractService implements IUserService
       type: 'skin',
       texture: {
         metadata: {
-          model: slim ? 'slim' : 'steve'
+          model: slim ? 'slim' : 'steve',
         },
         url: skinUrl,
-        data
-      }
+        data,
+      },
     }, this.getters.profileService)
   }
 
@@ -399,11 +399,11 @@ export default class UserService extends AbstractService implements IUserService
     /**
      * The user id of the user
      */
-    userId: string;
+    userId: string
     /**
      * The game profile id of the user
      */
-    profileId: string;
+    profileId: string
   }) {
     requireObject(payload)
     requireString(payload.userId)
@@ -458,19 +458,19 @@ export default class UserService extends AbstractService implements IUserService
         textures: {
           SKIN: {
             url: gameProfileResponse.skins[0].url,
-            metadata: { model: gameProfileResponse.skins[0].variant === 'CLASSIC' ? 'steve' : 'slim' }
+            metadata: { model: gameProfileResponse.skins[0].variant === 'CLASSIC' ? 'steve' : 'slim' },
           },
           CAPE: gameProfileResponse.capes.length > 0 ? {
-            url: gameProfileResponse.capes[0].url
-          } : undefined
-        }
+            url: gameProfileResponse.capes[0].url,
+          } : undefined,
+        },
       }]
       return {
         userId: mcResponse.username,
         accessToken: mcResponse.access_token,
         gameProfiles,
         selectedProfile: gameProfiles[0],
-        avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value
+        avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value,
       }
     }
 
@@ -479,7 +479,7 @@ export default class UserService extends AbstractService implements IUserService
       accessToken: mcResponse.access_token,
       gameProfiles: [],
       selectedProfile: undefined,
-      avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value
+      avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value,
     }
   }
 
@@ -494,7 +494,7 @@ export default class UserService extends AbstractService implements IUserService
       username,
       password,
       authService = password ? 'mojang' : 'offline',
-      profileService = 'mojang'
+      profileService = 'mojang',
     } = options
 
     const selectedUserProfile = this.getters.user
@@ -531,7 +531,7 @@ export default class UserService extends AbstractService implements IUserService
         username,
         password,
         requestUser: true,
-        clientToken: this.state.user.clientToken
+        clientToken: this.state.user.clientToken,
       }, usingAuthService).catch((e) => {
         if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
           throw Exception.from(e, { type: 'loginInternetNotConnected' })
@@ -565,7 +565,7 @@ export default class UserService extends AbstractService implements IUserService
         authService,
 
         selectedProfile: selectedProfile ? selectedProfile.id : '',
-        avatar
+        avatar,
       })
     } else {
       this.log(`Found existed user ${userId}. Update the profiles of it`)
@@ -573,14 +573,14 @@ export default class UserService extends AbstractService implements IUserService
         id: userId,
         accessToken,
         profiles: availableProfiles,
-        selectedProfile: selectedProfile ? selectedProfile.id : ''
+        selectedProfile: selectedProfile ? selectedProfile.id : '',
       })
     }
     if ((!this.state.user.selectedUser.id || options.selectProfile) && selectedProfile) {
       this.log(`Select the game profile ${selectedProfile.id} in user ${userId}`)
       this.commit('userGameProfileSelect', {
         profileId: selectedProfile.id,
-        userId
+        userId,
       })
     } else {
       this.log(`No game profiles found for user ${username} in ${authService}, ${profileService} services.`)

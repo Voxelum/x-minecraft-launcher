@@ -1,4 +1,4 @@
-import { serviceProxy } from '/@/providers/provideServiceProxy'
+import { getServiceProxy } from '/@/providers/provideServiceProxy'
 import Router from 'vue-router'
 import BaseSettingPage from './pages/BaseSettingPage.vue'
 import CurseforgePage from './pages/CurseforgePage.vue'
@@ -15,78 +15,79 @@ import SettingPage from './pages/SettingPage.vue'
 import UserPage from './pages/UserPage.vue'
 import VersionSettingPage from './pages/VersionSettingPage.vue'
 import MCWikiPage from './pages/MCWikiPage.vue'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 const router = new Router({
   routes: [
     {
       path: '/',
-      component: HomePage
+      component: HomePage,
     },
     {
       path: '/instances',
-      component: InstancesPage
+      component: InstancesPage,
     },
     {
       path: '/setting',
-      component: SettingPage
+      component: SettingPage,
     },
     {
       path: '/user',
-      component: UserPage
+      component: UserPage,
     },
     {
       path: '/save',
-      component: SaveViewPage
+      component: SaveViewPage,
     },
     {
       path: '/base-setting',
-      component: BaseSettingPage
+      component: BaseSettingPage,
     },
     {
       path: '/mod-setting',
-      component: ModSettingPage
+      component: ModSettingPage,
     },
     {
       path: '/game-setting',
-      component: GameSettingPage
+      component: GameSettingPage,
     },
     {
       path: '/resource-pack-setting',
-      component: ResourcePackSettingPage
+      component: ResourcePackSettingPage,
     },
     {
       path: '/resource-pack-preview',
-      component: ResourcePackPreviewPage
+      component: ResourcePackPreviewPage,
     },
     {
       path: '/version-setting',
-      component: VersionSettingPage
+      component: VersionSettingPage,
     },
     {
       path: '/curseforge',
-      component: CurseforgePage
+      component: CurseforgePage,
     },
     {
       path: '/curseforge/:type',
       component: CurseforgeViewPage,
-      props: (route) => ({ keyword: route.query.keyword, page: Number.parseInt(route.query.page as any ?? '1', 10), type: route.path.split('/')[2], from: route.query.from })
+      props: (route) => ({ keyword: route.query.keyword, page: Number.parseInt(route.query.page as any ?? '1', 10), type: route.path.split('/')[2], from: route.query.from }),
     },
     {
       path: '/curseforge/:type/:id',
       component: CurseforgeProjectPage,
-      props: (route) => ({ type: route.path.split('/')[2], id: route.path.split('/')[3], from: route.query.from })
+      props: (route) => ({ type: route.path.split('/')[2], id: route.path.split('/')[3], from: route.query.from }),
     },
     {
       path: '/mcwiki',
       component: MCWikiPage,
-      props: (route) => ({ path: route.query.path })
-    }
-  ]
+      props: (route) => ({ path: route.query.path }),
+    },
+  ],
 })
 
 router.beforeEach((to, from, next) => {
   const full = to.fullPath.substring(1)
-  const { openInBrowser } = serviceProxy.BaseService
+  const { openInBrowser } = getServiceProxy(BaseServiceKey)
   if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {
     next(false)
     console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`)

@@ -24,7 +24,8 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "./**/*",
+    ".",
+    "./global.d.ts",
     "../shared/**/*"
   ],
   "exclude": [

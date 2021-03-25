@@ -1,5 +1,9 @@
 <template>
-  <v-layout class="home-page" row wrap>
+  <v-layout
+    class="home-page"
+    row
+    wrap
+  >
     <v-icon
       v-ripple
       style="
@@ -14,7 +18,7 @@
         user-select: none;
       "
       dark
-      @click="quit"
+      @click="quit()"
     >
       close
     </v-icon>
@@ -63,16 +67,24 @@
       <home-header />
     </v-flex>
 
-    <v-flex v-if="isServer" d-flex xs12 style="margin: 40px">
+    <v-flex
+      v-if="isServer"
+      d-flex
+      xs12
+      style="margin: 40px"
+    >
       <server-status-bar />
     </v-flex>
 
     <more-speed-dial :refreshing="refreshing" />
 
-    <export-speed-dial :refreshing="refreshing" @show="showExport" />
+    <export-speed-dial
+      :refreshing="refreshing"
+      @show="showExport"
+    />
 
     <v-tooltip top>
-      <template v-slot:activator="{ on }">
+      <template #activator="{ on }">
         <v-btn
           style="position: absolute; left: 140px; bottom: 10px"
           flat
@@ -81,7 +93,9 @@
           v-on="on"
           @click="showLogDialog"
         >
-          <v-icon dark>subtitles</v-icon>
+          <v-icon dark>
+            subtitles
+          </v-icon>
         </v-btn>
       </template>
       {{ $t("profile.logsCrashes.title") }}
@@ -141,7 +155,12 @@
       @click="launch"
     >
       {{ $t("launch.launch") }}
-      <v-icon v-if="launchStatus === 'ready'" right> play_arrow </v-icon>
+      <v-icon
+        v-if="launchStatus === 'ready'"
+        right
+      >
+        play_arrow
+      </v-icon>
       <v-progress-circular
         v-else
         class="v-icon--right"
@@ -150,7 +169,10 @@
         :width="2"
       />
     </v-btn>
-    <log-dialog v-model="isLogDialogShown" :hide="hideLogDialog" />
+    <log-dialog
+      v-model="isLogDialogShown"
+      :hide="hideLogDialog"
+    />
     <game-exit-dialog />
     <feedback-dialog />
     <export-dialog
@@ -165,8 +187,8 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, onMounted, ref } from '@vue/composition-api';
-import { LaunchException } from '/@shared/entities/exception';
+import { defineComponent, onMounted, ref } from '@vue/composition-api'
+import { LaunchException } from '/@shared/entities/exception'
 import {
   useI18n,
   useLaunch,
@@ -175,47 +197,48 @@ import {
   useJava,
   useQuit,
   useService,
-} from '/@/hooks';
-import { useDialog, useNotifier, useJavaWizardDialog } from '../hooks';
-import GameExitDialog from './HomePageGameExitDialog.vue';
-import LaunchBlockedDialog from './HomePageLaunchBlockedDialog.vue';
-import FeedbackDialog from './HomePageFeedbackDialog.vue';
-import LogDialog from './HomePageLogDialog.vue';
-import HomeHeader from './HomePageHeader.vue';
-import ProblemsBar from './HomePageProblemsBar.vue';
-import ServerStatusBar from './HomePageServerStatusBar.vue';
-import ExportDialog from './HomePageExportDialog.vue';
-import ExportSpeedDial from './HomePageExportSpeedDial.vue';
-import MoreSpeedDial from './HomePageMoreSpeedDial.vue';
+} from '/@/hooks'
+import { useDialog, useNotifier, useJavaWizardDialog } from '../hooks'
+import GameExitDialog from './HomePageGameExitDialog.vue'
+import LaunchBlockedDialog from './HomePageLaunchBlockedDialog.vue'
+import FeedbackDialog from './HomePageFeedbackDialog.vue'
+import LogDialog from './HomePageLogDialog.vue'
+import HomeHeader from './HomePageHeader.vue'
+import ProblemsBar from './HomePageProblemsBar.vue'
+import ServerStatusBar from './HomePageServerStatusBar.vue'
+import ExportDialog from './HomePageExportDialog.vue'
+import ExportSpeedDial from './HomePageExportSpeedDial.vue'
+import MoreSpeedDial from './HomePageMoreSpeedDial.vue'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 function setupLaunch() {
-  const { launch, status: launchStatus } = useLaunch();
-  const { show: showLaunchStatusDialog, hide: hideLaunchStatusDialog } = useDialog('launch-status');
-  const { missing: missingJava } = useJava();
-  const { show: showLaunchBlockedDialog } = useDialog('launch-blocked');
-  const { show: showJavaDialog } = useJavaWizardDialog();
+  const { launch, status: launchStatus } = useLaunch()
+  const { show: showLaunchStatusDialog, hide: hideLaunchStatusDialog } = useDialog('launch-status')
+  const { missing: missingJava } = useJava()
+  const { show: showLaunchBlockedDialog } = useDialog('launch-blocked')
+  const { show: showJavaDialog } = useJavaWizardDialog()
 
   return {
     launchStatus,
     hideLaunchStatusDialog,
     launch() {
       if (missingJava.value) {
-        showJavaDialog();
+        showJavaDialog()
       } else if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching' || launchStatus.value === 'launched') {
-        showLaunchStatusDialog();
+        showLaunchStatusDialog()
       } else {
         launch().catch((e: LaunchException) => {
           if (e.type === 'launchBlockedIssues') {
-            showLaunchBlockedDialog();
+            showLaunchBlockedDialog()
           } else if (e.type === 'launchGeneralException') {
             // TODO: support this
           } else if (e.type === 'launchNoVersionInstalled') {
             // TODO: implement this
           }
-        });
+        })
       }
     },
-  };
+  }
 }
 
 export default defineComponent({
@@ -232,32 +255,32 @@ export default defineComponent({
     MoreSpeedDial,
   },
   setup() {
-    const { $t } = useI18n();
-    const { showSaveDialog } = useNativeDialog();
-    const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log');
-    const { show: showFeedbackDialog } = useDialog('feedback');
-    const { refreshing, name, isServer, refreshServerStatus, path } = useInstance();
-    const { openDirectory } = useService('BaseService');
-    const { subscribeTask } = useNotifier();
-    const { quit } = useQuit();
-    const isExportingCurseforge = ref(false);
-    const isExportingModpack = ref(false);
+    const { $t } = useI18n()
+    const { showSaveDialog } = useNativeDialog()
+    const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log')
+    const { show: showFeedbackDialog } = useDialog('feedback')
+    const { refreshing, name, isServer, refreshServerStatus, path } = useInstance()
+    const { openDirectory } = useService(BaseServiceKey)
+    const { subscribeTask } = useNotifier()
+    const { quit } = useQuit()
+    const isExportingCurseforge = ref(false)
+    const isExportingModpack = ref(false)
     async function showExport(type: 'normal' | 'curseforge') {
       if (type === 'curseforge') {
-        isExportingCurseforge.value = true;
+        isExportingCurseforge.value = true
       } else {
-        isExportingModpack.value = true;
+        isExportingModpack.value = true
       }
     }
     function showInstanceFolder() {
-      openDirectory(path.value);
+      openDirectory(path.value)
     }
 
     onMounted(() => {
       if (isServer.value) {
-        refreshServerStatus();
+        refreshServerStatus()
       }
-    });
+    })
 
     return {
       isServer,
@@ -276,9 +299,9 @@ export default defineComponent({
 
       showExport,
       showInstanceFolder,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

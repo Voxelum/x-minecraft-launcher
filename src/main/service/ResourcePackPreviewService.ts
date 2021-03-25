@@ -3,30 +3,30 @@ import { MinecraftFolder } from '@xmcl/core'
 import { ModelLoader, ResourceManager, ResourcePack, ResourcePackWrapper } from '@xmcl/resourcepack'
 import { join } from 'path'
 import InstanceResourceService from './InstanceResourceService'
-import AbstractService, { Service, Subscribe } from './Service'
+import AbstractService, { ExportService, Inject, Subscribe } from './Service'
 import LauncherApp from '../app/LauncherApp'
 import { ResourcePackPreviewServiceKey, ResourcePackPreviewService as IResourcePackPreviewService, BlockStateJson } from '/@shared/services/ResourcePackPreviewService'
 
 interface NamedResourcePackWrapper extends ResourcePackWrapper {
-  path: string;
+  path: string
 }
 
-@Service(ResourcePackPreviewServiceKey)
+@ExportService(ResourcePackPreviewServiceKey)
 export default class ResourcePackPreviewService extends AbstractService implements IResourcePackPreviewService {
-  private resourceManager = new ResourceManager();
+  private resourceManager = new ResourceManager()
 
-  private modelLoader = new ModelLoader(this.resourceManager);
+  private modelLoader = new ModelLoader(this.resourceManager)
 
-  private cachedBlocks: BlockStateJson[] | undefined;
+  private cachedBlocks: BlockStateJson[] | undefined
 
-  private cachedJsonVersion: string | undefined;
+  private cachedJsonVersion: string | undefined
 
-  private queue = new Queue();
+  private queue = new Queue()
 
-  private active = false;
+  private active = false
 
   constructor(app: LauncherApp,
-    private instanceResourceService: InstanceResourceService) {
+    @Inject(InstanceResourceService) private instanceResourceService: InstanceResourceService) {
     super(app)
     this.app.on('minecraft-start', () => {
       if (this.active) {
@@ -55,7 +55,7 @@ export default class ResourcePackPreviewService extends AbstractService implemen
   protected getResourcePackPath(pack: string) {
     if (pack === 'vanilla') {
       const version = this.getters.instanceVersion.minecraftVersion
-      const jarPath = new MinecraftFolder(this.state.root).getVersionJar(version)
+      const jarPath = new MinecraftFolder(this.getPath()).getVersionJar(version)
       return jarPath
     }
     pack = pack.startsWith('file/') ? pack.substring(5) : pack

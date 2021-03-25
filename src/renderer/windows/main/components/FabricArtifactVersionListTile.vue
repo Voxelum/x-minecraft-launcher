@@ -40,10 +40,10 @@
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api';
-import { FabricArtifactVersion } from '@xmcl/installer';
-import VirtualList from 'vue-virtual-scroll-list';
-import { required } from '/@/util/props';
+import { defineComponent } from '@vue/composition-api'
+import { FabricArtifactVersion } from '@xmcl/installer'
+import VirtualList from 'vue-virtual-scroll-list'
+import { required } from '/@/util/props'
 
 export default defineComponent({
   components: { VirtualList },
@@ -53,6 +53,6 @@ export default defineComponent({
     selected: required<string>(String),
     select: required<(version: FabricArtifactVersion) => void>(Function),
   },
-});
+})
 
 </script>

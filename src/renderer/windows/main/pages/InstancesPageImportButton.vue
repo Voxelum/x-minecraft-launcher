@@ -3,14 +3,14 @@
     :close-delay="0"
     left
   >
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <v-speed-dial
         open-on-hover
         style="z-index: 1"
         direction="bottom"
         transition="slide-y-reverse-transition"
       >
-        <template v-slot:activator>
+        <template #activator>
           <v-btn
             flat
             fab
@@ -62,30 +62,30 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent } from '@vue/composition-api';
-import { useI18n } from '/@/hooks';
+import { reactive, toRefs, defineComponent } from '@vue/composition-api'
+import { useI18n } from '/@/hooks'
 
 export default defineComponent({
   setup() {
-    const { $t } = useI18n();
+    const { $t } = useI18n()
     const data = reactive({
       text: $t('profile.importZip'),
-    });
+    })
     return {
       ...toRefs(data),
       onMouseEnter(text: string) {
         setTimeout(() => {
-          data.text = $t(text);
-        }, 100);
+          data.text = $t(text)
+        }, 100)
       },
       onMouseLeave() {
         setTimeout(() => {
-          data.text = $t('profile.importZip');
-        }, 100);
+          data.text = $t('profile.importZip')
+        }, 100)
       },
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

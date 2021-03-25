@@ -17,7 +17,9 @@
           @click="goBack"
         >
           <v-list-tile-avatar>
-            <v-icon dark>arrow_back</v-icon>
+            <v-icon dark>
+              arrow_back
+            </v-icon>
           </v-list-tile-avatar>
         </v-list-tile>
       </v-list>
@@ -56,7 +58,9 @@
         to="/curseforge"
       >
         <v-list-tile-action style="padding-right: 2px;">
-          <v-icon :size="14">$vuetify.icons.curseforge</v-icon>
+          <v-icon :size="14">
+            $vuetify.icons.curseforge
+          </v-icon>
         </v-list-tile-action>
       </v-list-tile>
       <!-- <v-list-tile
@@ -87,10 +91,12 @@
             right
             :value="count !== 0"
           >
-            <template v-slot:badge>
+            <template #badge>
               <span>{{ count }}</span>
             </template>
-            <v-icon dark>assignment</v-icon>
+            <v-icon dark>
+              assignment
+            </v-icon>
           </v-badge>
         </v-list-tile-action>
       </v-list-tile>
@@ -107,10 +113,12 @@
             right
             :value="updateStatus !== 'none'"
           >
-            <template v-slot:badge>
+            <template #badge>
               <span>{{ 1 }}</span>
             </template>
-            <v-icon dark>settings</v-icon>
+            <v-icon dark>
+              settings
+            </v-icon>
           </v-badge>
         </v-list-tile-action>
       </v-list-tile>
@@ -123,32 +131,32 @@ import {
   reactive,
   toRefs,
   defineComponent,
-} from '@vue/composition-api';
+} from '@vue/composition-api'
 import {
   provideRouterHistory,
   useRouter,
   useTaskCount,
   useUpdateInfo,
-} from '/@/hooks';
-import { required } from '/@/util/props';
-import { useDialog } from '../hooks';
+} from '/@/hooks'
+import { required } from '/@/util/props'
+import { useDialog } from '../hooks'
 
 export default defineComponent({
   props: {
     goBack: required<() => void>(Function),
   },
   setup() {
-    const { count } = useTaskCount();
-    const { show } = useDialog('task');
-    const { updateStatus } = useUpdateInfo();
+    const { count } = useTaskCount()
+    const { show } = useDialog('task')
+    const { updateStatus } = useUpdateInfo()
 
     return {
       updateStatus,
       count,
       showTaskDialog: show,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

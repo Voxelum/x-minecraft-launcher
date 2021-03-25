@@ -13,7 +13,7 @@ export const gunzip: (data: Buffer) => Promise<Buffer> = promisify(_gunzip)
 export const gzip: (data: Buffer) => Promise<Buffer> = promisify(_gzip)
 
 export class ZipTask extends TaskLooped<void> {
-  private writeStream: Writable | undefined;
+  private writeStream: Writable | undefined
 
   constructor(readonly destination: string, readonly zipFile: ZipFile = new ZipFile()) {
     super()

@@ -1,7 +1,10 @@
 <template>
   <div style="display: flex !important; height: 100%; flex-direction: column;">
     <v-list-tile style="margin: 0px 0;">
-      <v-checkbox v-model="showAlpha" :label="$t('minecraft.showAlpha')" />
+      <v-checkbox
+        v-model="showAlpha"
+        :label="$t('minecraft.showAlpha')"
+      />
     </v-list-tile>
     <v-divider dark />
     <refreshing-tile v-if="refreshing" />
@@ -24,24 +27,24 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, computed } from '@vue/composition-api';
+import { defineComponent, computed } from '@vue/composition-api'
 import {
   useMinecraftVersions,
   useMinecraftVersionFilter,
-} from '/@/hooks';
-import { required } from '/@/util/props';
-import { MinecraftVersion } from '@xmcl/installer';
+} from '/@/hooks'
+import { required } from '/@/util/props'
+import { MinecraftVersion } from '@xmcl/installer'
 
 export default defineComponent({
-  props: { 
+  props: {
     select: required<(v: MinecraftVersion) => void>(Function),
-    filterText: required<string>(String), 
+    filterText: required<string>(String),
     version: required<string>(String),
   },
   setup(props) {
-    const { versions: vers, statuses, refreshing, refresh } = useMinecraftVersions();
-    const { filter, showAlpha, acceptingRange } = useMinecraftVersionFilter(computed(() => props.filterText));
-    const versions = computed(() => vers.value.filter(filter));
+    const { versions: vers, statuses, refreshing, refresh } = useMinecraftVersions()
+    const { filter, showAlpha, acceptingRange } = useMinecraftVersionFilter(computed(() => props.filterText))
+    const versions = computed(() => vers.value.filter(filter))
 
     return {
       showAlpha,
@@ -50,9 +53,9 @@ export default defineComponent({
       refreshing,
       statuses,
       refresh,
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped=true>

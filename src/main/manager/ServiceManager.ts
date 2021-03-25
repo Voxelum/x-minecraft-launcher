@@ -1,9 +1,27 @@
 import { Task } from '@xmcl/task'
 import { Manager } from '.'
-import LauncherApp from '../app/LauncherApp'
+import BaseService from '../service/BaseService'
+import CurseForgeService from '../service/CurseForgeService'
+import DiagnoseService from '../service/DiagnoseService'
+import ExternalAuthSkinService from '../service/ExternalAuthSkinService'
+import ImportService from '../service/ImportService'
+import InstallService from '../service/InstallService'
+import InstanceCurseforgeIOService from '../service/InstanceCurseforgeIOService'
+import InstanceGameSettingService from '../service/InstanceGameSettingService'
+import InstanceIOService from '../service/InstanceIOService'
+import InstanceResourceService from '../service/InstanceResourceService'
+import InstanceSavesService from '../service/InstanceSavesService'
+import InstanceService from '../service/InstanceService'
+import JavaService from '../service/JavaService'
+import LaunchService from '../service/LaunchService'
+import ResourcePackPreviewService from '../service/ResourcePackPreviewService'
+import ResourceService from '../service/ResourceService'
+import ServerStatusService from '../service/ServerStatusService'
+import UserService from '../service/UserService'
+import VersionService from '../service/VersionService'
 import { Client } from '/@main/engineBridge'
-import AbstractService, { registeredServices, ServiceConstructor } from '/@main/service/Service'
-import { toRecord } from '/@shared/util/object'
+import AbstractService, { ServiceConstructor } from '/@main/service/Service'
+import { ServiceKey } from '/@shared/services/Service'
 import { aquire, isBusy, release } from '/@shared/util/semaphore'
 
 interface ServiceCallSession {
@@ -13,31 +31,15 @@ interface ServiceCallSession {
   call: () => Promise<any>
 }
 
-function createProxyForService<T>(): [T, (v: T) => void] {
-  let target: any
-  const p: T = new Proxy({} as any, {
-    get(_, p) {
-      return target[p]
-    },
-    has(_, p) {
-      return !!target[p]
-    },
-    ownKeys(_) {
-      return Object.keys(target)
-    }
-  })
-  const set = (v: T) => {
-    target = v
-  }
-  return [p, set]
-}
-
 export default class ServiceManager extends Manager {
-  private registeredServices: Record<string, ServiceConstructor> = toRecord(registeredServices, (s) => Reflect.getMetadata('service:key', s))
+  private registeredServices: ServiceConstructor[] = []
 
-  private services: AbstractService[] = []
+  private activeServices: AbstractService[] = []
 
-  private activeServices = new Map<ServiceConstructor, AbstractService>()
+  /**
+   * The service exposed to the remote
+   */
+  private exposedService: Record<string, AbstractService> = {}
 
   private usedSession = 0
 
@@ -45,11 +47,13 @@ export default class ServiceManager extends Manager {
 
   private semaphore: Record<string, number> = {}
 
-  getService<T extends ServiceConstructor>(service: T): InstanceType<T> | undefined {
-    return this.activeServices.get(Object.getPrototypeOf(service).constructor) as any
+  getService<T extends ServiceConstructor>(key: ServiceKey<T>): InstanceType<T> | undefined {
+    return this.exposedService[key as any] as any
   }
 
-  protected registerService(s: ServiceConstructor) { this.registeredServices[s.name] = s }
+  protected addService<S extends AbstractService>(type: ServiceConstructor<S>) {
+    this.registeredServices.push(type)
+  }
 
   /**
    * Aquire and boradcast the key is in used.
@@ -84,33 +88,50 @@ export default class ServiceManager extends Manager {
     this.log(`Setup service ${this.app.gameDataPath}`)
 
     // create service instance
-    const serviceMap: Map<ServiceConstructor, AbstractService> = this.activeServices
-    const loaded: Set<ServiceConstructor> = new Set()
+    const serviceMap = this.exposedService
+    const injection = this.app.context
 
     const discoverService = (ServiceConstructor: ServiceConstructor) => {
-      if (serviceMap.has(ServiceConstructor)) {
-        return serviceMap.get(ServiceConstructor)
+      if (injection.getObject(ServiceConstructor)) {
+        return
       }
-      if (loaded.has(ServiceConstructor)) {
-        throw new Error('Circular Service dependencies!')
-      }
-
-      const types = Reflect.getMetadata('design:paramtypes', ServiceConstructor)
-      const params: any[] = []
-      for (const type of types) {
-        if (type === LauncherApp) {
-          // injecting app
-          params.push(this.app)
-        } else if (Object.getPrototypeOf(type) === AbstractService) {
-          // injecting a service
-          params.push(discoverService(type))
-        } else {
-          throw new Error(`Cannot inject type ${type} to service ${type.name}!`)
+      const types = Reflect.getMetadata('service:params', ServiceConstructor)
+      const params: any[] = [this.app]
+      if (types) {
+        for (let i = 0; i < types.length; i++) {
+          const type = types[i]
+          if (type) {
+            if (injection.getObject(type)) {
+              // inject object
+              params[i] = injection.getObject(type)
+            } else if (Object.getPrototypeOf(type) === AbstractService) {
+              // injecting a service
+              params[i] = discoverService(type)
+            } else {
+              throw new Error(`Cannot inject type ${type} to service ${type.name}!`)
+            }
+          }
         }
       }
 
       const serv = new ServiceConstructor(...params)
-      serviceMap.set(ServiceConstructor, serv)
+      injection.register(ServiceConstructor, serv)
+      this.activeServices.push(serv)
+      const key = Reflect.getMetadata('service:key', ServiceConstructor)
+      if (key) {
+        serviceMap[key] = serv
+        this.log(`Expose service ${key} to remote`)
+      } else {
+        this.warn(`Unexpose the service ${ServiceConstructor.name}`)
+      }
+
+      const subscrptions = Reflect.getMetadata('service:subscribe', serv)
+      if (subscrptions) {
+        for (const { mutations, handler } of subscrptions) {
+          this.app.storeManager.subscribeAll(mutations, handler.bind(serv))
+        }
+      }
+
       return serv
     }
 
@@ -124,7 +145,7 @@ export default class ServiceManager extends Manager {
    */
   async initializeServices() {
     const startingTime = Date.now()
-    await Promise.all(this.services.map(s => s.initialize().catch((e) => {
+    await Promise.all(this.activeServices.map(s => s.initialize().catch((e) => {
       this.error(`Error during initialize service: ${Object.getPrototypeOf(s).constructor.name}`)
       this.error(e)
     })))
@@ -133,23 +154,10 @@ export default class ServiceManager extends Manager {
   }
 
   /**
-   * Initialize all the services
-   */
-  async initializeService() {
-    // wait app ready since in the init stage, the module can access network & others
-    const startingTime = Date.now()
-    await Promise.all(this.services.map(s => s.initialize().catch((e) => {
-      this.error(`Error during service init ${Object.getPrototypeOf(s).constructor.name}:`)
-      this.error(e)
-    })))
-    this.log(`Successfully init modules. Total Time is ${Date.now() - startingTime}ms.`)
-  }
-
-  /**
    * Start the specific service call from its id.
    * @param id The service call session id.
    */
-  startServiceCall(id: number) {
+  private startServiceCall(id: number) {
     if (!this.sessions[id]) {
       this.error(`Unknown service call session ${id}!`)
     }
@@ -158,9 +166,17 @@ export default class ServiceManager extends Manager {
       if (r instanceof Promise) {
         return r.then(r => ({ result: r }), (e) => {
           this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`)
-          this.warn(e)
-          this.warn(e.stack)
-          return { error: { object: e, errorMessage: e.toString() } }
+          if (e instanceof Promise) {
+            return e.then((err) => {
+              // this.warn(JSON.stringify(err))
+              // this.warn(err.stack)
+              return { error: { object: err, errorMessage: err.toString() } }
+            })
+          } else {
+            // this.warn(JSON.stringify(e))
+            // this.warn(e.stack)
+            return { error: { object: e, errorMessage: e.toString() } }
+          }
         })
       }
       return { result: r }
@@ -183,10 +199,10 @@ export default class ServiceManager extends Manager {
    * @param payload The payload
    * @returns The service call session id
    */
-  prepareServiceCall(client: Client, service: string, name: string, payload: any): number | undefined {
-    const serv = this.activeServices.get(this.registeredServices[service])
+  private prepareServiceCall(client: Client, service: string, name: string, payload: any): number | undefined {
+    const serv = this.exposedService[service]
     if (!serv) {
-      this.error(`Cannot execute service call ${name} from service ${service}. The service not found.`)
+      this.error(`Cannot execute service call ${name} from service ${service}. No service exposed as ${service}.`)
     } else {
       if (name in serv) {
         const tasks: Task<any>[] = []
@@ -205,13 +221,13 @@ export default class ServiceManager extends Manager {
           get(target, key) {
             if (key === 'submit') { return submit }
             return Reflect.get(target, key)
-          }
+          },
         })
         const session: ServiceCallSession = {
           call: () => servProxy[name](payload),
           name: `${service}.${name}`,
           pure: false,
-          id: sessionId
+          id: sessionId,
         }
 
         this.sessions[sessionId] = session
@@ -224,7 +240,7 @@ export default class ServiceManager extends Manager {
   }
 
   dispose() {
-    return Promise.all(this.services.map((s) => s.dispose().catch((e) => {
+    return Promise.all(this.activeServices.map((s) => s.dispose().catch((e) => {
       this.error(`Error during dispose ${Object.getPrototypeOf(s).constructor.name}:`)
       this.error(e)
     })))
@@ -233,14 +249,33 @@ export default class ServiceManager extends Manager {
   // SETUP CODE
 
   async setup() {
+    this.addService(BaseService)
+    this.addService(CurseForgeService)
+    this.addService(DiagnoseService)
+    this.addService(ExternalAuthSkinService)
+    this.addService(ImportService)
+    this.addService(InstallService)
+    this.addService(InstanceCurseforgeIOService)
+    this.addService(InstanceGameSettingService)
+    this.addService(InstanceIOService)
+    this.addService(InstanceResourceService)
+    this.addService(InstanceSavesService)
+    this.addService(InstanceService)
+    this.addService(JavaService)
+    this.addService(LaunchService)
+    this.addService(ResourcePackPreviewService)
+    this.addService(ResourceService)
+    this.addService(ServerStatusService)
+    this.addService(UserService)
+    this.addService(VersionService)
+
     this.setupServices()
     await this.initializeServices()
-    this.app.emit('store-ready', this.app.storeManager.store)
+    this.app.emit('service-ready')
   }
 
   async engineReady() {
     this.app.handle('service-call', (e, service: string, name: string, payload: any) => this.prepareServiceCall(e.sender, service, name, payload))
     this.app.handle('session', (_, id) => this.startServiceCall(id))
-    this.initializeService()
   }
 }

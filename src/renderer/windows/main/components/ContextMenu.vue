@@ -15,25 +15,27 @@
           @click="item.onClick"
         >
           <v-list-tile-avatar>
-            <v-icon :size="item.icon === '$vuetify.icons.curseforge' ? 14: undefined">{{ item.icon }}</v-icon>
+            <v-icon :size="item.icon === '$vuetify.icons.curseforge' ? 14: undefined">
+              {{ item.icon }}
+            </v-icon>
           </v-list-tile-avatar>
           <v-list-tile-title>{{ item.text }}</v-list-tile-title>
         </v-list-tile>
-        <v-divider :key="index"></v-divider>
+        <v-divider :key="index" />
       </template>
     </v-list>
   </v-menu>
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api';
-import { useContextMenuData } from '../hooks';
+import { defineComponent } from '@vue/composition-api'
+import { useContextMenuData } from '../hooks'
 
 export default defineComponent({
   setup() {
-    return useContextMenuData();
+    return useContextMenuData()
   },
-});
+})
 </script>
 
 <style>

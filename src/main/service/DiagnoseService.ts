@@ -5,8 +5,8 @@ import { PackMeta } from '@xmcl/resourcepack'
 import { readJson, readJSON } from 'fs-extra'
 import { basename, join, relative } from 'path'
 import { AUTHLIB_ORG_NAME } from '../constant'
-import AbstractService, { Service, Singleton, Subscribe } from './Service'
-import VersionService from './VersionService'
+import { AggregateExecutor } from '../util/aggregator'
+import AbstractService, { ExportService, Singleton, Subscribe } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { exists, missing, validateSha256 } from '/@main/util/fs'
 import { Issue, IssueReport } from '/@shared/entities/issue'
@@ -14,7 +14,7 @@ import { EMPTY_JAVA } from '/@shared/entities/java'
 import { ForgeModCommonMetadata } from '/@shared/entities/mod'
 import { FabricResource } from '/@shared/entities/resource'
 import { compareRelease, getExpectVersion } from '/@shared/entities/version'
-import { DiagnoseServiceKey, DiagnoseService as IDiagnoseService } from '/@shared/services/DiagnoseService'
+import { DiagnoseService as IDiagnoseService, DiagnoseServiceKey } from '/@shared/services/DiagnoseService'
 import { parseVersion, VersionRange } from '/@shared/util/mavenVersion'
 
 export type DiagnoseFunction = (report: Partial<IssueReport>) => Promise<void>
@@ -27,14 +27,15 @@ export interface Fix {
 /**
  * This is the service provides the diagnose service for current launch profile
  */
-@Service(DiagnoseServiceKey)
+@ExportService(DiagnoseServiceKey)
 export default class DiagnoseService extends AbstractService implements IDiagnoseService {
-  private fixes: Fix[] = [];
+  private fixes: Fix[] = []
 
-  constructor(
-    app: LauncherApp,
-    private versionService: VersionService
-  ) {
+  private postIssue = new AggregateExecutor<Partial<IssueReport>, Partial<IssueReport>>(r => r.reduce((prev, cur) => Object.assign(prev, cur), {}),
+    (report) => this.commit('issuesPost', report),
+    500)
+
+  constructor(app: LauncherApp) {
     super(app)
   }
 
@@ -49,7 +50,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
         if (result instanceof Promise) { return result.then(() => { }) }
         return Promise.resolve(result)
       },
-      recheck
+      recheck,
     })
   }
 
@@ -61,6 +62,15 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
     await this.diagnoseJava(report)
     await this.diagnoseServer(report)
     // await this.diagnoseCustomSkin(report);
+    this.report(report)
+    this.release('diagnose')
+  }
+
+  @Subscribe('javaUpdate', 'javaRemove')
+  async onJavaUpdate() {
+    this.aquire('diagnose')
+    const report: Partial<IssueReport> = {}
+    await this.diagnoseJava(report)
     this.report(report)
     this.release('diagnose')
   }
@@ -116,7 +126,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
     this.report(report)
   }
 
-  @Subscribe('userGameProfileSelect', 'userProfileUpdate')
+  @Subscribe('userGameProfileSelect', 'userProfileUpdate', 'userSnapshot')
   async onUserUpdate() {
     const report: Partial<IssueReport> = {}
     // await this.diagnoseCustomSkin(report);
@@ -131,27 +141,12 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
     this.report(report)
   }
 
-  async initialize() {
-    this.aquire('diagnose')
-    try {
-      this.log('Init with a full diagnose')
-      const report: Partial<IssueReport> = {}
-      await this.diagnoseVersion(report)
-      await this.diagnoseJava(report)
-      await this.diagnoseServer(report)
-      // await this.diagnoseCustomSkin(report);
-      await this.diagnoseUser(report)
-      this.report(report)
-    } finally {
-      this.release('diagnose')
-    }
-  }
-
   @Singleton()
   async diagnoseMods(report: Partial<IssueReport>) {
     this.aquire('diagnose')
     try {
       const { runtime: version } = this.getters.instance
+      this.log(`Diagnose mods under ${version.minecraft}`)
       const mods = this.state.instanceResource.mods
       if (typeof mods === 'undefined') {
         this.warn(`The instance mods folder is undefined ${this.state.instance.path}!`)
@@ -167,7 +162,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
         incompatibleMod: [],
         requireForge: [],
         requireFabric: [],
-        requireFabricAPI: []
+        requireFabricAPI: [],
       }
       const forgeMods = mods.filter(m => !!m && m.type === 'forge')
       for (const mod of forgeMods) {
@@ -214,6 +209,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
   async diagnoseResourcePacks(report: Partial<IssueReport>) {
     this.aquire('diagnose')
     try {
+      this.log('Diagnose resource packs')
       const { runtime: version } = this.getters.instance
       const resourcePacks = this.state.instanceGameSetting.resourcePacks
       const resources = resourcePacks.map((name) => this.state.resource.resourcepacks.find((pack) => `file/${pack.name}${pack.ext}` === name))
@@ -222,7 +218,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
       const resolvedMcVersion = parseVersion(mcversion)
 
       const tree: Pick<IssueReport, 'incompatibleResourcePack'> = {
-        incompatibleResourcePack: []
+        incompatibleResourcePack: [],
       }
 
       const packFormatMapping = this.state.client.packFormatMapping.mcversion
@@ -252,16 +248,17 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
       const content = await readJson(jsonPath).catch(() => undefined)
       if (!content) return false
       const info = LibraryInfo.resolve(`${AUTHLIB_ORG_NAME}:${content.version}`)
-      const mc = new MinecraftFolder(this.state.root)
+      const mc = new MinecraftFolder(this.getPath())
       const libPath = mc.getLibraryByPath(info.path)
       return validateSha256(libPath, content.checksums.sha256)
     }
     try {
       const user = this.state.user.users[this.state.user.selectedUser.id]
 
+      this.log(`Diagnose user ${user.username}`)
       if (user) {
         const tree: Pick<IssueReport, 'missingAuthlibInjector'> = {
-          missingAuthlibInjector: []
+          missingAuthlibInjector: [],
         }
 
         if (user.authService !== 'mojang' && user.authService !== 'offline') {
@@ -282,7 +279,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
     try {
       const user = this.state.user.users[this.state.user.selectedUser.id]
       const tree: Pick<IssueReport, 'missingCustomSkinLoader'> = {
-        missingCustomSkinLoader: []
+        missingCustomSkinLoader: [],
       }
       if (user) {
         if (user.profileService !== 'mojang') {
@@ -297,7 +294,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
                   target: 'forge',
                   skinService: user.profileService,
                   missingJar: !res,
-                  noVersionSelected: !forge
+                  noVersionSelected: !forge,
                 })
               }
             } else {
@@ -310,7 +307,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
                 target: 'fabric',
                 skinService: user.profileService,
                 missingJar: true,
-                noVersionSelected: false
+                noVersionSelected: false,
               })
             }
           } else {
@@ -329,6 +326,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
   async diagnoseJava(report: Partial<IssueReport>) {
     this.aquire('diagnose')
     try {
+      this.log('Diagnose java')
       const instance = this.getters.instance
       const instanceJava = this.getters.instanceJava
 
@@ -338,7 +336,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
       const tree: Pick<IssueReport, 'incompatibleJava' | 'invalidJava' | 'missingJava'> = {
         incompatibleJava: [],
         missingJava: [],
-        invalidJava: []
+        invalidJava: [],
       }
 
       if (instanceJava === EMPTY_JAVA || this.getters.missingJava) {
@@ -366,7 +364,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
   @Singleton()
   async diagnoseFailure(log: string) {
     const tree: Pick<IssueReport, 'badForge'> = {
-      badForge: []
+      badForge: [],
     }
 
     const lines = log.split('\n').map(l => l.trim()).filter(l => l.length !== 0)
@@ -387,10 +385,11 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
   async diagnoseServer(report: Partial<IssueReport>) {
     this.aquire('diagnose')
     try {
+      this.log('Diagnose server status')
       const stat = this.getters.instance.serverStatus
 
       const tree: Pick<IssueReport, 'missingModsOnServer'> = {
-        missingModsOnServer: []
+        missingModsOnServer: [],
       }
 
       if (stat && stat.modinfo) {
@@ -410,11 +409,12 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
     try {
       const id = this.state.instance.path
       const selected = this.state.instance.all[id]
+      this.log(`Diagnose version of ${selected.path}`)
       if (!selected) {
         this.error(`No profile selected! ${id}`)
         return
       }
-      await this.versionService.refreshVersions()
+      // await this.versionService.refreshVersions()
       const runtime = selected.runtime
       const currentVersion = this.getters.instanceVersion
 
@@ -437,7 +437,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
         'corruptedLibraries' |
         'corruptedAssets' |
 
-        'badInstall'>;
+        'badInstall'>
 
       const tree: VersionReport = {
         missingVersion: [],
@@ -453,7 +453,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
         corruptedLibraries: [],
         corruptedAssets: [],
 
-        badInstall: []
+        badInstall: [],
       }
 
       if (!targetVersion) {
@@ -461,7 +461,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
       } else {
         this.log(`Diagnose for version ${targetVersion}`)
 
-        const location = this.state.root
+        const location = this.getPath()
         const gameReport = await diagnose(targetVersion, location)
 
         for (const issue of gameReport.issues) {
@@ -536,12 +536,12 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
    */
   report(report: Partial<IssueReport>) {
     for (const [key, value] of Object.entries(report)) {
-      const reg = this.state.diagnose.registry[key]
+      const reg = this.state.diagnose[key]
       if (value && reg.actived.length === 0 && value.length === 0) {
         delete report[key]
       }
     }
-    this.commit('issuesPost', report)
+    this.postIssue.push(report)
   }
 
   /**
@@ -552,7 +552,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
     this.aquire('diagnose')
     try {
       const unfixed = issues.filter(p => p.autofix)
-        .filter(p => !this.state.diagnose.registry[p.id].fixing)
+        .filter(p => !this.state.diagnose[p.id].fixing)
 
       if (unfixed.length === 0) return
 

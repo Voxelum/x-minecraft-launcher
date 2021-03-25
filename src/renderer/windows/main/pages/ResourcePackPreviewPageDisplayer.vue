@@ -11,100 +11,99 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs, onMounted, computed, ref, watch, onUnmounted } from '@vue/composition-api';
-import { BlockModel } from '@xmcl/resourcepack';
-import { BlockModelFactory } from '@xmcl/model';
-import { required } from '/@/util/props';
-import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
-import { Scene } from 'three/src/scenes/Scene';
-import { AmbientLight } from 'three/src/lights/AmbientLight';
-import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
-import { Vector3 } from 'three/src/math/Vector3';
-import { Object3D } from 'three/src/core/Object3D';
-import { OrbitControls } from '../../../skin/OrbitControls';
+import { defineComponent, reactive, toRefs, onMounted, computed, ref, watch, onUnmounted } from '@vue/composition-api'
+import { BlockModel } from '@xmcl/resourcepack'
+import { BlockModelFactory } from '@xmcl/model'
+import { required } from '/@/util/props'
+import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer'
+import { Scene } from 'three/src/scenes/Scene'
+import { AmbientLight } from 'three/src/lights/AmbientLight'
+import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera'
+import { Vector3 } from 'three/src/math/Vector3'
+import { Object3D } from 'three/src/core/Object3D'
+import { OrbitControls } from '../../../skin/OrbitControls'
 
 function findRealTexturePath(model: BlockModel.Resolved, variantKey: string) {
-  let texturePath = model.textures[variantKey] as string;
+  let texturePath = model.textures[variantKey] as string
   while (texturePath.startsWith('#')) {
-    const next = model.textures[texturePath.substring(1, texturePath.length)];
+    const next = model.textures[texturePath.substring(1, texturePath.length)]
     if (!next) {
-      console.log(`Find NOOP ${variantKey}`);
-      return undefined;
+      console.log(`Find NOOP ${variantKey}`)
+      return undefined
     }
-    texturePath = next;
+    texturePath = next
   }
-  console.log(`Find ${texturePath} ${variantKey}`);
-  return texturePath;
+  console.log(`Find ${texturePath} ${variantKey}`)
+  return texturePath
 }
 
 export default defineComponent({
-  props: { 
-    value: required<{ 
-      model: BlockModel.Resolved; 
-      textures: Record<string, { url: string }> 
+  props: {
+    value: required<{
+      model: BlockModel.Resolved
+      textures: Record<string, { url: string }>
     }>(Object),
   },
   setup(props) {
-    const canvas = ref(null);
+    const canvas = ref(null)
     const data = {
       disposed: false,
-    };
+    }
     onUnmounted(() => {
-      data.disposed = true;
-    });
+      data.disposed = true
+    })
     onMounted(() => {
-      const renderer = new WebGLRenderer({ canvas: canvas.value!, antialias: true, alpha: true });
-      const scene = new Scene();
-      const camera = new PerspectiveCamera(60, 1, 1, 1000);
-      const controls = new OrbitControls(camera, canvas.value!);
+      const renderer = new WebGLRenderer({ canvas: canvas.value!, antialias: true, alpha: true })
+      const scene = new Scene()
+      const camera = new PerspectiveCamera(60, 1, 1, 1000)
+      const controls = new OrbitControls(camera, canvas.value!)
 
-      camera.position.x = 16;
-      camera.position.x = 16;
-      camera.position.x = 32;
+      camera.position.x = 16
+      camera.position.x = 16
+      camera.position.x = 32
 
-      scene.add(new AmbientLight(0xffffff, 0.97));
+      scene.add(new AmbientLight(0xffffff, 0.97))
 
-      camera.lookAt(new Vector3(0, 0, 0));
+      camera.lookAt(new Vector3(0, 0, 0))
 
-      controls.target = new Vector3(0, 0, 0);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.2;
-      controls.zoomSpeed = 1.4;
-      controls.rotateSpeed = 0.6;
-      controls.enableKeys = false;
+      controls.target = new Vector3(0, 0, 0)
+      controls.enableDamping = true
+      controls.dampingFactor = 0.2
+      controls.zoomSpeed = 1.4
+      controls.rotateSpeed = 0.6
+      controls.enableKeys = false
       // if (props.rotate) {
       //   controls.autoRotate = true;
       //   controls.autoRotateSpeed = 4;
       // } else {
-      controls.autoRotate = false;
+      controls.autoRotate = false
       // }
 
-
-      let currentObj: any;
+      let currentObj: any
       watch(computed(() => props.value), () => {
         for (const [key, value] of Object.entries(props.value.model.textures)) {
-          props.value.model.textures[key] = findRealTexturePath(props.value.model, key);
+          props.value.model.textures[key] = findRealTexturePath(props.value.model, key)
         }
-        const obj = new BlockModelFactory(props.value.textures).getObject(props.value.model);
+        const obj = new BlockModelFactory(props.value.textures).getObject(props.value.model)
 
         if (currentObj) {
-          scene.remove(currentObj);
+          scene.remove(currentObj)
         }
-        scene.add(obj);
-        currentObj = obj;
-      });
+        scene.add(obj)
+        currentObj = obj
+      })
 
       requestAnimationFrame(function animate(nowMsec) {
-        if (data.disposed) return;
-        requestAnimationFrame(animate);
-        const result = controls.update();
-        renderer.render(scene, camera);
-      });
-    });
+        if (data.disposed) return
+        requestAnimationFrame(animate)
+        const result = controls.update()
+        renderer.render(scene, camera)
+      })
+    })
 
     return {
       canvas,
-    };
+    }
   },
-});
+})
 </script>

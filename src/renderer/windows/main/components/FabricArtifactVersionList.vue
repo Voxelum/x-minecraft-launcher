@@ -1,6 +1,12 @@
 <template>
-  <v-list dark style="background-color: transparent; overflow-x: hidden; overflow-y: hidden;">
-    <v-list-tile ripple @click="select({ version: '' })">
+  <v-list
+    dark
+    style="background-color: transparent; overflow-x: hidden; overflow-y: hidden;"
+  >
+    <v-list-tile
+      ripple
+      @click="select({ version: '' })"
+    >
       <v-list-tile-avatar>
         <v-icon>close</v-icon>
       </v-list-tile-avatar>
@@ -19,11 +25,11 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, ref, onMounted } from '@vue/composition-api';
-import { FabricArtifactVersion } from '@xmcl/installer';
-import { required } from '/@/util/props';
-import VirtualList from 'vue-virtual-scroll-list';
-import Tile from './FabricArtifactVersionListTile.vue';
+import { defineComponent, ref, onMounted } from '@vue/composition-api'
+import { FabricArtifactVersion } from '@xmcl/installer'
+import { required } from '/@/util/props'
+import VirtualList from 'vue-virtual-scroll-list'
+import Tile from './FabricArtifactVersionListTile.vue'
 
 export default defineComponent({
   components: { VirtualList },
@@ -34,16 +40,16 @@ export default defineComponent({
     select: required<(version: { version: string }) => void>(Function),
   },
   setup(props) {
-    let list = ref<any>(null);
+    const list = ref<any>(null)
     onMounted(() => {
-      let index = props.versions.findIndex(v => v.version === props.version);
-      (list.value! as any).scrollToIndex(index);
-    });
+      const index = props.versions.findIndex(v => v.version === props.version);
+      (list.value! as any).scrollToIndex(index)
+    })
     return {
       list,
       Tile,
-    };
+    }
   },
-});
+})
 
 </script>

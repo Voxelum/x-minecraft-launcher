@@ -1,7 +1,7 @@
 export function parseLog (log: string): Log {
   const tags = [] as string[]
   let content = ''
-    type StateFunc = (c: string, index: number) => boolean;
+    type StateFunc = (c: string, index: number) => boolean
     const normalState: StateFunc = (c, i) => {
       if (c === '[') {
         state = tagState(i)
@@ -29,7 +29,7 @@ export function parseLog (log: string): Log {
 }
 
 export interface Log {
-    tags: string[];
-    content: string;
-    raw: string;
+  tags: string[]
+  content: string
+  raw: string
 }

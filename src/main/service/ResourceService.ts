@@ -1,20 +1,21 @@
 import { task } from '@xmcl/task'
 import { stat } from 'fs-extra'
-import debounce from 'lodash.debounce'
 import { join } from 'path'
+import LauncherApp from '../app/LauncherApp'
+import { AggregateExecutor } from '../util/aggregator'
 import { RelativeMappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
-import AbstractService, { Service } from './Service'
+import AbstractService, { ExportService, internal } from './Service'
 import { FileStat, mutateResource, persistResource, readFileStat, remove, ResourceCache } from '/@main/entities/resource'
 import { fixResourceSchema } from '/@main/util/dataFix'
 import { copyPassively, FileType, readdirEnsured } from '/@main/util/fs'
 import { Exception } from '/@shared/entities/exception'
 import { AnyPersistedResource, AnyResource, isPersistedResource, PersistedResource } from '/@shared/entities/resource'
-import { PersistedResourceSchema, ResourceType } from '/@shared/entities/resource.schema'
+import { PersistedResourceSchema, Resource, ResourceType } from '/@shared/entities/resource.schema'
 import { ImportFileOptions, ImportFilesOptions, ParseFileOptions, ParseFilesOptions, RenameResourceOptions, ResourceService as IResourceService, ResourceServiceKey, SetResourceTagsOptions } from '/@shared/services/ResourceService'
 import { isNonnull, requireString } from '/@shared/util/assert'
 
-interface ParseResourceContext {
+export interface ParseResourceContext {
   stat?: FileStat
   sha1?: string
   fileType?: FileType
@@ -26,28 +27,34 @@ export interface Query {
   ino?: number
 }
 
-@Service(ResourceServiceKey)
+@ExportService(ResourceServiceKey)
 export default class ResourceService extends AbstractService implements IResourceService {
   private cache = new ResourceCache()
 
   private loadPromises: Record<string, Promise<void>> = {}
 
-  private resourceRemoveQueue: AnyPersistedResource[] = []
+  private resourceRemove = new AggregateExecutor<AnyPersistedResource, AnyPersistedResource[]>(_ => _,
+    (res) => {
+      this.commit('resourcesRemove', res)
+      for (const resource of res) {
+        this.cache.discard(resource)
+        this.unpersistResource(resource)
+      }
+    }, 1000)
+
+  private resourceUpdate = new AggregateExecutor<AnyPersistedResource, AnyPersistedResource[]>(_ => _,
+    (res) => {
+      this.commit('resources', res)
+      for (const resource of res) {
+        this.cache.discard(resource)
+        this.cache.put(resource)
+        this.resourceFile.writeTo(this.getPath(resource.location + '.json'), { ...(resource as any), version: 1 })
+      }
+    }, 1000)
 
   private resourceFile = new RelativeMappedFile<PersistedResourceSchema>('', new BufferJsonSerializer(PersistedResourceSchema))
 
-  private commitUpdate = debounce(async () => {
-    const queue = this.resourceRemoveQueue
-    if (queue.length > 0) {
-      this.resourceRemoveQueue = []
-      this.commit('resourcesRemove', queue)
-      for (const resource of queue) {
-        this.cache.discard(resource)
-        await this.unpersistResource(resource)
-      }
-    }
-  }, 500)
-
+  @internal
   protected normalizeResource(resource: string | AnyPersistedResource | AnyResource): AnyPersistedResource | undefined {
     if (typeof resource === 'string') {
       return this.cache.get(resource)
@@ -58,14 +65,20 @@ export default class ResourceService extends AbstractService implements IResourc
     return this.cache.get(resource.hash)
   }
 
+  constructor(app: LauncherApp) {
+    super(app)
+  }
+
   /**
    * Query in memory resource by key.
    * The key can be `hash`, `url` or `ino` of the file.
    */
+  @internal
   getResourceByKey(key: string | number): AnyPersistedResource | undefined {
     return this.cache.get(key)
   }
 
+  @internal
   isResourceInCache(key: string | number) {
     return !!this.cache.get(key)
   }
@@ -74,6 +87,7 @@ export default class ResourceService extends AbstractService implements IResourc
    * Query resource in memory by the resource query
    * @param query The resource query.
    */
+  @internal
   getResource(query: Query) {
     let res: PersistedResource | undefined
     if (query.hash) {
@@ -98,11 +112,13 @@ export default class ResourceService extends AbstractService implements IResourc
     return undefined
   }
 
+  @internal
   private async loadDomain(domain: string) {
     const path = this.getPath(domain)
     const files = await readdirEnsured(path)
     const result: PersistedResource[] = []
     const processFile = async (file: string) => {
+      if (!file.endsWith('.json')) return
       try {
         const filePath = join(path, file)
         const resourceData = await this.resourceFile.readTo(filePath)
@@ -127,7 +143,7 @@ export default class ResourceService extends AbstractService implements IResourc
           ino,
           ext: resourceData.ext,
           curseforge: resourceData.curseforge,
-          github: resourceData.github
+          github: resourceData.github,
         })
         result.push(resource)
       } catch (e) {
@@ -143,6 +159,7 @@ export default class ResourceService extends AbstractService implements IResourc
     this.commitResources(result)
   }
 
+  @internal
   async initialize() {
     for (const domain of ['mods', 'resourcepacks', 'saves', 'modpacks', 'unknown']) {
       this.loadPromises[domain] = this.loadDomain(domain)
@@ -166,11 +183,10 @@ export default class ResourceService extends AbstractService implements IResourc
     if (!resource) {
       throw new Exception({
         type: 'resourceNotFoundException',
-        resource: resourceOrKey as string
+        resource: resourceOrKey as string,
       })
     }
-    this.resourceRemoveQueue.push(resource)
-    await this.commitUpdate()
+    this.resourceRemove.push(resource)
   }
 
   /**
@@ -181,14 +197,11 @@ export default class ResourceService extends AbstractService implements IResourc
     if (!resource) {
       throw new Exception({
         type: 'resourceNotFoundException',
-        resource: options.resource as string
+        resource: options.resource as string,
       })
     }
     const result = mutateResource<PersistedResource<any>>(resource, (r) => { r.name = options.name })
-    this.cache.discard(resource)
-    this.cache.put(result)
-    this.commit('resource', result)
-    await this.resourceFile.writeTo(this.getPath(result.location + '.json'), { ...result, version: 1 })
+    this.resourceUpdate.push(result)
   }
 
   /**
@@ -199,14 +212,11 @@ export default class ResourceService extends AbstractService implements IResourc
     if (!resource) {
       throw new Exception({
         type: 'resourceNotFoundException',
-        resource: options.resource as string
+        resource: options.resource as string,
       })
     }
     const result = mutateResource<PersistedResource<any>>(resource, (r) => { r.tags = options.tags })
-    this.cache.discard(resource)
-    this.cache.put(result)
-    this.commit('resource', result)
-    await this.resourceFile.writeTo(this.getPath(result.location + '.json'), { ...result, version: 1 })
+    this.resourceUpdate.push(result)
   }
 
   /**
@@ -233,7 +243,7 @@ export default class ResourceService extends AbstractService implements IResourc
       path: f.path,
       source: f.source,
       type: f.type ?? options.type,
-      url: f.url
+      url: f.url,
     })))
   }
 
@@ -253,8 +263,7 @@ export default class ResourceService extends AbstractService implements IResourc
     const resource = await (options.background ? task.startAndWait() : this.submit(task))
 
     this.log(`Import and cache newly added resource ${resource.path} -> ${resource.domain}`)
-    this.cache.put(resource)
-    this.commit('resource', resource)
+    this.resourceUpdate.push(resource)
     return resource
   }
 
@@ -286,7 +295,7 @@ export default class ResourceService extends AbstractService implements IResourc
             source: f.source,
             type: f.type ?? options.type,
             background: options.background,
-            restrictToDomain: options.restrictToDomain
+            restrictToDomain: options.restrictToDomain,
           }, context)
           const result = await (options.background ? task.startAndWait() : this.submit(task))
           this.log(`Import and cache newly added resource ${result.path} -> ${result.domain}`)
@@ -324,7 +333,7 @@ export default class ResourceService extends AbstractService implements IResourc
       if (!resource) {
         throw new Exception({
           type: 'resourceNotFoundException',
-          resource: r
+          resource: r,
         })
       }
       promises.push(copyPassively(resource.path, join(targetDirectory, resource.name + resource.ext)))
@@ -334,7 +343,8 @@ export default class ResourceService extends AbstractService implements IResourc
 
   // helper methods
 
-  protected async queryExistedResourceByPath(path: string, context: ParseResourceContext) {
+  @internal
+  async queryExistedResourceByPath(path: string, context: ParseResourceContext) {
     let result: AnyPersistedResource | undefined
 
     let stats = context?.stat
@@ -368,7 +378,14 @@ export default class ResourceService extends AbstractService implements IResourc
     return result
   }
 
-  private async resolveResource(options: ParseFileOptions, context: ParseResourceContext) {
+  /**
+   * Resolve a file into resource
+   * @param options The parse option
+   * @param context The resource context
+   * @returns The resolved resource and icon
+   */
+  @internal
+  async resolveResource(options: ParseFileOptions, context: ParseResourceContext) {
     const { path, type } = options
     let sha1 = context?.sha1
     let fileType = context?.fileType
@@ -395,17 +412,39 @@ export default class ResourceService extends AbstractService implements IResourc
       sha1,
       fileType,
       stat,
-      hint: type ?? '*'
+      hint: type ?? '*',
     })
     return [resolved, icon] as const
+  }
+
+  /**
+  * The internal method which should be called in-services. You should first call {@link resolveResource} to get resolved resource and icon
+  * @param resource The resource to import
+  * @param context The query context
+  * @see {queryExistedResourceByPath}
+  */
+  @internal
+  async importParsedResource(options: ImportFileOptions, resolved: Resource, icon: Uint8Array | undefined) {
+    if (options.restrictToDomain && resolved.domain !== options.restrictToDomain) {
+      throw new Exception({
+        type: 'resourceDomainMissmatched',
+        path: options.path,
+        expectedDomain: options.restrictToDomain,
+        actualDomain: resolved.domain,
+        actualType: resolved.type,
+      }, `Non-${options.restrictToDomain} resource at ${options.path} type=${resolved.type}`)
+    }
+
+    const result = await persistResource(resolved, this.getPath(), options.source ?? {}, options.url ?? [], icon)
+    return result as AnyPersistedResource
   }
 
   /**
    * Resolve resource task. This will not write the resource to the cache, but it will persist the resource to disk.
    * @throws DomainMissMatchedError
    */
+  @internal
   private importFileTask(options: ImportFileOptions, context: ParseResourceContext) {
-    const root = this.getPath()
     return task('importResource', async () => {
       if (!context.stat) {
         context.stat = await readFileStat(options.path)
@@ -413,25 +452,15 @@ export default class ResourceService extends AbstractService implements IResourc
       if (context.stat.isDirectory) {
         throw new Exception({
           type: 'resourceImportDirectoryException',
-          path: options.path
+          path: options.path,
         })
       }
       const [resolved, icon] = await this.resolveResource(options, context)
-      if (options.restrictToDomain && resolved.domain !== options.restrictToDomain) {
-        throw new Exception({
-          type: 'resourceDomainMissmatched',
-          path: options.path,
-          expectedDomain: options.restrictToDomain,
-          actualDomain: resolved.domain,
-          actualType: resolved.type
-        }, `Non-${options.restrictToDomain} resource at ${options.path} type=${resolved.type}`)
-      }
-
-      const result = await persistResource(resolved, root, options.source ?? {}, options.url ?? [], icon)
-      return result as AnyPersistedResource
+      return this.importParsedResource(options, resolved, icon)
     })
   }
 
+  @internal
   private commitResources(resources: PersistedResource[]) {
     for (const resource of resources) {
       this.cache.put(resource as any)
@@ -439,6 +468,7 @@ export default class ResourceService extends AbstractService implements IResourc
     this.commit('resources', resources as any)
   }
 
+  @internal
   protected unpersistResource(resource: PersistedResource) {
     return remove(resource, this.getPath())
   }

@@ -2,10 +2,10 @@ import { inject, InjectionKey, Ref, provide, ref } from '@vue/composition-api'
 import { requireNonnull } from '/@shared/util/assert'
 
 export interface ContextMenuItem {
-    text: string;
-    icon: string;
-    onClick: () => void;
-    children: ContextMenuItem[];
+  text: string
+  icon: string
+  onClick: () => void
+  children: ContextMenuItem[]
 }
 
 export const CONTEXT_MENU_X: InjectionKey<Ref<number>> = Symbol('CONTEXT_MENU_X')
@@ -33,7 +33,7 @@ export function useContextMenu () {
     zshown.value = true
   }
   return {
-    open
+    open,
   }
 }
 
@@ -47,7 +47,7 @@ export function useContextMenuData () {
   requireNonnull(items)
   requireNonnull(shown)
   return {
-    x, y, items, shown
+    x, y, items, shown,
   }
 }
 

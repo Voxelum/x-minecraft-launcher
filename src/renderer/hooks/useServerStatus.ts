@@ -25,7 +25,7 @@ export function useInstanceServerStatus (instancePath?: string) {
     description: computed(() => status.value.description),
     favicon: computed(() => status.value.favicon || unknownServer),
     ping: computed(() => status.value.ping),
-    refresh: refreshServerStatus
+    refresh: refreshServerStatus,
   }
 }
 
@@ -35,15 +35,15 @@ export function useServer (serverRef: Ref<{ host: string; port?: number }>, prot
   const status = reactive({
     version: {
       name: '',
-      protocol: 0
+      protocol: 0,
     },
     players: {
       max: 0,
-      online: 0
+      online: 0,
     },
     description: '',
     favicon: unknownServer,
-    ping: -1
+    ping: -1,
   })
   const pinging = ref(false)
   /**
@@ -59,7 +59,7 @@ export function useServer (serverRef: Ref<{ host: string; port?: number }>, prot
     const result = await pingServer({
       host: server.host,
       port: server.port,
-      protocol: protocol.value
+      protocol: protocol.value,
     }).finally(() => {
       pinging.value = false
     })
@@ -95,6 +95,6 @@ export function useServer (serverRef: Ref<{ host: string; port?: number }>, prot
     ...toRefs(status),
     pinging,
     refresh,
-    reset
+    reset,
   }
 }

@@ -14,7 +14,12 @@
           source.status === "remote" ? "cloud" : "folder"
         }}
       </v-icon>
-      <v-progress-circular v-else :width="2" :size="24" indeterminate />
+      <v-progress-circular
+        v-else
+        :width="2"
+        :size="24"
+        indeterminate
+      />
     </v-list-tile-avatar>
 
     <v-list-tile-title>{{ source.version }}</v-list-tile-title>
@@ -36,10 +41,10 @@
 </template>
 
 <script lang=ts>
-import { required } from '/@/util/props';
-import { Status } from '/@shared/entities/version';
-import { defineComponent } from '@vue/composition-api';
-import { ForgeVersion } from '@xmcl/installer';
+import { required } from '/@/util/props'
+import { Status } from '/@shared/entities/version'
+import { defineComponent } from '@vue/composition-api'
+import { ForgeVersion } from '@xmcl/installer'
 
 export default defineComponent({
   props: {
@@ -47,5 +52,5 @@ export default defineComponent({
     select: required<(version: { version: string }) => void>(Function),
     selected: required(String),
   },
-});
+})
 </script>

@@ -53,40 +53,40 @@
 </template>
 
 <script lang=ts>
-import { computed, defineComponent, ref } from '@vue/composition-api';
+import { computed, defineComponent, ref } from '@vue/composition-api'
 import {
   useI18n,
   useUserSkin,
   useNativeDialog,
   useUserSecurityStatus,
-} from '/@/hooks';
-import { required } from '/@/util/props';
-import { useNotifier } from '../hooks';
-import ImportSkinUrlForm from './UserPageImportSkinUrlForm.vue';
-import SpeedDial from './UserPageSkinSpeedDial.vue';
+} from '/@/hooks'
+import { required } from '/@/util/props'
+import { useNotifier } from '../hooks'
+import ImportSkinUrlForm from './UserPageImportSkinUrlForm.vue'
+import SpeedDial from './UserPageSkinSpeedDial.vue'
 
 export default defineComponent({
   components: {
     ImportSkinUrlForm,
     SpeedDial,
   },
-  props: { 
+  props: {
     userId: required<string>(String),
     profileId: required<string>(String),
     name: required<string>(String),
   },
   setup(props) {
-    const { $t } = useI18n();
-    const { watcherTask } = useNotifier();
-    const { security } = useUserSecurityStatus();
-    const { url, slim, refreshing, refresh, save, exportTo, loading, modified, reset } = useUserSkin(computed(() => props.userId), computed(() => props.profileId));
-    const { showOpenDialog, showSaveDialog } = useNativeDialog();
-    const isImportSkinDialogShown = ref(false);
-    const pending = computed(() => refreshing.value || loading.value);
+    const { $t } = useI18n()
+    const { watcherTask } = useNotifier()
+    const { security } = useUserSecurityStatus()
+    const { url, slim, refreshing, refresh, save, exportTo, loading, modified, reset } = useUserSkin(computed(() => props.userId), computed(() => props.profileId))
+    const { showOpenDialog, showSaveDialog } = useNativeDialog()
+    const isImportSkinDialogShown = ref(false)
+    const pending = computed(() => refreshing.value || loading.value)
     async function loadSkin() {
-      const { filePaths } = await showOpenDialog({ title: $t('user.openSkinFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] });
+      const { filePaths } = await showOpenDialog({ title: $t('user.openSkinFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] })
       if (filePaths && filePaths[0]) {
-        url.value = `file://${filePaths[0]}`;
+        url.value = `file://${filePaths[0]}`
       }
     }
     async function exportSkin() {
@@ -94,16 +94,16 @@ export default defineComponent({
         title: $t('user.skinSaveTitle'),
         defaultPath: `${props.name}.png`,
         filters: [{ extensions: ['png'], name: 'PNG Images' }],
-      });
+      })
       if (filePath) {
-        exportTo({ path: filePath, url: url.value });
+        exportTo({ path: filePath, url: url.value })
       }
     }
     async function dropSkin(e: DragEvent) {
       if (e.dataTransfer) {
-        const length = e.dataTransfer.files.length;
+        const length = e.dataTransfer.files.length
         if (length > 0) {
-          url.value = `file://${e.dataTransfer!.files[0].path}`;
+          url.value = `file://${e.dataTransfer!.files[0].path}`
         }
       }
     }
@@ -120,9 +120,9 @@ export default defineComponent({
       exportSkin,
       dropSkin,
       isImportSkinDialogShown,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

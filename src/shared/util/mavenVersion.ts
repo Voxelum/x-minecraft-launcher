@@ -18,15 +18,15 @@
  */
 
 export interface ArtifactVersion {
-  majorVersion?: number;
+  majorVersion?: number
 
-  minorVersion?: number;
+  minorVersion?: number
 
-  incrementalVersion?: number;
+  incrementalVersion?: number
 
-  buildNumber?: number;
+  buildNumber?: number
 
-  qualifier?: string;
+  qualifier?: string
 
   readonly comparable: ComparableVersion
 
@@ -137,7 +137,7 @@ export function parseVersion(version: string): ArtifactVersion {
     comparable,
     compareTo(otherVersion) {
       return comparable.compareTo(otherVersion.comparable)
-    }
+    },
   }
 }
 function getNextIntegerToken(tok: string[]) {
@@ -161,12 +161,12 @@ function tryParseInt(s: string): number | undefined {
 }
 
 enum Type {
-  INT, STRING, LIST
+  INT, STRING, LIST,
 }
 interface Item {
-  isNull(): boolean;
-  compareTo(item: Item | undefined): number;
-  readonly type: Type;
+  isNull(): boolean
+  compareTo(item: Item | undefined): number
+  readonly type: Type
 }
 
 class IntItem implements Item {
@@ -176,7 +176,7 @@ class IntItem implements Item {
     return this.value === 0
   }
 
-  type = Type.INT;
+  type = Type.INT
   compareTo(item: Item): number {
     if (item === undefined) {
       return (this.value === 0) ? 0 : 1 // 1.0 === 1, 1.1 > 1
@@ -199,12 +199,12 @@ class IntItem implements Item {
   }
 }
 class ListItem implements Item {
-  private value = new Array<Item>();
+  private value = new Array<Item>()
   isNull(): boolean {
     return this.value.length === 0
   }
 
-  type = Type.LIST;
+  type = Type.LIST
   push(item: Item) {
     this.value.push(item)
   }
@@ -264,9 +264,9 @@ class StringItem implements Item {
     return StringItem.compre(StringItem.comparableQualifier(this.value), (StringItem.RELEASE_VERSION_INDEX)) === 0
   }
 
-  private static readonly QUALIFIERS: string[] = ['alpha', 'beta', 'milestone', 'rc', 'snapshot', '', 'sp'];
-  private static readonly RELEASE_VERSION_INDEX = StringItem.QUALIFIERS.indexOf('').toString();
-  static readonly ALIASES: { [key: string]: string } = { ga: '', final: '', release: '', cr: 'rc' };
+  private static readonly QUALIFIERS: string[] = ['alpha', 'beta', 'milestone', 'rc', 'snapshot', '', 'sp']
+  private static readonly RELEASE_VERSION_INDEX = StringItem.QUALIFIERS.indexOf('').toString()
+  static readonly ALIASES: { [key: string]: string } = { ga: '', final: '', release: '', cr: 'rc' }
   private static compre(a: string, b: string): number {
     return a > b ? 1 : a === b ? 0 : -1
   }
@@ -276,7 +276,7 @@ class StringItem implements Item {
     return i === -1 ? (StringItem.QUALIFIERS.length + '-' + qualifier) : i.toString()
   }
 
-  type = Type.STRING;
+  type = Type.STRING
 
   compareTo(item: Item): number {
     if (item === null) {
@@ -318,7 +318,7 @@ class StringItem implements Item {
   }
 }
 export class ComparableVersion {
-  private readonly items = new ListItem();
+  private readonly items = new ListItem()
   constructor(readonly version: string) {
     const items = this.items
 
@@ -413,7 +413,7 @@ export class ComparableVersion {
 }
 
 class Restriction {
-  public static readonly EVERYTHING: Restriction = new Restriction(undefined, false, undefined, false);
+  public static readonly EVERYTHING: Restriction = new Restriction(undefined, false, undefined, false)
 
   public constructor(readonly lowerBound: ArtifactVersion | undefined, readonly lowerBoundInclusive: boolean, readonly upperBound: ArtifactVersion | undefined,
     readonly upperBoundInclusive: boolean) {
@@ -446,7 +446,7 @@ class Restriction {
 }
 
 export class VersionRange {
-  static from = VersionRange.createFromVersionSpec;
+  static from = VersionRange.createFromVersionSpec
   constructor(readonly recommendedVersion: ArtifactVersion | undefined, readonly restrictions: Restriction[]) {
   }
 

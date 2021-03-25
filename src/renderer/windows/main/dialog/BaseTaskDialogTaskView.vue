@@ -17,7 +17,7 @@
         item-key="id"
         item-children="children"
       >
-        <template v-slot:append="{ item }">
+        <template #append="{ item }">
           <task-node-status
             :item="item"
             :show-number="hovered[item.id]"
@@ -26,7 +26,7 @@
           />
         </template>
 
-        <template v-slot:label="{ item }">
+        <template #label="{ item }">
           <div
             style="padding: 5px 0px;"
             @click="onTaskClick($event, item)"
@@ -54,21 +54,21 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent } from '@vue/composition-api';
-import { useClipboard, useTasks } from '/@/hooks';
-import { TaskItem } from '/@/entities/task';
+import { reactive, toRefs, defineComponent } from '@vue/composition-api'
+import { useClipboard, useTasks } from '/@/hooks'
+import { TaskItem } from '/@/entities/task'
 
 export default defineComponent({
   setup() {
-    const clipboard = useClipboard();
-    const { tasks, pause, resume, cancel } = useTasks();
+    const clipboard = useClipboard()
+    const { tasks, pause, resume, cancel } = useTasks()
 
     const data = reactive({
       tree: [],
       opened: [],
       active: 0,
       hovered: {} as Record<string, boolean>,
-    });
+    })
 
     return {
       ...toRefs(data),
@@ -77,9 +77,9 @@ export default defineComponent({
       resume,
       cancel,
       onTaskClick(event: MouseEvent, item: TaskItem) {
-        clipboard.writeText(item.message || '');
+        clipboard.writeText(item.message || '')
       },
-    };
+    }
   },
-});
+})
 </script>

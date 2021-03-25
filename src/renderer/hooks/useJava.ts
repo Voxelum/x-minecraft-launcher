@@ -27,6 +27,6 @@ export function useJava () {
     refreshLocalJava,
     refreshing,
     missing,
-    openJavaSite: () => openInBrowser('https://www.java.com/download/')
+    openJavaSite: () => openInBrowser('https://www.java.com/download/'),
   }
 }

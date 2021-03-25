@@ -14,7 +14,7 @@
       <v-spacer />
 
       <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
+        <template #activator="{ on }">
           <v-btn
             icon
             large
@@ -27,7 +27,7 @@
         {{ $t('user.service.add') }}
       </v-tooltip>
       <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
+        <template #activator="{ on }">
           <v-btn
             icon
             large
@@ -40,7 +40,7 @@
         {{ $t('user.refreshAccount') }}
       </v-tooltip>
       <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
+        <template #activator="{ on }">
           <v-btn
             icon
             large
@@ -151,8 +151,12 @@
 
         <v-card-text>
           {{ $t('user.account.removeDescription') }}
-          <div style="color: grey">{{ $t('user.name') }}: {{ removingUserName }}</div>
-          <div style="color: grey">{{ $t('user.id') }}: {{ removingProfile }}</div>
+          <div style="color: grey">
+            {{ $t('user.name') }}: {{ removingUserName }}
+          </div>
+          <div style="color: grey">
+            {{ $t('user.id') }}: {{ removingProfile }}
+          </div>
         </v-card-text>
 
         <v-divider />
@@ -179,7 +183,7 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, defineComponent, watch } from '@vue/composition-api';
+import { reactive, toRefs, computed, defineComponent, watch } from '@vue/composition-api'
 import {
   useCurrentUser,
   useSwitchUser,
@@ -189,14 +193,14 @@ import {
   useGameProfile,
   useProfileId,
   useStore,
-} from '/@/hooks';
-import { useLoginDialog, useDialog } from '../hooks';
-import ChallengesForm from './UserPageChallengesForm.vue';
-import PageSkinView from './UserPageSkinView.vue';
-import UserServicesCard from './UserPageUserServicesCard.vue';
-import SpeedDial from './UserPageSkinSpeedDial.vue';
-import GameProfileSpeedDial from './UserPageGameProfileSpeedDial.vue';
-import UserList from './UserPageUserList.vue';
+} from '/@/hooks'
+import { useLoginDialog, useDialog } from '../hooks'
+import ChallengesForm from './UserPageChallengesForm.vue'
+import PageSkinView from './UserPageSkinView.vue'
+import UserServicesCard from './UserPageUserServicesCard.vue'
+import SpeedDial from './UserPageSkinSpeedDial.vue'
+import GameProfileSpeedDial from './UserPageGameProfileSpeedDial.vue'
+import UserList from './UserPageUserList.vue'
 
 export default defineComponent({
   components: {
@@ -208,15 +212,15 @@ export default defineComponent({
     UserList,
   },
   setup() {
-    const { refreshStatus: refreshAccount, refreshSkin } = useCurrentUser();
-    const { security } = useUserSecurityStatus();
-    const { show: showLoginDialog } = useLoginDialog();
-    const { show: showUserServiceDialog } = useDialog('user-service');
+    const { refreshStatus: refreshAccount, refreshSkin } = useCurrentUser()
+    const { security } = useUserSecurityStatus()
+    const { show: showLoginDialog } = useLoginDialog()
+    const { show: showUserServiceDialog } = useDialog('user-service')
 
-    const { users } = useUsers();
-    const { select, remove, modified, commit, userId, profileId } = useSwitchUser();
-    const { gameProfile } = useProfileId(userId, profileId);
-    const { name } = useGameProfile(gameProfile);
+    const { users } = useUsers()
+    const { select, remove, modified, commit, userId, profileId } = useSwitchUser()
+    const { gameProfile } = useProfileId(userId, profileId)
+    const { name } = useGameProfile(gameProfile)
     const data = reactive({
       isChallengesDialogShown: false,
       isUserServicesDialogShown: false,
@@ -225,33 +229,33 @@ export default defineComponent({
       selecting: false,
       deleting: false,
       dragged: false,
-    });
-    const loading = computed(() => data.selecting || data.deleting);
-    const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removingProfile, cancel: cancelRemoveProfile } = useOperation('', (v) => remove(v));
+    })
+    const loading = computed(() => data.selecting || data.deleting)
+    const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removingProfile, cancel: cancelRemoveProfile } = useOperation('', (v) => remove(v))
 
-    const { state } = useStore();
-    const removingUserName = computed(() => state.user.users[removingProfile.value]?.username ?? '');
+    const { state } = useStore()
+    const removingUserName = computed(() => state.user.users[removingProfile.value]?.username ?? '')
 
     function confirmSelectGameProfile() {
-      data.selecting = true;
-      commit().finally(() => { data.selecting = false; });
+      data.selecting = true
+      commit().finally(() => { data.selecting = false })
     }
 
     watch(removingProfile, (n) => {
       if (n) {
-        data.isDeleteDialogShown = true;
+        data.isDeleteDialogShown = true
       }
-    });
+    })
 
     watch(computed(() => data.isDeleteDialogShown), (s) => {
       if (!s) {
-        removingProfile.value = '';
+        removingProfile.value = ''
       }
-    });
+    })
 
     function refresh() {
-      refreshAccount();
-      refreshSkin();
+      refreshAccount()
+      refreshSkin()
     }
 
     return {
@@ -279,9 +283,9 @@ export default defineComponent({
       showUserServiceDialog,
 
       showLoginDialog,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

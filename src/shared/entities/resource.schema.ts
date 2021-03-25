@@ -1,6 +1,6 @@
 /* eslint-disable no-redeclare */
 import { Schema } from './schema'
-import _ResourceSchema from './ResourceSchema.json'
+import _ResourceSchema from './PersistedResourceSchema.json'
 
 export const PersistedResourceSchema: Schema<PersistedResourceSchema> = _ResourceSchema
 
@@ -38,7 +38,7 @@ export enum ResourceType {
   CurseforgeModpack = 'curseforge-modpack',
   Save = 'save',
   ResourcePack = 'resourcepack',
-  Unknown = 'unknown'
+  Unknown = 'unknown',
 }
 
 export enum ResourceDomain {
@@ -46,7 +46,7 @@ export enum ResourceDomain {
   Saves = 'saves',
   ResourcePacks = 'resourcepacks',
   Modpacks = 'modpacks',
-  Unknown = 'unknowns'
+  Unknown = 'unknowns',
 }
 
 /**
@@ -57,6 +57,10 @@ export interface Resource<T = unknown> {
    * The path of the resource file
    */
   path: string
+  /**
+   * The resource file path relative to the .minecraft without extension
+   */
+  location: string
   /**
    * The suggest name of the resource
    */
@@ -100,6 +104,7 @@ export interface Resource<T = unknown> {
 /**
  * Reprensent a persisted resource
  */
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export interface PersistedResourceSchema extends Omit<Resource<object | object[]>, 'path'> {
   /**
    * @default 0
@@ -109,10 +114,6 @@ export interface PersistedResourceSchema extends Omit<Resource<object | object[]
    * @deprecated
    */
   path?: string
-  /**
-   * The resource file path relative to the data root directory
-   */
-  location: string
   /**
    * The resource extension name
    */

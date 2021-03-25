@@ -24,7 +24,7 @@ export function useLocalVersions () {
   return {
     localVersions,
     ...versions,
-    ...useServiceOnly(InstallServiceKey, 'reinstall')
+    ...useServiceOnly(InstallServiceKey, 'reinstall'),
   }
 }
 
@@ -58,14 +58,14 @@ export function useMinecraftVersions () {
     refreshing,
     release,
     snapshot,
-    refresh: refreshMinecraft
+    refresh: refreshMinecraft,
   }
 }
 
 export function useMinecraftVersionFilter (filterText: Ref<string>) {
   const data = reactive({
     acceptingRange: '',
-    showAlpha: false
+    showAlpha: false,
   })
 
   function filter (v: MinecraftVersion) {
@@ -76,7 +76,7 @@ export function useMinecraftVersionFilter (filterText: Ref<string>) {
 
   return {
     ...toRefs(data),
-    filter
+    filter,
   }
 }
 
@@ -122,7 +122,7 @@ export function useFabricVersions () {
     yarnVersions,
     refresh,
     loaderStatus,
-    yarnStatus
+    yarnStatus,
   }
 }
 
@@ -175,7 +175,7 @@ export function useForgeVersions (minecraftVersion: Ref<string>) {
     refreshing,
     statuses,
     recommended,
-    latest
+    latest,
   }
 }
 
@@ -200,7 +200,7 @@ export function useLiteloaderVersions (minecraftVersion: Ref<string>) {
   return {
     versions,
     refresh,
-    refreshing
+    refreshing,
   }
 }
 
@@ -222,6 +222,6 @@ export function useOptifineVersions (minecraftVersion: Ref<string>) {
   return {
     versions,
     refresh,
-    refreshing
+    refreshing,
   }
 }

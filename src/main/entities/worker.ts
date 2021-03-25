@@ -44,15 +44,16 @@ export interface CPUWorker {
 
 export class WorkerAgent implements CPUWorker {
   constructor(private worker: Worker) { }
+
   private counter = 0
 
-  private post<T>(payload: WorkPayload) {
-    this.worker.postMessage(payload)
-    return new Promise<T>((resolve, reject) => {
+  submit<T extends keyof CPUWorker>(work: T, payload: Parameters<CPUWorker[T]>[0]): ReturnType<CPUWorker[T]> {
+    const _id = this.counter++
+    return new Promise((resolve, reject) => {
       const handler = (resp: WorkerResponse) => {
         const { error, result, id } = resp
-        if (id === payload.id) {
-          this.worker?.removeListener('message', handler)
+        if (id === _id) {
+          this.worker.removeListener('message', handler)
           if (error) {
             reject(error)
           } else {
@@ -60,12 +61,9 @@ export class WorkerAgent implements CPUWorker {
           }
         }
       }
-      this.worker!.on('message', handler)
-    })
-  }
-
-  submit<T extends keyof CPUWorker>(work: T, payload: Parameters<CPUWorker[T]>[0]): ReturnType<CPUWorker[T]> {
-    throw this.post({ type: work, id: this.counter++, ...payload })
+      this.worker.on('message', handler)
+      this.worker.postMessage({ ...payload, type: work, id: _id })
+    }) as any
   }
 
   checksum(payload: ChecksumWorkPayload): Promise<string> {

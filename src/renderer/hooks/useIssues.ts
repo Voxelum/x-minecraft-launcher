@@ -9,6 +9,6 @@ export function useIssues () {
 
   return {
     issues,
-    refreshing
+    refreshing,
   }
 }

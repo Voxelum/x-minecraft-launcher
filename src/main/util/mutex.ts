@@ -1,7 +1,7 @@
-export type Ticket = () => void;
+export type Ticket = () => void
 
 export class WaitingQueue {
-  private last: Promise<any> | undefined;
+  private last: Promise<any> | undefined
 
   async enqueue<T>(operation: () => Promise<T>): Promise<T> {
     if (this.last) {
@@ -22,7 +22,7 @@ export class WaitingQueue {
 }
 
 export class Queue {
-  private queue: Array<[Promise<void>, () => void]> = [];
+  private queue: Array<[Promise<void>, () => void]> = []
 
   async waitInline(): Promise<Ticket> {
     let _resolve: () => void

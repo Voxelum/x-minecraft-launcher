@@ -6,28 +6,46 @@
     @dragover.prevent="onDragOver"
     @drop="onDropToImport"
   >
-    <v-layout column fill-height style="max-height: 100%">
-      <v-toolbar dark flat color="transparent" style="z-index: 10">
+    <v-layout
+      column
+      fill-height
+      style="max-height: 100%"
+    >
+      <v-toolbar
+        dark
+        flat
+        color="transparent"
+        style="z-index: 10"
+      >
         <v-toolbar-title>{{ $tc("mod.name", 2) }}</v-toolbar-title>
         <v-spacer />
         <!-- <v-tooltip bottom>
           <template v-slot:activator="{ on }"> -->
-        <v-btn icon @click="showModsFolder()">
+        <v-btn
+          icon
+          @click="showModsFolder()"
+        >
           <v-icon>folder</v-icon>
         </v-btn>
         <!-- </template>
           {{ $t(`curseforge.mc-mods.description`) }}
         </v-tooltip> -->
         <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn icon v-on="on" @click="goToCurseforgeMods()">
-              <v-icon :size="14">$vuetify.icons.curseforge</v-icon>
+          <template #activator="{ on }">
+            <v-btn
+              icon
+              v-on="on"
+              @click="goToCurseforgeMods()"
+            >
+              <v-icon :size="14">
+                $vuetify.icons.curseforge
+              </v-icon>
             </v-btn>
           </template>
           {{ $t(`curseforge.mc-mods.description`) }}
         </v-tooltip>
         <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
+          <template #activator="{ on }">
             <v-btn
               icon
               v-on="on"
@@ -47,8 +65,12 @@
           }}
         </v-tooltip>
         <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn icon v-on="on" @click="toggle()">
+          <template #activator="{ on }">
+            <v-btn
+              icon
+              v-on="on"
+              @click="toggle()"
+            >
               <v-icon>search</v-icon>
             </v-btn>
           </template>
@@ -118,10 +140,10 @@
 </template>
 
 <script lang=ts>
-import VirtualList from 'vue-virtual-scroll-list';
-import { defineComponent, reactive, toRefs, computed, ref, Ref, provide, watch, onMounted, onUnmounted, set, nextTick } from '@vue/composition-api';
-import { ForgeResource, LiteloaderResource } from '/@shared/entities/resource';
-import { isCompatible } from '/@shared/entities/version';
+import VirtualList from 'vue-virtual-scroll-list'
+import { defineComponent, reactive, toRefs, computed, ref, Ref, provide, watch, onMounted, onUnmounted, set, nextTick } from '@vue/composition-api'
+import { ForgeResource, LiteloaderResource } from '/@shared/entities/resource'
+import { isCompatible } from '/@shared/entities/version'
 import {
   useInstanceMods,
   useResourceOperation,
@@ -134,134 +156,135 @@ import {
   useInstanceBase,
   useRouter,
   useService,
-} from '/@/hooks';
-import { useLocalStorageCacheBool } from '/@/hooks/useCache';
-import { filter } from 'fuzzy';
-import { isNonnull } from '/@shared/util/assert';
-import { useSearchToggles, useSearch } from '../hooks';
-import ModCard from './ModSettingPageCard.vue';
-import DeleteView from './ModSettingPageDeleteView.vue';
-import FloatButton from './ModSettingPageFloatButton.vue';
+} from '/@/hooks'
+import { useLocalStorageCacheBool } from '/@/hooks/useCache'
+import { filter } from 'fuzzy'
+import { isNonnull } from '/@shared/util/assert'
+import { useSearchToggles, useSearch } from '../hooks'
+import ModCard from './ModSettingPageCard.vue'
+import DeleteView from './ModSettingPageDeleteView.vue'
+import FloatButton from './ModSettingPageFloatButton.vue'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
-type ModResource = ForgeResource | LiteloaderResource;
+type ModResource = ForgeResource | LiteloaderResource
 
 function setupDragMod(items: Ref<ModItem[]>, selectedMods: Ref<ModItem[]>, isSelectionMode: Ref<boolean>) {
-  const dragged = reactive({} as Record<string, boolean>);
-  const isDraggingMod = computed(() => Object.values(dragged).some((v) => v));
+  const dragged = reactive({} as Record<string, boolean>)
+  const isDraggingMod = computed(() => Object.values(dragged).some((v) => v))
 
   watch(items, (arr) => {
     for (const m of arr) {
       if (!(m.hash in dragged)) {
-        dragged[m.hash] = false;
+        dragged[m.hash] = false
       }
     }
-  });
+  })
 
   function isDragged(mod: ModItem) {
     if (!(mod.hash in dragged)) {
-      set(dragged, mod.hash, false);
+      set(dragged, mod.hash, false)
     }
-    return dragged[mod.hash];
+    return dragged[mod.hash]
   }
   function onItemDragstart(event: DragEvent, mod: ModItem) {
     if (isSelectionMode.value && selectedMods.value.some(m => m.id === mod.id)) {
-      event.dataTransfer!.setData('mods', selectedMods.value.map(m => m.hash).join(','));
-      selectedMods.value.forEach((m) => { dragged[m.hash] = true; });
+      event.dataTransfer!.setData('mods', selectedMods.value.map(m => m.hash).join(','))
+      selectedMods.value.forEach((m) => { dragged[m.hash] = true })
     } else {
-      event.dataTransfer!.setData('mod', mod.hash);
-      dragged[mod.hash] = true;
+      event.dataTransfer!.setData('mod', mod.hash)
+      dragged[mod.hash] = true
     }
   }
   function onDrageEnd() {
-    Object.keys(dragged).forEach((k) => { dragged[k] = false; });
+    Object.keys(dragged).forEach((k) => { dragged[k] = false })
   }
   return {
     isDraggingMod,
     isDragged,
     onDrageEnd,
     onItemDragstart,
-  };
+  }
 }
 
 function setupEnable(items: Ref<ModItem[]>, isSelectionMode: Ref<boolean>, selectedMods: Ref<ModItem[]>, isSelected: (mod: ModItem) => boolean, commit: (mods: ModItem[]) => Promise<void>) {
-  const modifiedItems = ref([] as ModItem[]);
-  const isModified = computed(() => modifiedItems.value.length > 0);
-  const saving = ref(false);
+  const modifiedItems = ref([] as ModItem[])
+  const isModified = computed(() => modifiedItems.value.length > 0)
+  const saving = ref(false)
   function modifyMod(mod: ModItem, value: boolean) {
-    value = !!value;
+    value = !!value
     const update = (oldValue: ModItem, newValue: boolean) => {
       if (newValue !== oldValue.enabled && modifiedItems.value.every(i => i.hash !== oldValue.hash)) {
-        modifiedItems.value.push({ ...oldValue, enabled: newValue });
+        modifiedItems.value.push({ ...oldValue, enabled: newValue })
       } else if (newValue === oldValue.enabled && modifiedItems.value.some(i => i.hash === oldValue.hash)) {
-        modifiedItems.value = modifiedItems.value.filter((v) => v.hash !== oldValue.hash);
+        modifiedItems.value = modifiedItems.value.filter((v) => v.hash !== oldValue.hash)
       }
-    };
+    }
     if (isSelectionMode.value && isSelected(mod)) {
       for (const mod of selectedMods.value) {
-        update(mod, value);
+        update(mod, value)
       }
     } else {
-      update(mod, value);
+      update(mod, value)
     }
   }
   function modifiedEnabled(mod: ModItem) {
-    const modified = modifiedItems.value.some((i) => i.hash === mod.hash);
-    return (!modified && mod.enabled) || (modified && !mod.enabled);
+    const modified = modifiedItems.value.some((i) => i.hash === mod.hash)
+    return (!modified && mod.enabled) || (modified && !mod.enabled)
   }
   watch(items, (newValues) => {
     if (saving.value) {
-      modifiedItems.value = [];
+      modifiedItems.value = []
     } else {
-      const mods = [] as ModItem[];
-      const enableds = new Set<string>();
+      const mods = [] as ModItem[]
+      const enableds = new Set<string>()
       for (const mod of newValues) {
         if (mod.enabled) {
-          enableds.add(mod.hash);
+          enableds.add(mod.hash)
         }
       }
       for (const mod of modifiedItems.value) {
         if (mod.enabled && !enableds.has(mod.hash)) {
-          mods.push(mod);
+          mods.push(mod)
         } else if (!mod.enabled && enableds.has(mod.hash)) {
-          mods.push(mod);
+          mods.push(mod)
         }
       }
-      modifiedItems.value = mods;
+      modifiedItems.value = mods
     }
-    saving.value = false;
-  });
+    saving.value = false
+  })
   function save() {
-    if (saving.value) return;
-    saving.value = true;
+    if (saving.value) return
+    saving.value = true
     commit(modifiedItems.value).catch((e) => {
-      console.error('Cannot save the mods setting:');
-      console.error(e);
-      saving.value = false;
-    });
+      console.error('Cannot save the mods setting:')
+      console.error(e)
+      saving.value = false
+    })
   }
-  return { modifiedEnabled, modifyMod, isModified, saving, save };
+  return { modifiedEnabled, modifyMod, isModified, saving, save }
 }
 
 function setupDeletion(mods: Ref<ModItem[]>) {
-  const { removeResource } = useResourceOperation();
+  const { removeResource } = useResourceOperation()
   const { begin: beginDelete, cancel: cancelDelete, operate: confirmDelete, data: deletingMods } = useOperation<ModItem[]>([], (mods) => {
     for (const mod of mods) {
-      removeResource(mod.hash);
+      removeResource(mod.hash)
     }
-  });
+  })
   function onDropDelete(e: DragEvent) {
-    const hash = e.dataTransfer!.getData('mod');
+    const hash = e.dataTransfer!.getData('mod')
     if (hash) {
-      const target = mods.value.find(m => m.hash === hash);
+      const target = mods.value.find(m => m.hash === hash)
       if (target) {
-        beginDelete([target]);
+        beginDelete([target])
       }
     }
-    const hashs = e.dataTransfer!.getData('mods');
+    const hashs = e.dataTransfer!.getData('mods')
     if (hashs) {
-      const toDeletes = hashs.split(',').map((hash) => mods.value.find(m => m.hash === hash)).filter(isNonnull);
+      const toDeletes = hashs.split(',').map((hash) => mods.value.find(m => m.hash === hash)).filter(isNonnull)
       if (toDeletes.length > 0) {
-        beginDelete(toDeletes);
+        beginDelete(toDeletes)
       }
     }
   }
@@ -270,86 +293,86 @@ function setupDeletion(mods: Ref<ModItem[]>) {
     onDropDelete,
     confirmDelete,
     cancelDelete,
-  };
+  }
 }
 
 function setupSelection(items: Ref<ModItem[]>) {
-  const isSelectionMode = ref(false);
-  const selectedItems = reactive({} as Record<string, boolean>);
-  const selectedMods = computed(() => items.value.filter(i => selectedItems[i.hash]));
+  const isSelectionMode = ref(false)
+  const selectedItems = reactive({} as Record<string, boolean>)
+  const selectedMods = computed(() => items.value.filter(i => selectedItems[i.hash]))
   watch(items, (arr) => {
-    isSelectionMode.value = false;
+    isSelectionMode.value = false
     for (const m of arr) {
       if (!(m.hash in selectedItems)) {
-        selectedItems[m.hash] = false;
+        selectedItems[m.hash] = false
       }
     }
-  });
+  })
 
   function select(...mod: ModItem[]) {
     if (!isSelectionMode.value) {
-      isSelectionMode.value = true;
+      isSelectionMode.value = true
     }
     for (const m of mod) {
-      selectedItems[m.hash] = !selectedItems[m.hash];
+      selectedItems[m.hash] = !selectedItems[m.hash]
     }
   }
   function selectOrUnselect(mod: ModItem) {
     if (isSelectionMode.value) {
-      selectedItems[mod.hash] = !selectedItems[mod.hash];
+      selectedItems[mod.hash] = !selectedItems[mod.hash]
     }
   }
   function isSelected(mod: ModItem) {
     if (!(mod.hash in selectedItems)) {
-      set(selectedItems, mod.hash, false);
+      set(selectedItems, mod.hash, false)
     }
-    return selectedItems[mod.hash];
+    return selectedItems[mod.hash]
   }
-  let lastIndex = -1;
+  let lastIndex = -1
   function onClick(event: MouseEvent, index: number) {
     if (lastIndex !== -1 && event.shiftKey) {
-      let min = lastIndex;
-      let max = index;
+      let min = lastIndex
+      let max = index
       if (lastIndex > index) {
-        max = lastIndex;
-        min = index;
+        max = lastIndex
+        min = index
       }
-      select(...items.value.slice(min + 1, max));
+      select(...items.value.slice(min + 1, max))
     }
-    selectOrUnselect(items.value[index]);
-    lastIndex = index;
+    selectOrUnselect(items.value[index])
+    lastIndex = index
   }
   function onKeyup(e: KeyboardEvent) {
     if (e.key === 'Escape') {
-      isSelectionMode.value = false;
-      Object.keys(selectedItems).forEach((k) => { selectedItems[k] = false; });
+      isSelectionMode.value = false
+      Object.keys(selectedItems).forEach((k) => { selectedItems[k] = false })
     } else if ((e.keyCode === 65 || e.key === 'a') && e.ctrlKey) {
-      isSelectionMode.value = true;
-      nextTick().then(() => select(...items.value));
+      isSelectionMode.value = true
+      nextTick().then(() => select(...items.value))
     }
   }
   function onKeyDown(e: KeyboardEvent) {
     if ((e.keyCode === 65 || e.key === 'a') && e.ctrlKey) {
-      e.preventDefault();
-      return false;
+      e.preventDefault()
+      return false
     }
-    return true;
+    return true
   }
   onMounted(() => {
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyup);
-  });
+    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener('keyup', onKeyup)
+  })
   onUnmounted(() => {
-    document.removeEventListener('keydown', onKeyDown);
-    document.removeEventListener('keyup', onKeyup);
-  });
+    document.removeEventListener('keydown', onKeyDown)
+    document.removeEventListener('keyup', onKeyup)
+  })
   return {
     onClick,
     select,
     isSelectionMode,
     isSelected,
     selectedMods,
-  };
+  }
 }
 
 export default defineComponent({
@@ -365,68 +388,68 @@ export default defineComponent({
       filterModId: '',
 
       visibleCount: 10,
-    });
-    const { minecraft } = useInstanceVersionBase();
-    const { importResource } = useResourceOperation();
-    const { items: mods, commit } = useInstanceMods();
-    const { toggle } = useSearchToggles();
-    const { text: filteredText } = useSearch();
-    const { path } = useInstanceBase();
-    const { openDirectory } = useService('BaseService');
+    })
+    const { minecraft } = useInstanceVersionBase()
+    const { importResource } = useResourceOperation()
+    const { items: mods, commit } = useInstanceMods()
+    const { toggle } = useSearchToggles()
+    const { text: filteredText } = useSearch()
+    const { path } = useInstanceBase()
+    const { openDirectory } = useService(BaseServiceKey)
 
     function isCompatibleMod(mod: ModItem) {
       if (mod.enabled) {
-        return true;
+        return true
       }
       if (data.filterInCompatible) {
-        return isCompatible(mod.dependencies.minecraft, minecraft.value);
+        return isCompatible(mod.dependencies.minecraft, minecraft.value)
       }
-      return true;
+      return true
     }
     function group(list: ModItem[], mod: ModItem): ModItem[] {
-      if (list.find(v => v.hash === mod.hash)) return list;
-      const existed = list.findIndex(v => v.id === mod.id && v.type === mod.type);
+      if (list.find(v => v.hash === mod.hash)) return list
+      const existed = list.findIndex(v => v.id === mod.id && v.type === mod.type)
       if (existed !== -1) {
-        list.splice(existed + 1, 0, mod);
-        mod.subsequence = true;
+        list.splice(existed + 1, 0, mod)
+        mod.subsequence = true
       } else {
-        list.push(mod);
-        mod.subsequence = false;
+        list.push(mod)
+        mod.subsequence = false
       }
-      return list;
+      return list
     }
     const items = computed(() => filter(filteredText.value, mods.value, { extract: v => `${v.name} ${v.version} ${v.dependencies.minecraft}` })
       .map((r) => r.original)
       .filter(isCompatibleMod)
       .sort((a, b) => (a.enabled ? -1 : 1))
       .reduce(group, [])
-      .filter((m, i) => i < data.visibleCount));
+      .filter((m, i) => i < data.visibleCount))
 
-    const selection = setupSelection(items);
-    const { isSelectionMode, selectedMods, isSelected } = selection;
+    const selection = setupSelection(items)
+    const { isSelectionMode, selectedMods, isSelected } = selection
 
     const { onDrop: onDropToImport } = useDrop((file) => {
-      importResource({ type: 'mods', path: file.path });
-    });
+      importResource({ type: 'mods', path: file.path })
+    })
 
     function setFilteredModid(mod: ModItem) {
-      data.filterModId = mod.id;
+      data.filterModId = mod.id
     }
     function onVisible(visible: boolean, index: number) {
-      if (!visible) return;
+      if (!visible) return
       if (data.visibleCount < index + 20) {
-        data.visibleCount += 20;
+        data.visibleCount += 20
       }
     }
     function onDragOver(event: DragEvent) {
       // console.log(event);
     }
-    const { replace } = useRouter();
+    const { replace } = useRouter()
     function goToCurseforgeMods() {
-      replace(`/curseforge/mc-mods?from=${path.value}`);
+      replace(`/curseforge/mc-mods?from=${path.value}`)
     }
     function showModsFolder() {
-      openDirectory(`${path.value}/mods`);
+      openDirectory(`${path.value}/mods`)
     }
     return {
       ...toRefs(data),
@@ -446,9 +469,9 @@ export default defineComponent({
       ModCard,
 
       ...selection,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

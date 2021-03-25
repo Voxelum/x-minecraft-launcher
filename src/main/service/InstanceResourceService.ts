@@ -1,12 +1,12 @@
-import { copyFile, ensureDir, FSWatcher, link, unlink } from 'fs-extra'
-import debounce from 'lodash.debounce'
+import { ensureDir, FSWatcher, unlink } from 'fs-extra'
 import watch from 'node-watch'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { AggregateExecutor } from '../util/aggregator'
 import ResourceService from './ResourceService'
-import AbstractService, { Service, Singleton, Subscribe } from './Service'
+import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
 import { mutateResource } from '/@main/entities/resource'
-import { readdirIfPresent } from '/@main/util/fs'
+import { linkOrCopy, readdirIfPresent } from '/@main/util/fs'
 import { AnyResource, isModResource, isResourcePackResource, PersistedResource } from '/@shared/entities/resource'
 import { ResourceDomain } from '/@shared/entities/resource.schema'
 import { DeployOptions, InstanceResourceService as IInstanceResourceService, InstanceResourceServiceKey } from '/@shared/services/InstanceResourceService'
@@ -14,46 +14,35 @@ import { DeployOptions, InstanceResourceService as IInstanceResourceService, Ins
 /**
  * Provide the abilities to import mods and resource packs files to instance
  */
-@Service(InstanceResourceServiceKey)
+@ExportService(InstanceResourceServiceKey)
 export default class InstanceResourceService extends AbstractService implements IInstanceResourceService {
-  private watchingMods = '';
+  private watchingMods = ''
 
-  private modsWatcher: FSWatcher | undefined;
+  private modsWatcher: FSWatcher | undefined
 
-  private watchingResourcePack = '';
+  private watchingResourcePack = ''
 
-  private resourcepacksWatcher: FSWatcher | undefined;
+  private resourcepacksWatcher: FSWatcher | undefined
 
-  private addModQueue: AnyResource[] = [];
+  private addMod = new AggregateExecutor<AnyResource, AnyResource[]>(v => v,
+    res => this.commit('instanceModAdd', res),
+    1000)
 
-  private removeModQueue: AnyResource[] = [];
+  private removeMod = new AggregateExecutor<AnyResource, AnyResource[]>(v => v,
+    res => this.commit('instanceModRemove', res),
+    1000)
 
-  private addResourcePackQueue: AnyResource[] = [];
+  private addResourcePack = new AggregateExecutor<AnyResource, AnyResource[]>(v => v,
+    res => this.commit('instanceResourcepackAdd', res),
+    1000)
 
-  private removeResourcePackQueue: AnyResource[] = [];
-
-  private commitUpdate = debounce(() => {
-    if (this.addModQueue.length > 0) {
-      this.commit('instanceModAdd', this.addModQueue)
-      this.addModQueue = []
-    }
-    if (this.removeModQueue.length > 0) {
-      this.commit('instanceModRemove', this.removeModQueue)
-      this.removeModQueue = []
-    }
-    if (this.addResourcePackQueue.length > 0) {
-      this.commit('instanceResourcepackAdd', this.addResourcePackQueue)
-      this.addResourcePackQueue = []
-    }
-    if (this.removeResourcePackQueue.length > 0) {
-      this.commit('instanceResourcepackRemove', this.removeResourcePackQueue)
-      this.removeResourcePackQueue = []
-    }
-  }, 1000);
+  private removeResourcePack = new AggregateExecutor<AnyResource, AnyResource[]>(v => v,
+    res => this.commit('instanceResourcepackRemove', res),
+    1000)
 
   constructor(
     app: LauncherApp,
-    private resourceService: ResourceService
+    @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app)
   }
@@ -66,12 +55,12 @@ export default class InstanceResourceService extends AbstractService implements 
     const fileArgs = files.filter((file) => !file.startsWith('.')).map((file) => ({
       path: join(dir, file),
       url: [] as string[],
-      source: undefined
+      source: undefined,
     }))
     const resources = await this.resourceService.importFiles({
       files: fileArgs,
       restrictToDomain: ResourceDomain.Mods,
-      type: 'mods'
+      type: 'mods',
     })
     return resources.map((r, i) => mutateResource(r, (r) => { r.path = fileArgs[i].path }))
       .filter(isModResource)
@@ -85,13 +74,13 @@ export default class InstanceResourceService extends AbstractService implements 
     const fileArgs = files.filter((file) => !file.startsWith('.')).map((file) => ({
       path: join(dir, file),
       url: [] as string[],
-      source: undefined
+      source: undefined,
     }))
 
     const resources = await this.resourceService.importFiles({
       files: fileArgs,
       restrictToDomain: ResourceDomain.ResourcePacks,
-      type: 'resourcepack'
+      type: 'resourcepack',
     })
     return resources.map((r, i) => mutateResource(r, (r) => { r.path = fileArgs[i].path }))
       .filter(isResourcePackResource)
@@ -137,15 +126,13 @@ export default class InstanceResourceService extends AbstractService implements 
             } else {
               this.warn(`Non mod resource added in /mods directory! ${filePath}`)
             }
-            this.addModQueue.push(mutateResource(resource, (r) => { r.path = filePath }))
-            this.commitUpdate()
+            this.addMod.push(mutateResource(resource, (r) => { r.path = filePath }))
           })
         } else {
           const target = this.state.instanceResource.mods.find(r => r.path === filePath)
           if (target) {
             this.log(`Instace mod remove ${filePath}`)
-            this.removeModQueue.push(target)
-            this.commitUpdate()
+            this.removeMod.push(target)
           } else {
             this.warn(`Cannot remove the mod ${filePath} as it's not found in memory cache!`)
           }
@@ -174,8 +161,7 @@ export default class InstanceResourceService extends AbstractService implements 
           this.resourceService.importFile({ path: filePath, type: 'resourcepacks' }).then((resource) => {
             if (isResourcePackResource(resource)) {
               this.log(`Instace resource pack add ${filePath}`)
-              this.addResourcePackQueue.push(mutateResource(resource, (r) => { r.path = filePath }))
-              this.commitUpdate()
+              this.addResourcePack.push(mutateResource(resource, (r) => { r.path = filePath }))
             } else {
               this.warn(`Non resource pack resource added in /resourcepacks directory! ${filePath}`)
             }
@@ -184,8 +170,7 @@ export default class InstanceResourceService extends AbstractService implements 
           const target = this.state.instanceResource.resourcepacks.find(r => r.path === filePath)
           if (target) {
             this.log(`Instace resource pack remove ${filePath}`)
-            this.removeResourcePackQueue.push(target)
-            this.commitUpdate()
+            this.removeResourcePack.push(target)
           } else {
             this.warn(`Cannot remove the resource pack ${filePath} as it's not found in memory cache!`)
           }
@@ -193,6 +178,14 @@ export default class InstanceResourceService extends AbstractService implements 
       })
       this.log(`Mounted on instance resource packs: ${basePath}`)
     }
+  }
+
+  deployMod(options: DeployOptions): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
+  deployResourcePack(options: DeployOptions): Promise<void> {
+    throw new Error('Method not implemented.')
   }
 
   async deploy({ resources, path = this.state.instance.path }: DeployOptions) {
@@ -209,9 +202,9 @@ export default class InstanceResourceService extends AbstractService implements 
       if (resource.domain !== ResourceDomain.Mods && resource.domain !== ResourceDomain.ResourcePacks) {
         this.warn(`Skip to deploy ${resource.name} as it's not a mod or resourcepack`)
       } else {
-        const src = join(this.state.root, resource.location + resource.ext)
+        const src = join(this.getPath(), resource.location + resource.ext)
         const dest = join(path, resource.location + resource.ext)
-        promises.push(link(src, dest).catch(() => copyFile(src, dest)).catch((e) => {
+        promises.push(linkOrCopy(src, dest).catch((e) => {
           this.error(`Cannot deploy the resource from ${src} to ${dest}`)
           this.error(e)
           throw e

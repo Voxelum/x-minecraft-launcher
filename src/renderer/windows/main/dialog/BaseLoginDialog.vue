@@ -1,17 +1,35 @@
 <template>
-  <v-dialog v-model="isShown" width="500" :persistent="persistent" @dragover.prevent>
-    <v-card class="login-card" @dragover.prevent @drop="onDrop">
-      <v-flex text-xs-center pa-4 class="green">
-        <v-icon style="font-size: 50px">person_pin</v-icon>
+  <v-dialog
+    v-model="isShown"
+    width="500"
+    :persistent="persistent"
+    @dragover.prevent
+  >
+    <v-card
+      class="login-card"
+      @dragover.prevent
+      @drop="onDrop"
+    >
+      <v-flex
+        text-xs-center
+        pa-4
+        class="green"
+      >
+        <v-icon style="font-size: 50px">
+          person_pin
+        </v-icon>
       </v-flex>
       <hint
         v-if="showDropHint"
         icon="save_alt"
         :text="$t('user.dropHint')"
         style="height: 350px"
-      ></hint>
+      />
       <v-card-text v-if="!showDropHint">
-        <v-form ref="form" v-model="isFormValid">
+        <v-form
+          ref="form"
+          v-model="isFormValid"
+        >
           <v-layout>
             <v-flex xs6>
               <v-select
@@ -74,7 +92,10 @@
         v-if="!showDropHint"
         style="padding-left: 40px; padding-right: 40px"
       >
-        <v-flex text-xs-center style="z-index: 1">
+        <v-flex
+          text-xs-center
+          style="z-index: 1"
+        >
           <v-btn
             block
             :loading="logining"
@@ -91,8 +112,7 @@
             <a
               style="padding-right: 10px; z-index: 20"
               href="https://my.minecraft.net/en-us/password/forgot/"
-            >{{ $t("user.forgetPassword") }}</a
-            >
+            >{{ $t("user.forgetPassword") }}</a>
             <a
               style="z-index: 20"
               href="https://my.minecraft.net/en-us/store/minecraft/#register"
@@ -108,17 +128,18 @@
 </template>
 
 <script lang=ts>
-import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref, nextTick } from '@vue/composition-api';
-import { useLogin, useLoginValidation, useI18n, useService } from '/@/hooks';
-import { useLoginDialog } from '../hooks/index';
-import Hint from '../components/Hint.vue';
+import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref, nextTick } from '@vue/composition-api'
+import { useLogin, useLoginValidation, useI18n, useService } from '/@/hooks'
+import { useLoginDialog } from '../hooks/index'
+import Hint from '../components/Hint.vue'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export default defineComponent({
   components: { Hint },
   setup(props, context) {
-    const { hide, isShown, show } = useLoginDialog();
-    const { $te, $t } = useI18n();
-    const inside = ref(false);
+    const { hide, isShown, show } = useLoginDialog()
+    const { $te, $t } = useI18n()
+    const inside = ref(false)
     const {
       username,
       password,
@@ -138,8 +159,8 @@ export default defineComponent({
       history,
       profileServices,
       authServices,
-    } = useLogin();
-    const isOffline = computed(() => authService.value.value === 'offline');
+    } = useLogin()
+    const isOffline = computed(() => authService.value.value === 'offline')
     const {
       usernameRules,
       usernameErrors,
@@ -147,72 +168,72 @@ export default defineComponent({
       passwordErrors,
       reset: resetError,
       handleError,
-    } = useLoginValidation(isOffline);
-    const isMicrosoft = computed(() => authService.value.value === 'microsoft');
-    const persistent = computed(() => !logined.value);
+    } = useLoginValidation(isOffline)
+    const isMicrosoft = computed(() => authService.value.value === 'microsoft')
+    const persistent = computed(() => !logined.value)
     const data = reactive({
       isFormValid: true,
-    });
-    const accountInput: Ref<any> = ref(null);
-    const form: Ref<any> = ref(null);
+    })
+    const accountInput: Ref<any> = ref(null)
+    const form: Ref<any> = ref(null)
     const passwordLabel = computed(() => ($te(`user.${authService.value.value}.password`)
       ? $t(`user.${authService.value.value}.password`)
-      : $t(`user.${isOffline.value ? 'offline' : 'mojang'}.password`)));
-    const showDropHint = computed(() => isMicrosoft.value && inside.value && logining.value);
+      : $t(`user.${isOffline.value ? 'offline' : 'mojang'}.password`)))
+    const showDropHint = computed(() => isMicrosoft.value && inside.value && logining.value)
 
     async function _login() {
-      resetError();
-      accountInput.value.blur();
-      await nextTick(); // wait a tick to make sure username updated.
+      resetError()
+      accountInput.value.blur()
+      await nextTick() // wait a tick to make sure username updated.
       try {
-        await login();
-        hide();
+        await login()
+        hide()
       } catch (e) {
-        handleError(e);
-        console.log(e);
+        handleError(e)
+        console.log(e)
       }
     }
 
     onMounted(() => {
       if (!logined.value) {
-        show();
+        show()
       }
       watch(logined, (l) => {
-        isShown.value = !l;
-      });
+        isShown.value = !l
+      })
       watch(isShown, (s) => {
-        if (!s) { return; }
+        if (!s) { return }
         if (!logined.value) {
-          selectProfile.value = true;
+          selectProfile.value = true
         }
-        reset();
-      });
+        reset()
+      })
       watch([authService, profileService], () => {
-        form.value.resetValidation();
+        form.value.resetValidation()
         if (authService.value !== profileService.value && profileService.value.value === '') {
-          profileService.value = profileServices.value.find(p => p === authService.value) ?? profileServices.value.find(p => p.value === 'mojang')!;
+          profileService.value = profileServices.value.find(p => p === authService.value) ?? profileServices.value.find(p => p.value === 'mojang')!
         }
-      });
-    });
+      })
+    })
 
     document.addEventListener('dragleave', (e) => {
       if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'copyLink') {
-        inside.value = false;
+        inside.value = false
       }
-    });
+    })
     document.addEventListener('dragenter', (e) => {
       if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'copyLink') {
-        inside.value = true;
+        inside.value = true
       }
-    });
-    const { handleUrl } = useService('BaseService');
+    })
+    const { handleUrl } = useService(BaseServiceKey)
     const onDrop = (e: DragEvent) => {
-      const url = e.dataTransfer?.getData('xmcl/url');
+      const url = e.dataTransfer?.getData('xmcl/url')
       if (url) {
-        handleUrl(url);
+        handleUrl(url)
       }
-      inside.value = false;
-    };
+      inside.value = false
+    }
 
     return {
       ...toRefs(data),
@@ -248,9 +269,9 @@ export default defineComponent({
       showDropHint,
       passwordLabel,
       onDrop,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

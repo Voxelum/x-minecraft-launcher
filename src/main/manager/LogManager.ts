@@ -13,21 +13,21 @@ function formatMsg(message: any, options: any[]) { return options.length !== 0 ?
 function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}\n`) } }) }
 
 export interface Logger {
-  log(message: any, ...options: any[]): void;
-  warn(message: any, ...options: any[]): void;
-  error(message: any, ...options: any[]): void;
+  log(message: any, ...options: any[]): void
+  warn(message: any, ...options: any[]): void
+  error(message: any, ...options: any[]): void
 }
 
 export default class LogManager extends Manager {
-  private loggerEntries = { log: baseTransform('INFO'), warn: baseTransform('WARN'), error: baseTransform('ERROR') };
+  private loggerEntries = { log: baseTransform('INFO'), warn: baseTransform('WARN'), error: baseTransform('ERROR') }
 
-  private output = new PassThrough();
+  private output = new PassThrough()
 
-  private logRoot = '';
+  private logRoot = ''
 
-  private openedStream: { [name: string]: WriteStream } = {};
+  private openedStream: { [name: string]: WriteStream } = {}
 
-  private hasError = false;
+  private hasError = false
 
   constructor(app: LauncherApp) {
     super(app)
@@ -67,7 +67,7 @@ export default class LogManager extends Manager {
     return {
       log(message: any, ...options: any[]) { log.write(formatMsg(message, options)) },
       warn(message: any, ...options: any[]) { warn.write(formatMsg(message, options)) },
-      error(message: any, ...options: any[]) { error.write(formatMsg(message, options)) }
+      error(message: any, ...options: any[]) { error.write(formatMsg(message, options)) },
     }
   }
 

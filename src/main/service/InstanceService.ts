@@ -5,7 +5,7 @@ import { join, resolve } from 'path'
 import { v4 } from 'uuid'
 import DiagnoseService from './DiagnoseService'
 import ServerStatusService from './ServerStatusService'
-import AbstractService, { Service, Singleton, Subscribe } from './Service'
+import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { exists, missing, readdirEnsured } from '/@main/util/fs'
 import { MappedFile, RelativeMappedFile } from '/@main/util/persistance'
@@ -19,41 +19,21 @@ import { requireObject, requireString } from '/@shared/util/assert'
 import { assignShallow } from '/@shared/util/object'
 
 const INSTANCES_FOLDER = 'instances'
-const INSTANCES_JSON = 'instances.json'
 
 /**
  * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
  */
-@Service(InstanceServiceKey)
+@ExportService(InstanceServiceKey)
 export class InstanceService extends AbstractService implements IInstanceService {
-  protected readonly instancesFile = new MappedFile<InstancesSchema>(this.getPath(INSTANCES_JSON), new BufferJsonSerializer(InstancesSchema))
-    .setSaveSource(() => ({ instances: Object.keys(this.state.instance.all), selectedInstance: this.state.instance.path }));
+  protected readonly instancesFile = new MappedFile<InstancesSchema>(this.getPath('instances.json'), new BufferJsonSerializer(InstancesSchema))
+    .setSaveSource(() => ({ instances: Object.keys(this.state.instance.all), selectedInstance: this.state.instance.path }))
 
-  protected readonly instanceFile = new RelativeMappedFile<InstanceSchema>(INSTANCES_JSON, new BufferJsonSerializer(InstanceSchema));
+  protected readonly instanceFile = new RelativeMappedFile<InstanceSchema>('instance.json', new BufferJsonSerializer(InstanceSchema))
 
   constructor(app: LauncherApp,
-    diagnoseService: DiagnoseService,
-    protected readonly statusService: ServerStatusService) {
+    @Inject(DiagnoseService) diagnoseService: DiagnoseService,
+    @Inject(ServerStatusService) protected statusService: ServerStatusService) {
     super(app)
-
-    this.storeManager
-      .subscribe('instanceAdd', async (payload) => {
-        await this.instanceFile.saveTo(payload.path, payload)
-        await this.instancesFile.save()
-        this.log(`Saved new instance ${payload.path}`)
-      })
-      .subscribe('instanceRemove', async () => {
-        await this.instancesFile.save()
-      })
-      .subscribe('instance', async () => {
-        const inst = this.state.instance.all[this.state.instance.path]
-        await this.instanceFile.saveTo(inst.path, inst)
-      })
-      .subscribe('instanceSelect', async (path) => {
-        await this.instanceFile.saveTo(path, this.state.instance.all[path])
-        await this.instancesFile.save()
-        this.log(`Saved instance selection ${path}`)
-      })
 
     diagnoseService.registerMatchedFix(['invalidJava'], () => {
       this.editInstance({ java: this.getters.defaultJava.path })
@@ -81,6 +61,7 @@ export class InstanceService extends AbstractService implements IInstanceService
       option = await this.instanceFile.readTo(path)
     } catch (e) {
       this.warn(`Cannot load instance json ${path}`)
+      this.warn(e)
       return false
     }
 
@@ -105,7 +86,7 @@ export class InstanceService extends AbstractService implements IInstanceService
 
     commit('instanceAdd', instance)
 
-    this.log(`Added instance ${instance.path}`)
+    this.log(`Loaded instance ${instance.path}`)
 
     return true
   }
@@ -133,21 +114,27 @@ export class InstanceService extends AbstractService implements IInstanceService
         await this.mountInstance(Object.keys(state.instance.all)[0])
       }
     }
-  }
 
-  /**
-   * Return the instance's screenshots urls.
-   *
-   * If the provided path is not a instance, it will return empty array.
-   */
-  async listInstanceScreenshots(path: string) {
-    const screenshots = join(path, 'screenshots')
-    try {
-      const files = await readdir(screenshots)
-      return files.map(f => `file://${screenshots}/${f}`)
-    } catch (e) {
-      return []
-    }
+    this.storeManager
+      .subscribe('instanceAdd', async (payload) => {
+        await this.instanceFile.saveTo(payload.path, payload)
+        await this.instancesFile.save()
+        this.log(`Saved new instance ${payload.path}`)
+      })
+      .subscribe('instanceRemove', async () => {
+        await this.instancesFile.save()
+        this.log(`Removed instance files under ${this.state.instance.path}`)
+      })
+      .subscribe('instance', async () => {
+        const inst = this.state.instance.all[this.state.instance.path]
+        await this.instanceFile.saveTo(inst.path, inst)
+        this.log(`Saved instance ${this.state.instance.path}`)
+      })
+      .subscribe('instanceSelect', async (path) => {
+        await this.instanceFile.saveTo(path, this.state.instance.all[path])
+        await this.instancesFile.save()
+        this.log(`Saved instance selection ${path}`)
+      })
   }
 
   /**
@@ -390,7 +377,7 @@ export class InstanceService extends AbstractService implements IInstanceService
         fabricLoader: '',
         yarn: '',
         optifinePatch: '',
-        optifineType: ''
+        optifineType: '',
       }
       if (info.status.modinfo && info.status.modinfo.type === 'FML') {
         // TODO: handle mod server
@@ -398,7 +385,7 @@ export class InstanceService extends AbstractService implements IInstanceService
     }
     return this.createInstance({
       ...options,
-      server: getHostAndPortFromIp(info.ip)
+      server: getHostAndPortFromIp(info.ip),
     })
   }
 }

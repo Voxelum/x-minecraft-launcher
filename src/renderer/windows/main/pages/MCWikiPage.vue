@@ -7,48 +7,48 @@
       useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36 Edg/84.0.522.39"
       webpreferences="javascript=yes"
       partition="persist:mcwiki"
-    ></webview>
+    />
   </div>
 </template>
 
 <script lang=ts>
-import { defineComponent, computed, ref, Ref, onMounted } from '@vue/composition-api';
-import { WebviewTag } from 'electron';
-import { useRouter } from '/@/hooks';
+import { defineComponent, computed, ref, Ref, onMounted } from '@vue/composition-api'
+import { WebviewTag } from 'electron'
+import { useRouter } from '/@/hooks'
 
 export default defineComponent({
   props: {
     path: String,
   },
   setup(props) {
-    const view: Ref<WebviewTag | null> = ref(null);
+    const view: Ref<WebviewTag | null> = ref(null)
     function isMcWikiHost(u: string) {
-      let url = new URL(u);
-      return url.host === 'www.mcmod.cn' || 'play.mcmod.cn';
+      const url = new URL(u)
+      return url.host === 'www.mcmod.cn' || 'play.mcmod.cn'
     }
     function isCurseforge(u: string) {
-      let url = new URL(u);
-      return url.host === 'www.curseforge.com';
+      const url = new URL(u)
+      return url.host === 'www.curseforge.com'
     }
     const url = computed(() => {
-      let initUrl = 'https://www.mcmod.cn/';
+      let initUrl = 'https://www.mcmod.cn/'
       if (props.path) {
         if (!isMcWikiHost(decodeURIComponent(props.path))) {
-          initUrl = 'https://www.mcmod.cn/';
+          initUrl = 'https://www.mcmod.cn/'
         } else {
-          initUrl = decodeURIComponent(props.path);
+          initUrl = decodeURIComponent(props.path)
         }
       } else {
-        initUrl = 'https://www.mcmod.cn/';
+        initUrl = 'https://www.mcmod.cn/'
       }
-      return initUrl;
-    });
-    const { replace } = useRouter();
+      return initUrl
+    })
+    const { replace } = useRouter()
     onMounted(() => {
-      const webview: WebviewTag = view.value!;
+      const webview: WebviewTag = view.value!
 
       webview.addEventListener('dom-ready', () => {
-        webview.openDevTools();
+        webview.openDevTools()
 
         if (url.value === 'https://www.mcmod.cn/' || url.value === 'https://www.mcmod.cn') {
           webview.executeJavaScript(`
@@ -73,7 +73,7 @@ export default defineComponent({
           let sec = document.querySelector('.top-main .navs').children[3];
           first.remove();
           sec.remove();
-        `);
+        `)
         }
 
         // .top-main.clearfix { display: none; }
@@ -165,24 +165,24 @@ export default defineComponent({
         .class-excount .infos { background: #424242 !important; }
         .class-menu-page { background: transparent !important; }
         `,
-        );
-      });
+        )
+      })
       webview.addEventListener('new-window', (e) => {
         if (isMcWikiHost(e.url)) {
           if (e.url.startsWith('https://www.mcmod.cn/jump/')) {
-            let url = atob(e.url.substring('https://www.mcmod.cn/jump/'.length));
+            const url = atob(e.url.substring('https://www.mcmod.cn/jump/'.length))
             if (isCurseforge(url)) {
-              replace(`/curseforge/mc-mods?search=${url.substring(url.lastIndexOf('/') + 1)}`);
+              replace(`/curseforge/mc-mods?search=${url.substring(url.lastIndexOf('/') + 1)}`)
             } else {
-              replace(`external/${url}`);
+              replace(`external/${url}`)
             }
           } else {
-            replace(`/mcwiki?path=${encodeURIComponent(e.url)}`);
+            replace(`/mcwiki?path=${encodeURIComponent(e.url)}`)
           }
         }
-      });
-    });
-    return { view, url };
+      })
+    })
+    return { view, url }
   },
-});
+})
 </script>

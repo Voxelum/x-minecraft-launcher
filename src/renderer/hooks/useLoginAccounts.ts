@@ -9,6 +9,6 @@ export function useSelectedServices () {
   return {
     authService,
     profileService,
-    history
+    history,
   }
 }

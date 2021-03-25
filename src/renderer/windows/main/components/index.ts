@@ -64,7 +64,7 @@ const components = {
   UniversalDropViewFileListTile,
   UniversalDropViewPreview,
   VaniliaFolderStruct,
-  ZipFileIcon
+  ZipFileIcon,
 }
 
 export default components

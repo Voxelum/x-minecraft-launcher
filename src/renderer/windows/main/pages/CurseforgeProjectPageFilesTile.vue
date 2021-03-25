@@ -48,12 +48,12 @@
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent } from '@vue/composition-api'
 import {
   required,
   withDefault,
-} from '/@/util/props';
-import { File } from '@xmcl/curseforge';
+} from '/@/util/props'
+import { File } from '@xmcl/curseforge'
 
 export default defineComponent({
   props: {
@@ -64,22 +64,22 @@ export default defineComponent({
     modpack: required(Boolean),
   },
   setup() {
-    const releases = ['', 'R', 'A', 'B'];
+    const releases = ['', 'R', 'A', 'B']
     function getColor(type: number) {
       switch (type) {
-        case 1: return 'primary';
-        case 2: return 'red';
-        case 3: return 'orange';
+        case 1: return 'primary'
+        case 2: return 'red'
+        case 3: return 'orange'
         default:
-          return '';
+          return ''
       }
     }
     return {
       getColor,
       releases,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

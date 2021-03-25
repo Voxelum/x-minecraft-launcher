@@ -59,22 +59,22 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent } from '@vue/composition-api';
-import { useDialog } from '../hooks';
+import { reactive, toRefs, defineComponent } from '@vue/composition-api'
+import { useDialog } from '../hooks'
 
 export default defineComponent({
   setup() {
     const data = reactive({
       hovered: {},
-    });
-    const { hide, isShown } = useDialog('feedback');
+    })
+    const { hide, isShown } = useDialog('feedback')
     return {
       ...toRefs(data),
       hide,
       isShown,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

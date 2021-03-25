@@ -29,7 +29,9 @@
             :disabled="error"
             @click="submit"
           >
-            <v-icon left>inbox</v-icon>
+            <v-icon left>
+              inbox
+            </v-icon>
             {{ $t('user.skinImport') }}
           </v-btn>
         </v-flex>
@@ -39,42 +41,42 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent } from '@vue/composition-api';
-import { useI18n } from '/@/hooks';
+import { reactive, toRefs, defineComponent } from '@vue/composition-api'
+import { useI18n } from '/@/hooks'
 
 // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
-const URL_PATTERN = new RegExp('^(https?:\\/\\/)?' // protocol
-  + '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' // domain name
-  + '((\\d{1,3}\\.){3}\\d{1,3}))' // OR ip (v4) address
-  + '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' // port and path
-  + '(\\?[;&a-z\\d%_.~+=-]*)?' // query string
-  + '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+const URL_PATTERN = new RegExp('^(https?:\\/\\/)?' + // protocol
+  '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+  '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+  '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+  '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+  '(\\#[-a-z\\d_]*)?$', 'i') // fragment locator
 
 export default defineComponent({
   setup(props, context) {
-    const { $t } = useI18n();
+    const { $t } = useI18n()
     const rules = [
       (v: any) => !!v || $t('user.skinUrlNotEmpty'),
       (v: any) => !!URL_PATTERN.test(v) || $t('user.skinUrlNotValid'),
-    ];
+    ]
     const data = reactive({
       error: true,
       url: '',
-    });
+    })
     function validate() {
-      data.error = rules.some(r => typeof r(data.url) === 'string');
+      data.error = rules.some(r => typeof r(data.url) === 'string')
     }
     function submit() {
-      context.emit('input', data.url);
+      context.emit('input', data.url)
     }
     return {
       ...toRefs(data),
       rules,
       validate,
       submit,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

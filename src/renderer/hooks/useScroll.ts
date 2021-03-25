@@ -1,6 +1,6 @@
 import { Ref, onMounted } from '@vue/composition-api'
 
-export function useScrollToOnMount (elem: Ref<null | Vue | HTMLElement>, computeOffset: () => number) {
+export function useScrollToOnMount(elem: Ref<null | import('vue').default | HTMLElement>, computeOffset: () => number) {
   onMounted(() => {
     const yOffset = computeOffset()
     const elemValue = elem.value

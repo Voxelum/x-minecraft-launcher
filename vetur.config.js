@@ -1,8 +1,8 @@
 /** @type {import('vls').VeturConfig} */
 const config = {
   projects: [{
-    root: '.',
-    tsconfig: 'src/renderer/tsconfig.vetur.json'
+    root: './src/renderer',
+    tsconfig: './tsconfig.json'
   }]
 }
 

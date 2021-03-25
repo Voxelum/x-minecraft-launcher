@@ -71,10 +71,10 @@
 </template>
 
 <script lang=ts>
-import { computed, defineComponent, Ref } from '@vue/composition-api';
-import { Instance } from '/@shared/entities/instance';
-import { required } from '/@/util/props';
-import PreviewCard from './InstancesPagePreviewCard.vue';
+import { computed, defineComponent, Ref } from '@vue/composition-api'
+import { Instance } from '/@shared/entities/instance'
+import { required } from '/@/util/props'
+import PreviewCard from './InstancesPagePreviewCard.vue'
 
 export default defineComponent({
   props: { instances: required<Instance[]>(Array) },
@@ -82,26 +82,26 @@ export default defineComponent({
     PreviewCard,
   },
   setup(props) {
-    const now = Date.now();
-    const oneDay = 1000 * 60 * 60 * 24;
-    const threeDays = oneDay * 3;
+    const now = Date.now()
+    const oneDay = 1000 * 60 * 60 * 24
+    const threeDays = oneDay * 3
     const instancesByTime: Ref<Instance[][]> = computed(() => {
-      const todayR = [];
-      const threeR = [];
-      const other = [];
+      const todayR = []
+      const threeR = []
+      const other = []
       for (const p of props.instances) {
-        const diff = now - p.lastAccessDate;
+        const diff = now - p.lastAccessDate
         if (diff <= oneDay) {
-          todayR.push(p);
+          todayR.push(p)
         } else if (diff <= threeDays) {
-          threeR.push(p);
+          threeR.push(p)
         } else {
-          other.push(p);
+          other.push(p)
         }
       }
-      return [todayR, threeR, other];
-    });
-    return { instancesByTime };
+      return [todayR, threeR, other]
+    })
+    return { instancesByTime }
   },
-});
+})
 </script>

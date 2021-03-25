@@ -3,27 +3,27 @@ import { requireObject, requireString } from '/@shared/util/assert'
 import { ModuleOption } from '../root'
 
 type State = {
-    all: JavaRecord[];
-};
+  all: JavaRecord[]
+}
 
 interface Getters {
-    defaultJava: JavaRecord;
-    missingJava: boolean;
+  defaultJava: JavaRecord
+  missingJava: boolean
 }
 interface Mutations {
-    javaUpdate: (JavaRecord | JavaRecord[]);
-    javaRemove: (JavaRecord);
+  javaUpdate: (JavaRecord | JavaRecord[])
+  javaRemove: (JavaRecord)
 }
 
-export type JavaModule = ModuleOption<State, Getters, Mutations, {}>;
+export type JavaModule = ModuleOption<State, Getters, Mutations, {}>
 
 const mod: JavaModule = {
   state: {
-    all: []
+    all: [],
   },
   getters: {
     defaultJava: state => state.all.find(j => j.valid && j.majorVersion === 8) || state.all.find(j => j.valid) || EMPTY_JAVA,
-    missingJava: state => state.all.length === 0
+    missingJava: state => state.all.length === 0,
   },
   mutations: {
     javaUpdate (state, java) {
@@ -55,8 +55,8 @@ const mod: JavaModule = {
 
       // TODO: remove in vue3
       state.all = state.all.filter(j => j.path !== java.path && j.version !== java.version)
-    }
-  }
+    },
+  },
 }
 
 export default mod

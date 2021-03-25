@@ -1,11 +1,15 @@
 <template>
   <v-flex xs12>
-    <v-list two-line subheader style="background: transparent; width: 100%">
+    <v-list
+      two-line
+      subheader
+      style="background: transparent; width: 100%"
+    >
       <v-subheader style="padding-right: 2px">
         Java
         <v-spacer />
         <v-tooltip left>
-          <template v-slot:activator="{ on }">
+          <template #activator="{ on }">
             <v-btn
               icon
               :loading="refreshingLocalJava"
@@ -18,8 +22,12 @@
           {{ $t("java.refresh") }}
         </v-tooltip>
         <v-tooltip left>
-          <template v-slot:activator="{ on }">
-            <v-btn icon @click="browseFile" v-on="on">
+          <template #activator="{ on }">
+            <v-btn
+              icon
+              @click="browseFile"
+              v-on="on"
+            >
               <v-icon>add</v-icon>
             </v-btn>
           </template>
@@ -27,7 +35,7 @@
         </v-tooltip>
       </v-subheader>
       <v-list-group no-action>
-        <template v-slot:activator>
+        <template #activator>
           <v-list-tile>
             <v-list-tile-content>
               <v-list-tile-title>{{ $t("java.location") }}</v-list-tile-title>
@@ -39,7 +47,11 @@
             </v-list-tile-content>
           </v-list-tile>
         </template>
-        <java-list v-model="java" :items="javas" :remove="removeJava" />
+        <java-list
+          v-model="java"
+          :items="javas"
+          :remove="removeJava"
+        />
       </v-list-group>
       <v-list-tile avatar>
         <v-list-tile-action>
@@ -128,18 +140,28 @@
         </v-list-tile-content>
 
         <v-list-tile-action>
-          <v-btn icon @click="copyToClipboard">
+          <v-btn
+            icon
+            @click="copyToClipboard"
+          >
             <v-icon>content_copy</v-icon>
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
-          <v-btn icon @click="showPreview">
+          <v-btn
+            icon
+            @click="showPreview"
+          >
             <v-icon>print</v-icon>
           </v-btn>
         </v-list-tile-action>
       </v-list-tile>
     </v-list>
-    <v-dialog v-model="isPreviewShown" :width="500" style="overflow: hidden">
+    <v-dialog
+      v-model="isPreviewShown"
+      :width="500"
+      style="overflow: hidden"
+    >
       <v-card>
         <v-toolbar color="primary">
           {{
@@ -165,8 +187,8 @@ import {
   defineComponent,
   toRefs,
   computed,
-} from '@vue/composition-api';
-import { JavaRecord } from '/@shared/entities/java';
+} from '@vue/composition-api'
+import { JavaRecord } from '/@shared/entities/java'
 import {
   useI18n,
   useAutoSaveLoad,
@@ -175,15 +197,15 @@ import {
   useJava,
   useLaunchPreview,
   useClipboard,
-} from '/@/hooks';
-import JavaList from './BaseSettingPageJavaList.vue';
-import { useNotifier } from '../hooks';
+} from '/@/hooks'
+import JavaList from './BaseSettingPageJavaList.vue'
+import { useNotifier } from '../hooks'
 
 export default defineComponent({
   components: { JavaList },
   setup() {
-    const { $t } = useI18n();
-    const { showOpenDialog } = useNativeDialog();
+    const { $t } = useI18n()
+    const { showOpenDialog } = useNativeDialog()
     const {
       editInstance: edit,
       maxMemory,
@@ -191,11 +213,11 @@ export default defineComponent({
       vmOptions,
       mcOptions,
       java,
-    } = useInstance();
-    const { preview, refresh, command } = useLaunchPreview();
-    const { notify } = useNotifier();
-    const board = useClipboard();
-    const { all: javas, add, remove, refreshLocalJava, refreshing: refreshingLocalJava } = useJava();
+    } = useInstance()
+    const { preview, refresh, command } = useLaunchPreview()
+    const { notify } = useNotifier()
+    const board = useClipboard()
+    const { all: javas, add, remove, refreshLocalJava, refreshing: refreshingLocalJava } = useJava()
 
     const data = reactive({
       vmOptions: '',
@@ -209,7 +231,7 @@ export default defineComponent({
       java: { path: '', version: '', majorVersion: 0 },
 
       isPreviewShown: false,
-    });
+    })
     function save() {
       return edit({
         minMemory: data.minMemory ? Number.parseInt(data.minMemory as any, 10) : undefined,
@@ -217,31 +239,31 @@ export default defineComponent({
         vmOptions: data.vmOptions.split(' ').filter(v => v.length !== 0),
         mcOptions: data.mcOptions.split(' ').filter(v => v.length !== 0),
         java: data.java.path,
-      });
+      })
     }
     function load() {
-      data.maxMemory = maxMemory.value <= 0 ? undefined : maxMemory.value;
-      data.minMemory = minMemory.value <= 0 ? undefined : minMemory.value;
-      data.vmOptions = vmOptions.value.join(' ');
-      data.mcOptions = mcOptions.value.join(' ');
-      data.java = javas.value.find(j => j.path === java.value)! ?? data.java;
+      data.maxMemory = maxMemory.value <= 0 ? undefined : maxMemory.value
+      data.minMemory = minMemory.value <= 0 ? undefined : minMemory.value
+      data.vmOptions = vmOptions.value.join(' ')
+      data.mcOptions = mcOptions.value.join(' ')
+      data.java = javas.value.find(j => j.path === java.value)! ?? data.java
     }
     function showPreview() {
       save()
         .then(refresh)
         .then(() => {
-          data.isPreviewShown = true;
-        });
+          data.isPreviewShown = true
+        })
     }
     function copyToClipboard() {
       save()
         .then(refresh)
         .then(() => {
-          notify({ level: 'success', title: $t('copy.success') });
-          board.writeText(command.value);
-        });
+          notify({ level: 'success', title: $t('copy.success') })
+          board.writeText(command.value)
+        })
     }
-    useAutoSaveLoad(save, load);
+    useAutoSaveLoad(save, load)
 
     return {
       ...toRefs(data),
@@ -251,17 +273,17 @@ export default defineComponent({
       async browseFile() {
         const { filePaths } = await showOpenDialog({
           title: $t('java.browser'),
-        });
-        filePaths.forEach(add);
+        })
+        filePaths.forEach(add)
       },
       showPreview,
       removeJava: remove,
       refreshLocalJava,
       refreshingLocalJava,
       copyToClipboard,
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped=true>

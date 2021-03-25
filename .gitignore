@@ -1,5 +1,5 @@
 .DS_Store
-dist/electron/*
+dist/*
 dist/web/*
 dist/test/*
 dist/*.json
