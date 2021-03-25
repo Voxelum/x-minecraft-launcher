@@ -19,7 +19,7 @@ export const modules = {
   resource,
   setting,
   user,
-  version
+  version,
 }
 
 export default modules

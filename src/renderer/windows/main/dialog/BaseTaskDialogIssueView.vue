@@ -16,7 +16,7 @@
         transition
         hoverable
       >
-        <template v-slot:append="{ item }">
+        <template #append="{ item }">
           <div v-if="item.id">
             <v-progress-circular
               v-if="item.fixing"
@@ -31,8 +31,11 @@
           </div>
         </template>
 
-        <template v-slot:label="{ item }">
-          <div v-if="item.name" style="display: flex; align-items: center;">
+        <template #label="{ item }">
+          <div
+            v-if="item.name"
+            style="display: flex; align-items: center;"
+          >
             <span
               style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
             >{{ $t(`${item.name}`) }}</span>
@@ -51,7 +54,10 @@
               {{ item.items.length }}
             </v-chip>
           </div>
-          <div v-else style="padding: 5px 0px;">
+          <div
+            v-else
+            style="padding: 5px 0px;"
+          >
             <div style="display: flex">
               <v-icon
                 :color="!item.optional ? 'red': 'orange'"
@@ -63,9 +69,22 @@
                 style="display: inline-block; overflow: hidden; max-width: 300px; text-overflow: ellipsis; white-space: nowrap;"
               >{{ $tc(`diagnosis.${item.id}`, 0, item.arguments) }}</span>
             </div>
-            <span v-if="item.arguments.file" class="tree-minor-label">{{ item.arguments.file }}</span>
-            <div v-if="item.expect" class="tree-minor-label">Expect: {{ item.expect }}</div>
-            <div v-if="item.actual" class="tree-minor-label">Actual: {{ item.actual }}</div>
+            <span
+              v-if="item.arguments.file"
+              class="tree-minor-label"
+            >{{ item.arguments.file }}</span>
+            <div
+              v-if="item.expect"
+              class="tree-minor-label"
+            >
+              Expect: {{ item.expect }}
+            </div>
+            <div
+              v-if="item.actual"
+              class="tree-minor-label"
+            >
+              Actual: {{ item.actual }}
+            </div>
             <span
               class="tree-minor-label"
               style="margin-left: 5px; max-width: 320px; display: inline-block; overflow: hidden;"
@@ -80,27 +99,27 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api';
-import { useStore } from '/@/hooks';
-import { Registry } from '/@shared/entities/issue';
+import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api'
+import { useStore } from '/@/hooks'
+import { Registry } from '/@shared/entities/issue'
 
 interface IssueType {
-  name: string;
-  $id: number;
-  items: IssueLeaf[];
+  name: string
+  $id: number
+  items: IssueLeaf[]
 }
 interface IssueLeaf {
-  id: string;
-  $id: number;
-  fixing: boolean;
-  autofix: boolean;
-  optional: boolean;
-  arguments: object;
+  id: string
+  $id: number
+  fixing: boolean
+  autofix: boolean
+  optional: boolean
+  arguments: object
 }
 
 function useIssuesTree() {
-  const { state } = useStore();
-  let $id = 0;
+  const { state } = useStore()
+  let $id = 0
 
   function collect(id: string, reg: Registry<any, any, any>) {
     return reg.actived.map((a) => ({
@@ -110,76 +129,76 @@ function useIssuesTree() {
       autofix: reg.autofix,
       optional: reg.optional,
       arguments: a,
-    }));
+    }))
   }
 
   const assets = computed(() => {
-    let items: IssueLeaf[] = [];
-    let corruptedAssets = state.diagnose.registry.corruptedAssets;
-    let missingAssets = state.diagnose.registry.missingAssets;
+    const items: IssueLeaf[] = []
+    const corruptedAssets = state.diagnose.registry.corruptedAssets
+    const missingAssets = state.diagnose.registry.missingAssets
     if (corruptedAssets.actived.length !== 0) {
-      items.push(...collect('corruptedAssets', corruptedAssets));
+      items.push(...collect('corruptedAssets', corruptedAssets))
     }
     if (missingAssets.actived.length !== 0) {
-      items.push(...collect('missingAssets', missingAssets));
+      items.push(...collect('missingAssets', missingAssets))
     }
-    return { name: 'assets', items, location: `${state.root}/assets`, $id: $id++ };
-  });
+    return { name: 'assets', items, location: `${state.root}/assets`, $id: $id++ }
+  })
   const libraries = computed(() => {
-    let items: IssueLeaf[] = [];
-    let corruptedLibraries = state.diagnose.registry.corruptedLibraries;
-    let missingLibraries = state.diagnose.registry.missingLibraries;
+    const items: IssueLeaf[] = []
+    const corruptedLibraries = state.diagnose.registry.corruptedLibraries
+    const missingLibraries = state.diagnose.registry.missingLibraries
     if (corruptedLibraries.actived.length !== 0) {
-      items.push(...collect('corruptedLibraries', corruptedLibraries));
+      items.push(...collect('corruptedLibraries', corruptedLibraries))
     }
     if (missingLibraries.actived.length !== 0) {
-      items.push(...collect('missingLibraries', missingLibraries));
+      items.push(...collect('missingLibraries', missingLibraries))
     }
-    return { name: 'libraries', items, location: `${state.root}/libraries`, $id: $id++ };
-  });
+    return { name: 'libraries', items, location: `${state.root}/libraries`, $id: $id++ }
+  })
   const version = computed(() => {
-    let items: IssueLeaf[] = [];
-    let missingVersionJar = state.diagnose.registry.missingVersionJar;
-    let missingVersionJson = state.diagnose.registry.missingVersionJson;
-    let corruptedVersionJar = state.diagnose.registry.corruptedVersionJar;
+    const items: IssueLeaf[] = []
+    const missingVersionJar = state.diagnose.registry.missingVersionJar
+    const missingVersionJson = state.diagnose.registry.missingVersionJson
+    const corruptedVersionJar = state.diagnose.registry.corruptedVersionJar
     if (missingVersionJar.actived.length !== 0) {
-      items.push(...collect('missingVersionJar', missingVersionJar));
+      items.push(...collect('missingVersionJar', missingVersionJar))
     }
     if (missingVersionJson.actived.length !== 0) {
-      items.push(...collect('missingVersionJson', missingVersionJson));
+      items.push(...collect('missingVersionJson', missingVersionJson))
     }
     if (corruptedVersionJar.actived.length !== 0) {
-      items.push(...collect('corruptedVersionJar', corruptedVersionJar));
+      items.push(...collect('corruptedVersionJar', corruptedVersionJar))
     }
-    return { name: 'version', items, location: `${state.root}/versions`, $id: $id++ };
-  });
+    return { name: 'version', items, location: `${state.root}/versions`, $id: $id++ }
+  })
   const mods = computed(() => {
-    let items: IssueLeaf[] = [];
-    let incompatibleMod = state.diagnose.registry.incompatibleMod;
+    const items: IssueLeaf[] = []
+    const incompatibleMod = state.diagnose.registry.incompatibleMod
     if (incompatibleMod.actived.length !== 0) {
-      items.push(...collect('incompatibleMod', incompatibleMod));
+      items.push(...collect('incompatibleMod', incompatibleMod))
     }
-    return { name: 'mod', items, location: `${state.root}/mods`, $id: $id++ };
-  });
+    return { name: 'mod', items, location: `${state.root}/mods`, $id: $id++ }
+  })
 
   const items = computed(() => {
-    let result: IssueType[] = [];
+    const result: IssueType[] = []
     if (version.value.items.length) {
-      result.push(version.value);
+      result.push(version.value)
     }
     if (assets.value.items.length) {
-      result.push(assets.value);
+      result.push(assets.value)
     }
     if (libraries.value.items.length) {
-      result.push(libraries.value);
+      result.push(libraries.value)
     }
     if (mods.value.items.length) {
-      result.push(mods.value);
+      result.push(mods.value)
     }
-    return result;
-  });
+    return result
+  })
 
-  return { items, root: state.root };
+  return { items, root: state.root }
 }
 
 export default defineComponent({
@@ -187,14 +206,14 @@ export default defineComponent({
     const data = reactive({
       tree: [],
       opened: [],
-    });
+    })
 
     return {
       ...toRefs(data),
       ...useIssuesTree(),
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped=true>

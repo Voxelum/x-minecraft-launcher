@@ -14,12 +14,12 @@ export default class LaunchService extends AbstractService implements ILaunchSer
   constructor(app: LauncherApp,
     private diagnoseService: DiagnoseService,
     private externalAuthSkinService: ExternalAuthSkinService,
-    private instanceResourceService: InstanceResourceService
+    private instanceResourceService: InstanceResourceService,
   ) {
     super(app)
   }
 
-  private launchedProcess: ChildProcess | undefined;
+  private launchedProcess: ChildProcess | undefined
 
   async generateArguments() {
     const instance = this.getters.instance
@@ -51,14 +51,14 @@ export default class LaunchService extends AbstractService implements ILaunchSer
       version,
       extraExecOption: {
         detached: true,
-        cwd: minecraftFolder.root
+        cwd: minecraftFolder.root,
       },
       extraJVMArgs: instance.vmOptions,
       extraMCArgs: instance.mcOptions,
       yggdrasilAgent: useAuthLib ? {
         jar: await this.externalAuthSkinService.installAuthlibInjection(),
-        server: this.getters.authService.hostName
-      } : undefined
+        server: this.getters.authService.hostName,
+      } : undefined,
     }
 
     return generateArguments(option)
@@ -133,21 +133,21 @@ export default class LaunchService extends AbstractService implements ILaunchSer
         version,
         extraExecOption: {
           detached: true,
-          cwd: minecraftFolder.root
+          cwd: minecraftFolder.root,
         },
         extraJVMArgs: instance.vmOptions,
         extraMCArgs: instance.mcOptions,
         yggdrasilAgent: useAuthLib ? {
           jar: await this.externalAuthSkinService.installAuthlibInjection(),
-          server: this.getters.authService.hostName
-        } : undefined
+          server: this.getters.authService.hostName,
+        } : undefined,
       }
 
       if ('server' in instance && instance.server?.host) {
         this.log('Launching a server')
         option.server = {
           ip: instance.server?.host,
-          port: instance.server?.port
+          port: instance.server?.port,
         }
       }
 
@@ -163,7 +163,7 @@ export default class LaunchService extends AbstractService implements ILaunchSer
         version: version.id,
         minecraft: version.minecraftVersion,
         forge: instance.runtime.forge ?? '',
-        fabricLoader: instance.runtime.fabricLoader ?? ''
+        fabricLoader: instance.runtime.fabricLoader ?? '',
       })
       const watcher = createMinecraftProcessWatcher(process)
       const errorLogs = [] as string[]
@@ -184,7 +184,7 @@ export default class LaunchService extends AbstractService implements ILaunchSer
           signal,
           crashReport,
           crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
-          errorLog: errorLogs.join('\n')
+          errorLog: errorLogs.join('\n'),
         })
         this.commit('launchStatus', 'ready')
         this.launchedProcess = undefined

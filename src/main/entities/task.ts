@@ -2,21 +2,21 @@ import { TaskAddedPayload, TaskBatchPayload, TaskPayload, TaskUpdatePayload } fr
 import { Task, TaskGroup, TaskState } from '@xmcl/task'
 import { EventEmitter } from 'events'
 
-export type TaskEventType = 'update' | 'start' | 'success' | 'fail' | 'pause' | 'cancel' | 'resume';
+export type TaskEventType = 'update' | 'start' | 'success' | 'fail' | 'pause' | 'cancel' | 'resume'
 
 export interface TaskEventEmitter extends EventEmitter {
-    on(event: 'update', handler: (uuid: string, task: Task<any>, chunkSize: number) => void): this;
-    on(event: 'fail', handler: (uuid: string, task: Task<any>, error: any) => void): this;
-    on(event: TaskEventType, handler: (uuid: string, task: Task<any>) => void): this;
+  on(event: 'update', handler: (uuid: string, task: Task<any>, chunkSize: number) => void): this
+  on(event: 'fail', handler: (uuid: string, task: Task<any>, error: any) => void): this
+  on(event: TaskEventType, handler: (uuid: string, task: Task<any>) => void): this
 
-    emit(event: 'update', uuid: string, task: Task<any>, chunkSize: number): boolean;
-    emit(event: 'fail', uuid: string, task: Task<any>, error: any): boolean;
-    emit(event: TaskEventType, uuid: string, task: Task<any>): boolean;
+  emit(event: 'update', uuid: string, task: Task<any>, chunkSize: number): boolean
+  emit(event: 'fail', uuid: string, task: Task<any>, error: any): boolean
+  emit(event: TaskEventType, uuid: string, task: Task<any>): boolean
 }
 
 export interface TaskMonitor {
-    flush(): TaskBatchPayload;
-    destroy(): void;
+  flush(): TaskBatchPayload
+  destroy(): void
 }
 
 export function mapTaskToTaskPayload (uuid: string, task: Task<any>): TaskPayload {
@@ -32,7 +32,7 @@ export function mapTaskToTaskPayload (uuid: string, task: Task<any>): TaskPayloa
     state: task.state,
     time: Date.now(),
     error: Reflect.get(task, 'error'),
-    children: task instanceof TaskGroup ? (task as any).children.map((c: Task) => mapTaskToTaskPayload(uuid, c)) : []
+    children: task instanceof TaskGroup ? (task as any).children.map((c: Task) => mapTaskToTaskPayload(uuid, c)) : [],
   }
 }
 
@@ -41,7 +41,7 @@ export function mapTaskToTaskPayload (uuid: string, task: Task<any>): TaskPayloa
  */
 export function createTaskMonitor (
   emitter: TaskEventEmitter,
-  onEventQueued: (total: number) => void = () => { }
+  onEventQueued: (total: number) => void = () => { },
 ): TaskMonitor {
   let adds: TaskAddedPayload[] = []
   let updates: Record<string, TaskUpdatePayload> = {}
@@ -55,7 +55,7 @@ export function createTaskMonitor (
       return updates[uuidWithId]
     }
     const update = {
-      uuid, id: task.id, time: Date.now()
+      uuid, id: task.id, time: Date.now(),
     }
     updates[uuidWithId] = update
     return update
@@ -102,7 +102,7 @@ export function createTaskMonitor (
       parentId: task.parent?.id,
       path: task.path,
       param: task.param,
-      time: Date.now()
+      time: Date.now(),
     })
     notify()
   }
@@ -118,7 +118,7 @@ export function createTaskMonitor (
   function flush (): TaskBatchPayload {
     const result: TaskBatchPayload = {
       adds,
-      updates: Object.values(updates)
+      updates: Object.values(updates),
     }
 
     adds = []
@@ -152,7 +152,7 @@ export function createTaskPusher (
   emitter: TaskEventEmitter,
   interval: number,
   threshold: number,
-  consume: (payload: TaskBatchPayload) => void
+  consume: (payload: TaskBatchPayload) => void,
 ) {
   const monitor = createTaskMonitor(emitter, (size) => {
     if (size > threshold) {

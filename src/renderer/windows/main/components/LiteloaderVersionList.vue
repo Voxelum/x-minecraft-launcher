@@ -57,7 +57,9 @@
         class="white--text"
       >
         <v-btn large>
-          <v-icon left>refresh</v-icon>
+          <v-icon left>
+            refresh
+          </v-icon>
           {{ $t('liteloader.noVersion', { version: mcversion }) }}
         </v-btn>
       </v-flex>
@@ -66,9 +68,9 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, computed } from '@vue/composition-api';
-import { LiteloaderVersion } from '@xmcl/installer';
-import { useInstanceVersionBase, useLiteloaderVersions } from '/@/hooks';
+import { defineComponent, computed } from '@vue/composition-api'
+import { LiteloaderVersion } from '@xmcl/installer'
+import { useInstanceVersionBase, useLiteloaderVersions } from '/@/hooks'
 
 export default defineComponent({
   props: {
@@ -82,19 +84,19 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    const { minecraft } = useInstanceVersionBase();
-    const mcversion = computed(() => props.mcversion || minecraft.value);
-    const { versions, refresh, refreshing } = useLiteloaderVersions(mcversion);
+    const { minecraft } = useInstanceVersionBase()
+    const mcversion = computed(() => props.mcversion || minecraft.value)
+    const { versions, refresh, refreshing } = useLiteloaderVersions(mcversion)
     return {
       versions,
       refresh,
       refreshing,
       selectVersion(item: LiteloaderVersion) {
-        context.emit('value', item);
+        context.emit('value', item)
       },
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

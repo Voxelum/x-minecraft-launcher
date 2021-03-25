@@ -17,7 +17,7 @@ export default class InstanceGameSettingService extends AbstractService implemen
 
   private watchingInstance = ''
 
-  private dirty = false;
+  private dirty = false
 
   async dispose() {
     this.watcher?.close()

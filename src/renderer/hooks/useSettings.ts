@@ -10,23 +10,23 @@ export function useSettings () {
   const locales = computed(() => state.setting.locales || [])
   const selectedLocale = computed({
     get: () => locales.value.find(l => l === state.setting.locale) || 'en',
-    set: v => commit('locale', v)
+    set: v => commit('locale', v),
   })
   const allowPrerelease = computed({
     get: () => state.setting.allowPrerelease,
-    set: v => commit('allowPrerelease', v)
+    set: v => commit('allowPrerelease', v),
   })
   const autoInstallOnAppQuit = computed({
     get: () => state.setting.autoInstallOnAppQuit,
-    set: v => commit('autoInstallOnAppQuit', v)
+    set: v => commit('autoInstallOnAppQuit', v),
   })
   const autoDownload = computed({
     get: () => state.setting.autoDownload,
-    set: v => commit('autoDownload', v)
+    set: v => commit('autoDownload', v),
   })
   const apiSetsPreference = computed({
     get: () => state.setting.apiSetsPreference,
-    set: v => commit('apiSetsPreference', v)
+    set: v => commit('apiSetsPreference', v),
   })
   const apiSets = computed(() => ['mojang', ...state.setting.apiSets])
   const updateStatus = computed(() => state.setting.updateStatus)
@@ -46,7 +46,7 @@ export function useSettings () {
     updateStatus,
     checkingUpdate,
     downloadingUpdate,
-    updateInfo
+    updateInfo,
   }
 }
 
@@ -56,7 +56,7 @@ export function useLauncherVersion () {
   const build = computed(() => state.setting.build)
   return {
     version,
-    build
+    build,
   }
 }
 
@@ -71,6 +71,6 @@ export function useUpdateInfo () {
     downloadingUpdate,
     updateInfo,
     updateStatus,
-    ...useServiceOnly(BaseServiceKey, 'downloadUpdate', 'quitAndInstall', 'checkUpdate')
+    ...useServiceOnly(BaseServiceKey, 'downloadUpdate', 'quitAndInstall', 'checkUpdate'),
   }
 }

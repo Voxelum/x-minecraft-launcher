@@ -68,7 +68,7 @@ export function useInstance() {
     isServer: computed(() => getters.instance.server !== null),
     refreshing: computed(() => state.semaphore.instance > 0),
     ...useServiceOnly(InstanceServiceKey, 'editInstance', 'refreshServerStatus'),
-    ...useServiceOnly(InstanceIOServiceKey, 'exportInstance')
+    ...useServiceOnly(InstanceIOServiceKey, 'exportInstance'),
   }
 }
 
@@ -81,7 +81,7 @@ export function useInstances() {
     instances: computed(() => getters.instances),
 
     ...useServiceOnly(InstanceServiceKey, 'mountInstance', 'deleteInstance', 'refreshServerStatusAll'),
-    ...useServiceOnly(InstanceIOServiceKey, 'importInstance', 'linkInstance')
+    ...useServiceOnly(InstanceIOServiceKey, 'importInstance', 'linkInstance'),
   }
 }
 
@@ -109,7 +109,7 @@ export function useInstanceCreation() {
     icon: '',
     image: '',
     blur: 4,
-    server: null as undefined | CreateOption['server']
+    server: null as undefined | CreateOption['server'],
   })
   const refs = toRefs(data)
   const required: Required<typeof refs> = toRefs(data) as any
@@ -131,7 +131,7 @@ export function useInstanceCreation() {
         forge: '',
         liteloader: '',
         fabricLoader: '',
-        yarn: ''
+        yarn: '',
       }
       data.java = ''
       data.showLog = false
@@ -190,7 +190,7 @@ export function useInstanceCreation() {
         data.runtime.forge = metadata.runtime.forge
         data.runtime.fabricLoader = metadata.runtime.fabricLoader
       }
-    }
+    },
   }
 }
 
@@ -204,7 +204,7 @@ export function useInstanceVersionBase() {
     minecraft,
     forge,
     fabricLoader,
-    yarn
+    yarn,
   }
 }
 
@@ -212,7 +212,7 @@ export function useInstanceTemplates() {
   const { getters, state } = useStore()
   return {
     instances: computed(() => getters.instances),
-    modpacks: computed(() => state.resource.modpacks)
+    modpacks: computed(() => state.resource.modpacks),
   }
 }
 
@@ -247,7 +247,7 @@ export function useInstanceGameSetting() {
     refresh,
     commit(settings: GameSetting) {
       edit(settings)
-    }
+    },
   }
 }
 
@@ -263,7 +263,7 @@ export function useInstanceSaves() {
     loadAllInstancesSaves,
     importSave: (options: ImportSaveOptions) => importSave(options).finally(refresh),
     path: computed(() => state.instance.path),
-    saves: computed(() => state.instanceSave.saves)
+    saves: computed(() => state.instanceSave.saves),
   }
 }
 
@@ -279,7 +279,7 @@ export function useInstanceVersion() {
   return {
     ...useInstanceVersionBase(),
     id,
-    folder
+    folder,
   }
 }
 
@@ -287,6 +287,6 @@ export function useInstanceLogs() {
   const { state } = useStore()
   return {
     path: computed(() => state.instance.path),
-    ...useServiceOnly(InstanceLogServiceKey, 'getCrashReportContent', 'getLogContent', 'listCrashReports', 'listLogs', 'removeCrashReport', 'removeLog', 'showCrash', 'showLog')
+    ...useServiceOnly(InstanceLogServiceKey, 'getCrashReportContent', 'getLogContent', 'listCrashReports', 'listLogs', 'removeCrashReport', 'removeLog', 'showCrash', 'showLog'),
   }
 }

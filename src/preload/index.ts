@@ -19,8 +19,8 @@ const api = {
     },
     showSaveDialog (...options: any[]) {
       return ipcRenderer.invoke('dialog:showSaveDialog', ...options)
-    }
-  } as Pick<Dialog, 'showCertificateTrustDialog' | 'showErrorBox' | 'showMessageBox' | 'showOpenDialog' | 'showSaveDialog'>
+    },
+  } as Pick<Dialog, 'showCertificateTrustDialog' | 'showErrorBox' | 'showMessageBox' | 'showOpenDialog' | 'showSaveDialog'>,
 }
 
 try {

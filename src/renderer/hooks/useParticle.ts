@@ -1,10 +1,10 @@
 import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from './useCache'
 
 export enum ParticleMode {
-    PUSH = 'push',
-    REMOVE = 'remove',
-    REPULSE = 'repulse',
-    BUBBLE = 'bubble',
+  PUSH = 'push',
+  REMOVE = 'remove',
+  REPULSE = 'repulse',
+  BUBBLE = 'bubble',
 }
 
 export function useParticle () {
@@ -12,13 +12,13 @@ export function useParticle () {
   const showParticle = useLocalStorageCacheBool('showParticle', true)
   return {
     showParticle,
-    particleMode
+    particleMode,
   }
 }
 
 export function useBackgroundBlur () {
   const blurMainBody = useLocalStorageCacheBool('blurMainBody', true)
   return {
-    blurMainBody
+    blurMainBody,
   }
 }

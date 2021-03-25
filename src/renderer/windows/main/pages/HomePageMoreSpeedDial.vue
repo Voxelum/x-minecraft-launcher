@@ -1,13 +1,16 @@
 <template>
-  <v-tooltip :close-delay="0" right>
-    <template v-slot:activator="{ on }">
+  <v-tooltip
+    :close-delay="0"
+    right
+  >
+    <template #activator="{ on }">
       <v-speed-dial
         open-on-hover
         class="more-button"
         direction="top"
         transition="slide-y-reverse-transition"
       >
-        <template v-slot:activator>
+        <template #activator>
           <v-btn
             flat
             icon
@@ -18,7 +21,9 @@
             @click="$emit('show', 'normal')"
             @mouseenter="enter($tc('profile.setting'))"
           >
-            <v-icon dark>more_vert</v-icon>
+            <v-icon dark>
+              more_vert
+            </v-icon>
           </v-btn>
         </template>
         <v-btn
@@ -30,7 +35,12 @@
           v-on="on"
           @mouseenter="enter($tc('mod.name', 2) )"
         >
-          <v-icon dark style="margin-left: 24px">extensions</v-icon>
+          <v-icon
+            dark
+            style="margin-left: 24px"
+          >
+            extensions
+          </v-icon>
         </v-btn>
         <v-btn
           flat
@@ -42,7 +52,9 @@
           @click="$emit('show', 'resourcepacks')"
           @mouseenter="enter($tc('resourcepack.name', 2) )"
         >
-          <v-icon dark>palette</v-icon>
+          <v-icon dark>
+            palette
+          </v-icon>
         </v-btn>
         <v-btn
           flat
@@ -54,7 +66,9 @@
           @click="$emit('show', 'saves')"
           @mouseenter="enter($tc('save.name', 2) )"
         >
-          <v-icon dark>map</v-icon>
+          <v-icon dark>
+            map
+          </v-icon>
         </v-btn>
       </v-speed-dial>
     </template>
@@ -63,23 +77,23 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs } from '@vue/composition-api';
-import { useI18n } from '/@/hooks';
+import { defineComponent, reactive, toRefs } from '@vue/composition-api'
+import { useI18n } from '/@/hooks'
 
 export default defineComponent({
   props: {
     refreshing: Boolean,
   },
   setup() {
-    const { $t } = useI18n();
-    const data = reactive({ text: $t('profile.setting') });
+    const { $t } = useI18n()
+    const data = reactive({ text: $t('profile.setting') })
     const enter = (text: string) => {
-      setTimeout(() => { data.text = text; }, 100);
-    };
+      setTimeout(() => { data.text = text }, 100)
+    }
     return {
       ...toRefs(data),
       enter,
-    };
+    }
   },
-});
+})
 </script>

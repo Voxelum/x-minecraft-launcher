@@ -31,7 +31,7 @@
             :src="`file:///${backgroundImage}`"
             :style="{ filter: `blur:${blur}px` }"
             style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;"
-          />
+          >
           <vue-particles
             v-if="showParticle"
             color="#dedede"
@@ -61,7 +61,7 @@
 </template>
 
 <script lang=ts>
-import '/@/assets/common.css';
+import '/@/assets/common.css'
 
 import {
   onMounted,
@@ -72,7 +72,7 @@ import {
   ref,
   provide,
   Ref,
-} from '@vue/composition-api';
+} from '@vue/composition-api'
 import {
   useParticle,
   useBackgroundImage,
@@ -82,67 +82,67 @@ import {
   useBackgroundBlur,
   provideAsyncRoute,
   provideRouterHistory,
-} from '/@/hooks';
-import { provideTasks } from '/@/providers/provideTaskProxy';
-import { provideDialog, provideNotifier, provideContextMenu, provideSearch } from './hooks';
-import LoginDialog from './dialog/BaseLoginDialog.vue';
-import TaskDialog from './dialog/BaseTaskDialog.vue';
-import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue';
-import JavaWizardDialog from './dialog/BaseJavaWizardDialog.vue';
+} from '/@/hooks'
+import { provideTasks } from '/@/providers/provideTaskProxy'
+import { provideDialog, provideNotifier, provideContextMenu, provideSearch } from './hooks'
+import LoginDialog from './dialog/BaseLoginDialog.vue'
+import TaskDialog from './dialog/BaseTaskDialog.vue'
+import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue'
+import JavaWizardDialog from './dialog/BaseJavaWizardDialog.vue'
 
 export default defineComponent({
   components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaWizardDialog },
   setup() {
-    provideDialog();
-    provideNotifier();
-    provideTasks();
-    provideAsyncRoute();
-    const { goBack } = provideRouterHistory();
+    provideDialog()
+    provideNotifier()
+    provideTasks()
+    provideAsyncRoute()
+    const { goBack } = provideRouterHistory()
 
-    const { text, toggle } = provideSearch();
-    provideContextMenu();
+    const { text, toggle } = provideSearch()
+    provideContextMenu()
 
-    const ipcRenderer = useIpc();
-    const { particleMode, showParticle } = useParticle();
-    const { blurMainBody } = useBackgroundBlur();
-    const { blur, backgroundImage } = useBackgroundImage();
-    const { state } = useStore();
-    const router = useRouter();
-    const onHomePage = ref(router.currentRoute.path === '/');
-    const app: Ref<any> = ref(null);
+    const ipcRenderer = useIpc()
+    const { particleMode, showParticle } = useParticle()
+    const { blurMainBody } = useBackgroundBlur()
+    const { blur, backgroundImage } = useBackgroundImage()
+    const { state } = useStore()
+    const router = useRouter()
+    const onHomePage = ref(router.currentRoute.path === '/')
+    const app: Ref<any> = ref(null)
 
     router.afterEach((to) => {
-      onHomePage.value = to.path === '/';
-      toggle(true);
-      text.value = '';
-    });
+      onHomePage.value = to.path === '/'
+      toggle(true)
+      text.value = ''
+    })
 
     const data = reactive({
       loading: true,
       over: false,
-    });
+    })
 
     function refreshImage() {
-      const img = backgroundImage;
+      const img = backgroundImage
     }
 
     onMounted(() => {
       ipcRenderer.once('synced', () => {
-        data.loading = false;
-      });
+        data.loading = false
+      })
       watch(backgroundImage, () => {
-        refreshImage();
-      });
+        refreshImage()
+      })
       watch(particleMode, () => {
         if (showParticle.value) {
-          showParticle.value = false;
+          showParticle.value = false
           setImmediate(() => {
-            showParticle.value = true;
-          });
+            showParticle.value = true
+          })
         }
-      });
-      app.value!.$el.classList.add(state.platform);
-    });
+      })
+      app.value!.$el.classList.add(state.platform)
+    })
 
     return {
       ...toRefs(data),
@@ -154,9 +154,9 @@ export default defineComponent({
       showParticle,
       onHomePage,
       goBack,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

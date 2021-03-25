@@ -7,24 +7,24 @@ import { cpus } from 'os'
 import { Manager } from '.'
 
 export default class NetworkManager extends Manager {
-  private inGFW = false;
+  private inGFW = false
 
-  private agents: Agents;
+  private agents: Agents
 
-  private headers: Record<string, string> = {};
+  private headers: Record<string, string> = {}
 
-  readonly request = got.extend({});
+  readonly request = got.extend({})
 
   constructor(app: LauncherApp) {
     super(app)
     const options: AgentOptions = {
       keepAlive: true,
       maxSockets: cpus().length * 4,
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
     }
     this.agents = ({
       http: new HttpAgent(options),
-      https: new HttpsAgent(options)
+      https: new HttpsAgent(options),
     })
   }
 
@@ -32,7 +32,7 @@ export default class NetworkManager extends Manager {
     return {
       agents: this.agents,
       headers: this.headers,
-      overwriteWhen: 'checksumNotMatchOrEmpty'
+      overwriteWhen: 'checksumNotMatchOrEmpty',
     } as const
   }
 
@@ -42,7 +42,7 @@ export default class NetworkManager extends Manager {
   async updateGFW() {
     this.inGFW = await Promise.race([
       this.request.head('https://npm.taobao.org', { throwHttpErrors: false }).then(() => true, () => false),
-      this.request.head('https://www.google.com', { throwHttpErrors: false }).then(() => false, () => true)
+      this.request.head('https://www.google.com', { throwHttpErrors: false }).then(() => false, () => true),
     ])
     this.log(this.inGFW ? 'Detected current in China mainland.' : 'Detected current NOT in China mainland.')
     return this.inGFW

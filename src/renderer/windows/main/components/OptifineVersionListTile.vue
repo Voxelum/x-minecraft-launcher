@@ -28,10 +28,10 @@
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api';
-import VirtualList from 'vue-virtual-scroll-list';
-import { required } from '/@/util/props';
-import { OptifineVersion } from '/@shared/entities/version.schema';
+import { defineComponent } from '@vue/composition-api'
+import VirtualList from 'vue-virtual-scroll-list'
+import { required } from '/@/util/props'
+import { OptifineVersion } from '/@shared/entities/version.schema'
 
 export default defineComponent({
   components: { VirtualList },
@@ -41,6 +41,6 @@ export default defineComponent({
     selected: required<OptifineVersion>(Object),
     select: required<(version: OptifineVersion) => void>(Function),
   },
-});
+})
 
 </script>

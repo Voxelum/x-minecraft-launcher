@@ -8,22 +8,31 @@
     open-on-click
     hoverable
   >
-    <template v-slot:prepend="{ item, open }">
-      <v-icon v-if="!item.file" :color="item.diff ? 'green lighten-2' : ''">
+    <template #prepend="{ item, open }">
+      <v-icon
+        v-if="!item.file"
+        :color="item.diff ? 'green lighten-2' : ''"
+      >
         {{ open ? 'folder_open' : 'folder' }}
       </v-icon>
-      <v-icon v-else :color="item.diff ? 'green lighten-2' : ''">
+      <v-icon
+        v-else
+        :color="item.diff ? 'green lighten-2' : ''"
+      >
         {{ files[item.file] }}
       </v-icon>
     </template>
-    <template v-slot:label="{ item }">
+    <template #label="{ item }">
       <span :class="{ diff: item.diff }">
-        {{ item.name }} 
+        {{ item.name }}
       </span>
     </template>
-    <template v-slot:append=" { item } ">
-      <span style="padding-right: 10px;" :class="{ diff: item.diff }">
-        {{ item.id ? $t(`intro.struct.${item.id}`) : '' }} 
+    <template #append=" { item } ">
+      <span
+        style="padding-right: 10px;"
+        :class="{ diff: item.diff }"
+      >
+        {{ item.id ? $t(`intro.struct.${item.id}`) : '' }}
       </span>
     </template>
   </v-treeview>
@@ -110,7 +119,7 @@ export default {
               },
             ],
           },
-         
+
           {
             name: 'mods',
             id: 'mods',
@@ -151,7 +160,7 @@ export default {
               },
             ],
           },
-         
+
           {
             name: 'setting.json',
             id: 'config',
@@ -194,7 +203,7 @@ export default {
   }),
   watch: {
   },
-};
+}
 </script>
 
 <style>

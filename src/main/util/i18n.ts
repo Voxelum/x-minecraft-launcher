@@ -1,5 +1,5 @@
 interface LocalizationData {
-  [key: string]: string | LocalizationData;
+  [key: string]: string | LocalizationData
 }
 
 export function createI18n(i18nMap: { [local: string]: LocalizationData }, defaultLocal: string) {
@@ -42,6 +42,6 @@ export function createI18n(i18nMap: { [local: string]: LocalizationData }, defau
       usingData = i18nMap[locale]
     },
     get locales() { return Object.keys(i18nMap) },
-    get locale() { return usingLocale }
+    get locale() { return usingLocale },
   }
 }

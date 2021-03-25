@@ -9,10 +9,13 @@
       v-if="!fetching"
       style="height: 100%; display: flex; flex-direction: column;"
     >
-      <v-card-title style="background-color: black" class="elevation-3;">
+      <v-card-title
+        style="background-color: black"
+        class="elevation-3;"
+      >
         <h2>{{ $t('title') }}</h2>
       </v-card-title>
-      <v-divider></v-divider>
+      <v-divider />
       <v-list
         class="non-moveable"
         three-line
@@ -42,7 +45,7 @@
           </v-list-tile-action>
         </v-list-tile>
       </v-list>
-      <div style="flex-grow: 1"></div>
+      <div style="flex-grow: 1" />
       <v-card-actions
         class="non-moveable"
         style="justify-content: center; display: flex;"
@@ -88,51 +91,51 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs, inject } from '@vue/composition-api';
-import { useIpc, useNativeDialog, useI18n } from '/@/hooks';
-import { I18N_KEY } from '/@/constant';
+import { defineComponent, reactive, toRefs, inject } from '@vue/composition-api'
+import { useIpc, useNativeDialog, useI18n } from '/@/hooks'
+import { I18N_KEY } from '/@/constant'
 
 export default defineComponent({
   setup() {
-    const i18n = inject(I18N_KEY);
-    const { $t } = useI18n();
-    const ipcRenderer = useIpc();
-    const dialog = useNativeDialog();
+    const i18n = inject(I18N_KEY)
+    const { $t } = useI18n()
+    const ipcRenderer = useIpc()
+    const dialog = useNativeDialog()
     const data = reactive({
       fetching: true,
       minecraftPath: '',
       path: '',
       defaultPath: '',
       loading: false,
-    });
+    })
     ipcRenderer.invoke('preset').then(({ minecraftPath, defaultPath, locale }) => {
-      data.fetching = false;
-      i18n!.locale = locale;
-      data.minecraftPath = minecraftPath;
-      data.path = defaultPath;
-      data.defaultPath = defaultPath;
-    });
+      data.fetching = false
+      i18n!.locale = locale
+      data.minecraftPath = minecraftPath
+      data.path = defaultPath
+      data.defaultPath = defaultPath
+    })
     function setup() {
-      ipcRenderer.invoke('setup', data.path);
-      data.loading = true;
+      ipcRenderer.invoke('setup', data.path)
+      data.loading = true
     }
     async function browse() {
       const { filePaths } = await dialog.showOpenDialog({
         title: $t('browse'),
         defaultPath: data.defaultPath,
         properties: ['openDirectory', 'createDirectory'],
-      });
+      })
       if (filePaths && filePaths.length !== 0) {
-        data.path = filePaths[0];
+        data.path = filePaths[0]
       }
     }
     return {
       ...toRefs(data),
       setup,
       browse,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

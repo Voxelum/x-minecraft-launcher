@@ -24,7 +24,7 @@ function createProxyForService<T>(): [T, (v: T) => void] {
     },
     ownKeys(_) {
       return Object.keys(target)
-    }
+    },
   })
   const set = (v: T) => {
     target = v
@@ -205,13 +205,13 @@ export default class ServiceManager extends Manager {
           get(target, key) {
             if (key === 'submit') { return submit }
             return Reflect.get(target, key)
-          }
+          },
         })
         const session: ServiceCallSession = {
           call: () => servProxy[name](payload),
           name: `${service}.${name}`,
           pure: false,
-          id: sessionId
+          id: sessionId,
         }
 
         this.sessions[sessionId] = session

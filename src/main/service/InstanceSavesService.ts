@@ -2,16 +2,17 @@ import { createHash } from 'crypto'
 import filenamify from 'filenamify'
 import { ensureDir, ensureFile, FSWatcher, readdir, remove } from 'fs-extra'
 import watch from 'node-watch'
+import { pathToFileURL } from 'url'
 import { basename, extname, join, resolve } from 'path'
 import AbstractService, { Service, ServiceException, Singleton, Subscribe } from './Service'
-import { findLevelRootOnPath, getInstanceSave, loadInstanceSaveMetadata } from '/@main/entities/save'
+import { findLevelRootOnPath, getInstanceSave, readInstanceSaveMetadata } from '/@main/entities/save'
 import { copyPassively, isFile, missing, readdirIfPresent } from '/@main/util/fs'
 import { unpack7z, ZipTask } from '/@main/util/zip'
 import { Exception } from '/@shared/entities/exception'
 import { InstanceSave } from '/@shared/entities/save'
 import {
   CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
-  ImportSaveOptions, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey
+  ImportSaveOptions, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey,
 } from '/@shared/services/InstanceSavesService'
 import { isNonnull, requireObject, requireString } from '/@shared/util/assert'
 
@@ -20,9 +21,9 @@ import { isNonnull, requireObject, requireString } from '/@shared/util/assert'
  */
 @Service(InstanceSavesServiceKey)
 export default class InstanceSavesService extends AbstractService implements IInstanceSavesService {
-  private watcher: FSWatcher | undefined;
+  private watcher: FSWatcher | undefined
 
-  private watching = '';
+  private watching = ''
 
   async dispose() {
     if (this.watcher) {
@@ -31,10 +32,25 @@ export default class InstanceSavesService extends AbstractService implements IIn
   }
 
   /**
+   * Return the instance's screenshots urls.
+   *
+   * If the provided path is not a instance, it will return empty array.
+   */
+  async getScreenshotUrls(path: string = this.state.instance.path) {
+    const screenshots = join(path, 'screenshots')
+    try {
+      const files = await readdir(screenshots)
+      return files.map(f => pathToFileURL(join(path, 'screenshots')).toString())
+    } catch (e) {
+      return []
+    }
+  }
+
+  /**
    * Load all registered instances' saves metadata
    */
   @Singleton()
-  async loadAllInstancesSaves() {
+  async readAllInstancesSaves() {
     const all: Array<InstanceSave> = []
 
     for (const instance of this.getters.instances) {
@@ -79,7 +95,7 @@ export default class InstanceSavesService extends AbstractService implements IIn
       const saves = await Promise.all(savePaths
         .filter((d) => !d.startsWith('.'))
         .map((d) => join(savesDir, d))
-        .map((p) => loadInstanceSaveMetadata(p, this.getters.instance.name).catch((e) => {
+        .map((p) => readInstanceSaveMetadata(p, this.getters.instance.name).catch((e) => {
           this.warn(`Parse save in ${p} failed. Skip it.`)
           this.warn(e)
           return undefined
@@ -97,7 +113,7 @@ export default class InstanceSavesService extends AbstractService implements IIn
       const filePath = filename
       if (event === 'update') {
         if (this.state.instanceSave.saves.every((s) => s.path !== filename)) {
-          loadInstanceSaveMetadata(filePath, this.getters.instance.name).then((save) => {
+          readInstanceSaveMetadata(filePath, this.getters.instance.name).then((save) => {
             this.commit('instanceSaveAdd', save)
           }).catch((e) => {
             this.warn(`Parse save in ${filePath} failed. Skip it.`)
@@ -168,11 +184,6 @@ export default class InstanceSavesService extends AbstractService implements IIn
     await remove(savePath)
   }
 
-  /**
-   * Import a zip or folder save to the target instance.
-   *
-   * If the instancePath is not presented in the options, it will use the current selected instancePath.
-   */
   async importSave(options: ImportSaveOptions) {
     let { source, instancePath, saveName } = options
 

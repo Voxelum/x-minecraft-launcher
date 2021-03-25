@@ -28,7 +28,7 @@ export function useAsyncRoute () {
     funcs.push(func)
   }
   return {
-    beforeUnmount
+    beforeUnmount,
   }
 }
 
@@ -59,7 +59,7 @@ export function provideRouterHistory () {
   provide('history', localHistory)
 
   return {
-    goBack
+    goBack,
   }
 }
 

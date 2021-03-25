@@ -16,21 +16,21 @@ import { DeployOptions, InstanceResourceService as IInstanceResourceService, Ins
  */
 @Service(InstanceResourceServiceKey)
 export default class InstanceResourceService extends AbstractService implements IInstanceResourceService {
-  private watchingMods = '';
+  private watchingMods = ''
 
-  private modsWatcher: FSWatcher | undefined;
+  private modsWatcher: FSWatcher | undefined
 
-  private watchingResourcePack = '';
+  private watchingResourcePack = ''
 
-  private resourcepacksWatcher: FSWatcher | undefined;
+  private resourcepacksWatcher: FSWatcher | undefined
 
-  private addModQueue: AnyResource[] = [];
+  private addModQueue: AnyResource[] = []
 
-  private removeModQueue: AnyResource[] = [];
+  private removeModQueue: AnyResource[] = []
 
-  private addResourcePackQueue: AnyResource[] = [];
+  private addResourcePackQueue: AnyResource[] = []
 
-  private removeResourcePackQueue: AnyResource[] = [];
+  private removeResourcePackQueue: AnyResource[] = []
 
   private commitUpdate = debounce(() => {
     if (this.addModQueue.length > 0) {
@@ -49,11 +49,11 @@ export default class InstanceResourceService extends AbstractService implements 
       this.commit('instanceResourcepackRemove', this.removeResourcePackQueue)
       this.removeResourcePackQueue = []
     }
-  }, 1000);
+  }, 1000)
 
   constructor(
     app: LauncherApp,
-    private resourceService: ResourceService
+    private resourceService: ResourceService,
   ) {
     super(app)
   }
@@ -66,12 +66,12 @@ export default class InstanceResourceService extends AbstractService implements 
     const fileArgs = files.filter((file) => !file.startsWith('.')).map((file) => ({
       path: join(dir, file),
       url: [] as string[],
-      source: undefined
+      source: undefined,
     }))
     const resources = await this.resourceService.importFiles({
       files: fileArgs,
       restrictToDomain: ResourceDomain.Mods,
-      type: 'mods'
+      type: 'mods',
     })
     return resources.map((r, i) => mutateResource(r, (r) => { r.path = fileArgs[i].path }))
       .filter(isModResource)
@@ -85,13 +85,13 @@ export default class InstanceResourceService extends AbstractService implements 
     const fileArgs = files.filter((file) => !file.startsWith('.')).map((file) => ({
       path: join(dir, file),
       url: [] as string[],
-      source: undefined
+      source: undefined,
     }))
 
     const resources = await this.resourceService.importFiles({
       files: fileArgs,
       restrictToDomain: ResourceDomain.ResourcePacks,
-      type: 'resourcepack'
+      type: 'resourcepack',
     })
     return resources.map((r, i) => mutateResource(r, (r) => { r.path = fileArgs[i].path }))
       .filter(isResourcePackResource)
@@ -193,6 +193,14 @@ export default class InstanceResourceService extends AbstractService implements 
       })
       this.log(`Mounted on instance resource packs: ${basePath}`)
     }
+  }
+
+  deployMod(options: DeployOptions): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
+  deployResourcePack(options: DeployOptions): Promise<void> {
+    throw new Error('Method not implemented.')
   }
 
   async deploy({ resources, path = this.state.instance.path }: DeployOptions) {

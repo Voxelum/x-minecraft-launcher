@@ -17,12 +17,12 @@ const components = {
   BaseLaunchStatusDialog,
   BaseTaskDialog,
   BaseTaskDialogNotificationView,
-  DialogDownloadMissingServerMods
+  DialogDownloadMissingServerMods,
 }
 
 export default defineComponent({
   components,
   setup() {
     return () => h('div', { staticStyle: { 'z-index': 10 } }, components.map((c: any) => h(c)))
-  }
+  },
 })

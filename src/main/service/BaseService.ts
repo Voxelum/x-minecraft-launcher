@@ -22,7 +22,7 @@ export default class BaseService extends AbstractService implements IBaseService
       'autoInstallOnAppQuit',
       'autoDownload',
       'apiSetsPreference',
-      'apiSets'
+      'apiSets',
     ], () => {
       this.settingFile.write({
         locale: this.state.setting.locale,
@@ -30,7 +30,7 @@ export default class BaseService extends AbstractService implements IBaseService
         autoDownload: this.state.setting.autoDownload,
         allowPrerelease: this.state.setting.allowPrerelease,
         apiSets: this.state.setting.apiSets,
-        apiSetsPreference: this.state.setting.apiSetsPreference
+        apiSetsPreference: this.state.setting.apiSetsPreference,
       })
     })
   }
@@ -43,7 +43,7 @@ export default class BaseService extends AbstractService implements IBaseService
       autoDownload: data.autoDownload,
       allowPrerelease: data.allowPrerelease,
       apiSets: data.apiSets,
-      apiSetsPreference: data.apiSetsPreference
+      apiSetsPreference: data.apiSetsPreference,
     })
     this.checkUpdate()
   }
@@ -57,19 +57,19 @@ export default class BaseService extends AbstractService implements IBaseService
    * If user does not trust the url, it won't open the site.
    * @param url The pending url
    */
-  openInBrowser = this.app.openInBrowser.bind(this.app);
+  openInBrowser = this.app.openInBrowser.bind(this.app)
 
   /**
    * A electron provided function to show item in direcotry
    * @param path The path to the file item
    */
-  showItemInDirectory = this.app.showItemInFolder;
+  showItemInDirectory = this.app.showItemInFolder
 
   /**
    * A safe method that only open directory. If the `path` is a file, it won't execute it.
    * @param path The directory path.
    */
-  openDirectory = this.app.openDirectory;
+  openDirectory = this.app.openDirectory
 
   /**
    * Quit and install the update once the update is ready
@@ -111,11 +111,11 @@ export default class BaseService extends AbstractService implements IBaseService
     this.commit('updateStatus', 'ready')
   }
 
-  quit = this.app.quit.bind(this.app);
+  quit = this.app.quit.bind(this.app)
 
-  exit = this.app.exit;
+  exit = this.app.exit
 
-  private oldMigratedRoot = '';
+  private oldMigratedRoot = ''
 
   async migrate(options: MigrateOptions) {
     // TODO: not to hardcode
@@ -148,7 +148,7 @@ export default class BaseService extends AbstractService implements IBaseService
         copyFile(this.getPath('authlib-injection.json'), join(destination, 'authlib-injection.json')).catch(onError),
         copyFile(this.getPath('java.json'), join(destination, 'java.json')).catch(onError),
         copyFile(this.getPath('setting.json'), join(destination, 'setting.json')).catch(onError),
-        copyFile(this.getPath('user.json'), join(destination, 'user.json')).catch(onError)
+        copyFile(this.getPath('user.json'), join(destination, 'user.json')).catch(onError),
       ])
 
       const content = await readJson(join(destination, 'instances.json'))
@@ -201,7 +201,7 @@ export default class BaseService extends AbstractService implements IBaseService
       unlink(join(this.oldMigratedRoot, 'authlib-injection.json')).catch(onError),
       unlink(join(this.oldMigratedRoot, 'java.json')).catch(onError),
       unlink(join(this.oldMigratedRoot, 'setting.json')).catch(onError),
-      unlink(join(this.oldMigratedRoot, 'user.json')).catch(onError)
+      unlink(join(this.oldMigratedRoot, 'user.json')).catch(onError),
     ])
     this.app.relaunch()
   }

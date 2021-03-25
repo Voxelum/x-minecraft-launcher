@@ -21,7 +21,9 @@
           class="non-moveable"
           @click="close"
         >
-          <v-icon dark>close</v-icon>
+          <v-icon dark>
+            close
+          </v-icon>
         </v-btn>
       </v-toolbar>
       <v-list style="overflow: auto; max-height: 90vh; max-width: 100%">
@@ -50,38 +52,38 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs } from '@vue/composition-api';
-import { useClipboard, useIpc } from '/@/hooks';
-import { parseLog, Log } from './log';
+import { defineComponent, reactive, toRefs } from '@vue/composition-api'
+import { useClipboard, useIpc } from '/@/hooks'
+import { parseLog, Log } from './log'
 
 export default defineComponent({
   setup() {
-    const clipboard = useClipboard();
-    const ipcRenderer = useIpc();
+    const clipboard = useClipboard()
+    const ipcRenderer = useIpc()
     const data = reactive({
       logs: [] as Log[],
-    });
+    })
     function accept(log: string) {
-      data.logs.push(parseLog(log));
+      data.logs.push(parseLog(log))
     }
     ipcRenderer.on('minecraft-stdout', (event, str) => {
-      accept(str);
-    });
+      accept(str)
+    })
     ipcRenderer.on('minecraft-error', (event, str) => {
-      accept(str);
-    });
+      accept(str)
+    })
     return {
       ...toRefs(data),
       close() {
-        ipcRenderer.send('window-hide');
+        ipcRenderer.send('window-hide')
       },
       onClick(log: Log) {
-        clipboard.clear();
-        clipboard.writeText(log.raw);
+        clipboard.clear()
+        clipboard.writeText(log.raw)
       },
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

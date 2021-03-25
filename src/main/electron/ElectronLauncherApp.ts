@@ -23,19 +23,19 @@ export default class ElectronLauncherApp extends LauncherApp {
   /**
    * A map to keep running browser
    */
-  protected windows: { [name: string]: BrowserWindow } = {};
+  protected windows: { [name: string]: BrowserWindow } = {}
 
-  showItemInFolder = shell.showItemInFolder;
+  showItemInFolder = shell.showItemInFolder
 
-  quitApp = app.quit;
+  quitApp = app.quit
 
-  exit = app.exit;
+  exit = app.exit
 
   getPath(key: 'home' | 'appData' | 'userData' | 'cache' | 'temp' | 'exe' | 'module' | 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos' | 'logs' | 'pepperFlashSystemPlugin') {
     return app.getPath(key)
   }
 
-  handle = ipcMain.handle;
+  handle = ipcMain.handle
 
   /**
    * Push a event with payload to client.

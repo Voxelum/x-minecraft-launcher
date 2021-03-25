@@ -21,8 +21,12 @@
         </v-chip>
       </v-list-tile-avatar>
       <v-list-tile-content>
-        <v-list-tile-title v-if="item.valid">Java {{ item.version }}</v-list-tile-title>
-        <v-list-tile-title v-else>{{ $t('java.invalid') }}</v-list-tile-title>
+        <v-list-tile-title v-if="item.valid">
+          Java {{ item.version }}
+        </v-list-tile-title>
+        <v-list-tile-title v-else>
+          {{ $t('java.invalid') }}
+        </v-list-tile-title>
         <v-list-tile-sub-title>{{ item.path }}</v-list-tile-sub-title>
       </v-list-tile-content>
       <v-list-tile-action>
@@ -51,10 +55,10 @@ import {
   reactive,
   defineComponent,
   toRefs,
-} from '@vue/composition-api';
-import { JavaRecord } from '/@shared/entities/java';
-import { useService } from '/@/hooks';
-import { required } from '/@/util/props';
+} from '@vue/composition-api'
+import { JavaRecord } from '/@shared/entities/java'
+import { useService } from '/@/hooks'
+import { required } from '/@/util/props'
 
 export default defineComponent({
   props: {
@@ -63,8 +67,8 @@ export default defineComponent({
     remove: required<(java: JavaRecord) => void>(Function),
   },
   setup(props) {
-    const { showItemInDirectory } = useService('BaseService');
-    return { showItemInDirectory };
+    const { showItemInDirectory } = useService('BaseService')
+    return { showItemInDirectory }
   },
-});
+})
 </script>

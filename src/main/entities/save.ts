@@ -1,16 +1,23 @@
 import { exists, isDirectory } from '/@main/util/fs'
-import { InstanceSave, InstanceSaveMetadata } from '/@shared/entities/save'
+import { InstanceSave, InstanceSaveMetadata, ResourceSaveMetadata, SaveMetadata } from '/@shared/entities/save'
 import { FileSystem } from '@xmcl/system'
 import { WorldReader } from '@xmcl/world'
 import { readdir } from 'fs-extra'
 import { basename, join } from 'path'
+import { pathToFileURL } from 'node:url'
 
-export async function findLevelRoot (fs: FileSystem, path: string): Promise<string | undefined> {
-  if (path !== '' && !(await fs.isDirectory(path))) return undefined
-  if (await fs.existsFile([path, 'level.dat'].join(fs.sep))) return path
-  for (const subdir of await fs.listFiles(path)) {
+/**
+ * Find the relative path of the save relative to the file system.
+ * @param fs The file system
+ * @param searchPath A path relative to the file system
+ * @returns A relative path to the file system root
+ */
+export async function findLevelRootDirectory(fs: FileSystem, searchPath: string): Promise<string | undefined> {
+  if (searchPath !== '' && !(await fs.isDirectory(searchPath))) return undefined
+  if (await fs.existsFile(fs.join(searchPath, 'level.dat'))) return searchPath
+  for (const subdir of await fs.listFiles(searchPath)) {
     if (subdir === '') continue
-    const result = await findLevelRoot(fs, join(path, subdir))
+    const result = await findLevelRootDirectory(fs, fs.join(searchPath, subdir))
     if (result) return result
   }
   return undefined
@@ -19,7 +26,7 @@ export async function findLevelRoot (fs: FileSystem, path: string): Promise<stri
 /**
  * Find the directory contains the level.dat
  */
-export async function findLevelRootOnPath (path: string): Promise<string | undefined> {
+export async function findLevelRootOnPath(path: string): Promise<string | undefined> {
   if (!(await isDirectory(path))) return undefined
   if (await exists(join(path, 'level.dat'))) return path
   for (const subdir of await readdir(path)) {
@@ -34,12 +41,45 @@ export async function findLevelRootOnPath (path: string): Promise<string | undef
  * @param path The path of the save directory
  * @param instanceName The instance name
  */
-export function getInstanceSave (path: string, instanceName: string): InstanceSave {
+export function getInstanceSave(path: string, instanceName: string): InstanceSave {
   return {
     path,
     instanceName,
     name: basename(path),
-    icon: `file://${join(path, 'icon.png')}`
+    icon: pathToFileURL(join(path, 'icon.png')).toString(),
+  }
+}
+
+/**
+ * Read the basic save metadata
+ * @param save The save object or path
+ */
+export async function readSaveMetadata(save: string | Uint8Array | FileSystem | WorldReader): Promise<SaveMetadata> {
+  const resolveReader = () => {
+    if (typeof save === 'string' || save instanceof Uint8Array) {
+      return WorldReader.create(save)
+    }
+    if (save instanceof WorldReader) {
+      return save
+    }
+    return new WorldReader(save)
+  }
+  const reader = await resolveReader()
+  const level = await reader.getLevelData()
+  return {
+    mode: level.GameType,
+    levelName: level.LevelName,
+    gameVersion: level.Version.Name,
+    difficulty: level.Difficulty,
+    cheat: false,
+    lastPlayed: level.LastPlayed.toNumber(),
+  }
+}
+
+export async function readResourceSaveMetadata(resourcePath: string | Uint8Array | FileSystem | WorldReader, root: string): Promise<ResourceSaveMetadata> {
+  return {
+    root,
+    ...(await readSaveMetadata(resourcePath)),
   }
 }
 
@@ -49,20 +89,9 @@ export function getInstanceSave (path: string, instanceName: string): InstanceSa
  * @param path The path of the save directory
  * @param instanceName The instance name
  */
-export async function loadInstanceSaveMetadata (path: string, instanceName: string): Promise<InstanceSaveMetadata> {
-  const reader = await WorldReader.create(path)
-  const level = await reader.getLevelData()
+export async function readInstanceSaveMetadata(path: string, instanceName: string): Promise<InstanceSaveMetadata> {
   return {
-    path,
-    instanceName,
-    mode: level.GameType,
-    name: basename(path),
-
-    levelName: level.LevelName,
-    icon: `file://${join(path, 'icon.png')}`,
-    gameVersion: level.Version.Name,
-    difficulty: level.Difficulty,
-    cheat: false,
-    lastPlayed: level.LastPlayed.toNumber()
+    ...getInstanceSave(path, instanceName),
+    ...(await readSaveMetadata(path)),
   }
 }

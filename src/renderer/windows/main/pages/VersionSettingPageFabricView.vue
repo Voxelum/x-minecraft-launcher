@@ -24,12 +24,12 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api';
+import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api'
 import {
   useFabricVersions,
-} from '/@/hooks';
-import { required } from '/@/util/props';
-import { FabricArtifactVersion } from '@xmcl/installer';
+} from '/@/hooks'
+import { required } from '/@/util/props'
+import { FabricArtifactVersion } from '@xmcl/installer'
 
 export default defineComponent({
   props: {
@@ -41,34 +41,34 @@ export default defineComponent({
   setup(props) {
     const data = reactive({
       showStableOnly: false,
-    });
+    })
 
-    const { yarnVersions: yv, loaderVersions: lv, yarnStatus, loaderStatus } = useFabricVersions();
+    const { yarnVersions: yv, loaderVersions: lv, yarnStatus, loaderStatus } = useFabricVersions()
     const loaderVersions = computed(() => lv.value.filter((v) => {
       if (data.showStableOnly && !v.stable) {
-        return false;
+        return false
       }
-      return true;
+      return true
       // return v.version.indexOf(filterText.value) !== -1;
-    }));
+    }))
     const yarnVersions = computed(() => yv.value.filter((v) => {
       if (v.gameVersion !== props.minecraft) {
-        return false;
+        return false
       }
       if (data.showStableOnly && !v.stable) {
-        return false;
+        return false
       }
-      return true;
+      return true
       // return v.version.indexOf(filterText.value) !== -1;
-    }));
-    const fabricSupported = computed(() => !!yarnVersions.value.find(v => v.gameVersion === props.minecraft));
+    }))
+    const fabricSupported = computed(() => !!yarnVersions.value.find(v => v.gameVersion === props.minecraft))
     const selectLoader = (v: FabricArtifactVersion) => {
       if (!v.version) {
-        props.select('');
+        props.select('')
       } else {
-        props.select(v.version);
+        props.select(v.version)
       }
-    };
+    }
 
     return {
       ...toRefs(data),
@@ -76,9 +76,9 @@ export default defineComponent({
       loaderVersions,
       fabricSupported,
       loaderStatus,
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped=true>

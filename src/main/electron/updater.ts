@@ -46,33 +46,33 @@ export class DownloadAsarUpdateTask extends DownloadTask {
  * Download the full update. This size can be larger as it carry the whole electron thing...
  */
 export class DownloadFullUpdateTask extends TaskBase<void> {
-    private updateSignal = new UpdaterSignal(autoUpdater);
+  private updateSignal = new UpdaterSignal(autoUpdater)
 
-    private cancellationToken = new CancellationToken();
+  private cancellationToken = new CancellationToken()
 
-    protected async run (): Promise<void> {
-      this.updateSignal.progress((info) => {
-        this._progress = info.transferred
-        this._total = info.total
-        this.update(info.delta)
-      })
-      await autoUpdater.downloadUpdate(this.cancellationToken)
-    }
+  protected async run (): Promise<void> {
+    this.updateSignal.progress((info) => {
+      this._progress = info.transferred
+      this._total = info.total
+      this.update(info.delta)
+    })
+    await autoUpdater.downloadUpdate(this.cancellationToken)
+  }
 
-    protected performCancel (): Promise<void> {
-      this.cancellationToken.cancel()
-      return new Promise((resolve) => {
-        autoUpdater.once('update-cancelled', resolve)
-      })
-    }
+  protected performCancel (): Promise<void> {
+    this.cancellationToken.cancel()
+    return new Promise((resolve) => {
+      autoUpdater.once('update-cancelled', resolve)
+    })
+  }
 
-    protected async performPause (): Promise<void> {
-      this.cancellationToken.cancel()
-    }
+  protected async performPause (): Promise<void> {
+    this.cancellationToken.cancel()
+  }
 
-    protected performResume (): void {
-      this.run()
-    }
+  protected performResume (): void {
+    this.run()
+  }
 }
 
 export async function quitAndInstallAsar (this: ElectronLauncherApp) {
@@ -121,9 +121,9 @@ export async function quitAndInstallAsar (this: ElectronLauncherApp) {
     startProcessCmd += ` -WorkingDirectory ${process.cwd()}`
     await writeFile(psPath, [
       'Start-Sleep -s 3',
-            `Copy-Item -Path "${updateAsarPath}" -Destination "${appAsarPath}"`,
-            `Remove-Item -Path "${updateAsarPath}"`,
-            startProcessCmd
+      `Copy-Item -Path "${updateAsarPath}" -Destination "${appAsarPath}"`,
+      `Remove-Item -Path "${updateAsarPath}"`,
+      startProcessCmd,
     ].join('\r\n'))
 
     const args = [
@@ -131,7 +131,7 @@ export async function quitAndInstallAsar (this: ElectronLauncherApp) {
       '-ExecutionPolicy',
       'RemoteSigned',
       '-File',
-            `"${psPath}"`
+      `"${psPath}"`,
     ]
     if (!hasWriteAccess) {
       args.unshift(elevatePath)
@@ -140,7 +140,7 @@ export async function quitAndInstallAsar (this: ElectronLauncherApp) {
     this.log(`Relaunch the process by: ${startProcessCmd}`)
 
     spawn(args[0], args.slice(1), {
-      detached: true
+      detached: true,
     }).on('error', (e) => {
       this.error(e)
     }).on('exit', (code, s) => {

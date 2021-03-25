@@ -4,7 +4,7 @@ import storeTemplate, { ModuleOption, MutationKeys, MutationPayload, RootState }
 import { createStaticStore, StaticStore } from '/@shared/util/staticStore'
 
 export default class StoreManager extends Manager {
-  public store: StaticStore<RootState> = createStaticStore(storeTemplate) as any;
+  public store: StaticStore<RootState> = createStaticStore(storeTemplate) as any
 
   private eventbus = new EventEmitter()
 
@@ -12,9 +12,9 @@ export default class StoreManager extends Manager {
    * The total order of the current store state.
    * One commit will make this id increment by one.
    */
-  private checkPointId = 0;
+  private checkPointId = 0
 
-  private checkPoint: any;
+  private checkPoint: any
 
   sync(currentId: number) {
     const checkPointId = this.checkPointId
@@ -24,7 +24,7 @@ export default class StoreManager extends Manager {
     }
     return {
       state: JSON.parse(JSON.stringify(this.checkPoint)),
-      length: checkPointId
+      length: checkPointId,
     }
   }
 

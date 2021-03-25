@@ -16,7 +16,7 @@ export default class ExternalAuthSkinService extends AbstractService implements 
   constructor(
     app: LauncherApp,
     private diagnoseService: DiagnoseService,
-    private resourceService: ResourceService
+    private resourceService: ResourceService,
   ) {
     super(app)
     diagnoseService.registerMatchedFix(['missingAuthlibInjector'],
@@ -80,11 +80,11 @@ export default class ExternalAuthSkinService extends AbstractService implements 
     await ensureFile(destination)
     await this.submit(new DownloadTask({
       url,
-      destination
+      destination,
     }).setName('downloadCustomSkinLoader'))
     return this.resourceService.importFile({
       path: destination,
-      type: 'mods'
+      type: 'mods',
     })
   }
 
@@ -103,9 +103,9 @@ export default class ExternalAuthSkinService extends AbstractService implements 
             sha1: '',
             size: -1,
             path: info.path,
-            url: content.download_url
-          }
-        }
+            url: content.download_url,
+          },
+        },
       }
       await this.submit(installResolvedLibrariesTask(Version.resolveLibraries([authlib]), root).setName('installAuthlibInjector'))
       return mc.getLibraryByPath(info.path)

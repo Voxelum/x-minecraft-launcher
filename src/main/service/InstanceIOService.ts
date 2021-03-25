@@ -24,7 +24,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
   constructor(app: LauncherApp,
     private resourceService: ResourceService,
     private instanceService: InstanceService,
-    private versionService: VersionService
+    private versionService: VersionService,
   ) {
     super(app)
   }

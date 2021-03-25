@@ -1,7 +1,18 @@
 <template>
-  <v-container grid-list-xs fill-height>
-    <v-layout row wrap>
-      <v-flex tag="h1" style="margin-bottom: 10px" class="white--text" xs6>
+  <v-container
+    grid-list-xs
+    fill-height
+  >
+    <v-layout
+      row
+      wrap
+    >
+      <v-flex
+        tag="h1"
+        style="margin-bottom: 10px"
+        class="white--text"
+        xs6
+      >
         <span class="headline">{{ $t("profile.versionSetting") }}</span>
       </v-flex>
       <v-flex xs12>
@@ -13,30 +24,40 @@
           :slider-color="barColor"
         >
           <v-tab>
-            <div class="version-tab">{{ $t("version.locals") }}</div>
+            <div class="version-tab">
+              {{ $t("version.locals") }}
+            </div>
           </v-tab>
           <v-tab>
             <div class="version-tab">
               Minecraft
-              <div class="subtitle">{{ minecraft }}</div>
+              <div class="subtitle">
+                {{ minecraft }}
+              </div>
             </div>
           </v-tab>
           <v-tab>
             <div class="version-tab">
               Forge
-              <div class="subtitle">{{ forge || $t("version.unset") }}</div>
+              <div class="subtitle">
+                {{ forge || $t("version.unset") }}
+              </div>
             </div>
           </v-tab>
           <v-tab>
             <div class="version-tab">
               Fabric
-              <div class="subtitle">{{ loader || $t("version.unset") }}</div>
+              <div class="subtitle">
+                {{ loader || $t("version.unset") }}
+              </div>
             </div>
           </v-tab>
           <v-tab>
             <div class="version-tab">
               Optifine
-              <div class="subtitle">{{ optifine || $t("version.unset") }}</div>
+              <div class="subtitle">
+                {{ optifine || $t("version.unset") }}
+              </div>
             </div>
           </v-tab>
         </v-tabs>
@@ -48,21 +69,30 @@
           style="height: 70vh; overflow-y: hidden"
           @mousewheel.stop
         >
-          <v-tab-item style="height: 100%" @mousewheel.stop>
+          <v-tab-item
+            style="height: 100%"
+            @mousewheel.stop
+          >
             <local-version-list
               :value="localVersion"
               :filter-text="filterText"
               @input="setLocalVersion"
             />
           </v-tab-item>
-          <v-tab-item style="height: 100%" @mousewheel.stop>
+          <v-tab-item
+            style="height: 100%"
+            @mousewheel.stop
+          >
             <minecraft-view
               :filter-text="filterText"
               :version="minecraft"
               :select="setMinecraft"
             />
           </v-tab-item>
-          <v-tab-item style="height: 100%" @mousewheel.stop>
+          <v-tab-item
+            style="height: 100%"
+            @mousewheel.stop
+          >
             <forge-view
               :filter-text="filterText"
               :version="forge"
@@ -70,7 +100,10 @@
               :minecraft="minecraft"
             />
           </v-tab-item>
-          <v-tab-item style="height: 100%" @mousewheel.stop>
+          <v-tab-item
+            style="height: 100%"
+            @mousewheel.stop
+          >
             <fabric-view
               :filter-text="filterText"
               :loader="loader"
@@ -79,7 +112,10 @@
               :minecraft="minecraft"
             />
           </v-tab-item>
-          <v-tab-item style="height: 100%" @mousewheel.stop>
+          <v-tab-item
+            style="height: 100%"
+            @mousewheel.stop
+          >
             <optifine-view
               :filter-text="filterText"
               :version="optifineVersion"
@@ -94,26 +130,26 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, computed, ref, toRefs } from '@vue/composition-api';
+import { defineComponent, reactive, computed, ref, toRefs } from '@vue/composition-api'
 import {
   useAutoSaveLoad,
   useInstance,
-} from '/@/hooks';
-import type { ForgeVersion, MinecraftVersion } from '@xmcl/installer';
-import type { ResolvedVersion } from '@xmcl/core';
-import { OptifineVersion } from '/@shared/entities/version.schema';
-import { EMPTY_VERSION, isForgeLibrary, isFabricLoaderLibrary, isOptifineLibrary, filterForgeVersion, filterOptfineVersion } from '/@shared/entities/version';
-import MinecraftView from './VersionSettingPageMinecraftView.vue';
-import ForgeView from './VersionSettingPageForgeView.vue';
-import FabricView from './VersionSettingPageFabricView.vue';
-import OptifineView from './VersionSettingPageOptifineView.vue';
+} from '/@/hooks'
+import type { ForgeVersion, MinecraftVersion } from '@xmcl/installer'
+import type { ResolvedVersion } from '@xmcl/core'
+import { OptifineVersion } from '/@shared/entities/version.schema'
+import { EMPTY_VERSION, isForgeLibrary, isFabricLoaderLibrary, isOptifineLibrary, filterForgeVersion, filterOptfineVersion } from '/@shared/entities/version'
+import MinecraftView from './VersionSettingPageMinecraftView.vue'
+import ForgeView from './VersionSettingPageForgeView.vue'
+import FabricView from './VersionSettingPageFabricView.vue'
+import OptifineView from './VersionSettingPageOptifineView.vue'
 
 export default defineComponent({
   components: {
     MinecraftView, ForgeView, FabricView, OptifineView,
   },
   setup() {
-    const filterText = ref('');
+    const filterText = ref('')
     const data = reactive({
       active: 0,
 
@@ -127,78 +163,78 @@ export default defineComponent({
 
       // unused
       liteloader: '',
-    });
+    })
 
     const optifine = computed(() => {
-      const index = data.optifine.lastIndexOf('_');
-      const type = data.optifine.substring(0, index);
-      const patch = data.optifine.substring(index + 1, data.optifine.length);
-      return { type, patch };
-    });
+      const index = data.optifine.lastIndexOf('_')
+      const type = data.optifine.substring(0, index)
+      const patch = data.optifine.substring(index + 1, data.optifine.length)
+      return { type, patch }
+    })
 
-    const { editInstance: edit, runtime, version } = useInstance();
+    const { editInstance: edit, runtime, version } = useInstance()
     const barColor = computed(() => {
       switch (data.active) {
-        case 0: return 'white';
-        case 1: return 'primary';
-        case 2: return 'brown';
-        case 3: return 'orange';
-        case 4: return 'cyan';
-        default: return 'primary';
+        case 0: return 'white'
+        case 1: return 'primary'
+        case 2: return 'brown'
+        case 3: return 'orange'
+        case 4: return 'cyan'
+        default: return 'primary'
       }
-    });
+    })
 
     const localVersion = computed(() => {
-      return EMPTY_VERSION;
-    });
+      return EMPTY_VERSION
+    })
     function setLocalVersion(v: ResolvedVersion) {
-      console.log(v);
-      console.log(v.libraries.map(v => v.name));
-      console.log(v.libraries.find(isForgeLibrary));
-      data.minecraft = v.minecraftVersion;
-      data.forge = filterForgeVersion(v.libraries.find(isForgeLibrary)?.version ?? '');
-      data.liteloader = '';
-      data.loader = v.libraries.find(isFabricLoaderLibrary)?.version ?? '';
-      data.optifine = filterOptfineVersion(v.libraries.find(isOptifineLibrary)?.version ?? '');
-      data.yarn = '';
-      data.folder = v.id ?? '';
+      console.log(v)
+      console.log(v.libraries.map(v => v.name))
+      console.log(v.libraries.find(isForgeLibrary))
+      data.minecraft = v.minecraftVersion
+      data.forge = filterForgeVersion(v.libraries.find(isForgeLibrary)?.version ?? '')
+      data.liteloader = ''
+      data.loader = v.libraries.find(isFabricLoaderLibrary)?.version ?? ''
+      data.optifine = filterOptfineVersion(v.libraries.find(isOptifineLibrary)?.version ?? '')
+      data.yarn = ''
+      data.folder = v.id ?? ''
     }
     function setMinecraft(v: MinecraftVersion) {
       if (data.minecraft !== v.id) {
-        data.minecraft = v.id;
-        data.forge = '';
-        data.liteloader = '';
-        data.loader = '';
-        data.yarn = '';
-        data.optifine = '';
-        data.folder = '';
+        data.minecraft = v.id
+        data.forge = ''
+        data.liteloader = ''
+        data.loader = ''
+        data.yarn = ''
+        data.optifine = ''
+        data.folder = ''
       }
     }
     function setOptifine(v: OptifineVersion | undefined) {
       if (!v) {
-        data.optifine = '';
+        data.optifine = ''
       } else {
-        data.optifine = `${v.type}_${v.patch}`;
-        data.folder = '';
+        data.optifine = `${v.type}_${v.patch}`
+        data.folder = ''
       }
     }
     function setForge(v: ForgeVersion | undefined) {
       if (!v) {
-        data.forge = '';
+        data.forge = ''
       } else {
-        data.forge = v.version;
-        data.folder = '';
-        data.loader = '';
+        data.forge = v.version
+        data.folder = ''
+        data.loader = ''
       }
     }
     function setFabric(version?: string) {
       if (version) {
-        data.loader = version;
-        data.forge = '';
+        data.loader = version
+        data.forge = ''
       } else {
-        data.loader = '';
-        data.folder = '';
-        data.yarn = '';
+        data.loader = ''
+        data.folder = ''
+        data.yarn = ''
       }
     }
     function save() {
@@ -212,19 +248,19 @@ export default defineComponent({
           liteloader: data.liteloader,
           optifine: data.optifine,
         },
-      });
+      })
     }
     async function load() {
-      const { forge, minecraft, liteloader, fabricLoader, yarn, optifine } = runtime.value;
-      data.folder = version.value;
-      data.minecraft = minecraft;
-      data.forge = forge ?? '';
-      data.yarn = yarn ?? '';
-      data.loader = fabricLoader ?? '';
-      data.optifine = optifine ?? '';
+      const { forge, minecraft, liteloader, fabricLoader, yarn, optifine } = runtime.value
+      data.folder = version.value
+      data.minecraft = minecraft
+      data.forge = forge ?? ''
+      data.yarn = yarn ?? ''
+      data.loader = fabricLoader ?? ''
+      data.optifine = optifine ?? ''
     }
 
-    useAutoSaveLoad(save, load);
+    useAutoSaveLoad(save, load)
 
     return {
       ...toRefs(data),
@@ -240,9 +276,9 @@ export default defineComponent({
       optifineVersion: optifine,
 
       barColor,
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped=true>

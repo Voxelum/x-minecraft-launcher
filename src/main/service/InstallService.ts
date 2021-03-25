@@ -19,11 +19,11 @@ import { InstallServiceKey, InstallOptifineOptions, InstallService as IInstallSe
  */
 @Service(InstallServiceKey)
 export default class InstallService extends AbstractService implements IInstallService {
-  private refreshedMinecraft = false;
-  private refreshedFabric = false;
-  private refreshedLiteloader = false;
-  private refreshedOptifine = false;
-  private refreshedForge: Record<string, boolean> = {};
+  private refreshedMinecraft = false
+  private refreshedFabric = false
+  private refreshedLiteloader = false
+  private refreshedOptifine = false
+  private refreshedForge: Record<string, boolean> = {}
 
   private minecraftVersionJson = new MappedFile<VersionMinecraftSchema>(this.getPath('minecraft-version.json'), new BufferJsonSerializer(VersionMinecraftSchema))
   private forgeVersionJson = new MappedFile<VersionForgeSchema>(this.getPath('forge-versions.json'), new BufferJsonSerializer(VersionForgeSchema))
@@ -33,7 +33,7 @@ export default class InstallService extends AbstractService implements IInstallS
 
   constructor(app: LauncherApp,
     private local: VersionService,
-    diagnoseService: DiagnoseService
+    diagnoseService: DiagnoseService,
   ) {
     super(app)
 
@@ -129,7 +129,7 @@ export default class InstallService extends AbstractService implements IInstallS
       (issues) => {
         const assets = [
           ...issues.filter(i => i.multi).map(i => i.arguments.values).reduce((a, b) => [...a, ...b], []),
-          ...issues.filter(i => !i.multi).map(i => i.arguments)
+          ...issues.filter(i => !i.multi).map(i => i.arguments),
         ]
         return this.installAssets(assets)
       },
@@ -139,7 +139,7 @@ export default class InstallService extends AbstractService implements IInstallS
       async (issues) => {
         const libs = [
           ...issues.filter(i => i.multi).map(i => i.arguments.values).reduce((a, b) => [...a, ...b], []),
-          ...issues.filter(i => !i.multi).map(i => i.arguments)
+          ...issues.filter(i => !i.multi).map(i => i.arguments),
         ]
         return this.installLibraries({ libraries: libs })
       },
@@ -159,7 +159,7 @@ export default class InstallService extends AbstractService implements IInstallS
       this.forgeVersionJson.read(),
       this.liteloaderVersionJson.read(),
       this.fabricVersionJson.read(),
-      this.optifineVersionJson.read()
+      this.optifineVersionJson.read(),
     ])
 
     if (typeof mc === 'object') {
@@ -196,7 +196,7 @@ export default class InstallService extends AbstractService implements IInstallS
     const options: InstallForgeOptions = {
       ...this.networkManager.getDownloadBaseOptions(),
       overwriteWhen: 'checksumNotMatch',
-      java: this.getters.defaultJava.path
+      java: this.getters.defaultJava.path,
     }
     if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
       const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference)
@@ -212,7 +212,7 @@ export default class InstallService extends AbstractService implements IInstallS
       assetsDownloadConcurrency: 16,
       ...this.networkManager.getDownloadBaseOptions(),
       overwriteWhen: 'checksumNotMatch',
-      side: 'client'
+      side: 'client',
     }
 
     if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
@@ -248,16 +248,16 @@ export default class InstallService extends AbstractService implements IInstallS
 
   private async getForgesFromBMCL(mcversion: string, currentForgeVersion: ForgeVersionList) {
     interface BMCLForge {
-      'branch': string; // '1.9';
-      'build': string; // 1766;
-      'mcversion': string; // '1.9';
-      'modified': string; // '2016-03-18T07:44:28.000Z';
-      'version': string; // '12.16.0.1766';
+      'branch': string // '1.9';
+      'build': string // 1766;
+      'mcversion': string // '1.9';
+      'modified': string // '2016-03-18T07:44:28.000Z';
+      'version': string // '12.16.0.1766';
       files: {
-        format: 'zip' | 'jar'; // zip
-        category: 'universal' | 'mdk' | 'installer';
-        hash: string;
-      }[];
+        format: 'zip' | 'jar' // zip
+        category: 'universal' | 'mdk' | 'installer'
+        hash: string
+      }[]
     }
 
     const { body, statusCode, headers } = await this.networkManager.request({
@@ -266,12 +266,12 @@ export default class InstallService extends AbstractService implements IInstallS
       headers: currentForgeVersion && currentForgeVersion.timestamp
         ? {
           'If-Modified-Since': currentForgeVersion.timestamp,
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45'
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
         }
         : {
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45'
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
         },
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
     })
     function convert(v: BMCLForge): ForgeVersion {
       const installer = v.files.find(f => f.category === 'installer')!
@@ -280,7 +280,7 @@ export default class InstallService extends AbstractService implements IInstallS
         mcversion: v.mcversion,
         version: v.version,
         type: 'common',
-        date: v.modified
+        date: v.modified,
       } as any
     }
     if (statusCode === 304) {
@@ -290,7 +290,7 @@ export default class InstallService extends AbstractService implements IInstallS
     const result: ForgeVersionList = {
       mcversion,
       timestamp: headers['if-modified-since'] ?? forges[0]?.modified,
-      versions: forges.map(convert)
+      versions: forges.map(convert),
     }
     return result
   }
@@ -555,12 +555,12 @@ export default class InstallService extends AbstractService implements IInstallS
     this.log('Start to refresh optifine metadata')
 
     const headers = this.state.version.optifine.etag === '' ? undefined : {
-      'If-None-Match': this.state.version.optifine.etag
+      'If-None-Match': this.state.version.optifine.etag,
     }
 
     const response = await this.networkManager.request.get('https://bmclapi2.bangbang93.com/optifine/versionList', {
       headers,
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
     })
 
     if (response.statusCode === 304) {
@@ -571,7 +571,7 @@ export default class InstallService extends AbstractService implements IInstallS
 
       this.commit('optifineMetadata', {
         etag,
-        versions
+        versions,
       })
       this.log('Found new optifine version metadata. Update it.')
     }
@@ -612,7 +612,7 @@ export default class InstallService extends AbstractService implements IInstallS
       await this.yield(new DownloadTask({
         ...downloadOptions,
         url: `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
-        destination: path
+        destination: path,
       }).setName('download'))
       let id: string = await this.concat(installOptifineTask(path, minecraft, { java }))
 
@@ -648,7 +648,7 @@ export default class InstallService extends AbstractService implements IInstallS
     }
 
     const option = this.state.version.liteloader.timestamp === '' ? undefined : {
-      original: this.state.version.liteloader
+      original: this.state.version.liteloader,
     }
     const remoteList = await getLiteloaderVersionList(option)
     if (remoteList !== this.state.version.liteloader) {

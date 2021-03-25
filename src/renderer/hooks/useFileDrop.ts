@@ -5,6 +5,6 @@ export function useFileDrop() {
   return {
     importFile,
     readFileMetadata,
-    readFilesMetadata
+    readFilesMetadata,
   } as const
 }

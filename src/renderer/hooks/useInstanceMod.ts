@@ -14,50 +14,50 @@ export interface ModItem {
   /**
    * Path on disk
    */
-  path: string;
+  path: string
   /**
    * The mod id
    */
-  id: string;
+  id: string
   /**
    * Mod display name
    */
-  name: string;
+  name: string
   /**
    * Mod version
    */
-  version: string;
-  description: string;
+  version: string
+  description: string
   /**
    * Mod icon url
    */
-  icon: string;
+  icon: string
 
-  tags: string[];
+  tags: string[]
 
   dependencies: {
-    minecraft: string;
-    fabricLoader?: string;
-    forge?: string;
-  };
+    minecraft: string
+    fabricLoader?: string
+    forge?: string
+  }
 
-  hash: string;
+  hash: string
   /**
    * The universal location of the mod
    */
-  url: string;
+  url: string
 
-  type: 'fabric' | 'forge' | 'liteloader' | 'unknown';
+  type: 'fabric' | 'forge' | 'liteloader' | 'unknown'
 
-  enabled: boolean;
+  enabled: boolean
 
-  subsequence: boolean;
+  subsequence: boolean
 
-  hide: boolean;
+  hide: boolean
 
   curseforge?: {
-    projectId: number;
-    fileId: number;
+    projectId: number
+    fileId: number
   }
 }
 
@@ -90,8 +90,8 @@ export function useInstanceMods() {
       hide: false,
       curseforge: resource.curseforge,
       dependencies: {
-        minecraft: ''
-      }
+        minecraft: '',
+      },
     }
     if (resource.type === 'forge') {
       const meta = resource.metadata
@@ -146,7 +146,7 @@ export function useInstanceMods() {
       subsequence: false,
       hide: false,
       curseforge: resource.curseforge,
-      dependencies: { minecraft: '[*]' }
+      dependencies: { minecraft: '[*]' },
     }
   }
 
@@ -164,7 +164,7 @@ export function useInstanceMods() {
 
     await Promise.all([
       deploy({ resources: enabled }),
-      undeploy(disabled)
+      undeploy(disabled),
     ])
   }
 
@@ -182,6 +182,6 @@ export function useInstanceMods() {
   return {
     items,
     commit,
-    loading
+    loading,
   }
 }

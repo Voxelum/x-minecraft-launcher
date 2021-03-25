@@ -30,7 +30,7 @@ export function useUserProfile (userProfile: Ref<UserProfile>) {
     accessToken,
     username,
     profiles,
-    id
+    id,
   }
 }
 
@@ -42,7 +42,7 @@ export function useUserProfileStatus (userProfile: Ref<UserProfile>) {
     accessTokenValid,
     offline,
     isServiceCompatible,
-    logined: accessTokenValid
+    logined: accessTokenValid,
   }
 }
 
@@ -53,11 +53,11 @@ const NO_USER_PROFILE: UserProfile = Object.freeze({
   profileService: '',
   profiles: {},
   id: '',
-  username: ''
+  username: '',
 })
 const NO_GAME_PROFILE: GameProfile = Object.freeze({
   id: '',
-  name: ''
+  name: '',
 })
 
 export function useSelectedUser () {
@@ -88,7 +88,7 @@ export function useCurrentUser () {
     profileId,
     userProfile,
     gameProfile,
-    ...useServiceOnly(UserServiceKey, 'refreshStatus', 'switchUserProfile', 'logout', 'refreshSkin')
+    ...useServiceOnly(UserServiceKey, 'refreshStatus', 'switchUserProfile', 'logout', 'refreshSkin'),
   }
 }
 
@@ -98,7 +98,7 @@ export function useUserSkin (userId: Ref<string>, gameProfileId: Ref<string>) {
   const data = reactive({
     url: '',
     slim: false,
-    loading: false
+    loading: false,
   })
   const gameProfile = computed(() => state.user.users[userId.value]?.profiles[gameProfileId.value] || EMPTY_GAME_PROFILE)
   function reset () {
@@ -136,7 +136,7 @@ export function useUserSkin (userId: Ref<string>, gameProfileId: Ref<string>) {
     reset,
     modified,
 
-    exportTo: saveSkin
+    exportTo: saveSkin,
   }
 }
 
@@ -146,7 +146,7 @@ export function useUserServices () {
   const profileServices = computed(() => Object.keys(state.user.profileServices))
   return {
     authServices,
-    profileServices
+    profileServices,
   }
 }
 
@@ -161,7 +161,7 @@ export function useSwitchUser () {
 
   const data = reactive({
     profileId: profileId.value,
-    userId: userId.value
+    userId: userId.value,
   })
   const modified = computed(() => data.profileId !== profileId.value || data.userId !== userId.value)
   const { switchUserProfile, removeUserProfile } = useServiceOnly(UserServiceKey, 'switchUserProfile', 'removeUserProfile')
@@ -186,13 +186,13 @@ export function useSwitchUser () {
     remove,
     commit,
     modified,
-    ...toRefs(data)
+    ...toRefs(data),
   }
 }
 
 interface ServiceItem {
-    text: string;
-    value: string;
+  text: string
+  value: string
 }
 
 export function useLogin () {
@@ -210,18 +210,18 @@ export function useLogin () {
 
   const _authService = computed<ServiceItem>({
     get () { return authServices.value.find(a => a.value === authService.value)! },
-    set (v) { authService.value = v as any as string }
+    set (v) { authService.value = v as any as string },
   })
   const _profileService = computed<ServiceItem>({
     get () { return profileServices.value.find(a => a.value === profileService.value)! },
-    set (v) { profileService.value = v as any as string }
+    set (v) { profileService.value = v as any as string },
   })
 
   const data = reactive({
     logining: false,
     username: '',
     password: '',
-    selectProfile: true
+    selectProfile: true,
   })
   async function _login () {
     data.logining = true
@@ -256,7 +256,7 @@ export function useLogin () {
     selectedUser: userId,
 
     authServices,
-    profileServices
+    profileServices,
   }
 }
 
@@ -266,7 +266,7 @@ export function useLoginValidation (isOffline: Ref<boolean>) {
   const emailRules = [
     (v: unknown) => !!v || $t('user.requireEmail'),
     (v: string) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
-            $t('user.illegalEmail')
+            $t('user.illegalEmail'),
   ]
   const passwordRules = [(v: unknown) => !!v || $t('user.requirePassword')]
   const usernameRules = computed(() => (isOffline.value
@@ -274,7 +274,7 @@ export function useLoginValidation (isOffline: Ref<boolean>) {
     : emailRules))
   const data = reactive({
     usernameErrors: [] as string[],
-    passwordErrors: [] as string[]
+    passwordErrors: [] as string[],
   })
   function reset () {
     data.usernameErrors = []
@@ -298,7 +298,7 @@ export function useLoginValidation (isOffline: Ref<boolean>) {
     usernameRules,
     passwordRules,
     reset,
-    handleError
+    handleError,
   }
 }
 
@@ -308,61 +308,61 @@ export function useUserSecurityStatus () {
 
   return {
     security,
-    refreshing: useBusy('checkLocation')
+    refreshing: useBusy('checkLocation'),
   }
 }
 
 export function useUserSecurity () {
-    interface MojangChallenge {
-        readonly answer: {
-            id: number;
-            answer: string;
-        };
-        readonly question: {
-            id: number;
-            question: string;
-        };
+  interface MojangChallenge {
+    readonly answer: {
+      id: number
+      answer: string
     }
+    readonly question: {
+      id: number
+      question: string
+    }
+  }
 
-    const { security, refreshing } = useUserSecurityStatus()
-    const { getChallenges, checkLocation, submitChallenges } = useServiceOnly(UserServiceKey, 'getChallenges', 'checkLocation', 'submitChallenges')
-    const data = reactive({
-      loading: false,
-      challenges: [] as MojangChallenge[],
-      error: undefined as any
-    })
-    async function check () {
-      try {
-        if (data.loading) return
-        if (data.challenges.length > 0) return
-        data.loading = true
-        const sec = await checkLocation()
-        if (sec) return
-        try {
-          const challenges = await getChallenges()
-          data.challenges = challenges.map(c => ({ question: c.question, answer: { id: c.answer.id, answer: '' } }))
-        } catch (e) {
-          data.error = e
-        }
-      } finally {
-        data.loading = false
-      }
-    }
-    async function submit () {
+  const { security, refreshing } = useUserSecurityStatus()
+  const { getChallenges, checkLocation, submitChallenges } = useServiceOnly(UserServiceKey, 'getChallenges', 'checkLocation', 'submitChallenges')
+  const data = reactive({
+    loading: false,
+    challenges: [] as MojangChallenge[],
+    error: undefined as any,
+  })
+  async function check () {
+    try {
+      if (data.loading) return
+      if (data.challenges.length > 0) return
       data.loading = true
+      const sec = await checkLocation()
+      if (sec) return
       try {
-        await submitChallenges(data.challenges.map(c => c.answer))
+        const challenges = await getChallenges()
+        data.challenges = challenges.map(c => ({ question: c.question, answer: { id: c.answer.id, answer: '' } }))
       } catch (e) {
         data.error = e
-      } finally {
-        data.loading = false
       }
+    } finally {
+      data.loading = false
     }
-    return {
-      ...toRefs(data),
-      refreshing,
-      security,
-      check,
-      submit
+  }
+  async function submit () {
+    data.loading = true
+    try {
+      await submitChallenges(data.challenges.map(c => c.answer))
+    } catch (e) {
+      data.error = e
+    } finally {
+      data.loading = false
     }
+  }
+  return {
+    ...toRefs(data),
+    refreshing,
+    security,
+    check,
+    submit,
+  }
 }

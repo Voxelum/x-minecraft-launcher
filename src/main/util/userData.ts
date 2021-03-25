@@ -53,10 +53,10 @@ export function fitMinecraftLauncherProfileData (result: UserSchema, data: UserS
               dict[id] = {
                 id,
                 name: o.displayName,
-                textures: { SKIN: { url: '' } }
+                textures: { SKIN: { url: '' } },
               }
               return dict
-            }, {} as { [key: string]: any })
+            }, {} as { [key: string]: any }),
         }
       }
     }

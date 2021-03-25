@@ -6,11 +6,11 @@ import { TaskProxy } from '/@/taskProxy'
 import { TaskBatchPayload, TaskPayload, TaskState } from '/@shared/task'
 
 class ChildrenWatcer {
-  readonly cached: Array<TaskItem> = new Array(10);
+  readonly cached: Array<TaskItem> = new Array(10)
 
-  readonly childrens: Array<TaskItem> = [];
+  readonly childrens: Array<TaskItem> = []
 
-  public dirty = false;
+  public dirty = false
 
   constructor(private target: Ref<TaskItem[]>, init?: TaskItem[]) {
     if (init) {
@@ -80,7 +80,7 @@ export function provideTasks() {
     tasks,
     pause,
     resume,
-    cancel
+    cancel,
   })
 
   let syncing: Promise<void> | undefined
@@ -102,7 +102,7 @@ export function provideTasks() {
       state: payload.state,
       progress: payload.progress,
       total: payload.total,
-      children
+      children,
     })
     dictionary[localId] = item
     return item
@@ -128,7 +128,7 @@ export function provideTasks() {
         state: TaskState.Running,
         progress: 0,
         total: -1,
-        parentId
+        parentId,
       })
       if (typeof parentId === 'number') {
         const parentLocalId = `${uuid}@${parentId}`

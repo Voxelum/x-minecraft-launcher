@@ -26,11 +26,13 @@
           :src="source.icon"
           style="min-height: 126px; max-height: 126px; max-width: 126px; min-width; 126px"
           contain
-        />
+        >
       </v-flex>
       <v-flex style="padding: 10px 0; flex-grow: 1">
         <h3>{{ source.name }}</h3>
-        <div style="color: grey">{{ new Date(source.lastPlayed) }}</div>
+        <div style="color: grey">
+          {{ new Date(source.lastPlayed) }}
+        </div>
         <v-chip
           small
           outline
@@ -76,12 +78,11 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, computed, ref } from '@vue/composition-api';
-import { InstanceSaveMetadata } from '/@shared/entities/save';
-import unknownPack from '/@/assets/unknown_pack.png';
-import { required } from '/@/util/props';
-import { useI18n } from '/@/hooks';
-
+import { defineComponent, computed, ref } from '@vue/composition-api'
+import { InstanceSaveMetadata } from '/@shared/entities/save'
+import unknownPack from '/@/assets/unknown_pack.png'
+import { required } from '/@/util/props'
+import { useI18n } from '/@/hooks'
 
 export default defineComponent({
   props: {
@@ -90,25 +91,25 @@ export default defineComponent({
     source: required<InstanceSaveMetadata>(Object),
   },
   setup(props) {
-    const { $t } = useI18n();
+    const { $t } = useI18n()
     const levelMode = computed(() => {
       switch (props.source.mode) {
-        case 0: return $t('gamesetting.gametype.survival');
-        case 1: return $t('gamesetting.gametype.creative');
-        case 2: return $t('gamesetting.gametype.adventure');
-        case 3: return $t('gamesetting.gametype.spectator');
+        case 0: return $t('gamesetting.gametype.survival')
+        case 1: return $t('gamesetting.gametype.creative')
+        case 2: return $t('gamesetting.gametype.adventure')
+        case 3: return $t('gamesetting.gametype.spectator')
         case -1:
         default:
-          return $t('gamesetting.gametype.non');
+          return $t('gamesetting.gametype.non')
       }
-    });
+    })
     return {
       unknownPack,
       levelMode,
       icon: ref(null),
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

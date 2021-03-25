@@ -1,6 +1,7 @@
 import Vue, { Component } from 'vue'
 declare module '*.vue' {
-  export default Vue
+  const component: Vue
+  export default component
 }
 declare module '*.webp' {
   const value: string
@@ -12,5 +13,5 @@ declare module 'vue-particles' {
 }
 declare module 'vue-virtual-scroll-list' {
   const component: Component<any, any, any, { size: number; remain: number }>
-  export = component;
+  export = component
 }

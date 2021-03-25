@@ -37,35 +37,35 @@ function configApp(app: ReturnType<typeof createApp>) {
   app.use(Vuetify, {
     icons: {
       curseforge: {
-        component: CurseforgeIcon
+        component: CurseforgeIcon,
       },
       zip: {
-        component: ZipFileIcon
+        component: ZipFileIcon,
       },
       jar: {
-        component: JarFileIcon
+        component: JarFileIcon,
       },
       package: {
-        component: PackageFileIcon
+        component: PackageFileIcon,
       },
       forge: {
-        component: ForgeIcon
+        component: ForgeIcon,
       },
       fabric: {
-        component: FabricIcon
-      }
+        component: FabricIcon,
+      },
     },
     theme: {
       primary: colors.green,
       // secondary: colors.lime,
-      accent: colors.green.accent3
-    }
+      accent: colors.green.accent3,
+    },
   })
   app.use(Router)
   app.use(VueObserveVisibility)
   app.use(VueParticles)
-  app.component('text-component', TextComponent)
-  app.component('skin-view', SkinView)
+  app.component('TextComponent', TextComponent)
+  app.component('SkinView', SkinView)
   for (const [key, value] of Object.entries(components)) {
     app.component(key, value)
   }
@@ -101,10 +101,10 @@ function startApp() {
             return (prop as Function).bind(target)
           }
           return prop
-        }
+        },
       }))
       return () => h(MainWindow)
-    }
+    },
   })
   app.mount('#app')
 }

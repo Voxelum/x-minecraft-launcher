@@ -17,7 +17,7 @@ export function useCurseforgeProjectFiles(projectId: number) {
   const { getters } = useStore()
   const data = reactive({
     files: [] as readonly File[],
-    loading: false
+    loading: false,
   })
   const status = computed(() => data.files.map(file => getters.isFileInstalled({ id: file.id, href: file.downloadUrl })))
   async function refresh() {
@@ -35,7 +35,7 @@ export function useCurseforgeProjectFiles(projectId: number) {
   return {
     ...toRefs(data),
     status,
-    refresh
+    refresh,
   }
 }
 
@@ -69,7 +69,7 @@ export function useCurseforgeProjectDescription(projectId: number) {
   const { fetchProjectDescription } = useService(CurseForgeServiceKey)
   const data = reactive({
     description: '',
-    loading: false
+    loading: false,
   })
   async function refresh() {
     data.loading = true
@@ -98,7 +98,7 @@ export function useCurseforgeProject(projectId: number) {
     lastUpdate: '',
     totalDownload: 0,
     attachments: [] as Attachment[],
-    refreshingProject: false
+    refreshingProject: false,
   })
   async function refresh() {
     data.refreshingProject = true
@@ -119,7 +119,7 @@ export function useCurseforgeProject(projectId: number) {
   return {
     ...toRefs(data),
     recentFiles,
-    refresh
+    refresh,
   }
 }
 
@@ -163,7 +163,7 @@ export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Re
     set(v: number) {
       const route = router.currentRoute
       router.push({ query: { ...route.query, page: v.toString() } })
-    }
+    },
   })
   const data = reactive({
     pages: 5,
@@ -176,7 +176,7 @@ export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Re
 
     loading: false,
 
-    currentKeyword: keyword.value
+    currentKeyword: keyword.value,
   })
   const index = computed(() => (currentPage.value - 1) * pageSize)
   const refs = toRefs(data)
@@ -189,7 +189,7 @@ export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Re
         sectionId,
         sort: data.sort,
         gameVersion: data.gameVersion,
-        searchFilter: keyword.value
+        searchFilter: keyword.value,
       })
       if (currentPage.value > data.pages / 2) {
         data.pages += 5
@@ -218,6 +218,6 @@ export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Re
     ...refs,
     currentPage,
     search,
-    refresh
+    refresh,
   }
 }

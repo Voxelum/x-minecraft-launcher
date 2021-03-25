@@ -3,37 +3,37 @@ import { UpdateInfo } from '/@shared/entities/update'
 import { ModuleOption } from '../root'
 
 interface State extends SettingSchema {
-    /**
+  /**
      * All supported languages of the launcher
      */
-    locales: string[];
-    updateInfo: UpdateInfo | null;
-    updateStatus: 'ready' | 'none' | 'pending';
-    version: string;
-    build: number;
+  locales: string[]
+  updateInfo: UpdateInfo | null
+  updateStatus: 'ready' | 'none' | 'pending'
+  version: string
+  build: number
 }
 
 interface Mutations {
-    config: SettingSchema;
-    locale: string;
-    locales: string[];
-    allowPrerelease: boolean;
-    autoInstallOnAppQuit: boolean;
-    updateStatus: 'ready' | 'none' | 'pending';
-    autoDownload: boolean;
-    updateInfo: UpdateInfo;
-    settings: { [key: string]: number | string | boolean | object };
+  config: SettingSchema
+  locale: string
+  locales: string[]
+  allowPrerelease: boolean
+  autoInstallOnAppQuit: boolean
+  updateStatus: 'ready' | 'none' | 'pending'
+  autoDownload: boolean
+  updateInfo: UpdateInfo
+  settings: { [key: string]: number | string | boolean | object }
 
-    apiSetsPreference: 'mojang' | 'bmcl' | 'mcbbs';
-    apiSets: { name: string; url: string }[];
+  apiSetsPreference: 'mojang' | 'bmcl' | 'mcbbs'
+  apiSets: { name: string; url: string }[]
 
-    version: [string, number];
+  version: [string, number ]
 }
 
 /**
  * Whole launcher setting
  */
-export type SettingModule = ModuleOption<State, {}, Mutations, {}>;
+export type SettingModule = ModuleOption<State, {}, Mutations, {}>
 
 const mod: SettingModule = {
   state: {
@@ -47,7 +47,7 @@ const mod: SettingModule = {
     apiSetsPreference: 'mcbbs',
     apiSets: [{ name: 'mcbbs', url: 'https://download.mcbbs.net' }, { name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }],
     version: '',
-    build: 0
+    build: 0,
   },
   mutations: {
     updateInfo (state, updateInfo) {
@@ -81,8 +81,8 @@ const mod: SettingModule = {
     },
     apiSetsPreference (state, use) { state.apiSetsPreference = use },
     apiSets (state, sets) { state.apiSets = sets },
-    version (state, [version, build]) { state.version = version; state.build = build ?? 0 }
-  }
+    version (state, [version, build]) { state.version = version; state.build = build ?? 0 },
+  },
 }
 
 export default mod

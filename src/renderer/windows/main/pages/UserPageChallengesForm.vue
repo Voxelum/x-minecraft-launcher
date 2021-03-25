@@ -98,22 +98,22 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, watch, computed } from '@vue/composition-api';
-import { useUserSecurity } from '/@/hooks';
+import { defineComponent, watch, computed } from '@vue/composition-api'
+import { useUserSecurity } from '/@/hooks'
 
 export default defineComponent({
   props: { show: Boolean },
   setup(props) {
-    const { submit, challenges, error, security, refreshing, loading, check } = useUserSecurity();
+    const { submit, challenges, error, security, refreshing, loading, check } = useUserSecurity()
     function updateAnswer(index: number, content: string) {
-      challenges.value[index].answer.answer = content;
-      error.value = undefined;
+      challenges.value[index].answer.answer = content
+      error.value = undefined
     }
     watch(computed(() => props.show), (newValue) => {
       if (newValue) {
-        check();
+        check()
       }
-    });
+    })
     return {
       loading,
       updateAnswer,
@@ -122,9 +122,9 @@ export default defineComponent({
       security,
       refreshing,
       submit,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

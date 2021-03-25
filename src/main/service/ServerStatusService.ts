@@ -24,7 +24,7 @@ export default class ServerStatusService extends AbstractService implements ISer
       }
       this.commit('protocolMapping', {
         protocol: object.protocol,
-        mcversion: mcversionMapping
+        mcversion: mcversionMapping,
       })
     } else {
       const rev = await readJSON(protocolPath)
@@ -32,7 +32,7 @@ export default class ServerStatusService extends AbstractService implements ISer
 
       this.commit('protocolMapping', {
         protocol: forward,
-        mcversion: rev
+        mcversion: rev,
       })
     }
   }

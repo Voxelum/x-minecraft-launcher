@@ -1,8 +1,13 @@
 <template>
   <v-menu>
-    <template v-slot:activator="{ on }">
-      <v-btn flat v-on="on">
-        <v-icon left> keyboard_arrow_down </v-icon>
+    <template #activator="{ on }">
+      <v-btn
+        flat
+        v-on="on"
+      >
+        <v-icon left>
+          keyboard_arrow_down
+        </v-icon>
         {{
           selected.path
             ? $t("curseforge.installTo", { path: selected.name })
@@ -36,13 +41,13 @@
 </template>
 
 <script lang=ts>
-import { useI18n, useInstances } from '/@/hooks';
-import { basename } from '/@/util/basename';
-import { defineComponent, computed, inject, ref, reactive, toRefs, Ref } from '@vue/composition-api';
+import { useI18n, useInstances } from '/@/hooks'
+import { basename } from '/@/util/basename'
+import { defineComponent, computed, inject, ref, reactive, toRefs, Ref } from '@vue/composition-api'
 
 interface Item {
-  name: string;
-  path: string;
+  name: string
+  path: string
 }
 
 export default defineComponent({
@@ -50,34 +55,34 @@ export default defineComponent({
     value: String,
   },
   setup(props, context) {
-    const { instances } = useInstances();
-    const { $t } = useI18n();
-    const defaultItem: Item = { name: $t('curseforge.installToStorage'), path: '' };
-    const items = computed(() => instances.value.map(i => ({ path: i.path, name: i.name ?? basename(i.path) })));
+    const { instances } = useInstances()
+    const { $t } = useI18n()
+    const defaultItem: Item = { name: $t('curseforge.installToStorage'), path: '' }
+    const items = computed(() => instances.value.map(i => ({ path: i.path, name: i.name ?? basename(i.path) })))
     const selected = computed({
       get() {
-        const instance = instances.value.find(i => i.path === props.value);
+        const instance = instances.value.find(i => i.path === props.value)
         return instance
           ? { path: instance.path, name: instance.name ?? basename(instance.path) }
-          : defaultItem;
+          : defaultItem
       },
       set(value: Item) {
         if (!value) {
-          context.emit('input', '');
+          context.emit('input', '')
         } else {
-          context.emit('input', value.path);
+          context.emit('input', value.path)
         }
       },
-    });
+    })
     function onSelect(item: Item) {
-      selected.value = item;
+      selected.value = item
     }
     return {
       onSelect,
       defaultItem,
       items,
       selected,
-    };
+    }
   },
-});
+})
 </script>

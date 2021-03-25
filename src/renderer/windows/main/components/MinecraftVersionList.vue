@@ -12,11 +12,11 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, ref, Ref, onMounted } from '@vue/composition-api';
-import VirtualList from 'vue-virtual-scroll-list';
-import { MinecraftVersion } from '@xmcl/installer';
-import { required, withDefault } from '/@/util/props';
-import Tile from './MinecraftVersionListTile.vue';
+import { defineComponent, ref, Ref, onMounted } from '@vue/composition-api'
+import VirtualList from 'vue-virtual-scroll-list'
+import { MinecraftVersion } from '@xmcl/installer'
+import { required, withDefault } from '/@/util/props'
+import Tile from './MinecraftVersionListTile.vue'
 
 export default defineComponent({
   components: { VirtualList },
@@ -28,14 +28,14 @@ export default defineComponent({
     select: required<(version: MinecraftVersion) => void>(Function),
   },
   setup(props) {
-    const list: Ref<any> = ref(null);
+    const list: Ref<any> = ref(null)
     onMounted(() => {
-      let index = props.versions.findIndex(v => v.id === props.value);
-      (list.value! as any).scrollToIndex(index);
-    });
-    return { list, Tile };
+      const index = props.versions.findIndex(v => v.id === props.value);
+      (list.value! as any).scrollToIndex(index)
+    })
+    return { list, Tile }
   },
-});
+})
 </script>
 
 <style>

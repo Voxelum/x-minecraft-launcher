@@ -1,32 +1,32 @@
 import type { ForgeModMetadata } from '@xmcl/mod-parser'
 
 export interface ForgeModCommonMetadata extends ForgeModMetadata {
-    modid: string;
-    /**
+  modid: string
+  /**
      * Display name
      */
-    name: string;
-    /**
+  name: string
+  /**
      * Logo file path
      */
-    logoFile: string;
+  logoFile: string
 
-    /**
+  /**
      * Description of the mod
      */
-    description: string;
+  description: string
 
-    authors: string[];
+  authors: string[]
 
-    version: string;
-    /**
+  version: string
+  /**
      * Accept minecraft version range
      */
-    acceptMinecraft: string;
-    /**
+  acceptMinecraft: string
+  /**
      * Accept forge version range
      */
-    acceptForge: string;
+  acceptForge: string
 }
 
 export function normalizeForgeModMetadata (metadata: ForgeModMetadata): ForgeModCommonMetadata {
@@ -39,7 +39,7 @@ export function normalizeForgeModMetadata (metadata: ForgeModMetadata): ForgeMod
     authors: [],
     logoFile: '',
     description: '',
-    ...metadata
+    ...metadata,
   }
   if (metadata.modsToml.length > 0) {
     const modInfo = metadata.modsToml[0]

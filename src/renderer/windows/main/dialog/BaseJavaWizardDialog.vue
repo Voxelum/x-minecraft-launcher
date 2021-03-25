@@ -48,9 +48,9 @@
 </template>
 
 <script lang=ts>
-import { reactive, computed, toRefs, defineComponent } from '@vue/composition-api';
-import { useI18n, useStore, useJava, useNativeDialog, useServiceOnly, useInstance } from '/@/hooks';
-import { useJavaWizardDialog, useNotifier } from '../hooks';
+import { reactive, computed, toRefs, defineComponent } from '@vue/composition-api'
+import { useI18n, useStore, useJava, useNativeDialog, useServiceOnly, useInstance } from '/@/hooks'
+import { useJavaWizardDialog, useNotifier } from '../hooks'
 
 export default defineComponent({
   props: {
@@ -60,16 +60,16 @@ export default defineComponent({
     },
   },
   setup() {
-    const { showOpenDialog } = useNativeDialog();
-    const { state } = useStore();
-    const { $t } = useI18n();
-    const { show, isShown, javaIssue } = useJavaWizardDialog();
-    const { add, refreshLocalJava } = useJava();
-    const { editInstance } = useInstance();
-    const { fixNoJava } = useServiceOnly('DiagnoseService', 'fixNoJava');
-    const { subscribeTask } = useNotifier();
+    const { showOpenDialog } = useNativeDialog()
+    const { state } = useStore()
+    const { $t } = useI18n()
+    const { show, isShown, javaIssue } = useJavaWizardDialog()
+    const { add, refreshLocalJava } = useJava()
+    const { editInstance } = useInstance()
+    const { fixNoJava } = useServiceOnly('DiagnoseService', 'fixNoJava')
+    const { subscribeTask } = useNotifier()
 
-    const java8 = computed(() => state.java.all.find(j => j.majorVersion === 8 && j.valid));
+    const java8 = computed(() => state.java.all.find(j => j.majorVersion === 8 && j.valid))
     const data = reactive({
       step: 0,
 
@@ -94,23 +94,23 @@ export default defineComponent({
         message: $t('diagnosis.missingJava.selectJava.message'),
         disabled: false,
       }],
-    });
+    })
 
-    const missing = computed(() => javaIssue.value === 'missing');
-    const reason = computed(() => (!missing.value ? $t('java.incompatibleJava') : $t('java.missing')));
-    const hint = computed(() => (!missing.value ? $t('java.incompatibleJavaHint') : $t('java.missingHint')));
+    const missing = computed(() => javaIssue.value === 'missing')
+    const reason = computed(() => (!missing.value ? $t('java.incompatibleJava') : $t('java.missing')))
+    const hint = computed(() => (!missing.value ? $t('java.incompatibleJavaHint') : $t('java.missingHint')))
 
     function refresh() {
-      data.status = 'resolving';
+      data.status = 'resolving'
       refreshLocalJava().finally(() => {
         if (missing.value) {
-          data.status = 'error';
-          show();
+          data.status = 'error'
+          show()
         }
-      });
+      })
     }
     function selectJava(java: { path: string }) {
-      editInstance({ java: java.path });
+      editInstance({ java: java.path })
     }
     return {
       ...toRefs(data),
@@ -122,28 +122,28 @@ export default defineComponent({
       selectJava,
       async fixProblem(index: number) {
         if (index === 0) {
-          subscribeTask(editInstance({ java: java8.value!.path }), $t('java.modifyInstance'));
-          isShown.value = false;
+          subscribeTask(editInstance({ java: java8.value!.path }), $t('java.modifyInstance'))
+          isShown.value = false
         } else if (index === 1) {
-          fixNoJava();
-          isShown.value = false;
+          fixNoJava()
+          isShown.value = false
         } else if (index === 2) {
           const { filePaths, canceled } = await showOpenDialog({
             title: $t('java.browse'),
-          });
+          })
 
           if (filePaths.length === 0 || canceled) {
-            return;
+            return
           }
 
-          let javas = await Promise.all(filePaths.map(add));
-          subscribeTask(editInstance({ java: javas.find((j) => !!j)!.path }), $t('java.modifyInstance'));
-          isShown.value = false;
+          const javas = await Promise.all(filePaths.map(add))
+          subscribeTask(editInstance({ java: javas.find((j) => !!j)!.path }), $t('java.modifyInstance'))
+          isShown.value = false
         }
       },
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped=true>

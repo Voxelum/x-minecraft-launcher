@@ -19,7 +19,7 @@ export default class TelemetryManager extends Manager {
     this.app.on('minecraft-start', (options) => {
       defaultClient.trackEvent({
         name: 'minecraft-start',
-        properties: options
+        properties: options,
       })
     })
     this.app.on('minecraft-exit', ({ code, signal, crashReport }) => {
@@ -27,7 +27,7 @@ export default class TelemetryManager extends Manager {
       const crashed = crashReport.length > 0
       if (normalExit) {
         defaultClient.trackEvent({
-          name: 'minecraft-exit'
+          name: 'minecraft-exit',
         })
       } else {
         defaultClient.trackEvent({
@@ -35,8 +35,8 @@ export default class TelemetryManager extends Manager {
           properties: {
             code,
             signal,
-            crashed
-          }
+            crashed,
+          },
         })
       }
     })

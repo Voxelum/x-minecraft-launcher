@@ -1,5 +1,9 @@
 <template>
-  <v-stepper v-model="step" non-linear dark>
+  <v-stepper
+    v-model="step"
+    non-linear
+    dark
+  >
     <v-stepper-header>
       <v-stepper-step
         :rules="[() => valid]"
@@ -10,7 +14,11 @@
         {{ $t('profile.baseSetting') }}
       </v-stepper-step>
       <v-divider />
-      <v-stepper-step editable :complete="step > 2" step="2">
+      <v-stepper-step
+        editable
+        :complete="step > 2"
+        step="2"
+      >
         {{ $t('profile.advancedSetting') }}
         <small>{{ $t('optional') }}</small>
       </v-stepper-step>
@@ -19,24 +27,51 @@
 
     <v-stepper-items>
       <v-stepper-content step="1">
-        <v-form ref="form" v-model="valid" lazy-validation style="height: 100%;">
-          <v-container grid-list fill-height>
-            <v-layout row wrap>
-              <v-flex xs12 style="display: flex; flex-direction: row">
-                <img :src="favicon" style="max-width: 80px; max-height: 80px; min-height: 80px;">
+        <v-form
+          ref="form"
+          v-model="valid"
+          lazy-validation
+          style="height: 100%;"
+        >
+          <v-container
+            grid-list
+            fill-height
+          >
+            <v-layout
+              row
+              wrap
+            >
+              <v-flex
+                xs12
+                style="display: flex; flex-direction: row"
+              >
+                <img
+                  :src="favicon"
+                  style="max-width: 80px; max-height: 80px; min-height: 80px;"
+                >
                 <div style="flex-grow: 1" />
                 <v-layout>
                   <span style="display: flex; align-items: center;">
-                    <text-component v-if="description" :source="description" />
+                    <text-component
+                      v-if="description"
+                      :source="description"
+                    />
                     <div
                       v-else
                       style="font-size: 18px; font-weight: bold;"
                     >{{ $t('profile.server.creationHint') }}</div>
                   </span>
-                  <text-component v-if="version.name" :source="version.name" />
+                  <text-component
+                    v-if="version.name"
+                    :source="version.name"
+                  />
                 </v-layout>
               </v-flex>
-              <v-flex d-flex xs4 style="display: flex; align-items: center">
+              <v-flex
+                d-flex
+                xs4
+                style="display: flex; align-items: center"
+              >
                 <v-text-field
                   :value="$t(version.name)"
                   dark
@@ -67,11 +102,17 @@
                 />
               </v-flex>
 
-              <v-flex d-flex xs12>
+              <v-flex
+                d-flex
+                xs12
+              >
                 <v-divider />
               </v-flex>
 
-              <v-flex d-flex xs4>
+              <v-flex
+                d-flex
+                xs4
+              >
                 <v-text-field
                   v-model="serverField"
                   dark
@@ -81,12 +122,15 @@
                   required
                 />
               </v-flex>
-              <v-flex d-flex xs4>
+              <v-flex
+                d-flex
+                xs4
+              >
                 <minecraft-version-menu
                   :accept-range="acceptingVersion"
                   @input="runtime.minecraft = $event"
                 >
-                  <template v-slot="{ on }">
+                  <template #default="{ on }">
                     <v-text-field
                       v-model="runtime.minecraft"
                       dark
@@ -101,7 +145,10 @@
                   </template>
                 </minecraft-version-menu>
               </v-flex>
-              <v-flex d-flex xs4>
+              <v-flex
+                d-flex
+                xs4
+              >
                 <v-text-field
                   v-model="name"
                   :placeholder="server.host"
@@ -116,10 +163,21 @@
           </v-container>
         </v-form>
         <v-layout>
-          <v-btn :disabled="creating" flat @click="quit">{{ $t('cancel') }}</v-btn>
+          <v-btn
+            :disabled="creating"
+            flat
+            @click="quit"
+          >
+            {{ $t('cancel') }}
+          </v-btn>
           <v-spacer />
           <!-- <v-switch v-model="filterVersion" :label="$t('profile.server.filterVersion')" /> -->
-          <v-btn flat @click="step = 2">{{ $t('next') }}</v-btn>
+          <v-btn
+            flat
+            @click="step = 2"
+          >
+            {{ $t('next') }}
+          </v-btn>
           <v-btn
             flat
             :loading="pinging"
@@ -139,10 +197,24 @@
         </v-layout>
       </v-stepper-content>
       <v-stepper-content step="2">
-        <v-form v-model="valid" lazy-validation style="height: 100%;">
-          <v-container grid-list fill-height style="overflow: auto;">
-            <v-layout row wrap>
-              <v-flex d-flex xs6>
+        <v-form
+          v-model="valid"
+          lazy-validation
+          style="height: 100%;"
+        >
+          <v-container
+            grid-list
+            fill-height
+            style="overflow: auto;"
+          >
+            <v-layout
+              row
+              wrap
+            >
+              <v-flex
+                d-flex
+                xs6
+              >
                 <v-select
                   v-model="java"
                   class="java-select"
@@ -156,7 +228,10 @@
                   :menu-props="{ auto: true, overflowY: true }"
                 />
               </v-flex>
-              <v-flex d-flex xs3>
+              <v-flex
+                d-flex
+                xs3
+              >
                 <v-text-field
                   v-model="minMemory"
                   hide-details
@@ -165,7 +240,10 @@
                   required
                 />
               </v-flex>
-              <v-flex d-flex xs3>
+              <v-flex
+                d-flex
+                xs3
+              >
                 <v-text-field
                   v-model="maxMemory"
                   hide-details
@@ -174,9 +252,15 @@
                   required
                 />
               </v-flex>
-              <v-flex d-flex xs6>
-                <forge-version-menu :minecraft="runtime.minecraft" @input="runtime.forge = $event">
-                  <template v-slot="{ on }">
+              <v-flex
+                d-flex
+                xs6
+              >
+                <forge-version-menu
+                  :minecraft="runtime.minecraft"
+                  @input="runtime.forge = $event"
+                >
+                  <template #default="{ on }">
                     <v-text-field
                       v-model="runtime.forge"
                       dark
@@ -196,7 +280,13 @@
         </v-form>
 
         <v-layout>
-          <v-btn :disabled="creating" flat @click="quit">{{ $t('cancel') }}</v-btn>
+          <v-btn
+            :disabled="creating"
+            flat
+            @click="quit"
+          >
+            {{ $t('cancel') }}
+          </v-btn>
           <v-spacer />
           <v-btn
             :loading="creating"
@@ -213,8 +303,8 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, ref, Ref, computed, onMounted, watch, defineComponent } from '@vue/composition-api';
-import { useJava, useI18n, useServer, useRouter, useInstanceCreation } from '/@/hooks';
+import { reactive, toRefs, ref, Ref, computed, onMounted, watch, defineComponent } from '@vue/composition-api'
+import { useJava, useI18n, useServer, useRouter, useInstanceCreation } from '/@/hooks'
 
 export default defineComponent({
   props: {
@@ -224,21 +314,21 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    const { create, reset: $reset, ...creationData } = useInstanceCreation();
-    const { all: javas } = useJava();
-    const { $t } = useI18n();
-    const router = useRouter();
+    const { create, reset: $reset, ...creationData } = useInstanceCreation()
+    const { all: javas } = useJava()
+    const { $t } = useI18n()
+    const router = useRouter()
 
     const server: Ref<{ host: string; port?: number }> = ref({
       host: '',
       port: 25565,
-    });
+    })
     const staticData = {
       memoryRule: [(v: number) => Number.isInteger(v)],
       nameRules: [
         (v: string) => !!v || $t('profile.requireName'),
       ],
-    };
+    }
     const data = reactive({
       step: 1,
       valid: false,
@@ -246,10 +336,10 @@ export default defineComponent({
 
       filterVersion: false,
       javaValid: true,
-    });
-    const serverField = ref('');
-    const ready = computed(() => data.valid && data.javaValid);
-    const dataRef = toRefs(data);
+    })
+    const serverField = ref('')
+    const ready = computed(() => data.valid && data.javaValid)
+    const dataRef = toRefs(data)
 
     const {
       favicon,
@@ -261,51 +351,51 @@ export default defineComponent({
       pinging,
       description,
       reset: resetServer,
-    } = useServer(server, ref(undefined));
+    } = useServer(server, ref(undefined))
 
     function reset() {
-      $reset();
-      resetServer();
-      server.value.host = '';
-      server.value.port = 25565;
-      creationData.name.value = '';
+      $reset()
+      resetServer()
+      server.value.host = ''
+      server.value.port = 25565
+      creationData.name.value = ''
     }
 
     function init() {
-      data.step = 1;
-      reset();
+      data.step = 1
+      reset()
     }
     function quit() {
-      context.emit('quit');
+      context.emit('quit')
     }
     async function doCreate() {
       try {
-        data.creating = true;
-        creationData.name.value = creationData.name.value || server.value.host;
-        creationData.server.value = server.value;
-        await create();
-        init();
-        router.replace('/');
+        data.creating = true
+        creationData.name.value = creationData.name.value || server.value.host
+        creationData.server.value = server.value
+        await create()
+        init()
+        router.replace('/')
       } finally {
-        data.creating = false;
+        data.creating = false
       }
     }
     onMounted(() => {
       watch(() => props.show, () => {
         if (props.show) {
-          init();
+          init()
         }
-      });
-    });
+      })
+    })
     watch(serverField, (v) => {
-      let [host, port] = v.split(':');
-      server.value.host = host;
+      const [host, port] = v.split(':')
+      server.value.host = host
       if (port) {
-        server.value.port = Number.parseInt(port, 10);
+        server.value.port = Number.parseInt(port, 10)
       } else {
-        server.value.port = 25565;
+        server.value.port = 25565
       }
-    });
+    })
 
     return {
       ...dataRef,
@@ -325,9 +415,9 @@ export default defineComponent({
       pinging,
       server,
       description,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

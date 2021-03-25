@@ -86,7 +86,7 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, onMounted, defineComponent, Ref, ref, onUnmounted } from '@vue/composition-api';
+import { reactive, toRefs, computed, onMounted, defineComponent, Ref, ref, onUnmounted } from '@vue/composition-api'
 import {
   useI18n,
   useNativeDialog,
@@ -95,33 +95,33 @@ import {
   useResourceOperation,
   useCurseforgeImport,
   useOperation,
-} from '/@/hooks';
-import { Notify, useNotifier, useSearch, useSearchToggle } from '../hooks';
-import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue';
-import AddServerStepper from './InstancesPageAddServerStepper.vue';
-import InstancesView from './InstancesPageInstancesView.vue';
-import DeleteDialog from './InstancesPageDeleteDialog.vue';
-import ImportButton from './InstancesPageImportButton.vue';
-import CreateButton from './InstancesPageCreateButton.vue';
+} from '/@/hooks'
+import { Notify, useNotifier, useSearch, useSearchToggle } from '../hooks'
+import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue'
+import AddServerStepper from './InstancesPageAddServerStepper.vue'
+import InstancesView from './InstancesPageInstancesView.vue'
+import DeleteDialog from './InstancesPageDeleteDialog.vue'
+import ImportButton from './InstancesPageImportButton.vue'
+import CreateButton from './InstancesPageCreateButton.vue'
 
 function useRefreshInstance(notify: Notify) {
-  const { $t } = useI18n();
-  const pinging = ref(false);
-  const { refreshServerStatusAll } = useInstances();
+  const { $t } = useI18n()
+  const pinging = ref(false)
+  const { refreshServerStatusAll } = useInstances()
   return {
     pinging,
     refresh() {
-      if (pinging.value) return;
-      pinging.value = true;
+      if (pinging.value) return
+      pinging.value = true
       refreshServerStatusAll().then(() => {
-        notify({ level: 'success', title: $t('profile.refreshServers') });
+        notify({ level: 'success', title: $t('profile.refreshServers') })
       }, (e) => {
-        notify({ level: 'error', title: $t('profile.refreshServers') });
+        notify({ level: 'error', title: $t('profile.refreshServers') })
       }).finally(() => {
-        pinging.value = false;
-      });
+        pinging.value = false
+      })
     },
-  };
+  }
 }
 
 function setupInstanceCreation() {
@@ -129,40 +129,40 @@ function setupInstanceCreation() {
     wizard: false,
     creatingServer: false,
     creatingTooltip: false,
-  });
+  })
   return {
     ...toRefs(data),
     onCreate(type: 'server' | 'instance') {
       if (type === 'server') {
-        data.creatingTooltip = false;
-        data.creatingServer = true;
-        data.wizard = true;
+        data.creatingTooltip = false
+        data.creatingServer = true
+        data.wizard = true
       } else {
-        data.creatingTooltip = false;
-        data.creatingServer = false;
-        data.wizard = true;
+        data.creatingTooltip = false
+        data.creatingServer = false
+        data.wizard = true
       }
     },
-  };
+  }
 }
 
 function setupInstanceImport() {
-  const { importInstance } = useInstances();
-  const { showOpenDialog } = useNativeDialog();
-  const { $t } = useI18n();
-  const { importResource } = useResourceOperation();
-  const { importCurseforgeModpack } = useCurseforgeImport();
+  const { importInstance } = useInstances()
+  const { showOpenDialog } = useNativeDialog()
+  const { $t } = useI18n()
+  const { importResource } = useResourceOperation()
+  const { importCurseforgeModpack } = useCurseforgeImport()
   async function onImport(type: 'zip' | 'folder' | 'curseforge') {
-    const fromFolder = type === 'folder';
+    const fromFolder = type === 'folder'
     const filters = fromFolder
       ? []
-      : [{ extensions: ['zip'], name: 'Zip' }];
+      : [{ extensions: ['zip'], name: 'Zip' }]
     const { filePaths } = await showOpenDialog({
       title: $t('profile.import.title'),
       message: $t('profile.import.description'),
       filters,
       properties: fromFolder ? ['openDirectory'] : ['openFile'],
-    });
+    })
     if (filePaths && filePaths.length > 0) {
       for (const f of filePaths) {
         if (type === 'curseforge') {
@@ -170,30 +170,30 @@ function setupInstanceImport() {
             path: f,
             type: 'curseforge-modpack',
             background: true,
-          });
-          await importCurseforgeModpack({ path: f });
+          })
+          await importCurseforgeModpack({ path: f })
         } else {
-          await importInstance(f);
+          await importInstance(f)
         }
       }
     }
   }
   return {
     onImport,
-  };
+  }
 }
 
 function setupDelete(deleteInstance: (path: string) => Promise<void>) {
-  const defaultInstance = { path: '', name: '' };
+  const defaultInstance = { path: '', name: '' }
   const { cancel: cancelDelete, operate: doDelete, begin: startDelete, data: deletingInstance } = useOperation(defaultInstance, async (instance) => {
     if (instance && 'path' in instance) {
       await deleteInstance(instance.path).catch(() => {
-      });
+      })
     }
-  });
+  })
   const { begin: dragStart, cancel: dragEnd, operate: drop, data: draggingInstance } = useOperation(defaultInstance, (inst) => {
-    startDelete(inst);
-  });
+    startDelete(inst)
+  })
   return {
     dragStart,
     dragEnd,
@@ -203,7 +203,7 @@ function setupDelete(deleteInstance: (path: string) => Promise<void>) {
     cancelDelete: () => setTimeout(cancelDelete, 100),
     doDelete,
     deletingInstance,
-  };
+  }
 }
 
 export default defineComponent({
@@ -216,39 +216,39 @@ export default defineComponent({
     InstancesView,
   },
   setup() {
-    const { mountInstance: selectInstance, deleteInstance, instances } = useInstances();
-    const { notify } = useNotifier();
-    const { replace } = useRouter();
-    const { text: filter } = useSearch();
+    const { mountInstance: selectInstance, deleteInstance, instances } = useInstances()
+    const { notify } = useNotifier()
+    const { replace } = useRouter()
+    const { text: filter } = useSearch()
 
-    const filterElem = ref(null) as Ref<any>;
+    const filterElem = ref(null) as Ref<any>
 
     const filteredInstance = computed(() => {
-      const filterString = filter.value.toLowerCase();
+      const filterString = filter.value.toLowerCase()
       return instances.value.filter(
-        profile => filterString === ''
-          || (profile.author
+        profile => filterString === '' ||
+          (profile.author
             ? profile.author.toLowerCase().indexOf(filterString) !== -1
-            : false)
-          || profile.name.toLowerCase().indexOf(filterString) !== -1
-          || (profile.description
+            : false) ||
+          profile.name.toLowerCase().indexOf(filterString) !== -1 ||
+          (profile.description
             ? profile.description.toLowerCase().indexOf(filterString) !== -1
             : false),
-      );
-    });
+      )
+    })
 
     function focusSearch(force?: boolean) {
       if (force) {
-        filterElem.value.blur();
+        filterElem.value.blur()
       } else if (filterElem.value.isFocused) {
-        filterElem.value.blur();
+        filterElem.value.blur()
       } else {
-        filterElem.value.focus();
+        filterElem.value.focus()
       }
-      return false;
+      return false
     }
 
-    useSearchToggle(focusSearch);
+    useSearchToggle(focusSearch)
 
     return {
       // drag instance to delete
@@ -266,14 +266,14 @@ export default defineComponent({
       ...setupInstanceImport(),
 
       selectInstance(path: string) {
-        selectInstance(path);
-        replace('/');
+        selectInstance(path)
+        replace('/')
       },
       filterElem,
-    };
+    }
   },
   methods: {},
-});
+})
 </script>
 
 <style>

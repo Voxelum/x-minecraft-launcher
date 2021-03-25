@@ -4,7 +4,7 @@ import { StaticStore } from '/@shared/util/staticStore'
 export abstract class Manager {
   constructor(protected app: LauncherApp) { }
 
-  private name: string = Object.getPrototypeOf(this).constructor.name;
+  private name: string = Object.getPrototypeOf(this).constructor.name
 
   /* eslint-disable */
   setup(): Promise<void> | void { }

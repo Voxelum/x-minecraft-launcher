@@ -19,7 +19,7 @@ import { requireString } from '/@shared/util/assert'
 
 @Service(JavaServiceKey)
 export default class JavaService extends AbstractService implements IJavaService {
-  protected readonly config = new MappedFile<JavaSchema>(this.getPath('java.json'), new BufferJsonSerializer(JavaSchema));
+  protected readonly config = new MappedFile<JavaSchema>(this.getPath('java.json'), new BufferJsonSerializer(JavaSchema))
 
   private readonly internalJavaLocation = this.app.platform.name === 'osx'
     ? this.getPath('jre', 'Contents', 'Home', 'bin', 'java')
@@ -72,7 +72,7 @@ export default class JavaService extends AbstractService implements IJavaService
     return installJreFromMojangTask({
       destination: dest,
       unpackLZMA: unpack7z,
-      ...this.networkManager.getDownloadBaseOptions()
+      ...this.networkManager.getDownloadBaseOptions(),
     })
   }
 
@@ -98,7 +98,7 @@ export default class JavaService extends AbstractService implements IJavaService
       await this.yield(new DownloadTask({
         ...networkManager.getDownloadBaseOptions(),
         destination: archivePath,
-        url
+        url,
       }).setName('download') /* , 90 */)
 
       if (system === 'windows') {

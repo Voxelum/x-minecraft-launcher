@@ -53,7 +53,9 @@
       max-width="290"
     >
       <v-card dark>
-        <v-card-title class="headline">{{ $t('version.deleteTitle') }}</v-card-title>
+        <v-card-title class="headline">
+          {{ $t('version.deleteTitle') }}
+        </v-card-title>
         <v-card-text>{{ $t('version.deleteDescription') }}</v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -97,7 +99,9 @@
             flat
             @click="comfireReinstall()"
           >
-            <v-icon left>build</v-icon>
+            <v-icon left>
+              build
+            </v-icon>
             {{ $t('yes') }}
           </v-btn>
         </v-card-actions>
@@ -124,7 +128,9 @@
           color="primary"
           @click="browseVersoinsFolder"
         >
-          <v-icon left>folder</v-icon>
+          <v-icon left>
+            folder
+          </v-icon>
           {{ $t('version.noLocalVersion') }}
         </v-btn>
         <v-btn
@@ -140,10 +146,10 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api';
-import { useLocalVersions } from '/@/hooks';
-import type { ResolvedVersion } from '@xmcl/core';
-import { required, withDefault } from '/@/util/props';
+import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api'
+import { useLocalVersions } from '/@/hooks'
+import type { ResolvedVersion } from '@xmcl/core'
+import { required, withDefault } from '/@/util/props'
 
 export default defineComponent({
   props: {
@@ -157,48 +163,48 @@ export default defineComponent({
 
       reinstallVersion: false,
       reinstallVersionId: '',
-    });
-    const { localVersions, deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions, reinstall } = useLocalVersions();
-    const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1));
+    })
+    const { localVersions, deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions, reinstall } = useLocalVersions()
+    const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1))
 
     function isSelected(v: ResolvedVersion) {
-      if (!props.value) return false;
-      return v === props.value;
+      if (!props.value) return false
+      return v === props.value
     }
     function selectVersion(v: ResolvedVersion) {
-      context.emit('input', v);
+      context.emit('input', v)
     }
     function browseVersoinsFolder() {
-      showVersionsDirectory();
+      showVersionsDirectory()
     }
     function openVersionDir(v: ResolvedVersion) {
-      showVersionDirectory(v.id);
+      showVersionDirectory(v.id)
     }
     function startDelete(v: ResolvedVersion) {
-      data.deletingVersion = true;
-      data.deletingVersionId = v.id;
+      data.deletingVersion = true
+      data.deletingVersionId = v.id
     }
     function startReinstall(v: ResolvedVersion) {
-      data.reinstallVersion = true;
-      data.reinstallVersionId = v.id;
+      data.reinstallVersion = true
+      data.reinstallVersionId = v.id
     }
     function comfireDeleting() {
-      deleteVersion(data.deletingVersionId);
-      data.deletingVersion = false;
-      data.deletingVersionId = '';
+      deleteVersion(data.deletingVersionId)
+      data.deletingVersion = false
+      data.deletingVersionId = ''
     }
     function comfireReinstall() {
-      reinstall(data.reinstallVersionId);
-      data.reinstallVersion = false;
-      data.reinstallVersionId = '';
+      reinstall(data.reinstallVersionId)
+      data.reinstallVersion = false
+      data.reinstallVersionId = ''
     }
     function cancelDeleting() {
-      data.deletingVersion = false;
-      data.deletingVersionId = '';
+      data.deletingVersion = false
+      data.deletingVersionId = ''
     }
     function cancelReinstall() {
-      data.reinstallVersion = false;
-      data.reinstallVersionId = '';
+      data.reinstallVersion = false
+      data.reinstallVersionId = ''
     }
 
     return {
@@ -215,9 +221,9 @@ export default defineComponent({
       startReinstall,
       cancelReinstall,
       comfireReinstall,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

@@ -19,17 +19,17 @@ import iconPath from '/@static/apple-touch-icon.png'
 import i18n from './locales'
 
 export default class Controller implements LauncherAppController {
-  private mainWin: BrowserWindow | undefined = undefined;
+  private mainWin: BrowserWindow | undefined = undefined
 
-  private loggerWin: BrowserWindow | undefined = undefined;
+  private loggerWin: BrowserWindow | undefined = undefined
 
-  private setupRef: BrowserWindow | undefined = undefined;
+  private setupRef: BrowserWindow | undefined = undefined
 
-  private i18n = i18n;
+  private i18n = i18n
 
-  private tray: Tray | undefined;
+  private tray: Tray | undefined
 
-  private store!: StaticStore<any>;
+  private store!: StaticStore<any>
 
   constructor(protected app: LauncherApp) { }
 
@@ -71,13 +71,13 @@ export default class Controller implements LauncherAppController {
       width: -1,
       height: -1,
       x: null,
-      y: null
+      y: null,
     }))
     const config = {
       width: typeof configData.width === 'number' ? configData.width as number : -1,
       height: typeof configData.height === 'number' ? configData.height as number : -1,
       x: typeof configData.x === 'number' ? configData.x as number : null,
-      y: typeof configData.y === 'number' ? configData.y as number : null
+      y: typeof configData.y === 'number' ? configData.y as number : null,
     }
 
     const browser = new BrowserWindow({
@@ -102,8 +102,8 @@ export default class Controller implements LauncherAppController {
         nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
         session: session.fromPartition('persist:main'),
-        webviewTag: true
-      }
+        webviewTag: true,
+      },
     })
 
     browser.on('ready-to-show', () => { this.app.log('Main Window is ready to show!') })
@@ -134,8 +134,8 @@ export default class Controller implements LauncherAppController {
         webSecurity: !IS_DEV, // disable security for loading local image
         nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
-        session: session.fromPartition('persist:logger')
-      }
+        session: session.fromPartition('persist:logger'),
+      },
     })
 
     this.setupBrowserLogger(browser, 'logger')
@@ -162,8 +162,8 @@ export default class Controller implements LauncherAppController {
         webSecurity: !IS_DEV, // disable security for loading local image
         nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
-        session: session.fromPartition('persist:setup')
-      }
+        session: session.fromPartition('persist:setup'),
+      },
     })
 
     this.setupBrowserLogger(browser, 'setup')
@@ -190,7 +190,7 @@ export default class Controller implements LauncherAppController {
       title: $t('openUrl.title', { url }),
       message: $t('openUrl.message', { url }),
       checkboxLabel: $t('openUrl.trust'),
-      buttons: [$t('openUrl.cancel'), $t('openUrl.yes')]
+      buttons: [$t('openUrl.cancel'), $t('openUrl.yes')],
     })
     return result.response === 1
   }
@@ -205,7 +205,7 @@ export default class Controller implements LauncherAppController {
         label: $t('checkUpdate'),
         click() {
           service?.checkUpdate()
-        }
+        },
       },
       { type: 'separator' },
       {
@@ -223,15 +223,15 @@ export default class Controller implements LauncherAppController {
               `CPU: ${cpuPercentage}%`,
               `Private Memory: ${m.private}KB`,
               `Shared Memory: ${m.shared}KB`,
-              `Physically Memory: ${m.residentSet}KB`
+              `Physically Memory: ${m.residentSet}KB`,
             ]
             dialog.showMessageBox({
               type: 'info',
               title: 'Diagnosis Info',
-              message: `${messages.join('\n')}`
+              message: `${messages.join('\n')}`,
             })
           })
-        }
+        },
       },
       { type: 'separator' },
       {
@@ -239,8 +239,8 @@ export default class Controller implements LauncherAppController {
         type: 'normal',
         click() {
           app.quit()
-        }
-      }
+        },
+      },
     ])
   }
 
@@ -396,7 +396,7 @@ export default class Controller implements LauncherAppController {
       const notification = new Notification({
         title: n.type === 'taskFinish' ? $t('task.success') : $t('task.fail'),
         body: $t('task.continue'),
-        icon: iconPath
+        icon: iconPath,
       })
       notification.show()
       notification.on('click', () => {

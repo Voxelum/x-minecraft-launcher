@@ -6,6 +6,7 @@ import { JavaRecord } from '/@shared/entities/java'
 import { ServerStatus, UNKNOWN_STATUS } from '/@shared/entities/serverStatus'
 import { getResolvedVersion } from '/@shared/entities/version'
 import { remove, set } from '/@shared/util/middleware'
+import { DeepPartial } from '/@shared/util/object'
 
 interface State {
   /**
@@ -68,7 +69,7 @@ export type InstanceModule = ModuleOption<State, Getters, Mutations, {}>
 const mod: InstanceModule = {
   state: {
     all: {},
-    path: ''
+    path: '',
   },
   getters: {
     instances: state => Object.keys(state.all).map(k => state.all[k]),
@@ -85,11 +86,11 @@ const mod: InstanceModule = {
           path: javaPath,
           version: '',
           majorVersion: 0,
-          valid: false
+          valid: false,
         }
       }
       return rootGetter.defaultJava
-    }
+    },
   },
   mutations: {
     instanceAdd(state, instance) {
@@ -136,7 +137,7 @@ const mod: InstanceModule = {
         } else {
           inst.server = {
             host: settings.server.host,
-            port: settings.server.port
+            port: settings.server.port,
           }
         }
       }
@@ -191,8 +192,8 @@ const mod: InstanceModule = {
       for (const [path, stat] of Object.entries(statues)) {
         state.all[path].serverStatus = stat
       }
-    }
-  }
+    },
+  },
 }
 
 export default mod

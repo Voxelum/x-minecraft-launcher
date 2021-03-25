@@ -5,7 +5,7 @@ export function getServiceCallTasks(promise: Readonly<Promise<any>>): Ref<string
   return Reflect.get(promise, '__tasks__')
 }
 
-async function startSession(sessionId: number | undefined, tasks: Ref<Array<any>>) {
+async function startSession(sessionId: number, tasks: Ref<Array<any>>) {
   const listener = (event: any, task: string) => {
     tasks.value.push(task)
   }
@@ -37,7 +37,7 @@ function getServiceProxy(seriv: string) {
       }
       Object.defineProperty(func, 'name', { value: functionName, enumerable: false, writable: false, configurable: false })
       return func
-    }
+    },
   })
 }
 

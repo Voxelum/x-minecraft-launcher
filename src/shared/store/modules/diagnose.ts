@@ -2,24 +2,24 @@ import { Issue, IssueRegistry, IssueReport } from '/@shared/entities/issue'
 import { ModuleOption } from '../root'
 
 interface State {
-    registry: IssueRegistry;
+  registry: IssueRegistry
 }
 
 interface Getters {
-    /**
+  /**
      * The problems of current launcher state
      */
-    issues: Issue[];
-    isIssueActive: (id: keyof State['registry']) => boolean;
+  issues: Issue[]
+  isIssueActive: (id: keyof State['registry']) => boolean
 }
 
 interface Mutations {
-    issuesPost: Partial<IssueReport>;
-    issuesStartResolve: Issue[];
-    issuesEndResolve: Issue[];
+  issuesPost: Partial<IssueReport>
+  issuesStartResolve: Issue[]
+  issuesEndResolve: Issue[]
 }
 
-export type DiagnoseModule = ModuleOption<State, Getters, Mutations, {}>;
+export type DiagnoseModule = ModuleOption<State, Getters, Mutations, {}>
 
 const mod: DiagnoseModule = {
   state: {
@@ -51,8 +51,8 @@ const mod: DiagnoseModule = {
 
       requireFabric: { fixing: false, autofix: false, optional: true, actived: [] },
       requireForge: { fixing: false, autofix: false, optional: true, actived: [] },
-      requireFabricAPI: { fixing: false, autofix: false, optional: true, actived: [] }
-    }
+      requireFabricAPI: { fixing: false, autofix: false, optional: true, actived: [] },
+    },
   },
   getters: {
     issues (state) {
@@ -66,7 +66,7 @@ const mod: DiagnoseModule = {
             arguments: { count: reg.actived.length, values: reg.actived },
             autofix: reg.autofix,
             optional: reg.optional,
-            multi: true
+            multi: true,
           })
         } else {
           issues.push(...reg.actived.map(a => ({
@@ -74,14 +74,14 @@ const mod: DiagnoseModule = {
             arguments: a,
             autofix: reg.autofix,
             optional: reg.optional,
-            multi: false
+            multi: false,
           })))
         }
       }
 
       return issues
     },
-    isIssueActive: (state) => (key) => (key in state.registry ? state.registry[key].actived.length !== 0 : false)
+    isIssueActive: (state) => (key) => (key in state.registry ? state.registry[key].actived.length !== 0 : false),
   },
   mutations: {
     issuesPost (state, issues) {
@@ -104,8 +104,8 @@ const mod: DiagnoseModule = {
       issues.forEach((p) => {
         state.registry[p.id].fixing = false
       })
-    }
-  }
+    },
+  },
 }
 
 export default mod

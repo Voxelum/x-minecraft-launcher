@@ -29,11 +29,11 @@ export interface Fix {
  */
 @Service(DiagnoseServiceKey)
 export default class DiagnoseService extends AbstractService implements IDiagnoseService {
-  private fixes: Fix[] = [];
+  private fixes: Fix[] = []
 
   constructor(
     app: LauncherApp,
-    private versionService: VersionService
+    private versionService: VersionService,
   ) {
     super(app)
   }
@@ -49,7 +49,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
         if (result instanceof Promise) { return result.then(() => { }) }
         return Promise.resolve(result)
       },
-      recheck
+      recheck,
     })
   }
 
@@ -167,7 +167,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
         incompatibleMod: [],
         requireForge: [],
         requireFabric: [],
-        requireFabricAPI: []
+        requireFabricAPI: [],
       }
       const forgeMods = mods.filter(m => !!m && m.type === 'forge')
       for (const mod of forgeMods) {
@@ -222,7 +222,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
       const resolvedMcVersion = parseVersion(mcversion)
 
       const tree: Pick<IssueReport, 'incompatibleResourcePack'> = {
-        incompatibleResourcePack: []
+        incompatibleResourcePack: [],
       }
 
       const packFormatMapping = this.state.client.packFormatMapping.mcversion
@@ -261,7 +261,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
 
       if (user) {
         const tree: Pick<IssueReport, 'missingAuthlibInjector'> = {
-          missingAuthlibInjector: []
+          missingAuthlibInjector: [],
         }
 
         if (user.authService !== 'mojang' && user.authService !== 'offline') {
@@ -282,7 +282,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
     try {
       const user = this.state.user.users[this.state.user.selectedUser.id]
       const tree: Pick<IssueReport, 'missingCustomSkinLoader'> = {
-        missingCustomSkinLoader: []
+        missingCustomSkinLoader: [],
       }
       if (user) {
         if (user.profileService !== 'mojang') {
@@ -297,7 +297,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
                   target: 'forge',
                   skinService: user.profileService,
                   missingJar: !res,
-                  noVersionSelected: !forge
+                  noVersionSelected: !forge,
                 })
               }
             } else {
@@ -310,7 +310,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
                 target: 'fabric',
                 skinService: user.profileService,
                 missingJar: true,
-                noVersionSelected: false
+                noVersionSelected: false,
               })
             }
           } else {
@@ -338,7 +338,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
       const tree: Pick<IssueReport, 'incompatibleJava' | 'invalidJava' | 'missingJava'> = {
         incompatibleJava: [],
         missingJava: [],
-        invalidJava: []
+        invalidJava: [],
       }
 
       if (instanceJava === EMPTY_JAVA || this.getters.missingJava) {
@@ -366,7 +366,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
   @Singleton()
   async diagnoseFailure(log: string) {
     const tree: Pick<IssueReport, 'badForge'> = {
-      badForge: []
+      badForge: [],
     }
 
     const lines = log.split('\n').map(l => l.trim()).filter(l => l.length !== 0)
@@ -390,7 +390,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
       const stat = this.getters.instance.serverStatus
 
       const tree: Pick<IssueReport, 'missingModsOnServer'> = {
-        missingModsOnServer: []
+        missingModsOnServer: [],
       }
 
       if (stat && stat.modinfo) {
@@ -424,20 +424,20 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
       const mcLocation = MinecraftFolder.from(currentVersion.minecraftDirectory)
 
       type VersionReport = Pick<IssueReport,
-        'missingVersionJar' |
-        'missingAssetsIndex' |
-        'missingVersionJson' |
-        'missingLibraries' |
-        'missingAssets' |
-        'missingVersion' |
+      'missingVersionJar' |
+      'missingAssetsIndex' |
+      'missingVersionJson' |
+      'missingLibraries' |
+      'missingAssets' |
+      'missingVersion' |
 
-        'corruptedVersionJar' |
-        'corruptedAssetsIndex' |
-        'corruptedVersionJson' |
-        'corruptedLibraries' |
-        'corruptedAssets' |
+      'corruptedVersionJar' |
+      'corruptedAssetsIndex' |
+      'corruptedVersionJson' |
+      'corruptedLibraries' |
+      'corruptedAssets' |
 
-        'badInstall'>;
+      'badInstall'>
 
       const tree: VersionReport = {
         missingVersion: [],
@@ -453,7 +453,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
         corruptedLibraries: [],
         corruptedAssets: [],
 
-        badInstall: []
+        badInstall: [],
       }
 
       if (!targetVersion) {

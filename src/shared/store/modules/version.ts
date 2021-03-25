@@ -5,57 +5,57 @@ import type { FabricArtifactVersion, LiteloaderVersionList, MinecraftVersion, Mi
 import { ModuleOption } from '../root'
 
 interface State {
-    /**
+  /**
      * All the local versions installed in the disk
      */
-    local: ResolvedVersion[];
-    /**
+  local: ResolvedVersion[]
+  /**
      * Minecraft version metadata list. Helps to download.
      */
-    minecraft: VersionMinecraftSchema;
-    /**
+  minecraft: VersionMinecraftSchema
+  /**
      * Forge version metadata dictionary. Helps to download.
      */
-    forge: VersionForgeSchema;
-    /**
+  forge: VersionForgeSchema
+  /**
      * Fabric version metadata dictionary. Helps to download.
      */
-    fabric: VersionFabricSchema;
-    /**
+  fabric: VersionFabricSchema
+  /**
      * Liteloader version metadata list. Helps to download.
      */
-    liteloader: VersionLiteloaderSchema;
-    /**
+  liteloader: VersionLiteloaderSchema
+  /**
      * The optifine version list
      */
-    optifine: VersionOptifineSchema;
+  optifine: VersionOptifineSchema
 }
 
 interface Getters {
-    /**
+  /**
      * Latest snapshot
      */
-    minecraftSnapshot: MinecraftVersion | undefined;
-    /**
+  minecraftSnapshot: MinecraftVersion | undefined
+  /**
      * Latest release
      */
-    minecraftRelease: MinecraftVersion;
-    minecraftVersion: (mcversion: string) => MinecraftVersion | undefined;
+  minecraftRelease: MinecraftVersion
+  minecraftVersion: (mcversion: string) => MinecraftVersion | undefined
 }
 
 interface Mutations {
-    localVersions: ResolvedVersion[];
-    localVersion: ResolvedVersion;
-    localVersionRemove: string;
-    minecraftMetadata: MinecraftVersionList;
-    optifineMetadata: VersionOptifineSchema;
-    forgeMetadata: ForgeVersionList;
-    liteloaderMetadata: LiteloaderVersionList;
-    fabricYarnMetadata: { versions: FabricArtifactVersion[]; timestamp: string };
-    fabricLoaderMetadata: { versions: FabricArtifactVersion[]; timestamp: string };
+  localVersions: ResolvedVersion[]
+  localVersion: ResolvedVersion
+  localVersionRemove: string
+  minecraftMetadata: MinecraftVersionList
+  optifineMetadata: VersionOptifineSchema
+  forgeMetadata: ForgeVersionList
+  liteloaderMetadata: LiteloaderVersionList
+  fabricYarnMetadata: { versions: FabricArtifactVersion[]; timestamp: string }
+  fabricLoaderMetadata: { versions: FabricArtifactVersion[]; timestamp: string }
 }
 
-export type VersionModule = ModuleOption<State, Getters, Mutations, {}>;
+export type VersionModule = ModuleOption<State, Getters, Mutations, {}>
 
 const mod: VersionModule = {
   state: {
@@ -67,9 +67,9 @@ const mod: VersionModule = {
       timestamp: '',
       latest: {
         snapshot: '',
-        release: ''
+        release: '',
       },
-      versions: []
+      versions: [],
     },
     forge: [],
     liteloader: {
@@ -79,20 +79,20 @@ const mod: VersionModule = {
         authors: '',
         url: '',
         updated: '',
-        updatedTime: 0
+        updatedTime: 0,
       },
-      versions: {}
+      versions: {},
     },
     fabric: {
       yarnTimestamp: '',
       loaderTimestamp: '',
       yarns: [],
-      loaders: []
+      loaders: [],
     },
     optifine: {
       etag: '',
-      versions: []
-    }
+      versions: [],
+    },
   },
   getters: {
     /**
@@ -104,7 +104,7 @@ const mod: VersionModule = {
          */
     minecraftRelease: state => state.minecraft.versions.find(v => v.id === state.minecraft.latest.release) || LATEST_RELEASE,
 
-    minecraftVersion: state => version => state.minecraft.versions.find(v => v.id === version)
+    minecraftVersion: state => version => state.minecraft.versions.find(v => v.id === version),
   },
   mutations: {
     localVersions (state, local) {
@@ -149,8 +149,8 @@ const mod: VersionModule = {
     optifineMetadata (state, { versions, etag: timestamp }) {
       state.optifine.versions = versions
       state.optifine.etag = timestamp
-    }
-  }
+    },
+  },
 }
 
 export default mod

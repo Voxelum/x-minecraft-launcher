@@ -10,8 +10,12 @@
         tabs
         color="green darken"
       >
-        <v-toolbar-title v-if="isCurseforge">{{ $t('profile.modpack.exportCurseforge') }}</v-toolbar-title>
-        <v-toolbar-title v-else>{{ $t('profile.modpack.export') }}</v-toolbar-title>
+        <v-toolbar-title v-if="isCurseforge">
+          {{ $t('profile.modpack.exportCurseforge') }}
+        </v-toolbar-title>
+        <v-toolbar-title v-else>
+          {{ $t('profile.modpack.export') }}
+        </v-toolbar-title>
 
         <v-spacer />
         <v-btn
@@ -103,8 +107,12 @@
         </v-container>
 
         <v-layout>
-          <v-subheader v-if="isCurseforge">{{ $t('profile.modpack.overrides') }}</v-subheader>
-          <v-subheader v-else>{{ $t('profile.modpack.includes') }}</v-subheader>
+          <v-subheader v-if="isCurseforge">
+            {{ $t('profile.modpack.overrides') }}
+          </v-subheader>
+          <v-subheader v-else>
+            {{ $t('profile.modpack.includes') }}
+          </v-subheader>
         </v-layout>
         <v-layout
           row
@@ -123,7 +131,7 @@
           >
             {{ $t('cancel') }}
           </v-btn>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-btn
             flat
             color="primary"
@@ -221,8 +229,8 @@ export default defineComponent({
           }
         } else {
           const files = data.selected.filter(p => !!data.files.find(f => f.path === p && !f.isDirectory))
-          await exportInstance({ 
-            destinationPath: filePath, 
+          await exportInstance({
+            destinationPath: filePath,
             includeLibraries: data.includeLibraries,
             includeAssets: data.includeAssets,
             files,

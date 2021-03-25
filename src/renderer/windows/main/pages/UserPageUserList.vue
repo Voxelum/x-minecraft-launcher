@@ -14,7 +14,7 @@
       @dragstart="$emit('dragstart', $event)"
       @dragend="$emit('dragend', $event)"
     >
-      <template v-slot:activator>
+      <template #activator>
         <v-list-tile
           v-data-transfer:id="user.id"
           draggable
@@ -25,18 +25,31 @@
           <v-list-tile-content>
             <v-list-tile-title>{{ user.username }}</v-list-tile-title>
             <v-list-tile-sub-title>
-              <v-chip small outline label style="margin: 0; margin-top: 4px">
+              <v-chip
+                small
+                outline
+                label
+                style="margin: 0; margin-top: 4px"
+              >
                 {{ $t("user.authMode") }}:
                 {{ user.authService }}
               </v-chip>
-              <v-chip small outline label style="margin: 0; margin-top: 4px">
+              <v-chip
+                small
+                outline
+                label
+                style="margin: 0; margin-top: 4px"
+              >
                 {{ $t("user.profileMode") }}:
                 {{ user.profileService }}
               </v-chip>
             </v-list-tile-sub-title>
           </v-list-tile-content>
-          <v-list-tile-avatar v-if="user.avatar" :size="48">
-            <v-img :src="user.avatar"></v-img>
+          <v-list-tile-avatar
+            v-if="user.avatar"
+            :size="48"
+          >
+            <v-img :src="user.avatar" />
           </v-list-tile-avatar>
         </v-list-tile>
       </template>
@@ -48,7 +61,10 @@
         "
       >
         <v-card color="orange">
-          <v-list-tile v-ripple @click="gotoPurchesPage">
+          <v-list-tile
+            v-ripple
+            @click="gotoPurchesPage"
+          >
             <v-list-tile-content>
               <v-list-tile-sub-title class="no-ownership">
                 要使用此账户访问完整的《Minecraft:
@@ -59,7 +75,10 @@
           </v-list-tile>
         </v-card>
         <v-card color="orange">
-          <v-list-tile v-ripple @click="gotoFAQPage">
+          <v-list-tile
+            v-ripple
+            @click="gotoFAQPage"
+          >
             <v-list-tile-content>
               <v-list-tile-sub-title class="no-ownership">
                 或者您可以参照 Mojang 官方账户迁移 FAQ 来迁移账户
@@ -68,7 +87,10 @@
           </v-list-tile>
         </v-card>
       </template>
-      <template v-for="p in user.profiles" v-else>
+      <template
+        v-for="p in user.profiles"
+        v-else
+      >
         <v-card
           :key="p.id + user.id"
           :class="{ green: p.id === profileId && user.id === userId }"
@@ -96,10 +118,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api';
-import { UserProfile } from '/@shared/entities/user.schema';
-import { required } from '/@/util/props';
-import { useService } from '/@/hooks';
+import { defineComponent } from '@vue/composition-api'
+import { UserProfile } from '/@shared/entities/user.schema'
+import { required } from '/@/util/props'
+import { useService } from '/@/hooks'
 
 export default defineComponent({
   props: {
@@ -109,16 +131,16 @@ export default defineComponent({
     profileId: required<string>(String),
   },
   setup() {
-    const { openInBrowser } = useService('BaseService');
+    const { openInBrowser } = useService('BaseService')
     function gotoPurchesPage() {
-      openInBrowser('https://www.minecraft.net/store/minecraft-java-edition?ref=launcher');
+      openInBrowser('https://www.minecraft.net/store/minecraft-java-edition?ref=launcher')
     }
     function gotoFAQPage() {
-      openInBrowser('https://help.minecraft.net/hc/en-us/articles/360050865492-Minecraft-Java-Edition-Account-Migration-FAQ');
+      openInBrowser('https://help.minecraft.net/hc/en-us/articles/360050865492-Minecraft-Java-Edition-Account-Migration-FAQ')
     }
-    return { gotoPurchesPage, gotoFAQPage };
+    return { gotoPurchesPage, gotoFAQPage }
   },
-});
+})
 </script>
 
 <style>

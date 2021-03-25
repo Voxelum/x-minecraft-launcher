@@ -18,7 +18,7 @@ export type InstanceSaveModule = ModuleOption<State, Getters, Mutations, {}>
 
 const mod: InstanceSaveModule = {
   state: {
-    saves: []
+    saves: [],
   },
   getters: {
   },
@@ -31,8 +31,8 @@ const mod: InstanceSaveModule = {
     },
     instanceSaveRemove(state, save) {
       state.saves = state.saves.filter((s) => s.path !== save)
-    }
-  }
+    },
+  },
 }
 
 export default mod

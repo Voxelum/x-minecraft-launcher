@@ -31,7 +31,10 @@
         >
           <v-responsive>
             <v-img :src="images[target]">
-              <div v-if="!ready" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+              <div
+                v-if="!ready"
+                style="display: flex; align-items: center; justify-content: center; height: 100%;"
+              >
                 <v-progress-circular
                   indeterminate
                   :size="100"
@@ -50,18 +53,18 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, computed } from '@vue/composition-api';
-import resourcepack from '/@/assets/curseforge_resourcepack.webp';
-import mods from '/@/assets/curseforge_mods.webp';
-import modpack from '/@/assets/curseforge_modpack.webp';
-import worlds from '/@/assets/curseforge_worlds.webp';
-import { useNetworkStatus, useCurseforgeCategories } from '/@/hooks';
+import { defineComponent, computed } from '@vue/composition-api'
+import resourcepack from '/@/assets/curseforge_resourcepack.webp'
+import mods from '/@/assets/curseforge_mods.webp'
+import modpack from '/@/assets/curseforge_modpack.webp'
+import worlds from '/@/assets/curseforge_worlds.webp'
+import { useNetworkStatus, useCurseforgeCategories } from '/@/hooks'
 
 export default defineComponent({
   setup() {
-    const { online } = useNetworkStatus();
-    const { refreshing } = useCurseforgeCategories();
-    const ready = computed(() => online.value && !refreshing.value);
+    const { online } = useNetworkStatus()
+    const { refreshing } = useCurseforgeCategories()
+    const ready = computed(() => online.value && !refreshing.value)
     return {
       targets: ['mc-mods', 'texture-packs', 'worlds', 'modpacks'] as const,
       ready,
@@ -71,9 +74,9 @@ export default defineComponent({
         modpacks: modpack,
         worlds,
       },
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped=true>

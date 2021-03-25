@@ -29,8 +29,10 @@
         <img
           v-if="isServer"
           :src="favicon"
-        />
-        <v-icon v-else>power</v-icon>
+        >
+        <v-icon v-else>
+          power
+        </v-icon>
       </v-avatar>
       {{ $tc('version.name', 2) }}: {{ folder === 'unknown' ? $t('version.notInstalled') : folder }}
     </v-chip>
@@ -69,18 +71,18 @@
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent } from '@vue/composition-api'
 import {
   useInstance,
   useInstanceServerStatus,
   useInstanceVersion,
-} from '/@/hooks';
+} from '/@/hooks'
 
 export default defineComponent({
   setup() {
-    const { runtime, name, author, isServer } = useInstance();
-    const { id, folder } = useInstanceVersion();
-    const { players, ping, favicon } = useInstanceServerStatus();
+    const { runtime, name, author, isServer } = useInstance()
+    const { id, folder } = useInstanceVersion()
+    const { players, ping, favicon } = useInstanceServerStatus()
     return {
       version: runtime,
       name,
@@ -91,7 +93,7 @@ export default defineComponent({
       players,
       ping,
       favicon,
-    };
+    }
   },
-});
+})
 </script>

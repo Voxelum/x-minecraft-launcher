@@ -1,6 +1,12 @@
 <template>
-  <v-list dark style="background-color: transparent; height: 100%;">
-    <v-list-tile ripple @click="select({ version: '' })">
+  <v-list
+    dark
+    style="background-color: transparent; height: 100%;"
+  >
+    <v-list-tile
+      ripple
+      @click="select({ version: '' })"
+    >
       <v-list-tile-avatar>
         <v-icon>close</v-icon>
       </v-list-tile-avatar>
@@ -18,13 +24,13 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, computed } from '@vue/composition-api';
-import { ForgeVersion } from '@xmcl/installer';
-import { required } from '/@/util/props';
-import VirtualList from 'vue-virtual-scroll-list';
-import Tile from './ForgeVersionListTile.vue';
+import { defineComponent, computed } from '@vue/composition-api'
+import { ForgeVersion } from '@xmcl/installer'
+import { required } from '/@/util/props'
+import VirtualList from 'vue-virtual-scroll-list'
+import Tile from './ForgeVersionListTile.vue'
 
-export type Status = 'loading' | 'folder' | 'cloud';
+export type Status = 'loading' | 'folder' | 'cloud'
 
 export default defineComponent({
   components: { VirtualList },
@@ -43,9 +49,9 @@ export default defineComponent({
         latest: 'fiber_new',
       },
       Tile,
-    };
+    }
   },
-});
+})
 </script>
 
 <style>

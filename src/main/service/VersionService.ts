@@ -10,9 +10,9 @@ import { VersionServiceKey, VersionService as IVersionService } from '/@shared/s
  */
 @Service(VersionServiceKey)
 export default class VersionService extends AbstractService implements IVersionService {
-  private versionsWatcher = new FileStateWatcher([] as string[], (state, _, f) => [...new Set([...state, f])]);
+  private versionsWatcher = new FileStateWatcher([] as string[], (state, _, f) => [...new Set([...state, f])])
 
-  private versionLoaded = false;
+  private versionLoaded = false
 
   async dispose() {
     this.versionsWatcher.close()

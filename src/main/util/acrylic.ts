@@ -8,7 +8,7 @@ export async function acrylic (pid: number) {
 
   const ps = new Shell({
     executionPolicy: 'RemoteSigned',
-    noProfile: true
+    noProfile: true,
   })
   ps.addCommand('[Console]::OutputEncoding = [Text.Encoding]::UTF8')
   ps.addCommand(`Add-Type -Path '${acrylicScriptPath}'`)

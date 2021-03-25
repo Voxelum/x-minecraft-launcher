@@ -27,9 +27,9 @@ const INSTANCES_JSON = 'instances.json'
 @Service(InstanceServiceKey)
 export class InstanceService extends AbstractService implements IInstanceService {
   protected readonly instancesFile = new MappedFile<InstancesSchema>(this.getPath(INSTANCES_JSON), new BufferJsonSerializer(InstancesSchema))
-    .setSaveSource(() => ({ instances: Object.keys(this.state.instance.all), selectedInstance: this.state.instance.path }));
+    .setSaveSource(() => ({ instances: Object.keys(this.state.instance.all), selectedInstance: this.state.instance.path }))
 
-  protected readonly instanceFile = new RelativeMappedFile<InstanceSchema>(INSTANCES_JSON, new BufferJsonSerializer(InstanceSchema));
+  protected readonly instanceFile = new RelativeMappedFile<InstanceSchema>(INSTANCES_JSON, new BufferJsonSerializer(InstanceSchema))
 
   constructor(app: LauncherApp,
     diagnoseService: DiagnoseService,
@@ -132,21 +132,6 @@ export class InstanceService extends AbstractService implements IInstanceService
       } else {
         await this.mountInstance(Object.keys(state.instance.all)[0])
       }
-    }
-  }
-
-  /**
-   * Return the instance's screenshots urls.
-   *
-   * If the provided path is not a instance, it will return empty array.
-   */
-  async listInstanceScreenshots(path: string) {
-    const screenshots = join(path, 'screenshots')
-    try {
-      const files = await readdir(screenshots)
-      return files.map(f => `file://${screenshots}/${f}`)
-    } catch (e) {
-      return []
     }
   }
 
@@ -390,7 +375,7 @@ export class InstanceService extends AbstractService implements IInstanceService
         fabricLoader: '',
         yarn: '',
         optifinePatch: '',
-        optifineType: ''
+        optifineType: '',
       }
       if (info.status.modinfo && info.status.modinfo.type === 'FML') {
         // TODO: handle mod server
@@ -398,7 +383,7 @@ export class InstanceService extends AbstractService implements IInstanceService
     }
     return this.createInstance({
       ...options,
-      server: getHostAndPortFromIp(info.ip)
+      server: getHostAndPortFromIp(info.ip),
     })
   }
 }

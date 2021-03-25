@@ -25,7 +25,7 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
   constructor(app: LauncherApp,
     private resourceService: ResourceService,
     private instanceService: InstanceService,
-    private instanceResourceService: InstanceResourceService
+    private instanceResourceService: InstanceResourceService,
   ) {
     super(app)
   }
@@ -48,20 +48,20 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
     const instance = this.state.instance.all[instancePath]
     const modLoaders = instance.runtime.forge ? [{
       id: `forge-${instance.runtime.forge}`,
-      primary: true
+      primary: true,
     }] : []
     const curseforgeConfig: CurseforgeModpackManifest = {
       manifestType: 'minecraftModpack',
       manifestVersion: 1,
       minecraft: {
         version: ganeVersionInstance?.minecraftVersion ?? instance.runtime.minecraft,
-        modLoaders
+        modLoaders,
       },
       name: options.name ?? name,
       version,
       author: author ?? instance.author,
       files: [],
-      overrides: 'overrides'
+      overrides: 'overrides',
     }
 
     const zipTask = new ZipTask(destinationPath)
@@ -121,20 +121,20 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
           forge: forgeId ? forgeId.id.substring(6) : '',
           liteloader: '',
           fabricLoader: '',
-          yarn: ''
-        }
+          yarn: '',
+        },
       }
 
       if (instancePath) {
         await instanceService.editInstance({
           instancePath,
-          ...config
+          ...config,
         })
       } else {
         instancePath = await instanceService.createInstance({
           name: manifest.name,
           author: manifest.author,
-          ...config
+          ...config,
         })
       }
 
@@ -166,7 +166,7 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
           const path = m.getMod(basename(u))
           files.find(fi => fi.fileID === f)!.path = path
           return path
-        }
+        },
       }))
 
       if (manifest.files.length > 0) {
@@ -175,9 +175,9 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
             path: f.path,
             url: [f.url, getCurseforgeUrl(f.projectID, f.fileID)],
             source: {
-              curseforge: { projectId: f.projectID, fileId: f.fileID }
-            }
-          }))
+              curseforge: { projectId: f.projectID, fileId: f.fileID },
+            },
+          })),
         })
         const mapping: Record<string, string> = {}
         for (const file of files) {

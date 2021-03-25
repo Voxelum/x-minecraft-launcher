@@ -38,7 +38,7 @@ export enum ResourceType {
   CurseforgeModpack = 'curseforge-modpack',
   Save = 'save',
   ResourcePack = 'resourcepack',
-  Unknown = 'unknown'
+  Unknown = 'unknown',
 }
 
 export enum ResourceDomain {
@@ -46,13 +46,13 @@ export enum ResourceDomain {
   Saves = 'saves',
   ResourcePacks = 'resourcepacks',
   Modpacks = 'modpacks',
-  Unknown = 'unknowns'
+  Unknown = 'unknowns',
 }
 
 /**
  * The interface represent a resource
  */
-export interface Resource<T = unknown> {
+export interface Resource<T = unknown > {
   /**
    * The path of the resource file
    */
@@ -100,6 +100,7 @@ export interface Resource<T = unknown> {
 /**
  * Reprensent a persisted resource
  */
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export interface PersistedResourceSchema extends Omit<Resource<object | object[]>, 'path'> {
   /**
    * @default 0

@@ -10,16 +10,34 @@ import { ServiceKey } from '/@shared/services/Service'
 export const PURE_SYMBOL = Symbol('__pure__')
 
 export type ServiceConstructor<T extends AbstractService = any> = {
-  new(...args: any[]): T;
+  new(...args: any[]): T
 }
 
 export const registeredServices: ServiceConstructor[] = []
 
+/**
+ * Register a service into global service registry.
+ * @param key The service key representing it
+ */
 export function Service<T extends AbstractService>(key: ServiceKey<T>) {
   return (target: ServiceConstructor<T>) => {
     Reflect.defineMetadata('service:key', key, target)
     registeredServices.push(target)
   }
+}
+
+/**
+ * Mark a service method is internal and should not be called by renderer process remotely.
+ */
+export function internal(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  let internal: string[]
+  if (Reflect.hasMetadata(target, 'service:internal')) {
+    internal = Reflect.getMetadata('service:internal', target)
+  } else {
+    internal = []
+    Reflect.defineMetadata('service:internal', internal, target)
+  }
+  internal.push(propertyKey)
 }
 
 /**
@@ -36,11 +54,11 @@ export function Subscribe(...keys: MutationKeys[]) {
   }
 }
 
-export type KeySerializer = (this: AbstractService, ...params: any[]) => string;
+export type KeySerializer = (this: AbstractService, ...params: any[]) => string
 
 export enum Policy {
   Skip = 'skip',
-  Wait = 'wait'
+  Wait = 'wait',
 }
 
 const runningSingleton: Record<string, Promise<any>> = {}
@@ -145,7 +163,7 @@ export class ServiceException extends Error {
  * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied
  */
 export default abstract class AbstractService {
-  readonly name: string;
+  readonly name: string
 
   constructor(readonly app: LauncherApp) {
     this.name = Object.getPrototypeOf(this).constructor.name
@@ -203,22 +221,22 @@ export default abstract class AbstractService {
   /**
    * Return the path under the config root
    */
-  protected getAppDataPath: (...args: string[]) => string = (...args) => join(this.app.appDataPath, ...args);
+  protected getAppDataPath: (...args: string[]) => string = (...args) => join(this.app.appDataPath, ...args)
 
   /**
    * Return the path under the temp root
    */
-  protected getTempPath: (...args: string[]) => string = (...args) => join(this.app.temporaryPath, ...args);
+  protected getTempPath: (...args: string[]) => string = (...args) => join(this.app.temporaryPath, ...args)
 
   /**
    * Return the path under game libraries/assets root
    */
-  protected getPath: (...args: string[]) => string = (...args) => join(this.app.gameDataPath, ...args);
+  protected getPath: (...args: string[]) => string = (...args) => join(this.app.gameDataPath, ...args)
 
   /**
    * Return the path under .minecraft folder
    */
-  protected getMinecraftPath: (...args: string[]) => string = (...args) => join(this.app.minecraftDataPath, ...args);
+  protected getMinecraftPath: (...args: string[]) => string = (...args) => join(this.app.minecraftDataPath, ...args)
 
   /**
    * The path of .minecraft

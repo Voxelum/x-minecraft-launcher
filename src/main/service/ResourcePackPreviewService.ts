@@ -8,22 +8,22 @@ import LauncherApp from '../app/LauncherApp'
 import { ResourcePackPreviewServiceKey, ResourcePackPreviewService as IResourcePackPreviewService, BlockStateJson } from '/@shared/services/ResourcePackPreviewService'
 
 interface NamedResourcePackWrapper extends ResourcePackWrapper {
-  path: string;
+  path: string
 }
 
 @Service(ResourcePackPreviewServiceKey)
 export default class ResourcePackPreviewService extends AbstractService implements IResourcePackPreviewService {
-  private resourceManager = new ResourceManager();
+  private resourceManager = new ResourceManager()
 
-  private modelLoader = new ModelLoader(this.resourceManager);
+  private modelLoader = new ModelLoader(this.resourceManager)
 
-  private cachedBlocks: BlockStateJson[] | undefined;
+  private cachedBlocks: BlockStateJson[] | undefined
 
-  private cachedJsonVersion: string | undefined;
+  private cachedJsonVersion: string | undefined
 
-  private queue = new Queue();
+  private queue = new Queue()
 
-  private active = false;
+  private active = false
 
   constructor(app: LauncherApp,
     private instanceResourceService: InstanceResourceService) {

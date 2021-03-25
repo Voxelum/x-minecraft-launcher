@@ -1,17 +1,17 @@
 import { GetterTree, ModuleTree, MutationTree, StoreOptions, MutationPayload } from 'vuex'
 
-type Container = { state?: any; getters?: GetterTree<any, any>; modules?: ModuleTree<any>; mutations?: MutationTree<any> };
+type Container = { state?: any; getters?: GetterTree<any, any>; modules?: ModuleTree<any>; mutations?: MutationTree<any> }
 
 function createGetters (rootState: any, rootGetters: GetterTree<any, any>, getters: GetterTree<any, any>, state: any, container: Container) {
   if (container.getters) {
     for (const [key, func] of Object.entries(container.getters)) {
       Object.defineProperty(getters, key, {
         get () { return func(state, getters, rootState, rootGetters) },
-        enumerable: true
+        enumerable: true,
       })
       Object.defineProperty(rootGetters, key, {
         get () { return func(state, getters, rootState, rootGetters) },
-        enumerable: true
+        enumerable: true,
       })
     }
   }
@@ -23,20 +23,20 @@ function createMutations (state: any, mutations: Record<string, (payload?: any) 
     }
   }
 }
-function deepCopy<T> (object: T): T {
+function deepCopy<T > (object: T): T {
   return JSON.parse(JSON.stringify(object))
 }
 
-type Listener = (mutation: MutationPayload, state: any) => void;
+type Listener = (mutation: MutationPayload, state: any) => void
 
-export interface StaticStore<T> {
-    state: T;
-    getters: Record<string, any>;
-    commit: (name: string, payload?: any) => void;
-    subscribe: (fn: Listener) => void;
+export interface StaticStore<T > {
+  state: T
+  getters: Record<string, any>
+  commit: (name: string, payload?: any) => void
+  subscribe: (fn: Listener) => void
 }
 
-export function createStaticStore<T> (template: StoreOptions<T>): StaticStore<T> {
+export function createStaticStore<T > (template: StoreOptions<T>): StaticStore<T> {
   const subscriptions: Listener[] = []
 
   const state = deepCopy(typeof template.state === 'object' ? template.state : (template as any).state())
@@ -67,6 +67,6 @@ export function createStaticStore<T> (template: StoreOptions<T>): StaticStore<T>
     state: state as T,
     getters,
     commit,
-    subscribe
+    subscribe,
   }
 }
