@@ -5,7 +5,7 @@ import { URL } from 'url'
 import { v4 } from 'uuid'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
-import AbstractService, { Service, Singleton } from './Service'
+import AbstractService, { ExportService, Singleton } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { aquireXBoxToken, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '/@main/entities/user'
 import { createhDynamicThrottle as createDynamicThrottle } from '/@main/util/trafficAgent'
@@ -85,7 +85,7 @@ export interface LauncherProfile {
   }
 }
 
-@Service(UserServiceKey)
+@ExportService(UserServiceKey)
 export default class UserService extends AbstractService implements IUserService {
   private refreshSkinRecord: Record<string, boolean> = {}
 

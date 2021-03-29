@@ -59,6 +59,7 @@ import {
 import { JavaRecord } from '/@shared/entities/java'
 import { useService } from '/@/hooks'
 import { required } from '/@/util/props'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export default defineComponent({
   props: {
@@ -67,7 +68,7 @@ export default defineComponent({
     remove: required<(java: JavaRecord) => void>(Function),
   },
   setup(props) {
-    const { showItemInDirectory } = useService('BaseService')
+    const { showItemInDirectory } = useService(BaseServiceKey)
     return { showItemInDirectory }
   },
 })

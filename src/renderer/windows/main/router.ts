@@ -1,4 +1,4 @@
-import { serviceProxy } from '/@/providers/provideServiceProxy'
+import { getServiceProxy } from '/@/providers/provideServiceProxy'
 import Router from 'vue-router'
 import BaseSettingPage from './pages/BaseSettingPage.vue'
 import CurseforgePage from './pages/CurseforgePage.vue'
@@ -15,6 +15,7 @@ import SettingPage from './pages/SettingPage.vue'
 import UserPage from './pages/UserPage.vue'
 import VersionSettingPage from './pages/VersionSettingPage.vue'
 import MCWikiPage from './pages/MCWikiPage.vue'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 const router = new Router({
   routes: [
@@ -86,7 +87,7 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   const full = to.fullPath.substring(1)
-  const { openInBrowser } = serviceProxy.BaseService
+  const { openInBrowser } = getServiceProxy(BaseServiceKey)
   if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {
     next(false)
     console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`)

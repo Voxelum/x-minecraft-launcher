@@ -1,17 +1,17 @@
+import { Task } from '@xmcl/task'
+import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { autoUpdater } from 'electron-updater'
+import { createServer } from 'http'
+import { join } from 'path'
+import { URL } from 'url'
+import Controller from './Controller'
+import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate } from './updater'
 import LauncherApp from '/@main/app/LauncherApp'
 import { LauncherAppController } from '/@main/app/LauncherAppController'
 import { IS_DEV } from '/@main/constant'
 import { isDirectory } from '/@main/util/fs'
 import { UpdateInfo } from '/@shared/entities/update'
 import { StaticStore } from '/@shared/util/staticStore'
-import { Task } from '@xmcl/task'
-import { app, BrowserWindow, ipcMain, shell } from 'electron'
-import { autoUpdater } from 'electron-updater'
-import { createServer } from 'http'
-import { join } from 'path'
-import { parse } from 'url'
-import Controller from './Controller'
-import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate } from './updater'
 
 export default class ElectronLauncherApp extends LauncherApp {
   createController(): LauncherAppController {
@@ -185,14 +185,17 @@ export default class ElectronLauncherApp extends LauncherApp {
   }
 
   handleUrl(url: string) {
-    const parsed = parse(url, true)
+    const parsed = new URL(url)
     if ((parsed.host === 'launcher' || IS_DEV) && parsed.pathname === '/auth') {
       let error: Error | undefined
-      if (parsed.query.error) {
-        error = new Error(unescape(parsed.query.error_description as string));
-        (error as any).error = parsed.query.error
+      if (parsed.searchParams.get('error')) {
+        const err = parsed.searchParams.get('error')!
+        const errDescription = parsed.searchParams.get('error')!
+        error = new Error(unescape(errDescription));
+        (error as any).error = err
       }
-      this.emit('microsoft-authorize-code', error, parsed.query.code as string)
+      const code = parsed.searchParams.get('code') as string
+      this.emit('microsoft-authorize-code', error, code)
     }
   }
 

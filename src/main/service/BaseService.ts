@@ -1,21 +1,23 @@
 import { copy, copyFile, ensureDir, readJson, remove, unlink, writeJson } from 'fs-extra'
 import { join } from 'path'
+import 'reflect-metadata'
+import settings from '../../shared/store/modules/base'
 import LauncherApp from '../app/LauncherApp'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
-import AbstractService, { Service, Singleton } from './Service'
+import AbstractService, { ExportService, Singleton } from './Service'
 import { IS_DEV } from '/@main/constant'
 import { SettingSchema } from '/@shared/entities/setting.schema'
 import { BaseService as IBaseService, BaseServiceKey, MigrateOptions } from '/@shared/services/BaseService'
-import settings from '/@shared/store/modules/setting'
 
-@Service(BaseServiceKey)
+@ExportService(BaseServiceKey)
 export default class BaseService extends AbstractService implements IBaseService {
   private settingFile = new MappedFile<SettingSchema>(this.getPath('setting.json'), new BufferJsonSerializer(SettingSchema))
 
+  private _state = this.storeManager.register(settings)
+
   constructor(app: LauncherApp) {
     super(app)
-    this.storeManager.register(settings)
     this.storeManager.subscribeAll([
       'locale',
       'allowPrerelease',
@@ -25,12 +27,12 @@ export default class BaseService extends AbstractService implements IBaseService
       'apiSets',
     ], () => {
       this.settingFile.write({
-        locale: this.state.setting.locale,
-        autoInstallOnAppQuit: this.state.setting.autoInstallOnAppQuit,
-        autoDownload: this.state.setting.autoDownload,
-        allowPrerelease: this.state.setting.allowPrerelease,
-        apiSets: this.state.setting.apiSets,
-        apiSetsPreference: this.state.setting.apiSetsPreference,
+        locale: this._state.locale,
+        autoInstallOnAppQuit: this._state.autoInstallOnAppQuit,
+        autoDownload: this._state.autoDownload,
+        allowPrerelease: this._state.allowPrerelease,
+        apiSets: this._state.apiSets,
+        apiSetsPreference: this._state.apiSetsPreference,
       })
     })
   }
@@ -75,7 +77,7 @@ export default class BaseService extends AbstractService implements IBaseService
    * Quit and install the update once the update is ready
    */
   async quitAndInstall() {
-    if (this.state.setting.updateStatus === 'ready') {
+    if (this._state.updateStatus === 'ready') {
       await this.app.installUpdateAndQuit()
     } else {
       this.warn('There is no update avaiable!')
@@ -104,7 +106,7 @@ export default class BaseService extends AbstractService implements IBaseService
    */
   @Singleton()
   async downloadUpdate() {
-    if (!this.state.setting.updateInfo) {
+    if (!this._state.updateInfo) {
       throw new Error('Cannot download update if we don\'t check the version update!')
     }
     await this.submit(this.app.downloadUpdateTask())

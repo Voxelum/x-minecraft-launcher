@@ -5,7 +5,7 @@ import { join, resolve } from 'path'
 import { v4 } from 'uuid'
 import DiagnoseService from './DiagnoseService'
 import ServerStatusService from './ServerStatusService'
-import AbstractService, { Service, Singleton, Subscribe } from './Service'
+import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { exists, missing, readdirEnsured } from '/@main/util/fs'
 import { MappedFile, RelativeMappedFile } from '/@main/util/persistance'
@@ -24,7 +24,7 @@ const INSTANCES_JSON = 'instances.json'
 /**
  * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
  */
-@Service(InstanceServiceKey)
+@ExportService(InstanceServiceKey)
 export class InstanceService extends AbstractService implements IInstanceService {
   protected readonly instancesFile = new MappedFile<InstancesSchema>(this.getPath(INSTANCES_JSON), new BufferJsonSerializer(InstancesSchema))
     .setSaveSource(() => ({ instances: Object.keys(this.state.instance.all), selectedInstance: this.state.instance.path }))
@@ -32,8 +32,8 @@ export class InstanceService extends AbstractService implements IInstanceService
   protected readonly instanceFile = new RelativeMappedFile<InstanceSchema>(INSTANCES_JSON, new BufferJsonSerializer(InstanceSchema))
 
   constructor(app: LauncherApp,
-    diagnoseService: DiagnoseService,
-    protected readonly statusService: ServerStatusService) {
+    @Inject(DiagnoseService) diagnoseService: DiagnoseService,
+    @Inject(ServerStatusService) protected statusService: ServerStatusService) {
     super(app)
 
     this.storeManager

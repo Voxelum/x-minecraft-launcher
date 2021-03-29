@@ -338,10 +338,13 @@ export async function resolveResourceWithParser(path: string, fileType: FileType
       // skip
     }
   }
+  const slice = sha1.slice(0, 6)
+  const name = parser.getSuggestedName(metadata) || basename(path, ext)
 
   return [{
     path,
-    name: parser.getSuggestedName(metadata) || basename(path, ext),
+    location: join(parser.domain, `${name}.${slice}`),
+    name,
     ino: stat.ino,
     size: stat.size,
     ext: extname(path),

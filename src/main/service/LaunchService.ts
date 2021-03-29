@@ -1,20 +1,20 @@
-import { Exception } from '/@shared/entities/exception'
 import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder, Version } from '@xmcl/core'
 import { ChildProcess } from 'child_process'
 import { EOL } from 'os'
+import LauncherApp from '../app/LauncherApp'
 import DiagnoseService from './DiagnoseService'
 import ExternalAuthSkinService from './ExternalAuthSkinService'
 import InstanceResourceService from './InstanceResourceService'
-import AbstractService, { Service } from './Service'
-import LauncherApp from '../app/LauncherApp'
-import { LaunchServiceKey, LaunchService as ILaunchService } from '/@shared/services/LaunchService'
+import AbstractService, { ExportService, Inject } from './Service'
+import { Exception } from '/@shared/entities/exception'
+import { LaunchService as ILaunchService, LaunchServiceKey } from '/@shared/services/LaunchService'
 
-@Service(LaunchServiceKey)
+@ExportService(LaunchServiceKey)
 export default class LaunchService extends AbstractService implements ILaunchService {
   constructor(app: LauncherApp,
-    private diagnoseService: DiagnoseService,
-    private externalAuthSkinService: ExternalAuthSkinService,
-    private instanceResourceService: InstanceResourceService,
+    @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
+    @Inject(ExternalAuthSkinService) private externalAuthSkinService: ExternalAuthSkinService,
+    @Inject(InstanceResourceService) private instanceResourceService: InstanceResourceService,
   ) {
     super(app)
   }

@@ -5,7 +5,7 @@ import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { RelativeMappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
-import AbstractService, { internal, Service } from './Service'
+import AbstractService, { internal, ExportService } from './Service'
 import { FileStat, mutateResource, persistResource, readFileStat, remove, ResourceCache } from '/@main/entities/resource'
 import { fixResourceSchema } from '/@main/util/dataFix'
 import { copyPassively, FileType, readdirEnsured } from '/@main/util/fs'
@@ -27,7 +27,7 @@ export interface Query {
   ino?: number
 }
 
-@Service(ResourceServiceKey)
+@ExportService(ResourceServiceKey)
 export default class ResourceService extends AbstractService implements IResourceService {
   private cache = new ResourceCache()
 

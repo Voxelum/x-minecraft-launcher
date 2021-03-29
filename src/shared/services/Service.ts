@@ -1,1 +1,1 @@
-export interface ServiceKey<T > extends String { }
+export interface ServiceKey<T> extends String { }

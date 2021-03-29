@@ -75,6 +75,7 @@
         "yazl": "^2.5.1"
     },
     "external": [
+        "reflect-metadata",
         "applicationinsights",
         "atomically",
         "semver",
@@ -141,6 +142,7 @@
         "electron": "^11.3.0",
         "electron-builder": "^22.9.1",
         "esbuild": "^0.8.52",
+        "esbuild-plugin-tsc": "^0.2.0",
         "eslint": "^7.13.0",
         "eslint-config-standard": "^14.1.1",
         "eslint-plugin-import": "^2.22.1",

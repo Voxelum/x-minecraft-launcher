@@ -10,13 +10,14 @@ import { app, BrowserWindow, dialog, ProcessMemoryInfo, Menu, session, Tray, Not
 import { readJSON } from 'fs-extra'
 import { join, resolve } from 'path'
 import indexPreload from '/@preload/index'
-import mainWinUrl from '/@renderer/index'
-import loggerWinUrl from '/@renderer/logger'
-import setupWinUrl from '/@renderer/setup'
+import mainWinUrl from '/@renderer/index.html'
+import loggerWinUrl from '/@renderer/logger.html'
+import setupWinUrl from '/@renderer/setup.html'
 import LauncherApp from '../app/LauncherApp'
 import favcon2XPath from '/@static/favicon@2x.png'
 import iconPath from '/@static/apple-touch-icon.png'
 import i18n from './locales'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export default class Controller implements LauncherAppController {
   private mainWin: BrowserWindow | undefined = undefined
@@ -198,7 +199,7 @@ export default class Controller implements LauncherAppController {
   private createMenu() {
     const { t: $t } = this.i18n
     const app = this.app
-    const service = this.app.serviceManager.getService(BaseService)
+    const service = this.app.getRegisteredObject(BaseService)
     return Menu.buildFromTemplate([
       {
         type: 'normal',

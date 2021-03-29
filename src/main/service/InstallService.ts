@@ -6,7 +6,7 @@ import { URL } from 'url'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
 import DiagnoseService from './DiagnoseService'
-import AbstractService, { Service, Singleton } from './Service'
+import AbstractService, { ExportService, Inject, Singleton } from './Service'
 import VersionService from './VersionService'
 import LauncherApp from '/@main/app/LauncherApp'
 import { RuntimeVersions } from '/@shared/entities/instance.schema'
@@ -17,7 +17,7 @@ import { InstallServiceKey, InstallOptifineOptions, InstallService as IInstallSe
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
  */
-@Service(InstallServiceKey)
+@ExportService(InstallServiceKey)
 export default class InstallService extends AbstractService implements IInstallService {
   private refreshedMinecraft = false
   private refreshedFabric = false
@@ -32,8 +32,8 @@ export default class InstallService extends AbstractService implements IInstallS
   private optifineVersionJson = new MappedFile<VersionOptifineSchema>(this.getPath('optifine-versions.json'), new BufferJsonSerializer(VersionOptifineSchema))
 
   constructor(app: LauncherApp,
-    private local: VersionService,
-    diagnoseService: DiagnoseService,
+    @Inject(VersionService) private local: VersionService,
+    @Inject(DiagnoseService) diagnoseService: DiagnoseService,
   ) {
     super(app)
 

@@ -4,6 +4,9 @@ export interface MigrateOptions {
   destination: string
 }
 export interface BaseService {
+  /**
+   * let the launcher to handle a url open. The url can be xmcl:// protocol
+   */
   handleUrl(url: string): Promise<void>
   /**
    * Try to open a url in default browser. It will popup a message dialog to let user know.
@@ -33,7 +36,14 @@ export interface BaseService {
    * Download the update if there is avaiable update
    */
   downloadUpdate(): Promise<void>
+  /**
+   * Quit the launcher
+   */
   quit(): void
+  /**
+   * Exit the launcher with code
+   * @param code The code number
+   */
   exit(code?: number | undefined): void
   migrate(options: MigrateOptions): Promise<void>
   postMigrate(): Promise<void>

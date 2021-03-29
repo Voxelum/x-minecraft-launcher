@@ -42,13 +42,12 @@
 
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api'
-import VirtualList from 'vue-virtual-scroll-list'
 import { MinecraftVersion } from '@xmcl/installer'
-import { Status } from '/@shared/entities/version'
 import { required, withDefault } from '/@/util/props'
+import { Status } from '/@shared/entities/version'
 
 export default defineComponent({
-  components: { VirtualList },
+  components: { },
   props: {
     showTime: withDefault(Boolean, () => true),
     source: required<MinecraftVersion>(Object),

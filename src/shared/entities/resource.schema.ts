@@ -52,11 +52,15 @@ export enum ResourceDomain {
 /**
  * The interface represent a resource
  */
-export interface Resource<T = unknown > {
+export interface Resource<T = unknown> {
   /**
    * The path of the resource file
    */
   path: string
+  /**
+   * The resource file path relative to the .minecraft without extension
+   */
+  location: string
   /**
    * The suggest name of the resource
    */
@@ -110,10 +114,6 @@ export interface PersistedResourceSchema extends Omit<Resource<object | object[]
    * @deprecated
    */
   path?: string
-  /**
-   * The resource file path relative to the data root directory
-   */
-  location: string
   /**
    * The resource extension name
    */

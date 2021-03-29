@@ -1,4 +1,14 @@
-import { createSemanticDiagnosticsBuilderProgram, createWatchCompilerHost, createWatchProgram, DiagnosticCategory, formatDiagnosticsWithColorAndContext, sys } from 'typescript'
+import { join } from "path"
+import {
+  createSemanticDiagnosticsBuilderProgram,
+  createWatchCompilerHost,
+  createWatchProgram,
+  DiagnosticCategory,
+  formatDiagnosticsWithColorAndContext,
+  sys,
+  transpile,
+  transpileModule,
+} from "typescript"
 
 /**
  * @param {number | void} timeout
@@ -13,7 +23,7 @@ function createDeferred(timeout) {
       new Promise((r) => setTimeout(r, timeout, true)),
       // @ts-ignore
       // eslint-disable-next-line promise/param-names
-      new Promise((r) => (resolve = r))
+      new Promise((r) => (resolve = r)),
     ])
   } else {
     // @ts-ignore
@@ -32,8 +42,8 @@ const FOUND_N_ERRORS_WATCHING_FOR_FILE_CHANGES = 6194
  * Typescript watch program helper to sync Typescript watch status with Rollup hooks.
  */
 export class WatchProgramHelper {
-  _startDeferred = null;
-  _finishDeferred = null;
+  _startDeferred = null
+  _finishDeferred = null
 
   watch(timeout = 1000) {
     // Race watcher start promise against a timeout in case Typescript and Rollup change detection is not in sync.
@@ -95,7 +105,7 @@ export class WatchProgramHelper {
 
 /**
  * Create a typecheck only typescript plugin
- * @param {{tsconfig?: string[]; tsconfigOverride?: import('typescript').CompilerOptions }} options
+ * @param {{tsconfig?: string[] tsconfigOverride?: import('typescript').CompilerOptions }} options
  * @returns {import('rollup').Plugin}
  */
 const create = ({ tsconfig, tsconfigOverride } = {}) => {
@@ -109,9 +119,9 @@ const create = ({ tsconfig, tsconfigOverride } = {}) => {
    * @type {import('typescript').FormatDiagnosticsHost}
    */
   const formatHost = {
-    getCanonicalFileName: path => path,
+    getCanonicalFileName: (path) => path,
     getCurrentDirectory: sys.getCurrentDirectory,
-    getNewLine: () => sys.newLine
+    getNewLine: () => sys.newLine,
   }
 
   /**
@@ -130,45 +140,87 @@ const create = ({ tsconfig, tsconfigOverride } = {}) => {
    * @type {import('rollup').Plugin}
    */
   const plugin = {
-    name: 'typescript:checker',
+    name: "typescript:checker",
     buildStart() {
       if (!programs) {
-        programs = configPath.map((c) => createWatchProgram(createWatchCompilerHost(
-          c,
-          tsconfigOverride || { noEmit: true, noEmitOnError: false },
-          sys,
-          createProgram,
-          (diagnostic) => {
-            diagnostics.push(diagnostic)
-          },
-          (diagnostic) => watcher.handleStatus(diagnostic)
-        )))
+        programs = configPath.map((c) =>
+          createWatchProgram(
+            createWatchCompilerHost(
+              c,
+              tsconfigOverride || {
+                noEmit: true,
+                noEmitOnError: false,
+              },
+              sys,
+              createProgram,
+              (diagnostic) => {
+                diagnostics.push(diagnostic)
+              },
+              (diagnostic) => watcher.handleStatus(diagnostic)
+            )
+          )
+        )
       }
     },
     async load(id) {
-      if (!id.endsWith('.ts')) {
+      if (!id.endsWith(".ts")) {
         return null
       }
       await watcher.wait()
     },
+    async resolveId(id, importer) {
+      if (id.endsWith(".ts")) {
+        return
+      }
+      const tsResult = await this.resolve(`${id}.ts`, importer, {
+        skipSelf: true,
+      })
+      if (tsResult) {
+        return tsResult
+      }
+      const indexTsResult = await this.resolve(
+        `${id}/index.ts`,
+        importer,
+        { skipSelf: true }
+      )
+      if (indexTsResult) {
+        return indexTsResult
+      }
+    },
+    async transform(code, id) {
+      if (!id.endsWith(".ts")) {
+        return
+      }
+      const root = join(__dirname, '../../src/main/services')
+      console.log(root)
+      console.log(`tsc: ${id} ${id.startsWith(root)}`)
+      return undefined
+    },
     generateBundle() {
       if (diagnostics.length > 0) {
         const count = diagnostics.length
-        console.error(formatDiagnosticsWithColorAndContext(diagnostics.splice(0), formatHost))
-        this.error(`Fail to compile the project. Found ${count} errors.`)
+        console.error(
+          formatDiagnosticsWithColorAndContext(
+            diagnostics.splice(0),
+            formatHost
+          )
+        )
+        this.error(
+          `Fail to compile the project. Found ${count} errors.`
+        )
       }
     },
     watchChange(id) {
-      if (!id.endsWith('.ts')) {
+      if (!id.endsWith(".ts")) {
         return
       }
       watcher.watch()
     },
     buildEnd() {
       if (!this.meta.watchMode) {
-        programs.forEach(p => p.close())
+        programs.forEach((p) => p.close())
       }
-    }
+    },
   }
 
   return plugin

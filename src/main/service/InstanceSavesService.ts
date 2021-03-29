@@ -4,7 +4,7 @@ import { ensureDir, ensureFile, FSWatcher, readdir, remove } from 'fs-extra'
 import watch from 'node-watch'
 import { pathToFileURL } from 'url'
 import { basename, extname, join, resolve } from 'path'
-import AbstractService, { Service, ServiceException, Singleton, Subscribe } from './Service'
+import AbstractService, { ExportService, ServiceException, Singleton, Subscribe } from './Service'
 import { findLevelRootOnPath, getInstanceSave, readInstanceSaveMetadata } from '/@main/entities/save'
 import { copyPassively, isFile, missing, readdirIfPresent } from '/@main/util/fs'
 import { unpack7z, ZipTask } from '/@main/util/zip'
@@ -19,7 +19,7 @@ import { isNonnull, requireObject, requireString } from '/@shared/util/assert'
 /**
  * Provide the ability to preview saves data of an instance
  */
-@Service(InstanceSavesServiceKey)
+@ExportService(InstanceSavesServiceKey)
 export default class InstanceSavesService extends AbstractService implements IInstanceSavesService {
   private watcher: FSWatcher | undefined
 

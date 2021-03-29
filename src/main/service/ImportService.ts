@@ -5,29 +5,30 @@ import InstanceIOService from './InstanceIOService'
 import InstanceResourceService from './InstanceResourceService'
 import InstanceSavesService from './InstanceSavesService'
 import ResourceService, { ParseResourceContext } from './ResourceService'
-import AbstractService, { Service } from './Service'
+import AbstractService, { ExportService, Inject } from './Service'
 import { ZipTask } from '/@main/util/zip'
-import { isModpackResource, isModResource, isSaveResource, PersistedResource } from '/@shared/entities/resource'
+import { isModpackResource, isModResource, isSaveResource } from '/@shared/entities/resource'
 import { ResourceDomain } from '/@shared/entities/resource.schema'
 import { ImportFileOptions, ImportService as IImportService, ImportServiceKey } from '/@shared/services/ImportService'
 
-@Service(ImportServiceKey)
+@ExportService(ImportServiceKey)
 export default class ImportService extends AbstractService implements IImportService {
   constructor(
     app: LauncherApp,
-    private resourceService: ResourceService,
-    private instanceIOService: InstanceIOService,
-    private instanceResourcesService: InstanceResourceService,
-    private instanceSaveService: InstanceSavesService,
+    @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(InstanceIOService) private instanceIOService: InstanceIOService,
+    @Inject(InstanceResourceService) private instanceResourcesService: InstanceResourceService,
+    @Inject(InstanceSavesService) private instanceSaveService: InstanceSavesService,
   ) {
     super(app)
   }
 
-  async importFile(options: ImportFileOptions): Promise<PersistedResource> {
+  async importFile(options: ImportFileOptions): Promise<void> {
     const context: ParseResourceContext = {}
     const existed = await this.resourceService.queryExistedResourceByPath(options.path, context)
     if (existed) {
-      return existed
+      return
+      // return existed
     }
     const [resolved, icon] = await this.resourceService.resolveResource(options, context)
     const getInstancePath = (inst: string | boolean) => typeof inst === 'boolean' ? this.state.instance.path : inst
@@ -109,6 +110,6 @@ export default class ImportService extends AbstractService implements IImportSer
       //   result = await this.resourceService.importFile({ path, type })
       // }
     }
-    return result
+    // return result
   }
 }

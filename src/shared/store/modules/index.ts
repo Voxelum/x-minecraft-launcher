@@ -5,7 +5,7 @@ import instance from './instance'
 import java from './java'
 import launch from './launch'
 import resource from './resource'
-import setting from './setting'
+import setting from './base'
 import user from './user'
 import version from './version'
 

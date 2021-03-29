@@ -4,17 +4,17 @@ import watch from 'node-watch'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import ResourceService from './ResourceService'
-import AbstractService, { Service, Singleton, Subscribe } from './Service'
+import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
 import { mutateResource } from '/@main/entities/resource'
-import { readdirIfPresent } from '/@main/util/fs'
-import { AnyResource, isModResource, isResourcePackResource, PersistedResource } from '/@shared/entities/resource'
+import { linkOrCopy, readdirIfPresent } from '/@main/util/fs'
+import { AnyResource, isModResource, isPersistedResource, isResourcePackResource, PersistedResource } from '/@shared/entities/resource'
 import { ResourceDomain } from '/@shared/entities/resource.schema'
 import { DeployOptions, InstanceResourceService as IInstanceResourceService, InstanceResourceServiceKey } from '/@shared/services/InstanceResourceService'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
  */
-@Service(InstanceResourceServiceKey)
+@ExportService(InstanceResourceServiceKey)
 export default class InstanceResourceService extends AbstractService implements IInstanceResourceService {
   private watchingMods = ''
 
@@ -53,7 +53,7 @@ export default class InstanceResourceService extends AbstractService implements 
 
   constructor(
     app: LauncherApp,
-    private resourceService: ResourceService,
+    @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app)
   }
@@ -219,7 +219,7 @@ export default class InstanceResourceService extends AbstractService implements 
       } else {
         const src = join(this.state.root, resource.location + resource.ext)
         const dest = join(path, resource.location + resource.ext)
-        promises.push(link(src, dest).catch(() => copyFile(src, dest)).catch((e) => {
+        promises.push(linkOrCopy(src, dest).catch((e) => {
           this.error(`Cannot deploy the resource from ${src} to ${dest}`)
           this.error(e)
           throw e

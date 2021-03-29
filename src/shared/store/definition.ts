@@ -8,7 +8,7 @@ import { LauncherModule } from './modules/launch'
 import { ResourceModule } from './modules/resource'
 import { InstanceSaveModule } from './modules/instanceSave'
 import { InstanceServerInfoModule } from './modules/instanceServerInfo'
-import { SettingModule } from './modules/setting'
+import { BaseModule } from './modules/base'
 import { UserModule } from './modules/user'
 import { VersionModule } from './modules/version'
 import { InstanceResourceModule } from './modules/instanceResource'
@@ -26,7 +26,7 @@ declare module './root' {
     instanceSave: InstanceSaveModule
     instanceResource: InstanceResourceModule
     resource: ResourceModule
-    setting: SettingModule
+    setting: BaseModule
     user: UserModule
     version: VersionModule
   }
@@ -34,8 +34,8 @@ declare module './root' {
     type Semaphore = 'instance' | 'install' | 'java' | 'diagnose' | 'refreshMinecraft' | 'refreshForge' | 'refreshLiteloader'
     interface BaseState {
       /**
-         * launcher root data folder path
-         */
+       * launcher root data folder path
+       */
       root: string
       online: boolean
       platform: NodeJS.Platform

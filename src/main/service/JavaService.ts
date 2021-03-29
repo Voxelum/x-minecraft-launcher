@@ -6,7 +6,7 @@ import { basename, dirname, join } from 'path'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
 import DiagnoseService from './DiagnoseService'
-import AbstractService, { Service, Singleton } from './Service'
+import AbstractService, { ExportService, Inject, Singleton } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { getTsingHuaAdpotOponJDKPageUrl, parseTsingHuaAdpotOpenJDKHotspotArchive } from '/@main/entities/java'
 import { missing, readdirIfPresent } from '/@main/util/fs'
@@ -17,7 +17,7 @@ import { JavaServiceKey, JavaService as IJavaService } from '/@shared/services/J
 import java from '/@shared/store/modules/java'
 import { requireString } from '/@shared/util/assert'
 
-@Service(JavaServiceKey)
+@ExportService(JavaServiceKey)
 export default class JavaService extends AbstractService implements IJavaService {
   protected readonly config = new MappedFile<JavaSchema>(this.getPath('java.json'), new BufferJsonSerializer(JavaSchema))
 
@@ -27,7 +27,7 @@ export default class JavaService extends AbstractService implements IJavaService
       this.app.platform.name === 'windows' ? 'javaw.exe' : 'java')
 
   constructor(app: LauncherApp,
-    diagnoseService: DiagnoseService) {
+    @Inject(DiagnoseService) diagnoseService: DiagnoseService) {
     super(app)
 
     this.storeManager.register(java)

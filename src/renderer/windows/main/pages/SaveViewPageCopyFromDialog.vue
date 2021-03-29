@@ -92,7 +92,7 @@ import { defineComponent, reactive, computed, toRefs, onMounted, watch } from '@
 import {
   useInstanceSaves,
   useBusy,
-  useResource,
+  useSaveResource,
 } from '/@/hooks'
 import { InstanceSave } from '/@shared/entities/save'
 
@@ -115,8 +115,8 @@ export default defineComponent({
       error: null,
     })
 
-    const { cloneSave, path, loadAllInstancesSaves: loadAllPreviews, importSave } = useInstanceSaves()
-    const { resources: storedSaves } = useResource('saves')
+    const { cloneSave, path, readAllInstancesSaves: loadAllPreviews, importSave } = useInstanceSaves()
+    const { resources: storedSaves } = useSaveResource()
     const nothingSelected = computed(() => data.profilesCopyFrom.every(v => !v) && data.resourcesCopyFrom.every(v => !v))
     const loadingSaves = useBusy(loadAllPreviews)
 

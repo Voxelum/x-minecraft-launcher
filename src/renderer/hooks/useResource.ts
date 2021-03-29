@@ -12,6 +12,14 @@ export function useResourceOperation() {
   }
 }
 
+export function useSaveResource() {
+  const { state } = useStore()
+  return {
+    ...useResourceOperation(),
+    resources: computed(() => state.resource.saves),
+  }
+}
+
 export function useModResource() {
   const { state } = useStore()
   return {

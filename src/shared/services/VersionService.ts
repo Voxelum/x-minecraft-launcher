@@ -18,8 +18,19 @@ export interface VersionService {
      */
   refreshVersion(versionFolder: string): Promise<void>
   refreshVersions(force?: boolean): Promise<void>
+  /**
+   * Delete a local version
+   * @param version The version id
+   */
   deleteVersion(version: string): Promise<void>
+  /**
+   * Show the `.minecraft/versions` folder
+   */
   showVersionsDirectory(): Promise<boolean>
+  /**
+   * Show a specific version directory
+   * @param version The version to show
+   */
   showVersionDirectory(version: string): Promise<boolean>
 }
 

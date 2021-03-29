@@ -1,5 +1,6 @@
 import { ServiceKey } from './Service'
 import { Issue, IssueReport } from '/@shared/entities/issue'
+import { State } from '/@shared/store/modules/diagnose'
 /**
  * This is the service provides the diagnose service for current launch profile
  */

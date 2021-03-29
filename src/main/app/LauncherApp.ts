@@ -21,6 +21,7 @@ import { ensureDir, readFile, readJson, writeFile } from 'fs-extra'
 import { extname, join } from 'path'
 import { URL } from 'url'
 import { LauncherAppController } from './LauncherAppController'
+import { Constructor, LaunchAppContext } from './LaunchAppContext'
 
 export interface Platform {
   /**
@@ -76,8 +77,6 @@ export interface LauncherApp {
 }
 
 export abstract class LauncherApp extends EventEmitter {
-  static app: LauncherApp
-
   /**
      * Launcher %APPDATA%/xmcl path
      */
@@ -123,6 +122,8 @@ export abstract class LauncherApp extends EventEmitter {
 
   readonly platform: Platform = getPlatform()
 
+  readonly context = new LaunchAppContext()
+
   abstract readonly version: string
 
   readonly build: number = Number.parseInt(process.env.BUILD_NUMBER ?? '0', 10)
@@ -141,7 +142,7 @@ export abstract class LauncherApp extends EventEmitter {
     this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft')
     this.temporaryPath = ''
     this.controller = this.createController()
-    LauncherApp.app = this
+    this.context.register(LauncherApp as any, this)
   }
 
   abstract createController(): LauncherAppController
@@ -245,6 +246,10 @@ export abstract class LauncherApp extends EventEmitter {
   warn = (message: any, ...options: any[]) => { this.logManager.warn(`[App] ${message}`, ...options) }
 
   error = (message: any, ...options: any[]) => { this.logManager.error(`[App] ${message}`, ...options) }
+
+  getRegisteredObject<T>(type: Constructor<T>): T | undefined {
+    return this.context.getObject(type)
+  }
 
   /**
      * Start an app from file path

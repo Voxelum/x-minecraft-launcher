@@ -5,14 +5,14 @@ import { Agent } from 'https'
 import { basename, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import ResourceService from './ResourceService'
-import AbstractService, { Service, Singleton } from './Service'
+import AbstractService, { ExportService, Inject, Singleton } from './Service'
 import { getCurseforgeSourceInfo } from '/@main/entities/resource'
 import { ProjectType } from '/@shared/entities/curseforge'
-import { CurseForgeServiceKey, CurseForgeService as ICurseForgeService, InstallFileOptions } from '/@shared/services/CurseForgeService'
+import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, InstallFileOptions } from '/@shared/services/CurseForgeService'
 import { requireObject, requireString } from '/@shared/util/assert'
 import { compareDate } from '/@shared/util/object'
 
-@Service(CurseForgeServiceKey)
+@ExportService(CurseForgeServiceKey)
 export default class CurseForgeService extends AbstractService implements ICurseForgeService {
   private userAgent: Agent = new Agent({ keepAlive: true })
 
@@ -27,7 +27,7 @@ export default class CurseForgeService extends AbstractService implements ICurse
   private searchProjectCache: Record<string, AddonInfo[]> = {}
 
   constructor(app: LauncherApp,
-    private resourceService: ResourceService,
+    @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app)
   }

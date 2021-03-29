@@ -70,7 +70,7 @@ export default class StoreManager extends Manager {
     return this
   }
 
-  register<T>(template: ModuleOption<T, any, any, any>, loader?: () => Promise<T>) {
+  register<T, G>(template: ModuleOption<T, any, any, any>, loader?: () => Promise<T>): T {
 
   }
 }

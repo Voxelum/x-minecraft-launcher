@@ -7,16 +7,16 @@ import { ensureFile, readJson, writeFile } from 'fs-extra'
 import { join } from 'path'
 import DiagnoseService from './DiagnoseService'
 import ResourceService from './ResourceService'
-import AbstractService, { Service } from './Service'
+import AbstractService, { ExportService, Inject } from './Service'
 import LauncherApp from '../app/LauncherApp'
 import { ExternalAuthSkinServiceKey, ExternalAuthSkinService as IExternalAuthSkinService } from '/@shared/services/ExternalAuthSkinService'
 
-@Service(ExternalAuthSkinServiceKey)
+@ExportService(ExternalAuthSkinServiceKey)
 export default class ExternalAuthSkinService extends AbstractService implements IExternalAuthSkinService {
   constructor(
     app: LauncherApp,
-    private diagnoseService: DiagnoseService,
-    private resourceService: ResourceService,
+    @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
+    @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app)
     diagnoseService.registerMatchedFix(['missingAuthlibInjector'],

@@ -4,13 +4,29 @@ import { ModuleOption } from '../root'
 
 interface State extends SettingSchema {
   /**
-     * All supported languages of the launcher
-     */
+   * All supported languages of the launcher
+   */
   locales: string[]
   updateInfo: UpdateInfo | null
   updateStatus: 'ready' | 'none' | 'pending'
   version: string
   build: number
+  /**
+    * launcher root data folder path
+    */
+  root: string
+  /**
+   * Is current environment connecting to internet?
+   */
+  online: boolean
+  /**
+   * The current operating system platform
+   */
+  platform: NodeJS.Platform
+  /**
+   * The version of the launcher
+   */
+  launcherVersion: string
 }
 
 interface Mutations {
@@ -27,15 +43,20 @@ interface Mutations {
   apiSetsPreference: 'mojang' | 'bmcl' | 'mcbbs'
   apiSets: { name: string; url: string }[]
 
-  version: [string, number ]
+  version: [string, number]
+
+  root: string
+  online: boolean
+  launcherVersion: string
+  platform: NodeJS.Platform
 }
 
 /**
- * Whole launcher setting
+ * Base Launcher Information
  */
-export type SettingModule = ModuleOption<State, {}, Mutations, {}>
+export type BaseModule = ModuleOption<State, {}, Mutations, {}>
 
-const mod: SettingModule = {
+const mod: BaseModule = {
   state: {
     locale: '',
     locales: [],
@@ -48,40 +69,48 @@ const mod: SettingModule = {
     apiSets: [{ name: 'mcbbs', url: 'https://download.mcbbs.net' }, { name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }],
     version: '',
     build: 0,
+    root: '',
+    launcherVersion: '',
+    online: false,
+    platform: 'win32',
   },
   mutations: {
-    updateInfo (state, updateInfo) {
+    online(state, o) { state.online = o },
+    root(state, r) { state.root = r },
+    platform(state, p) { state.platform = p },
+    launcherVersion(state, s) { state.launcherVersion = s },
+    updateInfo(state, updateInfo) {
       if (typeof updateInfo === 'object') state.updateInfo = updateInfo
     },
-    updateStatus (state, updateStatus) { state.updateStatus = updateStatus },
-    allowPrerelease (state, allowPrerelease) {
+    updateStatus(state, updateStatus) { state.updateStatus = updateStatus },
+    allowPrerelease(state, allowPrerelease) {
       if (typeof allowPrerelease === 'boolean') { state.allowPrerelease = allowPrerelease }
     },
-    autoInstallOnAppQuit (state, autoInstallOnAppQuit) {
+    autoInstallOnAppQuit(state, autoInstallOnAppQuit) {
       if (typeof autoInstallOnAppQuit === 'boolean') state.autoInstallOnAppQuit = autoInstallOnAppQuit
     },
-    autoDownload (state, autoDownload) {
+    autoDownload(state, autoDownload) {
       if (typeof autoDownload === 'boolean') state.autoDownload = autoDownload
     },
-    locale (state, language) {
+    locale(state, language) {
       state.locale = language
     },
-    locales (state, languages) {
+    locales(state, languages) {
       state.locales = languages
     },
-    config (state, config) {
+    config(state, config) {
       state.locale = config.locale
       state.autoDownload = config.autoDownload || false
       state.autoInstallOnAppQuit = config.autoDownload || false
       state.allowPrerelease = config.allowPrerelease || false
       state.apiSetsPreference = typeof config.apiSetsPreference === 'string' ? config.apiSetsPreference : 'mcbbs'
     },
-    settings (state, settings) {
+    settings(state, settings) {
       // Object.assign(state.settings, settings);
     },
-    apiSetsPreference (state, use) { state.apiSetsPreference = use },
-    apiSets (state, sets) { state.apiSets = sets },
-    version (state, [version, build]) { state.version = version; state.build = build ?? 0 },
+    apiSetsPreference(state, use) { state.apiSetsPreference = use },
+    apiSets(state, sets) { state.apiSets = sets },
+    version(state, [version, build]) { state.version = version; state.build = build ?? 0 },
   },
 }
 

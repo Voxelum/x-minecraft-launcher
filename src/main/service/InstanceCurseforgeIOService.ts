@@ -6,7 +6,7 @@ import LauncherApp from '../app/LauncherApp'
 import InstanceResourceService from './InstanceResourceService'
 import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
-import AbstractService, { Service } from './Service'
+import AbstractService, { ExportService, Inject } from './Service'
 import { getCurseforgeUrl } from '/@main/entities/resource'
 import { isFile } from '/@main/util/fs'
 import { ZipTask } from '/@main/util/zip'
@@ -20,12 +20,12 @@ import { isNonnull, requireObject } from '/@shared/util/assert'
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
-@Service(InstanceCurseforgeIOServiceKey)
+@ExportService(InstanceCurseforgeIOServiceKey)
 export default class InstanceCurseforgeIOService extends AbstractService implements IInstanceCurseforgeIOService {
   constructor(app: LauncherApp,
-    private resourceService: ResourceService,
-    private instanceService: InstanceService,
-    private instanceResourceService: InstanceResourceService,
+    @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(InstanceService) private instanceService: InstanceService,
+    @Inject(InstanceResourceService) private instanceResourceService: InstanceResourceService,
   ) {
     super(app)
   }

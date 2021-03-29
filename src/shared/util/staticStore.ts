@@ -1,42 +1,47 @@
 import { GetterTree, ModuleTree, MutationTree, StoreOptions, MutationPayload } from 'vuex'
 
-type Container = { state?: any; getters?: GetterTree<any, any>; modules?: ModuleTree<any>; mutations?: MutationTree<any> }
+type Container = {
+  state?: any
+  getters?: GetterTree<any, any>
+  mutations?: MutationTree<any>
+  modules?: ModuleTree<any>
+}
 
-function createGetters (rootState: any, rootGetters: GetterTree<any, any>, getters: GetterTree<any, any>, state: any, container: Container) {
+function createGetters(rootState: any, rootGetters: GetterTree<any, any>, getters: GetterTree<any, any>, state: any, container: Container) {
   if (container.getters) {
     for (const [key, func] of Object.entries(container.getters)) {
       Object.defineProperty(getters, key, {
-        get () { return func(state, getters, rootState, rootGetters) },
+        get() { return func(state, getters, rootState, rootGetters) },
         enumerable: true,
       })
       Object.defineProperty(rootGetters, key, {
-        get () { return func(state, getters, rootState, rootGetters) },
+        get() { return func(state, getters, rootState, rootGetters) },
         enumerable: true,
       })
     }
   }
 }
-function createMutations (state: any, mutations: Record<string, (payload?: any) => any>, container: Container) {
+function createMutations(state: any, mutations: Record<string, (payload?: any) => any>, container: Container) {
   if (container.mutations) {
     for (const [key, func] of Object.entries(container.mutations)) {
       mutations[key] = (payload) => func(state, payload)
     }
   }
 }
-function deepCopy<T > (object: T): T {
+function deepCopy<T>(object: T): T {
   return JSON.parse(JSON.stringify(object))
 }
 
 type Listener = (mutation: MutationPayload, state: any) => void
 
-export interface StaticStore<T > {
+export interface StaticStore<T> {
   state: T
   getters: Record<string, any>
   commit: (name: string, payload?: any) => void
   subscribe: (fn: Listener) => void
 }
 
-export function createStaticStore<T > (template: StoreOptions<T>): StaticStore<T> {
+export function createStaticStore<T>(template: StoreOptions<T>): StaticStore<T> {
   const subscriptions: Listener[] = []
 
   const state = deepCopy(typeof template.state === 'object' ? template.state : (template as any).state())
@@ -46,7 +51,7 @@ export function createStaticStore<T > (template: StoreOptions<T>): StaticStore<T
     subscriptions.push(fn)
   }
 
-  function discover (thisState: any, container: Container) {
+  function discover(thisState: any, container: Container) {
     createGetters(state, getters, {}, thisState, container)
     createMutations(thisState, mutations, container)
     if (container.modules) {

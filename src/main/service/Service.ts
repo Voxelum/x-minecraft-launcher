@@ -13,16 +13,25 @@ export type ServiceConstructor<T extends AbstractService = any> = {
   new(...args: any[]): T
 }
 
-export const registeredServices: ServiceConstructor[] = []
+export function Inject<T extends AbstractService>(con: ServiceConstructor<T>) {
+  return (target: object, key: string, index: number) => {
+    if (Reflect.hasMetadata('service:params', target)) {
+      Reflect.getMetadata('service:params', target)[index] = con
+    } else {
+      const arr: ServiceConstructor[] = []
+      Reflect.defineMetadata('service:params', arr, target)
+      arr.push(con)
+    }
+  }
+}
 
 /**
- * Register a service into global service registry.
+ * Export a service .
  * @param key The service key representing it
  */
-export function Service<T extends AbstractService>(key: ServiceKey<T>) {
+export function ExportService<T extends AbstractService>(key: ServiceKey<T>) {
   return (target: ServiceConstructor<T>) => {
     Reflect.defineMetadata('service:key', key, target)
-    registeredServices.push(target)
   }
 }
 
@@ -182,8 +191,6 @@ export default abstract class AbstractService {
   get credentialManager() { return this.app.credentialManager }
 
   get workerManager() { return this.app.workerManager }
-
-  get persistManager() { return this.app.persistManager }
 
   /**
    * Submit a task into the task manager.

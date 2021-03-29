@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import { startService } from 'esbuild'
 import { extname } from 'path'
+import typscript from 'typescript'
 
 /**
  * Wrap esbuild to rollup plugin to build typescript
@@ -12,19 +13,6 @@ const createPlugin = () => {
     async buildStart() {
       this.cache.set('service', await startService())
     },
-    async resolveId(id, importer) {
-      if (id.endsWith('.ts')) {
-        return
-      }
-      const tsResult = await this.resolve(`${id}.ts`, importer, { skipSelf: true })
-      if (tsResult) {
-        return tsResult
-      }
-      const indexTsResult = await this.resolve(`${id}/index.ts`, importer, { skipSelf: true })
-      if (indexTsResult) {
-        return indexTsResult
-      }
-    },
     async transform(code, id) {
       if (id.endsWith('js') || id.endsWith('js?commonjs-proxy')) {
         return
@@ -32,6 +20,7 @@ const createPlugin = () => {
       if (!id.endsWith('.ts')) {
         return
       }
+      console.log(`esbuild: ${id}`)
       function printMessage(m, code) {
         console.error(chalk.yellow(m.text))
         if (m.location) {

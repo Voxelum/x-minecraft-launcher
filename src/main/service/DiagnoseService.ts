@@ -5,7 +5,7 @@ import { PackMeta } from '@xmcl/resourcepack'
 import { readJson, readJSON } from 'fs-extra'
 import { basename, join, relative } from 'path'
 import { AUTHLIB_ORG_NAME } from '../constant'
-import AbstractService, { Service, Singleton, Subscribe } from './Service'
+import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
 import VersionService from './VersionService'
 import LauncherApp from '/@main/app/LauncherApp'
 import { exists, missing, validateSha256 } from '/@main/util/fs'
@@ -15,7 +15,9 @@ import { ForgeModCommonMetadata } from '/@shared/entities/mod'
 import { FabricResource } from '/@shared/entities/resource'
 import { compareRelease, getExpectVersion } from '/@shared/entities/version'
 import { DiagnoseServiceKey, DiagnoseService as IDiagnoseService } from '/@shared/services/DiagnoseService'
+import { VersionServiceKey } from '/@shared/services/VersionService'
 import { parseVersion, VersionRange } from '/@shared/util/mavenVersion'
+import diagnoseModule from '/@shared/store/modules/diagnose'
 
 export type DiagnoseFunction = (report: Partial<IssueReport>) => Promise<void>
 export interface Fix {
@@ -27,14 +29,13 @@ export interface Fix {
 /**
  * This is the service provides the diagnose service for current launch profile
  */
-@Service(DiagnoseServiceKey)
+@ExportService(DiagnoseServiceKey)
 export default class DiagnoseService extends AbstractService implements IDiagnoseService {
   private fixes: Fix[] = []
 
-  constructor(
-    app: LauncherApp,
-    private versionService: VersionService,
-  ) {
+  private _state = this.app.storeManager.register(diagnoseModule)
+
+  constructor(app: LauncherApp) {
     super(app)
   }
 
@@ -414,7 +415,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
         this.error(`No profile selected! ${id}`)
         return
       }
-      await this.versionService.refreshVersions()
+      // await this.versionService.refreshVersions()
       const runtime = selected.runtime
       const currentVersion = this.getters.instanceVersion
 
@@ -424,20 +425,20 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
       const mcLocation = MinecraftFolder.from(currentVersion.minecraftDirectory)
 
       type VersionReport = Pick<IssueReport,
-      'missingVersionJar' |
-      'missingAssetsIndex' |
-      'missingVersionJson' |
-      'missingLibraries' |
-      'missingAssets' |
-      'missingVersion' |
+        'missingVersionJar' |
+        'missingAssetsIndex' |
+        'missingVersionJson' |
+        'missingLibraries' |
+        'missingAssets' |
+        'missingVersion' |
 
-      'corruptedVersionJar' |
-      'corruptedAssetsIndex' |
-      'corruptedVersionJson' |
-      'corruptedLibraries' |
-      'corruptedAssets' |
+        'corruptedVersionJar' |
+        'corruptedAssetsIndex' |
+        'corruptedVersionJson' |
+        'corruptedLibraries' |
+        'corruptedAssets' |
 
-      'badInstall'>
+        'badInstall'>
 
       const tree: VersionReport = {
         missingVersion: [],

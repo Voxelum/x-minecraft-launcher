@@ -90,6 +90,7 @@ export function isSaveResource(resource: Resource): resource is SaveResource {
 
 export const NO_RESOURCE: UnknownResource = Object.freeze({
   metadata: {},
+  location: '',
   type: ResourceType.Unknown,
   domain: ResourceDomain.Unknown,
   ino: 0,
@@ -107,7 +108,7 @@ export interface SourceInformation {
   curseforge?: CurseforgeInformation
 }
 
-export function isPersistedResource(resource: Resource): resource is AnyPersistedResource {
+export function isPersistedResource<T>(resource: Resource<T>): resource is PersistedResource<T> {
   const r = resource as any
   return r.tags instanceof Array && r.uri instanceof Array && typeof r.location === 'string' && typeof r.date === 'string'
 }

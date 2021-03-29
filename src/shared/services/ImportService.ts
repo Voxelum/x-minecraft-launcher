@@ -62,7 +62,7 @@ export interface ImportService {
    * - For save, you can override the setting in `savePolicy`
    * - For modpack, you can override the setting in `modpackPolicy`
    */
-  importFile(options: ImportFileOptions): Promise<PersistedResource>
+  importFile(options: ImportFileOptions): Promise<void>
 }
 
 export const ImportServiceKey: ServiceKey<ImportService> = 'ImportService'

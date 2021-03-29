@@ -1,5 +1,6 @@
 import { provide, reactive, ref, Ref, set } from '@vue/composition-api'
 import { ipcRenderer, SERVICES_KEY, SERVICES_SEMAPHORE_KEY } from '/@/constant'
+import { ServiceKey } from '/@shared/services/Service'
 
 export function getServiceCallTasks(promise: Readonly<Promise<any>>): Ref<string[]> {
   return Reflect.get(promise, '__tasks__')
@@ -21,7 +22,7 @@ async function startSession(sessionId: number, tasks: Ref<Array<any>>) {
   return result
 }
 
-function getServiceProxy(seriv: string) {
+export function getServiceProxy<T>(seriv: ServiceKey<T>): T {
   return new Proxy({} as any, {
     get(_, functionName) {
       const func = function (payload: any) {
