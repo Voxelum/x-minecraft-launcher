@@ -90,8 +90,8 @@ export default class ExternalAuthSkinService extends AbstractService implements 
 
   async installAuthlibInjection(): Promise<string> {
     const jsonPath = this.getPath('authlib-injection.json')
-    const mc = new MinecraftFolder(this.state.root)
-    const root = this.state.root
+    const root = this.getPath()
+    const mc = new MinecraftFolder(root)
 
     const download = async (content: any) => {
       const name = `${AUTHLIB_ORG_NAME}:${content.version}`

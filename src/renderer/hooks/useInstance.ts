@@ -1,6 +1,6 @@
 import { computed, reactive, toRefs } from '@vue/composition-api'
 import { Frame as GameSetting } from '@xmcl/gamesetting'
-import { useBusy } from './useSemaphore'
+import { useBusy, useSemaphore } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
 import { useStore } from './useStore'
 import { useCurrentUser } from './useUser'
@@ -67,7 +67,7 @@ export function useInstance() {
     creationDate,
     server,
     isServer: computed(() => getters.instance.server !== null),
-    refreshing: computed(() => state.semaphore.instance > 0),
+    refreshing: computed(() => useSemaphore('instance').value !== 0),
     ...useServiceOnly(InstanceServiceKey, 'editInstance', 'refreshServerStatus'),
     ...useServiceOnly(InstanceIOServiceKey, 'exportInstance'),
   }
@@ -117,14 +117,14 @@ export function useInstanceCreation() {
   return {
     ...required,
     /**
-         * Commit this creation. It will create and select the instance.
-         */
+     * Commit this creation. It will create and select the instance.
+     */
     create() {
       return createAndSelect(data)
     },
     /**
-         * Reset the change
-         */
+     * Reset the change
+     */
     reset() {
       data.name = ''
       data.runtime = {

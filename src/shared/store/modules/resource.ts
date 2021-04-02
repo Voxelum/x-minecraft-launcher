@@ -19,7 +19,7 @@ interface Getters {
   queryResource(uri: string): AnyPersistedResource | undefined
 }
 
-interface Mutations {
+export interface Mutations {
   resource: AnyPersistedResource
   resources: AnyPersistedResource[]
   resourcesRemove: AnyPersistedResource[]

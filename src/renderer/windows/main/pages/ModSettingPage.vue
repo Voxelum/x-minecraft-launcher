@@ -164,6 +164,7 @@ import { useSearchToggles, useSearch } from '../hooks'
 import ModCard from './ModSettingPageCard.vue'
 import DeleteView from './ModSettingPageDeleteView.vue'
 import FloatButton from './ModSettingPageFloatButton.vue'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 type ModResource = ForgeResource | LiteloaderResource
 
@@ -394,7 +395,7 @@ export default defineComponent({
     const { toggle } = useSearchToggles()
     const { text: filteredText } = useSearch()
     const { path } = useInstanceBase()
-    const { openDirectory } = useService('BaseService')
+    const { openDirectory } = useService(BaseServiceKey)
 
     function isCompatibleMod(mod: ModItem) {
       if (mod.enabled) {

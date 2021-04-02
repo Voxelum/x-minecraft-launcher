@@ -1,7 +1,6 @@
 import { copy, copyFile, ensureDir, readJson, remove, unlink, writeJson } from 'fs-extra'
 import { join } from 'path'
 import 'reflect-metadata'
-import settings from '../../shared/store/modules/base'
 import LauncherApp from '../app/LauncherApp'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
@@ -14,8 +13,6 @@ import { BaseService as IBaseService, BaseServiceKey, MigrateOptions } from '/@s
 export default class BaseService extends AbstractService implements IBaseService {
   private settingFile = new MappedFile<SettingSchema>(this.getPath('setting.json'), new BufferJsonSerializer(SettingSchema))
 
-  private _state = this.storeManager.register(settings)
-
   constructor(app: LauncherApp) {
     super(app)
     this.storeManager.subscribeAll([
@@ -27,12 +24,12 @@ export default class BaseService extends AbstractService implements IBaseService
       'apiSets',
     ], () => {
       this.settingFile.write({
-        locale: this._state.locale,
-        autoInstallOnAppQuit: this._state.autoInstallOnAppQuit,
-        autoDownload: this._state.autoDownload,
-        allowPrerelease: this._state.allowPrerelease,
-        apiSets: this._state.apiSets,
-        apiSetsPreference: this._state.apiSetsPreference,
+        locale: this.state.base.locale,
+        autoInstallOnAppQuit: this.state.base.autoInstallOnAppQuit,
+        autoDownload: this.state.base.autoDownload,
+        allowPrerelease: this.state.base.allowPrerelease,
+        apiSets: this.state.base.apiSets,
+        apiSetsPreference: this.state.base.apiSetsPreference,
       })
     })
   }
@@ -77,7 +74,7 @@ export default class BaseService extends AbstractService implements IBaseService
    * Quit and install the update once the update is ready
    */
   async quitAndInstall() {
-    if (this._state.updateStatus === 'ready') {
+    if (this.state.base.updateStatus === 'ready') {
       await this.app.installUpdateAndQuit()
     } else {
       this.warn('There is no update avaiable!')
@@ -106,7 +103,7 @@ export default class BaseService extends AbstractService implements IBaseService
    */
   @Singleton()
   async downloadUpdate() {
-    if (!this._state.updateInfo) {
+    if (!this.state.base.updateInfo) {
       throw new Error('Cannot download update if we don\'t check the version update!')
     }
     await this.submit(this.app.downloadUpdateTask())

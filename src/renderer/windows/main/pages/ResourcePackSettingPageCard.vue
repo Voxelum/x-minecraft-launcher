@@ -7,7 +7,7 @@
     draggable
     :class="{ incompatible: !compatible }"
     class="draggable-card white--text elevation-4"
-    style="margin-top: 10px;"
+    style="margin-top: 10px"
     @dragstart="onDragStart"
     @dragend.prevent="onDragEnd"
     @contextmenu="openContextMenu"
@@ -22,38 +22,49 @@
         >
           <v-flex
             xs6
-            style="padding: 0;"
+            style="padding: 0"
           >
-            <v-img
+            <img
               ref="iconImage"
-              style="user-drag: none; user-select: none; height: 125px;"
+              v-fallback-img="unknownPack"
+              style="user-drag: none; user-select: none; height: 125px"
               :src="pack.icon"
               contain
-            />
+            >
+            <!-- <v-img
+
+            /> -->
           </v-flex>
           <v-flex
             xs6
-            style="padding-top: 10px;"
+            style="padding-top: 10px"
           >
             <text-component
-              style="white-space: normal; word-break: break-word;"
+              style="white-space: normal; word-break: break-word"
               :source="pack.name"
               class="title"
             />
             <br>
             <text-component
-              style="white-space: normal; word-break: break-word;"
+              style="white-space: normal; word-break: break-word"
               :source="pack.description"
             />
           </v-flex>
         </v-layout>
       </template>
       <span>
-        {{ compatible ? $t('resourcepack.compatible', { format: pack.pack_format, version: mcversion }) : $t('resourcepack.incompatible', {
-          accept: pack.acceptingRange,
-          actual: mcversion,
-          format: pack.pack_format
-        }) }}
+        {{
+          compatible
+            ? $t("resourcepack.compatible", {
+              format: pack.pack_format,
+              version: mcversion,
+            })
+            : $t("resourcepack.incompatible", {
+              accept: pack.acceptingRange,
+              actual: mcversion,
+              format: pack.pack_format,
+            })
+        }}
       </span>
     </v-tooltip>
   </v-card>
@@ -64,6 +75,8 @@ import { defineComponent, reactive, ref, toRefs, Ref, computed } from '@vue/comp
 import { useInstanceVersionBase, useCompatible, useDragTransferItem, ResourcePackItem, useI18n, useService } from '/@/hooks'
 import { required } from '/@/util/props'
 import { useContextMenu, ContextMenuItem, useCurseforgeRoute } from '../hooks'
+import { BaseServiceKey } from '/@shared/services/BaseService'
+import unknownPack from '/@/assets/unknown_pack.png'
 
 export default defineComponent({
   props: {
@@ -77,7 +90,7 @@ export default defineComponent({
     const { open } = useContextMenu()
     const { $t } = useI18n()
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
-    const { showItemInDirectory } = useService('BaseService')
+    const { showItemInDirectory } = useService(BaseServiceKey)
     const card: Ref<any> = ref(null)
 
     useDragTransferItem(computed(() => card.value?.$el as HTMLElement), props.pack.id, props.isSelected ? 'right' : 'left')
@@ -136,6 +149,7 @@ export default defineComponent({
       mcversion: minecraft,
       card,
       openContextMenu,
+      unknownPack,
     }
   },
 })

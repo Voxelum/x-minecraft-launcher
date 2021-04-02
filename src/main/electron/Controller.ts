@@ -5,7 +5,7 @@ import BaseService from '/@main/service/BaseService'
 import { acrylic } from '/@main/util/acrylic'
 import { trackWindowSize } from '/@main/util/windowSizeTracker'
 import { TaskNotification } from '/@shared/entities/notification'
-import { StaticStore } from '/@shared/util/staticStore'
+import { StaticStore } from '../util/staticStore'
 import { app, BrowserWindow, dialog, ProcessMemoryInfo, Menu, session, Tray, Notification } from 'electron'
 import { readJSON } from 'fs-extra'
 import { join, resolve } from 'path'
@@ -17,7 +17,6 @@ import LauncherApp from '../app/LauncherApp'
 import favcon2XPath from '/@static/favicon@2x.png'
 import iconPath from '/@static/apple-touch-icon.png'
 import i18n from './locales'
-import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export default class Controller implements LauncherAppController {
   private mainWin: BrowserWindow | undefined = undefined
@@ -81,6 +80,13 @@ export default class Controller implements LauncherAppController {
       y: typeof configData.y === 'number' ? configData.y as number : null,
     }
 
+    const sess = session.fromPartition('persist:main')
+
+    sess.protocol.registerFileProtocol('dataroot', (req, callback) => {
+      const pathname = decodeURIComponent(req.url.replace('dataroot:///', ''))
+      callback(join(this.app.appDataPath, pathname))
+    })
+
     const browser = new BrowserWindow({
       title: 'KeyStone Launcher',
       minWidth: 800,
@@ -99,10 +105,10 @@ export default class Controller implements LauncherAppController {
       vibrancy: 'sidebar', // or popover
       icon: iconPath,
       webPreferences: {
-        webSecurity: !IS_DEV, // disable security for loading local image
+        // webSecurity: !IS_DEV, // disable security for loading local image
         nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
-        session: session.fromPartition('persist:main'),
+        session: sess,
         webviewTag: true,
       },
     })
@@ -343,7 +349,7 @@ export default class Controller implements LauncherAppController {
         this.i18n.use(mutation.payload)
       }
     })
-    this.i18n.use(this.store.state.setting.locale)
+    this.i18n.use(this.store.state.base.locale)
 
     const $t = this.i18n.t
     const tray = this.tray

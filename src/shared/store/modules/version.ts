@@ -6,8 +6,8 @@ import { ModuleOption } from '../root'
 
 interface State {
   /**
-     * All the local versions installed in the disk
-     */
+   * All the local versions installed in the disk
+   */
   local: ResolvedVersion[]
   /**
      * Minecraft version metadata list. Helps to download.
@@ -43,7 +43,7 @@ interface Getters {
   minecraftVersion: (mcversion: string) => MinecraftVersion | undefined
 }
 
-interface Mutations {
+export interface Mutations {
   localVersions: ResolvedVersion[]
   localVersion: ResolvedVersion
   localVersionRemove: string
@@ -60,8 +60,8 @@ export type VersionModule = ModuleOption<State, Getters, Mutations, {}>
 const mod: VersionModule = {
   state: {
     /**
-         * local versions
-         */
+     * local versions
+     */
     local: [],
     minecraft: {
       timestamp: '',
@@ -96,36 +96,38 @@ const mod: VersionModule = {
   },
   getters: {
     /**
-         * latest snapshot
-         */
+     * latest snapshot
+     */
     minecraftSnapshot: state => state.minecraft.versions.find(v => v.id === state.minecraft.latest.snapshot),
     /**
-         * latest release
-         */
+     * latest release
+     */
     minecraftRelease: state => state.minecraft.versions.find(v => v.id === state.minecraft.latest.release) || LATEST_RELEASE,
 
     minecraftVersion: state => version => state.minecraft.versions.find(v => v.id === version),
   },
   mutations: {
-    localVersions (state, local) {
+    localVersions(state, local) {
+      local.forEach(Object.freeze)
       state.local = local
     },
-    localVersion (state, local) {
-      const found = state.local.find(l => l.id === local.id)
-      if (found) {
-        Object.assign(found, local)
+    localVersion(state, local) {
+      Object.freeze(local)
+      const found = state.local.findIndex(l => l.id === local.id)
+      if (found !== -1) {
+        state.local[found] = local
       } else {
         state.local.push(local as any)
         state.local = state.local.sort((a, b) => a.id.localeCompare(b.id))
       }
     },
-    localVersionRemove (state, folder) {
+    localVersionRemove(state, folder) {
       state.local = state.local.filter(v => v.id === folder)
     },
-    minecraftMetadata (state, metadata) {
+    minecraftMetadata(state, metadata) {
       state.minecraft = Object.freeze(metadata)
     },
-    forgeMetadata (state, metadata) {
+    forgeMetadata(state, metadata) {
       const existed = state.forge.find((version) => version.mcversion === metadata.mcversion)
       if (existed) {
         existed.timestamp = metadata.timestamp
@@ -135,19 +137,19 @@ const mod: VersionModule = {
         state.forge.push(result)
       }
     },
-    liteloaderMetadata (state, metadata) {
+    liteloaderMetadata(state, metadata) {
       state.liteloader = Object.freeze(metadata)
     },
-    fabricYarnMetadata (state, { versions, timestamp }) {
+    fabricYarnMetadata(state, { versions, timestamp }) {
       state.fabric.yarnTimestamp = timestamp
       state.fabric.yarns = Object.seal(versions)
     },
-    fabricLoaderMetadata (state, { versions, timestamp }) {
+    fabricLoaderMetadata(state, { versions, timestamp }) {
       state.fabric.loaderTimestamp = timestamp
       state.fabric.loaders = Object.seal(versions)
     },
-    optifineMetadata (state, { versions, etag: timestamp }) {
-      state.optifine.versions = versions
+    optifineMetadata(state, { versions, etag: timestamp }) {
+      state.optifine.versions = Object.seal(versions)
       state.optifine.etag = timestamp
     },
   },

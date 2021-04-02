@@ -22,12 +22,15 @@
             "type": "object",
             "properties": {
                 "mcversion": {
+                    "description": "The minecraft version",
                     "type": "string"
                 },
                 "type": {
+                    "description": "The type of the optifine like HD_U",
                     "type": "string"
                 },
                 "patch": {
+                    "description": "The patch of the optifine",
                     "type": "string"
                 }
             },

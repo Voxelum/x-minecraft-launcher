@@ -15,7 +15,7 @@ interface State {
 interface Getters {
 }
 
-interface Mutations {
+export interface Mutations {
   instanceMods: AnyResource[]
   instanceModAdd: AnyResource[]
   instanceModRemove: AnyResource[]

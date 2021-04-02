@@ -1,5 +1,5 @@
 import { Task } from '@xmcl/task'
-import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, shell, protocol } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { createServer } from 'http'
 import { join } from 'path'
@@ -11,7 +11,7 @@ import { LauncherAppController } from '/@main/app/LauncherAppController'
 import { IS_DEV } from '/@main/constant'
 import { isDirectory } from '/@main/util/fs'
 import { UpdateInfo } from '/@shared/entities/update'
-import { StaticStore } from '/@shared/util/staticStore'
+import { StaticStore } from '../util/staticStore'
 
 export default class ElectronLauncherApp extends LauncherApp {
   createController(): LauncherAppController {
@@ -85,10 +85,10 @@ export default class ElectronLauncherApp extends LauncherApp {
   }
 
   downloadUpdateTask(): Task<void> {
-    if (this.storeManager.store.state.setting.updateInfo) {
-      if (this.storeManager.store.state.setting.updateInfo.incremental) {
+    if (this.storeManager.store.state.base.updateInfo) {
+      if (this.storeManager.store.state.base.updateInfo.incremental) {
         const updatePath = join(this.appDataPath, 'update.asar')
-        return new DownloadAsarUpdateTask(this.storeManager.store.state.setting.updateInfo, this.networkManager.isInGFW, updatePath)
+        return new DownloadAsarUpdateTask(this.storeManager.store.state.base.updateInfo, this.networkManager.isInGFW, updatePath)
           .map(() => undefined)
       }
       return new DownloadFullUpdateTask()
@@ -97,8 +97,8 @@ export default class ElectronLauncherApp extends LauncherApp {
   }
 
   async installUpdateAndQuit(): Promise<void> {
-    if (this.storeManager.store.state.setting.updateInfo) {
-      if (this.storeManager.store.state.setting.updateInfo.incremental) {
+    if (this.storeManager.store.state.base.updateInfo) {
+      if (this.storeManager.store.state.base.updateInfo.incremental) {
         await quitAndInstallAsar.bind(this)()
       } else {
         quitAndInstallFullUpdate()
@@ -185,7 +185,7 @@ export default class ElectronLauncherApp extends LauncherApp {
   }
 
   handleUrl(url: string) {
-    const parsed = new URL(url)
+    const parsed = new URL(url, 'xmcl://')
     if ((parsed.host === 'launcher' || IS_DEV) && parsed.pathname === '/auth') {
       let error: Error | undefined
       if (parsed.searchParams.get('error')) {
@@ -217,15 +217,15 @@ export default class ElectronLauncherApp extends LauncherApp {
       }
     })
 
-    if (!store.state.setting.locale) {
+    if (!store.state.base.locale) {
       store.commit('locale', app.getLocale())
     }
 
     this.log(`Current launcher core version is ${this.version}.`)
 
-    autoUpdater.autoInstallOnAppQuit = store.state.setting.autoInstallOnAppQuit
-    autoUpdater.autoDownload = store.state.setting.autoDownload
-    // autoUpdater.allowPrerelease = store.state.setting.allowPrerelease;
+    autoUpdater.autoInstallOnAppQuit = store.state.base.autoInstallOnAppQuit
+    autoUpdater.autoDownload = store.state.base.autoDownload
+    // autoUpdater.allowPrerelease = store.state.base.allowPrerelease;
 
     autoUpdater.allowPrerelease = true
 

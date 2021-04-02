@@ -267,6 +267,7 @@ import {
 } from '/@/hooks'
 import ResourcePackCard from './ResourcePackSettingPageCard.vue'
 import { useSearch, useSearchToggle } from '../hooks'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export default defineComponent({
   components: {
@@ -280,7 +281,7 @@ export default defineComponent({
     const { removeResource } = useResourceOperation()
     const { replace } = useRouter()
     const { path } = useInstanceBase()
-    const { openDirectory } = useService('BaseService')
+    const { openDirectory } = useService(BaseServiceKey)
     const searchBar: Ref<any> = ref(null)
     const data = reactive({
       dragging: false,

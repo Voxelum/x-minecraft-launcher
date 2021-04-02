@@ -132,6 +132,7 @@ import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref
 import { useLogin, useLoginValidation, useI18n, useService } from '/@/hooks'
 import { useLoginDialog } from '../hooks/index'
 import Hint from '../components/Hint.vue'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export default defineComponent({
   components: { Hint },
@@ -225,7 +226,7 @@ export default defineComponent({
         inside.value = true
       }
     })
-    const { handleUrl } = useService('BaseService')
+    const { handleUrl } = useService(BaseServiceKey)
     const onDrop = (e: DragEvent) => {
       const url = e.dataTransfer?.getData('xmcl/url')
       if (url) {

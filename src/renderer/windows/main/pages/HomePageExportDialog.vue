@@ -147,23 +147,23 @@
 </template>
 
 <script lang=ts>
-import { InstanceFile } from '/@main/service/InstanceIOService'
 import { computed, defineComponent, nextTick, reactive, toRefs, watch } from '@vue/composition-api'
 import { useZipFilter } from '../hooks'
-import ExportLocalVersionList from './HomePageExportLocalVersionList.vue'
 import InstanceFiles from './HomePageInstanceFiles.vue'
 import { useI18n, useInstance, useInstanceVersion, useLocalVersions, useNativeDialog, useService } from '/@/hooks'
+import { InstanceCurseforgeIOServiceKey } from '/@shared/services/InstanceCurseforgeIOServic'
+import { InstanceFile, InstanceIOServiceKey } from '/@shared/services/InstanceIOService'
 
 export default defineComponent({
-  components: { InstanceFiles, ExportLocalVersionList },
+  components: { InstanceFiles },
   props: {
     value: Boolean,
     isCurseforge: Boolean,
   },
   setup(props, context) {
     const { name, author } = useInstance()
-    const { getInstanceFiles, exportInstance } = useService('InstanceIOService')
-    const { exportCurseforgeModpack } = useService('InstanceCurseforgeIOService')
+    const { getInstanceFiles, exportInstance } = useService(InstanceIOServiceKey)
+    const { exportCurseforgeModpack } = useService(InstanceCurseforgeIOServiceKey)
     const { showSaveDialog } = useNativeDialog()
     const { localVersions } = useLocalVersions()
     const { folder } = useInstanceVersion()
@@ -247,7 +247,7 @@ export default defineComponent({
       }
     })
     return {
-      localVersions: computed(() => localVersions.value.map((v) => v.folder)),
+      localVersions: computed(() => localVersions.value.map((v) => v.id)),
       ...toRefs(data),
       cancel,
       confirm,

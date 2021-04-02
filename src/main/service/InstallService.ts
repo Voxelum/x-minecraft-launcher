@@ -25,7 +25,7 @@ export default class InstallService extends AbstractService implements IInstallS
   private refreshedOptifine = false
   private refreshedForge: Record<string, boolean> = {}
 
-  private minecraftVersionJson = new MappedFile<VersionMinecraftSchema>(this.getPath('minecraft-version.json'), new BufferJsonSerializer(VersionMinecraftSchema))
+  private minecraftVersionJson = new MappedFile<VersionMinecraftSchema>(this.getPath('minecraft-versions.json'), new BufferJsonSerializer(VersionMinecraftSchema))
   private forgeVersionJson = new MappedFile<VersionForgeSchema>(this.getPath('forge-versions.json'), new BufferJsonSerializer(VersionForgeSchema))
   private liteloaderVersionJson = new MappedFile<VersionLiteloaderSchema>(this.getPath('lite-versions.json'), new BufferJsonSerializer(VersionLiteloaderSchema))
   private fabricVersionJson = new MappedFile<VersionFabricSchema>(this.getPath('fabric-versions.json'), new BufferJsonSerializer(VersionFabricSchema))
@@ -36,18 +36,6 @@ export default class InstallService extends AbstractService implements IInstallS
     @Inject(DiagnoseService) diagnoseService: DiagnoseService,
   ) {
     super(app)
-
-    this.storeManager.subscribe('minecraftMetadata', () => {
-      this.minecraftVersionJson.write(this.state.version.minecraft)
-    }).subscribe('forgeMetadata', () => {
-      this.forgeVersionJson.write(this.state.version.forge)
-    }).subscribe('liteloaderMetadata', () => {
-      this.liteloaderVersionJson.write(this.state.version.liteloader)
-    }).subscribeAll(['fabricLoaderMetadata', 'fabricYarnMetadata'], () => {
-      this.fabricVersionJson.write(this.state.version.fabric)
-    }).subscribe('optifineMetadata', () => {
-      this.optifineVersionJson.write(this.state.version.optifine)
-    })
 
     diagnoseService.registerMatchedFix(['missingVersionJson', 'missingVersionJar', 'corruptedVersionJson', 'corruptedVersionJar'],
       async (issues) => {
@@ -147,7 +135,7 @@ export default class InstallService extends AbstractService implements IInstallS
 
     diagnoseService.registerMatchedFix(['badInstall'],
       async (issues) => {
-        const task = installByProfileTask(issues[0].arguments.installProfile, this.state.root, { java: this.getters.defaultJava.path })
+        const task = installByProfileTask(issues[0].arguments.installProfile, this.getPath(), { java: this.getters.defaultJava.path })
         await this.submit(task)
       },
       diagnoseService.diagnoseVersion.bind(diagnoseService))
@@ -180,11 +168,23 @@ export default class InstallService extends AbstractService implements IInstallS
     if (optifine) {
       this.commit('optifineMetadata', optifine)
     }
+
+    this.storeManager.subscribe('minecraftMetadata', () => {
+      this.minecraftVersionJson.write(this.state.version.minecraft)
+    }).subscribe('forgeMetadata', () => {
+      this.forgeVersionJson.write(this.state.version.forge)
+    }).subscribe('liteloaderMetadata', () => {
+      this.liteloaderVersionJson.write(this.state.version.liteloader)
+    }).subscribeAll(['fabricLoaderMetadata', 'fabricYarnMetadata'], () => {
+      this.fabricVersionJson.write(this.state.version.fabric)
+    }).subscribe('optifineMetadata', () => {
+      this.optifineVersionJson.write(this.state.version.optifine)
+    })
   }
 
   protected getMinecraftJsonManifestRemote() {
-    if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
-      const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference)
+    if (this.networkManager.isInGFW && this.state.base.apiSetsPreference !== 'mojang') {
+      const api = this.state.base.apiSets.find(a => a.name === this.state.base.apiSetsPreference)
       if (api) {
         return `${api.url}/mc/game/version_manifest.json`
       }
@@ -198,8 +198,8 @@ export default class InstallService extends AbstractService implements IInstallS
       overwriteWhen: 'checksumNotMatch',
       java: this.getters.defaultJava.path,
     }
-    if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
-      const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference)
+    if (this.networkManager.isInGFW && this.state.base.apiSetsPreference !== 'mojang') {
+      const api = this.state.base.apiSets.find(a => a.name === this.state.base.apiSetsPreference)
       if (api) {
         options.mavenHost = [`${api.url}/maven`]
       }
@@ -215,8 +215,8 @@ export default class InstallService extends AbstractService implements IInstallS
       side: 'client',
     }
 
-    if (this.networkManager.isInGFW && this.state.setting.apiSetsPreference !== 'mojang') {
-      const api = this.state.setting.apiSets.find(a => a.name === this.state.setting.apiSetsPreference)
+    if (this.networkManager.isInGFW && this.state.base.apiSetsPreference !== 'mojang') {
+      const api = this.state.base.apiSets.find(a => a.name === this.state.base.apiSetsPreference)
       if (api) {
         option.assetsHost = `${api.url}/assets`
         option.mavenHost = `${api.url}/maven`
@@ -324,7 +324,7 @@ export default class InstallService extends AbstractService implements IInstallS
   @Singleton('install')
   async installAssetsForVersion(version: string) {
     const option = this.getInstallOptions()
-    const location = this.state.root
+    const location = this.getPath()
     const resolvedVersion = await Version.parse(location, version)
     await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
   }
@@ -332,7 +332,7 @@ export default class InstallService extends AbstractService implements IInstallS
   @Singleton('install')
   async installDependencies(version: string) {
     const option = this.getInstallOptions()
-    const location = this.state.root
+    const location = this.getPath()
     const resolvedVersion = await Version.parse(location, version)
     await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries'))
     await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
@@ -345,7 +345,7 @@ export default class InstallService extends AbstractService implements IInstallS
   @Singleton('install')
   async reinstall(version: string) {
     const option = this.getInstallOptions()
-    const location = this.state.root
+    const location = this.getPath()
     const local = this.state.version.local.find(v => v.id === version)
     if (!local) {
       throw new Error(`Cannot reinstall ${version} as it's not found!`)
@@ -370,7 +370,7 @@ export default class InstallService extends AbstractService implements IInstallS
   @Singleton('install')
   async installAssets(assets: { name: string; size: number; hash: string }[]) {
     const option = this.getInstallOptions()
-    const location = this.state.root
+    const location = this.getPath()
     const task = installResolvedAssetsTask(assets, new MinecraftFolder(location), option).setName('installAssets')
     await this.submit(task)
   }
@@ -383,7 +383,7 @@ export default class InstallService extends AbstractService implements IInstallS
     const id = meta.id
 
     const option = this.getInstallOptions()
-    const task = installVersionTask(meta, this.state.root, option).setName('installVersion')
+    const task = installVersionTask(meta, this.getPath(), option).setName('installVersion')
     try {
       await this.submit(task)
       this.local.refreshVersions()
@@ -405,7 +405,7 @@ export default class InstallService extends AbstractService implements IInstallS
       resolved = libraries as any
     }
     const option = this.getInstallOptions()
-    const task = installResolvedLibrariesTask(resolved, this.state.root, option).setName('installLibraries')
+    const task = installResolvedLibrariesTask(resolved, this.getPath(), option).setName('installLibraries')
     try {
       await this.submit(task)
     } catch (e) {
@@ -473,7 +473,7 @@ export default class InstallService extends AbstractService implements IInstallS
     let version: string | undefined
     try {
       this.log(`Start to install forge ${meta.version} on ${meta.mcversion}`)
-      version = await this.submit(installForgeTask(meta, this.state.root, options))
+      version = await this.submit(installForgeTask(meta, this.getPath(), options))
       this.local.refreshVersions()
       this.log(`Success to install forge ${meta.version} on ${meta.mcversion}`)
     } catch (err) {
@@ -664,7 +664,7 @@ export default class InstallService extends AbstractService implements IInstallS
   @Singleton('install')
   async installLiteloader(meta: LiteloaderVersion) {
     try {
-      await this.submit(installLiteloaderTask(meta, this.state.root))
+      await this.submit(installLiteloaderTask(meta, this.getPath()))
     } catch (err) {
       this.warn(err)
     } finally {

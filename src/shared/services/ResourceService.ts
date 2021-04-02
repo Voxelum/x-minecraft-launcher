@@ -9,16 +9,16 @@ export interface ParseFileOptions {
      */
   path: string
   /**
-     * The hint for the import file type
-     */
+    * The hint for the import file type
+    */
   type?: FileTypeHint
   /**
-     * The extra info you want to provide to the source of the resource
-     */
+    * The extra info you want to provide to the source of the resource
+    */
   source?: SourceInformation
   /**
-     * The file urls
-     */
+    * The file urls
+    */
   url?: string[]
 }
 export interface ImportFileOptions extends ParseFileOptions {

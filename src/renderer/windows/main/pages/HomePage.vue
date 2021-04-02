@@ -18,7 +18,7 @@
         user-select: none;
       "
       dark
-      @click="quit"
+      @click="quit()"
     >
       close
     </v-icon>
@@ -209,6 +209,7 @@ import ServerStatusBar from './HomePageServerStatusBar.vue'
 import ExportDialog from './HomePageExportDialog.vue'
 import ExportSpeedDial from './HomePageExportSpeedDial.vue'
 import MoreSpeedDial from './HomePageMoreSpeedDial.vue'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 function setupLaunch() {
   const { launch, status: launchStatus } = useLaunch()
@@ -259,7 +260,7 @@ export default defineComponent({
     const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log')
     const { show: showFeedbackDialog } = useDialog('feedback')
     const { refreshing, name, isServer, refreshServerStatus, path } = useInstance()
-    const { openDirectory } = useService('BaseService')
+    const { openDirectory } = useService(BaseServiceKey)
     const { subscribeTask } = useNotifier()
     const { quit } = useQuit()
     const isExportingCurseforge = ref(false)

@@ -24,7 +24,6 @@
           class="base-settings"
           two-line
           subheader
-          style="background: transparent width: 100%"
         >
           <v-subheader style="padding-right: 2px">
             {{ $t("setting.general") }}
@@ -58,7 +57,7 @@
               </v-list-tile-sub-title>
             </v-list-tile-content>
             <!-- <v-layout > -->
-            <v-list-tile-action style="margin-right: 15px display: flex flex-grow: 1 flex-direction: row align-item: center justify-content: flex-end align-items: center">
+            <v-list-tile-action style="margin-right: 15px; display: flex; flex-grow: 1; flex-direction: row; align-item: center; justify-content: flex-end; align-items: center">
               <v-chip
                 color="green"
                 large
@@ -427,10 +426,14 @@ export default defineComponent({
 </style>
 <style>
 .local-version .v-select__selection--comma {
-  max-width: 100px
-  white-space: nowrap
-  overflow: hidden
-  text-overflow: ellipsis
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.base-settings {
+  background: transparent !important;
+  width: 100%;
 }
 .base-settings .v-text-field--box input,
 .v-text-field--full-width input,

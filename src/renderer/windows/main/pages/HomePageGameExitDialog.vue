@@ -67,6 +67,7 @@
 <script lang=ts>
 import { reactive, toRefs, defineComponent } from '@vue/composition-api'
 import { useIpc, useInstanceLogs, useService } from '/@/hooks'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export default defineComponent({
   setup() {
@@ -79,7 +80,7 @@ export default defineComponent({
       errorLog: '',
     })
     const { getLogContent, getCrashReportContent, showLog } = useInstanceLogs()
-    const { showItemInDirectory } = useService('BaseService')
+    const { showItemInDirectory } = useService(BaseServiceKey)
     function decorate(log: string) {
       // let lines = log.split('\n');
       // let result: string[] = [];

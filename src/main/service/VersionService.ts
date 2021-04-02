@@ -1,7 +1,7 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
 import { remove } from 'fs-extra'
 import { join } from 'path'
-import AbstractService, { ExportService } from './Service'
+import AbstractService, { Enqueue, ExportService } from './Service'
 import { copyPassively, FileStateWatcher, missing, readdirEnsured } from '/@main/util/fs'
 import { VersionServiceKey, VersionService as IVersionService } from '/@shared/services/VersionService'
 
@@ -34,16 +34,17 @@ export default class VersionService extends AbstractService implements IVersionS
   async checkLocalMinecraftFiles() {
     const mcPath = this.getMinecraftPath()
     if (await missing(mcPath)) return
-    if (mcPath === this.state.root) return
+    const root = this.getPath()
+    if (mcPath === root) return
     this.log('Try to migrate the version from .minecraft')
-    await copyPassively(join(mcPath, 'libraries'), join(this.state.root, 'libraries'))
-    await copyPassively(join(mcPath, 'assets'), join(this.state.root, 'assets'))
-    await copyPassively(join(mcPath, 'versions'), join(this.state.root, 'versions'))
+    await copyPassively(join(mcPath, 'libraries'), join(root, 'libraries'))
+    await copyPassively(join(mcPath, 'assets'), join(root, 'assets'))
+    await copyPassively(join(mcPath, 'versions'), join(root, 'versions'))
   }
 
-  public async resolveLocalVersion(versionFolder: string, root: string = this.state.root): Promise<ResolvedVersion> {
+  public async resolveLocalVersion(versionFolder: string, root: string = this.getPath()): Promise<ResolvedVersion> {
     const resolved = await Version.parse(root, versionFolder)
-    return resolved
+    return Object.freeze(resolved)
   }
 
   async resolveVersionId() {

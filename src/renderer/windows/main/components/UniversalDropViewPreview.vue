@@ -49,18 +49,11 @@
 <script lang=ts>
 import { useFileDrop, useService } from '/@/hooks'
 import { required } from '/@/util/props'
-import { FileMetadata } from '@main/service/IOService'
-import { Resource } from '/@shared/entities/resource'
 import { defineComponent, computed, ref } from '@vue/composition-api'
-import { ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
+import { Resource, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
 import FileListTile from './UniversalDropViewFileListTile.vue'
-
-export interface FilePreview extends FileMetadata {
-  name: string
-  size: number
-  enabled: boolean
-  status: 'loading' | 'idle' | 'failed' | 'saved'
-}
+import { InstanceResourceServiceKey } from '/@shared/services/InstanceResourceService'
+import { FilePreview } from './UniversalDropView.vue'
 
 export default defineComponent({
   components: {
@@ -73,16 +66,14 @@ export default defineComponent({
     const status = ref([] as boolean[])
     const enableMods = ref(true)
     const { importFile } = useFileDrop()
-    const { deploy } = useService('InstanceResourceService')
+    const { deploy } = useService(InstanceResourceServiceKey)
     const loading = computed(() => props.previews.some((v) => v.status === 'loading'))
     const pendings = computed(() => props.previews.filter((v) => (v.status === 'idle' || v.status === 'failed') &&
-      !v.existed &&
-      (v.type !== ResourceType.Unknown) &&
-      v.enabled))
+      (v.type !== ResourceType.Unknown) && v.enabled))
     const disabled = computed(() => pendings.value.length === 0)
     function remove(file: FilePreview) {
-      props.previews = props.previews.filter((p) => p.path !== file.path)
-      if (props.previews.length === 0) {
+      const previews = props.previews.filter((p) => p.path !== file.path)
+      if (previews.length === 0) {
         cancel()
       }
     }
@@ -92,23 +83,24 @@ export default defineComponent({
     function start() {
       const promises = [] as Promise<any>[]
       const resourcesToDeploy = [] as Resource[]
-      for (const preview of pendings.value) {
-        preview.status = 'loading'
-        const promise = importFile(preview).then((resource) => {
-          if (resource.domain === ResourceDomain.Mods && enableMods.value) {
-            resourcesToDeploy.push(resource)
-          }
-          preview.status = 'saved'
-        }, (e) => {
-          console.log(`Failed to import resource ${preview.path}`)
-          console.log(e)
-          preview.status = 'failed'
-        })
-        promises.push(promise)
-      }
-      Promise.all(promises)
-        .then(() => deploy({ resources: resourcesToDeploy }))
-        .then(() => cancel())
+      // TODO: fix this
+      // for (const preview of pendings.value) {
+      //   preview.status = 'loading'
+      //   const promise = importFile(preview).then((resource) => {
+      //     if (resource.domain === ResourceDomain.Mods && enableMods.value) {
+      //       resourcesToDeploy.push(resource)
+      //     }
+      //     preview.status = 'saved'
+      //   }, (e) => {
+      //     console.log(`Failed to import resource ${preview.path}`)
+      //     console.log(e)
+      //     preview.status = 'failed'
+      //   })
+      //   promises.push(promise)
+      // }
+      // Promise.all(promises)
+      //   .then(() => deploy({ resources: resourcesToDeploy }))
+      //   .then(() => cancel())
     }
     return {
       enableMods,

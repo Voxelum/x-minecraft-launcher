@@ -90,7 +90,7 @@ function startApp() {
       provideServiceProxy()
       const store = provideVuexStore()
       provide(I18N_KEY, i18n)
-      store.watch((state) => state.setting.locale, (newValue: string, oldValue: string) => {
+      store.watch((state) => state.base.locale, (newValue: string, oldValue: string) => {
         console.log(`Locale changed ${oldValue} -> ${newValue}`)
         i18n.locale = newValue
       })

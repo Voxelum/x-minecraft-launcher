@@ -1,11 +1,11 @@
 import { Task } from '@xmcl/task'
 import { join } from 'path'
+import 'reflect-metadata'
 import LauncherApp from '/@main/app/LauncherApp'
 import { WaitingQueue } from '/@main/util/mutex'
 import { Exceptions } from '/@shared/entities/exception'
-import { MutationKeys, RootCommit, RootGetters, RootState } from '/@shared/store'
-import 'reflect-metadata'
 import { ServiceKey } from '/@shared/services/Service'
+import { MutationKeys, RootCommit, RootGetters, RootState } from '/@shared/store'
 
 export const PURE_SYMBOL = Symbol('__pure__')
 
@@ -16,11 +16,12 @@ export type ServiceConstructor<T extends AbstractService = any> = {
 export function Inject<T extends AbstractService>(con: ServiceConstructor<T>) {
   return (target: object, key: string, index: number) => {
     if (Reflect.hasMetadata('service:params', target)) {
+      // console.log(`Inject ${key} ${index} <- ${target}`)
       Reflect.getMetadata('service:params', target)[index] = con
     } else {
-      const arr: ServiceConstructor[] = []
+      const arr: any[] = []
       Reflect.defineMetadata('service:params', arr, target)
-      arr.push(con)
+      arr[index] = con
     }
   }
 }
@@ -40,7 +41,7 @@ export function ExportService<T extends AbstractService>(key: ServiceKey<T>) {
  */
 export function internal(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
   let internal: string[]
-  if (Reflect.hasMetadata(target, 'service:internal')) {
+  if (Reflect.hasMetadata('service:internal', target)) {
     internal = Reflect.getMetadata('service:internal', target)
   } else {
     internal = []
@@ -58,7 +59,11 @@ export function Subscribe(...keys: MutationKeys[]) {
     if (!keys || keys.length === 0) {
       throw new Error('Must listen at least one mutation!')
     } else {
-      target.app.storeManager.subscribeAll(keys, descriptor.value)
+      if (!Reflect.hasMetadata('service:subscribe', target)) {
+        Reflect.defineMetadata('service:subscribe', [], target)
+      }
+      const sub = Reflect.getMetadata('service:subscribe', target) as any[]
+      sub.push({ mutations: keys, handler: descriptor.value })
     }
   }
 }

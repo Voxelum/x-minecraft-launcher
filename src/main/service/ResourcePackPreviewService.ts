@@ -55,7 +55,7 @@ export default class ResourcePackPreviewService extends AbstractService implemen
   protected getResourcePackPath(pack: string) {
     if (pack === 'vanilla') {
       const version = this.getters.instanceVersion.minecraftVersion
-      const jarPath = new MinecraftFolder(this.state.root).getVersionJar(version)
+      const jarPath = new MinecraftFolder(this.getPath()).getVersionJar(version)
       return jarPath
     }
     pack = pack.startsWith('file/') ? pack.substring(5) : pack

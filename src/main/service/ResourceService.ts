@@ -1,11 +1,11 @@
 import { task } from '@xmcl/task'
 import { stat } from 'fs-extra'
-import debounce from 'lodash.debounce'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { AggregateExecutor } from '../util/aggregator'
 import { RelativeMappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
-import AbstractService, { internal, ExportService } from './Service'
+import AbstractService, { ExportService, internal } from './Service'
 import { FileStat, mutateResource, persistResource, readFileStat, remove, ResourceCache } from '/@main/entities/resource'
 import { fixResourceSchema } from '/@main/util/dataFix'
 import { copyPassively, FileType, readdirEnsured } from '/@main/util/fs'
@@ -33,21 +33,26 @@ export default class ResourceService extends AbstractService implements IResourc
 
   private loadPromises: Record<string, Promise<void>> = {}
 
-  private resourceRemoveQueue: AnyPersistedResource[] = []
+  private resourceRemove = new AggregateExecutor<AnyPersistedResource, AnyPersistedResource[]>(_ => _,
+    (res) => {
+      this.commit('resourcesRemove', res)
+      for (const resource of res) {
+        this.cache.discard(resource)
+        this.unpersistResource(resource)
+      }
+    }, 1000)
+
+  private resourceUpdate = new AggregateExecutor<AnyPersistedResource, AnyPersistedResource[]>(_ => _,
+    (res) => {
+      this.commit('resources', res)
+      for (const resource of res) {
+        this.cache.discard(resource)
+        this.cache.put(resource)
+        this.resourceFile.writeTo(this.getPath(resource.location + '.json'), { ...(resource as any), version: 1 })
+      }
+    }, 1000)
 
   private resourceFile = new RelativeMappedFile<PersistedResourceSchema>('', new BufferJsonSerializer(PersistedResourceSchema))
-
-  private commitUpdate = debounce(async () => {
-    const queue = this.resourceRemoveQueue
-    if (queue.length > 0) {
-      this.resourceRemoveQueue = []
-      this.commit('resourcesRemove', queue)
-      for (const resource of queue) {
-        this.cache.discard(resource)
-        await this.unpersistResource(resource)
-      }
-    }
-  }, 500)
 
   @internal
   protected normalizeResource(resource: string | AnyPersistedResource | AnyResource): AnyPersistedResource | undefined {
@@ -113,6 +118,7 @@ export default class ResourceService extends AbstractService implements IResourc
     const files = await readdirEnsured(path)
     const result: PersistedResource[] = []
     const processFile = async (file: string) => {
+      if (!file.endsWith('.json')) return
       try {
         const filePath = join(path, file)
         const resourceData = await this.resourceFile.readTo(filePath)
@@ -180,8 +186,7 @@ export default class ResourceService extends AbstractService implements IResourc
         resource: resourceOrKey as string,
       })
     }
-    this.resourceRemoveQueue.push(resource)
-    await this.commitUpdate()
+    this.resourceRemove.push(resource)
   }
 
   /**
@@ -196,10 +201,7 @@ export default class ResourceService extends AbstractService implements IResourc
       })
     }
     const result = mutateResource<PersistedResource<any>>(resource, (r) => { r.name = options.name })
-    this.cache.discard(resource)
-    this.cache.put(result)
-    this.commit('resource', result)
-    await this.resourceFile.writeTo(this.getPath(result.location + '.json'), { ...result, version: 1 })
+    this.resourceUpdate.push(result)
   }
 
   /**
@@ -214,10 +216,7 @@ export default class ResourceService extends AbstractService implements IResourc
       })
     }
     const result = mutateResource<PersistedResource<any>>(resource, (r) => { r.tags = options.tags })
-    this.cache.discard(resource)
-    this.cache.put(result)
-    this.commit('resource', result)
-    await this.resourceFile.writeTo(this.getPath(result.location + '.json'), { ...result, version: 1 })
+    this.resourceUpdate.push(result)
   }
 
   /**
@@ -264,8 +263,7 @@ export default class ResourceService extends AbstractService implements IResourc
     const resource = await (options.background ? task.startAndWait() : this.submit(task))
 
     this.log(`Import and cache newly added resource ${resource.path} -> ${resource.domain}`)
-    this.cache.put(resource)
-    this.commit('resource', resource)
+    this.resourceUpdate.push(resource)
     return resource
   }
 

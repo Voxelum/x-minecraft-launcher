@@ -108,8 +108,6 @@ export default class CurseForgeService extends AbstractService implements ICurse
     try {
       const destination = join(this.app.temporaryPath, basename(file.downloadUrl))
       const importResourceTask = task('importResource', async function () {
-        // c.update(0, 100);
-
         await this.yield(new DownloadTask({
           ...networkManager.getDownloadBaseOptions(),
           url: file.downloadUrl,

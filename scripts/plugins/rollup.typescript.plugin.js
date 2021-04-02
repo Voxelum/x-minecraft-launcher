@@ -1,4 +1,3 @@
-import { join } from "path"
 import {
   createSemanticDiagnosticsBuilderProgram,
   createWatchCompilerHost,
@@ -6,8 +5,6 @@ import {
   DiagnosticCategory,
   formatDiagnosticsWithColorAndContext,
   sys,
-  transpile,
-  transpileModule,
 } from "typescript"
 
 /**
@@ -186,15 +183,6 @@ const create = ({ tsconfig, tsconfigOverride } = {}) => {
       if (indexTsResult) {
         return indexTsResult
       }
-    },
-    async transform(code, id) {
-      if (!id.endsWith(".ts")) {
-        return
-      }
-      const root = join(__dirname, '../../src/main/services')
-      console.log(root)
-      console.log(`tsc: ${id} ${id.startsWith(root)}`)
-      return undefined
     },
     generateBundle() {
       if (diagnostics.length > 0) {

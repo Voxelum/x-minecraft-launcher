@@ -122,6 +122,7 @@ import { defineComponent } from '@vue/composition-api'
 import { UserProfile } from '/@shared/entities/user.schema'
 import { required } from '/@/util/props'
 import { useService } from '/@/hooks'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export default defineComponent({
   props: {
@@ -131,7 +132,7 @@ export default defineComponent({
     profileId: required<string>(String),
   },
   setup() {
-    const { openInBrowser } = useService('BaseService')
+    const { openInBrowser } = useService(BaseServiceKey)
     function gotoPurchesPage() {
       openInBrowser('https://www.minecraft.net/store/minecraft-java-edition?ref=launcher')
     }

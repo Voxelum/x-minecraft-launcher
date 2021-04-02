@@ -52,7 +52,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
       return
     }
 
-    const root = this.state.root
+    const root = this.getPath()
     const from = src
 
     const zipTask = new ZipTask(dest).setName('profile.modpack.export')

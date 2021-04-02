@@ -12,7 +12,7 @@ import { exists, isDirectory } from '/@main/util/fs'
 import { GiteeReleaseFetcher, GithubReleaseFetcher, ReleaseFetcher } from '/@main/util/release'
 import { RuntimeVersions } from '/@shared/entities/instance.schema'
 import { UpdateInfo } from '/@shared/entities/update'
-import { StaticStore } from '/@shared/util/staticStore'
+import { StaticStore } from '../util/staticStore'
 import { getPlatform } from '@xmcl/core'
 import { DownloadTask } from '@xmcl/installer'
 import { Task } from '@xmcl/task'
@@ -46,7 +46,7 @@ export interface AppManifest {
 
 export interface LauncherApp {
   on(channel: 'window-all-closed', listener: () => void): this
-  on(channel: 'store-ready', listener: (store: StaticStore<any>) => void): this
+  on(channel: 'service-ready', listener: () => void): this
   on(channel: 'engine-ready', listener: () => void): this
   on(channel: 'minecraft-window-ready', listener: () => void): this
   on(channel: 'minecraft-start', listener: (launchOptions: { version: string } & RuntimeVersions) => void): this
@@ -56,7 +56,7 @@ export interface LauncherApp {
   on(channel: 'microsoft-authorize-code', listener: (code: string) => void): this
 
   once(channel: 'window-all-closed', listener: () => void): this
-  once(channel: 'store-ready', listener: (store: StaticStore<any>) => void): this
+  once(channel: 'service-ready', listener: () => void): this
   once(channel: 'engine-ready', listener: () => void): this
   once(channel: 'minecraft-window-ready', listener: () => void): this
   once(channel: 'minecraft-start', listener: (launchOptions: { version: string } & RuntimeVersions) => void): this
@@ -68,7 +68,7 @@ export interface LauncherApp {
   emit(channel: 'microsoft-authorize-code', error?: Error, code?: string): this
   emit(channel: 'window-all-closed'): boolean
   emit(channel: 'engine-ready'): boolean
-  emit(channel: 'store-ready', store: StaticStore<any>): boolean
+  emit(channel: 'service-ready'): boolean
   emit(channel: 'minecraft-window-ready', ...args: any[]): boolean
   emit(channel: 'minecraft-start', launchOptions: { version: string } & RuntimeVersions): boolean
   emit(channel: 'minecraft-exit', exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }): boolean
@@ -355,8 +355,8 @@ export abstract class LauncherApp extends EventEmitter {
     await writeFile(manifestPath, JSON.stringify(manifest))
   }
 
-  readonly storeReadyPromise = new Promise((resolve) => {
-    this.on('store-ready', resolve)
+  readonly serviceReadyPromise = new Promise<void>((resolve) => {
+    this.on('service-ready', resolve)
   })
 
   // setup code
@@ -365,7 +365,7 @@ export abstract class LauncherApp extends EventEmitter {
     await this.setup()
     await this.waitEngineReady()
     await this.onEngineReady()
-    await this.storeReadyPromise
+    await this.serviceReadyPromise
     await this.onStoreReady(this.storeManager.store)
   }
 

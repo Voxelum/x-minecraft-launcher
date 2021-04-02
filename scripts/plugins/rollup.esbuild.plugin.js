@@ -1,7 +1,6 @@
 import chalk from 'chalk'
-import { startService } from 'esbuild'
+import { transform } from 'esbuild'
 import { extname } from 'path'
-import typscript from 'typescript'
 
 /**
  * Wrap esbuild to rollup plugin to build typescript
@@ -11,7 +10,7 @@ const createPlugin = () => {
   return ({
     name: 'main:esbuild',
     async buildStart() {
-      this.cache.set('service', await startService())
+      // this.cache.set('service', await startService())
     },
     async transform(code, id) {
       if (id.endsWith('js') || id.endsWith('js?commonjs-proxy')) {
@@ -20,7 +19,6 @@ const createPlugin = () => {
       if (!id.endsWith('.ts')) {
         return
       }
-      console.log(`esbuild: ${id}`)
       function printMessage(m, code) {
         console.error(chalk.yellow(m.text))
         if (m.location) {
@@ -38,11 +36,7 @@ const createPlugin = () => {
         }
       }
       try {
-        /**
-         * @type {import('esbuild').Service}
-         */
-        const service = this.cache.get('service')
-        const result = await service.transform(code, {
+        const result = await transform(code, {
           // @ts-ignore
           loader: extname(id).slice(1),
           sourcemap: true,
@@ -73,17 +67,17 @@ const createPlugin = () => {
       }
     },
     buildEnd(error) {
-      // Stop the service early if there's error
-      if (error && !this.meta.watchMode) {
-        this.cache.get('service').stop()
-        console.log('esbuild service stop!')
-      }
+      // // Stop the service early if there's error
+      // if (error && !this.meta.watchMode) {
+      //   this.cache.get('service').stop()
+      //   console.log('esbuild service stop!')
+      // }
     },
     generateBundle() {
-      if (!this.meta.watchMode) {
-        this.cache.get('service').stop()
-        console.log('esbuild service stop!')
-      }
+      // if (!this.meta.watchMode) {
+      //   this.cache.get('service').stop()
+      //   console.log('esbuild service stop!')
+      // }
     }
   })
 }

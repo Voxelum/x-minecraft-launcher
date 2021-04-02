@@ -1,5 +1,5 @@
 import LauncherApp from '/@main/app/LauncherApp'
-import { StaticStore } from '/@shared/util/staticStore'
+import { StaticStore } from '../util/staticStore'
 
 export abstract class Manager {
   constructor(protected app: LauncherApp) { }

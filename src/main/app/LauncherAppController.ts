@@ -1,4 +1,4 @@
-import { StaticStore } from '/@shared/util/staticStore'
+import { StaticStore } from '../util/staticStore'
 
 export interface LauncherAppController {
   processFirstLaunch(): Promise<string>

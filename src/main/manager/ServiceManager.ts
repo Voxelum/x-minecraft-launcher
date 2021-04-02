@@ -21,7 +21,6 @@ import UserService from '../service/UserService'
 import VersionService from '../service/VersionService'
 import { Client } from '/@main/engineBridge'
 import AbstractService, { ServiceConstructor } from '/@main/service/Service'
-import { JavaServiceKey } from '/@shared/services/JavaService'
 import { ServiceKey } from '/@shared/services/Service'
 import { aquire, isBusy, release } from '/@shared/util/semaphore'
 
@@ -91,39 +90,48 @@ export default class ServiceManager extends Manager {
     // create service instance
     const serviceMap = this.exposedService
     const injection = this.app.context
-    const loaded: Set<ServiceConstructor> = new Set()
 
     const discoverService = (ServiceConstructor: ServiceConstructor) => {
-      if (loaded.has(ServiceConstructor)) {
-        throw new Error('Circular Service dependencies!')
+      if (injection.getObject(ServiceConstructor)) {
+        return
       }
-
-      const types = Reflect.getMetadata('design:paramtypes', ServiceConstructor)
-      console.log(types)
-      console.log(ServiceConstructor)
-      const params: any[] = []
-      for (const type of types) {
-        if (injection.getObject(type)) {
-          // inject object
-          params.push(injection.getObject(type))
-        } else if (Object.getPrototypeOf(type) === AbstractService) {
-          // injecting a service
-          params.push(discoverService(type))
-        } else {
-          throw new Error(`Cannot inject type ${type} to service ${type.name}!`)
+      const types = Reflect.getMetadata('service:params', ServiceConstructor)
+      const params: any[] = [this.app]
+      if (types) {
+        for (let i = 0; i < types.length; i++) {
+          const type = types[i]
+          if (type) {
+            if (injection.getObject(type)) {
+              // inject object
+              params[i] = injection.getObject(type)
+            } else if (Object.getPrototypeOf(type) === AbstractService) {
+              // injecting a service
+              params[i] = discoverService(type)
+            } else {
+              throw new Error(`Cannot inject type ${type} to service ${type.name}!`)
+            }
+          }
         }
       }
 
       const serv = new ServiceConstructor(...params)
       injection.register(ServiceConstructor, serv)
       this.activeServices.push(serv)
-      const key = Reflect.getMetadata('service:key', serv)
+      const key = Reflect.getMetadata('service:key', ServiceConstructor)
       if (key) {
         serviceMap[key] = serv
         this.log(`Expose service ${key} to remote`)
       } else {
         this.warn(`Unexpose the service ${ServiceConstructor.name}`)
       }
+
+      const subscrptions = Reflect.getMetadata('service:subscribe', serv)
+      if (subscrptions) {
+        for (const { mutations, handler } of subscrptions) {
+          this.app.storeManager.subscribeAll(mutations, handler.bind(serv))
+        }
+      }
+
       return serv
     }
 
@@ -158,9 +166,17 @@ export default class ServiceManager extends Manager {
       if (r instanceof Promise) {
         return r.then(r => ({ result: r }), (e) => {
           this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`)
-          this.warn(e)
-          this.warn(e.stack)
-          return { error: { object: e, errorMessage: e.toString() } }
+          if (e instanceof Promise) {
+            return e.then((err) => {
+              // this.warn(JSON.stringify(err))
+              // this.warn(err.stack)
+              return { error: { object: err, errorMessage: err.toString() } }
+            })
+          } else {
+            // this.warn(JSON.stringify(e))
+            // this.warn(e.stack)
+            return { error: { object: e, errorMessage: e.toString() } }
+          }
         })
       }
       return { result: r }
@@ -186,7 +202,7 @@ export default class ServiceManager extends Manager {
   private prepareServiceCall(client: Client, service: string, name: string, payload: any): number | undefined {
     const serv = this.exposedService[service]
     if (!serv) {
-      this.error(`Cannot execute service call ${name} from service ${service}. The service not found.`)
+      this.error(`Cannot execute service call ${name} from service ${service}. No service exposed as ${service}.`)
     } else {
       if (name in serv) {
         const tasks: Task<any>[] = []
@@ -233,9 +249,6 @@ export default class ServiceManager extends Manager {
   // SETUP CODE
 
   async setup() {
-    this.setupServices()
-    await this.initializeServices()
-    this.app.emit('store-ready', this.app.storeManager.store)
     this.addService(BaseService)
     this.addService(CurseForgeService)
     this.addService(DiagnoseService)
@@ -255,6 +268,10 @@ export default class ServiceManager extends Manager {
     this.addService(ServerStatusService)
     this.addService(UserService)
     this.addService(VersionService)
+
+    this.setupServices()
+    await this.initializeServices()
+    this.app.emit('service-ready')
   }
 
   async engineReady() {

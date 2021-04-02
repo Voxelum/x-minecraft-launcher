@@ -22,7 +22,7 @@ const config = [{
   output: {
     dir: join(__dirname, '../dist'),
     format: 'cjs',
-    sourcemap: process.env.NODE_ENV === 'development' ? 'inline' : false
+    sourcemap: process.env.NODE_ENV === 'development' ? true : false
   },
   onwarn: (warning) => {
     if (warning.plugin === 'typescript:checker') {

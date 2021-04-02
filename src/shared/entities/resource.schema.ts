@@ -1,6 +1,6 @@
 /* eslint-disable no-redeclare */
 import { Schema } from './schema'
-import _ResourceSchema from './ResourceSchema.json'
+import _ResourceSchema from './PersistedResourceSchema.json'
 
 export const PersistedResourceSchema: Schema<PersistedResourceSchema> = _ResourceSchema
 

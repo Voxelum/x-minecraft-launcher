@@ -38,21 +38,22 @@ export interface WorkerResponse {
 export interface CPUWorker {
   checksum(payload: ChecksumWorkPayload): Promise<string>
   fileType(payload: FileTypePayload): Promise<FileType>
-  checksumAndFileType(payload: ChecksumWorkPayload): Promise<[string, FileType ]>
-  resolveResource(payload: ResolveResourceWorkPayload): Promise<[Resource, Uint8Array | undefined ]>
+  checksumAndFileType(payload: ChecksumWorkPayload): Promise<[string, FileType]>
+  resolveResource(payload: ResolveResourceWorkPayload): Promise<[Resource, Uint8Array | undefined]>
 }
 
 export class WorkerAgent implements CPUWorker {
   constructor(private worker: Worker) { }
+
   private counter = 0
 
-  private post<T >(payload: WorkPayload) {
-    this.worker.postMessage(payload)
-    return new Promise<T>((resolve, reject) => {
+  submit<T extends keyof CPUWorker>(work: T, payload: Parameters<CPUWorker[T]>[0]): ReturnType<CPUWorker[T]> {
+    const _id = this.counter++
+    return new Promise((resolve, reject) => {
       const handler = (resp: WorkerResponse) => {
         const { error, result, id } = resp
-        if (id === payload.id) {
-          this.worker?.removeListener('message', handler)
+        if (id === _id) {
+          this.worker.removeListener('message', handler)
           if (error) {
             reject(error)
           } else {
@@ -60,12 +61,9 @@ export class WorkerAgent implements CPUWorker {
           }
         }
       }
-      this.worker!.on('message', handler)
-    })
-  }
-
-  submit<T extends keyof CPUWorker >(work: T, payload: Parameters<CPUWorker[T]>[0]): ReturnType<CPUWorker[T]> {
-    throw this.post({ type: work, id: this.counter++, ...payload })
+      this.worker.on('message', handler)
+      this.worker.postMessage({ ...payload, type: work, id: _id })
+    }) as any
   }
 
   checksum(payload: ChecksumWorkPayload): Promise<string> {
@@ -76,11 +74,11 @@ export class WorkerAgent implements CPUWorker {
     throw this.submit('fileType', payload)
   }
 
-  checksumAndFileType(payload: ChecksumWorkPayload): Promise<[string, FileType ]> {
+  checksumAndFileType(payload: ChecksumWorkPayload): Promise<[string, FileType]> {
     return this.submit('checksumAndFileType', payload)
   }
 
-  resolveResource(payload: ResolveResourceWorkPayload): Promise<[Resource<unknown>, Uint8Array | undefined ]> {
+  resolveResource(payload: ResolveResourceWorkPayload): Promise<[Resource<unknown>, Uint8Array | undefined]> {
     return this.submit('resolveResource', payload)
   }
 }

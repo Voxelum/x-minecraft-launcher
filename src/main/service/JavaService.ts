@@ -13,8 +13,7 @@ import { missing, readdirIfPresent } from '/@main/util/fs'
 import { unpack7z } from '/@main/util/zip'
 import { JavaRecord } from '/@shared/entities/java'
 import { Java, JavaSchema } from '/@shared/entities/java.schema'
-import { JavaServiceKey, JavaService as IJavaService } from '/@shared/services/JavaService'
-import java from '/@shared/store/modules/java'
+import { JavaService as IJavaService, JavaServiceKey } from '/@shared/services/JavaService'
 import { requireString } from '/@shared/util/assert'
 
 @ExportService(JavaServiceKey)
@@ -29,11 +28,6 @@ export default class JavaService extends AbstractService implements IJavaService
   constructor(app: LauncherApp,
     @Inject(DiagnoseService) diagnoseService: DiagnoseService) {
     super(app)
-
-    this.storeManager.register(java)
-    this.storeManager.subscribeAll(['javaUpdate', 'javaRemove'], () => {
-      this.config.write(this.state.java)
-    })
 
     diagnoseService.registerMatchedFix(['missingJava'], () => {
       this.installDefaultJava()
@@ -51,6 +45,10 @@ export default class JavaService extends AbstractService implements IJavaService
       this.resolveJava(local)
     }
     this.refreshLocalJava()
+
+    this.storeManager.subscribeAll(['javaUpdate', 'javaRemove'], () => {
+      this.config.write(this.state.java)
+    })
   }
 
   /**
@@ -77,7 +75,7 @@ export default class JavaService extends AbstractService implements IJavaService
   }
 
   private installFromTsingHuaTask() {
-    const { app, networkManager, log, getTempPath, state } = this
+    const { app, networkManager, log, getTempPath, state, getPath } = this
     return task('installJre', async function () {
       const system = app.platform.name === 'osx' ? 'mac' as const : app.platform.name
       const arch = app.platform.arch === 'x64' ? '64' as const : '32' as const
@@ -90,7 +88,7 @@ export default class JavaService extends AbstractService implements IJavaService
         throw new Error(`Cannot find jre from tsinghua mirror for ${system} x${arch}`)
       }
 
-      const destination = join(state.root, 'jre')
+      const destination = getPath('jre')
       const archivePath = getTempPath(archiveInfo.fileName)
       const url = archiveInfo.url
 

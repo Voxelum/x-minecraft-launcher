@@ -1,4 +1,5 @@
 import { GetterTree, ModuleTree, MutationTree, StoreOptions, MutationPayload } from 'vuex'
+import { Logger } from '../manager/LogManager'
 
 type Container = {
   state?: any
@@ -41,7 +42,7 @@ export interface StaticStore<T> {
   subscribe: (fn: Listener) => void
 }
 
-export function createStaticStore<T>(template: StoreOptions<T>): StaticStore<T> {
+export function createStaticStore<T>(template: StoreOptions<T>, logger: Logger): StaticStore<T> {
   const subscriptions: Listener[] = []
 
   const state = deepCopy(typeof template.state === 'object' ? template.state : (template as any).state())
@@ -64,8 +65,12 @@ export function createStaticStore<T>(template: StoreOptions<T>): StaticStore<T> 
   discover(state, template)
 
   const commit = (type: string, payload: any) => {
-    mutations[type](payload)
-    subscriptions.forEach((f) => f({ type, payload }, state))
+    if (mutations[type]) {
+      mutations[type](payload)
+      subscriptions.forEach((f) => f({ type, payload }, state))
+    } else {
+      logger.warn(`[StaticStore] Cannot find mutation ${type}`)
+    }
   }
 
   return {

@@ -103,11 +103,12 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, ref, Ref, computed, inject, watch } from '@vue/composition-api'
-import { useInstanceVersionBase, useCompatible, useService, ModItem, useI18n } from '/@/hooks'
+import { computed, defineComponent, ref, Ref } from '@vue/composition-api'
+import { ContextMenuItem, useContextMenu, useCurseforgeRoute, useMcWikiRoute } from '../hooks'
 import unknownPack from '/@/assets/unknown_pack.png'
+import { ModItem, useCompatible, useI18n, useInstanceVersionBase, useService } from '/@/hooks'
 import { required } from '/@/util/props'
-import { useContextMenu, ContextMenuItem, useCurseforgeRoute, useMcWikiRoute } from '../hooks'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export default defineComponent({
   props: {
@@ -122,7 +123,7 @@ export default defineComponent({
     const { compatible: mcCompatible } = useCompatible(computed(() => props.source.dependencies.minecraft), minecraft, true)
     const { compatible: loaderCompatible } = useCompatible(computed(() => props.source.dependencies.forge ?? ''), forge, false)
     const { open } = useContextMenu()
-    const { openInBrowser, showItemInDirectory } = useService('BaseService')
+    const { openInBrowser, showItemInDirectory } = useService(BaseServiceKey)
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
     const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute()
     const { $t } = useI18n()

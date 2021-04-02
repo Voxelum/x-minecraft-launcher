@@ -294,6 +294,7 @@ import { defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composi
 import UpdateInfoDialog from './SettingPageUpdateInfoDialog.vue'
 import localMapping from '/@/assets/locales/index.json'
 import { useBackgroundBlur, useI18n, useLauncherVersion, useNativeDialog, useParticle, useService, useSettings, useStore } from '/@/hooks'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export default defineComponent({
   components: { UpdateInfoDialog },
@@ -301,13 +302,12 @@ export default defineComponent({
     const dialog = useNativeDialog()
     const { showParticle, particleMode } = useParticle()
     const { blurMainBody } = useBackgroundBlur()
-    const { migrate, postMigrate } = useService('BaseService')
+    const { migrate, postMigrate, openDirectory } = useService(BaseServiceKey)
     const { state } = useStore()
     const settings = useSettings()
     const { $t } = useI18n()
-    const { openDirectory } = useService('BaseService')
     const data = reactive({
-      rootLocation: state.root,
+      rootLocation: state.base.root,
 
       clearData: false,
       migrateData: false,
@@ -355,7 +355,7 @@ export default defineComponent({
       },
       doCancelApplyRoot() {
         data.migrateDialog = false
-        data.rootLocation = state.root
+        data.rootLocation = state.base.root
       },
       doApplyRoot() {
         data.migrateState = 1

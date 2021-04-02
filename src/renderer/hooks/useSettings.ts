@@ -7,32 +7,32 @@ import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export function useSettings () {
   const { state, commit } = useStore()
-  const locales = computed(() => state.setting.locales || [])
+  const locales = computed(() => state.base.locales || [])
   const selectedLocale = computed({
-    get: () => locales.value.find(l => l === state.setting.locale) || 'en',
+    get: () => locales.value.find(l => l === state.base.locale) || 'en',
     set: v => commit('locale', v),
   })
   const allowPrerelease = computed({
-    get: () => state.setting.allowPrerelease,
+    get: () => state.base.allowPrerelease,
     set: v => commit('allowPrerelease', v),
   })
   const autoInstallOnAppQuit = computed({
-    get: () => state.setting.autoInstallOnAppQuit,
+    get: () => state.base.autoInstallOnAppQuit,
     set: v => commit('autoInstallOnAppQuit', v),
   })
   const autoDownload = computed({
-    get: () => state.setting.autoDownload,
+    get: () => state.base.autoDownload,
     set: v => commit('autoDownload', v),
   })
   const apiSetsPreference = computed({
-    get: () => state.setting.apiSetsPreference,
+    get: () => state.base.apiSetsPreference,
     set: v => commit('apiSetsPreference', v),
   })
-  const apiSets = computed(() => ['mojang', ...state.setting.apiSets])
-  const updateStatus = computed(() => state.setting.updateStatus)
+  const apiSets = computed(() => ['mojang', ...state.base.apiSets])
+  const updateStatus = computed(() => state.base.updateStatus)
   const checkingUpdate = useBusy('checkUpdate')
   const downloadingUpdate = useBusy('downloadUpdate')
-  const updateInfo: Ref<UpdateInfo> = computed(() => state.setting.updateInfo || {}) as any
+  const updateInfo: Ref<UpdateInfo> = computed(() => state.base.updateInfo || {}) as any
 
   return {
     ...useServiceOnly(BaseServiceKey, 'checkUpdate'),
@@ -52,8 +52,8 @@ export function useSettings () {
 
 export function useLauncherVersion () {
   const { state } = useStore()
-  const version = computed(() => state.setting.version)
-  const build = computed(() => state.setting.build)
+  const version = computed(() => state.base.version)
+  const build = computed(() => state.base.build)
   return {
     version,
     build,
@@ -64,8 +64,8 @@ export function useUpdateInfo () {
   const { state } = useStore()
   const checkingUpdate = useBusy('checkUpdate')
   const downloadingUpdate = useBusy('downloadUpdate')
-  const updateInfo = computed(() => state.setting.updateInfo)
-  const updateStatus = computed(() => state.setting.updateStatus)
+  const updateInfo = computed(() => state.base.updateInfo)
+  const updateStatus = computed(() => state.base.updateStatus)
   return {
     checkingUpdate,
     downloadingUpdate,

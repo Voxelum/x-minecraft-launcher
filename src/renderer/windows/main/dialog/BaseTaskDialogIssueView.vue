@@ -134,33 +134,33 @@ function useIssuesTree() {
 
   const assets = computed(() => {
     const items: IssueLeaf[] = []
-    const corruptedAssets = state.diagnose.registry.corruptedAssets
-    const missingAssets = state.diagnose.registry.missingAssets
+    const corruptedAssets = state.diagnose.corruptedAssets
+    const missingAssets = state.diagnose.missingAssets
     if (corruptedAssets.actived.length !== 0) {
       items.push(...collect('corruptedAssets', corruptedAssets))
     }
     if (missingAssets.actived.length !== 0) {
       items.push(...collect('missingAssets', missingAssets))
     }
-    return { name: 'assets', items, location: `${state.root}/assets`, $id: $id++ }
+    return { name: 'assets', items, location: `${state.base.root}/assets`, $id: $id++ }
   })
   const libraries = computed(() => {
     const items: IssueLeaf[] = []
-    const corruptedLibraries = state.diagnose.registry.corruptedLibraries
-    const missingLibraries = state.diagnose.registry.missingLibraries
+    const corruptedLibraries = state.diagnose.corruptedLibraries
+    const missingLibraries = state.diagnose.missingLibraries
     if (corruptedLibraries.actived.length !== 0) {
       items.push(...collect('corruptedLibraries', corruptedLibraries))
     }
     if (missingLibraries.actived.length !== 0) {
       items.push(...collect('missingLibraries', missingLibraries))
     }
-    return { name: 'libraries', items, location: `${state.root}/libraries`, $id: $id++ }
+    return { name: 'libraries', items, location: `${state.base.root}/libraries`, $id: $id++ }
   })
   const version = computed(() => {
     const items: IssueLeaf[] = []
-    const missingVersionJar = state.diagnose.registry.missingVersionJar
-    const missingVersionJson = state.diagnose.registry.missingVersionJson
-    const corruptedVersionJar = state.diagnose.registry.corruptedVersionJar
+    const missingVersionJar = state.diagnose.missingVersionJar
+    const missingVersionJson = state.diagnose.missingVersionJson
+    const corruptedVersionJar = state.diagnose.corruptedVersionJar
     if (missingVersionJar.actived.length !== 0) {
       items.push(...collect('missingVersionJar', missingVersionJar))
     }
@@ -170,15 +170,15 @@ function useIssuesTree() {
     if (corruptedVersionJar.actived.length !== 0) {
       items.push(...collect('corruptedVersionJar', corruptedVersionJar))
     }
-    return { name: 'version', items, location: `${state.root}/versions`, $id: $id++ }
+    return { name: 'version', items, location: `${state.base.root}/versions`, $id: $id++ }
   })
   const mods = computed(() => {
     const items: IssueLeaf[] = []
-    const incompatibleMod = state.diagnose.registry.incompatibleMod
+    const incompatibleMod = state.diagnose.incompatibleMod
     if (incompatibleMod.actived.length !== 0) {
       items.push(...collect('incompatibleMod', incompatibleMod))
     }
-    return { name: 'mod', items, location: `${state.root}/mods`, $id: $id++ }
+    return { name: 'mod', items, location: `${state.base.root}/mods`, $id: $id++ }
   })
 
   const items = computed(() => {
@@ -198,7 +198,7 @@ function useIssuesTree() {
     return result
   })
 
-  return { items, root: state.root }
+  return { items, root: state.base.root }
 }
 
 export default defineComponent({

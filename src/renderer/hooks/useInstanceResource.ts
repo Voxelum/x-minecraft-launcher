@@ -78,10 +78,10 @@ export function useInstanceResourcePacks() {
     return meta ? meta.format ?? meta.pack_format : 3
   }
   function getResourcePackItem(resource: Resource<PackMeta.Pack>): ResourcePackItem {
-    const icon = isPersistedResource(resource) ? `${state.root}/${resource.location}.png` : ''
+    const icon = isPersistedResource(resource) ? `dataroot:///${resource.location}.png` : ''
     return {
       path: resource.path,
-      name: basename(resource.path),
+      name: resource.name,
       id: `file/${basename(resource.path)}`,
       url: resource.uri,
       pack_format: resource.metadata.pack_format,

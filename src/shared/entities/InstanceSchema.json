@@ -181,10 +181,12 @@
                 },
                 "yarn": {
                     "description": "Fabric yarn version, e.g. 1.15.1+build.14",
+                    "default": "",
                     "type": "string"
                 },
                 "optifine": {
                     "description": "Optifine version e.g. HD_U_F1_pre6 or HD_U_E6",
+                    "default": "",
                     "type": "string"
                 }
             },
