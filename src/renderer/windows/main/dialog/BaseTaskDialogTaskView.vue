@@ -28,13 +28,13 @@
 
         <template #label="{ item }">
           <div
-            style="padding: 5px 0px;"
+            style="padding: 5px 0px; max-width: 300px"
             @click="onTaskClick($event, item)"
             @mouseenter.prevent="hovered[item.id] = true"
             @mouseleave.prevent="hovered[item.id] = false"
           >
             <span
-              style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
+              style="max-width: 100px;"
             >{{ item.title }}</span>
             <div
               style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
