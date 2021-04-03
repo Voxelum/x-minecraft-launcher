@@ -1,9 +1,10 @@
 import { Task } from '@xmcl/task'
-import { app, BrowserWindow, ipcMain, shell, protocol } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { createServer } from 'http'
 import { join } from 'path'
 import { URL } from 'url'
+import { StaticStore } from '../util/staticStore'
 import Controller from './Controller'
 import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate } from './updater'
 import LauncherApp from '/@main/app/LauncherApp'
@@ -11,8 +12,22 @@ import { LauncherAppController } from '/@main/app/LauncherAppController'
 import { IS_DEV } from '/@main/constant'
 import { isDirectory } from '/@main/util/fs'
 import { UpdateInfo } from '/@shared/entities/update'
-import { StaticStore } from '../util/staticStore'
 
+ipcMain.handle('dialog:showCertificateTrustDialog', (event, ...args) => {
+  return dialog.showCertificateTrustDialog(args[0])
+})
+ipcMain.handle('dialog:showErrorBox', (event, ...args) => {
+  return dialog.showErrorBox(args[0], args[1])
+})
+ipcMain.handle('dialog:showMessageBox', (event, ...args) => {
+  return dialog.showMessageBox(args[0])
+})
+ipcMain.handle('dialog:showOpenDialog', (event, ...args) => {
+  return dialog.showOpenDialog(args[0])
+})
+ipcMain.handle('dialog:showSaveDialog', (event, ...args) => {
+  return dialog.showSaveDialog(args[0])
+})
 export default class ElectronLauncherApp extends LauncherApp {
   createController(): LauncherAppController {
     return new Controller(this)
