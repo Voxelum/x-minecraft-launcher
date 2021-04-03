@@ -2,7 +2,7 @@
   <v-app
     ref="app"
     dark
-    style="background: transparent;"
+    style="background: transparent; overflow: hidden"
   >
     <universal-drop-view />
     <v-container
@@ -28,8 +28,8 @@
         >
           <img
             v-if="backgroundImage"
-            :src="`file:///${backgroundImage}`"
-            :style="{ filter: `blur:${blur}px` }"
+            :src="`${backgroundImage}`"
+            :style="{ filter: `blur(${blur}px)` }"
             style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;"
           >
           <vue-particles
@@ -141,7 +141,7 @@ export default defineComponent({
           })
         }
       })
-      app.value!.$el.classList.add(state.platform)
+      app.value!.$el.classList.add(state.base.platform)
     })
 
     return {

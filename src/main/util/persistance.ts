@@ -19,7 +19,7 @@ export class FileIOHandler<T > {
   }
 
   async readTo(path: string): Promise<T> {
-    return this.serializer.deserialize(await readFile(path))
+    return this.serializer.deserialize(await readFile(path).catch(e => Buffer.from('')))
   }
 
   async saveTo(path: string, value?: T): Promise<void> {
