@@ -69,20 +69,21 @@ import { useDialog } from '../hooks'
 import TaskView from './BaseTaskDialogTaskView.vue'
 import IssueView from './BaseTaskDialogIssueView.vue'
 import NotificationView from './BaseTaskDialogNotificationView.vue'
+import { useRouter } from '/@/hooks'
 
 export default defineComponent({
   components: { TaskView, IssueView, NotificationView },
-  props: {
-    value: {
-      type: Boolean,
-      default: false,
-    },
-  },
   setup() {
     const { hide, isShown } = useDialog('task')
 
     const data = reactive({
       tabs: 0,
+    })
+    const router = useRouter()
+    router.afterEach((g) => {
+      if (isShown.value) {
+        hide()
+      }
     })
 
     return {
