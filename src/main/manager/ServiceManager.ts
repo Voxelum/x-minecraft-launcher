@@ -9,6 +9,7 @@ import InstallService from '../service/InstallService'
 import InstanceCurseforgeIOService from '../service/InstanceCurseforgeIOService'
 import InstanceGameSettingService from '../service/InstanceGameSettingService'
 import InstanceIOService from '../service/InstanceIOService'
+import InstanceLogService from '../service/InstanceLogService'
 import InstanceResourceService from '../service/InstanceResourceService'
 import InstanceSavesService from '../service/InstanceSavesService'
 import InstanceService from '../service/InstanceService'
@@ -258,6 +259,7 @@ export default class ServiceManager extends Manager {
     this.addService(InstanceCurseforgeIOService)
     this.addService(InstanceGameSettingService)
     this.addService(InstanceIOService)
+    this.addService(InstanceLogService)
     this.addService(InstanceResourceService)
     this.addService(InstanceSavesService)
     this.addService(InstanceService)
