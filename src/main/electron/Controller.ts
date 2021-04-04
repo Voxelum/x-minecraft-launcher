@@ -7,7 +7,7 @@ import { trackWindowSize } from '/@main/util/windowSizeTracker'
 import { TaskNotification } from '/@shared/entities/notification'
 import { StaticStore } from '../util/staticStore'
 import { app, BrowserWindow, dialog, ProcessMemoryInfo, Menu, session, Tray, Notification } from 'electron'
-import { readJSON } from 'fs-extra'
+import { readFile, readJSON } from 'fs-extra'
 import { join, resolve } from 'path'
 import indexPreload from '/@preload/index'
 import mainWinUrl from '/@renderer/index.html'
@@ -17,6 +17,8 @@ import LauncherApp from '../app/LauncherApp'
 import favcon2XPath from '/@static/favicon@2x.png'
 import iconPath from '/@static/apple-touch-icon.png'
 import i18n from './locales'
+import { fileType } from '../util/fs'
+import { fromFile } from 'file-type'
 
 export default class Controller implements LauncherAppController {
   private mainWin: BrowserWindow | undefined = undefined
@@ -90,6 +92,32 @@ export default class Controller implements LauncherAppController {
     sess.protocol.registerFileProtocol('dataroot', (req, callback) => {
       const pathname = decodeURIComponent(req.url.replace('dataroot:///', ''))
       callback(join(this.app.appDataPath, pathname))
+    })
+    sess.protocol.registerFileProtocol('image', (req, callback) => {
+      const pathname = decodeURIComponent(req.url.replace('image://', ''))
+      fromFile(pathname).then((type) => {
+        if (type && type.mime.startsWith('image/')) {
+          callback(pathname)
+        } else {
+          callback({ statusCode: 404 })
+        }
+      }).catch(() => {
+        callback({ statusCode: 404 })
+      })
+    })
+    sess.protocol.registerFileProtocol('video', (req, callback) => {
+      const pathname = decodeURIComponent(req.url.replace('video://', ''))
+      console.log(pathname)
+      callback(pathname)
+      // fromFile(pathname).then((type) => {
+      //   if (type && type.mime.startsWith('image/')) {
+      //     callback(pathname)
+      //   } else {
+      //     callback({ statusCode: 404 })
+      //   }
+      // }).catch(() => {
+      //   callback({ statusCode: 404 })
+      // })
     })
 
     const browser = new BrowserWindow({

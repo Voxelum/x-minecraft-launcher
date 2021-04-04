@@ -17,6 +17,5 @@ const mod: ComponentModule = {
     components: [],
   },
   // mutations: {
-
   // },
 }

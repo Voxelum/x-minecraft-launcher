@@ -351,12 +351,6 @@
   "installFabric": {
     "": "安装 Fabric"
   },
-  "installOptifine": {
-    "": "安装 Optifine",
-    "download": "下载 Optifine Universal",
-    "json": "生成 Json",
-    "jar": "生成 Optifine Jar"
-  },
   "installForge": {
     "": "安装 Forge",
     "downloadInstaller": "下载 Forge 安装器",
@@ -376,6 +370,12 @@
   "installLibraries": {
     "": "安装依赖运行库",
     "library": "检查库文件"
+  },
+  "installOptifine": {
+    "": "安装 Optifine",
+    "download": "下载 Optifine Universal",
+    "jar": "生成 Optifine Jar",
+    "json": "生成 Json"
   },
   "installVersion": {
     "": "安装%{version}的游戏本体",
@@ -749,6 +749,12 @@
     "autoDownloadDescription": "自动下载最新的版本",
     "autoInstallOnAppQuit": "自动安装",
     "autoInstallOnAppQuitDescription": "每次 App 退出后自动安装更新",
+    "backgroundImage": "背景图片",
+    "backgroundImageBlur": "背景模糊",
+    "backgroundImageBlurDescription": "拖动以模糊背景",
+    "backgroundImageClear": "清空",
+    "backgroundImageDescription": "选择一张背景图片或清空当前图片",
+    "backgroundImageSelect": "选择",
     "blurMainBody": "模糊窗口主体",
     "blurMainBodyDescription": "是否将启动器窗口右侧主体模糊",
     "browseRoot": "更改",
