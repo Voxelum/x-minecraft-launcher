@@ -1,4 +1,4 @@
-import { readFile } from "fs-extra"
+import { readFile } from 'fs-extra'
 import { ZipFile } from 'yauzl'
 import { readEntry, readAllEntries } from '@xmcl/unzip'
 
@@ -80,7 +80,7 @@ export interface Library {
    */
   name: string
   /**
-   * The name of the 
+   * The name of the
    */
   filename: string
   hint: 'local'
@@ -107,7 +107,7 @@ function isServerManaged(modpack: HMCLModpack): modpack is HMCLServerManagedModp
 export async function installHMCLModpack(zip: ZipFile) {
   const entires = await readAllEntries(zip)
   const versionJson = entires.find(e => e.fileName === 'minecraft/pack.json')
-  
+
   // if (isServerManaged(modpack)) {
   //   const versionJson = await readFile('')
   // }
