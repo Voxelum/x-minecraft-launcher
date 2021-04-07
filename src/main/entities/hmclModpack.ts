@@ -1,6 +1,9 @@
-import { readFile } from "fs-extra"
+import { Version } from '@xmcl/core'
+import { openEntryReadStream, readAllEntries, readEntry, walkEntriesGenerator } from '@xmcl/unzip'
+import { createWriteStream } from 'fs'
+import { join } from 'path'
 import { ZipFile } from 'yauzl'
-import { readEntry, readAllEntries } from '@xmcl/unzip'
+import { pipeline } from '../util/fs'
 
 /**
  * https://github.com/huanghongxun/HMCL/wiki/HMCL-%E6%95%B4%E5%90%88%E5%8C%85%E8%A7%84%E8%8C%83
@@ -51,13 +54,13 @@ export interface HMCLServerManagedModpack extends HMCLModpack {
   /**
    * Contains the files need to be downloaded from internet
    */
-  files: File[]
+  files: FileInfo[]
 }
 
 /**
  * Represnet a file need to be downloaded from internet
  */
-export interface File {
+export interface FileInfo {
   /**
    * The relative path of the file in minecraft
    */
@@ -69,7 +72,7 @@ export interface File {
   /**
    * The file download url
    */
-  url: string
+  url?: string
 }
 
 export interface Library {
@@ -80,7 +83,7 @@ export interface Library {
    */
   name: string
   /**
-   * The name of the 
+   * The name of the library
    */
   filename: string
   hint: 'local'
@@ -100,15 +103,46 @@ export interface Addon {
   version: string
 }
 
+export interface PatchedVersion {
+
+}
+
+export interface PackJson extends Version {
+  id: string
+  jar: string
+  root: boolean
+  hidden: boolean
+  patches: PatchedVersion[]
+}
+
 function isServerManaged(modpack: HMCLModpack): modpack is HMCLServerManagedModpack {
   return 'fileApi' in modpack
 }
 
-export async function installHMCLModpack(zip: ZipFile) {
-  const entires = await readAllEntries(zip)
-  const versionJson = entires.find(e => e.fileName === 'minecraft/pack.json')
-  
-  // if (isServerManaged(modpack)) {
-  //   const versionJson = await readFile('')
-  // }
+export async function readHMCLModpackMetadata(zip: ZipFile) {
+  for await (const entry of walkEntriesGenerator(zip)) {
+    if (entry.fileName === 'modpack.json') {
+      return readEntry(zip, entry).then(b => JSON.parse(b.toString()) as HMCLModpack)
+    }
+    if (entry.fileName === 'server-manifest.json') {
+      return readEntry(zip, entry).then(b => JSON.parse(b.toString()) as HMCLServerManagedModpack)
+    }
+  }
+  throw new Error()
+}
+
+export async function installHMCLModpack(zip: ZipFile, destination: string) {
+  const entries = await readAllEntries(zip)
+  if (entries.find(e => e.fileName === 'modpack.json')) {
+    const promises = [] as Array<Promise<void>>
+    for (const e of entries.filter(e => e.fileName.startsWith('minecraft'))) {
+      const fileName = join(destination, e.fileName)
+      if (e.fileName === 'minecraft/pack.json') {
+        const pack: PackJson = await readEntry(zip, e).then(b => JSON.parse(b.toString()))
+      } else {
+        promises.push(pipeline(await openEntryReadStream(zip, e), createWriteStream(fileName)))
+      }
+    }
+    await Promise.all(promises)
+  }
 }

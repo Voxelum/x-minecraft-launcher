@@ -10,18 +10,25 @@
 // Set environment for development
 // process.env.NODE_ENV = 'development';
 
+import { app, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
-import { app, BrowserWindow } from 'electron'
-import { Socket } from 'net'
+import { existsSync } from 'fs-extra';
+import { Socket } from 'net';
+import { join } from 'path';
+import './main';
 
-require('electron').app.on('web-contents-created', (event, contents) => {
-    contents.openDevTools();
+app.on('web-contents-created', (event, contents) => {
+  // const extensionDir = join(__dirname, '../extensions')
+  // if (existsSync(extensionDir)) {
+  //   contents.session.loadExtension(extensionDir)
+  // }
+  contents.openDevTools({ mode: 'detach' });
 })
 
 autoUpdater.setFeedURL({
-    provider: 'github',
-    repo: 'x-minecraft-launcher',
-    owner: 'voxelum',
+  provider: 'github',
+  repo: 'x-minecraft-launcher',
+  owner: 'voxelum',
 });
 autoUpdater.logger = null;
 
@@ -38,4 +45,4 @@ devServer.on('data', () => {
   BrowserWindow.getAllWindows().forEach(w => w.reload())
 })
 
-import './main';
+
