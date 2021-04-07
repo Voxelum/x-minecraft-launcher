@@ -173,6 +173,14 @@ img {
   max-height: 100%;
   object-fit: contain;
 }
+
+html ::-webkit-scrollbar {
+  display: none;
+}
+
+::-webkit-scrollbar {
+  display: unset;
+}
 </style>
 
 <style scoped=true>

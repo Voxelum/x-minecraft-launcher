@@ -20,7 +20,7 @@ import ServerStatusService from '../service/ServerStatusService'
 import UserService from '../service/UserService'
 import VersionService from '../service/VersionService'
 import { Client } from '/@main/engineBridge'
-import AbstractService, { ServiceConstructor } from '/@main/service/Service'
+import AbstractService, { KEYS_SYMBOL, PARAMS_SYMBOL, ServiceConstructor, SUBSCRIBE_SYMBOL } from '/@main/service/Service'
 import { ServiceKey } from '/@shared/services/Service'
 import { aquire, isBusy, release } from '/@shared/util/semaphore'
 
@@ -95,7 +95,7 @@ export default class ServiceManager extends Manager {
       if (injection.getObject(ServiceConstructor)) {
         return
       }
-      const types = Reflect.getMetadata('service:params', ServiceConstructor)
+      const types = Reflect.get(ServiceConstructor, PARAMS_SYMBOL)
       const params: any[] = [this.app]
       if (types) {
         for (let i = 0; i < types.length; i++) {
@@ -117,7 +117,7 @@ export default class ServiceManager extends Manager {
       const serv = new ServiceConstructor(...params)
       injection.register(ServiceConstructor, serv)
       this.activeServices.push(serv)
-      const key = Reflect.getMetadata('service:key', ServiceConstructor)
+      const key = Reflect.get(ServiceConstructor, KEYS_SYMBOL)
       if (key) {
         serviceMap[key] = serv
         this.log(`Expose service ${key} to remote`)
@@ -125,7 +125,7 @@ export default class ServiceManager extends Manager {
         this.warn(`Unexpose the service ${ServiceConstructor.name}`)
       }
 
-      const subscrptions = Reflect.getMetadata('service:subscribe', serv)
+      const subscrptions = Reflect.get(serv, SUBSCRIBE_SYMBOL)
       if (subscrptions) {
         for (const { mutations, handler } of subscrptions) {
           this.app.storeManager.subscribeAll(mutations, handler.bind(serv))

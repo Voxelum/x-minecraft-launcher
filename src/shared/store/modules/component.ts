@@ -1,7 +1,7 @@
-import { Component } from '/@shared/entities/compenent';
+import { Component } from '/@shared/entities/compenent'
 import { Mutations as ResourceMutations } from './resource'
 import { Mutations as VersionMutations } from './version'
-import { ModuleOption } from '../root';
+import { ModuleOption } from '../root'
 
 interface State {
   components: Component[]
@@ -16,7 +16,7 @@ const mod: ComponentModule = {
   state: {
     components: [],
   },
-  mutations: {
-    
-  },
+  // mutations: {
+
+  // },
 }
