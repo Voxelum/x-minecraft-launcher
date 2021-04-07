@@ -8,6 +8,10 @@ import { ServiceKey } from '/@shared/services/Service'
 import { MutationKeys, RootCommit, RootGetters, RootState } from '/@shared/store'
 
 export const PURE_SYMBOL = Symbol('__pure__')
+export const PARAMS_SYMBOL = Symbol('service:params')
+export const KEYS_SYMBOL = Symbol('service:key')
+export const INTERNAL_SYMBOL = Symbol('service:internal')
+export const SUBSCRIBE_SYMBOL = Symbol('service:subscribe')
 
 export type ServiceConstructor<T extends AbstractService = any> = {
   new(...args: any[]): T
@@ -15,12 +19,12 @@ export type ServiceConstructor<T extends AbstractService = any> = {
 
 export function Inject<T extends AbstractService>(con: ServiceConstructor<T>) {
   return (target: object, key: string, index: number) => {
-    if (Reflect.hasMetadata('service:params', target)) {
+    if (Reflect.has(target, PARAMS_SYMBOL)) {
       // console.log(`Inject ${key} ${index} <- ${target}`)
-      Reflect.getMetadata('service:params', target)[index] = con
+      Reflect.get(target, PARAMS_SYMBOL)[index] = con
     } else {
       const arr: any[] = []
-      Reflect.defineMetadata('service:params', arr, target)
+      Reflect.set(target, PARAMS_SYMBOL, arr)
       arr[index] = con
     }
   }
@@ -32,7 +36,7 @@ export function Inject<T extends AbstractService>(con: ServiceConstructor<T>) {
  */
 export function ExportService<T extends AbstractService>(key: ServiceKey<T>) {
   return (target: ServiceConstructor<T>) => {
-    Reflect.defineMetadata('service:key', key, target)
+    Reflect.set(target, KEYS_SYMBOL, key)
   }
 }
 
@@ -41,11 +45,11 @@ export function ExportService<T extends AbstractService>(key: ServiceKey<T>) {
  */
 export function internal(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
   let internal: string[]
-  if (Reflect.hasMetadata('service:internal', target)) {
-    internal = Reflect.getMetadata('service:internal', target)
+  if (Reflect.has(target, INTERNAL_SYMBOL)) {
+    internal = Reflect.get(target, INTERNAL_SYMBOL)
   } else {
     internal = []
-    Reflect.defineMetadata('service:internal', internal, target)
+    Reflect.set(target, INTERNAL_SYMBOL, internal)
   }
   internal.push(propertyKey)
 }
@@ -59,10 +63,10 @@ export function Subscribe(...keys: MutationKeys[]) {
     if (!keys || keys.length === 0) {
       throw new Error('Must listen at least one mutation!')
     } else {
-      if (!Reflect.hasMetadata('service:subscribe', target)) {
-        Reflect.defineMetadata('service:subscribe', [], target)
+      if (!Reflect.has(target, SUBSCRIBE_SYMBOL)) {
+        Reflect.set(target, SUBSCRIBE_SYMBOL, [])
       }
-      const sub = Reflect.getMetadata('service:subscribe', target) as any[]
+      const sub = Reflect.get(target, SUBSCRIBE_SYMBOL) as any[]
       sub.push({ mutations: keys, handler: descriptor.value })
     }
   }
