@@ -58,6 +58,7 @@
         "got": "^10.7.0",
         "iconv-lite": "^0.5.1",
         "jschardet": "^2.1.1",
+        "keytar": "^7.6.0",
         "lodash.debounce": "^4.0.8",
         "lodash.throttle": "^4.1.1",
         "node-powershell": "^4.0.0",
