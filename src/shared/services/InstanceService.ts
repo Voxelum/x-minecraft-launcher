@@ -23,8 +23,8 @@ export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'deplo
     port?: number
   } | null
   /**
-     * The target instance path. If this is absent, it will use the selected instance.
-     */
+    * The target instance path. If this is absent, it will use the selected instance.
+    */
   instancePath?: string
 }
 /**
