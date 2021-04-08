@@ -339,12 +339,7 @@
   "help": "Help",
   "home": "Home",
   "hotkeyChanges": "Hotkey Changes",
-  "importResource": {
-    "": "Import Resource",
-    "download": "Download Resource",
-    "parsing": "Parsing Resource",
-    "storing": "Storing Resource"
-  },
+  "importResource": "Import Resource",
   "importSave": "Import Save",
   "installAssets": {
     "": "Install Asset Files",
@@ -377,12 +372,6 @@
   "installFabric": {
     "": "Install Fabric"
   },
-  "installOptifine": {
-    "": "Install Optifine",
-    "download": "Download Optifine Universal",
-    "json": "Generate Json",
-    "jar": "Generate Jar"
-  },
   "installForge": {
     "": "Install Forge",
     "downloadInstaller": "Download Installer",
@@ -402,6 +391,12 @@
   "installLibraries": {
     "": "Install Libraries",
     "library": "Install Library"
+  },
+  "installOptifine": {
+    "": "Install Optifine",
+    "download": "Download Optifine Universal",
+    "jar": "Generate Jar",
+    "json": "Generate Json"
   },
   "installVersion": {
     "": "Install Minecraft Client {version}",

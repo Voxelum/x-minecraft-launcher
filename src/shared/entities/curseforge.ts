@@ -1,12 +1,11 @@
+import { ModpackManifest } from './modpack';
 
 export type ProjectType = 'mc-mods' | 'texture-packs' | 'worlds' | 'modpacks'
 
 /**
  * The modpack metadata structure
  */
-export interface CurseforgeModpackManifest {
-  manifestType: string
-  manifestVersion: number
+export interface CurseforgeModpackManifest extends ModpackManifest {
   minecraft: {
     version: string
     libraries?: string
@@ -15,9 +14,6 @@ export interface CurseforgeModpackManifest {
       primary: boolean
     }[]
   }
-  name: string
-  version: string
-  author: string
   files: {
     projectID: number
     fileID: number

@@ -12,6 +12,7 @@ import { BaseModule } from './modules/base'
 import { UserModule } from './modules/user'
 import { VersionModule } from './modules/version'
 import { InstanceResourceModule } from './modules/instanceResource'
+import { InstanceHMCLModpackModule } from './modules/instanceHCMLModpack'
 
 declare module './root' {
   interface ModuleMap {
@@ -25,6 +26,7 @@ declare module './root' {
     instanceServerInfo: InstanceServerInfoModule
     instanceSave: InstanceSaveModule
     instanceResource: InstanceResourceModule
+    instanceHCMLModpack: InstanceHMCLModpackModule
     resource: ResourceModule
     base: BaseModule
     user: UserModule

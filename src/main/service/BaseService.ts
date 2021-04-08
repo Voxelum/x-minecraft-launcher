@@ -1,6 +1,5 @@
 import { copy, copyFile, ensureDir, readJson, remove, unlink, writeJson } from 'fs-extra'
 import { join } from 'path'
-import 'reflect-metadata'
 import LauncherApp from '../app/LauncherApp'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'

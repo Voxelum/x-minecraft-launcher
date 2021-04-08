@@ -5,14 +5,14 @@ export interface Instance extends InstanceSchema {
   path: string
 
   /**
-     * The server status
-     */
+   * The server status
+   */
   serverStatus: ServerStatus
 }
 
 export const DEFAULT_PROFILE: InstanceSchema = Object.freeze(createTemplate())
 
-export function createTemplate (): Instance {
+export function createTemplate(): Instance {
   const base: Instance = {
     path: '',
     name: '',
