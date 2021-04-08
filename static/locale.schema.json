@@ -1713,9 +1713,6 @@
         "no": {
             "type": "string"
         },
-        "nodescription": {
-            "type": "string"
-        },
         "ok": {
             "type": "string"
         },
@@ -3195,7 +3192,6 @@
         "name",
         "next",
         "no",
-        "nodescription",
         "ok",
         "optional",
         "popular",

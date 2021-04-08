@@ -40,101 +40,103 @@ export interface RuntimeVersions {
   [id: string]: undefined | string
 }
 
-// eslint-disable-next-line no-redeclare
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export interface InstanceSchema {
   /**
-     * The display name of the profile. It will also be the modpack display name
-     * @default ""
-     */
+   * The display name of the profile. It will also be the modpack display name
+   * @default ""
+   */
   name: string
   /**
-     * The author of this instance
-     * @default ""
-     */
+   * The author of this instance
+   * @default ""
+   */
   author: string
   /**
-     * The description of this instance
-     * @default ""
-     */
+   * The description of this instance
+   * @default ""
+   */
   description: string
   /**
-     * Should show a logger window after Minecraft launched
-     * @default false
-     */
+   * Should show a logger window after Minecraft launched
+   * @default false
+   */
   showLog: boolean
   /**
-     * Should launcher hide after Minecraft launched
-     * @default true
-     */
+   * Should launcher hide after Minecraft launched
+   * @default true
+   */
   hideLauncher: boolean
   /**
-     * The target version id to launch. It will be computed from "runtime"
-     * @default ""
-     */
+   * The target version id to launch. It will be computed from "runtime"
+   * @default ""
+   */
   version: string
   /**
-     * The runtime version requirement of the profile.
-     *
-     * Containing the forge & liteloader & etc.
-     * @default { "minecraft": "", "forge": "", "liteloader": "" }
-     */
+   * The runtime version requirement of the profile.
+   *
+   * Containing the forge & liteloader & etc.
+   * @default { "minecraft": "", "forge": "", "liteloader": "" }
+   */
   runtime: RuntimeVersions
   /**
-     * The java path on the disk
-    * @default ""
-    */
+   * The java path on the disk
+   * @default ""
+   */
   java: string
-
+  /**
+   * The resolution of the game
+   */
   resolution: { width: number; height: number; fullscreen: boolean } | null
   /**
-     * @default 0
-     */
+    * @default 0
+    */
   minMemory: number
   /**
-     * @default 0
-     */
+    * @default 0
+    */
   maxMemory: number
   /**
-     * @default []
-     */
+   * @default []
+   */
   vmOptions: string[]
   /**
-     * @default []
-     */
+   * @default []
+   */
   mcOptions: string[]
-
   /**
-     * @default ""
-     */
+   * @default ""
+   */
   url: string
   /**
-     * @default ""
-     */
+   * @default ""
+   */
   icon: string
   /**
-     * @default 0
-     */
+   * @default 0
+   */
   lastAccessDate: number
   /**
-     * @default 0
-     */
+   * @default 0
+   */
   creationDate: number
   /**
-     * The option for instance to launch server directly
-     * @default null
-     */
+   * The option for instance to launch server directly
+   * @default null
+   */
   server: {
     host: string
     port?: number
   } | null
 }
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export interface InstancesSchema {
   selectedInstance: string
   /**
-     * The extra imported instance path
-     * @default []
-     */
+   * The extra imported instance path
+   * @default []
+   */
   instances: string[]
 }
 

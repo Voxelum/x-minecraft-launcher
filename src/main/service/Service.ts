@@ -1,6 +1,5 @@
 import { Task } from '@xmcl/task'
 import { join } from 'path'
-import 'reflect-metadata'
 import LauncherApp from '/@main/app/LauncherApp'
 import { WaitingQueue } from '/@main/util/mutex'
 import { Exceptions } from '/@shared/entities/exception'

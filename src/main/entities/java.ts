@@ -37,7 +37,7 @@ export function parseTsingHuaAdpotOpenJDKHotspotArchive (pageText: string, baseU
     .filter(isNonnull)
     .map((a) => a[1]) ?? []
 
-  const target = targets.find((target) => target.indexOf('hotspot') !== -1 && target.endsWith('.zip') || target.endsWith('.tar.gz'))
+  const target = targets.find((target) => (target.indexOf('hotspot') !== -1 && target.endsWith('.zip')) || target.endsWith('.tar.gz'))
   if (target) {
     return {
       fileName: target,
