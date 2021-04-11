@@ -229,6 +229,9 @@
   "feedback": {
     "": "Feedback",
     "description": "I found a Bug or I want to make a suggestion",
+    "discord": "Discord",
+    "discordDescription": "Join Discord Channel",
+    "discordJoin": "Join",
     "github": "Github Issue",
     "githubDescription": "Open an Github Issue to tell your thought",
     "githubOpenIssue": "Github",

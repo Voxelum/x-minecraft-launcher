@@ -54,6 +54,26 @@
           </v-btn>
         </v-list-tile-action>
       </v-list-tile>
+
+      <v-list-tile avatar>
+        <v-list-tile-content>
+          <v-list-tile-title>{{ $t('feedback.discord') }}</v-list-tile-title>
+          <v-list-tile-sub-title
+            style="max-width: 80%"
+          >
+            {{ $t('feedback.discordDescription') }}
+          </v-list-tile-sub-title>
+        </v-list-tile-content>
+
+        <v-list-tile-action>
+          <v-btn
+            flat
+            href="https://discord.gg/W5XVwYY7GQ"
+          >
+            {{ $t('feedback.discordJoin') }}
+          </v-btn>
+        </v-list-tile-action>
+      </v-list-tile>
     </v-list>
   </v-dialog>
 </template>
