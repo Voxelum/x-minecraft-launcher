@@ -1,4 +1,4 @@
-import { ensureDir, FSWatcher, unlink } from 'fs-extra'
+import { ensureDir, FSWatcher, link, remove, stat, unlink } from 'fs-extra'
 import watch from 'node-watch'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
@@ -204,11 +204,21 @@ export default class InstanceResourceService extends AbstractService implements 
       } else {
         const src = join(this.getPath(), resource.location + resource.ext)
         const dest = join(path, resource.location + resource.ext)
-        promises.push(linkOrCopy(src, dest).catch((e) => {
-          this.error(`Cannot deploy the resource from ${src} to ${dest}`)
-          this.error(e)
-          throw e
-        }))
+        const [srcStat, destStat] = await Promise.all([stat(src), stat(dest).catch(() => undefined)])
+
+        let promise: Promise<void> | undefined
+        if (!destStat) {
+          promise = linkOrCopy(src, dest)
+        } else if (srcStat.ino !== destStat.ino) {
+          promise = unlink(dest).then(() => linkOrCopy(src, dest))
+        }
+        if (promise) {
+          promises.push(promise.catch((e) => {
+            this.error(`Cannot deploy the resource from ${src} to ${dest}`)
+            this.error(e)
+            throw e
+          }))
+        }
       }
     }
     await Promise.all(promises)
