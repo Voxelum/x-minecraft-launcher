@@ -67,6 +67,7 @@ export default class Controller implements LauncherAppController {
 
   async createMainWindow() {
     const configPath = join(this.app.appDataPath, 'main-window-config.json')
+    this.app.log(`[Controller] Creating main window by config ${configPath}`)
     const configData = await readJSON(configPath).catch(() => ({
       width: -1,
       height: -1,
@@ -82,6 +83,10 @@ export default class Controller implements LauncherAppController {
 
     const sess = session.fromPartition('persist:main')
 
+    // sess.protocol.interceptHttpProtocol('https', (req, cb) => {
+    // eslint-disable-next-line standard/no-callback-literal
+    // cb({ headers: { 'Access-Control-Allow-Origin': '*' } })
+    // })
     sess.protocol.registerFileProtocol('dataroot', (req, callback) => {
       const pathname = decodeURIComponent(req.url.replace('dataroot:///', ''))
       callback(join(this.app.appDataPath, pathname))
@@ -105,7 +110,7 @@ export default class Controller implements LauncherAppController {
       vibrancy: 'sidebar', // or popover
       icon: iconPath,
       webPreferences: {
-        // webSecurity: !IS_DEV, // disable security for loading local image
+        webSecurity: !IS_DEV, // disable security for loading local image
         nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
         session: sess,
@@ -113,6 +118,7 @@ export default class Controller implements LauncherAppController {
       },
     })
 
+    this.app.log(`[Controller] Created main window by config ${configPath}`)
     browser.on('ready-to-show', () => { this.app.log('Main Window is ready to show!') })
     browser.on('close', () => { })
 
@@ -123,6 +129,8 @@ export default class Controller implements LauncherAppController {
 
     browser.loadURL(mainWinUrl)
     browser.show()
+
+    this.app.log(`[Controller] Load main window url ${mainWinUrl}`)
 
     this.mainWin = browser
   }
