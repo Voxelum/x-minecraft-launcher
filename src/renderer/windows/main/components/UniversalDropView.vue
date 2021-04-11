@@ -61,6 +61,7 @@
               <preview-view
                 v-else
                 :previews="previews"
+                @remove="remove"
                 @cancel="cancel"
               />
             </v-layout>
@@ -117,6 +118,14 @@ export default defineComponent({
       }
       pending.value = false
     }
+    function remove(file: FilePreview) {
+      previews.value = previews.value.filter((p) => p.path !== file.path)
+      console.log(file)
+      console.log(previews)
+      if (previews.value.length === 0) {
+        cancel()
+      }
+    }
     function cancel() {
       pending.value = true
       inside.value = false
@@ -142,6 +151,7 @@ export default defineComponent({
       inside,
       pending,
       previews,
+      remove,
       cancel,
     }
   },
