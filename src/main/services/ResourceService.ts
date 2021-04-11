@@ -8,7 +8,7 @@ import { BufferJsonSerializer } from '../util/serialize'
 import AbstractService, { ExportService, internal } from './Service'
 import { FileStat, mutateResource, persistResource, readFileStat, remove, ResourceCache } from '/@main/entities/resource'
 import { fixResourceSchema } from '/@main/util/dataFix'
-import { copyPassively, FileType, readdirEnsured } from '/@main/util/fs'
+import { copyPassively, fileType, FileType, readdirEnsured } from '/@main/util/fs'
 import { Exception } from '/@shared/entities/exception'
 import { AnyPersistedResource, AnyResource, isPersistedResource, PersistedResource } from '/@shared/entities/resource'
 import { PersistedResourceSchema, Resource, ResourceType } from '/@shared/entities/resource.schema'
@@ -133,7 +133,7 @@ export default class ResourceService extends AbstractService implements IResourc
           domain: resourceData.domain,
           type: resourceData.type,
           metadata: resourceData.metadata,
-          fileType: resourceData.fileType,
+          fileType: resourceData.fileType || await fileType(resourceFilePath),
           uri: resourceData.uri,
           date: resourceData.date,
           tags: resourceData.tags,

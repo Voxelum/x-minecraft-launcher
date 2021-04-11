@@ -47,12 +47,12 @@
           color="green darken-1"
         />
       </v-flex>
-      <v-flex xs2 style="justify-content: center; flex-direction: column">
+      <v-flex xs1>
         <create-button @create="onCreate" />
+      </v-flex>
+      <v-flex xs1> 
         <import-button @import="onImport" />
       </v-flex>
-      <!-- <v-flex xs1 style="justify-content: center">
-      </v-flex> -->
     </v-layout>
     <instances-view
       :instances="instances"

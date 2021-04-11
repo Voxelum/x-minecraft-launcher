@@ -166,10 +166,9 @@ export default defineComponent({
     })
     const { localVersions, deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions, reinstall } = useLocalVersions()
     const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1))
-
     function isSelected(v: ResolvedVersion) {
       if (!props.value) return false
-      return v === props.value
+      return v.id === props.value.id
     }
     function selectVersion(v: ResolvedVersion) {
       context.emit('input', v)

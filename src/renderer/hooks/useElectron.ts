@@ -1,10 +1,9 @@
-import { ELECTRON_CLIPBOARD, IPC_KEY, REMOTE_DIALOG_KEY } from '/@/constant'
-import { requireNonnull } from '/@shared/util/assert'
 import { inject } from '@vue/composition-api'
 import { Clipboard, Dialog, IpcRenderer } from 'electron'
 import { useServiceOnly } from './useService'
+import { ELECTRON_CLIPBOARD, IPC_KEY, REMOTE_DIALOG_KEY } from '/@/constant'
 import { BaseServiceKey } from '/@shared/services/BaseService'
-import { IPCRendererProtocol } from '/@shared/ipc'
+import { requireNonnull } from '/@shared/util/assert'
 
 /**
  * Use electron native dialog

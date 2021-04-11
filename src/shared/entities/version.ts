@@ -30,7 +30,7 @@ export function isFabricLoaderLibrary(lib: LibraryInfo) {
   return lib.groupId === 'net.fabricmc' && lib.artifactId === 'fabric-loader'
 }
 export function isOptifineLibrary(lib: LibraryInfo) {
-  return lib.groupId === 'optifine' && lib.artifactId === 'Optifine'
+  return lib.groupId === 'optifine' && (lib.artifactId === 'Optifine' || lib.artifactId === 'OptiFine')
 }
 
 export function filterForgeVersion(forgeVersion: string) {
@@ -125,7 +125,7 @@ export function isSameForgeVersion(forgeVersion: string, version: string) {
   return forgeVersion === version.substring(i + 1)
 }
 export function isSameOptifineVersion(optifineVersion: string, version: string) {
-  const i = version.indexOf('-')
+  const i = version.indexOf('_')
   if (i === -1) {
     return optifineVersion === version
   }
@@ -147,7 +147,7 @@ export function isVersionMatched(version: ResolvedVersion, runtime: RuntimeVersi
     return false
   }
   lib = version.libraries.find(isOptifineLibrary)
-  if (runtime.optifine && isSameOptifineVersion(runtime.optifine, lib?.version ?? '')) {
+  if (runtime.optifine && !isSameOptifineVersion(runtime.optifine, lib?.version ?? '')) {
     return false
   }
 

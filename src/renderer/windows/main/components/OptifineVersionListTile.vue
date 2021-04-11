@@ -4,17 +4,15 @@
     :class="{
       grey: selected.type === source.type && selected.patch === source.patch,
       'darken-1':
-        selected.patch === source.patch && selected.type === source.type
+        selected.patch === source.patch && selected.type === source.type,
     }"
     ripple
     @click="select(source)"
   >
     <v-list-tile-avatar>
-      <!-- <v-icon
-        v-if="statuses[source.version] !== 'loading'"
-      >
-        {{ statuses[source.version] === 'remote' ? 'cloud' : 'folder' }}
-      </v-icon> -->
+      <v-icon>
+        {{ icon }}
+      </v-icon>
       <!-- <v-progress-circular
         v-else
         :width="2"
@@ -23,23 +21,27 @@
       /> -->
     </v-list-tile-avatar>
 
-    <v-list-tile-title>{{ source.type }}_{{ source.patch }}</v-list-tile-title>
+    <v-list-tile-title> {{ source.mcversion }}_{{ source.type }}_{{ source.patch }}</v-list-tile-title>
   </v-list-tile>
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api'
-import VirtualList from 'vue-virtual-scroll-list'
+import { computed, defineComponent } from '@vue/composition-api'
 import { required } from '/@/util/props'
+import { Status } from '/@shared/entities/version'
 import { OptifineVersion } from '/@shared/entities/version.schema'
 
 export default defineComponent({
-  components: { VirtualList },
   props: {
-    // statuses: required<Record<string, 'loading' | 'remote'>>(Object),
+    statuses: required<Record<string, Status>>(Object),
     source: required<OptifineVersion>(Object),
     selected: required<OptifineVersion>(Object),
     select: required<(version: OptifineVersion) => void>(Function),
+  },
+  setup(props) {
+    const key = computed(() => props.source.mcversion + '_' + props.source.type + '_' + props.source.patch)
+    const icon = computed(() => props.statuses[key.value] === 'remote' ? 'cloud' : 'folder')
+    return { icon }
   },
 })
 

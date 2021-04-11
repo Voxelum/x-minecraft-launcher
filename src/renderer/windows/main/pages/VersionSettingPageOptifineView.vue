@@ -11,6 +11,7 @@
       :versions="versions"
       :version="version"
       :select="select"
+      :statuses="statuses"
     />
     <!-- <hint
       style="flex-grow: 1"
@@ -34,7 +35,7 @@ export default defineComponent({
     version: required<OptifineVersion>(Object),
   },
   setup(props) {
-    const { versions } = useOptifineVersions(computed(() => props.minecraft))
+    const { versions, statuses } = useOptifineVersions(computed(() => props.minecraft))
     // const loaderVersions = computed(() => lv.value.filter((v) => {
     //   if (data.showStableOnly && !v.stable) {
     //     return false;
@@ -55,6 +56,7 @@ export default defineComponent({
 
     return {
       versions,
+      statuses,
     }
   },
 })

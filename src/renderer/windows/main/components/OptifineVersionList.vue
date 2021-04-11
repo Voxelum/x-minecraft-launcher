@@ -23,22 +23,23 @@
       :data-key="'_id'"
       :data-component="Tile"
       :keep="16"
-      :extra-props="{ selected: version, select: select }"
+      :extra-props="{ selected: version, select: select, statuses }"
     />
   </v-list>
 </template>
 
 <script lang=ts>
-import { defineComponent, ref, onMounted } from '@vue/composition-api'
-import { required } from '/@/util/props'
-import { OptifineVersion } from '/@shared/entities/version.schema'
+import { defineComponent, onMounted, ref } from '@vue/composition-api'
 import VirtualList from 'vue-virtual-scroll-list'
 import Tile from './OptifineVersionListTile.vue'
+import { required } from '/@/util/props'
+import { Status } from '/@shared/entities/version'
+import { OptifineVersion } from '/@shared/entities/version.schema'
 
 export default defineComponent({
   components: { VirtualList },
   props: {
-    // statuses: required<{}>(Object),
+    statuses: required<Record<string, Status>>(Object),
     versions: required<OptifineVersion[]>(Array),
     version: required<OptifineVersion>(Object),
     select: required<(version: OptifineVersion | undefined) => void>(Function),

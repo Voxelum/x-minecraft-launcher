@@ -27,7 +27,7 @@
       </v-toolbar>
       <v-container
         grid-list-sm
-        style="overflow: auto max-height: 450px"
+        style="overflow: auto; max-height: 450px"
       >
         <v-subheader>{{ $t('profile.modpack.general') }}</v-subheader>
         <v-container
@@ -116,7 +116,7 @@
         </v-layout>
         <v-layout
           row
-          style="padding: 5px margin-bottom: 5px"
+          style="padding: 5px; margin-bottom: 5px"
         >
           <instance-files
             v-model="selected"

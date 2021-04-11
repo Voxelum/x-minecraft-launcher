@@ -66,6 +66,7 @@ module.exports = {
     "semi": "off",
     "@typescript-eslint/semi": ["error", "never"],
     "no-redeclare": "off",
+    "standard/no-callback-literal": "off",
     "@typescript-eslint/no-redeclare": ["error"],
     "@typescript-eslint/member-delimiter-style": ["error", { multiline: { delimiter: 'none' } }],
     "@typescript-eslint/ban-types": 0,

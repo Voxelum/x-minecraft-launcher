@@ -67,10 +67,12 @@ export interface Resource<T = unknown> {
   name: string
   /**
    * The ino of the file on disk
+   * @default 0
    */
   ino: number
   /**
    * The size of the resource
+   * @default 0
    */
   size: number
   /**
@@ -97,6 +99,7 @@ export interface Resource<T = unknown> {
   uri: string[]
   /**
    * The file type
+   * @default ""
    */
   fileType: string
 }
