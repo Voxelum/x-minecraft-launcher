@@ -1,6 +1,6 @@
 import { task } from '@xmcl/task'
 import { stat } from 'fs-extra'
-import { join } from 'path'
+import { basename, extname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
 import { RelativeMappedFile } from '../util/persistance'
@@ -11,7 +11,7 @@ import { fixResourceSchema } from '/@main/util/dataFix'
 import { copyPassively, fileType, FileType, readdirEnsured } from '/@main/util/fs'
 import { Exception } from '/@shared/entities/exception'
 import { AnyPersistedResource, AnyResource, isPersistedResource, PersistedResource } from '/@shared/entities/resource'
-import { PersistedResourceSchema, Resource, ResourceType } from '/@shared/entities/resource.schema'
+import { PersistedResourceSchema, Resource, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
 import { ImportFileOptions, ImportFilesOptions, ParseFileOptions, ParseFilesOptions, RenameResourceOptions, ResourceService as IResourceService, ResourceServiceKey, SetResourceTagsOptions } from '/@shared/services/ResourceService'
 import { isNonnull, requireString } from '/@shared/util/assert'
 
@@ -389,10 +389,7 @@ export default class ResourceService extends AbstractService implements IResourc
     const { path, type } = options
     let sha1 = context?.sha1
     let fileType = context?.fileType
-    let stat = context?.stat
-    if (!stat) {
-      stat = await readFileStat(path)
-    }
+    const stat = context?.stat ?? await readFileStat(path)
     if (stat.isDirectory) {
       fileType = 'directory'
       sha1 = ''
@@ -413,6 +410,22 @@ export default class ResourceService extends AbstractService implements IResourc
       fileType,
       stat,
       hint: type ?? '*',
+    }).catch((e) => {
+      const resource: Resource<void> = {
+        hash: sha1!,
+        fileType: fileType!,
+        ino: stat.ino,
+        path,
+        location: '',
+        name: basename(path),
+        size: stat.size,
+        ext: extname(path),
+        type: ResourceType.Unknown,
+        domain: ResourceDomain.Unknown,
+        metadata: undefined,
+        uri: [],
+      }
+      return [resource]
     })
     return [resolved, icon] as const
   }
