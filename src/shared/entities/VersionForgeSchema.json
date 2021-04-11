@@ -41,6 +41,7 @@
                     "type": "string"
                 },
                 "date": {
+                    "default": "",
                     "type": "string"
                 },
                 "installer": {
@@ -64,6 +65,7 @@
                 },
                 "type": {
                     "description": "The type of the forge release. The `common` means the normal release.",
+                    "default": "common",
                     "enum": [
                         "buggy",
                         "common",
@@ -75,10 +77,8 @@
             },
             "required": [
                 "date",
-                "installer",
                 "mcversion",
                 "type",
-                "universal",
                 "version"
             ]
         },

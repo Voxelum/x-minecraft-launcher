@@ -38,9 +38,12 @@ export interface ForgeVersion {
      * The forge version (without minecraft version)
      */
   version: string
+  /**
+   * @default ""
+   */
   date: string
-  installer: ForgeDownload
-  universal: ForgeDownload
+  installer?: ForgeDownload
+  universal?: ForgeDownload
   /**
      * The changelog info
      */
@@ -50,6 +53,7 @@ export interface ForgeVersion {
   launcher?: ForgeDownload
   /**
      * The type of the forge release. The `common` means the normal release.
+     * @default "common"
      */
   type: 'buggy' | 'recommended' | 'common' | 'latest'
 }

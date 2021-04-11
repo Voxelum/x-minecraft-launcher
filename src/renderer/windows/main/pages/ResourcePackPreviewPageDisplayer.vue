@@ -11,17 +11,16 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs, onMounted, computed, ref, watch, onUnmounted } from '@vue/composition-api'
-import { BlockModel } from '@xmcl/resourcepack'
+import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from '@vue/composition-api'
 import { BlockModelFactory } from '@xmcl/model'
-import { required } from '/@/util/props'
+import { BlockModel } from '@xmcl/resourcepack'
+import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera'
+import { AmbientLight } from 'three/src/lights/AmbientLight'
+import { Vector3 } from 'three/src/math/Vector3'
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer'
 import { Scene } from 'three/src/scenes/Scene'
-import { AmbientLight } from 'three/src/lights/AmbientLight'
-import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera'
-import { Vector3 } from 'three/src/math/Vector3'
-import { Object3D } from 'three/src/core/Object3D'
-import { OrbitControls } from '../../../skin/OrbitControls'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { required } from '/@/util/props'
 
 function findRealTexturePath(model: BlockModel.Resolved, variantKey: string) {
   let texturePath = model.textures[variantKey] as string

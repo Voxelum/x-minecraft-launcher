@@ -24,11 +24,6 @@ export default class TelemetryManager extends Manager {
       await writeFile(clientSessionFile, this.sessionId)
     }
 
-    const tags = defaultClient.context.tags
-    tags[this.contract.sessionId] = this.sessionId
-    tags[this.contract.userId] = this.sessionId
-    tags[this.contract.applicationVersion] = `${this.app.version}#${process.env.BUILD_NUMBER}`
-
     process.on('uncaughtException', (e) => {
       defaultClient.trackException({ exception: e })
     })
@@ -44,6 +39,11 @@ export default class TelemetryManager extends Manager {
       .setAutoCollectDependencies(false)
       .setAutoCollectRequests(false)
       .start()
+
+    const tags = defaultClient.context.tags
+    tags[this.contract.sessionId] = this.sessionId
+    tags[this.contract.userId] = this.sessionId
+    tags[this.contract.applicationVersion] = `${this.app.version}#${process.env.BUILD_NUMBER}`
 
     this.app.on('minecraft-start', (options) => {
       defaultClient.trackEvent({

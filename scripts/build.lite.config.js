@@ -14,7 +14,7 @@ const config = {
     ],
     files: [
       "node_modules/7zip-bin/**/*",
-      "!dist/electron/static/Acrylic.cs",
+      "!dist/static/Acrylic.cs",
       "!node_modules/7zip-bin/linux/**",
       "!node_modules/7zip-bin/win/**"
     ]
@@ -45,7 +45,7 @@ const config = {
     ],
     files: [
       "node_modules/7zip-bin/**/*",
-      "!dist/electron/static/Acrylic.cs",
+      "!dist/static/Acrylic.cs",
       "!node_modules/7zip-bin/win/**",
       "!node_modules/7zip-bin/mac/**"
     ]

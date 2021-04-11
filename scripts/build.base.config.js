@@ -18,12 +18,10 @@ const config = {
     repo: "x-minecraft-launcher"
   }],
   files: [
-    // don't include node_modules as all js modules are bundled into production js by rollup
-    // unless you want to prevent some module to bundle up
-    // list them below
+    '**/*'
   ],
   asarUnpack: [
-    "dist/static/Acrylic.cs",
+    "static/Acrylic.cs",
     "node_modules/7zip-bin/**/*"
   ],
 }

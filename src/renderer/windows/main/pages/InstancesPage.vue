@@ -2,7 +2,7 @@
   <v-container
     grid-list-md
     text-xs-center
-    style="padding-left: 30px; padding-right: 30px; z-index: 1"
+    style="z-index: 1"
     @dragover.prevent
   >
     <transition
@@ -47,12 +47,12 @@
           color="green darken-1"
         />
       </v-flex>
-      <v-flex xs1>
+      <v-flex xs2 style="justify-content: center; flex-direction: column">
         <create-button @create="onCreate" />
-      </v-flex>
-      <v-flex xs1>
         <import-button @import="onImport" />
       </v-flex>
+      <!-- <v-flex xs1 style="justify-content: center">
+      </v-flex> -->
     </v-layout>
     <instances-view
       :instances="instances"

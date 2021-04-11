@@ -48,7 +48,7 @@ interface ReleaseJson {
   }>
 }
 
-function convertRelease (r: ReleaseJson): Release {
+function convertRelease(r: ReleaseJson): Release {
   const asarAsset = r.assets.find((a) => a.name === 'app.asar')
   if (!asarAsset) {
     throw new Error()
@@ -64,28 +64,28 @@ function convertRelease (r: ReleaseJson): Release {
 }
 
 export class GithubReleaseFetcher implements ReleaseFetcher {
-  constructor (readonly owner: string, readonly repo: string) { }
+  constructor(readonly owner: string, readonly repo: string) { }
 
-  async getLatestRelease () {
+  async getLatestRelease() {
     const r: ReleaseJson = await got(`https://api.github.com/repos/${this.owner}/${this.repo}/releases/latest`).json()
     return convertRelease(r)
   }
 
-  async listReleases () {
+  async listReleases() {
     const r: ReleaseJson[] = await got(`https://api.github.com/repos/${this.owner}/${this.repo}/releases`).json()
     return r.map(convertRelease)
   }
 }
 
 export class GiteeReleaseFetcher implements ReleaseFetcher {
-  constructor (readonly owner: string, readonly repo: string) { }
+  constructor(readonly owner: string, readonly repo: string) { }
 
-  async getLatestRelease () {
+  async getLatestRelease() {
     const r: ReleaseJson = await got(`https://gitee.com/api/v5/repos/${this.owner}/${this.repo}/releases/latest`).json()
     return convertRelease(r)
   }
 
-  async listReleases () {
+  async listReleases() {
     const r: ReleaseJson[] = await got(`https://gitee.com/api/v5/repos/${this.owner}/${this.repo}/releases`).json()
     return r.map(convertRelease)
   }

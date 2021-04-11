@@ -6,7 +6,7 @@
     <template #activator="{ on }">
       <v-speed-dial
         open-on-hover
-        style="z-index: 1"
+        style="z-index: 1; display: flex; justify-content: center"
         direction="bottom"
         transition="slide-y-reverse-transition"
       >
@@ -16,7 +16,6 @@
             fab
             dark
             small
-            style="margin-left: 5px; margin-top: 5px;"
             @click="$emit('create', 'instance')"
             v-on="on"
           >
