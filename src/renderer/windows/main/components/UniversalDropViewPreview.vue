@@ -11,7 +11,7 @@
         v-for="file in previews"
         :key="file.name"
         :value="file"
-        @remove="remove(file)"
+        @remove="$emit('remove', file)"
       />
     </v-list>
     <v-spacer />
@@ -73,6 +73,8 @@ export default defineComponent({
     const disabled = computed(() => pendings.value.length === 0)
     function remove(file: FilePreview) {
       const previews = props.previews.filter((p) => p.path !== file.path)
+      console.log(file)
+      console.log(previews)
       if (previews.length === 0) {
         cancel()
       }
