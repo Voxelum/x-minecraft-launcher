@@ -72,7 +72,7 @@ export interface ResourceException extends ExceptionBase {
 }
 
 export interface GeneralException extends ExceptionBase {
-  type: 'fsError' | 'issueFix'
+  type: 'fsError' | 'issueFix' | 'general'
   error: Error
 }
 

@@ -22,6 +22,7 @@ import UserService from '../services/UserService'
 import VersionService from '../services/VersionService'
 import { Client } from '/@main/engineBridge'
 import AbstractService, { KEYS_SYMBOL, PARAMS_SYMBOL, ServiceConstructor, SUBSCRIBE_SYMBOL } from '../services/Service'
+import { Exception } from '/@shared/entities/exception'
 import { ServiceKey } from '/@shared/services/Service'
 import { aquire, isBusy, release } from '/@shared/util/semaphore'
 
@@ -167,17 +168,12 @@ export default class ServiceManager extends Manager {
       if (r instanceof Promise) {
         return r.then(r => ({ result: r }), (e) => {
           this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`)
-          if (e instanceof Promise) {
-            return e.then((err) => {
-              // this.warn(JSON.stringify(err))
-              // this.warn(err.stack)
-              return { error: { object: err, errorMessage: err.toString() } }
-            })
-          } else {
-            // this.warn(JSON.stringify(e))
-            // this.warn(e.stack)
-            return { error: { object: e, errorMessage: e.toString() } }
+          this.warn(JSON.stringify(e))
+          this.warn(e.stack)
+          if (e.type || e instanceof Exception) {
+            return { error: e }
           }
+          return { error: Exception.from(e, { type: 'general', error: e }) }
         })
       }
       return { result: r }
