@@ -4,7 +4,7 @@ import { ProjectType } from '/@shared/entities/curseforge'
 export function useCurseforgeRoute () {
   const { replace } = useRouter()
   function searchProjectAndRoute (name: string, type: ProjectType) {
-    replace(`/curseforge/${type}?search=${name}`)
+    replace(`/curseforge/${type}?keyword=${name}`)
   }
   function goProjectAndRoute (projectId: number, type: ProjectType) {
     replace(`/curseforge/${type}/${projectId}`)
