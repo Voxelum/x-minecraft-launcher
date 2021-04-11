@@ -225,7 +225,6 @@ export function useOptifineVersions(minecraftVersion: Ref<string>) {
       const optifineVersion = ver.mcversion + '_' + ver.type + '_' + ver.patch
       statusMap[optifineVersion] = localVersions[optifineVersion] ? 'local' : 'remote'
     }
-    console.log(statusMap)
     return statusMap
   })
 
