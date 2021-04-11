@@ -1,4 +1,4 @@
-import { LauncherProfile } from '/@main/service/UserService'
+import { LauncherProfile } from '../services/UserService'
 import { UserSchema } from '/@shared/entities/user.schema'
 import { AUTH_API_MOJANG, PROFILE_API_MOJANG } from '@xmcl/user'
 import { v4 } from 'uuid'

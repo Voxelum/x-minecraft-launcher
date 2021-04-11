@@ -82,14 +82,17 @@
         },
         "ino": {
             "description": "The ino of the file on disk",
+            "default": 0,
             "type": "number"
         },
         "size": {
             "description": "The size of the resource",
+            "default": 0,
             "type": "number"
         },
         "fileType": {
             "description": "The file type",
+            "default": "",
             "type": "string"
         }
     },

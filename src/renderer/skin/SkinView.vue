@@ -11,21 +11,21 @@
 </template>
 
 <script lang=ts>
-import { reactive, onUnmounted, watch, toRefs, ref, onMounted, defineComponent, Ref, computed } from '@vue/composition-api'
-import { PlayerModel, PlayerObject3D } from '@xmcl/model'
-import steveSkin from '/@/assets/steve_skin.png'
+import { computed, defineComponent, onMounted, onUnmounted, ref, Ref, watch } from '@vue/composition-api'
+import { PlayerObject3D } from '@xmcl/model'
+import { DoubleSide, NearestFilter, Texture } from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera'
+import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial'
+import { Vector3 } from 'three/src/math/Vector3'
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer'
 import { Scene } from 'three/src/scenes/Scene'
-import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera'
-import { Vector3 } from 'three/src/math/Vector3'
-import { Object3D } from 'three/src/core/Object3D'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial'
-import { DoubleSide, NearestFilter, Texture } from 'three'
+import steveSkin from '/@/assets/steve_skin.png'
 
 function useSkinModel(url: Ref<string>, slim: Ref<boolean>) {
   // const model = PlayerModel.create()
   const skinImage = new Image(64, 64)
+  skinImage.crossOrigin = 'anonymous'
   const capeImage = new Image()
   const texture = new Texture(skinImage, undefined, undefined, undefined, NearestFilter, NearestFilter)
   const capeTexture = new Texture(capeImage)
@@ -44,7 +44,7 @@ function useSkinModel(url: Ref<string>, slim: Ref<boolean>) {
 
   const model = new PlayerObject3D(
     new MeshBasicMaterial({ map: texture }),
-    new MeshBasicMaterial({ map: capeTexture }),
+    new MeshBasicMaterial({ map: capeTexture, visible: false }),
     new MeshBasicMaterial({
       map: texture,
       transparent: true,
@@ -54,10 +54,6 @@ function useSkinModel(url: Ref<string>, slim: Ref<boolean>) {
     slim.value)
 
   model.translateY(-0.5)
-
-  // watch([url, slim], () => {
-  //   img.value!.src = url.value
-  // })
 
   return { model }
 }

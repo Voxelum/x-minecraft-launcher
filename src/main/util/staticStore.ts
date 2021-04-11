@@ -1,5 +1,5 @@
 import { GetterTree, ModuleTree, MutationTree, StoreOptions, MutationPayload } from 'vuex'
-import { Logger } from '../manager/LogManager'
+import { Logger } from '../managers/LogManager'
 
 type Container = {
   state?: any

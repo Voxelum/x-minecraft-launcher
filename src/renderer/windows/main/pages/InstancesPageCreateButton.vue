@@ -6,7 +6,7 @@
     <template #activator="{ on }">
       <v-speed-dial
         open-on-hover
-        style="z-index: 1; display: flex; justify-content: center"
+        style="z-index: 1;"
         direction="bottom"
         transition="slide-y-reverse-transition"
       >

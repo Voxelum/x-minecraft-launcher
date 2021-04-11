@@ -84,9 +84,9 @@ export default defineComponent({
     const isImportSkinDialogShown = ref(false)
     const pending = computed(() => refreshing.value || loading.value)
     async function loadSkin() {
-      const { filePaths } = await showOpenDialog({ title: $t('user.openSkinFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] })
+      const { filePaths } = await showOpenDialog({ title: $t('user.skinImportFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] })
       if (filePaths && filePaths[0]) {
-        url.value = `file://${filePaths[0]}`
+        url.value = `image://${filePaths[0]}`
       }
     }
     async function exportSkin() {
@@ -103,7 +103,7 @@ export default defineComponent({
       if (e.dataTransfer) {
         const length = e.dataTransfer.files.length
         if (length > 0) {
-          url.value = `file://${e.dataTransfer!.files[0].path}`
+          url.value = `image://${e.dataTransfer!.files[0].path}`
         }
       }
     }

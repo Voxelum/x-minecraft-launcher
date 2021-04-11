@@ -6,17 +6,7 @@
   >
     <v-icon
       v-ripple
-      style="
-        position: absolute;
-        right: 0;
-        top: 0;
-        z-index: 2;
-        margin: 0;
-        padding: 10px;
-        cursor: pointer;
-        border-radius: 2px;
-        user-select: none;
-      "
+      class="exit-button"
       dark
       @click="quit()"
     >
@@ -303,6 +293,23 @@ export default defineComponent({
   },
 })
 </script>
+
+<style scoped>
+.exit-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 2px;
+  user-select: none;
+}
+.exit-button:hover {
+  background: rgb(209, 12, 12);
+}
+</style>
 
 <style>
 .v-dialog__content--active {

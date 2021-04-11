@@ -5,7 +5,7 @@ const CACHE: Map<string, any> = new Map()
 /**
  * im-memory cache
  */
-export function useInMemoryCache<T> (key: string, defaultValue: T): T {
+export function useInMemoryCache<T>(key: string, defaultValue: T): T {
   if (CACHE.has(key)) {
     return CACHE.get(key)!
   }
@@ -13,17 +13,17 @@ export function useInMemoryCache<T> (key: string, defaultValue: T): T {
   return defaultValue
 }
 
-export function clearInMemoryCacheAll () {
+export function clearInMemoryCacheAll() {
   CACHE.clear()
 }
 
-export function clearInMemoryCache (key: string) {
+export function clearInMemoryCache(key: string) {
   CACHE.delete(key)
 }
 
 const LOCAL_STORAGE_CACHE: Record<string, Ref<any>> = {}
 
-export function useLocalStorageCache<T> (key: string, defaultValue: () => T, toString: (t: T) => string, fromString: (s: string) => T): Ref<T> {
+export function useLocalStorageCache<T>(key: string, defaultValue: () => T, toString: (t: T) => string, fromString: (s: string) => T): Ref<T> {
   if (LOCAL_STORAGE_CACHE[key]) {
     return LOCAL_STORAGE_CACHE[key]
   }
@@ -39,18 +39,18 @@ export function useLocalStorageCache<T> (key: string, defaultValue: () => T, toS
   return v
 }
 
-export function useLocalStorageCacheFloat (key: string, defaultValue: number): Ref<number> {
+export function useLocalStorageCacheFloat(key: string, defaultValue: number): Ref<number> {
   return useLocalStorageCache(key, () => defaultValue, (n) => n.toString(), (s) => Number.parseFloat(s))
 }
 
-export function useLocalStorageCacheInt (key: string, defaultValue: number): Ref<number> {
+export function useLocalStorageCacheInt(key: string, defaultValue: number): Ref<number> {
   return useLocalStorageCache(key, () => defaultValue, (n) => n.toString(), (s) => Number.parseInt(s, 10))
 }
 
-export function useLocalStorageCacheStringValue<T extends string> (key: string, defaultValue: T): Ref<T> {
+export function useLocalStorageCacheStringValue<T extends string>(key: string, defaultValue: string): Ref<string> {
   return useLocalStorageCache(key, () => defaultValue, (s) => s, (s) => s as T)
 }
 
-export function useLocalStorageCacheBool (key: string, defaultValue: boolean): Ref<boolean> {
+export function useLocalStorageCacheBool(key: string, defaultValue: boolean): Ref<boolean> {
   return useLocalStorageCache(key, () => defaultValue, (b) => b.toString(), (s) => s === 'true')
 }

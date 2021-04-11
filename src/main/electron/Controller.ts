@@ -1,13 +1,13 @@
 
 import { LauncherAppController } from '/@main/app/LauncherAppController'
 import { IS_DEV } from '/@main/constant'
-import BaseService from '/@main/service/BaseService'
+import BaseService from '../services/BaseService'
 import { acrylic } from '/@main/util/acrylic'
 import { trackWindowSize } from '/@main/util/windowSizeTracker'
 import { TaskNotification } from '/@shared/entities/notification'
 import { StaticStore } from '../util/staticStore'
-import { app, BrowserWindow, dialog, ProcessMemoryInfo, Menu, session, Tray, Notification } from 'electron'
-import { readJSON } from 'fs-extra'
+import { app, BrowserWindow, dialog, ProcessMemoryInfo, Menu, session, Tray, Notification, net } from 'electron'
+import { readFile, readJSON } from 'fs-extra'
 import { join, resolve } from 'path'
 import indexPreload from '/@preload/index'
 import mainWinUrl from '/@renderer/index.html'
@@ -17,6 +17,8 @@ import LauncherApp from '../app/LauncherApp'
 import favcon2XPath from '/@static/favicon@2x.png'
 import iconPath from '/@static/apple-touch-icon.png'
 import i18n from './locales'
+import { fileType } from '../util/fs'
+import { fromFile } from 'file-type'
 
 export default class Controller implements LauncherAppController {
   private mainWin: BrowserWindow | undefined = undefined
@@ -83,13 +85,47 @@ export default class Controller implements LauncherAppController {
 
     const sess = session.fromPartition('persist:main')
 
-    // sess.protocol.interceptHttpProtocol('https', (req, cb) => {
-    // eslint-disable-next-line standard/no-callback-literal
-    // cb({ headers: { 'Access-Control-Allow-Origin': '*' } })
-    // })
+    for (const e of session.defaultSession.getAllExtensions()) {
+      sess.loadExtension(e.path)
+    }
+
+    sess.webRequest.onHeadersReceived((detail, cb) => {
+      if (detail.responseHeaders &&
+        detail.resourceType === 'image') {
+        detail.responseHeaders['Access-Control-Allow-Origin'] = ['*']
+      }
+      cb({ responseHeaders: detail.responseHeaders })
+    })
     sess.protocol.registerFileProtocol('dataroot', (req, callback) => {
       const pathname = decodeURIComponent(req.url.replace('dataroot:///', ''))
       callback(join(this.app.appDataPath, pathname))
+    })
+    sess.protocol.registerFileProtocol('image', (req, callback) => {
+      const pathname = decodeURIComponent(req.url.replace('image://', ''))
+
+      fromFile(pathname).then((type) => {
+        if (type && type.mime.startsWith('image/')) {
+          callback(pathname)
+        } else {
+          callback({ statusCode: 404 })
+        }
+      }).catch(() => {
+        callback({ statusCode: 404 })
+      })
+    })
+    sess.protocol.registerFileProtocol('video', (req, callback) => {
+      const pathname = decodeURIComponent(req.url.replace('video://', ''))
+      console.log(pathname)
+      callback(pathname)
+      // fromFile(pathname).then((type) => {
+      //   if (type && type.mime.startsWith('image/')) {
+      //     callback(pathname)
+      //   } else {
+      //     callback({ statusCode: 404 })
+      //   }
+      // }).catch(() => {
+      //   callback({ statusCode: 404 })
+      // })
     })
 
     const browser = new BrowserWindow({
@@ -110,7 +146,7 @@ export default class Controller implements LauncherAppController {
       vibrancy: 'sidebar', // or popover
       icon: iconPath,
       webPreferences: {
-        webSecurity: !IS_DEV, // disable security for loading local image
+        // webSecurity: !IS_DEV, // disable security for loading local image
         nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
         session: sess,
@@ -146,7 +182,7 @@ export default class Controller implements LauncherAppController {
       maximizable: false,
       icon: iconPath,
       webPreferences: {
-        webSecurity: !IS_DEV, // disable security for loading local image
+        // webSecurity: !IS_DEV, // disable security for loading local image
         nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
         session: session.fromPartition('persist:logger'),
@@ -174,7 +210,7 @@ export default class Controller implements LauncherAppController {
       vibrancy: 'sidebar', // or popover
       icon: iconPath,
       webPreferences: {
-        webSecurity: !IS_DEV, // disable security for loading local image
+        // webSecurity: !IS_DEV, // disable security for loading local image
         nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
         session: session.fromPartition('persist:setup'),

@@ -1,4 +1,4 @@
-import { isFabricLoaderLibrary, isForgeLibrary, Status } from '/@shared/entities/version'
+import { filterOptfineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, Status } from '/@shared/entities/version'
 import { isNonnull } from '/@shared/util/assert'
 import { computed, onMounted, onUnmounted, reactive, Ref, toRefs, watch } from '@vue/composition-api'
 import { MinecraftVersion } from '@xmcl/installer'
@@ -211,6 +211,24 @@ export function useOptifineVersions(minecraftVersion: Ref<string>) {
   const versions = computed(() => state.version.optifine.versions.filter(v => v.mcversion === minecraftVersion.value))
   const refreshing = useBusy('refreshOptifine')
 
+  const statuses = computed(() => {
+    const localVersions: { [k: string]: boolean } = {}
+    state.version.local.forEach((ver) => {
+      const lib = ver.libraries.find(isOptifineLibrary)
+      if (lib) {
+        const optifineVer = filterOptfineVersion(lib?.version)
+        localVersions[`${ver.minecraftVersion}_${optifineVer}`] = true
+      }
+    })
+    const statusMap: { [key: string]: Status } = {}
+    for (const ver of state.version.optifine.versions) {
+      const optifineVersion = ver.mcversion + '_' + ver.type + '_' + ver.patch
+      statusMap[optifineVersion] = localVersions[optifineVersion] ? 'local' : 'remote'
+    }
+    console.log(statusMap)
+    return statusMap
+  })
+
   watch(minecraftVersion, () => {
     refreshOptifine()
   })
@@ -220,6 +238,7 @@ export function useOptifineVersions(minecraftVersion: Ref<string>) {
   }
 
   return {
+    statuses,
     versions,
     refresh,
     refreshing,

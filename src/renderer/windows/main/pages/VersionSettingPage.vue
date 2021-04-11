@@ -130,19 +130,20 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, computed, ref, toRefs } from '@vue/composition-api'
+import { computed, defineComponent, reactive, ref, toRefs } from '@vue/composition-api'
+import type { ResolvedVersion } from '@xmcl/core'
+import type { ForgeVersion, MinecraftVersion } from '@xmcl/installer'
+import FabricView from './VersionSettingPageFabricView.vue'
+import ForgeView from './VersionSettingPageForgeView.vue'
+import MinecraftView from './VersionSettingPageMinecraftView.vue'
+import OptifineView from './VersionSettingPageOptifineView.vue'
 import {
   useAutoSaveLoad,
   useInstance,
+  useStore,
 } from '/@/hooks'
-import type { ForgeVersion, MinecraftVersion } from '@xmcl/installer'
-import type { ResolvedVersion } from '@xmcl/core'
+import { filterForgeVersion, filterOptfineVersion, getResolvedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary } from '/@shared/entities/version'
 import { OptifineVersion } from '/@shared/entities/version.schema'
-import { EMPTY_VERSION, isForgeLibrary, isFabricLoaderLibrary, isOptifineLibrary, filterForgeVersion, filterOptfineVersion } from '/@shared/entities/version'
-import MinecraftView from './VersionSettingPageMinecraftView.vue'
-import ForgeView from './VersionSettingPageForgeView.vue'
-import FabricView from './VersionSettingPageFabricView.vue'
-import OptifineView from './VersionSettingPageOptifineView.vue'
 
 export default defineComponent({
   components: {
@@ -173,6 +174,7 @@ export default defineComponent({
     })
 
     const { editInstance: edit, runtime, version } = useInstance()
+    const { state } = useStore()
     const barColor = computed(() => {
       switch (data.active) {
         case 0: return 'white'
@@ -185,12 +187,9 @@ export default defineComponent({
     })
 
     const localVersion = computed(() => {
-      return EMPTY_VERSION
+      return getResolvedVersion(state.version.local, data as any, '')
     })
     function setLocalVersion(v: ResolvedVersion) {
-      console.log(v)
-      console.log(v.libraries.map(v => v.name))
-      console.log(v.libraries.find(isForgeLibrary))
       data.minecraft = v.minecraftVersion
       data.forge = filterForgeVersion(v.libraries.find(isForgeLibrary)?.version ?? '')
       data.liteloader = ''
