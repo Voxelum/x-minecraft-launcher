@@ -15,6 +15,7 @@ import { autoUpdater } from 'electron-updater';
 import { existsSync } from 'fs-extra';
 import { Socket } from 'net';
 import { join } from 'path';
+import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import './main';
 
 app.on('web-contents-created', (event, contents) => {
@@ -32,12 +33,13 @@ autoUpdater.setFeedURL({
 });
 autoUpdater.logger = null;
 
-// Require `main` process to boot app
-
-app.on('browser-window-created', (event, window) => {
-  // if (!window.webContents.isDevToolsOpened()) {
-  //   window.webContents.openDevTools()
-  // }
+app.whenReady().then(() => {
+  install(VUEJS_DEVTOOLS).then((v) => {
+    console.log(`Installed vue devtool ${v}`)
+  }, (e) => {
+    console.error(`Fail to install vue devtool`)
+    console.error(e)
+  })
 })
 
 const devServer = new Socket({}).connect(25555, '127.0.0.1')

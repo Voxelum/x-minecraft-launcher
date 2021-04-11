@@ -1,34 +1,63 @@
 <template>
-  <canvas
-    ref="canvas"
-    :width="width"
-    :height="height"
-    @dragover="$emit('dragover', $event)"
-    @drop="$emit('drop', $event)"
-  />
+  <div>
+    <canvas
+      ref="canvas"
+      :width="width"
+      :height="height"
+      @dragover="$emit('dragover', $event)"
+      @drop="$emit('drop', $event)"
+    />
+  </div>
 </template>
 
 <script lang=ts>
 import { reactive, onUnmounted, watch, toRefs, ref, onMounted, defineComponent, Ref, computed } from '@vue/composition-api'
-import { PlayerModel } from '@xmcl/model'
-import defaultSkin from '/@/assets/steve_skin.png'
+import { PlayerModel, PlayerObject3D } from '@xmcl/model'
+import steveSkin from '/@/assets/steve_skin.png'
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer'
 import { Scene } from 'three/src/scenes/Scene'
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera'
 import { Vector3 } from 'three/src/math/Vector3'
 import { Object3D } from 'three/src/core/Object3D'
-import { OrbitControls } from './OrbitControls'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial'
+import { DoubleSide, NearestFilter, Texture } from 'three'
 
 function useSkinModel(url: Ref<string>, slim: Ref<boolean>) {
-  const model = PlayerModel.create()
-  const steve = defaultSkin
-  model.setSkin(url.value || steve, false)
-  onMounted(() => {
-    (model.playerObject3d as unknown as Object3D).translateY(-0.5)
-  })
+  // const model = PlayerModel.create()
+  const skinImage = new Image(64, 64)
+  const capeImage = new Image()
+  const texture = new Texture(skinImage, undefined, undefined, undefined, NearestFilter, NearestFilter)
+  const capeTexture = new Texture(capeImage)
+
+  skinImage.onload = () => {
+    texture.needsUpdate = true
+  }
+  capeImage.onload = () => {
+    capeTexture.needsUpdate = true
+  }
+
   watch([url, slim], () => {
-    model.setSkin(url.value, slim.value)
+    skinImage.src = url.value
+    model.slim = slim.value
   })
+
+  const model = new PlayerObject3D(
+    new MeshBasicMaterial({ map: texture }),
+    new MeshBasicMaterial({ map: capeTexture }),
+    new MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+      depthWrite: true,
+      side: DoubleSide,
+    }),
+    slim.value)
+
+  model.translateY(-0.5)
+
+  // watch([url, slim], () => {
+  //   img.value!.src = url.value
+  // })
 
   return { model }
 }
@@ -75,7 +104,8 @@ export default defineComponent({
     const data = {
       disposed: false,
     }
-    const { model } = useSkinModel(computed(() => props.href), computed(() => props.slim))
+    const src = computed(() => props.href || steveSkin)
+    const { model } = useSkinModel(src, computed(() => props.slim))
     onUnmounted(() => {
       data.disposed = true
     })
@@ -100,7 +130,7 @@ export default defineComponent({
         controls.autoRotate = false
       }
 
-      scene.add(model.playerObject3d as unknown as Object3D)
+      scene.add(model)
 
       requestAnimationFrame(function animate(nowMsec) {
         if (data.disposed) return

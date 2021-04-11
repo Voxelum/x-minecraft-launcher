@@ -8,28 +8,28 @@ export interface Serializer<D, T> {
   deserialize(data: D): T | Promise<T>
 }
 
-export function pipe<A, B, C> (serialzerIn: Serializer<A, B>, serialzerOut: Serializer<B, C>): Serializer<A, C> {
+export function pipe<A, B, C>(serialzerIn: Serializer<A, B>, serialzerOut: Serializer<B, C>): Serializer<A, C> {
   return {
-    async serialize (val) {
+    async serialize(val) {
       return serialzerIn.serialize(await serialzerOut.serialize(val))
     },
-    async deserialize (data) {
+    async deserialize(data) {
       return serialzerOut.deserialize(await serialzerIn.deserialize(data))
     },
   }
 }
 
-export function serverDatSerializer (): Serializer<Uint8Array, ServerInfo[]> {
+export function serverDatSerializer(): Serializer<Uint8Array, ServerInfo[]> {
   return {
-    serialize (value) { return writeInfo(value) },
-    async deserialize (buff) { return readInfo(buff) },
+    serialize(value) { return writeInfo(value) },
+    async deserialize(buff) { return readInfo(buff) },
   }
 }
 
 export class BufferJsonSerializer<T> implements Serializer<Buffer, T> {
-  constructor (readonly schema: Schema<T>) { }
+  constructor(readonly schema: Schema<T>) { }
 
-  serialize (data: T) {
+  serialize(data: T) {
     const deepCopy = JSON.parse(JSON.stringify(data))
     const schemaObject = this.schema
     const ajv = new Ajv({ useDefaults: true, removeAdditional: true })
@@ -43,15 +43,15 @@ export class BufferJsonSerializer<T> implements Serializer<Buffer, T> {
           message += `- ${e.keyword} error @[${e.dataPath}:${e.schemaPath}]: ${e.message}\n`
         })
         const cmd = validation.errors.map(e => `delete object${e.dataPath};`)
-        // logger.log(message);
-        // logger.log(cmd.join('\n'));
+        console.log(message)
+        console.log(cmd.join('\n'))
         runInContext(cmd.join('\n'), context)
       }
     }
     return Buffer.from(JSON.stringify(deepCopy), 'utf-8')
   }
 
-  deserialize (b: Buffer) {
+  deserialize(b: Buffer) {
     const originalString = b.toString('utf-8')
     let object
     try {
@@ -64,15 +64,14 @@ export class BufferJsonSerializer<T> implements Serializer<Buffer, T> {
       const validation = ajv.compile(this.schema)
       const valid = validation(object)
       if (!valid) {
-        // logger.warn('Try to remove those invalid keys. This might cause problem.');
-        // logger.warn(originalString);
+        console.warn('Try to remove those invalid keys. This might cause problem.')
         const context = createContext({ object })
         if (validation.errors) {
-          // this.warn(`Found invalid config file on ${path}.`);
-          // validation.errors.forEach(e => this.warn(e));
+          // console.warn(`Found invalid config file on ${path}.`)
+          validation.errors.forEach(e => console.warn(e))
           const cmd = validation.errors.filter(e => e.dataPath).map(e => `delete object${e.dataPath};`)
           if (cmd.length !== 0) {
-            // this.log(cmd.join('\n'));
+            console.log(cmd.join('\n'))
             runInContext(cmd.join('\n'), context)
           }
         }

@@ -8,11 +8,11 @@ import { useStore } from './useStore'
 import { InstallServiceKey } from '/@shared/services/InstallService'
 import { VersionServiceKey } from '/@shared/services/VersionService'
 
-export function useVersions () {
+export function useVersions() {
   return useServiceOnly(VersionServiceKey, 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory')
 }
 
-export function useLocalVersions () {
+export function useLocalVersions() {
   const { state } = useStore()
   const localVersions = computed(() => state.version.local)
   const versions = useVersions()
@@ -28,7 +28,7 @@ export function useLocalVersions () {
   }
 }
 
-export function useMinecraftVersions () {
+export function useMinecraftVersions() {
   const { state } = useStore()
   const { refreshMinecraft } = useService(InstallServiceKey)
   const refreshing = useBusy('refreshMinecraft')
@@ -62,13 +62,13 @@ export function useMinecraftVersions () {
   }
 }
 
-export function useMinecraftVersionFilter (filterText: Ref<string>) {
+export function useMinecraftVersionFilter(filterText: Ref<string>) {
   const data = reactive({
     acceptingRange: '',
     showAlpha: false,
   })
 
-  function filter (v: MinecraftVersion) {
+  function filter(v: MinecraftVersion) {
     if (!data.showAlpha && v.type !== 'release') return false
     // if (!isCompatible(data.acceptingRange, v.id)) return false;
     return v.id.indexOf(filterText.value) !== -1
@@ -80,7 +80,7 @@ export function useMinecraftVersionFilter (filterText: Ref<string>) {
   }
 }
 
-export function useFabricVersions () {
+export function useFabricVersions() {
   const { state } = useStore()
   const { refreshFabric } = useService(InstallServiceKey)
   const loaderVersions = computed(() => state.version.fabric.loaders ?? [])
@@ -109,7 +109,7 @@ export function useFabricVersions () {
     return statusMap
   })
 
-  function refresh (force = false) {
+  function refresh(force = false) {
     return refreshFabric(force)
   }
 
@@ -126,7 +126,7 @@ export function useFabricVersions () {
   }
 }
 
-export function useForgeVersions (minecraftVersion: Ref<string>) {
+export function useForgeVersions(minecraftVersion: Ref<string>) {
   const { state } = useStore()
   const { refreshForge } = useService(InstallServiceKey)
   const versions = computed(() => state.version.forge.find(v => v.mcversion === minecraftVersion.value)?.versions ?? [])
@@ -165,7 +165,7 @@ export function useForgeVersions (minecraftVersion: Ref<string>) {
     })
   })
 
-  function refresh () {
+  function refresh() {
     return refreshForge({ mcversion: minecraftVersion.value, force: true })
   }
 
@@ -179,7 +179,7 @@ export function useForgeVersions (minecraftVersion: Ref<string>) {
   }
 }
 
-export function useLiteloaderVersions (minecraftVersion: Ref<string>) {
+export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
   const { state } = useStore()
   const { refreshLiteloader } = useService(InstallServiceKey)
 
@@ -193,7 +193,7 @@ export function useLiteloaderVersions (minecraftVersion: Ref<string>) {
     })
   })
 
-  function refresh () {
+  function refresh() {
     return refreshLiteloader()
   }
 
@@ -204,7 +204,7 @@ export function useLiteloaderVersions (minecraftVersion: Ref<string>) {
   }
 }
 
-export function useOptifineVersions (minecraftVersion: Ref<string>) {
+export function useOptifineVersions(minecraftVersion: Ref<string>) {
   const { state } = useStore()
   const { refreshOptifine } = useService(InstallServiceKey)
 
@@ -215,7 +215,7 @@ export function useOptifineVersions (minecraftVersion: Ref<string>) {
     refreshOptifine()
   })
 
-  function refresh () {
+  function refresh() {
     return refreshOptifine()
   }
 

@@ -46,6 +46,7 @@
             "type": "string"
         },
         "resolution": {
+            "description": "The resolution of the game",
             "anyOf": [
                 {
                     "type": "object",

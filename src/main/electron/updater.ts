@@ -168,6 +168,7 @@ export function checkUpdateTask (this: ElectronLauncherApp): Task<_UpdateInfo> {
       this.log('Update available and set status to pending')
       this.storeManager.store.commit('updateStatus', 'pending')
     })
+    console.log(`check update task`)
     const info = await autoUpdater.checkForUpdates()
 
     if (this.networkManager.isInGFW && !injectedUpdate) {

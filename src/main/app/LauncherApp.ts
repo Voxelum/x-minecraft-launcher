@@ -370,9 +370,10 @@ export abstract class LauncherApp extends EventEmitter {
   }
 
   protected async setup() {
-    await ensureDir(this.appDataPath)
     try {
-      (this.gameDataPath as any) = await readFile(join(this.appDataPath, 'root')).then((b) => b.toString().trim())
+      await ensureDir(this.appDataPath)
+      const self = this as any
+      self.gameDataPath = await readFile(join(this.appDataPath, 'root')).then((b) => b.toString().trim())
     } catch (e) {
       if (e.code === 'ENOENT') {
         // first launch

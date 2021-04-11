@@ -6,7 +6,7 @@ export interface LoginMicrosoftOptions {
    * The authorization code. If not present, it will try to get the auth code.
    */
   oauthCode?: string
-  microsoftEmailAddress?: string
+  microsoftEmailAddress: string
 }
 export interface LoginOptions {
   /**

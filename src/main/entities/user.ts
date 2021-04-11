@@ -45,9 +45,9 @@ export interface XBoxGameProfileResponse {
     }, {
       'id': 'PublicGamerpic'
       'value': string
-    } ]
+    }]
     isSponsoredUser: boolean
-  } ]
+  }]
 }
 
 export interface MinecraftAuthResponse {
@@ -66,12 +66,12 @@ export interface MinecraftProfileResponse {
     url: string
     variant: 'CLASSIC' | string
     alias: 'STEVE' | string
-  } ]
+  }]
   capes: [{
     id: string
     state: 'ACTIVE' | string
     url: string
-  } ]
+  }]
 }
 export interface MinecraftProfileErrorResponse {
   path: '/minecraft/profile'
@@ -98,7 +98,7 @@ export interface MinecraftOwnershipResponse {
   keyId: string
 }
 
-export async function getOAuthToken (request: Got, code: string) {
+export async function getOAuthToken(request: Got, code: string) {
   const oauthResponse: OAuthTokenResponse = await request.post('https://login.live.com/oauth20_token.srf', {
     form: {
       client_id: CLIENT_ID,
@@ -118,7 +118,7 @@ export async function getOAuthToken (request: Got, code: string) {
  * authenticate with xbox live by ms oauth access token
  * @param oauthAccessToken The oauth access token
  */
-export async function authenticateXboxLive (request: Got, oauthAccessToken: string) {
+export async function authenticateXboxLive(request: Got, oauthAccessToken: string) {
   const xblResponse: XBoxResponse = await request.post('https://user.auth.xboxlive.com/user/authenticate', {
     body: JSON.stringify({
       Properties: {
@@ -142,7 +142,7 @@ export async function authenticateXboxLive (request: Got, oauthAccessToken: stri
  * Authorize the xbox live. It will get the xsts token in response.
  * @param xblResponseToken
  */
-export async function authorizeXboxLive (request: Got, xblResponseToken: string, relyingParty: 'rp://api.minecraftservices.com/' | 'http://xboxlive.com' = 'rp://api.minecraftservices.com/') {
+export async function authorizeXboxLive(request: Got, xblResponseToken: string, relyingParty: 'rp://api.minecraftservices.com/' | 'http://xboxlive.com' = 'rp://api.minecraftservices.com/') {
   const xstsResponse: XBoxResponse = await request.post('https://xsts.auth.xboxlive.com/xsts/authorize', {
     headers: {
       'Content-Type': 'application/json',
@@ -160,7 +160,7 @@ export async function authorizeXboxLive (request: Got, xblResponseToken: string,
   return xstsResponse
 }
 
-export async function aquireXBoxToken (request: Got, oauthAccessToken: string) {
+export async function aquireXBoxToken(request: Got, oauthAccessToken: string) {
   const req = request.extend({
     headers: {
       'Content-Type': 'application/json',
@@ -175,7 +175,7 @@ export async function aquireXBoxToken (request: Got, oauthAccessToken: string) {
   return { xstsResponse: minecraftXstsResponse, xboxGameProfile }
 }
 
-export async function getXboxGameProfile (request: Got, xuid: string, uhs: string, xstsToken: string) {
+export async function getXboxGameProfile(request: Got, xuid: string, uhs: string, xstsToken: string) {
   const response: XBoxGameProfileResponse = await request.get(`https://profile.xboxlive.com/users/xuid(${xuid})/profile/settings`, {
     searchParams: {
       settings: ['PublicGamerpic', 'Gamertag'].join(','),
@@ -197,7 +197,7 @@ export async function getXboxGameProfile (request: Got, xuid: string, uhs: strin
  * @param uhs uhs from {@link XBoxResponse}
  * @param xstsToken
  */
-export async function loginMinecraftWithXBox (request: Got, uhs: string, xstsToken: string) {
+export async function loginMinecraftWithXBox(request: Got, uhs: string, xstsToken: string) {
   const mcResponse: MinecraftAuthResponse = await request.post('https://api.minecraftservices.com/authentication/login_with_xbox', {
     json: {
       identityToken: `XBL3.0 x=${uhs};${xstsToken}`,
@@ -211,7 +211,7 @@ export async function loginMinecraftWithXBox (request: Got, uhs: string, xstsTok
  * Return the owner ship list of the player with those token.
  * @param accessToken The Minecraft access token
  */
-export async function checkGameOwnership (request: Got, accessToken: string) {
+export async function checkGameOwnership(request: Got, accessToken: string) {
   const mcResponse: MinecraftOwnershipResponse = await request.get('https://api.minecraftservices.com/entitlements/mcstore', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -225,7 +225,7 @@ export async function checkGameOwnership (request: Got, accessToken: string) {
  * The new way to get game profile by the access token
  * @param accessToken The minecraft access token
  */
-export async function getGameProfile (request: Got, accessToken: string) {
+export async function getGameProfile(request: Got, accessToken: string) {
   const profileResponse: MinecraftProfileResponse | MinecraftProfileErrorResponse = await request.get('https://api.minecraftservices.com/minecraft/profile', {
     headers: {
       Authorization: `Bearer ${accessToken}`,

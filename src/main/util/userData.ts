@@ -6,7 +6,7 @@ import { v4 } from 'uuid'
 /**
  * Fit the user data from loaded user data and loaded launcher profile json
  */
-export function fitMinecraftLauncherProfileData (result: UserSchema, data: UserSchema, launchProfile: LauncherProfile) {
+export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSchema, launchProfile: LauncherProfile) {
   if (typeof data === 'object') {
     result.authServices = data.authServices
     result.authServices.mojang = AUTH_API_MOJANG

@@ -9,7 +9,7 @@ export interface WindowsTransform {
   y: number | null
 }
 
-export function trackWindowSize (browserWindow: BrowserWindow, config: WindowsTransform, configPath: string) {
+export function trackWindowSize(browserWindow: BrowserWindow, config: WindowsTransform, configPath: string) {
   const update = debounce(() => {
     const [width, height] = browserWindow.getSize()
     const [x, y] = browserWindow.getPosition()

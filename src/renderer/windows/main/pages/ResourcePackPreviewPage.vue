@@ -48,13 +48,13 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs, ref, Ref, computed, onMounted, inject, watch } from '@vue/composition-api'
+import { BlockStateJson } from '@shared/services/ResourcePackPreviewService'
+import { computed, defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import { BlockModel } from '@xmcl/resourcepack'
-import { useBlockModelPreview, useBlockStateModels } from '/@/hooks'
-import { BlockStateJson } from '@main/service/ResourcePackPreviewService'
-import PreviewItem from './ResourcePackPreviewPageItem.vue'
-import Displayer from './ResourcePackPreviewPageDisplayer.vue'
 import { useSearch } from '../hooks'
+import Displayer from './ResourcePackPreviewPageDisplayer.vue'
+import PreviewItem from './ResourcePackPreviewPageItem.vue'
+import { useBlockModelPreview, useBlockStateModels } from '/@/hooks'
 
 export default defineComponent({
   components: { Displayer },

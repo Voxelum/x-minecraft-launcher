@@ -116,25 +116,35 @@ async function start() {
         return require('./build.lite.config')
     }
   }
+  const onlyRenderer = process.env.ONLY === 'renderer'
+  const onlyMain = process.env.ONLY === 'main'
+  const onlyElectron = process.env.ONLY === 'electron'
 
-  const [mainConfig] = await loadRollupConfig()
+  if (!onlyRenderer && !onlyElectron) {
+    const [mainConfig] = await loadRollupConfig()
 
-  await remove(join(__dirname, '../dist'))
+    await remove(join(__dirname, '../dist'))
 
-  console.log(chalk.bold.underline('Build main process & preload'))
-  const startTime = Date.now()
-  await buildMain(mainConfig)
-  console.log(
-    `Build completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s.\n`
-  )
-  await buildRenderer()
+    console.log(chalk.bold.underline('Build main process & preload'))
+    const startTime = Date.now()
+    await buildMain(mainConfig)
+    console.log(
+      `Build completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s.\n`
+    )
+  }
 
-  console.log()
-  if (process.env.BUILD_TARGET) {
-    const config = loadElectronBuilderConfig()
-    const dir = process.env.BUILD_TARGET === 'dir'
-    await generatePackageJson()
-    await buildElectron(config, dir)
+  if (!onlyMain && !onlyElectron) {
+    await buildRenderer()
+    console.log()
+  }
+
+  if (!onlyMain && !onlyRenderer) {
+    if (process.env.BUILD_TARGET) {
+      const config = loadElectronBuilderConfig()
+      const dir = process.env.BUILD_TARGET === 'dir'
+      await generatePackageJson()
+      await buildElectron(config, dir)
+    }
   }
 }
 
