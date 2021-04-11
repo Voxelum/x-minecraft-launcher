@@ -6,7 +6,7 @@ import { acrylic } from '/@main/util/acrylic'
 import { trackWindowSize } from '/@main/util/windowSizeTracker'
 import { TaskNotification } from '/@shared/entities/notification'
 import { StaticStore } from '../util/staticStore'
-import { app, BrowserWindow, dialog, ProcessMemoryInfo, Menu, session, Tray, Notification, net } from 'electron'
+import { app, BrowserWindow, dialog, ProcessMemoryInfo, Menu, session, Tray, Notification, net, shell } from 'electron'
 import { readFile, readJSON } from 'fs-extra'
 import { join, resolve } from 'path'
 import indexPreload from '/@preload/index'
@@ -157,6 +157,14 @@ export default class Controller implements LauncherAppController {
     this.app.log(`[Controller] Created main window by config ${configPath}`)
     browser.on('ready-to-show', () => { this.app.log('Main Window is ready to show!') })
     browser.on('close', () => { })
+    browser.webContents.on('will-navigate', (event, url) => {
+      event.preventDefault();
+      if (!IS_DEV) {
+          shell.openExternal(url);
+      } else if (!url.startsWith('http://localhost')) {
+          shell.openExternal(url);
+      }
+  });
 
     this.setupBrowserLogger(browser, 'main')
     this.setWindowArcry(browser)
