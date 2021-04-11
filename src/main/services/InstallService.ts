@@ -71,7 +71,7 @@ export default class InstallService extends AbstractService implements IInstallS
     diagnoseService.registerMatchedFix(['missingVersion'],
       async (issues) => {
         if (!issues[0].arguments) return
-        const { minecraft, forge, fabricLoader, optifine } = issues[0].arguments
+        const { minecraft, forge, fabricLoader, optifine } = issues[0].arguments as RuntimeVersions
         let targetVersion: string | undefined
         if (minecraft && this.state.version.local.every(v => v.minecraftVersion !== minecraft)) {
           if (this.state.version.minecraft.versions.length === 0) {
@@ -534,7 +534,7 @@ export default class InstallService extends AbstractService implements IInstallS
         return installFabric(artifact, this.getPath(), { side: 'client' })
       }))
       this.local.refreshVersions()
-      this.log(`Success to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`)
+      this.log(`Success to install fabric: yarn ${versions.yarn}, loader ${versions.loader}. The new version is ${result}`)
       return result
     } catch (e) {
       this.warn(`An error ocurred during install fabric yarn-${versions.yarn}, loader-${versions.loader}`)

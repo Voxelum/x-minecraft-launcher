@@ -140,7 +140,6 @@
 </template>
 
 <script lang=ts>
-import VirtualList from 'vue-virtual-scroll-list'
 import { defineComponent, reactive, toRefs, computed, ref, Ref, provide, watch, onMounted, onUnmounted, set, nextTick } from '@vue/composition-api'
 import { ForgeResource, LiteloaderResource } from '/@shared/entities/resource'
 import { isCompatible } from '/@shared/entities/version'
@@ -148,8 +147,6 @@ import {
   useInstanceMods,
   useResourceOperation,
   useInstanceVersionBase,
-  useDropImport,
-  useDropImportFile,
   ModItem,
   useOperation,
   useDrop,
@@ -379,7 +376,6 @@ export default defineComponent({
   components: {
     ModCard,
     DeleteView,
-    VirtualList,
     FloatButton,
   },
   setup() {

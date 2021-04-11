@@ -24,9 +24,7 @@
 
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api'
-import {
-  useCurseforgeProjectDescription,
-} from '/@/hooks'
+import { useCurseforgeProjectDescription } from '/@/hooks'
 
 export default defineComponent<{ project: number }>({
   props: { project: Number },
