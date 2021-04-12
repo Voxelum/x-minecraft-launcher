@@ -1,13 +1,11 @@
 <template>
-  <div>
-    <canvas
-      ref="canvas"
-      :width="width"
-      :height="height"
-      @dragover="$emit('dragover', $event)"
-      @drop="$emit('drop', $event)"
-    />
-  </div>
+  <canvas
+    ref="canvas"
+    :width="width"
+    :height="height"
+    @dragover="$emit('dragover', $event)"
+    @drop="$emit('drop', $event)"
+  />
 </template>
 
 <script lang=ts>

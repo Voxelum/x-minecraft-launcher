@@ -22,7 +22,7 @@
         fab
         small
         absolute
-        style="bottom: 100px; right: 55px; z-index: 2;"
+        style="bottom: 100px; z-index: 2;"
         :disabled="pending"
         @click="reset"
       >

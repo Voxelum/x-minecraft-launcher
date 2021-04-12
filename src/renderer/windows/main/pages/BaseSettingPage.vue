@@ -170,6 +170,7 @@
               <v-checkbox
                 v-model="hideLauncher"
                 hide-details
+                @click="hideLauncher = !hideLauncher"
               />
             </v-list-tile-action>
             <v-list-tile-content>
@@ -191,6 +192,7 @@
               <v-checkbox
                 v-model="showLog"
                 hide-details
+                @click="showLog = !showLog"
               />
             </v-list-tile-action>
             <v-list-tile-content>

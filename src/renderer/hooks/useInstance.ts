@@ -151,9 +151,9 @@ export function useInstanceCreation() {
       data.server = null
     },
     /**
-         * Use the same configuration as the input instance
-         * @param instance The instance will be copied
-         */
+     * Use the same configuration as the input instance
+     * @param instance The instance will be copied
+     */
     use(instance: InstanceConfig) {
       data.name = instance.name
       data.runtime = { ...instance.runtime }

@@ -12,6 +12,14 @@ p {
     user-select: none;
 }
 
+.absolute-centered {
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+}
+
 .non-moveable {
     -webkit-app-region: no-drag;
 }

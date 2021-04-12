@@ -6,7 +6,7 @@ import { AggregateExecutor } from '../util/aggregator'
 import ResourceService from './ResourceService'
 import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
 import { mutateResource } from '/@main/entities/resource'
-import { linkOrCopy, readdirIfPresent } from '/@main/util/fs'
+import { linkWithTimeoutOrCopy, readdirIfPresent } from '/@main/util/fs'
 import { AnyResource, isModResource, isResourcePackResource, PersistedResource } from '/@shared/entities/resource'
 import { ResourceDomain } from '/@shared/entities/resource.schema'
 import { DeployOptions, InstanceResourceService as IInstanceResourceService, InstanceResourceServiceKey } from '/@shared/services/InstanceResourceService'
@@ -47,9 +47,7 @@ export default class InstanceResourceService extends AbstractService implements 
     super(app)
   }
 
-  private async scanMods() {
-    const instance = this.getters.instance
-    const dir = join(instance.path, 'mods')
+  private async scanMods(dir: string) {
     const files = await readdirIfPresent(dir)
 
     const fileArgs = files.filter((file) => !file.startsWith('.')).map((file) => ({
@@ -66,9 +64,7 @@ export default class InstanceResourceService extends AbstractService implements 
       .filter(isModResource)
   }
 
-  private async scanResourcepacks() {
-    const instance = this.getters.instance
-    const dir = join(instance.path, 'resourcepacks')
+  private async scanResourcepacks(dir: string) {
     const files = await readdirIfPresent(dir)
 
     const fileArgs = files.filter((file) => !file.startsWith('.')).map((file) => ({
@@ -115,7 +111,7 @@ export default class InstanceResourceService extends AbstractService implements 
       this.watchingMods = basePath
       await ensureDir(basePath)
       await this.resourceService.whenModsReady()
-      this.commit('instanceMods', await this.scanMods())
+      this.commit('instanceMods', await this.scanMods(basePath))
       this.modsWatcher = watch(basePath, (event, name) => {
         if (name.startsWith('.')) return
         const filePath = name
@@ -153,7 +149,7 @@ export default class InstanceResourceService extends AbstractService implements 
       this.watchingResourcePack = basePath
       await ensureDir(basePath)
       await this.resourceService.whenResourcePacksReady()
-      this.commit('instanceResourcepacks', await this.scanResourcepacks())
+      this.commit('instanceResourcepacks', await this.scanResourcepacks(basePath))
       this.resourcepacksWatcher = watch(basePath, (event, name) => {
         if (name.startsWith('.')) return
         const filePath = name
@@ -198,19 +194,19 @@ export default class InstanceResourceService extends AbstractService implements 
       path = this.state.instance.path
     }
     this.log(`Deploy ${resources.length} to ${path}`)
-    for (const resource of resources) {
-      if (resource.domain !== ResourceDomain.Mods && resource.domain !== ResourceDomain.ResourcePacks) {
-        this.warn(`Skip to deploy ${resource.name} as it's not a mod or resourcepack`)
+    for (const res of resources) {
+      if (res.domain !== ResourceDomain.Mods && res.domain !== ResourceDomain.ResourcePacks) {
+        this.warn(`Skip to deploy ${res.name} as it's not a mod or resourcepack`)
       } else {
-        const src = join(this.getPath(), resource.location + resource.ext)
-        const dest = join(path, resource.location + resource.ext)
+        const src = join(res.path)
+        const dest = join(path, res.location + res.ext)
         const [srcStat, destStat] = await Promise.all([stat(src), stat(dest).catch(() => undefined)])
 
         let promise: Promise<void> | undefined
         if (!destStat) {
-          promise = linkOrCopy(src, dest)
+          promise = linkWithTimeoutOrCopy(src, dest)
         } else if (srcStat.ino !== destStat.ino) {
-          promise = unlink(dest).then(() => linkOrCopy(src, dest))
+          promise = unlink(dest).then(() => linkWithTimeoutOrCopy(src, dest))
         }
         if (promise) {
           promises.push(promise.catch((e) => {
@@ -221,7 +217,9 @@ export default class InstanceResourceService extends AbstractService implements 
         }
       }
     }
-    await Promise.all(promises)
+    if (promises.length > 0) {
+      await Promise.all(promises)
+    }
   }
 
   async ensureResourcePacksDeployment() {

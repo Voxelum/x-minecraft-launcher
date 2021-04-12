@@ -7,7 +7,8 @@
       <v-fab-transition>
         <v-btn
           v-if="visibled"
-          style="position:absolute; z-index: 3; bottom: 20px; left: 200px;"
+          class="absolute-centered"
+          style="z-index: 3; bottom: 40px"
           :color="deleting ? 'red' : 'green'"
           fab
           large

@@ -33,6 +33,7 @@ export type FabricResource = Resource<FabricModMetadata> & { readonly type: Reso
 export type LiteloaderResource = Resource<LiteloaderModMetadata> & { readonly type: ResourceType.Liteloader }
 export type ResourcePackResource = Resource<PackMeta.Pack> & { readonly type: ResourceType.ResourcePack }
 export type CurseforgeModpackResource = Resource<CurseforgeModpackManifest> & { readonly type: ResourceType.CurseforgeModpack }
+export type McbbsModpackResource = Resource<Modpack> & { readonly type: ResourceType.McbbsModpack }
 export type ModpackResource = Resource<Modpack> & { readonly type: ResourceType.Modpack }
 export type SaveResource = Resource<ResourceSaveMetadata> & { readonly type: ResourceType.Save }
 export type UnknownResource = Resource<unknown> & { readonly type: ResourceType.Unknown }
@@ -44,6 +45,7 @@ export type AnyResource = ForgeResource
   | ModpackResource
   | ResourcePackResource
   | SaveResource
+  | McbbsModpackResource
   | UnknownResource
 
 export type PersistedForgeResource = PersistedResource<ForgeModCommonMetadata> & { readonly type: ResourceType.Forge }
@@ -51,6 +53,7 @@ export type PersistedFabricResource = PersistedResource<FabricModMetadata> & { r
 export type PersistedLiteloaderResource = PersistedResource<LiteloaderModMetadata> & { readonly type: ResourceType.Liteloader }
 export type PersistedResourcePackResource = PersistedResource<PackMeta.Pack> & { readonly type: ResourceType.ResourcePack }
 export type PersistedCurseforgeModpackResource = PersistedResource<CurseforgeModpackManifest> & { readonly type: ResourceType.CurseforgeModpack }
+export type PersistedMcbbsModpackResource = PersistedResource<Modpack> & { readonly type: ResourceType.McbbsModpack }
 export type PersistedModpackResource = PersistedResource<Modpack> & { readonly type: ResourceType.Modpack }
 export type PersistedSaveResource = PersistedResource<ResourceSaveMetadata> & { readonly type: ResourceType.Save }
 export type PersistedUnknownResource = PersistedResource<unknown> & { readonly type: ResourceType.Unknown }
@@ -62,6 +65,7 @@ export type AnyPersistedResource = PersistedForgeResource
   | PersistedModpackResource
   | PersistedResourcePackResource
   | PersistedSaveResource
+  | PersistedMcbbsModpackResource
   | PersistedUnknownResource
 
 export function isForgeResource(resource: Resource): resource is ForgeResource {
@@ -80,6 +84,9 @@ export function isModResource(resource: Resource): resource is ModResource {
   return resource.type === 'forge' || resource.type === 'fabric' || resource.type === 'liteloader'
 }
 
+/**
+ * Is this resource a raw modpack resource. The raw modpack means it just containing the .minecraft folder content itself
+ */
 export function isModpackResource(resource: Resource): resource is ModpackResource {
   return resource.type === ResourceType.Modpack
 }

@@ -107,27 +107,21 @@ export default class CurseForgeService extends AbstractService implements ICurse
     const networkManager = this.networkManager
     try {
       const destination = join(this.app.temporaryPath, basename(file.downloadUrl))
-      const importResourceTask = task('importResource', async function () {
-        await this.yield(new DownloadTask({
-          ...networkManager.getDownloadBaseOptions(),
-          url: file.downloadUrl,
-          destination,
-        }).setName('download')/* , 80 */)
-
-        // TODO: add tag from addon info
-        // let addonInf = await this.fetchProject(projectId);
-        return this.yield(task('parsing', () => resourceService.importFile({
-          path: destination,
-          url: urls,
-          source: getCurseforgeSourceInfo(projectId, file.id),
-          type: typeHints[type],
-          background: true,
-        }))/* , 20 */)
+      const task = new DownloadTask({
+        ...networkManager.getDownloadBaseOptions(),
+        url: file.downloadUrl,
+        destination,
+      }).setName('installCurseforgeFile')
+      const promise = this.submit(task)
+      this.commit('curseforgeDownloadFileStart', { fileId: file.id, taskId: this.taskManager.getTaskUUID(task) })
+      await promise
+      const result = await resourceService.importFile({
+        path: destination,
+        url: urls,
+        source: getCurseforgeSourceInfo(projectId, file.id),
+        type: typeHints[type],
+        background: true,
       })
-
-      const promise = this.submit(importResourceTask)
-      this.commit('curseforgeDownloadFileStart', { fileId: file.id, taskId: this.taskManager.getTaskUUID(importResourceTask) })
-      const result = await promise
       this.log(`Install curseforge file ${file.displayName}(${file.downloadUrl}) success!`)
       return result
     } finally {

@@ -5,25 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "java",
-            "name": "Launch A",
-            "request": "launch",
-            "mainClass": "A",
-            "projectName": "voxelauncher_a6b733bf"
-        },
-        {
-            "name": "Debug Jest Tests",
-            "type": "node",
-            "request": "launch",
-            "runtimeArgs": [
-                "--inspect-brk",
-                "${workspaceRoot}/node_modules/jest/bin/jest.js",
-                "--runInBand"
-            ],
-            "internalConsoleOptions": "neverOpen",
-            "port": 9229
-        },
-        {
             "name": "Electron: Main (attach)",
             "type": "node",
             "request": "attach",

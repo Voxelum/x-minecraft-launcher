@@ -13,7 +13,7 @@
       {{ $t('forge.disable') }}
     </v-list-tile>
     <virtual-list
-      style="overflow-y: scroll; scrollbar-width: 0; height: 90%"
+      style="overflow-y: auto; scrollbar-width: 0; height: 90%"
       :data-sources="items"
       :data-key="'version'"
       :data-component="Tile"

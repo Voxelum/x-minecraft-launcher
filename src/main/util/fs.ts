@@ -120,6 +120,17 @@ export function linkOrCopy(from: string, to: string) {
   return link(from, to).catch(() => copy(from, to))
 }
 
+export function linkWithTimeout(from: string, to: string, timeout = 1500) {
+  return new Promise<void>((resolve, reject) => {
+    link(from, to).then(resolve, reject)
+    setTimeout(() => reject(new Error('timeout')), timeout)
+  })
+}
+
+export function linkWithTimeoutOrCopy(from: string, to: string, timeout = 1500) {
+  return linkWithTimeout(from, to, timeout).catch(() => copy(from, to))
+}
+
 export type FileType = FileExtension | 'unknown' | 'directory'
 
 export async function fileType(path: string): Promise<FileType> {
