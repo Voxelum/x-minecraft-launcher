@@ -1,6 +1,5 @@
 import { ImportFileOptions as _ImportFileOptions } from './ResourceService'
 import { ServiceKey } from './Service'
-import { PersistedResource } from '/@shared/entities/resource'
 export interface ImportModpackPolicy {
   /**
    * Should import this modpack to storage? (So you can use again in next time)
@@ -14,7 +13,7 @@ export interface ImportModpackPolicy {
    * - If string, which should be a instance path, it will apply to the instance setting.
    * @default true
    */
-  installToInstance?: string | boolean
+  installToInstance?: boolean
 }
 export interface ImportSavePolicy {
   /**

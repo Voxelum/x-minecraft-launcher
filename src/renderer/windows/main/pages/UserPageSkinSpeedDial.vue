@@ -7,7 +7,8 @@
       <v-speed-dial
         v-if="security"
         v-model="fab"
-        style="position:absolute; z-index: 3; bottom: 80px; right: 100px;"
+        class="absolute-centered"
+        style="z-index: 3; bottom: 80px; display: flex; justify-content: center"
         direction="top"
         :open-on-hover="true"
       >

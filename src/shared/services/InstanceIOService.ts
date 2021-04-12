@@ -68,8 +68,9 @@ export interface InstanceIOService {
   /**
    * Import an instance from a game zip file or a game directory. The location root must be the game directory.
    * @param location The zip or directory path
+   * @returns The newly created instance path
    */
-  importInstance(location: string): Promise<void>
+  importInstance(location: string): Promise<string>
 }
 
 export const InstanceIOServiceKey: ServiceKey<InstanceIOService> = 'InstanceIOService'

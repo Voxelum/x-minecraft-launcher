@@ -7,7 +7,7 @@
     max-height="300"
     :close-on-content-click="false"
     :disabled="disabled"
-    style="background-color: #303030; overflow: hidden;"
+    style="background-color: #303030; overflow-y: hidden;"
   >
     <template #activator="{ on }">
       <slot :on="on" />
@@ -47,7 +47,7 @@
       :status="status"
       :select="select"
       :selected="''"
-      style="max-height: 180px; background-color: #424242"
+      style="max-height: 180px; background-color: #424242; display: flex; flex-direction: column;"
     />
   </v-menu>
 </template>

@@ -62,6 +62,7 @@
         <v-layout
           column
           fill-height
+          style="position: relative"
         >
           <v-flex
             v-if="!security"
@@ -97,8 +98,10 @@
           />
         </v-layout>
       </v-flex>
+      <v-flex grow />
       <v-flex shrink>
         <v-layout
+          style="position: relative"
           justify-center
           align-center
           fill-height
@@ -110,6 +113,7 @@
           />
         </v-layout>
       </v-flex>
+      <v-flex grow />
     </v-layout>
     <v-dialog
       v-model="isChallengesDialogShown"

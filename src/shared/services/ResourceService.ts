@@ -27,8 +27,8 @@ export interface ImportFileOptions extends ParseFileOptions {
      */
   restrictToDomain?: ResourceDomain
   /**
-     * Is import file task in background?
-     */
+   * Is import file task in background?
+   */
   background?: boolean
 }
 export interface ParseFilesOptions {

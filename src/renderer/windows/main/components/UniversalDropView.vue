@@ -26,7 +26,12 @@
               fill-height
             >
               <v-flex
-                v-if="pending"
+                v-if="loading"
+              >
+                <refreshing-tile />
+              </v-flex>
+              <v-flex
+                v-else-if="pending"
                 style="text-align: center; user-select: none"
               >
                 <v-icon
@@ -91,6 +96,7 @@ export default defineComponent({
   setup() {
     const pending = ref(true)
     const inside = ref(false)
+    const loading = ref(false)
     const previews = ref([] as FilePreview[])
     const { parseFiles } = useFileDrop()
     async function onDrop(event: DragEvent) {
@@ -104,7 +110,8 @@ export default defineComponent({
           }
         }
       }
-      const result = await parseFiles({ files: files.map(f => ({ path: f.path })) })
+      loading.value = true
+      const result = await parseFiles({ files: files.map(f => ({ path: f.path })) }).finally(() => { loading.value = false })
       for (let i = 0; i < result.length; i++) {
         const r = result[i]
         const f = files[i]
@@ -120,8 +127,6 @@ export default defineComponent({
     }
     function remove(file: FilePreview) {
       previews.value = previews.value.filter((p) => p.path !== file.path)
-      console.log(file)
-      console.log(previews)
       if (previews.value.length === 0) {
         cancel()
       }
@@ -147,6 +152,7 @@ export default defineComponent({
       }
     })
     return {
+      loading,
       onDrop,
       inside,
       pending,

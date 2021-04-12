@@ -47,13 +47,12 @@
 </template>
 
 <script lang=ts>
-import { useFileDrop, useService } from '/@/hooks'
-import { required } from '/@/util/props'
-import { defineComponent, computed, ref } from '@vue/composition-api'
-import { Resource, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
-import FileListTile from './UniversalDropViewFileListTile.vue'
-import { InstanceResourceServiceKey } from '/@shared/services/InstanceResourceService'
+import { computed, defineComponent, ref } from '@vue/composition-api'
 import { FilePreview } from './UniversalDropView.vue'
+import FileListTile from './UniversalDropViewFileListTile.vue'
+import { useFileDrop } from '/@/hooks'
+import { required } from '/@/util/props'
+import { ResourceType } from '/@shared/entities/resource.schema'
 
 export default defineComponent({
   components: {
@@ -63,18 +62,14 @@ export default defineComponent({
     previews: required<FilePreview[]>(Array),
   },
   setup(props, context) {
-    const status = ref([] as boolean[])
     const enableMods = ref(true)
     const { importFile } = useFileDrop()
-    const { deploy } = useService(InstanceResourceServiceKey)
     const loading = computed(() => props.previews.some((v) => v.status === 'loading'))
     const pendings = computed(() => props.previews.filter((v) => (v.status === 'idle' || v.status === 'failed') &&
       (v.type !== ResourceType.Unknown) && v.enabled))
     const disabled = computed(() => pendings.value.length === 0)
     function remove(file: FilePreview) {
       const previews = props.previews.filter((p) => p.path !== file.path)
-      console.log(file)
-      console.log(previews)
       if (previews.length === 0) {
         cancel()
       }
@@ -84,25 +79,23 @@ export default defineComponent({
     }
     function start() {
       const promises = [] as Promise<any>[]
-      const resourcesToDeploy = [] as Resource[]
-      // TODO: fix this
-      // for (const preview of pendings.value) {
-      //   preview.status = 'loading'
-      //   const promise = importFile(preview).then((resource) => {
-      //     if (resource.domain === ResourceDomain.Mods && enableMods.value) {
-      //       resourcesToDeploy.push(resource)
-      //     }
-      //     preview.status = 'saved'
-      //   }, (e) => {
-      //     console.log(`Failed to import resource ${preview.path}`)
-      //     console.log(e)
-      //     preview.status = 'failed'
-      //   })
-      //   promises.push(promise)
-      // }
-      // Promise.all(promises)
-      //   .then(() => deploy({ resources: resourcesToDeploy }))
-      //   .then(() => cancel())
+      for (const preview of pendings.value) {
+        preview.status = 'loading'
+        const promise = importFile({
+          ...preview,
+          modpackPolicy: {
+            import: true,
+          },
+        }).then(() => {
+          preview.status = 'saved'
+        }, (e) => {
+          console.log(`Failed to import resource ${preview.path}`)
+          console.log(e)
+          preview.status = 'failed'
+        })
+        promises.push(promise)
+      }
+      Promise.all(promises).then(() => cancel())
     }
     return {
       enableMods,

@@ -1,13 +1,14 @@
 import { unlink } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import InstanceGameSettingService from './InstanceGameSettingService'
 import InstanceIOService from './InstanceIOService'
 import InstanceResourceService from './InstanceResourceService'
 import InstanceSavesService from './InstanceSavesService'
 import ResourceService, { ParseResourceContext } from './ResourceService'
 import AbstractService, { ExportService, Inject } from './Service'
 import { ZipTask } from '/@main/util/zip'
-import { isModpackResource, isModResource, isSaveResource } from '/@shared/entities/resource'
+import { isModpackResource, isModResource, isResourcePackResource, isSaveResource } from '/@shared/entities/resource'
 import { ResourceDomain } from '/@shared/entities/resource.schema'
 import { ImportFileOptions, ImportService as IImportService, ImportServiceKey } from '/@shared/services/ImportService'
 
@@ -19,6 +20,7 @@ export default class ImportService extends AbstractService implements IImportSer
     @Inject(InstanceIOService) private instanceIOService: InstanceIOService,
     @Inject(InstanceResourceService) private instanceResourcesService: InstanceResourceService,
     @Inject(InstanceSavesService) private instanceSaveService: InstanceSavesService,
+    @Inject(InstanceGameSettingService) private instanceGameSettingService: InstanceGameSettingService,
   ) {
     super(app)
   }
@@ -58,10 +60,16 @@ export default class ImportService extends AbstractService implements IImportSer
       const zipTask = new ZipTask(tempZipPath)
       await zipTask.includeAs(resolved.path, '')
       await zipTask.startAndWait()
-      await this.resourceService.importParsedResource(options, resolved, icon)
+      const zipedContext: ParseResourceContext = {}
+      const existed = await this.resourceService.queryExistedResourceByPath(tempZipPath, zipedContext)
+      if (!existed) {
+        const [resolvedZip] = await this.resourceService.resolveResource({ ...options, path: tempZipPath }, zipedContext)
+        await this.resourceService.importParsedResource({ ...options, path: tempZipPath }, resolvedZip, icon)
+      }
       await unlink(tempZipPath)
     }
     if (resolved.fileType === 'directory') {
+      // the importing object is a folder
       if (shouldImport) {
         if (resolved.domain === ResourceDomain.ResourcePacks ||
           resolved.domain === ResourceDomain.Saves ||
@@ -75,40 +83,47 @@ export default class ImportService extends AbstractService implements IImportSer
           await this.instanceIOService.importInstance(resolved.metadata.root)
         } else if (isModResource(resolved)) {
           this.warn(`Deploy directory mod to instance ${instancePath}. This might not work!`)
-          this.instanceResourcesService.deploy({ resources: [resolved], path: instancePath })
+          await this.instanceResourcesService.deploy({ resources: [resolved], path: instancePath })
         } else if (isSaveResource(resolved)) {
           await this.instanceSaveService.importSave({
             instancePath,
             source: join(resolved.path, resolved.metadata.root),
           })
+        } else if (isResourcePackResource(resolved)) {
+          await this.instanceResourcesService.deploy({ resources: [resolved], path: instancePath })
+          if (instancePath !== this.state.instance.path) {
+            const frame = await this.instanceGameSettingService.getInstanceGameSettings(instancePath)
+            await this.instanceGameSettingService.edit({ ...frame, resourcePacks: [...(frame.resourcePacks || []), resolved.path] })
+          } else {
+            await this.instanceGameSettingService.edit({ resourcePacks: [...this.state.instanceGameSetting.resourcePacks, resolved.path] })
+          }
         }
       }
     } else {
+      // the import object is a file
       if (shouldImport) {
         await this.resourceService.importParsedResource(options, resolved, icon)
       }
-      // if (installToInstance) {
-      //   if (resolved.type === ResourceType.Modpack) {
-      //     const tempDir = this.getTempPath(resolved.name)
-      //     const zip = await open(path)
-      //     const entries = await readAllEntries(zip)
-      //     await new UnzipTask(zip, entries, tempDir).startAndWait()
-
-      //     await this.instanceIOService.importInstance(tempDir)
-      //     await remove(tempDir)
-      //   }
-      // }
-      // if (resolved.domain === ResourceDomain.Modpacks && resolved.type === ResourceType.Modpack) {
-      //   const tempDir = this.getTempPath(resolved.name)
-      //   const zip = await open(path)
-      //   const entries = await readAllEntries(zip)
-      //   await new UnzipTask(zip, entries, tempDir).startAndWait()
-
-      //   await this.instanceIOService.importInstance(tempDir)
-      //   await remove(tempDir)
-      // } else if (resolved.fileType === 'zip' || resolved.ext === '.jar') {
-      //   result = await this.resourceService.importFile({ path, type })
-      // }
+      if (installToInstance) {
+        if (isModpackResource(resolved)) {
+          await this.instanceIOService.importInstance(resolved.metadata.root)
+        } else if (isModResource(resolved)) {
+          await this.instanceResourcesService.deploy({ resources: [resolved], path: instancePath })
+        } else if (isSaveResource(resolved)) {
+          await this.instanceSaveService.importSave({
+            instancePath,
+            source: join(resolved.path, resolved.metadata.root),
+          })
+        } else if (isResourcePackResource(resolved)) {
+          await this.instanceResourcesService.deploy({ resources: [resolved], path: instancePath })
+          if (instancePath !== this.state.instance.path) {
+            const frame = await this.instanceGameSettingService.getInstanceGameSettings(instancePath)
+            await this.instanceGameSettingService.edit({ ...frame, resourcePacks: [...(frame.resourcePacks || []), resolved.path] })
+          } else {
+            await this.instanceGameSettingService.edit({ resourcePacks: [...this.state.instanceGameSetting.resourcePacks, resolved.path] })
+          }
+        }
+      }
     }
     // return result
   }

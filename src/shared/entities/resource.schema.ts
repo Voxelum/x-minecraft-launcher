@@ -36,6 +36,7 @@ export enum ResourceType {
   Fabric = 'fabric',
   Modpack = 'modpack',
   CurseforgeModpack = 'curseforge-modpack',
+  McbbsModpack = 'mcbbs-modpack',
   Save = 'save',
   ResourcePack = 'resourcepack',
   Unknown = 'unknown',

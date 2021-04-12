@@ -425,7 +425,7 @@ export default class ResourceService extends AbstractService implements IResourc
         metadata: undefined,
         uri: [],
       }
-      return [resource]
+      return [resource, undefined] as const
     })
     return [resolved, icon] as const
   }

@@ -147,10 +147,6 @@ export default class InstanceIOService extends AbstractService implements IInsta
     return true
   }
 
-  /**
-   * Import an instance from a game zip file or a game directory. The location root must be the game directory.
-   * @param location The zip or directory path
-   */
   async importInstance(location: string) {
     requireString(location)
 
@@ -206,5 +202,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
     await copyPassively(resolve(srcDirectory, 'versions'), this.getPath('versions'))
 
     if (!isDir) { await remove(srcDirectory) }
+
+    return instancePath
   }
 }

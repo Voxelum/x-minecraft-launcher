@@ -4,6 +4,7 @@ import watch from 'node-watch'
 import { join } from 'path'
 import AbstractService, { ExportService, Singleton, Subscribe } from './Service'
 import { exists, missing } from '/@main/util/fs'
+import { Exception } from '/@shared/entities/exception'
 import { compareRelease, compareSnapshot, isReleaseVersion, isSnapshotPreview } from '/@shared/entities/version'
 import { EditGameSettingOptions, InstanceGameSettingService as IInstanceGameSettingService, InstanceGameSettingServiceKey } from '/@shared/services/InstanceGameSettingService'
 import { requireString } from '/@shared/util/assert'
@@ -66,6 +67,12 @@ export default class InstanceGameSettingService extends AbstractService implemen
     }
   }
 
+  async getInstanceGameSettings(path: string) {
+    const optionsPath = join(path, 'options.txt')
+    const result = await readFile(optionsPath, 'utf-8').then(parse, () => ({} as Frame))
+    return result
+  }
+
   @Subscribe('instanceGameSettings')
   async saveInstanceGameSetting() {
     const optionsTxtPath = join(this.state.instance.path, 'options.txt')
@@ -91,32 +98,37 @@ export default class InstanceGameSettingService extends AbstractService implemen
     this.log(`Saved instance gamesettings ${this.state.instance.path}`)
   }
 
-  /**
-   * Edit the game setting of current instance
-   * @param gameSetting The game setting edit options
-   */
-  edit(gameSetting: EditGameSettingOptions) {
-    const current = this.state.instanceGameSetting
+  async edit(options: EditGameSettingOptions) {
+    const instancePath = options.instancePath ?? this.state.instance.path
+    const instance = this.state.instance.all[instancePath]
+    if (!instance) {
+      throw new Exception({ type: 'instanceNotFound', instancePath: options.instancePath! })
+    }
+    const current = instancePath !== this.watchingInstance
+      ? await this.getInstanceGameSettings(instancePath)
+      : this.state.instanceGameSetting
+
     const result: Frame = {}
-    for (const key of Object.keys(gameSetting)) {
+    for (const key of Object.keys(options)) {
+      if (key === 'instancePath') continue
       if (key === 'resourcePacks') continue
-      if (key in current && (current as any)[key] !== (gameSetting as any)[key]) {
-        (result as any)[key] = (gameSetting as any)[key]
+      if (key in current && (current as any)[key] !== (options as any)[key]) {
+        (result as any)[key] = (options as any)[key]
       }
     }
     // resourcePacks:["vanilla","file/§lDefault§r..§l3D§r..Low§0§o.zip"]
-    if (gameSetting.resourcePacks) {
-      const mcversion = this.getters.instance.runtime.minecraft
+    if (options.resourcePacks) {
+      const mcversion = instance.runtime.minecraft
       let resourcePacks: string[]
       if ((isReleaseVersion(mcversion) && compareRelease(mcversion, '1.13.0') >= 0) ||
         (isSnapshotPreview(mcversion) && compareSnapshot(mcversion, '17w43a') >= 0)) {
-        resourcePacks = gameSetting.resourcePacks
+        resourcePacks = options.resourcePacks
           .map(r => (r !== 'vanilla' && !r.startsWith('file/') ? `file/${r}` : r))
         if (resourcePacks.every((p) => p !== 'vanilla')) {
           resourcePacks.unshift('vanilla')
         }
       } else {
-        resourcePacks = gameSetting.resourcePacks.filter(r => r !== 'vanilla')
+        resourcePacks = options.resourcePacks.filter(r => r !== 'vanilla')
           .map(r => (r.startsWith('file/') ? r.substring(5) : r))
       }
       if (result.resourcePacks?.length !== resourcePacks.length || result.resourcePacks?.some((p, i) => p !== resourcePacks[i])) {
@@ -124,7 +136,7 @@ export default class InstanceGameSettingService extends AbstractService implemen
       }
     }
     if (Object.keys(result).length > 0) {
-      this.log(`Edit gamesetting: ${JSON.stringify(result, null, 4)}`)
+      this.log(`Edit gamesetting: ${JSON.stringify(result, null, 4)} to ${instancePath}`)
       this.commit('instanceGameSettings', result)
     }
   }
