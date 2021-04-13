@@ -2,6 +2,8 @@ import { existsSync, readFile } from 'fs-extra'
 import { basename, join } from 'path'
 import { cleanUrl } from './util'
 
+const asarUnpack = ['static/Acrylic.cs']
+
 /**
  * @returns {import('rollup').Plugin}
  */
@@ -29,7 +31,12 @@ export default function createPreloadPlugin() {
             type: 'asset',
             source: await readFile(clean)
           })
-          return `import { join } from 'path'; export default join(__dirname, __ASSETS__${hash}__);`
+          if (asarUnpack && asarUnpack.indexOf(`static/${basename(clean)}`) !== -1) {
+            // is unpack resource
+            return `import { join } from 'path'; export default join(__dirname.replace(/.asar/, '.asar.unpacked'), __ASSETS__${hash}__);`
+          } else {
+            return `import { join } from 'path'; export default join(__dirname, __ASSETS__${hash}__);`
+          }
         }
       }
     }
