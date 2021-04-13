@@ -45,6 +45,14 @@ export default class TelemetryManager extends Manager {
     tags[this.contract.userId] = this.sessionId
     tags[this.contract.applicationVersion] = `${this.app.version}#${process.env.BUILD_NUMBER}`
 
+    this.app.on('user-login', (authService) => {
+      defaultClient.trackEvent({
+        name: 'user-login',
+        properties: {
+          authService,
+        },
+      })
+    })
     this.app.on('minecraft-start', (options) => {
       defaultClient.trackEvent({
         name: 'minecraft-start',
