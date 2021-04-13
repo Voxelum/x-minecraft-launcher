@@ -45,6 +45,7 @@ export interface AppManifest {
 }
 
 export interface LauncherApp {
+  on(channel: 'user-login', listener: (authService: string) => void): this
   on(channel: 'window-all-closed', listener: () => void): this
   on(channel: 'service-ready', listener: () => void): this
   on(channel: 'engine-ready', listener: () => void): this
@@ -55,6 +56,7 @@ export interface LauncherApp {
   on(channel: 'minecraft-stderr', listener: (err: string) => void): this
   on(channel: 'microsoft-authorize-code', listener: (code: string) => void): this
 
+  once(channel: 'user-login', listener: (authService: string) => void): this
   once(channel: 'window-all-closed', listener: () => void): this
   once(channel: 'service-ready', listener: () => void): this
   once(channel: 'engine-ready', listener: () => void): this
@@ -65,6 +67,7 @@ export interface LauncherApp {
   once(channel: 'minecraft-stderr', listener: (err: string) => void): this
   once(channel: 'microsoft-authorize-code', listener: (error?: Error, code?: string) => void): this
 
+  emit(channel: 'user-login', authService: string): this
   emit(channel: 'microsoft-authorize-code', error?: Error, code?: string): this
   emit(channel: 'window-all-closed'): boolean
   emit(channel: 'engine-ready'): boolean

@@ -513,6 +513,12 @@ export default class UserService extends AbstractService implements IUserService
     let selectedProfile: GameProfile | undefined
     let avatar: string | undefined
 
+    if (authService !== 'offline' && authService !== 'microsoft') {
+      this.app.emit('user-login', usingAuthService.hostName)
+    } else {
+      this.app.emit('user-login', authService)
+    }
+
     if (authService === 'offline') {
       const result = offline(username)
       userId = result.user!.id
