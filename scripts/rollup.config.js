@@ -60,7 +60,7 @@ const config = [{
       indent: '  ',
       compact: false,
       namedExports: true
-    })
+    }),
   ]
 }]
 
