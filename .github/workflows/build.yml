@@ -20,10 +20,12 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js 12
-      uses: actions/setup-node@v1
+    - name: Use Node.js 15
+      uses: actions/setup-node@v2-beta
       with:
-        node-version: 12
+        node-version: 15
+    - name: Use npm 7
+      run: npm install -g npm@7
     - name: Get npm cache directory
       id: npm-cache
       run: |
@@ -70,18 +72,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     if: ${{ !startsWith(github.event.commits[0].message, 'chore(release)') }}
-    strategy:
-      matrix:
-        node-version: [12.x]
 
     steps:
     - uses: actions/checkout@v2
     - name: Fetch All
       run: git fetch --prune --unshallow
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - name: Use Node.js 15
+      uses: actions/setup-node@v2-beta
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 15
+    - name: Use npm 7
+      run: npm install -g npm@7
     - name: Install
       run: |
         npm ci
@@ -114,10 +115,12 @@ jobs:
     needs: build
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js 12
-      uses: actions/setup-node@v1
+    - name: Use Node.js 15
+      uses: actions/setup-node@v2-beta
       with:
-        node-version: 12
+        node-version: 15
+    - name: Use npm 7
+      run: npm install -g npm@7
     - uses: actions/cache@v1
       with:
         path: ~/.npm
