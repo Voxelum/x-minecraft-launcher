@@ -137,3 +137,21 @@ export async function fileType(path: string): Promise<FileType> {
   const result = await fromFile(path)
   return result?.ext ?? 'unknown'
 }
+
+/**
+ * An existing file was the target of an operation that required that the target not exist
+ */
+export const EEXIST_ERROR = 'EEXIST'
+
+/**
+ * No such file or directory: Commonly raised by fs operations to indicate that a component
+ * of the specified pathname does not exist. No entity (file or directory) could be found
+ * by the given path
+ */
+export const ENOENT_ERROR = 'ENOENT'
+
+/**
+ * Operation not permitted. An attempt was made to perform an operation that requires
+ * elevated privileges.
+ */
+export const EPERM_ERROR = 'EPERM'

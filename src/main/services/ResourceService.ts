@@ -1,5 +1,5 @@
 import { task } from '@xmcl/task'
-import { stat } from 'fs-extra'
+import { stat, unlink } from 'fs-extra'
 import { basename, extname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
@@ -8,7 +8,7 @@ import { BufferJsonSerializer } from '../util/serialize'
 import AbstractService, { ExportService, internal } from './Service'
 import { FileStat, mutateResource, persistResource, readFileStat, remove, ResourceCache } from '/@main/entities/resource'
 import { fixResourceSchema } from '/@main/util/dataFix'
-import { copyPassively, fileType, FileType, readdirEnsured } from '/@main/util/fs'
+import { copyPassively, ENOENT_ERROR, fileType, FileType, readdirEnsured } from '/@main/util/fs'
 import { Exception } from '/@shared/entities/exception'
 import { AnyPersistedResource, AnyResource, isPersistedResource, PersistedResource } from '/@shared/entities/resource'
 import { PersistedResourceSchema, Resource, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
@@ -119,8 +119,8 @@ export default class ResourceService extends AbstractService implements IResourc
     const result: PersistedResource[] = []
     const processFile = async (file: string) => {
       if (!file.endsWith('.json')) return
+      const filePath = join(path, file)
       try {
-        const filePath = join(path, file)
         const resourceData = await this.resourceFile.readTo(filePath)
 
         await fixResourceSchema({ log: this.log, warn: this.warn, error: this.error }, filePath, resourceData, this.getPath())
@@ -147,11 +147,16 @@ export default class ResourceService extends AbstractService implements IResourc
         })
         result.push(resource)
       } catch (e) {
-        this.error(`Cannot load resource ${file}`)
-        if (e.stack) {
-          this.error(e.stack)
+        if (e.code === ENOENT_ERROR) {
+          this.warn(`The resource file ${filePath} cannot be found! Remove this resource record!`)
+          unlink(filePath)
         } else {
-          this.error(e)
+          this.error(`Cannot load resource ${file}`)
+          if (e.stack) {
+            this.error(e.stack)
+          } else {
+            this.error(e)
+          }
         }
       }
     }
@@ -223,15 +228,15 @@ export default class ResourceService extends AbstractService implements IResourc
    * Parse a single file as a resource and return the resource object
    * @param options The parse file option
    */
-  async parseFile(options: ParseFileOptions): Promise<AnyResource> {
+  async parseFile(options: ParseFileOptions): Promise<[AnyResource, Uint8Array | undefined]> {
     const { path } = options
     const context: ParseResourceContext = {}
     const existed = await this.queryExistedResourceByPath(path, context)
     if (existed) {
-      return existed
+      return [existed, undefined]
     }
-    const [resource] = await this.resolveResource(options, context)
-    return resource as AnyResource
+    const [resource, icon] = await this.resolveResource(options, context)
+    return [resource as AnyResource, icon]
   }
 
   /**

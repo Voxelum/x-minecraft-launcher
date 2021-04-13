@@ -97,8 +97,8 @@ export default class Controller implements LauncherAppController {
       cb({ responseHeaders: detail.responseHeaders })
     })
     sess.protocol.registerFileProtocol('dataroot', (req, callback) => {
-      const pathname = decodeURIComponent(req.url.replace('dataroot:///', ''))
-      callback(join(this.app.appDataPath, pathname))
+      const pathname = decodeURIComponent(req.url.replace('dataroot://', ''))
+      callback(join(this.app.gameDataPath, pathname))
     })
     sess.protocol.registerFileProtocol('image', (req, callback) => {
       const pathname = decodeURIComponent(req.url.replace('image://', ''))
