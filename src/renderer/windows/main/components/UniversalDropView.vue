@@ -113,13 +113,13 @@ export default defineComponent({
       loading.value = true
       const result = await parseFiles({ files: files.map(f => ({ path: f.path })) }).finally(() => { loading.value = false })
       for (let i = 0; i < result.length; i++) {
-        const r = result[i]
+        const r = result[i][0]
         const f = files[i]
         previews.value.push({
           ...r,
           name: f.name,
           size: f.size,
-          enabled: r.type !== ResourceType.Unknown,
+          enabled: isPersistedResource(r),
           status: isPersistedResource(r) ? 'saved' : 'idle',
         })
       }
