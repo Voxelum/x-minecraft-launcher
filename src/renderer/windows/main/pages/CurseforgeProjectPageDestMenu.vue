@@ -44,6 +44,7 @@
 import { useI18n, useInstances } from '/@/hooks'
 import { basename } from '/@/util/basename'
 import { defineComponent, computed, inject, ref, reactive, toRefs, Ref } from '@vue/composition-api'
+import { optional } from '/@/util/props'
 
 interface Item {
   name: string
@@ -52,7 +53,7 @@ interface Item {
 
 export default defineComponent({
   props: {
-    value: String,
+    value: optional(String),
   },
   setup(props, context) {
     const { instances } = useInstances()

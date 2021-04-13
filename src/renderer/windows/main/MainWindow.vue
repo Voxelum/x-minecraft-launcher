@@ -32,9 +32,6 @@
             :style="{ filter: `blur(${blur}px)` }"
             style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;"
           >
-          <!-- <video style="z-index:0; position: absolute;" autoplay>
-           <source :src="video">
-          </video> -->
           <vue-particles
             v-if="showParticle"
             color="#dedede"
@@ -102,8 +99,6 @@ export default defineComponent({
     provideAsyncRoute()
     const { goBack } = provideRouterHistory()
 
-    const video = "video://D:\\asmr\\rn210308.mp4"
-
     const { text, toggle } = provideSearch()
     provideContextMenu()
 
@@ -159,7 +154,6 @@ export default defineComponent({
       showParticle,
       onHomePage,
       goBack,
-      video,
     }
   },
 })

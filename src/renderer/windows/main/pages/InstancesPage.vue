@@ -50,7 +50,7 @@
       <v-flex xs1>
         <create-button @create="onCreate" />
       </v-flex>
-      <v-flex xs1> 
+      <v-flex xs1>
         <import-button @import="onImport" />
       </v-flex>
     </v-layout>

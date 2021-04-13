@@ -1,4 +1,4 @@
-/* eslint-disable no-redeclare */
+/* eslint-disable @typescript-eslint/no-redeclare */
 import { Schema } from './schema'
 import _JavaSchema from './JavaSchema.json'
 export const JavaSchema: Schema<JavaSchema> = _JavaSchema

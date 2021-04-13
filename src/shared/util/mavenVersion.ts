@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -199,7 +200,7 @@ class IntItem implements Item {
   }
 }
 class ListItem implements Item {
-  private value = new Array<Item>()
+  private value = [] as Item[]
   isNull(): boolean {
     return this.value.length === 0
   }

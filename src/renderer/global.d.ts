@@ -1,5 +1,5 @@
 declare module '*.vue' {
-  import { ComponentOptions } from 'vue'
+  import { ComponentOptions, Component } from 'vue'
   const component: ComponentOptions
   export default component
 }
@@ -12,7 +12,7 @@ declare module 'vue-particles' {
   export default module
 }
 declare module 'vue-virtual-scroll-list' {
-  import { Component } from 'vue'
-  const component: Component<any, any, any, { size: number; remain: number }>
+
+  const component: import('vue').Component<any, any, any, { size: number; remain: number }>
   export = component
 }

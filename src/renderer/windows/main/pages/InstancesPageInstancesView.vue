@@ -77,10 +77,10 @@ import { required } from '/@/util/props'
 import PreviewCard from './InstancesPagePreviewCard.vue'
 
 export default defineComponent({
-  props: { instances: required<Instance[]>(Array) },
   components: {
     PreviewCard,
   },
+  props: { instances: required<Instance[]>(Array) },
   setup(props) {
     const now = Date.now()
     const oneDay = 1000 * 60 * 60 * 24

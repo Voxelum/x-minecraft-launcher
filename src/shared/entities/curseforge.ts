@@ -1,4 +1,4 @@
-import { ModpackManifest } from './modpack';
+import { ModpackManifest } from './modpack'
 
 export type ProjectType = 'mc-mods' | 'texture-packs' | 'worlds' | 'modpacks'
 

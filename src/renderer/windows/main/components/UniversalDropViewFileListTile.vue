@@ -31,7 +31,7 @@
     </v-list-tile-content> -->
     <v-list-tile-action>
       <v-chip
-        v-if="value.existed"
+        v-if="'date' in value"
         label
       >
         {{ $t('existed') }} {{ typeName }}
@@ -48,7 +48,7 @@
 
     <v-list-tile-action>
       <v-checkbox
-        v-model="value.enabled"
+        v-model="enabled"
         style="justify-content: flex-end"
         :disabled="disabled"
         hide-details
@@ -104,15 +104,20 @@ export default defineComponent({
   props: {
     value: required<FilePreview>(Object),
   },
-  setup(props) {
+  emits: ['enable', 'remove'],
+  setup(props, context) {
     const { $tc, $t } = useI18n()
     const disabled = computed(() => props.value.type === 'unknown' ||
       props.value.status !== 'idle')
+    const enabled = computed({
+      get() { return props.value.enabled },
+      set(v) { context.emit('enable', v) },
+    })
 
     const icon = computed(() => iconMap[props.value.type] ?? 'device_unknown')
     const tryEnable = () => {
       if (!disabled.value) {
-        props.value.enabled = !props.value.enabled
+        context.emit('enable')
       }
     }
     const typeName = computed(() => {
@@ -127,7 +132,7 @@ export default defineComponent({
         case 'unknown': return $t('unknownResource')
       }
     })
-    return { disabled, tryEnable, icon, typeName }
+    return { disabled, tryEnable, icon, typeName, enabled }
   },
 })
 </script>

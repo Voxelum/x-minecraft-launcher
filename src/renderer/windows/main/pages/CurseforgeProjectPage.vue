@@ -216,6 +216,7 @@ import {
 import ProjectDescription from './CurseforgeProjectPageDescription.vue'
 import DestMenu from './CurseforgeProjectPageDestMenu.vue'
 import ProjectFiles from './CurseforgeProjectPageFiles.vue'
+import { withDefault } from '/@/util/props'
 
 interface InstallOptions {
   path?: string
@@ -224,16 +225,9 @@ interface InstallOptions {
 export default defineComponent({
   components: { ProjectDescription, ProjectFiles, DestMenu },
   props: {
-    type: {
-      type: String,
-      default: 'mc-mods',
-    },
-    id: {
-      type: String,
-      required: true,
-      default: '',
-    },
-    from: String,
+    type: withDefault(String, () => 'mc-mods'),
+    id: withDefault(String, () => ''),
+    from: withDefault(String, () => ''),
   },
   setup(props) {
     const projectId = computed(() => Number.parseInt(props.id, 10))

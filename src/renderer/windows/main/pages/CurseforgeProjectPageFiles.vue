@@ -48,14 +48,18 @@ import {
   useCurseforgeProjectFiles,
   useCurseforgeInstall,
 } from '/@/hooks'
-import { required } from '/@/util/props'
+import { optional, required, withDefault } from '/@/util/props'
 import Tile from './CurseforgeProjectPageFilesTile.vue'
 import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue'
 import { useSearch } from '../hooks'
 
 export default defineComponent({
   components: { VirtualList, AddInstanceStepper },
-  props: { project: required(Number), type: required<ProjectType>(String as any), from: String },
+  props: {
+    project: required(Number),
+    type: required<ProjectType>(String as any),
+    from: optional(String),
+  },
   setup(props) {
     const { files, loading, refresh } = useCurseforgeProjectFiles(props.project)
     const { install: installFile, getFileStatus, getFileResource } = useCurseforgeInstall(props.type, props.project)
@@ -72,7 +76,12 @@ export default defineComponent({
           const resource = await installFile(file)
           filePath = resource.path
         } else {
-          filePath = getFileResource(file).path
+          const res = getFileResource(file)
+          if (res) {
+            filePath = res.path
+          } else {
+            throw new Error(`Cannot find installed curseforge file named ${file.displayName} fileId=${file.id} projectId=${file.projectId}`)
+          }
         }
         data.initialTemplate = filePath
         data.isConfirmDialogShown = true

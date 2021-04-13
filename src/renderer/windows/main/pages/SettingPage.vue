@@ -1,6 +1,14 @@
 <template>
-  <v-container grid-list-md fluid style="z-index: 2; overflow: auto">
-    <v-layout wrap style="padding: 6px; 8px; max-height: 90vh" fill-height>
+  <v-container
+    grid-list-md
+    fluid
+    style="z-index: 2; overflow: auto"
+  >
+    <v-layout
+      wrap
+      style="padding: 6px; 8px; max-height: 90vh"
+      fill-height
+    >
       <v-flex
         d-flex
         xs12
@@ -10,7 +18,10 @@
       >
         <span class="headline">{{ $tc("setting.name", 2) }}</span>
       </v-flex>
-      <v-flex d-flex xs12>
+      <v-flex
+        d-flex
+        xs12
+      >
         <v-list
           three-line
           subheader
@@ -19,12 +30,16 @@
           <v-subheader>{{ $t("setting.general") }}</v-subheader>
           <v-list-tile>
             <v-list-tile-content>
-              <v-list-tile-title>{{
-                $t("setting.language")
-              }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{
-                $t("setting.languageDescription")
-              }}</v-list-tile-sub-title>
+              <v-list-tile-title>
+                {{
+                  $t("setting.language")
+                }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{
+                  $t("setting.languageDescription")
+                }}
+              </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <v-select
@@ -38,9 +53,11 @@
           </v-list-tile>
           <v-list-tile>
             <v-list-tile-content>
-              <v-list-tile-title>{{
-                $t("setting.location")
-              }}</v-list-tile-title>
+              <v-list-tile-title>
+                {{
+                  $t("setting.location")
+                }}
+              </v-list-tile-title>
               <v-list-tile-sub-title>{{ rootLocation }}</v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
@@ -54,19 +71,27 @@
               </v-btn>
             </v-list-tile-action>
             <v-list-tile-action>
-              <v-btn outline flat @click="showRootDir">
+              <v-btn
+                outline
+                flat
+                @click="showRootDir"
+              >
                 {{ $t("setting.showRoot") }}
               </v-btn>
             </v-list-tile-action>
           </v-list-tile>
           <v-list-tile>
             <v-list-tile-content>
-              <v-list-tile-title>{{
-                $t("setting.useBmclAPI")
-              }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{
-                $t("setting.useBmclAPIDescription")
-              }}</v-list-tile-sub-title>
+              <v-list-tile-title>
+                {{
+                  $t("setting.useBmclAPI")
+                }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{
+                  $t("setting.useBmclAPIDescription")
+                }}
+              </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <v-select
@@ -83,24 +108,34 @@
       </v-flex>
       <v-divider dark />
       <v-flex style="background: transparent">
-        <v-list three-line subheader style="background: transparent">
+        <v-list
+          three-line
+          subheader
+          style="background: transparent"
+        >
           <v-subheader>{{ $t("setting.update") }}</v-subheader>
           <v-list-tile avatar>
             <v-list-tile-action>
-              <v-btn icon :loading="checkingUpdate" @click="checkUpdate">
+              <v-btn
+                icon
+                :loading="checkingUpdate"
+                @click="checkUpdate"
+              >
                 <v-icon>refresh</v-icon>
               </v-btn>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>{{
-                $t("setting.latestVersion")
-              }}</v-list-tile-title>
-              <v-list-tile-sub-title
-                >{{ version }} build {{ build }}
+              <v-list-tile-title>
+                {{
+                  $t("setting.latestVersion")
+                }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ version }} build {{ build }}
                 {{
                   updateInfo.version ? `-> ${updateInfo.version}` : ""
-                }}</v-list-tile-sub-title
-              >
+                }}
+              </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <v-btn
@@ -114,8 +149,8 @@
                   updateStatus === "none"
                     ? $t("setting.alreadyLatest")
                     : updateStatus === "pending"
-                    ? $t("setting.updateToThisVersion")
-                    : $t("setting.installAndQuit")
+                      ? $t("setting.updateToThisVersion")
+                      : $t("setting.installAndQuit")
                 }}
               </v-btn>
             </v-list-tile-action>
@@ -156,12 +191,16 @@
               <v-checkbox v-model="blurMainBody" />
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>{{
-                $t("setting.blurMainBody")
-              }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{
-                $t("setting.blurMainBodyDescription")
-              }}</v-list-tile-sub-title>
+              <v-list-tile-title>
+                {{
+                  $t("setting.blurMainBody")
+                }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{
+                  $t("setting.blurMainBodyDescription")
+                }}
+              </v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-list-tile avatar>
@@ -169,72 +208,112 @@
               <v-checkbox v-model="showParticle" />
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>{{
-                $t("setting.showParticle")
-              }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{
-                $t("setting.showParticleDescription")
-              }}</v-list-tile-sub-title>
+              <v-list-tile-title>
+                {{
+                  $t("setting.showParticle")
+                }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{
+                  $t("setting.showParticleDescription")
+                }}
+              </v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-list-tile>
             <v-list-tile-content>
-              <v-list-tile-title>{{
-                $t("setting.particleMode")
-              }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{
-                $t("setting.particleModeDescription")
-              }}</v-list-tile-sub-title>
+              <v-list-tile-title>
+                {{
+                  $t("setting.particleMode")
+                }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{
+                  $t("setting.particleModeDescription")
+                }}
+              </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-select v-model="particleMode" :items="particleModes" />
+              <v-select
+                v-model="particleMode"
+                :items="particleModes"
+              />
             </v-list-tile-action>
           </v-list-tile>
           <v-list-tile>
             <v-list-tile-content>
-              <v-list-tile-title>{{
-                $t("setting.backgroundImage")
-              }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{
-                $t("setting.backgroundImageDescription")
-              }}</v-list-tile-sub-title>
+              <v-list-tile-title>
+                {{
+                  $t("setting.backgroundImage")
+                }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{
+                  $t("setting.backgroundImageDescription")
+                }}
+              </v-list-tile-sub-title>
             </v-list-tile-content>
-            <v-btn outline flat style="margin-right: 10px" :disabled="!backgroundImage" @click="clearImage">
+            <v-btn
+              outline
+              flat
+              style="margin-right: 10px"
+              :disabled="!backgroundImage"
+              @click="clearImage"
+            >
               {{ $t("setting.backgroundImageClear") }}
             </v-btn>
-            <v-btn outline flat style="margin-right: 10px" @click="selectImage">
+            <v-btn
+              outline
+              flat
+              style="margin-right: 10px"
+              @click="selectImage"
+            >
               {{ $t("setting.backgroundImageSelect") }}
             </v-btn>
           </v-list-tile>
           <v-list-tile>
             <v-list-tile-content>
-              <v-list-tile-title>{{
-                $t("setting.backgroundImageBlur")
-              }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{
-                $t("setting.backgroundImageBlurDescription")
-              }}</v-list-tile-sub-title>
+              <v-list-tile-title>
+                {{
+                  $t("setting.backgroundImageBlur")
+                }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{
+                  $t("setting.backgroundImageBlurDescription")
+                }}
+              </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-slider
+              v-model="blur"
               :min="0"
               :max="100"
               :hint="$t('setting.backgroundImageBlur')"
               :always-dirty="true"
-              v-model="blur" 
-            ></v-slider>
+            />
           </v-list-tile>
         </v-list>
       </v-flex>
     </v-layout>
 
     <update-info-dialog v-model="viewingUpdateDetail" />
-    <v-dialog :value="migrateDialog" persistent>
-      <v-card v-if="migrateState === 0" dark>
+    <v-dialog
+      :value="migrateDialog"
+      persistent
+    >
+      <v-card
+        v-if="migrateState === 0"
+        dark
+      >
         <v-card-title>
           <h2 style="display: block; min-width: 100%">
             {{ $t("setting.setRootTitle") }}
           </h2>
-          <v-text-field :value="rootLocation" readonly hide-details />
+          <v-text-field
+            :value="rootLocation"
+            readonly
+            hide-details
+          />
         </v-card-title>
         <v-card-text>
           <p>{{ $t("setting.setRootDescription") }}</p>
@@ -242,25 +321,43 @@
         </v-card-text>
         <v-divider />
         <v-card-actions>
-          <v-btn flat large @click="doCancelApplyRoot">
+          <v-btn
+            flat
+            large
+            @click="doCancelApplyRoot"
+          >
             {{ $t("cancel") }}
           </v-btn>
           <v-spacer />
-          <v-btn flat large @click="doApplyRoot()">
+          <v-btn
+            flat
+            large
+            @click="doApplyRoot()"
+          >
             {{ $t("setting.apply") }}
           </v-btn>
         </v-card-actions>
       </v-card>
-      <v-card v-else-if="migrateState === 1" dark>
+      <v-card
+        v-else-if="migrateState === 1"
+        dark
+      >
         <v-card-title>
           <h2>{{ $t("setting.waitReload") }}</h2>
         </v-card-title>
         <v-spacer />
         <div style="display: flex; width: 100; justify-content: center">
-          <v-progress-circular :size="100" color="white" indeterminate />
+          <v-progress-circular
+            :size="100"
+            color="white"
+            indeterminate
+          />
         </div>
       </v-card>
-      <v-card v-else dark>
+      <v-card
+        v-else
+        dark
+      >
         <v-card-title>
           <h2 v-if="migrateError">
             {{ $t("setting.migrateFailed") }}
@@ -319,8 +416,8 @@ function setupImage() {
       properties: ['openFile'],
       filters: [{
         name: 'image',
-        extensions: ['png', 'jpg']
-      }]
+        extensions: ['png', 'jpg'],
+      }],
     }).then((v) => {
       const imagePath = v.filePaths[0]
       setBackgroundImage(imagePath)
@@ -333,7 +430,7 @@ function setupImage() {
     blur,
     backgroundImage,
     selectImage,
-    clearImage
+    clearImage,
   }
 }
 
