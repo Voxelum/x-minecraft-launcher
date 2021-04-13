@@ -73,7 +73,7 @@ export function useInstanceMods() {
     return resource.uri.find(u => u.startsWith('http')) ?? ''
   }
   function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource | AnyResource): ModItem {
-    const icon = `dataroot:///${resource.location}.png`
+    const icon = `dataroot://${resource.location}.png`
     const modItem: ModItem = {
       path: 'filePath' in resource ? (resource as any).filePath : resource.path,
       id: '',

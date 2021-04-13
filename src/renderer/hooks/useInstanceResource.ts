@@ -78,7 +78,7 @@ export function useInstanceResourcePacks() {
     return meta ? meta.format ?? meta.pack_format : 3
   }
   function getResourcePackItem(resource: Resource<PackMeta.Pack>): ResourcePackItem {
-    const icon = isPersistedResource(resource) ? `${state.base.root}/${resource.location}.png` : ''
+    const icon = isPersistedResource(resource) ? `dataroot://${resource.location}.png` : ''
     return {
       path: resource.path,
       name: resource.name,
@@ -89,7 +89,7 @@ export function useInstanceResourcePacks() {
       acceptingRange: getters.getAcceptMinecraftRangeByFormat(getResourcepackFormat(resource.metadata)),
       icon,
 
-      resource: Object.freeze(resource),
+      resource: Object.freeze(resource) as any,
     }
   }
   function getResourcePackItemFromInstanceResource(resource: AnyResource): ResourcePackItem {

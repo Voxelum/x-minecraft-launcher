@@ -83,12 +83,12 @@ export interface ResourceService {
      * Parse a single file as a resource and return the resource object
      * @param options The parse file option
      */
-  parseFile(options: ParseFileOptions): Promise<AnyResource>
+  parseFile(options: ParseFileOptions): Promise<[AnyResource, undefined | Uint8Array]>
   /**
      * Parse multiple files and return corresponding resources
      * @param options The parse multiple files options
      */
-  parseFiles(options: ParseFilesOptions): Promise<AnyResource[]>
+  parseFiles(options: ParseFilesOptions): Promise<[AnyResource, undefined | Uint8Array][]>
   /**
      * Import the resource into the launcher.
      * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.

@@ -1,13 +1,12 @@
-import { ensureDir, FSWatcher, link, remove, stat, unlink } from 'fs-extra'
+import { ensureDir, FSWatcher, stat, unlink } from 'fs-extra'
 import watch from 'node-watch'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
 import ResourceService from './ResourceService'
 import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
-import { mutateResource } from '/@main/entities/resource'
 import { linkWithTimeoutOrCopy, readdirIfPresent } from '/@main/util/fs'
-import { AnyResource, isModResource, isResourcePackResource, PersistedResource } from '/@shared/entities/resource'
+import { AnyResource, isModResource, isPersistedResource, isResourcePackResource, PersistedResource } from '/@shared/entities/resource'
 import { ResourceDomain } from '/@shared/entities/resource.schema'
 import { DeployOptions, InstanceResourceService as IInstanceResourceService, InstanceResourceServiceKey } from '/@shared/services/InstanceResourceService'
 
@@ -55,13 +54,14 @@ export default class InstanceResourceService extends AbstractService implements 
       url: [] as string[],
       source: undefined,
     }))
-    const resources = await this.resourceService.importFiles({
+    const resources = await this.resourceService.parseFiles({
       files: fileArgs,
-      restrictToDomain: ResourceDomain.Mods,
       type: 'mods',
     })
-    return resources.map((r, i) => mutateResource(r, (r) => { r.path = fileArgs[i].path }))
-      .filter(isModResource)
+    for (const [res, icon] of resources.filter(r => !isPersistedResource(r[0]))) {
+      this.resourceService.importParsedResource({ path: res.path, type: res.type }, res, icon)
+    }
+    return resources.map(([res]) => res)
   }
 
   private async scanResourcepacks(dir: string) {
@@ -73,13 +73,15 @@ export default class InstanceResourceService extends AbstractService implements 
       source: undefined,
     }))
 
-    const resources = await this.resourceService.importFiles({
+    const resources = await this.resourceService.parseFiles({
       files: fileArgs,
-      restrictToDomain: ResourceDomain.ResourcePacks,
       type: 'resourcepack',
     })
-    return resources.map((r, i) => mutateResource(r, (r) => { r.path = fileArgs[i].path }))
-      .filter(isResourcePackResource)
+
+    for (const [res, icon] of resources.filter(r => !isPersistedResource(r[0]))) {
+      this.resourceService.importParsedResource({ path: res.path, type: res.type }, res, icon)
+    }
+    return resources.map(([res]) => res)
   }
 
   @Subscribe('instanceSelect')
@@ -116,13 +118,14 @@ export default class InstanceResourceService extends AbstractService implements 
         if (name.startsWith('.')) return
         const filePath = name
         if (event === 'update') {
-          this.resourceService.importFile({ path: filePath, type: 'mods', background: true }).then((resource) => {
+          this.resourceService.parseFile({ path: filePath, type: 'mods' }).then(([resource, icon]) => {
             if (isModResource(resource)) {
               this.log(`Instace mod add ${filePath}`)
             } else {
               this.warn(`Non mod resource added in /mods directory! ${filePath}`)
             }
-            this.addMod.push(mutateResource(resource, (r) => { r.path = filePath }))
+            this.resourceService.importParsedResource({ path: filePath }, resource, icon)
+            this.addMod.push(resource)
           })
         } else {
           const target = this.state.instanceResource.mods.find(r => r.path === filePath)
@@ -154,13 +157,16 @@ export default class InstanceResourceService extends AbstractService implements 
         if (name.startsWith('.')) return
         const filePath = name
         if (event === 'update') {
-          this.resourceService.importFile({ path: filePath, type: 'resourcepacks' }).then((resource) => {
+          this.resourceService.parseFile({ path: filePath, type: 'resourcepacks' }).then(([resource, icon]) => {
             if (isResourcePackResource(resource)) {
               this.log(`Instace resource pack add ${filePath}`)
-              this.addResourcePack.push(mutateResource(resource, (r) => { r.path = filePath }))
             } else {
               this.warn(`Non resource pack resource added in /resourcepacks directory! ${filePath}`)
             }
+            if (!isPersistedResource(resource)) {
+              this.resourceService.importParsedResource({ path: filePath }, resource, icon)
+            }
+            this.addResourcePack.push(resource)
           })
         } else {
           const target = this.state.instanceResource.resourcepacks.find(r => r.path === filePath)
@@ -174,14 +180,6 @@ export default class InstanceResourceService extends AbstractService implements 
       })
       this.log(`Mounted on instance resource packs: ${basePath}`)
     }
-  }
-
-  deployMod(options: DeployOptions): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-
-  deployResourcePack(options: DeployOptions): Promise<void> {
-    throw new Error('Method not implemented.')
   }
 
   async deploy({ resources, path = this.state.instance.path }: DeployOptions) {

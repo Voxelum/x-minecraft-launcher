@@ -6,6 +6,7 @@ import { URL } from 'url'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
 import DiagnoseService from './DiagnoseService'
+import ResourceService from './ResourceService'
 import AbstractService, { ExportService, Inject, Singleton } from './Service'
 import VersionService from './VersionService'
 import LauncherApp from '/@main/app/LauncherApp'
@@ -34,6 +35,7 @@ export default class InstallService extends AbstractService implements IInstallS
   constructor(app: LauncherApp,
     @Inject(VersionService) private local: VersionService,
     @Inject(DiagnoseService) diagnoseService: DiagnoseService,
+    @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app)
 
@@ -607,6 +609,8 @@ export default class InstallService extends AbstractService implements IInstallS
     }
 
     const java = this.getters.defaultJava.valid ? this.getters.defaultJava.path : undefined
+    const resourceService = this.resourceService
+    const error = this.error
 
     const id = await this.submit(task('installOptifine', async function () {
       await this.yield(new DownloadTask({
@@ -614,6 +618,14 @@ export default class InstallService extends AbstractService implements IInstallS
         url: `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
         destination: path,
       }).setName('download'))
+      resourceService.importFile({
+        path,
+        type: 'mods',
+        background: true,
+      }).catch((e) => {
+        error(`Fail to import optifine as mod! ${path}`)
+        error(e)
+      })
       let id: string = await this.concat(installOptifineTask(path, minecraft, { java }))
 
       if (options.inhrenitFrom) {

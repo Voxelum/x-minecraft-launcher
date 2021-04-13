@@ -16,8 +16,6 @@ export interface InstanceResourceService {
    */
   mountModResources(): Promise<void>
   mountResourcepacks(): Promise<void>
-  deployMod(options: DeployOptions): Promise<void>
-  deployResourcePack(options: DeployOptions): Promise<void>
   deploy(options: DeployOptions): Promise<void>
   ensureResourcePacksDeployment(): Promise<void>
   undeploy(resources: Resource[]): Promise<void>
