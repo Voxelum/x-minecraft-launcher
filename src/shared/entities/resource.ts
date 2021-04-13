@@ -39,14 +39,14 @@ export type SaveResource = Resource<ResourceSaveMetadata> & { readonly type: Res
 export type UnknownResource = Resource<unknown> & { readonly type: ResourceType.Unknown }
 export type ModResource = ForgeResource | FabricResource | LiteloaderResource
 export type AnyResource = ForgeResource
-  | FabricResource
-  | LiteloaderResource
-  | CurseforgeModpackResource
-  | ModpackResource
-  | ResourcePackResource
-  | SaveResource
-  | McbbsModpackResource
-  | UnknownResource
+| FabricResource
+| LiteloaderResource
+| CurseforgeModpackResource
+| ModpackResource
+| ResourcePackResource
+| SaveResource
+| McbbsModpackResource
+| UnknownResource
 
 export type PersistedForgeResource = PersistedResource<ForgeModCommonMetadata> & { readonly type: ResourceType.Forge }
 export type PersistedFabricResource = PersistedResource<FabricModMetadata> & { readonly type: ResourceType.Fabric }
@@ -59,14 +59,14 @@ export type PersistedSaveResource = PersistedResource<ResourceSaveMetadata> & { 
 export type PersistedUnknownResource = PersistedResource<unknown> & { readonly type: ResourceType.Unknown }
 export type PersistedModResource = PersistedForgeResource | PersistedFabricResource | PersistedLiteloaderResource
 export type AnyPersistedResource = PersistedForgeResource
-  | PersistedFabricResource
-  | PersistedLiteloaderResource
-  | PersistedCurseforgeModpackResource
-  | PersistedModpackResource
-  | PersistedResourcePackResource
-  | PersistedSaveResource
-  | PersistedMcbbsModpackResource
-  | PersistedUnknownResource
+| PersistedFabricResource
+| PersistedLiteloaderResource
+| PersistedCurseforgeModpackResource
+| PersistedModpackResource
+| PersistedResourcePackResource
+| PersistedSaveResource
+| PersistedMcbbsModpackResource
+| PersistedUnknownResource
 
 export function isForgeResource(resource: Resource): resource is ForgeResource {
   return resource.type === 'forge'

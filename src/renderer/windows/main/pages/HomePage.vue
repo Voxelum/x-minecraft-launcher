@@ -173,6 +173,7 @@
         isExportingCurseforge = false;
       "
     />
+    <launch-blocked-dialog />
   </v-layout>
 </template>
 

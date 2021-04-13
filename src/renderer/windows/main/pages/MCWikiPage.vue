@@ -15,10 +15,11 @@
 import { defineComponent, computed, ref, Ref, onMounted } from '@vue/composition-api'
 import { WebviewTag } from 'electron'
 import { useRouter } from '/@/hooks'
+import { optional } from '/@/util/props'
 
 export default defineComponent({
   props: {
-    path: String,
+    path: optional(String),
   },
   setup(props) {
     const view: Ref<WebviewTag | null> = ref(null)

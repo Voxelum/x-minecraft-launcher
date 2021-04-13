@@ -12,6 +12,7 @@
         :key="file.name"
         :value="file"
         @remove="$emit('remove', file)"
+        @enable="setEnable(file, $event)"
       />
     </v-list>
     <v-spacer />
@@ -97,6 +98,9 @@ export default defineComponent({
       }
       Promise.all(promises).then(() => cancel())
     }
+    function setEnable(file: FilePreview, enabled?: boolean) {
+      file.enabled = enabled ?? true
+    }
     return {
       enableMods,
       remove,
@@ -104,6 +108,7 @@ export default defineComponent({
       start,
       loading,
       disabled,
+      setEnable,
     }
   },
 })

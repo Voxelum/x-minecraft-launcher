@@ -346,6 +346,7 @@ import {
 } from '/@/hooks'
 import { JavaRecord } from '/@shared/entities/java'
 import { useSearch, useSearchToggles, useSearchToggle } from '../hooks'
+import { optional, withDefault } from '/@/util/props'
 
 interface InstanceTemplate {
   type: 'instance'
@@ -446,11 +447,8 @@ function setupTemplates() {
 
 export default defineComponent({
   props: {
-    show: {
-      type: Boolean,
-      default: false,
-    },
-    initialTemplate: String,
+    show: withDefault(Boolean, () => false),
+    initialTemplate: optional(String),
   },
   setup(props, context) {
     const { $t } = useI18n()

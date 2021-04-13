@@ -81,6 +81,7 @@ export default defineComponent({
       let currentObj: any
       watch(computed(() => props.value), () => {
         for (const [key, value] of Object.entries(props.value.model.textures)) {
+          // eslint-disable-next-line vue/no-mutating-props
           props.value.model.textures[key] = findRealTexturePath(props.value.model, key)
         }
         const obj = new BlockModelFactory(props.value.textures).getObject(props.value.model)

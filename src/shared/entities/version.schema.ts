@@ -1,4 +1,4 @@
-/* eslint-disable no-redeclare */
+/* eslint-disable @typescript-eslint/no-redeclare */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Schema } from './schema'
 

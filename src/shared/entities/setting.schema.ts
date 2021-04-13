@@ -1,4 +1,4 @@
-/* eslint-disable no-redeclare */
+/* eslint-disable @typescript-eslint/no-redeclare */
 import { Schema } from './schema'
 import _SettingSchema from './SettingSchema.json'
 

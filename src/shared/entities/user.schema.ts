@@ -1,4 +1,4 @@
-/* eslint-disable no-redeclare */
+/* eslint-disable @typescript-eslint/no-redeclare */
 import { YggdrasilAuthAPI, ProfileServiceAPI, GameProfile } from '@xmcl/user'
 import { Schema } from './schema'
 import _UserSchema from './UserSchema.json'

@@ -202,7 +202,6 @@ import { useLoginDialog, useDialog } from '../hooks'
 import ChallengesForm from './UserPageChallengesForm.vue'
 import PageSkinView from './UserPageSkinView.vue'
 import UserServicesCard from './UserPageUserServicesCard.vue'
-import SpeedDial from './UserPageSkinSpeedDial.vue'
 import GameProfileSpeedDial from './UserPageGameProfileSpeedDial.vue'
 import UserList from './UserPageUserList.vue'
 
@@ -211,7 +210,6 @@ export default defineComponent({
     ChallengesForm,
     UserServicesCard,
     PageSkinView,
-    SpeedDial,
     GameProfileSpeedDial,
     UserList,
   },

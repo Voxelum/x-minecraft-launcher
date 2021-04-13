@@ -1,4 +1,5 @@
 import { computed, inject, InjectionKey, provide, Ref, ref } from '@vue/composition-api'
+import type { FileFilter } from 'electron'
 import { useI18n } from '/@/hooks'
 
 export type DialogNames = 'task' | 'java-wizard' | 'login' | 'detail' | ''
@@ -12,7 +13,7 @@ export const DIALOG_JAVA_ISSUE: InjectionKey<Ref<'incompatible' | 'missing'>> = 
 
 export function useZipFilter () {
   const { $t } = useI18n()
-  const zipFilter: Electron.FileFilter = {
+  const zipFilter: FileFilter = {
     extensions: ['zip'],
     name: $t('zip'),
   }

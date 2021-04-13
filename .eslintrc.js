@@ -60,7 +60,7 @@ module.exports = {
     // ],
 
     "indent": "off",
-    "@typescript-eslint/indent": ["error", 2, { "SwitchCase": 1 }],
+    "@typescript-eslint/indent": ["error", 2, { "SwitchCase": 1, ignoredNodes: ['TSTypeParameterInstantiation'] }],
     "comma-dangle": "off",
     "@typescript-eslint/comma-dangle": ["error", "always-multiline"],
     "semi": "off",

@@ -48,7 +48,7 @@
 </template>
 
 <script lang=ts>
-import { BlockStateJson } from '@shared/services/ResourcePackPreviewService'
+import { BlockStateJson } from '/@shared/services/ResourcePackPreviewService'
 import { computed, defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import { BlockModel } from '@xmcl/resourcepack'
 import { useSearch } from '../hooks'

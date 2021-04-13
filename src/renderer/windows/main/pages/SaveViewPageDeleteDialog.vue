@@ -42,18 +42,13 @@
 
 <script>
 import { defineComponent } from '@vue/composition-api'
+import { required } from '/@/util/props'
 
 export default defineComponent({
   props: {
-    cancel: {
-      type: Function,
-    },
-    operate: {
-      type: Function,
-    },
-    value: {
-      type: String,
-    },
+    cancel: required(Function),
+    operate: required(Function),
+    value: required(String),
   },
 })
 </script>
