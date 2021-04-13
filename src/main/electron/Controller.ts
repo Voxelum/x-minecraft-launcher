@@ -1,24 +1,23 @@
 
+import { app, BrowserWindow, dialog, Menu, Notification, ProcessMemoryInfo, session, shell, Tray } from 'electron'
+import { fromFile } from 'file-type'
+import { readJSON } from 'fs-extra'
+import { join } from 'path'
+import LauncherApp from '../app/LauncherApp'
+import BaseService from '../services/BaseService'
+import { StaticStore } from '../util/staticStore'
+import i18n from './locales'
 import { LauncherAppController } from '/@main/app/LauncherAppController'
 import { IS_DEV } from '/@main/constant'
-import BaseService from '../services/BaseService'
 import { acrylic } from '/@main/util/acrylic'
 import { trackWindowSize } from '/@main/util/windowSizeTracker'
-import { TaskNotification } from '/@shared/entities/notification'
-import { StaticStore } from '../util/staticStore'
-import { app, BrowserWindow, dialog, ProcessMemoryInfo, Menu, session, Tray, Notification, net, shell } from 'electron'
-import { readFile, readJSON } from 'fs-extra'
-import { join, resolve } from 'path'
 import indexPreload from '/@preload/index'
 import mainWinUrl from '/@renderer/index.html'
 import loggerWinUrl from '/@renderer/logger.html'
 import setupWinUrl from '/@renderer/setup.html'
-import LauncherApp from '../app/LauncherApp'
-import favcon2XPath from '/@static/favicon@2x.png'
+import { TaskNotification } from '/@shared/entities/notification'
 import iconPath from '/@static/apple-touch-icon.png'
-import i18n from './locales'
-import { fileType } from '../util/fs'
-import { fromFile } from 'file-type'
+import favcon2XPath from '/@static/favicon@2x.png'
 
 export default class Controller implements LauncherAppController {
   private mainWin: BrowserWindow | undefined = undefined
@@ -113,20 +112,20 @@ export default class Controller implements LauncherAppController {
         callback({ statusCode: 404 })
       })
     })
-    sess.protocol.registerFileProtocol('video', (req, callback) => {
-      const pathname = decodeURIComponent(req.url.replace('video://', ''))
-      console.log(pathname)
-      callback(pathname)
-      // fromFile(pathname).then((type) => {
-      //   if (type && type.mime.startsWith('image/')) {
-      //     callback(pathname)
-      //   } else {
-      //     callback({ statusCode: 404 })
-      //   }
-      // }).catch(() => {
-      //   callback({ statusCode: 404 })
-      // })
-    })
+    // sess.protocol.registerFileProtocol('video', (req, callback) => {
+    //   const pathname = decodeURIComponent(req.url.replace('video://', ''))
+    //   console.log(pathname)
+    //   callback(pathname)
+    // fromFile(pathname).then((type) => {
+    //   if (type && type.mime.startsWith('image/')) {
+    //     callback(pathname)
+    //   } else {
+    //     callback({ statusCode: 404 })
+    //   }
+    // }).catch(() => {
+    //   callback({ statusCode: 404 })
+    // })
+    // })
 
     const browser = new BrowserWindow({
       title: 'KeyStone Launcher',
@@ -146,7 +145,6 @@ export default class Controller implements LauncherAppController {
       vibrancy: 'sidebar', // or popover
       icon: iconPath,
       webPreferences: {
-        // webSecurity: !IS_DEV, // disable security for loading local image
         nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
         session: sess,
@@ -155,16 +153,19 @@ export default class Controller implements LauncherAppController {
     })
 
     this.app.log(`[Controller] Created main window by config ${configPath}`)
-    browser.on('ready-to-show', () => { this.app.log('Main Window is ready to show!') })
+    browser.on('ready-to-show', () => {
+      this.app.log('Main Window is ready to show!')
+      this.setWindowArcry(browser)
+    })
     browser.on('close', () => { })
     browser.webContents.on('will-navigate', (event, url) => {
-      event.preventDefault();
+      event.preventDefault()
       if (!IS_DEV) {
-          shell.openExternal(url);
+        shell.openExternal(url)
       } else if (!url.startsWith('http://localhost')) {
-          shell.openExternal(url);
+        shell.openExternal(url)
       }
-  });
+    })
 
     this.setupBrowserLogger(browser, 'main')
     this.setWindowArcry(browser)
@@ -190,7 +191,6 @@ export default class Controller implements LauncherAppController {
       maximizable: false,
       icon: iconPath,
       webPreferences: {
-        // webSecurity: !IS_DEV, // disable security for loading local image
         nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
         session: session.fromPartition('persist:logger'),
