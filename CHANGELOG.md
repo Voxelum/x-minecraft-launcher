@@ -40,6 +40,41 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.13.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.12.1...v0.13.0)
+
+* chore: use node 15 ([3671561](https://github.com/voxelum/x-minecraft-launcher/commit/3671561))
+* style: fix lint ([e163824](https://github.com/voxelum/x-minecraft-launcher/commit/e163824))
+* style: fix style ([510acbb](https://github.com/voxelum/x-minecraft-launcher/commit/510acbb))
+* refactor: adapt to new parse file ([b604cb9](https://github.com/voxelum/x-minecraft-launcher/commit/b604cb9))
+* refactor: change to rollup ([669ed43](https://github.com/voxelum/x-minecraft-launcher/commit/669ed43))
+* refactor: credential ([96be4b1](https://github.com/voxelum/x-minecraft-launcher/commit/96be4b1))
+* refactor: extract services ([cc644c9](https://github.com/voxelum/x-minecraft-launcher/commit/cc644c9))
+* refactor: fix dialog & style ([2598bc1](https://github.com/voxelum/x-minecraft-launcher/commit/2598bc1))
+* refactor: HMCL ([937c3ea](https://github.com/voxelum/x-minecraft-launcher/commit/937c3ea))
+* refactor: make sure the resource correctly parse and icon loaded ([ed76b1f](https://github.com/voxelum/x-minecraft-launcher/commit/ed76b1f))
+* refactor: model display & credential persist ([30f84f0](https://github.com/voxelum/x-minecraft-launcher/commit/30f84f0))
+* refactor: modpack service ([03cf878](https://github.com/voxelum/x-minecraft-launcher/commit/03cf878))
+* refactor: modpack spec ([cab4135](https://github.com/voxelum/x-minecraft-launcher/commit/cab4135))
+* refactor: Move the service interface to shared ([479df5f](https://github.com/voxelum/x-minecraft-launcher/commit/479df5f))
+* refactor: track user login service ([74c2ddd](https://github.com/voxelum/x-minecraft-launcher/commit/74c2ddd))
+* docs: update license ([c5040b7](https://github.com/voxelum/x-minecraft-launcher/commit/c5040b7))
+* fix: acrylic effect on windows ([2d99b87](https://github.com/voxelum/x-minecraft-launcher/commit/2d99b87))
+* fix: correct assign telemetry user/session ([f15f36b](https://github.com/voxelum/x-minecraft-launcher/commit/f15f36b))
+* fix: correct popagate error ([4137be1](https://github.com/voxelum/x-minecraft-launcher/commit/4137be1))
+* fix: curseforge search ([87a22f2](https://github.com/voxelum/x-minecraft-launcher/commit/87a22f2))
+* fix: navigate to other site ([a5bc02c](https://github.com/voxelum/x-minecraft-launcher/commit/a5bc02c))
+* fix: parse malform resource ([0aaad5b](https://github.com/voxelum/x-minecraft-launcher/commit/0aaad5b))
+* fix: resource deploy ([456536f](https://github.com/voxelum/x-minecraft-launcher/commit/456536f))
+* fix: universal drop item remove ([d4631cb](https://github.com/voxelum/x-minecraft-launcher/commit/d4631cb))
+* fix: update ru.json (#123) ([eb69a84](https://github.com/voxelum/x-minecraft-launcher/commit/eb69a84)), closes [#123](https://github.com/voxelum/x-minecraft-launcher/issues/123)
+* Adjust some button position & drop import handling ([c99dc42](https://github.com/voxelum/x-minecraft-launcher/commit/c99dc42))
+* feat: add discord ([eaf720d](https://github.com/voxelum/x-minecraft-launcher/commit/eaf720d))
+* feat: background img (#128) ([3aa2ea7](https://github.com/voxelum/x-minecraft-launcher/commit/3aa2ea7)), closes [#128](https://github.com/voxelum/x-minecraft-launcher/issues/128)
+* feat: support optifine ([ec4a897](https://github.com/voxelum/x-minecraft-launcher/commit/ec4a897))
+
+
 ## [0.12.1](https://github.com/voxelum/x-minecraft-launcher/compare/v0.12.0...v0.12.1)
 
 * fix: respect resource packs to export cf ([bf0a121](https://github.com/voxelum/x-minecraft-launcher/commit/bf0a121))
