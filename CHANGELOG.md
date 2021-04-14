@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+
+## [0.13.1](https://github.com/voxelum/x-minecraft-launcher/compare/v0.13.0...v0.13.1)
+
+* fix: autoupdate break on new electron ([176a582](https://github.com/voxelum/x-minecraft-launcher/commit/176a582))
+* fix: resource parse return wrong path ([b5f3b06](https://github.com/voxelum/x-minecraft-launcher/commit/b5f3b06))
+* chore: write sha256 & sha1 after build ([fdc8676](https://github.com/voxelum/x-minecraft-launcher/commit/fdc8676))
+
+
 ## [0.13.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.12.1...v0.13.0)
 
 * chore: use node 15 ([3671561](https://github.com/voxelum/x-minecraft-launcher/commit/3671561))
