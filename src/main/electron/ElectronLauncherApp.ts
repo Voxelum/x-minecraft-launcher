@@ -102,7 +102,7 @@ export default class ElectronLauncherApp extends LauncherApp {
   downloadUpdateTask(): Task<void> {
     if (this.storeManager.store.state.base.updateInfo) {
       if (this.storeManager.store.state.base.updateInfo.incremental) {
-        const updatePath = join(this.appDataPath, 'update.asar')
+        const updatePath = join(this.appDataPath, 'pending_update')
         return new DownloadAsarUpdateTask(this.storeManager.store.state.base.updateInfo, this.networkManager.isInGFW, updatePath)
           .map(() => undefined)
       }

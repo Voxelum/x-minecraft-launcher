@@ -44,7 +44,7 @@
           flat
           :loading="downloadingUpdate"
           :disabled="downloadingUpdate"
-          @click="downloadUpdate"
+          @click="downloadUpdate()"
         >
           <v-icon
             color="white"
@@ -58,7 +58,7 @@
           v-else
           block
           color="primary"
-          @click="quitAndInstall"
+          @click="quitAndInstall()"
         >
           <v-icon
             color="white"

@@ -1,16 +1,18 @@
-import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '/@main/constant'
-import { UpdateInfo as _UpdateInfo } from '/@shared/entities/update'
-import { DownloadTask } from '@xmcl/installer'
-import { task, Task, TaskBase, TaskLooped } from '@xmcl/task'
+import { ChecksumNotMatchError, DownloadTask } from '@xmcl/installer'
+import { task, Task, TaskBase } from '@xmcl/task'
 import { spawn } from 'child_process'
-import { URL } from 'url'
 import { autoUpdater, CancellationToken, Provider, UpdateInfo, UpdaterSignal } from 'electron-updater'
-import { writeFile } from 'fs-extra'
+import { close, stat, writeFile } from 'fs-extra'
+import got from 'got'
 import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
 import { basename, dirname, join } from 'path'
 import { SemVer } from 'semver'
+import { URL } from 'url'
 import { promisify } from 'util'
+import { checksum } from '../util/fs'
 import ElectronLauncherApp from './ElectronLauncherApp'
+import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '/@main/constant'
+import { UpdateInfo as _UpdateInfo } from '/@shared/entities/update'
 
 /**
  * Only download asar file update.
@@ -19,16 +21,18 @@ import ElectronLauncherApp from './ElectronLauncherApp'
  * you can call this to download asar update
  */
 export class DownloadAsarUpdateTask extends DownloadTask {
-  constructor (private updateInfo: UpdateInfo, private isInGFW: boolean, destination: string) {
+  private sha256 = ''
+
+  constructor(private updateInfo: UpdateInfo, private isInGFW: boolean, destination: string) {
     super({ url: '', destination })
   }
 
-  protected async process () {
+  protected async process() {
     const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise)
     const files = provider.resolveFiles(this.updateInfo)
 
     const uObject = files[0].url
-    uObject.pathname = `${uObject.pathname.substring(0, uObject.pathname.lastIndexOf('/'))}app.asar`
+    uObject.pathname = `${uObject.pathname.substring(0, uObject.pathname.lastIndexOf('/') + 1)}app.asar`
 
     if (this.isInGFW) {
       uObject.host = AZURE_CDN_HOST
@@ -37,8 +41,37 @@ export class DownloadAsarUpdateTask extends DownloadTask {
     }
 
     this.url = uObject.toString()
+    this.originalUrl = this.url
 
     return super.process()
+  }
+
+  async shouldProcess() {
+    const missed = await stat(this.destination).then(s => s.size === 0, () => false)
+    if (missed) {
+      return true
+    }
+    if (!this.sha256) {
+      this.sha256 = await got(`${this.url}.sha256`).text().catch(() => '')
+    }
+    if (!this.sha256) {
+      return true
+    }
+    const expect = this.sha256
+    const actual = await checksum(this.destination, 'sha256')
+    return expect !== actual
+  }
+
+  async validate() {
+    if (this.sha256) {
+      const expect = this.sha256
+      const actual = await checksum(this.destination, 'sha256')
+      if (actual !== expect) {
+        throw new ChecksumNotMatchError('sha256', expect, actual, this.destination)
+      }
+    }
+    await close(this.fd).catch(() => { })
+    this.fd = -1
   }
 }
 
@@ -50,7 +83,7 @@ export class DownloadFullUpdateTask extends TaskBase<void> {
 
   private cancellationToken = new CancellationToken()
 
-  protected async run (): Promise<void> {
+  protected async run(): Promise<void> {
     this.updateSignal.progress((info) => {
       this._progress = info.transferred
       this._total = info.total
@@ -59,23 +92,23 @@ export class DownloadFullUpdateTask extends TaskBase<void> {
     await autoUpdater.downloadUpdate(this.cancellationToken)
   }
 
-  protected performCancel (): Promise<void> {
+  protected performCancel(): Promise<void> {
     this.cancellationToken.cancel()
     return new Promise((resolve) => {
       autoUpdater.once('update-cancelled', resolve)
     })
   }
 
-  protected async performPause (): Promise<void> {
+  protected async performPause(): Promise<void> {
     this.cancellationToken.cancel()
   }
 
-  protected performResume (): void {
+  protected performResume(): void {
     this.run()
   }
 }
 
-export async function quitAndInstallAsar (this: ElectronLauncherApp) {
+export async function quitAndInstallAsar(this: ElectronLauncherApp) {
   if (IS_DEV) {
     this.log('Currently is development envrionment. Skip to install ASAR')
     return
@@ -84,7 +117,7 @@ export async function quitAndInstallAsar (this: ElectronLauncherApp) {
   const appPath = dirname(exePath)
 
   const appAsarPath = join(appPath, 'resources', 'app.asar')
-  const updateAsarPath = join(this.appDataPath, 'update.asar')
+  const updateAsarPath = join(this.appDataPath, 'pending_update')
 
   this.log(`Install asar on ${this.platform.name}`)
   if (this.platform.name === 'windows') {
@@ -153,7 +186,7 @@ export async function quitAndInstallAsar (this: ElectronLauncherApp) {
   this.quitApp()
 }
 
-export function quitAndInstallFullUpdate () {
+export function quitAndInstallFullUpdate() {
   if (IS_DEV) {
     return
   }
@@ -162,7 +195,7 @@ export function quitAndInstallFullUpdate () {
 
 let injectedUpdate = false
 
-export function checkUpdateTask (this: ElectronLauncherApp): Task<_UpdateInfo> {
+export function checkUpdateTask(this: ElectronLauncherApp): Task<_UpdateInfo> {
   return task('checkUpdate', async () => {
     autoUpdater.once('update-available', () => {
       this.log('Update available and set status to pending')

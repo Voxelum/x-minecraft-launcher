@@ -105,7 +105,8 @@ export default class BaseService extends AbstractService implements IBaseService
     if (!this.state.base.updateInfo) {
       throw new Error('Cannot download update if we don\'t check the version update!')
     }
-    await this.submit(this.app.downloadUpdateTask())
+    this.log(`Start to download update: ${this.state.base.updateInfo.version} incremental=${this.state.base.updateInfo.incremental}`)
+    await this.submit(this.app.downloadUpdateTask().setName('downloadUpdate'))
     this.commit('updateStatus', 'ready')
   }
 
