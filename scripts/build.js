@@ -7,6 +7,11 @@ const { build: electronBuilder } = require('electron-builder')
 const { stat, remove, writeFile } = require('fs-extra')
 const { rollup } = require('rollup')
 const { loadRollupConfig } = require('./util')
+const { createHash } = require('crypto')
+const { createReadStream, createWriteStream } = require('fs')
+const { promisify } = require('util')
+const { pipeline } = require('stream')
+const { existsSync } = require('fs')
 
 /**
  * Generate the distribution version of package json
@@ -78,6 +83,17 @@ function buildRenderer() {
 }
 
 /**
+ * @param {string} algorithm The hash algorithm
+ * @param {string} path path of the file
+ * @param {string} destination
+ * @returns Hash string
+ */
+async function writeHash(algorithm, path, destination) {
+  let hash = createHash(algorithm).setEncoding("hex");
+  await promisify(pipeline)(createReadStream(path), hash, createWriteStream(destination));
+}
+
+/**
  * Use electron builder to build your app to installer, zip, or etc.
  *
  * @param {import('electron-builder').Configuration} config The electron builder config
@@ -90,13 +106,21 @@ async function buildElectron(config, dir) {
 
   for (const file of files) {
     const fstat = await stat(file)
+    if (!file.endsWith('.blockmap')) {
+      await writeHash('sha256', file, `${file}.sha256`);
+      await writeHash('sha1', file, `${file}.sha1`);
+    }
     console.log(
       `${chalk.gray('[write]')} ${chalk.yellow(file)} ${(
         fstat.size /
         1024 /
         1024
-      ).toFixed(2)}mb`
+      ).toFixed(2)}mb.`
     )
+  }
+
+  if (existsSync('build/win-unpacked/resources/app.asar')) {
+    await writeHash('sha256', 'build/win-unpacked/resources/app.asar', `build/win-unpacked/resources/app.asar.sha256`);
   }
 
   console.log(

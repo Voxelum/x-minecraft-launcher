@@ -1,4 +1,5 @@
 const baseConfig = require('./build.base.config')
+const { version } = require('../package.json')
 
 /**
  * @type {import('electron-builder').Configuration}
@@ -6,12 +7,15 @@ const baseConfig = require('./build.base.config')
 const config = {
   ...baseConfig,
   nsis: {
-    // eslint-disable-next-line no-template-curly-in-string
     artifactName: '${productName}-Setup-${version}.${ext}',
     oneClick: false,
     allowToChangeInstallationDirectory: true,
-    perMachine: true,
+    perMachine: false,
     differentialPackage: true
+  },
+  nsisWeb: {
+    artifactName: '${productName}-Web-Setup-${version}.${ext}',
+    appPackageUrl: `https://xmcl-release.azureedge.net/releases/x-minecraft-launcher-${version}-x64.nsis.7z`,
   },
   dmg: {
     contents: [
@@ -42,11 +46,7 @@ const config = {
   win: {
     icon: 'build/icons/icon.ico',
     target: [
-      // disable build for x32 by default
-      // 'nsis:ia32',
-      // 'nsis:x64',
-      // uncomment to generate web installer
-      // electron-builder can use either web or offline installer to auto update
+      'nsis:x64',
       {
         target: 'nsis-web',
         arch: [

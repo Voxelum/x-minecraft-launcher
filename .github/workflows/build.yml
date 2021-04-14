@@ -51,22 +51,21 @@ jobs:
       env:
         BUILD_NUMBER: ${{ steps.vars.outputs.build_number }}
         FULL_RELEASE: ${{ startsWith(github.event.commits[0].message, 'chore(release)') }}
-    - name: Upload Web Build
-      uses: actions/upload-artifact@v2
-      with:
-        name: build
-        path: build/nsis-web/*.*
     - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
         name: build
-        path: build/*.*
+        path: |
+          build/*.*
+          build/nsis-web/*.*
     - name: Upload Windows Asar
       if: ${{ runner.os == 'Windows' && startsWith(github.event.commits[0].message, 'chore(release)') }} 
       uses: actions/upload-artifact@v2
       with:
         name: build
-        path: build/win-unpacked/resources/app.asar
+        path: |
+          build/win-unpacked/resources/app.asar
+          build/win-unpacked/resources/app.asar.sha256
 
   repare-release:
     runs-on: ubuntu-latest
