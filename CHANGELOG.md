@@ -2,46 +2,6 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## [0.13.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.12.1...v0.13.0)
 
 * chore: use node 15 ([3671561](https://github.com/voxelum/x-minecraft-launcher/commit/3671561))
