@@ -167,7 +167,6 @@
         "vite": "^2.1.5",
         "vite-plugin-vue2": "^1.2.2",
         "vue-observe-visibility": "^0.4.6",
-        "vue-particles": "^1.0.9",
         "vue-template-compiler": "^2.6.12"
     },
     "jest": {
