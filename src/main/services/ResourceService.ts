@@ -233,7 +233,7 @@ export default class ResourceService extends AbstractService implements IResourc
     const context: ParseResourceContext = {}
     const existed = await this.queryExistedResourceByPath(path, context)
     if (existed) {
-      return [existed, undefined]
+      return [mutateResource(existed, (r) => { r.path = path }), undefined]
     }
     const [resource, icon] = await this.resolveResource(options, context)
     return [resource as AnyResource, icon]
