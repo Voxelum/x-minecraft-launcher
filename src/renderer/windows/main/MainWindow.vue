@@ -32,7 +32,7 @@
             :style="{ filter: `blur(${blur}px)` }"
             style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;"
           >
-          <vue-particles
+          <particles
             v-if="showParticle"
             color="#dedede"
             :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }"
@@ -88,10 +88,11 @@ import { provideDialog, provideNotifier, provideContextMenu, provideSearch } fro
 import LoginDialog from './dialog/BaseLoginDialog.vue'
 import TaskDialog from './dialog/BaseTaskDialog.vue'
 import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue'
+import Particles from '../../skin/Particles.vue'
 import JavaWizardDialog from './dialog/BaseJavaWizardDialog.vue'
 
 export default defineComponent({
-  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaWizardDialog },
+  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaWizardDialog, Particles },
   setup() {
     provideDialog()
     provideNotifier()

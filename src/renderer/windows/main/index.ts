@@ -11,7 +11,6 @@ import Vue from 'vue'
 import VueCompositionApi, { createApp, h, provide } from '@vue/composition-api'
 import VueI18n from 'vue-i18n'
 import VueObserveVisibility from 'vue-observe-visibility'
-import VueParticles from 'vue-particles'
 import Router from 'vue-router'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
@@ -63,7 +62,6 @@ function configApp(app: ReturnType<typeof createApp>) {
   })
   app.use(Router)
   app.use(VueObserveVisibility)
-  app.use(VueParticles)
   app.component('TextComponent', TextComponent)
   app.component('SkinView', SkinView)
   for (const [key, value] of Object.entries(components)) {
