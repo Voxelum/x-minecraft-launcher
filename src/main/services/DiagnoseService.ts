@@ -261,7 +261,7 @@ export default class DiagnoseService extends AbstractService implements IDiagnos
           missingAuthlibInjector: [],
         }
 
-        if (user.authService !== 'mojang' && user.authService !== 'offline') {
+        if (user.authService !== 'mojang' && user.authService !== 'offline' && user.authService !== 'microsoft') {
           if (!await doesAuthlibInjectionExisted()) {
             tree.missingAuthlibInjector.push({})
           }
