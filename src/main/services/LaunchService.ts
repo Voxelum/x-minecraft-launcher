@@ -116,7 +116,7 @@ export default class LaunchService extends AbstractService implements ILaunchSer
       const javaPath = this.getters.instanceJava.path || this.getters.defaultJava.path
 
       await this.instanceResourceService.ensureResourcePacksDeployment()
-      const useAuthLib = user.authService !== 'mojang' && user.authService !== 'offline'
+      const useAuthLib = user.authService !== 'mojang' && user.authService !== 'offline' && user.authService !== 'microsoft'
 
       /**
            * Build launch condition
