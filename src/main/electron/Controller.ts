@@ -18,6 +18,7 @@ import setupWinUrl from '/@renderer/setup.html'
 import { TaskNotification } from '/@shared/entities/notification'
 import iconPath from '/@static/apple-touch-icon.png'
 import favcon2XPath from '/@static/favicon@2x.png'
+import './controlIpc'
 
 export default class Controller implements LauncherAppController {
   private mainWin: BrowserWindow | undefined = undefined
