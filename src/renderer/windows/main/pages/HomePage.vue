@@ -26,6 +26,24 @@
         user-select: none;
       "
       dark
+      @click="minimize()"
+    >
+      minimize
+    </v-icon>
+    <v-icon
+      v-ripple
+      style="
+        position: absolute;
+        right: 88px;
+        top: 0;
+        z-index: 2;
+        margin: 0;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 2px;
+        user-select: none;
+      "
+      dark
       @click="showFeedbackDialog"
     >
       help_outline
@@ -34,7 +52,7 @@
       v-ripple
       style="
         position: absolute;
-        right: 88px;
+        right: 132px;
         top: 0;
         z-index: 2;
         margin: 0;
@@ -188,6 +206,7 @@ import {
   useJava,
   useQuit,
   useService,
+  useBrowserWindowOperation,
 } from '/@/hooks'
 import { useDialog, useNotifier, useJavaWizardDialog } from '../hooks'
 import GameExitDialog from './HomePageGameExitDialog.vue'
@@ -256,6 +275,7 @@ export default defineComponent({
     const { quit } = useQuit()
     const isExportingCurseforge = ref(false)
     const isExportingModpack = ref(false)
+    const { minimize } = useBrowserWindowOperation()
     async function showExport(type: 'normal' | 'curseforge') {
       if (type === 'curseforge') {
         isExportingCurseforge.value = true
@@ -278,6 +298,7 @@ export default defineComponent({
       refreshing,
       showFeedbackDialog,
       quit,
+      minimize,
 
       isExportingCurseforge,
       isExportingModpack,
