@@ -281,6 +281,8 @@ export function useLoginValidation (isOffline: Ref<boolean>) {
     data.passwordErrors = []
   }
   function handleError (e: LoginException) {
+    console.log('hello')
+    console.log(Object.keys(e))
     if (e.type === 'loginInternetNotConnected') {
       // TODO: handle this case
     } else if (e.type === 'loginInvalidCredentials') {
