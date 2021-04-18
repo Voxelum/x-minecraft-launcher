@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.14.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.13.1...v0.14.0)
+
+* fix: authlib diagnose shown on MS account ([20d4eb8](https://github.com/voxelum/x-minecraft-launcher/commit/20d4eb8))
+* fix: login does not show correct error ([35d4332](https://github.com/voxelum/x-minecraft-launcher/commit/35d4332))
+* fix: microsoft user cannot launch ([24ca7f6](https://github.com/voxelum/x-minecraft-launcher/commit/24ca7f6))
+* fix: particle background ([3e78718](https://github.com/voxelum/x-minecraft-launcher/commit/3e78718))
+* feat: add control to minimize window ([9972baf](https://github.com/voxelum/x-minecraft-launcher/commit/9972baf))
+
+
 ## [0.13.1](https://github.com/voxelum/x-minecraft-launcher/compare/v0.13.0...v0.13.1)
 
 * fix: autoupdate break on new electron ([176a582](https://github.com/voxelum/x-minecraft-launcher/commit/176a582))
