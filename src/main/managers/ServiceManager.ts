@@ -168,8 +168,11 @@ export default class ServiceManager extends Manager {
       if (r instanceof Promise) {
         return r.then(r => ({ result: r }), (e) => {
           this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`)
-          this.warn(JSON.stringify(e))
-          this.warn(e.stack)
+          if (e instanceof Error) {
+            this.warn(e)
+          } else {
+            this.warn(JSON.stringify(e))
+          }
           if (e.type || e instanceof Exception) {
             return { error: e }
           }

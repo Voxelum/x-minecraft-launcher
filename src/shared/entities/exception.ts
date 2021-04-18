@@ -17,7 +17,7 @@ export class Exception extends Error implements ExceptionBase {
   }
 
   static from(error: Error, exception: Exceptions): Exception {
-    return Object.assign(new Exception(exception), error)
+    return Object.assign(error, exception) as Exception
   }
 }
 
